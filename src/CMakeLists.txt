@@ -73,6 +73,7 @@ set(SOURCE_FILES
   mmSolver/MMCameraCalibrateNode.cpp
   mmSolver/MMCameraRelativePoseCmd.cpp
   mmSolver/MMCameraSolveCmd.cpp
+  mmSolver/MMImagePlaneTransformNode.cpp
   mmSolver/MMLensData.cpp
   mmSolver/MMLensDeformerNode.cpp
   mmSolver/MMLensEvaluateNode.cpp

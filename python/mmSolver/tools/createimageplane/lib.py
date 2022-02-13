@@ -41,19 +41,23 @@ def create_image_poly_plane(name=None):
     Create a default polygon image plane under camera.
     """
     assert name is None or isinstance(name, pycompat.TEXT_TYPE)
-    tfm, creator = maya.cmds.polyPlane(
-        axis=(0.0, 0.0, 1.0),
-        subdivisionsWidth=32,
-        subdivisionsHeight=32,
-        name=name,
-    )
+    name_shp = name + 'Shape'
+    tfm = maya.cmds.createNode('mmImagePlaneTransform', name=name)
+    shp = maya.cmds.createNode('mesh', name=name_shp, parent=tfm)
+    creator = maya.cmds.createNode('polyPlane')
+    maya.cmds.connectAttr(creator + '.output', shp + '.inMesh')
+
+    maya.cmds.setAttr(creator + '.subdivisionsWidth', 32)
+    maya.cmds.setAttr(creator + '.subdivisionsHeight', 32)
+    maya.cmds.setAttr(creator + '.axisX', 0.0)
+    maya.cmds.setAttr(creator + '.axisY', 0.0)
+    maya.cmds.setAttr(creator + '.axisZ', 1.0)
 
     # Make the polygon image plane non-selectable.
     display_type = 2  # 2 = 'Reference'
     maya.cmds.setAttr(tfm + '.overrideEnabled', 1)
     maya.cmds.setAttr(tfm + '.overrideDisplayType', display_type)
 
-    shp = maya.cmds.listRelatives(tfm, shapes=True)[0]
     deform_node = maya.cmds.deformer(tfm, type='mmLensDeformer')[0]
     mkr_scl = maya.cmds.createNode('mmMarkerScale')
     inv_mult = maya.cmds.createNode('multiplyDivide')
@@ -68,6 +72,20 @@ def create_image_poly_plane(name=None):
         defaultValue=1.0)
     maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
     maya.cmds.setAttr(tfm + '.' + attr, 10.0)
+
+    # MeshResolution attribute
+    attr = 'meshResolution'
+    maya.cmds.addAttr(
+        tfm,
+        longName=attr,
+        at='long',
+        minValue=1,
+        maxValue=256,
+        defaultValue=32)
+    node_attr = tfm + '.' + attr
+    maya.cmds.setAttr(node_attr, keyable=True)
+    maya.cmds.connectAttr(node_attr, creator + '.subdivisionsWidth')
+    maya.cmds.connectAttr(node_attr, creator + '.subdivisionsHeight')
 
     # Focal Length attribute
     attr = 'focalLength'

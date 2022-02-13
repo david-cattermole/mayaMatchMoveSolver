@@ -42,6 +42,7 @@
 #include "mmSolver/MMMarkerScaleNode.h"
 #include "mmSolver/MMReprojectionNode.h"
 #include "mmSolver/MMMarkerGroupTransformNode.h"
+#include "mmSolver/MMImagePlaneTransformNode.h"
 #include "mmSolver/MMMarkerTransformNode.h"
 #include "mmSolver/MMLensDeformerNode.h"
 #include "mmSolver/MMLensEvaluateNode.h"
@@ -395,6 +396,19 @@ MStatus initializePlugin(MObject obj) {
         markerGroupClassification,
         status);
 
+    // MM Marker Group transform
+    const MString imagePlaneClassification = MM_IMAGE_PLANE_DRAW_CLASSIFY;
+    REGISTER_TRANSFORM(
+        plugin,
+        MMImagePlaneTransformNode::nodeName(),
+        MMImagePlaneTransformNode::m_id,
+        MMImagePlaneTransformNode::creator,
+        MMImagePlaneTransformNode::initialize,
+        MPxTransformationMatrix::baseTransformationMatrixId,
+        MPxTransformationMatrix::creator,
+        imagePlaneClassification,
+        status);
+
     // Marker transform node and matrix
     const MString markerTfmClassification = "drawdb/geometry/transform";
     REGISTER_TRANSFORM(plugin,
@@ -600,6 +614,9 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(),
                     MMMarkerGroupTransformNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, MMImagePlaneTransformNode::nodeName(),
+                    MMImagePlaneTransformNode::m_id, status);
 
     DEREGISTER_NODE(plugin, MMMarkerTransformNode::nodeName(),
                     MMMarkerTransformNode::m_id, status);

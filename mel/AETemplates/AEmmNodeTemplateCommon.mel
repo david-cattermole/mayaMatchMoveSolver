@@ -23,6 +23,10 @@ global proc AEmmNodeTemplateCommonBegin(string $nodeName)
     editorTemplate -beginScrollLayout;
 }
 
+global proc AEmmNodeTransformTemplateCommonBegin(string $nodeName)
+{
+    editorTemplate -beginScrollLayout;
+}
 
 global proc AEmmNodeShapeTemplateCommonBegin(string $nodeName)
 {
@@ -35,7 +39,18 @@ global proc AEmmNodeTemplateCommonEnd(string $nodeName)
     AEabstractBaseCreateTemplate($nodeName);
 
     editorTemplate -addExtraControls;
+    editorTemplate -endScrollLayout;
+}
 
+global proc AEmmNodeTransformTemplateCommonEnd(string $nodeName)
+{
+    AEtransformMain $nodeName;
+    AEtransformNoScroll $nodeName;
+
+    // For smooth skin influence objects
+    AEtransformSkinCluster $nodeName;
+
+    editorTemplate -addExtraControls;
     editorTemplate -endScrollLayout;
 }
 

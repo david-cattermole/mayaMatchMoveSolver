@@ -54,7 +54,7 @@ function(add_ui_compile
         add_custom_command(
                 OUTPUT
                     ${output_file}
-                    ${output_file}.never_exist  # force re-run.
+                    file_never_exist.txt  # force re-run.
                 COMMAND ${MAYA_QT_UIC_EXECUTABLE} -g python ${input_file} -o ${output_file}
                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                 DEPENDS ${input_file}
@@ -71,7 +71,7 @@ function(add_ui_compile
         add_custom_command(
                 OUTPUT
                     ${output_file}
-                    ${output_file}.never_exist  # force re-run.
+                    file_never_exist.txt  # force re-run.
                 COMMAND ${MAYA_PYTHON_EXECUTABLE} ${EXEC_SCRIPT} ${input_file}
                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                 DEPENDS ${input_file}

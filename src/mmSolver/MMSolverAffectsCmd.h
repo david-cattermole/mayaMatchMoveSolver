@@ -20,8 +20,8 @@
  * Header for mmAffects Maya command.
  */
 
-#ifndef MAYA_MM_SOLVER_AFFECTS_CMD_H
-#define MAYA_MM_SOLVER_AFFECTS_CMD_H
+#ifndef MM_SOLVER_AFFECTS_CMD_H
+#define MM_SOLVER_AFFECTS_CMD_H
 
 // STL
 #include <cmath>
@@ -100,4 +100,4 @@ private:
 
 } // namespace mmsolver
 
-#endif // MAYA_MM_SOLVER_AFFECTS_CMD_H
+#endif // MM_SOLVER_AFFECTS_CMD_H

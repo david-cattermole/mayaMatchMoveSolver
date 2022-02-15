@@ -21,8 +21,8 @@
  * Parameters (Attributes).
  */
 
-#ifndef MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_DEFINES_H
-#define MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_DEFINES_H
+#ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_DEFINES_H
+#define MM_SOLVER_CORE_BUNDLE_ADJUST_DEFINES_H
 
 // The number of errors that are measured per-marker.
 // There are two measurements per-marker, X and Y.
@@ -165,4 +165,4 @@
 #define LEVMAR_SUPPORT_PARAMETER_BOUNDS_VALUE true
 #define LEVMAR_SUPPORT_ROBUST_LOSS_VALUE false
 
-#endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_DEFINES_H
+#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_DEFINES_H

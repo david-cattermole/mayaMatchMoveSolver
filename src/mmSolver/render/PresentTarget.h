@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef MAYA_MM_SOLVER_RENDER_PRESENT_TARGET_H
-#define MAYA_MM_SOLVER_RENDER_PRESENT_TARGET_H
+#ifndef MM_SOLVER_RENDER_PRESENT_TARGET_H
+#define MM_SOLVER_RENDER_PRESENT_TARGET_H
 
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>

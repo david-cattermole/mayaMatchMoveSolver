@@ -20,8 +20,8 @@
  * Convert between different coordinate spaces, for points.
  */
 
-#ifndef MAYA_MM_SOLVER_CORE_MM_COORD_H
-#define MAYA_MM_SOLVER_CORE_MM_COORD_H
+#ifndef MM_SOLVER_CORE_MM_COORD_H
+#define MM_SOLVER_CORE_MM_COORD_H
 
 // STL
 #include <cassert>
@@ -141,4 +141,4 @@ convertPoint2D(
 
 } // namespace mmcoord
 
-#endif // MAYA_MM_SOLVER_CORE_MM_COORD_H
+#endif // MM_SOLVER_CORE_MM_COORD_H

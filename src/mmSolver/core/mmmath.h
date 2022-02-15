@@ -20,8 +20,8 @@
  * Mathematical functions for vectors, points, lines and matrices.
  */
 
-#ifndef MAYA_MM_SOLVER_CORE_CALIBRATION_MATH_H
-#define MAYA_MM_SOLVER_CORE_CALIBRATION_MATH_H
+#ifndef MM_SOLVER_CORE_CALIBRATION_MATH_H
+#define MM_SOLVER_CORE_CALIBRATION_MATH_H
 
 // MM Solver
 #include "mmdata.h"
@@ -103,4 +103,4 @@ cosineAngleBetweenLines(
 } // namespace math
 
 
-#endif // MAYA_MM_SOLVER_CORE_CALIBRATION_MATH_H
+#endif // MM_SOLVER_CORE_CALIBRATION_MATH_H

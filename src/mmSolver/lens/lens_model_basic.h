@@ -20,8 +20,8 @@
  * Functor class for the basic brownian lens distortion model.
  */
 
-#ifndef MAYA_MM_SOLVER_CORE_LENS_MODEL_BASIC_H
-#define MAYA_MM_SOLVER_CORE_LENS_MODEL_BASIC_H
+#ifndef MM_SOLVER_CORE_LENS_MODEL_BASIC_H
+#define MM_SOLVER_CORE_LENS_MODEL_BASIC_H
 
 #include "lens_model.h"
 
@@ -70,4 +70,4 @@ private:
 };
 
 
-#endif // MAYA_MM_SOLVER_CORE_LENS_MODEL_BASIC_H
+#endif // MM_SOLVER_CORE_LENS_MODEL_BASIC_H

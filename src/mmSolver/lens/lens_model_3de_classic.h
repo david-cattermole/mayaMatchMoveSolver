@@ -20,8 +20,8 @@
  * Class for the basic brownian lens distortion model.
  */
 
-#ifndef MAYA_MM_SOLVER_CORE_LENS_MODEL_3DE_CLASSIC_H
-#define MAYA_MM_SOLVER_CORE_LENS_MODEL_3DE_CLASSIC_H
+#ifndef MM_SOLVER_CORE_LENS_MODEL_3DE_CLASSIC_H
+#define MM_SOLVER_CORE_LENS_MODEL_3DE_CLASSIC_H
 
 // Do not define 'min' and 'max' macros on MS Windows (with MSVC),
 // added to fix errors with LDPK.
@@ -119,4 +119,4 @@ private:
 };
 
 
-#endif // MAYA_MM_SOLVER_CORE_LENS_MODEL_3DE_CLASSIC_H
+#endif // MM_SOLVER_CORE_LENS_MODEL_3DE_CLASSIC_H

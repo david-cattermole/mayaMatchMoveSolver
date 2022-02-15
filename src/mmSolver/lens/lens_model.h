@@ -20,8 +20,8 @@
  * Abstract base-class for all the LensModels.
  */
 
-#ifndef MAYA_MM_SOLVER_CORE_LENS_MODEL_H
-#define MAYA_MM_SOLVER_CORE_LENS_MODEL_H
+#ifndef MM_SOLVER_CORE_LENS_MODEL_H
+#define MM_SOLVER_CORE_LENS_MODEL_H
 
 
 class LensModel {
@@ -95,4 +95,4 @@ typedef void (LensModel::*LensModelMembFn)(double x,
 #define CALL_MEMBER_FUNC(object, ptr_to_member) ((object).*(ptrToMember))
 
 
-#endif // MAYA_MM_SOLVER_CORE_LENS_MODEL_H
+#endif // MM_SOLVER_CORE_LENS_MODEL_H

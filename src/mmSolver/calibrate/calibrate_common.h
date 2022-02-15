@@ -20,8 +20,8 @@
  * Common functions used for camera calibration.
  */
 
-#ifndef MAYA_MM_SOLVER_CORE_CALIBRATE_COMMON_H
-#define MAYA_MM_SOLVER_CORE_CALIBRATE_COMMON_H
+#ifndef MM_SOLVER_CORE_CALIBRATE_COMMON_H
+#define MM_SOLVER_CORE_CALIBRATE_COMMON_H
 
 // MM Solver
 #include "mmSolver/core/mmdata.h"

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDER_H
-#define MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDER_H
+#ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDER_H
+#define MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDER_H
 
 // STL
 #include <string>
@@ -61,4 +61,4 @@ int solveFunc_cminpack_lmder(void *data,
                              int ldfjac,
                              int iflag);
 
-#endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDER_H
+#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDER_H

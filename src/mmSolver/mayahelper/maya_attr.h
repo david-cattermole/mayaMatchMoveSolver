@@ -20,8 +20,8 @@
  * Attribute class, represents an attribute that could be modified.
  */
 
-#ifndef MAYA_MM_SOLVER_ATTR_H
-#define MAYA_MM_SOLVER_ATTR_H
+#ifndef MM_SOLVER_ATTR_H
+#define MM_SOLVER_ATTR_H
 
 #include <vector>
 #include <memory>

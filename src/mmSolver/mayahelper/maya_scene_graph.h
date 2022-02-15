@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef MAYA_MM_SOLVER_MAYA_SCENE_GRAPH_H
-#define MAYA_MM_SOLVER_MAYA_SCENE_GRAPH_H
+#ifndef MM_SOLVER_MAYA_SCENE_GRAPH_H
+#define MM_SOLVER_MAYA_SCENE_GRAPH_H
 
 // STL
 #include <memory>
@@ -64,4 +64,4 @@ MStatus construct_scene_graph(
         std::vector<mmscenegraph::AttrId> &out_attrIdList
 );
 
-#endif  // MAYA_MM_SOLVER_MAYA_SCENE_GRAPH_H
+#endif  // MM_SOLVER_MAYA_SCENE_GRAPH_H

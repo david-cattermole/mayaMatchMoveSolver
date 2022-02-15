@@ -20,8 +20,8 @@
  * Constant values used in the mmSolver renderer.
  */
 
-#ifndef MAYA_MM_SOLVER_RENDER_CONSTANTS_H
-#define MAYA_MM_SOLVER_RENDER_CONSTANTS_H
+#ifndef MM_SOLVER_RENDER_CONSTANTS_H
+#define MM_SOLVER_RENDER_CONSTANTS_H
 
 // Maya
 #include <maya/MString.h>
@@ -60,4 +60,4 @@ const float kEdgeThresholdDefault = 0.05f;
 } // namespace render
 } // namespace mmsolver
 
-#endif // MAYA_MM_SOLVER_RENDER_CONSTANTS_H
+#endif // MM_SOLVER_RENDER_CONSTANTS_H

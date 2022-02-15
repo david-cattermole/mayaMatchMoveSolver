@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef MAYA_MM_SOLVER_RENDER_MAIN_OVERRIDE_H
-#define MAYA_MM_SOLVER_RENDER_MAIN_OVERRIDE_H
+#ifndef MM_SOLVER_RENDER_MAIN_OVERRIDE_H
+#define MM_SOLVER_RENDER_MAIN_OVERRIDE_H
 
 #include "constants.h"
 #include "RenderGlobalsNode.h"

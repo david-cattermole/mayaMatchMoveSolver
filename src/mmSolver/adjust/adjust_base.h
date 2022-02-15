@@ -23,8 +23,8 @@
  */
 
 
-#ifndef MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H
-#define MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H
+#ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H
+#define MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H
 
 // STL
 #include <string>
@@ -196,4 +196,4 @@ bool solve(
     bool with_verbosity,
     MStringArray &outResult);
 
-#endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H
+#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H

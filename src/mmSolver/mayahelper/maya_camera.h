@@ -20,8 +20,8 @@
  * Camera class represents a viewable camera with a projection matrix.
  */
 
-#ifndef MAYA_MM_SOLVER_CAMERA_H
-#define MAYA_MM_SOLVER_CAMERA_H
+#ifndef MM_SOLVER_CAMERA_H
+#define MM_SOLVER_CAMERA_H
 
 #include <maya/MStatus.h>
 #include <maya/MObject.h>

@@ -20,8 +20,8 @@
  * Data types for use in mmSolver.
  */
 
-#ifndef MAYA_MM_SOLVER_CORE_MM_DATA_H
-#define MAYA_MM_SOLVER_CORE_MM_DATA_H
+#ifndef MM_SOLVER_CORE_MM_DATA_H
+#define MM_SOLVER_CORE_MM_DATA_H
 
 namespace mmdata {
 
@@ -203,4 +203,4 @@ public:
 
 } // namespace mmdata
 
-#endif // MAYA_MM_SOLVER_CORE_MM_DATA_H
+#endif // MM_SOLVER_CORE_MM_DATA_H

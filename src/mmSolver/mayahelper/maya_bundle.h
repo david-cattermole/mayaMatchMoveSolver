@@ -20,8 +20,8 @@
  * Class Bundle, represents a 3D point of a 2D Marker.
  */
 
-#ifndef MAYA_MM_SOLVER_BUNDLE_H
-#define MAYA_MM_SOLVER_BUNDLE_H
+#ifndef MM_SOLVER_BUNDLE_H
+#define MM_SOLVER_BUNDLE_H
 
 #include <vector>
 #include <memory>

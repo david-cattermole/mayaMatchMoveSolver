@@ -23,8 +23,8 @@
  */
 
 
-#ifndef MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_LEVMAR_BC_DIF_H
-#define MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_LEVMAR_BC_DIF_H
+#ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_LEVMAR_BC_DIF_H
+#define MM_SOLVER_CORE_BUNDLE_ADJUST_LEVMAR_BC_DIF_H
 
 // STL
 #include <string>
@@ -98,4 +98,4 @@ void solveFunc_levmar_bc_dif(double *p,
                              int n,
                              void *data);
 
-#endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_LEVMAR_BC_DIF_H
+#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_LEVMAR_BC_DIF_H

@@ -20,8 +20,8 @@
  * Define the reprojection functions.
  */
 
-#ifndef MAYA_MM_SOLVER_CORE_REPROJECTION_H
-#define MAYA_MM_SOLVER_CORE_REPROJECTION_H
+#ifndef MM_SOLVER_CORE_REPROJECTION_H
+#define MM_SOLVER_CORE_REPROJECTION_H
 
 
 // Maya
@@ -74,4 +74,4 @@ MStatus calculateCameraFacingRatio(MMatrix tfmMatrix,
                                    MMatrix camMatrix,
                                    double &outCameraDirRatio);
 
-#endif // MAYA_MM_SOLVER_CORE_REPROJECTION_H
+#endif // MM_SOLVER_CORE_REPROJECTION_H

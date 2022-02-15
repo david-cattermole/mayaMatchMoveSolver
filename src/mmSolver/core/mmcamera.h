@@ -20,8 +20,8 @@
  * Camera geometry related functions.
  */
 
-#ifndef MAYA_MM_SOLVER_CORE_MM_CAMERA_H
-#define MAYA_MM_SOLVER_CORE_MM_CAMERA_H
+#ifndef MM_SOLVER_CORE_MM_CAMERA_H
+#define MM_SOLVER_CORE_MM_CAMERA_H
 
 // Internal
 #include "mmdata.h"
@@ -41,4 +41,4 @@ focalLengthFromAngleOfView(
 
 } // namespace mmcamera
 
-#endif // MAYA_MM_SOLVER_CORE_MM_CAMERA_H
+#endif // MM_SOLVER_CORE_MM_CAMERA_H

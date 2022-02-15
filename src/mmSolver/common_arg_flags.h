@@ -20,8 +20,8 @@
  * Command for running mmSolver.
  */
 
-#ifndef MAYA_MM_SOLVER_COMMON_ARG_FLAGS_H
-#define MAYA_MM_SOLVER_COMMON_ARG_FLAGS_H
+#ifndef MM_SOLVER_COMMON_ARG_FLAGS_H
+#define MM_SOLVER_COMMON_ARG_FLAGS_H
 
 #include "mmSolver/MMSolverCmd.h"
 
@@ -115,4 +115,4 @@ MStatus parseSolveFramesArguments(const MArgDatabase &argData,
 
 } // namespace mmsolver
 
-#endif  // MAYA_MM_SOLVER_COMMON_ARG_FLAGS_H
+#endif  // MM_SOLVER_COMMON_ARG_FLAGS_H

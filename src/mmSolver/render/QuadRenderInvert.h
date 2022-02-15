@@ -20,8 +20,8 @@
  * A full-screen quad render, with a shader applied.
  */
 
-#ifndef MAYA_MM_SOLVER_RENDER_QUAD_RENDER_INVERT_H
-#define MAYA_MM_SOLVER_RENDER_QUAD_RENDER_INVERT_H
+#ifndef MM_SOLVER_RENDER_QUAD_RENDER_INVERT_H
+#define MM_SOLVER_RENDER_QUAD_RENDER_INVERT_H
 
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
@@ -56,4 +56,4 @@ protected:
 } // namespace render
 } // namespace mmsolver
 
-#endif // MAYA_MM_SOLVER_RENDER_QUAD_RENDER_INVERT_H
+#endif // MM_SOLVER_RENDER_QUAD_RENDER_INVERT_H

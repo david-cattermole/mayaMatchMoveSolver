@@ -21,8 +21,8 @@
  */
 
 
-#ifndef MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H
-#define MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H
+#ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H
+#define MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H
 
 // STL
 #include <string>
@@ -202,4 +202,4 @@ struct SolverResult {
     double errorFinal;
 };
 
-#endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H
+#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H

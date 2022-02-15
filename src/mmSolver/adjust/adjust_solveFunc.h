@@ -21,8 +21,8 @@
  */
 
 
-#ifndef MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
-#define MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
+#ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
+#define MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
 
 #include "adjust_data.h"
 
@@ -55,4 +55,4 @@ int solveFunc(const int numberOfParameters,
               void *userData);
 
 
-#endif // MAYA_MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
+#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H

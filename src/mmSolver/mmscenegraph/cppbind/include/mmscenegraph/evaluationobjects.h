@@ -19,7 +19,8 @@
  *
  */
 
-#pragma once
+#ifndef MM_SOLVER_MM_SCENE_GRAPH_EVALUATION_OBJECTS_H
+#define MM_SOLVER_MM_SCENE_GRAPH_EVALUATION_OBJECTS_H
 
 #include <memory>
 #include <string>
@@ -74,3 +75,5 @@ private:
 };
 
 } // namespace mmscenegraph
+
+#endif  // MM_SOLVER_MM_SCENE_GRAPH_EVALUATION_OBJECTS_H

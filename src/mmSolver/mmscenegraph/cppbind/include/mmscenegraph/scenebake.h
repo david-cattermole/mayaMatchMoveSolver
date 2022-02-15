@@ -19,7 +19,8 @@
  *
  */
 
-#pragma once
+#ifndef MM_SOLVER_MM_SCENE_GRAPH_SCENE_BAKE_H
+#define MM_SOLVER_MM_SCENE_GRAPH_SCENE_BAKE_H
 
 #include <memory>
 
@@ -41,3 +42,5 @@ bake_scene_graph(
 ) noexcept;
 
 } // namespace mmscenegraph
+
+#endif  // MM_SOLVER_MM_SCENE_GRAPH_SCENE_BAKE_H

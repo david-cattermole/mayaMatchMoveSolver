@@ -19,7 +19,8 @@
  *
  */
 
-#pragma once
+#ifndef MM_SOLVER_MM_SCENE_GRAPH_ATTR_DATA_BLOCK_H
+#define MM_SOLVER_MM_SCENE_GRAPH_ATTR_DATA_BLOCK_H
 
 #include <memory>
 #include <string>
@@ -84,3 +85,5 @@ private:
 };
 
 } // namespace mmscenegraph
+
+#endif  // MM_SOLVER_MM_SCENE_GRAPH_ATTR_DATA_BLOCK_H

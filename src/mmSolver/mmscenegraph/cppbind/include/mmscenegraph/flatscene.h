@@ -19,7 +19,8 @@
  *
  */
 
-#pragma once
+#ifndef MM_SOLVER_MM_SCENE_GRAPH_FLAT_SCENE_H
+#define MM_SOLVER_MM_SCENE_GRAPH_FLAT_SCENE_H
 
 #include <vector>
 
@@ -76,3 +77,5 @@ private:
 };
 
 } // namespace mmscenegraph
+
+#endif  // MM_SOLVER_MM_SCENE_GRAPH_FLAT_SCENE_H

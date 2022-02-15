@@ -19,7 +19,8 @@
  *
  */
 
-#pragma once
+#ifndef MM_SOLVER_MM_SCENE_GRAPH_MM_SCENE_GRAPH_H
+#define MM_SOLVER_MM_SCENE_GRAPH_MM_SCENE_GRAPH_H
 
 #include "_cxx.h"
 #include "_cxxbridge.h"
@@ -28,3 +29,5 @@
 #include "flatscene.h"
 #include "scenebake.h"
 #include "scenegraph.h"
+
+#endif  // MM_SOLVER_MM_SCENE_GRAPH_MM_SCENE_GRAPH_H

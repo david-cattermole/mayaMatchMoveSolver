@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 David Cattermole.
+ * Copyright (C) 2022 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -17,14 +17,18 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Define a lens. The lens is a simple brownian model.
  */
 
-#include "mmSolver/MMLensModelBasicNode.h"
+// Do not define 'min' and 'max' macros on MS Windows (with MSVC),
+// added to fix errors with LDPK.
+#define NOMINMAX
+
+#include "MMLensModel3deClassicNode.h"
 
 // STL
 #include <cstring>
 #include <cmath>
+#include <algorithm>
 
 // Maya
 #include <maya/MPlug.h>
@@ -39,35 +43,38 @@
 #include <maya/MFnPluginData.h>
 
 // MM Solver
+#include "MMLensData.h"
+#include "mmSolver/lens/lens_model_3de_classic.h"
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
-#include "mmSolver/lens/lens_model_basic.h"
-#include "mmSolver/MMLensData.h"
 
 namespace mmsolver {
 
-MTypeId MMLensModelBasicNode::m_id(MM_LENS_MODEL_BASIC_TYPE_ID);
+MTypeId MMLensModel3deClassicNode::m_id(MM_LENS_MODEL_3DE_CLASSIC_TYPE_ID);
 
 // Input Attributes
-MObject MMLensModelBasicNode::a_inLens;
-MObject MMLensModelBasicNode::a_enable;
-MObject MMLensModelBasicNode::a_k1;
-MObject MMLensModelBasicNode::a_k2;
+MObject MMLensModel3deClassicNode::a_inLens;
+MObject MMLensModel3deClassicNode::a_enable;
+MObject MMLensModel3deClassicNode::a_distortion;
+MObject MMLensModel3deClassicNode::a_anamorphicSqueeze;
+MObject MMLensModel3deClassicNode::a_curvatureX;
+MObject MMLensModel3deClassicNode::a_curvatureY;
+MObject MMLensModel3deClassicNode::a_quarticDistortion;
 
 // Output Attributes
-MObject MMLensModelBasicNode::a_outLens;
+MObject MMLensModel3deClassicNode::a_outLens;
 
 
-MMLensModelBasicNode::MMLensModelBasicNode() {}
+MMLensModel3deClassicNode::MMLensModel3deClassicNode() {}
 
-MMLensModelBasicNode::~MMLensModelBasicNode() {}
+MMLensModel3deClassicNode::~MMLensModel3deClassicNode() {}
 
-MString MMLensModelBasicNode::nodeName() {
-    return MString("mmLensModelBasic");
+MString MMLensModel3deClassicNode::nodeName() {
+    return MString("mmLensModel3deClassic");
 }
 
-MStatus MMLensModelBasicNode::compute(const MPlug &plug, MDataBlock &data) {
+MStatus MMLensModel3deClassicNode::compute(const MPlug &plug, MDataBlock &data) {
     MStatus status = MS::kUnknownParameter;
 
     if (plug == a_outLens) {
@@ -97,23 +104,42 @@ MStatus MMLensModelBasicNode::compute(const MPlug &plug, MDataBlock &data) {
         MMLensData* newLensData = (MMLensData*) fnPluginData.data(&status);
         if (enable) {
 
-            // K1 Attribute
-            MDataHandle k1Handle = data.inputValue(a_k1, &status);
+            // Distortion Attribute
+            MDataHandle distortionHandle = data.inputValue(a_distortion, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            double k1 = k1Handle.asDouble();
+            double distortion = distortionHandle.asDouble();
 
-            // K2 Attribute
-            MDataHandle k2Handle = data.inputValue(a_k2, &status);
+            // Anamorphic Squeeze Attribute
+            MDataHandle anamorphicSqueezeHandle =
+                    data.inputValue(a_anamorphicSqueeze, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            double k2 = k2Handle.asDouble();
+            double anamorphicSqueeze = anamorphicSqueezeHandle.asDouble();
+
+            // Curvature X Attribute
+            MDataHandle curvatureXHandle = data.inputValue(a_curvatureX, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            double curvatureX = curvatureXHandle.asDouble();
+
+            // Curvature Y Attribute
+            MDataHandle curvatureYHandle = data.inputValue(a_curvatureY, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            double curvatureY = curvatureYHandle.asDouble();
+
+            // Quartic Distortion Attribute
+            MDataHandle k2Handle = data.inputValue(a_quarticDistortion, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            double quarticDistortion = k2Handle.asDouble();
 
             // Create a lens distortion function to be passed to the
             // MMLensData.
-            LensModelBasic* newLensModel = new LensModelBasic();
+            LensModel3deClassic* newLensModel = new LensModel3deClassic();
             // Connect the input lens to the newly created lens object.
             newLensModel->setInputLensModel(inputLensModel);
-            newLensModel->setK1(k1);
-            newLensModel->setK2(k2);
+            newLensModel->setDistortion(distortion);
+            newLensModel->setAnamorphicSqueeze(anamorphicSqueeze);
+            newLensModel->setCurvatureX(curvatureX);
+            newLensModel->setCurvatureY(curvatureY);
+            newLensModel->setQuarticDistortion(quarticDistortion);
 
             newLensData->setValue(newLensModel);
         } else {
@@ -127,11 +153,11 @@ MStatus MMLensModelBasicNode::compute(const MPlug &plug, MDataBlock &data) {
     return status;
 }
 
-void *MMLensModelBasicNode::creator() {
-    return (new MMLensModelBasicNode());
+void *MMLensModel3deClassicNode::creator() {
+    return (new MMLensModel3deClassicNode());
 }
 
-MStatus MMLensModelBasicNode::initialize() {
+MStatus MMLensModel3deClassicNode::initialize() {
     MStatus status;
     MFnNumericAttribute numericAttr;
     MFnTypedAttribute typedAttr;
@@ -155,21 +181,47 @@ MStatus MMLensModelBasicNode::initialize() {
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_enable));
 
-    // K1
-    a_k1 = numericAttr.create(
-        "k1", "k1",
-        MFnNumericData::kDouble, 0.0);
+    // Distortion
+    a_distortion = numericAttr.create(
+            "distortion", "distortion",
+            MFnNumericData::kDouble, 0.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_k1));
+    CHECK_MSTATUS(addAttribute(a_distortion));
 
-    // K2
-    a_k2 = numericAttr.create(
-        "k2", "k2",
-        MFnNumericData::kDouble, 0.0);
+    // Anamorphic Squeeze
+    a_anamorphicSqueeze = numericAttr.create(
+        "anamorphicSqueeze", "anamorphicSqueeze",
+        MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_k2));
+    CHECK_MSTATUS(numericAttr.setMin(0.0));
+    CHECK_MSTATUS(numericAttr.setSoftMax(2.0));
+    CHECK_MSTATUS(addAttribute(a_anamorphicSqueeze));
+
+    // Curvature
+    a_curvatureX = numericAttr.create(
+            "curvatureX", "curvatureX",
+            MFnNumericData::kDouble, 0.0);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(a_curvatureX));
+
+    // Curvature
+    a_curvatureY = numericAttr.create(
+            "curvatureY", "curvatureY",
+            MFnNumericData::kDouble, 0.0);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(a_curvatureY));
+
+    // Quartic Distortion
+    a_quarticDistortion = numericAttr.create(
+            "quarticDistortion", "quarticDistortion",
+            MFnNumericData::kDouble, 0.0);
+    CHECK_MSTATUS(numericAttr.setStorable(true));
+    CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(a_quarticDistortion));
 
     // Out Lens
     a_outLens = typedAttr.create(
@@ -182,8 +234,11 @@ MStatus MMLensModelBasicNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_outLens));
 
     // Attribute Affects
-    CHECK_MSTATUS(attributeAffects(a_k1, a_outLens));
-    CHECK_MSTATUS(attributeAffects(a_k2, a_outLens));
+    CHECK_MSTATUS(attributeAffects(a_distortion, a_outLens));
+    CHECK_MSTATUS(attributeAffects(a_anamorphicSqueeze, a_outLens));
+    CHECK_MSTATUS(attributeAffects(a_curvatureX, a_outLens));
+    CHECK_MSTATUS(attributeAffects(a_curvatureY, a_outLens));
+    CHECK_MSTATUS(attributeAffects(a_quarticDistortion, a_outLens));
     CHECK_MSTATUS(attributeAffects(a_enable, a_outLens));
     CHECK_MSTATUS(attributeAffects(a_inLens, a_outLens));
 

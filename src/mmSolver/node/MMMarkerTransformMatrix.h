@@ -38,7 +38,7 @@ public:
 
     virtual MMatrix asMatrix() const;
     virtual MMatrix asMatrix(double percent) const;
-    
+
     LensModel* getLensModel() const;
     void setLensModel(LensModel* value);
 

@@ -32,7 +32,7 @@
 #include <maya/MPxTransformationMatrix.h>
 
 // MM Solver
-#include "mmSolver/MMMarkerTransformMatrix.h"
+#include "MMMarkerTransformMatrix.h"
 
 namespace mmsolver {
 
@@ -72,7 +72,7 @@ public:
 
     // Input Attributes
     static MObject a_inLens;
-    
+
 protected:
     typedef MPxTransform ParentClass;
 };

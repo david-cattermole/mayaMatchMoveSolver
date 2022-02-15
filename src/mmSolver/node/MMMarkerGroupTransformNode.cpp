@@ -21,15 +21,15 @@
  * transform node, but with a different icon.
  */
 
-#include "mmSolver/MMMarkerGroupTransformNode.h"
+#include "MMMarkerGroupTransformNode.h"
 
 // Maya
 #include <maya/MTypeId.h>
 #include <maya/MPxTransformationMatrix.h>
 
 // MM Solver
+#include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/nodeTypeIds.h"
-#include "mayahelper/maya_camera.h"
 
 namespace mmsolver {
 

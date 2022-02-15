@@ -25,7 +25,7 @@
  *
  */
 
-#include "mmSolver/MMLensDeformerNode.h"
+#include "MMLensDeformerNode.h"
 
 // Maya
 #include <maya/MFnTypedAttribute.h>
@@ -33,8 +33,8 @@
 #include <maya/MFnNumericData.h>
 
 // MM Solver
+#include "MMLensData.h"
 #include "mmSolver/nodeTypeIds.h"
-#include "mmSolver/MMLensData.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 

@@ -38,11 +38,11 @@
 #include <maya/MFnPluginData.h>
 
 // MM Solver
+#include "MMLensData.h"
+#include "mmSolver/lens/lens_model.h"
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
-#include "mmSolver/lens/lens_model.h"
-#include "mmSolver/MMLensData.h"
 
 namespace mmsolver {
 

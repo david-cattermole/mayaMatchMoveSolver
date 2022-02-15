@@ -19,7 +19,7 @@
  *
  */
 
-#include "mmSolver/MMCameraCalibrateNode.h"
+#include "MMCameraCalibrateNode.h"
 
 #include <maya/MMatrix.h>
 #include <maya/MPlug.h>

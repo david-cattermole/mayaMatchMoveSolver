@@ -65,7 +65,7 @@ public:
     static MObject a_filmOffset;
     static MObject a_horizontalFilmOffset;
     static MObject a_verticalFilmOffset;
-    
+
     // Output Attributes
     static MObject a_outTranslate;
     static MObject a_outTranslateX;

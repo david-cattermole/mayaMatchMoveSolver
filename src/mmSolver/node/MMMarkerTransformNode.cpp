@@ -21,7 +21,7 @@
  * distortion models.
  */
 
-#include "mmSolver/MMMarkerTransformNode.h"
+#include "MMMarkerTransformNode.h"
 
 // Maya
 #include <maya/MTypeId.h>
@@ -31,9 +31,9 @@
 #include <maya/MGlobal.h>
 
 // MM Solver
-#include "mmSolver/nodeTypeIds.h"
+#include "MMLensData.h"
 #include "mmSolver/lens/lens_model.h"
-#include "mmSolver/MMLensData.h"
+#include "mmSolver/nodeTypeIds.h"
 
 namespace mmsolver {
 

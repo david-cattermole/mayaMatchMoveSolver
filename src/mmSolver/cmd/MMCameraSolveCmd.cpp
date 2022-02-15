@@ -71,7 +71,7 @@
 #pragma warning( disable : 4702 )
 
 // Internal
-#include "mmSolver/MMCameraSolveCmd.h"
+#include "MMCameraSolveCmd.h"
 
 // STL
 #include <vector>

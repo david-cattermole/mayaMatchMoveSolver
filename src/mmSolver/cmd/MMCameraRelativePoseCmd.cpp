@@ -90,18 +90,18 @@
 
 // Internal
 #include "MMCameraRelativePoseCmd.h"
-#include "mayahelper/maya_utils.h"
-#include "mayahelper/maya_camera.h"
-#include "mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_utils.h"
 
 using MMMarker = Marker;
 using MMCamera = Camera;
 
 // MM Solver Utils
-#include "utilities/debug_utils.h"
+#include "mmSolver/utilities/debug_utils.h"
 
 // MM Solver Core
-#include "adjust/adjust_defines.h"
+#include "mmSolver/adjust/adjust_defines.h"
 
 // OpenMVG
 #ifdef MMSOLVER_USE_OPENMVG

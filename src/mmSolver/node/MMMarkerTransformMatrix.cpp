@@ -21,7 +21,7 @@
  * distortion models.
  */
 
-#include "mmSolver/MMMarkerTransformMatrix.h"
+#include "MMMarkerTransformMatrix.h"
 
 // Maya
 #include <maya/MPxTransformationMatrix.h>

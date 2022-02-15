@@ -23,7 +23,7 @@
 #ifndef MM_SOLVER_COMMON_ARG_FLAGS_H
 #define MM_SOLVER_COMMON_ARG_FLAGS_H
 
-#include "mmSolver/MMSolverCmd.h"
+#include "MMSolverCmd.h"
 
 // STL
 #include <cmath>

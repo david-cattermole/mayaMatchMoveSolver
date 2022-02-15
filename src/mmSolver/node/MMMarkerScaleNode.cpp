@@ -20,7 +20,7 @@
  * Simple computation node to keep markers in screen-space when the camera filmback/focal length is modified.
  */
 
-#include "mmSolver/MMMarkerScaleNode.h"
+#include "MMMarkerScaleNode.h"
 
 // STL
 #include <cstring>

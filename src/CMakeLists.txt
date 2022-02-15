@@ -25,9 +25,6 @@ set(CMAKE_MACOSX_RPATH 1)
 
 # Source
 set(SOURCE_FILES
-  mmSolver/utilities/debug_utils.cpp
-  mmSolver/utilities/number_utils.cpp
-  mmSolver/utilities/string_utils.cpp
   mmSolver/adjust/adjust_base.cpp
   mmSolver/adjust/adjust_cminpack_base.cpp
   mmSolver/adjust/adjust_cminpack_lmder.cpp
@@ -36,22 +33,41 @@ set(SOURCE_FILES
   mmSolver/adjust/adjust_solveFunc.cpp
   mmSolver/calibrate/calibrate_common.cpp
   mmSolver/calibrate/vanishing_point.cpp
-  mmSolver/lens/lens_model_3de_classic.cpp
-  mmSolver/lens/lens_model_basic.cpp
+  mmSolver/cmd/common_arg_flags.cpp
+  mmSolver/cmd/MMCameraRelativePoseCmd.cpp
+  mmSolver/cmd/MMCameraSolveCmd.cpp
+  mmSolver/cmd/MMReprojectionCmd.cpp
+  mmSolver/cmd/MMSolverAffectsCmd.cpp
+  mmSolver/cmd/MMSolverCmd.cpp
+  mmSolver/cmd/MMSolverTypeCmd.cpp
+  mmSolver/cmd/MMTestCameraMatrixCmd.cpp
   mmSolver/core/mmcamera.cpp
   mmSolver/core/mmcoord.cpp
   mmSolver/core/mmdata.cpp
   mmSolver/core/mmmath.cpp
   mmSolver/core/reprojection.cpp
-  mmSolver/shape/ShapeDrawUtils.cpp
-  mmSolver/shape/MarkerShapeNode.cpp
-  mmSolver/shape/MarkerDrawOverride.cpp
-  mmSolver/shape/BundleShapeNode.cpp
-  mmSolver/shape/BundleDrawOverride.cpp
-  mmSolver/shape/SkyDomeShapeNode.cpp
-  mmSolver/shape/SkyDomeDrawOverride.cpp
-  mmSolver/shape/LineShapeNode.cpp
-  mmSolver/shape/LineDrawOverride.cpp
+  mmSolver/lens/lens_model_3de_classic.cpp
+  mmSolver/lens/lens_model_basic.cpp
+  mmSolver/mayahelper/maya_camera.cpp
+  mmSolver/mayahelper/maya_marker.cpp
+  mmSolver/mayahelper/maya_bundle.cpp
+  mmSolver/mayahelper/maya_attr.cpp
+  mmSolver/mayahelper/maya_scene_graph.cpp
+  mmSolver/mayahelper/maya_utils.cpp
+  mmSolver/node/MMCameraCalibrateNode.cpp
+  mmSolver/node/MMImagePlaneTransformNode.cpp
+  mmSolver/node/MMLensData.cpp
+  mmSolver/node/MMLensDeformerNode.cpp
+  mmSolver/node/MMLensEvaluateNode.cpp
+  mmSolver/node/MMLensModel3deClassicNode.cpp
+  mmSolver/node/MMLensModelBasicNode.cpp
+  mmSolver/node/MMLensModelToggleNode.cpp
+  mmSolver/node/MMLineIntersectNode.cpp
+  mmSolver/node/MMMarkerGroupTransformNode.cpp
+  mmSolver/node/MMMarkerScaleNode.cpp
+  mmSolver/node/MMMarkerTransformMatrix.cpp
+  mmSolver/node/MMMarkerTransformNode.cpp
+  mmSolver/node/MMReprojectionNode.cpp
   mmSolver/render/HudRender.cpp
   mmSolver/render/MMRendererCmd.cpp
   mmSolver/render/PresentTarget.cpp
@@ -63,36 +79,20 @@ set(SOURCE_FILES
   mmSolver/render/RenderGlobalsNode.cpp
   mmSolver/render/RenderOverride.cpp
   mmSolver/render/SceneRender.cpp
-  mmSolver/mayahelper/maya_camera.cpp
-  mmSolver/mayahelper/maya_marker.cpp
-  mmSolver/mayahelper/maya_bundle.cpp
-  mmSolver/mayahelper/maya_attr.cpp
-  mmSolver/mayahelper/maya_scene_graph.cpp
-  mmSolver/mayahelper/maya_utils.cpp
-  mmSolver/common_arg_flags.cpp
-  mmSolver/MMCameraCalibrateNode.cpp
-  mmSolver/MMCameraRelativePoseCmd.cpp
-  mmSolver/MMCameraSolveCmd.cpp
-  mmSolver/MMImagePlaneTransformNode.cpp
-  mmSolver/MMLensData.cpp
-  mmSolver/MMLensDeformerNode.cpp
-  mmSolver/MMLensEvaluateNode.cpp
-  mmSolver/MMLensModel3deClassicNode.cpp
-  mmSolver/MMLensModelBasicNode.cpp
-  mmSolver/MMLensModelToggleNode.cpp
-  mmSolver/MMLineIntersectNode.cpp
-  mmSolver/MMMarkerGroupTransformNode.cpp
-  mmSolver/MMMarkerScaleNode.cpp
-  mmSolver/MMMarkerTransformMatrix.cpp
-  mmSolver/MMMarkerTransformNode.cpp
-  mmSolver/MMReprojectionCmd.cpp
-  mmSolver/MMReprojectionNode.cpp
-  mmSolver/MMSolverAffectsCmd.cpp
-  mmSolver/MMSolverCmd.cpp
-  mmSolver/MMSolverTypeCmd.cpp
-  mmSolver/MMTestCameraMatrixCmd.cpp
+  mmSolver/shape/ShapeDrawUtils.cpp
+  mmSolver/shape/MarkerShapeNode.cpp
+  mmSolver/shape/MarkerDrawOverride.cpp
+  mmSolver/shape/BundleShapeNode.cpp
+  mmSolver/shape/BundleDrawOverride.cpp
+  mmSolver/shape/SkyDomeShapeNode.cpp
+  mmSolver/shape/SkyDomeDrawOverride.cpp
+  mmSolver/shape/LineShapeNode.cpp
+  mmSolver/shape/LineDrawOverride.cpp
+  mmSolver/utilities/debug_utils.cpp
+  mmSolver/utilities/number_utils.cpp
+  mmSolver/utilities/string_utils.cpp
   mmSolver/pluginMain.cpp
-)
+  )
 
 include(MMSolverUtils)
 

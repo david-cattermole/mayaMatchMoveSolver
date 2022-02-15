@@ -95,14 +95,14 @@ public:
     static MObject a_outNormCoord;
     static MObject a_outNormCoordX;
     static MObject a_outNormCoordY;
-    
+
     // Output Attributes
     // Marker Coordinates (-0.5 to 0.5)
     static MObject a_outMarkerCoord;
     static MObject a_outMarkerCoordX;
     static MObject a_outMarkerCoordY;
     static MObject a_outMarkerCoordZ;
-    
+
     // Image Coordinates (0.0 to imageWidth or 0.0 to imageHeight)
     // (lower-left is 0.0, 0.0)
     static MObject a_outPixel;

@@ -20,7 +20,7 @@
  * Command for running mmSolver.
  */
 
-#include "mmSolver/common_arg_flags.h"
+#include "common_arg_flags.h"
 
 // STL
 #include <cmath>
@@ -36,15 +36,15 @@
 #include <maya/MFnDependencyNode.h>
 
 // Internal Objects
-#include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/mayahelper/maya_utils.h"
+#include "MMSolverCmd.h"
+#include "mmSolver/adjust/adjust_base.h"
+#include "mmSolver/adjust/adjust_data.h"
 #include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/adjust/adjust_data.h"
-#include "mmSolver/adjust/adjust_base.h"
-#include "mmSolver/MMSolverCmd.h"
+#include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
 

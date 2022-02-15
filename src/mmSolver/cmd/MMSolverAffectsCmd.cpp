@@ -58,14 +58,14 @@
 #include <maya/MFnNumericData.h>
 
 // MM Solver
+#include "mmSolver/adjust/adjust_base.h"
+#include "mmSolver/adjust/adjust_data.h"
+#include "mmSolver/adjust/adjust_defines.h"
+#include "mmSolver/adjust/adjust_relationships.h"
+#include "mmSolver/cmd/common_arg_flags.h"
+#include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
-#include "mmSolver/mayahelper/maya_utils.h"
-#include "mmSolver/common_arg_flags.h"
-#include "mmSolver/adjust/adjust_defines.h"
-#include "mmSolver/adjust/adjust_data.h"
-#include "mmSolver/adjust/adjust_base.h"
-#include "mmSolver/adjust/adjust_relationships.h"
 
 namespace mmsolver {
 

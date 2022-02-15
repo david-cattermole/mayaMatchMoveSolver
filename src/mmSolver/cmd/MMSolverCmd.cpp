@@ -37,16 +37,16 @@
 #include <maya/MStreamUtils.h>
 
 // MM Solver
-#include "mmSolver/common_arg_flags.h"
+#include "mmSolver/adjust/adjust_base.h"
+#include "mmSolver/adjust/adjust_data.h"
+#include "mmSolver/adjust/adjust_defines.h"
+#include "mmSolver/cmd/common_arg_flags.h"
 #include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/adjust/adjust_defines.h"
-#include "mmSolver/adjust/adjust_data.h"
-#include "mmSolver/adjust/adjust_base.h"
 
 namespace mmsolver {
 

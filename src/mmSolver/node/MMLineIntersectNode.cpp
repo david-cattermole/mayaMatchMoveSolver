@@ -19,7 +19,7 @@
  *
  */
 
-#include "mmSolver/MMLineIntersectNode.h"
+#include "MMLineIntersectNode.h"
 
 // STL
 #include <cstring>

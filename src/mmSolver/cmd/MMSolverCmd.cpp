@@ -17,7 +17,10 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Command for running mmSolver.
+ * Command for running the main solver.
+ *
+ * 'mmSolver' is the primary and most flexible solving command in the
+ * mayaMatchMoveSolver project.
  */
 
 #include "MMSolverCmd.h"

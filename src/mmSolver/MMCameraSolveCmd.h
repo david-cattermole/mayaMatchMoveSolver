@@ -40,6 +40,7 @@
 #include <maya/MPoint.h>
 #include <maya/MTimeArray.h>
 
+namespace mmsolver {
 
 class MMCameraSolveCmd : public MPxCommand {
 public:
@@ -74,5 +75,7 @@ private:
     uint32_t m_startFrame;
     uint32_t m_endFrame;
 };
+
+} // namespace mmsolver
 
 #endif // MAYA_MM_CAMERA_SOLVE_CMD_H

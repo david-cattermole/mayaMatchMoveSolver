@@ -172,6 +172,8 @@
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/adjust/adjust_defines.h"
 
+namespace mmsolver {
+
 using MMMarker = Marker;
 using MMCamera = Camera;
 
@@ -789,3 +791,5 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
     MMCameraSolveCmd::setResult(outResult);
     return status;
 }
+
+} // namespace mmsolver

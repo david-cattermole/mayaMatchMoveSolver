@@ -56,6 +56,7 @@
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 
+namespace mmsolver {
 
 class MMTestCameraMatrixCmd : public MPxCommand {
 public:
@@ -80,5 +81,7 @@ private:
 
     CameraPtr m_camera;
 };
+
+} // namespace mmsolver
 
 #endif // MAYA_MM_TEST_CAMERA_MATRIX_CMD_H

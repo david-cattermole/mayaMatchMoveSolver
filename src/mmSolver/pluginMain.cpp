@@ -195,131 +195,150 @@ MStatus initializePlugin(MObject obj) {
 
     // Register data types first, so the nodes and commands below can
     // reference them.
-    REGISTER_DATA(plugin,
-                  MMLensData::typeName(),
-                  MMLensData::m_id,
-                  MMLensData::creator,
-                  status);
+    REGISTER_DATA(
+        plugin,
+        mmsolver::MMLensData::typeName(),
+        mmsolver::MMLensData::m_id,
+        mmsolver::MMLensData::creator,
+        status);
 
-    REGISTER_COMMAND(plugin,
-                     MMSolverCmd::cmdName(),
-                     MMSolverCmd::creator,
-                     MMSolverCmd::newSyntax,
-                     status);
+    REGISTER_COMMAND(
+        plugin,
+        mmsolver::MMSolverCmd::cmdName(),
+        mmsolver::MMSolverCmd::creator,
+        mmsolver::MMSolverCmd::newSyntax,
+        status);
 
-    REGISTER_COMMAND(plugin,
-                     MMSolverTypeCmd::cmdName(),
-                     MMSolverTypeCmd::creator,
-                     MMSolverTypeCmd::newSyntax,
-                     status);
+    REGISTER_COMMAND(
+        plugin,
+        mmsolver::MMSolverTypeCmd::cmdName(),
+        mmsolver::MMSolverTypeCmd::creator,
+        mmsolver::MMSolverTypeCmd::newSyntax,
+        status);
 
-    REGISTER_COMMAND(plugin,
-                     MMReprojectionCmd::cmdName(),
-                     MMReprojectionCmd::creator,
-                     MMReprojectionCmd::newSyntax,
-                     status);
+    REGISTER_COMMAND(
+        plugin,
+        mmsolver::MMReprojectionCmd::cmdName(),
+        mmsolver::MMReprojectionCmd::creator,
+        mmsolver::MMReprojectionCmd::newSyntax,
+        status);
 
-    REGISTER_COMMAND(plugin,
-                     MMSolverAffectsCmd::cmdName(),
-                     MMSolverAffectsCmd::creator,
-                     MMSolverAffectsCmd::newSyntax,
-                     status);
+    REGISTER_COMMAND(
+        plugin,
+        mmsolver::MMSolverAffectsCmd::cmdName(),
+        mmsolver::MMSolverAffectsCmd::creator,
+        mmsolver::MMSolverAffectsCmd::newSyntax,
+        status);
 
-    REGISTER_COMMAND(plugin,
-                     MMTestCameraMatrixCmd::cmdName(),
-                     MMTestCameraMatrixCmd::creator,
-                     MMTestCameraMatrixCmd::newSyntax,
-                     status);
+    REGISTER_COMMAND(
+        plugin,
+        mmsolver::MMTestCameraMatrixCmd::cmdName(),
+        mmsolver::MMTestCameraMatrixCmd::creator,
+        mmsolver::MMTestCameraMatrixCmd::newSyntax,
+        status);
 
 
-    REGISTER_COMMAND(plugin,
-                     MMCameraRelativePoseCmd::cmdName(),
-                     MMCameraRelativePoseCmd::creator,
-                     MMCameraRelativePoseCmd::newSyntax,
-                     status);
+    REGISTER_COMMAND(
+        plugin,
+        mmsolver::MMCameraRelativePoseCmd::cmdName(),
+        mmsolver::MMCameraRelativePoseCmd::creator,
+        mmsolver::MMCameraRelativePoseCmd::newSyntax,
+        status);
 
-    REGISTER_COMMAND(plugin,
-                     MMCameraSolveCmd::cmdName(),
-                     MMCameraSolveCmd::creator,
-                     MMCameraSolveCmd::newSyntax,
-                     status);
+    REGISTER_COMMAND(
+        plugin,
+        mmsolver::MMCameraSolveCmd::cmdName(),
+        mmsolver::MMCameraSolveCmd::creator,
+        mmsolver::MMCameraSolveCmd::newSyntax,
+        status);
 
-    REGISTER_COMMAND(plugin,
-                     mmsolver::render::MMRendererCmd::cmdName(),
-                     mmsolver::render::MMRendererCmd::creator,
-                     mmsolver::render::MMRendererCmd::newSyntax,
-                     status);
+    REGISTER_COMMAND(
+        plugin,
+        mmsolver::render::MMRendererCmd::cmdName(),
+        mmsolver::render::MMRendererCmd::creator,
+        mmsolver::render::MMRendererCmd::newSyntax,
+        status);
 
-    REGISTER_NODE(plugin,
-                  MMMarkerScaleNode::nodeName(),
-                  MMMarkerScaleNode::m_id,
-                  MMMarkerScaleNode::creator,
-                  MMMarkerScaleNode::initialize,
-                  status);
+    REGISTER_NODE(
+        plugin,
+        mmsolver::MMMarkerScaleNode::nodeName(),
+        mmsolver::MMMarkerScaleNode::m_id,
+        mmsolver::MMMarkerScaleNode::creator,
+        mmsolver::MMMarkerScaleNode::initialize,
+        status);
 
-    REGISTER_NODE(plugin,
-                  MMReprojectionNode::nodeName(),
-                  MMReprojectionNode::m_id,
-                  MMReprojectionNode::creator,
-                  MMReprojectionNode::initialize,
-                  status);
+    REGISTER_NODE(
+        plugin,
+        mmsolver::MMReprojectionNode::nodeName(),
+        mmsolver::MMReprojectionNode::m_id,
+        mmsolver::MMReprojectionNode::creator,
+        mmsolver::MMReprojectionNode::initialize,
+        status);
 
-    REGISTER_NODE(plugin,
-                  MMCameraCalibrateNode::nodeName(),
-                  MMCameraCalibrateNode::m_id,
-                  MMCameraCalibrateNode::creator,
-                  MMCameraCalibrateNode::initialize,
-                  status);
+    REGISTER_NODE(
+        plugin,
+        mmsolver::MMCameraCalibrateNode::nodeName(),
+        mmsolver::MMCameraCalibrateNode::m_id,
+        mmsolver::MMCameraCalibrateNode::creator,
+        mmsolver::MMCameraCalibrateNode::initialize,
+        status);
 
-    REGISTER_NODE(plugin,
-                  MMLineIntersectNode::nodeName(),
-                  MMLineIntersectNode::m_id,
-                  MMLineIntersectNode::creator,
-                  MMLineIntersectNode::initialize,
-                  status);
+    REGISTER_NODE(
+        plugin,
+        mmsolver::MMLineIntersectNode::nodeName(),
+        mmsolver::MMLineIntersectNode::m_id,
+        mmsolver::MMLineIntersectNode::creator,
+        mmsolver::MMLineIntersectNode::initialize,
+        status);
 
-    REGISTER_DEFORMER_NODE(plugin,
-                           MMLensDeformerNode::nodeName(),
-                           MMLensDeformerNode::m_id,
-                           MMLensDeformerNode::creator,
-                           MMLensDeformerNode::initialize,
-                           MPxNode::kDeformerNode,
-                           status);
+    REGISTER_DEFORMER_NODE(
+        plugin,
+        mmsolver::MMLensDeformerNode::nodeName(),
+        mmsolver::MMLensDeformerNode::m_id,
+        mmsolver::MMLensDeformerNode::creator,
+        mmsolver::MMLensDeformerNode::initialize,
+        MPxNode::kDeformerNode,
+        status);
 
-    REGISTER_NODE(plugin,
-                  MMLensEvaluateNode::nodeName(),
-                  MMLensEvaluateNode::m_id,
-                  MMLensEvaluateNode::creator,
-                  MMLensEvaluateNode::initialize,
-                  status);
+    REGISTER_NODE(
+        plugin,
+        mmsolver::MMLensEvaluateNode::nodeName(),
+        mmsolver::MMLensEvaluateNode::m_id,
+        mmsolver::MMLensEvaluateNode::creator,
+        mmsolver::MMLensEvaluateNode::initialize,
+        status);
 
-    REGISTER_NODE(plugin,
-                  MMLensModelBasicNode::nodeName(),
-                  MMLensModelBasicNode::m_id,
-                  MMLensModelBasicNode::creator,
-                  MMLensModelBasicNode::initialize,
-                  status);
+    REGISTER_NODE(
+        plugin,
+        mmsolver::MMLensModelBasicNode::nodeName(),
+        mmsolver::MMLensModelBasicNode::m_id,
+        mmsolver::MMLensModelBasicNode::creator,
+        mmsolver::MMLensModelBasicNode::initialize,
+        status);
 
-    REGISTER_NODE(plugin,
-                  MMLensModel3deClassicNode::nodeName(),
-                  MMLensModel3deClassicNode::m_id,
-                  MMLensModel3deClassicNode::creator,
-                  MMLensModel3deClassicNode::initialize,
-                  status);
+    REGISTER_NODE(
+        plugin,
+        mmsolver::MMLensModel3deClassicNode::nodeName(),
+        mmsolver::MMLensModel3deClassicNode::m_id,
+        mmsolver::MMLensModel3deClassicNode::creator,
+        mmsolver::MMLensModel3deClassicNode::initialize,
+        status);
 
-    REGISTER_NODE(plugin,
-                  MMLensModelToggleNode::nodeName(),
-                  MMLensModelToggleNode::m_id,
-                  MMLensModelToggleNode::creator,
-                  MMLensModelToggleNode::initialize,
-                  status);
+    REGISTER_NODE(
+        plugin,
+        mmsolver::MMLensModelToggleNode::nodeName(),
+        mmsolver::MMLensModelToggleNode::m_id,
+        mmsolver::MMLensModelToggleNode::creator,
+        mmsolver::MMLensModelToggleNode::initialize,
+        status);
 
-    REGISTER_NODE(plugin,
-                  mmsolver::render::RenderGlobalsNode::nodeName(),
-                  mmsolver::render::RenderGlobalsNode::m_id,
-                  mmsolver::render::RenderGlobalsNode::creator,
-                  mmsolver::render::RenderGlobalsNode::initialize,
-                  status);
+    REGISTER_NODE(
+        plugin,
+        mmsolver::render::RenderGlobalsNode::nodeName(),
+        mmsolver::render::RenderGlobalsNode::m_id,
+        mmsolver::render::RenderGlobalsNode::creator,
+        mmsolver::render::RenderGlobalsNode::initialize,
+        status);
 
     const MString markerClassification = MM_MARKER_DRAW_CLASSIFY;
     const MString bundleClassification = MM_BUNDLE_DRAW_CLASSIFY;
@@ -387,10 +406,10 @@ MStatus initializePlugin(MObject obj) {
     const MString markerGroupClassification = MM_MARKER_GROUP_DRAW_CLASSIFY;
     REGISTER_TRANSFORM(
         plugin,
-        MMMarkerGroupTransformNode::nodeName(),
-        MMMarkerGroupTransformNode::m_id,
-        MMMarkerGroupTransformNode::creator,
-        MMMarkerGroupTransformNode::initialize,
+        mmsolver::MMMarkerGroupTransformNode::nodeName(),
+        mmsolver::MMMarkerGroupTransformNode::m_id,
+        mmsolver::MMMarkerGroupTransformNode::creator,
+        mmsolver::MMMarkerGroupTransformNode::initialize,
         MPxTransformationMatrix::baseTransformationMatrixId,
         MPxTransformationMatrix::creator,
         markerGroupClassification,
@@ -400,10 +419,10 @@ MStatus initializePlugin(MObject obj) {
     const MString imagePlaneClassification = MM_IMAGE_PLANE_DRAW_CLASSIFY;
     REGISTER_TRANSFORM(
         plugin,
-        MMImagePlaneTransformNode::nodeName(),
-        MMImagePlaneTransformNode::m_id,
-        MMImagePlaneTransformNode::creator,
-        MMImagePlaneTransformNode::initialize,
+        mmsolver::MMImagePlaneTransformNode::nodeName(),
+        mmsolver::MMImagePlaneTransformNode::m_id,
+        mmsolver::MMImagePlaneTransformNode::creator,
+        mmsolver::MMImagePlaneTransformNode::initialize,
         MPxTransformationMatrix::baseTransformationMatrixId,
         MPxTransformationMatrix::creator,
         imagePlaneClassification,
@@ -411,15 +430,16 @@ MStatus initializePlugin(MObject obj) {
 
     // Marker transform node and matrix
     const MString markerTfmClassification = "drawdb/geometry/transform";
-    REGISTER_TRANSFORM(plugin,
-                       MMMarkerTransformNode::nodeName(),
-                       MMMarkerTransformNode::m_id,
-                       MMMarkerTransformNode::creator,
-                       MMMarkerTransformNode::initialize,
-                       MMMarkerTransformMatrix::m_id,
-                       MMMarkerTransformMatrix::creator,
-                       markerTfmClassification,
-                       status)
+    REGISTER_TRANSFORM(
+        plugin,
+        mmsolver::MMMarkerTransformNode::nodeName(),
+        mmsolver::MMMarkerTransformNode::m_id,
+        mmsolver::MMMarkerTransformNode::creator,
+        mmsolver::MMMarkerTransformNode::initialize,
+        mmsolver::MMMarkerTransformMatrix::m_id,
+        mmsolver::MMMarkerTransformMatrix::creator,
+        markerTfmClassification,
+        status)
 
     // Register MM Solver Viewport Renderer.
     //
@@ -549,14 +569,38 @@ MStatus uninitializePlugin(MObject obj) {
         }
     }
 
-    DEREGISTER_COMMAND(plugin, MMSolverCmd::cmdName(), status);
-    DEREGISTER_COMMAND(plugin, MMSolverTypeCmd::cmdName(), status);
-    DEREGISTER_COMMAND(plugin, MMReprojectionCmd::cmdName(), status);
-    DEREGISTER_COMMAND(plugin, MMSolverAffectsCmd::cmdName(), status);
-    DEREGISTER_COMMAND(plugin, MMTestCameraMatrixCmd::cmdName(), status);
-    DEREGISTER_COMMAND(plugin, MMCameraRelativePoseCmd::cmdName(), status);
-    DEREGISTER_COMMAND(plugin, MMCameraSolveCmd::cmdName(), status);
-    DEREGISTER_COMMAND(plugin, mmsolver::render::MMRendererCmd::cmdName(), status);
+    DEREGISTER_COMMAND(
+        plugin,
+        mmsolver::MMSolverCmd::cmdName(),
+        status);
+    DEREGISTER_COMMAND(
+        plugin,
+        mmsolver::MMSolverTypeCmd::cmdName(),
+        status);
+    DEREGISTER_COMMAND(
+        plugin,
+        mmsolver::MMReprojectionCmd::cmdName(),
+        status);
+    DEREGISTER_COMMAND(
+        plugin,
+        mmsolver::MMSolverAffectsCmd::cmdName(),
+        status);
+    DEREGISTER_COMMAND(
+        plugin,
+        mmsolver::MMTestCameraMatrixCmd::cmdName(),
+        status);
+    DEREGISTER_COMMAND(
+        plugin,
+        mmsolver::MMCameraRelativePoseCmd::cmdName(),
+        status);
+    DEREGISTER_COMMAND(
+        plugin,
+        mmsolver::MMCameraSolveCmd::cmdName(),
+        status);
+    DEREGISTER_COMMAND(
+        plugin,
+        mmsolver::render::MMRendererCmd::cmdName(),
+        status);
 
     DEREGISTER_DRAW_OVERRIDE(
         mmsolver::MarkerShapeNode::m_draw_db_classification,
@@ -596,49 +640,90 @@ MStatus uninitializePlugin(MObject obj) {
         mmsolver::LineShapeNode::m_id,
         status);
 
-    DEREGISTER_NODE(plugin,
-                    mmsolver::render::RenderGlobalsNode::nodeName(),
-                    mmsolver::render::RenderGlobalsNode::m_id, status);
+    DEREGISTER_NODE(
+        plugin,
+        mmsolver::render::RenderGlobalsNode::nodeName(),
+        mmsolver::render::RenderGlobalsNode::m_id,
+        status);
 
-    DEREGISTER_NODE(plugin, MMMarkerScaleNode::nodeName(),
-                    MMMarkerScaleNode::m_id, status);
+    DEREGISTER_NODE(
+        plugin,
+        mmsolver::MMMarkerScaleNode::nodeName(),
+        mmsolver::MMMarkerScaleNode::m_id,
+        status);
 
-    DEREGISTER_NODE(plugin, MMReprojectionNode::nodeName(),
-                    MMReprojectionNode::m_id, status);
+    DEREGISTER_NODE(
+        plugin,
+        mmsolver::MMReprojectionNode::nodeName(),
+        mmsolver::MMReprojectionNode::m_id,
+        status);
 
-    DEREGISTER_NODE(plugin, MMCameraCalibrateNode::nodeName(),
-                    MMCameraCalibrateNode::m_id, status);
+    DEREGISTER_NODE(
+        plugin,
+        mmsolver::MMCameraCalibrateNode::nodeName(),
+        mmsolver::MMCameraCalibrateNode::m_id,
+        status);
 
-    DEREGISTER_NODE(plugin, MMLineIntersectNode::nodeName(),
-                    MMLineIntersectNode::m_id, status);
+    DEREGISTER_NODE(
+        plugin,
+        mmsolver::MMLineIntersectNode::nodeName(),
+        mmsolver::MMLineIntersectNode::m_id,
+        status);
 
-    DEREGISTER_NODE(plugin, MMMarkerGroupTransformNode::nodeName(),
-                    MMMarkerGroupTransformNode::m_id, status);
+    DEREGISTER_NODE(
+        plugin,
+        mmsolver::MMMarkerGroupTransformNode::nodeName(),
+        mmsolver::MMMarkerGroupTransformNode::m_id,
+        status);
 
-    DEREGISTER_NODE(plugin, MMImagePlaneTransformNode::nodeName(),
-                    MMImagePlaneTransformNode::m_id, status);
+    DEREGISTER_NODE(
+        plugin,
+        mmsolver::MMImagePlaneTransformNode::nodeName(),
+        mmsolver::MMImagePlaneTransformNode::m_id,
+        status);
 
-    DEREGISTER_NODE(plugin, MMMarkerTransformNode::nodeName(),
-                    MMMarkerTransformNode::m_id, status);
+    DEREGISTER_NODE(
+        plugin,
+        mmsolver::MMMarkerTransformNode::nodeName(),
+        mmsolver::MMMarkerTransformNode::m_id,
+        status);
 
-    DEREGISTER_NODE(plugin, MMLensDeformerNode::nodeName(),
-                    MMLensDeformerNode::m_id, status);
+    DEREGISTER_NODE(
+        plugin,
+        mmsolver::MMLensDeformerNode::nodeName(),
+        mmsolver::MMLensDeformerNode::m_id,
+        status);
 
-    DEREGISTER_NODE(plugin, MMLensEvaluateNode::nodeName(),
-                    MMLensEvaluateNode::m_id, status);
+    DEREGISTER_NODE(
+        plugin,
+        mmsolver::MMLensEvaluateNode::nodeName(),
+        mmsolver::MMLensEvaluateNode::m_id,
+        status);
 
-    DEREGISTER_NODE(plugin, MMLensModelBasicNode::nodeName(),
-                    MMLensModelBasicNode::m_id, status);
+    DEREGISTER_NODE(
+        plugin,
+        mmsolver::MMLensModelBasicNode::nodeName(),
+        mmsolver::MMLensModelBasicNode::m_id,
+        status);
 
-    DEREGISTER_NODE(plugin, MMLensModel3deClassicNode::nodeName(),
-                    MMLensModel3deClassicNode::m_id, status);
+    DEREGISTER_NODE(
+        plugin,
+        mmsolver::MMLensModel3deClassicNode::nodeName(),
+        mmsolver::MMLensModel3deClassicNode::m_id,
+        status);
 
-    DEREGISTER_NODE(plugin, MMLensModelToggleNode::nodeName(),
-                    MMLensModelToggleNode::m_id, status);
+    DEREGISTER_NODE(
+        plugin,
+        mmsolver::MMLensModelToggleNode::nodeName(),
+        mmsolver::MMLensModelToggleNode::m_id,
+        status);
 
     // Unloaded last, so that all nodes needing it are unloaded first
     // and we won't get a potential crash.
-    DEREGISTER_DATA(plugin, MMLensData::typeName(),
-                    MMLensData::m_id, status);
+    DEREGISTER_DATA(
+        plugin,
+        mmsolver::MMLensData::typeName(),
+        mmsolver::MMLensData::m_id,
+        status);
     return status;
 }

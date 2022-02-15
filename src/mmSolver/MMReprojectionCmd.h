@@ -91,6 +91,7 @@
 #define WITH_CAMERA_DIR_RATIO_FLAG       "-wcd"
 #define WITH_CAMERA_DIR_RATIO_FLAG_LONG  "-withCameraDirectionRatio"
 
+namespace mmsolver {
 
 class MMReprojectionCmd : public MPxCommand {
 public:
@@ -140,5 +141,7 @@ private:
     bool m_asPixelCoordinate;
     bool m_withCameraDirRatio;
 };
+
+} // namespace mmsolver
 
 #endif // MAYA_MM_REPROJECTION_CMD_H

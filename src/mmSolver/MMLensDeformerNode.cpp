@@ -38,6 +38,8 @@
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
+namespace mmsolver {
+
 MTypeId MMLensDeformerNode::m_id(MM_LENS_DEFORMER_TYPE_ID);
 
 MObject MMLensDeformerNode::a_inLens;
@@ -226,3 +228,5 @@ MMLensDeformerNode::deform(MDataBlock& data,
 
     return status;
 }
+
+} // namespace mmsolver

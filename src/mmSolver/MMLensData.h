@@ -30,6 +30,7 @@
 // MM Solver
 #include "mmSolver/lens/lens_model.h"
 
+namespace mmsolver {
 
 class MMLensData : public MPxData {
 public:
@@ -57,3 +58,5 @@ public:
 private:
     LensModel* m_value;
 };
+
+} // namespace mmsolver

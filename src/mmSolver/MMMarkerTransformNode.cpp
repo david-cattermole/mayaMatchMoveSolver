@@ -35,6 +35,8 @@
 #include "mmSolver/lens/lens_model.h"
 #include "mmSolver/MMLensData.h"
 
+namespace mmsolver {
+
 MTypeId MMMarkerTransformNode::m_id(MM_MARKER_TRANSFORM_TYPE_ID);
 
 // Input Attributes
@@ -178,3 +180,5 @@ MMMarkerTransformMatrix *MMMarkerTransformNode::getMarkerTransformMatrix() {
 #endif
     return ltm;
 }
+
+} // namespace mmsolver

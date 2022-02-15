@@ -33,6 +33,7 @@
 // MM Solver
 #include "mmSolver/nodeTypeIds.h"
 
+namespace mmsolver {
 
 MTypeId MMMarkerTransformMatrix::m_id(MM_MARKER_TRANSFORM_MATRIX_TYPE_ID);
 
@@ -89,3 +90,5 @@ MMatrix MMMarkerTransformMatrix::asMatrix(double percent) const {
 
     return m;
 }
+
+} // namespace mmsolver

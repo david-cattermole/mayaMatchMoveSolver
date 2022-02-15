@@ -55,6 +55,7 @@
 // #define MM_DEBUG
 // #define WITH_PRINCIPAL_POINT
 
+namespace mmsolver {
 
 MMatrix
 convertToMMatrix(mmdata::Matrix4x4 matrix) {
@@ -1155,6 +1156,7 @@ MStatus MMCameraCalibrateNode::initialize() {
     return MS::kSuccess;
 }
 
+} // namespace mmsolver
 
 #undef MM_DEBUG
 #undef WITH_PRINCIPAL_POINT

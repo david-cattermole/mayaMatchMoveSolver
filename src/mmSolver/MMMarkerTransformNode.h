@@ -34,6 +34,8 @@
 // MM Solver
 #include "mmSolver/MMMarkerTransformMatrix.h"
 
+namespace mmsolver {
+
 class MMMarkerTransformNode : public MPxTransform {
 public:
     MMMarkerTransformNode();
@@ -75,5 +77,6 @@ protected:
     typedef MPxTransform ParentClass;
 };
 
+} // namespace mmsolver
 
 #endif // MM_MARKER_TRANSFORM_NODE_H

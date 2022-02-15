@@ -51,6 +51,8 @@
 #include "mmSolver/adjust/adjust_base.h"
 #include "mmSolver/core/reprojection.h"
 
+namespace mmsolver {
+
 MMReprojectionCmd::~MMReprojectionCmd() {}
 
 void *MMReprojectionCmd::creator() {
@@ -552,3 +554,5 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     MMReprojectionCmd::setResult(outResult);
     return status;
 }
+
+} // namespace mmsolver

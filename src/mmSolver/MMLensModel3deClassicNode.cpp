@@ -49,6 +49,8 @@
 #include "mmSolver/lens/lens_model_3de_classic.h"
 #include "mmSolver/MMLensData.h"
 
+namespace mmsolver {
+
 MTypeId MMLensModel3deClassicNode::m_id(MM_LENS_MODEL_3DE_CLASSIC_TYPE_ID);
 
 // Input Attributes
@@ -242,3 +244,5 @@ MStatus MMLensModel3deClassicNode::initialize() {
 
     return MS::kSuccess;
 }
+
+} // namespace mmsolver

@@ -33,6 +33,7 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MTypeId.h>
 
+namespace mmsolver {
 
 enum class CameraApertureUnit {
     Millimeters = 0,
@@ -152,5 +153,6 @@ public:
     static MObject a_outVanishingPointBY;
 };
 
+} // namespace mmsolver
 
 #endif // MM_CAMERA_CALIBRATION_NODE_H

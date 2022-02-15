@@ -44,6 +44,8 @@
 #include "mmSolver/lens/lens_model.h"
 #include "mmSolver/MMLensData.h"
 
+namespace mmsolver {
+
 MTypeId MMLensModelToggleNode::m_id(MM_LENS_MODEL_TOGGLE_TYPE_ID);
 
 // Input Attributes
@@ -147,3 +149,5 @@ MStatus MMLensModelToggleNode::initialize() {
 
     return MS::kSuccess;
 }
+
+} // namespace mmsolver

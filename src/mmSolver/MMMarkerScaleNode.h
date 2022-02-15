@@ -31,6 +31,8 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MTypeId.h>
 
+namespace mmsolver {
+
 class MMMarkerScaleNode : public MPxNode {
 public:
     MMMarkerScaleNode();
@@ -75,5 +77,6 @@ public:
     static MObject a_outScaleZ;
 };
 
+} // namespace mmsolver
 
 #endif // MM_MARKER_SCALE_NODE_H

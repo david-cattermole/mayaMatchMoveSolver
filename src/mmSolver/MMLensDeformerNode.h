@@ -40,6 +40,8 @@
 #include <maya/MPoint.h>
 #include <maya/MMatrix.h>
 
+namespace mmsolver {
+
 class MMLensDeformerNode : public MPxGeometryFilter {
 public:
     MMLensDeformerNode();
@@ -70,5 +72,7 @@ public:
 private:
 
 };
+
+} // namespace mmsolver
 
 #endif // MM_LENS_DEFORMER_NODE_H

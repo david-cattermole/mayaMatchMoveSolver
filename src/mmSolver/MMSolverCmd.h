@@ -206,6 +206,8 @@
 #define PRINT_STATS_FLAG           "-pst"
 #define PRINT_STATS_FLAG_LONG      "-printStatistics"
 
+namespace mmsolver {
+
 class MMSolverCmd : public MPxCommand {
 public:
 
@@ -280,5 +282,7 @@ private:
     MAnimCurveChange m_curveChange;
     MComputation m_computation;
 };
+
+} // namespace mmsolver
 
 #endif // MAYA_MM_SOLVER_CMD_H

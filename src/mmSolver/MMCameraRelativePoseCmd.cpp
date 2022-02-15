@@ -154,6 +154,7 @@ using MMCamera = Camera;
 #define END_FRAME_SHORT_FLAG "-ef"
 #define END_FRAME_LONG_FLAG "-endFrame"
 
+namespace mmsolver {
 
 using KernelType =
     openMVG::robust::ACKernelAdaptor<
@@ -959,3 +960,5 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     MMCameraRelativePoseCmd::setResult(outResult);
     return status;
 }
+
+} // namespace mmsolver

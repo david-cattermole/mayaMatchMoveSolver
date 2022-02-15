@@ -31,6 +31,8 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MTypeId.h>
 
+namespace mmsolver {
+
 class MMLineIntersectNode : public MPxNode {
 public:
     MMLineIntersectNode();
@@ -74,5 +76,6 @@ public:
     static MObject a_outCosineAngle;
 };
 
+} // namespace mmsolver
 
 #endif // MM_LINE_INTERSECTION_NODE_H

@@ -31,6 +31,8 @@
 #include "mmSolver/nodeTypeIds.h"
 #include "mayahelper/maya_camera.h"
 
+namespace mmsolver {
+
 MTypeId MMImagePlaneTransformNode::m_id(MM_IMAGE_PLANE_TRANSFORM_TYPE_ID);
 
 MString MMImagePlaneTransformNode::nodeName() {
@@ -68,3 +70,5 @@ void *MMImagePlaneTransformNode::creator() {
 MStatus MMImagePlaneTransformNode::initialize() {
     return MS::kSuccess;
 }
+
+} // namespace mmsolver

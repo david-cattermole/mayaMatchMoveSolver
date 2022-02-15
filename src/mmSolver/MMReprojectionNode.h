@@ -31,6 +31,8 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MTypeId.h>
 
+namespace mmsolver {
+
 class MMReprojectionNode : public MPxNode {
 public:
     MMReprojectionNode();
@@ -150,5 +152,6 @@ public:
     static MObject a_outCameraDirectionRatio;
 };
 
+} // namespace mmsolver
 
 #endif // MM_REPROJECTION_NODE_H

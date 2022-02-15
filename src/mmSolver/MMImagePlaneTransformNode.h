@@ -31,6 +31,8 @@
 #include <maya/MPxTransform.h>
 #include <maya/MPxTransformationMatrix.h>
 
+namespace mmsolver {
+
 class MMImagePlaneTransformNode : public MPxTransform {
 public:
     MMImagePlaneTransformNode();
@@ -54,5 +56,6 @@ public:
     static MTypeId m_id;
 };
 
+} // namespace mmsolver
 
 #endif // MM_IMAGE_PLANE_TRANSFORM_NODE_H

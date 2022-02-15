@@ -31,6 +31,8 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MTypeId.h>
 
+namespace mmsolver {
+
 class MMLensEvaluateNode : public MPxNode {
 public:
     MMLensEvaluateNode();
@@ -57,5 +59,7 @@ public:
     static MObject a_outY;
 
 };
+
+} // namespace mmsolver
 
 #endif // MM_LENS_EVALUATE_NODE_H

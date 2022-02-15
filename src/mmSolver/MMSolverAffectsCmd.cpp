@@ -67,6 +67,8 @@
 #include "mmSolver/adjust/adjust_base.h"
 #include "mmSolver/adjust/adjust_relationships.h"
 
+namespace mmsolver {
+
 MMSolverAffectsCmd::~MMSolverAffectsCmd() {}
 
 void *MMSolverAffectsCmd::creator() {
@@ -293,3 +295,5 @@ MStatus MMSolverAffectsCmd::undoIt() {
     m_addAttr_dgmod.undoIt();
     return status;
 }
+
+} // namespace mmsolver

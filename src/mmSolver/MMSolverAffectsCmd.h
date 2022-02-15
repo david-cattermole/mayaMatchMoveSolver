@@ -55,6 +55,7 @@
 #define MODE_VALUE_ADD_ATTRS_TO_MARKERS "addAttrsToMarkers"
 #define MODE_VALUE_RETURN_STRING "returnString"
 
+namespace mmsolver {
 
 class MMSolverAffectsCmd : public MPxCommand {
 public:
@@ -96,5 +97,7 @@ private:
     MDGModifier m_addAttr_dgmod;
     MDGModifier m_setAttr_dgmod;
 };
+
+} // namespace mmsolver
 
 #endif // MAYA_MM_SOLVER_AFFECTS_CMD_H

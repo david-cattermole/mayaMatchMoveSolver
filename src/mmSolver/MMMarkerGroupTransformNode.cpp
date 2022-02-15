@@ -31,6 +31,8 @@
 #include "mmSolver/nodeTypeIds.h"
 #include "mayahelper/maya_camera.h"
 
+namespace mmsolver {
+
 MTypeId MMMarkerGroupTransformNode::m_id(MM_MARKER_GROUP_TRANSFORM_TYPE_ID);
 
 MString MMMarkerGroupTransformNode::nodeName() {
@@ -68,3 +70,5 @@ void *MMMarkerGroupTransformNode::creator() {
 MStatus MMMarkerGroupTransformNode::initialize() {
     return MS::kSuccess;
 }
+
+} // namespace mmsolver

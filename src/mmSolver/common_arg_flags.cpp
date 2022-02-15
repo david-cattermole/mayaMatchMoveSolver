@@ -46,6 +46,7 @@
 #include "mmSolver/adjust/adjust_base.h"
 #include "mmSolver/MMSolverCmd.h"
 
+namespace mmsolver {
 
 void createSolveObjectSyntax(MSyntax &syntax) {
     syntax.addFlag(CAMERA_FLAG, CAMERA_FLAG_LONG,
@@ -471,3 +472,5 @@ MStatus parseSolveFramesArguments(const MArgDatabase &argData,
 
     return status;
 }
+
+} // namespace mmsolver

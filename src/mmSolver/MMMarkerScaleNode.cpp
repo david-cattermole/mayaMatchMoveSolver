@@ -42,6 +42,7 @@
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 
+namespace mmsolver {
 
 MTypeId MMMarkerScaleNode::m_id(MM_MARKER_SCALE_TYPE_ID);
 
@@ -434,3 +435,5 @@ MStatus MMMarkerScaleNode::initialize() {
 
     return (MS::kSuccess);
 }
+
+} // namespace mmsolver

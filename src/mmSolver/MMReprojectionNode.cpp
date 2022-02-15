@@ -45,6 +45,8 @@
 #include "mmSolver/core/reprojection.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 
+namespace mmsolver {
+
 MTypeId MMReprojectionNode::m_id(MM_REPROJECTION_TYPE_ID);
 
 // Input Attributes
@@ -1072,3 +1074,5 @@ MStatus MMReprojectionNode::initialize() {
 
     return MS::kSuccess;
 }
+
+} // namespace mmsolver

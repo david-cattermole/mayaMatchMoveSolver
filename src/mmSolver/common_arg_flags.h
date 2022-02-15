@@ -69,6 +69,7 @@
 #define SMOOTHNESS_FLAG       "-asm"
 #define SMOOTHNESS_FLAG_LONG  "-attrSmoothness"
 
+namespace mmsolver {
 
 /*
  * Add flags for solver objects to the command syntax.
@@ -111,5 +112,7 @@ void createSolveFramesSyntax(MSyntax &syntax);
  */
 MStatus parseSolveFramesArguments(const MArgDatabase &argData,
                                   MTimeArray         &out_frameList);
+
+} // namespace mmsolver
 
 #endif  // MAYA_MM_SOLVER_COMMON_ARG_FLAGS_H

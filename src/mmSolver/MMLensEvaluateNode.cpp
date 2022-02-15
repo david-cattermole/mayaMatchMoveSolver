@@ -44,6 +44,8 @@
 #include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/MMLensData.h"
 
+namespace mmsolver {
+
 MTypeId MMLensEvaluateNode::m_id(MM_LENS_EVALUATE_TYPE_ID);
 
 // Input Attributes
@@ -171,3 +173,5 @@ MStatus MMLensEvaluateNode::initialize() {
 
     return MS::kSuccess;
 }
+
+} // namespace mmsolver

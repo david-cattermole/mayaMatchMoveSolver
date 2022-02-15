@@ -47,6 +47,7 @@
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 
+namespace mmsolver {
 
 MMTestCameraMatrixCmd::~MMTestCameraMatrixCmd() {}
 
@@ -183,3 +184,5 @@ MStatus MMTestCameraMatrixCmd::doIt(const MArgList &args) {
 
     return status;
 }
+
+} // namespace mmsolver

@@ -50,6 +50,7 @@
 #include "mmSolver/core/mmcamera.h"
 #include "mmSolver/calibrate/calibrate_common.h"
 
+namespace mmsolver {
 
 MStatus getLineAttributeValues(
         MDataBlock &data,
@@ -364,3 +365,5 @@ MStatus MMLineIntersectNode::initialize() {
 
     return MS::kSuccess;
 }
+
+} // namespace mmsolver

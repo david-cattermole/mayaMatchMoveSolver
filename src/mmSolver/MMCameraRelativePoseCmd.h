@@ -40,6 +40,7 @@
 #include <maya/MPoint.h>
 #include <maya/MTimeArray.h>
 
+namespace mmsolver {
 
 class MMCameraRelativePoseCmd : public MPxCommand {
 public:
@@ -81,5 +82,7 @@ private:
     uint32_t m_startFrame;
     uint32_t m_endFrame;
 };
+
+} // namespace mmsolver
 
 #endif // MAYA_MM_CAMERA_RELATIVE_POSE_CMD_H

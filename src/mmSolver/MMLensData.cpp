@@ -26,6 +26,8 @@
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/lens/lens_model.h"
 
+namespace mmsolver {
+
 const MTypeId MMLensData::m_id(MM_LENS_DATA_TYPE_ID);
 const MString MMLensData::m_typeName(MM_LENS_DATA_TYPE_NAME);
 
@@ -82,3 +84,5 @@ MStatus MMLensData::readBinary(istream& /*in*/, unsigned) {
 MStatus MMLensData::writeBinary(ostream& /*out*/) {
     return MS::kSuccess;
 }
+
+} // namespace mmsolver

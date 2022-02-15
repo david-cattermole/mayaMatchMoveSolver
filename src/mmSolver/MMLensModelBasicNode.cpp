@@ -45,6 +45,8 @@
 #include "mmSolver/lens/lens_model_basic.h"
 #include "mmSolver/MMLensData.h"
 
+namespace mmsolver {
+
 MTypeId MMLensModelBasicNode::m_id(MM_LENS_MODEL_BASIC_TYPE_ID);
 
 // Input Attributes
@@ -187,3 +189,5 @@ MStatus MMLensModelBasicNode::initialize() {
 
     return MS::kSuccess;
 }
+
+} // namespace mmsolver

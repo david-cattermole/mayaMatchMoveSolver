@@ -29,6 +29,7 @@
 #include <maya/MObject.h>
 #include <maya/MTypeId.h>
 
+namespace mmsolver {
 
 class MMLensModelBasicNode : public MPxNode {
 public:
@@ -55,5 +56,7 @@ public:
     // Output Attributes
     static MObject a_outLens;
 };
+
+} // namespace mmsolver
 
 #endif // MM_LENS_MODEL_BASIC_NODE_H

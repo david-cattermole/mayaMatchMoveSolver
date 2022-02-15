@@ -49,6 +49,8 @@
 #include "mmSolver/adjust/adjust_base.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 
+namespace mmsolver {
+
 MMSolverTypeCmd::~MMSolverTypeCmd() {}
 
 void *MMSolverTypeCmd::creator() {
@@ -254,3 +256,5 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
 
     return status;
 }
+
+} // namespace mmsolver

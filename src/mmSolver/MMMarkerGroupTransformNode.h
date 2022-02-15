@@ -31,6 +31,8 @@
 #include <maya/MPxTransform.h>
 #include <maya/MPxTransformationMatrix.h>
 
+namespace mmsolver {
+
 class MMMarkerGroupTransformNode : public MPxTransform {
 public:
     MMMarkerGroupTransformNode();
@@ -54,5 +56,6 @@ public:
     static MTypeId m_id;
 };
 
+} // namespace mmsolver
 
 #endif // MM_MARKER_GROUP_TRANSFORM_NODE_H

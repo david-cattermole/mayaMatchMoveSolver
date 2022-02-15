@@ -76,6 +76,7 @@
 #define MM_SOLVER_TYPE_DEFAULT_FLAG           ("-def")
 #define MM_SOLVER_TYPE_DEFAULT_FLAG_LONG      ("-default")
 
+namespace mmsolver {
 
 class MMSolverTypeCmd : public MPxCommand {
 public:
@@ -108,5 +109,7 @@ private:
     bool  m_name;
     bool  m_index;
 };
+
+} // namespace mmsolver
 
 #endif // MAYA_MM_SOLVER_TYPE_CMD_H

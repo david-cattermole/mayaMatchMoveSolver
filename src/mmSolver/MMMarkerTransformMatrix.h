@@ -29,6 +29,8 @@
 // MM Solver
 #include "mmSolver/lens/lens_model.h"
 
+namespace mmsolver {
+
 class MMMarkerTransformMatrix : public MPxTransformationMatrix {
 public:
     MMMarkerTransformMatrix();
@@ -47,3 +49,5 @@ protected:
 
     LensModel* m_value;
 };
+
+} // namespace mmsolver

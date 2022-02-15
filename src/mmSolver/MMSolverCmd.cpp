@@ -48,6 +48,8 @@
 #include "mmSolver/adjust/adjust_data.h"
 #include "mmSolver/adjust/adjust_base.h"
 
+namespace mmsolver {
+
 MMSolverCmd::~MMSolverCmd() {}
 
 void *MMSolverCmd::creator() {
@@ -577,3 +579,5 @@ MStatus MMSolverCmd::undoIt() {
     m_dgmod.undoIt();
     return status;
 }
+
+} // namespace mmsolver

@@ -70,6 +70,7 @@
 // Compiler Warning (level 4) C4702: unreachable code.
 #pragma warning( disable : 4702 )
 
+#include "MMCameraRelativePoseCmd.h"
 
 // STL
 #include <vector>
@@ -87,21 +88,6 @@
 
 #include <chrono>
 #include <thread>
-
-// Internal
-#include "MMCameraRelativePoseCmd.h"
-#include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_utils.h"
-
-using MMMarker = Marker;
-using MMCamera = Camera;
-
-// MM Solver Utils
-#include "mmSolver/utilities/debug_utils.h"
-
-// MM Solver Core
-#include "mmSolver/adjust/adjust_defines.h"
 
 // OpenMVG
 #ifdef MMSOLVER_USE_OPENMVG
@@ -134,6 +120,7 @@ using MMCamera = Camera;
 #endif  // MMSOLVER_USE_OPENMVG
 
 // Maya
+#include <maya/MTypes.h>
 #include <maya/MSyntax.h>
 #include <maya/MArgList.h>
 #include <maya/MArgDatabase.h>
@@ -148,6 +135,30 @@ using MMCamera = Camera;
 #include <maya/MDagPath.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MItSelectionList.h>
+#include <maya/MTransformationMatrix.h>
+#include <maya/MEulerRotation.h>
+
+// Internal
+#include "mmSolver/adjust/adjust_defines.h"
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/number_utils.h"
+
+// TODO: Add these flags to the command to allow querying two different cameras.
+#define CAMERA_A_SHORT_FLAG "-ca"
+#define CAMERA_A_LONG_FLAG "-cameraA"
+
+#define CAMERA_B_SHORT_FLAG "-cb"
+#define CAMERA_B_LONG_FLAG "-cameraB"
+
+#define FRAME_A_SHORT_FLAG "-fa"
+#define FRAME_A_LONG_FLAG "-frameA"
+
+#define FRAME_B_SHORT_FLAG "-fb"
+#define FRAME_B_LONG_FLAG "-frameB"
 
 #define START_FRAME_SHORT_FLAG "-sf"
 #define START_FRAME_LONG_FLAG "-startFrame"
@@ -166,7 +177,7 @@ using KernelType =
 bool get_marker_coords(
     const uint32_t frame_num,
     const MTime::Unit &uiUnit,
-    MMMarker &mkr,
+    Marker &mkr,
     double &x,
     double &y,
     double &weight,
@@ -184,9 +195,8 @@ bool get_marker_coords(
 }
 
 bool get_camera_values(
-    const uint32_t frame_num,
-    const MTime::Unit &uiUnit,
-    MMCamera &cam,
+    const MTime &time,
+    Camera &cam,
     int &image_width,
     int &image_height,
     double &focal_length_mm,
@@ -194,8 +204,6 @@ bool get_camera_values(
     double &sensor_height_mm) {
 
     auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
-    auto frame = static_cast<double>(frame_num);
-    MTime time = MTime(frame, uiUnit);
 
     auto filmBackWidth_inch = cam.getFilmbackWidthValue(time, timeEvalMode);
     auto filmBackHeight_inch = cam.getFilmbackHeightValue(time, timeEvalMode);
@@ -227,7 +235,7 @@ bool MMCameraRelativePoseCmd::hasSyntax() const {
 }
 
 bool MMCameraRelativePoseCmd::isUndoable() const {
-    return false;
+    return true;
 }
 
 /*
@@ -316,23 +324,40 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             CHECK_MSTATUS_AND_RETURN_IT(status);
             MString shape_node_name = nodeDagPath.fullPathName();
 
-            auto cam = MMCamera();
-            cam.setTransformNodeName(transform_node_name);
-            cam.setShapeNodeName(shape_node_name);
+            // TODO: Switch between camera A and camera B.
+            m_camera_a.setTransformNodeName(transform_node_name);
+            m_camera_a.setShapeNodeName(shape_node_name);
+
+            m_camera_a_tx_attr.setNodeName(transform_node_name);
+            m_camera_a_ty_attr.setNodeName(transform_node_name);
+            m_camera_a_tz_attr.setNodeName(transform_node_name);
+            m_camera_a_rx_attr.setNodeName(transform_node_name);
+            m_camera_a_ry_attr.setNodeName(transform_node_name);
+            m_camera_a_rz_attr.setNodeName(transform_node_name);
+
+            m_camera_a_tx_attr.setAttrName(MString("translateX"));
+            m_camera_a_ty_attr.setAttrName(MString("translateY"));
+            m_camera_a_tz_attr.setAttrName(MString("translateZ"));
+            m_camera_a_rx_attr.setAttrName(MString("rotateX"));
+            m_camera_a_ry_attr.setAttrName(MString("rotateY"));
+            m_camera_a_rz_attr.setAttrName(MString("rotateZ"));
+
+            auto startFrameValue = static_cast<double>(m_startFrame);
+            auto endFrameValue = static_cast<double>(m_endFrame);
+            m_startTime = MTime(startFrameValue, uiUnit);
+            m_endTime = MTime(endFrameValue, uiUnit);
 
             get_camera_values(
-                m_startFrame,
-                uiUnit,
-                cam,
+                m_startTime,
+                m_camera_a,
                 m_image_width_a,
                 m_image_height_a,
                 m_focal_length_mm_a,
                 m_sensor_width_mm_a,
                 m_sensor_height_mm_a);
             get_camera_values(
-                m_endFrame,
-                uiUnit,
-                cam,
+                m_endTime,
+                m_camera_a,
                 m_image_width_b,
                 m_image_height_b,
                 m_focal_length_mm_b,
@@ -365,7 +390,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         if (object_type == ObjectType::kMarker) {
             // Add Markers
             MMSOLVER_INFO("Marker name: " << node_name.asChar());
-            auto mkr = MMMarker();
+            auto mkr = Marker();
             mkr.setNodeName(node_name);
 
             double x_a = 0.0;
@@ -944,10 +969,45 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         auto pose_id = view.id_pose;
         MMSOLVER_INFO("view: " << key << "=" << pose_id);
 
-        // auto pose = poses.at(pose_id);
         auto pose = scene.GetPoseOrDie(&view);
-        MMSOLVER_INFO("pose translation: " << pose.translation());
-        MMSOLVER_INFO("pose rotation: " << pose.rotation());
+        auto pose_translation = pose.translation();
+        auto pose_rotation = pose.rotation();
+        MMSOLVER_INFO("pose translation: " << pose_translation);
+        MMSOLVER_INFO("pose rotation: " << pose_rotation);
+
+        const double c_rotate_matrix[4][4] = {
+            {pose_rotation(0, 0),  pose_rotation(1, 0), pose_rotation(2, 0), pose_rotation(3, 0)},
+            {pose_rotation(0, 1),  pose_rotation(1, 1), pose_rotation(2, 1), pose_rotation(3, 1)},
+            {pose_rotation(0, 2),  pose_rotation(1, 2), pose_rotation(2, 2), pose_rotation(3, 2)},
+            {pose_rotation(0, 3),  pose_rotation(1, 3), pose_rotation(2, 3), pose_rotation(3, 3)},
+        };
+        MMatrix maya_rotate_matrix(c_rotate_matrix);
+
+        // TODO: Expose the Rotation Order, so we can match the camera
+        // that needs it.
+        auto rotate_order = MEulerRotation::kZXY; // kXYZ
+        auto value_time = m_endTime;
+        // auto rotate_order = m_camera_b_rotate_order;
+        if (pose_id == 0) {
+            // rotate_order = m_camera_a_rotate_order;
+            value_time = m_startTime;
+        }
+
+        auto euler_rotation = MEulerRotation::decompose(
+            maya_rotate_matrix,
+            rotate_order);
+        auto rx = euler_rotation.x * RADIANS_TO_DEGREES;
+        auto ry = euler_rotation.y * RADIANS_TO_DEGREES;
+        auto rz = euler_rotation.z * RADIANS_TO_DEGREES;
+        MMSOLVER_INFO("pose euler rotation (ZXY): " << rx << "," << ry << "," << rz);
+
+        m_camera_a_tx_attr.setValue(pose_translation[0], value_time, m_dgmod, m_curveChange);
+        m_camera_a_ty_attr.setValue(pose_translation[1], value_time, m_dgmod, m_curveChange);
+        m_camera_a_tz_attr.setValue(pose_translation[2], value_time, m_dgmod, m_curveChange);
+
+        m_camera_a_rx_attr.setValue(rx, value_time, m_dgmod, m_curveChange);
+        m_camera_a_ry_attr.setValue(ry, value_time, m_dgmod, m_curveChange);
+        m_camera_a_rz_attr.setValue(rz, value_time, m_dgmod, m_curveChange);
     }
 
     for (auto it : landmarks) {
@@ -955,10 +1015,27 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         auto landmark = it.second;
         auto pos = landmark.X;
         MMSOLVER_INFO("landmark: " << key << "=" << pos);
+
+        // TODO: Set the bundle positions.
     }
 
     MMCameraRelativePoseCmd::setResult(outResult);
     return status;
 }
+
+MStatus MMCameraRelativePoseCmd::redoIt() {
+    MStatus status;
+    m_dgmod.doIt();
+    m_curveChange.redoIt();
+    return status;
+}
+
+MStatus MMCameraRelativePoseCmd::undoIt() {
+    MStatus status;
+    m_curveChange.undoIt();
+    m_dgmod.undoIt();
+    return status;
+}
+
 
 } // namespace mmsolver

@@ -20,9 +20,8 @@
  * Header for mmCameraSolve Maya command.
  */
 
-#ifndef MAYA_MM_CAMERA_RELATIVE_POSE_CMD_H
-#define MAYA_MM_CAMERA_RELATIVE_POSE_CMD_H
-
+#ifndef MM_SOLVER_MM_CAMERA_RELATIVE_POSE_CMD_H
+#define MM_SOLVER_MM_CAMERA_RELATIVE_POSE_CMD_H
 
 // STL
 #include <cmath>
@@ -37,8 +36,15 @@
 #include <maya/MSyntax.h>
 #include <maya/MSelectionList.h>
 #include <maya/MTime.h>
-#include <maya/MPoint.h>
 #include <maya/MTimeArray.h>
+#include <maya/MDGModifier.h>
+#include <maya/MAnimCurveChange.h>
+
+// Maya helpers
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
 
@@ -46,19 +52,17 @@ class MMCameraRelativePoseCmd : public MPxCommand {
 public:
 
     MMCameraRelativePoseCmd() {};
-
     virtual ~MMCameraRelativePoseCmd();
 
     virtual bool hasSyntax() const;
-
     static MSyntax newSyntax();
 
     virtual MStatus doIt(const MArgList &args);
-
     virtual bool isUndoable() const;
+    virtual MStatus undoIt();
+    virtual MStatus redoIt();
 
     static void *creator();
-
     static MString cmdName();
 
 private:
@@ -78,11 +82,34 @@ private:
     std::vector<std::pair<double, double>> m_marker_coords_a;
     std::vector<std::pair<double, double>> m_marker_coords_b;
 
+    // Maya Objects
+    Camera m_camera_a;
+    Attr m_camera_a_tx_attr;
+    Attr m_camera_a_ty_attr;
+    Attr m_camera_a_tz_attr;
+    Attr m_camera_a_rx_attr;
+    Attr m_camera_a_ry_attr;
+    Attr m_camera_a_rz_attr;
+
+    // Camera m_camera_b;
+    // Attr m_camera_b_tx_attr;
+    // Attr m_camera_b_ty_attr;
+    // Attr m_camera_b_tz_attr;
+    // Attr m_camera_b_rx_attr;
+    // Attr m_camera_b_ry_attr;
+    // Attr m_camera_b_rz_attr;
+
     // Frame range
     uint32_t m_startFrame;
     uint32_t m_endFrame;
+    MTime m_startTime;
+    MTime m_endTime;
+
+    // Undo/Redo
+    MDGModifier m_dgmod;
+    MAnimCurveChange m_curveChange;
 };
 
 } // namespace mmsolver
 
-#endif // MAYA_MM_CAMERA_RELATIVE_POSE_CMD_H
+#endif // MM_SOLVER_MM_CAMERA_RELATIVE_POSE_CMD_H

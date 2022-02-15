@@ -20,8 +20,8 @@
  * Attribute class, represents an attribute that could be modified.
  */
 
-#ifndef MM_SOLVER_ATTR_H
-#define MM_SOLVER_ATTR_H
+#ifndef MM_SOLVER_MAYA_HELPER_MAYA_ATTR_H
+#define MM_SOLVER_MAYA_HELPER_MAYA_ATTR_H
 
 #include <vector>
 #include <memory>
@@ -137,87 +137,63 @@ public:
     Attr();
 
     MString getName() const;
-
     MStatus setName(MString value);
 
     MString getNodeName() const;
-
     MStatus setNodeName(const MString &value);
 
     MString getAttrName() const;
-
     MStatus setAttrName(const MString &value);
 
     MObject getObject();
-
     MPlug getPlug();
-
     MObject getAttribute();
-
     MString getAnimCurveName();
-
     int getAttrType();
 
     bool isFreeToChange();
-
     bool isAnimated();
-
     bool isConnected();
 
     MStatus getValue(bool &value, const MTime &time, const int timeEvalMode);
-
     MStatus getValue(int &value, const MTime &time, const int timeEvalMode);
-
     MStatus getValue(short &value, const MTime &time, const int timeEvalMode);
-
     MStatus getValue(double &value, const MTime &time, const int timeEvalMode);
-
     MStatus getValue(MMatrix &value, const MTime &time, const int timeEvalMode);
 
     MStatus getValue(bool &value, const int timeEvalMode);
-
     MStatus getValue(int &value, const int timeEvalMode);
-
     MStatus getValue(short &value, const int timeEvalMode);
-
     MStatus getValue(double &value, const int timeEvalMode);
-
     MStatus getValue(MMatrix &value, const int timeEvalMode);
 
-    MStatus setValue(const double value, const MTime &time,
-                     MDGModifier &dgmod, MAnimCurveChange &animChange);
+    MStatus setValue(
+        const double value,
+        const MTime &time,
+        MDGModifier &dgmod,
+        MAnimCurveChange &animChange);
 
-    MStatus setValue(const double value,
-                     MDGModifier &dgmod, MAnimCurveChange &animChange);
+    MStatus setValue(
+        const double value,
+        MDGModifier &dgmod,
+        MAnimCurveChange &animChange);
 
     double getMinimumValue() const;
-
-    void setMinimumValue(const double value);
-
     double getMaximumValue() const;
-
-    void setMaximumValue(const double value);
-
     double getOffsetValue() const;
-
-    void setOffsetValue(const double value);
-
     double getScaleValue() const;
-
-    void setScaleValue(const double value);
-
     ObjectType getObjectType() const;
-
-    void setObjectType(const ObjectType value);
-
     unsigned int getSolverAttrType() const;
 
+    void setMinimumValue(const double value);
+    void setMaximumValue(const double value);
+    void setOffsetValue(const double value);
+    void setScaleValue(const double value);
+    void setObjectType(const ObjectType value);
     void setSolverAttrType(const unsigned int value);
 
     MString getLongNodeName();
-
     MString getLongAttributeName();
-
     MString getLongName();
 
 private:
@@ -284,4 +260,4 @@ typedef StiffAttrsPtrList::iterator StiffAttrsPtrListIt;
 typedef StiffAttrsPtrList::const_iterator StiffAttrsPtrListCIt;
 
 
-#endif //MAYA_MM_SOLVER_ATTR_H
+#endif // MM_SOLVER_MAYA_HELPER_MAYA_ATTR_H

@@ -20,8 +20,8 @@
  * Class Bundle, represents a 3D point of a 2D Marker.
  */
 
-#ifndef MM_SOLVER_BUNDLE_H
-#define MM_SOLVER_BUNDLE_H
+#ifndef MM_SOLVER_MAYA_HELPER_MAYA_BUNDLE_H
+#define MM_SOLVER_MAYA_HELPER_MAYA_BUNDLE_H
 
 #include <vector>
 #include <memory>
@@ -79,4 +79,4 @@ typedef std::shared_ptr<Bundle> BundlePtr;
 typedef std::vector<std::shared_ptr<Bundle> > BundlePtrList;
 typedef BundlePtrList::iterator BundlePtrListIt;
 
-#endif //MAYA_MM_SOLVER_BUNDLE_H
+#endif // MM_SOLVER_MAYA_HELPER_MAYA_BUNDLE_H

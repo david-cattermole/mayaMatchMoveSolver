@@ -20,8 +20,8 @@
  * Class for 2D Marker objects, aka 'track points' or '2d points'.
  */
 
-#ifndef MM_SOLVER_MARKER_H
-#define MM_SOLVER_MARKER_H
+#ifndef MM_SOLVER_MAYA_HELPER_MAYA_MARKER_H
+#define MM_SOLVER_MAYA_HELPER_MAYA_MARKER_H
 
 #include <vector>
 #include <memory>
@@ -119,4 +119,4 @@ typedef std::vector<std::shared_ptr<Marker> > MarkerPtrList;
 typedef MarkerPtrList::iterator MarkerPtrListIt;
 typedef MarkerPtrList::const_iterator MarkerPtrListCIt;
 
-#endif // MM_SOLVER_MARKER_H
+#endif // MM_SOLVER_MAYA_HELPER_MAYA_MARKER_H

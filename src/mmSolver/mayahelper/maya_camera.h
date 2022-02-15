@@ -20,8 +20,8 @@
  * Camera class represents a viewable camera with a projection matrix.
  */
 
-#ifndef MM_SOLVER_CAMERA_H
-#define MM_SOLVER_CAMERA_H
+#ifndef MM_SOLVER_MAYA_HELPER_MAYA_CAMERA_H
+#define MM_SOLVER_MAYA_HELPER_MAYA_CAMERA_H
 
 #include <maya/MStatus.h>
 #include <maya/MObject.h>
@@ -139,78 +139,76 @@ public:
     Attr &getMatrixAttr();
 
     Attr &getFilmbackWidthAttr();
-
     Attr &getFilmbackHeightAttr();
-
     Attr &getFilmbackOffsetXAttr();
-
     Attr &getFilmbackOffsetYAttr();
 
     Attr &getFocalLengthAttr();
-
     Attr &getCameraScaleAttr();
-
     Attr &getNearClipPlaneAttr();
-
     Attr &getFarClipPlaneAttr();
-
     Attr &getFilmFitAttr();
 
     Attr &getRenderWidthAttr();
-
     Attr &getRenderHeightAttr();
-
     Attr &getRenderAspectAttr();
 
     double getFilmbackWidthValue(const MTime &time, const int timeEvalMode);
-
     double getFilmbackHeightValue(const MTime &time, const int timeEvalMode);
-
     double getFilmbackOffsetXValue(const MTime &time, const int timeEvalMode);
-
     double getFilmbackOffsetYValue(const MTime &time, const int timeEvalMode);
 
     double getFocalLengthValue(const MTime &time, const int timeEvalMode);
-
     double getCameraScaleValue();
-
     double getNearClipPlaneValue();
-
     double getFarClipPlaneValue();
-
     short getFilmFitValue();
 
     int getRenderWidthValue();
-
     int getRenderHeightValue();
-
     double getRenderAspectValue();
 
     MStatus getFrustum(
-            double &left, double &right,
-            double &top, double &bottom,
-            const MTime &time,
-            const int timeEvalMode);
+        double &left, double &right,
+        double &top, double &bottom,
+        const MTime &time,
+        const int timeEvalMode);
 
-    MStatus getProjMatrix(MMatrix &value, const MTime &time,
-                          const int timeEvalMode);
+    MStatus getProjMatrix(
+        MMatrix &value,
+        const MTime &time,
+        const int timeEvalMode);
 
-    MStatus getProjMatrix(MMatrix &value, const int timeEvalMode);
+    MStatus getProjMatrix(
+        MMatrix &value,
+        const int timeEvalMode);
 
-    MStatus getWorldPosition(MPoint &value, const MTime &time,
-                             const int timeEvalMode);
+    MStatus getWorldPosition(
+        MPoint &value,
+        const MTime &time,
+        const int timeEvalMode);
 
-    MStatus getWorldPosition(MPoint &value, const int timeEvalMode);
+    MStatus getWorldPosition(
+        MPoint &value,
+        const int timeEvalMode);
 
-    MStatus getForwardDirection(MVector &value, const MTime &time,
-                                const int timeEvalMode);
+    MStatus getForwardDirection(
+        MVector &value,
+        const MTime &time,
+        const int timeEvalMode);
 
-    MStatus getForwardDirection(MVector &value, const int timeEvalMode);
+    MStatus getForwardDirection(
+        MVector &value,
+        const int timeEvalMode);
 
-    MStatus getWorldProjMatrix(MMatrix &value, const MTime &time,
-                               const int timeEvalMode);
+    MStatus getWorldProjMatrix(
+        MMatrix &value,
+        const MTime &time,
+        const int timeEvalMode);
 
-    MStatus getWorldProjMatrix(MMatrix &value, const int timeEvalMode);
+    MStatus getWorldProjMatrix(
+        MMatrix &value,
+        const int timeEvalMode);
 
     MStatus clearAuxilaryAttrsCache();
 
@@ -271,4 +269,4 @@ typedef std::shared_ptr<Camera> CameraPtr;
 typedef std::vector<std::shared_ptr<Camera> > CameraPtrList;
 typedef CameraPtrList::iterator CameraPtrListIt;
 
-#endif //MAYA_MM_SOLVER_CAMERA_H
+#endif // MM_SOLVER_MAYA_HELPER_MAYA_CAMERA_H

@@ -108,24 +108,23 @@ if(CMAKE_SYSTEM_NAME STREQUAL Linux)
   target_link_libraries(mmSolver PUBLIC m)
 endif ()
 
-
-if (BUILD_MMSCENEGRAPH)
-  add_subdirectory(mmSolver/mmscenegraph)
-  if(MMSCENEGRAPH_INCLUDE_DIR)
-    target_link_libraries(mmSolver
-      PRIVATE
-      mmscenegraph
-      )
-    target_include_directories(mmSolver
-      PRIVATE ${MMSCENEGRAPH_INCLUDE_DIR}
-      )
-    target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_MMSCENEGRAPH)
-  endif()
-endif ()
-
-
+# Set global flags and options that need to apply to the Maya
+# plug-in. See 'MMSolverUtils' CMake module for more information.
 set_global_treat_warnings_as_errors()
 set_global_maya_plugin_compile_options()
+
+
+find_package(mmscenegraph REQUIRED)
+if(NOT mmscenegraph_FOUND)
+  message(FATAL_ERROR "mmscenegraph Not Found! Make sure mmscenegraph is built before building mmSolver.")
+else()
+  message(STATUS "mmscenegraph found.")
+  target_link_libraries(mmSolver
+    PRIVATE
+    mmscenegraph::mmscenegraph
+    )
+  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_MMSCENEGRAPH)
+endif()
 
 
 find_package(Maya REQUIRED)

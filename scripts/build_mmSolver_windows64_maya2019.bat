@@ -28,9 +28,10 @@ SETLOCAL
 SET MAYA_VERSION=2019
 SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2019"
 
-:: Python executable - edit this to point to an explicit python executable file.
+:: Executable names/paths used for build process.
 SET PYTHON_EXE=python
 SET CMAKE_EXE=cmake
+SET RUST_CARGO_EXE=cargo
 
 :: C++ Standard to use.
 SET CXX_STANDARD=11
@@ -38,4 +39,11 @@ SET CXX_STANDARD=11
 :: Setup Compiler environment. Change for your install path as needed.
 CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
 
-scripts\internal\build_mmSolver_windows64.bat
+:: This script defines the batch script variables 'MMSCENEGRAPH_LIB_DIR'
+:: and 'MMSCENEGRAPH_INCLUDE_DIR'.
+::
+:: The script assumes 'RUST_CARGO_EXE' has been set to the Rust
+:: 'cargo' executable.
+CALL scripts\internal\build_mmscenegraph_windows64.bat
+
+CALL scripts\internal\build_mmSolver_windows64.bat

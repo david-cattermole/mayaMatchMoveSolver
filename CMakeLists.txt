@@ -55,121 +55,60 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 # Build options; What will we build?  This is used mostly for
 # developer debug. If the developer is working on some Python code
 # only, we don't need to wait for the Maya Plug-In to compute each
-# time.
-set(BUILD_PLUGIN 1 CACHE BOOL
-        "Do you want to build the plug-in?")
-set(BUILD_MMSCENEGRAPH 1 CACHE BOOL
-        "Do you want to build with the mmSceneGraph feature?")
-set(BUILD_PYTHON 1 CACHE BOOL
-        "Do you want to build and install the Python API and tools?")
-set(BUILD_MEL 1 CACHE BOOL
-        "Do you want to build and install the MEL scripts and tools?")
-set(BUILD_3DEQUALIZER 1 CACHE BOOL
-        "Do you want to build and install 3DEqualizer scripts?")
-set(BUILD_SYNTHEYES 1 CACHE BOOL
-        "Do you want to build and install SynthEyes scripts?")
-set(BUILD_BLENDER 1 CACHE BOOL
-        "Do you want to build and install Blender add-on?")
-set(BUILD_QT_UI 1 CACHE BOOL
-        "Do you want to build the Qt UI files?")
-set(BUILD_DOCS 1 CACHE BOOL
-        "Do you want to build and install the documentation?")
-set(BUILD_ICONS 1 CACHE BOOL
-        "Do you want to build and install the icons?")
-set(BUILD_CONFIG 1 CACHE BOOL
-        "Do you want to build and install the config files?")
-set(BUILD_TESTS 0 CACHE BOOL
-        "Do you want to build the test files?")
+# time, so turn off the plugin.
+option(BUILD_PLUGIN "Do you want to build the Maya plug-in?" ON)
+option(BUILD_PYTHON "Do you want to build and install the Python API and tools?" ON)
+option(BUILD_MEL "Do you want to build and install the MEL scripts and tools?" ON)
+option(BUILD_3DEQUALIZER "Do you want to build and install 3DEqualizer scripts?" ON)
+option(BUILD_SYNTHEYES "Do you want to build and install SynthEyes scripts?" ON)
+option(BUILD_BLENDER "Do you want to build and install Blender add-on?" ON)
+option(BUILD_QT_UI "Do you want to build the Qt UI files?" ON)
+option(BUILD_DOCS "Do you want to build and install the documentation?" ON)
+option(BUILD_ICONS "Do you want to build and install the icons?" ON)
+option(BUILD_CONFIG "Do you want to build and install the config files?" ON)
+option(BUILD_TESTS "Do you want to build the test files?" OFF)
 
 
 # Maya SDK
-set(MAYA_VERSION "2017" CACHE STRING
-        "Maya version number")
-set(MAYA_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH
-        "Maya install directory")
-set(DEVKIT_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH
-        "Maya development kit (devkit) directory")
-set(MAYA_INCLUDE_PATH "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH
-        "Maya include directory")
-set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH
-        "Maya library directory")
+set(MAYA_VERSION "2019" CACHE STRING "Maya version number")
+set(MAYA_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH "Maya install directory")
+set(DEVKIT_LOCATION "/usr/autodesk/maya${MAYA_VERSION}/" CACHE PATH "Maya development kit (devkit) directory")
+set(MAYA_INCLUDE_PATH "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH "Maya include directory")
+set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH "Maya library directory")
 
 
-# Google Log
-set(GLOG_ROOT "/usr/local"
-  CACHE PATH "Glog directory")
-set(GLOG_INCLUDE_PATH "/usr/local/include"
-  CACHE PATH "Glog include directory")
-set(GLOG_LIB_PATH "/usr/local/lib"
-  CACHE PATH "Glog library directory")
-
-
-# Google Log
-set(GFLAGS_ROOT "/usr/local"
-  CACHE PATH "Gflags directory")
-set(GFLAGS_INCLUDE_PATH "/usr/local/include"
-  CACHE PATH "Gflags include directory")
-set(GFLAGS_LIB_PATH "/usr/local/lib"
-  CACHE PATH "Gflags library directory")
+# # Google Log
+# set(GLOG_ROOT "/usr/local" CACHE PATH "Glog directory")
+# set(GLOG_INCLUDE_PATH "/usr/local/include" CACHE PATH "Glog include directory")
+# set(GLOG_LIB_PATH "/usr/local/lib" CACHE PATH "Glog library directory")
 
 
 # CMinpack
-set(CMINPACK_ROOT "/usr/local"
-  CACHE PATH "CMinpack directory")
-set(CMINPACK_INCLUDE_PATH "/usr/local/include"
-  CACHE PATH "CMinpack include directory")
-set(CMINPACK_LIB_PATH "/usr/local/lib"
-  CACHE PATH "CMinpack library directory")
-
-
-# # SuiteSparse
-# set(SUITESPARSE_ROOT /usr/local/suite_sparse_config
-#   CACHE PATH "Root path for SuiteSparse installation.")
-# set(SUITESPARSE_INCLUDE_PATH /usr/include/suite_sparse_config
-#   CACHE PATH "SuiteSparse headers directory.")
-# set(SUITESPARSE_LIB_PATH /usr/lib
-#   CACHE PATH "SuiteSparse library directory.")
+set(CMINPACK_ROOT "/usr/local" CACHE PATH "CMinpack directory")
+set(CMINPACK_INCLUDE_PATH "/usr/local/include" CACHE PATH "CMinpack include directory")
+set(CMINPACK_LIB_PATH "/usr/local/lib" CACHE PATH "CMinpack library directory")
 
 
 # Ceres
-set(CERES_ROOT "/usr/local"
-  CACHE PATH "Ceres directory")
-set(CERES_INCLUDE_PATH "/usr/local/include"
-  CACHE PATH "Ceres include directory")
-set(CERES_LIB_PATH "/usr/local/lib"
-  CACHE PATH "Ceres library directory")
-
-
-# # LibMV
-# set(LIBMV_ROOT "/usr/local"
-#   CACHE PATH "Libmv directory")
-# set(LIBMV_INCLUDE_PATH "/usr/local/include"
-#   CACHE PATH "Libmv include directory")
-# set(LIBMV_LIB_PATH "/usr/local/lib"
-#   CACHE PATH "Libmv library directory")
+set(CERES_ROOT "/usr/local" CACHE PATH "Ceres directory")
+set(CERES_INCLUDE_PATH "/usr/local/include" CACHE PATH "Ceres include directory")
+set(CERES_LIB_PATH "/usr/local/lib" CACHE PATH "Ceres library directory")
 
 
 # OpenMVG
-set(OPENMVG_ROOT "/usr/local"
-  CACHE PATH "OpenMVG directory")
+set(OPENMVG_ROOT "/usr/local" CACHE PATH "OpenMVG directory")
 
 
 # DL-FCN
-set(DLFCN_ROOT "/usr/local"
-  CACHE PATH "dl-fcn directory")
-set(DLFCN_INCLUDE_PATH "/usr/local/include"
-  CACHE PATH "dl-fcn include directory")
-set(DLFCN_LIB_PATH "/usr/local/lib"
-  CACHE PATH "dl-fcn library directory")
+set(DLFCN_ROOT "/usr/local" CACHE PATH "dl-fcn directory")
+set(DLFCN_INCLUDE_PATH "/usr/local/include" CACHE PATH "dl-fcn include directory")
+set(DLFCN_LIB_PATH "/usr/local/lib" CACHE PATH "dl-fcn library directory")
 
 
 # LDPK
-set(LDPK_ROOT "/usr/local"
-  CACHE PATH "LDPK directory")
-set(LDPK_INCLUDE_PATH "/usr/local/include"
-  CACHE PATH "LDPK include directory")
-set(LDPK_LIB_PATH "/usr/local/lib"
-  CACHE PATH "LDPK library directory")
+set(LDPK_ROOT "/usr/local" CACHE PATH "LDPK directory")
+set(LDPK_INCLUDE_PATH "/usr/local/include" CACHE PATH "LDPK include directory")
+set(LDPK_LIB_PATH "/usr/local/lib" CACHE PATH "LDPK library directory")
 
 
 # Default Solver to use.

@@ -24,10 +24,10 @@
 MAYA_VERSION=2019
 MAYA_LOCATION=/usr/autodesk/maya2019/
 
-# Executable names/paths - edit this to point to an explicit python
-# executable file.
+# Executable names/paths used for build process.
 PYTHON_EXE=python
 CMAKE_EXE=cmake3
+RUST_CARGO_EXE=cargo
 
 # C++ Standard to use.
 CXX_STANDARD=11
@@ -37,6 +37,15 @@ CXX_STANDARD=11
 set -ev
 
 CWD=`pwd`
+
+# This 'source' defines the bash variables
+# 'MMSCENEGRAPH_LIB_DIR' and 'MMSCENEGRAPH_INCLUDE_DIR'.
+#
+# The script assumes 'RUST_CARGO_EXE' has been set to the Rust
+# 'cargo' executable.
+source "${CWD}/scripts/internal/build_mmscenegraph_linux.bash"
+
 source "${CWD}/scripts/internal/build_mmSolver_linux.bash"
+
 cd ${CWD}
 

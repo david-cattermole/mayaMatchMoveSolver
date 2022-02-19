@@ -60,7 +60,6 @@ BUILD_TYPE=Release
 # Build options, to allow faster compilation times. (not to be used by
 # users wanting to build this project.)
 BUILD_PLUGIN=1
-BUILD_MMSCENEGRAPH=1
 BUILD_PYTHON=1
 BUILD_MEL=1
 BUILD_3DEQUALIZER=1
@@ -107,44 +106,8 @@ OPENMVG_LIB_PATH="${OPENMVG_ROOT}/lib"
 LDPK_ROOT="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/ldpk"
 LDPK_INCLUDE_DIR="${LDPK_ROOT}/include"
 LDPK_LIB_PATH="${LDPK_ROOT}/lib"
-
-# Where to find the mmSceneGraph Rust libraries and headers.
-MMSCENEGRAPH_RUST_DIR=${PROJECT_ROOT}/src/mmSolver/mmscenegraph/rust
-MMSCENEGRAPH_CPP_DIR=${PROJECT_ROOT}/src/mmSolver/mmscenegraph/cppbind
-MMSCENEGRAPH_RUST_TARGET_DIR="${MMSCENEGRAPH_RUST_DIR}/target_maya${MAYA_VERSION}_linux/"
-MMSCENEGRAPH_CPP_TARGET_DIR="${MMSCENEGRAPH_CPP_DIR}/target_maya${MAYA_VERSION}_linux/"
-MMSCENEGRAPH_RUST_BUILD_DIR="${MMSCENEGRAPH_CPP_TARGET_DIR}/release"
-MMSCENEGRAPH_INCLUDE_DIR="${MMSCENEGRAPH_CPP_DIR}/include"
-
-# Build Rust code.
-if [ ${BUILD_MMSCENEGRAPH} -eq 1 ]; then
-    echo "Building mmSceneGraph..."
-
-    # Install the needed 'cxxbridge' command.
-    #
-    # NOTE: When chaging this version number, make sure to update the
-    # CXX version used in the C++ buildings, and all the build scripts
-    # using this value:
-    # './src/mmSolver/mmscenegraph/cppbind/Cargo.toml'
-    # './scripts/internal/build_mmSolver_windows64.bat'
-    cargo install cxxbridge-cmd --version 1.0.62
-
-    echo "Building Rust crate... (${MMSCENEGRAPH_RUST_DIR})"
-    cd "${MMSCENEGRAPH_RUST_DIR}"
-    cargo build --release --target-dir "${MMSCENEGRAPH_RUST_TARGET_DIR}"
-
-    echo "Building C++ Bindings... (${MMSCENEGRAPH_CPP_DIR})"
-    cd "${MMSCENEGRAPH_CPP_DIR}"
-    # Assumes 'cxxbridge' (cxxbridge-cmd) is installed.
-    echo "Generating C++ Headers..."
-    cxxbridge --header --output "${MMSCENEGRAPH_CPP_DIR}/include/mmscenegraph/_cxx.h"
-    cargo build --release --target-dir "${MMSCENEGRAPH_CPP_TARGET_DIR}"
-
-    cd "${PROJECT_ROOT}"
-fi
-
-# Number of CPUs
-CPU_NUM=`nproc --all`
+MMSCENEGRAPH_INSTALL_DIR="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_windows64/mmscenegraph"
+MMSCENEGRAPH_CMAKE_CONFIG_DIR="${MMSCENEGRAPH_INSTALL_DIR}/lib/cmake/mmscenegraph"
 
 # Build mmSolver project
 mkdir -p build_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
@@ -183,11 +146,12 @@ ${CMAKE_EXE} \
     -DLDPK_LIB_PATH=${LDPK_LIB_PATH} \
     -DMAYA_LOCATION=${MAYA_LOCATION} \
     -DMAYA_VERSION=${MAYA_VERSION} \
-    -DMMSCENEGRAPH_RUST_BUILD_DIR=${MMSCENEGRAPH_RUST_BUILD_DIR} \
+    -DMMSCENEGRAPH_LIB_DIR=${MMSCENEGRAPH_LIB_DIR} \
     -DMMSCENEGRAPH_INCLUDE_DIR=${MMSCENEGRAPH_INCLUDE_DIR} \
     ..
 
-${CMAKE_EXE} --build . --parallel ${CPU_NUM}
+NUMBER_OF_CPUS=`nproc --all`
+${CMAKE_EXE} --build . --parallel ${NUMBER_OF_CPUS}
 
 # Comment this line out to stop the automatic install into the home directory.
 ${CMAKE_EXE} --install .

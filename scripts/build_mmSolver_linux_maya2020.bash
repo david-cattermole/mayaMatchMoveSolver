@@ -24,10 +24,10 @@
 MAYA_VERSION=2020
 MAYA_LOCATION=/usr/autodesk/maya2020/
 
-# Executable names/paths - edit this to point to an explicit python
-# executable file.
+# Executable names/paths used for build process.
 PYTHON_EXE=python
 CMAKE_EXE=cmake3
+RUST_CARGO_EXE=cargo
 
 # C++ Standard to use.
 CXX_STANDARD=11

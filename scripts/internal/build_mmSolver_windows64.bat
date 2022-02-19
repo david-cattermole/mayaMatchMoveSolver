@@ -57,7 +57,6 @@ SET BUILD_TYPE=Release
 :: Build options, to allow faster compilation times. (not to be used by
 :: users wanting to build this project.)
 SET BUILD_PLUGIN=1
-SET BUILD_MMSCENEGRAPH=1
 SET BUILD_PYTHON=1
 SET BUILD_MEL=1
 SET BUILD_3DEQUALIZER=1
@@ -108,14 +107,8 @@ SET DLFCN_LIB_PATH="%DLFCN_ROOT%\lib"
 SET LDPK_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\ldpk"
 SET LDPK_INCLUDE_DIR="%LDPK_ROOT%\include"
 SET LDPK_LIB_PATH="%LDPK_ROOT%\lib"
-
-:: Where to find the mmSceneGraph Rust libraries and headers.
-SET MMSCENEGRAPH_RUST_DIR=%PROJECT_ROOT%\src\mmSolver\mmscenegraph\rust
-SET MMSCENEGRAPH_CPP_DIR=%PROJECT_ROOT%\src\mmSolver\mmscenegraph\cppbind
-SET MMSCENEGRAPH_RUST_TARGET_DIR="%MMSCENEGRAPH_RUST_DIR%\target_maya%MAYA_VERSION%_windows64"
-SET MMSCENEGRAPH_CPP_TARGET_DIR="%MMSCENEGRAPH_CPP_DIR%\target_maya%MAYA_VERSION%_windows64"
-SET MMSCENEGRAPH_RUST_BUILD_DIR="%MMSCENEGRAPH_CPP_TARGET_DIR%\release"
-SET MMSCENEGRAPH_INCLUDE_DIR="%MMSCENEGRAPH_CPP_DIR%\include"
+SET MMSCENEGRAPH_INSTALL_DIR="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\mmscenegraph"
+SET MMSCENEGRAPH_CMAKE_CONFIG_DIR="%MMSCENEGRAPH_INSTALL_DIR%\lib\cmake\mmscenegraph"
 
 :: MinGW is a common install for developers on Windows and
 :: if installed and used it will cause build conflicts and
@@ -125,44 +118,13 @@ IF EXIST "C:\MinGW" (
     SET IGNORE_INCLUDE_DIRECTORIES="C:\MinGW\bin;C:\MinGW\include"
 )
 
-IF "%BUILD_MMSCENEGRAPH%"=="1" (
-   ECHO Building mmSceneGraph...
-
-   :: Install the needed 'cxxbridge.exe' command.
-   ::
-   :: NOTE: When chaging this version number, make sure to update the
-   :: CXX version used in the C++ buildings, and all the build scripts
-   :: using this value:
-   :: './src/mmSolver/mmscenegraph/cppbind/Cargo.toml'
-   :: './scripts/internal/build_mmSolver_linux.bash'
-   cargo install cxxbridge-cmd --version 1.0.62
-
-   ECHO Building Rust crate... (%MMSCENEGRAPH_RUST_DIR%)
-   CHDIR "%MMSCENEGRAPH_RUST_DIR%"
-   cargo build --release --target-dir "%MMSCENEGRAPH_RUST_TARGET_DIR%"
-
-   ECHO Building C++ Bindings... (%MMSCENEGRAPH_CPP_DIR%)
-   CHDIR "%MMSCENEGRAPH_CPP_DIR%"
-   :: Assumes 'cxxbridge' (cxxbridge-cmd) is installed.
-   ECHO Generating C++ Headers...
-   cxxbridge --header --output "%MMSCENEGRAPH_CPP_DIR%\include\mmscenegraph\_cxx.h"
-   cargo build --release --target-dir "%MMSCENEGRAPH_CPP_TARGET_DIR%"
-
-   CHDIR "%PROJECT_ROOT%"
-)
-
 :: Build project
-SET BUILD_DIR_NAME=build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
+SET BUILD_DIR_NAME=build_mmSolver_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
 SET BUILD_DIR=%PROJECT_ROOT%\%BUILD_DIR_NAME%
 ECHO BUILD_DIR_NAME: %BUILD_DIR_NAME%
 ECHO BUILD_DIR: %BUILD_DIR%
 MKDIR "%BUILD_DIR_NAME%"
 CHDIR "%BUILD_DIR%"
-
-:: To Generate a Visual Studio 'Solution' file, for Maya 2018 (which
-:: uses Visual Studio 2015), replace the cmake -G line with the following line:
-::
-:: %CMAKE_EXE% -G "Visual Studio 14 2015 Win64" -T "v140"
 
 %CMAKE_EXE% -G "NMake Makefiles" ^
     -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
@@ -197,8 +159,7 @@ CHDIR "%BUILD_DIR%"
     -DDLFCN_LIB_PATH=%DLFCN_LIB_PATH% ^
     -DMAYA_LOCATION=%MAYA_LOCATION% ^
     -DMAYA_VERSION=%MAYA_VERSION% ^
-    -DMMSCENEGRAPH_RUST_BUILD_DIR=%MMSCENEGRAPH_RUST_BUILD_DIR% ^
-    -DMMSCENEGRAPH_INCLUDE_DIR=%MMSCENEGRAPH_INCLUDE_DIR% ^
+    -Dmmscenegraph_DIR=%MMSCENEGRAPH_CMAKE_CONFIG_DIR% ^
     ..
 
 %CMAKE_EXE% --build . --parallel 4

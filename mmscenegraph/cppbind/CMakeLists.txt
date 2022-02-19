@@ -1,4 +1,4 @@
-# Copyright (C) 2021 David Cattermole.
+# Copyright (C) 2020, 2021 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -16,6 +16,16 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-#
 
-add_subdirectory(cppbind)
+set(target_release_lib_name "mmscenegraph")
+set(rust_lib_name "mmscenegraph_rust")
+
+set(CMAKE_CXX_STANDARD 11)
+
+add_subdirectory(src)
+add_subdirectory(include)
+
+option(MMSCENEGRAPH_BUILD_TESTS "Do you want to build the test files for mmscenegraph?" OFF)
+if (MMSCENEGRAPH_BUILD_TESTS)
+  add_subdirectory(tests)
+endif()

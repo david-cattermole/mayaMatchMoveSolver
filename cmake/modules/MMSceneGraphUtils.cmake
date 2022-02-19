@@ -21,16 +21,15 @@
 
 
 # Find the Rust compiled library
-function(find_rust_library lib_name build_dir out_linktime_file)
+function(find_rust_library lib_name lib_dir out_linktime_file)
   if (MSVC)
     set(staticlib_name "${lib_name}.lib")
 
     # Get the Rust Library .lib (for Windows).
-    message(STATUS "Finding: ${staticlib_name}")
-    message(STATUS "RUST BUILD DIR: ${build_dir}")
+    message(STATUS "Finding: ${staticlib_name} in ${lib_dir}")
     find_path(linktime_dir ${staticlib_name}
-      HINTS ${build_dir}
-      PATHS ${build_dir}
+      HINTS ${lib_dir}
+      PATHS ${lib_dir}
       )
     if(EXISTS ${linktime_dir})
       set(${out_linktime_file} ${linktime_dir}/${staticlib_name} PARENT_SCOPE)
@@ -40,11 +39,10 @@ function(find_rust_library lib_name build_dir out_linktime_file)
     set(archive_name "lib${lib_name}.a")
 
     # Get the Rust Library .a (for Linux).
-    message(STATUS "Finding: ${archive_name}")
-    message(DEBUG "RUST BUILD DIR: ${build_dir}")
+    message(STATUS "Finding: ${archive_name} in ${lib_dir}")
     find_path(linktime_dir ${archive_name}
-      HINTS ${build_dir}
-      PATHS ${build_dir}
+      HINTS ${lib_dir}
+      PATHS ${lib_dir}
       )
     if(EXISTS ${linktime_dir})
       set(${out_linktime_file} ${linktime_dir}/${archive_name} PARENT_SCOPE)

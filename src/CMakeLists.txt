@@ -203,46 +203,6 @@ if(CXSPARSE_FOUND)
 endif()
 
 
-# find_package(Gflags REQUIRED)
-message(STATUS "GFLAGS: ${GFLAGS_FOUND}")
-message(STATUS "GFLAGS: Include=${GFLAGS_INCLUDE_DIRS}")
-message(STATUS "GFLAGS: Library=${GFLAGS_LIBRARIES}")
-if(GFLAGS_FOUND)
-  target_include_directories(mmSolver
-    PRIVATE ${GFLAGS_INCLUDE_DIRS}
-    )
-  target_link_libraries(mmSolver
-    PRIVATE
-    ${GFLAGS_LIBRARIES}
-    )
-  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_GFLAGS)
-  install_shared_library(
-    ${GFLAGS_LIBRARY}
-    ${GFLAGS_LIBRARY_DLL}
-    "${MODULE_FULL_NAME}/lib/")
-endif()
-
-
-# find_package(Glog REQUIRED)
-message(STATUS "GLOG: ${GLOG_FOUND}")
-message(STATUS "GLOG: Include=${GLOG_INCLUDE_DIRS}")
-message(STATUS "GLOG: Library=${GLOG_LIBRARIES}")
-if(GLOG_FOUND)
-  target_include_directories(mmSolver
-    PRIVATE ${GLOG_INCLUDE_DIRS}
-    )
-  target_link_libraries(mmSolver
-    PRIVATE
-    ${GLOG_LIBRARIES}
-    )
-  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_GLOG)
-  install_shared_library(
-    ${GLOG_LIBRARY}
-    ${GLOG_LIBRARY_DLL}
-    "${MODULE_FULL_NAME}/lib/")
-endif()
-
-
 find_package(Ceres REQUIRED)
 message(STATUS "CERES: ${CERES_FOUND}")
 message(STATUS "CERES: Version=${CERES_VERSION}")
@@ -258,23 +218,6 @@ if(CERES_FOUND)
     ceres
     )
   target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CERES)
-endif()
-
-
-# find_package(Libmv REQUIRED)
-message(STATUS "LIBMV: ${LIBMV_FOUND}")
-message(STATUS "LIBMV: Root=${LIBMV_ROOT}")
-message(STATUS "LIBMV: Include=${LIBMV_INCLUDE_DIRS}")
-message(STATUS "LIBMV: Library=${LIBMV_LIBRARIES}")
-if(LIBMV_FOUND)
-  target_include_directories(mmSolver
-    PRIVATE ${LIBMV_INCLUDE_DIRS}
-    )
-  target_link_libraries(mmSolver
-    PRIVATE
-    ${LIBMV_LIBRARIES}
-    )
-  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_LIBMV)
 endif()
 
 

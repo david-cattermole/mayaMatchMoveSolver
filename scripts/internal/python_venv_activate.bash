@@ -50,9 +50,11 @@ if [ ${FRESH_PYTHON_VIRTUAL_ENV} -eq 1 ]; then
 fi
 
 # Ensure Python Virtual Environment is setup.
+REQUIRE_PACKAGE_INSTALL=0
 if [ ! -f "${PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT}" ]; then
     echo "Setting up Python Virtual Environment"
     ${PYTHON_EXE} -m venv ${PYTHON_VIRTUAL_ENV_DIR_NAME}
+    REQUIRE_PACKAGE_INSTALL=1
 fi
 
 # Activate!
@@ -60,7 +62,9 @@ echo "Activating Python Virtual Environment ${PYTHON_VIRTUAL_ENV_DIR_NAME}"
 source "${PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT}"
 
 # Install requirements
-# ${PYTHON_EXE} -m pip install --upgrade pip
-${PYTHON_EXE} -m pip install -r "${PROJECT_ROOT}/requirements-dev.txt"
+if [ ${REQUIRE_PACKAGE_INSTALL} -eq 1 ]; then
+    # ${PYTHON_EXE} -m pip install --upgrade pip
+    ${PYTHON_EXE} -m pip install -r "${PROJECT_ROOT}/requirements-dev.txt"
+fi
 
 cd ${PROJECT_ROOT}

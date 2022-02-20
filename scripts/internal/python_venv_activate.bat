@@ -47,9 +47,11 @@ IF "%FRESH_PYTHON_VIRTUAL_ENV%"=="1" (
 )
 
 :: Ensure Python Virtual Environment is setup.
+SET REQUIRE_PACKAGE_INSTALL=0
 IF NOT EXIST %PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT% (
     ECHO Setting up Python Virtual Environment
     %PYTHON_EXE% -m venv %PYTHON_VIRTUAL_ENV_DIR_NAME%
+    SET REQUIRE_PACKAGE_INSTALL=1
 )
 
 :: Activate!
@@ -57,8 +59,10 @@ ECHO Activating Python Virtual Environment "%PYTHON_VIRTUAL_ENV_DIR_NAME%"
 CALL %PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT%
 
 :: Install requirements
-:: %PYTHON_EXE% -m pip install --upgrade pip
-%PYTHON_EXE% -m pip install -r "%PROJECT_ROOT%\requirements-dev.txt"
+IF "%REQUIRE_PACKAGE_INSTALL%"=="1" (
+    :: %PYTHON_EXE% -m pip install --upgrade pip
+    %PYTHON_EXE% -m pip install -r "%PROJECT_ROOT%\requirements-dev.txt"
+)
 
 :: Return back project root directory.
 CHDIR "%PROJECT_ROOT%"

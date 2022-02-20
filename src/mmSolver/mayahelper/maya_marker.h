@@ -42,57 +42,66 @@ public:
     Marker();
 
     MString getNodeName() const;
-
     MStatus setNodeName(MString value);
-
     MObject getObject();
 
     std::shared_ptr<Camera> getCamera();
-
-    MStatus setCamera(std::shared_ptr<Camera> &value);
-
     std::shared_ptr<Bundle> getBundle();
 
+    MStatus setCamera(std::shared_ptr<Camera> &value);
     MStatus setBundle(std::shared_ptr<Bundle> &value);
 
     Attr &getMatrixAttr();
-
     Attr &getPosXAttr();
-
     Attr &getPosYAttr();
-
     Attr &getEnableAttr();
-
     Attr &getWeightAttr();
 
-    MStatus getMatrix(MMatrix &value, const MTime &time,
-                      const int timeEvalMode);
+    MStatus getMatrix(
+        MMatrix &value,
+        const MTime &time,
+        const int timeEvalMode);
+    MStatus getMatrix(
+        MMatrix &value,
+        const int timeEvalMode);
 
-    MStatus getMatrix(MMatrix &value, const int timeEvalMode);
+    MStatus getPos(
+        double &x,
+        double &y,
+        double &z,
+        const MTime &time,
+        const int timeEvalMode);
+    MStatus getPos(
+        MPoint &point,
+        const MTime &time,
+        const int timeEvalMode);
+    MStatus getPos(
+        double &x,
+        double &y,
+        double &z,
+        const int timeEvalMode);
+    MStatus getPos(
+        MPoint &point,
+        const int timeEvalMode);
 
-    MStatus getPos(double &x, double &y, double &z, const MTime &time,
-                   const int timeEvalMode);
+    MStatus getPosXY(
+        double &x,
+        double &y,
+        const MTime &time,
+        const int timeEvalMode);
+    MStatus getPosXY(
+        double &x,
+        double &y,
+        const int timeEvalMode);
 
-    MStatus getPos(MPoint &point, const MTime &time,
-                   const int timeEvalMode);
-
-    MStatus getPos(double &x, double &y, double &z,
-                   const int timeEvalMode);
-
-    MStatus getPos(MPoint &point, const int timeEvalMode);
-
-
-    MStatus getPosXY(double &x, double &y, const MTime &time,
-                     const int timeEvalMode);
-
-    MStatus getPosXY(double &x, double &y,
-                     const int timeEvalMode);
-
-    MStatus getEnable(bool &value, const MTime &time,
-                      const int timeEvalMode);
-
-    MStatus getWeight(double &value, const MTime &time,
-                      const int timeEvalMode);
+    MStatus getEnable(
+        bool &value,
+        const MTime &time,
+        const int timeEvalMode);
+    MStatus getWeight(
+        double &value,
+        const MTime &time,
+        const int timeEvalMode);
 
     MString getLongNodeName();
 

@@ -42,27 +42,20 @@ public:
     Bundle();
 
     MString getNodeName() const;
-
     MStatus setNodeName(MString value);
-
     MObject getObject();
 
     double getWeight() const;
-
     MStatus setWeight(double value);
 
     Attr &getMatrixAttr();
 
     MStatus getMatrix(MMatrix &value, const MTime &time, const int timeEvalMode);
-
     MStatus getMatrix(MMatrix &value, const int timeEvalMode);
 
     MStatus getPos(double &x, double &y, double &z, const MTime &time, const int timeEvalMode);
-
     MStatus getPos(MPoint &point, const MTime &time, const int timeEvalMode);
-
     MStatus getPos(double &x, double &y, double &z, const int timeEvalMode);
-
     MStatus getPos(MPoint &point, const int timeEvalMode);
 
 private:

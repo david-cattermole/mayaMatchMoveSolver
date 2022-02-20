@@ -78,6 +78,7 @@ cxxbridge --header --output "${MMSCENEGRAPH_CPP_DIR}/include/mmscenegraph/_cxx.h
 ${RUST_CARGO_EXE} build ${RELEASE_FLAG} --target-dir "${MMSCENEGRAPH_CPP_TARGET_DIR}"
 
 # Build project
+cd "${PROJECT_ROOT}"
 mkdir -p build_mmscenegraph_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
 cd build_mmscenegraph_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
 

@@ -84,7 +84,6 @@ CALL %PROJECT_ROOT%\scripts\internal\python_venv_activate.bat
 :: By default these paths will work if the "build_thirdparty.bat"
 :: scripts have been run before this script.
 SET CMINPACK_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\cminpack"
-SET CXSPARSE_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\cxsparse"
 SET CERES_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\ceres"
 SET CERES_DIR="%CERES_ROOT%\CMake"
 SET CERES_INCLUDE_DIR="%CERES_ROOT%\include"
@@ -135,7 +134,6 @@ CHDIR "%BUILD_DIR%"
     -DBUILD_CONFIG=%BUILD_CONFIG% ^
     -DBUILD_TESTS=%BUILD_TESTS% ^
     -DCMINPACK_ROOT=%CMINPACK_ROOT% ^
-    -DCXSPARSE_ROOT=%CXSPARSE_ROOT% ^
     -DCeres_DIR=%CERES_DIR% ^
     -DEIGEN3_INCLUDE_DIR=%EIGEN3_INCLUDE_DIR% ^
     -DOpenMVG_DIR=%OPENMVG_DIR% ^

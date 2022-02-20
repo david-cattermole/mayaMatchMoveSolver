@@ -86,7 +86,6 @@ source "${PROJECT_ROOT}/scripts/internal/python_venv_activate.bash"
 # By default these paths will work if the "build_thirdparty.bat"
 # scripts have been run before this script.
 CMINPACK_ROOT="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/cminpack"
-CXSPARSE_ROOT="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/cxsparse"
 CERES_ROOT="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/ceres"
 CERES_DIR="${CERES_ROOT}/lib64/cmake/Ceres/"
 CERES_INCLUDE_DIR="${CERES_ROOT}/include"
@@ -127,7 +126,6 @@ ${CMAKE_EXE} \
     -DBUILD_CONFIG=${BUILD_CONFIG} \
     -DBUILD_TESTS=${BUILD_TESTS} \
     -DCMINPACK_ROOT=${CMINPACK_ROOT} \
-    -DCXSPARSE_ROOT=${CXSPARSE_ROOT} \
     -DCeres_DIR=${CERES_DIR} \
     -DEIGEN3_INCLUDE_DIR=${EIGEN3_INCLUDE_DIR} \
     -DOpenMVG_DIR=${OPENMVG_DIR} \

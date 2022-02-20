@@ -186,23 +186,6 @@ if(EIGEN3_FOUND)
 endif()
 
 
-find_package(Cxsparse REQUIRED)
-message(STATUS "CXSPARSE: ${CXSPARSE_FOUND}")
-message(STATUS "CXSPARSE: Root=${CXSPARSE_ROOT}")
-message(STATUS "CXSPARSE: Include=${CXSPARSE_INCLUDE_DIRS}")
-message(STATUS "CXSPARSE: Library=${CXSPARSE_LIBRARIES}")
-if(CXSPARSE_FOUND)
-  target_include_directories(mmSolver
-    PRIVATE ${CXSPARSE_INCLUDE_DIRS}
-    )
-  target_link_libraries(mmSolver
-    PRIVATE
-    ${CXSPARSE_LIBRARIES}
-    )
-  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CXSPARSE)
-endif()
-
-
 find_package(Ceres REQUIRED)
 message(STATUS "CERES: ${CERES_FOUND}")
 message(STATUS "CERES: Version=${CERES_VERSION}")

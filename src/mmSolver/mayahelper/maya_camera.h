@@ -116,15 +116,12 @@ public:
     Camera();
 
     MString getTransformNodeName();
-
-    void setTransformNodeName(MString value);
-
-    MObject getTransformObject();
-
     MString getShapeNodeName();
 
+    void setTransformNodeName(MString value);
     void setShapeNodeName(MString value);
 
+    MObject getTransformObject();
     MObject getShapeObject();
 
     // TODO: Use 'Projection Dynamic' to tell the solver that

@@ -17,6 +17,48 @@
 #
 """
 Library functions for creating and modifying image planes.
+
+
+Idea - Create wrapper image plane node
+- The node should adjust either 'live' or 'baked' nodes.
+
+
+Idea - Allow users to change the image sequence.
+- Both 'live' and 'baked' image planes are updated as needed.
+- Users can choose to auto-convert to Maya IFF format (for speed).
+
+
+Idea - Bake images into .iff files using Maya 'imgcvt' utility.
+- Experiment with .dds files to see if it's faster in the Maya viewport or not.
+- Write to local 'sourceimages/mmSolver_temp' directory, by default.
+
+
+Idea - Apply image processing templates to images.
+- Allow the use of OIIO, Natron or Nuke (if installed)
+- Features
+  - Reformat / down-res plates.
+    - Scale (50%)
+    - Maximum width (2048)
+    - Maximum height (2048)
+  - Lens undistort (for baked image planes)
+  - Converting to different formats (such as Maya 'iff')
+
+
+Tool - Set Image Plane File Path
+
+
+Tool - Toggle the Live/Baked image plane state.
+
+
+Idea - Create a custom image plane shape node.
+- Pipe the deforming polygon plane into the shape node and draw it with
+  an image sequence on it.
+- This allows us to hide the polygons in a viewport but still show the
+  image plane.
+- We can control the depth of the image plane with this method.
+- When the OCG Image Plane is fully developed we can easily replace this
+  shape node with the 'ocgImagePlane'.
+
 """
 
 from __future__ import absolute_import

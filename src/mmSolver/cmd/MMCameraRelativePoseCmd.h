@@ -44,6 +44,7 @@
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
@@ -83,27 +84,31 @@ private:
     std::vector<std::pair<double, double>> m_marker_coords_b;
 
     // Maya Objects
-    Camera m_camera_a;
-    Attr m_camera_a_tx_attr;
-    Attr m_camera_a_ty_attr;
-    Attr m_camera_a_tz_attr;
-    Attr m_camera_a_rx_attr;
-    Attr m_camera_a_ry_attr;
-    Attr m_camera_a_rz_attr;
+    CameraPtr m_camera_a;
+    Attr m_camera_tx_attr_a;
+    Attr m_camera_ty_attr_a;
+    Attr m_camera_tz_attr_a;
+    Attr m_camera_rx_attr_a;
+    Attr m_camera_ry_attr_a;
+    Attr m_camera_rz_attr_a;
 
-    // Camera m_camera_b;
-    // Attr m_camera_b_tx_attr;
-    // Attr m_camera_b_ty_attr;
-    // Attr m_camera_b_tz_attr;
-    // Attr m_camera_b_rx_attr;
-    // Attr m_camera_b_ry_attr;
-    // Attr m_camera_b_rz_attr;
+    CameraPtr m_camera_b;
+    Attr m_camera_tx_attr_b;
+    Attr m_camera_ty_attr_b;
+    Attr m_camera_tz_attr_b;
+    Attr m_camera_rx_attr_b;
+    Attr m_camera_ry_attr_b;
+    Attr m_camera_rz_attr_b;
 
-    // Frame range
-    uint32_t m_startFrame;
-    uint32_t m_endFrame;
-    MTime m_startTime;
-    MTime m_endTime;
+    MarkerPtrList m_marker_list_a;
+    MarkerPtrList m_marker_list_b;
+    BundlePtrList m_bundle_list;
+
+    // Frames A and B
+    uint32_t m_frame_a;
+    uint32_t m_frame_b;
+    MTime m_time_a;
+    MTime m_time_b;
 
     // Undo/Redo
     MDGModifier m_dgmod;

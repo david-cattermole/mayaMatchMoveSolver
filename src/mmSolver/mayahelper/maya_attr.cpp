@@ -190,7 +190,7 @@ MPlug Attr::getPlug() {
         MFnDependencyNode dependsNode(nodeObj, &status);
         MPlug plug = dependsNode.findPlug(attrName, true, &status);
         if (status != MStatus::kSuccess) {
-            MString name = Attr::getName();
+            // MString name = Attr::getName();
             // MMSOLVER_WRN("Attribute cannot be found; " << name);
             return m_plug;
         }

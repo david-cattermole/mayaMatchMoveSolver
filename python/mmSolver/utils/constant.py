@@ -38,6 +38,7 @@ CONFIG_PATH_VAR_NAME = 'MMSOLVER_CONFIG_PATH'
 CONFIG_HOME_DIR_PATH = {
     'Linux': '${HOME}/.mmSolver/',
     'Windows': '${APPDATA}/mmSolver/',
+    'Darwin': '${HOME}/.mmSolver/',
 }
 
 # Maya configuration

@@ -105,7 +105,7 @@ class MarkerNode(ObjectNode):
         d = self.data()
         mkr = d.get('marker')
         if mkr is None:
-            return color
+            return value
         used = mkr.get_used_hint()
         if used == mmapi.MARKER_USED_HINT_USED_VALUE:
             value = u'\u2714'  # "Heavy Check Mark"
@@ -114,11 +114,11 @@ class MarkerNode(ObjectNode):
         return value
 
     def objectColor(self):
-        color = None
         d = self.data()
         mkr = d.get('marker')
         if mkr is None:
-            return color
+            return None
+        color = None
         enable = bool(mkr.get_enable())
         if enable is False:
             color = QtGui.QColor(QtCore.Qt.darkGray)

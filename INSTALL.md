@@ -5,11 +5,11 @@ platforms and can be downloaded from the
 [Releases](https://github.com/david-cattermole/mayaMatchMoveSolver/releases)
 page on the GitHub [project page](https://github.com/david-cattermole/mayaMatchMoveSolver).
 
-| Operating System  | Maya Version(s)                   |
-| ----------------- | --------------------------------- |
-| Linux             | Maya 2016, 2017, 2018, 2019, 2020 |
-| Windows           | Maya 2016, 2017, 2018, 2019, 2020 |
-| Mac OS X          | Maya 2018, 2019                   |
+| Operating System  | Maya Version(s)                         |
+| ----------------- | --------------------------------------- |
+| Linux             | Maya 2016, 2017, 2018, 2019, 2020, 2022 |
+| Windows           | Maya 2016, 2017, 2018, 2019, 2020, 2022 |
+| Mac OS X          | Maya 2018, 2019                         |
 
 Download the archive format (`.zip` or `.tar.gz`) for your Maya
 version and operating system.
@@ -63,6 +63,47 @@ You can open Maya as normal and the tool will be recognised
 automatically at start-up.  You will see a message in the Script
 Editor `# root : MM Solver Startup... #`, and a new shelf will
 automatically be created for you named *mmSolver*.
+
+# Load mmSolver in Maya 2022
+
+Loading custom plug-ins in Maya 2022+ has been changed to increase
+security and avoid viruses, as a result mmSolver has needed to change
+slightly. Previous versions of Maya should still work exactly as
+before.
+
+To load mmSolver in Maya 2022 you must run the following MEL command:
+```
+mmsolver_load
+```
+
+This will load the mmSolver plug-in, and allow you to automatically
+load the mmSolver plug-in and will ensure it is loaded each time Maya
+is started.
+
+If you wish to unload mmSolver so it will not be loaded at Maya
+start-up run the following MEL command:
+```
+mmsolver_unload
+```
+
+These commands added in mmSolver v0.3.16 were added to work-around the
+Maya 2022+ Security preferences and ensure mmSolver will be loaded
+when it's needed.
+
+Additionally the Python module `mmSolver.startup` was added, and
+allows pipelines to manually load mmSolver with the Python commands:
+```
+import mmSolver.startup
+mmSolver.startup.mmsolver_startup()
+```
+
+Rather than using the `mmsolver_load` or `mmsolver_unload` commands,
+optionally you can load the mmSolver plug-in via the menu `Windows >
+Settings/Preferences > Plug-in Manager` window. This will also load
+the mmSolver tools automatically when the plug-in is loaded. If you
+wish to load mmSolver each time Maya is started you may enable
+"autoload" via the Plug-in Manager to ensure the mmSolver tools,
+shelves, menus and plug-in are always loaded.
 
 # Project Configuration
 

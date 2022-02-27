@@ -334,6 +334,12 @@ REM Maya 2020
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2020Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2020.bat
 ```
 
+Visual Studio 2019:
+```cmd
+REM Maya 2022
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2022Deploy_windows64 && scripts\build_cminpack.bat && scripts\build_mmSolver_windows64_maya2022.bat
+```
+
 Package files can then be uploaded from the
 "%userprofile%\dev\mayaMatchMoveSolver_maya*Deploy_windows64\packages"
 folder.

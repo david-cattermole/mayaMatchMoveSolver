@@ -17,10 +17,16 @@ Required:
     - [GCC 4.4.7](https://gcc.gnu.org/) (Maya 2016 and 2017)
     - [GCC 4.8.3](https://gcc.gnu.org/) (Maya 2018)
     - [GCC 6.3.1](https://gcc.gnu.org/) (Maya 2019 and 2020)
+      - Red Hat [DST 6.1](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/6/html/6.1_release_notes/index)
+      - `yum install devtoolset-6` on RHEL 7 / CentOS 7
+    - [GCC 9.3.1](https://gcc.gnu.org/) (Maya 2022)
+      - Red Hat [DST 9.1](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/9/html/9.1_release_notes/index)
+      - `yum install devtoolset-9` on RHEL 7 / CentOS 7
   - Windows
     - [Visual Studio 2012 update 5 (MSVC 11.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2016 and 2017)
     - [Visual Studio 2015 update 3 (MSVC 14.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2018 and 2019)
     - [Visual Studio 2017 (MSVC 15.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2020)
+    - [Visual Studio 2019 (MSVC 16.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2022)
 - [CMake 3.15+](https://cmake.org/)
   - Older versions may work, however the Blender Add-On may fail to
     generate.

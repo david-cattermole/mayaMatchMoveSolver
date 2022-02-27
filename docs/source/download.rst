@@ -62,14 +62,16 @@ Download the latest release **mmSolver v0.3.16**:
      - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2022-win64.zip>`_
 
    * - MacOS
-     - Maya 2018
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2018-mac.tar.gz>`_
+     - Maya 2018 (v0.3.15)
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2018-mac.tar.gz>`_
 
    * - MacOS
-     - Maya 2019
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2019-mac.tar.gz>`_
+     - Maya 2019 (v0.3.15)
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2019-mac.tar.gz>`_
 
 Older versions and full release notes can be found on the GitHub releases_ page.
+
+Note: MacOS is only supported until v0.3.15.
 
 Installation
 ============

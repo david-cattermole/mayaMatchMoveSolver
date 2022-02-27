@@ -728,6 +728,8 @@ def loadAllResources():
             continue
         file_names = os.listdir(directory_path)
         for file_name in file_names:
+            if not file_name.endswith('.rcc'):
+                continue
             file_path = os.path.join(directory_path, file_name)
             if os.path.isfile(file_path):
                 is_registered = QtCore.QResource.registerResource(file_path)

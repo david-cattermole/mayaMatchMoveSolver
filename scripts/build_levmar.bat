@@ -47,8 +47,8 @@ cmake -G "NMake Makefiles" ^
     -DLM_SNGL_PREC=0 ^
     ../working/levmar-2.6
 
-nmake /F Makefile clean
-nmake /F Makefile all
+cmake --build . --parallel 4
+cmake --install .
 
 :: The CMake script with levmar does not not define an install process.
 :: So we copy the files manually

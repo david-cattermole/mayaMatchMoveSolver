@@ -51,9 +51,9 @@ cmake \
     -DUSE_FPIC=ON \
     -DUSE_BLAS=0 \
     ../working/cminpack-1.3.6
-make clean
-make all
-make install
+
+cmake --build . --parallel 4
+cmake --install .
 
 # Return back project root directory.
 cd ${CWD}

@@ -47,9 +47,8 @@ cmake -G "NMake Makefiles" ^
     -DUSE_BLAS=0 ^
     ../working/cminpack-1.3.6
 
-nmake /F Makefile clean
-nmake /F Makefile all
-nmake /F Makefile install
+cmake --build . --parallel 4
+cmake --install .
 
 :: Return back project root directory.
 CHDIR "%ROOT%"

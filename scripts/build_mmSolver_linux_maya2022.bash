@@ -104,18 +104,18 @@ cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DMAYA_VERSION=${MAYA_VERSION} \
       -DMAYA_LOCATION=${MAYA_LOCATION} \
       ..
-make clean
-make -j${CPU_NUM}
-make install
+
+cmake --build . --parallel ${CPU_NUM}
+cmake --install .
 
 # Run tests
 if [ ${RUN_TESTS} -eq 1 ]; then
-    make test
+    cmake --build . --target test
 fi
 
 # Build ZIP package.
 if [ ${BUILD_PACKAGE} -eq 1 ]; then
-    make package
+    cmake --build . --target package
 fi
 
 # Return back project root directory.

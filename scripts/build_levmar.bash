@@ -52,8 +52,9 @@ cmake \
     -DNEED_F2C=0 \
     -DLM_SNGL_PREC=0 \
     ../working/levmar-2.6
-make clean
-make all
+
+cmake --build . --parallel 4
+cmake --install .
 
 # The CMake script with levmar does not not define an install process.
 # So we copy the files manually

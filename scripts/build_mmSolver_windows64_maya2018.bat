@@ -133,20 +133,19 @@ REM To Generate a Visual Studio 'Solution' file
         -DMAYA_VERSION=%MAYA_VERSION% ^
         ..
 
-    nmake /F Makefile clean
-    nmake /F Makefile all
+    cmake --build . --parallel 4
 
 REM Comment this line out to stop the automatic install into the home directory.
-    nmake /F Makefile install
+    cmake --install .
 
 REM Run tests
     IF "%RUN_TESTS%"=="1" (
-        nmake /F Makefile test
+        cmake --build . --target test
     )
 
 REM Create a .zip package.
 IF "%BUILD_PACKAGE%"=="1" (
-       nmake /F Makefile package
+       cmake --build . --target package
    )
 
 )

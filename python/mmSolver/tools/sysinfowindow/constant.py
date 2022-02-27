@@ -38,7 +38,7 @@ SYS_INFO_TEXT = """== System Information ==
 Operating System: {operating_sys}
 Window Manager: {desktop_wind_man}
 Compositing Manager: {desktop_comp_man}
-GPU: 
+GPU:
 {gpu_info}
 
 """

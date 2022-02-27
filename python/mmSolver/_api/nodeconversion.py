@@ -19,6 +19,10 @@
 Convert between different types of nodes.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver._api.marker as marker
 import mmSolver._api.bundle as bundle
 import mmSolver._api.nodefilter as nodefilter
@@ -95,6 +99,6 @@ def get_camera_nodes_from_marker_nodes(nodes):
         cam_shp_node = cam.get_shape_node()
         if cam_shp_node not in cam_nodes_tmp:
             cam_nodes_tmp[cam_shp_node] = (cam_tfm_node, cam_shp_node)
-    for key, value in cam_nodes_tmp.iteritems():
+    for key, value in cam_nodes_tmp.items():
         cam_nodes.append(value)
     return cam_nodes

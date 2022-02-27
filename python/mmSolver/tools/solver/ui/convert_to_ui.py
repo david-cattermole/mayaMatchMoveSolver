@@ -19,6 +19,10 @@
 Convert mmSolver API objects into UI objects that can be used in Qt models.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 
 import mmSolver.api as mmapi

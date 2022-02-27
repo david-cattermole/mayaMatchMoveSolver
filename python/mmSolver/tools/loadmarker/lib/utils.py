@@ -19,6 +19,10 @@
 The Load Marker tool - user facing.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import os.path
 
@@ -29,6 +33,7 @@ import mmSolver.logger
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.camera as camera_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.api as mmapi
 import mmSolver.tools.userpreferences.lib as userprefs_lib
 
@@ -168,7 +173,7 @@ def get_start_directory(file_path):
     :param file_path: An input
     :return:
     """
-    if isinstance(file_path, (str, unicode)) is False:
+    if isinstance(file_path, pycompat.TEXT_TYPE) is False:
         msg = 'file_path must be a string.'
         raise TypeError(msg)
     start_dir = os.getcwd()

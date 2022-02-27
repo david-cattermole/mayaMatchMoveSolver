@@ -31,6 +31,7 @@ import mmSolver.api as mmapi
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.utils.time as utils_time
 import mmSolver.utils.converttypes as converttypes
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.userpreferences.constant as userprefs_const
 import mmSolver.tools.userpreferences.lib as userprefs_lib
 import mmSolver.tools.solver.lib.state as lib_state
@@ -301,7 +302,7 @@ def create_solver_step():
     data['name'] = str(uuid.uuid4())
 
     start, end = utils_time.get_maya_timeline_range_inner()
-    frame_list = list(xrange(start, end + 1))
+    frame_list = list(range(start, end + 1))
     data['frame_list'] = frame_list
 
     step = solver_step.SolverStep(data=data)
@@ -424,15 +425,15 @@ def set_solver_step_list_to_collection(col, step_list):
 
 def __compile_frame_list(range_type, frame_string, by_frame):
     assert isinstance(range_type, int)
-    assert frame_string is None or isinstance(frame_string, basestring)
+    assert frame_string is None or isinstance(frame_string, pycompat.TEXT_TYPE)
     assert isinstance(by_frame, int)
     frame_nums = []
     if range_type == const.RANGE_TYPE_TIMELINE_INNER_VALUE:
         start, end = utils_time.get_maya_timeline_range_inner()
-        frame_nums = [f for f in xrange(start, end+1, by_frame)]
+        frame_nums = [f for f in range(start, end+1, by_frame)]
     elif range_type == const.RANGE_TYPE_TIMELINE_OUTER_VALUE:
         start, end = utils_time.get_maya_timeline_range_outer()
-        frame_nums = [f for f in xrange(start, end+1, by_frame)]
+        frame_nums = [f for f in range(start, end+1, by_frame)]
     elif range_type == const.RANGE_TYPE_CUSTOM_FRAMES_VALUE:
         if frame_string is None:
             start, end = utils_time.get_maya_timeline_range_inner()
@@ -443,7 +444,7 @@ def __compile_frame_list(range_type, frame_string, by_frame):
         start = min(frame_nums)
         frame_nums = [n for n in frame_nums
                       if (float(n - start) % by_frame) == 0]
-    return frame_nums 
+    return frame_nums
 
 
 def compile_collection(col, prog_fn=None):
@@ -462,7 +463,7 @@ def compile_collection(col, prog_fn=None):
     s = time.time()
     sol_list = []
     solver_tab = col_state.get_solver_tab_from_collection(col)
-    assert isinstance(solver_tab, (str, unicode))
+    assert isinstance(solver_tab, pycompat.TEXT_TYPE)
     if solver_tab == const.SOLVER_TAB_BASIC_VALUE:
         sol = mmapi.SolverBasic()
         range_type = col_state.get_solver_range_type_from_collection(col)
@@ -560,7 +561,7 @@ def gather_execute_options():
     minimal_ui = userprefs_lib.get_value(config, key)
     minimal_ui = minimal_ui == userprefs_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_TRUE_VALUE
 
-    options = mmapi.createExecuteOptions(
+    options = mmapi.create_execute_options(
         refresh=refresh_state,
         disable_viewport_two=disable_viewport_two_state,
         force_update=force_update_state,
@@ -629,7 +630,7 @@ def execute_collection(col,
     assert isinstance(options.force_update, bool)
     assert isinstance(options.display_node_types, dict)
     assert isinstance(options.do_isolate, bool)
-    assert isinstance(log_level, (str, unicode))
+    assert isinstance(log_level, pycompat.TEXT_TYPE)
     assert prog_fn is None or hasattr(prog_fn, '__call__')
     assert status_fn is None or hasattr(status_fn, '__call__')
     assert info_fn is None or hasattr(info_fn, '__call__')

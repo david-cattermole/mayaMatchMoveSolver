@@ -19,6 +19,10 @@
 The main window for the 'Solver' tool.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import time
 import datetime
@@ -36,6 +40,7 @@ import mmSolver.ui.Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.utils.undo as undo_utils
 import mmSolver.utils.tools as tools_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.ui.commonmenus as commonmenus
@@ -716,7 +721,7 @@ def loadAllResources():
     assert base_install_location is not None
     fallback = os.path.join(base_install_location, 'resources')
     resource_paths = os.environ.get('MMSOLVER_RESOURCE_PATH', fallback)
-    assert isinstance(resource_paths, basestring)
+    assert isinstance(resource_paths, pycompat.TEXT_TYPE)
     resource_paths = resource_paths.split(os.pathsep)
     for directory_path in resource_paths:
         if not os.path.isdir(directory_path):

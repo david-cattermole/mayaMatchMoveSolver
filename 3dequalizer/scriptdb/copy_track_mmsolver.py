@@ -55,6 +55,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import sys
 import json
 import tempfile
 import time
@@ -65,11 +66,11 @@ import tde4
 
 IS_PYTHON_2 = sys.version_info[0] == 2
 if IS_PYTHON_2 is True:
-    text_type = basestring
-    int_type = (int, long)
+    TEXT_TYPE = basestring  # noqa: F821
+    INT_TYPES = (int, long)  # noqa: F821
 else:
-    text_type = str
-    int_type = int
+    TEXT_TYPE = str
+    INT_TYPES = (int, )
 
 TITLE = 'Copy 2D Tracks to MM Solver...'
 EXT = '.uv'
@@ -633,8 +634,8 @@ def _generate_v1(point_group, camera, points,
     :returns: A ASCII format string, with the UV Track data in it.
     :rtype: str
     """
-    assert isinstance(point_group, text_type)
-    assert isinstance(camera, text_type)
+    assert isinstance(point_group, TEXT_TYPE)
+    assert isinstance(camera, TEXT_TYPE)
     assert isinstance(points, (list, tuple))
     assert start_frame is None or isinstance(start_frame, int)
     assert isinstance(undistort, bool)
@@ -790,10 +791,10 @@ def _generate_v2_v3_and_v4(point_group, camera, points,
     :returns: A JSON format string, with the UV Track data in it.
     :rtype: str
     """
-    assert isinstance(point_group, text_type)
-    assert isinstance(camera, text_type)
+    assert isinstance(point_group, TEXT_TYPE)
+    assert isinstance(camera, TEXT_TYPE)
     assert isinstance(points, (list, tuple))
-    assert isinstance(version, int_type)
+    assert isinstance(version, INT_TYPES)
     assert version in [UV_TRACK_FORMAT_VERSION_2,
                        UV_TRACK_FORMAT_VERSION_3,
                        UV_TRACK_FORMAT_VERSION_4]

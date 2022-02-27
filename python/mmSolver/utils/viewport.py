@@ -19,6 +19,10 @@
 Utilities for setting and querying viewport related information.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 

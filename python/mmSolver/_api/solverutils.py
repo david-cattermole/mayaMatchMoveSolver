@@ -22,6 +22,10 @@ Below are compilable methods that can be re-used by more than one
 solver type.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 import mmSolver._api.action as api_action
 import mmSolver._api.compile as api_compile

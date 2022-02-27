@@ -16,6 +16,10 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -34,6 +38,7 @@ import mmSolver.ui.uiutils as uiutils
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.tools as tools_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.attributebake.lib as fastbake_lib
 
 LOG = mmSolver.logger.get_logger()
@@ -62,7 +67,7 @@ def transform_has_constraints(tfm_node):
 
 
 def _display_warning_ui(msg):
-    assert isinstance(msg, basestring)
+    assert isinstance(msg, pycompat.TEXT_TYPE)
     msg = msg
     LOG.warn(msg)
     return
@@ -339,8 +344,8 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
     def getPreBakeFramesListFromNode(self, node):
         frames_list = []
         start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
-        keys_list = cmds.keyframe(node, q=True, time=(start_frame, end_frame))
-        if keys_list == None:
+        keys_list = cmds.keyframe(node, q=True, time=(start_frame, end_frame)) or []
+        if len(keys_list) == 0:
             frames_list = [start_frame, end_frame]
         bake_options = self.bakeOptions()
         if bake_options == 'full_bake':
@@ -356,8 +361,8 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
         return sorted(frames_list)
 
     def offsetVector(self, a, b):
-        assert isinstance(a, basestring)
-        assert isinstance(b, basestring)
+        assert isinstance(a, pycompat.TEXT_TYPE)
+        assert isinstance(b, pycompat.TEXT_TYPE)
         assert cmds.objExists(a) and cmds.objExists(b)
         a_pos = cmds.xform(a, q=True, ws=True, t=True)
         b_pos = cmds.xform(b, q=True, ws=True, t=True)
@@ -392,8 +397,8 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                         depth_list.append(vector + offset)
                     oma.MAnimControl.setCurrentTime(
                         om.MTime(float(current_time)))
-        except(NameError, ValueError, TypeError) as e:
-            print e
+        except (NameError, ValueError, TypeError) as e:
+            LOG.warn(e)
         finally:
             mel.eval('paneLayout -e -manage true $gMainPane')
             cmds.refresh(suspend=False)
@@ -527,8 +532,8 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 # Select the master control.
                 cmds.select(main_grp, replace=True)
                 self.refreshRigsList()
-        except(NameError, ValueError, TypeError) as e:
-            print e
+        except (NameError, ValueError, TypeError) as e:
+            LOG.warn(e)
         finally:
             mel.eval('paneLayout -e -manage true $gMainPane')
             cmds.refresh(suspend=False)
@@ -564,7 +569,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                     same_name_used = True
                 iterator += 1
 
-        if same_name_used == True:
+        if same_name_used is True:
             _display_warning_ui('same name exists already '
                                 'please type different name.')
         return valid_name_list, same_name_used
@@ -589,7 +594,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
         for sel_item, name_item in zip(sel, names):
             # Check if object has existing point constraint already
             has_constraints = transform_has_constraints(sel_item)
-            if has_constraints == False:
+            if has_constraints is False:
                 depth_list = self.calcDistance(cam_tfm, sel_item, 0)
                 node_screen_depths.append((sel_item, name_item, depth_list))
             else:
@@ -681,7 +686,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                                    FREEZE_RIG_SUFFIX_NAME)
                     # Calc full freeze list
                     dlist = self.calcDistance(cam_tfm, temp_grp, 0)
-                    if use_anim_layer == False:
+                    if use_anim_layer is False:
                         # Set keyframes on screenzdepth attribute,
                         # with no anim layer.
                         setZDepthKeyframes(
@@ -779,8 +784,8 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                             cmds.select(clear=True)
                 self.deleteRigBtn()
                 self.refreshRigsList()
-        except(NameError, ValueError, TypeError) as e:
-            print e
+        except (NameError, ValueError, TypeError) as e:
+            LOG.warn(e)
         finally:
             mel.eval('paneLayout -e -manage true $gMainPane')
             cmds.refresh(suspend=False)
@@ -874,7 +879,7 @@ class ScreenSpaceRigLayout(QtWidgets.QWidget):
                 cmds.connectAttr(src, child + '.scaleZ', f=True)
                 self.lockUnlockAttributes(child, lock=True)
             self.lockUnlockAttributes(parent, lock=True)
-        except:
+        except RuntimeError:
             _display_warning_ui('freeze rig can not be matched.')
         self.refreshRigsList()
 

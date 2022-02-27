@@ -19,6 +19,10 @@
 Defines a basic node class able to be used for tree data models.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 
 def get_nodes_recursively(top_node):
     nodes = []

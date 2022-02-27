@@ -171,18 +171,20 @@ MStatus initializePlugin(MObject obj) {
         status);
 
     // Run the Python startup function when the plug-in loads.
-    bool displayEnabled = false;
+    bool displayEnabled = true;
     bool undoEnabled = false;
-    MString command;
-    command += "import maya.utils;\n";
-    command += "global MMSOLVER_STARTED\n";
-    command += "if 'mmsolver_startup' in dir() and MMSOLVER_STARTED is False:\n";
-    command += "    maya.utils.executeDeferred(mmsolver_startup);\n";
-    status = MGlobal::executePythonCommand(
-            command,
-            displayEnabled,
-            undoEnabled
+    MString startup_cmd;
+    startup_cmd += "global proc mmsolver_startup() ";
+    startup_cmd += "{ ";
+    startup_cmd += "python(\"import mmSolver.startup; mmSolver.startup.mmsolver_startup()\"); ";
+    startup_cmd += "} ";
+    startup_cmd += "evalDeferred(\"mmsolver_startup\");";
+    status = MGlobal::executeCommand(
+        startup_cmd,
+        displayEnabled,
+        undoEnabled
     );
+    CHECK_MSTATUS(status);
 
     return status;
 }

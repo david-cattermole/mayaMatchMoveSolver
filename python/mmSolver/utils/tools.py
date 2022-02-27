@@ -19,6 +19,10 @@
 Utilities for Tools to help develop and standardise inside mmSolver.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import uuid
 from contextlib import contextmanager
 

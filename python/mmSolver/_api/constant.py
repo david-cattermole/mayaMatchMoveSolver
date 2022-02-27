@@ -19,6 +19,10 @@
 Constant values used in the API.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.OpenMaya as OpenMaya
 
 # Plug-in names
@@ -160,7 +164,7 @@ DEFAULT_PLATE_HEIGHT = 1556
 
 # Root Frame Strategies.
 ROOT_FRAME_STRATEGY_GLOBAL_VALUE = 0
-ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE = 1 # forward pair.
+ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE = 1  # forward pair.
 ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE = 2
 ROOT_FRAME_STRATEGY_FWD_INCREMENT_VALUE = 3  # forward increment.
 

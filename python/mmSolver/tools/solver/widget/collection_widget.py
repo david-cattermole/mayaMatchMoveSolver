@@ -15,9 +15,10 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""
 
-"""
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 import time
 

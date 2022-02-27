@@ -38,6 +38,7 @@ import mmSolver.utils.node as node_utils
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.animcurve as anim_utils
 import mmSolver.utils.transform as tfm_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.reparent.keytimeutils as keytime_utils
 import mmSolver.tools.createcontroller.constant as const
 
@@ -154,7 +155,7 @@ def _sort_by_hierarchy(nodes, children_first=False):
     assert isinstance(nodes, (list, set, tuple))
     depth_to_node_map = collections.defaultdict(list)
     for node in nodes:
-        assert isinstance(node, basestring)
+        assert isinstance(node, pycompat.TEXT_TYPE)
         depth = node.count('|')
         depth_to_node_map[depth].append(node)
     nodes = []

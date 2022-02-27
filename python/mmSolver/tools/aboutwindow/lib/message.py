@@ -19,6 +19,10 @@
 Formats and displays 'about' information.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.constant as mmSolver_const
 import mmSolver.tools.aboutwindow.constant as const
 

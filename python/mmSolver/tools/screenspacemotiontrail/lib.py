@@ -28,6 +28,7 @@ import mmSolver.api as mmapi
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.camera as camera_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.screenspacemotiontrail.constant as const
 
 LOG = mmSolver.logger.get_logger()
@@ -213,8 +214,8 @@ def create_screen_space_motion_trail(cam, tfm,
     """
     Create a Screen-Space Maya Locator that may be solved in Screen XYZ.
     """
-    assert isinstance(cam, basestring)
-    assert isinstance(tfm, basestring)
+    assert isinstance(cam, pycompat.TEXT_TYPE)
+    assert isinstance(tfm, pycompat.TEXT_TYPE)
     if name is None:
         name = tfm.rpartition('|')[-1]
 

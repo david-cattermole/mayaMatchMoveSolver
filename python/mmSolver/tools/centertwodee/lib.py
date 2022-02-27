@@ -20,6 +20,10 @@ Functions to deal with range mappings to work between the UI sliders
 and the offset/zoom nodes
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 
 import mmSolver.logger
@@ -165,10 +169,11 @@ def get_camera_zoom(cam_shp):
 
 
 def process_value(input_value=None, source=None, zoom=None):
-    if zoom == False:
+    assert isinstance(zoom, bool)
+    if zoom is False:
         new_range = set_offset_range(source)
         zoom = False
-    elif zoom == True:
+    elif zoom is True:
         new_range = set_zoom_range(input_value=input_value, source=source)
         zoom = True
     input_range_start, input_range_end, \

@@ -182,7 +182,7 @@ def smooth_animcurve(animcurve, selected_keyframes,
     last_time = int(times[-1])
     first_time_padded = int(first_time - (width * 2))
     last_time_padded = int(last_time + (width * 2))
-    all_times = xrange(first_time_padded, last_time_padded + 1)
+    all_times = range(first_time_padded, last_time_padded + 1)
 
     sel_first_time = int(selected_keyframes[0])
     sel_last_time = int(selected_keyframes[-1])

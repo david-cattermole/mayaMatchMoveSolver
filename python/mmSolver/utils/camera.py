@@ -19,9 +19,14 @@
 Camera related functions.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.python_compat as pycompat
 
 LOG = mmSolver.logger.get_logger()
 
@@ -104,10 +109,10 @@ def get_image_plane_shapes_from_camera(cam_tfm, cam_shp):
     :returns: The list of image shape nodes, may be an empty list.
     :rtype: [str, ..]
     """
-    assert isinstance(cam_tfm, (str, unicode, basestring))
+    assert isinstance(cam_tfm, pycompat.TEXT_TYPE)
     assert len(cam_tfm) > 0
     assert maya.cmds.objExists(cam_tfm)
-    assert isinstance(cam_shp, (str, unicode, basestring))
+    assert isinstance(cam_shp, pycompat.TEXT_TYPE)
     assert len(cam_shp) > 0
     assert maya.cmds.objExists(cam_shp)
     assert node_utils.attribute_exists('imagePlane', cam_shp)

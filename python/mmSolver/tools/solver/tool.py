@@ -59,15 +59,14 @@ def __set_override_current_frame_value(col, layout_ui, tab, value):
             lib_col.set_override_current_frame_on_collection(col, value)
         else:
             raise ValueError('tab is not supported; tab=%r' % tab)
+    elif tab == const.SOLVER_TAB_BASIC_VALUE:
+        pass
+    elif tab == const.SOLVER_TAB_STANDARD_VALUE:
+        pass
+    elif tab == const.SOLVER_TAB_LEGACY_VALUE:
+        layout_ui.solver_settings.legacy_widget.setOverrideCurrentFrame(col, value)
     else:
-        if tab == const.SOLVER_TAB_BASIC_VALUE:
-            pass
-        elif tab == const.SOLVER_TAB_STANDARD_VALUE:
-            pass
-        elif tab == const.SOLVER_TAB_LEGACY_VALUE:
-            layout_ui.solver_settings.legacy_widget.setOverrideCurrentFrame(col, value)
-        else:
-            raise ValueError('tab is not supported; tab=%r' % tab)
+        raise ValueError('tab is not supported; tab=%r' % tab)
     return
 
 

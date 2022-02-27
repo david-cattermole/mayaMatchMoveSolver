@@ -42,7 +42,7 @@ def main():
     sel = maya.cmds.ls(sl=True, long=True)
     node_filtered = mmapi.filter_nodes_into_categories(sel)
     cams = node_filtered['camera']
-    cams = filter(utils_camera.is_not_startup_cam, cams)
+    cams = list(filter(utils_camera.is_not_startup_cam, cams))
     mkr_grps = node_filtered['markergroup']
 
     cam = None

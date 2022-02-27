@@ -21,6 +21,10 @@ Module for reading marker files.
 This should be used by end-users, not the internal modules.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 
 import maya.cmds
@@ -30,6 +34,7 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.animcurve as anim_utils
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.loadmarker.lib.fieldofview as fieldofview
 import mmSolver.tools.loadmarker.lib.interface as interface
 import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
@@ -45,7 +50,7 @@ def read(file_path, **kwargs):
     """
     Read a file path, find the format parser based on the file extension.
     """
-    if isinstance(file_path, (str, unicode)) is False:
+    if isinstance(file_path, pycompat.TEXT_TYPE) is False:
         msg = 'file path must be a string, got %r'
         raise TypeError(msg % type(file_path))
     if os.path.isfile(file_path) is False:
@@ -241,7 +246,7 @@ def __set_node_data(mkr, bnd, mkr_data,
     mkr_node = mkr.get_node()
 
     mkr_name = mkr_data.get_name()
-    assert isinstance(mkr_name, (str, unicode))
+    assert isinstance(mkr_name, pycompat.TEXT_TYPE)
     maya.cmds.setAttr(mkr_node + '.markerName', lock=False)
     maya.cmds.setAttr(mkr_node + '.markerName', mkr_name, type='string')
     maya.cmds.setAttr(mkr_node + '.markerName', lock=True)
@@ -258,9 +263,9 @@ def __set_node_data(mkr, bnd, mkr_data,
     # Get keyframe data
     mkr_x_data = mkr_data.get_x().get_raw_data()
     mkr_y_data = mkr_data.get_y().get_raw_data()
-    for t, v in mkr_x_data.iteritems():
+    for t, v in mkr_x_data.items():
         mkr_x_data[t] = (v - 0.5) * overscan_x
-    for t, v in mkr_y_data.iteritems():
+    for t, v in mkr_y_data.items():
         mkr_y_data[t] = (v - 0.5) * overscan_y
     mkr_x = interface.KeyframeData(data=mkr_x_data)
     mkr_y = interface.KeyframeData(data=mkr_y_data)

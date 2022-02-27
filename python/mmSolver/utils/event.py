@@ -48,9 +48,14 @@ Example usage::
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import collections
 import maya.utils
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 
 
 LOG = mmSolver.logger.get_logger()
@@ -65,7 +70,7 @@ def trigger_event(event_name, **kwargs):
     """
     LOG.debug('trigger_event: event_name=%r kwargs=%r',
               event_name, kwargs)
-    assert isinstance(event_name, basestring)
+    assert isinstance(event_name, pycompat.TEXT_TYPE)
     __EVENT_ARGUMENTS[event_name].append(kwargs)
 
     deferred_func = lambda: __call_functions(event_name)
@@ -111,7 +116,7 @@ def __call_functions(event_name):
 def add_function_to_event(event_name, func, deferred=True):
     LOG.debug('add_function_to_event: event_name=%r func=%r deferred=%r',
               event_name, func, deferred)
-    assert isinstance(event_name, basestring)
+    assert isinstance(event_name, pycompat.TEXT_TYPE)
     assert callable(func) is True
     assert isinstance(deferred, bool)
 

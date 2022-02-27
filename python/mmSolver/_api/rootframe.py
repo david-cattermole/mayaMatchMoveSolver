@@ -44,6 +44,10 @@ Root Frame calculation logic.
 #  highest, then add the next highest, etc. This should ensure
 #  stability of the solver is maximum.
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import collections
 
 import mmSolver.logger
@@ -229,7 +233,7 @@ def get_root_frames_from_markers(mkr_list, min_frames_per_marker,
                 break
 
             frame_map = common_nodes[mkr_node][mkr_count]
-            frame_keys = frame_map.keys()
+            frame_keys = list(frame_map.keys())
             i = 0
             while len(frame_keys) > 0:
                 if len(mkr_frames[mkr_node]) >= min_frames_count:

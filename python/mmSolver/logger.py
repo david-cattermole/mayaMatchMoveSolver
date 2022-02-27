@@ -19,6 +19,10 @@
 Unified logging for the mmSolver package.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import os
 import logging
@@ -125,5 +129,5 @@ class MayaViewportHandler(logging.StreamHandler):
                                     position='botLeft')
         except (KeyboardInterrupt, SystemExit):
             raise
-        except:
+        except BaseException:
             self.handleError(record)

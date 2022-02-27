@@ -26,7 +26,6 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-# import mmSolver.tools.calibratecamera.constant as const
 
 
 LOG = mmSolver.logger.get_logger()

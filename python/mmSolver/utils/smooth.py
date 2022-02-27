@@ -38,13 +38,19 @@ Example usage::
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import math
 import sys
 
+import mmSolver.utils.python_compat as pycompat
+
 # FFT module
-if sys.version_info[0] == 2:
+if pycompat.IS_PYTHON_2:
     import mmSolver.utils._fft_py2 as fft
-elif sys.version_info[0] == 3:
+else:
     import mmSolver.utils._fft_py3 as fft
 
 import mmSolver.utils.constant as const
@@ -57,8 +63,8 @@ except ImportError:
 
 
 # Optimal 'range' function for Python 2
-if sys.version_info[0] == 2:
-    range = xrange
+if pycompat.IS_PYTHON_2:
+    range = xrange  # noqa: F821
 
 
 def smooth(smooth_type, value_array, width):
@@ -112,7 +118,7 @@ def average_smooth(value_array, width):
     :returns: Smoothed copy of 'value_array'.
     :rtype: [float, ..]
     """
-    sigma_val = (width-1.0)
+    sigma_val = (width - 1.0)
     if sigma_val <= 0.0:
         return value_array
 
@@ -124,15 +130,15 @@ def average_smooth(value_array, width):
     for i in range(value_num):
 
         # Get Average
-        start = int(i-sigma_val)
-        end = int(i+sigma_val)+1
+        start = int(i - sigma_val)
+        end = int(i + sigma_val) + 1
         if start < 0:
             start = 0
         if end >= value_num:
             end = value_num
         for j in range(start, end):
             sum_avg = sum_avg + value_array[j]
-        sum_avg = sum_avg/(end-start)
+        sum_avg = sum_avg / (end-start)
 
         for k in range(value_num):
             new_array[i] = ((sum_avg * weights[i]) +
@@ -230,7 +236,7 @@ def _generate_window_raw(n, filtr=None):
             window[i] = _gaussian(mean, i, std)
 
     elif filtr == 'triangle':
-        half_n = (n - 1) / 2
+        half_n = (n - 1) // 2
         # Middle index number
         window[half_n] = n
 
@@ -331,10 +337,10 @@ def _fourier_smooth_raw(data, width, filtr=None):
     x = _fft_convolve_raw(s, window)
     if n % 2 == 1:
         # n is odd
-        x = x[n/2:-(n/2)]
+        x = x[n//2:-(n//2)]
     else:
         # n is even
-        x = x[(n/2)-1:-(n/2)]
+        x = x[(n//2)-1:-(n//2)]
 
     assert len(x) == len(data)
     return x
@@ -368,7 +374,7 @@ def _generate_window_numpy(n, filtr=None):
             window[i] = _gaussian(mean, i, std)
 
     elif filtr == 'triangle':
-        half_n = (n - 1) / 2
+        half_n = (n - 1) // 2
         # Middle index number
         window[half_n] = n
 
@@ -434,10 +440,10 @@ def _fourier_smooth_numpy(data, width, filtr=None):
     x = np.convolve(s, window, mode='valid')
     if n % 2 == 1:
         # n is odd
-        x = x[n/2:-(n/2)]
+        x = x[n//2:-(n//2)]
     else:
         # n is even
-        x = x[(n/2)-1:-(n/2)]
+        x = x[(n//2)-1:-(n//2)]
 
     assert len(x) == len(data)
     return x

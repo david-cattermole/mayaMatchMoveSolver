@@ -22,6 +22,10 @@ This widget holds the older 'legacy' solver, which contains solver
 steps as a TableView for users to manipulate.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 
 import mmSolver.ui.qtpyutils as qtpyutils

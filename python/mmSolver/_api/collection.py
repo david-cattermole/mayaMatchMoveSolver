@@ -19,6 +19,10 @@
 Collection functions used to group and execute a solve using mmSolver.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import warnings
 
 import maya.cmds
@@ -30,6 +34,7 @@ import mmSolver.utils.configmaya as configmaya
 import mmSolver.utils.event as event_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.animcurve as anim_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.utils as api_utils
 import mmSolver._api.compile as api_compile
 import mmSolver._api.excep as excep
@@ -143,7 +148,7 @@ def _get_auxiliary_attr(col, attr, key, default_value):
                 keyable=False,
                 hidden=True,
                 attributeType='bool')
-        elif isinstance(default_value, (int, long)):
+        elif isinstance(default_value, pycompat.INT_TYPES):
             maya.cmds.addAttr(
                 attr_node,
                 longName=aux_name,
@@ -196,7 +201,7 @@ def _set_auxiliary_attr(col, attr, key, value):
                 keyable=False,
                 hidden=True,
                 attributeType='bool')
-        elif isinstance(value, (int, long)):
+        elif isinstance(value, pycompat.INT_TYPES):
             maya.cmds.addAttr(
                 attr_node,
                 longName=aux_name,
@@ -245,7 +250,7 @@ class Collection(object):
         self._actions_list = []
 
         if node is not None:
-            if isinstance(node, (str, unicode)):
+            if isinstance(node, pycompat.TEXT_TYPE):
                 self.set_node(node)
             else:
                 msg = 'node argument must be a string.'
@@ -525,7 +530,7 @@ class Collection(object):
     def add_marker(self, mkr):
         assert isinstance(mkr, marker.Marker)
         node = mkr.get_node()
-        assert isinstance(node, (str, unicode))
+        assert isinstance(node, pycompat.TEXT_TYPE)
         assert len(node) > 0
         if self._set.member_in_set(node) is False:
             self._set.add_member(node)
@@ -623,7 +628,7 @@ class Collection(object):
     def add_attribute(self, attr):
         assert isinstance(attr, attribute.Attribute)
         name = attr.get_name()
-        assert isinstance(name, (str, unicode))
+        assert isinstance(name, pycompat.TEXT_TYPE)
         if not self._set.member_in_set(name):
             self._set.add_member(name)
             self._actions_list = []  # reset argument flag cache.
@@ -946,7 +951,7 @@ class Collection(object):
         return value
 
     def set_attribute_used_hint(self, attr, value):
-        assert isinstance(value, (int, long))
+        assert isinstance(value, pycompat.INT_TYPES)
         assert value in const.ATTRIBUTE_USED_HINT_LIST
         key = 'used_hint'
         _set_auxiliary_attr(self, attr, key, value)

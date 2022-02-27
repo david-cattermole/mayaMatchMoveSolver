@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.api as mmapi
 import maya.cmds as cmds
 
@@ -53,7 +54,7 @@ def filter_nodes(what_to_delete_dict):
 
 
 def collect_nodes(node_categories, mode=None):
-    assert isinstance(mode, basestring)
+    assert isinstance(mode, pycompat.TEXT_TYPE)
     list_to_delete = list()
     for key in sorted(node_categories.keys()):
         if key in ['attribute', 'bundle', 'camera', 'other']:
@@ -64,10 +65,14 @@ def collect_nodes(node_categories, mode=None):
 
 
 def collect_misc_nodes():
-    misc_nodes = cmds.ls(long=True,
-                       type=['mmMarkerScale',
-                             'mmReprojection',
-                             'mmMarkerGroupTransform'])
+    misc_nodes = cmds.ls(
+        long=True,
+        type=[
+            'mmMarkerScale',
+            'mmReprojection',
+            'mmMarkerGroupTransform'
+        ]
+    )
     other_nodes = cmds.ls('mmSolver*', long=True)
     combined_set = set(misc_nodes+other_nodes)
     return list(sorted(combined_set))

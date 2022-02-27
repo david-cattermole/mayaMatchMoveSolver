@@ -19,6 +19,11 @@
 Toggle Image Planes in the active 3D viewport.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.tools.toggleviewportimgplns.lib as lib
@@ -44,5 +49,5 @@ def main():
         LOG.error('Please select an active viewport; model_panel=%r',
                   model_panel)
         return
-    lib.toggle_image_plane_visibility(model_panel)    
+    lib.toggle_image_plane_visibility(model_panel)
     return

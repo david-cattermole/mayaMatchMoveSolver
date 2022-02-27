@@ -19,11 +19,19 @@
 Supporting functions for building the mmSolver menu.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import maya.mel
+import maya.cmds
+
 import os
 import mmSolver.logger
 import mmSolver.ui.shelfutils as shelf_utils
 import mmSolver.ui.menuutils as menu_utils
 import mmSolver.utils.config as config_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.mmshelf.constant as const
 
 LOG = mmSolver.logger.get_logger()
@@ -79,7 +87,7 @@ def compile_function_definition(item, funcs):
     :rtype: dict or None
     """
     func_def = None
-    if isinstance(item, basestring):
+    if isinstance(item, pycompat.TEXT_TYPE):
         func_def = get_function_definition(item, funcs)
         if func_def is None and '---' in item:
             func_def = {const.DIVIDER_KEY: True}

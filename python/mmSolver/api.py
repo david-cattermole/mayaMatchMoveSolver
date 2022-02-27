@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2020 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -18,6 +18,10 @@
 """
 Controls the user-facing API.
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
 # All the objects for the user API.
 from mmSolver._api.camera import Camera
@@ -201,12 +205,6 @@ from mmSolver._api.constant import (
     ACTION_STATUS_SUCCESS,
     ACTION_STATUS_FAILED,
     ACTION_STATUS_LIST,
-)
-from mmSolver._api.state import (
-    is_solver_running,
-    set_solver_running,
-    get_user_interrupt,
-    set_user_interrupt,
 )
 
 # Utility functions that the user is allowed to use.

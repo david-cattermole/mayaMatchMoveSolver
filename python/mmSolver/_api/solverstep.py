@@ -20,6 +20,10 @@ Solver related functions and classes for an individual solver
 operation (step).
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep

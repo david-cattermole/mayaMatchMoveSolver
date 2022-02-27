@@ -19,12 +19,17 @@
 Functions to create Maya shelves and buttons.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import warnings
 
 import maya.cmds
 import maya.mel
 
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 
 
 LOG = mmSolver.logger.get_logger()
@@ -61,8 +66,8 @@ def create_shelf(parent=None, name=None):
     """
     assert name is not None
     assert parent is not None
-    assert isinstance(name, basestring)
-    assert isinstance(parent, basestring)
+    assert isinstance(name, pycompat.TEXT_TYPE)
+    assert isinstance(parent, pycompat.TEXT_TYPE)
     if len(parent) == 0:
         return None
     shelf = str(name)
@@ -127,11 +132,11 @@ def create_shelf_button(parent=None,
     :rtype: str
     """
     assert parent is not None
-    assert isinstance(parent, basestring)
-    assert name is None or isinstance(name, basestring)
-    assert tooltip is None or isinstance(tooltip, basestring)
-    assert icon is None or isinstance(icon, basestring)
-    assert cmd is None or isinstance(cmd, basestring)
+    assert isinstance(parent, pycompat.TEXT_TYPE)
+    assert name is None or isinstance(name, pycompat.TEXT_TYPE)
+    assert tooltip is None or isinstance(tooltip, pycompat.TEXT_TYPE)
+    assert icon is None or isinstance(icon, pycompat.TEXT_TYPE)
+    assert cmd is None or isinstance(cmd, pycompat.TEXT_TYPE)
 
     kwargs = {}
     label = 'label'
@@ -142,18 +147,18 @@ def create_shelf_button(parent=None,
     sourceType = 'python'
     command = None
     doubleClickCommand = None
-    if isinstance(name, basestring):
+    if isinstance(name, pycompat.TEXT_TYPE):
         imageOverlayLabel = str(name)
-    if isinstance(tooltip, basestring):
+    if isinstance(tooltip, pycompat.TEXT_TYPE):
         label = str(tooltip)
         annotation = str(tooltip)
-    if isinstance(icon, basestring):
+    if isinstance(icon, pycompat.TEXT_TYPE):
         image = str(icon)
         image1 = str(icon)
 
     if cmdLanguage is None:
         sourceType = 'python'
-    elif isinstance(cmdLanguage, basestring):
+    elif isinstance(cmdLanguage, pycompat.TEXT_TYPE):
         sourceType = str(cmdLanguage)
     else:
         msg = 'cmdLanguage must be None or str: cmdLanguage=%r'
@@ -161,7 +166,7 @@ def create_shelf_button(parent=None,
         raise ValueError(msg, cmdLanguage)
     kwargs['sourceType'] = sourceType
 
-    if isinstance(cmd, basestring):
+    if isinstance(cmd, pycompat.TEXT_TYPE):
         command = str(cmd)
         kwargs['command'] = command
 
@@ -189,7 +194,7 @@ def create_shelf_separator(parent=None):
     :rtype: str
     """
     assert parent is not None
-    assert isinstance(parent, basestring)
+    assert isinstance(parent, pycompat.TEXT_TYPE)
     control = maya.cmds.separator(
         parent=parent,
         style='shelf',

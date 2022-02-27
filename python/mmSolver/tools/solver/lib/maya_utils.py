@@ -24,6 +24,7 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.solver.constant as const
 
 
@@ -143,8 +144,8 @@ def set_current_frame(value, update=None):
     :return: Frame number
     :rtype: int
     """
-    assert isinstance(value, (float, int, long))
-    if isinstance(update, (bool, int, long)):
+    assert isinstance(value, (float, ) + pycompat.INT_TYPES)
+    if isinstance(update, (bool, ) + pycompat.INT_TYPES):
         maya.cmds.currentTime(value, update=update)
     else:
         maya.cmds.currentTime(value)

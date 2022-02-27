@@ -24,6 +24,7 @@ This module should not have any UI code.
 
 import maya.cmds
 
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.logger
 
 LOG = mmSolver.logger.get_logger()
@@ -35,7 +36,7 @@ def get_next_frame_maya():
 
     This function uses the current Maya scene state, for example
     selection and current frame.
-    
+
     :rtype: int
     """
     frame = maya.cmds.findKeyframe(timeSlider=True, which='next')
@@ -48,7 +49,7 @@ def get_prev_frame_maya():
 
     This function uses the current Maya scene state, for example
     selection and current frame.
-    
+
     :rtype: int
     """
     frame = maya.cmds.findKeyframe(timeSlider=True, which='previous')
@@ -58,19 +59,19 @@ def get_prev_frame_maya():
 def get_next_frame(cur_frame, int_list):
     """
     Get the next frame in the frame number sequence given.
-    
+
     :param cur_frame: The current time number.
     :type cur_frame: int or float
 
     :param int_list: The frames number sequence as a list.
     :type int_list: [int, ..]
 
-    :returns: The next frame number, or None if no next frame can be 
+    :returns: The next frame number, or None if no next frame can be
               found.
     :rtype: int or None
     """
     assert isinstance(int_list, (list, tuple))
-    assert isinstance(cur_frame, (float, int, long))
+    assert isinstance(cur_frame, (float, ) + pycompat.INT_TYPES)
     future_frames = [int(f) for f in int_list
                      if float(f) > float(cur_frame)]
     future_frames = list(sorted(future_frames))
@@ -90,19 +91,19 @@ def get_next_frame(cur_frame, int_list):
 def get_prev_frame(cur_frame, int_list):
     """
     Get the previous frame in the frame number sequence given.
-    
+
     :param cur_frame: The current time number.
     :type cur_frame: int or float
 
     :param int_list: The frames number sequence as a list.
     :type int_list: [int, ..]
 
-    :returns: The previous frame number, or None if no previous frame 
+    :returns: The previous frame number, or None if no previous frame
               can be found.
     :rtype: int or None
     """
     assert isinstance(int_list, (list, tuple))
-    assert isinstance(cur_frame, (float, int, long))
+    assert isinstance(cur_frame, (float, ) + pycompat.INT_TYPES)
     past_frames = [f for f in int_list
                    if float(f) < float(cur_frame)]
     past_frames = list(sorted(past_frames))
@@ -117,4 +118,3 @@ def get_prev_frame(cur_frame, int_list):
         # The last previous frame.
         previous_frame = past_frames[-1]
     return previous_frame
-

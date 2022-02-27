@@ -19,6 +19,10 @@
 Marker and the related objects, Camera and Bundle.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import warnings
 
 import maya.OpenMaya as OpenMaya
@@ -30,6 +34,7 @@ import mmSolver.utils.event as event_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.animcurve as anim_utils
 import mmSolver.utils.time as time_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
@@ -218,7 +223,7 @@ class Marker(object):
             )
             warnings.warn(msg)
             node = name
-        if isinstance(node, basestring):
+        if isinstance(node, pycompat.TEXT_TYPE):
             try:
                 dag = node_utils.get_as_dag_path(node)
                 self._mfn = OpenMaya.MFnDagNode(dag)
@@ -264,7 +269,7 @@ class Marker(object):
                 node = self._mfn.fullPathName()
             except RuntimeError:
                 pass
-        if isinstance(node, (str, unicode)) and len(node) == 0:
+        if isinstance(node, pycompat.TEXT_TYPE) and len(node) == 0:
             node = None
         return node
 
@@ -275,7 +280,7 @@ class Marker(object):
         :param node: The existing Maya node.
         :type node: str
         """
-        assert isinstance(node, (str, unicode))
+        assert isinstance(node, pycompat.TEXT_TYPE)
         dag = node_utils.get_as_dag_path(node)
         try:
             self._mfn = OpenMaya.MFnDagNode(dag)
@@ -371,7 +376,7 @@ class Marker(object):
         :return: Marker object with newly created node.
         :rtype: Marker
         """
-        assert isinstance(name, (str, unicode))
+        assert isinstance(name, pycompat.TEXT_TYPE)
         if cam is not None:
             if mkr_grp is not None:
                 msg = 'Cannot specify both camera and marker group, '
@@ -968,14 +973,14 @@ class Marker(object):
         assert isinstance(bnd, mmSolver._api.bundle.Bundle)
 
         bnd_node = bnd.get_node()
-        assert isinstance(bnd_node, (str, unicode))
+        assert isinstance(bnd_node, pycompat.TEXT_TYPE)
         assert maya.cmds.objExists(bnd_node)
 
         mkr_node = self.get_node()
         if mkr_node is None:
             LOG.warn('Could not get Marker node. self=%r', self)
             return None
-        assert isinstance(mkr_node, (str, unicode))
+        assert isinstance(mkr_node, pycompat.TEXT_TYPE)
         assert maya.cmds.objExists(mkr_node)
 
         attr_name = 'bundle'
@@ -1266,7 +1271,7 @@ class Marker(object):
         :param value: The value to set, a value in MARKER_USED_HINT_LIST.
         :type value: int
         """
-        assert isinstance(value, (int, long))
+        assert isinstance(value, pycompat.INT_TYPES)
         assert value in const.MARKER_USED_HINT_LIST
         node = self.get_node()
         if node is None:

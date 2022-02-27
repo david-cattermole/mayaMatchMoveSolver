@@ -19,6 +19,10 @@
 The 'Pref' layout, the contents of the userpreferences window.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
@@ -27,6 +31,7 @@ import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.userpreferences.lib as userprefs_lib
 import mmSolver.tools.userpreferences.constant as pref_const
 import mmSolver.tools.userprefswindow.ui.ui_pref_layout as ui_pref_layout
@@ -58,7 +63,7 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         key = pref_const.REG_EVNT_ADD_NEW_MKR_TO_KEY
         value = userprefs_lib.get_value(config, key)
         label = userprefs_lib.get_label_from_value(key, value)
-        assert isinstance(label, basestring)
+        assert isinstance(label, pycompat.TEXT_TYPE)
         labels = userprefs_lib.get_labels(key)
         self.addNewMarkersToComboBox.clear()
         self.addNewMarkersToComboBox.addItems(labels)
@@ -75,7 +80,7 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         key = pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY
         value = userprefs_lib.get_value(config, key)
         label = userprefs_lib.get_label_from_value(key, value)
-        assert isinstance(label, basestring)
+        assert isinstance(label, pycompat.TEXT_TYPE)
         labels = userprefs_lib.get_labels(key)
         self.validateSolverOnUIOpenComboBox.clear()
         self.validateSolverOnUIOpenComboBox.addItems(labels)
@@ -92,7 +97,7 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         key = pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY
         value = userprefs_lib.get_value(config, key)
         label = userprefs_lib.get_label_from_value(key, value)
-        assert isinstance(label, basestring)
+        assert isinstance(label, pycompat.TEXT_TYPE)
         labels = userprefs_lib.get_labels(key)
         self.showValidateButtonComboBox.clear()
         self.showValidateButtonComboBox.addItems(labels)
@@ -109,7 +114,7 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         key = pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY
         value = userprefs_lib.get_value(config, key)
         label = userprefs_lib.get_label_from_value(key, value)
-        assert isinstance(label, basestring)
+        assert isinstance(label, pycompat.TEXT_TYPE)
         labels = userprefs_lib.get_labels(key)
         self.allowObjectRelationsComboBox.clear()
         self.allowObjectRelationsComboBox.addItems(labels)
@@ -126,7 +131,7 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         key = pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY
         value = userprefs_lib.get_value(config, key)
         label = userprefs_lib.get_label_from_value(key, value)
-        assert isinstance(label, basestring)
+        assert isinstance(label, pycompat.TEXT_TYPE)
         labels = userprefs_lib.get_labels(key)
         self.minimalUIWhileSolvingComboBox.clear()
         self.minimalUIWhileSolvingComboBox.addItems(labels)

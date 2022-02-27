@@ -49,6 +49,10 @@ Utility functions for 3D line intersection (for triangulating 3D points).
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 

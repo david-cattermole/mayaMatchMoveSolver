@@ -19,6 +19,10 @@
 Utilities used with Collection compiled 'kwargs'.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 import maya.mel
 import maya.OpenMaya as OpenMaya
@@ -73,7 +77,7 @@ def is_single_frame(kwargs):
               frame to solve.
     :rtype: bool
     """
-    has_one_frame = len(kwargs.get('frame')) is 1
+    has_one_frame = len(kwargs.get('frame')) == 1
     is_interactive = maya.cmds.about(query=True, batch=True) is False
     return has_one_frame and is_interactive
 

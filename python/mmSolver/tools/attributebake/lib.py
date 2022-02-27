@@ -16,11 +16,17 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.time as time_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.attributebake.constant as const
+
 
 LOG = mmSolver.logger.get_logger()
 
@@ -28,10 +34,10 @@ LOG = mmSolver.logger.get_logger()
 def get_bake_frame_range(frame_range_mode,
                          custom_start_frame,
                          custom_end_frame):
-    assert isinstance(frame_range_mode, basestring)
+    assert isinstance(frame_range_mode, pycompat.TEXT_TYPE)
     assert frame_range_mode in const.FRAME_RANGE_MODE_VALUES
-    assert isinstance(custom_start_frame, (int, long))
-    assert isinstance(custom_end_frame, (int, long))
+    assert isinstance(custom_start_frame, pycompat.INT_TYPES)
+    assert isinstance(custom_end_frame, pycompat.INT_TYPES)
     frame_range = None
     if frame_range_mode == const.FRAME_RANGE_MODE_TIMELINE_INNER_VALUE:
         frame_range = time_utils.get_maya_timeline_range_inner()
@@ -60,8 +66,8 @@ def bake_attributes(nodes, attrs, start_frame, end_frame, smart_bake=False):
     :param smart_bake: Perform a "smart" bake - do not bake per-frame.
     """
     assert isinstance(nodes, list)
-    assert isinstance(start_frame, (int, long))
-    assert isinstance(end_frame, (int, long))
+    assert isinstance(start_frame, pycompat.INT_TYPES)
+    assert isinstance(end_frame, pycompat.INT_TYPES)
     assert isinstance(smart_bake, bool)
     assert isinstance(attrs, list)
     if smart_bake is True:

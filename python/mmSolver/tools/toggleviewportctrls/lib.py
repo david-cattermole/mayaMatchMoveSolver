@@ -19,6 +19,10 @@
 Logic to toggle the NURBS curves, locators and cameras in a viewport.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
 

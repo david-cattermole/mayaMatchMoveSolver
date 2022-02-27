@@ -19,6 +19,10 @@
 Attribute nodes for the mmSolver Window UI.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 
 import mmSolver.ui.qtpyutils as qtpyutils

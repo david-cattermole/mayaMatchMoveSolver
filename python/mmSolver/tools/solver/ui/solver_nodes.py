@@ -42,6 +42,11 @@ The ability to add new solver steps should be given with a + and -
 button at top-right.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.converttypes as converttypes
 import mmSolver.ui.nodes as nodes
@@ -89,7 +94,7 @@ class SolverStepNode(nodes.Node):
                  selectable=True,
                  checkable=True,
                  neverHasChildren=False):
-        if isinstance(name, basestring) is False:
+        if isinstance(name, pycompat.TEXT_TYPE) is False:
             raise TypeError
         if icon is None:
             icon = const.SOLVER_STEP_ICON_NAME

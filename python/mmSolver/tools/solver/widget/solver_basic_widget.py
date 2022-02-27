@@ -19,6 +19,10 @@
 Solver Settings 'Basic' widget.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 
 import mmSolver.ui.qtpyutils as qtpyutils

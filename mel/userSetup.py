@@ -19,106 +19,61 @@
 """
 A start-up script for mmSolver.
 
-We use the Python 'userSetup.py' file rather than 'userSetup.mel'
-because of the message here:
+This file is automatically imported by Maya before version 2022. After
+Maya 2022 this file is no longer imported and the functions must be
+called explicitly.
 
-https://around-the-corner.typepad.com/adn/2012/07/distributing-files-on-maya-maya-modules.html
-
-.. note:
-
-    Another issue is that it is very common to use a userSetup.mel
-    (.py) script to do some initialization, but Maya will load only
-    one userSetup.mel, and the first one found in its script search
-    path. That means any setup scripts in modules might be ignored by
-    Maya if the user defines its own setup script, or if another
-    module is first in the search order and have a userSetup.mel file
-    present. Something to remember... a workaround is to use the
-    module '/scripts/startup' folder and have your initialization code
-    posted there, or use a userSetup.py file instead. There is other
-    workarounds, but too complicated compare to this one.
-
+To workaround this issue the mmSolver plug-in will
+now call the mmSolver.startup.mmsolver_startup() Python function when
+loaded, so you can enable auto-load for the 'mmSolver' plug-in and
+mmSolver will be correctly started each time Maya loads. This
+workaround unfortunately slows down Maya startup times.
 """
 
 import os
+import warnings
+
 import maya.cmds
 import maya.utils
-import mmSolver.logger
 
+import mmSolver.startup
 
-LOG = mmSolver.logger.get_logger()
-MMSOLVER_STARTED = False
-
-
+# Backwards compatibility for users needing call individual start up
+# scripts.
+#
+# These functions were moved to 'mmSolver.startup' because Maya 2022
+# doesn't run the userSetup.py file defined in a module anymore.
 def mmsolver_create_shelf():
-    """
-    Build the mmSolver shelf.
-    """
-    import mmSolver.tools.mmshelf.tool
-    mmSolver.tools.mmshelf.tool.build_shelf()
+    msg = 'Deprecated, please use mmSolver.startup.mmsolver_create_shelf()'
+    warnings.warn(msg)
+    mmSolver.startup.mmsolver_create_shelf()
 
 
 def mmsolver_create_menu():
-    """
-    Build the mmSolver menu.
-    """
-    import mmSolver.tools.mmmenu.tool
-    mmSolver.tools.mmmenu.tool.build_menu()
+    msg = 'Deprecated, please use mmSolver.startup.mmsolver_create_menu()'
+    warnings.warn(msg)
+    mmSolver.startup.mmsolver_create_menu()
 
 
 def mmsolver_create_hotkey_set():
-    """
-    Create the mmSolver Hotkey Set.
-    """
-    import mmSolver.tools.mmhotkeyset.tool
-    mmSolver.tools.mmhotkeyset.tool.build_hotkey_set()
+    msg = 'Deprecated, please use mmSolver.startup.mmsolver_create_hotkey_set()'
+    warnings.warn(msg)
+    mmSolver.startup.mmsolver_create_hotkey_set()
 
 
 def mmsolver_register_events():
-    """
-    Initialise the built-in (non-maya) events for mmSolver.
-    """
-    import mmSolver.tools.registerevents.tool
-    mmSolver.tools.registerevents.tool.register_events()
+    msg = 'Deprecated, please use mmSolver.startup.mmsolver_create_register_events()'
+    warnings.warn(msg)
+    mmSolver.startup.mmsolver_register_events()
 
 
 def mmsolver_startup():
-    """
-    Responsible for starting up mmSolver, including creating shelves,
-    hotkeys and menus.
-    """
-    LOG.info('MM Solver Startup...')
-
-    global MMSOLVER_STARTED
-    MMSOLVER_STARTED = True
-
-    # Only run GUI code when the Maya interactive GUI opens.
-    is_batch_mode = maya.cmds.about(batch=True)
-    LOG.debug('Batch Mode: %r', is_batch_mode)
-    if is_batch_mode is False:
-        # Create Menu.
-        build_menu = bool(int(os.environ.get('MMSOLVER_CREATE_MENU', 1)))
-        LOG.debug('Build Menu: %r', build_menu)
-        if build_menu is True:
-            maya.utils.executeDeferred(mmsolver_create_menu)
-
-        # Create Shelf.
-        build_shelf = bool(int(os.environ.get('MMSOLVER_CREATE_SHELF', 1)))
-        LOG.debug('Build Shelf: %r', build_shelf)
-        if build_shelf is True:
-            maya.utils.executeDeferred(mmsolver_create_shelf)
-
-        # Create Hotkey Set.
-        build_hotkey_set = bool(int(os.environ.get('MMSOLVER_CREATE_HOTKEY_SET', 1)))
-        LOG.debug('Build Hotkey Set: %r', build_hotkey_set)
-        if build_hotkey_set is True:
-            maya.utils.executeDeferred(mmsolver_create_hotkey_set)
-
-        # Register Events.
-        maya.utils.executeDeferred(mmsolver_register_events)
-    return
+    msg = 'Deprecated, please use mmSolver.startup.mmsolver_startup()'
+    warnings.warn(msg)
+    mmSolver.startup.mmsolver_startup()
 
 
 # Run Start up Function after Maya has loaded.
 load_at_startup = bool(int(os.environ.get('MMSOLVER_LOAD_AT_STARTUP', 1)))
 if load_at_startup is True:
-    maya.utils.executeDeferred(mmsolver_startup)
+    maya.utils.executeDeferred(mmSolver.startup.mmsolver_startup)

@@ -19,6 +19,10 @@
 The camera calibration tool.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 
 import mmSolver.logger
@@ -49,6 +53,40 @@ def main():
     return
 
 
+def _find_camera_from_selection(sel):
+    cam = None
+    filtered_nodes = mmapi.filter_nodes_into_categories(sel)
+    cam_nodes = filtered_nodes['camera']
+    mkr_grp_nodes = filtered_nodes['markergroup']
+    mkr_nodes = filtered_nodes['marker']
+
+    # Check selected camera.
+    if len(cam_nodes) > 0:
+        cam_node = cam_nodes[0]
+        cam_tfm, cam_shp = camera_utils.get_camera(cam_node)
+        if cam_tfm is not None and cam_shp is not None:
+            cam = mmapi.Camera(transform=cam_tfm, shape=cam_shp)
+    if cam is not None and cam.is_valid():
+        return cam
+
+    # Check selected marker group.
+    if len(mkr_grp_nodes) > 0:
+        mkr_grp_node = mkr_grp_nodes[0]
+        mkr_grp = mmapi.MarkerGroup(node=mkr_grp_node)
+        cam = mkr_grp.get_camera()
+    if cam is not None and cam.is_valid():
+        return cam
+
+    # Check selected marker.
+    if len(mkr_nodes) > 0:
+        mkr_node = mkr_nodes[0]
+        mkr = mmapi.Marker(node=mkr_node)
+        cam = mkr.get_camera()
+    if cam is not None and cam.is_valid():
+        return cam
+    return None
+
+
 def _get_camera_for_update(sel):
     cam = None
     if len(sel) == 0:
@@ -61,36 +99,7 @@ def _get_camera_for_update(sel):
             if cam is not None and cam.is_valid():
                 return cam
     else:
-        # Find camera from selection.
-        filtered_nodes = mmapi.filter_nodes_into_categories(sel)
-        cam_nodes = filtered_nodes['camera']
-        mkr_grp_nodes = filtered_nodes['markergroup']
-        mkr_nodes = filtered_nodes['marker']
-
-        # Check selected camera.
-        if len(cam_nodes) > 0:
-            cam_node = cam_nodes[0]
-            cam_tfm, cam_shp = camera_utils.get_camera(cam_node)
-            if cam_tfm is not None and cam_shp is not None:
-                cam = mmapi.Camera(transform=cam_tfm, shape=cam_shp)
-        if cam is not None and cam.is_valid():
-            return cam
-
-        # Check selected marker group.
-        if len(mkr_grp_nodes) > 0:
-            mkr_grp_node = mkr_grp_nodes[0]
-            mkr_grp = mmapi.MarkerGroup(node=mkr_grp_node)
-            cam = mkr_grp.get_camera()
-        if cam is not None and cam.is_valid():
-            return cam
-
-        # Check selected marker.
-        if len(mkr_nodes) > 0:
-            mkr_node = mkr_nodes[0]
-            mkr = mmapi.Marker(node=mkr_node)
-            cam = mkr.get_camera()
-        if cam is not None and cam.is_valid():
-            return cam
+        cam = _find_camera_from_selection(sel)
 
     return cam
 

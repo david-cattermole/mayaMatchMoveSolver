@@ -64,6 +64,10 @@
 #                                                             __________
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - /_ Enjoy! _/- - -
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 __author__ = 'Morgan Loomis'
 __license__ = 'MIT'
 __revision__ = 5
@@ -74,7 +78,7 @@ import maya.cmds as mc
 from maya import OpenMaya
 
 try:
-    import ml_utilities as utl
+    from . import ml_utilities as utl
     utl.upToDateCheck(32)
 except ImportError:
     result = mc.confirmDialog( title='Module Not Found', 

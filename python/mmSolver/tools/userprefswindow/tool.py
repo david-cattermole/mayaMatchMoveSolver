@@ -19,6 +19,10 @@
 The Preferences window for mmSolver.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 import mmSolver.tools.userprefswindow.ui.pref_window as pref_window
 

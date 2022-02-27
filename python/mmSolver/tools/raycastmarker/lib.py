@@ -148,6 +148,7 @@ def _create_look_at_matrix(dir_x, dir_y, dir_z):
     mat.setElement(2, 2, forward.z)
     return mat
 
+
 def _do_raycast(node_list, mesh_nodes, frame_range,
                 max_dist,
                 use_smooth_mesh,

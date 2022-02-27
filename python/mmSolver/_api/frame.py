@@ -25,6 +25,11 @@ so that frame 1, 11 and 21 are solved by a slower solver, and
 frames 1 to 21 are solved with a faster solver.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 import mmSolver._api.utils as api_utils
@@ -108,9 +113,9 @@ class Frame(object):
         Get the data of this Frame, both number and tags.
 
         Data structure returned is::
-           
+
             {
-                'number': int or float, 
+                'number': int or float,
                 'tags': list of strs,
             }
 
@@ -127,9 +132,9 @@ class Frame(object):
         Set the internal frame data using once function call.
 
         Expected data structure is::
-           
+
             {
-                'number': int or float, 
+                'number': int or float,
                 'tags': list of strs,
             }
 
@@ -145,11 +150,11 @@ class Frame(object):
         if num is None:
             msg = 'Data is not valid, number value not valid; {0}'
             msg = msg.format(value)
-            raise excep.NotValid, msg
+            raise excep.NotValid(msg)
         if tags is None:
             msg = 'Data is not valid, tags value not valid; {0}'
             msg = msg.format(value)
-            raise excep.NotValid, msg
+            raise excep.NotValid(msg)
 
         self.set_number(num)
         self.set_tags(tags)

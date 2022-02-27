@@ -134,9 +134,14 @@ Format version 4::
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import math
 import json
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.loadmarker.lib.interface as interface
 import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
 import mmSolver.tools.loadmarker.constant as const
@@ -177,8 +182,8 @@ def _parse_point_info_v2_v3(mkr_data, point_data):
     name = point_data.get('name')
     set_name = point_data.get('set_name')
     id_ = point_data.get('id')
-    assert isinstance(name, basestring)
-    assert set_name is None or isinstance(set_name, basestring)
+    assert isinstance(name, pycompat.TEXT_TYPE)
+    assert set_name is None or isinstance(set_name, pycompat.TEXT_TYPE)
     assert id_ is None or isinstance(id_, int)
     mkr_data.set_name(name)
     mkr_data.set_group_name(set_name)
@@ -407,7 +412,7 @@ def parse_v1(file_path, **kwargs):
         raise interface.ParserError('No points exist.')
 
     idx = 1  # Skip the first line
-    for _ in xrange(num_points):
+    for _ in range(num_points):
         mkr_name = lines[idx]
         mkr_name = mkr_name.strip()
 

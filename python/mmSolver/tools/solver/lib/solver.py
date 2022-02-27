@@ -19,6 +19,10 @@
 Manipulate solvers.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.time as utils_time
@@ -32,7 +36,7 @@ def create_solver():
     sol.set_max_iterations(10)
     sol.set_verbose(True)
     start, end = utils_time.get_maya_timeline_range_inner()
-    for f in xrange(start, end + 1):
+    for f in range(start, end + 1):
         frm = mmapi.Frame(f)
         sol.add_frame(frm)
     return sol

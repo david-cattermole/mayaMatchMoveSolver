@@ -1,4 +1,4 @@
-# Copyright (C) 2018 David Cattermole.
+# Copyright (C) 2022 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -16,38 +16,27 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-A manager class for registering new marker file formats.
+Provide Python 2.7 vs 3.x compatibility without using any
+third-party packages (like 'six' for example).
 """
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# module level manager, stores an instance of 'FormatManager'.
-__format_manager = None
+# NOTE: Do NOT add any module imports here other than the Python
+# standard library. This module is used in many places in mmSolver,
+# and we do not want a circular import dependency.
+import sys
 
 
-class FormatManager(object):
-    def __init__(self):
-        self.__formats = {}
-
-    def register_format(self, class_obj):
-        if str(class_obj) not in self.__formats:
-            self.__formats[str(class_obj)] = class_obj
-        return True
-
-    def get_formats(self):
-        format_list = []
-        for key in self.__formats:
-            fmt = self.__formats[key]
-            format_list.append(fmt)
-        return format_list
-
-
-def get_format_manager():
-    global __format_manager
-    if __format_manager is None:
-        __format_manager = FormatManager()
-    return __format_manager
-
-
+IS_PYTHON_2 = sys.version_info[0] == 2
+IS_PYTHON_3 = sys.version_info[0] == 3
+if IS_PYTHON_2 is True:
+    TEXT_TYPE = basestring  # noqa: F821
+    INT_TYPES = (int, long)  # noqa: F821
+    LONG_TYPE = long  # noqa: F821
+else:
+    TEXT_TYPE = str
+    INT_TYPES = (int, )
+    LONG_TYPE = int

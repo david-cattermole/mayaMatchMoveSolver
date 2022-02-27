@@ -26,6 +26,10 @@ solve is executed. Usually the options are responsible for forcing Maya
 to update in various ways (DG or Viewport.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 import pprint
 import collections
@@ -35,6 +39,7 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.state as api_state
 import mmSolver._api.utils as api_utils
 import mmSolver._api.compile as api_compile
@@ -317,9 +322,9 @@ def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
             # selected' after resetting the objects.
             if options.do_isolate is True:
                 viewport_utils.set_isolated_nodes(panel, [], False)
-        else:
-            if options.do_isolate is True:
-                viewport_utils.set_isolated_nodes(panel, list(objs), True)
+
+        elif options.do_isolate is True:
+            viewport_utils.set_isolated_nodes(panel, list(objs), True)
 
     # Show menu restore.
     for panel, node_types_vis in panel_node_type_vis.items():
@@ -667,7 +672,7 @@ def execute(col,
     assert validate_mode in const.VALIDATE_MODE_VALUE_LIST
     if log_level is None:
         log_level = const.LOG_LEVEL_DEFAULT
-    assert isinstance(log_level, (str, unicode))
+    assert isinstance(log_level, pycompat.TEXT_TYPE)
     validate_runtime = validate_mode == const.VALIDATE_MODE_AT_RUNTIME_VALUE
     validate_before = validate_mode == const.VALIDATE_MODE_PRE_VALIDATE_VALUE
 

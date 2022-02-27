@@ -19,12 +19,17 @@
 3D Bundle objects.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
 import mmSolver.utils.event as event_utils
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.constant as const
 import mmSolver._api.marker
 
@@ -124,7 +129,7 @@ class Bundle(object):
         :type node: str
         """
         if node is not None:
-            assert isinstance(node, (str, unicode))
+            assert isinstance(node, pycompat.TEXT_TYPE)
             assert maya.cmds.objExists(node)
             dag = node_utils.get_as_dag_path(node)
             if dag is not None:
@@ -162,7 +167,7 @@ class Bundle(object):
                 node = self._mfn.fullPathName()
             except RuntimeError:
                 pass
-        if isinstance(node, (str, unicode)) and len(node) == 0:
+        if isinstance(node, pycompat.TEXT_TYPE) and len(node) == 0:
             node = None
         return node
 
@@ -175,7 +180,7 @@ class Bundle(object):
 
         :return: Nothing.
         """
-        assert isinstance(node, (str, unicode))
+        assert isinstance(node, pycompat.TEXT_TYPE)
         assert maya.cmds.objExists(node)
         dag = node_utils.get_as_dag_path(node)
         if dag is not None:
@@ -218,7 +223,7 @@ class Bundle(object):
         :return: Bundle object attached to newly created node.
         :rtype: Bundle
         """
-        assert isinstance(name, (str, unicode))
+        assert isinstance(name, pycompat.TEXT_TYPE)
         if colour is not None:
             assert isinstance(colour, (tuple, list))
             assert len(colour) == 3

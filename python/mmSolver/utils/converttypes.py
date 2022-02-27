@@ -19,7 +19,12 @@
 Conversion functions between various types, for fundamental Python types.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 
 LOG = mmSolver.logger.get_logger()
 
@@ -36,7 +41,7 @@ def stringToBoolean(value):
     v = None
     if isinstance(value, bool):
         v = value
-    elif isinstance(value, basestring):
+    elif isinstance(value, pycompat.TEXT_TYPE):
         value = value.strip().lower()
         if value in TRUE_WORDS:
             v = True
@@ -69,7 +74,7 @@ def stringToIntList(value):
     :return: List of integer numbers parsed from the string.
     :rtype: [int, ..]
     """
-    if isinstance(value, (basestring, str, unicode)) is False:
+    if isinstance(value, pycompat.TEXT_TYPE) is False:
         msg = 'Given argument is not a string: type=%r value=%r'
         raise TypeError(msg, type(value), value)
     value = value.strip()
@@ -83,7 +88,7 @@ def stringToIntList(value):
             continue
 
         dash_split = v.split('-')
-        dash_split = filter(lambda x: x.isdigit(), dash_split)
+        dash_split = [x for x in dash_split if x.isdigit()]
         if len(dash_split) > 1:
             # Even if the user adds more than 1 dash character, we only take
             # the first two.

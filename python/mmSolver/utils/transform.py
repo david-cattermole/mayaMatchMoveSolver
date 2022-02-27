@@ -30,6 +30,10 @@ Features:
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import math
 
 import maya.cmds
@@ -40,6 +44,7 @@ import mmSolver.logger
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.animcurve as animcurve_utils
 import mmSolver.utils.constant as const
+import mmSolver.utils.python_compat as pycompat
 
 
 ROTATE_ORDER_STR_TO_APITWO_CONSTANT = {
@@ -124,7 +129,7 @@ def get_parent_inverse_matrix_apitwo(node, ctx):
     :returns: The 4x4 matrix value at the given DG context.
     :rtype: maya.api.OpenMaya.MMatrix
     """
-    assert isinstance(node, (str, unicode))
+    assert isinstance(node, pycompat.TEXT_TYPE)
     assert isinstance(ctx, OpenMaya2.MDGContext)
     name = node + '.parentInverseMatrix[0]'
     plug = node_utils.get_as_plug_apitwo(name)
@@ -145,7 +150,7 @@ def get_world_matrix_apitwo(node, ctx):
     :returns: The 4x4 matrix value at the given DG context.
     :rtype: maya.api.OpenMaya.MMatrix
     """
-    assert isinstance(node, (str, unicode))
+    assert isinstance(node, pycompat.TEXT_TYPE)
     assert isinstance(ctx, OpenMaya2.MDGContext)
     name = node + '.worldMatrix[0]'
     plug = node_utils.get_as_plug_apitwo(name)
@@ -191,7 +196,7 @@ class TransformNode(object):
         :type node: str
         """
         if node is not None:
-            assert isinstance(node, (str, unicode))
+            assert isinstance(node, pycompat.TEXT_TYPE)
             assert maya.cmds.objExists(node)
             dag = node_utils.get_as_dag_path_apitwo(node)
             if dag is not None:
@@ -254,7 +259,7 @@ class TransformNode(object):
                 node = self._mfn.fullPathName()
             except RuntimeError:
                 pass
-        if isinstance(node, (str, unicode)) and len(node) == 0:
+        if isinstance(node, pycompat.TEXT_TYPE) and len(node) == 0:
             node = None
         return node
 
@@ -278,7 +283,7 @@ class TransformNode(object):
         :param node: Node to set to.
         :type node: str
         """
-        assert isinstance(node, (str, unicode))
+        assert isinstance(node, pycompat.TEXT_TYPE)
         assert maya.cmds.objExists(node)
         dag = node_utils.get_as_dag_path_apitwo(node)
         if dag is not None:
@@ -596,7 +601,7 @@ def get_transform_matrix_list(tfm_matrix_cache,
     assert isinstance(tfm_matrix_cache, TransformMatrixCache)
     assert isinstance(times, (list, tuple))
     assert isinstance(src_tfm_node, TransformNode)
-    assert rotate_order is None or isinstance(rotate_order, (str, unicode))
+    assert rotate_order is None or isinstance(rotate_order, pycompat.TEXT_TYPE)
     if eval_mode is None:
         eval_mode = const.EVAL_MODE_DEFAULT
     assert eval_mode in const.EVAL_MODE_LIST
@@ -784,7 +789,7 @@ def set_transform_values(tfm_matrix_cache,
     assert isinstance(times, (list, tuple))
     assert isinstance(src_tfm_node, TransformNode)
     assert isinstance(dst_tfm_node, TransformNode)
-    assert rotate_order is None or isinstance(rotate_order, (str, unicode))
+    assert rotate_order is None or isinstance(rotate_order, pycompat.TEXT_TYPE)
     if eval_mode is None:
         eval_mode = const.EVAL_MODE_DEFAULT
     assert eval_mode in const.EVAL_MODE_LIST

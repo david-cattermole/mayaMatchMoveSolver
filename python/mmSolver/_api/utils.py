@@ -23,6 +23,10 @@ this module.
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import warnings
 
 import maya.cmds
@@ -30,6 +34,7 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.utils.configmaya as configmaya
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.constant as const
 
 
@@ -90,7 +95,7 @@ def get_object_type(node):
     :return: The object type string; One of the values in OBJECT_TYPE_LIST
     :rtype: OBJECT_TYPE_*
     """
-    assert isinstance(node, basestring)
+    assert isinstance(node, pycompat.TEXT_TYPE)
     assert maya.cmds.objExists(node)
 
     # Attribute type.
@@ -163,10 +168,10 @@ def get_marker_group_above_node(node):
     Get the first marker group transform node above the node.
 
     :param node: The node name to check above for a marker group.
-    :type node: str or unicode
+    :type node: str
 
     :return: String of marker group found, or None.
-    :rtype: str or unicode
+    :rtype: str
     """
     # TODO: This function may be called many times, we should look
     # into caching some of this computation.

@@ -19,8 +19,13 @@
 The standard solver - allows solving static and animated attributes.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.logger
 
+import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.constant as const
 import mmSolver._api.frame as frame
 import mmSolver._api.excep as excep
@@ -938,9 +943,9 @@ class SolverStandard(solverbase.SolverBase):
         Set Use Single Frame value.
 
         :param value: Value to be set.
-        :type value: bool or int or long
+        :type value: bool or int
         """
-        assert isinstance(value, (bool, int, long))
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
         self._data['use_single_frame'] = bool(value)
 
     def get_single_frame(self):
@@ -962,9 +967,9 @@ class SolverStandard(solverbase.SolverBase):
         Set Single Frame value.
 
         :param value: Value to be set.
-        :type value: Frame or int or long
+        :type value: Frame or int
         """
-        assert isinstance(value, (frame.Frame, int, long))
+        assert isinstance(value, (frame.Frame, int, pycompat.LONG_TYPE))
         number = value
         if isinstance(value, frame.Frame):
             number = value.get_number()
@@ -987,9 +992,9 @@ class SolverStandard(solverbase.SolverBase):
         Set Only Root Frames value.
 
         :param value: Value to be set.
-        :type value: bool or int or long
+        :type value: bool or int
         """
-        assert isinstance(value, (bool, int, long))
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
         self._data['only_root_frames'] = bool(value)
 
     ############################################################################
@@ -1009,9 +1014,9 @@ class SolverStandard(solverbase.SolverBase):
         Set Global Solve value.
 
         :param value: Value to be set.
-        :type value: bool or int or long
+        :type value: bool or int
         """
-        assert isinstance(value, (bool, int, long))
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
         self._data['global_solve'] = bool(value)
 
     ############################################################################
@@ -1031,10 +1036,12 @@ class SolverStandard(solverbase.SolverBase):
         Set 'Pre-Solve Object Relationships' value.
 
         :param value: Value to be set.
-        :type value: bool or int or long
+        :type value: bool or int
         """
-        assert isinstance(value, (bool, int, long))
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
         self._data['eval_object_relationships'] = bool(value)
+
+    ############################################################################
 
     def get_eval_complex_graphs(self):
         """
@@ -1052,12 +1059,12 @@ class SolverStandard(solverbase.SolverBase):
 
         If True, the solve will try to trigger evalation of complex
         node graphs (such as Mesh Rivets), by changing the
-        timeEvalModeq of the mmSolver command.
+        timeEvalMode of the mmSolver command.
 
         :param value: Value to be set.
-        :type value: bool or int or long
+        :type value: bool or int
         """
-        assert isinstance(value, (bool, int, long))
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
         self._data['eval_complex_node_graphs'] = bool(value)
 
     ############################################################################
@@ -1080,9 +1087,9 @@ class SolverStandard(solverbase.SolverBase):
         Value must be one in ROOT_FRAME_STRATEGY_VALUE_LIST.
 
         :param value: Value to be set.
-        :type value: int or long
+        :type value: int
         """
-        assert isinstance(value, (int, long))
+        assert isinstance(value, pycompat.INT_TYPES)
         assert value in const.ROOT_FRAME_STRATEGY_VALUE_LIST
         self._data['root_frame_strategy'] = value
 
@@ -1105,7 +1112,7 @@ class SolverStandard(solverbase.SolverBase):
         :param value: Value to be set.
         :type value: int
         """
-        assert isinstance(value, (int, long))
+        assert isinstance(value, pycompat.INT_TYPES)
         assert value > 0
         self._data['block_iteration_num'] = value
 
@@ -1126,7 +1133,7 @@ class SolverStandard(solverbase.SolverBase):
         :param value: Value to be set.
         :type value: int
         """
-        assert isinstance(value, (int, long))
+        assert isinstance(value, pycompat.INT_TYPES)
         assert value > 0
         self._data['root_iteration_num'] = value
 
@@ -1147,7 +1154,7 @@ class SolverStandard(solverbase.SolverBase):
         :param value: Value to be set.
         :type value: int
         """
-        assert isinstance(value, (int, long))
+        assert isinstance(value, pycompat.INT_TYPES)
         assert value > 0
         self._data['anim_iteration_num'] = value
 
@@ -1168,7 +1175,7 @@ class SolverStandard(solverbase.SolverBase):
         :param value: Value to be set.
         :type value: int
         """
-        assert isinstance(value, (int, long))
+        assert isinstance(value, pycompat.INT_TYPES)
         assert value > 0
         self._data['lineup_iteration_num'] = value
 

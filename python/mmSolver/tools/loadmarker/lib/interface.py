@@ -19,6 +19,10 @@
 Provides a base interface for marker import plug-ins.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import abc
 import collections
@@ -169,7 +173,7 @@ class KeyframeData(object):
         # Sort keys, based on int values, not string.
         keys = self._data.keys()
         int_keys = list()
-        for key in self._data.iterkeys():
+        for key in self._data.keys():
             int_keys.append(int(key))
         keys = sorted(int_keys)
 
@@ -233,7 +237,7 @@ class KeyframeData(object):
         initial = None
         total = float()  # assume it's a float?
         total_num = int()
-        for key in iter(self._data):
+        for key in self._data.keys():
             if initial is None:
                 initial = self._data[key]
             total = total + float(self._data[key])
@@ -411,5 +415,11 @@ class LoaderBase(object):
         Parse the given file path.
 
         Inherit from LoaderBase and override this method.
+
+        :raise ParserError:
+            When the parser encounters an error related to parsing.
+
+        :return: List of MarkerData, or None.
+        :rtype: [MarkerData, ...] or None
         """
         return

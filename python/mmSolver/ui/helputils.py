@@ -19,9 +19,15 @@
 Utilities for 'user help' functions.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import webbrowser
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
+
 
 LOG = mmSolver.logger.get_logger()
 
@@ -43,7 +49,7 @@ def get_help_source():
     """
     Determine the user's perfered help source, or fallback to a
     preselected source.
-    
+
     :return: The help source to search for, a value in
              HELP_SOURCE_LIST.
 
@@ -51,12 +57,12 @@ def get_help_source():
     src = os.environ.get(ENV_VAR_NAME_HELP_SOURCE, None)
     if src is None:
         msg = (
-            'Preferred help source was not found with environment' 
+            'Preferred help source was not found with environment'
             ' variable MM_SOLVER_HELP_SOURCE, falling back to %r.'
         )
         LOG.warning(msg, HELP_SOURCE_FALLBACK)
         return HELP_SOURCE_FALLBACK
-    assert isinstance(src, (str, unicode))
+    assert isinstance(src, pycompat.TEXT_TYPE)
     src = src.lower()
     if src not in HELP_SOURCE_LIST:
         msg = 'Could not find help source %r, falling back to %r.'
@@ -110,7 +116,7 @@ def get_help_base_location(help_source=None):
         LOG.error(msg, help_source)
         raise ValueError(msg % help_source)
     return url
-    
+
 
 def open_help_in_browser(page=None, help_source=None):
     """
@@ -126,7 +132,7 @@ def open_help_in_browser(page=None, help_source=None):
 
     :rtype: None
     """
-    assert page is None or isinstance(page, basestring)
+    assert page is None or isinstance(page, pycompat.TEXT_TYPE)
     url = get_help_base_location(help_source=help_source)
     if url is None:
         LOG.warning('Could not find help documentation.')

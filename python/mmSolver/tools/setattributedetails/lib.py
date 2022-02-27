@@ -66,8 +66,8 @@ AttrDetail = collections.namedtuple(
         "curve_mean",
         "curve_variance",
         "curve_frame_variance",
-        "curve_max_variance",
-     )
+        "curve_max_variance"
+    )
 )
 
 

@@ -40,6 +40,10 @@ Additionally, studios may modify the '.mod' file to provide an
 intermediate studio or project location.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import collections
 import json
 import os
@@ -47,6 +51,7 @@ import platform
 
 import mmSolver.logger
 import mmSolver.utils.constant as const
+import mmSolver.utils.python_compat as pycompat
 
 LOG = mmSolver.logger.get_logger()
 
@@ -130,7 +135,7 @@ def read_data(file_path):
         try:
             text = f.read()
             data = json.loads(text)
-        except:
+        except BaseException:
             raise
     return data
 
@@ -160,7 +165,7 @@ def write_data(data, file_path, human_readable=True):
             'separators': (',', ':'),
         }
     text = json.dumps(data, **kwargs)
-    with open(file_path, 'wb') as f:
+    with open(file_path, 'w') as f:
         f.write(text)
     return
 
@@ -246,7 +251,7 @@ def _recursive_update(d, u):
     :returns: A dictionary with both d and u merged together.
     :rtype: dict
     """
-    for k, v in u.iteritems():
+    for k, v in u.items():
         if isinstance(v, collections.Mapping):
             d[k] = _recursive_update(d.get(k, {}), v)
         else:
@@ -373,9 +378,9 @@ class Config(object):
             the file, use the Config.read() method.
 
         :param value: The value to set.
-        :type value: basestring
+        :type value: str
         """
-        assert isinstance(value, basestring)
+        assert isinstance(value, pycompat.TEXT_TYPE)
         if value == self._file_path:
             # No change to the file path.
             return

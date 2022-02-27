@@ -19,8 +19,14 @@
 Actions - a wrapper tuple for a callable function with positional and keyword arguments.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import collections
 import importlib
+
+import mmSolver.utils.python_compat as pycompat
 
 
 Action = collections.namedtuple(
@@ -43,7 +49,7 @@ def _action_func_is_name(action, name):
     func = action.func
     if func is None:
         return False
-    if isinstance(func, (basestring, unicode, str)):
+    if isinstance(func, pycompat.TEXT_TYPE):
         func_is_mmsolver = func.endswith('.' + name)
     elif callable(func):
         func_is_mmsolver = func.__name__ == name
@@ -56,7 +62,7 @@ def func_str_to_callable(func_str):
     """
     Convert a function written as a string, to be a callable object.
     """
-    assert isinstance(func_str, basestring) is True
+    assert isinstance(func_str, pycompat.TEXT_TYPE) is True
     # Look up callable function from name at run-time.
     mod_name, func_name = func_str.rsplit('.', 1)
     mod = importlib.import_module(mod_name)
@@ -68,7 +74,7 @@ def action_to_components(action):
     func = action.func
     args = list(action.args)
     kwargs = action.kwargs.copy()
-    if isinstance(func, basestring):
+    if isinstance(func, pycompat.TEXT_TYPE):
         func = func_str_to_callable(func)
     assert callable(func)
     return func, args, kwargs

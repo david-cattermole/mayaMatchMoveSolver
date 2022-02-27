@@ -32,6 +32,7 @@ changes.
 
 | Releases                                                                                | Description                                        |
 | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| [v0.3.16](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.16) | Maya 2022 support.                                 |
 | [v0.3.15](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.15) | Added Camera Calibration tool and 3DE R7 support.  |
 | [v0.3.14](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.14) | Integrated Qt.py and bug fixes.                    |
 | [v0.3.13](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.13) | New tools, and Maya 2020 support.                  |

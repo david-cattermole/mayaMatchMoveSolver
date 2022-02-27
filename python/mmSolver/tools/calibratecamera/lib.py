@@ -191,6 +191,12 @@ def create_new_setup():
     # Image plane is almost at far-clipping plane distance.
     maya.cmds.setAttr('{}.depth'.format(img_pl_shp), 9990)
 
+    # Darken the imagePlane.
+    value = 0.5
+    maya.cmds.setAttr(
+        '{}.colorGain'.format(img_pl_shp),
+        value, value, value, type='double3')
+
     # Make the image plane non-selectable.
     maya.cmds.setAttr('{}.overrideEnabled'.format(img_pl_shp), 1)
     maya.cmds.setAttr(

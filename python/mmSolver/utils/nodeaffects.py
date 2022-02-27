@@ -230,7 +230,7 @@ def _convert_node_to_plugs(node, attr, node_type,
                     continue
                 node_attr = node_ + '.' + attr__
                 compound_attrs = maya.cmds.listAttr(node_attr, multi=True)
-                if compound_attrs > 1:
+                if len(compound_attrs) > 1:
                     for array_item in compound_attrs:
                         node_attr = node_ + '.' + array_item
                         node_attr = _get_full_path_plug(node_attr)

@@ -57,7 +57,7 @@ def read(file_path, **kwargs):
         msg = 'file path does not exist; %r'
         raise OSError(msg % file_path)
 
-    file_format_class = None
+    file_format_classes = []
     mgr = fmtmgr.get_format_manager()
     for fmt in mgr.get_formats():
         attr = getattr(fmt, 'file_exts', None)
@@ -67,14 +67,28 @@ def read(file_path, **kwargs):
             continue
         for ext in fmt.file_exts:
             if file_path.endswith(ext):
-                file_format_class = fmt
-                break
-    if file_format_class is None:
+                file_format_classes.append(fmt)
+    if len(file_format_classes) == 0:
         msg = 'No file formats found for file path: %r'
         raise RuntimeError(msg % file_path)
 
-    file_format_obj = file_format_class()
-    file_info, mkr_data_list = file_format_obj.parse(file_path, **kwargs)
+    file_info = None
+    mkr_data_list = []
+    for file_format_class in file_format_classes:
+        file_format_obj = file_format_class()
+        try:
+            contents = file_format_obj.parse(
+                file_path,
+                **kwargs)
+        except (interface.ParserError, OSError):
+            contents = (None, [])
+
+        file_info, mkr_data_list = contents
+        if (file_info
+            and (isinstance(mkr_data_list, list)
+                 and len(mkr_data_list) > 0)):
+            break
+
     return file_info, mkr_data_list
 
 

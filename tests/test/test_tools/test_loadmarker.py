@@ -218,7 +218,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
 
     def test_loadmarker_tdetxt_format(self):
         """
-        Test loading markers using the '.uv' format.
+        Test loading markers using the 3DEqualizer '.txt' format.
         """
         cam = lib_utils.create_new_camera()
         mkr_grp = lib_utils.create_new_marker_group(cam)
@@ -230,7 +230,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
             # (self.get_data_path('3de_v4', 'FB1880_man_v05.txt'), (1920.0, 1080.0)),
         ]
         for path, res in paths:
-            print('Reading... %r' % path)
+            print('Reading... %r (%s x %s)' % (path, res[0], res[1]))
             _, tmp_list = marker_read.read(
                 path,
                 image_width=res[0],
@@ -260,6 +260,55 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         self.assertTrue(maya.cmds.objExists('BottomRight_MKR'))
         self.assertEqual(maya.cmds.getAttr('BottomRight_MKR.translateX'), 0.5)
         self.assertEqual(maya.cmds.getAttr('BottomRight_MKR.translateY'), -0.5)
+
+    def test_loadmarker_pftrack2dt_format(self):
+        """
+        Test loading markers using the '.2dt'/'.txt' format.
+        """
+        cam = lib_utils.create_new_camera()
+        mkr_grp = lib_utils.create_new_marker_group(cam)
+
+        mkr_data_list = []
+        paths = [
+            (self.get_data_path('pftrack', 'pftrack_corners_v001.txt'), (716.0, 572.0)),
+            (self.get_data_path('pftrack', 'pftrack_corners_v002.txt'), (1920.0, 1080.0)),
+            (self.get_data_path('pftrack', 'pftrack_hollywoodcameraworks_headtracking.txt'), (1920.0, 1080.0)),
+
+            (self.get_data_path('pftrack', 'pftrack_user_track_docs.txt'), (1920.0, 1080.0)),
+        ]
+        for path, res in paths:
+            print('Reading... %r (%s x %s)' % (path, res[0], res[1]))
+            _, tmp_list = marker_read.read(
+                path,
+                image_width=res[0],
+                image_height=res[1]
+            )
+            self.assertNotEqual(tmp_list, None)
+            mkr_data_list += tmp_list
+
+        # Create the markers
+        num_nodes1 = len(maya.cmds.ls())
+        marker_read.create_nodes(mkr_data_list, cam=cam, mkr_grp=mkr_grp)
+        num_nodes2 = len(maya.cmds.ls())
+        self.assertGreater(num_nodes2, num_nodes1)
+
+        self.assertTrue(maya.cmds.objExists('lowerLeftSingleFrame_MKR'))
+        self.assertTrue(maya.cmds.objExists('upperRightSingleFrame_MKR'))
+
+        self.assertTrue(maya.cmds.objExists('upperLeft_MKR'))
+        self.assertTrue(maya.cmds.objExists('upperRight_MKR'))
+        self.assertTrue(maya.cmds.objExists('lowerLeft_MKR'))
+        self.assertTrue(maya.cmds.objExists('lowerRight_MKR'))
+
+        self.assertTrue(maya.cmds.objExists('Tracker0001_MKR'))
+        self.assertTrue(maya.cmds.objExists('Tracker0002_MKR'))
+
+        self.assertTrue(maya.cmds.objExists('head_MKR'))
+        self.assertTrue(maya.cmds.objExists('head1_MKR'))
+        self.assertTrue(maya.cmds.objExists('head2_MKR'))
+        self.assertTrue(maya.cmds.objExists('head3_MKR'))
+        self.assertTrue(maya.cmds.objExists('head4_MKR'))
+        return
 
 
 if __name__ == '__main__':

@@ -523,7 +523,8 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
 
         string_data_list = model.stringDataList()
         for cam in selected_cameras:
-            assert isinstance(cam, mmapi.Camera)
+            if not isinstance(cam, mmapi.Camera):
+                continue
             if cam is None:
                 continue
             nodes = [

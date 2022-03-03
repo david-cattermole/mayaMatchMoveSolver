@@ -26,3 +26,4 @@ import mmSolver.tools.loadmarker.lib.formats.rz2
 # import mmSolver.tools.loadmarker.lib.formats.rzml
 import mmSolver.tools.loadmarker.lib.formats.tdetxt
 import mmSolver.tools.loadmarker.lib.formats.uvtrack
+import mmSolver.tools.loadmarker.lib.formats.pftrack2dt

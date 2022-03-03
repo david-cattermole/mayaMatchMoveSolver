@@ -35,6 +35,33 @@ import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
 LOG = mmSolver.logger.get_logger()
 
 
+def _get_file_path_formats(text):
+    """
+    Look up the possible Formats for the file path.
+
+    :param text: File path text.
+
+    :returns: List of formats for the file path.
+    :rtype: [Format, ..]
+    """
+    formats = []
+    if isinstance(text, pycompat.TEXT_TYPE) is False:
+        return formats
+    if os.path.isfile(text) is False:
+        return formats
+    fmt_mgr = formatmanager.get_format_manager()
+    fmts = fmt_mgr.get_formats()
+    ext_to_fmt = {}
+    for fmt in fmts:
+        for ext in fmt.file_exts:
+            ext_to_fmt[ext] = fmt
+    for ext, fmt in ext_to_fmt.items():
+        if text.endswith(ext):
+            formats.append(fmt)
+            break
+    return formats
+
+
 def get_file_path_format(text):
     """
     Look up the Format from the file path.
@@ -45,18 +72,10 @@ def get_file_path_format(text):
     :rtype: None or Format
     """
     format_ = None
-    if isinstance(text, pycompat.TEXT_TYPE) is False:
-        return format_
-    if os.path.isfile(text) is False:
-        return format_
-    fmt_mgr = formatmanager.get_format_manager()
-    fmts = fmt_mgr.get_formats()
-    ext_to_fmt = {}
-    for fmt in fmts:
-        for ext in fmt.file_exts:
-            ext_to_fmt[ext] = fmt
-    for ext, fmt in ext_to_fmt.items():
-        if text.endswith(ext):
+    formats = _get_file_path_formats(text)
+    for fmt in formats:
+        file_info, _ = mayareadfile.read(text)
+        if file_info is not None:
             format_ = fmt
             break
     return format_

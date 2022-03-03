@@ -45,7 +45,8 @@ Load Markers
     Load Markers UI
 
 The Load Markers UI allows loading of ``.uv`` (mmSolver), ``.txt``
-(3DEqualizer4), ``.rz2`` (Autodesk MatchMover) formatted files.
+(3DEqualizer4), ``.rz2`` (Autodesk MatchMover), ``.txt / .2dt``
+(PFTrack) formatted files.
 
 When opening the UI, the contents of the user’s clipboard is
 queried. If the clipboard is a valid file path, it will be
@@ -67,9 +68,10 @@ count), the default option is to create a new camera. The ``Update``
 button refreshes the ``Camera`` list without needing to close and
 re-open the UI.
 
+For 3DEqualizer ``.txt`` and PFTrack ``.txt / .2dt`` formats you will
+need to enter the Width / Height of the input format.
+
 Once a file path is given, press the ``Load`` button.
-For ``.txt`` format you will need to enter the Width / Height of the input
-format.
 
 Run this Python command:
 
@@ -268,10 +270,10 @@ automatically restored when the Load Marker UI is re-opened.
        both 2D and 3D data in one file.
 
    * - Image Resolution
-     - is for use with 3DEqualizer4 ``.txt`` files, which are stored
-       with plate resolution embedded into the 2D data. Use this field
-       to choose the correct plate resolution for the 2D data that was
-       exported.
+     - is for use with 3DEqualizer4 ``.txt`` or PFTrack ``.txt /
+       .2dt`` files, which are stored with plate resolution embedded
+       into the 2D data. Use this field to choose the correct plate
+       resolution for the 2D data that was exported.
 
 .. _update-markers-in-maya-ref:
 

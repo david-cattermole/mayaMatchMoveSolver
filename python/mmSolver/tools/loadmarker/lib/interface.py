@@ -254,8 +254,8 @@ class MarkerData(object):
         self._group_name = None  # None or str or unicode
         self._id = None  # None or int
         self._color = None  # the colour of the point
-        self._x = KeyframeData()
-        self._y = KeyframeData()
+        self._x = KeyframeData()  # 0.0 is left, 1.0 is right.
+        self._y = KeyframeData()  # 0.0 is bottom, 1.0 is top.
         self._enable = KeyframeData()
         self._weight = KeyframeData()
         self._bnd_x = None
@@ -415,5 +415,15 @@ class LoaderBase(object):
         Parse the given file path.
 
         Inherit from LoaderBase and override this method.
+
+        :raise ParserError:
+            When the parser encounters an error related to parsing.
+
+        :raise OSError:
+            When there is a problem with reading or accessing the
+            given file.
+
+        :return: Tuple of FileInfo and List of MarkerData.
+        :rtype: (FileInfo, [MarkerData, ...])
         """
         return

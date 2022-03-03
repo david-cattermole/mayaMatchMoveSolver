@@ -52,6 +52,31 @@ import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
 LOG = mmSolver.logger.get_logger()
 
 
+def parse_int_or_none(value):
+  try:
+    return int(value)
+  except ValueError:
+    return None
+
+
+def parse_float_or_none(value):
+  try:
+    return float(value)
+  except ValueError:
+    return None
+
+
+def _remove_comments_from_lines(lines):
+    clean_lines = []
+    for line in lines:
+        line = line.strip()
+        if line.startswith('#'):
+            continue
+        line = line.partition('#')[0]
+        clean_lines.append(line)
+    return clean_lines
+
+
 class Loader3DETXT(interface.LoaderBase):
 
     name = '3DEqualizer Track Points (*.txt)'
@@ -75,10 +100,6 @@ class Loader3DETXT(interface.LoaderBase):
         # If the image width/height is not given we raise an error immediately.
         image_width = kwargs.get('image_width')
         image_height = kwargs.get('image_height')
-        if isinstance(image_width, (int, float)):
-            ValueError('image_width must be float or int.')
-        if isinstance(image_height, (int, float)):
-            ValueError('image_height must be float or int.')
         if image_width is None:
             image_width = 1.0
         if image_height is None:
@@ -93,9 +114,13 @@ class Loader3DETXT(interface.LoaderBase):
             raise OSError('No contents in the file: %s' % file_path)
         mkr_data_list = []
 
+        lines = _remove_comments_from_lines(lines)
+
         line = lines[0]
         line = line.strip()
-        num_points = int(line)
+        num_points = parse_int_or_none(line)
+        if num_points is None:
+            raise interface.ParserError('Invalid file format.')
         if num_points < 1:
             raise interface.ParserError('No points exist.')
 
@@ -112,13 +137,17 @@ class Loader3DETXT(interface.LoaderBase):
             idx += 1
             line = lines[idx]
             line = line.strip()
-            mkr_color = int(line)
+            mkr_color = parse_int_or_none(line)
+            if mkr_color is None:
+                raise interface.ParserError('Invalid file format.')
             mkr_data.set_color(mkr_color)
 
             idx += 1
             line = lines[idx]
             line = line.strip()
-            num_frames = int(line)
+            num_frames = parse_int_or_none(line)
+            if num_frames is None:
+                raise interface.ParserError('Invalid file format.')
             if num_frames <= 0:
                 idx += 1
                 msg = 'point has no data: %r'
@@ -141,9 +170,13 @@ class Loader3DETXT(interface.LoaderBase):
                     # We should not get here
                     msg = 'File invalid, there must be 3 numbers in line: %r'
                     raise interface.ParserError(msg % line)
-                frame = int(split[0])
-                mkr_u = float(split[1]) * inv_image_width
-                mkr_v = float(split[2]) * inv_image_height
+                frame = parse_int_or_none(split[0])
+                pos_x = parse_float_or_none(split[1])
+                pos_y = parse_float_or_none(split[2])
+                if frame is None or pos_x is None or pos_y is None:
+                    raise interface.ParserError('Invalid file format.')
+                mkr_u = pos_x * inv_image_width
+                mkr_v = pos_y * inv_image_height
                 mkr_weight = 1.0
 
                 mkr_data.weight.set_value(frame, mkr_weight)
@@ -154,8 +187,8 @@ class Loader3DETXT(interface.LoaderBase):
             # Fill in occluded point frames
             all_frames = list(range(min(frames), max(frames)+1))
             for frame in all_frames:
-                mkr_enable = int(frame in frames)
-                mkr_data.enable.set_value(frame, mkr_enable)
+                mkr_enable = bool(frame in frames)
+                mkr_data.enable.set_value(frame, int(mkr_enable))
                 if mkr_enable is False:
                     mkr_data.weight.set_value(frame, 0.0)
 

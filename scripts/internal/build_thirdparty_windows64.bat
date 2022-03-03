@@ -19,7 +19,7 @@ SETLOCAL
 :: along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 :: ---------------------------------------------------------------------
 ::
-:: Builds the libmv libraries.
+:: Builds the third-party libraries, like OpenMVG, and Ceres, etc.
 
 :: The root of this project.
 SET THIS_DIR=%~dp0

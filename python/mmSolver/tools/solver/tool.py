@@ -77,7 +77,7 @@ def run_solve(override_current_frame=None):
     If the Solver UI is found, the window will update and show
     progress messages.
 
-    This function is strongly dependant on the Solver UI.
+    This function is strongly dependent on the Solver UI.
     The following state information is set via the Solver UI.
 
     - Active Collection

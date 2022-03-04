@@ -21,7 +21,7 @@ The .txt format from the 3DEqualizer 2D Points exporter.
 The position coordinate (0.0, 0.0) is the lower-left.
 The position coordinate (width, height) is the upper-right.
 
-This format is resolution dependant!
+This format is resolution dependent!
 
 The file format looks like this::
 

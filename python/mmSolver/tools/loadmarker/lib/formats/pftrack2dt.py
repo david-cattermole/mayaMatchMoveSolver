@@ -21,7 +21,7 @@ The .txt format from PFTrack / PFMatchIt.
 The position coordinate (-0.5, -0.5) is the lower-left.
 The position coordinate (width - 0.5, height - 0.5) is the upper-right.
 
-This format is resolution dependant!
+This format is resolution dependent!
 
 The data block looks like this::
 

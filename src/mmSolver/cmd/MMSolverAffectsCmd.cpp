@@ -28,7 +28,7 @@
  *       -mode "addAttrsToMarkers";
  *
  * Note: The '-frame' argument is not required for this command. This
- * command only works with time-independant data.
+ * command only works with time-independent data.
  *
  */
 

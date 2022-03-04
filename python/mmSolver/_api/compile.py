@@ -142,7 +142,7 @@ def get_markers_static_values(mkr_list):
     Get static values from markers.
 
     This is intended to be used as cached values for future functions.
-    The values computed in this function should not be dependant on time.
+    The values computed in this function should not be dependent on time.
 
     :param mkr_list: List of Markers to compile.
     :type mkr_list: [Marker, ..]
@@ -326,7 +326,7 @@ def get_attributes_static_values(col, attr_list):
     Get static values from attributes.
 
     The static values can then be re-used as cached values.
-    The values computed in this function should *not* be dependant on time.
+    The values computed in this function should *not* be dependent on time.
 
     :param col: Collection to be used for min/max values.
     :type col: Collection

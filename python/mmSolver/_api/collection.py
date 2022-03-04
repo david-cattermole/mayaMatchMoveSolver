@@ -97,9 +97,9 @@ def _get_auxiliary_attr_name(col, attr, key):
     """Auxiliary attribute names combine four individual parts, the
     Collection, the node and attribute names, and the key.
 
-    Auxiliary attribute values are dependant on all four bits of data.
+    Auxiliary attribute values are dependent on all four bits of data.
     The Auxiliary attribute data is not just "attached" to the
-    attribute itself, it is also dependant on the Collection.
+    attribute itself, it is also dependent on the Collection.
 
     When a user changes the "active" collection, the auxiliary
     attribute values may be different - this is a useful feature, but

@@ -112,34 +112,34 @@ distribution.
 Run in the Linux Bash terminal:
 ```commandline
 # Maya 2016
-$ source load_maya2016.sh  # Example script to set up Maya environment
+$ source load_maya2016.sh  # Example script to set up development environment.
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2016Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2016Deploy_linux
 $ cd /media/dev/mayaMatchMoveSolver_maya2016Deploy_linux ; git fetch --all; git checkout -f develop; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_thirdparty_linux_maya2016.bash ; bash scripts/build_mmSolver_linux_maya2016.bash
 
 # Maya 2017
-$ source load_maya2017.sh  # Example script to set up Maya environment
+$ source load_maya2017.sh  # Example script to set up development environment.
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2017Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2017Deploy_linux
 $ cd /media/dev/mayaMatchMoveSolver_maya2017Deploy_linux ; git fetch --all; git checkout -f develop; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_thirdparty_linux_maya2017.bash ; bash scripts/build_mmSolver_linux_maya2017.bash
 
 # Maya 2018
-$ source load_maya2018.sh  # Example script to set up Maya environment
+$ source load_maya2018.sh  # Example script to set up development environment.
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2018Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2018Deploy_linux
 $ cd /media/dev/mayaMatchMoveSolver_maya2018Deploy_linux ; git fetch --all; git checkout -f develop; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_thirdparty_linux_maya2018.bash ; bash scripts/build_mmSolver_linux_maya2018.bash
 
 # Maya 2019
-$ source load_maya2019.sh  # Example script to set up Maya environment
+$ source load_maya2019.sh  # Example script to set up development environment.
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2019Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2019Deploy_linux
 $ cd /media/dev/mayaMatchMoveSolver_maya2019Deploy_linux ; git fetch --all; git checkout -f develop; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_thirdparty_linux_maya2019.bash ; bash scripts/build_mmSolver_linux_maya2019.bash
 
 # Maya 2020
-$ source load_maya2020.sh  # Example script to set up Maya environment
+$ source load_maya2020.sh  # Example script to set up development environment.
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2020Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2020Deploy_linux
 $ cd /media/dev/mayaMatchMoveSolver_maya2020Deploy_linux ; git fetch --all; git checkout -f develop; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_thirdparty_linux_maya2020.bash ; bash scripts/build_mmSolver_linux_maya2020.bash
 
 # Maya 2022
-$ load_maya2022.sh  # Example script to set up Maya environment
+$ source load_maya2022.sh  # Example script to set up development environment.
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2022Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2022Deploy_linux
-$ cd /media/dev/mayaMatchMoveSolver_maya2022Deploy_linux ; git fetch --all; git checkout -f master; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_cminpack.bash ; bash scripts/build_mmSolver_linux_maya2022.bash
+$ cd /media/dev/mayaMatchMoveSolver_maya2022Deploy_linux ; git fetch --all; git checkout -f develop; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_thirdparty_linux_maya2022.bash ; bash scripts/build_mmSolver_linux_maya2022.bash
 ```
 
 Package files can then be uploaded from the

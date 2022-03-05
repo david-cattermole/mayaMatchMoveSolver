@@ -43,12 +43,12 @@ impl AnimDenseAttr {
     }
 
     pub fn get_value(&self, frame: FrameValue) -> Real {
-        let f = (self.frame_start - frame) as usize;
+        let f = (frame - self.frame_start) as usize;
         self.values[f]
     }
 
     pub fn set_value(&mut self, frame: FrameValue, value: Real) {
-        let f = (self.frame_start - frame) as usize;
+        let f = (frame - self.frame_start) as usize;
         self.values[f] = value;
     }
 

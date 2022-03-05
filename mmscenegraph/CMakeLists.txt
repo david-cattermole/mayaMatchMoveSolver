@@ -63,5 +63,5 @@ install(FILES
   "${CMAKE_CURRENT_BINARY_DIR}/mmscenegraphConfigVersion.cmake"
   DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mmscenegraph")
 export(EXPORT mmscenegraphTargets
-  FILE "${CMAKE_CURRENT_BINRARY_DIR}/mmscenegraphTargets.cmake"
+  FILE "${CMAKE_INSTALL_LIBDIR}/mmscenegraphTargets.cmake"
   )

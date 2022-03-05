@@ -1,4 +1,4 @@
-# To create and run the docker container in Power Shell or BASH:
+# To create and run the docker container in PowerShell or BASH:
 #
 # $ docker build --file Dockerfile_maya2019 -t mmsolver-linux-maya2019-build .
 # $ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-maya2019-build
@@ -20,6 +20,7 @@
 #
 # $ ./scripts/build_thirdparty_linux_maya2019.bash
 # $ ./scripts/build_mmSolver_linux_maya2019.bash
+# $ mayapy tests/runTests.py
 #
 
 FROM centos:7

@@ -123,6 +123,28 @@ class SolverBasic(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_solver_type(self):
+        """
+        Get 'Scene Graph Mode' value.
+
+        :rtype: int
+        """
+        return self._data.get(
+            'solver_type',
+            const.SOLVER_STD_SOLVER_TYPE_DEFAULT_VALUE)
+
+    def set_solver_type(self, value):
+        """
+        Set 'Scene Graph Mode' value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
+        assert isinstance(value, int)
+        self._data['solver_type'] = value
+
+    ############################################################################
+
     def get_scene_graph_mode(self):
         """
         Get 'Scene Graph Mode' value.
@@ -334,6 +356,7 @@ class SolverBasic(solverbase.SolverBase):
         eval_object_relationships = self.get_eval_object_relationships()
         remove_unused_objects = eval_object_relationships
         eval_complex_graphs = self.get_eval_complex_graphs()
+        solver_type = self.get_solver_type()
         scene_graph_mode = self.get_scene_graph_mode()
         precomputed_data = self.get_precomputed_data()
 
@@ -365,6 +388,7 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_solver_type(solver_type)
             sol.set_scene_graph_mode(scene_graph_mode)
             sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
             sol.set_remove_unused_markers(remove_unused_objects)
@@ -393,6 +417,7 @@ class SolverBasic(solverbase.SolverBase):
                     sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
                     sol.set_use_smoothness(not is_first_frame)
                     sol.set_use_stiffness(not is_first_frame)
+                    sol.set_solver_type(solver_type)
                     sol.set_scene_graph_mode(scene_graph_mode)
                     sol.set_time_eval_mode(time_eval_mode)
                     sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
@@ -418,6 +443,7 @@ class SolverBasic(solverbase.SolverBase):
                 sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
                 sol.set_use_smoothness(use_smooth_stiff)
                 sol.set_use_stiffness(use_smooth_stiff)
+                sol.set_solver_type(solver_type)
                 sol.set_scene_graph_mode(scene_graph_mode)
                 sol.set_time_eval_mode(time_eval_mode)
                 sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_PER_FRAME)

@@ -177,6 +177,7 @@ def _compile_multi_root_frames(col,
                                batch_frame_list,
                                root_iter_num,
                                remove_unused_objects,
+                               solver_type,
                                scene_graph_mode,
                                precomputed_data,
                                withtest,
@@ -205,6 +206,11 @@ def _compile_multi_root_frames(col,
         the solver?
     :type remove_unused_objects: bool
 
+    :param solver_type:
+        Which Solver type should be used?
+        A value in mmSolver.api.SOLVER_TYPE_*.
+    :type solver_type: int
+
     :param scene_graph_mode:
         Which Scene Graph should be used? 0=Maya DAG or 1=MM Scene Graph.
     :type scene_graph_mode: int
@@ -224,6 +230,7 @@ def _compile_multi_root_frames(col,
     """
     assert isinstance(root_iter_num, int)
     assert isinstance(remove_unused_objects, bool)
+    assert isinstance(solver_type, int)
     assert isinstance(scene_graph_mode, int)
     assert isinstance(withtest, bool)
     assert isinstance(verbose, bool)
@@ -256,6 +263,7 @@ def _compile_multi_root_frames(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_solver_type(solver_type)
         sol.set_scene_graph_mode(scene_graph_mode)
         sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
         sol.set_remove_unused_markers(remove_unused_objects)
@@ -348,6 +356,7 @@ def _compile_multi_inbetween_frames(col,
                                     eval_complex_graphs,
                                     anim_iter_num,
                                     remove_unused_objects,
+                                    solver_type,
                                     scene_graph_mode,
                                     precomputed_data,
                                     withtest,
@@ -387,6 +396,11 @@ def _compile_multi_inbetween_frames(col,
         the solver?
     :type remove_unused_objects: bool
 
+    :param solver_type:
+        Which Solver type should be used?
+        A value in mmSolver.api.SOLVER_TYPE_*.
+    :type solver_type: int
+
     :param scene_graph_mode:
         Which Scene Graph should be used? 0=Maya DAG or 1=MM Scene Graph.
     :type scene_graph_mode: int
@@ -408,6 +422,7 @@ def _compile_multi_inbetween_frames(col,
     assert isinstance(eval_complex_graphs, bool)
     assert isinstance(anim_iter_num, int)
     assert isinstance(remove_unused_objects, bool)
+    assert isinstance(solver_type, int)
     assert isinstance(scene_graph_mode, int)
     assert isinstance(precomputed_data, dict)
     assert isinstance(withtest, bool)
@@ -423,6 +438,7 @@ def _compile_multi_inbetween_frames(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_solver_type(solver_type)
         sol.set_scene_graph_mode(scene_graph_mode)
         sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
         sol.set_remove_unused_markers(remove_unused_objects)
@@ -454,6 +470,7 @@ def _compile_multi_inbetween_frames(col,
                 sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
                 sol.set_use_smoothness(not is_first_frame)
                 sol.set_use_stiffness(not is_first_frame)
+                sol.set_solver_type(solver_type)
                 sol.set_scene_graph_mode(scene_graph_mode)
                 sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
                 sol.set_remove_unused_markers(remove_unused_objects)
@@ -478,6 +495,7 @@ def _compile_multi_inbetween_frames(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(use_smooth_stiff)
             sol.set_use_stiffness(use_smooth_stiff)
+            sol.set_solver_type(solver_type)
             sol.set_scene_graph_mode(scene_graph_mode)
             sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
             sol.set_remove_unused_markers(remove_unused_objects)
@@ -507,6 +525,7 @@ def _compile_multi_frame(col,
                          triangulate_bundles,
                          use_euler_filter,
                          remove_unused_objects,
+                         solver_type,
                          scene_graph_mode,
                          precomputed_data,
                          withtest,
@@ -583,6 +602,11 @@ def _compile_multi_frame(col,
         the solver?
     :type remove_unused_objects: bool
 
+    :param solver_type:
+        Which Solver type should be used?
+        A value in mmSolver.api.SOLVER_TYPE_*.
+    :type solver_type: int
+
     :param scene_graph_mode:
         Which Scene Graph should be used? 0=Maya DAG or 1=MM Scene Graph.
     :type scene_graph_mode: int
@@ -610,6 +634,7 @@ def _compile_multi_frame(col,
     assert isinstance(triangulate_bundles, bool)
     assert isinstance(use_euler_filter, bool)
     assert isinstance(remove_unused_objects, bool)
+    assert isinstance(solver_type, int)
     assert isinstance(scene_graph_mode, int)
     assert isinstance(precomputed_data, dict)
     assert isinstance(withtest, bool)
@@ -669,6 +694,7 @@ def _compile_multi_frame(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_solver_type(solver_type)
             sol.set_scene_graph_mode(scene_graph_mode)
             sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
             sol.set_remove_unused_markers(remove_unused_objects)
@@ -710,6 +736,7 @@ def _compile_multi_frame(col,
         sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
         sol.set_use_smoothness(False)
         sol.set_use_stiffness(False)
+        sol.set_solver_type(solver_type)
         sol.set_scene_graph_mode(scene_graph_mode)
         sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
         sol.set_remove_unused_markers(remove_unused_objects)
@@ -760,6 +787,7 @@ def _compile_multi_frame(col,
             root_iter_num,
             precomputed_data,
             remove_unused_objects,
+            solver_type,
             scene_graph_mode,
             withtest,
             verbose
@@ -801,6 +829,7 @@ def _compile_multi_frame(col,
         eval_complex_graphs,
         anim_iter_num,
         remove_unused_objects,
+        solver_type,
         scene_graph_mode,
         precomputed_data,
         withtest,
@@ -819,6 +848,7 @@ def _compile_single_frame(col,
                           lineup_iter_num,
                           auto_attr_blocks,
                           remove_unused_objects,
+                          solver_type,
                           scene_graph_mode,
                           precomputed_data,
                           withtest,
@@ -856,6 +886,11 @@ def _compile_single_frame(col,
         the solver?
     :type remove_unused_objects: bool
 
+    :param solver_type:
+        Which Solver type should be used?
+        A value in mmSolver.api.SOLVER_TYPE_*.
+    :type solver_type: int
+
     :param scene_graph_mode:
         Which Scene Graph should be used? 0=Maya DAG or 1=MM Scene Graph.
     :type scene_graph_mode: int
@@ -877,6 +912,7 @@ def _compile_single_frame(col,
     assert isinstance(block_iter_num, int)
     assert isinstance(lineup_iter_num, int)
     assert isinstance(remove_unused_objects, bool)
+    assert isinstance(solver_type, int)
     assert isinstance(scene_graph_mode, int)
     assert isinstance(precomputed_data, dict)
     assert isinstance(withtest, bool)
@@ -896,6 +932,7 @@ def _compile_single_frame(col,
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_solver_type(solver_type)
             sol.set_scene_graph_mode(scene_graph_mode)
             sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
             sol.set_remove_unused_markers(remove_unused_objects)
@@ -917,6 +954,7 @@ def _compile_single_frame(col,
     sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
     sol.set_use_smoothness(False)
     sol.set_use_stiffness(False)
+    sol.set_solver_type(solver_type)
     sol.set_scene_graph_mode(scene_graph_mode)
     sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
     sol.set_remove_unused_markers(remove_unused_objects)
@@ -1132,6 +1170,28 @@ class SolverStandard(solverbase.SolverBase):
         """
         assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
         self._data['eval_complex_node_graphs'] = bool(value)
+
+    ############################################################################
+
+    def get_solver_type(self):
+        """
+        Get 'Scene Graph Mode' value.
+
+        :rtype: int
+        """
+        return self._data.get(
+            'solver_type',
+            const.SOLVER_STD_SOLVER_TYPE_DEFAULT_VALUE)
+
+    def set_solver_type(self, value):
+        """
+        Set 'Scene Graph Mode' value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
+        assert isinstance(value, int)
+        self._data['solver_type'] = value
 
     ############################################################################
 
@@ -1454,6 +1514,7 @@ class SolverStandard(solverbase.SolverBase):
         eval_object_relationships = self.get_eval_object_relationships()
         remove_unused_objects = eval_object_relationships
         eval_complex_graphs = self.get_eval_complex_graphs()
+        solver_type = self.get_solver_type()
         scene_graph_mode = self.get_scene_graph_mode()
         block_iter_num = self.get_block_iteration_num()
         root_iter_num = self.get_root_iteration_num()
@@ -1498,6 +1559,7 @@ class SolverStandard(solverbase.SolverBase):
                 lineup_iter_num,
                 auto_attr_blocks,
                 remove_unused_objects,
+                solver_type,
                 scene_graph_mode,
                 precomputed_data,
                 withtest,
@@ -1523,6 +1585,7 @@ class SolverStandard(solverbase.SolverBase):
                 triangulate_bundles,
                 use_euler_filter,
                 remove_unused_objects,
+                solver_type,
                 scene_graph_mode,
                 precomputed_data,
                 withtest,

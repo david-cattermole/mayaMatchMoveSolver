@@ -130,6 +130,7 @@ class TestSolver6(solverUtils.SolverTestCase):
                 frame=frames,
                 iterations=10,
                 solverType=solver_index,
+                sceneGraphMode=scene_graph_mode,
                 verbose=True,
                 **kwargs
             )
@@ -146,6 +147,7 @@ class TestSolver6(solverUtils.SolverTestCase):
         #                 attr=node_attrs,
         #                 iterations=10,
         #                 solverType=solver_index,
+        #                 sceneGraphMode=scene_graph_mode,
         #                 frame=[j],
         #                 verbose=True,
         #             )
@@ -159,6 +161,7 @@ class TestSolver6(solverUtils.SolverTestCase):
         #         #     attr=node_attrs,
         #         #     iterations=10,
         #         #     solverType=solver_index,
+        #         #     sceneGraphMode=scene_graph_mode,
         #         #     frame=betweenFrames,
         #         #     verbose=True,
         #         # )
@@ -171,6 +174,7 @@ class TestSolver6(solverUtils.SolverTestCase):
         #     attr=node_attrs,
         #     iterations=10,
         #     solverType=solver_index,
+        #     sceneGraphMode=scene_graph_mode,
         #     frame=allFrames,
         #     verbose=True,
         # )

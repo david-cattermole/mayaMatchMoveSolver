@@ -141,6 +141,7 @@ class TestSolver7(solverUtils.SolverTestCase):
             frame=frames,
             iterations=1000,
             solverType=solver_index,
+            sceneGraphMode=scene_graph_mode,
             verbose=True,
             **kwargs
         )

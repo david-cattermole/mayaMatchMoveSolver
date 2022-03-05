@@ -104,6 +104,7 @@ class TestSolver3(solverUtils.SolverTestCase):
         result = maya.cmds.mmSolver(
             frame=frames,
             solverType=solver_index,
+            sceneGraphMode=scene_graph_mode,
             delta=0.00001,
             verbose=True,
             **kwargs

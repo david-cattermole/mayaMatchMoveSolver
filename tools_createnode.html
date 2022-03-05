@@ -81,7 +81,8 @@ are not supported to create Markers.</p>
 <p class="caption"><span class="caption-text">Load Markers UI</span></p>
 </div>
 <p>The Load Markers UI allows loading of <code class="docutils literal notranslate"><span class="pre">.uv</span></code> (mmSolver), <code class="docutils literal notranslate"><span class="pre">.txt</span></code>
-(3DEqualizer4), <code class="docutils literal notranslate"><span class="pre">.rz2</span></code> (Autodesk MatchMover) formatted files.</p>
+(3DEqualizer4), <code class="docutils literal notranslate"><span class="pre">.rz2</span></code> (Autodesk MatchMover), <code class="docutils literal notranslate"><span class="pre">.txt</span> <span class="pre">/</span> <span class="pre">.2dt</span></code>
+(PFTrack) formatted files.</p>
 <p>When opening the UI, the contents of the user’s clipboard is
 queried. If the clipboard is a valid file path, it will be
 automatically pasted into the “File Path”, so you won’t need to
@@ -98,9 +99,9 @@ scene. If no cameras are available (persp, front, top, left do not
 count), the default option is to create a new camera. The <code class="docutils literal notranslate"><span class="pre">Update</span></code>
 button refreshes the <code class="docutils literal notranslate"><span class="pre">Camera</span></code> list without needing to close and
 re-open the UI.</p>
-<p>Once a file path is given, press the <code class="docutils literal notranslate"><span class="pre">Load</span></code> button.
-For <code class="docutils literal notranslate"><span class="pre">.txt</span></code> format you will need to enter the Width / Height of the input
-format.</p>
+<p>For 3DEqualizer <code class="docutils literal notranslate"><span class="pre">.txt</span></code> and PFTrack <code class="docutils literal notranslate"><span class="pre">.txt</span> <span class="pre">/</span> <span class="pre">.2dt</span></code> formats you will
+need to enter the Width / Height of the input format.</p>
+<p>Once a file path is given, press the <code class="docutils literal notranslate"><span class="pre">Load</span></code> button.</p>
 <p>Run this Python command:</p>
 <div class="code python highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.loadmarker.ui.loadmarker_window</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
@@ -274,10 +275,10 @@ Marker data. Only some formats (for example <code class="docutils literal notran
 both 2D and 3D data in one file.</td>
 </tr>
 <tr class="row-even"><td>Image Resolution</td>
-<td>is for use with 3DEqualizer4 <code class="docutils literal notranslate"><span class="pre">.txt</span></code> files, which are stored
-with plate resolution embedded into the 2D data. Use this field
-to choose the correct plate resolution for the 2D data that was
-exported.</td>
+<td>is for use with 3DEqualizer4 <code class="docutils literal notranslate"><span class="pre">.txt</span></code> or PFTrack <code class="docutils literal notranslate"><span class="pre">.txt</span> <span class="pre">/</span>
+<span class="pre">.2dt</span></code> files, which are stored with plate resolution embedded
+into the 2D data. Use this field to choose the correct plate
+resolution for the 2D data that was exported.</td>
 </tr>
 </tbody>
 </table>

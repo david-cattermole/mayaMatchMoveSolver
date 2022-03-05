@@ -3,7 +3,7 @@
 Download
 ========
 
-Download the latest release **mmSolver v0.3.15**:
+Download the latest release **mmSolver v0.3.16**:
 
 .. list-table:: Downloads
    :widths: auto
@@ -15,53 +15,63 @@ Download the latest release **mmSolver v0.3.15**:
 
    * - Linux
      - Maya 2016
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2016-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2016-linux.tar.gz>`_
 
    * - Linux
      - Maya 2017
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2017-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2017-linux.tar.gz>`_
 
    * - Linux
      - Maya 2018
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2018-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2018-linux.tar.gz>`_
 
    * - Linux
      - Maya 2019
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2019-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2019-linux.tar.gz>`_
 
    * - Linux
      - Maya 2020
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2020-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2020-linux.tar.gz>`_
+
+   * - Linux
+     - Maya 2022
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2022-linux.tar.gz>`_
 
    * - Windows
      - Maya 2016
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2016-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2016-win64.zip>`_
 
    * - Windows
      - Maya 2017
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2017-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2017-win64.zip>`_
 
    * - Windows
      - Maya 2018
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2018-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2018-win64.zip>`_
 
    * - Windows
      - Maya 2019
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2019-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2019-win64.zip>`_
 
    * - Windows
      - Maya 2020
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2020-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2020-win64.zip>`_
+
+   * - Windows
+     - Maya 2022
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2022-win64.zip>`_
 
    * - MacOS
-     - Maya 2018
+     - Maya 2018 (v0.3.15)
      - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2018-mac.tar.gz>`_
 
    * - MacOS
-     - Maya 2019
+     - Maya 2019 (v0.3.15)
      - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2019-mac.tar.gz>`_
 
 Older versions and full release notes can be found on the GitHub releases_ page.
+
+Note: MacOS is only supported until v0.3.15.
 
 Installation
 ============
@@ -101,6 +111,46 @@ You can open Maya as normal and the tool will be recognised
 automatically at start-up.  You will see a message in the Script
 Editor '# root : MM Solver Startup... #', a new shelf and menu will
 automatically be created for you named 'mmSolver'.
+
+
+Load mmSolver in Maya 2022
+--------------------------
+
+Loading custom plug-ins in Maya 2022+ has been changed to increase
+security and avoid viruses, as a result mmSolver has needed to change
+slightly. Previous versions of Maya should still work exactly as
+before.
+
+To load mmSolver in Maya 2022 you must run the following MEL command::
+
+   mmsolver_load
+
+This will load the mmSolver plug-in, and allow you to automatically
+load the mmSolver plug-in and will ensure it is loaded each time Maya
+is started.
+
+If you wish to unload mmSolver so it will not be loaded at Maya
+start-up run the following MEL command::
+
+   mmsolver_unload
+
+These commands added in mmSolver v0.3.16 were added to work-around the
+Maya 2022+ Security preferences and ensure mmSolver will be loaded
+when it's needed.
+
+Additionally the Python module `mmSolver.startup` was added, and
+allows pipelines to manually load mmSolver with the Python commands::
+
+   import mmSolver.startup
+   mmSolver.startup.mmsolver_startup()
+
+Rather than using the `mmsolver_load` or `mmsolver_unload` commands,
+optionally you can load the mmSolver plug-in via the menu `Windows >
+Settings/Preferences > Plug-in Manager` window. This will also load
+the mmSolver tools automatically when the plug-in is loaded. If you
+wish to load mmSolver each time Maya is started you may enable
+"autoload" via the Plug-in Manager to ensure the mmSolver tools,
+shelves, menus and plug-in are always loaded.
 
 Install 3DEqualizer Files
 -------------------------

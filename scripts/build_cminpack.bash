@@ -52,8 +52,9 @@ cmake \
     -DUSE_BLAS=0 \
     ../working/cminpack-1.3.6
 
-cmake --build . --parallel 4
-cmake --install .
+cmake --build .
+# cmake --install .
+make install
 
 # Return back project root directory.
 cd ${CWD}

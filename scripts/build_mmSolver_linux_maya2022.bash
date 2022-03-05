@@ -78,9 +78,6 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # The root of this project.
 PROJECT_ROOT=`readlink -f ${DIR}/..`
 
-# Number of CPUs
-CPU_NUM=`nproc --all`
-
 # Build mmSolver project
 mkdir -p build_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
 cd build_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
@@ -105,8 +102,9 @@ cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
       -DMAYA_LOCATION=${MAYA_LOCATION} \
       ..
 
-cmake --build . --parallel ${CPU_NUM}
-cmake --install .
+cmake --build .
+# cmake --install .
+make install
 
 # Run tests
 if [ ${RUN_TESTS} -eq 1 ]; then

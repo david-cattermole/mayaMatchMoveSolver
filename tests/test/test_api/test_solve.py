@@ -900,13 +900,20 @@ class TestSolve(test_api_utils.APITestCase):
         self.checkSolveResults(solres_list)
         return
 
-    def test_opera_house(self):
+    def do_solve_opera_house(self, solver_name, solver_type_index, scene_graph_mode):
         """
         Load pre-tracked Markers for the 'opera house' image sequence,
         then solve it.
 
         http://danielwedge.com/fmatrix/operahouse.html
         """
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            raise unittest.SkipTest(msg)
+        scene_graph_name = mmapi.SCENE_GRAPH_MODE_NAME_LIST[scene_graph_mode]
+        scene_graph_label = mmapi.SCENE_GRAPH_MODE_LABEL_LIST[scene_graph_mode]
+        print('Scene Graph:', scene_graph_label)
+
         # Time Range
         start = 0
         end = 41
@@ -1127,6 +1134,8 @@ class TestSolve(test_api_utils.APITestCase):
         sol.set_frame_list(not_root_frm_list)
         sol.set_only_root_frames(False)
         sol.set_global_solve(False)
+        sol.set_solver_type(solver_type_index)
+        sol.set_scene_graph_mode(scene_graph_mode)
         sol._auto_attr_blocks = True
         sol._triangulate_bundles = False
         sol_list.append(sol)
@@ -1167,7 +1176,9 @@ class TestSolve(test_api_utils.APITestCase):
             col.add_attribute(attr_tz)
 
         # save the output
-        path = self.get_data_path('test_solve_opera_house_before.ma')
+        file_name = 'test_solve_opera_house_{}_{}_before.ma'.format(
+            solver_name, scene_graph_name)
+        path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -1185,12 +1196,32 @@ class TestSolve(test_api_utils.APITestCase):
         mmapi.update_deviation_on_collection(col, results)
 
         # save the output
-        path = self.get_data_path('test_solve_opera_house_after.ma')
+        file_name = 'test_solve_opera_house_{}_{}_after.ma'.format(
+            solver_name, scene_graph_name)
+        path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         self.checkSolveResults(results)
         return
+
+    def test_opera_house_ceres_maya_dag(self):
+        self.do_solve_opera_house('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+
+    def test_opera_house_ceres_mmscenegraph(self):
+        self.do_solve_opera_house('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+
+    def test_opera_house_cminpack_lmdif_maya_dag(self):
+        self.do_solve_opera_house('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+
+    def test_opera_house_cminpack_lmdif_mmscenegraph(self):
+        self.do_solve_opera_house('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+
+    def test_opera_house_cminpack_lmder_maya_dag(self):
+        self.do_solve_opera_house('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+
+    def test_opera_house_cminpack_lmder_mmscenegraph(self):
+        self.do_solve_opera_house('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
 
 if __name__ == '__main__':

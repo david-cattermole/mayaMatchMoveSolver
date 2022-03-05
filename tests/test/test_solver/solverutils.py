@@ -63,24 +63,6 @@ class SolverTestCase(baseUtils.TestBase):
         super(SolverTestCase, self).tearDown()
 
     @staticmethod
-    def haveSolverType(name=None, index=None):
-        has_solver = False
-        kwargs = {
-            'name': False,
-            'index': False,
-        }
-        if name is not None:
-            kwargs['name'] = True
-        elif index is not None:
-            kwargs['index'] = True
-        solverTypes = maya.cmds.mmSolverType(query=True, list=True, **kwargs)
-        if name is not None:
-            has_solver = name in solverTypes
-        if index is not None:
-            has_solver = index in solverTypes
-        return has_solver
-
-    @staticmethod
     def runSolverAffects(affects_mode, **kwargs):
         assert 'mmSolverAffects' in dir(maya.cmds)
         s = time.time()

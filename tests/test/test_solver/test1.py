@@ -106,7 +106,6 @@ class TestSolver1(solverUtils.SolverTestCase):
             solverType=solver_index,
             sceneGraphMode=scene_graph_mode,
             iterations=1000,
-            sceneGraphMode=scene_graph_mode,
             verbose=True,
             **kwargs)
         e = time.time()

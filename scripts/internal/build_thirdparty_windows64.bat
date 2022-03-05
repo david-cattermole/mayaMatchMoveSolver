@@ -45,7 +45,7 @@ CHDIR %BUILD_DIR_NAME%
 DEL /S /Q *
 FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
 
-%CMAKE_EXE% -G "NMake Makefiles" ^
+%CMAKE_EXE% -G Ninja ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_CXX_STANDARD=%CXX_STANDARD% ^
     -DTHIRDPARTY_BASE_INSTALL_DIR=%INSTALL_DIR% ^

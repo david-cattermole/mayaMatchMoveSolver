@@ -96,7 +96,8 @@ def main(path_list):
             exit_code = 1
             print("Tests failed!", file=sys.stderr)
         print("Press CTRL+C to exit 'mayapy'.")
-        maya.standalone.uninitialize()
+        if int(maya.cmds.about(apiVersion=True)) < 20220000:
+            maya.standalone.uninitialize()
         sys.exit(exit_code)
     return
 

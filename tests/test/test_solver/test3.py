@@ -86,7 +86,9 @@ class TestSolver3(solverUtils.SolverTestCase):
         ]
 
         # save the output
-        path = self.get_data_path('solver_test3_%s_before.ma' % solver_name)
+        file_name = 'solver_test3_{}_{}_before.ma'.format(
+            solver_name, scene_graph_name)
+        path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -113,7 +115,9 @@ class TestSolver3(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path('solver_test3_%s_after.ma' % solver_name)
+        file_name = 'solver_test3_{}_{}_after.ma'.format(
+            solver_name, scene_graph_name)
+        path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

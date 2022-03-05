@@ -35,7 +35,7 @@ except RuntimeError:
     pass
 import maya.cmds
 
-
+import mmSolver.api as mmapi
 import test.test_solver.solverutils as solverUtils
 
 

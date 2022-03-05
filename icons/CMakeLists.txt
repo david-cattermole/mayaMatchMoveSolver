@@ -18,8 +18,8 @@
 #
 # Build Icons (using Qt Resource Compiler)
 
-set(input_file ${CMAKE_SOURCE_DIR}/icons/resources.qrc)
-set(output_file ${CMAKE_SOURCE_DIR}/icons/resources.rcc)
+set(input_file ${CMAKE_CURRENT_SOURCE_DIR}/resources.qrc)
+set(output_file ${CMAKE_CURRENT_BINARY_DIR}/resources.rcc)
 
 find_program(QT_RESOURCE_COMPILER_EXECUTABLE
         rcc
@@ -36,7 +36,7 @@ find_program(QT_RESOURCE_COMPILER_EXECUTABLE
 
 add_custom_command(
         OUTPUT ${output_file}
-        COMMAND ${QT_RESOURCE_COMPILER_EXECUTABLE} -binary resources.qrc -o resources.rcc
+        COMMAND ${QT_RESOURCE_COMPILER_EXECUTABLE} -binary ${input_file} -o ${output_file}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/icons
         DEPENDS ${input_file}
 )
@@ -45,3 +45,7 @@ add_custom_target(
         DEPENDS ${output_file}
         COMMENT "Building Icons (with Qt Resource Compiler) (${input_file})..."
 )
+
+install(FILES
+        "${output_file}"
+        DESTINATION "${MODULE_FULL_NAME}/resources")

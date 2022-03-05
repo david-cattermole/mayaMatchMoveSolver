@@ -500,12 +500,6 @@ endif ()
 # Install Icons.
 if (BUILD_ICONS)
     install(DIRECTORY "icons/"
-            DESTINATION "${MODULE_FULL_NAME}/resources"
-            FILES_MATCHING PATTERN "*.rcc"
-            PATTERN "icons/edit" EXCLUDE
-            PATTERN "icons/library" EXCLUDE
-            PATTERN "icons/ui" EXCLUDE)
-    install(DIRECTORY "icons/"
             DESTINATION "${MODULE_FULL_NAME}/icons"
             FILES_MATCHING PATTERN "*.png"
             PATTERN "icons/edit" EXCLUDE

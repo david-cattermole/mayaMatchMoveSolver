@@ -72,7 +72,7 @@ UI, or in the module install directory, for example this path:
 
 (On Windows)
 ```
-C:/Users/<user name>/My Documents/maya/2017/modules/mayaMatchMoveSolver-0.1.0-maya2017-win64/docs/html/index.html
+C:/Users/<user name>/My Documents/maya/2017/modules/mayaMatchMoveSolver-0.1.0-maya2018-win64/docs/html/index.html
 ```
 
 ## Community

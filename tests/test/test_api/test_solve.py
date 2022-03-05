@@ -499,7 +499,7 @@ class TestSolve(test_api_utils.APITestCase):
         start_frame = 0
         end_frame = 94
 
-        path = self.get_data_path('scenes', 'stA', 'stA.ma')
+        path = self.get_data_path('scenes', 'stA_v001.ma')
         ok = maya.cmds.file(path, open=True, ignoreVersion=True, force=True)
         assert isinstance(ok, (str, unicode))
 

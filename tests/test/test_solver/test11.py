@@ -52,7 +52,7 @@ class TestSolver11(solverUtils.SolverTestCase):
         print('Scene Graph:', scene_graph_label)
 
         # Open File Path
-        scenePath = self.get_data_path('scenes/sta_v002.ma')
+        scenePath = self.get_data_path('scenes', 'stA_v002.ma')
         maya.cmds.file(scenePath,
                        open=True,
                        force=True,

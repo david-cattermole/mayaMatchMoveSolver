@@ -53,7 +53,12 @@ def build_shelf():
     func_config_name = const.CONFIG_FILE_FUNCTIONS_NAME
     shelf_config_name = const.CONFIG_FILE_SHELF_DEFAULT_NAME
     result = lib.build(shelf, func_config_name, shelf_config_name)
-    lib.activate_shelf_tab(shelf_name)
+    # # Activating the shelf will switch the current shelf to
+    # # mmSolver. Although this might be helpful for people, in a
+    # # studio setting where mmSolver is loaded for all users,
+    # # including non-matchmove artists, this might become annoying,
+    # # and should therefore be disabled.
+    # lib.activate_shelf_tab(shelf_name)
     return result
 
 

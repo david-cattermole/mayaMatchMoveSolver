@@ -1,56 +1,194 @@
 # Building and Install
 
-Building mmSolver is quite easy. The project uses CMake, and provides 
-pre-made build scripts for Windows (Batch Script) and Linux (Bash - 
+Building mmSolver is quite easy. The project uses CMake, and provides
+pre-made build scripts for Windows (Batch Script) and Linux (Bash -
 Shell Script).
 
-You may edit these scripts for your system, or use them as-is if you 
+You may edit these scripts for your system, or use them as-is if you
 have a standard default installation of Maya.
 
 # Dependencies
 
-These projects are needed for building the ``mmSolver`` project.
+These tools and libraries are required for building the ``mmSolver``
+project. For details, please see the section below for each
+dependency.
 
-Required:
-- C++ compiler (depending on Maya version)
-  - Linux
-    - [GCC 4.4.7](https://gcc.gnu.org/) (Maya 2016 and 2017)
-    - [GCC 4.8.2](https://gcc.gnu.org/) (Maya 2018)
-    - [GCC 6.3.1](https://gcc.gnu.org/) (Maya 2019 and 2020)
-      - Red Hat [DST 6.1](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/6/html/6.1_release_notes/index)
-      - `yum install devtoolset-6` on RHEL 7 / CentOS 7
-    - [GCC 9.3.1](https://gcc.gnu.org/) (Maya 2022)
-      - Red Hat [DST 9.1](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/9/html/9.1_release_notes/index)
-      - `yum install devtoolset-9` on RHEL 7 / CentOS 7
-  - Windows
-    - [Visual Studio 2012 update 5 (MSVC 11.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2016 and 2017)
-    - [Visual Studio 2015 update 3 (MSVC 14.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2018 and 2019)
-    - [Visual Studio 2017 (MSVC 15.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2020)
-    - [Visual Studio 2019 (MSVC 16.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2022)
-  - MacOS
-    - [Xcode 7.3.1 with SDK 10.11, clang with libc++](https://developer.apple.com/download) (Maya 2018)
-    - [Xcode version 7.3.1 and CMake are required](https://developer.apple.com/download) (Maya 2019)
-- [CMake 3.15+](https://cmake.org/)
-  - Older versions may work, however the Blender Add-On may fail to
-    generate.
-- [Autodesk Maya 2016+](https://www.autodesk.com.au/products/maya/overview)
+- [Autodesk Maya](https://www.autodesk.com.au/products/maya/overview)
 - [Maya Development Kit](https://www.autodesk.com/developer-network/platform-technologies/maya)
-- [CMinpack 1.3.8](https://github.com/devernay/cminpack/releases/tag/v1.3.8)
-- [LibMV 2.0](https://developer.blender.org/diffusion/LMV/)
-  - [Ceres Solver](http://ceres-solver.org/)
-  - [Eigen](https://eigen.tuxfamily.org/)
-  - ... many internal dependencies.
-- [OpenMVG 2.0](https://github.com/openMVG/openMVG/releases/tag/v2.0)
-  - ... many internal dependencies.
-- [Python 2.7.x or 3.x](https://www.python.org/) - for development building, testing and formatting Python code
-  - [Sphinx](http://www.sphinx-doc.org/en/master/index.html) - for building documentation.
-  - [Black](https://github.com/psf/black) - for Python code formatting.
-  - [PyLint](https://pylint.org/) - for Python code 'linting'.
-  - See 'requirements-dev.txt' for more details.
-- [Rust 1.43+](https://www.rust-lang.org/) for MM Scene Graph features.
-  - [cxx-bridge](https://cxx.rs/) for Rust/C++ bindings.
-  - See the 'Cargo.toml' files for a full list of (automatically)
-    installed dependencies.
+- [CMake](https://cmake.org/)
+- C++ Compilier
+  - [GCC](https://gcc.gnu.org/) (Linux)
+  - [Visual Studio (MSVC)](https://visualstudio.microsoft.com/downloads/) (Windows)
+  - [Xcode annd clang](https://developer.apple.com/download) (MacOS)
+- [Rust](https://www.rust-lang.org/)
+  - [cxx-bridge](https://cxx.rs/)
+- [CMinpack](https://github.com/devernay/cminpack)
+- [Eigen](https://eigen.tuxfamily.org/)
+- [OpenMVG](https://github.com/openMVG/openMVG)
+- [Ceres Solver](http://ceres-solver.org/)
+- [Lens Distortion Plug-in Kit (LDPK)](https://www.3dequalizer.com)
+  - [dlfcn-win32](https://github.com/dlfcn-win32/dlfcn-win32) (Windows only)
+- [Python](https://www.python.org/)
+  - [Sphinx](http://www.sphinx-doc.org/en/master/index.html)
+  - [Black](https://github.com/psf/black) - development requirement only.
+  - [PyLint](https://pylint.org/) - development requirement only.
+
+## Autodesk Maya
+
+[Autodesk Maya 2018+](https://www.autodesk.com.au/products/maya/overview) is
+supported and must be installed on the host to build mmSolver. mayapy
+is required to run tests and the main Maya executable is required to
+test and use mmSolver.
+
+# Maya Development Kit ("devkit")
+
+The [Maya Development Kit](https://www.autodesk.com/developer-network/platform-technologies/maya)
+is required for building mmSolver.
+
+Various utilities and libraries and files that are installed with the
+Maya devkit are used during the build process.
+
+## CMake
+
+[CMake 3.15+](https://cmake.org/) is required to build all parts of
+mmSolver. Older versions if CMake may work, however the Blender Add-On
+may fail to generate.
+
+### Ninja
+
+As of mmSolver v0.4.0, [Ninja build system](https://ninja-build.org/)
+is used in the default Windows Batch scripts - Linux (and MacOS) build
+scripts are not affected. Alternate build systems will likely work
+(such as NMake or Visual Studio projects) but are not tested.
+
+## C++ Compiler
+
+Depending on the version of Maya you are targeting, you will need the
+C++ compiler recommended by Autodesk for your platform. Below is a
+list of the versions currently used and recommended. Please refer to
+the Autodesk Maya Developer documentation for details on setting up
+your build environment.
+
+Each Maya version also specifies a different C++ standard. As of
+mmSolver v0.4.0 a C++ compiler with at least C++11 is required.
+
+- Linux
+  - [GCC 4.4.7](https://gcc.gnu.org/) (Maya 2016 and 2017)
+  - [GCC 4.8.2](https://gcc.gnu.org/) (Maya 2018)
+  - [GCC 6.3.1](https://gcc.gnu.org/) (Maya 2019 and 2020)
+    - Red Hat [DST 6.1](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/6/html/6.1_release_notes/index)
+    - `yum install devtoolset-6` on RHEL 7 / CentOS 7
+  - [GCC 9.3.1](https://gcc.gnu.org/) (Maya 2022)
+    - Red Hat [DST 9.1](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/9/html/9.1_release_notes/index)
+    - `yum install devtoolset-9` on RHEL 7 / CentOS 7
+- Windows
+  - [Visual Studio 2012 update 5 (MSVC 11.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2016 and 2017)
+  - [Visual Studio 2015 update 3 (MSVC 14.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2018 and 2019)
+  - [Visual Studio 2017 (MSVC 15.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2020)
+  - [Visual Studio 2019 (MSVC 16.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2022)
+- MacOS
+  - [Xcode 7.3.1 with SDK 10.11, clang with libc++](https://developer.apple.com/download) (Maya 2018)
+  - [Xcode version 7.3.1 and CMake are required](https://developer.apple.com/download) (Maya 2019)
+
+## Rust
+
+[Rust 1.43+](https://www.rust-lang.org/) is required for ``MM Scene
+Graph`` features inside mmSolver.
+
+Rust is a modern programming language comparable to C or C++ in terms
+of speed, and is highly performant and provides safety and stability
+guarantees for software written in Rust.
+
+Both the Rust compiler (``rustc``) and the Rust package manager
+(``cargo``) are required to be installed to build mmSolver. No part of
+Rust is required to be installed at run-time.
+
+See the 'Cargo.toml' files for a full list of (automatically)
+installed dependencies via the package managers.
+
+### cxx-bridge
+
+[cxx-bridge](https://cxx.rs/) is an executable required for generating
+C++ bindings for Rust code. This utility allows C++ code to interact
+with Rust code in simple and a safe way. This is used for the ``MM
+Scene Graph`` features.
+
+## Eigen
+
+[Eigen](https://eigen.tuxfamily.org/) is a requirement of OpenMVG and
+also mmSolver (because mmSolver uses OpenMVG headers).
+
+## CMinpack
+
+[CMinpack 1.3.8](https://github.com/devernay/cminpack/releases/tag/v1.3.8)
+is required for non-linear least-squares minimization.
+
+This solver is not as sophisticated as Ceres and may be deprecated in a
+future release (in favor of [Ceres Solver](http://ceres-solver.org/))
+
+## Ceres
+
+[Ceres Solver](http://ceres-solver.org/) is a state-of-the-art
+non-linear least-squares minimization library required for OpenMVG.
+
+Ceres Solver allows solving large minimization problems efficiently
+using sparse matrices. Ceres Solver itself has many dependencies, and
+the speed of the library depends on the underlying sparse matrix
+libraries and functions. Feel free to compile and use whatever
+underlying dependencies provides the best performance for you -
+however make sure that sparse matrix solving is available.
+
+In a future version of mmSolver Ceres may replace CMinpack as the
+default and recommended global
+
+## OpenMVG
+
+[OpenMVG 2.0](https://github.com/openMVG/openMVG/releases/tag/v2.0) is
+required for traditional Multiple-View Geometry calculations inside
+mmSolver, such as Structure from Motion, triangulation and other
+features.
+
+## Lens Distortion Plug-in Kit
+
+[Lens Distortion Plug-in Kit (LDPK)](https://www.3dequalizer.com/?site=tech_docs)
+is an open source project provided freely by Science-D-Visions, the
+creators of 3DEqualizer.
+
+The LDPK provides a standard set of lens distortion features and the
+ability to provide custom lens distortion plug-ins.
+
+When compiling the LDPK on Windows,
+[dlfcn-win32](https://github.com/dlfcn-win32/dlfcn-win32) is required.
+
+## Python
+
+[Python 3.x](https://www.python.org/) is used for development, testing
+and formatting Python code.
+
+The mmSolver build will use the provided Maya Python executable
+(``mayapy``) for some processes, such as generating Python files from
+Qt .ui files. Use of ``mayapy`` will use Python 2.x or 3.x depending
+on the Maya version.
+
+See 'requirements-dev.txt' for more details of all dependencies.
+
+### Sphinx
+
+[Sphinx](http://www.sphinx-doc.org/en/master/index.html) is used to
+build documentation for mmSolver including the mmSolver
+[documentation page](https://david-cattermole.github.io/mayaMatchMoveSolver/index.html),
+and the documentation bundled with mmSolver.
+
+### Developer Python Tools - Black and PyLint
+
+[Black](https://github.com/psf/black) is used for for Python code
+formatting, and is only used by developers.
+
+[PyLint](https://pylint.org/) for Python code 'linting'. It is not
+critical for building mmSolver.
+
+Both Black and PyLint are used for during development and is not
+required for building mmSolver.
 
 # Building Overview
 
@@ -109,7 +247,7 @@ On Windows:
 
 To build dependencies we have pre-configured build scripts for Linux
 and Windows.
-  
+
 | Build Script Name                       | Operating System |
 | ------------                            | -----------      |
 | build_thirdparty_linux_mayaXXXX.bash    | Linux            |
@@ -121,7 +259,7 @@ These scripts will automatically install into `<project root>/external/install`.
 # Building mmSolver
 
 To build the project we can use the build scripts provided.
-  
+
 | Build Script Name                     | Operating System |
 | ------------                          | -----------      |
 | build_mmSolver_linux_mayaXXXX.bash    | Linux            |

@@ -114,7 +114,7 @@ REM To Generate a Visual Studio 'Solution' file
 
 ) ELSE (
 
-    cmake -G Ninja ^
+    cmake -G "NMake Makefiles" ^
         -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
         -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
         -DBUILD_PLUGIN=%BUILD_PLUGIN% ^

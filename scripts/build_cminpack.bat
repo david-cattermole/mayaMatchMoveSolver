@@ -38,7 +38,7 @@ CHDIR build
 DEL /S /Q *
 FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
 
-cmake -G Ninja ^
+cmake -G "NMake Makefiles" ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% ^
     -DBUILD_SHARED_LIBS=ON ^

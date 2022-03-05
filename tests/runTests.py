@@ -95,11 +95,8 @@ def main(path_list):
         if results.wasSuccessful() is False:
             exit_code = 1
             print("Tests failed!", file=sys.stderr)
-        # NOTE: We should call 'maya.standalone.uninitialize()', but
-        # that seems to hang Maya if we do, but at least 'sys.exit()'
-        # will not hang and we can CTRL+C in the terminal to exit out
-        # of the Maya Python interpreter.
         print("Press CTRL+C to exit 'mayapy'.")
+        maya.standalone.uninitialize()
         sys.exit(exit_code)
     return
 

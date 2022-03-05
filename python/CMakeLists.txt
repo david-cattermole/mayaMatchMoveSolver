@@ -26,7 +26,7 @@ function(add_ui_compile
          name
          input_file
          output_file)
-    if(MAYA_VERSION GREATER_EQUAL 2022)
+    if((MAYA_VERSION GREATER 2022) OR (MAYA_VERSION EQUAL 2022))
         # Maya 2022 and above. Use Maya provided 'uic' executable to
         # compile .ui files into .py files. Earlier versions of Maya
         # can only compile to C++ code with 'uic'.

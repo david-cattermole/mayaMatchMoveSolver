@@ -128,22 +128,22 @@ class TestSolver1(solverUtils.SolverTestCase):
         assert self.approx_equal(ty, 3.6)
 
     def test_init_ceres_maya_dag(self):
-        self.do_solve('ceres', 3, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
     def test_init_ceres_mmscenegraph(self):
-        self.do_solve('ceres', 3, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
     def test_init_cminpack_lmdif_maya_dag(self):
-        self.do_solve('cminpack_lmdif', 1, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
     def test_init_cminpack_lmdif_mmscenegraph(self):
-        self.do_solve('cminpack_lmdif', 1, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
     def test_init_cminpack_lmder_maya_dag(self):
-        self.do_solve('cminpack_lmder', 2, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
     def test_init_cminpack_lmder_mmscenegraph(self):
-        self.do_solve('cminpack_lmder', 2, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
 
 if __name__ == '__main__':

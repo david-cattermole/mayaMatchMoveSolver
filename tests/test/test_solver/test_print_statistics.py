@@ -159,13 +159,13 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
         return
 
     def test_init_ceres(self):
-        self.do_solve('ceres', 3)
+        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES)
 
     def test_init_cminpack_lmdif(self):
-        self.do_solve('cminpack_lmdif', 1)
+        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF)
 
     def test_init_cminpack_lmder(self):
-        self.do_solve('cminpack_lmder', 2)
+        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER)
 
 
 if __name__ == '__main__':

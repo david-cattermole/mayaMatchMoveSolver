@@ -37,6 +37,9 @@ SET SOURCE_DIR="%ROOT%"
 :: SET WORKING_DIR="%ROOT%\working\maya%MAYA_VERSION%_windows64"
 SET WORKING_DIR="C:\build_mmSolver_maya%MAYA_VERSION%_windows64"
 
+:: Optionally use "NMake Makefiles" as the build system generator.
+SET CMAKE_GENERATOR=Ninja
+
 :: Build plugin
 SET BUILD_DIR_NAME=build_maya%MAYA_VERSION%_linux
 CHDIR %WORKING_DIR%
@@ -45,7 +48,7 @@ CHDIR %BUILD_DIR_NAME%
 DEL /S /Q *
 FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
 
-%CMAKE_EXE% -G Ninja ^
+%CMAKE_EXE% -G %CMAKE_GENERATOR% ^
     -DCMAKE_BUILD_TYPE=Release ^
     -DCMAKE_CXX_STANDARD=%CXX_STANDARD% ^
     -DTHIRDPARTY_BASE_INSTALL_DIR=%INSTALL_DIR% ^

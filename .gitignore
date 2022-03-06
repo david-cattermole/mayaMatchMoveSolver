@@ -20,7 +20,7 @@ ui_*.py
 
 old/*
 precompiled/*
-venv/*
+*venv*/*
 
 *.so
 *.so.*
@@ -42,11 +42,11 @@ tests/**/*.tiff
 tests/**/*.iff
 tests/**/*.png
 
-external/build/*
+external/build*/*
 external/install/*
 external/working/*
 external/include/*.h*
 external/include/*atlas*
 
-docs/build/html/*
-docs/build/doctrees/*
+docs/build*/html/*
+docs/build*/doctrees/*

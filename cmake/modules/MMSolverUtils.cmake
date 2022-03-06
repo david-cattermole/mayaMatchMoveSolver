@@ -344,3 +344,64 @@ function(install_shared_libraries lib_files lib_files_dll install_dir)
       ${install_dir})
   endforeach ()
 endfunction()
+
+
+# Compile a .ui file into a .py file using 'mayapy' command.
+function(compile_qt_ui_to_python_file
+         name
+         input_file
+         output_file)
+    if(MAYA_VERSION GREATER_EQUAL 2022)
+        find_package(Maya REQUIRED)
+        # Maya 2022 and above. Use Maya provided 'uic' executable to
+        # compile .ui files into .py files. Earlier versions of Maya
+        # can only compile to C++ code with 'uic'.
+        find_program(MAYA_QT_UIC_EXECUTABLE
+                uic
+            HINTS
+                "${MAYA_LOCATION}"
+                "$ENV{MAYA_LOCATION}"
+                "${MAYA_BASE_DIR}"
+            PATH_SUFFIXES
+                MacOS/
+                bin/
+            DOC
+                "Maya provided Qt 'uic' executable path"
+        )
+
+        # Runs 'uic -g python <ui_file> -o <output_python_file>'
+        add_custom_command(
+                OUTPUT
+                    ${output_file}
+                    # file_never_exist.txt  # force re-run.
+                COMMAND ${MAYA_QT_UIC_EXECUTABLE} -g python ${input_file} -o ${output_file}
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                DEPENDS ${input_file}
+        )
+        add_custom_target(
+                compile_ui_${name} ALL
+                DEPENDS ${output_file}
+                COMMENT "Compiling Qt UI file (${input_file})..."
+        )
+    else ()
+        # Use the Maya Python environment to compile the .ui files
+        # into .py files.
+        set(EXEC_SCRIPT ${CMAKE_SOURCE_DIR}/scripts/internal/compileUI.py)
+        add_custom_command(
+                OUTPUT
+                    ${output_file}
+                    # file_never_exist.txt  # force re-run.
+                COMMAND ${MAYA_PYTHON_EXECUTABLE} ${EXEC_SCRIPT} ${input_file}
+                WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+                DEPENDS ${input_file}
+        )
+        add_custom_target(
+                compile_ui_${name} ALL
+                DEPENDS ${output_file}
+                COMMENT "Compiling Qt UI file (${input_file})..."
+        )
+    endif ()
+    if (BUILD_PLUGIN)
+        add_dependencies(mmSolver compile_ui_${name})
+    endif ()
+endfunction()

@@ -36,6 +36,8 @@ except RuntimeError:
     pass
 import maya.cmds
 
+import mmSolver.api as mmapi
+
 
 class TestBase(unittest.TestCase):
 
@@ -120,3 +122,26 @@ class TestBase(unittest.TestCase):
             has_solver = index in solverTypes
         print('has_solver:', has_solver)
         return has_solver
+
+    def checkSolveResults(self, solres_list):
+        # Ensure the values are correct
+        for res in solres_list:
+            success = res.get_success()
+            err = res.get_final_error()
+            print('final error', success, err)
+            self.assertTrue(success)
+            self.assertTrue(isinstance(err, float))
+
+        # Check the final error values
+        frm_err_list = mmapi.merge_frame_error_list(solres_list)
+
+        avg_err = mmapi.get_average_frame_error_list(frm_err_list)
+        print('avg error', avg_err)
+
+        max_err_frm, max_err_val = mmapi.get_max_frame_error(frm_err_list)
+        print('max error frame and value:', max_err_frm, max_err_val)
+        self.assertLess(avg_err, 1.0)
+        self.assertGreater(avg_err, 0.0)
+        self.assertLess(max_err_val, 1.0)
+        self.assertGreater(max_err_val, 0.0)
+        return

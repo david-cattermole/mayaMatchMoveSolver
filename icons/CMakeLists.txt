@@ -20,39 +20,10 @@
 
 include(MMSolverUtils)
 
-# This section sets a hard location to the rcc  
-# executable file to prevent any errors of 
-# likes of 'rcc command not found'
-find_program(MAYA_RCC_EXECUTABLE
-        rcc
-    HINTS
-        "${MAYA_LOCATION}"
-        "$ENV{MAYA_LOCATION}"
-        "${MAYA_BASE_DIR}"
-    PATH_SUFFIXES
-        MacOS
-        bin3/  # Use Python 3.x location, in Maya 2022.
-        bin/
-    DOC
-        "Maya's Qt resource compiler (rcc) executable path"
-)
-
 get_maya_module_os_name(os_name)
-set(input_file resources.qrc)
-set(output_file resources_${os_name}_maya${MAYA_VERSION}.rcc)
-message(STATUS "resources output_file: ${output_file}")
-add_custom_command(
-        OUTPUT ${output_file}
-        COMMAND ${MAYA_RCC_EXECUTABLE} -binary ${input_file} -o ${output_file}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-        DEPENDS ${input_file}
-)
-add_custom_target(
-        build_icons ALL
-        DEPENDS ${output_file}
-        COMMENT "Building Icons (with Qt Resource Compiler) (${input_file})..."
-)
-
+set(input_file ${CMAKE_CURRENT_SOURCE_DIR}/resources.qrc)
+set(output_file ${CMAKE_CURRENT_BINARY_DIR}/resources_${os_name}_maya${MAYA_VERSION}.rcc)
+compile_qt_resources_qrc_to_rcc_file("qt_resources" ${input_file} ${output_file})
 
 # Install Icons.
 install(FILES
@@ -60,13 +31,9 @@ install(FILES
   DESTINATION "${MODULE_FULL_NAME}/resources")
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
   DESTINATION "${MODULE_FULL_NAME}/icons"
-  FILES_MATCHING PATTERN "*.png"
-  PATTERN "edit" EXCLUDE
-  PATTERN "library" EXCLUDE
-  PATTERN "ui" EXCLUDE)
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
-  DESTINATION "${MODULE_FULL_NAME}/icons"
-  FILES_MATCHING PATTERN "*.svg"
+  FILES_MATCHING
+        PATTERN "*.png"
+        PATTERN "*.svg"
   PATTERN "edit" EXCLUDE
   PATTERN "library" EXCLUDE
   PATTERN "ui" EXCLUDE)

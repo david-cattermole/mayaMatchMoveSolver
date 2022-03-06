@@ -405,3 +405,40 @@ function(compile_qt_ui_to_python_file
         add_dependencies(mmSolver compile_ui_${name})
     endif ()
 endfunction()
+
+
+function(compile_qt_resources_qrc_to_rcc_file
+         name
+         input_file
+         output_file)
+    find_package(Maya REQUIRED)
+    # This section sets a hard location to the rcc
+    # executable file to prevent any errors of
+    # likes of 'rcc command not found'
+    find_program(MAYA_RCC_EXECUTABLE
+            rcc
+        HINTS
+            "${MAYA_LOCATION}"
+            "$ENV{MAYA_LOCATION}"
+            "${MAYA_BASE_DIR}"
+        PATH_SUFFIXES
+            MacOS
+            bin3/  # Use Python 3.x location, in Maya 2022.
+            bin/
+        DOC
+            "Maya's Qt resource compiler (rcc) executable path"
+    )
+
+    # message(STATUS "Qt Resources file: ${output_file}")
+    add_custom_command(
+            OUTPUT ${output_file}
+            COMMAND ${MAYA_RCC_EXECUTABLE} -binary ${input_file} -o ${output_file}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            DEPENDS ${input_file}
+    )
+    add_custom_target(
+            build_icons ALL
+            DEPENDS ${output_file}
+            COMMENT "Building Icons (with Qt Resource Compiler) (${input_file})..."
+    )
+endfunction()

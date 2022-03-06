@@ -127,7 +127,7 @@ int countUpNumberOfErrors(const MarkerPtrList &markerList,
             status = marker->getWeight(weight, frame, timeEvalMode);
             CHECK_MSTATUS_AND_RETURN(status, numberOfMarkerErrors);
 
-            if ((enable == true) && (weight > 0.0)) {
+            if (enable && (weight > 0.0)) {
                 // First index is into 'markerList'
                 // Second index is into 'frameList'
                 IndexPair markerPair(i, j);
@@ -154,25 +154,11 @@ int countUpNumberOfErrors(const MarkerPtrList &markerList,
                 weightMaxPerFrame.insert(std::pair<int, double>(j, weight_max));
 
                 // Get Marker Position.
-                MMatrix cameraWorldProjectionMatrix;
-                CameraPtr camera = marker->getCamera();
-                status = camera->getWorldProjMatrix(
-                    cameraWorldProjectionMatrix, frame, timeEvalMode);
-                double filmBackWidth = camera->getFilmbackWidthValue(
-                    frame, timeEvalMode);
-                double filmBackHeight = camera->getFilmbackHeightValue(
-                    frame, timeEvalMode);
-                double filmBackInvAspect = filmBackHeight / filmBackWidth;
+                double px = 0.0;
+                double py = 0.0;
+                status = marker->getPosXY(px, py, frame, timeEvalMode);
                 CHECK_MSTATUS(status);
-                MPoint marker_pos;
-                status = marker->getPos(marker_pos, frame, timeEvalMode);
-                CHECK_MSTATUS(status);
-                marker_pos = marker_pos * cameraWorldProjectionMatrix;
-                marker_pos.cartesianize();
-                // convert to -0.5 to 0.5, maintaining the aspect
-                // ratio of the film back.
-                marker_pos[0] *= 0.5;
-                marker_pos[1] *= 0.5 * filmBackInvAspect;
+                MPoint marker_pos(px, py, 0.0);
                 markerPosList.push_back(marker_pos);
             }
         }

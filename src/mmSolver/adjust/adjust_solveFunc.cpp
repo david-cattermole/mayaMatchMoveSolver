@@ -409,6 +409,7 @@ void measureErrors_mayaDag(
 
     // Compute Marker Errors
     MMatrix cameraWorldProjectionMatrix;
+    MPoint mkr_mpos;
     MPoint bnd_mpos;
     int numberOfErrorsMeasured = 0;
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
@@ -452,7 +453,6 @@ void measureErrors_mayaDag(
         double mkr_y = 0.0;
 #if USE_MARKER_POSITION_CACHE == 1
         // Use pre-computed marker position and weight
-        MPoint mkr_mpos;
         mkr_mpos = ud->markerPosList[i];
         mkr_x = mkr_mpos.x;
         mkr_y = mkr_mpos.y;
@@ -510,7 +510,8 @@ void measureErrors_mayaDag(
         // be best to test this detail.
         double dx = fabs(mkr_x - bnd_mpos.x) * ud->imageWidth;
         double dy = fabs(mkr_y - bnd_mpos.y) * ud->imageWidth;
-        double d = distance_2d(mkr_x, mkr_y, bnd_mpos.x, bnd_mpos.y) * ud->imageWidth;
+        double d = distance_2d(
+            mkr_x, mkr_y, bnd_mpos[0], bnd_mpos[1]) * ud->imageWidth;
 
         auto errorIndex_x = i * ERRORS_PER_MARKER;
         auto errorIndex_y = errorIndex_x + 1;

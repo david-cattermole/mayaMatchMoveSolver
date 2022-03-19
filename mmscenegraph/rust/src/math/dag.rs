@@ -124,7 +124,7 @@ pub fn compute_projection_matrix_with_attrs(
     attr_focal: AttrId,
     attr_lens_offset_x: AttrId,
     attr_lens_offset_y: AttrId,
-    attr_near_clip_plane: AttrId,
+    _attr_near_clip_plane: AttrId,
     attr_far_clip_plane: AttrId,
     attr_camera_scale: AttrId,
     film_fit: FilmFit,
@@ -133,19 +133,19 @@ pub fn compute_projection_matrix_with_attrs(
     frame: FrameValue,
 ) -> Matrix44 {
     // println!("Compute Projection Matrix!");
-    let focal_length = attr_data_block.get_attr_value(attr_focal, frame);
+    let focal_length_mm = attr_data_block.get_attr_value(attr_focal, frame);
 
-    let sensor_x = attr_data_block.get_attr_value(attr_sensor_x, frame);
-    let sensor_y = attr_data_block.get_attr_value(attr_sensor_y, frame);
-    let sensor_x = sensor_x * MM_TO_INCH;
-    let sensor_y = sensor_y * MM_TO_INCH;
+    let sensor_x_mm = attr_data_block.get_attr_value(attr_sensor_x, frame);
+    let sensor_y_mm = attr_data_block.get_attr_value(attr_sensor_y, frame);
+    let sensor_x_inch = sensor_x_mm * MM_TO_INCH;
+    let sensor_y_inch = sensor_y_mm * MM_TO_INCH;
 
-    let lens_offset_x =
+    let lens_offset_x_mm =
         attr_data_block.get_attr_value(attr_lens_offset_x, frame);
-    let lens_offset_y =
+    let lens_offset_y_mm =
         attr_data_block.get_attr_value(attr_lens_offset_y, frame);
-    let lens_offset_x = lens_offset_x * MM_TO_INCH;
-    let lens_offset_y = lens_offset_y * MM_TO_INCH;
+    let lens_offset_x_inch = lens_offset_x_mm * MM_TO_INCH;
+    let lens_offset_y_inch = lens_offset_y_mm * MM_TO_INCH;
 
     let near_clip_plane =
         attr_data_block.get_attr_value(attr_near_clip_plane, frame);
@@ -154,11 +154,11 @@ pub fn compute_projection_matrix_with_attrs(
     let camera_scale = attr_data_block.get_attr_value(attr_camera_scale, frame);
 
     get_projection_matrix(
-        focal_length,
-        sensor_x,
-        sensor_y,
-        lens_offset_x,
-        lens_offset_y,
+        focal_length_mm,
+        sensor_x_inch,
+        sensor_y_inch,
+        lens_offset_x_inch,
+        lens_offset_y_inch,
         render_image_width as Real,
         render_image_height as Real,
         film_fit,

@@ -47,11 +47,11 @@
 
 
 MStatus getAngleOfView(
-        const double filmBackSize,
-        const double focalLength,
+        const double filmBackSize_mm,
+        const double focalLength_mm,
         double &angleOfView,
         bool asDegrees) {
-    angleOfView = 2.0 * atan(filmBackSize * (0.5 / focalLength));
+    angleOfView = 2.0 * atan(filmBackSize_mm * (0.5 / focalLength_mm));
     if (asDegrees) {
         angleOfView *= RADIANS_TO_DEGREES;
     }
@@ -60,12 +60,12 @@ MStatus getAngleOfView(
 
 
 MStatus getCameraPlaneScale(
-        const double filmBackSize,
-        const double focalLength,
+        const double filmBackSize_mm,
+        const double focalLength_mm,
         double &scale) {
     double aov = 0.0;
     const bool asDegrees = true;
-    getAngleOfView(filmBackSize, focalLength, aov, asDegrees);
+    getAngleOfView(filmBackSize_mm, focalLength_mm, aov, asDegrees);
     // Hard-code 'pi' so we don't have cross-platform problems
     // between Linux and Windows.
     const double pi = 3.14159265358979323846;
@@ -75,28 +75,28 @@ MStatus getCameraPlaneScale(
 
 
 MStatus computeFrustumCoordinates(
-        const double focalLength,     // millimetres
-        const double filmBackWidth,   // inches
-        const double filmBackHeight,  // inches
-        const double filmOffsetX,     // inches
-        const double filmOffsetY,     // inches
-        const double nearClipPlane,   // centimetres
+        const double focalLength_mm,       // millimetres
+        const double filmBackWidth_inch,   // inches
+        const double filmBackHeight_inch,  // inches
+        const double filmOffsetX_inch,     // inches
+        const double filmOffsetY_inch,     // inches
+        const double nearClipPlane_cm,     // centimetres
         const double cameraScale,
         double &left, double &right,
         double &top, double &bottom) {
     MStatus status = MS::kSuccess;
 
     // Convert everything into millimetres
-    double filmWidth = filmBackWidth * INCH_TO_MM;
-    double filmHeight = filmBackHeight * INCH_TO_MM;
-    double offsetX = filmOffsetX * INCH_TO_MM;
-    double offsetY = filmOffsetY * INCH_TO_MM;
+    double filmWidth_mm = filmBackWidth_inch * INCH_TO_MM;
+    double filmHeight_mm = filmBackHeight_inch * INCH_TO_MM;
+    double offsetX_mm = filmOffsetX_inch * INCH_TO_MM;
+    double offsetY_mm = filmOffsetY_inch * INCH_TO_MM;
 
-    double focal_to_near = (nearClipPlane / focalLength) * cameraScale;
-    right = focal_to_near * (0.5 * filmWidth + offsetX);
-    left = focal_to_near * (-0.5 * filmWidth + offsetX);
-    top = focal_to_near * (0.5 * filmHeight + offsetY);
-    bottom = focal_to_near * (-0.5 * filmHeight + offsetY);
+    double focal_to_near = (nearClipPlane_cm / focalLength_mm) * cameraScale;
+    right = focal_to_near * (0.5 * filmWidth_mm + offsetX_mm);
+    left = focal_to_near * (-0.5 * filmWidth_mm + offsetX_mm);
+    top = focal_to_near * (0.5 * filmHeight_mm + offsetY_mm);
+    bottom = focal_to_near * (-0.5 * filmHeight_mm + offsetY_mm);
 
     return status;
 }
@@ -247,32 +247,32 @@ MStatus computeProjectionMatrix(
 
 
 MStatus getProjectionMatrix(
-        const double focalLength,     // millimetres
-        const double filmBackWidth,   // inches
-        const double filmBackHeight,  // inches
-        const double filmOffsetX,     // inches
-        const double filmOffsetY,     // inches
-        const double imageWidth,      // pixels
-        const double imageHeight,     // pixels
+        const double focalLength_mm,       // millimetres
+        const double filmBackWidth_inch,   // inches
+        const double filmBackHeight_inch,  // inches
+        const double filmOffsetX_inch,     // inches
+        const double filmOffsetY_inch,     // inches
+        const double imageWidth_pixels,    // pixels
+        const double imageHeight_pixels,   // pixels
         const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
-        const double nearClipPlane,
-        const double farClipPlane,
+        const double nearClipPlane_cm,     // centimetres
+        const double farClipPlane_cm,      // centimetres
         const double cameraScale,
         MMatrix &projectionMatrix) {
     MStatus status = MS::kSuccess;
 
-    double filmAspectRatio = filmBackWidth / filmBackHeight;
+    double filmAspectRatio = filmBackWidth_inch / filmBackHeight_inch;
     double imageAspectRatio =
-        static_cast<double>(imageWidth) / static_cast<double>(imageHeight);
+        static_cast<double>(imageWidth_pixels) / static_cast<double>(imageHeight_pixels);
 
     double left = 0.0;
     double right = 0.0;
     double top = 0.0;
     double bottom = 0.0;
-    computeFrustumCoordinates(focalLength,
-                              filmBackWidth, filmBackHeight,
-                              filmOffsetX, filmOffsetY,
-                              nearClipPlane, cameraScale,
+    computeFrustumCoordinates(focalLength_mm,
+                              filmBackWidth_inch, filmBackHeight_inch,
+                              filmOffsetX_inch, filmOffsetY_inch,
+                              nearClipPlane_cm, cameraScale,
                               left, right, top, bottom);
 
     // Apply 'Film Fit'
@@ -297,7 +297,7 @@ MStatus getProjectionMatrix(
             filmFitScaleX, filmFitScaleY,
             screenSizeX, screenSizeY,
             screenLeft, screenRight, screenTop, screenBottom,
-            nearClipPlane, farClipPlane,
+            nearClipPlane_cm, farClipPlane_cm,
             projectionMatrix);
 
     return status;
@@ -707,8 +707,8 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time,
         // We assume that the following attributes won't be animated, but Maya
         // allows them to be animated.
         cameraScale = getCameraScaleValue();
-        // override because Maya expects this value to be hard-coded,
-        // for some crazy reason.
+        // Override the near-clip value because Maya expects this value to
+        // be hard-coded (for some crazy reason).
         nearClip = 0.1;  // getNearClipPlaneValue();
         farClip = getFarClipPlaneValue();
         filmFit = getFilmFitValue();

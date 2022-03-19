@@ -52,8 +52,8 @@ pub struct Frustum {
 
 #[derive(Debug)]
 pub struct Screen {
-    size_x: Real,
-    size_y: Real,
+    size_x_mm: Real,
+    size_y_mm: Real,
     right: Real,
     left: Real,
     top: Real,
@@ -77,28 +77,28 @@ mod tests {
 
     #[test]
     fn test_get_projection_matrix() {
-        let focal_length = 35.0;
-        let film_back_width = 36.0 / 25.4;
-        let film_back_height = 24.0 / 25.4;
+        let focal_length_mm = 35.0;
+        let film_back_width_inch = 36.0 / 25.4;
+        let film_back_height_inch = 24.0 / 25.4;
         let film_offset_x = 0.0;
         let film_offset_y = 0.0;
         let image_width = 2048.0;
         let image_height = 1556.0;
         let film_fit = FilmFit::Horizontal;
-        let near_clip_plane = 0.1;
-        let far_clip_plane = 10000.0;
+        let near_clip_plane_cm = 0.01;  // This value will be ignored and treated as 0.1
+        let far_clip_plane_cm = 10000.0;
         let camera_scale = 1.0;
         let camera_projection_matrix = get_projection_matrix(
-            focal_length,
-            film_back_width,
-            film_back_height,
+            focal_length_mm,
+            film_back_width_inch,
+            film_back_height_inch,
             film_offset_x,
             film_offset_y,
             image_width,
             image_height,
             film_fit,
-            near_clip_plane,
-            far_clip_plane,
+            near_clip_plane_cm,
+            far_clip_plane_cm,
             camera_scale,
         );
         // println!("Camera Projection Matrix: {}", camera_projection_matrix);
@@ -121,55 +121,55 @@ mod tests {
 
 #[inline]
 pub fn get_angle_of_view_as_radian(
-    film_back_size: Real,
-    focal_length: Real,
+    film_back_size_mm: Real,
+    focal_length_mm: Real,
 ) -> Real {
     // println!("Get Angle of View as radian");
-    let angle_of_view = film_back_size * (0.5 / focal_length);
+    let angle_of_view = film_back_size_mm * (0.5 / focal_length_mm);
     2.0 * angle_of_view.atan()
 }
 
 #[inline]
 pub fn get_angle_of_view_as_degree(
-    film_back_size: Real,
-    focal_length: Real,
+    film_back_size_mm: Real,
+    focal_length_mm: Real,
 ) -> Real {
-    get_angle_of_view_as_radian(film_back_size, focal_length)
+    get_angle_of_view_as_radian(film_back_size_mm, focal_length_mm)
         * RADIANS_TO_DEGREES
 }
 
 #[inline]
 pub fn get_camera_plane_scale(
-    film_back_size: Real,
-    focal_length: Real,
+    film_back_size_mm: Real,
+    focal_length_mm: Real,
 ) -> Real {
-    let aov = get_angle_of_view_as_degree(film_back_size, focal_length);
+    let aov = get_angle_of_view_as_degree(film_back_size_mm, focal_length_mm);
     let scale = aov * 0.5 * DEGREES_TO_RADIANS;
     scale.tan()
 }
 
 #[inline]
 pub fn compute_frustum_coordinates(
-    focal_length: Real,     // millimetres
-    film_back_width: Real,  // inches
-    film_back_height: Real, // inches
-    film_offset_x: Real,    // inches
-    film_offset_y: Real,    // inches
-    near_clip_plane: Real,  // centimetres
+    focal_length_mm: Real,       // millimetres
+    film_back_width_inch: Real,  // inches
+    film_back_height_inch: Real, // inches
+    film_offset_x_inch: Real,    // inches
+    film_offset_y_inch: Real,    // inches
+    near_clip_plane_cm: Real,    // centimetres
     camera_scale: Real,
 ) -> Frustum {
     // Convert everything into millimetres
-    let film_width = film_back_width * INCH_TO_MM;
-    let film_height = film_back_height * INCH_TO_MM;
-    let offset_x = film_offset_x * INCH_TO_MM;
-    let offset_y = film_offset_y * INCH_TO_MM;
+    let film_width_mm = film_back_width_inch * INCH_TO_MM;
+    let film_height_mm = film_back_height_inch * INCH_TO_MM;
+    let offset_x_mm = film_offset_x_inch * INCH_TO_MM;
+    let offset_y_mm = film_offset_y_inch * INCH_TO_MM;
 
-    let focal_to_near = (near_clip_plane / focal_length) * camera_scale;
+    let focal_to_near = (near_clip_plane_cm / focal_length_mm) * camera_scale;
     Frustum {
-        right: focal_to_near * (0.5 * film_width + offset_x),
-        left: focal_to_near * (-0.5 * film_width + offset_x),
-        top: focal_to_near * (0.5 * film_height + offset_y),
-        bottom: focal_to_near * (-0.5 * film_height + offset_y),
+        right: focal_to_near * (0.5 * film_width_mm + offset_x_mm),
+        left: focal_to_near * (-0.5 * film_width_mm + offset_x_mm),
+        top: focal_to_near * (0.5 * film_height_mm + offset_y_mm),
+        bottom: focal_to_near * (-0.5 * film_height_mm + offset_y_mm),
     }
 }
 
@@ -187,8 +187,8 @@ pub fn apply_film_fit_logic(
 ) -> (FilmFitScale, Screen) {
     let mut film_fit_scale = FilmFitScale { x: 1.0, y: 1.0 };
     let mut screen = Screen {
-        size_x: 0.0,
-        size_y: 0.0,
+        size_x_mm: 0.0,
+        size_y_mm: 0.0,
         left: frustum.left,
         right: frustum.right,
         top: frustum.top,
@@ -198,23 +198,23 @@ pub fn apply_film_fit_logic(
     match film_fit {
         FilmFit::Horizontal => {
             film_fit_scale.x = image_aspect_ratio / film_aspect_ratio;
-            screen.size_x = frustum.right - frustum.left;
-            screen.size_y = screen.size_x / image_aspect_ratio;
+            screen.size_x_mm = frustum.right - frustum.left;
+            screen.size_y_mm = screen.size_x_mm / image_aspect_ratio;
         }
         FilmFit::Vertical => {
             film_fit_scale.x = 1.0 / (image_aspect_ratio / film_aspect_ratio);
-            screen.size_y = frustum.top - frustum.bottom;
-            screen.size_x = screen.size_y * image_aspect_ratio;
+            screen.size_y_mm = frustum.top - frustum.bottom;
+            screen.size_x_mm = screen.size_y_mm * image_aspect_ratio;
         }
         FilmFit::Fill => {
             if film_aspect_ratio > image_aspect_ratio {
                 film_fit_scale.x = film_aspect_ratio / image_aspect_ratio;
-                screen.size_y = frustum.top - frustum.bottom;
-                screen.size_x = screen.size_y * image_aspect_ratio;
+                screen.size_y_mm = frustum.top - frustum.bottom;
+                screen.size_x_mm = screen.size_y_mm * image_aspect_ratio;
             } else {
                 film_fit_scale.y = image_aspect_ratio / film_aspect_ratio;
-                screen.size_x = frustum.right - frustum.left;
-                screen.size_y = (screen.size_x
+                screen.size_x_mm = frustum.right - frustum.left;
+                screen.size_y_mm = (screen.size_x_mm
                     * (film_aspect_ratio / image_aspect_ratio))
                     / film_aspect_ratio;
             }
@@ -222,14 +222,14 @@ pub fn apply_film_fit_logic(
         FilmFit::Overscan => {
             if film_aspect_ratio > image_aspect_ratio {
                 film_fit_scale.y = image_aspect_ratio / film_aspect_ratio;
-                screen.size_x = frustum.right - frustum.left;
-                screen.size_y =
+                screen.size_x_mm = frustum.right - frustum.left;
+                screen.size_y_mm =
                     (frustum.right - frustum.left) / image_aspect_ratio;
             } else {
                 film_fit_scale.x = film_aspect_ratio / image_aspect_ratio;
-                screen.size_x = (frustum.right - frustum.left)
+                screen.size_x_mm = (frustum.right - frustum.left)
                     * (image_aspect_ratio / film_aspect_ratio);
-                screen.size_y = frustum.top - frustum.bottom;
+                screen.size_y_mm = frustum.top - frustum.bottom;
             }
         }
     }
@@ -244,20 +244,20 @@ pub fn apply_film_fit_logic(
 pub fn compute_projection_matrix(
     film_fit_scale: FilmFitScale,
     screen: Screen,
-    near_clip_plane: Real,
-    far_clip_plane: Real,
+    near_clip_plane_cm: Real,
+    far_clip_plane_cm: Real,
     _camera_scale: Real,
 ) -> Matrix44 {
     // println!("Compute Projection Matrix");
     na::Matrix4::<Real>::new(
         // First Row
-        1.0 / (screen.size_x * 0.5) * MM_TO_CM,
+        1.0 / (screen.size_x_mm * 0.5) * MM_TO_CM,
         0.0,
         0.0,
         0.0,
         // Second Row
         0.0,
-        1.0 / (screen.size_y * 0.5) * MM_TO_CM,
+        1.0 / (screen.size_y_mm * 0.5) * MM_TO_CM,
         0.0,
         0.0,
         // Third Row
@@ -265,9 +265,9 @@ pub fn compute_projection_matrix(
             * film_fit_scale.x,
         (screen.top + screen.bottom) / (screen.top - screen.bottom)
             * film_fit_scale.y,
-        (far_clip_plane + near_clip_plane) / (far_clip_plane - near_clip_plane),
-        2.0 * far_clip_plane * near_clip_plane
-            / (far_clip_plane - near_clip_plane),
+        (far_clip_plane_cm + near_clip_plane_cm) / (far_clip_plane_cm - near_clip_plane_cm),
+        2.0 * far_clip_plane_cm * near_clip_plane_cm
+            / (far_clip_plane_cm - near_clip_plane_cm),
         // Forth Row
         0.0,
         0.0,
@@ -278,27 +278,31 @@ pub fn compute_projection_matrix(
 
 #[inline]
 pub fn get_projection_matrix(
-    focal_length: Real,
-    film_back_width: Real,
-    film_back_height: Real,
-    film_offset_x: Real,
-    film_offset_y: Real,
-    image_width: Real,
-    image_height: Real,
+    focal_length_mm: Real,
+    film_back_width_inch: Real,
+    film_back_height_inch: Real,
+    film_offset_x_inch: Real,
+    film_offset_y_inch: Real,
+    image_width_pixels: Real,
+    image_height_pixels: Real,
     film_fit: FilmFit,
-    near_clip_plane: Real,
-    far_clip_plane: Real,
+    near_clip_plane_cm: Real,
+    far_clip_plane_cm: Real,
     camera_scale: Real,
 ) -> Matrix44 {
-    let film_aspect_ratio: Real = film_back_width / film_back_height;
-    let image_aspect_ratio: Real = image_width / image_height;
+    // println!("Get Projection Matrix: {}in x {}in by {}mm", film_back_width_inch, film_back_height_inch, focal_length_mm);
+    // println!("near_clip_plane_cm: {}cm", near_clip_plane_cm);
+    // println!("far_clip_plane_cm: {}cm", far_clip_plane_cm);
+
+    let film_aspect_ratio: Real = film_back_width_inch / film_back_height_inch;
+    let image_aspect_ratio: Real = image_width_pixels / image_height_pixels;
     let frustum = compute_frustum_coordinates(
-        focal_length,
-        film_back_width,
-        film_back_height,
-        film_offset_x,
-        film_offset_y,
-        near_clip_plane,
+        focal_length_mm,
+        film_back_width_inch,
+        film_back_height_inch,
+        film_offset_x_inch,
+        film_offset_y_inch,
+        near_clip_plane_cm,
         camera_scale,
     );
 
@@ -314,8 +318,8 @@ pub fn get_projection_matrix(
     compute_projection_matrix(
         film_fit_scale,
         screen,
-        near_clip_plane,
-        far_clip_plane,
+        near_clip_plane_cm,
+        far_clip_plane_cm,
         camera_scale,
     )
 }

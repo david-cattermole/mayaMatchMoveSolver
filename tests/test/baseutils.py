@@ -113,14 +113,11 @@ class TestBase(unittest.TestCase):
             kwargs['name'] = True
         elif index is not None:
             kwargs['index'] = True
-        print('mmSolverTypes kwargs:', kwargs)
         solverTypes = maya.cmds.mmSolverType(query=True, list=True, **kwargs)
-        print('solverTypes:', solverTypes)
         if name is not None:
             has_solver = name in solverTypes
         if index is not None:
             has_solver = index in solverTypes
-        print('has_solver:', has_solver)
         return has_solver
 
     def checkSolveResults(self, solres_list):

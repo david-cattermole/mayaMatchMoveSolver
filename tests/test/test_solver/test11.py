@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2022 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -64,73 +64,68 @@ class TestSolver11(solverUtils.SolverTestCase):
         cameras = []
         camTfm = '|Scene|stA_1_1'
         camShape = '|Scene|stA_1_1|stA_1_1Shape1'
-        print('nodes', (camTfm, camShape))
-        cameras.append((camTfm, camShape))
+        film_fit = 1  # 3=Overscan, 1=Horizontal
+        maya.cmds.setAttr(camShape + '.filmFit', film_fit)
+        print('camera nodes', (camTfm, camShape))
+
+        maya.cmds.setAttr('defaultResolution.width', 1920)
+        maya.cmds.setAttr('defaultResolution.height', 1280)
 
         # Get Attrs
         node_attrs = [
-            (cameras[0][0] + '.tx', 'None', 'None', 'None', 'None'),
-            (cameras[0][0] + '.ty', 'None', 'None', 'None', 'None'),
-            (cameras[0][0] + '.tz', 'None', 'None', 'None', 'None'),
-            (cameras[0][0] + '.rx', 'None', 'None', 'None', 'None'),
-            (cameras[0][0] + '.ry', 'None', 'None', 'None', 'None'),
-            (cameras[0][0] + '.rz', 'None', 'None', 'None', 'None'),
+            (camTfm + '.tx', 'None', 'None', 'None', 'None'),
+            (camTfm + '.ty', 'None', 'None', 'None', 'None'),
+            (camTfm + '.tz', 'None', 'None', 'None', 'None'),
+            (camTfm + '.rx', 'None', 'None', 'None', 'None'),
+            (camTfm + '.ry', 'None', 'None', 'None', 'None'),
+            (camTfm + '.rz', 'None', 'None', 'None', 'None'),
         ]
 
         # Get Markers and Bundles
         markers = []
         firstBundle = None
-        for camTfm, camShape in cameras:
-            nodes = maya.cmds.ls('*_MKR', type='transform', long=True) or []
-            for node in nodes:
-                markerTfm = node
+        nodes = maya.cmds.ls('*_MKR', type='transform', long=True) or []
+        for node in nodes:
+            markerTfm = node
 
-                mkrGrp = maya.cmds.listRelatives(
-                    markerTfm,
-                    parent=True,
-                    type='mmMarkerGroupTransform',
-                    fullPath=True)[0]
+            mkrGrp = maya.cmds.listRelatives(
+                markerTfm,
+                parent=True,
+                type='mmMarkerGroupTransform',
+                fullPath=True)[0]
 
-                camTfm = maya.cmds.listRelatives(
-                    mkrGrp,
-                    parent=True,
-                    type='transform',
-                    fullPath=True)[0]
-                camShape = maya.cmds.listRelatives(
-                    camTfm,
-                    children=True,
-                    type='camera',
-                    fullPath=True)[0]
+            name = markerTfm.rpartition('|')[-1]
+            bundleName = '|' + name.replace('marker', 'bundle').replace('MKR', 'BND')
+            bundleTfm = maya.cmds.ls(bundleName, type='transform', long=True)[0]
 
-                name = markerTfm.rpartition('|')[-1]
-                bundleName = '|' + name.replace('marker', 'bundle').replace('MKR', 'BND')
-                bundleTfm = maya.cmds.ls(bundleName, type='transform', long=True)[0]
+            markers.append((markerTfm, camShape, bundleTfm))
 
-                markers.append((markerTfm, camShape, bundleTfm))
+            # Do not solve one of the bundles, this gives the
+            # solver an anchor.
+            if firstBundle is None:
+                firstBundle = bundleTfm
+                continue
 
-                # Do not solve one of the bundles, this gives the
-                # solver an anchor.
-                if firstBundle is None:
-                    firstBundle = bundleTfm
-                    continue
+            # node_attr_tx = bundleTfm + '.tx'
+            # node_attr_ty = bundleTfm + '.ty'
+            # node_attr_tz = bundleTfm + '.tz'
+            # node_attrs.append((node_attr_tx, 'None', 'None', 'None', 'None'))
+            # node_attrs.append((node_attr_ty, 'None', 'None', 'None', 'None'))
+            # node_attrs.append((node_attr_tz, 'None', 'None', 'None', 'None'))
 
-                node_attr_tx = bundleTfm + '.tx'
-                node_attr_ty = bundleTfm + '.ty'
-                node_attr_tz = bundleTfm + '.tz'
-                node_attrs.append((node_attr_tx, 'None', 'None', 'None', 'None'))
-                node_attrs.append((node_attr_ty, 'None', 'None', 'None', 'None'))
-                node_attrs.append((node_attr_tz, 'None', 'None', 'None', 'None'))
-
-        frames = list(range(1, 95 + 1))
+        # frames = list(range(1, 95 + 1))
+        frames = list(range(1, 1 + 1))
 
         kwargs = {
-            'camera': cameras,
+            'camera': [(camTfm, camShape)],
             'marker': markers,
             'attr': node_attrs
         }
 
         # save the output
-        path = self.get_data_path('solver_test11_%s_before.ma' % solver_name)
+        file_name = 'solver_test11_{}_{}_before.ma'.format(
+            solver_name, scene_graph_name)
+        path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -161,22 +156,22 @@ class TestSolver11(solverUtils.SolverTestCase):
         results = [mmapi.SolveResult(result)]
         self.checkSolveResults(results)
 
-    def test_init_ceres_maya_dag(self):
+    def test_ceres_maya_dag(self):
         self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
-    def test_init_ceres_mmscenegraph(self):
+    def test_ceres_mmscenegraph(self):
         self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
-    def test_init_cminpack_lmdif_maya_dag(self):
+    def test_cminpack_lmdif_maya_dag(self):
         self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
-    def test_init_cminpack_lmdif_mmscenegraph(self):
+    def test_cminpack_lmdif_mmscenegraph(self):
         self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
-    def test_init_cminpack_lmder_maya_dag(self):
+    def test_cminpack_lmder_maya_dag(self):
         self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
-    def test_init_cminpack_lmder_mmscenegraph(self):
+    def test_cminpack_lmder_mmscenegraph(self):
         self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
 

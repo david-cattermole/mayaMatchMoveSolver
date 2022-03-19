@@ -147,8 +147,11 @@ pub fn compute_projection_matrix_with_attrs(
     let lens_offset_x_inch = lens_offset_x_mm * MM_TO_INCH;
     let lens_offset_y_inch = lens_offset_y_mm * MM_TO_INCH;
 
-    let near_clip_plane =
-        attr_data_block.get_attr_value(attr_near_clip_plane, frame);
+    // Override the near-clip value because Maya expects this value to
+    // be hard-coded (for some crazy reason).
+    let near_clip_plane = 0.1;
+    // let near_clip_plane = attr_data_block.get_attr_value(attr_near_clip_plane, frame);
+
     let far_clip_plane =
         attr_data_block.get_attr_value(attr_far_clip_plane, frame);
     let camera_scale = attr_data_block.get_attr_value(attr_camera_scale, frame);

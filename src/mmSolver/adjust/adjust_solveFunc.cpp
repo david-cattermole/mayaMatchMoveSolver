@@ -640,7 +640,7 @@ void measureErrors_mmSceneGraph(
     int numberOfErrorsMeasured = 0;
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = ud->errorToMarkerList[i];
-        // int markerIndex = markerPair.first;
+        int mkrIndex = markerPair.first;
         int frameIndex = markerPair.second;
         bool skipFrame = frameIndexEnable[frameIndex] == false;
         bool skipMarker = errorMeasurements[i] == false;
@@ -662,22 +662,25 @@ void measureErrors_mmSceneGraph(
         assert(mkr_weight > 0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
         mkr_weight = std::sqrt(mkr_weight);
 
-        // TODO: Calculate 'behind_camera_error_factor', the same as the Maya DAG function.
+        // TODO: Calculate 'behind_camera_error_factor', the same as
+        // the Maya DAG function.
         double behind_camera_error_factor = 1.0;
 
-        auto errorIndex_x = i * ERRORS_PER_MARKER;
-        auto errorIndex_y = errorIndex_x + 1;
-        auto mkr_x = out_marker_list[errorIndex_x];
-        auto mkr_y = out_marker_list[errorIndex_y];
-        auto point_x = out_point_list[errorIndex_x];
-        auto point_y = out_point_list[errorIndex_y];
+        auto mkrIndex_x = mkrIndex * 2;
+        auto mkrIndex_y = mkrIndex_x + 1;
+        auto mkr_x = out_marker_list[mkrIndex_x];
+        auto mkr_y = out_marker_list[mkrIndex_y];
+        auto point_x = out_point_list[mkrIndex_x];
+        auto point_y = out_point_list[mkrIndex_y];
 
-        auto dx = out_deviation_list[errorIndex_x];
-        auto dy = out_deviation_list[errorIndex_y];
+        auto dx = out_deviation_list[mkrIndex_x];
+        auto dy = out_deviation_list[mkrIndex_y];
         auto ddx = dx * ud->imageWidth;
         auto ddy = dy * ud->imageWidth;
         double d = std::sqrt((dx * dx) + (dy * dy)) * ud->imageWidth;
 
+        auto errorIndex_x = i * ERRORS_PER_MARKER;
+        auto errorIndex_y = errorIndex_x + 1;
         errors[errorIndex_x] = dx * mkr_weight * behind_camera_error_factor;
         errors[errorIndex_y] = dy * mkr_weight * behind_camera_error_factor;
 

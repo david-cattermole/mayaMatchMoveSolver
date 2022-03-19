@@ -180,15 +180,17 @@ impl FlatScene {
         assert!(num_markers > 0);
         assert!(num_transforms > 0);
 
-        self.out_tfm_world_matrix_list.clear();
-        self.out_bnd_world_matrix_list.clear();
-        self.out_cam_world_matrix_list.clear();
-        self.out_tfm_world_matrix_list
-            .reserve(num_transforms * num_frames);
+        let num_total_bundles = num_bundles * num_frames;
+        let num_total_cameras = num_cameras * num_frames;
+        let num_total_transforms = num_transforms * num_frames;
+
+        self.out_tfm_world_matrix_list.reserve(num_total_transforms);
+        self.out_bnd_world_matrix_list = Vec::with_capacity(num_total_bundles);
+        self.out_cam_world_matrix_list = Vec::with_capacity(num_total_cameras);
         self.out_bnd_world_matrix_list
-            .reserve(num_bundles * num_frames);
+            .resize(num_total_bundles, Matrix44::identity());
         self.out_cam_world_matrix_list
-            .reserve(num_cameras * num_frames);
+            .resize(num_total_cameras, Matrix44::identity());
 
         compute_world_matrices_with_attrs(
             &attrdb,
@@ -206,22 +208,24 @@ impl FlatScene {
 
         for (i, node_id) in (0..).zip(self.tfm_node_ids.iter()) {
             match node_id {
-                NodeId::Camera(_) => {
-                    // println!("Camera node: {:?}", node_id);
+                NodeId::Camera(index) => {
+                    // println!("Camera node: {:?} index: {}", node_id, index);
                     for f in 0..num_frames {
                         let index_at_frame = (i * num_frames) + f;
                         let world_matrix =
                             self.out_tfm_world_matrix_list[index_at_frame];
-                        self.out_cam_world_matrix_list.push(world_matrix);
+                        self.out_cam_world_matrix_list[*index as usize] =
+                            world_matrix;
                     }
                 }
-                NodeId::Bundle(_) => {
-                    // println!("Bundle node: {:?}", node_id);
+                NodeId::Bundle(index) => {
+                    // println!("Bundle node: {:?} index: {}", node_id, index);
                     for f in 0..num_frames {
                         let index_at_frame = (i * num_frames) + f;
                         let world_matrix =
                             self.out_tfm_world_matrix_list[index_at_frame];
-                        self.out_bnd_world_matrix_list.push(world_matrix)
+                        self.out_bnd_world_matrix_list[*index as usize] =
+                            world_matrix;
                     }
                 }
                 _ => (),

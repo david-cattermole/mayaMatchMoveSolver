@@ -628,9 +628,9 @@ add_transforms(
                 scale_attr_ids,
                 rotate_order);
             tfm_node_id = tfm_node.id;
-        }
 
-        out_nodeNameToNodeIdMap.insert({nodeNameStr, tfm_node_id});
+            out_nodeNameToNodeIdMap.insert({nodeNameStr, tfm_node_id});
+        }
         auto parent_ok = out_sceneGraph.set_node_parent(
             previous_node_id,
             tfm_node_id);

@@ -928,8 +928,25 @@ add_markers(
         out_evalObjects.add_marker(mkr_node);
 
         // Create Marker to Bundle and Camera relationships.
-        out_sceneGraph.link_marker_to_camera(mkr_node.id, cam_node_id);
-        out_sceneGraph.link_marker_to_bundle(mkr_node.id, bnd_node_id);
+        auto link_camera_ok =
+            out_sceneGraph.link_marker_to_camera(mkr_node.id, cam_node_id);
+        if (!link_camera_ok) {
+            MMSOLVER_WRN("add_markers: Cannot link marker to camera; "
+                         << " mkr=" << mkr_node.id.index
+                         << " cam=" << cam_node_id.index);
+            status = MS::kFailure;
+        }
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        auto link_bundle_ok =
+            out_sceneGraph.link_marker_to_bundle(mkr_node.id, bnd_node_id);
+        if (!link_bundle_ok) {
+            MMSOLVER_WRN("add_markers: Cannot link marker to bundle; "
+                         << " mkr=" << mkr_node.id.index
+                         << " bnd=" << bnd_node_id.index);
+            status = MS::kFailure;
+        }
+        CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }

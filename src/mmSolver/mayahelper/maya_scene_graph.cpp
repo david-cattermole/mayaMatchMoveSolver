@@ -978,7 +978,7 @@ convert_attributes_to_attr_ids(
             out_attrIdList.push_back(search->second);
         } else {
             MMSOLVER_ERR("key was not found: " << key);
-            return MStatus::kFailure;
+            return MS::kFailure;
         }
     }
     assert(out_attrIdList.size() == attrList.size());

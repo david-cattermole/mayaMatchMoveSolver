@@ -885,7 +885,7 @@ add_markers(
         auto mkr_cam_shp_name = mkr_cam_ptr->getShapeNodeName();
 
         mmsg::NodeId cam_node_id = mmsg::NodeId();
-        for (unsigned int j = 0; j < cameraList.size(); ++j) {
+        for (uint32_t j = 0; j < cameraList.size(); ++j) {
             if (cameraList[j]->getShapeNodeName() == mkr_cam_shp_name) {
                 cam_node_id = cameraNodes[j].id;
                 break;
@@ -897,7 +897,7 @@ add_markers(
         auto mkr_bnd_tfm_name = mkr_bnd_ptr->getNodeName();
 
         mmsg::NodeId bnd_node_id = mmsg::NodeId();
-        for (unsigned int j = 0; j < bundleList.size(); ++j) {
+        for (uint32_t j = 0; j < bundleList.size(); ++j) {
             if (bundleList[j]->getNodeName() == mkr_bnd_tfm_name) {
                 bnd_node_id = bundleNodes[j].id;
                 break;

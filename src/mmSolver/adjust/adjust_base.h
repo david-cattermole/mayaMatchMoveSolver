@@ -191,7 +191,6 @@ bool solve(
     MDGModifier &dgmod,
     MAnimCurveChange &curveChange,
     MComputation &computation,
-    MString &debugFileName,
     MStringArray &printStatsList,
     bool with_verbosity,
     MStringArray &outResult);

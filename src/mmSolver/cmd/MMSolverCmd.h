@@ -197,11 +197,6 @@
 #define VERBOSE_FLAG_LONG      "-verbose"
 #define VERBOSE_DEFAULT_VALUE  false
 
-// Write a debug file somewhere
-#define DEBUG_FILE_FLAG           "-df"
-#define DEBUG_FILE_FLAG_LONG      "-debugFile"
-#define DEBUG_FILE_DEFAULT_VALUE  ""
-
 // Print Statistics from the solver inputs.
 #define PRINT_STATS_FLAG           "-pst"
 #define PRINT_STATS_FLAG_LONG      "-printStatistics"
@@ -264,7 +259,6 @@ private:
     bool m_supportRobustLoss;
 
     // Solver printing.
-    MString m_debugFile;
     MStringArray m_printStatsList;
     bool m_verbose;
 

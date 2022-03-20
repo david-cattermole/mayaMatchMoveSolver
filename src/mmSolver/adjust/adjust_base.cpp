@@ -967,7 +967,6 @@ MStatus solveFrames(
         MAnimCurveChange &out_curveChange,
         //
         MComputation &out_computation,
-        MString &out_debugFile,
         const bool verbose,
         //
         IndexPairList &out_paramToAttrList,
@@ -1306,16 +1305,12 @@ MStatus solveFrames(
 
     // Verbosity
     userData.verbose = verbose;
-    userData.debugFileName = out_debugFile;
 
     // Calculate initial errors.
     double initialErrorAvg = 0;
     double initialErrorMin = 0;
     double initialErrorMax = 0;
     if (solverOptions.acceptOnlyBetter || printStats.deviation) {
-        // Never write debug data during statistics gathering.
-        std::ofstream *debugFileStream = nullptr;
-
         std::vector<bool> frameIndexEnable(frameList.length(), 1);
         std::vector<bool> skipErrorMeasurements(numberOfErrors, 1);
         measureErrors(
@@ -1330,7 +1325,6 @@ MStatus solveFrames(
             initialErrorAvg,
             initialErrorMax,
             initialErrorMin,
-            debugFileStream,
             status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -1373,16 +1367,6 @@ MStatus solveFrames(
         // want to solve.
         status = MS::kSuccess;
         return status;
-    }
-
-    std::ofstream file;
-    if (out_debugFile.length() > 0) {
-        const char *debugFileNameChar = out_debugFile.asChar();
-        file.open(debugFileNameChar);
-        if (file.is_open() == true) {
-             file << std::endl;
-             file.close();
-        }
     }
 
     // Set Initial parameters
@@ -1522,7 +1506,6 @@ bool solve(SolverOptions &solverOptions,
            MDGModifier &dgmod,
            MAnimCurveChange &curveChange,
            MComputation &computation,
-           MString &debugFile,
            MStringArray &printStatsList,
            bool with_verbosity,
            MStringArray &outResult)
@@ -1671,7 +1654,6 @@ bool solve(SolverOptions &solverOptions,
             curveChange,
             //
             computation,
-            debugFile,
             verbose,
             //
             paramToAttrList,
@@ -1709,7 +1691,6 @@ bool solve(SolverOptions &solverOptions,
                 curveChange,
                 //
                 computation,
-                debugFile,
                 verbose,
                 //
                 paramToAttrList,

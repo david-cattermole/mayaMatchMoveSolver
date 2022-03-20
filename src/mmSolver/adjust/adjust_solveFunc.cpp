@@ -200,9 +200,7 @@ void setParameters_mayaDag(
         const int numberOfParameters,
         const double *parameters,
         SolverData *ud,
-        std::ofstream *debugFile,
         MStatus &status) {
-    UNUSED(debugFile);
 
     MTime currentFrame = MAnimControl::currentTime();
     for (int i = 0; i < numberOfParameters; ++i) {
@@ -248,9 +246,7 @@ void setParameters_mmSceneGraph(
         const int numberOfParameters,
         const double *parameters,
         SolverData *ud,
-        std::ofstream *debugFile,
         MStatus &status) {
-    UNUSED(debugFile);
 
     for (int i = 0; i < numberOfParameters; ++i) {
         const IndexPair attrPair = ud->paramToAttrList[i];
@@ -285,9 +281,7 @@ void setParameters(
         const int numberOfParameters,
         const double *parameters,
         SolverData *ud,
-        std::ofstream *debugFile,
         MStatus &status) {
-    UNUSED(debugFile);
 
     const SceneGraphMode sceneGraphMode = ud->solverOptions->sceneGraphMode;
     if (sceneGraphMode == SceneGraphMode::kMayaDag) {
@@ -295,14 +289,12 @@ void setParameters(
             numberOfParameters,
             parameters,
             ud,
-            debugFile,
             status);
     } else if (sceneGraphMode == SceneGraphMode::kMMSceneGraph) {
         setParameters_mmSceneGraph(
             numberOfParameters,
             parameters,
             ud,
-            debugFile,
             status);
     }
 
@@ -386,10 +378,8 @@ void measureErrors_mayaDag(
         double &error_avg,
         double &error_max,
         double &error_min,
-        std::ofstream *debugFile,
         MStatus &status) {
     UNUSED(numberOfErrors);
-    UNUSED(debugFile);
 
     // Trigger an DG Evaluation at a different time, to help Maya
     // evaluate at the correct frame.
@@ -607,12 +597,10 @@ void measureErrors_mmSceneGraph(
         double &error_avg,
         double &error_max,
         double &error_min,
-        std::ofstream *debugFile,
         MStatus &status) {
     UNUSED(numberOfErrors);
     UNUSED(numberOfAttrStiffnessErrors);
     UNUSED(numberOfAttrSmoothnessErrors);
-    UNUSED(debugFile);
     UNUSED(status);
 
     // Evaluate Scene.
@@ -720,9 +708,7 @@ void measureErrors(
         double &error_avg,
         double &error_max,
         double &error_min,
-        std::ofstream *debugFile,
         MStatus &status) {
-    UNUSED(debugFile);
     error_avg = 0.0;
     error_max = -0.0;
     error_min = std::numeric_limits<double>::max();
@@ -744,7 +730,6 @@ void measureErrors(
             error_avg,
             error_max,
             error_min,
-            debugFile,
             status);
     } else if (sceneGraphMode == SceneGraphMode::kMMSceneGraph) {
         measureErrors_mmSceneGraph(
@@ -759,7 +744,6 @@ void measureErrors(
             error_avg,
             error_max,
             error_min,
-            debugFile,
             status);
     }
 
@@ -778,9 +762,7 @@ void measureErrors(
 
 
 // Add another 'normal function' evaluation to the count.
-void incrementNormalIteration(SolverData *ud,
-                              bool debugIsOpen,
-                              std::ofstream *debugFile) {
+void incrementNormalIteration(SolverData *ud) {
     ++ud->funcEvalNum;
     ++ud->iterNum;
     MStreamUtils::stdErrorStream() << "Iteration ";
@@ -789,16 +771,12 @@ void incrementNormalIteration(SolverData *ud,
     MStreamUtils::stdErrorStream() << " | Eval ";
     MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw(4)
                                    << ud->funcEvalNum;
-    UNUSED(debugIsOpen);
-    UNUSED(debugFile);
     return;
 }
 
 
 // Add another 'jacobian function' evaluation to the count.
-void incrementJacobianIteration(SolverData *ud,
-                                bool debugIsOpen,
-                                std::ofstream *debugFile) {
+void incrementJacobianIteration(SolverData *ud) {
     ++ud->funcEvalNum;
     ++ud->jacIterNum;
     if (ud->verbose) {
@@ -812,8 +790,6 @@ void incrementJacobianIteration(SolverData *ud,
             MStreamUtils::stdErrorStream() << "\n";
         }
     }
-    UNUSED(debugIsOpen);
-    UNUSED(debugFile);
     return;
 }
 
@@ -839,13 +815,10 @@ int solveFunc(const int numberOfParameters,
     int numberOfMarkers = numberOfMarkerErrors / ERRORS_PER_MARKER;
     assert(ud->errorToParamList.size() == static_cast<size_t>(numberOfMarkers));
 
-    std::ofstream *debugFile = nullptr;
-    bool debugIsOpen = false;
-
     if (ud->isNormalCall) {
-        incrementNormalIteration(ud, debugIsOpen, debugFile);
+        incrementNormalIteration(ud);
     } else if (ud->isJacobianCall && !ud->doCalcJacobian) {
-        incrementJacobianIteration(ud, debugIsOpen, debugFile);
+        incrementJacobianIteration(ud);
     }
 
     if (ud->isPrintCall) {
@@ -900,7 +873,6 @@ int solveFunc(const int numberOfParameters,
                     numberOfParameters,
                     parameters,
                     ud,
-                    debugFile,
                     status);
             ud->timer.paramBenchTimer.stop();
             ud->timer.paramBenchTicks.stop();
@@ -924,7 +896,6 @@ int solveFunc(const int numberOfParameters,
                           errors,
                           ud,
                           error_avg, error_max, error_min,
-                          debugFile,
                           status);
             ud->timer.errorBenchTimer.stop();
             ud->timer.errorBenchTicks.stop();
@@ -999,7 +970,7 @@ int solveFunc(const int numberOfParameters,
 
             std::vector<bool> frameIndexEnabled = ud->paramFrameList[i];
 
-            incrementJacobianIteration(ud, debugIsOpen, debugFile);
+            incrementJacobianIteration(ud);
             paramListA[i] = paramListA[i] + deltaA;
             {
                 ud->timer.paramBenchTimer.start();
@@ -1013,7 +984,6 @@ int solveFunc(const int numberOfParameters,
                         numberOfParameters,
                         &paramListA[0],
                         ud,
-                        debugFile,
                         status);
                 ud->timer.paramBenchTimer.stop();
                 ud->timer.paramBenchTicks.stop();
@@ -1045,7 +1015,6 @@ int solveFunc(const int numberOfParameters,
                               error_avg_tmp,
                               error_max_tmp,
                               error_min_tmp,
-                              debugFile,
                               status);
                 ud->timer.errorBenchTimer.stop();
                 ud->timer.errorBenchTicks.stop();
@@ -1090,7 +1059,7 @@ int solveFunc(const int numberOfParameters,
                     }
                 } else {
 
-                    incrementJacobianIteration(ud, debugIsOpen, debugFile);
+                    incrementJacobianIteration(ud);
                     paramListB[i] = paramListB[i] + deltaB;
                     {
                         ud->timer.paramBenchTimer.start();
@@ -1103,7 +1072,6 @@ int solveFunc(const int numberOfParameters,
                         setParameters(numberOfParameters,
                                       &paramListB[0],
                                       ud,
-                                      debugFile,
                                       status);
                         ud->timer.paramBenchTimer.stop();
                         ud->timer.paramBenchTicks.stop();
@@ -1131,7 +1099,6 @@ int solveFunc(const int numberOfParameters,
                                       error_avg_tmp,
                                       error_max_tmp,
                                       error_min_tmp,
-                                      debugFile,
                                       status);
                         ud->timer.errorBenchTimer.stop();
                         ud->timer.errorBenchTicks.stop();

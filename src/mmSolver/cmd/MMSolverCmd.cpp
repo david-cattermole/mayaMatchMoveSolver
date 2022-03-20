@@ -78,8 +78,6 @@ void createSolveLogSyntax(MSyntax &syntax) {
     // TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
     syntax.addFlag(VERBOSE_FLAG, VERBOSE_FLAG_LONG,
                    MSyntax::kBoolean);
-    syntax.addFlag(DEBUG_FILE_FLAG, DEBUG_FILE_FLAG_LONG,
-                   MSyntax::kString);
     syntax.addFlag(PRINT_STATS_FLAG, PRINT_STATS_FLAG_LONG,
                    MSyntax::kString);
     syntax.makeFlagMultiUse(PRINT_STATS_FLAG);
@@ -112,8 +110,6 @@ void createSolveInfoSyntax(MSyntax &syntax) {
                    MSyntax::kBoolean);
     syntax.addFlag(FRAME_SOLVE_MODE_FLAG, FRAME_SOLVE_MODE_FLAG_LONG,
                    MSyntax::kUnsigned);
-    syntax.addFlag(DEBUG_FILE_FLAG, DEBUG_FILE_FLAG_LONG,
-                   MSyntax::kString);
     syntax.addFlag(PRINT_STATS_FLAG, PRINT_STATS_FLAG_LONG,
                    MSyntax::kString);
 
@@ -146,7 +142,6 @@ MSyntax MMSolverCmd::newSyntax() {
 }
 
 MStatus parseSolveLogArguments(const MArgDatabase &argData,
-                               MString &out_debugFile,
                                MStringArray &out_printStatsList,
                                bool &out_verbose) {
     MStatus status = MStatus::kSuccess;
@@ -156,13 +151,6 @@ MStatus parseSolveLogArguments(const MArgDatabase &argData,
     out_verbose = VERBOSE_DEFAULT_VALUE;
     if (argData.isFlagSet(VERBOSE_FLAG)) {
         status = argData.getFlagArgument(VERBOSE_FLAG, 0, out_verbose);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-    }
-
-    // Get 'Debug File'
-    out_debugFile = DEBUG_FILE_DEFAULT_VALUE;
-    if (argData.isFlagSet(DEBUG_FILE_FLAG)) {
-        status = argData.getFlagArgument(DEBUG_FILE_FLAG, 0, out_debugFile);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -452,7 +440,6 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
 
     status = parseSolveLogArguments(
         argData,
-        m_debugFile,
         m_printStatsList,
         m_verbose);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -525,7 +512,6 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
             m_dgmod,
             m_curveChange,
             m_computation,
-            m_debugFile,
             m_printStatsList,
             m_verbose,
             outResult

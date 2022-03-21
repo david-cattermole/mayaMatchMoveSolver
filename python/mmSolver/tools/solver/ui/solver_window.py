@@ -625,7 +625,7 @@ class SolverWindow(BaseWindow):
         """
         assert isinstance(value, bool)
 
-        def _set_widget_visibilty(window, visible):
+        def _set_widget_visibility(window, visible):
             self.menubar.setVisible(visible)
             self.subForm.collection_widget.setVisible(visible)
             self.subForm.object_browser.setVisible(visible)
@@ -638,7 +638,7 @@ class SolverWindow(BaseWindow):
         if uiutils.isValidQtObject(self) is True:
             QtWidgets.QApplication.processEvents()
             if value is False:
-                _set_widget_visibilty(self, True)
+                _set_widget_visibility(self, True)
 
                 # Restore non-minimal window size.
                 QtWidgets.QApplication.processEvents()
@@ -647,8 +647,8 @@ class SolverWindow(BaseWindow):
                 self._saved_ui_size = self.size()
 
                 # QtWidgets.QApplication.processEvents()
-                _set_widget_visibilty(self, False)
                 QtWidgets.QApplication.processEvents()
+                _set_widget_visibility(self, False)
 
                 # Resize the bottom window edge upwards.
                 width = self.size().width()
@@ -656,7 +656,7 @@ class SolverWindow(BaseWindow):
                 QtWidgets.QApplication.processEvents()
 
                 # Run again to trigger the UI to resize properly.
-                _set_widget_visibilty(self, False)
+                _set_widget_visibility(self, False)
                 self.resize(width, 1)
                 QtWidgets.QApplication.processEvents()
 

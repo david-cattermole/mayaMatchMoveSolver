@@ -609,21 +609,6 @@ class SolverStep(solverbase.SolverBase):
         # TODO: Add 'robustLossType' flag.
         # TODO: Add 'robustLossScale' flag.
         # TODO: Add 'autoParamScaling' flag.
-        # TODO: Add 'debugFile' flag.
-
-        # # Add a debug file flag to the mmSolver command, only
-        # # triggered during debug mode.
-        # # TODO: Wrap this in another function.
-        # if logging.DEBUG >= LOG.getEffectiveLevel():
-        #     debug_file = maya.cmds.file(query=True, sceneName=True)
-        #     debug_file = os.path.basename(debug_file)
-        #     debug_file, ext = os.path.splitext(debug_file)
-        #     debug_file_path = os.path.join(
-        #         os.path.expandvars('${TEMP}'),
-        #         debug_file + '_' + str(i).zfill(6) + '.log'
-        #     )
-        #     if len(debug_file) > 0 and debug_file_path is not None:
-        #         kwargs['debugFile'] = debug_file_path
 
         action = api_action.Action(
             func=func,

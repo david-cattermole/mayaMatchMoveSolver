@@ -25,6 +25,7 @@
 #include "adjust_solveFunc.h"
 
 // STL
+#include <cstdlib>
 #include <ctime>
 #include <cmath>
 #include <iostream>
@@ -53,16 +54,6 @@
 #include <maya/MGlobal.h>
 #include <maya/MStreamUtils.h>
 
-// cminpack
-#ifdef MMSOLVER_USE_CMINPACK
-#include <cminpack.h>
-#endif
-
-// Lev-Mar
-#ifdef MMSOLVER_USE_LEVMAR
-#include <levmar.h>
-#endif
-
 // MM Scene Graph
 #include <mmscenegraph/mmscenegraph.h>
 
@@ -75,8 +66,6 @@
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "adjust_base.h"
 #include "adjust_data.h"
-#include "adjust_cminpack_base.h"
-#include "adjust_levmar_bc_dif.h"
 
 
 namespace mmsg = mmscenegraph;

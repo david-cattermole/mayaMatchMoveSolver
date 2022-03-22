@@ -81,7 +81,7 @@ impl ShimAttrDataBlock {
         attr_id: BindAttrId,
         frame: CoreFrameValue,
         value: CoreReal,
-    ) {
+    ) -> bool {
         let attr_id = bind_to_core_attr_id(attr_id);
         self.inner.set_attr_value(attr_id, frame, value)
     }

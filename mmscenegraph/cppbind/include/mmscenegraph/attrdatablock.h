@@ -73,7 +73,7 @@ public:
     ) const noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    void
+    bool
     set_attr_value(
         AttrId attr_id,
         FrameValue frame,

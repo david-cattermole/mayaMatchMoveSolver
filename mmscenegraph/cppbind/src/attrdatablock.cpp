@@ -77,7 +77,7 @@ AttrDataBlock::get_attr_value(
     return inner_->get_attr_value(attr_id, frame);
 }
 
-void
+bool
 AttrDataBlock::set_attr_value(
         AttrId attr_id,
         FrameValue frame,

@@ -1091,7 +1091,7 @@ struct ShimAttrDataBlock final : public ::rust::Opaque {
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::AttrId create_attr_static(double value) noexcept;
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::AttrId create_attr_anim_dense(::rust::Vec<double> values, ::std::uint32_t frame_start) noexcept;
   MMSCENEGRAPH_API_EXPORT double get_attr_value(::mmscenegraph::AttrId attr_id, ::std::uint32_t frame) const noexcept;
-  MMSCENEGRAPH_API_EXPORT void set_attr_value(::mmscenegraph::AttrId attr_id, ::std::uint32_t frame, double value) noexcept;
+  MMSCENEGRAPH_API_EXPORT bool set_attr_value(::mmscenegraph::AttrId attr_id, ::std::uint32_t frame, double value) noexcept;
   ~ShimAttrDataBlock() = delete;
 
 private:

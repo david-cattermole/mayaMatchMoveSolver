@@ -1119,7 +1119,7 @@ struct ShimAttrDataBlock final : public ::rust::Opaque {
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::AttrId create_attr_static(double value) noexcept;
   MMSCENEGRAPH_API_EXPORT ::mmscenegraph::AttrId create_attr_anim_dense(::rust::Vec<double> values, ::std::uint32_t frame_start) noexcept;
   MMSCENEGRAPH_API_EXPORT double get_attr_value(::mmscenegraph::AttrId attr_id, ::std::uint32_t frame) const noexcept;
-  MMSCENEGRAPH_API_EXPORT void set_attr_value(::mmscenegraph::AttrId attr_id, ::std::uint32_t frame, double value) noexcept;
+  MMSCENEGRAPH_API_EXPORT bool set_attr_value(::mmscenegraph::AttrId attr_id, ::std::uint32_t frame, double value) noexcept;
   ~ShimAttrDataBlock() = delete;
 
 private:
@@ -1264,7 +1264,7 @@ void mmscenegraph$cxxbridge1$ShimAttrDataBlock$clear(::mmscenegraph::ShimAttrDat
 
 double mmscenegraph$cxxbridge1$ShimAttrDataBlock$get_attr_value(const ::mmscenegraph::ShimAttrDataBlock &self, ::mmscenegraph::AttrId attr_id, ::std::uint32_t frame) noexcept;
 
-void mmscenegraph$cxxbridge1$ShimAttrDataBlock$set_attr_value(::mmscenegraph::ShimAttrDataBlock &self, ::mmscenegraph::AttrId attr_id, ::std::uint32_t frame, double value) noexcept;
+bool mmscenegraph$cxxbridge1$ShimAttrDataBlock$set_attr_value(::mmscenegraph::ShimAttrDataBlock &self, ::mmscenegraph::AttrId attr_id, ::std::uint32_t frame, double value) noexcept;
 
 ::mmscenegraph::ShimAttrDataBlock *mmscenegraph$cxxbridge1$shim_create_attr_data_block_box() noexcept;
 ::std::size_t mmscenegraph$cxxbridge1$ShimSceneGraph$operator$sizeof() noexcept;
@@ -1606,8 +1606,8 @@ MMSCENEGRAPH_API_EXPORT double ShimAttrDataBlock::get_attr_value(::mmscenegraph:
   return mmscenegraph$cxxbridge1$ShimAttrDataBlock$get_attr_value(*this, attr_id, frame);
 }
 
-MMSCENEGRAPH_API_EXPORT void ShimAttrDataBlock::set_attr_value(::mmscenegraph::AttrId attr_id, ::std::uint32_t frame, double value) noexcept {
-  mmscenegraph$cxxbridge1$ShimAttrDataBlock$set_attr_value(*this, attr_id, frame, value);
+MMSCENEGRAPH_API_EXPORT bool ShimAttrDataBlock::set_attr_value(::mmscenegraph::AttrId attr_id, ::std::uint32_t frame, double value) noexcept {
+  return mmscenegraph$cxxbridge1$ShimAttrDataBlock$set_attr_value(*this, attr_id, frame, value);
 }
 
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimAttrDataBlock> shim_create_attr_data_block_box() noexcept {

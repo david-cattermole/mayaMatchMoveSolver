@@ -259,7 +259,12 @@ pub mod ffi {
         ) -> AttrId;
 
         fn get_attr_value(&self, attr_id: AttrId, frame: u32) -> f64;
-        fn set_attr_value(&mut self, attr_id: AttrId, frame: u32, value: f64);
+        fn set_attr_value(
+            &mut self,
+            attr_id: AttrId,
+            frame: u32,
+            value: f64,
+        ) -> bool;
 
         fn shim_create_attr_data_block_box() -> Box<ShimAttrDataBlock>;
     }

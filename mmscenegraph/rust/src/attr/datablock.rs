@@ -88,13 +88,23 @@ impl AttrDataBlock {
         attr_id: AttrId,
         frame: FrameValue,
         value: Real,
-    ) {
-        match attr_id {
-            AttrId::Static(index) => self.static_attrs[index].set_value(value),
-            AttrId::AnimDense(index) => {
-                self.anim_dense_attrs[index].set_value(frame, value)
+    ) -> bool {
+        if !value.is_finite() {
+            println!(
+                "Failed to set attribute id \"{:?}\" at frame \"{}\" with non-finite value \"{}\".",
+                attr_id, frame, value);
+            false
+        } else {
+            match attr_id {
+                AttrId::Static(index) => {
+                    self.static_attrs[index].set_value(value)
+                }
+                AttrId::AnimDense(index) => {
+                    self.anim_dense_attrs[index].set_value(frame, value)
+                }
+                AttrId::None => (),
             }
-            AttrId::None => (),
+            true
         }
     }
 }

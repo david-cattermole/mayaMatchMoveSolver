@@ -369,21 +369,25 @@ bool set_maya_attribute_values(const int numberOfParameters,
 // Compute the average error based on the error values
 // the solve function last computed.
 bool compute_error_stats(const int numberOfMarkerErrors,
-                         SolverData &userData,
-                         double &errorAvg,
-                         double &errorMin,
-                         double &errorMax){
-    errorAvg = 0;
-    errorMin = std::numeric_limits<double>::max();
-    errorMax = -0.0;
+                         const SolverData &userData,
+                         double &out_errorAvg,
+                         double &out_errorMin,
+                         double &out_errorMax){
+    out_errorAvg = 0;
+    out_errorMin = std::numeric_limits<double>::max();
+    out_errorMax = -0.0;
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
-        double err = userData.errorDistanceList[i];
-        errorAvg += err;
-        if (err < errorMin) { errorMin = err; }
-        if (err > errorMax) { errorMax = err; }
+        const double err = userData.errorDistanceList[i];
+        if (!std::isfinite(err)) {
+            MMSOLVER_ERR("Error distance value is invalid, skipping: " << err);
+            continue;
+        }
+        out_errorAvg += err;
+        if (err < out_errorMin) { out_errorMin = err; }
+        if (err > out_errorMax) { out_errorMax = err; }
     }
     assert(numberOfMarkerErrors > 0);
-    errorAvg /= (double) (numberOfMarkerErrors / ERRORS_PER_MARKER);
+    out_errorAvg /= (double) (numberOfMarkerErrors / ERRORS_PER_MARKER);
     return true;
 }
 

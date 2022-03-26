@@ -144,10 +144,10 @@ bool set_maya_attribute_values(
 
 bool compute_error_stats(
     const int numberOfMarkerErrors,
-    SolverData &userData,
-    double &errorAvg,
-    double &errorMin,
-    double &errorMax);
+    const SolverData &userData,
+    double &out_errorAvg,
+    double &out_errorMin,
+    double &out_errorMax);
 
 
 void logResultsSolveDetails(

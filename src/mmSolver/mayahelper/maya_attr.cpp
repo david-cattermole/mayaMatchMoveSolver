@@ -25,7 +25,7 @@
 #include "maya_attr.h"
 
 // STL
-#include <cmath>     // trunc
+#include <cmath>     // trunc, isfinite
 #include <cassert>   // assert
 #include <limits>    // numeric_limits<double>::max and min
 
@@ -574,10 +574,23 @@ MStatus Attr::getValue(MMatrix &value, const int timeEvalMode) {
 
 MStatus Attr::setValue(double value, const MTime &time,
                        MDGModifier &dgmod, MAnimCurveChange &animChange) {
-    MStatus status;
+    MStatus status = MS::kSuccess;
+
+    MPlug plug = Attr::getPlug();
+    if (!std::isfinite(value)) {
+        status = MS::kFailure;
+        MString name = Attr::getName();
+        MString plugName = plug.name(&status);
+        MMSOLVER_ERR("Set attribute with non-finite value;"
+                     << " name=" << name
+                     << " plug=" << plugName
+                     << " value=" << value
+                     << " time=" << time.value());
+        return status;
+    }
+
     const bool connected = Attr::isConnected();
     const bool animated = Attr::isAnimated();
-    MPlug plug = Attr::getPlug();
 
     int attrType = Attr::getAttrType();
     if (attrType == ATTR_DATA_TYPE_ANGLE) {
@@ -610,7 +623,6 @@ MStatus Attr::setValue(double value, const MTime &time,
     } else {
         dgmod.newPlugValueDouble(plug, value);
     }
-    status = MS::kSuccess;
     return status;
 }
 

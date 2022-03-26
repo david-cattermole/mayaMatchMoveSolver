@@ -59,7 +59,7 @@ add_attribute(
     const mmsg::FrameValue end_frame,
     const int timeEvalMode,
     const double scaleFactor,
-    mmsg::AttrDataBlock &attrDataBlock,
+    mmsg::AttrDataBlock &out_attrDataBlock,
     mmsg::AttrId &out_attrId,
     StringToAttrIdMap &out_attrNameToAttrIdMap
 ) {
@@ -98,10 +98,10 @@ add_attribute(
             CHECK_MSTATUS_AND_RETURN_IT(status);
             values.push_back(value * scaleFactor);
         }
-        out_attrId = attrDataBlock.create_attr_anim_dense(values, start_frame);
+        out_attrId = out_attrDataBlock.create_attr_anim_dense(values, start_frame);
     } else {
         status = mayaAttr.getValue(value, timeEvalMode);
-        out_attrId = attrDataBlock.create_attr_static(value * scaleFactor);
+        out_attrId = out_attrDataBlock.create_attr_static(value * scaleFactor);
     }
 
     MString nodeAttrName = mayaAttr.getLongName();

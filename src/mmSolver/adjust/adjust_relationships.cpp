@@ -264,7 +264,6 @@ int countUpNumberOfUnknownParameters(const AttrPtrList &attrList,
         MObject nodeObj = attr->getObject();
 
         bool attrIsPartOfCamera = false;
-        MFnDependencyNode dependNode(nodeObj);
         if (nodeObj.apiType() == MFn::kTransform) {
             MFnDagNode dagNode(nodeObj);
             for (unsigned int k = 0; k < dagNode.childCount(); ++k) {

@@ -101,6 +101,7 @@ class TestSolveIssue53(test_api_utils.APITestCase):
         cam_tfm = 'stA_1_1'
         cam = mmapi.Camera(cam_tfm)
         cam_shp = cam.get_shape_node()
+        maya.cmds.setAttr('{}.filmFit'.format(cam_shp), 1)  # 1 = Horizontal
         cam_attr_list = []
         attrs = ['translateX', 'translateY', 'translateZ',
                  'rotateX', 'rotateY', 'rotateZ']

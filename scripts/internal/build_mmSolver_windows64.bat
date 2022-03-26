@@ -150,11 +150,14 @@ CHDIR "%BUILD_DIR%"
     -DMAYA_VERSION=%MAYA_VERSION% ^
     -Dmmscenegraph_DIR=%MMSCENEGRAPH_CMAKE_CONFIG_DIR% ^
     ..
+if errorlevel 1 goto failied_to_generate
 
 %CMAKE_EXE% --build . --parallel 4
+if errorlevel 1 goto failied_to_build
 
 :: Comment this line out to stop the automatic install into the home directory.
 %CMAKE_EXE% --install .
+if errorlevel 1 goto failied_to_install
 
 :: Run tests
 IF "%RUN_TESTS%"=="1" (
@@ -164,7 +167,25 @@ IF "%RUN_TESTS%"=="1" (
 :: Create a .zip package.
 IF "%BUILD_PACKAGE%"=="1" (
     %CMAKE_EXE% --build . --target package
+    if errorlevel 1 goto failied_to_build_zip
 )
 
 :: Return back project root directory.
 CHDIR "%PROJECT_ROOT%"
+exit /b 1
+
+:failied_to_generate
+echo Failed to generate build files.
+exit /b 1
+
+:failied_to_build
+echo Failed to build.
+exit /b 1
+
+:failied_to_install
+echo Failed to install.
+exit /b 1
+
+:failied_to_build_zip
+echo Failed to build the ZIP package file.
+exit /b 1

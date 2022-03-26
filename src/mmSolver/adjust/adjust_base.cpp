@@ -598,7 +598,7 @@ void logResultsSolveDetails(
         MarkerPtr marker = userData.markerList[markerPair.first];
         MTime frame = userData.frameList[markerPair.second];
         const char *markerName = marker->getNodeName().asChar();
-        double d = userData.errorDistanceList[i];
+        const double d = userData.errorDistanceList[i];
 
         ait = frameErrorMapping.find(markerPair.second);
         ErrorPair pair;

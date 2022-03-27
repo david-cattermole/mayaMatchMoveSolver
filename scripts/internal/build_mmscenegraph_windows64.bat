@@ -67,10 +67,10 @@ CHDIR "%MMSCENEGRAPH_CPP_DIR%"
 :: Assumes 'cxxbridge' (cxxbridge-cmd) is installed.
 ECHO Generating C++ Headers...
 cxxbridge --header --output "%MMSCENEGRAPH_CPP_DIR%\include\mmscenegraph\_cxx.h"
-if errorlevel 1 goto failied_to_generate_cpp_header
+if errorlevel 1 goto failed_to_generate_cpp_header
 
 %RUST_CARGO_EXE% build %RELEASE_FLAG% --target-dir "%MMSCENEGRAPH_CPP_TARGET_DIR%"
-if errorlevel 1 goto failied_to_build_rust
+if errorlevel 1 goto failed_to_build_rust
 
 :: MinGW is a common install for developers on Windows and
 :: if installed and used it will cause build conflicts and
@@ -103,34 +103,34 @@ CHDIR "%BUILD_DIR%"
     -DMMSCENEGRAPH_INCLUDE_DIR=%MMSCENEGRAPH_INCLUDE_DIR% ^
     -DBUILD_SHARED_LIBS=OFF ^
     %MMSCENEGRAPH_ROOT%
-if errorlevel 1 goto failied_to_generate_cpp
+if errorlevel 1 goto failed_to_generate_cpp
 
 %CMAKE_EXE% --build . --parallel 4
-if errorlevel 1 goto failied_to_build_cpp
+if errorlevel 1 goto failed_to_build_cpp
 
 %CMAKE_EXE% --install .
-if errorlevel 1 goto failied_to_install_cpp
+if errorlevel 1 goto failed_to_install_cpp
 
 :: Return back project root directory.
 CHDIR "%PROJECT_ROOT%"
 exit /b 0
 
-:failied_to_generate_cpp_header
+:failed_to_generate_cpp_header
 echo Failed to Generate C++ header files from Rust.
 exit /b 1
 
-:failied_to_build_rust
+:failed_to_build_rust
 echo Failed to build Rust code.
 exit /b 1
 
-:failied_to_generate_cpp
+:failed_to_generate_cpp
 echo Failed to generate C++ build files.
 exit /b 1
 
-:failied_to_build_cpp
+:failed_to_build_cpp
 echo Failed to build C++ code.
 exit /b 1
 
-:failied_to_install_cpp
+:failed_to_install_cpp
 echo Failed to install C++ artifacts.
 exit /b 1

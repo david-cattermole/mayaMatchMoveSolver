@@ -54,26 +54,26 @@ FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
     -DTHIRDPARTY_BASE_INSTALL_DIR=%INSTALL_DIR% ^
     -DTHIRDPARTY_BASE_WORKING_DIR=%WORKING_DIR% ^
     %SOURCE_DIR%
-if errorlevel 1 goto failied_to_generate
+if errorlevel 1 goto failed_to_generate
 
 %CMAKE_EXE% --build . --parallel 4
-if errorlevel 1 goto failied_to_build
+if errorlevel 1 goto failed_to_build
 
 %CMAKE_EXE% --install .
-if errorlevel 1 goto failied_to_install
+if errorlevel 1 goto failed_to_install
 
 :: Return back project root directory.
 CHDIR "%ROOT%"
 exit /b 0
 
-:failied_to_generate
+:failed_to_generate
 echo Failed to generate build files.
 exit /b 1
 
-:failied_to_build
+:failed_to_build
 echo Failed to build.
 exit /b 1
 
-:failied_to_install
+:failed_to_install
 echo Failed to install.
 exit /b 1

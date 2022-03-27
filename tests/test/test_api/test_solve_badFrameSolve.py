@@ -86,6 +86,10 @@ class TestSolveBadPerFrameSolve(test_api_utils.APITestCase):
     def do_solve(self, solver_name, solver_type_index, scene_graph_mode):
         """
         The same test as 'test_badPerFrameSolve', but using the SolverStandard class.
+
+        NOTE: Using the 'MM Scene Graph' scene graph doesn't correctly
+        solve this test because it's using an object solve that has a
+        non-zero pivot point.
         """
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
@@ -101,6 +105,11 @@ class TestSolveBadPerFrameSolve(test_api_utils.APITestCase):
         path = self.get_data_path('scenes', file_name)
         maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
         print('File opened:', path)
+
+        # MM Scene Graph does not support filmFit values other than
+        # 'horizontal'.
+        filmFit = 1  # 1 = Horizontal
+        maya.cmds.setAttr('cameraShape1.filmFit', filmFit)
 
         # Frames
         start_frame = 1

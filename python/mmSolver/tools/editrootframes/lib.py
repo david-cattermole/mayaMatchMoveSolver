@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Library functions for editing the root frames defined
+Library functions for editing the user frames defined
 in the active Collection.
 
 This module should not have any UI code.
@@ -30,30 +30,30 @@ import mmSolver.tools.solver.lib.collectionstate as lib_col_state
 LOG = mmSolver.logger.get_logger()
 
 
-def get_root_frames_list(col):
+def get_user_frames_list(col):
     """
-    Get the Root Frames string, from the currently active Collection.
+    Get the User Frames string, from the currently active Collection.
 
     :rtype: [int, ..] or None
     """
     if col is None:
         return None
-    root_frames_str = lib_col_state.get_solver_root_frames_from_collection(col)
-    if root_frames_str is None or len(root_frames_str) == 0:
+    user_frames_str = lib_col_state.get_solver_user_frames_from_collection(col)
+    if user_frames_str is None or len(user_frames_str) == 0:
         return None
-    root_frames = convert_types.stringToIntList(root_frames_str)
-    return root_frames
+    user_frames = convert_types.stringToIntList(user_frames_str)
+    return user_frames
 
 
-def set_root_frames_list(col, root_frames_list):
+def set_user_frames_list(col, user_frames_list):
     """
-    Set the Root Frames on the currently active Collection.
+    Set the User Frames on the currently active Collection.
     """
     if col is None:
         return None
-    if root_frames_list is None:
+    if user_frames_list is None:
         return None
-    assert isinstance(root_frames_list, list)
-    root_frames_string = convert_types.intListToString(root_frames_list)
-    lib_col_state.set_solver_root_frames_on_collection(col, root_frames_string)
+    assert isinstance(user_frames_list, list)
+    user_frames_string = convert_types.intListToString(user_frames_list)
+    lib_col_state.set_solver_user_frames_on_collection(col, user_frames_string)
     return None

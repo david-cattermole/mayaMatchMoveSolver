@@ -309,6 +309,31 @@ SOLVER_INCREMENT_BY_FRAME_ATTR = 'solver_increment_by_frame'
 SOLVER_INCREMENT_BY_FRAME_ATTR_TYPE = 'long'
 SOLVER_INCREMENT_BY_FRAME_DEFAULT_VALUE = 1
 
+# Solver User Frames (stored on Collection node)
+SOLVER_USER_FRAMES_ATTR = 'solver_user_frames'
+SOLVER_USER_FRAMES_ATTR_TYPE = 'string'
+SOLVER_USER_FRAMES_DEFAULT_VALUE = None  # No default value.
+
+# Solver Use Per-Marker Frames (stored on Collection node)
+SOLVER_USE_PER_MARKER_FRAMES_ATTR = 'solver_use_per_marker_frames'
+SOLVER_USE_PER_MARKER_FRAMES_ATTR_TYPE = 'bool'
+SOLVER_USE_PER_MARKER_FRAMES_DEFAULT_VALUE = True
+
+# Solver Per-Marker Frames (stored on Collection node)
+SOLVER_PER_MARKER_FRAMES_ATTR = 'solver_per_marker_frames'
+SOLVER_PER_MARKER_FRAMES_ATTR_TYPE = 'long'
+SOLVER_PER_MARKER_FRAMES_DEFAULT_VALUE = 2
+
+# Solver Use Span Frames (stored on Collection node)
+SOLVER_USE_SPAN_FRAMES_ATTR = 'solver_use_span_frames'
+SOLVER_USE_SPAN_FRAMES_ATTR_TYPE = 'bool'
+SOLVER_USE_SPAN_FRAMES_DEFAULT_VALUE = True
+
+# Solver Span Frames (stored on Collection node)
+SOLVER_SPAN_FRAMES_ATTR = 'solver_span_frames'
+SOLVER_SPAN_FRAMES_ATTR_TYPE = 'long'
+SOLVER_SPAN_FRAMES_DEFAULT_VALUE = 10
+
 # Solver Root Frames (stored on Collection node)
 SOLVER_ROOT_FRAMES_ATTR = 'solver_root_frames'
 SOLVER_ROOT_FRAMES_ATTR_TYPE = 'string'

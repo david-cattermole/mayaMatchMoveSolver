@@ -69,6 +69,42 @@ def _getAllowObjectRelations():
 
 class StandardRootFrameWidget(rootframe_widget.RootFrameWidget):
 
+    def getUserFramesValue(self, col):
+        value = lib_col_state.get_solver_user_frames_from_collection(col)
+        return value
+
+    def setUserFramesValue(self, col, value):
+        lib_col_state.set_solver_user_frames_on_collection(col, value)
+        return
+
+    def getUsePerMarkerFramesValue(self, col):
+        value = lib_col_state.get_solver_use_per_marker_frames_from_collection(col)
+        return value
+
+    def setUsePerMarkerFramesValue(self, col, value):
+        lib_col_state.set_solver_use_per_marker_frames_on_collection(col, value)
+
+    def getPerMarkerFramesValue(self, col):
+        value = lib_col_state.get_solver_per_marker_frames_from_collection(col)
+        return value
+
+    def setPerMarkerFramesValue(self, col, value):
+        lib_col_state.set_solver_per_marker_frames_on_collection(col, value)
+
+    def getUseSpanFramesValue(self, col):
+        value = lib_col_state.get_solver_use_span_frames_from_collection(col)
+        return value
+
+    def setUseSpanFramesValue(self, col, value):
+        lib_col_state.set_solver_use_span_frames_on_collection(col, value)
+
+    def getSpanFramesValue(self, col):
+        value = lib_col_state.get_solver_span_frames_from_collection(col)
+        return value
+
+    def setSpanFramesValue(self, col, value):
+        lib_col_state.set_solver_span_frames_on_collection(col, value)
+
     def getRootFramesValue(self, col):
         value = lib_col_state.get_solver_root_frames_from_collection(col)
         return value

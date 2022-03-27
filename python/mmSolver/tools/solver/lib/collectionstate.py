@@ -590,7 +590,7 @@ def get_solver_range_type_from_collection(col):
     :type col: Collection
 
     :returns: An integer value in const.RANGE_TYPE_VALUE_LIST.
-    :rtype: bool
+    :rtype: int
     """
     value = get_value_from_node(
         col.get_node(),
@@ -701,6 +701,168 @@ def set_solver_increment_by_frame_on_collection(col, value):
         value,
         attr_type=const.SOLVER_INCREMENT_BY_FRAME_ATTR_TYPE,
         default_value=const.SOLVER_INCREMENT_BY_FRAME_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_user_frames_from_collection(col):
+    """
+    Get the value of solver 'User Frames', from a Collection.
+
+    :param col: The Collection to query.
+    :type col: Collection
+
+    :returns: The string representation of the frames.
+    :rtype: str
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_USER_FRAMES_ATTR,
+        attr_type=const.SOLVER_USER_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_USER_FRAMES_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_user_frames_on_collection(col, value):
+    """
+    Set the value of solver 'User Frames' on a Collection.
+
+    :param col: The Collection to change.
+    :type col: Collection
+
+    :param value: Value to set to.
+    :type value: str
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_USER_FRAMES_ATTR,
+        value,
+        attr_type=const.SOLVER_USER_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_USER_FRAMES_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_use_per_marker_frames_from_collection(col):
+    """
+    :rtype: bool
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_USE_PER_MARKER_FRAMES_ATTR,
+        attr_type=const.SOLVER_USE_PER_MARKER_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_USE_PER_MARKER_FRAMES_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_use_per_marker_frames_on_collection(col, value):
+    """
+    :type value: bool
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_USE_PER_MARKER_FRAMES_ATTR,
+        value,
+        attr_type=const.SOLVER_USE_PER_MARKER_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_USE_PER_MARKER_FRAMES_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_per_marker_frames_from_collection(col):
+    """
+    :rtype: int
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_PER_MARKER_FRAMES_ATTR,
+        attr_type=const.SOLVER_PER_MARKER_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_PER_MARKER_FRAMES_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_per_marker_frames_on_collection(col, value):
+    """
+    :type value: int
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_PER_MARKER_FRAMES_ATTR,
+        value,
+        attr_type=const.SOLVER_PER_MARKER_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_PER_MARKER_FRAMES_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_use_span_frames_from_collection(col):
+    """
+    :rtype: bool
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_USE_SPAN_FRAMES_ATTR,
+        attr_type=const.SOLVER_USE_SPAN_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_USE_SPAN_FRAMES_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_use_span_frames_on_collection(col, value):
+    """
+    :type value: bool
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_USE_SPAN_FRAMES_ATTR,
+        value,
+        attr_type=const.SOLVER_USE_SPAN_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_USE_SPAN_FRAMES_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_span_frames_from_collection(col):
+    """
+    :rtype: int
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_SPAN_FRAMES_ATTR,
+        attr_type=const.SOLVER_SPAN_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_SPAN_FRAMES_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_span_frames_on_collection(col, value):
+    """
+    :type value: int
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_SPAN_FRAMES_ATTR,
+        value,
+        attr_type=const.SOLVER_SPAN_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_SPAN_FRAMES_DEFAULT_VALUE,
     )
     return
 

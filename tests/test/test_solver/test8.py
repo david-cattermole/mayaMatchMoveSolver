@@ -51,7 +51,7 @@ class TestSolver8(solverUtils.SolverTestCase):
         print('Scene Graph:', scene_graph_label)
 
         # Open File Path
-        scenePath = self.get_data_path('solver_test8.ma')
+        scenePath = self.get_data_path('scenes', 'solver_test8.ma')
         maya.cmds.file(scenePath,
                        open=True,
                        force=True,

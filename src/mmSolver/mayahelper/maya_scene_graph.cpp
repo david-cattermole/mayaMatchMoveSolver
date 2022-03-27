@@ -599,10 +599,15 @@ add_transforms(
             break;
         }
 
-        // TODO: Check if the transform has any input connections for
-        // the transform values - if it does, the transform node is
-        // not supported and we must bail out of using the MM Scene
-        // Graph as an acceleration.
+        // TODO: Check if the transform has any of:
+        //
+        // - input connections to the transform values.
+        //
+        // - non-zero pivot-point transform values.
+        //
+        // if a node has any of these, the transform node is not
+        // supported and we must bail out of using the MM Scene Graph
+        // as an acceleration.
 
         auto search = out_nodeNameToNodeIdMap.find(nodeNameStr);
         if (search != out_nodeNameToNodeIdMap.end()) {

@@ -320,7 +320,7 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
             col.add_attribute(attr_tz)
 
         # save the output
-        file_name = 'test_solve_opera_house_{}_{}_before.ma'.format(
+        file_name = 'test_solve_operahouse_{}_{}_before.ma'.format(
             solver_name, scene_graph_name)
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
@@ -340,7 +340,7 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
         mmapi.update_deviation_on_collection(col, results)
 
         # save the output
-        file_name = 'test_solve_opera_house_{}_{}_after.ma'.format(
+        file_name = 'test_solve_operahouse_{}_{}_after.ma'.format(
             solver_name, scene_graph_name)
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)

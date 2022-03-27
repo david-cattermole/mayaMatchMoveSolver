@@ -155,7 +155,7 @@ class TestSolveIssue53(test_api_utils.APITestCase):
         print('pre-solve time:', e - s)
 
         # save the output, before.
-        file_name = 'test_solve_solveAllFramesCausesStaticAnimCurves_{}_{}_before.ma'.format(
+        file_name = 'test_solve_issue53_{}_{}_before.ma'.format(
             solver_name, scene_graph_name)
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
@@ -172,7 +172,7 @@ class TestSolveIssue53(test_api_utils.APITestCase):
         mmapi.update_deviation_on_collection(col, solres_list)
 
         # save the output
-        file_name = 'test_solve_solveAllFramesCausesStaticAnimCurves_{}_{}_after.ma'.format(
+        file_name = 'test_solve_issue53_{}_{}_after.ma'.format(
             solver_name, scene_graph_name)
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)

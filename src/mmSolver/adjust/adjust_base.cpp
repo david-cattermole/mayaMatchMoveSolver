@@ -1123,18 +1123,20 @@ MStatus solveFrames(
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    MMSOLVER_VRB("Number of Markers; used="
-        << usedMarkerList.size() << " | unused="
-        << unusedMarkerList.size());
-    MMSOLVER_VRB("Number of Attributes; used="
-        << usedAttrList.size() << " | unused="
-        << unusedAttrList.size());
-    MMSOLVER_VRB("Number of Parameters; " << numberOfParameters);
-    MMSOLVER_VRB("Number of Frames; " << frameList.length());
-    MMSOLVER_VRB("Number of Marker Errors; " << numberOfMarkerErrors);
-    MMSOLVER_VRB("Number of Attribute Stiffness Errors; " << numberOfAttrStiffnessErrors);
-    MMSOLVER_VRB("Number of Attribute Smoothness Errors; " << numberOfAttrSmoothnessErrors);
-    MMSOLVER_VRB("Number of Total Errors; " << numberOfErrors);
+    if (verbose) {
+        MMSOLVER_VRB("Number of Markers; used="
+                     << usedMarkerList.size() << " | unused="
+                     << unusedMarkerList.size());
+        MMSOLVER_VRB("Number of Attributes; used="
+                     << usedAttrList.size() << " | unused="
+                     << unusedAttrList.size());
+        MMSOLVER_VRB("Number of Parameters; " << numberOfParameters);
+        MMSOLVER_VRB("Number of Frames; " << frameList.length());
+        MMSOLVER_VRB("Number of Marker Errors; " << numberOfMarkerErrors);
+        MMSOLVER_VRB("Number of Attribute Stiffness Errors; " << numberOfAttrStiffnessErrors);
+        MMSOLVER_VRB("Number of Attribute Smoothness Errors; " << numberOfAttrSmoothnessErrors);
+        MMSOLVER_VRB("Number of Total Errors; " << numberOfErrors);
+    }
 
     // Bail out of solve if we don't have enough used markers or
     // attributes.
@@ -1186,16 +1188,18 @@ MStatus solveFrames(
     errorDistanceList.resize((uint64_t) numberOfMarkerErrors / ERRORS_PER_MARKER, 0);
     assert(out_errorToMarkerList.size() == errorDistanceList.size());
 
-    MMSOLVER_VRB("Solving...");
-    MMSOLVER_VRB("Solver Type=" << solverOptions.solverType);
-    MMSOLVER_VRB("Maximum Iterations=" << solverOptions.iterMax);
-    MMSOLVER_VRB("Tau=" << solverOptions.tau);
-    MMSOLVER_VRB("Epsilon1=" << solverOptions.eps1);
-    MMSOLVER_VRB("Epsilon2=" << solverOptions.eps2);
-    MMSOLVER_VRB("Epsilon3=" << solverOptions.eps3);
-    MMSOLVER_VRB("Delta=" << fabs(solverOptions.delta));
-    MMSOLVER_VRB("Auto Differencing Type=" << solverOptions.autoDiffType);
-    MMSOLVER_VRB("Time Evaluation Mode=" << solverOptions.timeEvalMode);
+    if (verbose) {
+        MMSOLVER_VRB("Solving...");
+        MMSOLVER_VRB("Solver Type=" << solverOptions.solverType);
+        MMSOLVER_VRB("Maximum Iterations=" << solverOptions.iterMax);
+        MMSOLVER_VRB("Tau=" << solverOptions.tau);
+        MMSOLVER_VRB("Epsilon1=" << solverOptions.eps1);
+        MMSOLVER_VRB("Epsilon2=" << solverOptions.eps2);
+        MMSOLVER_VRB("Epsilon3=" << solverOptions.eps3);
+        MMSOLVER_VRB("Delta=" << fabs(solverOptions.delta));
+        MMSOLVER_VRB("Auto Differencing Type=" << solverOptions.autoDiffType);
+        MMSOLVER_VRB("Time Evaluation Mode=" << solverOptions.timeEvalMode);
+    }
 
     if ((verbose == false) && (printStats.enable == false)) {
         std::stringstream ss;
@@ -1405,7 +1409,17 @@ MStatus solveFrames(
     for (int i = 0; i < numberOfParameters; ++i) {
         // Copy parameter values into the 'previous' parameter list.
         out_previousParamList[i] = out_paramList[i];
-        MMSOLVER_VRB("-> " << out_paramList[i]);
+    }
+    if (verbose) {
+        for (int i = 0; i < numberOfParameters; ++i) {
+            IndexPair attrPair = out_paramToAttrList[i];
+            AttrPtr attr = usedAttrList[attrPair.first];
+
+            MString attr_name = attr->getName();
+            auto attr_name_char = attr_name.asChar();
+
+            MMSOLVER_VRB("-> " << out_paramList[i] << " | " << attr_name_char);
+        }
     }
 
     if (solverOptions.solverType == SOLVER_TYPE_LEVMAR) {
@@ -1469,8 +1483,8 @@ MStatus solveFrames(
     }
 
     // Set the solved parameters
-    MMSOLVER_VRB("Setting Parameters...");
     if (errorIsBetter) {
+        MMSOLVER_VRB("Setting Solved Parameters...");
         set_maya_attribute_values(
             numberOfParameters,
             out_paramToAttrList,
@@ -1481,6 +1495,7 @@ MStatus solveFrames(
             out_curveChange);
     } else {
         // Set the initial parameter values.
+        MMSOLVER_VRB("Setting Initial Parameters...");
         set_maya_attribute_values(
             numberOfParameters,
             out_paramToAttrList,
@@ -1490,9 +1505,17 @@ MStatus solveFrames(
             out_dgmod,
             out_curveChange);
     }
-    MMSOLVER_VRB("Solved Parameters:");
-    for (int i = 0; i < numberOfParameters; ++i) {
-        MMSOLVER_VRB("-> " << out_paramList[i]);
+    if (verbose) {
+        MMSOLVER_VRB("Solved Parameters:");
+        for (int i = 0; i < numberOfParameters; ++i) {
+            IndexPair attrPair = out_paramToAttrList[i];
+            AttrPtr attr = usedAttrList[attrPair.first];
+
+            MString attr_name = attr->getName();
+            auto attr_name_char = attr_name.asChar();
+
+            MMSOLVER_VRB("-> " << out_paramList[i] << " | " << attr_name_char);
+        }
     }
 
     logResultsSolveDetails(

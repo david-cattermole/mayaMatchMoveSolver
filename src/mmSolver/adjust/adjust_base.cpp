@@ -342,15 +342,15 @@ bool set_maya_attribute_values(const int numberOfParameters,
         IndexPair attrPair = paramToAttrList[i];
         AttrPtr attr = attrList[attrPair.first];
 
-        double xoffset = attr->getOffsetValue();
-        double xscale = attr->getScaleValue();
-        double xmin = attr->getMinimumValue();
-        double xmax = attr->getMaximumValue();
-        double value = paramList[i];
-        value = parameterBoundFromInternalToExternal(
-            value,
+        const double offset = attr->getOffsetValue();
+        const double scale = attr->getScaleValue();
+        const double xmin = attr->getMinimumValue();
+        const double xmax = attr->getMaximumValue();
+        const double solver_value = paramList[i];
+        const double real_value = parameterBoundFromInternalToExternal(
+            solver_value,
             xmin, xmax,
-            xoffset, xscale);
+            offset, scale);
 
         // Get frame time
         MTime frame = currentFrame;
@@ -358,11 +358,29 @@ bool set_maya_attribute_values(const int numberOfParameters,
             frame = frameList[attrPair.second];
         }
 
-        status = attr->setValue(value, frame, dgmod, curveChange);
+        status = attr->setValue(real_value, frame, dgmod, curveChange);
         CHECK_MSTATUS(status);
+
+        if (status != MS::kSuccess) {
+            MString attr_name = attr->getName();
+            auto attr_name_char = attr_name.asChar();
+
+            MMSOLVER_ERR(
+                "set_maya_attribute_values was given an invalid value to set:"
+                << " frame=" << frame
+                << " attr name=" << attr_name_char
+                << " solver value=" << solver_value
+                << " bound value=" << real_value
+                << " offset=" << offset
+                << " scale=" << scale
+                << " min=" << xmin
+                << " max=" << xmax);
+
+            break;
+        }
     }
     dgmod.doIt();  // Commit changed data into Maya
-    return true;
+    return status == MS::kSuccess;
 }
 
 

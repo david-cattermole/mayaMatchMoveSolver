@@ -72,10 +72,10 @@ class TestSolveIssue53(test_api_utils.APITestCase):
         dont_touch_these_nodes = [
             '|bundle_12_BND',
             '|bundle_13_BND',
-            '|bundle_14_BND']
+            '|bundle_14_BND',
+        ]
 
-        # Triangulate all 3D points.
-        nodes = maya.cmds.ls(type='transform') or []
+        nodes = sorted(maya.cmds.ls(type='transform') or [])
         bnd_nodes = mmapi.filter_bundle_nodes(nodes)
         bnd_list = [mmapi.Bundle(node=n) for n in bnd_nodes]
         for bnd in bnd_list:
@@ -114,6 +114,7 @@ class TestSolveIssue53(test_api_utils.APITestCase):
         # Get Markers
         col = mmapi.Collection(node='collection1')
         mkr_list = col.get_marker_list()
+        mkr_list = sorted(mkr_list, key=lambda mkr: mkr.get_node())
 
         # Frames
         #
@@ -148,7 +149,7 @@ class TestSolveIssue53(test_api_utils.APITestCase):
         col.set_attribute_list(attr_list)
         col.set_solver_list(sol_list)
         e = time.time()
-        print('pre=solve time:', e - s)
+        print('pre-solve time:', e - s)
 
         # save the output, before.
         file_name = 'test_solve_solveAllFramesCausesStaticAnimCurves_{}_{}_before.ma'.format(

@@ -185,11 +185,12 @@ double calculateParameterDelta(double value,
 
 
 // Set Parameter values
-void setParameters_mayaDag(
+MStatus
+setParameters_mayaDag(
         const int numberOfParameters,
         const double *parameters,
-        SolverData *ud,
-        MStatus &status) {
+        SolverData *ud) {
+    MStatus status = MS::kSuccess;
 
     MTime currentFrame = MAnimControl::currentTime();
     for (int i = 0; i < numberOfParameters; ++i) {
@@ -200,9 +201,9 @@ void setParameters_mayaDag(
         const double scale = attr->getScaleValue();
         const double xmin = attr->getMinimumValue();
         const double xmax = attr->getMaximumValue();
-        double value = parameters[i];
-        value = parameterBoundFromInternalToExternal(
-            value,
+        const double solver_value = parameters[i];
+        const double real_value = parameterBoundFromInternalToExternal(
+            solver_value,
             xmin, xmax,
             offset, scale);
 
@@ -211,7 +212,25 @@ void setParameters_mayaDag(
         if (attrPair.second != -1) {
             frame = ud->frameList[attrPair.second];
         }
-        attr->setValue(value, frame, *ud->dgmod, *ud->curveChange);
+
+        status = attr->setValue(real_value, frame, *ud->dgmod, *ud->curveChange);
+        if (status != MS::kSuccess) {
+            MString attr_name = attr->getName();
+            auto attr_name_char = attr_name.asChar();
+
+            MMSOLVER_ERR(
+                "setParameters (Maya DAG) was given an invalid value to set:"
+                << " frame=" << frame
+                << " attr name=" << attr_name_char
+                << " solver value=" << solver_value
+                << " bound value=" << real_value
+                << " offset=" << offset
+                << " scale=" << scale
+                << " min=" << xmin
+                << " max=" << xmax);
+
+            break;
+        }
     }
 
     // Commit changed data into Maya
@@ -227,15 +246,16 @@ void setParameters_mayaDag(
         ud->cameraList[i]->clearAttrValueCache();
     }
 
-    status = MStatus::kSuccess;
+    return status;
 }
 
 
-void setParameters_mmSceneGraph(
+MStatus
+setParameters_mmSceneGraph(
         const int numberOfParameters,
         const double *parameters,
-        SolverData *ud,
-        MStatus &status) {
+        SolverData *ud) {
+    MStatus status = MS::kSuccess;
 
     for (int i = 0; i < numberOfParameters; ++i) {
         const IndexPair attrPair = ud->paramToAttrList[i];
@@ -246,9 +266,12 @@ void setParameters_mmSceneGraph(
         const double scale = attr->getScaleValue();
         const double xmin = attr->getMinimumValue();
         const double xmax = attr->getMaximumValue();
-        double value = parameters[i];
-        value = parameterBoundFromInternalToExternal(
-            value,
+        // The solver value is used inside the solver to compute the
+        // result, but is not the true value that will be set on the
+        // attribute at the end of the solve.
+        const double solver_value = parameters[i];
+        const double real_value = parameterBoundFromInternalToExternal(
+            solver_value,
             xmin, xmax,
             offset, scale);
 
@@ -258,33 +281,53 @@ void setParameters_mmSceneGraph(
             frame = ud->mmsgFrameList[attrPair.second];
         }
 
-        ud->mmsgAttrDataBlock.set_attr_value(attrId, frame, value);
-    }
+        auto ok = ud->mmsgAttrDataBlock.set_attr_value(attrId, frame, real_value);
+        if (!ok) {
+            status = MS::kFailure;
 
-    status = MStatus::kSuccess;
+            MString attr_name = attr->getName();
+            auto attr_name_char = attr_name.asChar();
+
+            MMSOLVER_ERR(
+                "setParameters (MMSG) was given an invalid value to set:"
+                << " attr name=" << attr_name_char
+                << " solver value=" << solver_value
+                << " bound value=" << real_value
+                << " offset=" << offset
+                << " scale=" << scale
+                << " min=" << xmin
+                << " max=" << xmax);
+            break;
+        }
+    }
+    return status;
 }
 
 
 // Set Parameter values
-void setParameters(
+MStatus
+setParameters(
         const int numberOfParameters,
         const double *parameters,
-        SolverData *ud,
-        MStatus &status) {
+        SolverData *ud) {
+    MStatus status = MS::kSuccess;
 
     const SceneGraphMode sceneGraphMode = ud->solverOptions->sceneGraphMode;
     if (sceneGraphMode == SceneGraphMode::kMayaDag) {
-        setParameters_mayaDag(
+        status = setParameters_mayaDag(
             numberOfParameters,
             parameters,
-            ud,
-            status);
+            ud);
     } else if (sceneGraphMode == SceneGraphMode::kMMSceneGraph) {
-        setParameters_mmSceneGraph(
+        status = setParameters_mmSceneGraph(
             numberOfParameters,
             parameters,
-            ud,
-            status);
+            ud);
+    } else {
+        MMSOLVER_ERR(
+            "setParameters failed, invalid SceneGraphMode: "
+            << static_cast<int>(sceneGraphMode));
+        status = MS::kFailure;
     }
 
     // Save a copy of the parameters - to be used for determining the
@@ -294,7 +337,7 @@ void setParameters(
         ud->previousParamList[j] = parameters[j];
     }
 
-    status = MStatus::kSuccess;
+    return status;
 }
 
 
@@ -403,6 +446,7 @@ void measureErrors_mayaDag(
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = ud->errorToMarkerList[i];
         int markerIndex = markerPair.first;
+
         int frameIndex = markerPair.second;
         bool skipFrame = frameIndexEnable[frameIndex] == false;
         bool skipMarker = errorMeasurements[i] == false;
@@ -611,6 +655,7 @@ void measureErrors_mmSceneGraph(
     auto num_points = ud->mmsgFlatScene.num_points();
     auto num_markers = ud->mmsgFlatScene.num_markers();
     auto num_deviations = ud->mmsgFlatScene.num_deviations();
+    auto num_frames = ud->mmsgFrameList.size();
     UNUSED(num_points);
     UNUSED(num_markers);
     UNUSED(num_deviations);
@@ -626,7 +671,8 @@ void measureErrors_mmSceneGraph(
     int numberOfErrorsMeasured = 0;
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = ud->errorToMarkerList[i];
-        int mkrIndex = markerPair.first;
+        int markerIndex = markerPair.first;
+
         int frameIndex = markerPair.second;
         bool skipFrame = frameIndexEnable[frameIndex] == false;
         bool skipMarker = errorMeasurements[i] == false;
@@ -652,7 +698,7 @@ void measureErrors_mmSceneGraph(
         // the Maya DAG function.
         double behind_camera_error_factor = 1.0;
 
-        auto mkrIndex_x = mkrIndex * 2;
+        auto mkrIndex_x = ((markerIndex * num_frames * 2) + (frameIndex * 2));
         auto mkrIndex_y = mkrIndex_x + 1;
         auto mkr_x = out_marker_list[mkrIndex_x];
         auto mkr_y = out_marker_list[mkrIndex_y];
@@ -868,11 +914,10 @@ int solveFunc(const int numberOfParameters,
                                           MProfiler::kColorA_L2,
                                           "set parameters");
 #endif
-            setParameters(
+            status = setParameters(
                     numberOfParameters,
                     parameters,
-                    ud,
-                    status);
+                    ud);
             ud->timer.paramBenchTimer.stop();
             ud->timer.paramBenchTicks.stop();
         }
@@ -979,11 +1024,10 @@ int solveFunc(const int numberOfParameters,
                                               MProfiler::kColorA_L2,
                                               "set parameters");
 #endif
-                setParameters(
+                status = setParameters(
                         numberOfParameters,
                         &paramListA[0],
-                        ud,
-                        status);
+                        ud);
                 ud->timer.paramBenchTimer.stop();
                 ud->timer.paramBenchTicks.stop();
             }
@@ -1068,10 +1112,10 @@ int solveFunc(const int numberOfParameters,
                                                       MProfiler::kColorA_L2,
                                                       "set parameters");
 #endif
-                        setParameters(numberOfParameters,
-                                      &paramListB[0],
-                                      ud,
-                                      status);
+                        status = setParameters(
+                                numberOfParameters,
+                                &paramListB[0],
+                                ud);
                         ud->timer.paramBenchTimer.stop();
                         ud->timer.paramBenchTicks.stop();
                     }

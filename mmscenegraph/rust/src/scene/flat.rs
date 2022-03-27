@@ -182,9 +182,8 @@ impl FlatScene {
 
         let num_total_bundles = num_bundles * num_frames;
         let num_total_cameras = num_cameras * num_frames;
-        let num_total_transforms = num_transforms * num_frames;
+        let _num_total_transforms = num_transforms * num_frames;
 
-        self.out_tfm_world_matrix_list.reserve(num_total_transforms);
         self.out_bnd_world_matrix_list = Vec::with_capacity(num_total_bundles);
         self.out_cam_world_matrix_list = Vec::with_capacity(num_total_cameras);
         self.out_bnd_world_matrix_list
@@ -211,20 +210,23 @@ impl FlatScene {
                 NodeId::Camera(index) => {
                     // println!("Camera node: {:?} index: {}", node_id, index);
                     for f in 0..num_frames {
-                        let index_at_frame = (i * num_frames) + f;
+                        let i_at_frame = (i * num_frames) + f;
+                        let index_at_frame = (*index as usize * num_frames) + f;
+
                         let world_matrix =
-                            self.out_tfm_world_matrix_list[index_at_frame];
-                        self.out_cam_world_matrix_list[*index as usize] =
+                            self.out_tfm_world_matrix_list[i_at_frame];
+                        self.out_cam_world_matrix_list[index_at_frame] =
                             world_matrix;
                     }
                 }
                 NodeId::Bundle(index) => {
                     // println!("Bundle node: {:?} index: {}", node_id, index);
                     for f in 0..num_frames {
-                        let index_at_frame = (i * num_frames) + f;
+                        let i_at_frame = (i * num_frames) + f;
+                        let index_at_frame = (*index as usize * num_frames) + f;
                         let world_matrix =
-                            self.out_tfm_world_matrix_list[index_at_frame];
-                        self.out_bnd_world_matrix_list[*index as usize] =
+                            self.out_tfm_world_matrix_list[i_at_frame];
+                        self.out_bnd_world_matrix_list[index_at_frame] =
                             world_matrix;
                     }
                 }
@@ -240,9 +242,7 @@ impl FlatScene {
         //     self.out_cam_world_matrix_list.len()
         // );
 
-        assert!(
-            self.out_cam_world_matrix_list.len() == (num_cameras * num_frames)
-        );
+        assert!(self.out_cam_world_matrix_list.len() == num_total_cameras);
         self.out_marker_list.clear();
         self.out_point_list.clear();
         self.out_deviation_list.clear();
@@ -285,7 +285,7 @@ impl FlatScene {
 
                 for (f, frame) in (0..).zip(frame_list) {
                     let frame = *frame;
-                    let cam_index_at_frame = (i * num_frames) + f;
+                    let cam_index_at_frame = (cam_index * num_frames) + f;
                     let bnd_index_at_frame = (bnd_index * num_frames) + f;
                     let bnd_matrix =
                         self.out_bnd_world_matrix_list[bnd_index_at_frame];

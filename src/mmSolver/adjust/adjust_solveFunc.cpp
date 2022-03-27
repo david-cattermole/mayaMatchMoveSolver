@@ -354,6 +354,15 @@ void determineMarkersToBeEvaluated(int numberOfParameters,
     return;
 }
 
+inline
+double distance_2d(
+    const double ax, const double ay,
+    const double bx, const double by
+) {
+    double dx = ax - bx;
+    double dy = ay - by;
+    return std::sqrt((dx * dx) + (dy * dy));
+}
 
 void measureErrors_mayaDag(
         const int numberOfErrors,
@@ -487,10 +496,8 @@ void measureErrors_mayaDag(
         // bad idea as it will introduce non-linearities, we are
         // better off using something like 'x*x - y*y'. It would
         // be best to test this detail.
-        double dx = fabs(mkr_x - bnd_mpos.x) * ud->imageWidth;
-        double dy = fabs(mkr_y - bnd_mpos.y) * ud->imageWidth;
-        double d = distance_2d(
-            mkr_x, mkr_y, bnd_mpos[0], bnd_mpos[1]) * ud->imageWidth;
+        const double dx = fabs(mkr_x - bnd_mpos.x) * ud->imageWidth;
+        const double dy = fabs(mkr_y - bnd_mpos.y) * ud->imageWidth;
 
         auto errorIndex_x = i * ERRORS_PER_MARKER;
         auto errorIndex_y = errorIndex_x + 1;
@@ -501,6 +508,8 @@ void measureErrors_mayaDag(
         // should not have any loss functions or scaling applied to it.
         ud->errorList[errorIndex_x] = dx * behind_camera_error_factor;
         ud->errorList[errorIndex_y] = dy * behind_camera_error_factor;
+
+        const double d = distance_2d(mkr_x, mkr_y, bnd_mpos[0], bnd_mpos[1]) * ud->imageWidth;
         ud->errorDistanceList[i] = d;
         error_avg += d;
         if (d > error_max) { error_max = d; }
@@ -652,9 +661,8 @@ void measureErrors_mmSceneGraph(
 
         auto dx = out_deviation_list[mkrIndex_x];
         auto dy = out_deviation_list[mkrIndex_y];
-        auto ddx = dx * ud->imageWidth;
-        auto ddy = dy * ud->imageWidth;
-        double d = std::sqrt((dx * dx) + (dy * dy)) * ud->imageWidth;
+        auto dx_pixels = dx * ud->imageWidth;
+        auto dy_pixels = dy * ud->imageWidth;
 
         auto errorIndex_x = i * ERRORS_PER_MARKER;
         auto errorIndex_y = errorIndex_x + 1;
@@ -665,6 +673,8 @@ void measureErrors_mmSceneGraph(
         // should not have any loss functions or scaling applied to it.
         ud->errorList[errorIndex_x] = dx * behind_camera_error_factor;
         ud->errorList[errorIndex_y] = dy * behind_camera_error_factor;
+
+        const double d = std::sqrt((dx * dx) + (dy * dy)) * ud->imageWidth;
         ud->errorDistanceList[i] = d;
         error_avg += d;
         if (d > error_max) { error_max = d; }

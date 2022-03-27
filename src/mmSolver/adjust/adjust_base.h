@@ -59,22 +59,9 @@ typedef std::pair<int, std::string> SolverTypePair;
 typedef IndexPairList::iterator IndexPairListIt;
 typedef IndexPairList::const_iterator IndexPairListCIt;
 
-inline
-double distance_2d(
-    const double ax, const double ay,
-    const double bx, const double by
-) {
-    double dx = ax - bx;
-    double dy = ay - by;
-    return std::sqrt((dx * dx) + (dy * dy));
-}
-
-inline
-double distance_2d(MPoint a, MPoint b) {
-    return distance_2d(a.x, a.y, b.x, b.y);
-}
 
 std::vector<SolverTypePair> getSolverTypes();
+
 
 SolverTypePair getSolverTypeDefault();
 

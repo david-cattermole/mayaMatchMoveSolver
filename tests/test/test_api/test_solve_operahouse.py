@@ -261,7 +261,9 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
         min_frames_per_marker = 2
         frame_nums = mmapi.get_root_frames_from_markers(
             mkr_list, min_frames_per_marker, start, end)
-        print('frame_nums', frame_nums)
+        frame_nums = mmapi.root_frames_list_combine(frame_nums, [start, end])
+        max_frame_span = 5
+        frame_nums = mmapi.root_frames_subdivide(frame_nums, max_frame_span)
         for f in frame_nums:
             frm = mmapi.Frame(f)
             root_frm_list.append(frm)

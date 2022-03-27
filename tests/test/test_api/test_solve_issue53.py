@@ -126,6 +126,9 @@ class TestSolveIssue53(test_api_utils.APITestCase):
         min_frames_per_marker = 2
         f_list = mmapi.get_root_frames_from_markers(
             mkr_list, min_frames_per_marker, start_frame, end_frame)
+        f_list = mmapi.root_frames_list_combine(f_list, [start_frame, end_frame])
+        max_frame_span = 5
+        f_list = mmapi.root_frames_subdivide(f_list, max_frame_span)
         for f in f_list:
             frm = mmapi.Frame(f)
             root_frm_list.append(frm)

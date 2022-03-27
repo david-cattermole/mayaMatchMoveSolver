@@ -48,6 +48,8 @@ from mmSolver._api.execute import (
 from mmSolver._api.frame import Frame
 from mmSolver._api.rootframe import (
     get_root_frames_from_markers,
+    root_frames_subdivide,
+    root_frames_list_combine,
 )
 from mmSolver._api.action import (
     Action,
@@ -415,6 +417,8 @@ __all__ = [
 
     # Root Frame
     'get_root_frames_from_markers',
+    'root_frames_subdivide',
+    'root_frames_list_combine',
 
     # Node Conversion
     'get_bundle_nodes_from_marker_nodes',

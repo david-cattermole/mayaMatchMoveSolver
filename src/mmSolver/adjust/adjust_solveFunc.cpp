@@ -996,6 +996,8 @@ int solveFunc(const int numberOfParameters,
                 evalMeasurements);
 
         // Calculate the jacobian matrix.
+        std::vector<double> paramListA(numberOfParameters, 0);
+        std::vector<double> errorListA(numberOfErrors, 0);
         for (int i = 0; i < numberOfParameters; ++i) {
             double ratio = (double) i / (double) numberOfParameters;
             int progressNum = progressMin + static_cast<int>(ratio * progressMax);
@@ -1008,11 +1010,9 @@ int solveFunc(const int numberOfParameters,
             }
 
             // Create a copy of the parameters and errors.
-            std::vector<double> paramListA(numberOfParameters, 0);
             for (int j = 0; j < numberOfParameters; ++j) {
                 paramListA[j] = parameters[j];
             }
-            std::vector<double> errorListA(numberOfErrors, 0);
             for (int j = 0; j < numberOfErrors; ++j) {
                 errorListA[j] = errors[j];
             }

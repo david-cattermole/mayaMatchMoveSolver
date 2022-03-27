@@ -64,7 +64,7 @@ if errorlevel 1 goto failied_to_install
 
 :: Return back project root directory.
 CHDIR "%ROOT%"
-exit /b 1
+exit /b 0
 
 :failied_to_generate
 echo Failed to generate build files.

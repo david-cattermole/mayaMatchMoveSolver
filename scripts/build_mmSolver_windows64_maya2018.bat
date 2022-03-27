@@ -45,5 +45,16 @@ CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd6
 :: The script assumes 'RUST_CARGO_EXE' has been set to the Rust
 :: 'cargo' executable.
 CALL scripts\internal\build_mmscenegraph_windows64.bat
+if errorlevel 1 goto failed_to_build_mmscenegraph
 
 CALL scripts\internal\build_mmSolver_windows64.bat
+if errorlevel 1 goto failed_to_build_mmsolver
+exit /b 0
+
+:failed_to_build_mmscenegraph
+echo Failed to build MM Scene Graph.
+exit /b 1
+
+:failed_to_build_mmsolver
+echo Failed to build MM Solver.
+exit /b 1

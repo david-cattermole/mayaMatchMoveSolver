@@ -172,7 +172,7 @@ IF "%BUILD_PACKAGE%"=="1" (
 
 :: Return back project root directory.
 CHDIR "%PROJECT_ROOT%"
-exit /b 1
+exit /b 0
 
 :failied_to_generate
 echo Failed to generate build files.

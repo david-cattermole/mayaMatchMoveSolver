@@ -113,7 +113,7 @@ if errorlevel 1 goto failied_to_install_cpp
 
 :: Return back project root directory.
 CHDIR "%PROJECT_ROOT%"
-exit /b 1
+exit /b 0
 
 :failied_to_generate_cpp_header
 echo Failed to Generate C++ header files from Rust.

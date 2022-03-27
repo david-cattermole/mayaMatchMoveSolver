@@ -398,7 +398,7 @@ class TestTransform(test_utils.UtilsTestCase):
         )
 
         # save the output scene file
-        path = 'test_transform.ma'
+        path = 'test_transform_after.ma'
         path = self.get_data_path(path)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -450,7 +450,7 @@ class TestTransform(test_utils.UtilsTestCase):
                                  delete_static_anim_curves=False)
 
         # save the output scene file
-        path = 'test_transform_set_transforms_with_rotate_pivot.ma'
+        path = 'test_transform_set_transforms_with_rotate_pivot_after.ma'
         path = self.get_data_path(path)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)

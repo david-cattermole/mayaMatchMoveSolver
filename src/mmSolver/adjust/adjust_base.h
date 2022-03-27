@@ -131,7 +131,7 @@ bool set_maya_attribute_values(
 
 bool compute_error_stats(
     const int numberOfMarkerErrors,
-    const SolverData &userData,
+    const std::vector<double> &errorDistanceList,
     double &out_errorAvg,
     double &out_errorMin,
     double &out_errorMax);

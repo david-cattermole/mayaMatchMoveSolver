@@ -349,22 +349,22 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
         self.checkSolveResults(results)
         return
 
-    def test_opera_house_ceres_maya_dag(self):
+    def test_ceres_maya_dag(self):
         self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
-    def test_opera_house_ceres_mmscenegraph(self):
+    def test_ceres_mmscenegraph(self):
         self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
-    def test_opera_house_cminpack_lmdif_maya_dag(self):
+    def test_cminpack_lmdif_maya_dag(self):
         self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
-    def test_opera_house_cminpack_lmdif_mmscenegraph(self):
+    def test_cminpack_lmdif_mmscenegraph(self):
         self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
-    def test_opera_house_cminpack_lmder_maya_dag(self):
+    def test_cminpack_lmder_maya_dag(self):
         self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
-    def test_opera_house_cminpack_lmder_mmscenegraph(self):
+    def test_cminpack_lmder_mmscenegraph(self):
         self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
 
 

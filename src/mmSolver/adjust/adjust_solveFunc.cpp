@@ -58,6 +58,8 @@
 #include <mmscenegraph/mmscenegraph.h>
 
 // MM Solver
+#include "mmSolver/core/mmdata.h"
+#include "mmSolver/core/mmmath.h"
 #include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
@@ -84,6 +86,11 @@ namespace mmsg = mmscenegraph;
 // positions. For solving lens distortion (where the marker positions
 // are dynamic) it doesn't make sense to use a marker cache.
 #define USE_MARKER_POSITION_CACHE 0
+
+
+// // Calculate the smoothness/stiffness error values without needing a
+// // 'variance' value.
+// #define CALC_SMOOTHNESS_STIFFNESS_WITHOUT_VARIANCE 1
 
 
 #if MAYA_API_VERSION < 201700
@@ -592,7 +599,16 @@ void measureErrors_mayaDag(
         stiffValueAttr->getValue(stiffValue, timeEvalMode);
         attr->getValue(attrValue, timeEvalMode);
 
+#ifdef CALC_SMOOTHNESS_STIFFNESS_WITHOUT_VARIANCE
+        auto straight_line = mmdata::Point2D(1.0, 0.0);
+        auto new_line = mmdata::Point2D(1.0, stiffValue - attrValue);
+        auto straight_line_norm = mmmath::normalize(straight_line);
+        auto new_line_norm = mmmath::normalize(new_line);
+        double error = 1.0 / std::abs(mmmath::dot(straight_line_norm, new_line_norm));
+#else
         double error = ((1.0 / gaussian(attrValue, stiffValue, stiffVariance)) - 1.0);
+#endif
+
         ud->errorList[indexIntoErrorArray] = error * stiffWeight;
         errors[indexIntoErrorArray] = error * stiffWeight;
     }
@@ -619,7 +635,16 @@ void measureErrors_mayaDag(
         smoothValueAttr->getValue(smoothValue, timeEvalMode);
         attr->getValue(attrValue, timeEvalMode);
 
+#ifdef CALC_SMOOTHNESS_STIFFNESS_WITHOUT_VARIANCE
+        auto straight_line = mmdata::Point2D(1.0, 0.0);
+        auto new_line = mmdata::Point2D(1.0, smoothValue - attrValue);
+        auto straight_line_norm = mmmath::normalize(straight_line);
+        auto new_line_norm = mmmath::normalize(new_line);
+        double error = 1.0 / std::abs(mmmath::dot(straight_line_norm, new_line_norm));
+#else
         double error = ((1.0 / gaussian(attrValue, smoothValue, smoothVariance)) - 1.0);
+#endif
+
         ud->errorList[indexIntoErrorArray] = error * smoothWeight;
         errors[indexIntoErrorArray] = error * smoothWeight;
     }

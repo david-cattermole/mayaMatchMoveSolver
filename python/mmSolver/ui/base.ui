@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>354</width>
+    <width>471</width>
     <height>186</height>
    </rect>
   </property>
@@ -19,19 +19,19 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <property name="spacing">
-     <number>0</number>
+     <number>1</number>
     </property>
     <property name="leftMargin">
-     <number>6</number>
+     <number>3</number>
     </property>
     <property name="topMargin">
-     <number>6</number>
+     <number>3</number>
     </property>
     <property name="rightMargin">
-     <number>6</number>
+     <number>3</number>
     </property>
     <property name="bottomMargin">
-     <number>6</number>
+     <number>3</number>
     </property>
     <item>
      <layout class="QVBoxLayout" name="verticalLayout">
@@ -141,8 +141,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>354</width>
-     <height>20</height>
+     <width>471</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

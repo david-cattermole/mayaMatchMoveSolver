@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>646</width>
+    <width>656</width>
     <height>436</height>
    </rect>
   </property>
@@ -15,19 +15,19 @@
   </property>
   <layout class="QVBoxLayout" name="top_verticalLayout">
    <property name="spacing">
-    <number>5</number>
+    <number>2</number>
    </property>
    <property name="leftMargin">
-    <number>3</number>
+    <number>1</number>
    </property>
    <property name="topMargin">
-    <number>3</number>
+    <number>1</number>
    </property>
    <property name="rightMargin">
-    <number>3</number>
+    <number>1</number>
    </property>
    <property name="bottomMargin">
-    <number>3</number>
+    <number>1</number>
    </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout" stretch="0,0,0">

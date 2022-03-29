@@ -84,12 +84,10 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
         self.runSolverAffects(affects_mode, **kwargs)
 
         # Run solver!
-        debug_path = self.get_data_path('solver_min_max_values_staticframe_debug.log')
         s = time.time()
         result = maya.cmds.mmSolver(
             frame=frames,
             verbose=True,
-            debugFile=debug_path,
             **kwargs
         )
         e = time.time()
@@ -153,12 +151,10 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
         self.runSolverAffects(affects_mode, **kwargs)
 
         # Run solver!
-        debug_path = self.get_data_path('solver_min_max_values_staticframe_lower_bound_only_debug.log')
         s = time.time()
         result = maya.cmds.mmSolver(
             frame=frames,
             verbose=True,
-            debugFile=debug_path,
             **kwargs
         )
         e = time.time()
@@ -219,12 +215,10 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
         self.runSolverAffects(affects_mode, **kwargs)
 
         # Run solver!
-        debug_path = self.get_data_path('solver_min_max_values_staticframe_upper_bound_only_debug.log')
         s = time.time()
         result = maya.cmds.mmSolver(
             frame=frames,
             verbose=True,
-            debugFile=debug_path,
             **kwargs
         )
         e = time.time()

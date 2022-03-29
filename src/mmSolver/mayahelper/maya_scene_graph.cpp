@@ -701,83 +701,92 @@ check_transform_node(MDagPath &dag_path)
     }
 
     MFnDependencyNode dg_node(node_mobject);
-    auto tx_has_conn = attribute_has_connection(dg_node, MString("translateX"));
+    auto tx_attr_name = MString("translateX");
+    auto tx_has_conn = attribute_has_connection(dg_node, tx_attr_name);
     if (tx_has_conn) {
         status = MS::kFailure;
         MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"translateX\": "
+                     << "\"" << tx_attr_name.asChar() << "\": "
                      << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    auto ty_has_conn = attribute_has_connection(dg_node, MString("translateY"));
+    auto ty_attr_name = MString("translateY");
+    auto ty_has_conn = attribute_has_connection(dg_node, ty_attr_name);
     if (ty_has_conn) {
         status = MS::kFailure;
         MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"translateY\": "
+                     << "\"" << ty_attr_name.asChar() << "\": "
                      << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    auto tz_has_conn = attribute_has_connection(dg_node, MString("translateZ"));
+    auto tz_attr_name = MString("translateZ");
+    auto tz_has_conn = attribute_has_connection(dg_node, tz_attr_name);
     if (tz_has_conn) {
         status = MS::kFailure;
         MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"translateZ\": "
+                     << "\"" << tz_attr_name.asChar() << "\": "
                      << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    auto rx_has_conn = attribute_has_connection(dg_node, MString("rotateX"));
+    auto rx_attr_name = MString("rotateX");
+    auto rx_has_conn = attribute_has_connection(dg_node, rx_attr_name);
     if (rx_has_conn) {
         status = MS::kFailure;
         MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"rotateX\": "
+                     << "\"" << rx_attr_name.asChar() << "\": "
                      << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    auto ry_has_conn = attribute_has_connection(dg_node, MString("rotateY"));
+    auto ry_attr_name = MString("rotateY");
+    auto ry_has_conn = attribute_has_connection(dg_node, ry_attr_name);
     if (ry_has_conn) {
         status = MS::kFailure;
         MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"rotateY\": "
+                     << "\"" << ry_attr_name.asChar() << "\": "
                      << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    auto rz_has_conn = attribute_has_connection(dg_node, MString("rotateZ"));
+    auto rz_attr_name = MString("rotateZ");
+    auto rz_has_conn = attribute_has_connection(dg_node, rz_attr_name);
     if (rz_has_conn) {
         status = MS::kFailure;
         MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"rotateZ\": "
+                     << "\"" << rz_attr_name.asChar() << "\": "
                      << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    auto sx_has_conn = attribute_has_connection(dg_node, MString("scaleX"));
+    auto sx_attr_name = MString("scaleX");
+    auto sx_has_conn = attribute_has_connection(dg_node, sx_attr_name);
     if (sx_has_conn) {
         status = MS::kFailure;
         MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"scaleZ\": "
+                     << "\"" << sx_attr_name.asChar() << "\": "
                      << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    auto sy_has_conn = attribute_has_connection(dg_node, MString("scaleY"));
+    auto sy_attr_name = MString("scaleY");
+    auto sy_has_conn = attribute_has_connection(dg_node, sy_attr_name);
     if (sy_has_conn) {
         status = MS::kFailure;
         MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"scaleY\": "
+                     << "\"" << sy_attr_name.asChar() << "\": "
                      << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    auto sz_has_conn = attribute_has_connection(dg_node, MString("scaleZ"));
+    auto sz_attr_name = MString("scaleZ");
+    auto sz_has_conn = attribute_has_connection(dg_node, sz_attr_name);
     if (sz_has_conn) {
         status = MS::kFailure;
         MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"scaleZ\": "
+                     << "\"" << sz_attr_name.asChar() << "\": "
                      << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }

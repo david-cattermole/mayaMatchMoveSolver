@@ -1259,7 +1259,19 @@ MStatus solveFrames(
             mmsgAttrIdList);
         CHECK_MSTATUS(status);
         if (status != MS::kSuccess) {
-            solverOptions.sceneGraphMode = SceneGraphMode::kMayaDag;
+            // TODO: If an error constructing the scene is detected,
+            // it would be ideal to fall back to the Maya DAG scene
+            // graph, and continue without exiting with failure.
+            //
+            // Unfortunately because mmSolver requires special
+            // evaluation to happen when solving with Maya DAG
+            // per-frame, it's not possible to easily fall back. See
+            // the use of the 'FrameSolveMode' enum type for more
+            // details.
+            MMSOLVER_ERR("Maya DAG is invalid for use with MM Scene Graph, "
+                         << "please switch to Maya DAG and solve again.");
+            return status;
+            status = MS::kFailure;
         }
     } else if (solverOptions.sceneGraphMode == SceneGraphMode::kMayaDag) {
     } else {

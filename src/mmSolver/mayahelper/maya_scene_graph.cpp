@@ -34,11 +34,14 @@
 #include <maya/MTimeArray.h>
 #include <maya/MComputation.h>
 #include <maya/MString.h>
+#include <maya/MFnTransform.h>
+#include <maya/MFnDependencyNode.h>
 
 // MM SceneGraph
 #include <mmscenegraph/mmscenegraph.h>
 
 // MM Solver
+#include "mmSolver/utilities/number_utils.h"
 #include "maya_camera.h"
 #include "maya_attr.h"
 #include "maya_marker.h"
@@ -70,11 +73,6 @@ add_attribute(
     // TODO: If the attribute is keyed, but there's only one frame in
     // the frame list, then we can consider the attribute static, not
     // animated.
-
-    // TODO: If the attribute is connected directly to another
-    // attribute we can use the connected attribute's value. If the
-    // source attribute is computed by another node, the scene graph
-    // construction should fail - we do not support that yet.
 
     auto animated = mayaAttr.isAnimated();
     // auto locked = !mayaAttr.isFreeToChange();
@@ -126,7 +124,7 @@ get_translate_attrs(
     MStatus status = MS::kSuccess;
     double scaleFactor = 1.0;  // No conversion.
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("translateX"),
         frameList,
@@ -139,7 +137,7 @@ get_translate_attrs(
         out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("translateY"),
         frameList,
@@ -152,7 +150,7 @@ get_translate_attrs(
         out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("translateZ"),
         frameList,
@@ -182,7 +180,7 @@ get_rotate_attrs(
     MStatus status = MS::kSuccess;
     double scaleFactor = 1.0;  // No conversion.
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("rotateX"),
         frameList,
@@ -195,7 +193,7 @@ get_rotate_attrs(
         out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("rotateY"),
         frameList,
@@ -208,7 +206,7 @@ get_rotate_attrs(
         out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("rotateZ"),
         frameList,
@@ -238,7 +236,7 @@ get_scale_attrs(
     MStatus status = MS::kSuccess;
     double scaleFactor = 1.0;  // No conversion.
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("scaleX"),
         frameList,
@@ -251,7 +249,7 @@ get_scale_attrs(
         out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("scaleY"),
         frameList,
@@ -264,7 +262,7 @@ get_scale_attrs(
         out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("scaleZ"),
         frameList,
@@ -303,7 +301,7 @@ get_camera_attrs(
     out_render_image_width = camera->getRenderWidthValue();
     out_render_image_height = camera->getRenderHeightValue();
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("horizontalFilmAperture"),
         frameList,
@@ -316,7 +314,7 @@ get_camera_attrs(
         out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("verticalFilmAperture"),
         frameList,
@@ -329,7 +327,7 @@ get_camera_attrs(
         out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("focalLength"),
         frameList,
@@ -342,7 +340,7 @@ get_camera_attrs(
         out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("horizontalFilmOffset"),
         frameList,
@@ -355,7 +353,7 @@ get_camera_attrs(
         out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("verticalFilmOffset"),
         frameList,
@@ -368,7 +366,7 @@ get_camera_attrs(
         out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("nearClipPlane"),
         frameList,
@@ -381,7 +379,7 @@ get_camera_attrs(
         out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("farClipPlane"),
         frameList,
@@ -394,7 +392,7 @@ get_camera_attrs(
         out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_attribute(
+    status = add_attribute(
         mayaAttr,
         MString("cameraScale"),
         frameList,
@@ -451,7 +449,7 @@ get_transform_attrs(
 ) {
     MStatus status = MS::kSuccess;
 
-    get_translate_attrs(
+    status = get_translate_attrs(
         mayaAttr,
         frameList,
         start_frame,
@@ -459,7 +457,9 @@ get_transform_attrs(
         timeEvalMode,
         out_attrDataBlock, out_translateAttrIds,
         out_attrNameToAttrIdMap);
-    get_rotate_attrs(
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    status = get_rotate_attrs(
         mayaAttr,
         frameList,
         start_frame,
@@ -467,7 +467,9 @@ get_transform_attrs(
         timeEvalMode,
         out_attrDataBlock, out_rotateAttrIds,
         out_attrNameToAttrIdMap);
-    get_scale_attrs(
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    status = get_scale_attrs(
         mayaAttr,
         frameList,
         start_frame,
@@ -475,8 +477,11 @@ get_transform_attrs(
         timeEvalMode,
         out_attrDataBlock, out_scaleAttrIds,
         out_attrNameToAttrIdMap);
-    get_rotate_order_attr(
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    status = get_rotate_order_attr(
         mayaAttr, timeEvalMode, out_rotateOrder);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }
@@ -565,6 +570,221 @@ get_marker_attrs(
     return status;
 }
 
+bool
+is_zero(MPoint value, double tolerance=1.0e-3) {
+    bool x_is_zero = number::isApproxEqual<double>(value.x, 0.0, tolerance);
+    bool y_is_zero = number::isApproxEqual<double>(value.y, 0.0, tolerance);
+    bool z_is_zero = number::isApproxEqual<double>(value.z, 0.0, tolerance);
+    return x_is_zero && y_is_zero && z_is_zero;
+}
+
+bool
+is_zero(MVector value, double tolerance=1.0e-3) {
+    bool x_is_zero = number::isApproxEqual<double>(value.x, 0.0, tolerance);
+    bool y_is_zero = number::isApproxEqual<double>(value.y, 0.0, tolerance);
+    bool z_is_zero = number::isApproxEqual<double>(value.z, 0.0, tolerance);
+    return x_is_zero && y_is_zero && z_is_zero;
+}
+
+bool
+attribute_has_connection(
+    MFnDependencyNode &depend_node,
+    MString &name
+) {
+    MPlug plug = depend_node.findPlug(name);
+    if (plug.isNull()) {
+        return true;
+    }
+
+    MPlug source_plug = plug.source();
+    if (!source_plug.isNull()) {
+        // The only supported input connection is to an animation curve.
+        MObject source_node_mobject = source_plug.node();
+        auto has_anim_curve = source_node_mobject.hasFn(MFn::kAnimCurve);
+        if (!has_anim_curve) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// Check if the transform has any of:
+//
+// - DAG path is invalid.
+//
+// - DAG node is an instance.
+//
+// - Input connections to the transform values.
+//
+// - Non-zero pivot-point (or pivot point translation) transform
+//   values.
+//
+// If a node has any of these, the transform node is not supported and
+// we must bail out of using the MM Scene Graph as an acceleration.
+MStatus
+check_transform_node(MDagPath &dag_path)
+{
+    MStatus status = MS::kSuccess;
+
+    auto path_valid = dag_path.isValid(&status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    if (!path_valid) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: Invalid DAG path: "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    auto is_instanced = dag_path.isInstanced(&status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    if (is_instanced) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: No support for instanced nodes: "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    MObject node_mobject = dag_path.node(&status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    if (node_mobject.isNull()) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: Invalid node MObject: "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    MFnTransform mfn_transform(node_mobject, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MPoint scale_pivot = mfn_transform.scalePivot(
+        MSpace::kTransform,
+        &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    if (!is_zero(scale_pivot)) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: No support for non-zero scale pivot: "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    MVector scale_pivot_translation = mfn_transform.scalePivotTranslation(
+        MSpace::kTransform,
+        &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    if (!is_zero(scale_pivot_translation)) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: No support for non-zero scale pivot translation: "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    MPoint rotate_pivot = mfn_transform.rotatePivot(
+        MSpace::kTransform,
+        &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    if (!is_zero(rotate_pivot)) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: No support for non-zero rotate pivot: "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    MVector rotate_pivot_translation = mfn_transform.rotatePivotTranslation(
+        MSpace::kTransform,
+        &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    if (!is_zero(rotate_pivot_translation)) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: No support for non-zero rotate pivot translation\": "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    MFnDependencyNode dg_node(node_mobject);
+    auto tx_has_conn = attribute_has_connection(dg_node, MString("translateX"));
+    if (tx_has_conn) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
+                     << "\"translateX\": "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    auto ty_has_conn = attribute_has_connection(dg_node, MString("translateY"));
+    if (ty_has_conn) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
+                     << "\"translateY\": "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    auto tz_has_conn = attribute_has_connection(dg_node, MString("translateZ"));
+    if (tz_has_conn) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
+                     << "\"translateZ\": "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    auto rx_has_conn = attribute_has_connection(dg_node, MString("rotateX"));
+    if (rx_has_conn) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
+                     << "\"rotateX\": "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    auto ry_has_conn = attribute_has_connection(dg_node, MString("rotateY"));
+    if (ry_has_conn) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
+                     << "\"rotateY\": "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    auto rz_has_conn = attribute_has_connection(dg_node, MString("rotateZ"));
+    if (rz_has_conn) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
+                     << "\"rotateZ\": "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    auto sx_has_conn = attribute_has_connection(dg_node, MString("scaleX"));
+    if (sx_has_conn) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
+                     << "\"scaleZ\": "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    auto sy_has_conn = attribute_has_connection(dg_node, MString("scaleY"));
+    if (sy_has_conn) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
+                     << "\"scaleY\": "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    auto sz_has_conn = attribute_has_connection(dg_node, MString("scaleZ"));
+    if (sz_has_conn) {
+        status = MS::kFailure;
+        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
+                     << "\"scaleZ\": "
+                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    return status;
+}
+
 MStatus
 add_transforms(
     const mmsg::NodeId parent_node_id,
@@ -599,15 +819,8 @@ add_transforms(
             break;
         }
 
-        // TODO: Check if the transform has any of:
-        //
-        // - input connections to the transform values.
-        //
-        // - non-zero pivot-point transform values.
-        //
-        // if a node has any of these, the transform node is not
-        // supported and we must bail out of using the MM Scene Graph
-        // as an acceleration.
+        status = check_transform_node(dag_path);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto search = out_nodeNameToNodeIdMap.find(nodeNameStr);
         if (search != out_nodeNameToNodeIdMap.end()) {
@@ -756,7 +969,7 @@ add_cameras(
         status = tfm_dag_path.pop();
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
-        add_transforms(
+        status = add_transforms(
             cam_node.id,
             tfm_dag_path,
             frameList,
@@ -767,6 +980,7 @@ add_cameras(
             out_attrDataBlock,
             out_nodeNameToNodeIdMap,
             out_attrNameToAttrIdMap);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }
@@ -840,7 +1054,7 @@ add_bundles(
         status = dag_path.pop();
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
-        add_transforms(
+        status = add_transforms(
             bnd_node.id,
             dag_path,
             frameList,
@@ -851,7 +1065,7 @@ add_bundles(
             out_attrDataBlock,
             out_nodeNameToNodeIdMap,
             out_attrNameToAttrIdMap);
-
+        CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }
@@ -923,7 +1137,7 @@ add_markers(
         status = mayaAttr.setNodeName(transform_name);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
-        get_marker_attrs(
+        status = get_marker_attrs(
             mayaAttr,
             frameList,
             start_frame,
@@ -932,6 +1146,7 @@ add_markers(
             out_attrDataBlock,
             mkr_attr_ids,
             out_attrNameToAttrIdMap);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto mkr_node = out_sceneGraph.create_marker_node(mkr_attr_ids);
         out_markerNodes.push_back(mkr_node);
@@ -1042,7 +1257,7 @@ MStatus construct_scene_graph(
     // MMSOLVER_INFO("Frames count: " << out_frameList.size());
     assert(out_frameList.size() == frameList.length());
 
-    add_cameras(
+    status = add_cameras(
         cameraList,
         frameList,
         start_frame,
@@ -1052,8 +1267,9 @@ MStatus construct_scene_graph(
         out_sceneGraph, out_attrDataBlock,
         nodeNameToNodeIdMap,
         attrNameToAttrIdMap);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_bundles(
+    status = add_bundles(
         bundleList, frameList,
         start_frame,
         end_frame,
@@ -1062,8 +1278,9 @@ MStatus construct_scene_graph(
         out_sceneGraph, out_attrDataBlock,
         nodeNameToNodeIdMap,
         attrNameToAttrIdMap);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    add_markers(
+    status = add_markers(
         markerList,
         cameraList, bundleList,
         frameList,
@@ -1074,14 +1291,16 @@ MStatus construct_scene_graph(
         out_markerNodes, evalObjects,
         out_sceneGraph, out_attrDataBlock,
         attrNameToAttrIdMap);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Create parameters to attributes
-    convert_attributes_to_attr_ids(
+    status = convert_attributes_to_attr_ids(
         attrList,
         attrNameToAttrIdMap,
         out_attrDataBlock,
         out_attrIdList
     );
+    CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // // Print number of nodes in the evaluation objects.
     // MMSOLVER_INFO("EvaluationObjects num_bundles: "

@@ -20,6 +20,7 @@ The Create Image Plane tool.
 """
 
 import maya.cmds
+import maya.mel
 
 import mmSolver.logger
 import mmSolver.api as mmapi
@@ -76,12 +77,23 @@ def main():
         return
 
     created = set()
+    nodes = list()
     for cam in cams_to_add_lenses:
         cam_shp = cam.get_shape_node()
-        # Don't accidentally create two lenses for a camera if the
+        # Don't accidentally create two image planes for a camera if the
         # user has the transform and shape nodes selected.
         if cam_shp in created:
             continue
-        lib.create_image_plane_on_camera(cam)
+        node = lib.create_image_plane_on_camera(cam)
+        nodes.append(node)
         created.add(cam_shp)
+
+    if len(nodes) > 0:
+        maya.cmds.select(nodes, replace=True)
+
+        # Show the last node in the attribute editor.
+        node = nodes[-1]
+        maya.mel.eval('updateAE("{}");'.format(node))
+    else:
+        maya.cmds.select(sel, replace=True)
     return

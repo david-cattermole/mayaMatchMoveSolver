@@ -23,6 +23,70 @@
 
 source "AEmmNodeTemplateCommon";
 
+global proc int AEassignImageSequenceCallback(
+    string $file_attr,
+    string $file_name,
+    string $file_type)
+{
+    setAttr $file_attr -type "string" $file_name;
+    string $image_plane_tfm[];
+    tokenize ($file_attr, ".", $image_plane_tfm);
+
+    string $command = "import mmSolver.tools.createimageplane.lib as lib; ";
+
+    $command = $command + "lib.set_image_sequence(";
+    $command = $command + "\"" + $image_plane_tfm[0] + "\"";
+    $command = $command + ", \"" + $file_name + "\");";
+
+    python($command);
+
+    return true;
+}
+
+
+// TODO: Create a custom browser to be more explicit with image
+// sequences.
+global proc AEmmImagePlaneTransformBrowser(
+    string $cmd,
+    string $image_plane_tfm)
+{
+    string$workspace = `workspace -q -fn`;
+    setWorkingDirectory $workspace "image" "sourceImages";
+    string $open = (uiRes("m_AEimagePlaneTemplate.kOpen"));
+    fileBrowser($cmd, $open, "image", 0);
+}
+
+
+global proc AEmmImagePlaneTransformImageSequenceNew(string $file_attr)
+{
+    setUITemplate -pst attributeEditorTemplate;
+    rowLayout -nc 3 textureNameLayout;
+    text -label "Image Sequence";
+    textField textureNameField;
+    symbolButton -image "navButtonBrowse.png" browser;
+    setParent ..;
+    setUITemplate -ppt;
+
+    AEmmImagePlaneTransformImageSequenceReplace $file_attr;
+}
+
+
+global proc AEmmImagePlaneTransformImageSequenceReplace(string $file_attr)
+{
+    string $image_plane_tfm[];
+    tokenize($file_attr, ".", $image_plane_tfm);
+    if(size($image_plane_tfm) < 1) {
+        return;
+    }
+
+    connectControl -fileName textureNameField $file_attr;
+
+    string $command1 = "AEassignImageSequenceCallback " + $file_attr;
+    string $command2 = "AEmmImagePlaneTransformBrowser \"" + $command1 + "\" " + $image_plane_tfm[0];
+
+    button -edit -command $command2 browser;
+}
+
 
 global proc AEmmImagePlaneTransformTemplate(string $nodeName)
 {
@@ -30,7 +94,11 @@ global proc AEmmImagePlaneTransformTemplate(string $nodeName)
 
     editorTemplate -beginLayout "Common" -collapse 0;
     editorTemplate -addControl "displayMode";
-    editorTemplate -addControl "imageSequence";
+    editorTemplate
+        -callCustom
+        "AEmmImagePlaneTransformImageSequenceNew"
+        "AEmmImagePlaneTransformImageSequenceReplace"
+        "imageSequence";
     editorTemplate -addControl "meshResolution";
     editorTemplate -addControl "depth";
     editorTemplate -endLayout;

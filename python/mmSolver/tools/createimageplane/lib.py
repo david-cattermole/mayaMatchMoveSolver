@@ -355,6 +355,9 @@ def _get_image_plane_baked_shape_node(image_plane_tfm):
 
 
 def _expand_image_sequence_path(image_sequence_path, format_style):
+    # TODO: Query the start and end image sequence numbers, and
+    # determine if a sequence of images or a still image should be
+    # used.
     start = None
     end = None
     file_pattern = image_sequence_path
@@ -377,14 +380,20 @@ def create_baked_image_plane_node(cam_tfm):
 
 
 def set_image_sequence(tfm, image_sequence_path):
-    # format_style = const.FORMAT_STYLE_STANDARD
-    # file_pattern, start, end, is_seq = _expand_image_sequence_path(
-    #     image_sequence_path,
-    #     format_style)
+    set_main_image_sequence(tfm, image_sequence_path)
+    set_shader_file_path(tfm, image_sequence_path)
+    set_image_plane_file_path(tfm, image_sequence_path)
+
+
+def set_main_image_sequence(tfm, image_sequence_path):
+    format_style = const.FORMAT_STYLE_STANDARD
+    file_pattern, start, end, is_seq = _expand_image_sequence_path(
+        image_sequence_path,
+        format_style)
 
     maya.cmds.setAttr(
         tfm + '.imageSequence',
-        image_sequence_path,
+        file_pattern,
         type='string')
     return
 
@@ -492,6 +501,12 @@ def create_image_plane_on_camera(cam):
         baked_tfm, baked_shp = \
             create_baked_image_plane_node(cam_tfm)
 
+    # If the pixel aspect ratio of the input plate is non-zero, the
+    # image plane must scale 'to size' to break the confines of the
+    # input image width/height.
+    image_plane_fit = 4  # 4 = 'To Size'
+    maya.cmds.setAttr(baked_shp + '.fit', image_plane_fit)
+
     # Convert Maya image plane into a polygon image plane.
     poly_tfm, poly_shp, deform_node = create_image_poly_plane(name='imagePlane1')
     poly_tfm = set_image_plane_values(
@@ -517,11 +532,16 @@ def create_image_plane_on_camera(cam):
     maya.cmds.connectAttr(file_node + '.message', poly_tfm + '.shaderFileNode')
     maya.cmds.connectAttr(baked_shp + '.message', poly_tfm + '.imagePlaneShapeNode')
 
+    # Keep attributes in sync.
+    maya.cmds.connectAttr(poly_tfm + '.depth', baked_shp + '.depth')
+    maya.cmds.connectAttr(cam_shp + '.horizontalFilmAperture', baked_shp + '.sizeX')
+    maya.cmds.connectAttr(cam_shp + '.verticalFilmAperture', baked_shp + '.sizeY')
+    maya.cmds.connectAttr(cam_shp + '.horizontalFilmOffset', baked_shp + '.offsetX')
+    maya.cmds.connectAttr(cam_shp + '.verticalFilmOffset', baked_shp + '.offsetY')
+
     # Image sequence.
     image_sequence_path = _get_default_image()
     set_image_sequence(poly_tfm, image_sequence_path)
-    set_shader_file_path(poly_tfm, image_sequence_path)
-    set_image_plane_file_path(poly_tfm, image_sequence_path)
     return poly_tfm
 
 

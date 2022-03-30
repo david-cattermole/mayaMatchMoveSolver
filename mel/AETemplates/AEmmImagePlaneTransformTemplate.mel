@@ -99,6 +99,7 @@ global proc AEmmImagePlaneTransformTemplate(string $nodeName)
         "AEmmImagePlaneTransformImageSequenceNew"
         "AEmmImagePlaneTransformImageSequenceReplace"
         "imageSequence";
+    editorTemplate -addControl "imageSequenceFrame";
     editorTemplate -addControl "meshResolution";
     editorTemplate -addControl "depth";
     editorTemplate -endLayout;

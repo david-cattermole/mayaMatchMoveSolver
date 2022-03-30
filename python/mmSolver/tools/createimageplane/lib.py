@@ -199,6 +199,17 @@ def create_image_poly_plane(name=None):
         longName=attr,
         dataType='string')
 
+    # Image Sequence Frame attribute
+    attr = 'imageSequenceFrame'
+    maya.cmds.addAttr(
+        tfm,
+        longName=attr,
+        at='double',
+        minValue=0.0,
+        defaultValue=0.0)
+    maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
+    maya.cmds.connectAttr('time1.outTime', tfm + '.imageSequenceFrame')
+
     # Display Mode
     maya.cmds.addAttr(
         tfm,
@@ -414,6 +425,11 @@ def set_shader_file_path(image_plane_tfm, image_sequence_path):
         image_sequence_path,
         type='string')
     maya.cmds.setAttr(file_node + '.useFrameExtension', is_seq)
+
+    settable = maya.cmds.getAttr(file_node + '.frameExtension', settable=True)
+    if settable is True:
+        expression = 'frameExtension = {}.imageSequenceFrame'.format(image_plane_tfm)
+        maya.cmds.expression(object=file_node, string=expression)
     return
 
 
@@ -534,6 +550,7 @@ def create_image_plane_on_camera(cam):
 
     # Keep attributes in sync.
     maya.cmds.connectAttr(poly_tfm + '.depth', baked_shp + '.depth')
+    maya.cmds.connectAttr(poly_tfm + '.imageSequenceFrame', baked_shp + '.frameExtension')
     maya.cmds.connectAttr(cam_shp + '.horizontalFilmAperture', baked_shp + '.sizeX')
     maya.cmds.connectAttr(cam_shp + '.verticalFilmAperture', baked_shp + '.sizeY')
     maya.cmds.connectAttr(cam_shp + '.horizontalFilmOffset', baked_shp + '.offsetX')

@@ -88,9 +88,9 @@ namespace mmsg = mmscenegraph;
 #define USE_MARKER_POSITION_CACHE 0
 
 
-// // Calculate the smoothness/stiffness error values without needing a
-// // 'variance' value.
-// #define CALC_SMOOTHNESS_STIFFNESS_WITHOUT_VARIANCE 1
+// Calculate the smoothness/stiffness error values without needing a
+// 'variance' value.
+#define CALC_SMOOTHNESS_STIFFNESS_WITHOUT_VARIANCE 0
 
 
 #if MAYA_API_VERSION < 201700
@@ -599,7 +599,7 @@ void measureErrors_mayaDag(
         stiffValueAttr->getValue(stiffValue, timeEvalMode);
         attr->getValue(attrValue, timeEvalMode);
 
-#ifdef CALC_SMOOTHNESS_STIFFNESS_WITHOUT_VARIANCE
+#if CALC_SMOOTHNESS_STIFFNESS_WITHOUT_VARIANCE == 1
         auto straight_line = mmdata::Point2D(1.0, 0.0);
         auto new_line = mmdata::Point2D(1.0, stiffValue - attrValue);
         auto straight_line_norm = mmmath::normalize(straight_line);
@@ -635,7 +635,7 @@ void measureErrors_mayaDag(
         smoothValueAttr->getValue(smoothValue, timeEvalMode);
         attr->getValue(attrValue, timeEvalMode);
 
-#ifdef CALC_SMOOTHNESS_STIFFNESS_WITHOUT_VARIANCE
+#if CALC_SMOOTHNESS_STIFFNESS_WITHOUT_VARIANCE == 1
         auto straight_line = mmdata::Point2D(1.0, 0.0);
         auto new_line = mmdata::Point2D(1.0, smoothValue - attrValue);
         auto straight_line_norm = mmmath::normalize(straight_line);

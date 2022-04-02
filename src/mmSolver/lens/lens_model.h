@@ -37,20 +37,6 @@ public:
             , m_lensCenterOffsetX_cm(0.0)
             , m_lensCenterOffsetY_cm(0.0) {};
 
-    // double getFocalLength() const;
-    // double getFilmBackWidth() const;
-    // double getFilmBackHeight() const;
-    // double getPixelAspect() const;
-    // double getLensCenterOffsetX() const;
-    // double getLensCenterOffsetY() const;
-
-    // void setFocalLength(double value);
-    // void setFilmBackWidth(double value);
-    // void setFilmBackHeight(double value);
-    // void setPixelAspect(double value);
-    // void setLensCenterOffsetX(double value);
-    // void setLensCenterOffsetY(double value);
-
     double getFocalLength() const {return m_focalLength_cm;}
     double getFilmBackWidth() const {return m_filmBackWidth_cm;}
     double getFilmBackHeight() const {return m_filmBackHeight_cm;}
@@ -58,12 +44,12 @@ public:
     double getLensCenterOffsetX() const {return m_lensCenterOffsetX_cm;}
     double getLensCenterOffsetY() const {return m_lensCenterOffsetY_cm;}
 
-    void setFocalLength(double value) {m_focalLength_cm = value;}
-    void setFilmBackWidth(double value) {m_filmBackWidth_cm = value;}
-    void setFilmBackHeight(double value) {m_filmBackHeight_cm = value;}
-    void setPixelAspect(double value) {m_pixelAspect = value;}
-    void setLensCenterOffsetX(double value) {m_lensCenterOffsetX_cm = value;}
-    void setLensCenterOffsetY(double value) {m_lensCenterOffsetY_cm = value;}
+    void setFocalLength(const double value) {m_focalLength_cm = value;}
+    void setFilmBackWidth(const double value) {m_filmBackWidth_cm = value;}
+    void setFilmBackHeight(const double value) {m_filmBackHeight_cm = value;}
+    void setPixelAspect(const double value) {m_pixelAspect = value;}
+    void setLensCenterOffsetX(const double value) {m_lensCenterOffsetX_cm = value;}
+    void setLensCenterOffsetY(const double value) {m_lensCenterOffsetY_cm = value;}
 
     virtual void initModel() const = 0;
 

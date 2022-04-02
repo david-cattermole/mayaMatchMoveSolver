@@ -30,7 +30,7 @@ double LensModel3deClassic::getDistortion() const {
     return m_distortion;
 }
 
-void LensModel3deClassic::setDistortion(double value) {
+void LensModel3deClassic::setDistortion(const double value) {
     m_distortion = value;
     return;
 }
@@ -39,7 +39,7 @@ double LensModel3deClassic::getAnamorphicSqueeze() const {
     return m_anamorphicSqueeze;
 }
 
-void LensModel3deClassic::setAnamorphicSqueeze(double value) {
+void LensModel3deClassic::setAnamorphicSqueeze(const double value) {
     m_anamorphicSqueeze = value;
     return;
 }
@@ -48,7 +48,7 @@ double LensModel3deClassic::getCurvatureX() const {
     return m_curvatureX;
 }
 
-void LensModel3deClassic::setCurvatureX(double value) {
+void LensModel3deClassic::setCurvatureX(const double value) {
     m_curvatureX = value;
     return;
 }
@@ -57,7 +57,7 @@ double LensModel3deClassic::getCurvatureY() const {
     return m_curvatureY;
 }
 
-void LensModel3deClassic::setCurvatureY(double value) {
+void LensModel3deClassic::setCurvatureY(const double value) {
     m_curvatureY = value;
     return;
 }
@@ -66,7 +66,7 @@ double LensModel3deClassic::getQuarticDistortion() const {
     return m_quarticDistortion;
 }
 
-void LensModel3deClassic::setQuarticDistortion(double value) {
+void LensModel3deClassic::setQuarticDistortion(const double value) {
     m_quarticDistortion = value;
     return;
 }

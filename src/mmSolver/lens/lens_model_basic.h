@@ -33,14 +33,8 @@ public:
             , m_k1(0.0)
             , m_k2(0.0) {};
 
-    LensModelBasic(double focal_length,
-                   double film_back_width,
-                   double film_back_height,
-                   double pixel_aspect,
-                   double lens_center_offset_x,
-                   double lens_center_offset_y,
-                   double k1,
-                   double k2)
+    LensModelBasic(const double k1,
+                   const double k2)
             : LensModel{}
             , m_k1(k1)
             , m_k2(k2) {};
@@ -48,17 +42,15 @@ public:
     double getK1() const;
     double getK2() const;
 
-    void setK1(double value);
-    void setK2(double value);
-
-    LensModel* getInputLensModel() const;
+    void setK1(const double value);
+    void setK2(const double value);
 
     void setInputLensModel(LensModel* value);
 
     virtual void initModel() const;
 
-    virtual void applyModel(double x,
-                            double y,
+    virtual void applyModel(const double x,
+                            const double y,
                             double &out_x,
                             double &out_y) const;
 

@@ -33,7 +33,7 @@ double LensModelBasic::getK1() const {
     return m_k1;
 }
 
-void LensModelBasic::setK1(double value) {
+void LensModelBasic::setK1(const double value) {
     m_k1 = value;
     return;
 }
@@ -42,7 +42,7 @@ double LensModelBasic::getK2() const {
     return m_k2;
 }
 
-void LensModelBasic::setK2(double value) {
+void LensModelBasic::setK2(const double value) {
     m_k2 = value;
     return;
 }

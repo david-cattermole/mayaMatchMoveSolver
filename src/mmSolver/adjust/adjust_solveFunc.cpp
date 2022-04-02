@@ -679,18 +679,14 @@ void measureErrors_mmSceneGraph(
 
     auto num_points = ud->mmsgFlatScene.num_points();
     auto num_markers = ud->mmsgFlatScene.num_markers();
-    auto num_deviations = ud->mmsgFlatScene.num_deviations();
     auto num_frames = ud->mmsgFrameList.size();
     UNUSED(num_points);
     UNUSED(num_markers);
-    UNUSED(num_deviations);
-    assert(num_points == num_markers == num_deviations);
+    assert(num_points == num_markers);
 
-    auto out_deviation_list = ud->mmsgFlatScene.deviations();
     auto out_point_list = ud->mmsgFlatScene.points();
     auto out_marker_list = ud->mmsgFlatScene.markers();
-    assert(out_point_list.size() == out_deviation_list.size());
-    assert(out_marker_list.size() == out_deviation_list.size());
+    assert(out_marker_list.size() == out_point_list.size());
 
     // Count Marker Errors
     int numberOfErrorsMeasured = 0;
@@ -730,8 +726,8 @@ void measureErrors_mmSceneGraph(
         auto point_x = out_point_list[mkrIndex_x];
         auto point_y = out_point_list[mkrIndex_y];
 
-        auto dx = out_deviation_list[mkrIndex_x];
-        auto dy = out_deviation_list[mkrIndex_y];
+        auto dx = std::abs(mkr_x - point_x);
+        auto dy = std::abs(mkr_y - point_y);
         auto dx_pixels = dx * ud->imageWidth;
         auto dy_pixels = dy * ud->imageWidth;
 

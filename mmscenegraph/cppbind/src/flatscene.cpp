@@ -43,11 +43,6 @@ FlatScene::points() const noexcept {
     return inner_->points();
 }
 
-rust::Slice<const Real>
-FlatScene::deviations() const noexcept {
-    return inner_->deviations();
-}
-
 size_t
 FlatScene::num_markers() const noexcept {
     return inner_->num_markers();
@@ -56,11 +51,6 @@ FlatScene::num_markers() const noexcept {
 size_t
 FlatScene::num_points() const noexcept {
     return inner_->num_points();
-}
-
-size_t
-FlatScene::num_deviations() const noexcept {
-    return inner_->num_deviations();
 }
 
 void

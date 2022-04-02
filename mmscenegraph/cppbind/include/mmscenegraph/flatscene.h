@@ -50,20 +50,12 @@ public:
     points() const noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    rust::Slice<const Real>
-    deviations() const noexcept;
-
-    MMSCENEGRAPH_API_EXPORT
     size_t
     num_markers() const noexcept;
 
     MMSCENEGRAPH_API_EXPORT
     size_t
     num_points() const noexcept;
-
-    MMSCENEGRAPH_API_EXPORT
-    size_t
-    num_deviations() const noexcept;
 
     MMSCENEGRAPH_API_EXPORT
     void

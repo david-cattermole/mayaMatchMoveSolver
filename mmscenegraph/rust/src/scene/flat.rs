@@ -36,7 +36,6 @@ use crate::node::NodeId;
 
 const NUM_VALUES_PER_POINT: usize = 2;
 const NUM_VALUES_PER_MARKER: usize = 2;
-const NUM_VALUES_PER_DEVIATION: usize = 2;
 
 /// flattened scene data with an un-editable hierarchy.
 pub struct FlatScene {
@@ -69,7 +68,6 @@ pub struct FlatScene {
     out_cam_world_matrix_list: Vec<Matrix44>,
     out_marker_list: Vec<Real>,
     out_point_list: Vec<Real>,
-    out_deviation_list: Vec<Real>,
 }
 
 impl FlatScene {
@@ -116,7 +114,6 @@ impl FlatScene {
             out_cam_world_matrix_list: Vec::new(),
             out_marker_list: Vec::new(),
             out_point_list: Vec::new(),
-            out_deviation_list: Vec::new(),
         }
     }
 
@@ -126,10 +123,6 @@ impl FlatScene {
 
     pub fn points(&self) -> &[Real] {
         &self.out_point_list[..]
-    }
-
-    pub fn deviations(&self) -> &[Real] {
-        &self.out_deviation_list[..]
     }
 
     pub fn num_markers(&self) -> usize {
@@ -145,15 +138,6 @@ impl FlatScene {
         let len = self.out_point_list.len();
         if len > 0 {
             len / NUM_VALUES_PER_POINT
-        } else {
-            0
-        }
-    }
-
-    pub fn num_deviations(&self) -> usize {
-        let len = self.out_deviation_list.len();
-        if len > 0 {
-            len / NUM_VALUES_PER_DEVIATION
         } else {
             0
         }
@@ -245,13 +229,10 @@ impl FlatScene {
         assert!(self.out_cam_world_matrix_list.len() == num_total_cameras);
         self.out_marker_list.clear();
         self.out_point_list.clear();
-        self.out_deviation_list.clear();
         self.out_marker_list
             .reserve(num_markers * NUM_VALUES_PER_MARKER * num_frames);
         self.out_point_list
             .reserve(num_markers * NUM_VALUES_PER_POINT * num_frames);
-        self.out_deviation_list
-            .reserve(num_markers * NUM_VALUES_PER_DEVIATION * num_frames);
 
         let cam_attrs_iter = (0..).zip(
             self.cam_attr_list.iter().zip(
@@ -338,11 +319,6 @@ impl FlatScene {
 
                     // TODO: Compute the dot product of the camera
                     // forward vector and the direction to the bundle.
-
-                    let dev_x = (mkr_tx - reproj_mat[0]).abs();
-                    let dev_y = (mkr_ty - reproj_mat[1]).abs();
-                    self.out_deviation_list.push(dev_x);
-                    self.out_deviation_list.push(dev_y);
                 }
             }
         }

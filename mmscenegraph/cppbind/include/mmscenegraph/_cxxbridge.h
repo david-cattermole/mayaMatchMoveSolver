@@ -1134,10 +1134,8 @@ private:
 struct ShimFlatScene final : public ::rust::Opaque {
   MMSCENEGRAPH_API_EXPORT ::rust::Slice<const double> markers() const noexcept;
   MMSCENEGRAPH_API_EXPORT ::rust::Slice<const double> points() const noexcept;
-  MMSCENEGRAPH_API_EXPORT ::rust::Slice<const double> deviations() const noexcept;
   MMSCENEGRAPH_API_EXPORT ::std::size_t num_markers() const noexcept;
   MMSCENEGRAPH_API_EXPORT ::std::size_t num_points() const noexcept;
-  MMSCENEGRAPH_API_EXPORT ::std::size_t num_deviations() const noexcept;
   MMSCENEGRAPH_API_EXPORT void evaluate(const ::rust::Box<::mmscenegraph::ShimAttrDataBlock> &attrdb, ::rust::Slice<const ::std::uint32_t> frame_list) noexcept;
   ~ShimFlatScene() = delete;
 

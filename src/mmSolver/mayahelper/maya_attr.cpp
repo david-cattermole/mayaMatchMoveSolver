@@ -112,18 +112,17 @@ MStatus Attr::setName(MString value) {
     MStringArray values;
     status = value.split('.', values);
     if (status != MStatus::kSuccess) {
-        MMSOLVER_ERR("Attr::setName: Error splitting name. " << value);
+        MMSOLVER_ERR(
+            "Attr::setName: Error splitting name: "
+            << "\"" << value.asChar() << "\"");
         return MS::kFailure;
     }
     if (values.length() == 2) {
         Attr::setNodeName(values[0]);
         Attr::setAttrName(values[1]);
 
-        MDagPath nodeDagPath;
-        status = getAsDagPath(values[0], nodeDagPath);
-        CHECK_MSTATUS(status);
         MObject obj = Attr::getObject();
-        const auto objectType = computeObjectType(obj, nodeDagPath);
+        const auto objectType = computeObjectType(obj);
         Attr::setObjectType(objectType);
 
         const unsigned int solverAttrType = computeSolverAttrType(
@@ -131,8 +130,9 @@ MStatus Attr::setName(MString value) {
                 values[1]);
         Attr::setSolverAttrType(solverAttrType);
     } else {
-        MMSOLVER_ERR("Attr::setName: Value given has more than one dot character. "
-            << value);
+        MMSOLVER_ERR(
+            "Attr::setName: Value given has more than one dot character: "
+            << "\"" << value.asChar() << "\"");
         return MS::kFailure;
     }
     return status;

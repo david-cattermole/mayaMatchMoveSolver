@@ -82,9 +82,9 @@ namespace mmsg = mmscenegraph;
 
 
 // Pre-processor-level on/off switch for re-use of the Marker
-// positions. For solving lens distortion (where the marker positions
-// are dynamic) it doesn't make sense to use a marker cache.
-#define USE_MARKER_POSITION_CACHE 0
+// positions. This is an optimisation to avoid re-evaluating the
+// Marker values from the Maya DG in the solving evaluation loop.
+#define USE_MARKER_POSITION_CACHE 1
 
 
 // Calculate the smoothness/stiffness error values without needing a

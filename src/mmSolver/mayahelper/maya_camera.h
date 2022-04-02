@@ -23,21 +23,21 @@
 #ifndef MM_SOLVER_MAYA_HELPER_MAYA_CAMERA_H
 #define MM_SOLVER_MAYA_HELPER_MAYA_CAMERA_H
 
+// STL
+#include <cmath>
+#include <vector>
+#include <unordered_map>  // unordered_map
+#include <memory>
+
+// Maya
 #include <maya/MStatus.h>
 #include <maya/MObject.h>
 #include <maya/MMatrix.h>
 #include <maya/MPoint.h>
 #include <maya/MVector.h>
 #include <maya/MString.h>
-#include <maya/MPlug.h>
 
-#include <cmath>
-#include <vector>
-#include <unordered_map>  // unordered_map
-#include <memory>
-
-#include "../utilities/number_utils.h"
-
+#include "mmSolver/utilities/number_utils.h"
 #include "maya_attr.h"
 
 typedef std::pair<double, MMatrix> DoubleMatrixPair;

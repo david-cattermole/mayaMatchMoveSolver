@@ -22,7 +22,6 @@
 
 #include "maya_camera.h"
 
-#include <maya/MPlug.h>
 #include <maya/MObject.h>
 #include <maya/MDataHandle.h>
 #include <maya/MFnMatrixData.h>

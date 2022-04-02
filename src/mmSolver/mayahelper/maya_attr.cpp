@@ -684,14 +684,26 @@ void Attr::setSolverAttrType(const unsigned int value) {
 MString Attr::getLongNodeName() {
     MString result;
     MStatus status;
+    MString nodeName;
 
     MObject nodeObj = Attr::getObject();
-    MDagPath nodeDagPath;
-    status = MDagPath::getAPathTo(nodeObj, nodeDagPath);
-    CHECK_MSTATUS(status);
+    if (nodeObj.hasFn(MFn::kDagNode)) {
+        MDagPath nodeDagPath;
+        status = MDagPath::getAPathTo(nodeObj, nodeDagPath);
+        CHECK_MSTATUS(status);
 
-    MString nodeName = nodeDagPath.fullPathName(&status);
-    CHECK_MSTATUS(status);
+        nodeName = nodeDagPath.fullPathName(&status);
+        CHECK_MSTATUS(status);
+    } else if (nodeObj.hasFn(MFn::kDependencyNode)) {
+        MFnDependencyNode dependFn(nodeObj, &status);
+        CHECK_MSTATUS(status);
+        nodeName = dependFn.name();
+    } else {
+        nodeName = Attr::getNodeName();
+        MMSOLVER_ERR(
+            "Attr::getLongNodeName: Invalid object: "
+            << "\"" << nodeName.asChar() << "\"");
+    }
 
     return nodeName;
 }

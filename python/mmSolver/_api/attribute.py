@@ -128,7 +128,7 @@ class Attribute(object):
             node = dag_fn.fullPathName()
         except RuntimeError:
             depend_fn = OpenMaya.MFnDependencyNode(node_obj)
-            node = depend_fn.absoluteName()
+            node = depend_fn.name()
         if full_path is False:
             nodes = maya.cmds.ls(node) or []
             if len(nodes) > 0:

@@ -208,7 +208,7 @@ def create_image_poly_plane(name=None):
         minValue=0.0,
         defaultValue=0.0)
     maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
-    maya.cmds.connectAttr('time1.outTime', tfm + '.imageSequenceFrame')
+    _force_connect_attr('time1.outTime', tfm + '.imageSequenceFrame')
 
     # Display Mode
     maya.cmds.addAttr(
@@ -251,7 +251,7 @@ def create_image_poly_plane(name=None):
         'verticalFilmOffset'
     ]
     for attr in attrs:
-        maya.cmds.connectAttr(tfm + '.' + attr, deform_node + '.' + attr)
+        _force_connect_attr(tfm + '.' + attr, deform_node + '.' + attr)
 
     # Connect marker scale to transform node.
     maya.cmds.connectAttr(mkr_scl + '.outScale', tfm + '.scale')
@@ -293,7 +293,7 @@ def set_image_plane_values(cam, baked_shp, live_tfm, deform_node):
     src = cam_shp + '.outLens'
     dst = deform_node + '.inLens'
     if not maya.cmds.isConnected(src, dst):
-        maya.cmds.connectAttr(src, dst)
+        _force_connect_attr(src, dst)
 
     # Connect camera attributes
     attrs = [
@@ -307,7 +307,7 @@ def set_image_plane_values(cam, baked_shp, live_tfm, deform_node):
         src = cam_shp + '.' + attr
         dst = live_tfm + '.' + attr
         if not maya.cmds.isConnected(src, dst):
-            maya.cmds.connectAttr(src, dst)
+            _force_connect_attr(src, dst)
 
     # Copy the image plane 'depth' attribute value to the poly image
     # plane.
@@ -412,7 +412,7 @@ def set_main_image_sequence(tfm, image_sequence_path):
 def set_shader_file_path(image_plane_tfm, image_sequence_path):
     file_node = _get_image_plane_file_node(image_plane_tfm)
     if file_node is None:
-        LOG.warn('file node is invalid.')
+        LOG.warn('image plane shader file node is invalid.')
         return
 
     format_style = const.FORMAT_STYLE_STANDARD
@@ -430,13 +430,17 @@ def set_shader_file_path(image_plane_tfm, image_sequence_path):
     if settable is True:
         expression = 'frameExtension = {}.imageSequenceFrame'.format(image_plane_tfm)
         maya.cmds.expression(object=file_node, string=expression)
+
+    settable = maya.cmds.getAttr(file_node + '.frameOffset', settable=True)
+    if settable is True:
+        maya.cmds.setAttr(file_node + '.frameOffset', 0)
     return
 
 
 def set_image_plane_file_path(image_plane_tfm, image_sequence_path):
     image_plane_shp = _get_image_plane_baked_shape_node(image_plane_tfm)
     if image_plane_shp is None:
-        LOG.warn('file node is invalid.')
+        LOG.warn('image plane baked shape node is invalid.')
         return
 
     format_style = const.FORMAT_STYLE_STANDARD
@@ -449,6 +453,11 @@ def set_image_plane_file_path(image_plane_tfm, image_sequence_path):
         image_sequence_path,
         type='string')
     maya.cmds.setAttr(image_plane_shp + '.useFrameExtension', is_seq)
+
+    settable = maya.cmds.getAttr(image_plane_shp + '.frameOffset', settable=True)
+    if settable is True:
+        maya.cmds.setAttr(image_plane_shp + '.frameOffset', 0)
+
     return
 
 
@@ -465,11 +474,11 @@ def create_image_plane_shader(image_plane_tfm):
 
     src = file_node + '.outColor'
     dst = shd_node + '.outColor'
-    maya.cmds.connectAttr(src, dst, force=True)
+    _force_connect_attr(src, dst)
 
     src = shd_node + '.outColor'
     dst = sg_node + '.surfaceShader'
-    maya.cmds.connectAttr(src, dst, force=True)
+    _force_connect_attr(src, dst)
 
     conns = [
         ['coverage', 'coverage'],
@@ -494,11 +503,27 @@ def create_image_plane_shader(image_plane_tfm):
     for (src_attr, dst_attr) in conns:
         src = file_place2d + '.' + src_attr
         dst = file_node + '.' + dst_attr
-        maya.cmds.connectAttr(src, dst, force=True)
+        _force_connect_attr(src, dst)
 
     # Assign shader.
     maya.cmds.sets(obj_nodes, edit=True, forceElement=sg_node)
     return sg_node, shd_node, file_node
+
+
+def _force_connect_attr(src_attr, dst_attr):
+    """Disconnect attribute that is already connected to dst_attr, before
+    creating the connection.
+    """
+    conns = maya.cmds.listConnections(
+        dst_attr,
+        source=True,
+        plugs=True,
+        skipConversionNodes=True) or []
+    conns = [x for x in conns if maya.cmds.isConnected(x, dst_attr)]
+    for conn in conns:
+        maya.cmds.disconnectAttr(conn, dst_attr)
+    maya.cmds.connectAttr(src_attr, dst_attr, force=True)
+    return
 
 
 def create_image_plane_on_camera(cam):
@@ -524,7 +549,7 @@ def create_image_plane_on_camera(cam):
     maya.cmds.setAttr(baked_shp + '.fit', image_plane_fit)
 
     # Convert Maya image plane into a polygon image plane.
-    poly_tfm, poly_shp, deform_node = create_image_poly_plane(name='imagePlane1')
+    poly_tfm, poly_shp, deform_node = create_image_poly_plane(name='mmImagePlane1')
     poly_tfm = set_image_plane_values(
         cam,
         baked_shp,
@@ -545,16 +570,16 @@ def create_image_plane_on_camera(cam):
     sg_node, shd_node, file_node = create_image_plane_shader(poly_tfm)
 
     # Shortcut connections to nodes.
-    maya.cmds.connectAttr(file_node + '.message', poly_tfm + '.shaderFileNode')
-    maya.cmds.connectAttr(baked_shp + '.message', poly_tfm + '.imagePlaneShapeNode')
+    _force_connect_attr(file_node + '.message', poly_tfm + '.shaderFileNode')
+    _force_connect_attr(baked_shp + '.message', poly_tfm + '.imagePlaneShapeNode')
 
     # Keep attributes in sync.
-    maya.cmds.connectAttr(poly_tfm + '.depth', baked_shp + '.depth')
-    maya.cmds.connectAttr(poly_tfm + '.imageSequenceFrame', baked_shp + '.frameExtension')
-    maya.cmds.connectAttr(cam_shp + '.horizontalFilmAperture', baked_shp + '.sizeX')
-    maya.cmds.connectAttr(cam_shp + '.verticalFilmAperture', baked_shp + '.sizeY')
-    maya.cmds.connectAttr(cam_shp + '.horizontalFilmOffset', baked_shp + '.offsetX')
-    maya.cmds.connectAttr(cam_shp + '.verticalFilmOffset', baked_shp + '.offsetY')
+    _force_connect_attr(poly_tfm + '.depth', baked_shp + '.depth')
+    _force_connect_attr(poly_tfm + '.imageSequenceFrame', baked_shp + '.frameExtension')
+    _force_connect_attr(cam_shp + '.horizontalFilmAperture', baked_shp + '.sizeX')
+    _force_connect_attr(cam_shp + '.verticalFilmAperture', baked_shp + '.sizeY')
+    _force_connect_attr(cam_shp + '.horizontalFilmOffset', baked_shp + '.offsetX')
+    _force_connect_attr(cam_shp + '.verticalFilmOffset', baked_shp + '.offsetY')
 
     # Image sequence.
     image_sequence_path = _get_default_image()

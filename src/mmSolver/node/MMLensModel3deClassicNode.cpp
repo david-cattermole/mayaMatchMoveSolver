@@ -187,6 +187,8 @@ MStatus MMLensModel3deClassicNode::initialize() {
             MFnNumericData::kDouble, 0.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+    CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
     CHECK_MSTATUS(addAttribute(a_distortion));
 
     // Anamorphic Squeeze
@@ -195,24 +197,30 @@ MStatus MMLensModel3deClassicNode::initialize() {
         MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(numericAttr.setMin(0.001));
+    CHECK_MSTATUS(numericAttr.setMin(0.1));
+    CHECK_MSTATUS(numericAttr.setSoftMin(0.5));
     CHECK_MSTATUS(numericAttr.setSoftMax(2.0));
+    CHECK_MSTATUS(numericAttr.setMax(4.0));
     CHECK_MSTATUS(addAttribute(a_anamorphicSqueeze));
 
-    // Curvature
+    // Curvature X
     a_curvatureX = numericAttr.create(
             "curvatureX", "curvatureX",
             MFnNumericData::kDouble, 0.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+    CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
     CHECK_MSTATUS(addAttribute(a_curvatureX));
 
-    // Curvature
+    // Curvature Y
     a_curvatureY = numericAttr.create(
             "curvatureY", "curvatureY",
             MFnNumericData::kDouble, 0.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+    CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
     CHECK_MSTATUS(addAttribute(a_curvatureY));
 
     // Quartic Distortion
@@ -221,6 +229,8 @@ MStatus MMLensModel3deClassicNode::initialize() {
             MFnNumericData::kDouble, 0.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
+    CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
+    CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
     CHECK_MSTATUS(addAttribute(a_quarticDistortion));
 
     // Out Lens

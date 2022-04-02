@@ -117,7 +117,10 @@ def get_image_plane_shapes_from_camera(cam_tfm, cam_shp):
     assert maya.cmds.objExists(cam_shp)
     assert node_utils.attribute_exists('imagePlane', cam_shp)
     plug = '{0}.imagePlane'.format(cam_shp)
-    img_pl_shps = maya.cmds.listConnections(plug, type='imagePlane') or []
+    img_pl_shps = maya.cmds.listConnections(
+        plug,
+        type='imagePlane',
+        shapes=True) or []
     img_pl_shps = [node_utils.get_long_name(n) for n in img_pl_shps]
     img_pl_shps = [n for n in img_pl_shps if n is not None]
     return img_pl_shps

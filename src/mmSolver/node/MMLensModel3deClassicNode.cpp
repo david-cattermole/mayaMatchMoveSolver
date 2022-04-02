@@ -195,7 +195,7 @@ MStatus MMLensModel3deClassicNode::initialize() {
         MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
-    CHECK_MSTATUS(numericAttr.setMin(0.0));
+    CHECK_MSTATUS(numericAttr.setMin(0.001));
     CHECK_MSTATUS(numericAttr.setSoftMax(2.0));
     CHECK_MSTATUS(addAttribute(a_anamorphicSqueeze));
 

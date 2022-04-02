@@ -574,6 +574,22 @@ def set_image_plane_file_path(image_plane_tfm, image_sequence_path):
     if settable is True:
         maya.cmds.setAttr(image_plane_shp + '.frameOffset', 0)
 
+    # The image plane can query the loaded image pixel width/height.
+    image_width, image_height = maya.cmds.imagePlane(
+        image_plane_shp,
+        query=True,
+        imageSize=True)
+
+    # image_width/image_height will be wrong if the image file could
+    # not be loaded successfully.
+    if (image_width > 0) and (image_height > 0):
+        # With Maintain ratio ("mr") enabled, Maya will calculate the
+        # image height for us.
+        previous_maintain_ratio = maya.cmds.getAttr(image_plane_shp + '.mr')
+        maya.cmds.setAttr(image_plane_shp + '.mr', True)
+        plane_width = image_width / 100.0
+        maya.cmds.imagePlane(image_plane_shp, edit=True, width=plane_width)
+        maya.cmds.setAttr(image_plane_shp + '.mr', previous_maintain_ratio)
     return
 
 

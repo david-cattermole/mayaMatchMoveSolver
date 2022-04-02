@@ -34,7 +34,6 @@
 #include <cassert>
 #include <limits>
 #include <algorithm>
-#include <math.h>
 #include <stdio.h>
 
 // Maya
@@ -371,7 +370,7 @@ void determineMarkersToBeEvaluated(int numberOfParameters,
     std::vector<int> evalCount(numberOfMarkers, 0);
 
     // Get all parameters that have changed.
-    double approxDelta = fabs(delta) * 0.5;
+    double approxDelta = std::fabs(delta) * 0.5;
     bool noneChanged = true;
     std::vector<bool> paramChangedList(numberOfParameters, false);
     for (int i = 0; i < numberOfParameters; ++i) {
@@ -547,8 +546,8 @@ void measureErrors_mayaDag(
         // bad idea as it will introduce non-linearities, we are
         // better off using something like 'x*x - y*y'. It would
         // be best to test this detail.
-        const double dx = fabs(mkr_x - bnd_mpos.x) * ud->imageWidth;
-        const double dy = fabs(mkr_y - bnd_mpos.y) * ud->imageWidth;
+        const double dx = std::fabs(mkr_x - bnd_mpos.x) * ud->imageWidth;
+        const double dy = std::fabs(mkr_y - bnd_mpos.y) * ud->imageWidth;
 
         auto errorIndex_x = i * ERRORS_PER_MARKER;
         auto errorIndex_y = errorIndex_x + 1;
@@ -604,7 +603,7 @@ void measureErrors_mayaDag(
         auto new_line = mmdata::Point2D(1.0, stiffValue - attrValue);
         auto straight_line_norm = mmmath::normalize(straight_line);
         auto new_line_norm = mmmath::normalize(new_line);
-        double error = 1.0 / std::abs(mmmath::dot(straight_line_norm, new_line_norm));
+        double error = 1.0 / std::fabs(mmmath::dot(straight_line_norm, new_line_norm));
 #else
         double error = ((1.0 / gaussian(attrValue, stiffValue, stiffVariance)) - 1.0);
 #endif
@@ -640,7 +639,7 @@ void measureErrors_mayaDag(
         auto new_line = mmdata::Point2D(1.0, smoothValue - attrValue);
         auto straight_line_norm = mmmath::normalize(straight_line);
         auto new_line_norm = mmmath::normalize(new_line);
-        double error = 1.0 / std::abs(mmmath::dot(straight_line_norm, new_line_norm));
+        double error = 1.0 / std::fabs(mmmath::dot(straight_line_norm, new_line_norm));
 #else
         double error = ((1.0 / gaussian(attrValue, smoothValue, smoothVariance)) - 1.0);
 #endif
@@ -726,8 +725,8 @@ void measureErrors_mmSceneGraph(
         auto point_x = out_point_list[mkrIndex_x];
         auto point_y = out_point_list[mkrIndex_y];
 
-        auto dx = std::abs(mkr_x - point_x);
-        auto dy = std::abs(mkr_y - point_y);
+        auto dx = std::fabs(mkr_x - point_x);
+        auto dy = std::fabs(mkr_y - point_y);
         auto dx_pixels = dx * ud->imageWidth;
         auto dy_pixels = dy * ud->imageWidth;
 
@@ -1171,7 +1170,7 @@ int solveFunc(const int numberOfParameters,
                     // Set the Jacobian matrix using the previously
                     // calculated errors (A and B).
                     assert(errorListA.size() == errorListB.size());
-                    double inv_delta = 0.5 / (fabs(deltaA) + fabs(deltaB));
+                    double inv_delta = 0.5 / (std::fabs(deltaA) + std::fabs(deltaB));
                     for (size_t j = 0; j < errorListA.size(); ++j) {
                         size_t num = (i * ldfjac) + j;
                         double x = (errorListA[j] - errorListB[j]) * inv_delta;

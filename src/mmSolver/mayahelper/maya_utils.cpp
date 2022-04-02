@@ -141,10 +141,10 @@ MStatus getAsDagPath(
     MStatus status;
     MSelectionList selList;
     status = getAsSelectionList(nodeName, selList);
-    CHECK_MSTATUS(status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
     if (selList.length() == 1) {
         status = selList.getDagPath(0, nodeDagPath);
-        CHECK_MSTATUS(status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     return status;
 }

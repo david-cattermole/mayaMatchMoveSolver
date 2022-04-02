@@ -48,26 +48,30 @@
 // MM Solver
 #include "mmSolver/utilities/debug_utils.h"
 
-#define OBJECT_TYPE_UNKNOWN      (0)
-#define OBJECT_TYPE_ATTRIBUTE    (1)
-#define OBJECT_TYPE_MARKER       (2)
-#define OBJECT_TYPE_BUNDLE       (3)
-#define OBJECT_TYPE_CAMERA       (4)
-#define OBJECT_TYPE_IMAGE_PLANE  (5)
-#define OBJECT_TYPE_MARKER_GROUP (6)
-#define OBJECT_TYPE_COLLECTION   (7)
+#define MMSOLVER_OBJECT_TYPE_UNKNOWN      (0)
+#define MMSOLVER_OBJECT_TYPE_ATTRIBUTE    (1)
+#define MMSOLVER_OBJECT_TYPE_MARKER       (2)
+#define MMSOLVER_OBJECT_TYPE_BUNDLE       (3)
+#define MMSOLVER_OBJECT_TYPE_CAMERA       (4)
+#define MMSOLVER_OBJECT_TYPE_IMAGE_PLANE  (5)
+#define MMSOLVER_OBJECT_TYPE_MARKER_GROUP (6)
+#define MMSOLVER_OBJECT_TYPE_COLLECTION   (7)
+#define MMSOLVER_OBJECT_TYPE_LINE         (8)
+#define MMSOLVER_OBJECT_TYPE_LENS         (9)
 
 
 enum class ObjectType
 {
-    kUnknown = OBJECT_TYPE_UNKNOWN,
-    kAttribute = OBJECT_TYPE_ATTRIBUTE,
-    kMarker = OBJECT_TYPE_MARKER,
-    kBundle = OBJECT_TYPE_BUNDLE,
-    kCamera = OBJECT_TYPE_CAMERA,
-    kImagePlane = OBJECT_TYPE_IMAGE_PLANE,
-    kMarkerGroup = OBJECT_TYPE_MARKER_GROUP,
-    kCollection = OBJECT_TYPE_COLLECTION,
+    kUnknown = MMSOLVER_OBJECT_TYPE_UNKNOWN,
+    kAttribute = MMSOLVER_OBJECT_TYPE_ATTRIBUTE,
+    kMarker = MMSOLVER_OBJECT_TYPE_MARKER,
+    kBundle = MMSOLVER_OBJECT_TYPE_BUNDLE,
+    kCamera = MMSOLVER_OBJECT_TYPE_CAMERA,
+    kImagePlane = MMSOLVER_OBJECT_TYPE_IMAGE_PLANE,
+    kMarkerGroup = MMSOLVER_OBJECT_TYPE_MARKER_GROUP,
+    kCollection = MMSOLVER_OBJECT_TYPE_COLLECTION,
+    kLine = MMSOLVER_OBJECT_TYPE_LINE,
+    kLens = MMSOLVER_OBJECT_TYPE_LENS,
 };
 
 
@@ -104,8 +108,9 @@ bool hasAttrName(
 // Analogous to the Python function "mmSolver.api.get_object_type()"
 ObjectType computeObjectType(
     const MObject &node_obj,
+    // If 'nodeDagPath' given, assumed to be the node's MDagPath.
     MDagPath &nodeDagPath);
-
+ObjectType computeObjectType(const MObject &node_obj);
 
 // Generate attribute name used to set and look up 'attribute affects'
 // on nodes.

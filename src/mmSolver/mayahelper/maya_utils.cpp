@@ -159,12 +159,46 @@ bool hasAttrName(MFnDependencyNode &dependFn,
 }
 
 
-// Analogous to the Python function "mmSolver.api.get_object_type()"
-ObjectType computeObjectType(
+ObjectType computeDgObjectType(
+    const MObject &node_obj
+) {
+    MStatus status = MStatus::kSuccess;
+    ObjectType objectType = ObjectType::kUnknown;
+
+    MFnDependencyNode dependFn(node_obj, &status);
+    CHECK_MSTATUS(status);
+    if (status != MS::kSuccess) {
+        return objectType;
+    }
+
+    bool node_is_lens = false;
+    const MString base_node_type_name("mmLensModel");
+    const int char_index_start = 0;
+    const int char_index_end = 11;
+    const MString node_type = dependFn.typeName();
+    if (node_type.length() >= char_index_end) {
+        const MString start_string = node_type.substringW(
+            char_index_start,
+            char_index_end);
+        node_is_lens = start_string == base_node_type_name;
+    }
+
+    if (node_is_lens) {
+        objectType = ObjectType::kLens;
+    }
+
+    return objectType;
+}
+
+
+ObjectType computeDagObjectType(
     const MObject &node_obj,
     MDagPath &nodeDagPath
 ) {
     MStatus status = MStatus::kSuccess;
+    ObjectType objectType = ObjectType::kUnknown;
+
+    // TODO: Add support for detecting ObjectType::kLine objects.
 
     MFn::Type node_tid = nodeDagPath.apiType();
     bool hasTransformNode = (node_tid == MFn::kTransform)
@@ -179,6 +213,10 @@ ObjectType computeObjectType(
         MObject child_obj = nodeDagPath.child(i);
         status = MDagPath::getAPathTo(child_obj, childNodeDagPath);
         CHECK_MSTATUS(status);
+        if (status != MS::kSuccess) {
+            return objectType;
+        }
+
         MFn::Type shape_tid = childNodeDagPath.apiType();
         if (shape_tid == MFn::kLocator || shape_tid == MFn::kPluginLocatorNode) {
             hasLocatorShape = true;
@@ -191,8 +229,10 @@ ObjectType computeObjectType(
 
     MFnDependencyNode dependFn(node_obj, &status);
     CHECK_MSTATUS(status);
+    if (status != MS::kSuccess) {
+        return objectType;
+    }
 
-    ObjectType objectType = ObjectType::kUnknown;
     auto attrNameEnable = MString("enable");
     auto attrNameWeight = MString("weight");
     auto attrNameBundle = MString("bundle");
@@ -223,6 +263,52 @@ ObjectType computeObjectType(
     } else if (node_tid == MFn::kSet && hasAttrSolverList) {
         objectType = ObjectType::kCollection;
     }
+    return objectType;
+}
+
+
+// Analogous to the Python function "mmSolver.api.get_object_type()"
+ObjectType computeObjectType(
+    const MObject &node_obj,
+    MDagPath &nodeDagPath  // If given, assumed to be the node's MDagPath.
+) {
+    ObjectType objectType = ObjectType::kUnknown;
+
+    if (node_obj.hasFn(MFn::kDagNode)) {
+        objectType = computeDagObjectType(node_obj, nodeDagPath);
+    } else if (node_obj.hasFn(MFn::kDependencyNode)) {
+        objectType = computeDgObjectType(node_obj);
+    } else {
+        MMSOLVER_ERR(
+            "computeObjectType: node_obj is not a DG or DAG compatible object."
+        );
+    }
+
+    return objectType;
+}
+
+
+ObjectType computeObjectType(const MObject &node_obj) {
+    ObjectType objectType = ObjectType::kUnknown;
+
+    if (node_obj.hasFn(MFn::kDagNode)) {
+        MDagPath nodeDagPath;
+        MStatus status = MDagPath::getAPathTo(node_obj, nodeDagPath);
+        if (status != MS::kSuccess) {
+            MMSOLVER_ERR(
+                "computeObjectType: node_obj is not a DAG compatible object."
+            );
+            return objectType;
+        }
+        objectType = computeDagObjectType(node_obj, nodeDagPath);
+    } else if (node_obj.hasFn(MFn::kDependencyNode)) {
+        objectType = computeDgObjectType(node_obj);
+    } else {
+        MMSOLVER_ERR(
+            "computeObjectType: node_obj is not a DG or DAG compatible object."
+        );
+    }
+
     return objectType;
 }
 

@@ -16,8 +16,10 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-FORMAT_STYLE_MAYA = 'maya'
-FORMAT_STYLE_STANDARD = 'standard'
+FORMAT_STYLE_MAYA = 'maya'                # file.<f>.png
+FORMAT_STYLE_HASH_PADDED = 'hash_padded'  # file.####.png
+FORMAT_STYLE_FIRST_FRAME = 'first_frame'  # file.1001.png
+FORMAT_STYLE_PRINTF = 'printf'            # file.%04d.png ("old school" Nuke)
 
 DISPLAY_MODE_EXPRESSION = '''
 if ({image_plane_tfm}.displayMode == 0)

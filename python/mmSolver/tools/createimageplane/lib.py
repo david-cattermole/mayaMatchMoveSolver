@@ -65,6 +65,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import glob
 import os
 
 import maya.cmds
@@ -72,6 +73,7 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.camera as camera_utils
+import mmSolver.utils.node as node_utils
 import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.createimageplane.constant as const
 
@@ -109,7 +111,7 @@ def create_image_poly_plane(name=None):
     maya.cmds.addAttr(
         tfm,
         longName=attr,
-        at='double',
+        attributeType='double',
         minValue=0.0,
         defaultValue=1.0)
     maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
@@ -120,7 +122,7 @@ def create_image_poly_plane(name=None):
     maya.cmds.addAttr(
         tfm,
         longName=attr,
-        at='long',
+        attributeType='long',
         minValue=1,
         maxValue=256,
         defaultValue=32)
@@ -134,7 +136,7 @@ def create_image_poly_plane(name=None):
     maya.cmds.addAttr(
         tfm,
         longName=attr,
-        at='double',
+        attributeType='double',
         minValue=0.1,
         defaultValue=35.0)
     maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
@@ -145,7 +147,7 @@ def create_image_poly_plane(name=None):
     maya.cmds.addAttr(
         tfm,
         longName=attr,
-        at='double',
+        attributeType='double',
         minValue=0.001,
         defaultValue=value)
     maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
@@ -156,7 +158,7 @@ def create_image_poly_plane(name=None):
     maya.cmds.addAttr(
         tfm,
         longName=attr,
-        at='double',
+        attributeType='double',
         minValue=0.001,
         defaultValue=value)
     maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
@@ -167,7 +169,7 @@ def create_image_poly_plane(name=None):
     maya.cmds.addAttr(
         tfm,
         longName=attr,
-        at='double',
+        attributeType='double',
         minValue=0.001,
         defaultValue=value)
     maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
@@ -177,7 +179,7 @@ def create_image_poly_plane(name=None):
     maya.cmds.addAttr(
         tfm,
         longName=attr,
-        at='double',
+        attributeType='double',
         minValue=0.0,
         defaultValue=0.0)
     maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
@@ -187,7 +189,7 @@ def create_image_poly_plane(name=None):
     maya.cmds.addAttr(
         tfm,
         longName=attr,
-        at='double',
+        attributeType='double',
         minValue=0.0,
         defaultValue=0.0)
     maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
@@ -204,11 +206,31 @@ def create_image_poly_plane(name=None):
     maya.cmds.addAttr(
         tfm,
         longName=attr,
-        at='double',
+        attributeType='double',
         minValue=0.0,
         defaultValue=0.0)
     maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
     _force_connect_attr('time1.outTime', tfm + '.imageSequenceFrame')
+
+    # Image Sequence details.
+    maya.cmds.addAttr(
+        tfm,
+        longName='imageSequenceStartFrame',
+        niceName='Start Frame',
+        attributeType='long',
+        defaultValue=0)
+    maya.cmds.addAttr(
+        tfm,
+        longName='imageSequenceEndFrame',
+        niceName='End Frame',
+        attributeType='long',
+        defaultValue=0)
+    maya.cmds.addAttr(
+        tfm,
+        longName='imageSequencePadding',
+        niceName='Padding',
+        attributeType='long',
+        defaultValue=0)
 
     # Display Mode
     maya.cmds.addAttr(
@@ -365,21 +387,101 @@ def _get_image_plane_baked_shape_node(image_plane_tfm):
     return file_node
 
 
+def _get_string_numbers_at_end(string_value):
+    numbers = []
+    for i in range(1, len(string_value)):
+        char = string_value[-i]
+        if char.isdigit():
+            numbers.insert(0, char)
+        else:
+            break
+    return ''.join(numbers)
+
+
+def _split_image_sequence_path(file_path):
+    head, tail = os.path.split(file_path)
+    file_name, file_extension = os.path.splitext(tail)
+
+    seq_num_int = 0
+    seq_num_str = _get_string_numbers_at_end(file_name)
+    if len(seq_num_str) > 0:
+        file_name = file_name[:-len(seq_num_str)]
+        seq_num_int = int(seq_num_str)
+    return head, file_name, seq_num_int, seq_num_str, file_extension
+
+
+def _get_image_sequence_start_end_frames(base_dir, file_name, file_extension):
+    join_file_name = '{}*{}'.format(file_name, file_extension)
+    glob_path = os.path.join(base_dir, join_file_name)
+    all_paths = glob.iglob(glob_path)
+
+    padding_num = 0
+    start_frame = 9999999
+    end_frame = 0
+    count = 0
+    for path in all_paths:
+        path_base_dir, \
+            path_file_name, \
+            path_seq_num_int, \
+            path_seq_num_str, \
+            path_file_extension = _split_image_sequence_path(path)
+        start_frame = min(path_seq_num_int, start_frame)
+        end_frame = max(path_seq_num_int, end_frame)
+        padding_num = max(padding_num, len(path_seq_num_str))
+        count = count + 1
+
+    if count == 0:
+        start_frame = 0
+        end_frame = 0
+        padding_num = 0
+
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
+    assert isinstance(padding_num, int)
+    return start_frame, end_frame, padding_num
+
+
 def _expand_image_sequence_path(image_sequence_path, format_style):
-    # TODO: Query the start and end image sequence numbers, and
-    # determine if a sequence of images or a still image should be
-    # used.
-    start = None
-    end = None
-    file_pattern = image_sequence_path
+    image_sequence_path = os.path.abspath(image_sequence_path)
+
+    base_dir, \
+        file_name, \
+        seq_num_int, \
+        seq_num_str, \
+        file_extension = _split_image_sequence_path(image_sequence_path)
+
+    start_frame, end_frame, padding_num = \
+        _get_image_sequence_start_end_frames(
+            base_dir,
+            file_name,
+            file_extension)
+
+    image_seq_num = ''
     if format_style == const.FORMAT_STYLE_MAYA:
         # file.<f>.png
-        pass
-    elif format_style == const.FORMAT_STYLE_STANDARD:
+        if padding_num > 0:
+            image_seq_num = '<f>'
+    elif format_style == const.FORMAT_STYLE_HASH_PADDED:
         # file.####.png
-        pass
-    is_seq = start is not None or end is not None
-    return file_pattern, start, end, is_seq
+        image_seq_num = '#' * padding_num
+    elif format_style == const.FORMAT_STYLE_PRINTF:
+        # file.%04d.png
+        if padding_num > 0:
+            image_seq_num = '%0{}d'.format(padding_num)
+    elif format_style == const.FORMAT_STYLE_FIRST_FRAME:
+        # file.1001.png
+        image_seq_num = str(start_frame).zfill(padding_num)
+    else:
+        raise NotImplementedError
+
+    file_pattern = '{}{}{}'.format(
+        file_name,
+        image_seq_num,
+        file_extension)
+    file_pattern = os.path.join(base_dir, file_pattern)
+
+    is_seq = start_frame != end_frame and padding_num > 0
+    return file_pattern, start_frame, end_frame, padding_num, is_seq
 
 
 def create_baked_image_plane_node(cam_tfm):
@@ -397,8 +499,8 @@ def set_image_sequence(tfm, image_sequence_path):
 
 
 def set_main_image_sequence(tfm, image_sequence_path):
-    format_style = const.FORMAT_STYLE_STANDARD
-    file_pattern, start, end, is_seq = _expand_image_sequence_path(
+    format_style = const.FORMAT_STYLE_HASH_PADDED
+    file_pattern, start_frame, end_frame, pad_num, is_seq = _expand_image_sequence_path(
         image_sequence_path,
         format_style)
 
@@ -406,6 +508,20 @@ def set_main_image_sequence(tfm, image_sequence_path):
         tfm + '.imageSequence',
         file_pattern,
         type='string')
+
+    if not node_utils.node_is_referenced(tfm):
+        maya.cmds.setAttr(tfm + '.imageSequenceStartFrame', lock=False)
+        maya.cmds.setAttr(tfm + '.imageSequenceEndFrame', lock=False)
+        maya.cmds.setAttr(tfm + '.imageSequencePadding', lock=False)
+
+    maya.cmds.setAttr(tfm + '.imageSequenceStartFrame', start_frame)
+    maya.cmds.setAttr(tfm + '.imageSequenceEndFrame', end_frame)
+    maya.cmds.setAttr(tfm + '.imageSequencePadding', pad_num)
+
+    if not node_utils.node_is_referenced(tfm):
+        maya.cmds.setAttr(tfm + '.imageSequenceStartFrame', lock=True)
+        maya.cmds.setAttr(tfm + '.imageSequenceEndFrame', lock=True)
+        maya.cmds.setAttr(tfm + '.imageSequencePadding', lock=True)
     return
 
 
@@ -415,8 +531,8 @@ def set_shader_file_path(image_plane_tfm, image_sequence_path):
         LOG.warn('image plane shader file node is invalid.')
         return
 
-    format_style = const.FORMAT_STYLE_STANDARD
-    file_pattern, start, end, is_seq = _expand_image_sequence_path(
+    format_style = const.FORMAT_STYLE_MAYA
+    file_pattern, start, end, pad_num, is_seq = _expand_image_sequence_path(
         image_sequence_path,
         format_style)
 
@@ -443,8 +559,8 @@ def set_image_plane_file_path(image_plane_tfm, image_sequence_path):
         LOG.warn('image plane baked shape node is invalid.')
         return
 
-    format_style = const.FORMAT_STYLE_STANDARD
-    file_pattern, start, end, is_seq = _expand_image_sequence_path(
+    format_style = const.FORMAT_STYLE_HASH_PADDED
+    file_pattern, start, end, pad_num, is_seq = _expand_image_sequence_path(
         image_sequence_path,
         format_style)
 

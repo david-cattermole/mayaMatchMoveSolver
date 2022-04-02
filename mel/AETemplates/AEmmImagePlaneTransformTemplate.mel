@@ -94,12 +94,17 @@ global proc AEmmImagePlaneTransformTemplate(string $nodeName)
 
     editorTemplate -beginLayout "Common" -collapse 0;
     editorTemplate -addControl "displayMode";
+    editorTemplate -addSeparator;
     editorTemplate
         -callCustom
         "AEmmImagePlaneTransformImageSequenceNew"
         "AEmmImagePlaneTransformImageSequenceReplace"
         "imageSequence";
     editorTemplate -addControl "imageSequenceFrame";
+    editorTemplate -addControl "imageSequenceStartFrame";
+    editorTemplate -addControl "imageSequenceEndFrame";
+    editorTemplate -addControl "imageSequencePadding";
+    editorTemplate -addSeparator;
     editorTemplate -addControl "meshResolution";
     editorTemplate -addControl "depth";
     editorTemplate -endLayout;

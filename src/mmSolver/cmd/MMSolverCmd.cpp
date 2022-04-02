@@ -171,19 +171,6 @@ MStatus parseSolveLogArguments(const MArgDatabase &argData,
     }
 
     return status;
-
-    // markerName = markerArgs.asString(0, &status);
-    // CHECK_MSTATUS_AND_RETURN_IT(status);
-    // // TODO: Test for the type of node given for the marker.
-    // //  We need to support both 'transform' or 'mmMarkerTransform' node.
-    // //
-    // // status = nodeExistsAndIsType(markerName, MFn::Type::kTransform);  // Or MFn::Type::kPluginTransformNode
-    // // CHECK_MSTATUS_AND_RETURN_IT(status);
-
-    // cameraName = markerArgs.asString(1, &status);
-    // CHECK_MSTATUS_AND_RETURN_IT(status);
-    // status = nodeExistsAndIsType(cameraName, MFn::Type::kCamera);
-    // CHECK_MSTATUS_AND_RETURN_IT(status);
 }
 
 

@@ -201,8 +201,7 @@ RenderOverride::nextRenderOperation() {
 }
 
 MStatus RenderOverride::updateParameters() {
-    MStreamUtils::stdOutStream()
-        << "RenderOverride::updateParameters: \n";
+    MMSOLVER_INFO("RenderOverride::updateParameters: ");
 
     MStatus status = MS::kSuccess;
     if (m_pull_updates == false) {
@@ -235,8 +234,7 @@ MStatus RenderOverride::updateParameters() {
     if (status == MStatus::kSuccess) {
         m_mode = mode_plug.asShort();
     }
-    MStreamUtils::stdOutStream()
-        << "RenderOverride mode: " << m_mode << '\n';
+    MMSOLVER_INFO("RenderOverride mode: " << m_mode);
 
     MPlug render_format_plug = depends_node.findPlug(
         "renderFormat", /*wantNetworkedPlug=*/ true, &status);
@@ -248,9 +246,8 @@ MStatus RenderOverride::updateParameters() {
         // MHWRender::kR32G32B32A32_FLOAT;
         // MHWRender::kR8G8B8A8_UNORM;;
     }
-    MStreamUtils::stdOutStream()
-        << "RenderOverride render_format: "
-        << static_cast<short>(m_render_format) << '\n';
+    MMSOLVER_INFO("RenderOverride render_format: "
+                  << static_cast<short>(m_render_format));
 
     // MString attr_name = "wireframeAlpha";
     MPlug wire_alpha_plug = depends_node.findPlug(
@@ -281,8 +278,7 @@ MStatus RenderOverride::updateParameters() {
 
 MStatus
 RenderOverride::updateRenderOperations() {
-    MStreamUtils::stdOutStream()
-        << "RenderOverride::updateRenderOperations: \n";
+    MMSOLVER_INFO("RenderOverride::updateRenderOperations: ");
 
     if (m_ops[kPresentOp] != nullptr) {
         // render opations are already up-to-date.
@@ -427,8 +423,7 @@ RenderOverride::updateRenderOperations() {
 // appropriate location.
 MStatus
 RenderOverride::updateRenderTargets() {
-    MStreamUtils::stdOutStream()
-        << "RenderOverride::updateRenderTargets\n";
+    MMSOLVER_INFO("RenderOverride::updateRenderTargets");
     MHWRender::MRenderer *theRenderer = MHWRender::MRenderer::theRenderer();
     if (!theRenderer) {
         return MS::kFailure;
@@ -474,8 +469,7 @@ RenderOverride::updateRenderTargets() {
     // specific render targets.
 
     if (m_mode == 0) {
-        MStreamUtils::stdOutStream()
-            << "RenderOverride::mode = Zero\n";
+        MMSOLVER_INFO("RenderOverride::mode = Zero");
         // Blend edge detect on/off.
         auto depthPassOp = (SceneRender *) m_ops[kSceneDepthPass];
         if (depthPassOp) {
@@ -546,8 +540,7 @@ RenderOverride::updateRenderTargets() {
         }
 
     } else if (m_mode == 1) {
-        MStreamUtils::stdOutStream()
-            << "RenderOverride::mode = ONE\n";
+        MMSOLVER_INFO("RenderOverride::mode = ONE");
         // Blending wireframes.
         auto depthPassOp = (SceneRender *) m_ops[kSceneDepthPass];
         if (depthPassOp) {
@@ -616,8 +609,7 @@ RenderOverride::updateRenderTargets() {
             presentOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
     } else {
-        MStreamUtils::stdOutStream()
-            << "RenderOverride::mode = ELSE\n";
+        MMSOLVER_INFO("RenderOverride::mode = ELSE");
 
         // No blending or post operations.
         auto depthPassOp = (SceneRender *) m_ops[kSceneDepthPass];
@@ -709,9 +701,9 @@ RenderOverride::updateRenderTargets() {
 }
 
 MStatus RenderOverride::setPanelNames(const MString &name) {
-    MStreamUtils::stdOutStream()
-        << "RenderOverride::setPanelNames: "
-        << name.asChar() << '\n';
+    MMSOLVER_INFO(
+        "RenderOverride::setPanelNames: "
+        << name.asChar());
     // Set the name of the panel on operations which may use the panel
     // name to find out the associated M3dView.
     if (m_ops[kSceneDepthPass]) {
@@ -738,9 +730,9 @@ MStatus RenderOverride::setPanelNames(const MString &name) {
 
 MStatus
 RenderOverride::setup(const MString &destination) {
-    MStreamUtils::stdOutStream()
-        << "RenderOverride::setup: "
-        << destination.asChar() << '\n';
+    MMSOLVER_INFO(
+        "RenderOverride::setup: "
+        << destination.asChar());
     MStatus status = MS::kSuccess;
 
     // Track changes to the renderer and override for this viewport (nothing
@@ -784,8 +776,7 @@ RenderOverride::setup(const MString &destination) {
 // change from frame to frame (render target, output panel name etc).
 MStatus
 RenderOverride::cleanup() {
-    MStreamUtils::stdOutStream()
-        << "RenderOverride::cleanup: \n";
+    // MMSOLVER_INFO("RenderOverride::cleanup: ");
 
     // Reset the active view
     m_panel_name.clear();
@@ -801,10 +792,11 @@ void RenderOverride::renderer_change_func(const MString& panel_name,
                                           const MString& old_renderer,
                                           const MString& new_renderer,
                                           void* /*client_data*/) {
-    MStreamUtils::stdOutStream()
-            << "Renderer changed for panel '" << panel_name.asChar() << "'. "
-            << "New renderer is '" << new_renderer.asChar() << "', "
-            << "old was '" << old_renderer.asChar() << "'.\n";
+    MMSOLVER_INFO(
+        "Renderer changed for panel '" << panel_name.asChar() << "'. "
+        << "New renderer is '" << new_renderer.asChar() << "', "
+        << "old was '" << old_renderer.asChar() << "'."
+    );
 }
 
 // Callback for tracking render override changes
@@ -814,10 +806,11 @@ void RenderOverride::render_override_change_func(const MString& panel_name,
                                                  void* /*client_data*/) {
     // TODO: When the 'new_renderer' is MM_RENDERER_NAME, we must forcably
     //  create a new 'mmRenderGlobals' node.
-    MStreamUtils::stdOutStream()
-            << "Render override changed for panel '" << panel_name.asChar() << "'. "
-            << "New override is '" << new_renderer.asChar() << "', "
-            << "old was '" << old_renderer.asChar() << "'.\n";
+    MMSOLVER_INFO(
+        "Render override changed for panel '" << panel_name.asChar() << "'. "
+        << "New override is '" << new_renderer.asChar() << "', "
+        << "old was '" << old_renderer.asChar() << "'."
+    );
 }
 
 

@@ -101,6 +101,10 @@ namespace mmsg = mmscenegraph;
 #define CALC_SMOOTHNESS_STIFFNESS_WITHOUT_VARIANCE 0
 
 
+// Per-attribute type delta values
+#define PER_ATTR_TYPE_DELTA_VALUE 0
+
+
 #if MAYA_API_VERSION < 201700
 int getStringArrayIndexOfValue(MStringArray &array, MString &value) {
     int index = -1;
@@ -178,24 +182,44 @@ MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *ud) {
 
 // Given a specific parameter, calculate the expected 'delta' value of
 // the parameter.
-double calculateParameterDelta(double value,
-                               double delta,
-                               double sign,
-                               AttrPtr attr) {
+double calculateParameterDelta(const double value,
+                               const double delta,
+                               const double sign,
+                               AttrPtr &attr) {
     MStatus status = MS::kSuccess;
-    double xmin = attr->getMinimumValue();
-    double xmax = attr->getMaximumValue();
+    const double xmin = attr->getMinimumValue();
+    const double xmax = attr->getMaximumValue();
+
+    double new_delta = delta;
+#if PER_ATTR_TYPE_DELTA_VALUE == 1
+    // Relative delta for different types of solver attribute types.
+    const auto object_type = attr->getObjectType();
+    const auto solver_attr_type = attr->getSolverAttrType();
+    if (object_type == ObjectType::kCamera
+        && (solver_attr_type == ATTR_SOLVER_TYPE_CAMERA_FOCAL
+            || solver_attr_type == ATTR_SOLVER_TYPE_CAMERA_RX
+            || solver_attr_type == ATTR_SOLVER_TYPE_CAMERA_RY
+            || solver_attr_type == ATTR_SOLVER_TYPE_CAMERA_RZ)) {
+        new_delta *= 0.1;
+    } else if (object_type == ObjectType::kLens
+               && solver_attr_type == ATTR_SOLVER_TYPE_LENS_MODEL) {
+        new_delta *= 10.0;
+    }
+    // TODO: Change delta for bundle depending on bundle's distance
+    // from camera/origin.
+#endif
 
     // If the value +/- delta would cause the attribute to go
     // out of box-constraints, then we should only use one
     // value, or go in the other direction.
-    if ((value + delta) > xmax) {
-        sign = -1;
+    double new_sign = sign;
+    if ((value + new_delta) > xmax) {
+        new_sign = -1;
     }
-    if ((value - delta) < xmin) {
-        sign = 1;
+    if ((value - new_delta) < xmin) {
+        new_sign = 1;
     }
-    return delta * sign;
+    return new_delta * new_sign;
 }
 
 

@@ -185,7 +185,6 @@ struct SolverData {
 
     // Verbosity.
     bool verbose;
-    MString debugFileName;
 };
 
 

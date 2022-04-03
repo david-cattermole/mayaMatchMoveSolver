@@ -160,10 +160,10 @@ def _split_mkr_attr_into_categories(mkr_list, attr_list):
                         new_mkr_list.append(mkr)
                         new_attr_list.append(attr)
             if len(new_mkr_list) == 0 or len(new_attr_list) == 0:
-                LOG.warn(
-                    'No markers found affecting attribute. node=%r',
-                    node
-                )
+                msg = (
+                    'No markers found affecting attribute. '
+                    'node=%r attrs=%r category=%r')
+                LOG.warn(msg, node, attrs, category)
                 continue
             meta_mkr_list.append(new_mkr_list)
             meta_attr_list.append(new_attr_list)

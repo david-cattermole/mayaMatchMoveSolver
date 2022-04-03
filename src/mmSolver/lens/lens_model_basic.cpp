@@ -47,18 +47,18 @@ void LensModelBasic::setK2(const double value) {
     return;
 }
 
-LensModel* LensModelBasic::getInputLensModel() const {
+std::shared_ptr<LensModel> LensModelBasic::getInputLensModel() const {
     return m_inputLensModel;
 }
 
-void LensModelBasic::setInputLensModel(LensModel* value) {
+void LensModelBasic::setInputLensModel(std::shared_ptr<LensModel> value) {
     m_inputLensModel = value;
     return;
 }
 
 void LensModelBasic::initModel() const {
     // Initialize the 'previous' lens model in the chain.
-    LensModel* inputLensModel = LensModelBasic::getInputLensModel();
+    std::shared_ptr<LensModel> inputLensModel = LensModelBasic::getInputLensModel();
     if (inputLensModel != nullptr) {
         inputLensModel->initModel();
     }
@@ -66,14 +66,16 @@ void LensModelBasic::initModel() const {
     return;
 }
 
-void LensModelBasic::applyModel(double xd,
-                                double yd,
+void LensModelBasic::applyModel(const double xd,
+                                const double yd,
                                 double &xu,
                                 double &yu) const {
     // Apply the 'previous' lens model in the chain.
-    LensModel* inputLensModel = LensModelBasic::getInputLensModel();
+    std::shared_ptr<LensModel> inputLensModel = LensModelBasic::getInputLensModel();
+    double xdd = xd;
+    double ydd = yd;
     if (inputLensModel != nullptr) {
-        inputLensModel->applyModel(xd, yd, xd, yd);
+        inputLensModel->applyModel(xdd, ydd, xdd, ydd);
     }
 
     // Brownian lens distortion model.
@@ -97,7 +99,7 @@ void LensModelBasic::applyModel(double xd,
     double r2 = std::pow(r, 2);
     double r4 = std::pow(r, 4) * 2.0;
 
-    xu = xd + ((xd - xc) * ((m_k1 * r2) + (m_k2 * r4)));
-    yu = yd + ((yd - yc) * ((m_k1 * r2) + (m_k2 * r4)));
+    xu = xdd + ((xdd - xc) * ((m_k1 * r2) + (m_k2 * r4)));
+    yu = ydd + ((ydd - yc) * ((m_k1 * r2) + (m_k2 * r4)));
     return;
 }

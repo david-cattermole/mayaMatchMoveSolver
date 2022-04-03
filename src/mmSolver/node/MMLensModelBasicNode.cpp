@@ -87,9 +87,9 @@ MStatus MMLensModelBasicNode::compute(const MPlug &plug, MDataBlock &data) {
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
-        LensModel* inputLensModel = nullptr;
+        std::shared_ptr<LensModel> inputLensModel;
         if (inputLensData != nullptr) {
-            inputLensModel = (LensModel*) inputLensData->getValue();
+            inputLensModel = inputLensData->getValue();
         }
 
         // Output Lens
@@ -109,7 +109,8 @@ MStatus MMLensModelBasicNode::compute(const MPlug &plug, MDataBlock &data) {
 
             // Create a lens distortion function to be passed to the
             // MMLensData.
-            LensModelBasic* newLensModel = new LensModelBasic();
+            std::shared_ptr<LensModelBasic> newLensModel =
+                std::shared_ptr<LensModelBasic>(new LensModelBasic());
             // Connect the input lens to the newly created lens object.
             newLensModel->setInputLensModel(inputLensModel);
             newLensModel->setK1(k1);

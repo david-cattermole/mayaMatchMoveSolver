@@ -92,8 +92,8 @@ Attr::Attr() :
         m_maxValue(std::numeric_limits<float>::max()),
         m_offsetValue(0.0),
         m_scaleValue(1.0),
-        m_objectType(ObjectType::kUnknown),
-        m_solverAttrType(ATTR_SOLVER_TYPE_UNKNOWN) {
+        m_objectType(ObjectType::kUninitialized),
+        m_solverAttrType(ATTR_SOLVER_TYPE_UNINITIALIZED) {
      MDistance distanceOne(1.0, MDistance::internalUnit());
      m_linearFactor = distanceOne.as(MDistance::uiUnit());
      m_linearFactorInv = 1.0 / m_linearFactor;
@@ -121,13 +121,10 @@ MStatus Attr::setName(MString value) {
         Attr::setNodeName(values[0]);
         Attr::setAttrName(values[1]);
 
-        MObject obj = Attr::getObject();
-        const auto objectType = computeObjectType(obj);
-        Attr::setObjectType(objectType);
-
-        const unsigned int solverAttrType = computeSolverAttrType(
-                objectType,
-                values[1]);
+        auto object_type = Attr::getObjectType();
+        auto solverAttrType = computeSolverAttrType(
+            object_type,
+            values[1]);
         Attr::setSolverAttrType(solverAttrType);
     } else {
         MMSOLVER_ERR(
@@ -150,8 +147,11 @@ MStatus Attr::setNodeName(const MString &value) {
         m_connected = -1;
         m_isFreeToChange = -1;
         m_animCurveName = "";
+        m_nodeName = value;
+
+        MObject obj = Attr::getObject();
+        m_objectType = computeObjectType(obj);
     }
-    m_nodeName = value;
     return MS::kSuccess;
 }
 

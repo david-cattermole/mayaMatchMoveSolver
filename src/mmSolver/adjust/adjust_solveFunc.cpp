@@ -25,33 +25,40 @@
 #include "adjust_solveFunc.h"
 
 // STL
+#include <algorithm>
+#include <cassert>
+#include <cmath>
 #include <cstdlib>
 #include <ctime>
-#include <cmath>
 #include <iostream>
+#include <limits>
+#include <memory>
+#include <stdio.h>
 #include <string>
 #include <vector>
-#include <cassert>
-#include <limits>
-#include <algorithm>
-#include <stdio.h>
 
 // Maya
-#include <maya/MVector.h>
+#include <maya/MAnimCurveChange.h>
+#include <maya/MComputation.h>
+#include <maya/MDagPath.h>
+#include <maya/MDGContext.h>
+#include <maya/MFnAnimCurve.h>
+#include <maya/MFnDependencyNode.h>
+#include <maya/MFnPluginData.h>
+#include <maya/MGlobal.h>
+#include <maya/MMatrix.h>
+#include <maya/MObject.h>
 #include <maya/MPoint.h>
+#include <maya/MProfiler.h>
+#include <maya/MStreamUtils.h>
+#include <maya/MSelectionList.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
-#include <maya/MObject.h>
-#include <maya/MSelectionList.h>
-#include <maya/MDagPath.h>
-#include <maya/MFnDependencyNode.h>
-#include <maya/MFnAnimCurve.h>
-#include <maya/MAnimCurveChange.h>
-#include <maya/MMatrix.h>
-#include <maya/MComputation.h>
-#include <maya/MProfiler.h>
-#include <maya/MGlobal.h>
-#include <maya/MStreamUtils.h>
+#include <maya/MVector.h>
+
+#if MAYA_API_VERSION >= 20180000
+#include <maya/MDGContextGuard.h>
+#endif
 
 // MM Scene Graph
 #include <mmscenegraph/mmscenegraph.h>
@@ -59,12 +66,14 @@
 // MM Solver
 #include "mmSolver/core/mmdata.h"
 #include "mmSolver/core/mmmath.h"
-#include "mmSolver/utilities/number_utils.h"
-#include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/utilities/string_utils.h"
+#include "mmSolver/lens/lens_model.h"
+#include "mmSolver/node/MMLensData.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/utilities/number_utils.h"
+#include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/string_utils.h"
 #include "adjust_base.h"
 #include "adjust_data.h"
 
@@ -190,6 +199,87 @@ double calculateParameterDelta(double value,
 }
 
 
+MStatus
+calculateMarkerLensModelList(
+    const MarkerPtrList &markerList,
+    const MTimeArray &frameList,
+    std::vector<std::unique_ptr<LensModel>> &out_markerLensModelList
+) {
+    MStatus status = MS::kSuccess;
+
+    auto num_frames = frameList.length();
+    auto num_markers = markerList.size();
+    out_markerLensModelList.resize(num_markers * num_frames);
+
+    uint32_t added_lens_count = 0;
+    for (uint32_t i = 0; i < num_markers; ++i) {
+        MarkerPtr marker = markerList[i];
+        CameraPtr camera = marker->getCamera();
+
+        auto camera_shape_mobj = camera->getShapeObject();
+        MFnDependencyNode mfn_depend_node(camera_shape_mobj, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        // Get output lens data.
+        const MString attr_name = "outLens";
+        const bool want_networked_plug = true;
+        MPlug plug = mfn_depend_node.findPlug(attr_name, want_networked_plug, &status);
+        if (status != MS::kSuccess) {
+            // The camera may not have an 'outLens' attribute and may
+            // not have a lens node connected to it.
+            status = MS::kSuccess;
+            continue;
+        }
+
+        for (uint32_t j = 0; j < num_frames; j++) {
+            MTime frame = frameList[j];
+
+            MDGContext ctx(frame);
+#if MAYA_API_VERSION >= 20180000
+            MDGContextGuard ctxGuard(ctx);
+            MObject data_object = plug.asMObject(&status);
+#else
+            MObject data_object = plug.asMObject(ctx, &status);
+#endif
+            CHECK_MSTATUS(status);
+            if (status != MS::kSuccess) {
+                return status;
+            }
+            if (data_object.isNull()) {
+                continue;
+            }
+
+            MFnPluginData pluginDataFn(data_object);
+            const mmsolver::MMLensData* outputLensData =
+                (const mmsolver::MMLensData*) pluginDataFn.constData(&status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+
+            if (outputLensData != nullptr) {
+                auto nodeLensModel = outputLensData->getValue();
+                if (nodeLensModel != nullptr) {
+                    auto nodeLensModelClone = nodeLensModel->clone();
+                    nodeLensModelClone->initModel();
+
+                    // This indexing structure ensures lenses on the
+                    // same frame are tightly packed, which increases
+                    // cache locality.
+                    auto index = (i * num_frames) + j;
+                    out_markerLensModelList[index] = std::move(nodeLensModelClone);
+                    ++added_lens_count;
+                }
+            }
+        }
+    }
+
+    if (added_lens_count == 0) {
+        // Effectively disables lens distortion for the solve.
+        out_markerLensModelList.clear();
+    }
+
+    return status;
+}
+
+
 // Set Parameter values
 MStatus
 setParameters_mayaDag(
@@ -262,11 +352,11 @@ setParameters_mmSceneGraph(
         const double *parameters,
         SolverData *ud) {
     MStatus status = MS::kSuccess;
+    MTime currentFrame = MAnimControl::currentTime();
 
     for (int i = 0; i < numberOfParameters; ++i) {
         const IndexPair attrPair = ud->paramToAttrList[i];
         AttrPtr attr = ud->attrList[attrPair.first];
-        mmsg::AttrId attrId = ud->mmsgAttrIdList[attrPair.first];
 
         const double offset = attr->getOffsetValue();
         const double scale = attr->getScaleValue();
@@ -281,34 +371,62 @@ setParameters_mmSceneGraph(
             xmin, xmax,
             offset, scale);
 
-        // Get frame time
-        mmsg::FrameValue frame = 0;
-        if (attrPair.second != -1) {
-            frame = ud->mmsgFrameList[attrPair.second];
-        }
+        const auto object_type = attr->getObjectType();
+        if (object_type != ObjectType::kLens) {
+            mmsg::FrameValue frame = 0;
+            if (attrPair.second != -1) {
+                frame = ud->mmsgFrameList[attrPair.second];
+            }
 
-        auto ok = ud->mmsgAttrDataBlock.set_attr_value(attrId, frame, real_value);
-        if (!ok) {
-            status = MS::kFailure;
+            mmsg::AttrId attrId = ud->mmsgAttrIdList[attrPair.first];
+            auto ok = ud->mmsgAttrDataBlock.set_attr_value(attrId, frame, real_value);
+            if (!ok) {
+                status = MS::kFailure;
 
-            MString attr_name = attr->getName();
-            auto attr_name_char = attr_name.asChar();
+                MString attr_name = attr->getName();
+                auto attr_name_char = attr_name.asChar();
 
-            MMSOLVER_ERR(
-                "setParameters (MMSG) was given an invalid value to set:"
-                << " attr name=" << attr_name_char
-                << " solver value=" << solver_value
-                << " bound value=" << real_value
-                << " offset=" << offset
-                << " scale=" << scale
-                << " min=" << xmin
-                << " max=" << xmax);
-            break;
+                MMSOLVER_ERR(
+                    "setParameters (MMSG) was given an invalid value to set:"
+                    << " attr name=" << attr_name_char
+                    << " solver value=" << solver_value
+                    << " bound value=" << real_value
+                    << " offset=" << offset
+                    << " scale=" << scale
+                    << " min=" << xmin
+                    << " max=" << xmax);
+                break;
+            }
+        } else {
+            // Set the Maya DAG Lens node attributes.
+            MTime frame = currentFrame;
+            if (attrPair.second != -1) {
+                frame = ud->frameList[attrPair.second];
+            }
+
+            status = attr->setValue(real_value, frame, *ud->dgmod, *ud->curveChange);
+            if (status != MS::kSuccess) {
+                MString attr_name = attr->getName();
+                auto attr_name_char = attr_name.asChar();
+
+                MMSOLVER_ERR(
+                    "setParameters (MMSG) was given an invalid value to set:"
+                    << " frame=" << frame
+                    << " attr name=" << attr_name_char
+                    << " solver value=" << solver_value
+                    << " bound value=" << real_value
+                    << " offset=" << offset
+                    << " scale=" << scale
+                    << " min=" << xmin
+                    << " max=" << xmax);
+
+                break;
+            }
         }
     }
+
     return status;
 }
-
 
 // Set Parameter values
 MStatus
@@ -324,11 +442,33 @@ setParameters(
             numberOfParameters,
             parameters,
             ud);
+
+#if MMSOLVER_LENS_DISTORTION == 1 && MMSOLVER_LENS_DISTORTION_MAYA_DAG == 1
+        if (ud->markerLensModelList.size() > 0) {
+            status = calculateMarkerLensModelList(
+                ud->markerList,
+                ud->frameList,
+                ud->markerLensModelList
+            );
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+        }
+#endif
     } else if (sceneGraphMode == SceneGraphMode::kMMSceneGraph) {
         status = setParameters_mmSceneGraph(
             numberOfParameters,
             parameters,
             ud);
+
+#if MMSOLVER_LENS_DISTORTION == 1 && MMSOLVER_LENS_DISTORTION_MM_SCENE_GRAPH == 1
+        if (ud->markerLensModelList.size() > 0) {
+            status = calculateMarkerLensModelList(
+                ud->markerList,
+                ud->frameList,
+                ud->markerLensModelList
+            );
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+        }
+#endif
     } else {
         MMSOLVER_ERR(
             "setParameters failed, invalid SceneGraphMode: "
@@ -444,6 +584,9 @@ void measureErrors_mayaDag(
     }
 #endif
 
+    auto num_frames = ud->frameList.length();
+    auto num_marker_lens_models = ud->markerLensModelList.size();
+
     // Compute Marker Errors
     MMatrix cameraWorldProjectionMatrix;
     MPoint mkr_mpos;
@@ -452,8 +595,8 @@ void measureErrors_mayaDag(
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = ud->errorToMarkerList[i];
         int markerIndex = markerPair.first;
-
         int frameIndex = markerPair.second;
+
         bool skipFrame = frameIndexEnable[frameIndex] == false;
         bool skipMarker = errorMeasurements[i] == false;
         if (skipFrame) {
@@ -484,13 +627,9 @@ void measureErrors_mayaDag(
 
         BundlePtr bnd = marker->getBundle();
 
-        // When using lens distortion, we need to re-compute the
-        // marker positions, since they are affected by lens
-        // distortion.
         double mkr_x = 0.0;
         double mkr_y = 0.0;
 #if USE_MARKER_POSITION_CACHE == 1
-        // Use pre-computed marker position and weight
         mkr_mpos = ud->markerPosList[i];
         mkr_x = mkr_mpos.x;
         mkr_y = mkr_mpos.y;
@@ -498,8 +637,6 @@ void measureErrors_mayaDag(
         status = marker->getPosXY(mkr_x, mkr_y, frame, timeEvalMode);
         CHECK_MSTATUS(status);
 #endif
-        // TODO: Apply lens distortion to marker position.
-
         // Scale marker Y.
         {
             double filmBackWidth = camera->getFilmbackWidthValue(frame, timeEvalMode);
@@ -512,6 +649,30 @@ void measureErrors_mayaDag(
             double aspect = renderAspect / filmBackAspect;
             mkr_y *= aspect;
         }
+
+#if MMSOLVER_LENS_DISTORTION == 1 && MMSOLVER_LENS_DISTORTION_MAYA_DAG == 1
+        auto markerLensModelIndex = (frameIndex * num_frames) + markerIndex;
+        if (markerLensModelIndex < num_marker_lens_models
+            && ud->markerLensModelList[markerLensModelIndex] != nullptr) {
+            double out_x = mkr_x;
+            double out_y = mkr_y;
+            ud->markerLensModelList[markerLensModelIndex]->applyModel(
+                mkr_x,
+                mkr_y,
+                out_x,
+                out_y
+            );
+
+            // Applying the lens distortion model to large input
+            // values, creates NaN undistorted points.
+            if (std::isfinite(out_x)) {
+                mkr_x = out_x;
+            }
+            if (std::isfinite(out_y)) {
+                mkr_y = out_y;
+            }
+        }
+#endif
 
         double mkr_weight = ud->markerWeightList[i];
         assert(mkr_weight > 0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
@@ -670,8 +831,6 @@ void measureErrors_mmSceneGraph(
     UNUSED(status);
 
     // Evaluate Scene.
-    //
-    // TODO: Only re-evaluate the markers required.
     ud->mmsgFlatScene.evaluate(
         ud->mmsgAttrDataBlock,
         ud->mmsgFrameList);
@@ -679,6 +838,7 @@ void measureErrors_mmSceneGraph(
     auto num_points = ud->mmsgFlatScene.num_points();
     auto num_markers = ud->mmsgFlatScene.num_markers();
     auto num_frames = ud->mmsgFrameList.size();
+    auto num_marker_lens_models = ud->markerLensModelList.size();
     UNUSED(num_points);
     UNUSED(num_markers);
     assert(num_points == num_markers);
@@ -692,8 +852,8 @@ void measureErrors_mmSceneGraph(
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
         IndexPair markerPair = ud->errorToMarkerList[i];
         int markerIndex = markerPair.first;
-
         int frameIndex = markerPair.second;
+
         bool skipFrame = frameIndexEnable[frameIndex] == false;
         bool skipMarker = errorMeasurements[i] == false;
         if (skipFrame) {
@@ -724,6 +884,30 @@ void measureErrors_mmSceneGraph(
         auto mkr_y = out_marker_list[mkrIndex_y];
         auto point_x = out_point_list[mkrIndex_x];
         auto point_y = out_point_list[mkrIndex_y];
+
+#if MMSOLVER_LENS_DISTORTION == 1 && MMSOLVER_LENS_DISTORTION_MM_SCENE_GRAPH == 1
+        auto markerLensModelIndex = (frameIndex * num_frames) + markerIndex;
+        if (markerLensModelIndex < num_marker_lens_models
+            && ud->markerLensModelList[markerLensModelIndex] != nullptr) {
+            double out_x = mkr_x;
+            double out_y = mkr_y;
+            ud->markerLensModelList[markerLensModelIndex]->applyModel(
+                mkr_x,
+                mkr_y,
+                out_x,
+                out_y
+            );
+
+            // Applying the lens distortion model to large input
+            // values, creates NaN undistorted points.
+            if (std::isfinite(out_x)) {
+                mkr_x = out_x;
+            }
+            if (std::isfinite(out_y)) {
+                mkr_y = out_y;
+            }
+        }
+#endif
 
         auto dx = std::fabs(mkr_x - point_x);
         auto dy = std::fabs(mkr_y - point_y);

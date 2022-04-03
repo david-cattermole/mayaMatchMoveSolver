@@ -1202,6 +1202,13 @@ convert_attributes_to_attr_ids(
          ait != attrList.cend();
          ++ait) {
         AttrPtr attr = *ait;
+
+        ObjectType object_type = attr->getObjectType();
+        if (object_type == ObjectType::kLens) {
+            // Lens objects are not supported by mmSceneGraph.
+            continue;
+        }
+
         MString attrName = attr->getLongName();
         std::string key = std::string(attrName.asChar());
 
@@ -1211,11 +1218,12 @@ convert_attributes_to_attr_ids(
         if (search != attrNameToAttrIdMap.end()) {
             out_attrIdList.push_back(search->second);
         } else {
-            MMSOLVER_ERR("key was not found: " << key);
+            MMSOLVER_WRN("MM Scene Graph: Attribute name was not found: " << key
+                         << " object_type=" << static_cast<uint32_t>(object_type));
             return MS::kFailure;
         }
     }
-    assert(out_attrIdList.size() == attrList.size());
+    assert(out_attrIdList.size() <= attrList.size());
     return status;
 }
 

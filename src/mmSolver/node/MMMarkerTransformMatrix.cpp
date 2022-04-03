@@ -44,11 +44,11 @@ MPxTransformationMatrix *MMMarkerTransformMatrix::creator() {
     return new MMMarkerTransformMatrix();
 }
 
-LensModel* MMMarkerTransformMatrix::getLensModel() const {
+std::shared_ptr<LensModel> MMMarkerTransformMatrix::getLensModel() const {
     return m_value;
 }
 
-void MMMarkerTransformMatrix::setLensModel(LensModel* value) {
+void MMMarkerTransformMatrix::setLensModel(std::shared_ptr<LensModel> value) {
     m_value = value;
 }
 
@@ -65,7 +65,7 @@ MMatrix MMMarkerTransformMatrix::asMatrix() const {
 
     // Calculate and add lens distortion to the translates of the
     // matrix.
-    LensModel* lensModel = getLensModel();
+    std::shared_ptr<LensModel> lensModel = getLensModel();
     if (lensModel != nullptr) {
         MVector translate = tm.getTranslation(MSpace::kTransform, &status);
         CHECK_MSTATUS(status);

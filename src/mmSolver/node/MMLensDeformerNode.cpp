@@ -173,7 +173,7 @@ MMLensDeformerNode::deform(MDataBlock& data,
     }
 
     // Get the underlying lens model.
-    LensModel* lensModel = (LensModel*) inputLensData->getValue();
+    std::shared_ptr<LensModel> lensModel = inputLensData->getValue();
     if (lensModel == nullptr) {
         return status;
     }

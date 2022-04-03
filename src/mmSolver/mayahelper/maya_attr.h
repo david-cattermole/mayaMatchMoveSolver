@@ -45,35 +45,37 @@
 #define ATTR_DATA_TYPE_NUMERIC (3)
 
 // Solver Types of Attributes.
-#define ATTR_SOLVER_TYPE_UNKNOWN      (0)
-#define ATTR_SOLVER_TYPE_BUNDLE_TX    (1)
-#define ATTR_SOLVER_TYPE_BUNDLE_TY    (2)
-#define ATTR_SOLVER_TYPE_BUNDLE_TZ    (3)
-#define ATTR_SOLVER_TYPE_CAMERA_TX    (4)
-#define ATTR_SOLVER_TYPE_CAMERA_TY    (5)
-#define ATTR_SOLVER_TYPE_CAMERA_TZ    (6)
-#define ATTR_SOLVER_TYPE_CAMERA_RX    (7)
-#define ATTR_SOLVER_TYPE_CAMERA_RY    (8)
-#define ATTR_SOLVER_TYPE_CAMERA_RZ    (9)
-#define ATTR_SOLVER_TYPE_CAMERA_SX    (10)
-#define ATTR_SOLVER_TYPE_CAMERA_SY    (11)
-#define ATTR_SOLVER_TYPE_CAMERA_SZ    (12)
-#define ATTR_SOLVER_TYPE_CAMERA_FOCAL (13)
-#define ATTR_SOLVER_TYPE_TRANSFORM_TX (14)
-#define ATTR_SOLVER_TYPE_TRANSFORM_TY (15)
-#define ATTR_SOLVER_TYPE_TRANSFORM_TZ (16)
-#define ATTR_SOLVER_TYPE_TRANSFORM_RX (17)
-#define ATTR_SOLVER_TYPE_TRANSFORM_RY (18)
-#define ATTR_SOLVER_TYPE_TRANSFORM_RZ (19)
-#define ATTR_SOLVER_TYPE_TRANSFORM_SX (20)
-#define ATTR_SOLVER_TYPE_TRANSFORM_SY (21)
-#define ATTR_SOLVER_TYPE_TRANSFORM_SZ (22)
+#define ATTR_SOLVER_TYPE_UNINITIALIZED (0)
+#define ATTR_SOLVER_TYPE_UNKNOWN       (1)
+#define ATTR_SOLVER_TYPE_BUNDLE_TX     (2)
+#define ATTR_SOLVER_TYPE_BUNDLE_TY     (3)
+#define ATTR_SOLVER_TYPE_BUNDLE_TZ     (4)
+#define ATTR_SOLVER_TYPE_CAMERA_TX     (5)
+#define ATTR_SOLVER_TYPE_CAMERA_TY     (6)
+#define ATTR_SOLVER_TYPE_CAMERA_TZ     (7)
+#define ATTR_SOLVER_TYPE_CAMERA_RX     (8)
+#define ATTR_SOLVER_TYPE_CAMERA_RY     (9)
+#define ATTR_SOLVER_TYPE_CAMERA_RZ     (10)
+#define ATTR_SOLVER_TYPE_CAMERA_SX     (11)
+#define ATTR_SOLVER_TYPE_CAMERA_SY     (12)
+#define ATTR_SOLVER_TYPE_CAMERA_SZ     (13)
+#define ATTR_SOLVER_TYPE_CAMERA_FOCAL  (14)
+#define ATTR_SOLVER_TYPE_TRANSFORM_TX  (15)
+#define ATTR_SOLVER_TYPE_TRANSFORM_TY  (16)
+#define ATTR_SOLVER_TYPE_TRANSFORM_TZ  (17)
+#define ATTR_SOLVER_TYPE_TRANSFORM_RX  (18)
+#define ATTR_SOLVER_TYPE_TRANSFORM_RY  (19)
+#define ATTR_SOLVER_TYPE_TRANSFORM_RZ  (20)
+#define ATTR_SOLVER_TYPE_TRANSFORM_SX  (21)
+#define ATTR_SOLVER_TYPE_TRANSFORM_SY  (22)
+#define ATTR_SOLVER_TYPE_TRANSFORM_SZ  (23)
+#define ATTR_SOLVER_TYPE_LENS_MODEL    (24)
 
 
 inline
 unsigned int computeSolverAttrType(ObjectType objectType,
-                                   MString attrName) {
-    unsigned int attr_type = ATTR_SOLVER_TYPE_UNKNOWN;
+                                   MString &attrName) {
+    uint32_t attr_type = ATTR_SOLVER_TYPE_UNKNOWN;
     if (objectType == ObjectType::kBundle) {
         // A bundle node.
         if (attrName == "translateX" || attrName == "tx") {
@@ -106,6 +108,9 @@ unsigned int computeSolverAttrType(ObjectType objectType,
         } else if (attrName == "focalLength" || attrName == "fl") {
             attr_type = ATTR_SOLVER_TYPE_CAMERA_FOCAL;
         }
+    } else if (objectType == ObjectType::kLens) {
+        // A lens model node.
+        attr_type = ATTR_SOLVER_TYPE_LENS_MODEL;
     } else {
         // A normal transform node.
         if (attrName == "translateX" || attrName == "tx") {

@@ -42,11 +42,11 @@ MMLensData::MMLensData()
 
 MMLensData::~MMLensData() {}
 
-LensModel* MMLensData::getValue() const {
+std::shared_ptr<LensModel> MMLensData::getValue() const {
     return m_value;
 }
 
-void MMLensData::setValue(LensModel* value) {
+void MMLensData::setValue(std::shared_ptr<LensModel> value) {
     m_value = value;
 }
 

@@ -39,6 +39,7 @@ import mmSolver.utils.python_compat as pycompat
 import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
+import mmSolver.tools.createlens.lib as createlens_lib
 import test.test_api.apiutils as test_api_utils
 
 
@@ -88,6 +89,10 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
                 maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=frame, value=value)
         maya.cmds.setKeyframe(cam_shp, attribute='focalLength', time=start, value=14.0)
         maya.cmds.setKeyframe(cam_shp, attribute='focalLength', time=end, value=14.0)
+
+        # Create lens
+        lens = createlens_lib.create_lens_on_camera(cam, force_create_new=None)
+        lens_node = lens.get_node()
 
         # Create image plane
         path = self.get_data_path('operahouse', 'frame00.jpg')
@@ -307,6 +312,11 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
         col.add_attribute(attr_cam_rx)
         col.add_attribute(attr_cam_ry)
         col.add_attribute(attr_cam_rz)
+
+        # attr_lens_k1 = mmapi.Attribute(lens_node + '.distortion')
+        # attr_lens_k2 = mmapi.Attribute(lens_node + '.quarticDistortion')
+        # col.add_attribute(attr_lens_k1)
+        # col.add_attribute(attr_lens_k2)
 
         mkr_list = col.get_marker_list()
         for mkr in mkr_list:

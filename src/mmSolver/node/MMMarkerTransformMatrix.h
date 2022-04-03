@@ -39,15 +39,15 @@ public:
     virtual MMatrix asMatrix() const;
     virtual MMatrix asMatrix(double percent) const;
 
-    LensModel* getLensModel() const;
-    void setLensModel(LensModel* value);
+    std::shared_ptr<LensModel> getLensModel() const;
+    void setLensModel(std::shared_ptr<LensModel> value);
 
     static MTypeId m_id;
 
 protected:
     typedef MPxTransformationMatrix ParentClass;
 
-    LensModel* m_value;
+    std::shared_ptr<LensModel> m_value;
 };
 
 } // namespace mmsolver

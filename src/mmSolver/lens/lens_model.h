@@ -23,6 +23,9 @@
 #ifndef MM_SOLVER_CORE_LENS_MODEL_H
 #define MM_SOLVER_CORE_LENS_MODEL_H
 
+// STL
+// #include <vector>
+#include <memory>
 
 class LensModel {
 public:
@@ -35,7 +38,19 @@ public:
             , m_filmBackHeight_cm(2.4)
             , m_pixelAspect(1.0)
             , m_lensCenterOffsetX_cm(0.0)
-            , m_lensCenterOffsetY_cm(0.0) {};
+            , m_lensCenterOffsetY_cm(0.0)
+        {};
+
+    LensModel(const LensModel &rhs)
+            : m_focalLength_cm(rhs.getFocalLength())
+            , m_filmBackWidth_cm(rhs.getFilmBackWidth())
+            , m_filmBackHeight_cm(rhs.getFilmBackHeight())
+            , m_pixelAspect(rhs.getPixelAspect())
+            , m_lensCenterOffsetX_cm(rhs.getLensCenterOffsetX())
+            , m_lensCenterOffsetY_cm(rhs.getLensCenterOffsetY())
+        {};
+
+    virtual std::unique_ptr<LensModel> clone() const = 0;
 
     double getFocalLength() const {return m_focalLength_cm;}
     double getFilmBackWidth() const {return m_filmBackWidth_cm;}
@@ -52,9 +67,8 @@ public:
     void setLensCenterOffsetY(const double value) {m_lensCenterOffsetY_cm = value;}
 
     virtual void initModel() const = 0;
-
-    virtual void applyModel(double x,
-                            double y,
+    virtual void applyModel(const double x,
+                            const double y,
                             double &out_x,
                             double &out_y) const = 0;
 
@@ -72,13 +86,7 @@ protected:
 inline LensModel::~LensModel() {}
 
 
-typedef void (LensModel::*LensModelMembFn)(double x,
-                                           double y,
-                                           double &out_x,
-                                           double &out_y);
 
-// Shortcut to calling a member function of a specific class.
-#define CALL_MEMBER_FUNC(object, ptr_to_member) ((object).*(ptrToMember))
 
 
 #endif // MM_SOLVER_CORE_LENS_MODEL_H

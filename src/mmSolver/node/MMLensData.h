@@ -20,6 +20,9 @@
  * Holds Lens Distortion information in the Maya DG.
  */
 
+// STL
+#include <memory>
+
 // Maya
 #include <maya/MIOStream.h>
 #include <maya/MString.h>
@@ -46,8 +49,8 @@ public:
     MTypeId typeId() const;
     MString name() const;
 
-    LensModel* getValue() const;
-    void setValue(LensModel* value);
+    std::shared_ptr<LensModel> getValue() const;
+    void setValue(std::shared_ptr<LensModel> value);
 
     static MString typeName();
 
@@ -56,7 +59,7 @@ public:
     static void* creator();
 
 private:
-    LensModel* m_value;
+    std::shared_ptr<LensModel> m_value;
 };
 
 } // namespace mmsolver

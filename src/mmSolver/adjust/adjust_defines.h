@@ -165,4 +165,14 @@
 #define LEVMAR_SUPPORT_PARAMETER_BOUNDS_VALUE true
 #define LEVMAR_SUPPORT_ROBUST_LOSS_VALUE false
 
+// Allow mmSolver to compute lens distortion during the solve.
+//
+// Note: If 'MMSOLVER_LENS_DISTORTION' is disabled both
+// 'MMSOLVER_LENS_DISTORTION_MAYA_DAG' and
+// 'MMSOLVER_LENS_DISTORTION_MM_SCENE_GRAPH' should be considered
+// disabled too.
+#define MMSOLVER_LENS_DISTORTION 0
+#define MMSOLVER_LENS_DISTORTION_MAYA_DAG 1
+#define MMSOLVER_LENS_DISTORTION_MM_SCENE_GRAPH 0  // Disabled because of instability.
+
 #endif // MM_SOLVER_CORE_BUNDLE_ADJUST_DEFINES_H

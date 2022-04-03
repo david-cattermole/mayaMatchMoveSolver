@@ -25,10 +25,11 @@
 #define MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H
 
 // STL
+#include <fstream>
+#include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
-#include <iostream>
-#include <fstream>
 
 // Maya
 #include <maya/MGlobal.h>
@@ -47,6 +48,7 @@
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/lens/lens_model.h"
 #include "adjust_defines.h"
 
 // Group all the benchmark timers together.
@@ -126,6 +128,7 @@ struct SolverData {
     MTimeArray frameList;  // Times to solve
     SmoothAttrsPtrList smoothAttrsList;
     StiffAttrsPtrList stiffAttrsList;
+    std::vector<std::unique_ptr<LensModel>> markerLensModelList;
 
     // MM Scene Graph
     mmscenegraph::SceneGraph mmsgSceneGraph;

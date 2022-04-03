@@ -287,7 +287,7 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
     """
     tfm_node = maya.cmds.ls(tfm_node, long=True)[0]
 
-    # Get camera related to the given bundle.
+    # Get camera related to the given transform.
     camera_nodes = []
     if cam_tfm is not None:
         assert maya.cmds.objExists(cam_tfm) is True
@@ -300,6 +300,17 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
             camera_nodes.append(cam_tfm_node)
         if cam_shp_node not in camera_nodes:
             camera_nodes.append(cam_shp_node)
+
+        # Find all lens nodes.
+        if node_utils.attribute_exists('inLens', cam_shp_node):
+            lens_in_attr = cam_shp_node + '.inLens'
+            lens_nodes = maya.cmds.listConnections(lens_in_attr) or []
+            while len(lens_nodes) > 0:
+                camera_nodes += lens_nodes
+                for lens_node in lens_nodes:
+                    lens_in_attr = lens_node + '.inLens'
+                    if node_utils.attribute_exists('inLens', lens_node):
+                        lens_nodes = maya.cmds.listConnections(lens_in_attr) or []
 
     # Get all the parents above the nodes.
     parent_nodes = []

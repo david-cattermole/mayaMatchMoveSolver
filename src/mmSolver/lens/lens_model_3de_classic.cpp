@@ -71,18 +71,18 @@ void LensModel3deClassic::setQuarticDistortion(const double value) {
     return;
 }
 
-LensModel* LensModel3deClassic::getInputLensModel() const {
+std::shared_ptr<LensModel> LensModel3deClassic::getInputLensModel() const {
     return m_inputLensModel;
 }
 
-void LensModel3deClassic::setInputLensModel(LensModel* value) {
+void LensModel3deClassic::setInputLensModel(std::shared_ptr<LensModel> value) {
     m_inputLensModel = value;
     return;
 }
 
 void LensModel3deClassic::initModel() const {
     // Initialize the 'previous' lens model in the chain.
-    LensModel* inputLensModel = LensModel3deClassic::getInputLensModel();
+    std::shared_ptr<LensModel> inputLensModel = LensModel3deClassic::getInputLensModel();
     if (inputLensModel != nullptr) {
         inputLensModel->initModel();
     }
@@ -103,19 +103,21 @@ void LensModel3deClassic::initModel() const {
     return;
 }
 
-void LensModel3deClassic::applyModel(double xd,
-                                     double yd,
+void LensModel3deClassic::applyModel(const double xd,
+                                     const double yd,
                                      double &xu,
                                      double &yu) const {
     // Apply the 'previous' lens model in the chain.
-    LensModel* inputLensModel = LensModel3deClassic::getInputLensModel();
+    std::shared_ptr<LensModel> inputLensModel = LensModel3deClassic::getInputLensModel();
+    double xdd = xd;
+    double ydd = yd;
     if (inputLensModel != nullptr) {
-        inputLensModel->applyModel(xd, yd, xd, yd);
+        inputLensModel->applyModel(xdd, ydd, xdd, ydd);
     }
 
     // 'undistort' expects values 0.0 to 1.0, but our inputs are -0.5
     // to 0.5, therefore we must convert.
-    m_lensPlugin->undistort(xd + 0.5, yd + 0.5, xu, yu);
+    m_lensPlugin->undistort(xdd + 0.5, ydd + 0.5, xu, yu);
     xu -= 0.5;
     yu -= 0.5;
     return;

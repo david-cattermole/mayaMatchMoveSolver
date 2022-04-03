@@ -84,9 +84,9 @@ MStatus MMLensModelToggleNode::compute(const MPlug &plug, MDataBlock &data) {
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
-        LensModel* inputLensModel = nullptr;
+        std::shared_ptr<LensModel> inputLensModel;
         if (inputLensData != nullptr) {
-            inputLensModel = (LensModel*) inputLensData->getValue();
+            inputLensModel = inputLensData->getValue();
         }
 
         // Output Lens

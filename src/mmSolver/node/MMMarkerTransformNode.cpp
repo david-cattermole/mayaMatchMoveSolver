@@ -137,9 +137,9 @@ MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug& plug,
 
         // Get Input Lens
         MMLensData* inputLensData = (MMLensData*) dataHandle.asPluginData();
-        LensModel* inputLensModel = nullptr;
+        std::shared_ptr<LensModel> inputLensModel;
         if (inputLensData != nullptr) {
-            inputLensModel = (LensModel*) inputLensData->getValue();
+            inputLensModel = inputLensData->getValue();
         }
 
         // Update our new lens data

@@ -58,15 +58,17 @@
 #include <maya/MDagPath.h>
 
 // MM Solver
-#include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/utilities/string_utils.h"
-#include "mmSolver/utilities/number_utils.h"
+#include "mmSolver/lens/lens_model.h"
+#include "mmSolver/node/MMLensData.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_attr.h"
-#include "mmscenegraph/mmscenegraph.h"
 #include "mmSolver/mayahelper/maya_scene_graph.h"
+#include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/string_utils.h"
+#include "mmSolver/utilities/number_utils.h"
+#include "mmscenegraph/mmscenegraph.h"
 #include "adjust_relationships.h"
 #include "adjust_cminpack_base.h"
 #include "adjust_cminpack_lmdif.h"
@@ -1280,6 +1282,16 @@ MStatus solveFrames(
         return status;
     }
 
+    std::vector<std::unique_ptr<LensModel>> markerLensModelList;
+#if MMSOLVER_LENS_DISTORTION == 1
+    status = calculateMarkerLensModelList(
+        usedMarkerList,
+        frameList,
+        markerLensModelList
+    );
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+#endif
+
     // Solving Objects.
     //
     // This data structure is passed to the solve function, so we can
@@ -1292,6 +1304,7 @@ MStatus solveFrames(
     userData.frameList = frameList;
     userData.smoothAttrsList = smoothAttrsList;
     userData.stiffAttrsList = stiffAttrsList;
+    userData.markerLensModelList = std::move(markerLensModelList);
 
     userData.mmsgSceneGraph = std::move(mmsgSceneGraph);
     userData.mmsgAttrDataBlock = std::move(mmsgAttrDataBlock);

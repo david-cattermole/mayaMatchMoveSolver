@@ -174,7 +174,7 @@ ObjectType computeDgObjectType(
     bool node_is_lens = false;
     const MString base_node_type_name("mmLensModel");
     const int char_index_start = 0;
-    const int char_index_end = 11;
+    const int char_index_end = 10;
     const MString node_type = dependFn.typeName();
     if (node_type.length() >= char_index_end) {
         const MString start_string = node_type.substringW(

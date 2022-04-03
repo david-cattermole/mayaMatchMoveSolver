@@ -70,7 +70,7 @@ class TestBase(unittest.TestCase):
         print('Python Profiler:', self._pyProfilerPath)
 
     def reload_solver(self):
-        maya.cmds.unloadPlugin('mmSolver')
+        maya.cmds.unloadPlugin('mmSolver', force=True)
         maya.cmds.loadPlugin('mmSolver')
 
     def quit_maya(self):

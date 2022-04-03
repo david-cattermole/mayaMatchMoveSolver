@@ -45,6 +45,7 @@ public:
     void setK1(const double value);
     void setK2(const double value);
 
+    LensModel* getInputLensModel() const;
     void setInputLensModel(LensModel* value);
 
     virtual void initModel() const;

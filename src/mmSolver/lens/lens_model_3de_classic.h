@@ -95,8 +95,8 @@ public:
     void setCurvatureY(const double value);
     void setQuarticDistortion(const double value);
 
-    LensModel* getInputLensModel() const;
 
+    LensModel* getInputLensModel() const;
     void setInputLensModel(LensModel* value);
 
     virtual void initModel() const;

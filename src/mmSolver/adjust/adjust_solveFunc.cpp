@@ -732,13 +732,13 @@ void measureErrors_mmSceneGraph(
 
         auto errorIndex_x = i * ERRORS_PER_MARKER;
         auto errorIndex_y = errorIndex_x + 1;
-        errors[errorIndex_x] = dx * mkr_weight * behind_camera_error_factor;
-        errors[errorIndex_y] = dy * mkr_weight * behind_camera_error_factor;
+        errors[errorIndex_x] = dx_pixels * mkr_weight * behind_camera_error_factor;
+        errors[errorIndex_y] = dy_pixels * mkr_weight * behind_camera_error_factor;
 
         // 'ud->errorList' is the deviation shown to the user, it
         // should not have any loss functions or scaling applied to it.
-        ud->errorList[errorIndex_x] = dx * behind_camera_error_factor;
-        ud->errorList[errorIndex_y] = dy * behind_camera_error_factor;
+        ud->errorList[errorIndex_x] = dx_pixels * behind_camera_error_factor;
+        ud->errorList[errorIndex_y] = dy_pixels * behind_camera_error_factor;
 
         const double d = std::sqrt((dx * dx) + (dy * dy)) * ud->imageWidth;
         ud->errorDistanceList[i] = d;

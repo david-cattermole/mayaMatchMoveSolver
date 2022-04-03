@@ -76,13 +76,19 @@ def create_marker_connections(cam):
 
 def create_lens_on_camera(cam, force_create_new=None):
     """
-    Create a lens node on the given camera.
+    Create a lens node and connect it to the given camera.
 
-    Create a mmLensBasic node and connect it to the camera.
-
-    Add a 'lens' attribute to the camera. This 'camera.lens' dynamic
+    Add a special lens attribute to the camera. This dynamic lens
     attribute will fan-out and connect to each Marker as needed.
 
+    :param cam: The camera to create a lens for.
+    :type cam: mmSolver.api.Camera
+
+    :param force_create_new: Should the function create a new lens
+        node, even if a node already exists?
+    :type force_create_new: bool or None
+
+    :rtype: mmSolver.api.Lens
     """
     assert isinstance(cam, mmapi.Camera)
     if force_create_new is None:

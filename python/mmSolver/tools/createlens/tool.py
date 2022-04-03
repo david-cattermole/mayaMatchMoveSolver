@@ -83,10 +83,6 @@ def main():
         if cam_shp in created:
             continue
         lib.create_lens_on_camera(cam, force_create_new=False)
-        # lib.create_image_plane_on_camera(cam)
-        # # Set lens mode (undistort or distort)
-        # mode = 'undistort'
-        # lib.set_lens_mode(cam, mode)
         created.add(cam_shp)
     if len(created) > 0:
         maya.cmds.select(list(created), replace=True)

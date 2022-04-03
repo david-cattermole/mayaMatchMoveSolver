@@ -591,7 +591,12 @@ attribute_has_connection(
     MFnDependencyNode &depend_node,
     MString &name
 ) {
-    MPlug plug = depend_node.findPlug(name);
+    MStatus status = MS::kSuccess;
+    const bool want_networked_plug = true;
+    MPlug plug = depend_node.findPlug(name, want_networked_plug, &status);
+    if (status != MS::kSuccess) {
+        return false;
+    }
     if (plug.isNull()) {
         return true;
     }

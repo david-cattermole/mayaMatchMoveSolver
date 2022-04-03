@@ -58,10 +58,6 @@
 // // Enable the Maya profiling data collection.
 // #define MAYA_PROFILE 1
 
-// Enable the use of "debug file" output, so the solver writes out a
-// debug file with all the internal details.
-// #define WITH_DEBUG_FILE 0
-
 // Text character used to split up a single result string.
 #define CMD_RESULT_SPLIT_CHAR "#"
 

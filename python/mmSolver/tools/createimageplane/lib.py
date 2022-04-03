@@ -604,6 +604,10 @@ def create_image_plane_shader(image_plane_tfm):
     shd_node = maya.cmds.shadingNode('surfaceShader', asShader=True)
     sg_node = maya.cmds.sets(renderable=True, noSurfaceShader=True, empty=True)
 
+    # Pixel filter (how the texture is interpolated between pixels).
+    filter_type = 0  # 0 = Nearest Pixel / Unfiltered
+    maya.cmds.setAttr(file_node + ".filterType", filter_type)
+
     src = file_node + '.outColor'
     dst = shd_node + '.outColor'
     _force_connect_attr(src, dst)

@@ -531,7 +531,7 @@ def set_shader_file_path(image_plane_tfm, image_sequence_path):
         LOG.warn('image plane shader file node is invalid.')
         return
 
-    format_style = const.FORMAT_STYLE_MAYA
+    format_style = const.FORMAT_STYLE_FIRST_FRAME
     file_pattern, start, end, pad_num, is_seq = _expand_image_sequence_path(
         image_sequence_path,
         format_style)

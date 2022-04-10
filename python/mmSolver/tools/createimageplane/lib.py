@@ -415,7 +415,7 @@ def _get_image_sequence_start_end_frames(base_dir, file_name, file_extension):
     glob_path = os.path.join(base_dir, join_file_name)
     all_paths = glob.iglob(glob_path)
 
-    padding_num = 0
+    padding_num = 99
     start_frame = 9999999
     end_frame = 0
     count = 0
@@ -427,7 +427,7 @@ def _get_image_sequence_start_end_frames(base_dir, file_name, file_extension):
             path_file_extension = _split_image_sequence_path(path)
         start_frame = min(path_seq_num_int, start_frame)
         end_frame = max(path_seq_num_int, end_frame)
-        padding_num = max(padding_num, len(path_seq_num_str))
+        padding_num = min(padding_num, len(path_seq_num_str))
         count = count + 1
 
     if count == 0:

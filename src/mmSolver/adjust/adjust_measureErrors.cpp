@@ -211,30 +211,6 @@ void measureErrors_mayaDag(
             mkr_y *= aspect;
         }
 
-#if MMSOLVER_LENS_DISTORTION == 1 && MMSOLVER_LENS_DISTORTION_MAYA_DAG == 1
-        auto markerFrameIndex = markerIndex + frameIndex;
-        auto lensModel = ud->markerFrameToLensModelList[markerFrameIndex];
-        if (lensModel) {
-            double out_x = mkr_x;
-            double out_y = mkr_y;
-            lensModel->applyModelUndistort(
-                mkr_x,
-                mkr_y,
-                out_x,
-                out_y
-            );
-
-            // Applying the lens distortion model to large input
-            // values, creates NaN undistorted points.
-            if (std::isfinite(out_x)) {
-                mkr_x = out_x;
-            }
-            if (std::isfinite(out_y)) {
-                mkr_y = out_y;
-            }
-        }
-#endif
-
         double mkr_weight = ud->markerWeightList[i];
         assert(mkr_weight > 0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
         mkr_weight = std::sqrt(mkr_weight);
@@ -250,8 +226,32 @@ void measureErrors_mayaDag(
         bnd_mpos.cartesianize();
         // Convert to -0.5 to 0.5 range for 2D coordinates inside the
         // film back.
-        bnd_mpos[0] *= 0.5;
-        bnd_mpos[1] *= 0.5;
+        double point_x = bnd_mpos[0] * 0.5;
+        double point_y = bnd_mpos[1] * 0.5;
+
+#if MMSOLVER_LENS_DISTORTION == 1 && MMSOLVER_LENS_DISTORTION_MAYA_DAG == 1
+        auto markerFrameIndex = markerIndex + frameIndex;
+        auto lensModel = ud->markerFrameToLensModelList[markerFrameIndex];
+        if (lensModel) {
+            double out_x = point_x;
+            double out_y = point_y;
+            lensModel->applyModelDistort(
+                point_x,
+                point_y,
+                out_x,
+                out_y
+            );
+
+            // Applying the lens distortion model to large input
+            // values, creates NaN undistorted points.
+            if (std::isfinite(out_x)) {
+                point_x = out_x;
+            }
+            if (std::isfinite(out_y)) {
+                point_y = out_y;
+            }
+        }
+#endif
 
         // Is the bundle behind the camera?
         bool behind_camera = false;
@@ -268,8 +268,8 @@ void measureErrors_mayaDag(
         // bad idea as it will introduce non-linearities, we are
         // better off using something like 'x*x - y*y'. It would
         // be best to test this detail.
-        const double dx = std::fabs(mkr_x - bnd_mpos.x) * ud->imageWidth;
-        const double dy = std::fabs(mkr_y - bnd_mpos.y) * ud->imageWidth;
+        const double dx = std::fabs(mkr_x - point_x) * ud->imageWidth;
+        const double dy = std::fabs(mkr_y - point_y) * ud->imageWidth;
 
         auto errorIndex_x = i * ERRORS_PER_MARKER;
         auto errorIndex_y = errorIndex_x + 1;
@@ -281,7 +281,7 @@ void measureErrors_mayaDag(
         ud->errorList[errorIndex_x] = dx * behind_camera_error_factor;
         ud->errorList[errorIndex_y] = dy * behind_camera_error_factor;
 
-        const double d = distance_2d(mkr_x, mkr_y, bnd_mpos[0], bnd_mpos[1]) * ud->imageWidth;
+        const double d = distance_2d(mkr_x, mkr_y, point_x, point_y) * ud->imageWidth;
         ud->errorDistanceList[i] = d;
         error_avg += d;
         if (d > error_max) { error_max = d; }
@@ -450,11 +450,11 @@ void measureErrors_mmSceneGraph(
         auto markerFrameIndex = markerIndex + frameIndex;
         auto lensModel = ud->markerFrameToLensModelList[markerFrameIndex];
         if (lensModel) {
-            double out_x = mkr_x;
-            double out_y = mkr_y;
-            lensModel->applyModelUndistort(
-                mkr_x,
-                mkr_y,
+            double out_x = point_x;
+            double out_y = point_y;
+            lensModel->applyModelDistort(
+                point_x,
+                point_y,
                 out_x,
                 out_y
             );
@@ -462,10 +462,10 @@ void measureErrors_mmSceneGraph(
             // Applying the lens distortion model to large input
             // values, creates NaN undistorted points.
             if (std::isfinite(out_x)) {
-                mkr_x = out_x;
+                point_x = out_x;
             }
             if (std::isfinite(out_y)) {
-                mkr_y = out_y;
+                point_y = out_y;
             }
         }
 #endif

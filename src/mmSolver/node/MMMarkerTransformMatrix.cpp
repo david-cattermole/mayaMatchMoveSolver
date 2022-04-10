@@ -72,9 +72,18 @@ MMatrix MMMarkerTransformMatrix::asMatrix() const {
         MVector out_translate(translate);
 
         lensModel->initModel();
+
+        double temp_out_x = translate.x;
+        double temp_out_y = translate.y;
         lensModel->applyModelUndistort(
             translate.x, translate.y,
-            out_translate.x, out_translate.y);
+            temp_out_x, temp_out_y);
+        if (std::isfinite(temp_out_x)) {
+            out_translate.x = temp_out_x;
+        }
+        if (std::isfinite(temp_out_y)) {
+            out_translate.y = temp_out_y;
+        }
 
         status = tm.setTranslation(out_translate, MSpace::kTransform);
         CHECK_MSTATUS(status);

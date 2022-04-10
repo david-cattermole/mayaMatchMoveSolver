@@ -14,6 +14,8 @@ solver.
 - `adjust_relationships.h/cpp` evaluates the Maya DAG and tries to
   find relationships between the nodes.
 - `adjust_lensModel.h/cpp` lens distortion evaluation.
+- `adjust_setParameters.h/cpp` Set parameters and attributes to change
+  the scene for evaluation.
 - `adjust_data.h` defines data structures used for Bundle Adjustment.
 - `adjust_defines.h` defines constant values used in various parts of
   mmSolver (not just in the Bundle Adjustment sub-system).

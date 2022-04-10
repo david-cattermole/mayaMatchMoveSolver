@@ -34,7 +34,7 @@ void LensModelBasic::applyModelUndistort(
     const double yd,
     double &xu,
     double &yu
-) const {
+) {
     // Apply the 'previous' lens model in the chain.
     std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
     double xdd = xd;
@@ -75,7 +75,7 @@ void LensModelBasic::applyModelDistort(
     const double yd,
     double &xu,
     double &yu
-) const {
+) {
     // Apply the 'previous' lens model in the chain.
     std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
     double xdd = xd;

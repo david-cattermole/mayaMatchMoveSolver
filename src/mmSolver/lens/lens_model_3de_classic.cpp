@@ -30,8 +30,8 @@ void LensModel3deClassic::applyModelUndistort(
     const double yd,
     double &xu,
     double &yu
-) const {
-    if (m_state == LensModelState::kDirty) {
+) {
+    if (m_state != LensModelState::kClean) {
         // LDPK models must be initialized to work.
         m_lensPlugin->setParameterValue("tde4_focal_length_cm", LensModel::m_focalLength_cm);
         m_lensPlugin->setParameterValue("tde4_filmback_width_cm", LensModel::m_filmBackWidth_cm);
@@ -47,7 +47,7 @@ void LensModel3deClassic::applyModelUndistort(
         m_lensPlugin->setParameterValue("Quartic Distortion", m_quarticDistortion);
 
         m_lensPlugin->initializeParameters();
-        m_state == LensModelState::kClean;
+        m_state = LensModelState::kClean;
     }
 
     // Apply the 'previous' lens model in the chain.
@@ -71,8 +71,8 @@ void LensModel3deClassic::applyModelDistort(
     const double yd,
     double &xu,
     double &yu
-) const {
-    if (m_state == LensModelState::kDirty) {
+) {
+    if (m_state != LensModelState::kClean) {
         // LDPK models must be initialized to work.
         m_lensPlugin->setParameterValue("tde4_focal_length_cm", LensModel::m_focalLength_cm);
         m_lensPlugin->setParameterValue("tde4_filmback_width_cm", LensModel::m_filmBackWidth_cm);
@@ -88,7 +88,7 @@ void LensModel3deClassic::applyModelDistort(
         m_lensPlugin->setParameterValue("Quartic Distortion", m_quarticDistortion);
 
         m_lensPlugin->initializeParameters();
-        m_state == LensModelState::kClean;
+        m_state = LensModelState::kClean;
     }
 
     // Apply the 'previous' lens model in the chain.

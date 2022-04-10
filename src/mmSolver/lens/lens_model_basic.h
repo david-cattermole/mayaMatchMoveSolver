@@ -84,13 +84,13 @@ public:
         const double x,
         const double y,
         double &out_x,
-        double &out_y) const;
+        double &out_y);
 
     virtual void applyModelDistort(
         const double x,
         const double y,
         double &out_x,
-        double &out_y) const;
+        double &out_y);
 
 private:
     double m_k1;

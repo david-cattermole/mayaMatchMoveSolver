@@ -151,13 +151,13 @@ public:
         const double x,
         const double y,
         double &out_x,
-        double &out_y) const;
+        double &out_y);
 
     virtual void applyModelDistort(
         const double x,
         const double y,
         double &out_x,
-        double &out_y) const;
+        double &out_y);
 
 private:
     std::unique_ptr<LensPluginBase> m_lensPlugin;

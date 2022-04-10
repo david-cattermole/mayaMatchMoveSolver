@@ -89,6 +89,17 @@ CAMERA_ATTRS = set([
 ])
 
 
+LENS_ATTRS = set([
+    'k1',
+    'k2',
+    'distortion',
+    'anamorphicSqueeze',
+    'curvatureX',
+    'curvatureY',
+    'quarticDistortion',
+])
+
+
 def _get_full_path_plug(plug):
     """
     Get convert a 'name.attr' string into the long name equal.
@@ -161,7 +172,12 @@ def __get_and_fill_cache_value(cache, key, func):
 def _convert_node_to_plugs(node, attr, node_type,
                            worldspace_cache=None,
                            type_cache=None):
-    """Logic to decide if this attribute will affect the node."""
+    """
+    Logic to decide if this attribute will affect the node.
+
+    :returns: Set of plugs that the input node will affect.
+    :rtype: {str, ..}
+    """
     plugs = set()
     node_type_plug = '{0}.{1}'.format(node_type, attr)
 
@@ -169,6 +185,9 @@ def _convert_node_to_plugs(node, attr, node_type,
         # If the attribute affects the camera projection matrix, then
         # it's important to us.
         if attr not in CAMERA_ATTRS:
+            return plugs
+    elif node_type.startswith('mmLensModel'):
+        if attr not in LENS_ATTRS:
             return plugs
     else:
         # All other nodes, skip if world space is not affected
@@ -301,17 +320,21 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
         if cam_shp_node not in camera_nodes:
             camera_nodes.append(cam_shp_node)
 
-        # TODO: Find all lens nodes.
-
-        # if node_utils.attribute_exists('inLens', cam_shp_node):
-        #     lens_in_attr = cam_shp_node + '.inLens'
-        #     lens_nodes = maya.cmds.listConnections(lens_in_attr) or []
-        #     while len(lens_nodes) > 0:
-        #         camera_nodes += lens_nodes
-        #         for lens_node in lens_nodes:
-        #             lens_in_attr = lens_node + '.inLens'
-        #             if node_utils.attribute_exists('inLens', lens_node):
-        #                 lens_nodes = maya.cmds.listConnections(lens_in_attr) or []
+        # Find all lens nodes.
+        if node_utils.attribute_exists('inLens', cam_shp_node):
+            lens_in_attr = cam_shp_node + '.inLens'
+            conn_nodes = maya.cmds.listConnections(lens_in_attr) or []
+            conn_nodes = [x for x in conn_nodes
+                          if maya.cmds.nodeType(x).startswith('mmLensModel')]
+            while len(conn_nodes) > 0:
+                lens_node = conn_nodes.pop()
+                lens_in_attr = lens_node + '.inLens'
+                if node_utils.attribute_exists('inLens', lens_node):
+                    tmp_nodes = maya.cmds.listConnections(lens_in_attr) or []
+                    conn_nodes += [x for x in tmp_nodes
+                                  if maya.cmds.nodeType(x).startswith('mmLensModel')]
+                camera_nodes.append(lens_node)
+        camera_nodes = list(sorted(set(camera_nodes)))
 
     # Get all the parents above the nodes.
     parent_nodes = []

@@ -24,18 +24,11 @@
 #ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
 #define MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
 
-#include "mmSolver/lens/lens_model.h"
 #include "adjust_data.h"
 
 // success / failure constants.
 #define SOLVE_FUNC_SUCCESS (0)
 #define SOLVE_FUNC_FAILURE (-1)
-
-
-MStatus calculateMarkerLensModelList(
-    const MarkerPtrList &markerList,
-    const MTimeArray &frameList,
-    std::vector<std::unique_ptr<LensModel>> &out_markerLensModelList);
 
 
 void measureErrors(

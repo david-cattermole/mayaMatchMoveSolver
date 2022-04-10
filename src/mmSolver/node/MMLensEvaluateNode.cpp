@@ -90,7 +90,7 @@ MStatus MMLensEvaluateNode::compute(const MPlug &plug, MDataBlock &data) {
             // Evaluate the lens distortion, at (x, y)
             std::shared_ptr<LensModel> lensModel = inputLensData->getValue();
             if (lensModel != nullptr) {
-                lensModel->applyModel(x, y, out_x, out_y);
+                lensModel->applyModelUndistort(x, y, out_x, out_y);
             }
         }
 

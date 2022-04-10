@@ -26,60 +26,6 @@
 #include "mmSolver/utilities/debug_utils.h"
 
 
-double LensModel3deClassic::getDistortion() const {
-    return m_distortion;
-}
-
-void LensModel3deClassic::setDistortion(const double value) {
-    m_distortion = value;
-    return;
-}
-
-double LensModel3deClassic::getAnamorphicSqueeze() const {
-    return m_anamorphicSqueeze;
-}
-
-void LensModel3deClassic::setAnamorphicSqueeze(const double value) {
-    m_anamorphicSqueeze = value;
-    return;
-}
-
-double LensModel3deClassic::getCurvatureX() const {
-    return m_curvatureX;
-}
-
-void LensModel3deClassic::setCurvatureX(const double value) {
-    m_curvatureX = value;
-    return;
-}
-
-double LensModel3deClassic::getCurvatureY() const {
-    return m_curvatureY;
-}
-
-void LensModel3deClassic::setCurvatureY(const double value) {
-    m_curvatureY = value;
-    return;
-}
-
-double LensModel3deClassic::getQuarticDistortion() const {
-    return m_quarticDistortion;
-}
-
-void LensModel3deClassic::setQuarticDistortion(const double value) {
-    m_quarticDistortion = value;
-    return;
-}
-
-std::shared_ptr<LensModel> LensModel3deClassic::getInputLensModel() const {
-    return m_inputLensModel;
-}
-
-void LensModel3deClassic::setInputLensModel(std::shared_ptr<LensModel> value) {
-    m_inputLensModel = value;
-    return;
-}
-
 void LensModel3deClassic::initModel() const {
     // Initialize the 'previous' lens model in the chain.
     std::shared_ptr<LensModel> inputLensModel = LensModel3deClassic::getInputLensModel();
@@ -103,16 +49,16 @@ void LensModel3deClassic::initModel() const {
     return;
 }
 
-void LensModel3deClassic::applyModel(const double xd,
-                                     const double yd,
-                                     double &xu,
-                                     double &yu) const {
+void LensModel3deClassic::applyModelUndistort(const double xd,
+                                              const double yd,
+                                              double &xu,
+                                              double &yu) const {
     // Apply the 'previous' lens model in the chain.
-    std::shared_ptr<LensModel> inputLensModel = LensModel3deClassic::getInputLensModel();
+    std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
     double xdd = xd;
     double ydd = yd;
     if (inputLensModel != nullptr) {
-        inputLensModel->applyModel(xdd, ydd, xdd, ydd);
+        inputLensModel->applyModelUndistort(xdd, ydd, xdd, ydd);
     }
 
     // 'undistort' expects values 0.0 to 1.0, but our inputs are -0.5

@@ -58,14 +58,13 @@ class LensModel3deClassic : public LensModel {
 public:
 
     LensModel3deClassic()
-            : LensModel{}
+            : LensModel{LensModelType::k3deClassic}
             , m_distortion(0.0)
             , m_anamorphicSqueeze(1.0)
             , m_curvatureX(0.0)
             , m_curvatureY(0.0)
             , m_quarticDistortion(0.0)
             , m_lensPlugin(std::unique_ptr<LensPluginBase>(new LensPlugin()))
-            , m_inputLensModel{}
         {}
 
     LensModel3deClassic(const double distortion,
@@ -73,14 +72,13 @@ public:
                         const double curvature_x,
                         const double curvature_y,
                         const double quartic_distortion)
-            : LensModel{}
+            : LensModel{LensModelType::k3deClassic}
             , m_distortion(distortion)
             , m_anamorphicSqueeze(anamorphic_squeeze)
             , m_curvatureX(curvature_x)
             , m_curvatureY(curvature_y)
             , m_quarticDistortion(quartic_distortion)
             , m_lensPlugin(std::unique_ptr<LensPluginBase>(new LensPlugin()))
-            , m_inputLensModel{}
         {}
 
     LensModel3deClassic(const LensModel3deClassic &rhs)
@@ -91,39 +89,38 @@ public:
             , m_curvatureY(rhs.getCurvatureY())
             , m_quarticDistortion(rhs.getQuarticDistortion())
             , m_lensPlugin{std::unique_ptr<LensPluginBase>(new LensPlugin())}
-            , m_inputLensModel{rhs.getInputLensModel()}
         {}
 
     std::unique_ptr<LensModel>
-    clone() const override {
+    cloneAsUniquePtr() const override {
         return std::unique_ptr<LensModel>(new LensModel3deClassic(*this));
     }
 
-    double getDistortion() const;
-    double getAnamorphicSqueeze() const;
-    double getCurvatureX() const;
-    double getCurvatureY() const;
-    double getQuarticDistortion() const;
+    std::shared_ptr<LensModel>
+    cloneAsSharedPtr() const override {
+        return std::shared_ptr<LensModel>(new LensModel3deClassic(*this));
+    }
 
-    void setDistortion(const double value);
-    void setAnamorphicSqueeze(const double value);
-    void setCurvatureX(const double value);
-    void setCurvatureY(const double value);
-    void setQuarticDistortion(const double value);
+    double getDistortion() const {return m_distortion;}
+    double getAnamorphicSqueeze() const {return m_anamorphicSqueeze;}
+    double getCurvatureX() const {return m_curvatureX;}
+    double getCurvatureY() const {return m_curvatureY;}
+    double getQuarticDistortion() const {return m_quarticDistortion;}
 
-    std::shared_ptr<LensModel> getInputLensModel() const;
-    void setInputLensModel(std::shared_ptr<LensModel> value);
-
+    void setDistortion(const double value) {m_distortion = value;}
+    void setAnamorphicSqueeze(const double value) {m_anamorphicSqueeze = value;}
+    void setCurvatureX(const double value) {m_curvatureX = value;}
+    void setCurvatureY(const double value) {m_curvatureY = value;}
+    void setQuarticDistortion(const double value) {m_quarticDistortion = value;}
 
     virtual void initModel() const;
-    virtual void applyModel(const double x,
-                            const double y,
-                            double &out_x,
-                            double &out_y) const;
+    virtual void applyModelUndistort(
+        const double x,
+        const double y,
+        double &out_x,
+        double &out_y) const;
 
 private:
-
-    std::shared_ptr<LensModel> m_inputLensModel;
     std::unique_ptr<LensPluginBase> m_lensPlugin;
 
     double m_distortion;

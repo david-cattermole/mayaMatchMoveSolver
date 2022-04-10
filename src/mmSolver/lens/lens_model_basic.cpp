@@ -29,33 +29,6 @@
 #include "mmSolver/utilities/debug_utils.h"
 
 
-double LensModelBasic::getK1() const {
-    return m_k1;
-}
-
-void LensModelBasic::setK1(const double value) {
-    m_k1 = value;
-    return;
-}
-
-double LensModelBasic::getK2() const {
-    return m_k2;
-}
-
-void LensModelBasic::setK2(const double value) {
-    m_k2 = value;
-    return;
-}
-
-std::shared_ptr<LensModel> LensModelBasic::getInputLensModel() const {
-    return m_inputLensModel;
-}
-
-void LensModelBasic::setInputLensModel(std::shared_ptr<LensModel> value) {
-    m_inputLensModel = value;
-    return;
-}
-
 void LensModelBasic::initModel() const {
     // Initialize the 'previous' lens model in the chain.
     std::shared_ptr<LensModel> inputLensModel = LensModelBasic::getInputLensModel();
@@ -66,16 +39,16 @@ void LensModelBasic::initModel() const {
     return;
 }
 
-void LensModelBasic::applyModel(const double xd,
-                                const double yd,
-                                double &xu,
-                                double &yu) const {
+void LensModelBasic::applyModelUndistort(const double xd,
+                                         const double yd,
+                                         double &xu,
+                                         double &yu) const {
     // Apply the 'previous' lens model in the chain.
-    std::shared_ptr<LensModel> inputLensModel = LensModelBasic::getInputLensModel();
+    std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
     double xdd = xd;
     double ydd = yd;
     if (inputLensModel != nullptr) {
-        inputLensModel->applyModel(xdd, ydd, xdd, ydd);
+        inputLensModel->applyModelUndistort(xdd, ydd, xdd, ydd);
     }
 
     // Brownian lens distortion model.

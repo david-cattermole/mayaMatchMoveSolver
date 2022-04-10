@@ -128,7 +128,11 @@ struct SolverData {
     MTimeArray frameList;  // Times to solve
     SmoothAttrsPtrList smoothAttrsList;
     StiffAttrsPtrList stiffAttrsList;
-    std::vector<std::unique_ptr<LensModel>> markerLensModelList;
+
+    // Lens Distortion
+    std::vector<std::shared_ptr<LensModel>> markerFrameToLensModelList;
+    std::vector<std::shared_ptr<LensModel>> attrFrameToLensModelList;
+    std::vector<std::shared_ptr<LensModel>> lensModelList;
 
     // MM Scene Graph
     mmscenegraph::SceneGraph mmsgSceneGraph;

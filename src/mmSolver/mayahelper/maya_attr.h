@@ -69,8 +69,15 @@
 #define ATTR_SOLVER_TYPE_TRANSFORM_SX  (21)
 #define ATTR_SOLVER_TYPE_TRANSFORM_SY  (22)
 #define ATTR_SOLVER_TYPE_TRANSFORM_SZ  (23)
-#define ATTR_SOLVER_TYPE_LENS_MODEL    (24)
 
+// Lens distortion model.
+#define ATTR_SOLVER_TYPE_LENS_BASIC_K1                       (24)
+#define ATTR_SOLVER_TYPE_LENS_BASIC_K2                       (25)
+#define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_DISTORTION         (26)
+#define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_ANAMORPHIC_SQUEEZE (27)
+#define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_X        (28)
+#define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_Y        (29)
+#define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_QUARTIC_DISTORTION (30)
 
 inline
 unsigned int computeSolverAttrType(ObjectType objectType,
@@ -110,7 +117,21 @@ unsigned int computeSolverAttrType(ObjectType objectType,
         }
     } else if (objectType == ObjectType::kLens) {
         // A lens model node.
-        attr_type = ATTR_SOLVER_TYPE_LENS_MODEL;
+        if (attrName == "k1") {
+            attr_type = ATTR_SOLVER_TYPE_LENS_BASIC_K1;
+        } else if (attrName == "k2") {
+            attr_type = ATTR_SOLVER_TYPE_LENS_BASIC_K2;
+        } else if (attrName == "distortion") {
+            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_DISTORTION;
+        } else if (attrName == "anamorphicSqueeze") {
+            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_ANAMORPHIC_SQUEEZE;
+        } else if (attrName == "curvatureX") {
+            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_X;
+        } else if (attrName == "curvatureY") {
+            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_Y;
+        } else if (attrName == "quarticDistortion") {
+            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_QUARTIC_DISTORTION;
+        }
     } else {
         // A normal transform node.
         if (attrName == "translateX" || attrName == "tx") {

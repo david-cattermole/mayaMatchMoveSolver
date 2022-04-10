@@ -312,11 +312,12 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
         col.add_attribute(attr_cam_rx)
         col.add_attribute(attr_cam_ry)
         col.add_attribute(attr_cam_rz)
+        col.add_attribute(attr_cam_focal)
 
-        # attr_lens_k1 = mmapi.Attribute(lens_node + '.distortion')
-        # attr_lens_k2 = mmapi.Attribute(lens_node + '.quarticDistortion')
-        # col.add_attribute(attr_lens_k1)
-        # col.add_attribute(attr_lens_k2)
+        attr_lens_k1 = mmapi.Attribute(lens_node + '.distortion')
+        attr_lens_k2 = mmapi.Attribute(lens_node + '.quarticDistortion')
+        col.add_attribute(attr_lens_k1)
+        col.add_attribute(attr_lens_k2)
 
         mkr_list = col.get_marker_list()
         for mkr in mkr_list:

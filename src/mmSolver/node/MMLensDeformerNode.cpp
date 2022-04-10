@@ -219,7 +219,7 @@ MMLensDeformerNode::deform(MDataBlock& data,
         // Evaluate the lens distortion at (pt.x, pt.y).
         double out_x = pt.x;
         double out_y = pt.y;
-        lensModel->applyModel(pt.x, pt.y, out_x, out_y);
+        lensModel->applyModelUndistort(pt.x, pt.y, out_x, out_y);
 
         pt.x = lerp(pt.x, out_x, env);
         pt.y = lerp(pt.y, out_y, env);

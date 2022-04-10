@@ -64,10 +64,22 @@ public:
     double getK1() const {return m_k1;}
     double getK2() const {return m_k2;}
 
-    void setK1(const double value) {m_k1 = value;}
-    void setK2(const double value) {m_k2 = value;}
+    void setK1(const double value) {
+        bool same_value = m_k1 == value;
+        if (!same_value) {
+            m_state = LensModelState::kDirty;
+            m_k1 = value;
+        }
+    }
 
-    virtual void initModel() const;
+    void setK2(const double value) {
+        bool same_value = m_k2 == value;
+        if (!same_value) {
+            m_state = LensModelState::kDirty;
+            m_k2 = value;
+        }
+    }
+
     virtual void applyModelUndistort(
         const double x,
         const double y,

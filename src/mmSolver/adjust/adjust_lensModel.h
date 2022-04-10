@@ -34,10 +34,6 @@ setLensModelAttributeValue(
     const double value);
 
 MStatus
-initializeLensModelList(
-    std::vector<std::shared_ptr<LensModel>> &lensModelList);
-
-MStatus
 constructLensModelList(
     const CameraPtrList &cameraList,
     const MarkerPtrList &markerList,

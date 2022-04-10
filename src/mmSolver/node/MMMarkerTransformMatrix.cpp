@@ -71,8 +71,6 @@ MMatrix MMMarkerTransformMatrix::asMatrix() const {
         CHECK_MSTATUS(status);
         MVector out_translate(translate);
 
-        lensModel->initModel();
-
         double temp_out_x = translate.x;
         double temp_out_y = translate.y;
         lensModel->applyModelUndistort(

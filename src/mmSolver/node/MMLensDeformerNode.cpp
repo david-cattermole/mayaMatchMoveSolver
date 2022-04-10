@@ -210,8 +210,6 @@ MMLensDeformerNode::deform(MDataBlock& data,
     lensModel->setLensCenterOffsetX(lensCenterOffsetX);
     lensModel->setLensCenterOffsetY(lensCenterOffsetY);
 
-    lensModel->initModel();
-
     // Deform each point on the input geometry.
     for ( ; !iter.isDone(); iter.next()) {
         MPoint pt = iter.position();

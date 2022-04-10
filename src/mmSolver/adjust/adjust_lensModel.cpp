@@ -217,22 +217,6 @@ MStatus getUniqueNodeName(
     return status;
 }
 
-MStatus
-initializeLensModelList(
-    std::vector<std::shared_ptr<LensModel>> &inout_lensModelList)
-{
-    MStatus status = MS::kSuccess;
-
-    for (auto i = 0; i < inout_lensModelList.size(); ++i) {
-        std::shared_ptr<LensModel> lensModel = inout_lensModelList[i];
-        if (lensModel) {
-            lensModel->initModel();
-        }
-    }
-
-    return status;
-}
-
 // Get the Lenses for each Camera, and make sure to store the upstream
 // lenses too.
 MStatus getLensesFromCameraList(
@@ -658,8 +642,6 @@ constructLensModelList(
         out_lensModelList,
         out_attrFrameToLensModelList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
-
-    initializeLensModelList(out_lensModelList);
 
     return status;
 }

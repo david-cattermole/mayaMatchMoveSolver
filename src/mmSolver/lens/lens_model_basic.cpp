@@ -29,20 +29,12 @@
 #include "mmSolver/utilities/debug_utils.h"
 
 
-void LensModelBasic::initModel() const {
-    // Initialize the 'previous' lens model in the chain.
-    std::shared_ptr<LensModel> inputLensModel = LensModelBasic::getInputLensModel();
-    if (inputLensModel != nullptr) {
-        inputLensModel->initModel();
-    }
-    // This node does not need to initialize a 3DE lens plug-in.
-    return;
-}
-
-void LensModelBasic::applyModelUndistort(const double xd,
-                                         const double yd,
-                                         double &xu,
-                                         double &yu) const {
+void LensModelBasic::applyModelUndistort(
+    const double xd,
+    const double yd,
+    double &xu,
+    double &yu
+) const {
     // Apply the 'previous' lens model in the chain.
     std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
     double xdd = xd;

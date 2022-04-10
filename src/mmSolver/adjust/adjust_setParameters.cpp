@@ -172,14 +172,6 @@ setParameters_mayaDag(
         }
     }
 
-#if MMSOLVER_LENS_DISTORTION == 1 && MMSOLVER_LENS_DISTORTION_MAYA_DAG == 1
-    if (lensModelAttrsSet > 0) {
-        // LensModels must be initialized with new values before being
-        // used.
-        initializeLensModelList(ud->lensModelList);
-    }
-#endif
-
     return status;
 }
 
@@ -260,14 +252,6 @@ setParameters_mmSceneGraph(
             break;
         }
     }
-
-#if MMSOLVER_LENS_DISTORTION == 1 && MMSOLVER_LENS_DISTORTION_MM_SCENE_GRAPH == 1
-    if (lensModelAttrsSet > 0) {
-        // LensModels must be initialized with new values before being
-        // used.
-        initializeLensModelList(ud->lensModelList);
-    }
-#endif
 
     return status;
 }

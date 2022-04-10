@@ -107,13 +107,46 @@ public:
     double getCurvatureY() const {return m_curvatureY;}
     double getQuarticDistortion() const {return m_quarticDistortion;}
 
-    void setDistortion(const double value) {m_distortion = value;}
-    void setAnamorphicSqueeze(const double value) {m_anamorphicSqueeze = value;}
-    void setCurvatureX(const double value) {m_curvatureX = value;}
-    void setCurvatureY(const double value) {m_curvatureY = value;}
-    void setQuarticDistortion(const double value) {m_quarticDistortion = value;}
+    void setDistortion(const double value) {
+        bool same_value = m_distortion == value;
+        if (!same_value) {
+            m_state = LensModelState::kDirty;
+            m_distortion = value;
+        }
+    }
 
-    virtual void initModel() const;
+    void setAnamorphicSqueeze(const double value) {
+        bool same_value = m_anamorphicSqueeze == value;
+        if (!same_value) {
+            m_state = LensModelState::kDirty;
+            m_anamorphicSqueeze = value;
+        }
+    }
+
+    void setCurvatureX(const double value) {
+        bool same_value = m_curvatureX == value;
+        if (!same_value) {
+            m_state = LensModelState::kDirty;
+            m_curvatureX = value;
+        }
+    }
+
+    void setCurvatureY(const double value) {
+        bool same_value = m_curvatureY == value;
+        if (!same_value) {
+            m_state = LensModelState::kDirty;
+            m_curvatureY = value;
+        }
+    }
+
+    void setQuarticDistortion(const double value) {
+        bool same_value = m_quarticDistortion == value;
+        if (!same_value) {
+            m_state = LensModelState::kDirty;
+            m_quarticDistortion = value;
+        }
+    }
+
     virtual void applyModelUndistort(
         const double x,
         const double y,

@@ -25,34 +25,31 @@
 // MM Solver
 #include "mmSolver/utilities/debug_utils.h"
 
+void LensModel3deClassic::applyModelUndistort(
+    const double xd,
+    const double yd,
+    double &xu,
+    double &yu
+) const {
+    if (m_state == LensModelState::kDirty) {
+        // LDPK models must be initialized to work.
+        m_lensPlugin->setParameterValue("tde4_focal_length_cm", LensModel::m_focalLength_cm);
+        m_lensPlugin->setParameterValue("tde4_filmback_width_cm", LensModel::m_filmBackWidth_cm);
+        m_lensPlugin->setParameterValue("tde4_filmback_height_cm", LensModel::m_filmBackHeight_cm);
+        m_lensPlugin->setParameterValue("tde4_pixel_aspect", LensModel::m_pixelAspect);
+        m_lensPlugin->setParameterValue("tde4_lens_center_offset_x_cm", LensModel::m_lensCenterOffsetX_cm);
+        m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm", LensModel::m_lensCenterOffsetX_cm);
 
-void LensModel3deClassic::initModel() const {
-    // Initialize the 'previous' lens model in the chain.
-    std::shared_ptr<LensModel> inputLensModel = LensModel3deClassic::getInputLensModel();
-    if (inputLensModel != nullptr) {
-        inputLensModel->initModel();
+        m_lensPlugin->setParameterValue("Distortion", m_distortion);
+        m_lensPlugin->setParameterValue("Anamorphic Squeeze", m_anamorphicSqueeze);
+        m_lensPlugin->setParameterValue("Curvature X", m_curvatureX);
+        m_lensPlugin->setParameterValue("Curvature Y", m_curvatureY);
+        m_lensPlugin->setParameterValue("Quartic Distortion", m_quarticDistortion);
+
+        m_lensPlugin->initializeParameters();
+        m_state == LensModelState::kClean;
     }
 
-    m_lensPlugin->setParameterValue("tde4_focal_length_cm", LensModel::m_focalLength_cm);
-    m_lensPlugin->setParameterValue("tde4_filmback_width_cm", LensModel::m_filmBackWidth_cm);
-    m_lensPlugin->setParameterValue("tde4_filmback_height_cm", LensModel::m_filmBackHeight_cm);
-    m_lensPlugin->setParameterValue("tde4_pixel_aspect", LensModel::m_pixelAspect);
-    m_lensPlugin->setParameterValue("tde4_lens_center_offset_x_cm", LensModel::m_lensCenterOffsetX_cm);
-    m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm", LensModel::m_lensCenterOffsetX_cm);
-
-    m_lensPlugin->setParameterValue("Distortion", m_distortion);
-    m_lensPlugin->setParameterValue("Anamorphic Squeeze", m_anamorphicSqueeze);
-    m_lensPlugin->setParameterValue("Curvature X", m_curvatureX);
-    m_lensPlugin->setParameterValue("Curvature Y", m_curvatureY);
-    m_lensPlugin->setParameterValue("Quartic Distortion", m_quarticDistortion);
-    m_lensPlugin->initializeParameters();
-    return;
-}
-
-void LensModel3deClassic::applyModelUndistort(const double xd,
-                                              const double yd,
-                                              double &xu,
-                                              double &yu) const {
     // Apply the 'previous' lens model in the chain.
     std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
     double xdd = xd;

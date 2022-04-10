@@ -1550,7 +1550,18 @@ MStatus solveFrames(
             MString attr_name = attr->getName();
             auto attr_name_char = attr_name.asChar();
 
-            MMSOLVER_VRB("-> " << out_paramList[i] << " | " << attr_name_char);
+            const double offset = attr->getOffsetValue();
+            const double scale = attr->getScaleValue();
+            const double xmin = attr->getMinimumValue();
+            const double xmax = attr->getMaximumValue();
+
+            const double solver_value = out_paramList[i];
+            const double real_value = parameterBoundFromInternalToExternal(
+                solver_value,
+                xmin, xmax,
+                offset, scale);
+
+            MMSOLVER_VRB("-> " << real_value << " | " << attr_name_char);
         }
     }
 

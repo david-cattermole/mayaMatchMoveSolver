@@ -80,8 +80,12 @@
 #define PER_ATTR_TYPE_DELTA_VALUE 1
 
 
-#if MAYA_API_VERSION < 201700
+
+inline
 int getStringArrayIndexOfValue(MStringArray &array, MString &value) {
+#if MAYA_API_VERSION >= 201700
+    return array.indexOf(value);
+#else
     int index = -1;
     for (unsigned int i=0; i<array.length(); ++i) {
         if (array[i] == value) {
@@ -90,8 +94,9 @@ int getStringArrayIndexOfValue(MStringArray &array, MString &value) {
         }
     }
     return index;
-}
 #endif
+}
+
 
 
 /*
@@ -106,11 +111,9 @@ MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *ud) {
 
         MarkerPtr marker = ud->markerList[markerPair.first];
         MString markerName = marker->getNodeName();
-#if MAYA_API_VERSION >= 201700
-        const int markerName_idx = dgDirtyNodeNames.indexOf(markerName);
-#else
-        const int markerName_idx = getStringArrayIndexOfValue(dgDirtyNodeNames, markerName);
-#endif
+        const int markerName_idx = getStringArrayIndexOfValue(
+            dgDirtyNodeNames,
+            markerName);
         if (markerName_idx == -1) {
             dgDirtyCmd += " \"" + markerName + "\" ";
             dgDirtyNodeNames.append(markerName);
@@ -119,20 +122,16 @@ MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *ud) {
         CameraPtr camera = marker->getCamera();
         MString cameraTransformName = camera->getTransformNodeName();
         MString cameraShapeName = camera->getShapeNodeName();
-#if MAYA_API_VERSION >= 201700
-        const int cameraTransformName_idx = dgDirtyNodeNames.indexOf(cameraTransformName);
-#else
-        const int cameraTransformName_idx = getStringArrayIndexOfValue(dgDirtyNodeNames, cameraTransformName);
-#endif
+        const int cameraTransformName_idx = getStringArrayIndexOfValue(
+            dgDirtyNodeNames,
+            cameraTransformName);
         if (cameraTransformName_idx == -1) {
             dgDirtyCmd += " \"" + cameraTransformName + "\" ";
             dgDirtyNodeNames.append(cameraTransformName);
         }
-#if MAYA_API_VERSION >= 201700
-        const int cameraShapeName_idx = dgDirtyNodeNames.indexOf(cameraShapeName);
-#else
-        const int cameraShapeName_idx =  getStringArrayIndexOfValue(dgDirtyNodeNames, cameraShapeName);
-#endif
+        const int cameraShapeName_idx =  getStringArrayIndexOfValue(
+            dgDirtyNodeNames,
+            cameraShapeName);
         if (cameraShapeName_idx == -1) {
             dgDirtyCmd += " \"" + cameraShapeName + "\" ";
             dgDirtyNodeNames.append(cameraShapeName);
@@ -140,11 +139,9 @@ MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *ud) {
 
         BundlePtr bundle = marker->getBundle();
         MString bundleName = bundle->getNodeName();
-#if MAYA_API_VERSION >= 201700
-        const int bundleName_idx = dgDirtyNodeNames.indexOf(bundleName);
-#else
-        const int bundleName_idx = getStringArrayIndexOfValue(dgDirtyNodeNames, bundleName);
-#endif
+        const int bundleName_idx = getStringArrayIndexOfValue(
+            dgDirtyNodeNames,
+            bundleName);
         if (bundleName_idx == -1) {
             dgDirtyCmd += " \"" + bundleName + "\" ";
             dgDirtyNodeNames.append(bundleName);

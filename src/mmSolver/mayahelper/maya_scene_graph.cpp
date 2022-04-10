@@ -1211,6 +1211,10 @@ convert_attributes_to_attr_ids(
         ObjectType object_type = attr->getObjectType();
         if (object_type == ObjectType::kLens) {
             // Lens objects are not supported by mmSceneGraph.
+            auto emptyAttrId = mmsg::AttrId();
+            emptyAttrId.attr_type = mmsg::AttrType::kNone;  // Do not set any attribute.
+            emptyAttrId.index = 0;
+            out_attrIdList.push_back(emptyAttrId);
             continue;
         }
 
@@ -1228,7 +1232,7 @@ convert_attributes_to_attr_ids(
             return MS::kFailure;
         }
     }
-    assert(out_attrIdList.size() <= attrList.size());
+    assert(out_attrIdList.size() == attrList.size());
     return status;
 }
 

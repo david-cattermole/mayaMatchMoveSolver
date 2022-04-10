@@ -1194,10 +1194,8 @@ MStatus
 convert_attributes_to_attr_ids(
     const AttrPtrList &attrList,
     const StringToAttrIdMap &attrNameToAttrIdMap,
-    mmsg::AttrDataBlock &out_attrDataBlock,
-    std::vector<mmscenegraph::AttrId> &out_attrIdList
+    std::vector<mmsg::AttrId> &out_attrIdList
 ) {
-    UNUSED(out_attrDataBlock);
     MStatus status = MS::kSuccess;
 
     out_attrIdList.clear();
@@ -1251,7 +1249,7 @@ MStatus construct_scene_graph(
     std::vector<mmsg::CameraNode> &out_cameraNodes,
     std::vector<mmsg::BundleNode> &out_bundleNodes,
     std::vector<mmsg::MarkerNode> &out_markerNodes,
-    std::vector<mmscenegraph::AttrId> &out_attrIdList
+    std::vector<mmsg::AttrId> &out_attrIdList
 ) {
     // MMSOLVER_INFO("construct_scene_graph -----------------------------------");
     MStatus status = MS::kSuccess;
@@ -1323,7 +1321,6 @@ MStatus construct_scene_graph(
     status = convert_attributes_to_attr_ids(
         attrList,
         attrNameToAttrIdMap,
-        out_attrDataBlock,
         out_attrIdList
     );
     CHECK_MSTATUS_AND_RETURN_IT(status);

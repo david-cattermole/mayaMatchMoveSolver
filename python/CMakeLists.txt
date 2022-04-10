@@ -24,12 +24,10 @@ configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/constant.py.in
   ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/constant.py
   @ONLY)
-# Install generated constant file.
-install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
-        DESTINATION "${MODULE_FULL_NAME}/python"
-        FILES_MATCHING PATTERN "constant.py"
-        PATTERN "__pycache__" EXCLUDE)
 
+# Install generated constant file.
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/constant.py
+        DESTINATION "${MODULE_FULL_NAME}/python/mmSolver/")
 
 # Install Python API and tools
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"

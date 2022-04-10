@@ -14,6 +14,7 @@ solver.
 - `adjust_relationships.h/cpp` evaluates the Maya DAG and tries to
   find relationships between the nodes.
 - `adjust_lensModel.h/cpp` lens distortion evaluation.
+- `adjust_measureErrors.h/cpp` measure the Marker-to-Bundle deviation ("errors").
 - `adjust_setParameters.h/cpp` Set parameters and attributes to change
   the scene for evaluation.
 - `adjust_data.h` defines data structures used for Bundle Adjustment.

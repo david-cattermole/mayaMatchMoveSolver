@@ -32,6 +32,7 @@ set(SOURCE_FILES
   mmSolver/adjust/adjust_relationships.cpp
   mmSolver/adjust/adjust_lensModel.cpp
   mmSolver/adjust/adjust_setParameters.cpp
+  mmSolver/adjust/adjust_measureErrors.cpp
   mmSolver/adjust/adjust_solveFunc.cpp
   mmSolver/calibrate/calibrate_common.cpp
   mmSolver/calibrate/vanishing_point.cpp

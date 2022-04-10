@@ -17,26 +17,29 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Universal solver functions, to be used by any library.
+ * Measure the deviation/error distances between Markers and Bundles.
  */
 
 
-#ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
-#define MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
+#ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_MEASURE_ERRORS_H
+#define MM_SOLVER_CORE_BUNDLE_ADJUST_MEASURE_ERRORS_H
 
 #include "adjust_data.h"
 
-// success / failure constants.
-#define SOLVE_FUNC_SUCCESS (0)
-#define SOLVE_FUNC_FAILURE (-1)
+
+void measureErrors(
+        const int numberOfErrors,
+        const int numberOfMarkerErrors,
+        const int numberOfAttrStiffnessErrors,
+        const int numberOfAttrSmoothnessErrors,
+        const std::vector<bool> &frameIndexEnable,
+        const std::vector<bool> &errorMeasurements,
+        double *errors,
+        SolverData *ud,
+        double &error_avg,
+        double &error_max,
+        double &error_min,
+        MStatus &status);
 
 
-int solveFunc(const int numberOfParameters,
-              const int numberOfErrors,
-              const double *parameters,
-              double *errors,
-              double *jacobian,
-              void *userData);
-
-
-#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
+#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_MEASURE_ERRORS_H

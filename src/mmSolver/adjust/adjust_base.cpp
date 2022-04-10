@@ -72,6 +72,7 @@
 #include "adjust_cminpack_lmdif.h"
 #include "adjust_cminpack_lmder.h"
 #include "adjust_lensModel.h"
+#include "adjust_measureErrors.h"
 #include "adjust_solveFunc.h"
 
 namespace mmsg = mmscenegraph;

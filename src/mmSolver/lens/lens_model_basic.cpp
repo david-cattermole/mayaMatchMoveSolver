@@ -68,3 +68,44 @@ void LensModelBasic::applyModelUndistort(
     yu = ydd + ((ydd - yc) * ((m_k1 * r2) + (m_k2 * r4)));
     return;
 }
+
+
+void LensModelBasic::applyModelDistort(
+    const double xd,
+    const double yd,
+    double &xu,
+    double &yu
+) const {
+    // Apply the 'previous' lens model in the chain.
+    std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
+    double xdd = xd;
+    double ydd = yd;
+    if (inputLensModel != nullptr) {
+        inputLensModel->applyModelDistort(xdd, ydd, xdd, ydd);
+    }
+
+    // Brownian lens distortion model.
+    //
+    // xu = xd + ((xd - xc) * ((k1 * r2) + (k2 * r4)));
+    // yu = yd + ((yd - yc) * ((k1 * r2) + (k2 * r4)));
+    //
+    // where:
+    //   xu = undistorted image point
+    //   xd = distorted image point
+    //   xc = distortion center
+    //   k1, k2, etc = Nth radial distortion coefficent
+    //   p1, p2, etc = Nth tangential distortion coefficent
+    //   r = sqrt(pow(xd - xc, 2) + pow(yd - yc, 2))
+    //
+    // TODO: Expose the lens distortion center as a parameter.
+    double xc = 0.0;
+    double yc = 0.0;
+
+    double r = std::sqrt(std::pow(xd - xc, 2) + std::pow(yd - yc, 2));
+    double r2 = std::pow(r, 2);
+    double r4 = std::pow(r, 4) * 2.0;
+
+    xu = xdd - ((xdd - xc) * ((m_k1 * r2) + (m_k2 * r4)));
+    yu = ydd - ((ydd - yc) * ((m_k1 * r2) + (m_k2 * r4)));
+    return;
+}

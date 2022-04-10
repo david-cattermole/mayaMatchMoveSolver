@@ -152,6 +152,12 @@ public:
         double &out_x,
         double &out_y) const = 0;
 
+    virtual void applyModelDistort(
+        const double x,
+        const double y,
+        double &out_x,
+        double &out_y) const = 0;
+
 protected:
     std::shared_ptr<LensModel> m_inputLensModel;
     LensModelType m_type;

@@ -17,7 +17,7 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Class for the basic brownian lens distortion model.
+ * Class for the 3DE classic lens distortion model.
  */
 
 #ifndef MM_SOLVER_CORE_LENS_MODEL_3DE_CLASSIC_H
@@ -148,6 +148,12 @@ public:
     }
 
     virtual void applyModelUndistort(
+        const double x,
+        const double y,
+        double &out_x,
+        double &out_y) const;
+
+    virtual void applyModelDistort(
         const double x,
         const double y,
         double &out_x,

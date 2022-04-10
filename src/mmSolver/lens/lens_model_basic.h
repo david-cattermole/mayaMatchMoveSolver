@@ -86,6 +86,12 @@ public:
         double &out_x,
         double &out_y) const;
 
+    virtual void applyModelDistort(
+        const double x,
+        const double y,
+        double &out_x,
+        double &out_y) const;
+
 private:
     double m_k1;
     double m_k2;

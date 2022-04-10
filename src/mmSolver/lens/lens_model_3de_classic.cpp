@@ -17,7 +17,7 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * class for the basic brownian lens distortion model.
+ * Class for the 3DE classic lens distortion model.
  */
 
 #include "lens_model_3de_classic.h"
@@ -38,7 +38,7 @@ void LensModel3deClassic::applyModelUndistort(
         m_lensPlugin->setParameterValue("tde4_filmback_height_cm", LensModel::m_filmBackHeight_cm);
         m_lensPlugin->setParameterValue("tde4_pixel_aspect", LensModel::m_pixelAspect);
         m_lensPlugin->setParameterValue("tde4_lens_center_offset_x_cm", LensModel::m_lensCenterOffsetX_cm);
-        m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm", LensModel::m_lensCenterOffsetX_cm);
+        m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm", LensModel::m_lensCenterOffsetY_cm);
 
         m_lensPlugin->setParameterValue("Distortion", m_distortion);
         m_lensPlugin->setParameterValue("Anamorphic Squeeze", m_anamorphicSqueeze);
@@ -61,6 +61,47 @@ void LensModel3deClassic::applyModelUndistort(
     // 'undistort' expects values 0.0 to 1.0, but our inputs are -0.5
     // to 0.5, therefore we must convert.
     m_lensPlugin->undistort(xdd + 0.5, ydd + 0.5, xu, yu);
+    xu -= 0.5;
+    yu -= 0.5;
+    return;
+}
+
+void LensModel3deClassic::applyModelDistort(
+    const double xd,
+    const double yd,
+    double &xu,
+    double &yu
+) const {
+    if (m_state == LensModelState::kDirty) {
+        // LDPK models must be initialized to work.
+        m_lensPlugin->setParameterValue("tde4_focal_length_cm", LensModel::m_focalLength_cm);
+        m_lensPlugin->setParameterValue("tde4_filmback_width_cm", LensModel::m_filmBackWidth_cm);
+        m_lensPlugin->setParameterValue("tde4_filmback_height_cm", LensModel::m_filmBackHeight_cm);
+        m_lensPlugin->setParameterValue("tde4_pixel_aspect", LensModel::m_pixelAspect);
+        m_lensPlugin->setParameterValue("tde4_lens_center_offset_x_cm", LensModel::m_lensCenterOffsetX_cm);
+        m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm", LensModel::m_lensCenterOffsetY_cm);
+
+        m_lensPlugin->setParameterValue("Distortion", m_distortion);
+        m_lensPlugin->setParameterValue("Anamorphic Squeeze", m_anamorphicSqueeze);
+        m_lensPlugin->setParameterValue("Curvature X", m_curvatureX);
+        m_lensPlugin->setParameterValue("Curvature Y", m_curvatureY);
+        m_lensPlugin->setParameterValue("Quartic Distortion", m_quarticDistortion);
+
+        m_lensPlugin->initializeParameters();
+        m_state == LensModelState::kClean;
+    }
+
+    // Apply the 'previous' lens model in the chain.
+    std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
+    double xdd = xd;
+    double ydd = yd;
+    if (inputLensModel != nullptr) {
+        inputLensModel->applyModelDistort(xdd, ydd, xdd, ydd);
+    }
+
+    // 'undistort' expects values 0.0 to 1.0, but our inputs are -0.5
+    // to 0.5, therefore we must convert.
+    m_lensPlugin->distort(xdd + 0.5, ydd + 0.5, xu, yu);
     xu -= 0.5;
     yu -= 0.5;
     return;

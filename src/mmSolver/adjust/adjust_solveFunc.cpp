@@ -323,8 +323,9 @@ int solveFunc(const int numberOfParameters,
                               "iteration");
 #endif
 
-    bool interactive = ud->mayaSessionState == MGlobal::MMayaState::kInteractive;
-    if (interactive) {
+    const bool interactive = ud->mayaSessionState == MGlobal::MMayaState::kInteractive;
+    const bool sceneGraphIsMayaDAG = ud->solverOptions->sceneGraphMode == SceneGraphMode::kMayaDag;
+    if (interactive && sceneGraphIsMayaDAG) {
         MString dgDirtyCmd = generateDirtyCommand(numberOfMarkerErrors, ud);
         MGlobal::executeCommand(dgDirtyCmd);
     }

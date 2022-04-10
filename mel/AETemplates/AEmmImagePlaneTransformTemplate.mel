@@ -100,6 +100,15 @@ global proc AEmmImagePlaneTransformTemplate(string $nodeName)
         "AEmmImagePlaneTransformImageSequenceNew"
         "AEmmImagePlaneTransformImageSequenceReplace"
         "imageSequence";
+    // TODO: Add a 'baked' image sequence option, and a button to
+    // generate the undistorted 'baked' image sequence.
+    //
+    // The user should have the ability to set the image sequence
+    // explicitly, or not.
+    //
+    // The button should use 'Natron' by default, but should be able
+    // to have different backends, such as 3DEqualizer's
+    // 'sdv_image_warp' (from 3DE4 R6+), or Nuke.
     editorTemplate -addControl "imageSequenceFrame";
     editorTemplate -addControl "imageSequenceStartFrame";
     editorTemplate -addControl "imageSequenceEndFrame";

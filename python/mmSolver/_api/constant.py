@@ -174,7 +174,7 @@ CAMERA_SHAPE_NODE_API_TYPES = (
 )
 LINE_TRANSFORM_NODE_TYPE = 'transform'
 LINE_SHAPE_NODE_TYPE = 'mmLineShape'
-LENS_NODE_TYPE_DEFAULT = 'mmLensModel3deClassic'  # 'mmLensModelBasic'
+LENS_NODE_TYPE_DEFAULT = 'mmLensModel3de'
 LENS_DATA_TYPE_ID = 0x0012F184
 LENS_TOGGLE_NODE_NAME = 'lensDistortionToggle1'
 

@@ -66,9 +66,11 @@
 // MM Solver
 #include "mmSolver/core/mmdata.h"
 #include "mmSolver/core/mmmath.h"
-#include "mmSolver/lens/lens_model.h"
-#include "mmSolver/lens/lens_model_basic.h"
+#include "mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.h"
 #include "mmSolver/lens/lens_model_3de_classic.h"
+#include "mmSolver/lens/lens_model_3de_radial_decentered_deg_4_cylindric.h"
+#include "mmSolver/lens/lens_model_basic.h"
+#include "mmSolver/lens/lens_model.h"
 #include "mmSolver/node/MMLensData.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -105,15 +107,42 @@ setLensModelAttributeValue(
         || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_QUARTIC_DISTORTION)
     );
 
+    auto is_model_3de_radial_degree_4 = (
+        (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_2_DISTORTION)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_2_U)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_2_V)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_DISTORTION)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_U)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_V)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_CYLINDRIC_DIR)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_CYLINDRIC_BEND)
+    );
+
+    auto is_model_3de_anamorphic_deg_4_rot_squeeze = (
+        (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CX02)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CY02)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CX22)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CY22)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CX04)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CY04)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CX24)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CY24)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CX44)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CY44)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_LENS_ROTATION)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_SQUEEZE_X)
+        || (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_SQUEEZE_Y)
+    );
+
     if (is_model_basic) {
-        LensModelBasic* ptr = reinterpret_cast<LensModelBasic*>(lensModelPtr);
+        auto ptr = reinterpret_cast<LensModelBasic*>(lensModelPtr);
         if (solverAttrType == ATTR_SOLVER_TYPE_LENS_BASIC_K1) {
             ptr->setK1(value);
         } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_BASIC_K2) {
             ptr->setK2(value);
         }
     } else if (is_model_3de_classic) {
-        LensModel3deClassic* ptr = reinterpret_cast<LensModel3deClassic*>(lensModelPtr);
+        auto ptr = reinterpret_cast<LensModel3deClassic*>(lensModelPtr);
         if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_DISTORTION) {
             ptr->setDistortion(value);
         } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_ANAMORPHIC_SQUEEZE) {
@@ -124,6 +153,54 @@ setLensModelAttributeValue(
             ptr->setCurvatureY(value);
         } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_QUARTIC_DISTORTION) {
             ptr->setQuarticDistortion(value);
+        }
+    } else if (is_model_3de_radial_degree_4) {
+        auto ptr = reinterpret_cast<LensModel3deRadialDecenteredDeg4Cylindric*>(lensModelPtr);
+        if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_2_DISTORTION) {
+            ptr->setDegree2Distortion(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_2_U) {
+            ptr->setDegree2U(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_2_V) {
+            ptr->setDegree2V(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_DISTORTION) {
+            ptr->setDegree4Distortion(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_U) {
+            ptr->setDegree4U(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_V) {
+            ptr->setDegree4V(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_CYLINDRIC_DIR) {
+            ptr->setCylindricDirection(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_CYLINDRIC_BEND) {
+            ptr->setCylindricBending(value);
+        }
+    } else if (is_model_3de_anamorphic_deg_4_rot_squeeze) {
+        auto ptr = reinterpret_cast<LensModel3deAnamorphicDeg4RotateSqueezeXY*>(lensModelPtr);
+        if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CX02) {
+            ptr->setDegree2Cx02(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CY02) {
+            ptr->setDegree2Cy02(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CX22) {
+            ptr->setDegree2Cx22(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CY22) {
+            ptr->setDegree2Cy22(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CX04) {
+            ptr->setDegree4Cx04(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CY04) {
+            ptr->setDegree4Cy04(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CX24) {
+            ptr->setDegree4Cx24(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CY24) {
+            ptr->setDegree4Cy24(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CX44) {
+            ptr->setDegree4Cx44(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CY44) {
+            ptr->setDegree4Cy44(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_LENS_ROTATION) {
+            ptr->setLensRotation(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_SQUEEZE_X) {
+            ptr->setSqueezeX(value);
+        } else if (solverAttrType == ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_SQUEEZE_Y) {
+            ptr->setSqueezeY(value);
         }
     } else {
         MMSOLVER_ERR("Unknown lens attribute: solverAttrType=" << solverAttrType);

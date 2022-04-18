@@ -52,7 +52,7 @@
 #include "lens_model.h"
 
 using LensPluginBase = tde4_ld_plugin;
-using LensPlugin = tde4_ldp_classic_3de_mixed<ldpk::vec2d, ldpk::mat2d>;
+using LensPluginClassic = tde4_ldp_classic_3de_mixed<ldpk::vec2d, ldpk::mat2d>;
 
 class LensModel3deClassic : public LensModel {
 public:
@@ -64,7 +64,7 @@ public:
             , m_curvatureX(0.0)
             , m_curvatureY(0.0)
             , m_quarticDistortion(0.0)
-            , m_lensPlugin(std::unique_ptr<LensPluginBase>(new LensPlugin()))
+            , m_lensPlugin(std::unique_ptr<LensPluginBase>(new LensPluginClassic()))
         {}
 
     LensModel3deClassic(const double distortion,
@@ -78,7 +78,7 @@ public:
             , m_curvatureX(curvature_x)
             , m_curvatureY(curvature_y)
             , m_quarticDistortion(quartic_distortion)
-            , m_lensPlugin(std::unique_ptr<LensPluginBase>(new LensPlugin()))
+            , m_lensPlugin(std::unique_ptr<LensPluginBase>(new LensPluginClassic()))
         {}
 
     LensModel3deClassic(const LensModel3deClassic &rhs)
@@ -88,7 +88,7 @@ public:
             , m_curvatureX(rhs.getCurvatureX())
             , m_curvatureY(rhs.getCurvatureY())
             , m_quarticDistortion(rhs.getQuarticDistortion())
-            , m_lensPlugin{std::unique_ptr<LensPluginBase>(new LensPlugin())}
+            , m_lensPlugin{std::unique_ptr<LensPluginBase>(new LensPluginClassic())}
         {}
 
     std::unique_ptr<LensModel>
@@ -162,11 +162,11 @@ public:
 private:
     std::unique_ptr<LensPluginBase> m_lensPlugin;
 
-    double m_distortion;
-    double m_anamorphicSqueeze;
-    double m_curvatureX;
-    double m_curvatureY;
-    double m_quarticDistortion;
+    double m_distortion;        // "Distortion"
+    double m_anamorphicSqueeze; // "Anamorphic Squeeze"
+    double m_curvatureX;        // "Curvature X"
+    double m_curvatureY;        // "Curvature Y"
+    double m_quarticDistortion; // "Quartic Distortion"
 };
 
 

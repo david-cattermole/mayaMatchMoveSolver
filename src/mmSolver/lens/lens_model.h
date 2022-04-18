@@ -33,10 +33,28 @@ enum class LensModelState {
     kNumLensModelState,
 };
 
+// Warning: Do not change the numbers assigned to the different
+// types. These numbers are exposed to the user via the
+// "mmLensModel3de" node, with attribute 'lensModel'.
 enum class LensModelType {
     kUninitialized = 0,
     kBasic = 1,
+
+    // "3DE Classic LD Model"
     k3deClassic = 2,
+
+    // "3DE4 Radial - Standard, Degree 4"
+    k3deRadialDecenteredDeg4Cylindric = 3,
+
+    // "3DE4 Anamorphic - Standard, Degree 4"
+    k3deAnamorphicDeg4RotateSqueezeXY = 4,
+
+    // // "3DE4 Anamorphic - Rescaled, Degree 4"
+    // k3deAnamorphicDeg4RotateSqueezeXYRescaled = 5,
+
+    // // "3DE4 Anamorphic, Degree 6"
+    // k3deAnamorphicDeg6 = 6,
+
     kNumLensModelType,
 };
 

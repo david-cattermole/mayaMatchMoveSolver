@@ -48,7 +48,7 @@
 #include "mmSolver/node/MMLensData.h"
 #include "mmSolver/node/MMLensDeformerNode.h"
 #include "mmSolver/node/MMLensEvaluateNode.h"
-#include "mmSolver/node/MMLensModel3deClassicNode.h"
+#include "mmSolver/node/MMLensModel3deNode.h"
 #include "mmSolver/node/MMLensModelBasicNode.h"
 #include "mmSolver/node/MMLensModelToggleNode.h"
 #include "mmSolver/node/MMLineIntersectNode.h"
@@ -318,10 +318,10 @@ MStatus initializePlugin(MObject obj) {
 
     REGISTER_NODE(
         plugin,
-        mmsolver::MMLensModel3deClassicNode::nodeName(),
-        mmsolver::MMLensModel3deClassicNode::m_id,
-        mmsolver::MMLensModel3deClassicNode::creator,
-        mmsolver::MMLensModel3deClassicNode::initialize,
+        mmsolver::MMLensModel3deNode::nodeName(),
+        mmsolver::MMLensModel3deNode::m_id,
+        mmsolver::MMLensModel3deNode::creator,
+        mmsolver::MMLensModel3deNode::initialize,
         status);
 
     REGISTER_NODE(
@@ -708,8 +708,8 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(
         plugin,
-        mmsolver::MMLensModel3deClassicNode::nodeName(),
-        mmsolver::MMLensModel3deClassicNode::m_id,
+        mmsolver::MMLensModel3deNode::nodeName(),
+        mmsolver::MMLensModel3deNode::m_id,
         status);
 
     DEREGISTER_NODE(

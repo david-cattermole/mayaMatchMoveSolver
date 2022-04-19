@@ -44,6 +44,14 @@
 #define ATTR_DATA_TYPE_ANGLE (2)
 #define ATTR_DATA_TYPE_NUMERIC (3)
 
+enum class AttrDataType
+{
+    kUnknown = ATTR_DATA_TYPE_UNKNOWN,
+    kLinear = ATTR_DATA_TYPE_LINEAR,
+    kAngle = ATTR_DATA_TYPE_ANGLE,
+    kNumeric = ATTR_DATA_TYPE_NUMERIC
+};
+
 // Solver Types of Attributes.
 #define ATTR_SOLVER_TYPE_UNINITIALIZED (0)
 #define ATTR_SOLVER_TYPE_UNKNOWN       (1)
@@ -84,8 +92,8 @@
 #define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_DISTORTION    (34)
 #define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_U             (35)
 #define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_V             (36)
-#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_CYLINDRIC_DIR (37)
-#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_CYLINDRIC_BEND (38)
+#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DIRECTION (37)
+#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_BENDING (38)
 #define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CX02 (39)
 #define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CY02 (40)
 #define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CX22 (41)
@@ -100,121 +108,185 @@
 #define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_SQUEEZE_X (50)
 #define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_SQUEEZE_Y (51)
 
+enum class AttrSolverType
+{
+    kUninitialized = ATTR_SOLVER_TYPE_UNINITIALIZED,
+    kUnknown = ATTR_SOLVER_TYPE_UNKNOWN,
+
+    kBundleTx = ATTR_SOLVER_TYPE_BUNDLE_TX,
+    kBundleTy = ATTR_SOLVER_TYPE_BUNDLE_TY,
+    kBundleTz = ATTR_SOLVER_TYPE_BUNDLE_TZ,
+
+    kCameraTx = ATTR_SOLVER_TYPE_CAMERA_TX,
+    kCameraTy = ATTR_SOLVER_TYPE_CAMERA_TY,
+    kCameraTz = ATTR_SOLVER_TYPE_CAMERA_TZ,
+    kCameraRx = ATTR_SOLVER_TYPE_CAMERA_RX,
+    kCameraRy = ATTR_SOLVER_TYPE_CAMERA_RY,
+    kCameraRz = ATTR_SOLVER_TYPE_CAMERA_RZ,
+    kCameraSx = ATTR_SOLVER_TYPE_CAMERA_SX,
+    kCameraSy = ATTR_SOLVER_TYPE_CAMERA_SY,
+    kCameraSz = ATTR_SOLVER_TYPE_CAMERA_SZ,
+    kCameraFocal = ATTR_SOLVER_TYPE_CAMERA_FOCAL,
+
+    kTransformTx = ATTR_SOLVER_TYPE_TRANSFORM_TX,
+    kTransformTy = ATTR_SOLVER_TYPE_TRANSFORM_TY,
+    kTransformTz = ATTR_SOLVER_TYPE_TRANSFORM_TZ,
+    kTransformRx = ATTR_SOLVER_TYPE_TRANSFORM_RX,
+    kTransformRy = ATTR_SOLVER_TYPE_TRANSFORM_RY,
+    kTransformRz = ATTR_SOLVER_TYPE_TRANSFORM_RZ,
+    kTransformSx = ATTR_SOLVER_TYPE_TRANSFORM_SX,
+    kTransformSy = ATTR_SOLVER_TYPE_TRANSFORM_SY,
+    kTransformSz = ATTR_SOLVER_TYPE_TRANSFORM_SZ,
+
+    kLensBasicK1 = ATTR_SOLVER_TYPE_LENS_BASIC_K1,
+    kLensBasicK2 = ATTR_SOLVER_TYPE_LENS_BASIC_K2,
+
+    kLens3deClassicDistortion = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_DISTORTION,
+    kLens3deClassicAnamorphicSqueeze = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_ANAMORPHIC_SQUEEZE,
+    kLens3deClassicCurvatureX = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_X,
+    kLens3deClassicCurvatureY = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_Y,
+    kLens3deClassicQuarticDistortion = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_QUARTIC_DISTORTION,
+
+    kLens3deRadialDecenteredDeg4CylindricDegree2Distortion = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_2_DISTORTION,
+    kLens3deRadialDecenteredDeg4CylindricDegree2U = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_2_U,
+    kLens3deRadialDecenteredDeg4CylindricDegree2V = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_2_V,
+    kLens3deRadialDecenteredDeg4CylindricDegree4Distortion = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_DISTORTION,
+    kLens3deRadialDecenteredDeg4CylindricDegree4U = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_U,
+    kLens3deRadialDecenteredDeg4CylindricDegree4V = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_V,
+    kLens3deRadialDecenteredDeg4CylindricDirection = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DIRECTION,
+    kLens3deRadialDecenteredDeg4CylindricBending = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_BENDING,
+
+    kLens3deAnamorphicDeg4RotateSqueezeXYDegree2Cx02 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CX02,
+    kLens3deAnamorphicDeg4RotateSqueezeXYDegree2Cy02 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CY02,
+    kLens3deAnamorphicDeg4RotateSqueezeXYDegree2Cx22 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CX22,
+    kLens3deAnamorphicDeg4RotateSqueezeXYDegree2Cy22 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CY22,
+    kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cx04 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CX04,
+    kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cy04 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CY04,
+    kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cx24 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CX24,
+    kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cy24 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CY24,
+    kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cx44 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CX44,
+    kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cy44 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CY44,
+    kLens3deAnamorphicDeg4RotateSqueezeXYLensRotation = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_LENS_ROTATION,
+    kLens3deAnamorphicDeg4RotateSqueezeXYSqueezeX = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_SQUEEZE_X,
+    kLens3deAnamorphicDeg4RotateSqueezeXYSqueezeY = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_SQUEEZE_Y,
+};
+
 inline
-unsigned int computeSolverAttrType(ObjectType objectType,
-                                   MString &attrName) {
-    uint32_t attr_type = ATTR_SOLVER_TYPE_UNKNOWN;
+AttrSolverType
+computeSolverAttrType(ObjectType objectType,
+                      MString &attrName) {
+    auto attr_type = AttrSolverType::kUnknown;
     if (objectType == ObjectType::kBundle) {
         // A bundle node.
         if (attrName == "translateX" || attrName == "tx") {
-            attr_type = ATTR_SOLVER_TYPE_BUNDLE_TX;
+            attr_type = AttrSolverType::kBundleTx;
         } else if (attrName == "translateY" || attrName == "ty") {
-            attr_type = ATTR_SOLVER_TYPE_BUNDLE_TY;
+            attr_type = AttrSolverType::kBundleTy;
         } else if (attrName == "translateZ" || attrName == "tz") {
-            attr_type = ATTR_SOLVER_TYPE_BUNDLE_TZ;
+            attr_type = AttrSolverType::kBundleTz;
         }
     } else if (objectType == ObjectType::kCamera) {
         // A camera node.
         if (attrName == "translateX" || attrName == "tx") {
-            attr_type = ATTR_SOLVER_TYPE_CAMERA_TX;
+            attr_type = AttrSolverType::kCameraTx;
         } else if (attrName == "translateY" || attrName == "ty") {
-            attr_type = ATTR_SOLVER_TYPE_CAMERA_TY;
+            attr_type = AttrSolverType::kCameraTy;
         } else if (attrName == "translateZ" || attrName == "tz") {
-            attr_type = ATTR_SOLVER_TYPE_CAMERA_TZ;
+            attr_type = AttrSolverType::kCameraTz;
         } else if (attrName == "rotateX" || attrName == "rx") {
-            attr_type = ATTR_SOLVER_TYPE_CAMERA_RX;
+            attr_type = AttrSolverType::kCameraRx;
         } else if (attrName == "rotateY" || attrName == "ry") {
-            attr_type = ATTR_SOLVER_TYPE_CAMERA_RY;
+            attr_type = AttrSolverType::kCameraRy;
         } else if (attrName == "rotateZ" || attrName == "rx") {
-            attr_type = ATTR_SOLVER_TYPE_CAMERA_RZ;
+            attr_type = AttrSolverType::kCameraRz;
         } else if (attrName == "scaleX" || attrName == "sx") {
-            attr_type = ATTR_SOLVER_TYPE_CAMERA_SX;
+            attr_type = AttrSolverType::kCameraSx;
         } else if (attrName == "scaleY" || attrName == "sy") {
-            attr_type = ATTR_SOLVER_TYPE_CAMERA_SY;
+            attr_type = AttrSolverType::kCameraSy;
         } else if (attrName == "scaleZ" || attrName == "sz") {
-            attr_type = ATTR_SOLVER_TYPE_CAMERA_SZ;
+            attr_type = AttrSolverType::kCameraSz;
         } else if (attrName == "focalLength" || attrName == "fl") {
-            attr_type = ATTR_SOLVER_TYPE_CAMERA_FOCAL;
+            attr_type = AttrSolverType::kCameraFocal;
         }
     } else if (objectType == ObjectType::kLens) {
         // A lens model node.
         if (attrName == "k1") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_BASIC_K1;
+            attr_type = AttrSolverType::kLensBasicK1;
         } else if (attrName == "k2") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_BASIC_K2;
+            attr_type = AttrSolverType::kLensBasicK2;
         } else if (attrName == "tdeClassic_distortion") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_DISTORTION;
+            attr_type = AttrSolverType::kLens3deClassicDistortion;
         } else if (attrName == "tdeClassic_anamorphicSqueeze") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_ANAMORPHIC_SQUEEZE;
+            attr_type = AttrSolverType::kLens3deClassicAnamorphicSqueeze;
         } else if (attrName == "tdeClassic_curvatureX") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_X;
+            attr_type = AttrSolverType::kLens3deClassicCurvatureX;
         } else if (attrName == "tdeClassic_curvatureY") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_Y;
+            attr_type = AttrSolverType::kLens3deClassicCurvatureY;
         } else if (attrName == "tdeClassic_quarticDistortion") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_QUARTIC_DISTORTION;
+            attr_type = AttrSolverType::kLens3deClassicQuarticDistortion;
         } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_degree2_distortion") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_2_DISTORTION;
+            attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricDegree2Distortion;
         } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_degree2_u") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_2_U;
+            attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricDegree2U;
         } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_degree2_v") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_2_V;
+            attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricDegree2V;
         } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_degree4_distortion") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_DISTORTION;
+            attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricDegree4Distortion;
         } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_degree4_u") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_U;
+            attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricDegree4U;
         } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_degree4_v") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_V;
+            attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricDegree4V;
         } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_cylindricDirection") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_CYLINDRIC_DIR;
+            attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricDirection;
         } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_cylindricBending") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DECENTERED_DEG_4_CYLINDRIC_DEGREE_4_CYLINDRIC_BEND;
+            attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricBending;
         } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx02") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CX02;
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree2Cx02;
         } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy02") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CY02;
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree2Cy02;
         } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx22") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CX22;
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree2Cx22;
         } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy22") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_2_CY22;
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree2Cy22;
         } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx04") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CX04;
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cx04;
         } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy04") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CY04;
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cy04;
         } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx24") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CX24;
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cx24;
         } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy24") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CY24;
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cy24;
         } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx44") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CX44;
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cx44;
         } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy44") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_DEGREE_4_CY44;
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cy44;
         } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_lensRotation") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_LENS_ROTATION;
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYLensRotation;
         } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_squeeze_x") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_SQUEEZE_X;
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYSqueezeX;
         } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_squeeze_y") {
-            attr_type = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_SQUEEZE_Y;
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYSqueezeY;
         }
     } else {
         // A normal transform node.
         if (attrName == "translateX" || attrName == "tx") {
-            attr_type = ATTR_SOLVER_TYPE_TRANSFORM_TX;
+            attr_type = AttrSolverType::kTransformTx;
         } else if (attrName == "translateY" || attrName == "ty") {
-            attr_type = ATTR_SOLVER_TYPE_TRANSFORM_TY;
+            attr_type = AttrSolverType::kTransformTy;
         } else if (attrName == "translateZ" || attrName == "tz") {
-            attr_type = ATTR_SOLVER_TYPE_TRANSFORM_TZ;
+            attr_type = AttrSolverType::kTransformTz;
         } else if (attrName == "rotateX" || attrName == "rx") {
-            attr_type = ATTR_SOLVER_TYPE_TRANSFORM_RX;
+            attr_type = AttrSolverType::kTransformRx;
         } else if (attrName == "rotateY" || attrName == "ry") {
-            attr_type = ATTR_SOLVER_TYPE_TRANSFORM_RY;
+            attr_type = AttrSolverType::kTransformRy;
         } else if (attrName == "rotateZ" || attrName == "rx") {
-            attr_type = ATTR_SOLVER_TYPE_TRANSFORM_RZ;
+            attr_type = AttrSolverType::kTransformRz;
         } else if (attrName == "scaleX" || attrName == "sx") {
-            attr_type = ATTR_SOLVER_TYPE_TRANSFORM_SX;
+            attr_type = AttrSolverType::kTransformSx;
         } else if (attrName == "scaleY" || attrName == "sy") {
-            attr_type = ATTR_SOLVER_TYPE_TRANSFORM_SY;
+            attr_type = AttrSolverType::kTransformSy;
         } else if (attrName == "scaleZ" || attrName == "sz") {
-            attr_type = ATTR_SOLVER_TYPE_TRANSFORM_SZ;
+            attr_type = AttrSolverType::kTransformSz;
         }
     }
     return attr_type;
@@ -238,7 +310,7 @@ public:
     MPlug getPlug();
     MObject getAttribute();
     MString getAnimCurveName();
-    int getAttrType();
+    AttrDataType getAttrType();
 
     bool isFreeToChange();
     bool isAnimated();
@@ -272,14 +344,14 @@ public:
     double getOffsetValue() const;
     double getScaleValue() const;
     ObjectType getObjectType() const;
-    unsigned int getSolverAttrType() const;
+    AttrSolverType getSolverAttrType() const;
 
     void setMinimumValue(const double value);
     void setMaximumValue(const double value);
     void setOffsetValue(const double value);
     void setScaleValue(const double value);
     void setObjectType(const ObjectType value);
-    void setSolverAttrType(const unsigned int value);
+    void setSolverAttrType(const AttrSolverType value);
 
     MString getLongNodeName();
     MString getLongAttributeName();
@@ -299,7 +371,7 @@ private:
     double m_offsetValue;
     double m_scaleValue;
     ObjectType m_objectType;
-    unsigned int m_solverAttrType;
+    AttrSolverType m_solverAttrType;
 
     double m_linearFactor;
     double m_linearFactorInv;

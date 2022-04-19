@@ -168,7 +168,7 @@ double calculateParameterDelta(const double value,
     const auto object_type = attr->getObjectType();
     const auto solver_attr_type = attr->getSolverAttrType();
     if (object_type == ObjectType::kCamera
-        && (solver_attr_type == ATTR_SOLVER_TYPE_CAMERA_FOCAL)) {
+        && (solver_attr_type == AttrSolverType::kCameraFocal)) {
         new_delta *= 0.1;
     } else if (object_type == ObjectType::kLens) {
         new_delta *= 0.01;

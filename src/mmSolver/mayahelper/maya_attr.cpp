@@ -93,7 +93,7 @@ Attr::Attr() :
         m_offsetValue(0.0),
         m_scaleValue(1.0),
         m_objectType(ObjectType::kUninitialized),
-        m_solverAttrType(ATTR_SOLVER_TYPE_UNINITIALIZED) {
+        m_solverAttrType(AttrSolverType::kUninitialized) {
      MDistance distanceOne(1.0, MDistance::internalUnit());
      m_linearFactor = distanceOne.as(MDistance::uiUnit());
      m_linearFactorInv = 1.0 / m_linearFactor;
@@ -231,19 +231,19 @@ MObject Attr::getAttribute() {
 /*
  * Get the attribute type; linear, angle or numeric.
  */
-int Attr::getAttrType() {
-    MStatus status;
-    int attrType = ATTR_DATA_TYPE_UNKNOWN;
+AttrDataType
+Attr::getAttrType() {
+    auto attrType = AttrDataType::kUnknown;
     MObject attrObj = Attr::getAttribute();
     MFn::Type mfnAttrType = attrObj.apiType();
     if ((mfnAttrType == MFn::Type::kDoubleLinearAttribute) ||
         (mfnAttrType == MFn::Type::kFloatLinearAttribute)) {
-         attrType = ATTR_DATA_TYPE_LINEAR;
+         attrType = AttrDataType::kLinear;
     } else if ((mfnAttrType == MFn::Type::kDoubleAngleAttribute) ||
                (mfnAttrType == MFn::Type::kFloatAngleAttribute)) {
-         attrType = ATTR_DATA_TYPE_ANGLE;
+         attrType = AttrDataType::kAngle;
     } else {
-         attrType = ATTR_DATA_TYPE_NUMERIC;
+         attrType = AttrDataType::kNumeric;
     }
     return attrType;
 }
@@ -504,8 +504,8 @@ MStatus Attr::getValue(double &value, const MTime &time, const int timeEvalMode)
         value = plug.asDouble();
     }
 
-    int attrType = Attr::getAttrType();
-    if (attrType == ATTR_DATA_TYPE_ANGLE) {
+    auto attrType = Attr::getAttrType();
+    if (attrType == AttrDataType::kAngle) {
          value *= m_angularFactor;
     }
     return MS::kSuccess;
@@ -592,8 +592,8 @@ MStatus Attr::setValue(double value, const MTime &time,
     const bool connected = Attr::isConnected();
     const bool animated = Attr::isAnimated();
 
-    int attrType = Attr::getAttrType();
-    if (attrType == ATTR_DATA_TYPE_ANGLE) {
+    auto attrType = Attr::getAttrType();
+    if (attrType == AttrDataType::kAngle) {
          value *= m_angularFactorInv;
     }
 
@@ -673,11 +673,11 @@ void Attr::setObjectType(const ObjectType value) {
     m_objectType = value;
 }
 
-unsigned int Attr::getSolverAttrType() const {
+AttrSolverType Attr::getSolverAttrType() const {
     return m_solverAttrType;
 }
 
-void Attr::setSolverAttrType(const unsigned int value) {
+void Attr::setSolverAttrType(const AttrSolverType value) {
     m_solverAttrType = value;
 }
 

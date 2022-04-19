@@ -25,12 +25,13 @@
 #define MM_SOLVER_CORE_BUNDLE_ADJUST_LENS_MODEL_H
 
 #include "mmSolver/lens/lens_model.h"
+#include "mmSolver/mayahelper/maya_attr.h"
 #include "adjust_data.h"
 
 MStatus
 setLensModelAttributeValue(
     std::shared_ptr<LensModel> &lensModel,
-    const int attrType,
+    const AttrSolverType attrType,
     const double value);
 
 MStatus

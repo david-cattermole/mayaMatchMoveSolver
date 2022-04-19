@@ -111,7 +111,7 @@ setParameters_mayaDag(
         const auto object_type = attr->getObjectType();
         if (object_type == ObjectType::kLens) {
             auto num_frames = ud->frameList.length();
-            int solverAttrType = attr->getSolverAttrType();
+            auto solverAttrType = attr->getSolverAttrType();
             if (frameIndex != -1) {
                 // Animated attribute.
                 auto lensModel = ud->attrFrameToLensModelList[attrIndex + frameIndex];
@@ -208,7 +208,7 @@ setParameters_mmSceneGraph(
 #if MMSOLVER_LENS_DISTORTION == 1 && MMSOLVER_LENS_DISTORTION_MM_SCENE_GRAPH == 1
         const auto object_type = attr->getObjectType();
         if (object_type == ObjectType::kLens) {
-            int solverAttrType = attr->getSolverAttrType();
+            auto solverAttrType = attr->getSolverAttrType();
             if (frameIndex != -1) {
                 // Animated attribute.
                 auto lensModel = ud->attrFrameToLensModelList[attrIndex + frameIndex];

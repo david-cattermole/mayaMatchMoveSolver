@@ -101,20 +101,20 @@ def _get_attr_type(attr):
         return None
     attr_name = attr.get_attr().lower()
     attr_type = const.ATTR_TYPE_OTHER
-    if 'translate' in attr_name:
-        attr_type = const.ATTR_TYPE_TRANSLATE
-    elif 'rotate' in attr_name:
-        attr_type = const.ATTR_TYPE_ROTATE
-    elif 'scale' in attr_name:
-        attr_type = const.ATTR_TYPE_SCALE
-    else:
-        node_name = attr.get_node()
-        node_type = maya.cmds.nodeType(node_name)
-        node_type = node_type.lower()
-        if node_type == 'camera':
-            attr_type = const.ATTR_TYPE_CAMERA
-        elif 'lens' in node_type:
-            attr_type = const.ATTR_TYPE_LENS
+    node_name = attr.get_node()
+    node_type = maya.cmds.nodeType(node_name)
+    node_type = node_type.lower()
+    if node_type == 'camera':
+        attr_type = const.ATTR_TYPE_CAMERA
+    elif 'lens' in node_type:
+        attr_type = const.ATTR_TYPE_LENS
+    elif 'transform' in node_type:
+        if 'translate' in attr_name:
+            attr_type = const.ATTR_TYPE_TRANSLATE
+        elif 'rotate' in attr_name:
+            attr_type = const.ATTR_TYPE_ROTATE
+        elif 'scale' in attr_name:
+            attr_type = const.ATTR_TYPE_SCALE
     return attr_type
 
 

@@ -45,6 +45,8 @@ public:
 
     static MString nodeName();
 
+    void postConstructor() override;
+
     static MTypeId m_id;
 
     // Input Attributes
@@ -52,12 +54,14 @@ public:
     static MObject a_enable;
     static MObject a_lensModel;
 
+    static MObject a_tdeClassic_heading;
     static MObject a_tdeClassic_distortion;
     static MObject a_tdeClassic_anamorphicSqueeze;
     static MObject a_tdeClassic_curvatureX;
     static MObject a_tdeClassic_curvatureY;
     static MObject a_tdeClassic_quarticDistortion;
 
+    static MObject a_tdeRadialDecenteredDeg4Cylindric_heading;
     static MObject a_tdeRadialDecenteredDeg4Cylindric_degree2_distortion;
     static MObject a_tdeRadialDecenteredDeg4Cylindric_degree2_u;
     static MObject a_tdeRadialDecenteredDeg4Cylindric_degree2_v;
@@ -67,6 +71,7 @@ public:
     static MObject a_tdeRadialDecenteredDeg4Cylindric_cylindricDirection;
     static MObject a_tdeRadialDecenteredDeg4Cylindric_cylindricBending;
 
+    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_heading;
     static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx02;
     static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy02;
     static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx22;

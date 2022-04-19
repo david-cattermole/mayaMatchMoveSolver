@@ -63,12 +63,14 @@ MObject MMLensModel3deNode::a_inLens;
 MObject MMLensModel3deNode::a_enable;
 MObject MMLensModel3deNode::a_lensModel;
 
+MObject MMLensModel3deNode::a_tdeClassic_heading;
 MObject MMLensModel3deNode::a_tdeClassic_distortion;
 MObject MMLensModel3deNode::a_tdeClassic_anamorphicSqueeze;
 MObject MMLensModel3deNode::a_tdeClassic_curvatureX;
 MObject MMLensModel3deNode::a_tdeClassic_curvatureY;
 MObject MMLensModel3deNode::a_tdeClassic_quarticDistortion;
 
+MObject MMLensModel3deNode::a_tdeRadialDecenteredDeg4Cylindric_heading;
 MObject MMLensModel3deNode::a_tdeRadialDecenteredDeg4Cylindric_degree2_distortion;
 MObject MMLensModel3deNode::a_tdeRadialDecenteredDeg4Cylindric_degree2_u;
 MObject MMLensModel3deNode::a_tdeRadialDecenteredDeg4Cylindric_degree2_v;
@@ -78,6 +80,7 @@ MObject MMLensModel3deNode::a_tdeRadialDecenteredDeg4Cylindric_degree4_v;
 MObject MMLensModel3deNode::a_tdeRadialDecenteredDeg4Cylindric_cylindricDirection;
 MObject MMLensModel3deNode::a_tdeRadialDecenteredDeg4Cylindric_cylindricBending;
 
+MObject MMLensModel3deNode::a_tdeAnamorphicDeg4RotateSqueezeXY_heading;
 MObject MMLensModel3deNode::a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx02;
 MObject MMLensModel3deNode::a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy02;
 MObject MMLensModel3deNode::a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx22;
@@ -102,6 +105,19 @@ MMLensModel3deNode::~MMLensModel3deNode() {}
 
 MString MMLensModel3deNode::nodeName() {
     return MString("mmLensModel3de");
+}
+
+
+void MMLensModel3deNode::postConstructor() {
+    MObject thisNode = thisMObject();
+
+    MPlug tdeClassicPlug(thisNode, MMLensModel3deNode::a_tdeClassic_heading);
+    MPlug tdeRadialDeg4Plug(thisNode, MMLensModel3deNode::a_tdeRadialDecenteredDeg4Cylindric_heading);
+    MPlug tdeAnamorphicDeg4Plug(thisNode, MMLensModel3deNode::a_tdeAnamorphicDeg4RotateSqueezeXY_heading);
+
+    tdeClassicPlug.setLocked(true);
+    tdeRadialDeg4Plug.setLocked(true);
+    tdeAnamorphicDeg4Plug.setLocked(true);
 }
 
 MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
@@ -366,8 +382,22 @@ MStatus MMLensModel3deNode::initialize() {
     CHECK_MSTATUS(enumAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_lensModel));
 
-    // 3DE Classic
+    // 3DE Classic LD Model
     {
+        // Channel Box heading for the lens model. This attribute does
+        // nothing to the output of the node.
+        a_tdeClassic_heading = enumAttr.create(
+                "tdeClassic_heading",
+                "tdeClassic_heading",
+                0, &status);
+        CHECK_MSTATUS(status);
+        CHECK_MSTATUS(enumAttr.addField("--------", 0));
+        CHECK_MSTATUS(enumAttr.setStorable(false));
+        CHECK_MSTATUS(enumAttr.setKeyable(false));
+        CHECK_MSTATUS(enumAttr.setChannelBox(true));
+        CHECK_MSTATUS(enumAttr.setNiceNameOverride("3DE Classic LD Model"));
+        CHECK_MSTATUS(addAttribute(a_tdeClassic_heading));
+
         a_tdeClassic_distortion = numericAttr.create(
             "tdeClassic_distortion",
             "tdeClassic_distortion",
@@ -432,6 +462,20 @@ MStatus MMLensModel3deNode::initialize() {
 
     // 3DE Radial Decentered Degree 4 Cylindric
     {
+        // Channel Box heading for the lens model. This attribute does
+        // nothing to the output of the node.
+        a_tdeRadialDecenteredDeg4Cylindric_heading = enumAttr.create(
+                "tdeRadialDecenteredDeg4Cylindric_heading",
+                "tdeRadialDecenteredDeg4Cylindric_heading",
+                0, &status);
+        CHECK_MSTATUS(status);
+        CHECK_MSTATUS(enumAttr.addField("--------", 0));
+        CHECK_MSTATUS(enumAttr.setStorable(false));
+        CHECK_MSTATUS(enumAttr.setKeyable(false));
+        CHECK_MSTATUS(enumAttr.setChannelBox(true));
+        CHECK_MSTATUS(enumAttr.setNiceNameOverride("3DE4 Radial - Standard, Degree 4"));
+        CHECK_MSTATUS(addAttribute(a_tdeRadialDecenteredDeg4Cylindric_heading));
+
         // Distortion - Degree 2
         a_tdeRadialDecenteredDeg4Cylindric_degree2_distortion = numericAttr.create(
             "tdeRadialDecenteredDeg4Cylindric_degree2_distortion",
@@ -531,6 +575,20 @@ MStatus MMLensModel3deNode::initialize() {
 
     // 3DE Anamorphic - Standard, Degree 4
     {
+        // Channel Box heading for the lens model. This attribute does
+        // nothing to the output of the node.
+        a_tdeAnamorphicDeg4RotateSqueezeXY_heading = enumAttr.create(
+                "tdeAnamorphicDeg4RotateSqueezeXY_heading",
+                "tdeAnamorphicDeg4RotateSqueezeXY_heading",
+                0, &status);
+        CHECK_MSTATUS(status);
+        CHECK_MSTATUS(enumAttr.addField("--------", 0));
+        CHECK_MSTATUS(enumAttr.setStorable(false));
+        CHECK_MSTATUS(enumAttr.setKeyable(false));
+        CHECK_MSTATUS(enumAttr.setChannelBox(true));
+        CHECK_MSTATUS(enumAttr.setNiceNameOverride("3DE4 Anamorphic - Standard, Degree 4"));
+        CHECK_MSTATUS(addAttribute(a_tdeAnamorphicDeg4RotateSqueezeXY_heading));
+
         // Cx02 - Degree 2
         a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx02 = numericAttr.create(
                 "tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx02",

@@ -426,6 +426,7 @@ MStatus getAttrsFromLensNode(
         Attr attr = Attr();
         attr.setNodeName(nodeName);
         attr.setAttrName(attrNames[i]);
+        out_attrs.push_back(attr);
     }
 
     return status;

@@ -79,8 +79,6 @@ enum class AttrDataType
 #define ATTR_SOLVER_TYPE_TRANSFORM_SZ  (23)
 
 // Lens distortion models.
-#define ATTR_SOLVER_TYPE_LENS_BASIC_K1                       (24)
-#define ATTR_SOLVER_TYPE_LENS_BASIC_K2                       (25)
 #define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_DISTORTION         (26)
 #define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_ANAMORPHIC_SQUEEZE (27)
 #define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_X        (28)
@@ -137,9 +135,6 @@ enum class AttrSolverType
     kTransformSx = ATTR_SOLVER_TYPE_TRANSFORM_SX,
     kTransformSy = ATTR_SOLVER_TYPE_TRANSFORM_SY,
     kTransformSz = ATTR_SOLVER_TYPE_TRANSFORM_SZ,
-
-    kLensBasicK1 = ATTR_SOLVER_TYPE_LENS_BASIC_K1,
-    kLensBasicK2 = ATTR_SOLVER_TYPE_LENS_BASIC_K2,
 
     kLens3deClassicDistortion = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_DISTORTION,
     kLens3deClassicAnamorphicSqueeze = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_ANAMORPHIC_SQUEEZE,
@@ -210,11 +205,7 @@ computeSolverAttrType(ObjectType objectType,
         }
     } else if (objectType == ObjectType::kLens) {
         // A lens model node.
-        if (attrName == "k1") {
-            attr_type = AttrSolverType::kLensBasicK1;
-        } else if (attrName == "k2") {
-            attr_type = AttrSolverType::kLensBasicK2;
-        } else if (attrName == "tdeClassic_distortion") {
+        if (attrName == "tdeClassic_distortion") {
             attr_type = AttrSolverType::kLens3deClassicDistortion;
         } else if (attrName == "tdeClassic_anamorphicSqueeze") {
             attr_type = AttrSolverType::kLens3deClassicAnamorphicSqueeze;

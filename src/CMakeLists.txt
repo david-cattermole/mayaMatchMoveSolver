@@ -52,7 +52,7 @@ set(SOURCE_FILES
   mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.cpp
   mmSolver/lens/lens_model_3de_classic.cpp
   mmSolver/lens/lens_model_3de_radial_decentered_deg_4_cylindric.cpp
-  mmSolver/lens/lens_model_basic.cpp
+  mmSolver/lens/lens_model_passthrough.cpp
   mmSolver/mayahelper/maya_camera.cpp
   mmSolver/mayahelper/maya_marker.cpp
   mmSolver/mayahelper/maya_bundle.cpp
@@ -65,7 +65,6 @@ set(SOURCE_FILES
   mmSolver/node/MMLensDeformerNode.cpp
   mmSolver/node/MMLensEvaluateNode.cpp
   mmSolver/node/MMLensModel3deNode.cpp
-  mmSolver/node/MMLensModelBasicNode.cpp
   mmSolver/node/MMLensModelToggleNode.cpp
   mmSolver/node/MMLineIntersectNode.cpp
   mmSolver/node/MMMarkerGroupTransformNode.cpp

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020 David Cattermole.
+ * Copyright (C) 2020,2022 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -17,11 +17,11 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Functor class for the basic brownian lens distortion model.
+ * Class for a pass-through 'null' lens distortion model.
  */
 
-#ifndef MM_SOLVER_CORE_LENS_MODEL_BASIC_H
-#define MM_SOLVER_CORE_LENS_MODEL_BASIC_H
+#ifndef MM_SOLVER_CORE_LENS_MODEL_PASSTHROUGH_H
+#define MM_SOLVER_CORE_LENS_MODEL_PASSTHROUGH_H
 
 // STL
 #include <memory>
@@ -29,55 +29,25 @@
 // MM Solver
 #include "lens_model.h"
 
-class LensModelBasic : public LensModel {
+class LensModelPassthrough : public LensModel {
 public:
 
-    LensModelBasic()
-            : LensModel{LensModelType::kBasic}
-            , m_k1(0.0)
-            , m_k2(0.0)
+    LensModelPassthrough()
+            : LensModel{LensModelType::kPassthrough}
         {}
 
-    LensModelBasic(const double k1,
-                   const double k2)
-            : LensModel{LensModelType::kBasic}
-            , m_k1(k1)
-            , m_k2(k2)
-        {}
-
-    LensModelBasic(const LensModelBasic &rhs)
+    LensModelPassthrough(const LensModelPassthrough &rhs)
             : LensModel{rhs}
-            , m_k1(rhs.getK1())
-            , m_k2(rhs.getK2())
         {}
 
     std::unique_ptr<LensModel>
     cloneAsUniquePtr() const override {
-        return std::unique_ptr<LensModel>(new LensModelBasic(*this));
+        return std::unique_ptr<LensModel>(new LensModelPassthrough(*this));
     }
 
     std::shared_ptr<LensModel>
     cloneAsSharedPtr() const override {
-        return std::shared_ptr<LensModel>(new LensModelBasic(*this));
-    }
-
-    double getK1() const {return m_k1;}
-    double getK2() const {return m_k2;}
-
-    void setK1(const double value) {
-        bool same_value = m_k1 == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_k1 = value;
-        }
-    }
-
-    void setK2(const double value) {
-        bool same_value = m_k2 == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_k2 = value;
-        }
+        return std::shared_ptr<LensModel>(new LensModelPassthrough(*this));
     }
 
     virtual void applyModelUndistort(
@@ -91,11 +61,7 @@ public:
         const double y,
         double &out_x,
         double &out_y);
-
-private:
-    double m_k1;
-    double m_k2;
 };
 
 
-#endif // MM_SOLVER_CORE_LENS_MODEL_BASIC_H
+#endif // MM_SOLVER_CORE_LENS_MODEL_PASSTHROUGH_H

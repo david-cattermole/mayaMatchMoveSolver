@@ -50,9 +50,10 @@ class TestLens3(solverUtils.SolverTestCase):
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
 
-        lens_node = maya.cmds.createNode('mmLensModelBasic')
-        maya.cmds.setAttr(lens_node + '.k1', 0.0)
-        maya.cmds.setAttr(lens_node + '.k2', 0.0)
+        lens_node = maya.cmds.createNode('mmLensModel3de')
+        maya.cmds.setAttr(lens_node + '.lensModel', 2)  # 2 == k3deClassic
+        maya.cmds.setAttr(lens_node + '.tdeClassic_distortion', 0.0)
+        maya.cmds.setAttr(lens_node + '.tdeClassic_quarticDistortion', 0.0)
 
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
@@ -111,10 +112,10 @@ class TestLens3(solverUtils.SolverTestCase):
             (grp_tfm + '.tx', 'None', 'None', 'None', 'None'),
         )
         node_attrs.append(
-            (lens_node + '.k1', 'None', 'None', 'None', 'None'),
+            (lens_node + '.tdeClassic_distortion', 'None', 'None', 'None', 'None'),
         )
         node_attrs.append(
-            (lens_node + '.k2', 'None', 'None', 'None', 'None'),
+            (lens_node + '.tdeClassic_quarticDistortion', 'None', 'None', 'None', 'None'),
         )
         cameras = (
             (cam_tfm, cam_shp),

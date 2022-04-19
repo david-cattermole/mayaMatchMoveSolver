@@ -50,13 +50,16 @@ class TestLens1(solverUtils.SolverTestCase):
         shp_a = maya.cmds.createNode('locator', parent=tfm_a)
         tfm_b = maya.cmds.createNode('transform')
         shp_b = maya.cmds.createNode('locator', parent=tfm_b)
-        lens_node = maya.cmds.createNode('mmLensModelBasic')
+        lens_node = maya.cmds.createNode('mmLensModel3de')
         eval_node = maya.cmds.createNode('mmLensEvaluate')
 
-        plug = lens_node + '.k1'
+        plug = lens_node + '.lensModel'
+        maya.cmds.setAttr(plug, 2)  # 2 == k3deClassic
+
+        plug = lens_node + '.tdeClassic_distortion'
         maya.cmds.setAttr(plug, 0.2)
 
-        plug = lens_node + '.k2'
+        plug = lens_node + '.tdeClassic_quarticDistortion'
         maya.cmds.setAttr(plug, 0.1)
 
         src = lens_node + '.outLens'
@@ -97,10 +100,15 @@ class TestLens1(solverUtils.SolverTestCase):
         lens_b_node = maya.cmds.createNode('mmLensModelBasic')
         eval_node = maya.cmds.createNode('mmLensEvaluate')
 
-        plug = lens_a_node + '.k1'
+        plug_a = lens_a_node + '.lensModel'
+        plug_b = lens_b_node + '.lensModel'
+        maya.cmds.setAttr(plug_a, 2)  # 2 == k3deClassic
+        maya.cmds.setAttr(plug_b, 2)  # 2 == k3deClassic
+
+        plug = lens_a_node + '.tdeClassic_distortion'
         maya.cmds.setAttr(plug, 0.2)
 
-        plug = lens_b_node + '.k2'
+        plug = lens_b_node + '.tdeClassic_quarticDistortion'
         maya.cmds.setAttr(plug, 0.1)
 
         src = lens_a_node + '.outLens'

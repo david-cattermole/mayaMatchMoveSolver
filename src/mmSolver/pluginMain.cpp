@@ -49,7 +49,6 @@
 #include "mmSolver/node/MMLensDeformerNode.h"
 #include "mmSolver/node/MMLensEvaluateNode.h"
 #include "mmSolver/node/MMLensModel3deNode.h"
-#include "mmSolver/node/MMLensModelBasicNode.h"
 #include "mmSolver/node/MMLensModelToggleNode.h"
 #include "mmSolver/node/MMLineIntersectNode.h"
 #include "mmSolver/node/MMMarkerGroupTransformNode.h"
@@ -306,14 +305,6 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::MMLensEvaluateNode::m_id,
         mmsolver::MMLensEvaluateNode::creator,
         mmsolver::MMLensEvaluateNode::initialize,
-        status);
-
-    REGISTER_NODE(
-        plugin,
-        mmsolver::MMLensModelBasicNode::nodeName(),
-        mmsolver::MMLensModelBasicNode::m_id,
-        mmsolver::MMLensModelBasicNode::creator,
-        mmsolver::MMLensModelBasicNode::initialize,
         status);
 
     REGISTER_NODE(
@@ -698,12 +689,6 @@ MStatus uninitializePlugin(MObject obj) {
         plugin,
         mmsolver::MMLensEvaluateNode::nodeName(),
         mmsolver::MMLensEvaluateNode::m_id,
-        status);
-
-    DEREGISTER_NODE(
-        plugin,
-        mmsolver::MMLensModelBasicNode::nodeName(),
-        mmsolver::MMLensModelBasicNode::m_id,
         status);
 
     DEREGISTER_NODE(

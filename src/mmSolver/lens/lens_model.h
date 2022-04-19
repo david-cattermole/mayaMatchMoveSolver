@@ -38,7 +38,10 @@ enum class LensModelState {
 // "mmLensModel3de" node, with attribute 'lensModel'.
 enum class LensModelType {
     kUninitialized = 0,
-    kBasic = 1,
+
+    // Does nothing but passes through to the next lens model (if
+    // there is one).
+    kPassthrough = 1,
 
     // "3DE Classic LD Model"
     k3deClassic = 2,

@@ -69,7 +69,7 @@
 #include "mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.h"
 #include "mmSolver/lens/lens_model_3de_classic.h"
 #include "mmSolver/lens/lens_model_3de_radial_decentered_deg_4_cylindric.h"
-#include "mmSolver/lens/lens_model_basic.h"
+#include "mmSolver/lens/lens_model_passthrough.h"
 #include "mmSolver/lens/lens_model.h"
 #include "mmSolver/node/MMLensData.h"
 #include "mmSolver/mayahelper/maya_utils.h"
@@ -93,10 +93,10 @@ setLensModelAttributeValue(
         return status;
     }
     LensModel* lensModelPtr = lensModel.get();
-
-    auto is_model_basic = 0;
-    is_model_basic += solverAttrType == AttrSolverType::kLensBasicK1;
-    is_model_basic += solverAttrType == AttrSolverType::kLensBasicK2;
+    if (!lensModelPtr) {
+        status = MS::kFailure;
+        return status;
+    }
 
     auto is_model_3de_classic = 0;
     is_model_3de_classic += solverAttrType == AttrSolverType::kLens3deClassicDistortion;
@@ -130,14 +130,7 @@ setLensModelAttributeValue(
     is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYSqueezeX;
     is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYSqueezeY;
 
-    if (is_model_basic > 0) {
-        auto ptr = reinterpret_cast<LensModelBasic*>(lensModelPtr);
-        if (solverAttrType == AttrSolverType::kLensBasicK1) {
-            ptr->setK1(value);
-        } else if (solverAttrType == AttrSolverType::kLensBasicK2) {
-            ptr->setK2(value);
-        }
-    } else if (is_model_3de_classic > 0) {
+    if (is_model_3de_classic > 0) {
         auto ptr = reinterpret_cast<LensModel3deClassic*>(lensModelPtr);
         if (solverAttrType == AttrSolverType::kLens3deClassicDistortion) {
             ptr->setDistortion(value);
@@ -386,10 +379,7 @@ MStatus getAttrsFromLensNode(
     MString nodeTypeName = mfn_depend_node.typeName(&status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     MStringArray attrNames;
-    if (nodeTypeName.asChar() == "mmLensModelBasic") {
-        attrNames.append("k1");
-        attrNames.append("k2");
-    } else if (nodeTypeName.asChar() == "mmLensModel3de") {
+    if (nodeTypeName.asChar() == "mmLensModel3de") {
         // TODO: Should the 'lensModel' enum be queried and only the
         //  needed lensModel attributes appended?
         attrNames.append("tdeClassic_distortion");

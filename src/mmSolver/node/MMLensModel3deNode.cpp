@@ -48,6 +48,7 @@
 #include "mmSolver/lens/lens_model_3de_classic.h"
 #include "mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.h"
 #include "mmSolver/lens/lens_model_3de_radial_decentered_deg_4_cylindric.h"
+#include "mmSolver/lens/lens_model_passthrough.h"
 #include "mmSolver/lens/lens_model.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/nodeTypeIds.h"
@@ -98,7 +99,6 @@ MObject MMLensModel3deNode::a_tdeAnamorphicDeg4RotateSqueezeXY_squeeze_y;
 // Output Attributes
 MObject MMLensModel3deNode::a_outLens;
 
-
 MMLensModel3deNode::MMLensModel3deNode() {}
 
 MMLensModel3deNode::~MMLensModel3deNode() {}
@@ -106,7 +106,6 @@ MMLensModel3deNode::~MMLensModel3deNode() {}
 MString MMLensModel3deNode::nodeName() {
     return MString("mmLensModel3de");
 }
-
 
 void MMLensModel3deNode::postConstructor() {
     MObject thisNode = thisMObject();
@@ -152,178 +151,201 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
         // Output Lens
         MDataHandle outLensHandle = data.outputValue(a_outLens);
         MMLensData* newLensData = (MMLensData*) fnPluginData.data(&status);
-        if (enable) {
-            if (lensModelType == LensModelType::k3deClassic) {
-                MDataHandle k1Handle = data.inputValue(a_tdeClassic_distortion, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle squeezeHandle = data.inputValue(a_tdeClassic_anamorphicSqueeze, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle cxHandle = data.inputValue(a_tdeClassic_curvatureX, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle cyHandle = data.inputValue(a_tdeClassic_curvatureY, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle k2Handle = data.inputValue(a_tdeClassic_quarticDistortion, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+        if (!enable) {
+            // Create a lens distortion function to be passed to the
+            // MMLensData.
+            auto newLensModel = std::shared_ptr<LensModelPassthrough>(
+                    new LensModelPassthrough());
 
-                double distortion = k1Handle.asDouble();
-                double anamorphicSqueeze = squeezeHandle.asDouble();
-                double curvatureX = cxHandle.asDouble();
-                double curvatureY = cyHandle.asDouble();
-                double quarticDistortion = k2Handle.asDouble();
+            newLensModel->setInputLensModel(inputLensModel);
 
-                // Create a lens distortion function to be passed to the
-                // MMLensData.
-                auto newLensModel =
-                    std::shared_ptr<LensModel3deClassic>(new LensModel3deClassic());
+            newLensData->setValue(newLensModel);
+            outLensHandle.setMPxData(newLensData);
+            outLensHandle.setClean();
+            status = MS::kSuccess;
 
-                // Connect the input lens to the newly created lens object.
-                newLensModel->setInputLensModel(inputLensModel);
-                newLensModel->setDistortion(distortion);
-                newLensModel->setAnamorphicSqueeze(anamorphicSqueeze);
-                newLensModel->setCurvatureX(curvatureX);
-                newLensModel->setCurvatureY(curvatureY);
-                newLensModel->setQuarticDistortion(quarticDistortion);
+        } else if (lensModelType == LensModelType::k3deClassic) {
+            MDataHandle k1Handle = data.inputValue(a_tdeClassic_distortion, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle squeezeHandle = data.inputValue(a_tdeClassic_anamorphicSqueeze, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle cxHandle = data.inputValue(a_tdeClassic_curvatureX, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle cyHandle = data.inputValue(a_tdeClassic_curvatureY, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle k2Handle = data.inputValue(a_tdeClassic_quarticDistortion, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
 
-                newLensData->setValue(newLensModel);
+            double distortion = k1Handle.asDouble();
+            double anamorphicSqueeze = squeezeHandle.asDouble();
+            double curvatureX = cxHandle.asDouble();
+            double curvatureY = cyHandle.asDouble();
+            double quarticDistortion = k2Handle.asDouble();
 
-            } else if (lensModelType == LensModelType::k3deRadialDecenteredDeg4Cylindric) {
-                MDataHandle deg2DistortionHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_degree2_distortion, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle deg2UHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_degree2_u, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle deg2VHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_degree2_v, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+            // Create a lens distortion function to be passed to the
+            // MMLensData.
+            auto newLensModel =
+                std::shared_ptr<LensModel3deClassic>(new LensModel3deClassic());
 
-                MDataHandle deg4DistortionHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_degree4_distortion, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle deg4UHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_degree4_u, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle deg4VHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_degree4_v, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+            // Connect the input lens to the newly created lens object.
+            newLensModel->setInputLensModel(inputLensModel);
+            newLensModel->setDistortion(distortion);
+            newLensModel->setAnamorphicSqueeze(anamorphicSqueeze);
+            newLensModel->setCurvatureX(curvatureX);
+            newLensModel->setCurvatureY(curvatureY);
+            newLensModel->setQuarticDistortion(quarticDistortion);
 
-                MDataHandle cylindricDirHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_cylindricDirection, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle cylindricBendHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_cylindricBending, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+            newLensData->setValue(newLensModel);
+            outLensHandle.setMPxData(newLensData);
+            outLensHandle.setClean();
+            status = MS::kSuccess;
 
-                double deg2Distortion = deg2DistortionHandle.asDouble();
-                double deg2U = deg2UHandle.asDouble();
-                double deg2V = deg2VHandle.asDouble();
-                double deg4Distortion = deg4DistortionHandle.asDouble();
-                double deg4U = deg4UHandle.asDouble();
-                double deg4V = deg4VHandle.asDouble();
-                double cylindricDirection = cylindricDirHandle.asDouble();
-                double cylindricBending = cylindricBendHandle.asDouble();
+        } else if (lensModelType == LensModelType::k3deRadialDecenteredDeg4Cylindric) {
+            MDataHandle deg2DistortionHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_degree2_distortion, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle deg2UHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_degree2_u, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle deg2VHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_degree2_v, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
 
-                // Create a lens distortion function to be passed to the
-                // MMLensData.
-                auto newLensModel = std::shared_ptr<LensModel3deRadialDecenteredDeg4Cylindric>(
-                    new LensModel3deRadialDecenteredDeg4Cylindric());
+            MDataHandle deg4DistortionHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_degree4_distortion, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle deg4UHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_degree4_u, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle deg4VHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_degree4_v, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
 
-                // Connect the input lens to the newly created lens object.
-                newLensModel->setInputLensModel(inputLensModel);
-                newLensModel->setDegree2Distortion(deg2Distortion);
-                newLensModel->setDegree2U(deg2U);
-                newLensModel->setDegree2V(deg2V);
-                newLensModel->setDegree4Distortion(deg4Distortion);
-                newLensModel->setDegree4U(deg4U);
-                newLensModel->setDegree4V(deg4V);
-                newLensModel->setCylindricDirection(cylindricDirection);
-                newLensModel->setCylindricBending(cylindricBending);
+            MDataHandle cylindricDirHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_cylindricDirection, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle cylindricBendHandle = data.inputValue(a_tdeRadialDecenteredDeg4Cylindric_cylindricBending, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
 
-                newLensData->setValue(newLensModel);
+            double deg2Distortion = deg2DistortionHandle.asDouble();
+            double deg2U = deg2UHandle.asDouble();
+            double deg2V = deg2VHandle.asDouble();
+            double deg4Distortion = deg4DistortionHandle.asDouble();
+            double deg4U = deg4UHandle.asDouble();
+            double deg4V = deg4VHandle.asDouble();
+            double cylindricDirection = cylindricDirHandle.asDouble();
+            double cylindricBending = cylindricBendHandle.asDouble();
 
-            } else if (lensModelType == LensModelType::k3deAnamorphicDeg4RotateSqueezeXY) {
-                MDataHandle deg2Cx02Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx02, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle deg2Cy02Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy02, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+            // Create a lens distortion function to be passed to the
+            // MMLensData.
+            auto newLensModel = std::shared_ptr<LensModel3deRadialDecenteredDeg4Cylindric>(
+                new LensModel3deRadialDecenteredDeg4Cylindric());
 
-                MDataHandle deg2Cx22Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx22, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle deg2Cy22Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy22, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+            // Connect the input lens to the newly created lens object.
+            newLensModel->setInputLensModel(inputLensModel);
+            newLensModel->setDegree2Distortion(deg2Distortion);
+            newLensModel->setDegree2U(deg2U);
+            newLensModel->setDegree2V(deg2V);
+            newLensModel->setDegree4Distortion(deg4Distortion);
+            newLensModel->setDegree4U(deg4U);
+            newLensModel->setDegree4V(deg4V);
+            newLensModel->setCylindricDirection(cylindricDirection);
+            newLensModel->setCylindricBending(cylindricBending);
 
-                MDataHandle deg4Cx04Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx04, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle deg4Cy04Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy04, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+            newLensData->setValue(newLensModel);
+            outLensHandle.setMPxData(newLensData);
+            outLensHandle.setClean();
+            status = MS::kSuccess;
 
-                MDataHandle deg4Cx24Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx24, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle deg4Cy24Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy24, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+        } else if (lensModelType == LensModelType::k3deAnamorphicDeg4RotateSqueezeXY) {
+            MDataHandle deg2Cx02Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx02, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle deg2Cy02Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy02, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
 
-                MDataHandle deg4Cx44Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx44, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle deg4Cy44Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy44, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle deg2Cx22Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx22, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle deg2Cy22Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy22, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
 
-                MDataHandle lensRotationHandle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_lensRotation, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle squeezeXHandle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_squeeze_x, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-                MDataHandle squeezeYHandle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_squeeze_y, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle deg4Cx04Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx04, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle deg4Cy04Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy04, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
 
-                double deg2Cx02 = deg2Cx02Handle.asDouble();
-                double deg2Cy02 = deg2Cy02Handle.asDouble();
+            MDataHandle deg4Cx24Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx24, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle deg4Cy24Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy24, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
 
-                double deg2Cx22 = deg2Cx22Handle.asDouble();
-                double deg2Cy22 = deg2Cy22Handle.asDouble();
+            MDataHandle deg4Cx44Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx44, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle deg4Cy44Handle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy44, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
 
-                double deg4Cx04 = deg4Cx04Handle.asDouble();
-                double deg4Cy04 = deg4Cy04Handle.asDouble();
+            MDataHandle lensRotationHandle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_lensRotation, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle squeezeXHandle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_squeeze_x, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle squeezeYHandle = data.inputValue(a_tdeAnamorphicDeg4RotateSqueezeXY_squeeze_y, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
 
-                double deg4Cx24 = deg4Cx24Handle.asDouble();
-                double deg4Cy24 = deg4Cy24Handle.asDouble();
+            double deg2Cx02 = deg2Cx02Handle.asDouble();
+            double deg2Cy02 = deg2Cy02Handle.asDouble();
 
-                double deg4Cx44 = deg4Cx44Handle.asDouble();
-                double deg4Cy44 = deg4Cy44Handle.asDouble();
+            double deg2Cx22 = deg2Cx22Handle.asDouble();
+            double deg2Cy22 = deg2Cy22Handle.asDouble();
 
-                double lensRotation = lensRotationHandle.asDouble();
-                double squeeze_x = squeezeXHandle.asDouble();
-                double squeeze_y = squeezeYHandle.asDouble();
+            double deg4Cx04 = deg4Cx04Handle.asDouble();
+            double deg4Cy04 = deg4Cy04Handle.asDouble();
 
-                // Create a lens distortion function to be passed to the
-                // MMLensData.
-                auto newLensModel = std::shared_ptr<LensModel3deAnamorphicDeg4RotateSqueezeXY>(
-                    new LensModel3deAnamorphicDeg4RotateSqueezeXY());
+            double deg4Cx24 = deg4Cx24Handle.asDouble();
+            double deg4Cy24 = deg4Cy24Handle.asDouble();
 
-                // Connect the input lens to the newly created lens object.
-                newLensModel->setInputLensModel(inputLensModel);
-                newLensModel->setDegree2Cx02(deg2Cx02);
-                newLensModel->setDegree2Cy02(deg2Cy02);
+            double deg4Cx44 = deg4Cx44Handle.asDouble();
+            double deg4Cy44 = deg4Cy44Handle.asDouble();
 
-                newLensModel->setDegree2Cx22(deg2Cx22);
-                newLensModel->setDegree2Cy22(deg2Cy22);
+            double lensRotation = lensRotationHandle.asDouble();
+            double squeeze_x = squeezeXHandle.asDouble();
+            double squeeze_y = squeezeYHandle.asDouble();
 
-                newLensModel->setDegree4Cx04(deg4Cx04);
-                newLensModel->setDegree4Cy04(deg4Cy04);
+            // Create a lens distortion function to be passed to the
+            // MMLensData.
+            auto newLensModel = std::shared_ptr<LensModel3deAnamorphicDeg4RotateSqueezeXY>(
+                new LensModel3deAnamorphicDeg4RotateSqueezeXY());
 
-                newLensModel->setDegree4Cx24(deg4Cx24);
-                newLensModel->setDegree4Cy24(deg4Cy24);
+            // Connect the input lens to the newly created lens object.
+            newLensModel->setInputLensModel(inputLensModel);
+            newLensModel->setDegree2Cx02(deg2Cx02);
+            newLensModel->setDegree2Cy02(deg2Cy02);
 
-                newLensModel->setDegree4Cx44(deg4Cx44);
-                newLensModel->setDegree4Cy44(deg4Cy44);
+            newLensModel->setDegree2Cx22(deg2Cx22);
+            newLensModel->setDegree2Cy22(deg2Cy22);
 
-                newLensModel->setLensRotation(lensRotation);
-                newLensModel->setSqueezeX(squeeze_x);
-                newLensModel->setSqueezeY(squeeze_y);
+            newLensModel->setDegree4Cx04(deg4Cx04);
+            newLensModel->setDegree4Cy04(deg4Cy04);
 
-                newLensData->setValue(newLensModel);
+            newLensModel->setDegree4Cx24(deg4Cx24);
+            newLensModel->setDegree4Cy24(deg4Cy24);
 
-            } else {
-                MMSOLVER_ERR(
-                    "LensModelType value is invalid: nodeName=" << name().asChar()
-                    << " lensModelType=" << static_cast<int>(lensModelType));
-            }
+            newLensModel->setDegree4Cx44(deg4Cx44);
+            newLensModel->setDegree4Cy44(deg4Cy44);
+
+            newLensModel->setLensRotation(lensRotation);
+            newLensModel->setSqueezeX(squeeze_x);
+            newLensModel->setSqueezeY(squeeze_y);
+
+            newLensData->setValue(newLensModel);
+            outLensHandle.setMPxData(newLensData);
+            outLensHandle.setClean();
+            status = MS::kSuccess;
+
         } else {
-            newLensData->setValue(nullptr);
+            MMSOLVER_ERR(
+                "LensModelType value is invalid: nodeName=" << name().asChar()
+                << " lensModelType=" << static_cast<int>(lensModelType));
+            status = MS::kFailure;
+
+            // Create a lens distortion function to be passed to the
+            // MMLensData.
+            auto newLensModel = std::shared_ptr<LensModelPassthrough>(
+                    new LensModelPassthrough());
+
+            newLensData->setValue(newLensModel);
         }
-        outLensHandle.setMPxData(newLensData);
-        outLensHandle.setClean();
-        status = MS::kSuccess;
     }
 
     return status;

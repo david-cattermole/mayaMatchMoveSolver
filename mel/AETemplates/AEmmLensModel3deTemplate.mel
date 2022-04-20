@@ -54,19 +54,19 @@ global proc AEmmLensModel3deTemplate(string $nodeName)
     editorTemplate -endLayout;
 
     editorTemplate -beginLayout "3DE4 Anamorphic - Standard, Degree 4" -collapse 1;
-    editorTemplate -addControl "tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx02";
-    editorTemplate -addControl "tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy02";
-    editorTemplate -addControl "tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx22";
-    editorTemplate -addControl "tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy22";
-    editorTemplate -addControl "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx04";
-    editorTemplate -addControl "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy04";
-    editorTemplate -addControl "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx24";
-    editorTemplate -addControl "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy24";
-    editorTemplate -addControl "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx44";
-    editorTemplate -addControl "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy44";
-    editorTemplate -addControl "tdeAnamorphicDeg4RotateSqueezeXY_lensRotation";
-    editorTemplate -addControl "tdeAnamorphicDeg4RotateSqueezeXY_squeeze_x";
-    editorTemplate -addControl "tdeAnamorphicDeg4RotateSqueezeXY_squeeze_y";
+    editorTemplate -addControl "tdeAnamorphicDeg4_degree2_cx02";
+    editorTemplate -addControl "tdeAnamorphicDeg4_degree2_cy02";
+    editorTemplate -addControl "tdeAnamorphicDeg4_degree2_cx22";
+    editorTemplate -addControl "tdeAnamorphicDeg4_degree2_cy22";
+    editorTemplate -addControl "tdeAnamorphicDeg4_degree4_cx04";
+    editorTemplate -addControl "tdeAnamorphicDeg4_degree4_cy04";
+    editorTemplate -addControl "tdeAnamorphicDeg4_degree4_cx24";
+    editorTemplate -addControl "tdeAnamorphicDeg4_degree4_cy24";
+    editorTemplate -addControl "tdeAnamorphicDeg4_degree4_cx44";
+    editorTemplate -addControl "tdeAnamorphicDeg4_degree4_cy44";
+    editorTemplate -addControl "tdeAnamorphicDeg4_lensRotation";
+    editorTemplate -addControl "tdeAnamorphicDeg4_squeeze_x";
+    editorTemplate -addControl "tdeAnamorphicDeg4_squeeze_y";
     editorTemplate -endLayout;
 
     // editorTemplate -beginLayout "3DE4 Anamorphic - Rescaled, Degree 4" -collapse 1;

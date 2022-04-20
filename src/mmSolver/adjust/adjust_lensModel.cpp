@@ -475,36 +475,50 @@ MStatus getAttrsFromLensNode(
     CHECK_MSTATUS_AND_RETURN_IT(status);
     MStringArray attrNames;
     if (nodeTypeName.asChar() == "mmLensModel3de") {
-        // TODO: Should the 'lensModel' enum be queried and only the
-        //  needed lensModel attributes appended?
-        attrNames.append("tdeClassic_distortion");
-        attrNames.append("tdeClassic_anamorphicSqueeze");
-        attrNames.append("tdeClassic_curvatureX");
-        attrNames.append("tdeClassic_curvatureY");
-        attrNames.append("tdeClassic_quarticDistortion");
+        const MString lensModelEnumAttrName = "lensModel";
+        MPlug lensModelEnumPlug;
+        status = getNodePlug(node, lensModelEnumAttrName, lensModelEnumPlug);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        if (lensModelEnumPlug.isNull()) {
+            return status;
+        }
 
-        attrNames.append("tdeRadialDeg4_degree2_distortion");
-        attrNames.append("tdeRadialDeg4_degree2_u");
-        attrNames.append("tdeRadialDeg4_degree2_v");
-        attrNames.append("tdeRadialDeg4_degree4_distortion");
-        attrNames.append("tdeRadialDeg4_degree4_u");
-        attrNames.append("tdeRadialDeg4_degree4_v");
-        attrNames.append("tdeRadialDeg4_cylindricDirection");
-        attrNames.append("tdeRadialDeg4_cylindricBending");
-
-        attrNames.append("tdeAnamorphicDeg4_degree2_cx02");
-        attrNames.append("tdeAnamorphicDeg4_degree2_cy02");
-        attrNames.append("tdeAnamorphicDeg4_degree2_cx22");
-        attrNames.append("tdeAnamorphicDeg4_degree2_cy22");
-        attrNames.append("tdeAnamorphicDeg4_degree4_cx04");
-        attrNames.append("tdeAnamorphicDeg4_degree4_cy04");
-        attrNames.append("tdeAnamorphicDeg4_degree4_cx24");
-        attrNames.append("tdeAnamorphicDeg4_degree4_cy24");
-        attrNames.append("tdeAnamorphicDeg4_degree4_cx44");
-        attrNames.append("tdeAnamorphicDeg4_degree4_cy44");
-        attrNames.append("tdeAnamorphicDeg4_lensRotation");
-        attrNames.append("tdeAnamorphicDeg4_squeeze_x");
-        attrNames.append("tdeAnamorphicDeg4_squeeze_y");
+        short lensModelNum = lensModelEnumPlug.asShort();
+        auto lensModel = static_cast<LensModelType>(lensModelNum);
+        if (lensModel == LensModelType::k3deClassic) {
+            attrNames.append("tdeClassic_distortion");
+            attrNames.append("tdeClassic_anamorphicSqueeze");
+            attrNames.append("tdeClassic_curvatureX");
+            attrNames.append("tdeClassic_curvatureY");
+            attrNames.append("tdeClassic_quarticDistortion");
+        } else if (lensModel == LensModelType::k3deRadialDeg4) {
+            attrNames.append("tdeRadialDeg4_degree2_distortion");
+            attrNames.append("tdeRadialDeg4_degree2_u");
+            attrNames.append("tdeRadialDeg4_degree2_v");
+            attrNames.append("tdeRadialDeg4_degree4_distortion");
+            attrNames.append("tdeRadialDeg4_degree4_u");
+            attrNames.append("tdeRadialDeg4_degree4_v");
+            attrNames.append("tdeRadialDeg4_cylindricDirection");
+            attrNames.append("tdeRadialDeg4_cylindricBending");
+        } else if (lensModel == LensModelType::k3deAnamorphicDeg4) {
+            attrNames.append("tdeAnamorphicDeg4_degree2_cx02");
+            attrNames.append("tdeAnamorphicDeg4_degree2_cy02");
+            attrNames.append("tdeAnamorphicDeg4_degree2_cx22");
+            attrNames.append("tdeAnamorphicDeg4_degree2_cy22");
+            attrNames.append("tdeAnamorphicDeg4_degree4_cx04");
+            attrNames.append("tdeAnamorphicDeg4_degree4_cy04");
+            attrNames.append("tdeAnamorphicDeg4_degree4_cx24");
+            attrNames.append("tdeAnamorphicDeg4_degree4_cy24");
+            attrNames.append("tdeAnamorphicDeg4_degree4_cx44");
+            attrNames.append("tdeAnamorphicDeg4_degree4_cy44");
+            attrNames.append("tdeAnamorphicDeg4_lensRotation");
+            attrNames.append("tdeAnamorphicDeg4_squeeze_x");
+            attrNames.append("tdeAnamorphicDeg4_squeeze_y");
+        } else {
+            MMSOLVER_ERR(
+                "Invalid lens model type value from 'lensModel' attribute: "
+                << "value" << lensModelNum);
+        }
     }
 
     for (auto i = 0; i < attrNames.length(); ++i) {

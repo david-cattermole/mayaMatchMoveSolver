@@ -199,6 +199,42 @@ setLensModelAttributeValue(
     return status;
 }
 
+MStatus getNodePlug(
+    const MObject &node,
+    const MString &attrName,
+    MPlug &out_plug,
+    const bool wantNetworkedPlug=true)
+{
+    MStatus status = MS::kSuccess;
+
+    MFnDependencyNode mfnDependNode(node, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    out_plug = mfnDependNode.findPlug(attrName, wantNetworkedPlug, &status);
+    return status;
+}
+
+MStatus getNodeEnabledState(
+    const MObject &node,
+    const MString &attrName,
+    bool &out_enabled)
+{
+    MStatus status = MS::kSuccess;
+
+    MPlug plug;
+    status = getNodePlug(node, attrName, plug);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    if (plug.isNull()) {
+        out_enabled = false;
+        return status;
+    }
+
+    out_enabled = plug.asBool(&status);
+    CHECK_MSTATUS(status);
+
+    return status;
+}
+
 MStatus getLensModelFromPlug(
     const MPlug &plug,
     std::shared_ptr<LensModel> &out_lensModel)
@@ -231,25 +267,29 @@ MStatus getLensModelFromPlug(
     return status;
 }
 
-// Get the upstream node name on the other side of the
-// connection.
-MStatus getUpstreamLensNode(
+// Get the node name on the other side of the
+// 'inputAttrName' plug connection.
+//
+// For example, with a connection like this:
+//
+// mmLensModel3de.outLens -> camera.inLens
+//
+// with 'node' as a MObject for 'camera' and 'inputAttrName' set as
+// "inLens", this function will return the MObject for the
+// 'mmLensModel3de' node.
+MStatus getConnectedLensNode(
     const MObject &node,
+    const MString &inputAttrName,
     MObject &out_node)
 {
     MStatus status = MS::kSuccess;
     out_node = MObject();
 
-    MFnDependencyNode mfnDependNode(node, &status);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-
-    const bool wantNetworkedPlug = true;
-    const MString inputAttrName = "inLens";
-    MPlug inputPlug = mfnDependNode.findPlug(inputAttrName, wantNetworkedPlug, &status);
-    if (status != MS::kSuccess) {
-        status = MS::kSuccess;
-        return status;
-    }
+    MPlug inputPlug;
+    status = getNodePlug(
+        node,
+        inputAttrName,
+        inputPlug);
     if (inputPlug.isNull()) {
         return status;
     }
@@ -295,6 +335,10 @@ MStatus getLensesFromCameraList(
 {
     MStatus status = MS::kSuccess;
 
+    const MString inputAttrName = "inLens";
+    const MString outputAttrName = "outLens";
+    const MString enableAttrName = "enable";
+
     auto num_cameras = cameraList.size();
     for (uint32_t i = 0; i < num_cameras; i++) {
         auto camera = cameraList[i];
@@ -305,52 +349,90 @@ MStatus getLensesFromCameraList(
 
         MObject camera_shape_node_object = camera->getShapeObject();
         MObject node_object;
-        status = getUpstreamLensNode(camera_shape_node_object, node_object);
+
+        // Get connected 'mmLensModeToggle' node (or whatever node is
+        // connected) and ensure the node is active. If the node is
+        // not active, the camera doesn't have any lens distortion and
+        // can be ignored.
+        status = getConnectedLensNode(
+            camera_shape_node_object,
+            outputAttrName,
+            node_object);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        bool lens_toggle_enabled = false;
+        status = getNodeEnabledState(
+            node_object,
+            enableAttrName,
+            lens_toggle_enabled);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        if (!lens_toggle_enabled) {
+            // The 'mmLensModeToggle' node will disable all downstream
+            // lens nodes, so we can skip them.
+            std::vector<MString> lensNodeNames;
+            out_cameraLensNodeNames.push_back(lensNodeNames);
+            continue;
+        }
+
+        status = getConnectedLensNode(
+            camera_shape_node_object,
+            inputAttrName,
+            node_object);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         std::vector<MString> lensNodeNames;
         for (uint32_t node_depth = 0; !node_object.isNull(); ++node_depth) {
-            MString lensNodeName;
-            status = getUniqueNodeName(node_object, lensNodeName);
+            bool lens_model_enabled = false;
+            status = getNodeEnabledState(
+                node_object,
+                enableAttrName,
+                lens_model_enabled);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            std::string lensNodeNameStr(lensNodeName.asChar());
+            if (lens_model_enabled) {
+                MString lensNodeName;
+                status = getUniqueNodeName(node_object, lensNodeName);
+                CHECK_MSTATUS_AND_RETURN_IT(status);
+                std::string lensNodeNameStr(lensNodeName.asChar());
 
-            lensNodeNames.push_back(lensNodeName);
+                lensNodeNames.push_back(lensNodeName);
 
-            bool found = std::find(
+                bool found = std::find(
                     out_lensNodeNamesVec.cbegin(),
                     out_lensNodeNamesVec.cend(),
                     lensNodeName) != out_lensNodeNamesVec.cend();
-            if (!found) {
-                out_lensNodeNamesVec.push_back(lensNodeName);
-            }
-
-            auto search = out_lensNodeNameToLensModel.find(lensNodeNameStr);
-            if (search == out_lensNodeNameToLensModel.end()) {
-                MFnDependencyNode mfnDependNode(node_object, &status);
-                CHECK_MSTATUS_AND_RETURN_IT(status);
-
-                const MString outputAttrName = "outLens";
-                const bool wantNetworkedPlug = true;
-                MPlug outputPlug = mfnDependNode.findPlug(outputAttrName, wantNetworkedPlug, &status);
-                if (status != MS::kSuccess) {
-                    // The camera may not have an 'outLens' attribute and may
-                    // not have a lens node connected to it.
-                    status = MS::kSuccess;
-                    continue;
+                if (!found) {
+                    out_lensNodeNamesVec.push_back(lensNodeName);
                 }
 
-                std::shared_ptr<LensModel> lensModel;
-                status = getLensModelFromPlug(outputPlug, lensModel);
-                if (status != MS::kSuccess) {
-                    continue;
-                }
+                auto search = out_lensNodeNameToLensModel.find(lensNodeNameStr);
+                if (search == out_lensNodeNameToLensModel.end()) {
+                    MFnDependencyNode mfnDependNode(node_object, &status);
+                    CHECK_MSTATUS_AND_RETURN_IT(status);
 
-                out_lensNodeNameToLensModel.insert({lensNodeNameStr, lensModel});
+                    const bool wantNetworkedPlug = true;
+                    MPlug outputPlug = mfnDependNode.findPlug(outputAttrName, wantNetworkedPlug, &status);
+                    if (status != MS::kSuccess) {
+                        // The camera may not have an 'outLens' attribute and may
+                        // not have a lens node connected to it.
+                        status = MS::kSuccess;
+                        continue;
+                    }
+
+                    std::shared_ptr<LensModel> lensModel;
+                    status = getLensModelFromPlug(outputPlug, lensModel);
+                    if (status != MS::kSuccess) {
+                        continue;
+                    }
+
+                    out_lensNodeNameToLensModel.insert({lensNodeNameStr, lensModel});
+                }
             }
 
             MObject upstream_node;
-            status = getUpstreamLensNode(node_object, upstream_node);
+            status = getConnectedLensNode(
+                node_object,
+                inputAttrName,
+                upstream_node);
             CHECK_MSTATUS_AND_RETURN_IT(status);
             if (upstream_node.isNull()) {
                 // There is nothing upstream anymore.
@@ -372,9 +454,22 @@ MStatus getAttrsFromLensNode(
     std::vector<Attr> &out_attrs
 ) {
     MStatus status = MS::kSuccess;
+    out_attrs.clear();
 
     MFnDependencyNode mfn_depend_node(node, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    const MString enableAttrName = "enable";
+
+    bool nodeEnabled = false;
+    status = getNodeEnabledState(
+        node,
+        enableAttrName,
+        nodeEnabled);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    if (!nodeEnabled) {
+        return status;
+    }
 
     MString nodeTypeName = mfn_depend_node.typeName(&status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -648,12 +743,11 @@ MStatus constructAttributeToLensModelMap(
 
         auto search = lensNodeNameToLensModelIndex.find(nodeNameStr);
         if (search == lensNodeNameToLensModelIndex.end()) {
-            MMSOLVER_ERR(
+            MMSOLVER_WRN(
                 "Lens node name \"" << nodeName
-                << "\" not found in lens names lookup map, cannot continue!"
+                << "\" not found in lens names lookup map, lens node will be ignored!"
             );
-            status = MS::kFailure;
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+            continue;
         }
         auto lensIndex = search->second;
 

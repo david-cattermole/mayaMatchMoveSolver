@@ -215,47 +215,47 @@ computeSolverAttrType(ObjectType objectType,
             attr_type = AttrSolverType::kLens3deClassicCurvatureY;
         } else if (attrName == "tdeClassic_quarticDistortion") {
             attr_type = AttrSolverType::kLens3deClassicQuarticDistortion;
-        } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_degree2_distortion") {
+        } else if (attrName == "tdeRadialDeg4_degree2_distortion") {
             attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricDegree2Distortion;
-        } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_degree2_u") {
+        } else if (attrName == "tdeRadialDeg4_degree2_u") {
             attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricDegree2U;
-        } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_degree2_v") {
+        } else if (attrName == "tdeRadialDeg4_degree2_v") {
             attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricDegree2V;
-        } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_degree4_distortion") {
+        } else if (attrName == "tdeRadialDeg4_degree4_distortion") {
             attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricDegree4Distortion;
-        } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_degree4_u") {
+        } else if (attrName == "tdeRadialDeg4_degree4_u") {
             attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricDegree4U;
-        } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_degree4_v") {
+        } else if (attrName == "tdeRadialDeg4_degree4_v") {
             attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricDegree4V;
-        } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_cylindricDirection") {
+        } else if (attrName == "tdeRadialDeg4_cylindricDirection") {
             attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricDirection;
-        } else if (attrName == "tdeRadialDecenteredDeg4Cylindric_cylindricBending") {
+        } else if (attrName == "tdeRadialDeg4_cylindricBending") {
             attr_type = AttrSolverType::kLens3deRadialDecenteredDeg4CylindricBending;
-        } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx02") {
+        } else if (attrName == "tdeAnamorphicDeg4_degree2_cx02") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree2Cx02;
-        } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy02") {
+        } else if (attrName == "tdeAnamorphicDeg4_degree2_cy02") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree2Cy02;
-        } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx22") {
+        } else if (attrName == "tdeAnamorphicDeg4_degree2_cx22") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree2Cx22;
-        } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy22") {
+        } else if (attrName == "tdeAnamorphicDeg4_degree2_cy22") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree2Cy22;
-        } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx04") {
+        } else if (attrName == "tdeAnamorphicDeg4_degree4_cx04") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cx04;
-        } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy04") {
+        } else if (attrName == "tdeAnamorphicDeg4_degree4_cy04") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cy04;
-        } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx24") {
+        } else if (attrName == "tdeAnamorphicDeg4_degree4_cx24") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cx24;
-        } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy24") {
+        } else if (attrName == "tdeAnamorphicDeg4_degree4_cy24") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cy24;
-        } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx44") {
+        } else if (attrName == "tdeAnamorphicDeg4_degree4_cx44") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cx44;
-        } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy44") {
+        } else if (attrName == "tdeAnamorphicDeg4_degree4_cy44") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYDegree4Cy44;
-        } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_lensRotation") {
+        } else if (attrName == "tdeAnamorphicDeg4_lensRotation") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYLensRotation;
-        } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_squeeze_x") {
+        } else if (attrName == "tdeAnamorphicDeg4_squeeze_x") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYSqueezeX;
-        } else if (attrName == "tdeAnamorphicDeg4RotateSqueezeXY_squeeze_y") {
+        } else if (attrName == "tdeAnamorphicDeg4_squeeze_y") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4RotateSqueezeXYSqueezeY;
         }
     } else {

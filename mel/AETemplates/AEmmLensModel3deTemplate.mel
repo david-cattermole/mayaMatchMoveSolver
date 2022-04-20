@@ -43,14 +43,14 @@ global proc AEmmLensModel3deTemplate(string $nodeName)
     editorTemplate -endLayout;
 
     editorTemplate -beginLayout "3DE4 Radial - Standard, Degree 4" -collapse 0;
-    editorTemplate -addControl "tdeRadialDecenteredDeg4Cylindric_degree2_distortion";
-    editorTemplate -addControl "tdeRadialDecenteredDeg4Cylindric_degree2_u";
-    editorTemplate -addControl "tdeRadialDecenteredDeg4Cylindric_degree2_v";
-    editorTemplate -addControl "tdeRadialDecenteredDeg4Cylindric_degree4_distortion";
-    editorTemplate -addControl "tdeRadialDecenteredDeg4Cylindric_degree4_u";
-    editorTemplate -addControl "tdeRadialDecenteredDeg4Cylindric_degree4_v";
-    editorTemplate -addControl "tdeRadialDecenteredDeg4Cylindric_cylindricDirection";
-    editorTemplate -addControl "tdeRadialDecenteredDeg4Cylindric_cylindricBending";
+    editorTemplate -addControl "tdeRadialDeg4_degree2_distortion";
+    editorTemplate -addControl "tdeRadialDeg4_degree2_u";
+    editorTemplate -addControl "tdeRadialDeg4_degree2_v";
+    editorTemplate -addControl "tdeRadialDeg4_degree4_distortion";
+    editorTemplate -addControl "tdeRadialDeg4_degree4_u";
+    editorTemplate -addControl "tdeRadialDeg4_degree4_v";
+    editorTemplate -addControl "tdeRadialDeg4_cylindricDirection";
+    editorTemplate -addControl "tdeRadialDeg4_cylindricBending";
     editorTemplate -endLayout;
 
     editorTemplate -beginLayout "3DE4 Anamorphic - Standard, Degree 4" -collapse 1;
@@ -78,7 +78,7 @@ global proc AEmmLensModel3deTemplate(string $nodeName)
     editorTemplate -endLayout;
 
     editorTemplate -suppress "tdeClassic_heading";
-    editorTemplate -suppress "tdeRadialDecenteredDeg4Cylindric_heading";
+    editorTemplate -suppress "tdeRadialDeg4_heading";
     editorTemplate -suppress "tdeAnamorphicDeg4RotateSqueezeXY_heading";
     editorTemplate -suppress "outLens";
     editorTemplate -suppress "inLens";

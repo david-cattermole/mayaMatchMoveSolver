@@ -61,30 +61,30 @@ public:
     static MObject a_tdeClassic_curvatureY;
     static MObject a_tdeClassic_quarticDistortion;
 
-    static MObject a_tdeRadialDecenteredDeg4Cylindric_heading;
-    static MObject a_tdeRadialDecenteredDeg4Cylindric_degree2_distortion;
-    static MObject a_tdeRadialDecenteredDeg4Cylindric_degree2_u;
-    static MObject a_tdeRadialDecenteredDeg4Cylindric_degree2_v;
-    static MObject a_tdeRadialDecenteredDeg4Cylindric_degree4_distortion;
-    static MObject a_tdeRadialDecenteredDeg4Cylindric_degree4_u;
-    static MObject a_tdeRadialDecenteredDeg4Cylindric_degree4_v;
-    static MObject a_tdeRadialDecenteredDeg4Cylindric_cylindricDirection;
-    static MObject a_tdeRadialDecenteredDeg4Cylindric_cylindricBending;
+    static MObject a_tdeRadialDeg4_heading;
+    static MObject a_tdeRadialDeg4_degree2_distortion;
+    static MObject a_tdeRadialDeg4_degree2_u;
+    static MObject a_tdeRadialDeg4_degree2_v;
+    static MObject a_tdeRadialDeg4_degree4_distortion;
+    static MObject a_tdeRadialDeg4_degree4_u;
+    static MObject a_tdeRadialDeg4_degree4_v;
+    static MObject a_tdeRadialDeg4_cylindricDirection;
+    static MObject a_tdeRadialDeg4_cylindricBending;
 
-    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_heading;
-    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx02;
-    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy02;
-    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx22;
-    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy22;
-    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx04;
-    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy04;
-    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx24;
-    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy24;
-    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx44;
-    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy44;
-    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_lensRotation;
-    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_squeeze_x;
-    static MObject a_tdeAnamorphicDeg4RotateSqueezeXY_squeeze_y;
+    static MObject a_tdeAnamorphicDeg4_heading;
+    static MObject a_tdeAnamorphicDeg4_degree2_cx02;
+    static MObject a_tdeAnamorphicDeg4_degree2_cy02;
+    static MObject a_tdeAnamorphicDeg4_degree2_cx22;
+    static MObject a_tdeAnamorphicDeg4_degree2_cy22;
+    static MObject a_tdeAnamorphicDeg4_degree4_cx04;
+    static MObject a_tdeAnamorphicDeg4_degree4_cy04;
+    static MObject a_tdeAnamorphicDeg4_degree4_cx24;
+    static MObject a_tdeAnamorphicDeg4_degree4_cy24;
+    static MObject a_tdeAnamorphicDeg4_degree4_cx44;
+    static MObject a_tdeAnamorphicDeg4_degree4_cy44;
+    static MObject a_tdeAnamorphicDeg4_lensRotation;
+    static MObject a_tdeAnamorphicDeg4_squeeze_x;
+    static MObject a_tdeAnamorphicDeg4_squeeze_y;
 
     // Output Attributes
     static MObject a_outLens;

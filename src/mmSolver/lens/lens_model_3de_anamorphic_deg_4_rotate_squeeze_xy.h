@@ -60,7 +60,7 @@ class LensModel3deAnamorphicDeg4RotateSqueezeXY : public LensModel {
 public:
 
     LensModel3deAnamorphicDeg4RotateSqueezeXY()
-            : LensModel{LensModelType::k3deAnamorphicDeg4RotateSqueezeXY}
+            : LensModel{LensModelType::k3deAnamorphicDeg4}
             , m_degree2_cx02(0.0)
             , m_degree2_cy02(0.0)
             , m_degree2_cx22(0.0)
@@ -91,7 +91,7 @@ public:
         const double lensRotation,
         const double squeeze_x,
         const double squeeze_y)
-            : LensModel{LensModelType::k3deAnamorphicDeg4RotateSqueezeXY}
+            : LensModel{LensModelType::k3deAnamorphicDeg4}
             , m_degree2_cx02(degree2_cx02)
             , m_degree2_cy02(degree2_cy02)
             , m_degree2_cx22(degree2_cx22)

@@ -388,28 +388,28 @@ MStatus getAttrsFromLensNode(
         attrNames.append("tdeClassic_curvatureY");
         attrNames.append("tdeClassic_quarticDistortion");
 
-        attrNames.append("tdeRadialDecenteredDeg4Cylindric_degree2_distortion");
-        attrNames.append("tdeRadialDecenteredDeg4Cylindric_degree2_u");
-        attrNames.append("tdeRadialDecenteredDeg4Cylindric_degree2_v");
-        attrNames.append("tdeRadialDecenteredDeg4Cylindric_degree4_distortion");
-        attrNames.append("tdeRadialDecenteredDeg4Cylindric_degree4_u");
-        attrNames.append("tdeRadialDecenteredDeg4Cylindric_degree4_v");
-        attrNames.append("tdeRadialDecenteredDeg4Cylindric_cylindricDirection");
-        attrNames.append("tdeRadialDecenteredDeg4Cylindric_cylindricBending");
+        attrNames.append("tdeRadialDeg4_degree2_distortion");
+        attrNames.append("tdeRadialDeg4_degree2_u");
+        attrNames.append("tdeRadialDeg4_degree2_v");
+        attrNames.append("tdeRadialDeg4_degree4_distortion");
+        attrNames.append("tdeRadialDeg4_degree4_u");
+        attrNames.append("tdeRadialDeg4_degree4_v");
+        attrNames.append("tdeRadialDeg4_cylindricDirection");
+        attrNames.append("tdeRadialDeg4_cylindricBending");
 
-        attrNames.append("tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx02");
-        attrNames.append("tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy02");
-        attrNames.append("tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx22");
-        attrNames.append("tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy22");
-        attrNames.append("tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx04");
-        attrNames.append("tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy04");
-        attrNames.append("tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx24");
-        attrNames.append("tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy24");
-        attrNames.append("tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx44");
-        attrNames.append("tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy44");
-        attrNames.append("tdeAnamorphicDeg4RotateSqueezeXY_lensRotation");
-        attrNames.append("tdeAnamorphicDeg4RotateSqueezeXY_squeeze_x");
-        attrNames.append("tdeAnamorphicDeg4RotateSqueezeXY_squeeze_y");
+        attrNames.append("tdeAnamorphicDeg4_degree2_cx02");
+        attrNames.append("tdeAnamorphicDeg4_degree2_cy02");
+        attrNames.append("tdeAnamorphicDeg4_degree2_cx22");
+        attrNames.append("tdeAnamorphicDeg4_degree2_cy22");
+        attrNames.append("tdeAnamorphicDeg4_degree4_cx04");
+        attrNames.append("tdeAnamorphicDeg4_degree4_cy04");
+        attrNames.append("tdeAnamorphicDeg4_degree4_cx24");
+        attrNames.append("tdeAnamorphicDeg4_degree4_cy24");
+        attrNames.append("tdeAnamorphicDeg4_degree4_cx44");
+        attrNames.append("tdeAnamorphicDeg4_degree4_cy44");
+        attrNames.append("tdeAnamorphicDeg4_lensRotation");
+        attrNames.append("tdeAnamorphicDeg4_squeeze_x");
+        attrNames.append("tdeAnamorphicDeg4_squeeze_y");
     }
 
     for (auto i = 0; i < attrNames.length(); ++i) {

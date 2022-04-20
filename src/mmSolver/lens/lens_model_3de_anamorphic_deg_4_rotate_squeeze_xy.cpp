@@ -23,9 +23,6 @@
 
 #include "lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.h"
 
-// MM Solver
-#include "mmSolver/utilities/debug_utils.h"
-
 void LensModel3deAnamorphicDeg4RotateSqueezeXY::applyModelUndistort(
     const double xd,
     const double yd,

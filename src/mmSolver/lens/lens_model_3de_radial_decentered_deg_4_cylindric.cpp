@@ -23,9 +23,6 @@
 
 #include "lens_model_3de_radial_decentered_deg_4_cylindric.h"
 
-// MM Solver
-#include "mmSolver/utilities/debug_utils.h"
-
 void LensModel3deRadialDecenteredDeg4Cylindric::applyModelUndistort(
     const double xd,
     const double yd,

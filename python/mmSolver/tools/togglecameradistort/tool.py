@@ -75,7 +75,7 @@ def main():
         return
 
     for cam in cams_to_toggle:
-        # Set lens mode (undistort or distort)
+        # Set lens mode (enabled/disabled)
         enable = cam.get_lens_enable()
         cam.set_lens_enable(not enable)
     maya.cmds.select(sel, replace=True)

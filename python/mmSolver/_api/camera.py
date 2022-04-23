@@ -37,7 +37,7 @@ LOG = mmSolver.logger.get_logger()
 
 def _create_camera_attributes(cam_shp):
     """
-    Create the attributes expected to be on a Lens.
+    Create the attributes expected to be on a camera.
 
     :param cam_shp: Shape node for the Camera.
     :type cam_shp: str
@@ -47,6 +47,7 @@ def _create_camera_attributes(cam_shp):
     node_obj = node_utils.get_as_object_apione(cam_shp)
     dg_node_fn = OpenMaya.MFnDependencyNode(node_obj)
 
+    api_utils.load_plugin()
     typedAttr = OpenMaya.MFnTypedAttribute()
     data_type_id = OpenMaya.MTypeId(const.LENS_DATA_TYPE_ID)
 
@@ -83,6 +84,7 @@ def _create_lens_toggle_setup(cam_tfm, cam_shp):
         shapes=False,
         destination=True) or []
     if len(toggle_nodes) == 0:
+        api_utils.load_plugin()
         toggle_node = maya.cmds.createNode('mmLensModelToggle',
                                            name=const.LENS_TOGGLE_NODE_NAME)
         maya.cmds.connectAttr(cam_shp + '.inLens', toggle_node + '.inLens')

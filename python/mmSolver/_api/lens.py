@@ -257,3 +257,31 @@ class Lens(object):
         if maya.cmds.isConnected(src, dst) is False:
             maya.cmds.connectAttr(src, dst)
         return
+
+    ############################################################################
+
+    def get_enable(self):
+        """
+        Get the 'enable' of the Lens.
+        """
+        lens_node = self.get_node()
+        if lens_node is None:
+            msg = "Lens object has no node: object=%r"
+            LOG.warn(msg, self)
+            return
+        return maya.cmds.getAttr(lens_node + '.enable')
+
+    def set_enable(self, value):
+        """
+        Set the 'enable' value of the Lens.
+
+        Disabling the lens stops the lens from having an affect.
+        """
+        assert isinstance(value, bool)
+        lens_node = self.get_node()
+        if lens_node is None:
+            msg = "Lens object has no node: object=%r"
+            LOG.warn(msg, self)
+            return
+        maya.cmds.setAttr(lens_node + '.enable', value)
+        return

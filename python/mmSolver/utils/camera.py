@@ -40,7 +40,7 @@ def get_camera(node):
     :type node: str
 
     :returns: Two nodes in a tuple, transform then shape node.
-    :rtype: (str, str)
+    :rtype: (str, str) or (None, None)
     """
     cam_tfm = None
     cam_shp = None

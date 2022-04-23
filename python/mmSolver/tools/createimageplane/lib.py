@@ -85,6 +85,8 @@ def create_image_poly_plane(name=None):
     Create a default polygon image plane under camera.
     """
     assert name is None or isinstance(name, pycompat.TEXT_TYPE)
+    mmapi.load_plugin()
+
     name_shp = name + 'Shape'
     tfm = maya.cmds.createNode('mmImagePlaneTransform', name=name)
     shp = maya.cmds.createNode('mesh', name=name_shp, parent=tfm)

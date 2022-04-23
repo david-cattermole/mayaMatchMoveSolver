@@ -186,6 +186,18 @@ class Lens(object):
 
     ############################################################################
 
+    def get_output_nodes(self):
+        """Return objects connected to the output of this lens.
+
+        :returns: A list of str. The list may be empty.
+        """
+        lens_node = self.get_node()
+        output_nodes = maya.cmds.listConnections(
+            lens_node + ".outLens",
+            shapes=False,
+            source=True) or []
+        return output_nodes
+
     def get_input_node(self):
         """Return an object connected to the input of this lens.
 

@@ -57,6 +57,9 @@ LOG = mmSolver.logger.get_logger()
 def create_marker_connections(cam):
     """
     Create connections between the camera and markers.
+
+    Adds a special lens attribute to the camera. This dynamic lens
+    attribute will fan-out and connect to each Marker as needed.
     """
     assert isinstance(cam, mmapi.Camera)
 
@@ -78,9 +81,6 @@ def create_lens_on_camera(cam, force_create_new=None):
     """
     Create a lens node and connect it to the given camera.
 
-    Add a special lens attribute to the camera. This dynamic lens
-    attribute will fan-out and connect to each Marker as needed.
-
     :param cam: The camera to create a lens for.
     :type cam: mmSolver.api.Camera
 
@@ -97,7 +97,30 @@ def create_lens_on_camera(cam, force_create_new=None):
     create_marker_connections(cam)
     lens = cam.get_lens()
     if lens is None or force_create_new is True:
-        # Create a mmSolver.api.Lens() object, connect lens to the camera.
         lens = mmapi.Lens().create_node()
         cam.set_lens(lens)
+    return lens
+
+
+def add_lens_layer_on_camera(cam):
+    """
+    Create a new lens node as a 'layer' on the the given camera.
+
+    :param cam: The camera to create a lens for.
+    :type cam: mmSolver.api.Camera
+
+    :rtype: mmSolver.api.Lens
+    """
+    assert isinstance(cam, mmapi.Camera)
+    create_marker_connections(cam)
+    lens = None
+    existing_lens = cam.get_lens()
+    if existing_lens is None:
+        lens = mmapi.Lens().create_node()
+        cam.set_lens(lens)
+    else:
+        assert isinstance(cam, mmapi.Camera)
+        lens = mmapi.Lens().create_node()
+        cam.set_lens(lens)
+        lens.set_input_lens(existing_lens)
     return lens

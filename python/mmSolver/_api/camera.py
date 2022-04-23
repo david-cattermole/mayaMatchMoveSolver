@@ -525,6 +525,7 @@ class Camera(object):
         """
         Set the lens distortion mode of the camera.
         """
+        assert isinstance(value, bool)
         cam_tfm = self.get_transform_node()
         cam_shp = self.get_shape_node()
         if cam_tfm is None or cam_shp is None:

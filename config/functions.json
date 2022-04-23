@@ -720,7 +720,7 @@
             ]
         },
         "create_image_plane": {
-            "name": "Create Image Plane",
+            "name": "Create Image Plane...",
             "name_shelf": "",
             "tooltip": "Create a new Image Plane.",
             "icon_shelf": "createImagePlane_32x32.png",

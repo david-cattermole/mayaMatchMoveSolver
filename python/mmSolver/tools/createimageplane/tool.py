@@ -19,6 +19,8 @@
 The Create Image Plane tool.
 """
 
+import os
+
 import maya.cmds
 import maya.mel
 
@@ -29,6 +31,49 @@ import mmSolver.utils.camera as utils_camera
 import mmSolver.tools.createimageplane.lib as lib
 
 LOG = mmSolver.logger.get_logger()
+
+
+def _get_start_directory():
+    workspace_path = maya.cmds.workspace(query=True, fullName=True)
+    workspace_path = os.path.abspath(workspace_path)
+
+    file_rules = maya.cmds.workspace(query=True, fileRule=True)
+    file_rule = 'sourceImages'
+
+    file_rule_index = file_rules.index(file_rule)
+    source_images_dir = file_rules[file_rule_index + 1]
+
+    source_images_path = os.path.join(workspace_path, source_images_dir)
+    return source_images_path
+
+
+def prompt_user_for_image_sequence():
+    image_sequence_path = None
+    multiple_filters = (
+        'Image Files (*.jpg *.png *.iff *.exr *.tif *.tga);;'
+        'JPEG (*.jpg *.jpeg);;'
+        'PNG (*.png);;'
+        'Maya IFF (*.iff);;'
+        'EXR (*.exr);;'
+        'TIFF (*.tif);;'
+        'Targa (*.tga);;'
+        'All Files (*.*)'
+    )
+    start_dir = _get_start_directory()
+    results = maya.cmds.fileDialog2(
+        caption='Select Image Sequence',
+        okCaption='Open',
+        fileMode=1,  # 1 = A single existing file.
+        setProjectBtnEnabled=True,
+        fileFilter=multiple_filters,
+        startingDirectory=start_dir,
+    )
+    if len(results) == 0:
+        # User cancelled.
+        return image_sequence_path
+
+    image_sequence_path = results[0]
+    return image_sequence_path
 
 
 def main():
@@ -85,6 +130,11 @@ def main():
         if cam_shp in created:
             continue
         node = lib.create_image_plane_on_camera(cam)
+
+        image_seq = prompt_user_for_image_sequence()
+        if image_seq:
+            lib.set_image_sequence(node, image_seq)
+
         nodes.append(node)
         created.add(cam_shp)
 

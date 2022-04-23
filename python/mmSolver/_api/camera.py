@@ -133,6 +133,7 @@ class Camera(object):
 
     Example usage::
 
+        >>> import mmSolver.api as mmapi
         >>> cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         >>> cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         >>> cam = mmapi.Camera(shape=cam_shp)
@@ -536,11 +537,11 @@ class Camera(object):
 
     def get_lens(self):
         """
-        Get the camera connected to the Lens.
+        Get the lens connected to the camera.
 
-        :returns: Camera object, or None if Lens does not have a
-                  Camera.
-        :rtype: None or Camera
+        :returns: Lens object, or None if Camera does not have a
+                  Lens.
+        :rtype: None or Lens
         """
         lens = None
         cam_tfm = self.get_transform_node()
@@ -562,10 +563,10 @@ class Camera(object):
 
     def set_lens(self, lens):
         """
-        Connect this Lens to the given Camera.
+        Connect this Camera to the given Lens.
 
-        .. note:: If the `cam` argument is None, the Lens is
-            disconnected from any camera.
+        .. note:: If the `lens` argument is None, the Camera is
+            disconnected from any lens.
 
         :param lens: The Lens to connect this Camera to.
         :type lens: None or Lens

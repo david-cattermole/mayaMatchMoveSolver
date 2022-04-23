@@ -55,13 +55,14 @@ class Lens(object):
 
     Example usage::
 
+        >>> import mmSolver.api as mmapi
         >>> lens = mmapi.Lens().create_node()
         >>> lens.get_node()
         'lens1'
         >>> cam = mmapi.Camera(transform='myCamera')
         >>> lens = cam.get_lens()
         >>> lens.get_node()
-        'mmLensBasic1'
+        'lens1'
 
     """
 
@@ -185,9 +186,10 @@ class Lens(object):
 
     ############################################################################
 
-    def get_input_lens(self):
-        """Return an instance of the child lens connected to this lens, or
-        return None.
+    def get_input_node(self):
+        """Return an object connected to the input of this lens.
+
+        :returns: The returned object may be: str or None.
         """
         lens_node = self.get_node()
         input_nodes = maya.cmds.listConnections(
@@ -200,12 +202,43 @@ class Lens(object):
             input_node = input_nodes[0]
         return input_node
 
+    def _disconnect_input_nodes_from_lens(self, lens_node):
+        """
+        Disconnect all input nodes to this lens object.
+        """
+        assert len(lens_node) > 0
+        lens_node_connections = maya.cmds.listConnections(
+            lens_node + ".inLens",
+            shapes=False,
+            source=True,
+            destination=False,
+            connections=True,
+            plugs=True) or []
+        if len(lens_node_connections) > 0:
+            num = len(lens_node_connections)
+            src_list = lens_node_connections[1:num:2]
+            dst_list = lens_node_connections[0:num:2]
+            for src, dst in zip(src_list, dst_list):
+                if maya.cmds.isConnected(src, dst):
+                    maya.cmds.disconnectAttr(src, dst)
+        return
+
     def set_input_lens(self, input_lens):
         """
-        Connect the given node to the 'input' of this node.
+        Connect the given node to the 'input' of this object.
+
+        If input_lens is None, any existing input lens node will be
+        disconnected from the Lens.
         """
-        assert isinstance(input_lens, Lens)
+        assert input_lens is None or isinstance(input_lens, Lens)
         lens_node = self.get_node()
+        if lens_node is None:
+            msg = "Lens object has no node: object=%r"
+            LOG.warn(msg, self)
+            return
+        if input_lens is None:
+            self._disconnect_input_nodes_from_lens(lens_node)
+            return
         input_lens_node = input_lens.get_node()
         src = input_lens_node + '.outLens'
         dst = lens_node + '.inLens'

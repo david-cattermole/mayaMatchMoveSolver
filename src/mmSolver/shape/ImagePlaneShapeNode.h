@@ -38,8 +38,9 @@
 
 #if MAYA_API_VERSION >= 20190000
 #include <maya/MEvaluationNode.h>
-#include <assert.h>
 #endif
+
+#include <assert.h>
 
 namespace mmsolver {
 
@@ -89,6 +90,9 @@ public:
 
     // Attributes
     static MObject m_enable;
+    static MObject m_image_width;
+    static MObject m_image_height;
+    static MObject m_image_pixel_aspect;
     static MObject m_geometry_node;
     static MObject m_shader_node;
 };

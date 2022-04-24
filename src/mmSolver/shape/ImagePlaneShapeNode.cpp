@@ -36,17 +36,16 @@
 #include <maya/MTypeId.h>
 #include <maya/MPlug.h>
 #include <maya/MVector.h>
+#include <maya/MViewport2Renderer.h>
+
+#if MAYA_API_VERSION >= 20190000
+#include <maya/MEvaluationNode.h>
+#endif
+
+#include <assert.h>
 
 // MM Solver
 #include "mmSolver/nodeTypeIds.h"
-
-#if MAYA_API_VERSION >= 20190000
-#include <maya/MViewport2Renderer.h>
-#include <maya/MEvaluationNode.h>
-#include <assert.h>
-#endif
-
-// MM Solver
 #include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
@@ -60,9 +59,11 @@ MString ImagePlaneShapeNode::m_display_filter_label(MM_IMAGE_PLANE_SHAPE_DISPLAY
 
 // Attributes
 MObject ImagePlaneShapeNode::m_enable;
+MObject ImagePlaneShapeNode::m_image_width;
+MObject ImagePlaneShapeNode::m_image_height;
+MObject ImagePlaneShapeNode::m_image_pixel_aspect;
 MObject ImagePlaneShapeNode::m_geometry_node;
 MObject ImagePlaneShapeNode::m_shader_node;
-
 
 ImagePlaneShapeNode::ImagePlaneShapeNode() {}
 
@@ -149,22 +150,45 @@ MStatus ImagePlaneShapeNode::initialize() {
         MFnNumericData::kBoolean, 1);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(m_enable));
+
+    m_image_width = nAttr.create(
+        "imageWidth", "imgwdth",
+        MFnNumericData::kInt, 1920);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(1));
+    CHECK_MSTATUS(addAttribute(m_image_width));
+
+    m_image_height = nAttr.create(
+        "imageHeight", "imghght",
+        MFnNumericData::kInt, 1080);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(1));
+    CHECK_MSTATUS(addAttribute(m_image_height));
+
+    m_image_pixel_aspect = nAttr.create(
+        "imagePixelAspect", "imgpxasp",
+        MFnNumericData::kDouble, 1.0);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(0.1));
+    CHECK_MSTATUS(nAttr.setMax(4.0));
+    CHECK_MSTATUS(addAttribute(m_image_pixel_aspect));
 
     m_geometry_node = msgAttr.create("geometryNode", "geond", &status);
     CHECK_MSTATUS(status);
     CHECK_MSTATUS(msgAttr.setStorable(true));
     CHECK_MSTATUS(msgAttr.setConnectable(true));
     CHECK_MSTATUS(msgAttr.setKeyable(false));
+    CHECK_MSTATUS(addAttribute(m_geometry_node));
 
     m_shader_node = msgAttr.create("shaderNode", "shdnd", &status);
     CHECK_MSTATUS(status);
     CHECK_MSTATUS(msgAttr.setStorable(true));
     CHECK_MSTATUS(msgAttr.setConnectable(true));
     CHECK_MSTATUS(msgAttr.setKeyable(false));
-
-    // Add attributes
-    CHECK_MSTATUS(addAttribute(m_enable));
-    CHECK_MSTATUS(addAttribute(m_geometry_node));
     CHECK_MSTATUS(addAttribute(m_shader_node));
 
     return MS::kSuccess;

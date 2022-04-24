@@ -32,7 +32,9 @@
 #include <maya/MFnDependencyNode.h>
 #include <maya/MString.h>
 #include <maya/MPlug.h>
+#include <maya/MPlugArray.h>
 #include <maya/MPoint.h>
+#include <maya/MObject.h>
 
 // Maya Viewport 2.0
 #include <maya/MDrawContext.h>
@@ -52,10 +54,11 @@ const MString renderItemName_imagePlaneShaded = MString("imagePlaneShaded");
 ImagePlaneGeometryOverride::ImagePlaneGeometryOverride(const MObject &obj)
         : MHWRender::MPxGeometryOverride(obj)
         , m_this_node(obj)
-        , m_geometry_node_type(MFn::kInvalid)
+        , m_enable(false)
         , m_image_width(1920)
         , m_image_height(1080)
-        , m_image_pixel_aspect(1.0) {}
+        , m_image_pixel_aspect(1.0)
+        , m_geometry_node_type(MFn::kInvalid) {}
 
 ImagePlaneGeometryOverride::~ImagePlaneGeometryOverride() {}
 
@@ -181,6 +184,35 @@ void ImagePlaneGeometryOverride::updateDG()
                         << " type=" << node.apiTypeStr());
                 }
             }
+        }
+    }
+
+    // Query Attributes from the base node.
+    {
+        MDagPath objPath;
+        MDagPath::getAPathTo(m_this_node, objPath);
+
+        if (objPath.isValid()) {
+            MStatus status;
+            status = getNodeAttr(
+                objPath,
+                ImagePlaneShapeNode::m_enable, m_enable);
+            CHECK_MSTATUS(status);
+
+            status = getNodeAttr(
+                objPath,
+                ImagePlaneShapeNode::m_image_width, m_image_width);
+            CHECK_MSTATUS(status);
+
+            status = getNodeAttr(
+                objPath,
+                ImagePlaneShapeNode::m_image_height, m_image_height);
+            CHECK_MSTATUS(status);
+
+            status = getNodeAttr(
+                objPath,
+                ImagePlaneShapeNode::m_image_pixel_aspect, m_image_pixel_aspect);
+            CHECK_MSTATUS(status);
         }
     }
 }

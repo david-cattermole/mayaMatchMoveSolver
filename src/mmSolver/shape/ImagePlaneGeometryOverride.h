@@ -98,11 +98,11 @@ protected:
     MObject m_geometry_node;
     MObject m_shader_node;
 
+    bool m_enable;
     int32_t m_image_width;
     int32_t m_image_height;
     double m_image_pixel_aspect;
 };
-
 
 } // namespace mmsolver
 

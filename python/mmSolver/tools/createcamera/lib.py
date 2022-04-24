@@ -50,6 +50,7 @@ def create_camera(name=None, aspect_ratio=None):
     # Viewport display helpers.
     maya.cmds.setAttr(tfm + '.displayGateMaskColor', 0.0, 0.0, 0.0, type='double3')
     maya.cmds.setAttr(tfm + '.displayFilmGate', 1)
+    maya.cmds.setAttr(tfm + '.displayCameraFrustum', 1)
 
     # Default to full-frame camera with aspect ratio.
     film_back_width_mm = 36.0

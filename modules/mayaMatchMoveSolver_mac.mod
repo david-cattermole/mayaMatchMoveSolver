@@ -11,6 +11,7 @@ MMSOLVER_HELP_SOURCE = local
 MMSOLVER_DEFAULT_SOLVER = @DEFAULT_SOLVER@
 MMSOLVER_DEBUG = 0
 MAYA_CUSTOM_TEMPLATE_PATH +:= scripts/AETemplates
+MAYA_CUSTOM_TEMPLATE_PATH +:= scripts/NETemplates
 PYTHONPATH +:= python
 PYTHONPATH +:= python_qtpy
 [r] scripts: scripts

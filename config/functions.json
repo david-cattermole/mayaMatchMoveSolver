@@ -738,6 +738,22 @@
                 "mmSolver.tools.togglecameradistort.tool.main();"
             ]
         },
+        "camera_menu": {
+            "name": "Node Context",
+            "name_shelf": "NdCtx",
+            "tooltip": "Display camera nodes.",
+            "command": [
+                "pass"
+            ]
+        },
+        "camera_menu_popup": {
+            "popup": true,
+            "popup_post_command": [
+                "import mmSolver.tools.cameramenu.tool as tool;",
+                "tool.create_menu('{menu}');"
+            ],
+            "popup_button": ["left", "right"]
+        },
         "deform_marker": {
             "name": "Deform Marker",
             "name_shelf": "MkrOff",

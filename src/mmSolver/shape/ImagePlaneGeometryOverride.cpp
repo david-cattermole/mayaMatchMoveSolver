@@ -129,7 +129,6 @@ void ImagePlaneGeometryOverride::updateDG()
                 {
                     MDagPath path;
                     MDagPath::getAPathTo(node, path);
-                    m_geometry_node = node;
                     m_geometry_node_path = path;
                     m_geometry_node_type = path.apiType();
                     // MMSOLVER_INFO(
@@ -436,7 +435,6 @@ void ImagePlaneGeometryOverride::cleanUp() {}
 bool ImagePlaneGeometryOverride::requiresGeometryUpdate() const
 {
     if (m_geometry_node_path.isValid()
-        && !m_geometry_node.isNull()
         && !m_shader_node.isNull())
     {
         // MMSOLVER_INFO("ImagePlaneGeometryOverride::requiresGeometryUpdate: false");

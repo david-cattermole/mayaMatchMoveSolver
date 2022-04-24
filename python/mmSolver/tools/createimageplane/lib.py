@@ -693,7 +693,7 @@ def _convert_mesh_to_mm_image_plane_shape(name,
         img_plane_shp + '.shaderNode')
     # Mesh doesn't need to be visible to drive the image plane shape
     # node drawing.
-    maya.cmds.setAttr(img_plane_poly_shp + '.intermediateObject', 0)
+    maya.cmds.setAttr(img_plane_poly_shp + '.intermediateObject', 1)
     return img_plane_shp
 
 
@@ -728,22 +728,22 @@ def create_image_plane_on_camera(cam):
         poly_tfm,
         deform_node)
 
-    # Connect Display mode to live/baked nodes.
-    display_mode_expr = const.DISPLAY_MODE_EXPRESSION.format(
-        image_plane_tfm=poly_tfm,
-        baked_image_plane_shape=baked_shp,
-        live_image_plane_shape=poly_shp)
-    display_mode_expr = display_mode_expr.replace('{{', '{')
-    display_mode_expr = display_mode_expr.replace('}}', '}')
-    display_mode_expr_node = maya.cmds.expression(string=display_mode_expr)
-
     sg_node, shd_node, file_node = create_image_plane_shader(poly_tfm)
 
-    _convert_mesh_to_mm_image_plane_shape(
+    img_plane_shp = _convert_mesh_to_mm_image_plane_shape(
         name,
         poly_tfm,
         poly_shp,
         shd_node)
+
+    # Connect Display mode to live/baked nodes.
+    display_mode_expr = const.DISPLAY_MODE_EXPRESSION.format(
+        image_plane_tfm=poly_tfm,
+        baked_image_plane_shape=baked_shp,
+        live_image_plane_shape=img_plane_shp)
+    display_mode_expr = display_mode_expr.replace('{{', '{')
+    display_mode_expr = display_mode_expr.replace('}}', '}')
+    display_mode_expr_node = maya.cmds.expression(string=display_mode_expr)
 
     # Shortcut connections to nodes.
     _force_connect_attr(file_node + '.message', poly_tfm + '.shaderFileNode')

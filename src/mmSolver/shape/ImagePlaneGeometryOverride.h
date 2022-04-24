@@ -74,9 +74,10 @@ public:
 
     void cleanUp() override;
 
+#if MAYA_API_VERSION >= 20190000
     bool requiresGeometryUpdate() const override;
-
     bool requiresUpdateRenderItems(const MDagPath &path) const;
+#endif
 
     bool traceCallSequence() const override {
         // Return true if internal tracing is desired.

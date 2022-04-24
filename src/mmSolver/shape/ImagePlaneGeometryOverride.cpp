@@ -468,6 +468,7 @@ void ImagePlaneGeometryOverride::populateGeometry(
 
 void ImagePlaneGeometryOverride::cleanUp() {}
 
+#if MAYA_API_VERSION >= 20190000
 bool ImagePlaneGeometryOverride::requiresGeometryUpdate() const
 {
     if (m_geometry_node_path.isValid()
@@ -487,6 +488,7 @@ bool ImagePlaneGeometryOverride::requiresUpdateRenderItems(const MDagPath &path)
     //     << path.fullPathName());
     return true;  // Always update the render items.
 }
+#endif
 
 bool ImagePlaneGeometryOverride::hasUIDrawables() const {return true;}
 

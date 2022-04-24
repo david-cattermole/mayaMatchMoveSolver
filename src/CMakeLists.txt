@@ -88,10 +88,12 @@ set(SOURCE_FILES
   mmSolver/shape/MarkerDrawOverride.cpp
   mmSolver/shape/BundleShapeNode.cpp
   mmSolver/shape/BundleDrawOverride.cpp
-  mmSolver/shape/SkyDomeShapeNode.cpp
-  mmSolver/shape/SkyDomeDrawOverride.cpp
+  mmSolver/shape/ImagePlaneShapeNode.cpp
+  mmSolver/shape/ImagePlaneGeometryOverride.cpp
   mmSolver/shape/LineShapeNode.cpp
   mmSolver/shape/LineDrawOverride.cpp
+  mmSolver/shape/SkyDomeShapeNode.cpp
+  mmSolver/shape/SkyDomeDrawOverride.cpp
   mmSolver/utilities/debug_utils.cpp
   mmSolver/utilities/number_utils.cpp
   mmSolver/utilities/string_utils.cpp

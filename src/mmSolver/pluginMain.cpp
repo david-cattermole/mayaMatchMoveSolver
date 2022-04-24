@@ -61,10 +61,12 @@
 #include "mmSolver/shape/MarkerDrawOverride.h"
 #include "mmSolver/shape/BundleShapeNode.h"
 #include "mmSolver/shape/BundleDrawOverride.h"
-#include "mmSolver/shape/SkyDomeShapeNode.h"
-#include "mmSolver/shape/SkyDomeDrawOverride.h"
+#include "mmSolver/shape/ImagePlaneShapeNode.h"
+#include "mmSolver/shape/ImagePlaneGeometryOverride.h"
 #include "mmSolver/shape/LineShapeNode.h"
 #include "mmSolver/shape/LineDrawOverride.h"
+#include "mmSolver/shape/SkyDomeShapeNode.h"
+#include "mmSolver/shape/SkyDomeDrawOverride.h"
 
 // MM Renderer
 #include "mmSolver/render/RenderOverride.h"
@@ -181,6 +183,25 @@
         return stat;                                                    \
     }
 
+#define REGISTER_GEOMETRY_OVERRIDE(classification, register_name, creator, stat) \
+    stat = MHWRender::MDrawRegistry::registerGeometryOverrideCreator(   \
+        classification,                                                 \
+        register_name,                                                  \
+        creator);                                                       \
+    if (!stat) {                                                        \
+        stat.perror(                                                    \
+            MString(register_name) + ": registerGeometryOverrideCreator"); \
+        return (stat);                                                  \
+    }
+
+#define DEREGISTER_GEOMETRY_OVERRIDE(classification, register_name, stat) \
+    stat = MHWRender::MDrawRegistry::deregisterGeometryOverrideCreator( \
+        classification,                                                 \
+        register_name);                                                 \
+    if (!stat) {                                                        \
+        stat.perror("deregisterDrawOverrideCreator");                   \
+        return stat;                                                    \
+    }
 
 #undef PLUGIN_COMPANY  // Maya API defines this, we override it.
 #define PLUGIN_COMPANY PROJECT_NAME
@@ -333,6 +354,7 @@ MStatus initializePlugin(MObject obj) {
 
     const MString markerClassification = MM_MARKER_DRAW_CLASSIFY;
     const MString bundleClassification = MM_BUNDLE_DRAW_CLASSIFY;
+    const MString imagePlaneShapeClassification = MM_IMAGE_PLANE_SHAPE_DRAW_CLASSIFY;
     const MString skyDomeClassification = MM_SKY_DOME_DRAW_CLASSIFY;
     const MString lineClassification = MM_LINE_DRAW_CLASSIFY;
     REGISTER_LOCATOR_NODE(
@@ -352,6 +374,15 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::BundleShapeNode::initialize,
         MPxNode::kLocatorNode,
         &bundleClassification,
+        status);
+    REGISTER_LOCATOR_NODE(
+        plugin,
+        mmsolver::ImagePlaneShapeNode::nodeName(),
+        mmsolver::ImagePlaneShapeNode::m_id,
+        mmsolver::ImagePlaneShapeNode::creator,
+        mmsolver::ImagePlaneShapeNode::initialize,
+        MPxNode::kLocatorNode,
+        &imagePlaneShapeClassification,
         status);
     REGISTER_LOCATOR_NODE(
         plugin,
@@ -382,6 +413,11 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::BundleShapeNode::m_draw_registrant_id,
         mmsolver::BundleDrawOverride::Creator,
         status);
+    REGISTER_GEOMETRY_OVERRIDE(
+        mmsolver::ImagePlaneShapeNode::m_draw_db_classification,
+        mmsolver::ImagePlaneShapeNode::m_draw_registrant_id,
+        mmsolver::ImagePlaneGeometryOverride::Creator,
+        status);
     REGISTER_DRAW_OVERRIDE(
         mmsolver::SkyDomeShapeNode::m_draw_db_classification,
         mmsolver::SkyDomeShapeNode::m_draw_registrant_id,
@@ -407,7 +443,7 @@ MStatus initializePlugin(MObject obj) {
         status);
 
     // MM Marker Group transform
-    const MString imagePlaneClassification = MM_IMAGE_PLANE_DRAW_CLASSIFY;
+    const MString imagePlaneTransformClassification = MM_IMAGE_PLANE_TRANSFORM_DRAW_CLASSIFY;
     REGISTER_TRANSFORM(
         plugin,
         mmsolver::MMImagePlaneTransformNode::nodeName(),
@@ -416,7 +452,7 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::MMImagePlaneTransformNode::initialize,
         MPxTransformationMatrix::baseTransformationMatrixId,
         MPxTransformationMatrix::creator,
-        imagePlaneClassification,
+        imagePlaneTransformClassification,
         status);
 
     // Marker transform node and matrix
@@ -430,7 +466,7 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::MMMarkerTransformMatrix::m_id,
         mmsolver::MMMarkerTransformMatrix::creator,
         markerTfmClassification,
-        status)
+        status);
 
     // Register MM Solver Viewport Renderer.
     //
@@ -468,6 +504,8 @@ MStatus initializePlugin(MObject obj) {
         }
     }
 
+    // TODO: Construct a single MEL command buffer and run all
+    //  'selectType' MEL commands at once.
     MString mel_cmd = "";
 
     // Register a custom selection mask with priority 2 (same as
@@ -484,6 +522,14 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::BundleShapeNode::m_selection_type_name, 2);
     mel_cmd = "selectType -byName \"";
     mel_cmd += mmsolver::BundleShapeNode::m_selection_type_name;
+    mel_cmd += "\" 1";
+    status = MGlobal::executeCommand(mel_cmd);
+    CHECK_MSTATUS(status);
+
+    MSelectionMask::registerSelectionType(
+        mmsolver::ImagePlaneShapeNode::m_selection_type_name, 2);
+    mel_cmd = "selectType -byName \"";
+    mel_cmd += mmsolver::ImagePlaneShapeNode::m_selection_type_name;
     mel_cmd += "\" 1";
     status = MGlobal::executeCommand(mel_cmd);
     CHECK_MSTATUS(status);
@@ -514,6 +560,10 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::BundleShapeNode::m_display_filter_name,
         mmsolver::BundleShapeNode::m_display_filter_label,
         mmsolver::BundleShapeNode::m_draw_db_classification);
+    plugin.registerDisplayFilter(
+        mmsolver::ImagePlaneShapeNode::m_display_filter_name,
+        mmsolver::ImagePlaneShapeNode::m_display_filter_label,
+        mmsolver::ImagePlaneShapeNode::m_draw_db_classification);
     plugin.registerDisplayFilter(
         mmsolver::SkyDomeShapeNode::m_display_filter_name,
         mmsolver::SkyDomeShapeNode::m_display_filter_label,
@@ -601,6 +651,10 @@ MStatus uninitializePlugin(MObject obj) {
         mmsolver::BundleShapeNode::m_draw_db_classification,
         mmsolver::BundleShapeNode::m_draw_registrant_id,
         status);
+    DEREGISTER_GEOMETRY_OVERRIDE(
+        mmsolver::ImagePlaneShapeNode::m_draw_db_classification,
+        mmsolver::ImagePlaneShapeNode::m_draw_registrant_id,
+        status);
     DEREGISTER_DRAW_OVERRIDE(
         mmsolver::SkyDomeShapeNode::m_draw_db_classification,
         mmsolver::SkyDomeShapeNode::m_draw_registrant_id,
@@ -619,6 +673,11 @@ MStatus uninitializePlugin(MObject obj) {
         plugin,
         mmsolver::BundleShapeNode::nodeName(),
         mmsolver::BundleShapeNode::m_id,
+        status);
+    DEREGISTER_LOCATOR_NODE(
+        plugin,
+        mmsolver::ImagePlaneShapeNode::nodeName(),
+        mmsolver::ImagePlaneShapeNode::m_id,
         status);
     DEREGISTER_LOCATOR_NODE(
         plugin,

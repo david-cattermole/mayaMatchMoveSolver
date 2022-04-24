@@ -80,18 +80,18 @@ import mmSolver.tools.createimageplane.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def create_image_poly_plane(name=None):
+def create_image_poly_plane(name):
     """
     Create a default polygon image plane under camera.
     """
-    assert name is None or isinstance(name, pycompat.TEXT_TYPE)
+    assert isinstance(name, pycompat.TEXT_TYPE)
     mmapi.load_plugin()
 
-    name_shp = name + 'Shape'
+    name_mesh_shp = name + 'MeshShape'
     tfm = maya.cmds.createNode('mmImagePlaneTransform', name=name)
-    shp = maya.cmds.createNode('mesh', name=name_shp, parent=tfm)
+    mesh_shp = maya.cmds.createNode('mesh', name=name_mesh_shp, parent=tfm)
     creator = maya.cmds.createNode('polyPlane')
-    maya.cmds.connectAttr(creator + '.output', shp + '.inMesh')
+    maya.cmds.connectAttr(creator + '.output', mesh_shp + '.inMesh')
 
     maya.cmds.setAttr(creator + '.subdivisionsWidth', 32)
     maya.cmds.setAttr(creator + '.subdivisionsHeight', 32)
@@ -297,7 +297,7 @@ def create_image_poly_plane(name=None):
     for attr in attrs:
         maya.cmds.setAttr(tfm + '.' + attr, lock=True)
         maya.cmds.setAttr(tfm + '.' + attr, keyable=False, channelBox=False)
-    return tfm, shp, deform_node
+    return tfm, mesh_shp, deform_node
 
 
 def set_image_plane_values(cam, baked_shp, live_tfm, deform_node):
@@ -664,6 +664,28 @@ def _force_connect_attr(src_attr, dst_attr):
     return
 
 
+def _convert_mesh_to_mm_image_plane_shape(name,
+                                          img_plane_poly_tfm,
+                                          img_plane_poly_shp,
+                                          shd_node):
+    """Convert mesh to a mmImagePlaneShape."""
+    name_img_shp = name + 'Shape'
+    img_plane_shp = maya.cmds.createNode(
+        'mmImagePlaneShape',
+        name=name_img_shp,
+        parent=img_plane_poly_tfm)
+    maya.cmds.connectAttr(
+        img_plane_poly_shp + '.outMesh',
+        img_plane_shp + '.geometryNode')
+    maya.cmds.connectAttr(
+        shd_node + '.outColor',
+        img_plane_shp + '.shaderNode')
+    # Mesh doesn't need to be visible to drive the image plane shape
+    # node drawing.
+    maya.cmds.setAttr(img_plane_poly_shp + '.visibility', 0)
+    return img_plane_shp
+
+
 def create_image_plane_on_camera(cam):
     """Create an Image Plane that can be distorted in Maya's viewport
     (realtime).
@@ -687,7 +709,8 @@ def create_image_plane_on_camera(cam):
     maya.cmds.setAttr(baked_shp + '.fit', image_plane_fit)
 
     # Convert Maya image plane into a polygon image plane.
-    poly_tfm, poly_shp, deform_node = create_image_poly_plane(name='mmImagePlane1')
+    name = 'mmImagePlane1'
+    poly_tfm, poly_shp, deform_node = create_image_poly_plane(name=name)
     poly_tfm = set_image_plane_values(
         cam,
         baked_shp,
@@ -703,9 +726,13 @@ def create_image_plane_on_camera(cam):
     display_mode_expr = display_mode_expr.replace('}}', '}')
     display_mode_expr_node = maya.cmds.expression(string=display_mode_expr)
 
-    # Get file path and create new shader assignment for poly image
-    # plane.
     sg_node, shd_node, file_node = create_image_plane_shader(poly_tfm)
+
+    _convert_mesh_to_mm_image_plane_shape(
+        name,
+        poly_tfm,
+        poly_shp,
+        shd_node)
 
     # Shortcut connections to nodes.
     _force_connect_attr(file_node + '.message', poly_tfm + '.shaderFileNode')
@@ -737,12 +764,17 @@ def convert_image_planes_on_camera(cam):
     image_planes = camera_utils.get_image_plane_shapes_from_camera(cam_tfm, cam_shp)
     for image_plane_shp in image_planes:
         # Convert Maya image plane into a polygon image plane.
-        img_poly_plane_tfm, img_poly_plane_shp, deform_node = create_image_poly_plane()
-        set_image_plane_values(cam, image_plane_shp, img_poly_plane_tfm, deform_node)
+        name = 'mmImagePlane1'
+        poly_tfm, poly_shp, deform_node = create_image_poly_plane(name)
+        set_image_plane_values(cam, image_plane_shp, poly_tfm, deform_node)
 
-        # Get file path and create new shader assignment for poly
-        # image plane.
-        sg_node, shd_node, file_node = create_image_plane_shader(img_poly_plane_tfm)
+        sg_node, shd_node, file_node = create_image_plane_shader(poly_tfm)
+
+        _convert_mesh_to_mm_image_plane_shape(
+            name,
+            poly_tfm,
+            poly_shp,
+            shd_node)
 
         # Disable/hide the Maya image plane.
         maya.cmds.setAttr(image_plane_shp + '.displayMode', 0)  # 0 = 'None' mode

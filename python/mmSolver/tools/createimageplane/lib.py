@@ -554,7 +554,7 @@ def set_shader_file_path(image_plane_tfm, image_sequence_path):
         maya.cmds.setAttr(file_node + '.frameOffset', 0)
 
     # Cache the image sequence.
-    maya.cmds.setAttr(file_node + '.useHardwareTextureCycling', 1)
+    maya.cmds.setAttr(file_node + '.useHardwareTextureCycling', is_seq)
     maya.cmds.setAttr(file_node + '.startCycleExtension', start)
     maya.cmds.setAttr(file_node + '.endCycleExtension', end)
     return

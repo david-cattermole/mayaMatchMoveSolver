@@ -693,7 +693,7 @@ def _convert_mesh_to_mm_image_plane_shape(name,
         img_plane_shp + '.shaderNode')
     # Mesh doesn't need to be visible to drive the image plane shape
     # node drawing.
-    maya.cmds.setAttr(img_plane_poly_shp + '.visibility', 0)
+    maya.cmds.setAttr(img_plane_poly_shp + '.intermediateObject', 0)
     return img_plane_shp
 
 

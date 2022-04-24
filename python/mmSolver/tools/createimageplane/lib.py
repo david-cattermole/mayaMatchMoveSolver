@@ -552,6 +552,11 @@ def set_shader_file_path(image_plane_tfm, image_sequence_path):
     settable = maya.cmds.getAttr(file_node + '.frameOffset', settable=True)
     if settable is True:
         maya.cmds.setAttr(file_node + '.frameOffset', 0)
+
+    # Cache the image sequence.
+    maya.cmds.setAttr(file_node + '.useHardwareTextureCycling', 1)
+    maya.cmds.setAttr(file_node + '.startCycleExtension', start)
+    maya.cmds.setAttr(file_node + '.endCycleExtension', end)
     return
 
 
@@ -608,7 +613,13 @@ def create_image_plane_shader(image_plane_tfm):
 
     # Pixel filter (how the texture is interpolated between pixels).
     filter_type = 0  # 0 = Nearest Pixel / Unfiltered
-    maya.cmds.setAttr(file_node + ".filterType", filter_type)
+    maya.cmds.setAttr(file_node + '.filterType', filter_type)
+
+    # Display a dark-red color when an image is not found.
+    maya.cmds.setAttr(
+        file_node + '.defaultColor',
+        0.3, 0.0, 0.0,
+        type='double3')
 
     src = file_node + '.outColor'
     dst = shd_node + '.outColor'

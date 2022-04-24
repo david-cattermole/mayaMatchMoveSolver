@@ -46,6 +46,9 @@
 #include <assert.h>
 #endif
 
+// MM Solver
+#include "mmSolver/mayahelper/maya_utils.h"
+
 namespace mmsolver {
 
 MTypeId ImagePlaneShapeNode::m_id(MM_IMAGE_PLANE_SHAPE_TYPE_ID);
@@ -78,10 +81,15 @@ ImagePlaneShapeNode::compute(
 }
 
 bool ImagePlaneShapeNode::isBounded() const {
-    return false;
+    return true;
 }
 
 MBoundingBox ImagePlaneShapeNode::boundingBox() const {
+    // This forces the image plane to update very often, fast enough
+    // to ensure users changing lens distortion sliders will see the
+    // node update in real-time.
+    MHWRender::MRenderer::setGeometryDrawDirty(thisMObject());
+
     MPoint corner1(-1.0, -1.0, -1.0);
     MPoint corner2(1.0, 1.0, 1.0);
     return MBoundingBox(corner1, corner2);
@@ -101,10 +109,6 @@ MStatus ImagePlaneShapeNode::preEvaluation(
     const MEvaluationNode &evaluationNode
 ) {
     if (context.isNormal()) {
-        // MStatus status;
-        // if (evaluationNode.dirtyPlugExists(m_radius, &status) && status) {
-        //     MHWRender::MRenderer::setGeometryDrawDirty(thisMObject());
-        // }
         MHWRender::MRenderer::setGeometryDrawDirty(thisMObject());
     }
 

@@ -72,7 +72,7 @@ bool getUpstreamNodeFromConnection(
     MFnDependencyNode mfn_depend_node(this_node);
 
     bool wantNetworkedPlug = true;
-    MPlug message_plug = mfn_depend_node.findPlug(
+    MPlug plug = mfn_depend_node.findPlug(
         attr_name,
         wantNetworkedPlug,
         &status);
@@ -80,7 +80,7 @@ bool getUpstreamNodeFromConnection(
         CHECK_MSTATUS(status);
         return false;
     }
-    if (message_plug.isNull()) {
+    if (plug.isNull()) {
         MMSOLVER_WRN(
             "Could not get plug for \""
             << mfn_depend_node.name()
@@ -92,7 +92,7 @@ bool getUpstreamNodeFromConnection(
     bool as_source = false;
     // Ask for plugs connecting to this node's ".shaderNode"
     // attribute.
-    message_plug.connectedTo(
+    plug.connectedTo(
         out_connections,
         as_destination,
         as_source,
@@ -111,7 +111,8 @@ bool getUpstreamNodeFromConnection(
     return true;
 }
 
-void ImagePlaneGeometryOverride::updateDG() {
+void ImagePlaneGeometryOverride::updateDG()
+{
     if (!m_geometry_node_path.isValid()) {
         MString attr_name = "geometryNode";
         MPlugArray connections;
@@ -128,6 +129,7 @@ void ImagePlaneGeometryOverride::updateDG() {
                 {
                     MDagPath path;
                     MDagPath::getAPathTo(node, path);
+                    m_geometry_node = node;
                     m_geometry_node_path = path;
                     m_geometry_node_type = path.apiType();
                     // MMSOLVER_INFO(
@@ -186,7 +188,9 @@ void ImagePlaneGeometryOverride::updateRenderItems(
     MRenderItemList &list
 ) {
     if (!m_geometry_node_path.isValid()) {
-        // MMSOLVER_WRN("mmImagePlaneShape: Geometry node DAG path is not valid.");
+        // MMSOLVER_WRN(
+        //     "mmImagePlaneShape: "
+        //     << "Geometry node DAG path is not valid.");
         return;
     }
 
@@ -204,7 +208,8 @@ void ImagePlaneGeometryOverride::updateRenderItems(
 
     if (m_geometry_node_type != MFn::kMesh)  {
         MMSOLVER_WRN(
-            "mmImagePlaneShape: Only Meshes are supported, geometry node given is not a mesh.");
+            "mmImagePlaneShape: "
+            << "Only Meshes are supported, geometry node given is not a mesh.");
         return;
     }
 
@@ -224,39 +229,13 @@ void ImagePlaneGeometryOverride::updateRenderItems(
                 MRenderItem::DecorationItem,
                 MGeometry::kLines);
 
-            // auto draw_mode = MGeometry::kWireframe;
-            // auto draw_mode = MGeometry::kShaded;
-            // auto draw_mode = MGeometry::kTextured;
-            // auto draw_mode = MGeometry::kBoundingBox;
-            // // Draw only for selection - not visible in viewport -
-            // // can be combined with wire/shaded to further restrict
-            // // draw modes.
-            // auto draw_mode = MGeometry::kSelectionOnly;
-            // // Draw only if selection highlighting is enabled - can
-            // // be combined with wire/shaded to further restrict
-            // // draw modes.
-            // auto draw_mode = MGeometry::kSelectionHighlighting;
             auto draw_mode = MGeometry::kAll;  // Draw in all visible modes.
-            wireframeItem->setDrawMode(draw_mode);
-
-            // auto depth_priority = MRenderItem::sDormantFilledDepthPriority;
-            // auto depth_priority = MRenderItem::sDormantWireDepthPriority;
-            // auto depth_priority = MRenderItem::sHiliteWireDepthPriority;
             auto depth_priority = MRenderItem::sActiveWireDepthPriority;
-            // auto depth_priority = MRenderItem::sDormantPointDepthPriority;
-            // auto depth_priority = MRenderItem::sActivePointDepthPriority;
+
+            wireframeItem->setDrawMode(draw_mode);
             wireframeItem->depthPriority(depth_priority);
 
             list.append(wireframeItem);
-
-            MShaderInstance *shader = shaderManager->getStockShader(
-                MShaderManager::k3dSolidShader);
-            if (shader) {
-                static const float theColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
-                shader->setParameter("solidColor", theColor);
-                wireframeItem->setShader(shader);
-                shaderManager->releaseShader(shader);
-            }
         }
     }
 
@@ -268,36 +247,35 @@ void ImagePlaneGeometryOverride::updateRenderItems(
     } else {
         // MMSOLVER_INFO("mmImagePlaneShape: Generate shaded MRenderItem...");
         shadedItem = MRenderItem::Create(
-                renderItemName_imagePlaneShaded,
-                MRenderItem::NonMaterialSceneItem,
-                MGeometry::kTriangles);
+            renderItemName_imagePlaneShaded,
+            MRenderItem::NonMaterialSceneItem,
+            MGeometry::kTriangles);
 
-        // auto draw_mode = MGeometry::kWireframe;
-        // auto draw_mode = MGeometry::kShaded;
-        // auto draw_mode = MGeometry::kTextured;
-        // auto draw_mode = MGeometry::kBoundingBox;
-        // // Draw only for selection - not visible in viewport -
-        // // can be combined with wire/shaded to further restrict
-        // // draw modes.
-        // auto draw_mode = MGeometry::kSelectionOnly;
-        // // Draw only if selection highlighting is enabled - can
-        // // be combined with wire/shaded to further restrict
-        // // draw modes.
-        // auto draw_mode = MGeometry::kSelectionHighlighting;
         auto draw_mode = MGeometry::kAll;  // Draw in all visible modes.
-        shadedItem->setDrawMode(draw_mode);
-
-        // auto depth_priority = MRenderItem::sDormantFilledDepthPriority;
         auto depth_priority = MRenderItem::sDormantWireDepthPriority;
-        // auto depth_priority = MRenderItem::sHiliteWireDepthPriority;
-        // auto depth_priority = MRenderItem::sActiveWireDepthPriority;
-        // auto depth_priority = MRenderItem::sDormantPointDepthPriority;
-        // auto depth_priority = MRenderItem::sActivePointDepthPriority;
+
+        shadedItem->setDrawMode(draw_mode);
         shadedItem->depthPriority(depth_priority);
 
         list.append(shadedItem);
+    }
 
-        // Apply shader.
+    if (wireframeItem) {
+        wireframeItem->enable(true);
+
+        MShaderInstance *shader = shaderManager->getStockShader(
+            MShaderManager::k3dSolidShader);
+        if (shader) {
+            static const float color[] = {1.0f, 0.0f, 0.0f, 1.0f};
+            shader->setParameter("solidColor", color);
+            wireframeItem->setShader(shader);
+            shaderManager->releaseShader(shader);
+        }
+    }
+
+    if (shadedItem) {
+        shadedItem->enable(true);
+
         if (!m_shader_node.isNull()) {
             // TODO: Implement callback to detect when the shader
             // needs to be re-compiled.
@@ -316,19 +294,12 @@ void ImagePlaneGeometryOverride::updateRenderItems(
             MShaderInstance *shader = shaderManager->getStockShader(
                 MShaderManager::k3dSolidShader);
             if (shader) {
-                static const float theColor[] = {0.0f, 0.0f, 1.0f, 1.0f};
-                shader->setParameter("solidColor", theColor);
+                static const float color[] = {0.0f, 0.0f, 1.0f, 1.0f};
+                shader->setParameter("solidColor", color);
                 shadedItem->setShader(shader);
                 shaderManager->releaseShader(shader);
             }
         }
-    }
-
-    if (shadedItem) {
-        shadedItem->enable(true);
-    }
-    if (wireframeItem) {
-        wireframeItem->enable(true);
     }
 }
 
@@ -385,12 +356,6 @@ void ImagePlaneGeometryOverride::populateGeometry(
         {
             MVertexBuffer *vertexBuffer = data.createVertexBuffer(desc);
             if (vertexBuffer) {
-                // MGeometryExtractor::vertexCount and
-                // MGeometryExtractor::populateVertexBuffer.  since
-                // the plugin node has the same vertex data as its
-                // linked scene object, call vertexCount to allocate
-                // vertex buffer of the same size, and then call
-                // populateVertexBuffer to copy the data.
                 uint32_t vertexCount = extractor.vertexCount();
                 bool writeOnly = true;  // We don't need the current buffer values.
                 float *data = static_cast<float*>(
@@ -470,7 +435,23 @@ void ImagePlaneGeometryOverride::cleanUp() {}
 
 bool ImagePlaneGeometryOverride::requiresGeometryUpdate() const
 {
-    return true;  // Always update the geometry.
+    if (m_geometry_node_path.isValid()
+        && !m_geometry_node.isNull()
+        && !m_shader_node.isNull())
+    {
+        // MMSOLVER_INFO("ImagePlaneGeometryOverride::requiresGeometryUpdate: false");
+        return false;
+    }
+    // MMSOLVER_INFO("ImagePlaneGeometryOverride::requiresGeometryUpdate: true");
+    return true;
+}
+
+bool ImagePlaneGeometryOverride::requiresUpdateRenderItems(const MDagPath &path) const
+{
+    // MMSOLVER_INFO(
+    //     "ImagePlaneGeometryOverride::requiresUpdateRenderItems: true: "
+    //     << path.fullPathName());
+    return true;  // Always update the render items.
 }
 
 bool ImagePlaneGeometryOverride::hasUIDrawables() const {return false;}
@@ -485,6 +466,5 @@ void ImagePlaneGeometryOverride::addUIDrawables(
     // drawManager.text(MPoint(0, 0, 0), MString("Replicate"));
     // drawManager.endDrawable();
 }
-
 
 } // namespace mmsolver

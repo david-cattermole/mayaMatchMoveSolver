@@ -76,6 +76,8 @@ public:
 
     bool requiresGeometryUpdate() const override;
 
+    bool requiresUpdateRenderItems(const MDagPath &path) const;
+
     bool traceCallSequence() const override {
         // Return true if internal tracing is desired.
         return false;
@@ -91,9 +93,10 @@ protected:
 
     MObject m_this_node;
     MDagPath m_geometry_node_path;
-    MObject m_shader_node;
     MFn::Type m_geometry_node_type;
     MFn::Type m_shader_node_type;
+    MObject m_geometry_node;
+    MObject m_shader_node;
 };
 
 

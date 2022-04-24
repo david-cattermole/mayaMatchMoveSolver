@@ -97,6 +97,10 @@ protected:
     MFn::Type m_shader_node_type;
     MObject m_geometry_node;
     MObject m_shader_node;
+
+    int32_t m_image_width;
+    int32_t m_image_height;
+    double m_image_pixel_aspect;
 };
 
 

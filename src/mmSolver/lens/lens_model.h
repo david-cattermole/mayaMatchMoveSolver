@@ -80,7 +80,10 @@ public:
 
     LensModel(const LensModel &rhs)
             : m_type(rhs.getType())
-            , m_state(rhs.getState())
+              // The 'm_state' must not be copied because otherwise
+              // the 'm_lensPlugin' LDPK plug-in will not trigger an
+              // 'm_lensPlugin->initializeParameters()' call.
+            , m_state(LensModelState::kDirty)
             , m_focalLength_cm(rhs.getFocalLength())
             , m_filmBackWidth_cm(rhs.getFilmBackWidth())
             , m_filmBackHeight_cm(rhs.getFilmBackHeight())

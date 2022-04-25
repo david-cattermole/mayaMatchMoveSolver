@@ -350,7 +350,7 @@ MStatus getLensesFromCameraList(
         MObject camera_shape_node_object = camera->getShapeObject();
         MObject node_object;
 
-        // Get connected 'mmLensModeToggle' node (or whatever node is
+        // Get connected 'mmLensModelToggle' node (or whatever node is
         // connected) and ensure the node is active. If the node is
         // not active, the camera doesn't have any lens distortion and
         // can be ignored.
@@ -367,7 +367,7 @@ MStatus getLensesFromCameraList(
             lens_toggle_enabled);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         if (!lens_toggle_enabled) {
-            // The 'mmLensModeToggle' node will disable all downstream
+            // The 'mmLensModelToggle' node will disable all downstream
             // lens nodes, so we can skip them.
             std::vector<MString> lensNodeNames;
             out_cameraLensNodeNames.push_back(lensNodeNames);

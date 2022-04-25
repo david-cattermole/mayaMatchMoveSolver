@@ -534,7 +534,7 @@ MStatus MMLensModel3deNode::initialize() {
         CHECK_MSTATUS(numericAttr.setNiceNameOverride("V - Degree 2"));
         CHECK_MSTATUS(addAttribute(a_tdeRadialDeg4_degree2_v));
 
-        // Distortion - Degree 4
+        // Quartic Distortion - Degree 4
         a_tdeRadialDeg4_degree4_distortion = numericAttr.create(
             "tdeRadialDeg4_degree4_distortion",
             "tdeRadialDeg4_degree4_distortion",
@@ -543,7 +543,7 @@ MStatus MMLensModel3deNode::initialize() {
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
         CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Distortion - Degree 4"));
+        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Quartic Distortion - Degree 4"));
         CHECK_MSTATUS(addAttribute(a_tdeRadialDeg4_degree4_distortion));
 
         // U - Degree 4

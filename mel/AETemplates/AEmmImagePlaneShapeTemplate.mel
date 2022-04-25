@@ -94,6 +94,7 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
 
     editorTemplate -beginLayout "Image Plane Display" -collapse 0;
     editorTemplate -addControl "displayMode";
+    editorTemplate -addControl "meshResolution";
     editorTemplate -addSeparator;
     editorTemplate
         -callCustom
@@ -113,8 +114,13 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     editorTemplate -addControl "imageSequenceStartFrame";
     editorTemplate -addControl "imageSequenceEndFrame";
     editorTemplate -addControl "imageSequencePadding";
-    editorTemplate -addSeparator;
-    editorTemplate -addControl "meshResolution";
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "HUD" -collapse 0;
+    editorTemplate -beginNoOptimize;
+    editorTemplate -addControl "enableHud";
+    editorTemplate -addControl "enableImageResolution";
+    editorTemplate -endNoOptimize;
     editorTemplate -endLayout;
 
     editorTemplate -beginLayout "Nodes" -collapse 1;
@@ -123,6 +129,10 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     editorTemplate -addControl "geometryNode";
     editorTemplate -addControl "imagePlaneShapeNode";
     editorTemplate -endLayout;
+
+    editorTemplate -suppress "imageWidth";
+    editorTemplate -suppress "imageHeight";
+    editorTemplate -suppress "imagePixelAspect";
 
     AEmmNodeShapeTemplateCommonEnd($nodeName);
 }

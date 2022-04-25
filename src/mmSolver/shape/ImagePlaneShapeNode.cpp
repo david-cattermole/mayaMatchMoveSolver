@@ -58,7 +58,8 @@ MString ImagePlaneShapeNode::m_display_filter_name(MM_IMAGE_PLANE_SHAPE_DISPLAY_
 MString ImagePlaneShapeNode::m_display_filter_label(MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_LABEL);
 
 // Attributes
-MObject ImagePlaneShapeNode::m_enable;
+MObject ImagePlaneShapeNode::m_enable_hud;
+MObject ImagePlaneShapeNode::m_enable_image_resolution;
 MObject ImagePlaneShapeNode::m_image_width;
 MObject ImagePlaneShapeNode::m_image_height;
 MObject ImagePlaneShapeNode::m_image_pixel_aspect;
@@ -145,12 +146,19 @@ MStatus ImagePlaneShapeNode::initialize() {
     MFnNumericAttribute nAttr;
     MFnMessageAttribute msgAttr;
 
-    m_enable = nAttr.create(
-        "enable", "enb",
+    m_enable_hud = nAttr.create(
+        "enableHud", "enbhud",
         MFnNumericData::kBoolean, 1);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(m_enable));
+    CHECK_MSTATUS(addAttribute(m_enable_hud));
+
+    m_enable_image_resolution = nAttr.create(
+        "enableImageResolution", "enbimgres",
+        MFnNumericData::kBoolean, 1);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(m_enable_image_resolution));
 
     m_image_width = nAttr.create(
         "imageWidth", "imgwdth",

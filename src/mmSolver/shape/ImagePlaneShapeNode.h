@@ -89,7 +89,8 @@ public:
     static MString m_display_filter_label;
 
     // Attributes
-    static MObject m_enable;
+    static MObject m_enable_hud;
+    static MObject m_enable_image_resolution;
     static MObject m_image_width;
     static MObject m_image_height;
     static MObject m_image_pixel_aspect;

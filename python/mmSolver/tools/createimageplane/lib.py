@@ -377,6 +377,18 @@ def _get_default_image():
     return os.path.abspath(file_path)
 
 
+def _get_image_plane_mm_shape_node(image_plane_tfm):
+    shape = None
+    shapes = maya.cmds.listRelatives(
+        image_plane_tfm,
+        shapes=True,
+        type='mmImagePlaneShape'
+    ) or []
+    if len(shapes) > 0:
+        shape = shapes[0]
+    return shape
+
+
 def _get_image_plane_file_node(image_plane_tfm):
     file_node = None
     conns = maya.cmds.listConnections(
@@ -448,7 +460,7 @@ def _get_image_sequence_start_end_frames(base_dir, file_name, file_extension):
         padding_num = min(padding_num, len(path_seq_num_str))
         count = count + 1
 
-    if count == 0:
+    if count <= 1:
         start_frame = 0
         end_frame = 0
         padding_num = 0
@@ -474,31 +486,33 @@ def _expand_image_sequence_path(image_sequence_path, format_style):
             file_name,
             file_extension)
 
-    image_seq_num = ''
-    if format_style == const.FORMAT_STYLE_MAYA:
-        # file.<f>.png
-        if padding_num > 0:
-            image_seq_num = '<f>'
-    elif format_style == const.FORMAT_STYLE_HASH_PADDED:
-        # file.####.png
-        image_seq_num = '#' * padding_num
-    elif format_style == const.FORMAT_STYLE_PRINTF:
-        # file.%04d.png
-        if padding_num > 0:
-            image_seq_num = '%0{}d'.format(padding_num)
-    elif format_style == const.FORMAT_STYLE_FIRST_FRAME:
-        # file.1001.png
-        image_seq_num = str(start_frame).zfill(padding_num)
-    else:
-        raise NotImplementedError
-
-    file_pattern = '{}{}{}'.format(
-        file_name,
-        image_seq_num,
-        file_extension)
-    file_pattern = os.path.join(base_dir, file_pattern)
-
     is_seq = start_frame != end_frame and padding_num > 0
+    if is_seq is False:
+        file_pattern = image_sequence_path
+    else:
+        image_seq_num = ''
+        if format_style == const.FORMAT_STYLE_MAYA:
+            # file.<f>.png
+            if padding_num > 0:
+                image_seq_num = '<f>'
+        elif format_style == const.FORMAT_STYLE_HASH_PADDED:
+            # file.####.png
+            image_seq_num = '#' * padding_num
+        elif format_style == const.FORMAT_STYLE_PRINTF:
+            # file.%04d.png
+            if padding_num > 0:
+                image_seq_num = '%0{}d'.format(padding_num)
+        elif format_style == const.FORMAT_STYLE_FIRST_FRAME:
+            # file.1001.png
+            image_seq_num = str(start_frame).zfill(padding_num)
+        else:
+            raise NotImplementedError
+        file_pattern = '{}{}{}'.format(
+            file_name,
+            image_seq_num,
+            file_extension)
+        file_pattern = os.path.join(base_dir, file_pattern)
+
     return file_pattern, start_frame, end_frame, padding_num, is_seq
 
 
@@ -511,39 +525,68 @@ def _create_baked_image_plane_node(cam_tfm):
 
 
 def set_image_sequence(tfm, image_sequence_path):
-    set_main_image_sequence(tfm, image_sequence_path)
-    set_shader_file_path(tfm, image_sequence_path)
-    set_image_plane_file_path(tfm, image_sequence_path)
+    _set_main_image_sequence(tfm, image_sequence_path)
+    _set_shader_file_path(tfm, image_sequence_path)
+    _set_image_plane_file_path(tfm, image_sequence_path)
 
 
-def set_main_image_sequence(tfm, image_sequence_path):
+def _set_main_image_sequence(tfm, image_sequence_path):
+    shp = _get_image_plane_mm_shape_node(tfm)
+    if shp is None:
+        LOG.warn('mmImagePlaneShape node could not be found.')
+        return
+
+    assert maya.cmds.nodeType(shp) == 'mmImagePlaneShape'
     format_style = const.FORMAT_STYLE_HASH_PADDED
-    file_pattern, start_frame, end_frame, pad_num, is_seq = _expand_image_sequence_path(
-        image_sequence_path,
-        format_style)
+    file_pattern, start_frame, end_frame, pad_num, is_seq = \
+        _expand_image_sequence_path(
+            image_sequence_path,
+            format_style)
+
+    format_style = const.FORMAT_STYLE_FIRST_FRAME
+    first_frame_file_seq, _, _, _, _ = \
+        _expand_image_sequence_path(
+            image_sequence_path,
+            format_style)
+
+    mmapi.load_plugin()
+    try:
+        first_frame_file_seq = first_frame_file_seq.replace('\\', '/')
+        image_width_height = maya.cmds.mmReadImage(
+            first_frame_file_seq,
+            query=True,
+            widthHeight=True)
+    except RuntimeError:
+        image_width_height = None
+        LOG.warn('Failed to read file: %r', first_frame_file_seq)
+    if image_width_height is not None:
+        image_width = image_width_height[0]
+        image_height = image_width_height[1]
+        maya.cmds.setAttr(shp + '.imageWidth', image_width)
+        maya.cmds.setAttr(shp + '.imageHeight', image_height)
 
     maya.cmds.setAttr(
-        tfm + '.imageSequence',
+        shp + '.imageSequence',
         file_pattern,
         type='string')
 
-    if not node_utils.node_is_referenced(tfm):
-        maya.cmds.setAttr(tfm + '.imageSequenceStartFrame', lock=False)
-        maya.cmds.setAttr(tfm + '.imageSequenceEndFrame', lock=False)
-        maya.cmds.setAttr(tfm + '.imageSequencePadding', lock=False)
+    if not node_utils.node_is_referenced(shp):
+        maya.cmds.setAttr(shp + '.imageSequenceStartFrame', lock=False)
+        maya.cmds.setAttr(shp + '.imageSequenceEndFrame', lock=False)
+        maya.cmds.setAttr(shp + '.imageSequencePadding', lock=False)
 
-    maya.cmds.setAttr(tfm + '.imageSequenceStartFrame', start_frame)
-    maya.cmds.setAttr(tfm + '.imageSequenceEndFrame', end_frame)
-    maya.cmds.setAttr(tfm + '.imageSequencePadding', pad_num)
+    maya.cmds.setAttr(shp + '.imageSequenceStartFrame', start_frame)
+    maya.cmds.setAttr(shp + '.imageSequenceEndFrame', end_frame)
+    maya.cmds.setAttr(shp + '.imageSequencePadding', pad_num)
 
-    if not node_utils.node_is_referenced(tfm):
-        maya.cmds.setAttr(tfm + '.imageSequenceStartFrame', lock=True)
-        maya.cmds.setAttr(tfm + '.imageSequenceEndFrame', lock=True)
-        maya.cmds.setAttr(tfm + '.imageSequencePadding', lock=True)
+    if not node_utils.node_is_referenced(shp):
+        maya.cmds.setAttr(shp + '.imageSequenceStartFrame', lock=True)
+        maya.cmds.setAttr(shp + '.imageSequenceEndFrame', lock=True)
+        maya.cmds.setAttr(shp + '.imageSequencePadding', lock=True)
     return
 
 
-def set_shader_file_path(image_plane_tfm, image_sequence_path):
+def _set_shader_file_path(image_plane_tfm, image_sequence_path):
     file_node = _get_image_plane_file_node(image_plane_tfm)
     if file_node is None:
         LOG.warn('image plane shader file node is invalid.')
@@ -576,7 +619,7 @@ def set_shader_file_path(image_plane_tfm, image_sequence_path):
     return
 
 
-def set_image_plane_file_path(image_plane_tfm, image_sequence_path):
+def _set_image_plane_file_path(image_plane_tfm, image_sequence_path):
     image_plane_shp = _get_image_plane_baked_shape_node(image_plane_tfm)
     if image_plane_shp is None:
         LOG.warn('image plane baked shape node is invalid.')

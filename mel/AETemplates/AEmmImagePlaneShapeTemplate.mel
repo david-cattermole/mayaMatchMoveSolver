@@ -32,10 +32,11 @@ global proc int AEassignImageSequenceCallback(
     string $image_plane_shp[];
     tokenize ($file_attr, ".", $image_plane_shp);
 
-    string $command = "import mmSolver.tools.createimageplane.lib as lib; ";
+    string $image_plane_tfm[] = `listRelatives -parent $image_plane_shp[0]`;
 
+    string $command = "import mmSolver.tools.createimageplane.lib as lib; ";
     $command = $command + "lib.set_image_sequence(";
-    $command = $command + "\"" + $image_plane_shp[0] + "\"";
+    $command = $command + "\"" + $image_plane_tfm[0] + "\"";
     $command = $command + ", \"" + $file_name + "\");";
 
     python($command);

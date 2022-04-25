@@ -39,6 +39,7 @@ set(SOURCE_FILES
   mmSolver/cmd/common_arg_flags.cpp
   mmSolver/cmd/MMCameraRelativePoseCmd.cpp
   mmSolver/cmd/MMCameraSolveCmd.cpp
+  mmSolver/cmd/MMReadImageCmd.cpp
   mmSolver/cmd/MMReprojectionCmd.cpp
   mmSolver/cmd/MMSolverAffectsCmd.cpp
   mmSolver/cmd/MMSolverCmd.cpp

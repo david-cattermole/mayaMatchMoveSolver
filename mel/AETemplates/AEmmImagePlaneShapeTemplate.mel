@@ -1,0 +1,128 @@
+//
+// Copyright (C) 2022 David Cattermole.
+//
+// This file is part of mmSolver.
+//
+// mmSolver is free software: you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// mmSolver is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+// ---------------------------------------------------------------------
+//
+// Image plane transform node Template file.
+//
+
+
+source "AEmmNodeTemplateCommon";
+
+global proc int AEassignImageSequenceCallback(
+    string $file_attr,
+    string $file_name,
+    string $file_type)
+{
+    setAttr $file_attr -type "string" $file_name;
+    string $image_plane_shp[];
+    tokenize ($file_attr, ".", $image_plane_shp);
+
+    string $command = "import mmSolver.tools.createimageplane.lib as lib; ";
+
+    $command = $command + "lib.set_image_sequence(";
+    $command = $command + "\"" + $image_plane_shp[0] + "\"";
+    $command = $command + ", \"" + $file_name + "\");";
+
+    python($command);
+
+    return true;
+}
+
+
+// TODO: Create a custom browser to be more explicit with image
+// sequences.
+global proc AEmmImagePlaneShapeBrowser(
+    string $cmd,
+    string $image_plane_shp)
+{
+    string$workspace = `workspace -q -fn`;
+    setWorkingDirectory $workspace "image" "sourceImages";
+    string $open = (uiRes("m_AEimagePlaneTemplate.kOpen"));
+    fileBrowser($cmd, $open, "image", 0);
+}
+
+
+global proc AEmmImagePlaneShapeImageSequenceNew(string $file_attr)
+{
+    setUITemplate -pst attributeEditorTemplate;
+    rowLayout -nc 3 textureNameLayout;
+    text -label "Image Sequence";
+    textField textureNameField;
+    symbolButton -image "navButtonBrowse.png" browser;
+    setParent ..;
+    setUITemplate -ppt;
+
+    AEmmImagePlaneShapeImageSequenceReplace $file_attr;
+}
+
+
+global proc AEmmImagePlaneShapeImageSequenceReplace(string $file_attr)
+{
+    string $image_plane_shp[];
+    tokenize($file_attr, ".", $image_plane_shp);
+    if(size($image_plane_shp) < 1) {
+        return;
+    }
+
+    connectControl -fileName textureNameField $file_attr;
+
+    string $command1 = "AEassignImageSequenceCallback " + $file_attr;
+    string $command2 = "AEmmImagePlaneShapeBrowser \"" + $command1 + "\" " + $image_plane_shp[0];
+
+    button -edit -command $command2 browser;
+}
+
+
+global proc AEmmImagePlaneShapeTemplate(string $nodeName)
+{
+    AEmmNodeShapeTemplateCommonBegin($nodeName);
+
+    editorTemplate -beginLayout "Image Plane Display" -collapse 0;
+    editorTemplate -addControl "displayMode";
+    editorTemplate -addSeparator;
+    editorTemplate
+        -callCustom
+        "AEmmImagePlaneShapeImageSequenceNew"
+        "AEmmImagePlaneShapeImageSequenceReplace"
+        "imageSequence";
+    // TODO: Add a 'baked' image sequence option, and a button to
+    // generate the undistorted 'baked' image sequence.
+    //
+    // The user should have the ability to set the image sequence
+    // explicitly, or not.
+    //
+    // The button should use 'Natron' by default, but should be able
+    // to have different backends, such as 3DEqualizer's
+    // 'sdv_image_warp' (from 3DE4 R6+), or Nuke.
+    editorTemplate -addControl "imageSequenceFrame";
+    editorTemplate -addControl "imageSequenceStartFrame";
+    editorTemplate -addControl "imageSequenceEndFrame";
+    editorTemplate -addControl "imageSequencePadding";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "meshResolution";
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "Nodes" -collapse 1;
+    editorTemplate -addControl "shaderNode";
+    editorTemplate -addControl "shaderFileNode";
+    editorTemplate -addControl "geometryNode";
+    editorTemplate -addControl "imagePlaneShapeNode";
+    editorTemplate -endLayout;
+
+    AEmmNodeShapeTemplateCommonEnd($nodeName);
+}

@@ -80,7 +80,149 @@ import mmSolver.tools.createimageplane.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def create_image_poly_plane(name):
+def _create_image_plane_transform_attrs(image_plane_tfm):
+    # Depth attribute
+    attr = 'depth'
+    maya.cmds.addAttr(
+        image_plane_tfm,
+        longName=attr,
+        attributeType='double',
+        minValue=0.0,
+        defaultValue=1.0)
+    maya.cmds.setAttr(image_plane_tfm + '.' + attr, keyable=True)
+    maya.cmds.setAttr(image_plane_tfm + '.' + attr, 10.0)
+
+    # Focal Length attribute
+    attr = 'focalLength'
+    maya.cmds.addAttr(
+        image_plane_tfm,
+        longName=attr,
+        attributeType='double',
+        minValue=0.1,
+        defaultValue=35.0)
+    maya.cmds.setAttr(image_plane_tfm + '.' + attr, keyable=True)
+
+    # Horizontal Film Aperture attribute
+    attr = 'horizontalFilmAperture'
+    value = 36.0 / 25.4  # 35mm film in inches.
+    maya.cmds.addAttr(
+        image_plane_tfm,
+        longName=attr,
+        attributeType='double',
+        minValue=0.001,
+        defaultValue=value)
+    maya.cmds.setAttr(image_plane_tfm + '.' + attr, keyable=True)
+
+    # Vertical Film Aperture attribute
+    attr = 'verticalFilmAperture'
+    value = 24.0 / 25.4  # 35mm film in inches.
+    maya.cmds.addAttr(
+        image_plane_tfm,
+        longName=attr,
+        attributeType='double',
+        minValue=0.001,
+        defaultValue=value)
+    maya.cmds.setAttr(image_plane_tfm + '.' + attr, keyable=True)
+
+    # Pixel Aspect Ratio attribute
+    attr = 'pixelAspect'
+    value = 1.0
+    maya.cmds.addAttr(
+        image_plane_tfm,
+        longName=attr,
+        attributeType='double',
+        minValue=0.001,
+        defaultValue=value)
+    maya.cmds.setAttr(image_plane_tfm + '.' + attr, keyable=True)
+
+    # Horizontal Film Offset attribute
+    attr = 'horizontalFilmOffset'
+    maya.cmds.addAttr(
+        image_plane_tfm,
+        longName=attr,
+        attributeType='double',
+        minValue=0.0,
+        defaultValue=0.0)
+    maya.cmds.setAttr(image_plane_tfm + '.' + attr, keyable=True)
+
+    # Vertical Film Offset attribute
+    attr = 'verticalFilmOffset'
+    maya.cmds.addAttr(
+        image_plane_tfm,
+        longName=attr,
+        attributeType='double',
+        minValue=0.0,
+        defaultValue=0.0)
+    maya.cmds.setAttr(image_plane_tfm + '.' + attr, keyable=True)
+    return
+
+
+def _create_image_plane_shape_attrs(image_plane_shp):
+    # Display Mode
+    maya.cmds.addAttr(
+        image_plane_shp,
+        longName='displayMode',
+        attributeType='enum',
+        enumName='Live:Baked:')
+    maya.cmds.setAttr(
+        image_plane_shp + '.displayMode',
+        edit=True, keyable=True)
+
+    # Image Sequence attribute
+    attr = 'imageSequence'
+    maya.cmds.addAttr(
+        image_plane_shp,
+        longName=attr,
+        dataType='string')
+
+    # Image Sequence Frame attribute
+    attr = 'imageSequenceFrame'
+    maya.cmds.addAttr(
+        image_plane_shp,
+        longName=attr,
+        attributeType='double',
+        minValue=0.0,
+        defaultValue=0.0)
+    maya.cmds.setAttr(image_plane_shp + '.' + attr, keyable=True)
+    _force_connect_attr(
+        'time1.outTime',
+        image_plane_shp + '.imageSequenceFrame')
+
+    # Image Sequence details.
+    maya.cmds.addAttr(
+        image_plane_shp,
+        longName='imageSequenceStartFrame',
+        niceName='Start Frame',
+        attributeType='long',
+        defaultValue=0)
+    maya.cmds.addAttr(
+        image_plane_shp,
+        longName='imageSequenceEndFrame',
+        niceName='End Frame',
+        attributeType='long',
+        defaultValue=0)
+    maya.cmds.addAttr(
+        image_plane_shp,
+        longName='imageSequencePadding',
+        niceName='Padding',
+        attributeType='long',
+        defaultValue=0)
+
+    # Mesh Resolution attribute
+    attr = 'meshResolution'
+    maya.cmds.addAttr(
+        image_plane_shp,
+        longName=attr,
+        attributeType='long',
+        minValue=1,
+        maxValue=256,
+        defaultValue=32)
+    node_attr = image_plane_shp + '.' + attr
+    maya.cmds.setAttr(node_attr, keyable=True)
+    return
+
+
+def _create_image_poly_plane(name):
     """
     Create a default polygon image plane under camera.
     """
@@ -108,151 +250,21 @@ def create_image_poly_plane(name):
     mkr_scl = maya.cmds.createNode('mmMarkerScale')
     inv_mult = maya.cmds.createNode('multiplyDivide')
 
-    # Depth attribute
-    attr = 'depth'
-    maya.cmds.addAttr(
+    # Get the intermediate mesh shape, so we can re-order the nodes
+    # later and ensure the mmImagePlaneShape is first, so that users
+    # will see the mmImagePlaneShape first in the Attribute Editor.
+    shapes = maya.cmds.listRelatives(
         tfm,
-        longName=attr,
-        attributeType='double',
-        minValue=0.0,
-        defaultValue=1.0)
-    maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
-    maya.cmds.setAttr(tfm + '.' + attr, 10.0)
+        shapes=True,
+        noIntermediate=False,
+        type='mesh') or []
+    shapes = [x for x in shapes
+              if maya.cmds.getAttr(x + '.intermediateObject') == 1]
+    assert len(shapes) == 1
+    mesh_shp_original = shapes[0]
 
-    # MeshResolution attribute
-    attr = 'meshResolution'
-    maya.cmds.addAttr(
-        tfm,
-        longName=attr,
-        attributeType='long',
-        minValue=1,
-        maxValue=256,
-        defaultValue=32)
-    node_attr = tfm + '.' + attr
-    maya.cmds.setAttr(node_attr, keyable=True)
-    maya.cmds.connectAttr(node_attr, creator + '.subdivisionsWidth')
-    maya.cmds.connectAttr(node_attr, creator + '.subdivisionsHeight')
-
-    # Focal Length attribute
-    attr = 'focalLength'
-    maya.cmds.addAttr(
-        tfm,
-        longName=attr,
-        attributeType='double',
-        minValue=0.1,
-        defaultValue=35.0)
-    maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
-
-    # Horizontal Film Aperture attribute
-    attr = 'horizontalFilmAperture'
-    value = 36.0 / 25.4  # 35mm film in inches.
-    maya.cmds.addAttr(
-        tfm,
-        longName=attr,
-        attributeType='double',
-        minValue=0.001,
-        defaultValue=value)
-    maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
-
-    # Vertical Film Aperture attribute
-    attr = 'verticalFilmAperture'
-    value = 24.0 / 25.4  # 35mm film in inches.
-    maya.cmds.addAttr(
-        tfm,
-        longName=attr,
-        attributeType='double',
-        minValue=0.001,
-        defaultValue=value)
-    maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
-
-    # Pixel Aspect Ratio attribute
-    attr = 'pixelAspect'
-    value = 1.0
-    maya.cmds.addAttr(
-        tfm,
-        longName=attr,
-        attributeType='double',
-        minValue=0.001,
-        defaultValue=value)
-    maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
-
-    # Horizontal Film Offset attribute
-    attr = 'horizontalFilmOffset'
-    maya.cmds.addAttr(
-        tfm,
-        longName=attr,
-        attributeType='double',
-        minValue=0.0,
-        defaultValue=0.0)
-    maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
-
-    # Vertical Film Offset attribute
-    attr = 'verticalFilmOffset'
-    maya.cmds.addAttr(
-        tfm,
-        longName=attr,
-        attributeType='double',
-        minValue=0.0,
-        defaultValue=0.0)
-    maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
-
-    # Image Sequence attribute
-    attr = 'imageSequence'
-    maya.cmds.addAttr(
-        tfm,
-        longName=attr,
-        dataType='string')
-
-    # Image Sequence Frame attribute
-    attr = 'imageSequenceFrame'
-    maya.cmds.addAttr(
-        tfm,
-        longName=attr,
-        attributeType='double',
-        minValue=0.0,
-        defaultValue=0.0)
-    maya.cmds.setAttr(tfm + '.' + attr, keyable=True)
-    _force_connect_attr('time1.outTime', tfm + '.imageSequenceFrame')
-
-    # Image Sequence details.
-    maya.cmds.addAttr(
-        tfm,
-        longName='imageSequenceStartFrame',
-        niceName='Start Frame',
-        attributeType='long',
-        defaultValue=0)
-    maya.cmds.addAttr(
-        tfm,
-        longName='imageSequenceEndFrame',
-        niceName='End Frame',
-        attributeType='long',
-        defaultValue=0)
-    maya.cmds.addAttr(
-        tfm,
-        longName='imageSequencePadding',
-        niceName='Padding',
-        attributeType='long',
-        defaultValue=0)
-
-    # Display Mode
-    maya.cmds.addAttr(
-        tfm,
-        longName='displayMode',
-        attributeType='enum',
-        enumName='Live:Baked:')
-    maya.cmds.setAttr(
-        tfm + '.displayMode',
-        edit=True, keyable=True)
-
-    # Add message attributes
-    maya.cmds.addAttr(
-        tfm,
-        longName='shaderFileNode',
-        attributeType='message')
-    maya.cmds.addAttr(
-        tfm,
-        longName='imagePlaneShapeNode',
-        attributeType='message')
+    # Create (dynamic) attributes.
+    _create_image_plane_transform_attrs(tfm)
 
     # Connect Image Plane dummy attrs to Marker Scale node.
     attrs = [
@@ -264,7 +276,9 @@ def create_image_poly_plane(name):
         'verticalFilmOffset'
     ]
     for attr in attrs:
-        maya.cmds.connectAttr(tfm + '.' + attr, mkr_scl + '.' + attr)
+        src = tfm + '.' + attr
+        dst = mkr_scl + '.' + attr
+        maya.cmds.connectAttr(src, dst)
 
     attrs = [
         'focalLength',
@@ -275,7 +289,9 @@ def create_image_poly_plane(name):
         'verticalFilmOffset'
     ]
     for attr in attrs:
-        _force_connect_attr(tfm + '.' + attr, deform_node + '.' + attr)
+        src = tfm + '.' + attr
+        dst = deform_node + '.' + attr
+        _force_connect_attr(src, dst)
 
     # Connect marker scale to transform node.
     maya.cmds.connectAttr(mkr_scl + '.outScale', tfm + '.scale')
@@ -297,10 +313,10 @@ def create_image_poly_plane(name):
     for attr in attrs:
         maya.cmds.setAttr(tfm + '.' + attr, lock=True)
         maya.cmds.setAttr(tfm + '.' + attr, keyable=False, channelBox=False)
-    return tfm, mesh_shp, deform_node
+    return tfm, mesh_shp, mesh_shp_original, creator, deform_node
 
 
-def set_image_plane_values(cam, baked_shp, live_tfm, deform_node):
+def _set_image_plane_values(cam, baked_shp, live_tfm, deform_node):
     """Set the values of a polygon image plane with a regular Maya image
     plane.
 
@@ -486,7 +502,7 @@ def _expand_image_sequence_path(image_sequence_path, format_style):
     return file_pattern, start_frame, end_frame, padding_num, is_seq
 
 
-def create_baked_image_plane_node(cam_tfm):
+def _create_baked_image_plane_node(cam_tfm):
     name = 'bakedImagePlane1'
     img_pl_tfm, img_pl_shp = maya.cmds.imagePlane(
         camera=cam_tfm,
@@ -600,7 +616,7 @@ def set_image_plane_file_path(image_plane_tfm, image_sequence_path):
     return
 
 
-def create_image_plane_shader(image_plane_tfm):
+def _create_image_plane_shader(image_plane_tfm):
     """Create an image plane shader, to display an image sequence in Maya
     on a Polygon image plane.
     """
@@ -678,6 +694,8 @@ def _force_connect_attr(src_attr, dst_attr):
 def _convert_mesh_to_mm_image_plane_shape(name,
                                           img_plane_poly_tfm,
                                           img_plane_poly_shp,
+                                          img_plane_poly_shp_original,
+                                          poly_creator,
                                           shd_node):
     """Convert mesh to a mmImagePlaneShape."""
     name_img_shp = name + 'Shape'
@@ -685,15 +703,38 @@ def _convert_mesh_to_mm_image_plane_shape(name,
         'mmImagePlaneShape',
         name=name_img_shp,
         parent=img_plane_poly_tfm)
+
+    maya.cmds.reorder(img_plane_shp, back=True)
+    maya.cmds.reorder(img_plane_poly_shp_original, back=True)
+    maya.cmds.reorder(img_plane_poly_shp, back=True)
+
+    _create_image_plane_shape_attrs(img_plane_shp)
+
     maya.cmds.connectAttr(
         img_plane_poly_shp + '.outMesh',
         img_plane_shp + '.geometryNode')
     maya.cmds.connectAttr(
         shd_node + '.outColor',
         img_plane_shp + '.shaderNode')
+
+    # Mesh Resolution attr drives the plane sub-divisions.
+    node_attr = img_plane_shp + '.meshResolution'
+    maya.cmds.connectAttr(node_attr, poly_creator + '.subdivisionsWidth')
+    maya.cmds.connectAttr(node_attr, poly_creator + '.subdivisionsHeight')
+
     # Mesh doesn't need to be visible to drive the image plane shape
     # node drawing.
     maya.cmds.setAttr(img_plane_poly_shp + '.intermediateObject', 1)
+
+    # Add extra message attributes for finding nodes during callbacks.
+    maya.cmds.addAttr(
+        img_plane_shp,
+        longName='shaderFileNode',
+        attributeType='message')
+    maya.cmds.addAttr(
+        img_plane_shp,
+        longName='imagePlaneShapeNode',
+        attributeType='message')
     return img_plane_shp
 
 
@@ -711,7 +752,7 @@ def create_image_plane_on_camera(cam):
         baked_shp = image_plane_shps[0]
     if baked_shp is None:
         baked_tfm, baked_shp = \
-            create_baked_image_plane_node(cam_tfm)
+            _create_baked_image_plane_node(cam_tfm)
 
     # If the pixel aspect ratio of the input plate is non-zero, the
     # image plane must scale 'to size' to break the confines of the
@@ -721,19 +762,22 @@ def create_image_plane_on_camera(cam):
 
     # Convert Maya image plane into a polygon image plane.
     name = 'mmImagePlane1'
-    poly_tfm, poly_shp, deform_node = create_image_poly_plane(name=name)
-    poly_tfm = set_image_plane_values(
+    poly_tfm, poly_shp, poly_shp_original, poly_creator, deform_node = \
+        _create_image_poly_plane(name)
+    poly_tfm = _set_image_plane_values(
         cam,
         baked_shp,
         poly_tfm,
         deform_node)
 
-    sg_node, shd_node, file_node = create_image_plane_shader(poly_tfm)
+    sg_node, shd_node, file_node = _create_image_plane_shader(poly_tfm)
 
     img_plane_shp = _convert_mesh_to_mm_image_plane_shape(
         name,
         poly_tfm,
         poly_shp,
+        poly_shp_original,
+        poly_creator,
         shd_node)
 
     # Connect Display mode to live/baked nodes.
@@ -776,15 +820,19 @@ def convert_image_planes_on_camera(cam):
     for image_plane_shp in image_planes:
         # Convert Maya image plane into a polygon image plane.
         name = 'mmImagePlane1'
-        poly_tfm, poly_shp, deform_node = create_image_poly_plane(name)
-        set_image_plane_values(cam, image_plane_shp, poly_tfm, deform_node)
+        poly_tfm, poly_shp, poly_shp_original, poly_creator, deform_node = \
+            _create_image_poly_plane(name)
 
-        sg_node, shd_node, file_node = create_image_plane_shader(poly_tfm)
+        _set_image_plane_values(cam, image_plane_shp, poly_tfm, deform_node)
+
+        sg_node, shd_node, file_node = _create_image_plane_shader(poly_tfm)
 
         _convert_mesh_to_mm_image_plane_shape(
             name,
             poly_tfm,
             poly_shp,
+            poly_shp_original,
+            poly_creator,
             shd_node)
 
         # Disable/hide the Maya image plane.

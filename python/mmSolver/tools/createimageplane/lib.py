@@ -613,6 +613,12 @@ def set_image_plane_file_path(image_plane_tfm, image_sequence_path):
         plane_width = image_width / 100.0
         maya.cmds.imagePlane(image_plane_shp, edit=True, width=plane_width)
         maya.cmds.setAttr(image_plane_shp + '.mr', previous_maintain_ratio)
+
+    if is_seq is False:
+        maya.cmds.setAttr(image_plane_shp + '.frameCache', 1)
+    else:
+        sequence_length = end - start
+        maya.cmds.setAttr(image_plane_shp + '.frameCache', sequence_length)
     return
 
 

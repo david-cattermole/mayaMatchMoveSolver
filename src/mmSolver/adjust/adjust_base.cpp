@@ -162,8 +162,7 @@ void lossFunctionCauchy(const double z,
                         double &rho1,
                         double &rho2) {
     // Cauchy
-    // TODO: replace with 'std::log1p(z)', with C++11.
-    rho0 = std::log(1.0 + z);
+    rho0 = std::log1p(z);
     double t = 1.0 + z;
     rho1 = 1.0 / t;
     rho2 = -1.0 / std::pow(t, 2.0);

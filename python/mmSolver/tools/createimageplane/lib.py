@@ -716,6 +716,10 @@ def _convert_mesh_to_mm_image_plane_shape(name,
 
     _create_image_plane_shape_attrs(img_plane_shp)
 
+    src = img_plane_poly_tfm + '.pixelAspect'
+    dst = img_plane_shp + '.imagePixelAspect'
+    maya.cmds.connectAttr(src, dst)
+
     maya.cmds.connectAttr(
         img_plane_poly_shp + '.outMesh',
         img_plane_shp + '.geometryNode')

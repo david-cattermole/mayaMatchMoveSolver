@@ -78,6 +78,8 @@ import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.createimageplane.constant as const
 
 LOG = mmSolver.logger.get_logger()
+# Enables/disables the use of a 'baked' image plane feature.
+BAKED_IMAGE_PLANE = False
 
 
 def _create_image_plane_transform_attrs(image_plane_tfm):
@@ -159,14 +161,15 @@ def _create_image_plane_transform_attrs(image_plane_tfm):
 
 def _create_image_plane_shape_attrs(image_plane_shp):
     # Display Mode
-    maya.cmds.addAttr(
-        image_plane_shp,
-        longName='displayMode',
-        attributeType='enum',
-        enumName='Live:Baked:')
-    maya.cmds.setAttr(
-        image_plane_shp + '.displayMode',
-        edit=True, keyable=True)
+    if BAKED_IMAGE_PLANE is True:
+        maya.cmds.addAttr(
+            image_plane_shp,
+            longName='displayMode',
+            attributeType='enum',
+            enumName='Live:Baked:')
+        maya.cmds.setAttr(
+            image_plane_shp + '.displayMode',
+            edit=True, keyable=True)
 
     # Image Sequence attribute
     attr = 'imageSequence'
@@ -181,12 +184,31 @@ def _create_image_plane_shape_attrs(image_plane_shp):
         image_plane_shp,
         longName=attr,
         attributeType='double',
-        minValue=0.0,
         defaultValue=0.0)
-    maya.cmds.setAttr(image_plane_shp + '.' + attr, keyable=True)
-    _force_connect_attr(
-        'time1.outTime',
-        image_plane_shp + '.imageSequenceFrame')
+    node_attr = image_plane_shp + '.' + attr
+    maya.cmds.setAttr(node_attr, keyable=True)
+    _force_connect_attr('time1.outTime', node_attr)
+
+    attr = 'imageSequenceFirstFrame'
+    maya.cmds.addAttr(
+        image_plane_shp,
+        longName=attr,
+        niceName='First Frame',
+        attributeType='long',
+        defaultValue=0)
+    node_attr = image_plane_shp + '.' + attr
+    maya.cmds.setAttr(node_attr, keyable=False)
+    maya.cmds.setAttr(node_attr, channelBox=True)
+
+    attr = 'imageSequenceFrameOutput'
+    maya.cmds.addAttr(
+        image_plane_shp,
+        longName=attr,
+        niceName='Frame Output',
+        attributeType='double',
+        defaultValue=0.0)
+    node_attr = image_plane_shp + '.' + attr
+    maya.cmds.setAttr(node_attr, keyable=True)
 
     # Image Sequence details.
     maya.cmds.addAttr(
@@ -562,8 +584,17 @@ def _set_main_image_sequence(tfm, image_sequence_path):
     if image_width_height is not None:
         image_width = image_width_height[0]
         image_height = image_width_height[1]
+
+        if not node_utils.node_is_referenced(shp):
+            maya.cmds.setAttr(shp + '.imageWidth', lock=False)
+            maya.cmds.setAttr(shp + '.imageHeight', lock=False)
+
         maya.cmds.setAttr(shp + '.imageWidth', image_width)
         maya.cmds.setAttr(shp + '.imageHeight', image_height)
+
+        if not node_utils.node_is_referenced(shp):
+            maya.cmds.setAttr(shp + '.imageWidth', lock=True)
+            maya.cmds.setAttr(shp + '.imageHeight', lock=True)
 
     maya.cmds.setAttr(
         shp + '.imageSequence',
@@ -575,6 +606,7 @@ def _set_main_image_sequence(tfm, image_sequence_path):
         maya.cmds.setAttr(shp + '.imageSequenceEndFrame', lock=False)
         maya.cmds.setAttr(shp + '.imageSequencePadding', lock=False)
 
+    maya.cmds.setAttr(shp + '.imageSequenceFirstFrame', start_frame)
     maya.cmds.setAttr(shp + '.imageSequenceStartFrame', start_frame)
     maya.cmds.setAttr(shp + '.imageSequenceEndFrame', end_frame)
     maya.cmds.setAttr(shp + '.imageSequencePadding', pad_num)
@@ -592,6 +624,10 @@ def _set_shader_file_path(image_plane_tfm, image_sequence_path):
         LOG.warn('image plane shader file node is invalid.')
         return
 
+    mm_image_plane_shape = _get_image_plane_mm_shape_node(image_plane_tfm)
+    if mm_image_plane_shape is None:
+        LOG.warn('image plane shape node.')
+
     format_style = const.FORMAT_STYLE_FIRST_FRAME
     file_pattern, start, end, pad_num, is_seq = _expand_image_sequence_path(
         image_sequence_path,
@@ -603,14 +639,10 @@ def _set_shader_file_path(image_plane_tfm, image_sequence_path):
         type='string')
     maya.cmds.setAttr(file_node + '.useFrameExtension', is_seq)
 
-    settable = maya.cmds.getAttr(file_node + '.frameExtension', settable=True)
-    if settable is True:
-        expression = 'frameExtension = {}.imageSequenceFrame'.format(image_plane_tfm)
-        maya.cmds.expression(object=file_node, string=expression)
-
     settable = maya.cmds.getAttr(file_node + '.frameOffset', settable=True)
     if settable is True:
         maya.cmds.setAttr(file_node + '.frameOffset', 0)
+        maya.cmds.setAttr(file_node + '.frameOffset', lock=True)
 
     # Cache the image sequence.
     maya.cmds.setAttr(file_node + '.useHardwareTextureCycling', is_seq)
@@ -620,6 +652,8 @@ def _set_shader_file_path(image_plane_tfm, image_sequence_path):
 
 
 def _set_image_plane_file_path(image_plane_tfm, image_sequence_path):
+    if BAKED_IMAGE_PLANE is False:
+        return
     image_plane_shp = _get_image_plane_baked_shape_node(image_plane_tfm)
     if image_plane_shp is None:
         LOG.warn('image plane baked shape node is invalid.')
@@ -759,21 +793,21 @@ def _convert_mesh_to_mm_image_plane_shape(name,
 
     _create_image_plane_shape_attrs(img_plane_shp)
 
-    src = img_plane_poly_tfm + '.pixelAspect'
-    dst = img_plane_shp + '.imagePixelAspect'
-    maya.cmds.connectAttr(src, dst)
+    _force_connect_attr(
+        img_plane_shp + '.imagePixelAspect',
+        img_plane_poly_tfm + '.pixelAspect')
 
-    maya.cmds.connectAttr(
+    _force_connect_attr(
         img_plane_poly_shp + '.outMesh',
         img_plane_shp + '.geometryNode')
-    maya.cmds.connectAttr(
+    _force_connect_attr(
         shd_node + '.outColor',
         img_plane_shp + '.shaderNode')
 
     # Mesh Resolution attr drives the plane sub-divisions.
     node_attr = img_plane_shp + '.meshResolution'
-    maya.cmds.connectAttr(node_attr, poly_creator + '.subdivisionsWidth')
-    maya.cmds.connectAttr(node_attr, poly_creator + '.subdivisionsHeight')
+    _force_connect_attr(node_attr, poly_creator + '.subdivisionsWidth')
+    _force_connect_attr(node_attr, poly_creator + '.subdivisionsHeight')
 
     # Mesh doesn't need to be visible to drive the image plane shape
     # node drawing.
@@ -803,7 +837,7 @@ def create_image_plane_on_camera(cam):
     baked_shp = None
     if len(image_plane_shps) > 0:
         baked_shp = image_plane_shps[0]
-    if baked_shp is None:
+    if BAKED_IMAGE_PLANE is True and baked_shp is None:
         baked_tfm, baked_shp = \
             _create_baked_image_plane_node(cam_tfm)
 
@@ -811,7 +845,8 @@ def create_image_plane_on_camera(cam):
     # image plane must scale 'to size' to break the confines of the
     # input image width/height.
     image_plane_fit = 4  # 4 = 'To Size'
-    maya.cmds.setAttr(baked_shp + '.fit', image_plane_fit)
+    if BAKED_IMAGE_PLANE is True:
+        maya.cmds.setAttr(baked_shp + '.fit', image_plane_fit)
 
     # Convert Maya image plane into a polygon image plane.
     name = 'mmImagePlane1'
@@ -834,25 +869,46 @@ def create_image_plane_on_camera(cam):
         shd_node)
 
     # Connect Display mode to live/baked nodes.
-    display_mode_expr = const.DISPLAY_MODE_EXPRESSION.format(
-        image_plane_tfm=poly_tfm,
-        baked_image_plane_shape=baked_shp,
-        live_image_plane_shape=img_plane_shp)
-    display_mode_expr = display_mode_expr.replace('{{', '{')
-    display_mode_expr = display_mode_expr.replace('}}', '}')
-    display_mode_expr_node = maya.cmds.expression(string=display_mode_expr)
+    if BAKED_IMAGE_PLANE is True:
+        display_mode_expr = const.DISPLAY_MODE_EXPRESSION.format(
+            image_plane_tfm=poly_tfm,
+            baked_image_plane_shape=baked_shp,
+            live_image_plane_shape=img_plane_shp)
+        display_mode_expr = display_mode_expr.replace('{{', '{')
+        display_mode_expr = display_mode_expr.replace('}}', '}')
+        display_mode_expr_node = maya.cmds.expression(string=display_mode_expr)
 
     # Shortcut connections to nodes.
     _force_connect_attr(file_node + '.message', poly_tfm + '.shaderFileNode')
-    _force_connect_attr(baked_shp + '.message', poly_tfm + '.imagePlaneShapeNode')
+    if BAKED_IMAGE_PLANE is True:
+        _force_connect_attr(baked_shp + '.message', poly_tfm + '.imagePlaneShapeNode')
+
+    # Logic to calculate the frame number.
+    frame_expr = const.FRAME_EXPRESSION.format(node=img_plane_shp)
+    frame_expr = frame_expr.replace('{{', '{')
+    frame_expr = frame_expr.replace('}}', '}')
+    frame_expr_node = maya.cmds.expression(string=frame_expr)
+
+    # Show the users the final frame number.
+    shp_node_attr = img_plane_shp + '.imageSequenceFrameOutput'
+    maya.cmds.setAttr(shp_node_attr, lock=True)
+
+    file_node_attr = file_node + '.frameExtension'
+    _force_connect_attr(shp_node_attr, file_node_attr)
+    maya.cmds.setAttr(file_node_attr, lock=True)
+
+    if BAKED_IMAGE_PLANE is True:
+        baked_node_attr = baked_shp + '.frameExtension'
+        _force_connect_attr(shp_node_attr, baked_node_attr)
+        maya.cmds.setAttr(baked_node_attr, lock=True)
 
     # Keep attributes in sync.
-    _force_connect_attr(poly_tfm + '.depth', baked_shp + '.depth')
-    _force_connect_attr(poly_tfm + '.imageSequenceFrame', baked_shp + '.frameExtension')
-    _force_connect_attr(cam_shp + '.horizontalFilmAperture', baked_shp + '.sizeX')
-    _force_connect_attr(cam_shp + '.verticalFilmAperture', baked_shp + '.sizeY')
-    _force_connect_attr(cam_shp + '.horizontalFilmOffset', baked_shp + '.offsetX')
-    _force_connect_attr(cam_shp + '.verticalFilmOffset', baked_shp + '.offsetY')
+    if BAKED_IMAGE_PLANE is True:
+        _force_connect_attr(poly_tfm + '.depth', baked_shp + '.depth')
+        _force_connect_attr(cam_shp + '.horizontalFilmAperture', baked_shp + '.sizeX')
+        _force_connect_attr(cam_shp + '.verticalFilmAperture', baked_shp + '.sizeY')
+        _force_connect_attr(cam_shp + '.horizontalFilmOffset', baked_shp + '.offsetX')
+        _force_connect_attr(cam_shp + '.verticalFilmOffset', baked_shp + '.offsetY')
 
     # Image sequence.
     image_sequence_path = _get_default_image()

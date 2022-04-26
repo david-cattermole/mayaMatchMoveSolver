@@ -94,9 +94,8 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     AEmmNodeShapeTemplateCommonBegin($nodeName);
 
     editorTemplate -beginLayout "Image Plane Display" -collapse 0;
-    editorTemplate -addControl "displayMode";
-    editorTemplate -addControl "meshResolution";
-    editorTemplate -addSeparator;
+    // editorTemplate -addControl "displayMode";
+    // editorTemplate -addSeparator;
     editorTemplate
         -callCustom
         "AEmmImagePlaneShapeImageSequenceNew"
@@ -112,9 +111,18 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     // to have different backends, such as 3DEqualizer's
     // 'sdv_image_warp' (from 3DE4 R6+), or Nuke.
     editorTemplate -addControl "imageSequenceFrame";
+    editorTemplate -addControl "imageSequenceFirstFrame";
+    editorTemplate -addControl "imageSequenceFrameOutput";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "imageWidth";
+    editorTemplate -addControl "imageHeight";
+    editorTemplate -addControl "imagePixelAspect";
+    editorTemplate -addSeparator;
     editorTemplate -addControl "imageSequenceStartFrame";
     editorTemplate -addControl "imageSequenceEndFrame";
     editorTemplate -addControl "imageSequencePadding";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "meshResolution";
     editorTemplate -endLayout;
 
     editorTemplate -beginLayout "HUD" -collapse 0;
@@ -131,9 +139,6 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     editorTemplate -addControl "imagePlaneShapeNode";
     editorTemplate -endLayout;
 
-    editorTemplate -suppress "imageWidth";
-    editorTemplate -suppress "imageHeight";
-    editorTemplate -suppress "imagePixelAspect";
 
     AEmmNodeShapeTemplateCommonEnd($nodeName);
 }

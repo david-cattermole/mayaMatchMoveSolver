@@ -31,3 +31,10 @@ if ({image_plane_tfm}.displayMode == 0)
     {live_image_plane_shape}.lodVisibility = 0;
 }}
 '''
+
+FRAME_EXPRESSION = '''
+int $start_frame = {node}.imageSequenceStartFrame;
+int $first_frame = {node}.imageSequenceFirstFrame;
+int $user_frame = {node}.imageSequenceFrame;
+{node}.imageSequenceFrameOutput = ($start_frame - $first_frame) + $user_frame;
+'''

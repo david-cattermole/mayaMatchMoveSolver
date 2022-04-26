@@ -120,7 +120,6 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     editorTemplate -addSeparator;
     editorTemplate -addControl "imageSequenceStartFrame";
     editorTemplate -addControl "imageSequenceEndFrame";
-    editorTemplate -addControl "imageSequencePadding";
     editorTemplate -addSeparator;
     editorTemplate -addControl "meshResolution";
     editorTemplate -endLayout;
@@ -139,6 +138,7 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     editorTemplate -addControl "imagePlaneShapeNode";
     editorTemplate -endLayout;
 
+    editorTemplate -suppress "imageSequencePadding";
 
     AEmmNodeShapeTemplateCommonEnd($nodeName);
 }

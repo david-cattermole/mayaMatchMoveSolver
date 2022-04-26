@@ -763,6 +763,11 @@ def _force_connect_attr(src_attr, dst_attr):
     """Disconnect attribute that is already connected to dst_attr, before
     creating the connection.
     """
+    dst_lock_state = maya.cmds.getAttr(dst_attr, lock=True)
+
+    if dst_lock_state is True:
+        maya.cmds.setAttr(dst_attr, lock=False)
+
     conns = maya.cmds.listConnections(
         dst_attr,
         source=True,
@@ -772,6 +777,9 @@ def _force_connect_attr(src_attr, dst_attr):
     for conn in conns:
         maya.cmds.disconnectAttr(conn, dst_attr)
     maya.cmds.connectAttr(src_attr, dst_attr, force=True)
+
+    if dst_lock_state is True:
+        maya.cmds.setAttr(dst_attr, lock=True)
     return
 
 

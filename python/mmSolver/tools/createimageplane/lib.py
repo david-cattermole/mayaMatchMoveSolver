@@ -691,11 +691,12 @@ def _set_image_plane_file_path(image_plane_tfm, image_sequence_path):
         maya.cmds.imagePlane(image_plane_shp, edit=True, width=plane_width)
         maya.cmds.setAttr(image_plane_shp + '.mr', previous_maintain_ratio)
 
+    minimum_cache_size = 99
     if is_seq is False:
-        maya.cmds.setAttr(image_plane_shp + '.frameCache', 1)
+        sequence_length = minimum_cache_size
     else:
-        sequence_length = end - start
-        maya.cmds.setAttr(image_plane_shp + '.frameCache', sequence_length)
+        sequence_length = min(minimum_cache_size, end - start)
+    maya.cmds.setAttr(image_plane_shp + '.frameCache', sequence_length)
     return
 
 

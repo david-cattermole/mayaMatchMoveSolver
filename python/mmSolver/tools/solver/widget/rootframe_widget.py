@@ -183,6 +183,10 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         block = self.blockSignals(True)
         self.userFrames_lineEdit.setText(user_string)
         self.rootFrames_lineEdit.setText(root_string)
+        self.perMarkerFrames_checkBox.setChecked(use_per_marker_frames)
+        self.perMarkerFrames_spinBox.setValue(per_marker_frames)
+        self.spanFrames_checkBox.setChecked(use_span_frames)
+        self.spanFrames_spinBox.setValue(span_frames)
         self.blockSignals(block)
         return
 

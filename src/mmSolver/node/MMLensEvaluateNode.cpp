@@ -56,6 +56,7 @@ MObject MMLensEvaluateNode::a_inY;
 // Output Attributes
 MObject MMLensEvaluateNode::a_outX;
 MObject MMLensEvaluateNode::a_outY;
+MObject MMLensEvaluateNode::a_outHash;
 
 
 MMLensEvaluateNode::MMLensEvaluateNode() {}
@@ -69,7 +70,7 @@ MString MMLensEvaluateNode::nodeName() {
 MStatus MMLensEvaluateNode::compute(const MPlug &plug, MDataBlock &data) {
     MStatus status = MS::kUnknownParameter;
 
-    if ((plug == a_outX) || (plug == a_outY)) {
+    if ((plug == a_outX) || (plug == a_outY) || (plug == a_outHash)) {
         // Get Input Positions
         MDataHandle inXHandle = data.inputValue(a_inX, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -81,6 +82,7 @@ MStatus MMLensEvaluateNode::compute(const MPlug &plug, MDataBlock &data) {
 
         double out_x = x;
         double out_y = y;
+        int64_t out_hash = 0;
 
         // Get Input Lens
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
@@ -99,16 +101,21 @@ MStatus MMLensEvaluateNode::compute(const MPlug &plug, MDataBlock &data) {
                 if (std::isfinite(temp_out_y)) {
                     out_y = temp_out_y;
                 }
+
+                out_hash = lensModel->hashValue();
             }
         }
 
         // Output
         MDataHandle outXHandle = data.outputValue(a_outX);
         MDataHandle outYHandle = data.outputValue(a_outY);
+        MDataHandle outHashHandle = data.outputValue(a_outHash);
         outXHandle.setDouble(out_x);
         outYHandle.setDouble(out_y);
+        outHashHandle.setInt64(out_hash);
         outXHandle.setClean();
         outYHandle.setClean();
+        outHashHandle.setClean();
         status = MS::kSuccess;
     }
 
@@ -171,13 +178,28 @@ MStatus MMLensEvaluateNode::initialize() {
     CHECK_MSTATUS(numericAttr.setWritable(false));
     CHECK_MSTATUS(addAttribute(a_outY));
 
+    // Out Hash
+    a_outHash = numericAttr.create(
+            "outHash", "outHash",
+            MFnNumericData::kInt64, 0);
+    CHECK_MSTATUS(numericAttr.setStorable(false));
+    CHECK_MSTATUS(numericAttr.setKeyable(false));
+    CHECK_MSTATUS(numericAttr.setReadable(true));
+    CHECK_MSTATUS(numericAttr.setWritable(false));
+    CHECK_MSTATUS(addAttribute(a_outHash));
+
     // Attribute Affects
     CHECK_MSTATUS(attributeAffects(a_inX, a_outX));
     CHECK_MSTATUS(attributeAffects(a_inX, a_outY));
+    CHECK_MSTATUS(attributeAffects(a_inX, a_outHash));
+
     CHECK_MSTATUS(attributeAffects(a_inY, a_outX));
     CHECK_MSTATUS(attributeAffects(a_inY, a_outY));
+    CHECK_MSTATUS(attributeAffects(a_inY, a_outHash));
+
     CHECK_MSTATUS(attributeAffects(a_inLens, a_outX));
     CHECK_MSTATUS(attributeAffects(a_inLens, a_outY));
+    CHECK_MSTATUS(attributeAffects(a_inLens, a_outHash));
 
     return MS::kSuccess;
 }

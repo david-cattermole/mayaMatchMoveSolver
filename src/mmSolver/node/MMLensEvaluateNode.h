@@ -57,7 +57,7 @@ public:
     // Output Attributes
     static MObject a_outX;
     static MObject a_outY;
-
+    static MObject a_outHash;
 };
 
 } // namespace mmsolver

@@ -28,7 +28,9 @@ global proc AEmmImagePlaneTransformTemplate(string $nodeName)
 {
     AEmmNodeTransformTemplateCommonBegin($nodeName);
 
-    editorTemplate -beginLayout "Plane Attributes" -collapse 0;
+    editorTemplate -beginLayout "Common" -collapse 0;
+    editorTemplate -addControl "visibility";
+    editorTemplate -addSeparator;
     editorTemplate -addControl "depth";
     editorTemplate -endLayout;
 

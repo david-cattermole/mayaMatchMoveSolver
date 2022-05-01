@@ -58,11 +58,14 @@ MString ImagePlaneShapeNode::m_display_filter_name(MM_IMAGE_PLANE_SHAPE_DISPLAY_
 MString ImagePlaneShapeNode::m_display_filter_label(MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_LABEL);
 
 // Attributes
-MObject ImagePlaneShapeNode::m_enable_hud;
-MObject ImagePlaneShapeNode::m_enable_image_resolution;
+MObject ImagePlaneShapeNode::m_draw_hud;
+MObject ImagePlaneShapeNode::m_draw_image_resolution;
+MObject ImagePlaneShapeNode::m_draw_camera_size;
 MObject ImagePlaneShapeNode::m_image_width;
 MObject ImagePlaneShapeNode::m_image_height;
 MObject ImagePlaneShapeNode::m_image_pixel_aspect;
+MObject ImagePlaneShapeNode::m_camera_width_inch;
+MObject ImagePlaneShapeNode::m_camera_height_inch;
 MObject ImagePlaneShapeNode::m_geometry_node;
 MObject ImagePlaneShapeNode::m_shader_node;
 
@@ -146,19 +149,26 @@ MStatus ImagePlaneShapeNode::initialize() {
     MFnNumericAttribute nAttr;
     MFnMessageAttribute msgAttr;
 
-    m_enable_hud = nAttr.create(
-        "enableHud", "enbhud",
+    m_draw_hud = nAttr.create(
+        "drawHud", "enbhud",
         MFnNumericData::kBoolean, 1);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(m_enable_hud));
+    CHECK_MSTATUS(addAttribute(m_draw_hud));
 
-    m_enable_image_resolution = nAttr.create(
-        "enableImageResolution", "enbimgres",
+    m_draw_image_resolution = nAttr.create(
+        "drawImageResolution", "enbimgres",
         MFnNumericData::kBoolean, 1);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(m_enable_image_resolution));
+    CHECK_MSTATUS(addAttribute(m_draw_image_resolution));
+
+    m_draw_camera_size = nAttr.create(
+        "drawCameraSize", "enbcamsz",
+        MFnNumericData::kBoolean, 1);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(m_draw_camera_size));
 
     m_image_width = nAttr.create(
         "imageWidth", "imgwdth",
@@ -184,6 +194,24 @@ MStatus ImagePlaneShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setMin(0.1));
     CHECK_MSTATUS(nAttr.setMax(4.0));
     CHECK_MSTATUS(addAttribute(m_image_pixel_aspect));
+
+    m_camera_width_inch = nAttr.create(
+        "cameraWidthInch", "camwdthin",
+        MFnNumericData::kDouble, 1.0);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(0));
+    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Camera Width (inches)")));
+    CHECK_MSTATUS(addAttribute(m_camera_width_inch));
+
+    m_camera_height_inch = nAttr.create(
+        "cameraHeightInch", "camhghtin",
+        MFnNumericData::kDouble, 1.0);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(0));
+    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Camera Height (inches)")));
+    CHECK_MSTATUS(addAttribute(m_camera_height_inch));
 
     m_geometry_node = msgAttr.create("geometryNode", "geond", &status);
     CHECK_MSTATUS(status);

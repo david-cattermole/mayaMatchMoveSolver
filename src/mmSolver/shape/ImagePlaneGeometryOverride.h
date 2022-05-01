@@ -99,9 +99,11 @@ protected:
     MObject m_geometry_node;
     MObject m_shader_node;
 
-    bool m_enable_drawables;
+    bool m_draw_hud;
     bool m_draw_image_resolution;
+    bool m_draw_camera_size;
     MString m_image_resolution;
+    MString m_camera_size;
 };
 
 } // namespace mmsolver

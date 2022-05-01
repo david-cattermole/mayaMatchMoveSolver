@@ -44,6 +44,7 @@
 #include <maya/MGeometryExtractor.h>
 
 // MM Solver
+#include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
@@ -54,8 +55,9 @@ const MString renderItemName_imagePlaneShaded = MString("imagePlaneShaded");
 ImagePlaneGeometryOverride::ImagePlaneGeometryOverride(const MObject &obj)
         : MHWRender::MPxGeometryOverride(obj)
         , m_this_node(obj)
-        , m_enable_drawables(false)
+        , m_draw_hud(false)
         , m_draw_image_resolution(false)
+        , m_draw_camera_size(false)
         , m_geometry_node_type(MFn::kInvalid) {}
 
 ImagePlaneGeometryOverride::~ImagePlaneGeometryOverride() {}
@@ -192,58 +194,100 @@ void ImagePlaneGeometryOverride::updateDG()
 
         if (objPath.isValid()) {
             MStatus status;
-            double width = 1.0;
-            double height = 1.0;
-            double pixel_aspect = 1.0;
 
             status = getNodeAttr(
                 objPath,
-                ImagePlaneShapeNode::m_enable_hud,
-                m_enable_drawables);
+                ImagePlaneShapeNode::m_draw_hud,
+                m_draw_hud);
             CHECK_MSTATUS(status);
 
-            status = getNodeAttr(
-                objPath,
-                ImagePlaneShapeNode::m_enable_image_resolution,
-                m_draw_image_resolution);
-            CHECK_MSTATUS(status);
+            const auto int_precision = 0;
+            const auto double_precision = 3;
+            {
+                double width = 1.0;
+                double height = 1.0;
+                double pixel_aspect = 1.0;
 
-            status = getNodeAttr(
-                objPath,
-                ImagePlaneShapeNode::m_image_width,
-                width);
-            CHECK_MSTATUS(status);
+                status = getNodeAttr(
+                    objPath,
+                    ImagePlaneShapeNode::m_draw_image_resolution,
+                    m_draw_image_resolution);
+                CHECK_MSTATUS(status);
 
-            status = getNodeAttr(
-                objPath,
-                ImagePlaneShapeNode::m_image_height,
-                height);
-            CHECK_MSTATUS(status);
+                status = getNodeAttr(
+                    objPath,
+                    ImagePlaneShapeNode::m_image_width,
+                    width);
+                CHECK_MSTATUS(status);
 
-            status = getNodeAttr(
-                objPath,
-                ImagePlaneShapeNode::m_image_pixel_aspect,
-                pixel_aspect);
-            CHECK_MSTATUS(status);
+                status = getNodeAttr(
+                    objPath,
+                    ImagePlaneShapeNode::m_image_height,
+                    height);
+                CHECK_MSTATUS(status);
 
-            double aspect = (width * pixel_aspect) / height;
-            auto int_precision = 0;
-            auto double_precision = 3;
+                status = getNodeAttr(
+                    objPath,
+                    ImagePlaneShapeNode::m_image_pixel_aspect,
+                    pixel_aspect);
+                CHECK_MSTATUS(status);
 
-            MString width_string;
-            MString height_string;
-            MString pixel_aspect_string;
-            MString aspect_string;
+                double aspect = (width * pixel_aspect) / height;
 
-            width_string.set(width, int_precision);
-            height_string.set(height, int_precision);
-            pixel_aspect_string.set(pixel_aspect, double_precision);
-            aspect_string.set(aspect, double_precision);
+                MString width_string;
+                MString height_string;
+                MString pixel_aspect_string;
+                MString aspect_string;
 
-            m_image_resolution =
-                width_string + MString(" x ") + height_string
-                + MString(" | PAR: ") + pixel_aspect_string
-                + MString(" | ") + aspect_string;
+                width_string.set(width, int_precision);
+                height_string.set(height, int_precision);
+                pixel_aspect_string.set(pixel_aspect, double_precision);
+                aspect_string.set(aspect, double_precision);
+
+                m_image_resolution =
+                    MString("Image: ")
+                    + width_string + MString(" x ") + height_string
+                    + MString(" | PAR ") + pixel_aspect_string
+                    + MString(" | ") + aspect_string;
+            }
+
+            {
+                double width = 0.0;
+                double height = 0.0;
+
+                status = getNodeAttr(
+                    objPath,
+                    ImagePlaneShapeNode::m_draw_camera_size,
+                    m_draw_camera_size);
+                CHECK_MSTATUS(status);
+
+                status = getNodeAttr(
+                    objPath,
+                    ImagePlaneShapeNode::m_camera_width_inch,
+                    width);
+                CHECK_MSTATUS(status);
+
+                status = getNodeAttr(
+                    objPath,
+                    ImagePlaneShapeNode::m_camera_height_inch,
+                    height);
+                CHECK_MSTATUS(status);
+
+                double aspect = width / height;
+
+                MString width_string;
+                MString height_string;
+                MString aspect_string;
+
+                width_string.set(width * INCH_TO_MM, double_precision);
+                height_string.set(height * INCH_TO_MM, double_precision);
+                aspect_string.set(aspect, double_precision);
+
+                m_camera_size =
+                    MString("Camera: ")
+                    + width_string + MString("mm x ") + height_string
+                    + MString("mm | ") + aspect_string;
+            }
         }
     }
 }
@@ -530,20 +574,25 @@ void ImagePlaneGeometryOverride::addUIDrawables(
     MUIDrawManager &drawManager,
     const MFrameContext &frameContext
 ) {
-    if (!m_enable_drawables) {
+    if (!m_draw_hud) {
         return;
     }
 
+    const float pos_coord_x = 0.48f;
+    const float pos_coord_y = 0.52f;
+    const MColor text_color = MColor(1.0f, 0.0f, 0.0f);
+    const uint32_t font_size = 12;
+    const int* background_size = nullptr;
+    const MColor* background_color = nullptr;
+    auto dynamic = false;
+
     if (m_draw_image_resolution) {
-        auto text_position = MPoint(0.48, 0.52, 0.0);
-        uint32_t font_size = 12;
+        auto text_position = MPoint(pos_coord_x, pos_coord_y, 0.0);
         auto font_alignment = MUIDrawManager::kRight;
-        const int* background_size = nullptr;
-        const MColor* background_color = nullptr;
-        auto dynamic = false;
 
         drawManager.beginDrawable();
-        drawManager.setColor(MColor(1.0f, 0.0f, 0.0f));
+        drawManager.setColor(text_color);
+        drawManager.setFontSize(font_size);
         drawManager.text(
             text_position,
             m_image_resolution,
@@ -551,7 +600,23 @@ void ImagePlaneGeometryOverride::addUIDrawables(
             background_size,
             background_color,
             dynamic);
+        drawManager.endDrawable();
+    }
+
+    if (m_draw_camera_size) {
+        auto text_position = MPoint(-pos_coord_x, pos_coord_y, 0.0);
+        auto font_alignment = MUIDrawManager::kLeft;
+
+        drawManager.beginDrawable();
+        drawManager.setColor(text_color);
         drawManager.setFontSize(font_size);
+        drawManager.text(
+            text_position,
+            m_camera_size,
+            font_alignment,
+            background_size,
+            background_color,
+            dynamic);
         drawManager.endDrawable();
     }
 }

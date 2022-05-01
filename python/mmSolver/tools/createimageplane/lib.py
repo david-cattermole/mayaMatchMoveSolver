@@ -952,6 +952,9 @@ def _convert_mesh_to_mm_image_plane_shape(name,
     maya.cmds.setAttr(img_plane_shp + '.localScaleY', channelBox=False)
     maya.cmds.setAttr(img_plane_shp + '.localScaleZ', channelBox=False)
 
+    maya.cmds.setAttr(img_plane_shp + '.cameraWidthInch', channelBox=False)
+    maya.cmds.setAttr(img_plane_shp + '.cameraHeightInch', channelBox=False)
+
     maya.cmds.reorder(img_plane_shp, back=True)
     maya.cmds.reorder(img_plane_poly_shp_original, back=True)
     maya.cmds.reorder(img_plane_poly_shp, back=True)
@@ -1015,6 +1018,15 @@ def _convert_mesh_to_mm_image_plane_shape(name,
     _force_connect_attr(
         img_plane_shp + '.alphaGain',
         reverse2_node + '.inputZ')
+
+    # Set the camera size of the image plane shape HUD.
+    _force_connect_attr(
+        img_plane_poly_tfm + '.horizontalFilmAperture',
+        img_plane_shp + '.cameraWidthInch')
+    _force_connect_attr(
+        img_plane_poly_tfm + '.verticalFilmAperture',
+        img_plane_shp + '.cameraHeightInch')
+
     # Default color for the image plane, when nothing is loaded.
     _force_connect_attr(
         img_plane_shp + '.imageDefaultColor',

@@ -89,11 +89,14 @@ public:
     static MString m_display_filter_label;
 
     // Attributes
-    static MObject m_enable_hud;
-    static MObject m_enable_image_resolution;
+    static MObject m_draw_hud;
+    static MObject m_draw_image_resolution;
+    static MObject m_draw_camera_size;
     static MObject m_image_width;
     static MObject m_image_height;
     static MObject m_image_pixel_aspect;
+    static MObject m_camera_width_inch;
+    static MObject m_camera_height_inch;
     static MObject m_geometry_node;
     static MObject m_shader_node;
 };

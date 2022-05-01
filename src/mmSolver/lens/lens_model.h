@@ -25,6 +25,7 @@
 
 // STL
 #include <memory>
+#include "mmSolver/core/mmhash.h"
 
 enum class LensModelState {
     kUninitialized = 0,
@@ -181,6 +182,8 @@ public:
         const double y,
         double &out_x,
         double &out_y) = 0;
+
+    virtual mmhash::HashValue hashValue() = 0;
 
 protected:
     std::shared_ptr<LensModel> m_inputLensModel;

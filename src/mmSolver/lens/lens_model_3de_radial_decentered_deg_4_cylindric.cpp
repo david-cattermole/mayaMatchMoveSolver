@@ -23,6 +23,9 @@
 
 #include "lens_model_3de_radial_decentered_deg_4_cylindric.h"
 
+// MM Solver
+#include "mmSolver/core/mmhash.h"
+
 void LensModel3deRadialDecenteredDeg4Cylindric::applyModelUndistort(
     const double xd,
     const double yd,
@@ -113,4 +116,33 @@ void LensModel3deRadialDecenteredDeg4Cylindric::applyModelDistort(
     xu -= 0.5;
     yu -= 0.5;
     return;
+}
+
+mmhash::HashValue LensModel3deRadialDecenteredDeg4Cylindric::hashValue() {
+    // Apply the 'previous' lens model in the chain.
+    std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
+    mmhash::HashValue hash = 0;
+    if (inputLensModel != nullptr) {
+        hash = inputLensModel->hashValue();
+    }
+
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_focalLength_cm));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_filmBackWidth_cm));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_filmBackHeight_cm));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_pixelAspect));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_lensCenterOffsetX_cm));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_lensCenterOffsetY_cm));
+
+    mmhash::combine(hash, std::hash<double>()(m_degree2_distortion));
+    mmhash::combine(hash, std::hash<double>()(m_degree2_u));
+    mmhash::combine(hash, std::hash<double>()(m_degree2_v));
+
+    mmhash::combine(hash, std::hash<double>()(m_degree4_distortion));
+    mmhash::combine(hash, std::hash<double>()(m_degree4_u));
+    mmhash::combine(hash, std::hash<double>()(m_degree4_v));
+
+    mmhash::combine(hash, std::hash<double>()(m_cylindricDirection));
+    mmhash::combine(hash, std::hash<double>()(m_cylindricBending));
+
+    return hash;
 }

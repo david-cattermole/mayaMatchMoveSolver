@@ -50,6 +50,7 @@
 
 // MM Solver
 #include "lens_model.h"
+#include "mmSolver/core/mmhash.h"
 
 using LensPluginBase = tde4_ld_plugin;
 using LensPluginClassic = tde4_ldp_classic_3de_mixed<ldpk::vec2d, ldpk::mat2d>;
@@ -158,6 +159,8 @@ public:
         const double y,
         double &out_x,
         double &out_y);
+
+    virtual mmhash::HashValue hashValue();
 
 private:
     std::unique_ptr<LensPluginBase> m_lensPlugin;

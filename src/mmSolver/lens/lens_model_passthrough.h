@@ -28,6 +28,7 @@
 
 // MM Solver
 #include "lens_model.h"
+#include "mmSolver/core/mmhash.h"
 
 class LensModelPassthrough : public LensModel {
 public:
@@ -61,6 +62,8 @@ public:
         const double y,
         double &out_x,
         double &out_y);
+
+    virtual mmhash::HashValue hashValue();
 };
 
 

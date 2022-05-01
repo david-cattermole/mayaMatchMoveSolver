@@ -22,8 +22,11 @@
 
 #include "lens_model_3de_classic.h"
 
+// STL
+#include <functional>
+
 // MM Solver
-#include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/core/mmhash.h"
 
 void LensModel3deClassic::applyModelUndistort(
     const double xd,
@@ -105,4 +108,28 @@ void LensModel3deClassic::applyModelDistort(
     xu -= 0.5;
     yu -= 0.5;
     return;
+}
+
+mmhash::HashValue LensModel3deClassic::hashValue() {
+    // Apply the 'previous' lens model in the chain.
+    std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
+    mmhash::HashValue hash = 0;
+    if (inputLensModel != nullptr) {
+        hash = inputLensModel->hashValue();
+    }
+
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_focalLength_cm));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_filmBackWidth_cm));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_filmBackHeight_cm));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_pixelAspect));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_lensCenterOffsetX_cm));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_lensCenterOffsetY_cm));
+
+    mmhash::combine(hash, std::hash<double>()(m_distortion));
+    mmhash::combine(hash, std::hash<double>()(m_anamorphicSqueeze));
+    mmhash::combine(hash, std::hash<double>()(m_curvatureX));
+    mmhash::combine(hash, std::hash<double>()(m_curvatureY));
+    mmhash::combine(hash, std::hash<double>()(m_quarticDistortion));
+
+    return hash;
 }

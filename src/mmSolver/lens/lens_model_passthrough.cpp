@@ -63,3 +63,15 @@ void LensModelPassthrough::applyModelDistort(
     yu = ydd;
     return;
 }
+
+mmhash::HashValue LensModelPassthrough::hashValue() {
+    // Apply the 'previous' lens model in the chain.
+    std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
+    mmhash::HashValue hash = 0;
+    if (inputLensModel != nullptr) {
+        hash = inputLensModel->hashValue();
+    }
+
+    // Do nothing. This LensModel is a pass-through only.
+    return hash;
+}

@@ -51,6 +51,7 @@
 
 // MM Solver
 #include "lens_model.h"
+#include "mmSolver/core/mmhash.h"
 
 using LensPluginBase = tde4_ld_plugin;
 using LensPluginAnamorphicDeg4RotateSqueezeXY =
@@ -271,6 +272,8 @@ public:
         const double y,
         double &out_x,
         double &out_y);
+
+    virtual mmhash::HashValue hashValue();
 
 private:
     std::unique_ptr<LensPluginBase> m_lensPlugin;

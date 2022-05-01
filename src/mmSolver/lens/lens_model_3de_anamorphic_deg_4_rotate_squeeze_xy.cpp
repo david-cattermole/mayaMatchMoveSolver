@@ -23,6 +23,9 @@
 
 #include "lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.h"
 
+// MM Solver
+#include "mmSolver/core/mmhash.h"
+
 void LensModel3deAnamorphicDeg4RotateSqueezeXY::applyModelUndistort(
     const double xd,
     const double yd,
@@ -129,4 +132,42 @@ void LensModel3deAnamorphicDeg4RotateSqueezeXY::applyModelDistort(
     xu -= 0.5;
     yu -= 0.5;
     return;
+}
+
+mmhash::HashValue LensModel3deAnamorphicDeg4RotateSqueezeXY::hashValue() {
+    // Apply the 'previous' lens model in the chain.
+    std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
+    mmhash::HashValue hash = 0;
+    if (inputLensModel != nullptr) {
+        hash = inputLensModel->hashValue();
+    }
+
+
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_focalLength_cm));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_filmBackWidth_cm));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_filmBackHeight_cm));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_pixelAspect));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_lensCenterOffsetX_cm));
+    mmhash::combine(hash, std::hash<double>()(LensModel::m_lensCenterOffsetY_cm));
+
+    mmhash::combine(hash, std::hash<double>()(m_degree2_cx02));
+    mmhash::combine(hash, std::hash<double>()(m_degree2_cy02));
+
+    mmhash::combine(hash, std::hash<double>()(m_degree2_cx22));
+    mmhash::combine(hash, std::hash<double>()(m_degree2_cy22));
+
+    mmhash::combine(hash, std::hash<double>()(m_degree4_cx04));
+    mmhash::combine(hash, std::hash<double>()(m_degree4_cy04));
+
+    mmhash::combine(hash, std::hash<double>()(m_degree4_cx24));
+    mmhash::combine(hash, std::hash<double>()(m_degree4_cy24));
+
+    mmhash::combine(hash, std::hash<double>()(m_degree4_cx44));
+    mmhash::combine(hash, std::hash<double>()(m_degree4_cy44));
+
+    mmhash::combine(hash, std::hash<double>()(m_lensRotation));
+    mmhash::combine(hash, std::hash<double>()(m_squeeze_x));
+    mmhash::combine(hash, std::hash<double>()(m_squeeze_y));
+
+    return hash;
 }

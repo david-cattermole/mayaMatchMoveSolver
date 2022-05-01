@@ -48,6 +48,7 @@ set(SOURCE_FILES
   mmSolver/core/mmcamera.cpp
   mmSolver/core/mmcoord.cpp
   mmSolver/core/mmdata.cpp
+  mmSolver/core/mmhash.cpp
   mmSolver/core/mmmath.cpp
   mmSolver/core/reprojection.cpp
   mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.cpp

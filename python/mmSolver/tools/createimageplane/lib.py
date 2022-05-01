@@ -945,6 +945,13 @@ def _convert_mesh_to_mm_image_plane_shape(name,
         name=name_img_shp,
         parent=img_plane_poly_tfm)
 
+    maya.cmds.setAttr(img_plane_shp + '.localPositionX', channelBox=False)
+    maya.cmds.setAttr(img_plane_shp + '.localPositionY', channelBox=False)
+    maya.cmds.setAttr(img_plane_shp + '.localPositionZ', channelBox=False)
+    maya.cmds.setAttr(img_plane_shp + '.localScaleX', channelBox=False)
+    maya.cmds.setAttr(img_plane_shp + '.localScaleY', channelBox=False)
+    maya.cmds.setAttr(img_plane_shp + '.localScaleZ', channelBox=False)
+
     maya.cmds.reorder(img_plane_shp, back=True)
     maya.cmds.reorder(img_plane_poly_shp_original, back=True)
     maya.cmds.reorder(img_plane_poly_shp, back=True)

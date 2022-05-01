@@ -56,12 +56,12 @@ MarkerDrawOverride::MarkerDrawOverride(const MObject &obj)
         : MHWRender::MPxDrawOverride(obj,
                                      /*callback=*/ nullptr,
                                      /*isAlwaysDirty=*/ true) {
-        m_model_editor_changed_callback_id = MEventMessage::addEventCallback(
-                "modelEditorChanged", on_model_editor_changed_func, this);
+    m_model_editor_changed_callback_id = MEventMessage::addEventCallback(
+        "modelEditorChanged", on_model_editor_changed_func, this);
 
     MStatus status;
     MFnDependencyNode node(obj, &status);
-        m_node = status ? dynamic_cast<MarkerShapeNode *>(node.userNode()) : nullptr;
+    m_node = status ? dynamic_cast<MarkerShapeNode *>(node.userNode()) : nullptr;
 }
 
 MarkerDrawOverride::~MarkerDrawOverride() {

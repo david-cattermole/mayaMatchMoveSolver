@@ -89,6 +89,7 @@ public:
     static MString m_display_filter_label;
 
     // Attributes
+    static MObject m_visible_to_camera_only;
     static MObject m_draw_hud;
     static MObject m_draw_image_resolution;
     static MObject m_draw_camera_size;

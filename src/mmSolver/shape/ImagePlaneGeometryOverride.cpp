@@ -46,6 +46,7 @@
 // MM Solver
 #include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
+#include "ShapeDrawUtils.h"
 
 namespace mmsolver {
 
@@ -55,12 +56,30 @@ const MString renderItemName_imagePlaneShaded = MString("imagePlaneShaded");
 ImagePlaneGeometryOverride::ImagePlaneGeometryOverride(const MObject &obj)
         : MHWRender::MPxGeometryOverride(obj)
         , m_this_node(obj)
+        , m_visible(true)
         , m_draw_hud(false)
         , m_draw_image_resolution(false)
         , m_draw_camera_size(false)
-        , m_geometry_node_type(MFn::kInvalid) {}
+        , m_geometry_node_type(MFn::kInvalid) {
+    m_model_editor_changed_callback_id = MEventMessage::addEventCallback(
+        "modelEditorChanged", on_model_editor_changed_func, this);
+}
 
-ImagePlaneGeometryOverride::~ImagePlaneGeometryOverride() {}
+ImagePlaneGeometryOverride::~ImagePlaneGeometryOverride() {
+    if (m_model_editor_changed_callback_id != 0) {
+        MMessage::removeCallback(m_model_editor_changed_callback_id);
+        m_model_editor_changed_callback_id = 0;
+    }
+}
+
+void ImagePlaneGeometryOverride::on_model_editor_changed_func(void *clientData) {
+    // Mark the node as being dirty so that it can update on display
+    // appearance switch among wireframe and shaded.
+    ImagePlaneGeometryOverride *ovr = static_cast<ImagePlaneGeometryOverride *>(clientData);
+    if (ovr && !ovr->m_this_node.isNull()) {
+        MHWRender::MRenderer::setGeometryDrawDirty(ovr->m_this_node);
+    }
+}
 
 MHWRender::DrawAPI
 ImagePlaneGeometryOverride::supportedDrawAPIs() const {
@@ -195,11 +214,45 @@ void ImagePlaneGeometryOverride::updateDG()
         if (objPath.isValid()) {
             MStatus status;
 
+            auto frame_context = getFrameContext();
+            MDagPath camera_node_path = frame_context->getCurrentCameraPath(&status);
+            CHECK_MSTATUS(status);
+
+            // By default the draw is visible, unless overridden by
+            // m_visible_to_camera_only or m_is_under_camera.
+            m_visible = true;
+
+            status = getNodeAttr(
+                objPath,
+                ImagePlaneShapeNode::m_visible_to_camera_only,
+                m_visible_to_camera_only);
+            CHECK_MSTATUS(status);
+
             status = getNodeAttr(
                 objPath,
                 ImagePlaneShapeNode::m_draw_hud,
                 m_draw_hud);
             CHECK_MSTATUS(status);
+
+            m_is_under_camera = true;
+            if (camera_node_path.isValid()) {
+                status = objectIsBelowCamera(
+                    objPath,
+                    camera_node_path,
+                    m_is_under_camera);
+                CHECK_MSTATUS(status);
+            }
+
+            if (!m_is_under_camera) {
+                if (m_visible_to_camera_only) {
+                    m_visible = false;
+                }
+                // Do not draw the HUD if we are not under the camera,
+                // the HUD must only be visible from the point of view
+                // of the intended camera, otherwise it will look
+                // wrong.
+                m_draw_hud = false;
+            }
 
             const auto int_precision = 0;
             const auto double_precision = 3;
@@ -370,7 +423,7 @@ void ImagePlaneGeometryOverride::updateRenderItems(
     }
 
     if (wireframeItem) {
-        wireframeItem->enable(true);
+        wireframeItem->enable(m_visible);
 
         MShaderInstance *shader = shaderManager->getStockShader(
             MShaderManager::k3dSolidShader);
@@ -383,7 +436,7 @@ void ImagePlaneGeometryOverride::updateRenderItems(
     }
 
     if (shadedItem) {
-        shadedItem->enable(true);
+        shadedItem->enable(m_visible);
 
         if (!m_shader_node.isNull()) {
             // TODO: Implement callback to detect when the shader

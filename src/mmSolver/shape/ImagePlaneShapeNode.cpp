@@ -58,6 +58,7 @@ MString ImagePlaneShapeNode::m_display_filter_name(MM_IMAGE_PLANE_SHAPE_DISPLAY_
 MString ImagePlaneShapeNode::m_display_filter_label(MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_LABEL);
 
 // Attributes
+MObject ImagePlaneShapeNode::m_visible_to_camera_only;
 MObject ImagePlaneShapeNode::m_draw_hud;
 MObject ImagePlaneShapeNode::m_draw_image_resolution;
 MObject ImagePlaneShapeNode::m_draw_camera_size;
@@ -161,6 +162,13 @@ MStatus ImagePlaneShapeNode::initialize() {
     MStatus status;
     MFnNumericAttribute nAttr;
     MFnMessageAttribute msgAttr;
+
+    m_visible_to_camera_only = nAttr.create(
+        "visibleToCameraOnly", "viscamony",
+        MFnNumericData::kBoolean, 0);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(m_visible_to_camera_only));
 
     m_draw_hud = nAttr.create(
         "drawHud", "enbhud",

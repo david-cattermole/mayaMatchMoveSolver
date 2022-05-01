@@ -92,6 +92,8 @@ public:
 protected:
     ImagePlaneGeometryOverride(const MObject &obj);
 
+    static void on_model_editor_changed_func(void *clientData);
+
     MObject m_this_node;
     MDagPath m_geometry_node_path;
     MFn::Type m_geometry_node_type;
@@ -99,11 +101,15 @@ protected:
     MObject m_geometry_node;
     MObject m_shader_node;
 
+    bool m_visible;
+    bool m_visible_to_camera_only;
+    bool m_is_under_camera;
     bool m_draw_hud;
     bool m_draw_image_resolution;
     bool m_draw_camera_size;
     MString m_image_resolution;
     MString m_camera_size;
+    MCallbackId m_model_editor_changed_callback_id;
 };
 
 } // namespace mmsolver

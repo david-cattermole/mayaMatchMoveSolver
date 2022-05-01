@@ -959,7 +959,7 @@ def _convert_mesh_to_mm_image_plane_shape(name,
     # Image plane hash will be used to stop updating the Viewport 2.0
     # shape when the lens distortion values stay the same.
     lens_eval_node = maya.cmds.createNode('mmLensEvaluate')
-    _force_connect_attr(img_plane_shp + '.outLens', lens_eval_node + '.inLens')
+    _force_connect_attr(cam_shp + '.outLens', lens_eval_node + '.inLens')
     _force_connect_attr(lens_eval_node + '.outHash', img_plane_shp + '.lensHashCurrent')
 
     maya.cmds.reorder(img_plane_shp, back=True)

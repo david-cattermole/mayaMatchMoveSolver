@@ -36,6 +36,7 @@ global proc AEmmLensEvaluateTemplate(string $nodeName)
     editorTemplate -beginLayout "Outputs" -collapse 0;
     editorTemplate -addControl "outX";
     editorTemplate -addControl "outY";
+    editorTemplate -addControl "outHash";
     editorTemplate -endLayout;
 
     editorTemplate -suppress "outLens";

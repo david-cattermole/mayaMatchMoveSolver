@@ -212,7 +212,8 @@ MStatus ImagePlaneShapeNode::initialize() {
         "cameraWidthInch", "camwdthin",
         MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setConnectable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(false));
     CHECK_MSTATUS(nAttr.setMin(0));
     CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Camera Width (inches)")));
     CHECK_MSTATUS(addAttribute(m_camera_width_inch));
@@ -221,7 +222,8 @@ MStatus ImagePlaneShapeNode::initialize() {
         "cameraHeightInch", "camhghtin",
         MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setConnectable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(false));
     CHECK_MSTATUS(nAttr.setMin(0));
     CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Camera Height (inches)")));
     CHECK_MSTATUS(addAttribute(m_camera_height_inch));

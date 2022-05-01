@@ -97,6 +97,8 @@ public:
     static MObject m_image_pixel_aspect;
     static MObject m_camera_width_inch;
     static MObject m_camera_height_inch;
+    static MObject m_lens_hash_current;
+    static MObject m_lens_hash_previous;
     static MObject m_geometry_node;
     static MObject m_shader_node;
 };

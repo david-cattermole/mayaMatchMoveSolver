@@ -155,6 +155,8 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     editorTemplate -suppress "imageSequencePadding";
     editorTemplate -suppress "cameraWidthInch";
     editorTemplate -suppress "cameraHeightInch";
+    editorTemplate -suppress "lensHashCurrent";
+    editorTemplate -suppress "lensHashPrevious";
 
     AEmmNodeShapeTemplateCommonEnd($nodeName);
 }

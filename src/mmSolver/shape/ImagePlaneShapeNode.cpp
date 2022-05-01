@@ -66,6 +66,8 @@ MObject ImagePlaneShapeNode::m_image_height;
 MObject ImagePlaneShapeNode::m_image_pixel_aspect;
 MObject ImagePlaneShapeNode::m_camera_width_inch;
 MObject ImagePlaneShapeNode::m_camera_height_inch;
+MObject ImagePlaneShapeNode::m_lens_hash_current;
+MObject ImagePlaneShapeNode::m_lens_hash_previous;
 MObject ImagePlaneShapeNode::m_geometry_node;
 MObject ImagePlaneShapeNode::m_shader_node;
 
@@ -82,7 +84,7 @@ ImagePlaneShapeNode::compute(
     const MPlug &/*plug*/,
     MDataBlock &/*dataBlock*/
 ) {
-    return MS::kUnknownParameter;;
+    return MS::kUnknownParameter;
 }
 
 bool ImagePlaneShapeNode::isBounded() const {
@@ -90,10 +92,21 @@ bool ImagePlaneShapeNode::isBounded() const {
 }
 
 MBoundingBox ImagePlaneShapeNode::boundingBox() const {
-    // This forces the image plane to update very often, fast enough
-    // to ensure users changing lens distortion sliders will see the
-    // node update in real-time.
-    MHWRender::MRenderer::setGeometryDrawDirty(thisMObject());
+    MObject this_node = thisMObject();
+
+    MPlug current_plug(this_node, m_lens_hash_current);
+    int64_t current_hash = current_plug.asInt64();
+
+    MPlug previous_plug(this_node, m_lens_hash_previous);
+    int64_t previous_hash = previous_plug.asInt64();
+
+    // Limit the number of calls to
+    // 'setGeometryDrawDirty', because this causes the viewport update
+    // to run constantly, running up CPU for no reason.
+    if (current_hash != previous_hash) {
+        MHWRender::MRenderer::setGeometryDrawDirty(this_node);
+        previous_plug.setInt64(current_hash);
+    }
 
     MPoint corner1(-1.0, -1.0, -1.0);
     MPoint corner2(1.0, 1.0, 1.0);
@@ -212,6 +225,24 @@ MStatus ImagePlaneShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setMin(0));
     CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Camera Height (inches)")));
     CHECK_MSTATUS(addAttribute(m_camera_height_inch));
+
+    m_lens_hash_current = nAttr.create(
+        "lensHashCurrent", "lnshshcur",
+        MFnNumericData::kInt64, 0);
+    CHECK_MSTATUS(nAttr.setStorable(false));
+    CHECK_MSTATUS(nAttr.setConnectable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(false));
+    CHECK_MSTATUS(nAttr.setHidden(true));
+    CHECK_MSTATUS(addAttribute(m_lens_hash_current));
+
+    m_lens_hash_previous = nAttr.create(
+        "lensHashPrevious", "lnshshprv",
+        MFnNumericData::kInt64, 0);
+    CHECK_MSTATUS(nAttr.setStorable(false));
+    CHECK_MSTATUS(nAttr.setConnectable(false));
+    CHECK_MSTATUS(nAttr.setKeyable(false));
+    CHECK_MSTATUS(nAttr.setHidden(true));
+    CHECK_MSTATUS(addAttribute(m_lens_hash_previous));
 
     m_geometry_node = msgAttr.create("geometryNode", "geond", &status);
     CHECK_MSTATUS(status);

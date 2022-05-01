@@ -975,6 +975,9 @@ def _convert_mesh_to_mm_image_plane_shape(name,
     _force_connect_attr(
         shd_node + '.outColor',
         img_plane_shp + '.shaderNode')
+    _force_connect_attr(
+        cam_shp + '.message',
+        img_plane_shp + '.cameraNode')
 
     # The image drives the pixel aspect ratio of the image plane.
     _force_connect_attr(

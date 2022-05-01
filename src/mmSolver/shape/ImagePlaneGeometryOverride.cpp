@@ -46,7 +46,6 @@
 // MM Solver
 #include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
-#include "ShapeDrawUtils.h"
 
 namespace mmsolver {
 
@@ -206,6 +205,39 @@ void ImagePlaneGeometryOverride::updateDG()
         }
     }
 
+    if (!m_camera_node_path.isValid()) {
+        MString attr_name = "cameraNode";
+        MPlugArray connections;
+        bool ok = getUpstreamNodeFromConnection(
+            m_this_node,
+            attr_name,
+            connections);
+
+        if (ok) {
+            for (uint32_t i = 0; i < connections.length(); ++i) {
+                MObject node = connections[i].node();
+
+                if (node.hasFn(MFn::kCamera))
+                {
+                    MDagPath path;
+                    MDagPath::getAPathTo(node, path);
+                    m_camera_node_path = path;
+                    m_camera_node_type = path.apiType();
+                    // MMSOLVER_INFO(
+                    //     "Validated camera node: "
+                    //     << " path=" << m_camera_node_path.fullPathName().asChar()
+                    //     << " type=" << node.apiTypeStr());
+                    break;
+                } else {
+                    MMSOLVER_WRN(
+                        "Camera node is not correct type:"
+                        << " path=" << m_camera_node_path.fullPathName().asChar()
+                        << " type=" << node.apiTypeStr());
+                }
+            }
+        }
+    }
+
     // Query Attributes from the base node.
     {
         MDagPath objPath;
@@ -235,12 +267,12 @@ void ImagePlaneGeometryOverride::updateDG()
             CHECK_MSTATUS(status);
 
             m_is_under_camera = true;
-            if (camera_node_path.isValid()) {
-                status = objectIsBelowCamera(
-                    objPath,
-                    camera_node_path,
-                    m_is_under_camera);
-                CHECK_MSTATUS(status);
+            if (camera_node_path.isValid() && m_camera_node_path.isValid()) {
+                // Using an explicit camera node path to compare
+                // against ensures that if a rouge camera is parented
+                // under the attached camera, the node will be
+                // invisible.
+                m_is_under_camera = m_camera_node_path == camera_node_path;
             }
 
             if (!m_is_under_camera) {

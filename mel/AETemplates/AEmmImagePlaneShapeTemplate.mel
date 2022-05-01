@@ -151,6 +151,7 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     editorTemplate -addControl "shaderNode";
     editorTemplate -addControl "shaderFileNode";
     editorTemplate -addControl "geometryNode";
+    editorTemplate -addControl "cameraNode";
     editorTemplate -addControl "imagePlaneShapeNode";
     editorTemplate -endLayout;
 

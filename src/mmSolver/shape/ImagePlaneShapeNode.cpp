@@ -71,6 +71,7 @@ MObject ImagePlaneShapeNode::m_lens_hash_current;
 MObject ImagePlaneShapeNode::m_lens_hash_previous;
 MObject ImagePlaneShapeNode::m_geometry_node;
 MObject ImagePlaneShapeNode::m_shader_node;
+MObject ImagePlaneShapeNode::m_camera_node;
 
 ImagePlaneShapeNode::ImagePlaneShapeNode() {}
 
@@ -267,6 +268,13 @@ MStatus ImagePlaneShapeNode::initialize() {
     CHECK_MSTATUS(msgAttr.setConnectable(true));
     CHECK_MSTATUS(msgAttr.setKeyable(false));
     CHECK_MSTATUS(addAttribute(m_shader_node));
+
+    m_camera_node = msgAttr.create("cameraNode", "camnd", &status);
+    CHECK_MSTATUS(status);
+    CHECK_MSTATUS(msgAttr.setStorable(true));
+    CHECK_MSTATUS(msgAttr.setConnectable(true));
+    CHECK_MSTATUS(msgAttr.setKeyable(false));
+    CHECK_MSTATUS(addAttribute(m_camera_node));
 
     return MS::kSuccess;
 }

@@ -102,6 +102,7 @@ public:
     static MObject m_lens_hash_previous;
     static MObject m_geometry_node;
     static MObject m_shader_node;
+    static MObject m_camera_node;
 };
 
 } // namespace mmsolver

@@ -96,10 +96,13 @@ protected:
 
     MObject m_this_node;
     MDagPath m_geometry_node_path;
+    MDagPath m_camera_node_path;
     MFn::Type m_geometry_node_type;
     MFn::Type m_shader_node_type;
+    MFn::Type m_camera_node_type;
     MObject m_geometry_node;
     MObject m_shader_node;
+    MObject m_camera_node;
 
     bool m_visible;
     bool m_visible_to_camera_only;

@@ -408,7 +408,7 @@ def _create_image_poly_plane(name):
     for attr in attrs:
         src = tfm + '.' + attr
         dst = mkr_scl + '.' + attr
-        maya.cmds.connectAttr(src, dst)
+        _force_connect_attr(src, dst)
 
     attrs = [
         'focalLength',
@@ -424,13 +424,13 @@ def _create_image_poly_plane(name):
         _force_connect_attr(src, dst)
 
     # Connect marker scale to transform node.
-    maya.cmds.connectAttr(mkr_scl + '.outScale', tfm + '.scale')
-    maya.cmds.connectAttr(mkr_scl + '.outTranslateX', tfm + '.translateX')
-    maya.cmds.connectAttr(mkr_scl + '.outTranslateY', tfm + '.translateY')
+    _force_connect_attr(mkr_scl + '.outScale', tfm + '.scale')
+    _force_connect_attr(mkr_scl + '.outTranslateX', tfm + '.translateX')
+    _force_connect_attr(mkr_scl + '.outTranslateY', tfm + '.translateY')
 
     # Connect inverted depth to the transform TZ.
-    maya.cmds.connectAttr(mkr_scl + '.depth', inv_mult + '.input1Z')
-    maya.cmds.connectAttr(inv_mult + '.outputZ', tfm + '.translateZ')
+    _force_connect_attr(mkr_scl + '.depth', inv_mult + '.input1Z')
+    _force_connect_attr(inv_mult + '.outputZ', tfm + '.translateZ')
     maya.cmds.setAttr(inv_mult + '.operation', 1)  # Multiply operation
     maya.cmds.setAttr(inv_mult + '.input2Z', -1.0)
 
@@ -928,6 +928,7 @@ def _force_connect_attr(src_attr, dst_attr):
 
 
 def _convert_mesh_to_mm_image_plane_shape(name,
+                                          cam_shp,
                                           img_plane_poly_tfm,
                                           img_plane_poly_shp,
                                           img_plane_poly_shp_original,
@@ -954,6 +955,12 @@ def _convert_mesh_to_mm_image_plane_shape(name,
 
     maya.cmds.setAttr(img_plane_shp + '.cameraWidthInch', channelBox=False)
     maya.cmds.setAttr(img_plane_shp + '.cameraHeightInch', channelBox=False)
+
+    # Image plane hash will be used to stop updating the Viewport 2.0
+    # shape when the lens distortion values stay the same.
+    lens_eval_node = maya.cmds.createNode('mmLensEvaluate')
+    _force_connect_attr(img_plane_shp + '.outLens', lens_eval_node + '.inLens')
+    _force_connect_attr(lens_eval_node + '.outHash', img_plane_shp + '.lensHashCurrent')
 
     maya.cmds.reorder(img_plane_shp, back=True)
     maya.cmds.reorder(img_plane_poly_shp_original, back=True)
@@ -1092,6 +1099,7 @@ def create_image_plane_on_camera(cam):
     file_node = image_plane_shader_nodes['file_node']
     img_plane_shp = _convert_mesh_to_mm_image_plane_shape(
         name,
+        cam_shp,
         poly_tfm,
         poly_shp,
         poly_shp_original,
@@ -1181,6 +1189,7 @@ def convert_image_planes_on_camera(cam):
 
         _convert_mesh_to_mm_image_plane_shape(
             name,
+            cam_shp,
             poly_tfm,
             poly_shp,
             poly_shp_original,

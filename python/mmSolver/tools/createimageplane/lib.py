@@ -1088,14 +1088,16 @@ def create_image_plane_on_camera(cam):
 
     image_plane_shader_nodes = _create_image_plane_shader(poly_tfm)
 
+    shd_node = image_plane_shader_nodes['shd_node']
+    file_node = image_plane_shader_nodes['file_node']
     img_plane_shp = _convert_mesh_to_mm_image_plane_shape(
         name,
         poly_tfm,
         poly_shp,
         poly_shp_original,
         poly_creator,
-        image_plane_shader_nodes['shd_node'],
-        image_plane_shader_nodes['file_node'],
+        shd_node,
+        file_node,
         image_plane_shader_nodes['gamma_node'],
         image_plane_shader_nodes['blend_colors_node'],
         image_plane_shader_nodes['reverse1_node'],

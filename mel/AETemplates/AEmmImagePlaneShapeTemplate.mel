@@ -23,6 +23,7 @@
 
 source "AEmmNodeTemplateCommon";
 
+
 global proc int AEassignImageSequenceCallback(
     string $file_attr,
     string $file_name,
@@ -45,12 +46,12 @@ global proc int AEassignImageSequenceCallback(
 }
 
 
-// TODO: Create a custom browser to be more explicit with image
-// sequences.
 global proc AEmmImagePlaneShapeBrowser(
     string $cmd,
     string $image_plane_shp)
 {
+    // TODO: Use the python function
+    // 'mmSolver.tools.createimageplane.tool.prompt_user_for_image_sequence()'.
     string$workspace = `workspace -q -fn`;
     setWorkingDirectory $workspace "image" "sourceImages";
     string $open = (uiRes("m_AEimagePlaneTemplate.kOpen"));
@@ -93,26 +94,35 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
 {
     AEmmNodeShapeTemplateCommonBegin($nodeName);
 
-    editorTemplate -beginLayout "Image Plane Display" -collapse 0;
-    // editorTemplate -addControl "displayMode";
+    editorTemplate -beginLayout "Display" -collapse 0;
+    editorTemplate -addControl "visibility";
+    // editorTemplate -addControl "visibleToCameraOnly";  // Or "showInCameraOnly"
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "exposure";
+    editorTemplate -addControl "gamma";
+    editorTemplate -addControl "colorGain";
+    editorTemplate -addControl "alphaGain";
     // editorTemplate -addSeparator;
+    // editorTemplate -addControl "colorSpace";  // Might not be possible.
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "Image Sequence" -collapse 0;
     editorTemplate
         -callCustom
         "AEmmImagePlaneShapeImageSequenceNew"
         "AEmmImagePlaneShapeImageSequenceReplace"
         "imageSequence";
-    // TODO: Add a 'baked' image sequence option, and a button to
-    // generate the undistorted 'baked' image sequence.
+    // TODO: Add radio button to choose what will connect to the
+    // 'imageSequenceFrame' value? Options are:
+    //  - Scene Time (time1)
+    //  - Animation Curve
     //
-    // The user should have the ability to set the image sequence
-    // explicitly, or not.
-    //
-    // The button should use 'Natron' by default, but should be able
-    // to have different backends, such as 3DEqualizer's
-    // 'sdv_image_warp' (from 3DE4 R6+), or Nuke.
     editorTemplate -addControl "imageSequenceFrame";
     editorTemplate -addControl "imageSequenceFirstFrame";
     editorTemplate -addControl "imageSequenceFrameOutput";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "imageLoadEnable";
+    editorTemplate -addControl "imageUseAlphaChannel";
     editorTemplate -addSeparator;
     editorTemplate -addControl "imageWidth";
     editorTemplate -addControl "imageHeight";
@@ -120,8 +130,6 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     editorTemplate -addSeparator;
     editorTemplate -addControl "imageSequenceStartFrame";
     editorTemplate -addControl "imageSequenceEndFrame";
-    editorTemplate -addSeparator;
-    editorTemplate -addControl "meshResolution";
     editorTemplate -endLayout;
 
     editorTemplate -beginLayout "HUD" -collapse 0;
@@ -129,6 +137,11 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     editorTemplate -addControl "enableHud";
     editorTemplate -addControl "enableImageResolution";
     editorTemplate -endNoOptimize;
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "Miscellaneous" -collapse 1;
+    editorTemplate -addControl "meshResolution";
+    editorTemplate -addControl "imageDefaultColor";  // Cannot be textured.
     editorTemplate -endLayout;
 
     editorTemplate -beginLayout "Nodes" -collapse 1;

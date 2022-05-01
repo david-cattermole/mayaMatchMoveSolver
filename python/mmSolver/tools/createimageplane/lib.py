@@ -82,6 +82,43 @@ LOG = mmSolver.logger.get_logger()
 BAKED_IMAGE_PLANE = False
 
 
+def _add_attr_float3_color(node, attr_name, default_value):
+    min_value = 0.0
+    maya.cmds.addAttr(
+        node,
+        longName=attr_name,
+        usedAsColor=True,
+        attributeType='float3')
+
+    maya.cmds.addAttr(
+        node,
+        longName=attr_name + 'R',
+        attributeType='float',
+        minValue=min_value,
+        defaultValue=default_value,
+        parent=attr_name)
+    maya.cmds.addAttr(
+        node,
+        longName=attr_name + 'G',
+        attributeType='float',
+        minValue=min_value,
+        defaultValue=default_value,
+        parent=attr_name)
+    maya.cmds.addAttr(
+        node,
+        longName=attr_name + 'B',
+        attributeType='float',
+        minValue=min_value,
+        defaultValue=default_value,
+        parent=attr_name)
+
+    node_attr = node + '.' + attr_name
+    maya.cmds.setAttr(node_attr + 'R', keyable=True)
+    maya.cmds.setAttr(node_attr + 'G', keyable=True)
+    maya.cmds.setAttr(node_attr + 'B', keyable=True)
+    return
+
+
 def _create_image_plane_transform_attrs(image_plane_tfm):
     # Depth attribute
     attr = 'depth'
@@ -170,6 +207,77 @@ def _create_image_plane_shape_attrs(image_plane_shp):
         maya.cmds.setAttr(
             image_plane_shp + '.displayMode',
             edit=True, keyable=True)
+
+    # Exposure attribute
+    attr = 'exposure'
+    maya.cmds.addAttr(
+        image_plane_shp,
+        longName=attr,
+        attributeType='double',
+        softMinValue=-5.0,
+        softMaxValue=5.0,
+        defaultValue=0.0)
+    node_attr = image_plane_shp + '.' + attr
+    maya.cmds.setAttr(node_attr, keyable=True)
+
+    # Gamma attribute
+    attr = 'gamma'
+    maya.cmds.addAttr(
+        image_plane_shp,
+        longName=attr,
+        attributeType='double',
+        minValue=0.0,
+        softMaxValue=3.0,
+        defaultValue=1.0)
+    node_attr = image_plane_shp + '.' + attr
+    maya.cmds.setAttr(node_attr, keyable=True)
+
+    # Color Gain attribute
+    attr = 'colorGain'
+    default_value = 1.0
+    _add_attr_float3_color(image_plane_shp, attr, default_value)
+
+    # Alpha Gain attribute
+    attr = 'alphaGain'
+    maya.cmds.addAttr(
+        image_plane_shp,
+        longName=attr,
+        attributeType='double',
+        minValue=0.0,
+        softMaxValue=1.0,
+        defaultValue=1.0)
+    node_attr = image_plane_shp + '.' + attr
+    maya.cmds.setAttr(node_attr, keyable=True)
+
+    # Use Image Alpha Channel attribute
+    attr = 'imageUseAlphaChannel'
+    maya.cmds.addAttr(
+        image_plane_shp,
+        longName=attr,
+        attributeType='bool',
+        defaultValue=0)
+    node_attr = image_plane_shp + '.' + attr
+    maya.cmds.setAttr(node_attr, keyable=True)
+
+    # Default Image Color attribute, display a dark-red color when an
+    # image is not found.
+    attr = 'imageDefaultColor'
+    default_value = 0.0
+    _add_attr_float3_color(image_plane_shp, attr, default_value)
+    node_attr = image_plane_shp + '.' + attr
+    maya.cmds.setAttr(node_attr + 'R', 0.3)
+    maya.cmds.setAttr(node_attr + 'G', 0.0)
+    maya.cmds.setAttr(node_attr + 'B', 0.0)
+
+    # Image Load Enable attribute
+    attr = 'imageLoadEnable'
+    maya.cmds.addAttr(
+        image_plane_shp,
+        longName=attr,
+        attributeType='bool',
+        defaultValue=1)
+    node_attr = image_plane_shp + '.' + attr
+    maya.cmds.setAttr(node_attr, keyable=True)
 
     # Image Sequence attribute
     attr = 'imageSequence'
@@ -637,12 +745,17 @@ def _set_shader_file_path(image_plane_tfm, image_sequence_path):
         file_node + '.fileTextureName',
         image_sequence_path,
         type='string')
-    maya.cmds.setAttr(file_node + '.useFrameExtension', is_seq)
+
+    # Set useFrameExtension temporarily. Setting useFrameExtension to
+    # False causes frameOffset to be locked (but we need to edit it).
+    maya.cmds.setAttr(file_node + '.useFrameExtension', True)
 
     settable = maya.cmds.getAttr(file_node + '.frameOffset', settable=True)
     if settable is True:
         maya.cmds.setAttr(file_node + '.frameOffset', 0)
         maya.cmds.setAttr(file_node + '.frameOffset', lock=True)
+
+    maya.cmds.setAttr(file_node + '.useFrameExtension', is_seq)
 
     # Cache the image sequence.
     maya.cmds.setAttr(file_node + '.useHardwareTextureCycling', is_seq)
@@ -708,6 +821,10 @@ def _create_image_plane_shader(image_plane_tfm):
 
     file_place2d = maya.cmds.shadingNode('place2dTexture', asUtility=True)
     file_node = maya.cmds.shadingNode('file', asTexture=True, isColorManaged=True)
+    gamma_node = maya.cmds.shadingNode('gammaCorrect', asUtility=True)
+    blend_colors_node = maya.cmds.shadingNode('blendColors', asUtility=True)
+    reverse1_node = maya.cmds.shadingNode('reverse', asUtility=True)
+    reverse2_node = maya.cmds.shadingNode('reverse', asUtility=True)
     shd_node = maya.cmds.shadingNode('surfaceShader', asShader=True)
     sg_node = maya.cmds.sets(renderable=True, noSurfaceShader=True, empty=True)
 
@@ -715,20 +832,32 @@ def _create_image_plane_shader(image_plane_tfm):
     filter_type = 0  # 0 = Nearest Pixel / Unfiltered
     maya.cmds.setAttr(file_node + '.filterType', filter_type)
 
-    # Display a dark-red color when an image is not found.
-    maya.cmds.setAttr(
-        file_node + '.defaultColor',
-        0.3, 0.0, 0.0,
-        type='double3')
+    _force_connect_attr(
+        reverse2_node + '.output',
+        blend_colors_node + '.color2')
 
-    src = file_node + '.outColor'
-    dst = shd_node + '.outColor'
-    _force_connect_attr(src, dst)
+    # Add Gamma Control
+    _force_connect_attr(
+        file_node + '.outColor',
+        gamma_node + '.value')
+    _force_connect_attr(
+        gamma_node + '.outValue',
+        shd_node + '.outColor')
 
-    src = shd_node + '.outColor'
-    dst = sg_node + '.surfaceShader'
-    _force_connect_attr(src, dst)
+    # Enable/Disable alpha channel.
+    _force_connect_attr(
+        file_node + '.outTransparency',
+        blend_colors_node + '.color1')
+    _force_connect_attr(
+        blend_colors_node + '.output',
+        shd_node + '.outTransparency')
 
+    # Enable/Disable Loading the File
+    _force_connect_attr(
+        reverse1_node + '.outputX',
+        file_node + '.disableFileLoad')
+
+    # Connect all needed 2D Placement attributes to the File node.
     conns = [
         ['coverage', 'coverage'],
         ['translateFrame', 'translateFrame'],
@@ -754,9 +883,24 @@ def _create_image_plane_shader(image_plane_tfm):
         dst = file_node + '.' + dst_attr
         _force_connect_attr(src, dst)
 
+    # Connect shader to shading group
+    _force_connect_attr(
+        shd_node + '.outColor',
+        sg_node + '.surfaceShader')
+
     # Assign shader.
     maya.cmds.sets(obj_nodes, edit=True, forceElement=sg_node)
-    return sg_node, shd_node, file_node
+
+    nodes = {
+        'sg_node': sg_node,
+        'shd_node': shd_node,
+        'file_node': file_node,
+        'gamma_node': gamma_node,
+        'blend_colors_node': blend_colors_node,
+        'reverse1_node': reverse1_node,
+        'reverse2_node': reverse2_node
+    }
+    return nodes
 
 
 def _force_connect_attr(src_attr, dst_attr):
@@ -788,7 +932,12 @@ def _convert_mesh_to_mm_image_plane_shape(name,
                                           img_plane_poly_shp,
                                           img_plane_poly_shp_original,
                                           poly_creator,
-                                          shd_node):
+                                          shd_node,
+                                          file_node,
+                                          gamma_node,
+                                          blend_colors_node,
+                                          reverse1_node,
+                                          reverse2_node):
     """Convert mesh to a mmImagePlaneShape."""
     name_img_shp = name + 'Shape'
     img_plane_shp = maya.cmds.createNode(
@@ -802,16 +951,67 @@ def _convert_mesh_to_mm_image_plane_shape(name,
 
     _create_image_plane_shape_attrs(img_plane_shp)
 
-    _force_connect_attr(
-        img_plane_shp + '.imagePixelAspect',
-        img_plane_poly_tfm + '.pixelAspect')
-
+    # Nodes to drive the image plane shape.
     _force_connect_attr(
         img_plane_poly_shp + '.outMesh',
         img_plane_shp + '.geometryNode')
     _force_connect_attr(
         shd_node + '.outColor',
         img_plane_shp + '.shaderNode')
+
+    # The image drives the pixel aspect ratio of the image plane.
+    _force_connect_attr(
+        img_plane_shp + '.imagePixelAspect',
+        img_plane_poly_tfm + '.pixelAspect')
+
+    # Use the image alpha channel, or not
+    _force_connect_attr(
+        img_plane_shp + '.imageUseAlphaChannel',
+        blend_colors_node + '.blender')
+
+    # Allow user to load the image, or not.
+    _force_connect_attr(
+        img_plane_shp + '.imageLoadEnable',
+        reverse1_node + '.inputX')
+
+    # Color Exposure control.
+    _force_connect_attr(
+        img_plane_shp + '.exposure',
+        file_node + '.exposure')
+
+    # Color Gamma control.
+    _force_connect_attr(
+        img_plane_shp + '.gamma',
+        gamma_node + '.gammaX')
+    _force_connect_attr(
+        img_plane_shp + '.gamma',
+        gamma_node + '.gammaY')
+    _force_connect_attr(
+        img_plane_shp + '.gamma',
+        gamma_node + '.gammaZ')
+
+    # Control file color multiplier
+    _force_connect_attr(
+        img_plane_shp + '.colorGain',
+        file_node + '.colorGain')
+
+    # Control the alpha gain when 'imageUseAlphaChannel' is disabled.
+    _force_connect_attr(
+        img_plane_shp + '.alphaGain',
+        file_node + '.alphaGain')
+    _force_connect_attr(
+        img_plane_shp + '.alphaGain',
+        reverse2_node + '.inputX')
+    _force_connect_attr(
+        img_plane_shp + '.alphaGain',
+        reverse2_node + '.inputY')
+    _force_connect_attr(
+        img_plane_shp + '.alphaGain',
+        reverse2_node + '.inputZ')
+    # Default color for the image plane, when nothing is loaded.
+    _force_connect_attr(
+        img_plane_shp + '.imageDefaultColor',
+        file_node + '.defaultColor')
 
     # Mesh Resolution attr drives the plane sub-divisions.
     node_attr = img_plane_shp + '.meshResolution'
@@ -867,7 +1067,7 @@ def create_image_plane_on_camera(cam):
         poly_tfm,
         deform_node)
 
-    sg_node, shd_node, file_node = _create_image_plane_shader(poly_tfm)
+    image_plane_shader_nodes = _create_image_plane_shader(poly_tfm)
 
     img_plane_shp = _convert_mesh_to_mm_image_plane_shape(
         name,
@@ -875,7 +1075,13 @@ def create_image_plane_on_camera(cam):
         poly_shp,
         poly_shp_original,
         poly_creator,
-        shd_node)
+        image_plane_shader_nodes['shd_node'],
+        image_plane_shader_nodes['file_node'],
+        image_plane_shader_nodes['gamma_node'],
+        image_plane_shader_nodes['blend_colors_node'],
+        image_plane_shader_nodes['reverse1_node'],
+        image_plane_shader_nodes['reverse2_node']
+    )
 
     # Connect Display mode to live/baked nodes.
     if BAKED_IMAGE_PLANE is True:
@@ -902,9 +1108,16 @@ def create_image_plane_on_camera(cam):
     shp_node_attr = img_plane_shp + '.imageSequenceFrameOutput'
     maya.cmds.setAttr(shp_node_attr, lock=True)
 
+    # Set useFrameExtension temporarily. Setting useFrameExtension to
+    # False causes frameOffset to be locked (but we need to edit it).
+    is_seq = maya.cmds.getAttr(file_node + '.useFrameExtension')
+    maya.cmds.setAttr(file_node + '.useFrameExtension', True)
+
     file_node_attr = file_node + '.frameExtension'
     _force_connect_attr(shp_node_attr, file_node_attr)
     maya.cmds.setAttr(file_node_attr, lock=True)
+
+    maya.cmds.setAttr(file_node + '.useFrameExtension', is_seq)
 
     if BAKED_IMAGE_PLANE is True:
         baked_node_attr = baked_shp + '.frameExtension'
@@ -943,7 +1156,7 @@ def convert_image_planes_on_camera(cam):
 
         _set_image_plane_values(cam, image_plane_shp, poly_tfm, deform_node)
 
-        sg_node, shd_node, file_node = _create_image_plane_shader(poly_tfm)
+        image_plane_shader_nodes = _create_image_plane_shader(poly_tfm)
 
         _convert_mesh_to_mm_image_plane_shape(
             name,
@@ -951,7 +1164,13 @@ def convert_image_planes_on_camera(cam):
             poly_shp,
             poly_shp_original,
             poly_creator,
-            shd_node)
+            image_plane_shader_nodes['shd_node'],
+            image_plane_shader_nodes['file_node'],
+            image_plane_shader_nodes['gamma_node'],
+            image_plane_shader_nodes['blend_colors_node'],
+            image_plane_shader_nodes['reverse1_node'],
+            image_plane_shader_nodes['reverse2_node']
+        )
 
         # Disable/hide the Maya image plane.
         maya.cmds.setAttr(image_plane_shp + '.displayMode', 0)  # 0 = 'None' mode

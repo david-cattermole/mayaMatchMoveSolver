@@ -37,12 +37,12 @@ LOG = mmSolver.logger.get_logger()
 def create_image_plane(camera_shape_node):
     assert camera_shape_node is not None
     cam = mmapi.Camera(shape=camera_shape_node)
-    tfm = createimageplane_lib.create_image_plane_on_camera(cam)
+    tfm, shp = createimageplane_lib.create_image_plane_on_camera(cam)
 
     image_seq = createimageplane_tool.prompt_user_for_image_sequence()
     if image_seq:
         createimageplane_lib.set_image_sequence(tfm, image_seq)
-    return tfm
+    return tfm, shp
 
 
 def get_image_plane_type_name_label(image_plane_node):

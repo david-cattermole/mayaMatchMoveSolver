@@ -129,13 +129,13 @@ def main():
         # user has the transform and shape nodes selected.
         if cam_shp in created:
             continue
-        node = lib.create_image_plane_on_camera(cam)
+        mm_ip_tfm, mm_ip_shp = lib.create_image_plane_on_camera(cam)
 
         image_seq = prompt_user_for_image_sequence()
         if image_seq:
-            lib.set_image_sequence(node, image_seq)
+            lib.set_image_sequence(mm_ip_tfm, image_seq)
 
-        nodes.append(node)
+        nodes.append(mm_ip_shp)
         created.add(cam_shp)
 
     if len(nodes) > 0:

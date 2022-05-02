@@ -50,10 +50,11 @@ def _get_start_directory():
 def prompt_user_for_image_sequence():
     image_sequence_path = None
     multiple_filters = (
-        'Image Files (*.jpg *.png *.iff *.exr *.tif *.tga);;'
+        'Image Files (*.jpg *.png *.iff *.exr *.tif *.tga *.sgi);;'
         'JPEG (*.jpg *.jpeg);;'
         'PNG (*.png);;'
         'Maya IFF (*.iff);;'
+        'Silicon Graphics (*.sgi);;'
         'EXR (*.exr);;'
         'TIFF (*.tif);;'
         'Targa (*.tga);;'

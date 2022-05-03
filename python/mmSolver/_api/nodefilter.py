@@ -41,6 +41,7 @@ def filter_nodes_into_categories(nodes):
     - 'marker'
     - 'line'
     - 'lens'
+    - 'imageplane'
     - 'markergroup'
     - 'bundle'
     - 'attribute'
@@ -59,6 +60,7 @@ def filter_nodes_into_categories(nodes):
         'marker': [],
         'line': [],
         'lens': [],
+        'imageplane': [],
         'markergroup': [],
         'bundle': [],
         'attribute': [],
@@ -73,6 +75,8 @@ def filter_nodes_into_categories(nodes):
             result['line'].append(node)
         elif obj_type == const.OBJECT_TYPE_LENS:
             result['lens'].append(node)
+        elif obj_type == const.OBJECT_TYPE_IMAGE_PLANE:
+            result['imageplane'].append(node)
         elif obj_type == const.OBJECT_TYPE_MARKER_GROUP:
             result['markergroup'].append(node)
         elif obj_type == const.OBJECT_TYPE_BUNDLE:
@@ -128,6 +132,20 @@ def filter_lens_nodes(nodes):
     """
     filter_nodes = filter_nodes_into_categories(nodes)
     return filter_nodes.get('lens', [])
+
+
+def filter_image_plane_nodes(nodes):
+    """
+    Filter the given 'nodes' by only the imagePlane nodes.
+
+    :param nodes: List of nodes to query.
+    :type nodes: list or str
+
+    :returns: A list of imagePlane nodes, or empty list if no imagePlane nodes.
+    :rtype: list
+    """
+    filter_nodes = filter_nodes_into_categories(nodes)
+    return filter_nodes.get('imageplane', [])
 
 
 def filter_marker_group_nodes(nodes):

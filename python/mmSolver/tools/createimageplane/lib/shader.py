@@ -41,10 +41,10 @@ ShaderNetworkNodes = collections.namedtuple(
         'sg_node',
         'shd_node',
         'file_node',
-        'gamma_node',
-        'blend_colors_node',
-        'reverse1_node',
-        'reverse2_node'
+        'color_gamma_node',
+        'alpha_channel_blend_node',
+        'image_load_invert_boolean_node',
+        'alpha_channel_reverse_node'
     ]
 )
 
@@ -86,10 +86,10 @@ def create_network(image_plane_tfm):
 
     file_place2d = maya.cmds.shadingNode('place2dTexture', asUtility=True)
     file_node = maya.cmds.shadingNode('file', asTexture=True, isColorManaged=True)
-    gamma_node = maya.cmds.shadingNode('gammaCorrect', asUtility=True)
-    blend_colors_node = maya.cmds.shadingNode('blendColors', asUtility=True)
-    reverse1_node = maya.cmds.shadingNode('reverse', asUtility=True)
-    reverse2_node = maya.cmds.shadingNode('reverse', asUtility=True)
+    color_gamma_node = maya.cmds.shadingNode('gammaCorrect', asUtility=True)
+    alpha_channel_blend_node = maya.cmds.shadingNode('blendColors', asUtility=True)
+    image_load_invert_boolean_node = maya.cmds.shadingNode('reverse', asUtility=True)
+    alpha_channel_reverse_node = maya.cmds.shadingNode('reverse', asUtility=True)
     shd_node = maya.cmds.shadingNode('surfaceShader', asShader=True)
     sg_node = maya.cmds.sets(renderable=True, noSurfaceShader=True, empty=True)
 
@@ -98,28 +98,28 @@ def create_network(image_plane_tfm):
     maya.cmds.setAttr(file_node + '.filterType', filter_type)
 
     lib_utils.force_connect_attr(
-        reverse2_node + '.output',
-        blend_colors_node + '.color2')
+        alpha_channel_reverse_node + '.output',
+        alpha_channel_blend_node + '.color2')
 
     # Add Gamma Control
     lib_utils.force_connect_attr(
         file_node + '.outColor',
-        gamma_node + '.value')
+        color_gamma_node + '.value')
     lib_utils.force_connect_attr(
-        gamma_node + '.outValue',
+        color_gamma_node + '.outValue',
         shd_node + '.outColor')
 
     # Enable/Disable alpha channel.
     lib_utils.force_connect_attr(
         file_node + '.outTransparency',
-        blend_colors_node + '.color1')
+        alpha_channel_blend_node + '.color1')
     lib_utils.force_connect_attr(
-        blend_colors_node + '.output',
+        alpha_channel_blend_node + '.output',
         shd_node + '.outTransparency')
 
     # Enable/Disable Loading the File
     lib_utils.force_connect_attr(
-        reverse1_node + '.outputX',
+        image_load_invert_boolean_node + '.outputX',
         file_node + '.disableFileLoad')
 
     # Connect all needed 2D Placement attributes to the File node.
@@ -160,9 +160,9 @@ def create_network(image_plane_tfm):
         sg_node=sg_node,
         shd_node=shd_node,
         file_node=file_node,
-        gamma_node=gamma_node,
-        blend_colors_node=blend_colors_node,
-        reverse1_node=reverse1_node,
-        reverse2_node=reverse2_node
+        color_gamma_node=color_gamma_node,
+        alpha_channel_blend_node=alpha_channel_blend_node,
+        image_load_invert_boolean_node=image_load_invert_boolean_node,
+        alpha_channel_reverse_node=alpha_channel_reverse_node
     )
     return shd_network

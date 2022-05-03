@@ -39,20 +39,6 @@ import mmSolver.tools.createimageplane.lib.imageseq as lib_imageseq
 LOG = mmSolver.logger.get_logger()
 
 
-MMImagePlaneNetworkNodes = collections.namedtuple(
-    'MMImagePlaneNetworkNodes',
-    [
-        'sg_node',
-        'shd_node',
-        'file_node',
-        'gamma_node',
-        'blend_colors_node',
-        'reverse1_node',
-        'reverse2_node'
-    ]
-)
-
-
 def _create_transform_attrs(image_plane_tfm):
     # Depth attribute
     attr = 'depth'
@@ -327,10 +313,10 @@ def create_shape_node(name,
 
     shd_node = shader_node_network.shd_node
     file_node = shader_node_network.file_node
-    gamma_node = shader_node_network.gamma_node
-    blend_colors_node = shader_node_network.blend_colors_node
-    reverse1_node = shader_node_network.reverse1_node
-    reverse2_node = shader_node_network.reverse2_node
+    color_gamma_node = shader_node_network.color_gamma_node
+    alpha_channel_blend_node = shader_node_network.alpha_channel_blend_node
+    image_load_invert_boolean_node = shader_node_network.image_load_invert_boolean_node
+    alpha_channel_reverse_node = shader_node_network.alpha_channel_reverse_node
 
     mmapi.load_plugin()
     name_img_shp = name + 'Shape'
@@ -380,12 +366,12 @@ def create_shape_node(name,
     # Use the image alpha channel, or not
     lib_utils.force_connect_attr(
         shp + '.imageUseAlphaChannel',
-        blend_colors_node + '.blender')
+        alpha_channel_blend_node + '.blender')
 
     # Allow user to load the image, or not.
     lib_utils.force_connect_attr(
         shp + '.imageLoadEnable',
-        reverse1_node + '.inputX')
+        image_load_invert_boolean_node + '.inputX')
 
     # Color Exposure control.
     lib_utils.force_connect_attr(
@@ -395,13 +381,13 @@ def create_shape_node(name,
     # Color Gamma control.
     lib_utils.force_connect_attr(
         shp + '.gamma',
-        gamma_node + '.gammaX')
+        color_gamma_node + '.gammaX')
     lib_utils.force_connect_attr(
         shp + '.gamma',
-        gamma_node + '.gammaY')
+        color_gamma_node + '.gammaY')
     lib_utils.force_connect_attr(
         shp + '.gamma',
-        gamma_node + '.gammaZ')
+        color_gamma_node + '.gammaZ')
 
     # Control file color multiplier
     lib_utils.force_connect_attr(
@@ -414,13 +400,13 @@ def create_shape_node(name,
         file_node + '.alphaGain')
     lib_utils.force_connect_attr(
         shp + '.alphaGain',
-        reverse2_node + '.inputX')
+        alpha_channel_reverse_node + '.inputX')
     lib_utils.force_connect_attr(
         shp + '.alphaGain',
-        reverse2_node + '.inputY')
+        alpha_channel_reverse_node + '.inputY')
     lib_utils.force_connect_attr(
         shp + '.alphaGain',
-        reverse2_node + '.inputZ')
+        alpha_channel_reverse_node + '.inputZ')
 
     # Set the camera size of the image plane shape HUD.
     lib_utils.force_connect_attr(

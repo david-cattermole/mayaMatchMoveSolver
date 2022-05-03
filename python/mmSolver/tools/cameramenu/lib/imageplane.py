@@ -46,10 +46,12 @@ def create_image_plane(camera_shape_node):
 
 
 def get_image_plane_type_name_label(image_plane_node):
-    # TODO: Write this.
-    node_type = const.IMAGE_PLANE_TYPE_NAME_MM_SOLVER_LABEL
-    # node_type = const.IMAGE_PLANE_TYPE_NAME_MAYA_NATIVE_LABEL
-    return node_type
+    node_type = maya.cmds.nodeType(image_plane_node)
+    if node_type in const.MM_IMAGE_PLANE_NODE_TYPES:
+        label = const.IMAGE_PLANE_TYPE_NAME_MM_SOLVER_LABEL
+    else:
+        label = const.IMAGE_PLANE_TYPE_NAME_MAYA_NATIVE_LABEL
+    return label
 
 
 def get_camera_image_planes(camera_shape_node):

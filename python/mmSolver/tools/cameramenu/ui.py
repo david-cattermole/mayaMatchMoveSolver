@@ -36,7 +36,14 @@ LOG = mmSolver.logger.get_logger()
 def _generate_nice_name(node):
     assert isinstance(node, pycompat.TEXT_TYPE)
     assert maya.cmds.objExists(node)
-    return maya.cmds.ls(node)[0]
+    name = maya.cmds.ls(node)[0]
+    arrow_str = '->'
+    if arrow_str in name:
+        # Image planes have node names like
+        # 'cameraShape1->imagePlaneShape1', but we strip the camera
+        # name off for brevity.
+        name = name.split(arrow_str)[-1]
+    return name
 
 
 def _create_image_plane_menu_items(parent, camera_shape_node, image_plane_nodes):

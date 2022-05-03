@@ -502,6 +502,7 @@ def get_shape_node(image_plane_tfm):
     shapes = maya.cmds.listRelatives(
         image_plane_tfm,
         shapes=True,
+        fullPath=True,
         type='mmImagePlaneShape'
     ) or []
     if len(shapes) > 0:

@@ -83,6 +83,7 @@ def create_poly_plane(name_mesh_shp, image_plane_tfm, cam_shp):
         image_plane_tfm,
         shapes=True,
         noIntermediate=False,
+        fullPath=True,
         type='mesh') or []
     shapes = [x for x in shapes
               if maya.cmds.getAttr(x + '.intermediateObject') == 1]

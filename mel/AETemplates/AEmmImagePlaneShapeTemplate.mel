@@ -95,10 +95,7 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     AEmmNodeShapeTemplateCommonBegin($nodeName);
 
     editorTemplate -beginLayout "Display" -collapse 0;
-    editorTemplate -beginNoOptimize;
-    editorTemplate -addControl "visibility";
     editorTemplate -addControl "visibleToCameraOnly";
-    editorTemplate -endNoOptimize;
     editorTemplate -addSeparator;
     editorTemplate -addControl "exposure";
     editorTemplate -addControl "gamma";

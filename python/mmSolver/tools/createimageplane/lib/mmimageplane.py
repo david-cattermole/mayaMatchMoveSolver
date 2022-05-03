@@ -261,17 +261,17 @@ def _create_image_plane_shape_attrs(image_plane_shp):
     return
 
 
-def create_transform_node(name, cam_tfm, cam_shp):
+def create_transform_node(name_tfm, cam_tfm, cam_shp):
     """
     Create a default polygon image plane under camera.
     """
-    assert isinstance(name, pycompat.TEXT_TYPE)
+    assert isinstance(name_tfm, pycompat.TEXT_TYPE)
     mmapi.load_plugin()
     tfm = maya.cmds.createNode(
         'mmImagePlaneTransform',
-        name=name,
+        name=name_tfm,
         parent=cam_tfm)
-    
+
     # Create (dynamic) attributes.
     _create_transform_attrs(tfm)
 
@@ -289,15 +289,10 @@ def create_transform_node(name, cam_tfm, cam_shp):
         if not maya.cmds.isConnected(src, dst):
             lib_utils.force_connect_attr(src, dst)
 
-    # # Parent the transform under the camera.
-    # img_poly_plane_tfm_uuid = maya.cmds.ls(tfm, uuid=True)[0]
-    # maya.cmds.parent(tfm, cam_tfm, relative=True)
-    # tfm = maya.cmds.ls(img_poly_plane_tfm_uuid, long=True)[0]
-
     return tfm
 
 
-def create_shape_node(name,
+def create_shape_node(name_img_shp,
                       tfm,
                       cam_shp,
                       poly_plane_node_network,
@@ -305,7 +300,7 @@ def create_shape_node(name,
     """
     Convert mesh to a mmImagePlaneShape.
     """
-    assert isinstance(name, pycompat.TEXT_TYPE)
+    assert isinstance(name_img_shp, pycompat.TEXT_TYPE)
 
     img_plane_poly_shp = poly_plane_node_network.mesh_shape
     img_plane_poly_shp_original = poly_plane_node_network.mesh_shape_original
@@ -319,7 +314,6 @@ def create_shape_node(name,
     alpha_channel_reverse_node = shader_node_network.alpha_channel_reverse_node
 
     mmapi.load_plugin()
-    name_img_shp = name + 'Shape'
     shp = maya.cmds.createNode(
         'mmImagePlaneShape',
         name=name_img_shp,

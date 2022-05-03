@@ -94,10 +94,19 @@ def create_image_plane_on_camera(cam, name=None):
     cam_shp = cam.get_shape_node()
 
     mm_ip_tfm = lib_mmimageplane.create_transform_node(name, cam_tfm, cam_shp)
-    poly_plane_network = lib_polyplane.create_poly_plane(mm_ip_tfm, cam_shp)
-    shader_network = lib_shader.create_network(mm_ip_tfm)
+
+    poly_plane_name = name + 'MeshShape'
+    poly_plane_network = lib_polyplane.create_poly_plane(
+        poly_plane_name,
+        mm_ip_tfm,
+        cam_shp)
+
+    name_shade = name + 'Shader'
+    shader_network = lib_shader.create_network(name_shade, mm_ip_tfm)
+
+    name_img_shp = name + 'Shape'
     mm_ip_shp = lib_mmimageplane.create_shape_node(
-        name,
+        name_img_shp,
         mm_ip_tfm,
         cam_shp,
         poly_plane_network,
@@ -152,16 +161,25 @@ def convert_image_planes_on_camera(cam):
     for native_ip_shp in image_planes:
         # Convert Maya image plane into a polygon image plane.
         name = 'mmImagePlane1'
-        mm_ip_tfm = lib_mmimageplane.create_transform_node(name, cam_tfm, cam_shp)
-        poly_plane_network = lib_polyplane.create_poly_plane(mm_ip_tfm, cam_shp)
+        mm_ip_tfm = lib_mmimageplane.create_transform_node(
+            name, cam_tfm, cam_shp)
+
+        poly_plane_name = name + 'MeshShape'
+        poly_plane_network = lib_polyplane.create_poly_plane(
+            poly_plane_name,
+            mm_ip_tfm,
+            cam_shp)
 
         lib_nativeimageplane.copy_depth_value(
             mm_ip_tfm,
             native_ip_shp)
 
-        shader_network = lib_shader.create_network(mm_ip_tfm)
+        name_shader = name + 'Shader'
+        shader_network = lib_shader.create_network(name_shader, mm_ip_tfm)
+
+        name_img_shp = name + 'Shape'
         mm_ip_shp = lib_mmimageplane.create_shape_node(
-            name,
+            name_img_shp,
             mm_ip_tfm,
             cam_shp,
             poly_plane_network,

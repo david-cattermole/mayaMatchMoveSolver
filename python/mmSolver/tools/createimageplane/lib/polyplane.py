@@ -44,12 +44,10 @@ PolyPlaneNetworkNodes = collections.namedtuple(
 )
 
 
-def create_poly_plane(image_plane_tfm, cam_shp):
+def create_poly_plane(name_mesh_shp, image_plane_tfm, cam_shp):
     """
     Create a default polygon image plane under camera.
     """
-    # image_plane_tfm
-    name_mesh_shp = 'MeshShape'
     mesh_shp = maya.cmds.createNode(
         'mesh',
         name=name_mesh_shp,

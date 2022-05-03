@@ -738,18 +738,18 @@
                 "mmSolver.tools.togglecameradistort.tool.main();"
             ]
         },
-        "camera_menu": {
-            "name": "Node Context",
-            "name_shelf": "NdCtx",
+        "camera_context_menu": {
+            "name": "Camera Context",
+            "name_shelf": "CamCtx",
             "tooltip": "Display camera nodes.",
             "command": [
                 "pass"
             ]
         },
-        "camera_menu_popup": {
+        "camera_context_menu_popup": {
             "popup": true,
             "popup_post_command": [
-                "import mmSolver.tools.cameramenu.tool as tool;",
+                "import mmSolver.tools.cameracontextmenu.tool as tool;",
                 "tool.create_menu('{menu}');"
             ],
             "popup_button": ["left", "right"]

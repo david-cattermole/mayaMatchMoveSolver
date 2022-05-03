@@ -28,7 +28,7 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.tools.createimageplane.lib as createimageplane_lib
 import mmSolver.tools.createimageplane.tool as createimageplane_tool
-import mmSolver.tools.cameramenu.constant as const
+import mmSolver.tools.cameracontextmenu.constant as const
 
 
 LOG = mmSolver.logger.get_logger()

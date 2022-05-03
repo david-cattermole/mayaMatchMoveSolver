@@ -27,8 +27,8 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.python_compat as pycompat
-import mmSolver.tools.cameramenu.constant as const
-import mmSolver.tools.cameramenu.lib as lib
+import mmSolver.tools.cameracontextmenu.constant as const
+import mmSolver.tools.cameracontextmenu.lib as lib
 
 LOG = mmSolver.logger.get_logger()
 

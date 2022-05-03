@@ -34,7 +34,7 @@
             "camera_tools/camera_popup/camera_toggle_distortion",
             "camera_tools/camera_popup/---Input Output",
             "camera_tools/camera_popup/copy_camera_to_clipboard",
-            "camera_menu/camera_menu_popup/dummy",
+            "camera_context_menu/camera_context_menu_popup/dummy",
             "mb_tools/mb_popup/---Selection",
             "mb_tools/mb_popup/swap_marker_bundles",
             "mb_tools/mb_popup/select_marker_bundles",

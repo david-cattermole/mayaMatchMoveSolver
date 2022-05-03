@@ -29,7 +29,7 @@ import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.camera as camera_utils
 import mmSolver.api as mmapi
-import mmSolver.tools.cameramenu.ui as ui
+import mmSolver.tools.cameracontextmenu.ui as ui
 
 LOG = mmSolver.logger.get_logger()
 

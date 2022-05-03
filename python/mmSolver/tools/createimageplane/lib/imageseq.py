@@ -31,12 +31,16 @@ LOG = mmSolver.logger.get_logger()
 
 def _get_string_numbers_at_end(string_value):
     numbers = []
-    for i in range(1, len(string_value)):
+    for i in range(1, len(string_value) + 1):
         char = string_value[-i]
         if char.isdigit():
             numbers.insert(0, char)
         else:
             break
+    if len(string_value) == len(numbers):
+        # If the file name is only image numbers, it's not considered a valid
+        # image sequence.
+        return ''
     return ''.join(numbers)
 
 

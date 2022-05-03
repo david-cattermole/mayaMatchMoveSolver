@@ -28,6 +28,7 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.camera as camera_utils
+import mmSolver.utils.node as node_utils
 import mmSolver.api as mmapi
 import mmSolver.tools.cameracontextmenu.ui as ui
 
@@ -44,9 +45,32 @@ def _get_active_camera_nodes():
     """
     sel = maya.cmds.ls(selection=True, long=True) or []
     node_filtered = mmapi.filter_nodes_into_categories(sel)
-    camera_nodes = node_filtered['camera']
-    # TODO: Should we consider image planes to get cameras from as
-    #  well, not just lenses?
+    camera_nodes = set(node_filtered['camera'])
+
+    # mmSolver image planes.
+    image_plane_nodes = node_filtered['imageplane']
+    for image_plane_node in image_plane_nodes:
+        parent_nodes = node_utils.get_all_parent_nodes(image_plane_node)
+        parent_nodes = [x for x in parent_nodes if maya.cmds.objExists(x)]
+        camera_nodes |= set(mmapi.filter_camera_nodes(parent_nodes))
+
+    # Maya image planes.
+    for image_plane_node in sel:
+        node_type = maya.cmds.nodeType(image_plane_node)
+        if node_type == 'imagePlane':
+            parent_nodes = node_utils.get_all_parent_nodes(image_plane_node)
+            parent_nodes = [x for x in parent_nodes if maya.cmds.objExists(x)]
+            camera_nodes |= set(mmapi.filter_camera_nodes(parent_nodes))
+        else:
+            image_plane_shapes = maya.cmds.listRelatives(
+                image_plane_node,
+                type='imagePlane',
+                shapes=True,
+                fullPath=True) or []
+            for image_plane_shape in image_plane_shapes:
+                parent_nodes = node_utils.get_all_parent_nodes(image_plane_shape)
+                parent_nodes = [x for x in parent_nodes if maya.cmds.objExists(x)]
+                camera_nodes |= set(mmapi.filter_camera_nodes(parent_nodes))
 
     lens_nodes = node_filtered['lens']
     for lens_node in lens_nodes:
@@ -57,10 +81,7 @@ def _get_active_camera_nodes():
             allFuture=False,
             breadthFirst=False,
         ) or []
-        for upstream_node in upstream_nodes:
-            obj_type = mmapi.get_object_type(upstream_node)
-            if obj_type == mmapi.OBJECT_TYPE_CAMERA:
-                camera_nodes.append(upstream_node)
+        camera_nodes |= set(mmapi.filter_camera_nodes(upstream_nodes))
 
     # Ensure we only have camera shape nodes.
     camera_nodes = [camera_utils.get_camera(x) for x in camera_nodes]
@@ -70,7 +91,7 @@ def _get_active_camera_nodes():
     camera_nodes = [(tfm, shp) for tfm, shp in camera_nodes
                     if camera_utils.is_not_startup_cam(shp)]
     if len(camera_nodes) > 0:
-        return camera_nodes
+        return list(sorted(camera_nodes))
 
     # Create a lens in the active viewport camera.
     model_editor = viewport_utils.get_active_model_editor()

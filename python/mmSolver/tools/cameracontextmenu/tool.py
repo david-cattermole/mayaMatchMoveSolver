@@ -64,10 +64,11 @@ def _get_active_camera_nodes():
 
     # Ensure we only have camera shape nodes.
     camera_nodes = [camera_utils.get_camera(x) for x in camera_nodes]
-    camera_nodes = [shp for (tfm, shp) in camera_nodes if shp is not None]
+    camera_nodes = [(tfm, shp) for tfm, shp in camera_nodes
+                    if shp is not None]
 
-    camera_nodes = [x for x in camera_nodes
-                    if camera_utils.is_not_startup_cam(x)]
+    camera_nodes = [(tfm, shp) for tfm, shp in camera_nodes
+                    if camera_utils.is_not_startup_cam(shp)]
     if len(camera_nodes) > 0:
         return camera_nodes
 
@@ -87,7 +88,7 @@ def _get_active_camera_nodes():
         return []
     cam_tfm, cam_shp = camera_utils.get_camera(node)
 
-    return [cam_shp]
+    return [(cam_tfm, cam_shp)]
 
 
 def create_menu(menu_name):

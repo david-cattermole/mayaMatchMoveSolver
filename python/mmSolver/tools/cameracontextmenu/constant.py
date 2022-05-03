@@ -50,8 +50,8 @@ SELECT_CAMERA_NODE_TOOLTIP = 'Select camera node "{name}".'
 SELECT_CAMERA_NODE_CMD_LANG = 'python'
 SELECT_CAMERA_NODE_CMD = (
     'import maya.cmds;'
-    'camera_shape_node = "{camera_shape_node}";'
-    'maya.cmds.select(camera_shape_node, replace=True);'
+    'node = "{node}";'
+    'maya.cmds.select(node, replace=True);'
 )
 
 
@@ -82,9 +82,9 @@ TOGGLE_CAMERA_LENS_DISTORTION_ENABLED_CMD = (
 )
 
 
-SELECT_NODE_AND_SHOW_IN_ATTRIBUTE_EDITOR_TOOLTIP = 'Select and show node in Attribute Editor.'
-SELECT_NODE_AND_SHOW_IN_ATTRIBUTE_EDITOR_CMD_LANG = 'python'
-SELECT_NODE_AND_SHOW_IN_ATTRIBUTE_EDITOR_CMD = (
+SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_TOOLTIP = 'Select and show node in Attribute Editor.'
+SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_CMD_LANG = 'python'
+SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_CMD = (
     'import maya.cmds;'
     'import mmSolver.tools.cameracontextmenu.lib as lib;'
     'node = "{node}";'

@@ -740,8 +740,9 @@
         },
         "camera_context_menu": {
             "name": "Camera Context",
-            "name_shelf": "CamCtx",
+            "name_shelf": "",
             "tooltip": "Display camera nodes.",
+            "icon_shelf": "cameraContext_32x32.png",
             "command": [
                 "pass"
             ]

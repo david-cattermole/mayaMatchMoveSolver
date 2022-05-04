@@ -91,7 +91,7 @@ public:
     // Attributes
     static MObject m_visible_to_camera_only;
     static MObject m_draw_hud;
-    static MObject m_draw_image_resolution;
+    static MObject m_draw_image_size;
     static MObject m_draw_camera_size;
     static MObject m_image_width;
     static MObject m_image_height;

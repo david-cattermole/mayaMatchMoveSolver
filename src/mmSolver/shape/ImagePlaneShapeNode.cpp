@@ -60,7 +60,7 @@ MString ImagePlaneShapeNode::m_display_filter_label(MM_IMAGE_PLANE_SHAPE_DISPLAY
 // Attributes
 MObject ImagePlaneShapeNode::m_visible_to_camera_only;
 MObject ImagePlaneShapeNode::m_draw_hud;
-MObject ImagePlaneShapeNode::m_draw_image_resolution;
+MObject ImagePlaneShapeNode::m_draw_image_size;
 MObject ImagePlaneShapeNode::m_draw_camera_size;
 MObject ImagePlaneShapeNode::m_image_width;
 MObject ImagePlaneShapeNode::m_image_height;
@@ -178,12 +178,12 @@ MStatus ImagePlaneShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(m_draw_hud));
 
-    m_draw_image_resolution = nAttr.create(
-        "drawImageResolution", "enbimgres",
+    m_draw_image_size = nAttr.create(
+        "drawImageSize", "enbimgsz",
         MFnNumericData::kBoolean, 1);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(m_draw_image_resolution));
+    CHECK_MSTATUS(addAttribute(m_draw_image_size));
 
     m_draw_camera_size = nAttr.create(
         "drawCameraSize", "enbcamsz",

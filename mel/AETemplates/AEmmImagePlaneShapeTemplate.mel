@@ -135,7 +135,7 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     editorTemplate -addControl "drawHud";
     editorTemplate -addSeparator;
     editorTemplate -addControl "drawCameraSize";
-    editorTemplate -addControl "drawImageResolution";
+    editorTemplate -addControl "drawImageSize";
     // TODO: Add 'hudTextColor' - control the HUD text color.
     editorTemplate -endLayout;
 

@@ -57,7 +57,7 @@ ImagePlaneGeometryOverride::ImagePlaneGeometryOverride(const MObject &obj)
         , m_this_node(obj)
         , m_visible(true)
         , m_draw_hud(false)
-        , m_draw_image_resolution(false)
+        , m_draw_image_size(false)
         , m_draw_camera_size(false)
         , m_geometry_node_type(MFn::kInvalid) {
     m_model_editor_changed_callback_id = MEventMessage::addEventCallback(
@@ -295,8 +295,8 @@ void ImagePlaneGeometryOverride::updateDG()
 
                 status = getNodeAttr(
                     objPath,
-                    ImagePlaneShapeNode::m_draw_image_resolution,
-                    m_draw_image_resolution);
+                    ImagePlaneShapeNode::m_draw_image_size,
+                    m_draw_image_size);
                 CHECK_MSTATUS(status);
 
                 status = getNodeAttr(
@@ -329,7 +329,7 @@ void ImagePlaneGeometryOverride::updateDG()
                 pixel_aspect_string.set(pixel_aspect, double_precision);
                 aspect_string.set(aspect, double_precision);
 
-                m_image_resolution =
+                m_image_size =
                     MString("Image: ")
                     + width_string + MString(" x ") + height_string
                     + MString(" | PAR ") + pixel_aspect_string
@@ -671,7 +671,7 @@ void ImagePlaneGeometryOverride::addUIDrawables(
     const MColor* background_color = nullptr;
     auto dynamic = false;
 
-    if (m_draw_image_resolution) {
+    if (m_draw_image_size) {
         auto text_position = MPoint(pos_coord_x, pos_coord_y, 0.0);
         auto font_alignment = MUIDrawManager::kRight;
 
@@ -680,7 +680,7 @@ void ImagePlaneGeometryOverride::addUIDrawables(
         drawManager.setFontSize(font_size);
         drawManager.text(
             text_position,
-            m_image_resolution,
+            m_image_size,
             font_alignment,
             background_size,
             background_color,

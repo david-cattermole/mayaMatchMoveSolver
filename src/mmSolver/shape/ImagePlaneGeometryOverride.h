@@ -108,9 +108,9 @@ protected:
     bool m_visible_to_camera_only;
     bool m_is_under_camera;
     bool m_draw_hud;
-    bool m_draw_image_resolution;
+    bool m_draw_image_size;
     bool m_draw_camera_size;
-    MString m_image_resolution;
+    MString m_image_size;
     MString m_camera_size;
     MCallbackId m_model_editor_changed_callback_id;
 };

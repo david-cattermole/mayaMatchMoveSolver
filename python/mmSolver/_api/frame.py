@@ -42,6 +42,7 @@ class Frame(object):
 
     Example usage::
 
+        >>> import mmSolver.api as mmapi
         >>> frmA = mmapi.Frame(1)
         >>> frmA.get_number()
         1

@@ -17,7 +17,7 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Header for mmAffects Maya command.
+ * Header for mmSolverAffects Maya command.
  */
 
 #ifndef MM_SOLVER_AFFECTS_CMD_H
@@ -46,7 +46,7 @@
 
 // Command arguments:
 
-// The type of mode for the mmAffects command.
+// The type of mode for the mmSolverAffects command.
 #define MODE_FLAG            "-md"
 #define MODE_FLAG_LONG       "-mode"
 

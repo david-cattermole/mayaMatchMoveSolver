@@ -21,7 +21,7 @@
  *
  * Example usage (MEL):
  *
- *   mmAffects
+ *   mmSolverAffects
  *       -camera "camera1" "camera1Shape"
  *       -marker "myMarker" "camera1Shape" "myBundle"
  *       -attr "myBundle.translateX" "None" "None" "None" "None"
@@ -248,7 +248,7 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
     // Read all the flag arguments.
     status = MMSolverAffectsCmd::parseArgs(args);
     if (status != MStatus::kSuccess) {
-        MMSOLVER_ERR("Error parsing mmAffects command arguments.");
+        MMSOLVER_ERR("Error parsing mmSolverAffects command arguments.");
         return status;
     }
 

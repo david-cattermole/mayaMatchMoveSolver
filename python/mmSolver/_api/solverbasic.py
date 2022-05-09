@@ -360,6 +360,24 @@ class SolverBasic(solverbase.SolverBase):
         scene_graph_mode = self.get_scene_graph_mode()
         precomputed_data = self.get_precomputed_data()
 
+        # Make sure scene graph is valid before running the actual
+        # solve.
+        non_standard_scene_graph = scene_graph_mode != const.SCENE_GRAPH_MODE_MAYA_DAG
+        if non_standard_scene_graph is True:
+            use_animated_attrs = True
+            use_static_attrs = False
+            generator = solverutils.compile_solver_scene_graph(
+                col,
+                mkr_list,
+                attr_list,
+                use_animated_attrs,
+                use_static_attrs,
+                scene_graph_mode,
+                precomputed_data,
+                withtest)
+            for action, vaction in generator:
+                yield action, vaction
+
         # Pre-calculate the 'affects' relationship.
         if eval_object_relationships is True:
             generator = solverutils.compile_solver_affects(

@@ -30,6 +30,7 @@ import mmSolver.logger
 import mmSolver._api.action as api_action
 import mmSolver._api.compile as api_compile
 import mmSolver._api.solveraffects as solveraffects
+import mmSolver._api.solverscenegraph as solverscenegraph
 
 
 LOG = mmSolver.logger.get_logger()
@@ -45,6 +46,26 @@ def compile_solver_affects(col, mkr_list, attr_list,
         yield action, vaction
 
     sol = solveraffects.SolverAffects()
+    sol.set_precomputed_data(precomputed_data)
+
+    cache = api_compile.create_compile_solver_cache()
+    generator = api_compile.compile_solver_with_cache(
+        sol, col, mkr_list, attr_list, withtest, cache)
+    for action, vaction in generator:
+        yield action, vaction
+    return
+
+
+def compile_solver_scene_graph(col, mkr_list, attr_list,
+                               use_animated_attrs,
+                               use_static_attrs,
+                               scene_graph_mode,
+                               precomputed_data,
+                               withtest):
+    sol = solverscenegraph.SolverSceneGraph()
+    sol.set_attributes_use_animated(use_animated_attrs)
+    sol.set_attributes_use_static(use_static_attrs)
+    sol.set_scene_graph_mode(scene_graph_mode)
     sol.set_precomputed_data(precomputed_data)
 
     cache = api_compile.create_compile_solver_cache()

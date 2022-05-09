@@ -43,6 +43,10 @@ def action_func_is_mmSolverAffects(action):
     return _action_func_is_name(action, 'mmSolverAffects')
 
 
+def action_func_is_mmSolverSceneGraph(action):
+    return _action_func_is_name(action, 'mmSolverSceneGraph')
+
+
 def _action_func_is_name(action, name):
     if action is None:
         return False

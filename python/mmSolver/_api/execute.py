@@ -356,7 +356,7 @@ def postSolve_setUpdateProgress(progress_min,
 
     :param solres:
         The SolveResult object for the last solved state.
-    :type solres: SolveResult or None
+    :type solres: SolveResult, int, bool or None
 
     :param prog_fn: The function used report progress messages to
                     the user.
@@ -379,9 +379,8 @@ def postSolve_setUpdateProgress(progress_min,
     collectionutils.run_progress_func(prog_fn, int(percent))
 
     # Check if the user wants to stop solving.
-    if solres is None:
-        cmd_cancel = False
-    else:
+    cmd_cancel = False
+    if isinstance(solres, solveresult.SolveResult):
         cmd_cancel = solres.get_user_interrupted()
     gui_cancel = api_state.get_user_interrupt()
     if cmd_cancel is True or gui_cancel is True:
@@ -390,10 +389,19 @@ def postSolve_setUpdateProgress(progress_min,
         collectionutils.run_status_func(status_fn, 'WARNING: ' + msg)
         LOG.warn(msg)
         stop_solving = True
-    if (solres is not None) and (solres.get_success() is False):
-        msg = 'Solver failed!!!'
-        collectionutils.run_status_func(status_fn, 'ERROR: ' + msg)
-        LOG.error(msg)
+
+    if solres is not None:
+        fail = None
+        if isinstance(solres, solveresult.SolveResult):
+            fail = solres.get_success() is False
+        else:
+            fail = bool(solres) is False
+            if fail is True:
+                stop_solving = True
+        if fail is True:
+            msg = 'Solver failed!!!'
+            collectionutils.run_status_func(status_fn, 'ERROR: ' + msg)
+            LOG.error(msg)
     return stop_solving
 
 
@@ -770,6 +778,7 @@ def execute(col,
 
             func, args, kwargs = api_action.action_to_components(action)
             func_is_mmsolver = api_action.action_func_is_mmSolver(action)
+            func_is_scene_graph = api_action.action_func_is_mmSolverSceneGraph(action)
 
             if func_is_mmsolver is True:
                 frame = kwargs.get('frame')
@@ -815,9 +824,12 @@ def execute(col,
 
             # Create SolveResult.
             solres = None
-            if solve_data is not None and func_is_mmsolver is True:
-                solres = solveresult.SolveResult(solve_data)
-                solres_list.append(solres)
+            if solve_data is not None:
+                if func_is_mmsolver is True:
+                    solres = solveresult.SolveResult(solve_data)
+                    solres_list.append(solres)
+                elif func_is_scene_graph is True:
+                    solres = solve_data
 
             if func_is_mmsolver is True and solres.get_success() is True:
                 frame = kwargs.get('frame')

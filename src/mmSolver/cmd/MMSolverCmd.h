@@ -66,10 +66,6 @@
 #define SOLVER_TYPE_FLAG           "-st"
 #define SOLVER_TYPE_FLAG_LONG      "-solverType"
 
-// The Scene Graph used for evaluation.
-#define SCENE_GRAPH_MODE_FLAG           "-sgm"
-#define SCENE_GRAPH_MODE_FLAG_LONG      "-sceneGraphMode"
-
 // Time Evaluation Mode
 //
 // How should the solver evaluate time? Should we use DG Context, or

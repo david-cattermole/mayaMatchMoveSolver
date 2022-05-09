@@ -118,8 +118,7 @@ void createSolveInfoSyntax(MSyntax &syntax) {
     syntax.addFlag(REMOVE_UNUSED_ATTRIBUTES_FLAG, REMOVE_UNUSED_ATTRIBUTES_FLAG_LONG,
                    MSyntax::kBoolean);
 
-    syntax.addFlag(SCENE_GRAPH_MODE_FLAG, SCENE_GRAPH_MODE_FLAG_LONG,
-                   MSyntax::kUnsigned);
+    createSolveSceneGraphSyntax(syntax);
     syntax.addFlag(TIME_EVAL_MODE_FLAG, TIME_EVAL_MODE_FLAG_LONG,
                    MSyntax::kUnsigned);
 }
@@ -213,13 +212,10 @@ MStatus parseSolveInfoArguments(const MArgDatabase &argData,
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    // Get 'Scene Graph Mode'
-    uint32_t sceneGraphMode = SCENE_GRAPH_MODE_DEFAULT_VALUE;
-    if (argData.isFlagSet(SCENE_GRAPH_MODE_FLAG)) {
-        status = argData.getFlagArgument(SCENE_GRAPH_MODE_FLAG, 0, sceneGraphMode);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-    }
-    out_sceneGraphMode = static_cast<SceneGraphMode>(sceneGraphMode);
+    status = parseSolveSceneGraphArguments(
+        argData,
+        out_sceneGraphMode);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Get 'Frame Solve Mode'
     auto frameSolveMode = FRAME_SOLVE_MODE_DEFAULT_VALUE;

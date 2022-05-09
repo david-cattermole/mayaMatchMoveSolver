@@ -69,6 +69,10 @@
 #define SMOOTHNESS_FLAG       "-asm"
 #define SMOOTHNESS_FLAG_LONG  "-attrSmoothness"
 
+// The Scene Graph used for evaluation.
+#define SCENE_GRAPH_MODE_FLAG           "-sgm"
+#define SCENE_GRAPH_MODE_FLAG_LONG      "-sceneGraphMode"
+
 namespace mmsolver {
 
 /*
@@ -112,6 +116,19 @@ void createSolveFramesSyntax(MSyntax &syntax);
  */
 MStatus parseSolveFramesArguments(const MArgDatabase &argData,
                                   MTimeArray         &out_frameList);
+
+/*
+ * Add flags for solver scene graph to the command syntax.
+ */
+void createSolveSceneGraphSyntax(MSyntax &syntax);
+
+
+/*
+ * Parse arguments into solver scene graph.
+ */
+MStatus parseSolveSceneGraphArguments(
+    const MArgDatabase &argData,
+    SceneGraphMode &out_sceneGraphMode);
 
 } // namespace mmsolver
 

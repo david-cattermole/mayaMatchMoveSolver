@@ -42,6 +42,7 @@
 #include "mmSolver/cmd/MMReprojectionCmd.h"
 #include "mmSolver/cmd/MMSolverAffectsCmd.h"
 #include "mmSolver/cmd/MMSolverCmd.h"
+#include "mmSolver/cmd/MMSolverSceneGraphCmd.h"
 #include "mmSolver/cmd/MMSolverTypeCmd.h"
 #include "mmSolver/cmd/MMTestCameraMatrixCmd.h"
 #include "mmSolver/node/MMCameraCalibrateNode.h"
@@ -249,6 +250,13 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::MMSolverAffectsCmd::cmdName(),
         mmsolver::MMSolverAffectsCmd::creator,
         mmsolver::MMSolverAffectsCmd::newSyntax,
+        status);
+
+    REGISTER_COMMAND(
+        plugin,
+        mmsolver::MMSolverSceneGraphCmd::cmdName(),
+        mmsolver::MMSolverSceneGraphCmd::creator,
+        mmsolver::MMSolverSceneGraphCmd::newSyntax,
         status);
 
     REGISTER_COMMAND(
@@ -633,6 +641,10 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(
         plugin,
         mmsolver::MMSolverAffectsCmd::cmdName(),
+        status);
+    DEREGISTER_COMMAND(
+        plugin,
+        mmsolver::MMSolverSceneGraphCmd::cmdName(),
         status);
     DEREGISTER_COMMAND(
         plugin,

@@ -39,6 +39,7 @@
 #include "MMSolverCmd.h"
 #include "mmSolver/adjust/adjust_base.h"
 #include "mmSolver/adjust/adjust_data.h"
+#include "mmSolver/adjust/adjust_defines.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -469,6 +470,31 @@ MStatus parseSolveFramesArguments(const MArgDatabase &argData,
         status = MS::kFailure;
         status.perror("Frame List length is 0, must have a frame to solve.");
     }
+
+    return status;
+}
+
+
+void createSolveSceneGraphSyntax(MSyntax &syntax) {
+    syntax.addFlag(
+        SCENE_GRAPH_MODE_FLAG,
+        SCENE_GRAPH_MODE_FLAG_LONG,
+        MSyntax::kUnsigned);
+    return;
+}
+
+
+MStatus parseSolveSceneGraphArguments(const MArgDatabase &argData,
+                                      SceneGraphMode &out_sceneGraphMode) {
+    MStatus status = MStatus::kSuccess;
+
+    // Get 'Scene Graph Mode'
+    uint32_t sceneGraphMode = SCENE_GRAPH_MODE_DEFAULT_VALUE;
+    if (argData.isFlagSet(SCENE_GRAPH_MODE_FLAG)) {
+        status = argData.getFlagArgument(SCENE_GRAPH_MODE_FLAG, 0, sceneGraphMode);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    out_sceneGraphMode = static_cast<SceneGraphMode>(sceneGraphMode);
 
     return status;
 }

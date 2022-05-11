@@ -23,10 +23,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import collections
 import sys
 import os
 import logging
 import inspect
+import time
 
 
 def get_logger(level=None):
@@ -99,6 +101,11 @@ def add_maya_viewport_handler(logger, level=None):
 
 class MayaViewportHandler(logging.StreamHandler):
 
+    def __init__(self, *args, **kwargs):
+        super(MayaViewportHandler, self).__init__(*args, **kwargs)
+        self._last_few_message_hashes = collections.deque([], maxlen=3)
+        self._time_of_last_message = 0
+
     def emit(self, record):
         """
         Emit a record.
@@ -106,6 +113,27 @@ class MayaViewportHandler(logging.StreamHandler):
         in doRollover().
         """
         try:
+            record_format = self.format(record)
+
+            # Avoid the same message being spammed at the user.
+            #
+            # We remember the last N number of messages and only print
+            # new unique messages.
+            #
+            # Every few seconds, if the message is unique the message
+            # is printed anyway to avoid a lack of user perceived
+            # responsiveness.
+            message_hash = hash(record_format)
+            valid_message = message_hash not in self._last_few_message_hashes
+            time_now = time.time()
+            max_wait_time = 1.0  # in seconds
+            waited_long_enough = (time_now - self._time_of_last_message) > max_wait_time
+            if valid_message and waited_long_enough:
+                self._last_few_message_hashes.append(message_hash)
+                self._time_of_last_message = time_now
+            else:
+                return
+
             pre_text = ''
             post_text = ''
             fade_time = 1000  # in milliseconds
@@ -121,7 +149,8 @@ class MayaViewportHandler(logging.StreamHandler):
                 pre_text = '<p style="color:#FF0000";>'
                 post_text = '</p>'
                 fade_time = 10000
-            message = pre_text + self.format(record) + post_text
+            message = pre_text + record_format + post_text
+
             import maya.cmds
             maya.cmds.inViewMessage(statusMessage=message,
                                     fadeStayTime=fade_time,

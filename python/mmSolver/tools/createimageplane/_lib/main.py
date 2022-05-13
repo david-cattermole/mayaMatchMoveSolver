@@ -15,51 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""
-Library functions for creating and modifying image planes.
-
-
-Idea - Create wrapper image plane node
-- The node should adjust either 'live' or 'baked' nodes.
-
-
-Idea - Allow users to change the image sequence.
-- Both 'live' and 'baked' image planes are updated as needed.
-- Users can choose to auto-convert to Maya IFF format (for speed).
-
-
-Idea - Bake images into .iff files using Maya 'imgcvt' utility.
-- Experiment with .dds files to see if it's faster in the Maya viewport or not.
-- Write to local 'sourceimages/mmSolver_temp' directory, by default.
-
-
-Idea - Apply image processing templates to images.
-- Allow the use of OIIO, Natron or Nuke (if installed)
-- Features
-  - Reformat / down-res plates.
-    - Scale (50%)
-    - Maximum width (2048)
-    - Maximum height (2048)
-  - Lens undistort (for baked image planes)
-  - Converting to different formats (such as Maya 'iff')
-
-
-Tool - Set Image Plane File Path
-
-
-Tool - Toggle the Live/Baked image plane state.
-
-
-Idea - Create a custom image plane shape node.
-- Pipe the deforming polygon plane into the shape node and draw it with
-  an image sequence on it.
-- This allows us to hide the polygons in a viewport but still show the
-  image plane.
-- We can control the depth of the image plane with this method.
-- When the OCG Image Plane is fully developed we can easily replace this
-  shape node with the 'ocgImagePlane'.
-
-"""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -73,11 +28,11 @@ import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.python_compat as pycompat
 
 import mmSolver.tools.createimageplane.constant as const
-import mmSolver.tools.createimageplane.lib.utilities as lib_utils
-import mmSolver.tools.createimageplane.lib.shader as lib_shader
-import mmSolver.tools.createimageplane.lib.mmimageplane as lib_mmimageplane
-import mmSolver.tools.createimageplane.lib.polyplane as lib_polyplane
-import mmSolver.tools.createimageplane.lib.nativeimageplane as lib_nativeimageplane
+import mmSolver.tools.createimageplane._lib.utilities as lib_utils
+import mmSolver.tools.createimageplane._lib.shader as lib_shader
+import mmSolver.tools.createimageplane._lib.mmimageplane as lib_mmimageplane
+import mmSolver.tools.createimageplane._lib.polyplane as lib_polyplane
+import mmSolver.tools.createimageplane._lib.nativeimageplane as lib_nativeimageplane
 
 LOG = mmSolver.logger.get_logger()
 
@@ -208,11 +163,3 @@ def set_image_sequence(mm_ip_tfm, image_sequence_path):
     if file_node is not None:
         lib_shader.set_file_path(file_node, image_sequence_path)
     return
-
-
-# Stop users from accessing the internal functions of this sub-module.
-__all__ = [
-    'create_image_plane_on_camera',
-    'convert_image_planes_on_camera',
-    'set_image_sequence'
-]

@@ -23,17 +23,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import collections
-
 import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.constant as const_utils
 import mmSolver.utils.python_compat as pycompat
-import mmSolver.tools.createimageplane.constant as const
-import mmSolver.tools.createimageplane.lib.utilities as lib_utils
-import mmSolver.tools.createimageplane.lib.imageseq as lib_imageseq
+import mmSolver.utils.imageseq as imageseq_utils
+import mmSolver.tools.createimageplane._lib.utilities as lib_utils
 
 
 LOG = mmSolver.logger.get_logger()
@@ -438,15 +436,15 @@ def create_shape_node(name_img_shp,
 
 def set_image_sequence(shp, image_sequence_path):
     assert maya.cmds.nodeType(shp) == 'mmImagePlaneShape'
-    format_style = const.FORMAT_STYLE_HASH_PADDED
+    format_style = const_utils.IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED
     file_pattern, start_frame, end_frame, pad_num, is_seq = \
-        lib_imageseq.expand_image_sequence_path(
+        imageseq_utils.expand_image_sequence_path(
             image_sequence_path,
             format_style)
 
-    format_style = const.FORMAT_STYLE_FIRST_FRAME
+    format_style = const_utils.IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME
     first_frame_file_seq, _, _, _, _ = \
-        lib_imageseq.expand_image_sequence_path(
+        imageseq_utils.expand_image_sequence_path(
             image_sequence_path,
             format_style)
 

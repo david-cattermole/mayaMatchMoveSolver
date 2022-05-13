@@ -1,4 +1,4 @@
-# Copyright (C) 2020, 2022 David Cattermole.
+# Copyright (C) 2022 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -24,7 +24,7 @@ import glob
 import os
 
 import mmSolver.logger
-import mmSolver.tools.createimageplane.constant as const
+import mmSolver.utils.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
@@ -59,6 +59,8 @@ def _split_image_sequence_path(file_path):
 def _get_image_sequence_start_end_frames(base_dir, file_name, file_extension):
     join_file_name = '{}*{}'.format(file_name, file_extension)
     glob_path = os.path.join(base_dir, join_file_name)
+    LOG.warn("glob path: %r", glob_path)
+    # TODO: Only do this once and cache the results.
     all_paths = glob.iglob(glob_path)
 
     padding_num = 99
@@ -107,18 +109,18 @@ def expand_image_sequence_path(image_sequence_path, format_style):
         file_pattern = image_sequence_path
     else:
         image_seq_num = ''
-        if format_style == const.FORMAT_STYLE_MAYA:
+        if format_style == const.IMAGE_SEQ_FORMAT_STYLE_MAYA:
             # file.<f>.png
             if padding_num > 0:
                 image_seq_num = '<f>'
-        elif format_style == const.FORMAT_STYLE_HASH_PADDED:
+        elif format_style == const.IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED:
             # file.####.png
             image_seq_num = '#' * padding_num
-        elif format_style == const.FORMAT_STYLE_PRINTF:
+        elif format_style == const.IMAGE_SEQ_FORMAT_STYLE_PRINTF:
             # file.%04d.png
             if padding_num > 0:
                 image_seq_num = '%0{}d'.format(padding_num)
-        elif format_style == const.FORMAT_STYLE_FIRST_FRAME:
+        elif format_style == const.IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME:
             # file.1001.png
             image_seq_num = str(start_frame).zfill(padding_num)
         else:

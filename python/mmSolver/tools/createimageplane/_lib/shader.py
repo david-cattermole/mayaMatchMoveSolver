@@ -28,9 +28,9 @@ import collections
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.tools.createimageplane.constant as const
-import mmSolver.tools.createimageplane.lib.utilities as lib_utils
-import mmSolver.tools.createimageplane.lib.imageseq as lib_imageseq
+import mmSolver.utils.constant as const_utils
+import mmSolver.utils.imageseq as imageseq_utils
+import mmSolver.tools.createimageplane._lib.utilities as lib_utils
 
 LOG = mmSolver.logger.get_logger()
 
@@ -50,8 +50,8 @@ ShaderNetworkNodes = collections.namedtuple(
 
 
 def set_file_path(file_node, image_sequence_path):
-    format_style = const.FORMAT_STYLE_FIRST_FRAME
-    file_pattern, start, end, pad_num, is_seq = lib_imageseq.expand_image_sequence_path(
+    format_style = const_utils.IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME
+    file_pattern, start, end, pad_num, is_seq = imageseq_utils.expand_image_sequence_path(
         image_sequence_path,
         format_style)
 

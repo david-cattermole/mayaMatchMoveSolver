@@ -28,7 +28,7 @@ import collections
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.tools.createimageplane.lib.utilities as lib_utils
+import mmSolver.tools.createimageplane._lib.utilities as lib_utils
 
 LOG = mmSolver.logger.get_logger()
 

@@ -98,3 +98,16 @@ FRAME_RANGE_MODE_VALUES = [
     FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE,
     FRAME_RANGE_MODE_CUSTOM_VALUE,
 ]
+
+
+# Types of image sequence format:
+#
+# - Maya Style: "file.<f>.png"
+# - First frame style "file.1001.png"
+# - Hash Padded style: "file.####.png"
+# - "old school" Nuke style: file.%04d.png
+#
+IMAGE_SEQ_FORMAT_STYLE_MAYA = 'maya'
+IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED = 'hash_padded'
+IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME = 'first_frame'
+IMAGE_SEQ_FORMAT_STYLE_PRINTF = 'printf'

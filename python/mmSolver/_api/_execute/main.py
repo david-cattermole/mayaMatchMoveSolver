@@ -15,16 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""
-Execute a solve.
-
-Executing a solve compiles the Collections (of Markers, Bundles and
-Solvers) and turns it into a SolveResult, as fast as it can.
-
-Executing a solve has options that control the behaviour of how the
-solve is executed. Usually the options are responsible for forcing Maya
-to update in various ways (DG or Viewport.
-"""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -49,16 +39,10 @@ import mmSolver._api.solverbase as solverbase
 import mmSolver._api.collectionutils as collectionutils
 import mmSolver._api.constant as const
 
-import mmSolver._api.execute.options as executeoptions
-import mmSolver._api.execute.postsolve as executepostsolve
-import mmSolver._api.execute.presolve as executepresolve
-import mmSolver._api.execute.actionstate as actionstate
-
-from mmSolver._api.execute.options import (
-    ExecuteOptions,
-    create_execute_options
-)
-from mmSolver._api.execute.actionstate import ActionState
+import mmSolver._api._execute.options as executeoptions
+import mmSolver._api._execute.postsolve as executepostsolve
+import mmSolver._api._execute.presolve as executepresolve
+import mmSolver._api._execute.actionstate as actionstate
 
 
 LOG = mmSolver.logger.get_logger()
@@ -389,14 +373,3 @@ def execute(col,
     col._set_last_solve_duration(duration)
     col._set_last_solve_results(solres_list)
     return solres_list
-
-
-__all__ = [
-    # Classes
-    'ExecuteOptions',
-    'ActionState',
-
-    'create_execute_options',
-    'execute',
-    'validate',
-]

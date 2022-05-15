@@ -641,6 +641,24 @@
                 "mmSolver.tools.removecontroller2.tool.main();"
             ]
         },
+        "create_camera_body_track_scale_rig": {
+            "name": "Create Camera/Body Track Scale Rig...",
+            "name_shelf": "CrSclRig",
+            "tooltip": "Create Camera/Body Track Sclae Rig",
+            "command": [
+                "import mmSolver.tools.createcamerabodytrackscalerigbake.tool;",
+                "mmSolver.tools.createcamerabodytrackscalerigbake.tool.open_window();"
+            ]
+        }, 
+        "remove_camera_body_track_scale_rig": {
+            "name": "Remove Camera/Body Track Scale Rig",
+            "name_shelf": "RmSclRig",
+            "tooltip": "Remove Camera/Body Track Sclae Rig",
+            "command": [
+                "import mmSolver.tools.removecamerabodytrackscalerigbake.tool;",
+                "mmSolver.tools.removecamerabodytrackscalerigbake.tool.main();"
+            ]
+        },         
         "deform_marker": {
             "name": "Deform Marker",
             "name_shelf": "MkrOff",

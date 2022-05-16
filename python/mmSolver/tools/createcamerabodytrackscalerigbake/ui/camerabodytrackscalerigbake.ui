@@ -27,7 +27,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="scaleRigNameLineEdit"/>
+      <widget class="QLineEdit" name="scaleRigNameLineEdit">
+       <property name="placeholderText">
+        <string>&lt;type name here&gt;</string>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>

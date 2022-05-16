@@ -71,7 +71,7 @@
             "general_tools/remove_controller2",
             "general_tools/---Screen Space Tools",
             "general_tools/screen_z_manipulator",
-            "general_tools/screen_space_rig_bake",
+            "general_tools/screen_space_rig_bake2",
             "general_tools/create_camera_body_track_scale_rig",
             "general_tools/remove_camera_body_track_scale_rig",
             "general_tools/create_screen_space_motion_trail",

@@ -529,7 +529,16 @@
                 "import mmSolver.tools.screenspacerigbake.tool;",
                 "mmSolver.tools.screenspacerigbake.tool.open_window();"
             ]
-        },        
+        },  
+        "screen_space_rig_bake2": {
+            "name": "Screen-Space Rig Bake...",
+            "name_shelf": "ScrnRgBk",
+            "tooltip": "Bake transforms into screen-space, with helper rig.",
+            "command": [
+                "import mmSolver.tools.screenspacerigbake2.tool;",
+                "mmSolver.tools.screenspacerigbake2.tool.open_window();"
+            ]
+        },              
         "undo_scene": {
             "name": "Undo (without UI update)",
             "name_shelf": "Undo",

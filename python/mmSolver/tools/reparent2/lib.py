@@ -174,13 +174,18 @@ def reparent(children_nodes, parent_node,
         bake_mode = const.BAKE_MODE_FULL_BAKE_VALUE
     if rotate_order_mode is None:
         rotate_order_mode = const.ROTATE_ORDER_MODE_USE_EXISTING_VALUE
+    assert start_frame is None or isinstance(start_frame, int)
+    assert end_frame is None or isinstance(end_frame, int)
     assert frame_range_mode in const.FRAME_RANGE_MODE_VALUES
     assert bake_mode in const.BAKE_MODE_VALUES
     assert rotate_order_mode in const.ROTATE_ORDER_MODE_VALUES
     assert isinstance(delete_static_anim_curves, bool)
 
     # Get frame range
-    frame_range = time_utils.get_frame_range(frame_range_mode)
+    frame_range = time_utils.get_frame_range(
+        frame_range_mode,
+        start_frame=start_frame,
+        end_frame=end_frame)
 
     # Get bake mode.
     sparse = None

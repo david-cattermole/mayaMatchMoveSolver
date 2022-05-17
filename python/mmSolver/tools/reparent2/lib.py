@@ -52,7 +52,9 @@ SKIP_NONE = 'none'
 
 
 def _bake_nodes(nodes, frame_range, smart_bake=False):
-    if smart_bake:
+    assert isinstance(smart_bake, bool)
+    assert len(frame_range) == 2
+    if smart_bake is True:
         maya.cmds.bakeResults(
             nodes,
             time=frame_range,
@@ -245,7 +247,7 @@ def reparent(children_nodes, parent_node,
         loc_tfms.append(loc_tfm)
 
     # Bake the locator results
-    _bake_nodes(loc_tfms, frame_range, smart_bake=True)
+    _bake_nodes(loc_tfms, frame_range, smart_bake=smart_bake)
     maya.cmds.delete(loc_tfms, constraints=True)
 
     for child, child_node, loc_tfm in zip(children, children_nodes, loc_tfms):

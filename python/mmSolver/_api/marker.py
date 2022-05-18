@@ -1065,6 +1065,9 @@ class Marker(object):
         :returns: None
         """
         bnd = self.get_bundle()
+        if bnd is None:
+            LOG.warn('Could not get Bundle. self=%r', self)
+            return
         mkr_node = self.get_node()
         if mkr_node is None:
             LOG.warn('Could not get Marker node. self=%r', self)

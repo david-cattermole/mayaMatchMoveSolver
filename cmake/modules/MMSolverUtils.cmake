@@ -305,15 +305,19 @@ function(install_shared_library lib_file lib_file_dll install_dir)
   elseif (UNIX)
     string(FIND ${lib_file} ".so" find_so)
     if(${find_so} GREATER_EQUAL 0)
-      # Install both symlink and real library.
+      # Install only the real library, with the symlink name.
       get_filename_component(absolute_lib_file ${lib_file} REALPATH)
-      install(FILES ${lib_file} DESTINATION ${install_dir})
-      install(FILES ${absolute_lib_file} DESTINATION ${install_dir})
+      get_filename_component(lib_file_name ${lib_file} NAME)
+      install(FILES ${absolute_lib_file}
+        DESTINATION ${install_dir}
+        RENAME ${lib_file_name})
 
-      file(GLOB lib_files
-        LIST_DIRECTORIES 0
-        "${lib_file}*")
-      install(FILES ${lib_files} DESTINATION ${install_dir})
+      # # Copies all files similar to ${lib_file} to the install
+      # # directory.
+      # file(GLOB lib_files
+      #   LIST_DIRECTORIES 0
+      #   "${lib_file}*")
+      # install(FILES ${lib_files} DESTINATION ${install_dir})
     endif ()
   endif ()
 endfunction()

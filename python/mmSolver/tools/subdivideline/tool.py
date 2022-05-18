@@ -15,7 +15,8 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""Subdivide the number of markers in selected line.
+"""
+Subdivide the number of markers in selected line.
 
 This allows adding more detail in areas that are needed without
 adding line segments where they are not needed.
@@ -23,7 +24,6 @@ adding line segments where they are not needed.
 The tool works on the current Marker or Line selection. If a line is
 selected the line is uniformly subdivided. If markers are selected,
 the line segments around the markers are subdivided.
-
 """
 
 import collections

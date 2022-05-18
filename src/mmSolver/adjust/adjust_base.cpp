@@ -453,7 +453,7 @@ void logResultsSolveDetails(
             MStreamUtils::stdErrorStream() << "Solver returned FAILURE    | ";
         }
 
-        const std::size_t buffer_size = 128;
+        const size_t buffer_size = 128;
         char formatBuffer[buffer_size];
         std::snprintf(
             formatBuffer,

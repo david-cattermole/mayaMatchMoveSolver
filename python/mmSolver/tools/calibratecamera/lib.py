@@ -26,8 +26,10 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.tools.createimageplane.lib as imgpln_lib
 
 
+USE_MAYA_IMAGE_PLANE = False
 LOG = mmSolver.logger.get_logger()
 
 
@@ -183,28 +185,31 @@ def create_new_setup():
     cam_shp = maya.cmds.createNode('camera', name='cameraShape', parent=cam_tfm)
     cam = mmapi.Camera(shape=cam_shp)
 
-    # Create image plane.
-    img_pl_tfm, img_pl_shp = maya.cmds.imagePlane(camera=cam_shp)
+    if USE_MAYA_IMAGE_PLANE is True:
+        # Create image plane.
+        img_pl_tfm, img_pl_shp = maya.cmds.imagePlane(camera=cam_shp)
 
-    # Using a "To Size" fit mode will forcibly change the image to
-    # stretch it to match the size given. Therefore it is important
-    # the image plane size (including the aspect ratio) is correct.
-    maya.cmds.setAttr('{}.fit'.format(img_pl_shp), 4)  # 4 = To Size
+        # Using a "To Size" fit mode will forcibly change the image to
+        # stretch it to match the size given. Therefore it is important
+        # the image plane size (including the aspect ratio) is correct.
+        maya.cmds.setAttr('{}.fit'.format(img_pl_shp), 4)  # 4 = To Size
 
-    # Image plane is almost at far-clipping plane distance.
-    maya.cmds.setAttr('{}.depth'.format(img_pl_shp), 9990)
+        # Image plane is almost at far-clipping plane distance.
+        maya.cmds.setAttr('{}.depth'.format(img_pl_shp), 9990)
 
-    # Darken the imagePlane.
-    value = 0.5
-    maya.cmds.setAttr(
-        '{}.colorGain'.format(img_pl_shp),
-        value, value, value, type='double3')
+        # Darken the imagePlane.
+        value = 0.5
+        maya.cmds.setAttr(
+            '{}.colorGain'.format(img_pl_shp),
+            value, value, value, type='double3')
 
-    # Make the image plane non-selectable.
-    maya.cmds.setAttr('{}.overrideEnabled'.format(img_pl_shp), 1)
-    maya.cmds.setAttr(
-        '{}.overrideDisplayType'.format(img_pl_shp),
-        2)  # 2 == 'Reference' display type.
+        # Make the image plane non-selectable.
+        maya.cmds.setAttr('{}.overrideEnabled'.format(img_pl_shp), 1)
+        maya.cmds.setAttr(
+            '{}.overrideDisplayType'.format(img_pl_shp),
+            2)  # 2 == 'Reference' display type.
+    else:
+        mm_ip_tfm, mm_ip_shp = imgpln_lib.create_image_plane_on_camera(cam)
 
     # Create a "Calibrate" marker group.
     mkr_grp = mmapi.MarkerGroup().create_node(cam=cam, name='calibrate')
@@ -332,17 +337,30 @@ def create_new_setup():
          '{}.horizonPointNodeA'.format(calib_node)],
         ['{}.message'.format(horizon_mkr_node_b),
          '{}.horizonPointNodeB'.format(calib_node)],
-
-        ['{}.coverageX'.format(img_pl_shp),
-         '{}.imageWidth'.format(calib_node)],
-        ['{}.coverageY'.format(img_pl_shp),
-         '{}.imageHeight'.format(calib_node)],
-
-        ['{}.horizontalFilmAperture'.format(cam_shp),
-         '{}.sizeX'.format(img_pl_shp)],
-        ['{}.verticalFilmAperture'.format(cam_shp),
-         '{}.sizeY'.format(img_pl_shp)],
     ]
+
+    if USE_MAYA_IMAGE_PLANE is True:
+        src_dst_attr_list.append(
+            ['{}.coverageX'.format(img_pl_shp),
+             '{}.imageWidth'.format(calib_node)])
+        src_dst_attr_list.append(
+            ['{}.coverageY'.format(img_pl_shp),
+             '{}.imageHeight'.format(calib_node)])
+
+        src_dst_attr_list.append(
+            ['{}.horizontalFilmAperture'.format(cam_shp),
+             '{}.sizeX'.format(img_pl_shp)])
+        src_dst_attr_list.append(
+            ['{}.verticalFilmAperture'.format(cam_shp),
+             '{}.sizeY'.format(img_pl_shp)])
+    else:
+        src_dst_attr_list.append(
+            ['{}.imageWidth'.format(mm_ip_shp),
+             '{}.imageWidth'.format(calib_node)])
+        src_dst_attr_list.append(
+            ['{}.imageHeight'.format(mm_ip_shp),
+             '{}.imageHeight'.format(calib_node)])
+
     for src, dst in src_dst_attr_list:
         if maya.cmds.isConnected(src, dst) is False:
             maya.cmds.connectAttr(src, dst)

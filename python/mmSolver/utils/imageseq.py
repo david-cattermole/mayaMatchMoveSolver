@@ -59,7 +59,6 @@ def _split_image_sequence_path(file_path):
 def _get_image_sequence_start_end_frames(base_dir, file_name, file_extension):
     join_file_name = '{}*{}'.format(file_name, file_extension)
     glob_path = os.path.join(base_dir, join_file_name)
-    LOG.warn("glob path: %r", glob_path)
     # TODO: Only do this once and cache the results.
     all_paths = glob.iglob(glob_path)
 

@@ -19,6 +19,10 @@
 The Create Image Plane tool.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 
 import maya.cmds
@@ -30,6 +34,7 @@ import mmSolver.utils.viewport as utils_viewport
 import mmSolver.utils.camera as utils_camera
 import mmSolver.tools.createimageplane.lib as lib
 
+
 LOG = mmSolver.logger.get_logger()
 
 
@@ -38,13 +43,15 @@ def _get_start_directory():
     workspace_path = os.path.abspath(workspace_path)
 
     file_rules = maya.cmds.workspace(query=True, fileRule=True)
+    file_rule_names = file_rules[0::2]
+    file_rule_values = file_rules[1::2]
+
     file_rule = 'sourceImages'
+    file_rule_index = file_rule_names.index(file_rule)
+    dir_name = file_rule_values[file_rule_index]
 
-    file_rule_index = file_rules.index(file_rule)
-    source_images_dir = file_rules[file_rule_index + 1]
-
-    source_images_path = os.path.join(workspace_path, source_images_dir)
-    return source_images_path
+    path = os.path.join(workspace_path, dir_name)
+    return path
 
 
 def prompt_user_for_image_sequence(start_dir=None):
@@ -85,9 +92,9 @@ def main():
     mmapi.load_plugin()
 
     # Get selected camera(s).
-    sel = maya.cmds.ls(sl=True, long=True)
+    sel = maya.cmds.ls(selection=True, long=True) or []
     node_filtered = mmapi.filter_nodes_into_categories(sel)
-    cams = node_filtered['camera']
+    cams = node_filtered[mmapi.OBJECT_TYPE_CAMERA]
     cams = [x for x in cams if utils_camera.is_not_startup_cam(x)]
 
     cams_to_add_lenses = []

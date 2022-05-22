@@ -334,7 +334,7 @@ set(LDPK_PATCH_DST_2 ${LDPK_SOURCE_DIR}/ldpk-config.cmake.in)
 ExternalProject_Add(ldpk
     PREFIX ${LDPK_PREFIX}
     DEPENDS ${LDPK_DEPENDS}
-    URL "https://www.3dequalizer.com/user_daten/sections/tech_docs/archives/ldpk-2.4.tgz"
+    URL "https://www.3dequalizer.com/user_daten/sections/tech_docs/archives/ldpk-2.7.tgz"
     DOWNLOAD_DIR ${LDPK_DOWNLOAD_DIR}
     SOURCE_DIR ${LDPK_SOURCE_DIR}
     INSTALL_DIR ${LDPK_INSTALL_PATH}

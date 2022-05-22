@@ -55,10 +55,7 @@ def parse_file(file_path):
     cam_parameters = {}
     fov_parameters = {}
     lens_parameters = {}
-    LOG.warn('len(lines): %r', len(lines))
     for line in lines:
-        LOG.warn('line: %r', line)
-
         # Comments in Nuke scripts start with '#' and comments will be
         # ignored.
         line = line.partition('#')[0].strip()
@@ -116,10 +113,8 @@ def parse_file(file_path):
 
     # Check for invalid data.
     if nuke_node_type is None:
-        # LOG.warn('nuke_node_type is None')
         return None
     if node_name is None:
-        # LOG.warn('node_name is None')
         return None
 
     lens_object = LensObject(
@@ -152,8 +147,6 @@ def _remove_keyframes(node, attr_name):
 
 
 def _set_static_attr(node, attr_name, value):
-    # LOG.info('_set_static_attr: node=%r attr_name=%r value=%r',
-    #          node, attr_name, value)
     node_attr = '{}.{}'.format(node, attr_name)
 
     locked = maya.cmds.getAttr(node_attr)
@@ -173,8 +166,6 @@ def _set_static_attr(node, attr_name, value):
 
 
 def _set_animated_attr(node, attr_name, times, values):
-    # LOG.info('_set_static_attr: node=%r attr_name=%r times=%r values=%r',
-    #          node, attr_name, times[0], values[0])
     assert len(times) == len(values)
     assert len(times) > 0
     node_attr = node + '.' + attr_name
@@ -191,8 +182,6 @@ def _set_animated_attr(node, attr_name, times, values):
 
 
 def _set_lens_model(node, value):
-    LOG.info('_set_lens_model: node=%r value=%r', node, value)
-
     maya_node_type = maya.cmds.nodeType(node)
     if maya_node_type != const.MAYA_MM_LENS_MODEL_3DE:
         # Only 'mmLensModel3de' is supported for now.
@@ -247,8 +236,6 @@ def apply_to_lens(lens_object, lens):
 
     set_attributes_count = 0
     for param_name, value in lens_parameters.items():
-        # LOG.warn('param_name=%r value=%r', param_name, value)
-
         key = (object_node_type, param_name)
         attr_names = const.NODE_TYPE_PARAMETER_NAME_TO_ATTRIBUTE_NAMES.get(key, [])
         if len(attr_names) == 0:

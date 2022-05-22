@@ -69,7 +69,7 @@ def prompt_user_for_image_sequence(start_dir=None):
         setProjectBtnEnabled=True,
         fileFilter=multiple_filters,
         startingDirectory=start_dir,
-    )
+    ) or []
     if len(results) == 0:
         # User cancelled.
         return image_sequence_path

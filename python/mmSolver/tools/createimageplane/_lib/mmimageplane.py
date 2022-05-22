@@ -47,7 +47,6 @@ def _create_transform_attrs(image_plane_tfm):
         minValue=0.0,
         defaultValue=1.0)
     maya.cmds.setAttr(image_plane_tfm + '.' + attr, keyable=True)
-    maya.cmds.setAttr(image_plane_tfm + '.' + attr, 10.0)
 
     # Focal Length attribute
     attr = 'focalLength'
@@ -289,6 +288,10 @@ def create_transform_node(name_tfm, cam_tfm, cam_shp):
 
     # Create (dynamic) attributes.
     _create_transform_attrs(tfm)
+
+    # Image plane depth be far away, but still visible.
+    far_clip_plane = maya.cmds.getAttr(cam_tfm + '.farClipPlane')
+    maya.cmds.setAttr(tfm + '.depth', far_clip_plane * 0.9)
 
     # Connect camera attributes
     attrs = [

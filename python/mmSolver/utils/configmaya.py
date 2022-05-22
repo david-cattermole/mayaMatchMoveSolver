@@ -238,7 +238,7 @@ def get_scene_option(name, default=None):
     """
     if not maya.cmds.objExists(const.SCENE_DATA_NODE):
         maya.cmds.createNode(
-            'script',
+            const.SCENE_DATA_NODE_TYPE,
             name=const.SCENE_DATA_NODE,
             skipSelect=True)
     data = get_node_option_structure(
@@ -269,7 +269,7 @@ def set_scene_option(name, value, add_attr=None):
     """
     if not maya.cmds.objExists(const.SCENE_DATA_NODE):
         maya.cmds.createNode(
-            'script',
+            const.SCENE_DATA_NODE_TYPE,
             name=const.SCENE_DATA_NODE,
             skipSelect=True)
     data = get_node_option_structure(

@@ -43,6 +43,7 @@ CONFIG_HOME_DIR_PATH = {
 
 # Maya configuration
 SCENE_DATA_NODE = 'MM_SOLVER_SCENE_DATA'
+SCENE_DATA_NODE_TYPE = 'script'
 SCENE_DATA_ATTR = 'data'
 
 

@@ -37,15 +37,15 @@ def filter_nodes_into_categories(nodes):
 
     Supported categories are:
 
-    - 'camera'
-    - 'marker'
-    - 'line'
-    - 'lens'
-    - 'imageplane'
-    - 'markergroup'
-    - 'bundle'
-    - 'attribute'
-    - 'collection'
+    - OBJECT_TYPE_CAMERA
+    - OBJECT_TYPE_MARKER
+    - OBJECT_TYPE_LINE
+    - OBJECT_TYPE_LENS
+    - OBJECT_TYPE_IMAGE_PLANE
+    - OBJECT_TYPE_MARKER_GROUP
+    - OBJECT_TYPE_BUNDLE
+    - OBJECT_TYPE_ATTRIBUTE
+    - OBJECT_TYPE_COLLECTION
     - 'other'
 
     :param nodes: Maya nodes to categorise.
@@ -56,37 +56,37 @@ def filter_nodes_into_categories(nodes):
     """
     assert isinstance(nodes, (list, tuple))
     result = {
-        'camera': [],
-        'marker': [],
-        'line': [],
-        'lens': [],
-        'imageplane': [],
-        'markergroup': [],
-        'bundle': [],
-        'attribute': [],
-        'collection': [],
+        const.OBJECT_TYPE_CAMERA: [],
+        const.OBJECT_TYPE_MARKER: [],
+        const.OBJECT_TYPE_LINE: [],
+        const.OBJECT_TYPE_LENS: [],
+        const.OBJECT_TYPE_IMAGE_PLANE: [],
+        const.OBJECT_TYPE_MARKER_GROUP: [],
+        const.OBJECT_TYPE_BUNDLE: [],
+        const.OBJECT_TYPE_ATTRIBUTE: [],
+        const.OBJECT_TYPE_COLLECTION: [],
         'other': []
     }
     for node in nodes:
         obj_type = api_utils.get_object_type(node)
         if obj_type == const.OBJECT_TYPE_MARKER:
-            result['marker'].append(node)
+            result[const.OBJECT_TYPE_MARKER].append(node)
         elif obj_type == const.OBJECT_TYPE_LINE:
-            result['line'].append(node)
+            result[const.OBJECT_TYPE_LINE].append(node)
         elif obj_type == const.OBJECT_TYPE_LENS:
-            result['lens'].append(node)
+            result[const.OBJECT_TYPE_LENS].append(node)
         elif obj_type == const.OBJECT_TYPE_IMAGE_PLANE:
-            result['imageplane'].append(node)
+            result[const.OBJECT_TYPE_IMAGE_PLANE].append(node)
         elif obj_type == const.OBJECT_TYPE_MARKER_GROUP:
-            result['markergroup'].append(node)
+            result[const.OBJECT_TYPE_MARKER_GROUP].append(node)
         elif obj_type == const.OBJECT_TYPE_BUNDLE:
-            result['bundle'].append(node)
+            result[const.OBJECT_TYPE_BUNDLE].append(node)
         elif obj_type == const.OBJECT_TYPE_CAMERA:
-            result['camera'].append(node)
+            result[const.OBJECT_TYPE_CAMERA].append(node)
         elif obj_type == const.OBJECT_TYPE_ATTRIBUTE:
-            result['attribute'].append(node)
+            result[const.OBJECT_TYPE_ATTRIBUTE].append(node)
         elif obj_type == const.OBJECT_TYPE_COLLECTION:
-            result['collection'].append(node)
+            result[const.OBJECT_TYPE_COLLECTION].append(node)
         else:
             result['other'].append(node)
     return result
@@ -103,7 +103,7 @@ def filter_marker_nodes(nodes):
     :rtype: list
     """
     filter_nodes = filter_nodes_into_categories(nodes)
-    return filter_nodes.get('marker', [])
+    return filter_nodes.get(const.OBJECT_TYPE_MARKER, [])
 
 
 def filter_line_nodes(nodes):
@@ -117,7 +117,7 @@ def filter_line_nodes(nodes):
     :rtype: list
     """
     filter_nodes = filter_nodes_into_categories(nodes)
-    return filter_nodes.get('line', [])
+    return filter_nodes.get(const.OBJECT_TYPE_LINE, [])
 
 
 def filter_lens_nodes(nodes):
@@ -131,7 +131,7 @@ def filter_lens_nodes(nodes):
     :rtype: list
     """
     filter_nodes = filter_nodes_into_categories(nodes)
-    return filter_nodes.get('lens', [])
+    return filter_nodes.get(const.OBJECT_TYPE_LENS, [])
 
 
 def filter_image_plane_nodes(nodes):
@@ -145,7 +145,7 @@ def filter_image_plane_nodes(nodes):
     :rtype: list
     """
     filter_nodes = filter_nodes_into_categories(nodes)
-    return filter_nodes.get('imageplane', [])
+    return filter_nodes.get(const.OBJECT_TYPE_IMAGE_PLANE, [])
 
 
 def filter_marker_group_nodes(nodes):
@@ -159,7 +159,7 @@ def filter_marker_group_nodes(nodes):
     :rtype: list
     """
     filter_nodes = filter_nodes_into_categories(nodes)
-    return filter_nodes.get('markergroup', [])
+    return filter_nodes.get(const.OBJECT_TYPE_MARKER_GROUP, [])
 
 
 def filter_bundle_nodes(nodes):
@@ -173,7 +173,7 @@ def filter_bundle_nodes(nodes):
     :rtype: list
     """
     filter_nodes = filter_nodes_into_categories(nodes)
-    return filter_nodes.get('bundle', [])
+    return filter_nodes.get(const.OBJECT_TYPE_BUNDLE, [])
 
 
 def filter_camera_nodes(nodes):
@@ -187,7 +187,7 @@ def filter_camera_nodes(nodes):
     :rtype: list
     """
     filter_nodes = filter_nodes_into_categories(nodes)
-    return filter_nodes.get('camera', [])
+    return filter_nodes.get(const.OBJECT_TYPE_CAMERA, [])
 
 
 def filter_collection_nodes(nodes):
@@ -201,4 +201,4 @@ def filter_collection_nodes(nodes):
     :rtype: list
     """
     filter_nodes = filter_nodes_into_categories(nodes)
-    return filter_nodes.get('collection', [])
+    return filter_nodes.get(const.OBJECT_TYPE_COLLECTION, [])

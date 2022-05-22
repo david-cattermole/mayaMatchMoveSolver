@@ -44,8 +44,8 @@ def main():
     # Get Markers and Bundles
     sel = maya.cmds.ls(selection=True, long=True) or []
     filter_nodes = mmapi.filter_nodes_into_categories(sel)
-    mkr_nodes = filter_nodes.get('marker', [])
-    bnd_nodes = filter_nodes.get('bundle', [])
+    mkr_nodes = filter_nodes.get(mmapi.OBJECT_TYPE_MARKER, [])
+    bnd_nodes = filter_nodes.get(mmapi.OBJECT_TYPE_BUNDLE, [])
     if len(mkr_nodes) == 0 and len(bnd_nodes) == 0:
         msg = 'Please select at least one marker / bundle!'
         LOG.warning(msg)

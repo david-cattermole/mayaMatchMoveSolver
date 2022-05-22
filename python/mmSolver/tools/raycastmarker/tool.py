@@ -141,9 +141,9 @@ def main():
         return
 
     node_categories = mmapi.filter_nodes_into_categories(selection)
-    mkr_node_list = node_categories['marker']
-    bnd_node_list = node_categories['bundle']
-    cam_node_list = node_categories['camera']
+    mkr_node_list = node_categories[mmapi.OBJECT_TYPE_MARKER]
+    bnd_node_list = node_categories[mmapi.OBJECT_TYPE_BUNDLE]
+    cam_node_list = node_categories[mmapi.OBJECT_TYPE_CAMERA]
     if len(mkr_node_list) == 0 and len(bnd_node_list) == 0:
         LOG.warn('Please select markers or bundles to ray-cast.')
         return

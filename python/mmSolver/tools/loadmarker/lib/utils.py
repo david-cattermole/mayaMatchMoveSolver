@@ -53,7 +53,7 @@ def get_selected_cameras():
 
     added_cameras = []
     objects = mmapi.filter_nodes_into_categories(nodes)
-    for node in objects['camera']:
+    for node in objects[mmapi.OBJECT_TYPE_CAMERA]:
         cam = None
         if maya.cmds.nodeType(node) == 'camera':
             cam = mmapi.Camera(shape=node)
@@ -66,7 +66,7 @@ def get_selected_cameras():
             cams.append(cam)
             added_cameras.append(shp_node)
 
-    for node in objects['marker']:
+    for node in objects[mmapi.OBJECT_TYPE_MARKER]:
         mkr = mmapi.Marker(node=node)
         cam = mkr.get_camera()
         if cam is None:
@@ -76,7 +76,7 @@ def get_selected_cameras():
             cams.append(cam)
             added_cameras.append(shp_node)
 
-    for node in objects['markergroup']:
+    for node in objects[mmapi.OBJECT_TYPE_MARKER_GROUP]:
         mkr_grp = mmapi.MarkerGroup(node=node)
         cam = mkr_grp.get_camera()
         if cam is None:

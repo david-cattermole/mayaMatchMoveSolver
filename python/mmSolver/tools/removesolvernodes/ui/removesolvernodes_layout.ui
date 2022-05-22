@@ -61,9 +61,37 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="lenses_checkBox">
+        <property name="text">
+         <string>Lenses</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="lines_checkBox">
+        <property name="text">
+         <string>Lines</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="imagePlanes_checkBox">
+        <property name="text">
+         <string>Image Planes</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="collections_checkBox">
         <property name="text">
          <string>Collections</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="displayNodes_checkBox">
+        <property name="text">
+         <string>Display Nodes (Sky Dome, MM Renderer, etc)</string>
         </property>
        </widget>
       </item>

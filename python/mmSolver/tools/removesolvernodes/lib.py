@@ -26,7 +26,9 @@ from __future__ import print_function
 import maya.cmds as cmds
 
 import mmSolver.logger
-import mmSolver.utils.python_compat as pycompat
+import mmSolver.utils.node as node_utils
+import mmSolver.utils.constant as const_utils
+import mmSolver.tools.solver.constant as solver_const
 import mmSolver.api as mmapi
 
 LOG = mmSolver.logger.get_logger()
@@ -70,7 +72,6 @@ def _collect_lines(node_categories):
 
 def _collect_lenses(node_categories):
     nodes_to_delete = set(node_categories.get(mmapi.OBJECT_TYPE_LENS, set()))
-
     node_types_to_delete = ['mmLensDeformer', 'mmLensEvaluate']
     other_nodes = node_categories.get('other', [])
     for node in other_nodes:
@@ -80,6 +81,7 @@ def _collect_lenses(node_categories):
 
 
 def _collect_image_planes(node_categories):
+    # TODO: Get the auxiliary nodes that are used with mmImagePlanes.
     nodes_to_delete = node_categories.get(mmapi.OBJECT_TYPE_IMAGE_PLANE, [])
     return list(sorted(set(nodes_to_delete)))
 
@@ -94,8 +96,25 @@ def _collect_display_nodes(node_categories):
     return list(sorted(nodes_to_delete))
 
 
+def _collect_configuration_nodes(node_categories):
+    # These are nodes that store tool configuration inside the Maya
+    # scene. It's not really important to remove these nodes as
+    # compatibility because these are native Maya node types.
+    nodes_to_delete = set()
+    node_types_to_delete = [
+        (const_utils.SCENE_DATA_NODE_TYPE, const_utils.SCENE_DATA_ATTR),
+        (solver_const.MM_SOLVER_DATA_NODE_TYPE, solver_const.MM_SOLVER_DATA_ATTR_NAME)]
+    other_nodes = node_categories.get('other', [])
+    for node in other_nodes:
+        for node_type, attr_name in node_types_to_delete:
+            if (cmds.nodeType(node) == node_type
+                    and node_utils.attribute_exists(attr_name, node)):
+                nodes_to_delete.add(node)
+    return list(sorted(nodes_to_delete))
+
+
 def _collect_collections(node_categories):
-    nodes_to_delete = node_categories.get('collection', [])
+    nodes_to_delete = node_categories.get(mmapi.OBJECT_TYPE_COLLECTION, [])
     return list(sorted(set(nodes_to_delete)))
 
 
@@ -108,10 +127,8 @@ def _collect_misc_nodes():
             'mmLineIntersect',
             'mmCameraCalibrate'
         ]
-    )
-    other_nodes = cmds.ls('mmSolver*', long=True)
-    combined_set = set(misc_nodes+other_nodes)
-    return list(sorted(combined_set))
+    ) or []
+    return list(sorted(set(misc_nodes)))
 
 
 def filter_nodes(what_to_delete_dict):
@@ -159,6 +176,11 @@ def filter_nodes(what_to_delete_dict):
     what_type = 'display_nodes'
     if what_to_delete_dict.get(what_type) is True:
         found_nodes = _collect_display_nodes(node_categories)
+        found_nodes_map[what_type] = found_nodes
+
+    what_type = 'configuration_nodes'
+    if what_to_delete_dict.get(what_type) is True:
+        found_nodes = _collect_configuration_nodes(node_categories)
         found_nodes_map[what_type] = found_nodes
 
     what_type = 'other_nodes'

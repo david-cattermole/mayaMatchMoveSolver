@@ -96,6 +96,13 @@
        </widget>
       </item>
       <item>
+       <widget class="QCheckBox" name="configuration_checkBox">
+        <property name="text">
+         <string>Tool Configuration Nodes</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QCheckBox" name="otherNodes_checkBox">
         <property name="text">
          <string>Other Nodes</string>

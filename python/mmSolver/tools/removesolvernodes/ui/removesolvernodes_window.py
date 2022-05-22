@@ -68,6 +68,7 @@ def _generate_details_text(marker_nodes=None,
                            imageplane_nodes=None,
                            collection_nodes=None,
                            display_nodes=None,
+                           config_nodes=None,
                            other_nodes=None):
     details = 'Nodes to delete...\n'
 
@@ -110,6 +111,10 @@ def _generate_details_text(marker_nodes=None,
         details += '\nDisplay Nodes:\n'
         details += _format_node_list(display_nodes)
 
+    if len(config_nodes) > 0:
+        details += '\nConfiguration Nodes:\n'
+        details += _format_node_list(config_nodes)
+
     if len(other_nodes) > 0:
         details += '\nOther Nodes:\n'
         details += _format_node_list(other_nodes)
@@ -126,6 +131,7 @@ def _generate_message_text(nodes_to_delete=None,
                            imageplane_nodes=None,
                            collection_nodes=None,
                            display_nodes=None,
+                           config_nodes=None,
                            other_nodes=None):
     marker_count = len(marker_nodes)
     bundle_count = len(bundle_nodes)
@@ -135,6 +141,7 @@ def _generate_message_text(nodes_to_delete=None,
     imageplane_count = len(imageplane_nodes)
     collection_count = len(collection_nodes)
     display_count = len(display_nodes)
+    config_count = len(config_nodes)
     other_count = len(other_nodes)
 
     msg = (
@@ -148,6 +155,7 @@ def _generate_message_text(nodes_to_delete=None,
         '-> Image Planes: {imageplane_count}\n'
         '-> Collections: {collection_count}\n'
         '-> Display Nodes: {display_count}\n'
+        '-> Configuration Nodes: {config_count}\n'
         '-> Other Nodes: {other_count}\n'
         '\n'
     ).format(
@@ -160,6 +168,7 @@ def _generate_message_text(nodes_to_delete=None,
         imageplane_count=imageplane_count,
         collection_count=collection_count,
         display_count=display_count,
+        config_count=config_count,
         other_count=other_count,
     )
     if unknown_node_found:
@@ -186,6 +195,7 @@ def _run_tool(window_parent, save_scene, what_to_delete_dict):
     imageplane_nodes = found_nodes_map.get('imageplanes', [])
     collection_nodes = found_nodes_map.get('collections', [])
     display_nodes = found_nodes_map.get('display_nodes', [])
+    config_nodes = found_nodes_map.get('configuration_nodes', [])
     other_nodes = found_nodes_map.get('other_nodes', [])
 
     nodes_to_delete = []
@@ -210,6 +220,7 @@ def _run_tool(window_parent, save_scene, what_to_delete_dict):
         imageplane_nodes=imageplane_nodes,
         collection_nodes=collection_nodes,
         display_nodes=display_nodes,
+        config_nodes=config_nodes,
         other_nodes=other_nodes)
 
     msg = _generate_message_text(
@@ -223,6 +234,7 @@ def _run_tool(window_parent, save_scene, what_to_delete_dict):
         imageplane_nodes=imageplane_nodes,
         collection_nodes=collection_nodes,
         display_nodes=display_nodes,
+        config_nodes=config_nodes,
         other_nodes=other_nodes)
 
     inform_text = 'Are you sure you want to delete?'
@@ -261,8 +273,7 @@ class RemoveSolverNodesWindow(BaseWindow):
     name = 'RemoveSolverNodesWindow'
 
     def __init__(self, parent=None, name=None):
-        super(RemoveSolverNodesWindow, self).__init__(parent,
-                                               name=name)
+        super(RemoveSolverNodesWindow, self).__init__(parent, name=name)
         self.setupUi(self)
         self.addSubForm(removesolvernodes_layout.RemoveSolverNodesLayout)
 
@@ -313,6 +324,7 @@ class RemoveSolverNodesWindow(BaseWindow):
             'imageplanes': self.subForm.imagePlanes_checkBox.isChecked(),
             'collections': self.subForm.collections_checkBox.isChecked(),
             'display_nodes': self.subForm.displayNodes_checkBox.isChecked(),
+            'configuration_nodes': self.subForm.configuration_checkBox.isChecked(),
             'other_nodes': self.subForm.otherNodes_checkBox.isChecked()
         }
         ok = _run_tool(self, save_scene, what_to_delete_dict)

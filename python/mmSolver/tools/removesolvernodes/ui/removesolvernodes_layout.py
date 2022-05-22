@@ -96,6 +96,9 @@ class RemoveSolverNodesLayout(QtWidgets.QWidget, ui_removesolvernodes_layout.Ui_
         display_nodes = get_config_value(
             config, 'data/delete_display_nodes',
             const.DELETE_DISPLAY_NODES_DEFAULT_VALUE)
+        configuration = get_config_value(
+            config, 'data/delete_configuration',
+            const.DELETE_CONFIG_DEFAULT_VALUE)
         others = get_config_value(
             config, 'data/delete_others',
             const.DELETE_OTHERS_DEFAULT_VALUE)
@@ -109,6 +112,7 @@ class RemoveSolverNodesLayout(QtWidgets.QWidget, ui_removesolvernodes_layout.Ui_
         self.imagePlanes_checkBox.setChecked(imageplanes)
         self.collections_checkBox.setChecked(collections)
         self.displayNodes_checkBox.setChecked(display_nodes)
+        self.configuration_checkBox.setChecked(configuration)
         self.otherNodes_checkBox.setChecked(others)
 
     def save_options(self):
@@ -122,6 +126,7 @@ class RemoveSolverNodesLayout(QtWidgets.QWidget, ui_removesolvernodes_layout.Ui_
         imageplanes = self.imagePlanes_checkBox.isChecked()
         collections = self.collections_checkBox.isChecked()
         display_nodes = self.displayNodes_checkBox.isChecked()
+        configuration = self.configuration_checkBox.isChecked()
         others = self.otherNodes_checkBox.isChecked()
 
         config = get_config()
@@ -135,6 +140,7 @@ class RemoveSolverNodesLayout(QtWidgets.QWidget, ui_removesolvernodes_layout.Ui_
             config.set_value("data/delete_imageplanes", imageplanes)
             config.set_value("data/delete_collections", collections)
             config.set_value("data/delete_display_nodes", display_nodes)
+            config.set_value("data/delete_configuration", configuration)
             config.set_value("data/delete_others", others)
             config.write()
         return

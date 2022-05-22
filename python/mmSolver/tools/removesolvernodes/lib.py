@@ -105,7 +105,6 @@ def _collect_misc_nodes():
         type=[
             'mmMarkerScale',
             'mmReprojection',
-            'mmMarkerGroupTransform',
             'mmLineIntersect',
             'mmCameraCalibrate'
         ]

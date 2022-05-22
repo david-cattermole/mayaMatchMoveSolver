@@ -738,6 +738,15 @@
                 "mmSolver.tools.togglecameradistort.tool.main();"
             ]
         },
+        "load_lens": {
+            "name": "Load Lens File on Selected Lens(es)...",
+            "name_shelf": "LdLens",
+            "tooltip": "Load lens distortion values from a file on to a node.",
+            "command": [
+                "import mmSolver.tools.loadlens.tool;",
+                "mmSolver.tools.loadlens.tool.main();"
+            ]
+        },
         "camera_context_menu": {
             "name": "Camera Context",
             "name_shelf": "",

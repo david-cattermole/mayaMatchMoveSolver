@@ -40,6 +40,7 @@
             "camera_tools/camera_toggle_distortion",
             "camera_tools/---Input Output",
             "camera_tools/copy_camera_to_clipboard",
+            "camera_tools/load_lens",
             "marker_tools/---Edit Marker",
             "marker_tools/toggle_marker_lock",
             "marker_tools/place_marker_manipulator",
@@ -101,7 +102,8 @@
             "general_tools/user_preferences_window",
             "file_io_tools/---Input Output",
             "file_io_tools/load_marker_ui",
-            "file_io_tools/copy_camera_to_clipboard"
+            "file_io_tools/copy_camera_to_clipboard",
+            "file_io_tools/load_lens"
         ],
         "functions": {
             "attr_tools": {

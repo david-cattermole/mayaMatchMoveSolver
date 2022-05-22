@@ -232,8 +232,15 @@ def _run_tool(window_parent, save_scene, what_to_delete_dict):
     dialog.setText(msg)
     dialog.setInformativeText(inform_text)
     dialog.setDetailedText(details)
+    dialog.setStandardButtons(
+        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+    # No is default button because we don't want users to accidentally
+    # delete nodes - users must make a choice.
+    dialog.setDefaultButton(QtWidgets.QMessageBox.No)
+
     clicked_button = dialog.exec_()
-    if clicked_button == QtWidgets.QMessageBox.No:
+    if clicked_button != QtWidgets.QMessageBox.Yes:
+        # The user may close the UI without clicking a yes/no button.
         return False
 
     if save_scene is True:
@@ -266,7 +273,7 @@ class RemoveSolverNodesWindow(BaseWindow):
         self.baseHideStandardButtons()
         self.applyBtn.show()
         self.closeBtn.show()
-        self.applyBtn.setText('Clean..')
+        self.applyBtn.setText('Clean...')
         self.applyBtn.clicked.connect(self.clean)
 
         # Hide irrelevant stuff

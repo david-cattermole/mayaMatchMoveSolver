@@ -186,12 +186,29 @@ def _create_image_plane_shape_attrs(image_plane_shp):
     node_attr = image_plane_shp + '.' + attr
     maya.cmds.setAttr(node_attr, keyable=True)
 
-    # Image Sequence attribute
-    attr = 'imageSequence'
+    # Choose which image sequence path to use. This is only visible in
+    # the Attribute Editor, because this attribute must trigger a
+    # callback when changed to update the underlying 'file' node.
+    attr = 'imageSequenceSlot'
     maya.cmds.addAttr(
         image_plane_shp,
         longName=attr,
-        dataType='string')
+        attributeType='enum',
+        enumName="main=0:alternate1=1:alternate2=2:alternate3=3")
+    node_attr = image_plane_shp + '.' + attr
+    maya.cmds.setAttr(node_attr, keyable=False)
+
+    # Image Sequence attribute
+    attr = 'imageSequence'
+    nice_name = 'Image Sequence'
+    attr_suffix_list = ['Main', 'Alternate1', 'Alternate2', 'Alternate3']
+    nice_suffix_list = [' (Main)', ' (Alt 1)', ' (Alt 2)', ' (Alt 3)']
+    for attr_suffix, nice_suffix in zip(attr_suffix_list, nice_suffix_list):
+        maya.cmds.addAttr(
+            image_plane_shp,
+            longName=attr + attr_suffix,
+            niceName=nice_name + nice_suffix,
+            dataType='string')
 
     # Image Sequence Frame attribute
     attr = 'imageSequenceFrame'
@@ -434,19 +451,16 @@ def create_shape_node(name_img_shp,
     return shp
 
 
-def set_image_sequence(shp, image_sequence_path):
+def set_image_sequence(shp, image_sequence_path, attr_name):
     assert maya.cmds.nodeType(shp) == 'mmImagePlaneShape'
-    format_style = const_utils.IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED
+    assert node_utils.attribute_exists(attr_name, shp) is True
+
+    format_style = const_utils.IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME
     file_pattern, start_frame, end_frame, pad_num, is_seq = \
         imageseq_utils.expand_image_sequence_path(
             image_sequence_path,
             format_style)
-
-    format_style = const_utils.IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME
-    first_frame_file_seq, _, _, _, _ = \
-        imageseq_utils.expand_image_sequence_path(
-            image_sequence_path,
-            format_style)
+    first_frame_file_seq = file_pattern
 
     mmapi.load_plugin()
     try:
@@ -458,6 +472,7 @@ def set_image_sequence(shp, image_sequence_path):
     except RuntimeError:
         image_width_height = None
         LOG.warn('Failed to read file: %r', first_frame_file_seq)
+
     if image_width_height is not None:
         image_width = image_width_height[0]
         image_height = image_width_height[1]
@@ -474,7 +489,7 @@ def set_image_sequence(shp, image_sequence_path):
             maya.cmds.setAttr(shp + '.imageHeight', lock=True)
 
     maya.cmds.setAttr(
-        shp + '.imageSequence',
+        shp + '.' + attr_name,
         file_pattern,
         type='string')
 
@@ -506,6 +521,35 @@ def get_shape_node(image_plane_tfm):
     if len(shapes) > 0:
         shape = shapes[0]
     return shape
+
+
+def get_transform_node(image_plane_shp):
+    tfm = None
+    tfms = maya.cmds.listRelatives(
+        image_plane_shp,
+        parent=True,
+        fullPath=True,
+        type='mmImagePlaneTransform'
+    ) or []
+    if len(tfms) > 0:
+        tfm = tfms[0]
+    return tfm
+
+
+def get_image_plane_node_pair(node):
+    node_type = maya.cmds.nodeType(node)
+    assert node_type in ['mmImagePlaneShape', 'mmImagePlaneTransform']
+    tfm = None
+    shp = None
+    if node_type == 'mmImagePlaneTransform':
+        shp = get_shape_node(node)
+        tfm = node
+    else:
+        # Given a shape, we can look at our parent node to find the
+        # transform.
+        tfm = get_transform_node(node)
+        shp = node
+    return tfm, shp
 
 
 def get_file_node(image_plane_tfm):

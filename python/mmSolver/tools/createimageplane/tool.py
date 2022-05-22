@@ -47,8 +47,10 @@ def _get_start_directory():
     return source_images_path
 
 
-def prompt_user_for_image_sequence():
+def prompt_user_for_image_sequence(start_dir=None):
     image_sequence_path = None
+    if start_dir is None:
+        start_dir = _get_start_directory()
     multiple_filters = (
         'Image Files (*.jpg *.png *.iff *.exr *.tif *.tiff *.tga *.sgi);;'
         'JPEG (*.jpg *.jpeg);;'
@@ -60,7 +62,6 @@ def prompt_user_for_image_sequence():
         'Targa (*.tga);;'
         'All Files (*.*)'
     )
-    start_dir = _get_start_directory()
     results = maya.cmds.fileDialog2(
         caption='Select Image Sequence',
         okCaption='Open',
@@ -134,6 +135,7 @@ def main():
 
         image_seq = prompt_user_for_image_sequence()
         if image_seq:
+            attr_name = 'imageSequenceMain'
             lib.set_image_sequence(mm_ip_tfm, image_seq)
 
         nodes.append(mm_ip_shp)

@@ -28,6 +28,7 @@ import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.python_compat as pycompat
 
 import mmSolver.tools.createimageplane.constant as const
+import mmSolver.tools.createimageplane._lib.constant as lib_const
 import mmSolver.tools.createimageplane._lib.utilities as lib_utils
 import mmSolver.tools.createimageplane._lib.shader as lib_shader
 import mmSolver.tools.createimageplane._lib.mmimageplane as lib_mmimageplane
@@ -95,7 +96,7 @@ def create_image_plane_on_camera(cam, name=None):
     maya.cmds.setAttr(shader_network.file_node + '.useFrameExtension', is_seq)
 
     # Image sequence.
-    image_sequence_path = lib_utils.get_default_image()
+    image_sequence_path = lib_utils.get_default_image_path()
     set_image_sequence(mm_ip_tfm, image_sequence_path)
     return mm_ip_tfm, mm_ip_shp
 
@@ -150,16 +151,23 @@ def convert_image_planes_on_camera(cam):
     return ip_node_pairs
 
 
-def set_image_sequence(mm_ip_tfm, image_sequence_path):
-    shp = lib_mmimageplane.get_shape_node(mm_ip_tfm)
-    if shp is None:
-        LOG.warn('mmImagePlaneShape node could not be found.')
-    file_node = lib_mmimageplane.get_file_node(mm_ip_tfm)
+def set_image_sequence(
+        mm_image_plane_node,
+        image_sequence_path,
+        attr_name=None):
+    if attr_name is None:
+        attr_name = lib_const.DEFAULT_IMAGE_SEQUENCE_ATTR_NAME
+
+    tfm, shp = lib_mmimageplane.get_image_plane_node_pair(mm_image_plane_node)
+    if tfm is None or shp is None:
+        LOG.warn('mmImagePlane transform/shape could not be found.')
+
+    file_node = lib_mmimageplane.get_file_node(tfm)
     if file_node is None:
         LOG.warn('mmImagePlane shader file node is invalid.')
 
     if shp is not None:
-        lib_mmimageplane.set_image_sequence(shp, image_sequence_path)
+        lib_mmimageplane.set_image_sequence(shp, image_sequence_path, attr_name)
     if file_node is not None:
         lib_shader.set_file_path(file_node, image_sequence_path)
     return

@@ -26,6 +26,8 @@ Idea - Create wrapper image plane node
 Idea - Allow users to change the image sequence.
 - Both 'live' and 'baked' image planes are updated as needed.
 - Users can choose to auto-convert to Maya IFF format (for speed).
+- Users should have multiple file paths stored on the image plane,
+  with the choice to switch between them as needed.
 
 
 Idea - Bake images into .iff files using Maya 'imgcvt' utility.
@@ -71,9 +73,20 @@ from mmSolver.tools.createimageplane._lib.main import (
     convert_image_planes_on_camera
 )
 
+from mmSolver.tools.createimageplane._lib.constant import (
+    DEFAULT_IMAGE_SEQUENCE_ATTR_NAME
+)
+
+from mmSolver.tools.createimageplane._lib.utilities import (
+    get_default_image_path
+)
+
+
 # Stop users from accessing the internal functions of this sub-module.
 __all__ = [
     'create_image_plane_on_camera',
     'convert_image_planes_on_camera',
-    'set_image_sequence'
+    'set_image_sequence',
+    'get_default_image_path',
+    'DEFAULT_IMAGE_SEQUENCE_ATTR_NAME'
 ]

@@ -94,7 +94,7 @@ def force_connect_attr(src_attr, dst_attr):
     return
 
 
-def get_default_image():
+def get_default_image_path():
     base_install_location = os.environ.get('MMSOLVER_LOCATION', None)
     assert base_install_location is not None
     fallback = os.path.join(base_install_location, 'resources')

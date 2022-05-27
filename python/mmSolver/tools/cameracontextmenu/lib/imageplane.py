@@ -58,6 +58,7 @@ def get_camera_image_planes(camera_shape_node):
     cam_tfm, cam_shp = camera_utils.get_camera(camera_shape_node)
     native_image_plane_shps = camera_utils.get_image_plane_shapes_from_camera(cam_tfm, cam_shp)
 
+    mmapi.load_plugin()
     mm_image_plane_nodes = maya.cmds.listRelatives(
         cam_tfm,
         children=True,

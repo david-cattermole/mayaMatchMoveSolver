@@ -169,6 +169,10 @@ class Lens(object):
         if model is None:
             model = const.LENS_NODE_TYPE_DEFAULT
         assert isinstance(model, pycompat.TEXT_TYPE)
+
+        # The plug-in must be loaded to create custom lens node.
+        api_utils.load_plugin()
+
         node = maya.cmds.createNode(model, name=name)
         self.set_node(node)
         return self

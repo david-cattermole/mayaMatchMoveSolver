@@ -1,10 +1,13 @@
 .idea
 .vs
+.dumbjump
 .DS_Store
 #*
 *~
+*_.*
 *.bak
 *.pyc
+*cppcheck-build-*
 cmake-build-*
 *build/*
 *build_*/*

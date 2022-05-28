@@ -111,16 +111,7 @@ Calibration Tool Limitations
 This tool has a number of limitations and known issues, and a future
 version of mmSolver may fix or reduce these issues.
 
-- No GUI has been created for the tool.
-
-- There are no line visualizations to show the individual lines.
-
 - The camera does not yet update automatically while dragging the 2D points.
-
-- Only undistorted images should be used.
-
-  Straight-lines are assumed to be straight - no lens distortion is
-  taken into account.
 
 - Only 2 vanishing points can be used.
 
@@ -135,8 +126,6 @@ version of mmSolver may fix or reduce these issues.
   If you have this problem it is recommended to use `fSpy`_ to
   calibrate the camera, and `maya_fspy`_ to import the camera into
   Maya.
-
-For these reasons, the tool is currently marked as "beta".
 
 
 .. _fSpy:

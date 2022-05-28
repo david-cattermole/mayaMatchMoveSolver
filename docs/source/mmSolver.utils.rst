@@ -45,6 +45,13 @@ Event
     :members:
     :undoc-members:
 
+Image Sequence
+++++++++++++++
+
+.. automodule:: mmSolver.utils.imageseq
+    :members:
+    :undoc-members:
+
 Kalman Filter
 +++++++++++++
 

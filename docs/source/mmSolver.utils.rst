@@ -80,6 +80,13 @@ Node Affects
     :members:
     :undoc-members:
 
+Python Compatibility
+++++++++++++++++++++
+
+.. automodule:: mmSolver.utils.python_compat
+    :members:
+    :undoc-members:
+
 Raytrace
 ++++++++
 

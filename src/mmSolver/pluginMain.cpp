@@ -38,6 +38,7 @@
 // Solver and nodes
 #include "mmSolver/cmd/MMCameraRelativePoseCmd.h"
 #include "mmSolver/cmd/MMCameraSolveCmd.h"
+#include "mmSolver/cmd/MMConvertImageCmd.h"
 #include "mmSolver/cmd/MMReadImageCmd.h"
 #include "mmSolver/cmd/MMReprojectionCmd.h"
 #include "mmSolver/cmd/MMSolverAffectsCmd.h"
@@ -279,6 +280,13 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::MMCameraSolveCmd::cmdName(),
         mmsolver::MMCameraSolveCmd::creator,
         mmsolver::MMCameraSolveCmd::newSyntax,
+        status);
+
+    REGISTER_COMMAND(
+        plugin,
+        mmsolver::MMConvertImageCmd::cmdName(),
+        mmsolver::MMConvertImageCmd::creator,
+        mmsolver::MMConvertImageCmd::newSyntax,
         status);
 
     REGISTER_COMMAND(
@@ -657,6 +665,10 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(
         plugin,
         mmsolver::MMCameraSolveCmd::cmdName(),
+        status);
+    DEREGISTER_COMMAND(
+        plugin,
+        mmsolver::MMConvertImageCmd::cmdName(),
         status);
     DEREGISTER_COMMAND(
         plugin,

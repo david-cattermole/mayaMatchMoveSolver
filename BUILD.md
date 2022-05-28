@@ -56,7 +56,7 @@ may fail to generate.
 
 ### Ninja
 
-As of mmSolver v0.4.0, [Ninja build system](https://ninja-build.org/)
+As of mmSolver v0.4.0, the [Ninja build system](https://ninja-build.org/)
 is used in the default Windows Batch scripts - Linux (and MacOS) build
 scripts are not affected. Alternate build systems will likely work
 (such as NMake or Visual Studio projects) but are not tested.

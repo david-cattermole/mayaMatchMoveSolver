@@ -68,26 +68,34 @@
 
 // MM Solver
 #include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/core/mmmath.h"
 #include "mmSolver/utilities/string_utils.h"
 
 namespace mmsolver {
 
+using mmmath::clamp;
+using mmmath::fast_pow;
+
 // For an image sequence the 'file_path' should contain at least one
 // character '#', which will be replaced with the 'frame_number', with
 // a padding width of 'frame_padding'.
-MStatus expandFilePathWithFrameNumber(const MString &file_path,
-                                      uint32_t frame_padding,
-                                      uint32_t frame_number,
-                                      MString &out_file_path) {
+MStatus expand_file_path_with_frame_number(const MString &file_path,
+                                           uint32_t frame_padding,
+                                           uint32_t frame_number,
+                                           MString &out_file_path) {
     MStatus status = MStatus::kSuccess;
 
     auto first_char = file_path.index('#');
     if (first_char == -1) {
+        // Not an image sequence.
+        out_file_path = file_path;
         return status;
     }
 
     auto last_char = file_path.rindex('#');
     if (last_char == -1) {
+        // Not an image sequence.
+        out_file_path = file_path;
         return status;
     }
 
@@ -142,25 +150,79 @@ MStatus find_existing_file_path(MFileObject &file_object,
     return status;
 }
 
-// https://martin.ankerl.com/2007/10/04/optimized-pow-approximation-for-java-and-c-c/
-double fast_pow(double a, double b) {
-    union {
-        double d;
-        int x[2];
-    } u = { a };
-    u.x[1] = static_cast<int>(b * (u.x[1] - 1072632447) + 1072632447);
-    u.x[0] = 0;
-    return u.d;
+MStatus guess_output_format_pixel_type(const MString &in_output_format,
+                                       MImage::MPixelType &out_pixel_type) {
+    MStatus status = MStatus::kSuccess;
+
+    MString output_format(in_output_format);
+    output_format.toLowerCase();
+
+    if (output_format == MString("exr")) {
+        out_pixel_type = MImage::kFloat;
+    } else if (output_format == MString("hdr")) {
+        out_pixel_type = MImage::kFloat;
+    } else {
+        out_pixel_type = MImage::kByte;
+    }
+
+    return status;
 }
 
-// https://martin.ankerl.com/2007/10/04/optimized-pow-approximation-for-java-and-c-c/
-float fast_pow(float a, float b) {
-    union {
-        float f;
-        int i;
-    } u = { a };
-    u.i = static_cast<int>(b * (u.i - 1065307417) + 1065307417);
-    return u.f;
+MStatus guess_file_path_pixel_type(const MString &in_file_path,
+                                  MImage::MPixelType &out_pixel_type) {
+    MStatus status = MStatus::kSuccess;
+
+    MString file_path(in_file_path);
+    file_path.toLowerCase();
+
+    MStringArray splits;
+    file_path.split('.', splits);
+    MString file_extension = splits[splits.length() - 1];
+
+    guess_output_format_pixel_type(file_extension, out_pixel_type);
+
+    return status;
+}
+
+MStatus resize_image(MImage &image,
+                     const double resize_scale) {
+    MStatus status = MStatus::kSuccess;
+
+    MImage::MPixelType pixel_type = image.pixelType();
+    if (pixel_type != MImage::kByte) {
+        MMSOLVER_WRN(
+            "mmConvertImage: "
+            << "Maya does not support resizing floating-point pixels.");
+    }
+
+    uint32_t src_width = 2;
+    uint32_t src_height = 2;
+    status = image.getSize(src_width, src_height);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    auto dst_width_float = static_cast<double>(src_width) * resize_scale;
+    auto dst_height_float = static_cast<double>(src_height) * resize_scale;
+    auto dst_width = static_cast<uint32_t>(dst_width_float);
+    auto dst_height = static_cast<uint32_t>(dst_height_float);
+    if ((src_width != dst_width) && (src_height != dst_height)) {
+        const auto preserve_aspect_ratio = true;
+
+        // TODO: Replace this with a hand-written resize function. The
+        // MImage.resize() method appears to have a bug whereby the
+        // resized image is offset by +1 pixel in X and Y.
+        //
+        // If we can use Rust, then we have these easily available,
+        // and they appear to do exactly what we need, very quickly:
+        // https://crates.io/crates/fast_image_resize
+        // https://crates.io/crates/resize
+        //
+        // NOTE: MImage.resize() only works on 8-bit images, not
+        // floating point.
+        status = image.resize(dst_width, dst_height, preserve_aspect_ratio);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    return status;
 }
 
 MStatus convert_image(const MString &src_file_path,
@@ -169,55 +231,118 @@ MStatus convert_image(const MString &src_file_path,
                       // gif, jpg, rla, sgi, tga, tif, iff.  "iff" is
                       // default.
                       const MString &dst_output_format,
-                      const double resize_scale,
-                      // Temporary memory used to hold floating point
-                      // pixels and reused for each call to this
-                      // function.
-                      std::vector<float> &inout_temp_float_pixels) {
+                      const double resize_scale) {
     MStatus status = MStatus::kSuccess;
+
+    if (src_file_path == dst_file_path) {
+        status = MS::kFailure;
+        MMSOLVER_ERR(
+            "mmConvertImage: "
+            << "Cannot have source and destination as same path: "
+            << src_file_path.asChar());
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
 
     auto image = MImage();
     // kUnknown attempts to load the native pixel type.
-    auto pixel_type = MImage::kUnknown;
+    auto src_pixel_type = MImage::kUnknown;
     status = image.readFromFile(
         src_file_path,
-        pixel_type  // The desired pixel format is unknown.
+        src_pixel_type  // The desired pixel format is unknown.
     );
     if (status != MS::kSuccess) {
         MMSOLVER_ERR(
             "mmConvertImage: "
             << "Image file path could not be read: "
             << src_file_path.asChar());
-        return status;
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    src_pixel_type = image.pixelType();
+    const bool src_is_rgba = image.isRGBA();
+
+    // Maya always stores 4 channels (according to the
+    // documentation).
+    const auto channels = 4;
+
+    // Guess the Pixel Type for the output image.
+    MImage::MPixelType dst_pixel_type;
+    MImage::MPixelType format_pixel_type;
+    status = guess_output_format_pixel_type(
+        dst_output_format,
+        format_pixel_type);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    status = guess_file_path_pixel_type(
+        dst_file_path,
+        dst_pixel_type);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    if (format_pixel_type != dst_pixel_type) {
+        MMSOLVER_WRN(
+            "mmConvertImage: "
+            << "The destination file extension and output format seem to contradict each other. file path: "
+            << dst_file_path.asChar()
+            << " output format: \"" << dst_output_format.asChar() << "\"");
     }
 
-    uint32_t src_width = 2;
-    uint32_t src_height = 2;
-    image.getSize(src_width, src_height);
+    if (src_pixel_type == dst_pixel_type) {
+        // Try to resize. We can only resize kByte - Maya is limited
+        // with the pixel types it can resize.
+        if (src_pixel_type == MImage::kByte) {
+            status = resize_image(image, resize_scale);
+            if (status != MS::kSuccess) {
+                MMSOLVER_ERR(
+                    "mmConvertImage: "
+                    << "Failed to resize image file: "
+                    << src_file_path.asChar());
+                return status;
+            }
+        }
 
-    const auto preserve_aspect_ratio = true;
-    auto dst_width_float = static_cast<double>(src_width) * resize_scale;
-    auto dst_height_float = static_cast<double>(src_height) * resize_scale;
-    auto dst_width = static_cast<uint32_t>(dst_width_float);
-    auto dst_height = static_cast<uint32_t>(dst_height_float);
-    // TODO: Replace this with a hand-written resize function. The
-    // MImage.resize() method appears to have a bug whereby the
-    // resized image is offset by +1 pixel in X and Y.
-    image.resize(dst_width, dst_height, preserve_aspect_ratio);
+        // No conversion is needed. We write out the 8-bit image
+        // directly.
+        status = image.writeToFile(dst_file_path, dst_output_format);
+        if (status != MS::kSuccess) {
+            MMSOLVER_ERR(
+                "mmConvertImage: "
+                << "Failed to write image file: "
+                << dst_file_path.asChar()
+                << " output format: \"" << dst_output_format.asChar() << "\"");
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+        }
+    } else {
+        // Convert 32-bit to 8-bit integer. We assume the image
+        // has not been resized yet.
+        if (image.pixelType() == MImage::kByte) {
+            status = MS::kFailure;
+            MMSOLVER_ERR(
+                "mmConvertImage: "
+                << "Failed to write image file: "
+                << dst_file_path.asChar()
+                << " output format: \"" << dst_output_format.asChar() << "\"");
+            return status;
+        }
 
-    // TODO: Use the destination output format to work out if we are
-    // converting to/from a linear floating point image, then apply
-    // color management and convert to the desired file format. Only
-    // EXR is supported as a floating-point image file format.
-    if (image.pixelType() == MImage::kFloat) {
-        // Apply hard-coded gamma to the floating point image, so the
-        // image looks better than a default linear color space.
+        // Do gamma correction before converting.
+        uint32_t image_width = 2;
+        uint32_t image_height = 2;
+        status = image.getSize(image_width, image_height);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        // Get exponent based on if we are converting to/from floating
+        // point or not. Make (linear color space) pixels brighter.
+        const float gamma = 2.2F;
+        float exponent = 1.0F / gamma;
+
+        // TODO: Use the Autodesk 'synColor' library to change the
+        // color space for an 8-bit file format. This library is
+        // available in the Maya devkit.
         //
-        // Maya always stores 4 channels (according to the
-        // documentation).
-        auto channels = 4;
-        float * data_ptr = image.floatPixels();
-        if (data_ptr == nullptr) {
+        // https://forums.autodesk.com/t5/maya-programming/how-to-export-colors-with-correct-color-management/td-p/10515406
+
+        // Make sure we do our color management with floating point
+        // numbers, to avoid loss of detail. This does not do anything
+        // if the pixel format is already MImage::kFloat.
+        float* float_pixels = image.floatPixels();
+        if (float_pixels == nullptr) {
             // The data pointer should be valid because we have
             // already read and operated on the pixels, so it seems
             // very wrong that the data wouldn't be valid.
@@ -229,51 +354,47 @@ MStatus convert_image(const MString &src_file_path,
             return status;
         }
 
-        // TODO: Use the Autodesk 'synColor' library to change the color
-        // space for an 8-bit file format.
-        //
-        // https://forums.autodesk.com/t5/maya-programming/how-to-export-colors-with-correct-color-management/td-p/10515406
+        MImage out_image;
+        out_image.create(image_width, image_height, channels, MImage::kByte);
+        unsigned char* pixels = out_image.pixels();
 
-        // Apply (hard-coded) gamma.
-        auto data_size = dst_width * dst_height * channels;
-        inout_temp_float_pixels.resize(data_size);
-
-        const float gamma = 2.2F;
-        const float inv_gamma = 1.0 / gamma;
-        for (auto y = 0; y < dst_height; ++y) {
-            for (auto x = 0; x < dst_width; ++x) {
-                auto index = (y * dst_height) + dst_width;
-                inout_temp_float_pixels[index + 0] = fast_pow(data_ptr[index + 0], gamma);
-                inout_temp_float_pixels[index + 1] = fast_pow(data_ptr[index + 1], gamma);
-                inout_temp_float_pixels[index + 2] = fast_pow(data_ptr[index + 2], gamma);
-                // Alpha (4th channel) is not gamma corrected.
-                inout_temp_float_pixels[index + 3] = data_ptr[index + 3];
+        // Apply gamma correction.
+        for (auto y = 0; y < image_height; ++y) {
+            for (auto x = 0; x < image_width; ++x) {
+                auto index = (y * image_width * channels) + (x * channels);
+                auto r = clamp(fast_pow(float_pixels[index + 0], exponent) * 255.0F, 0.0, 255.0);
+                auto g = clamp(fast_pow(float_pixels[index + 1], exponent) * 255.0F, 0.0, 255.0);
+                auto b = clamp(fast_pow(float_pixels[index + 2], exponent) * 255.0F, 0.0, 255.0);
+                auto a = clamp(float_pixels[index + 3] * 255.0F, 0.0, 255.0);
+                pixels[index + 0] = static_cast<unsigned char>(r);
+                pixels[index + 1] = static_cast<unsigned char>(g);
+                pixels[index + 2] = static_cast<unsigned char>(b);
+                // Alpha does not need to be gamma corrected.
+                pixels[index + 3] = static_cast<unsigned char>(a);
             }
         }
-        image.setFloatPixels(
-            &inout_temp_float_pixels[0],
-            dst_width, dst_height, channels);
+        out_image.setRGBA(true);
 
-        // TODO: Convert the image into a pixel format needed as the
-        // output.
-        const auto to_pixel_format = MImage::kByte;
-        // A scale of 0 will automatically rescale based on the
-        // minimum and maximum values in the image.
-        const auto pixel_range_scale = 0.0;
-        const auto pixel_range_offset = 0.0;
-        image.convertPixelFormat(
-            to_pixel_format,
-            pixel_range_scale,
-            pixel_range_offset);
-    }
+        // Try to resize. We can only resize kByte - Maya is
+        // limited with the pixel types it can resize.
+        status = resize_image(out_image, resize_scale);
+        if (status != MS::kSuccess) {
+            MMSOLVER_ERR(
+                "mmConvertImage: "
+                << "Failed to resize image file: "
+                << src_file_path.asChar());
+            return status;
+        }
 
-    status = image.writeToFile(dst_file_path, dst_output_format);
-    if (status != MS::kSuccess) {
-        MMSOLVER_ERR(
-            "mmConvertImage: "
-            << "Failed to write image file: "
-            << dst_file_path.asChar());
-        return status;
+        status = out_image.writeToFile(dst_file_path, dst_output_format);
+        if (status != MS::kSuccess) {
+            MMSOLVER_ERR(
+                "mmConvertImage: "
+                << "Failed to write image file: "
+                << dst_file_path.asChar()
+                << " output format: \"" << dst_output_format.asChar() << "\"");
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+        }
     }
 }
 
@@ -474,7 +595,6 @@ MStatus MMConvertImageCmd::doIt(const MArgList &args) {
     auto src_file_object = MFileObject();
     auto dst_file_object = MFileObject();
 
-    std::vector<float> reused_temp_memory;
     MString src_file_path;
     MString dst_file_path;
 
@@ -486,17 +606,19 @@ MStatus MMConvertImageCmd::doIt(const MArgList &args) {
          ++src_frame, ++dst_frame) {
         total_count += 1;
 
-        expandFilePathWithFrameNumber(
+        status = expand_file_path_with_frame_number(
             m_src_file_path,
             m_src_frame_padding,
             src_frame,
             src_file_path);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
 
-        expandFilePathWithFrameNumber(
+        status = expand_file_path_with_frame_number(
             m_dst_file_path,
             m_dst_frame_padding,
             dst_frame,
             dst_file_path);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
 
         src_file_object.setRawFullName(src_file_path);
         src_file_object.setResolveMethod(MFileObject::kInputFile);
@@ -538,8 +660,7 @@ MStatus MMConvertImageCmd::doIt(const MArgList &args) {
             src_file_path,
             dst_file_path,
             m_dst_output_format,
-            m_resize_scale,
-            reused_temp_memory);
+            m_resize_scale);
         if (status != MS::kSuccess) {
             MMSOLVER_WRN(
                 "mmConvertImage: "

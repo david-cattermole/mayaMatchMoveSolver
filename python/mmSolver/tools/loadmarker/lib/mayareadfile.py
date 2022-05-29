@@ -35,12 +35,15 @@ import mmSolver.api as mmapi
 import mmSolver.utils.animcurve as anim_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.python_compat as pycompat
+import mmSolver.utils.loadfile.excep as excep
+import mmSolver.utils.loadfile.floatutils as floatutils
+import mmSolver.utils.loadfile.keyframedata as keyframedata
+import mmSolver.utils.loadmarker.formatmanager as fmtmgr
+import mmSolver.utils.loadmarker.markerdata as markerdata
 import mmSolver.tools.loadmarker.lib.fieldofview as fieldofview
-import mmSolver.tools.loadmarker.lib.interface as interface
-import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
 
 # Used to force importing of formats; do not remove this line.
-import mmSolver.tools.loadmarker.lib.formats
+import mmSolver.utils.loadmarker.formats
 
 
 LOG = mmSolver.logger.get_logger()
@@ -80,7 +83,7 @@ def read(file_path, **kwargs):
             contents = file_format_obj.parse(
                 file_path,
                 **kwargs)
-        except (interface.ParserError, OSError):
+        except (excep.ParserError, OSError):
             contents = (None, [])
 
         file_info, mkr_data_list = contents
@@ -112,9 +115,9 @@ def __create_node(mkr_data, cam, mkr_grp, with_bundles):
               False, the Bundle object will be None.
     :rtype: (Marker, Bundle or None)
     """
-    if isinstance(mkr_data, interface.MarkerData) is False:
+    if isinstance(mkr_data, markerdata.MarkerData) is False:
         msg = 'mkr_data must be of type: %r'
-        raise TypeError(msg % interface.MarkerData.__name__)
+        raise TypeError(msg % markerdata.MarkerData.__name__)
     if isinstance(with_bundles, bool) is False:
         msg = 'with_bundles must be of type: %r'
         raise TypeError(msg % bool.__name__)
@@ -167,9 +170,9 @@ def __set_attr_keyframes(node, attr_name, keyframes,
     :returns: Maya API (version 1) MFnAnimCurve object.
     :rtype: maya.OpenMaya.MFnAnimCurve
     """
-    if isinstance(keyframes, interface.KeyframeData) is False:
+    if isinstance(keyframes, keyframedata.KeyframeData) is False:
         msg = 'keyframes must be type %r'
-        raise TypeError(msg % interface.KeyframeData.__name__)
+        raise TypeError(msg % keyframedata.KeyframeData.__name__)
     if reduce_keys is None:
         reduce_keys = False
     if isinstance(reduce_keys, bool) is False:
@@ -203,7 +206,7 @@ def __set_attr_keyframes(node, attr_name, keyframes,
             if prev_v is None:
                 times.append(t)
                 values.append(v)
-            elif interface.float_is_equal(prev_v, v) is False:
+            elif floatutils.float_is_equal(prev_v, v) is False:
                 times.append(prev_t)
                 values.append(prev_v)
                 times.append(t)
@@ -253,7 +256,7 @@ def __set_node_data(mkr, bnd, mkr_data,
     """
     assert isinstance(mkr, mmapi.Marker)
     assert bnd is None or isinstance(bnd, mmapi.Bundle)
-    assert isinstance(mkr_data, interface.MarkerData)
+    assert isinstance(mkr_data, markerdata.MarkerData)
     assert load_bnd_pos is None or isinstance(load_bnd_pos, bool)
     assert isinstance(overscan_x, float)
     assert isinstance(overscan_y, float)
@@ -281,8 +284,8 @@ def __set_node_data(mkr, bnd, mkr_data,
         mkr_x_data[t] = (v - 0.5) * overscan_x
     for t, v in mkr_y_data.items():
         mkr_y_data[t] = (v - 0.5) * overscan_y
-    mkr_x = interface.KeyframeData(data=mkr_x_data)
-    mkr_y = interface.KeyframeData(data=mkr_y_data)
+    mkr_x = keyframedata.KeyframeData(data=mkr_x_data)
+    mkr_y = keyframedata.KeyframeData(data=mkr_y_data)
     mkr_enable = mkr_data.get_enable()
     mkr_weight = mkr_data.get_weight()
 
@@ -509,7 +512,7 @@ def _update_node(mkr, bnd, mkr_data,
     """
     assert isinstance(mkr, mmapi.Marker)
     assert bnd is None or isinstance(bnd, mmapi.Bundle)
-    assert isinstance(mkr_data, interface.MarkerData)
+    assert isinstance(mkr_data, markerdata.MarkerData)
     __set_node_data(
         mkr, bnd, mkr_data,
         load_bundle_position,
@@ -584,7 +587,7 @@ def update_nodes(mkr_list, mkr_data_list,
         )
     else:
         # Make a copy of mkr_list and mkr_data_list, to avoid any
-        # posiblity of the given arguments mkr_list and mkr_data_list
+        # possibility of the given arguments mkr_list and mkr_data_list
         # being modified indirectly (which can happen in Python).
         mkr_list = list(mkr_list)
         mkr_data_list = list(mkr_data_list)

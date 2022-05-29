@@ -28,8 +28,7 @@ import os.path
 
 import mmSolver.logger
 import mmSolver.utils.python_compat as pycompat
-import mmSolver.tools.loadmarker.lib.formatmanager as formatmanager
-import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
+import mmSolver.utils.loadmarker.formatmanager as fmtmgr
 
 
 LOG = mmSolver.logger.get_logger()
@@ -49,7 +48,7 @@ def _get_file_path_formats(text):
         return formats
     if os.path.isfile(text) is False:
         return formats
-    fmt_mgr = formatmanager.get_format_manager()
+    fmt_mgr = fmtmgr.get_format_manager()
     fmts = fmt_mgr.get_formats()
     ext_to_fmt = {}
     for fmt in fmts:
@@ -62,7 +61,7 @@ def _get_file_path_formats(text):
     return formats
 
 
-def get_file_path_format(text):
+def get_file_path_format(text, read_func):
     """
     Look up the Format from the file path.
 
@@ -74,14 +73,14 @@ def get_file_path_format(text):
     format_ = None
     formats = _get_file_path_formats(text)
     for fmt in formats:
-        file_info, _ = mayareadfile.read(text)
+        file_info, _ = read_func(text)
         if file_info is not None:
             format_ = fmt
             break
     return format_
 
 
-def is_valid_file_path(text):
+def is_valid_file_path(text, read_func):
     """
     Is the given text a file path we can load as a marker?
 
@@ -92,12 +91,12 @@ def is_valid_file_path(text):
     :rtype: bool
     """
     assert isinstance(text, pycompat.TEXT_TYPE)
-    fmt = get_file_path_format(text)
+    fmt = get_file_path_format(text, read_func)
     valid = fmt is not None
     return valid
 
 
-def get_file_info(file_path):
+def get_file_info(file_path, read_func):
     """
     Get the file path information.
 
@@ -107,11 +106,11 @@ def get_file_info(file_path):
     :return: The file info.
     :rtype: FileInfo
     """
-    file_info, _ = mayareadfile.read(file_path)
+    file_info, _ = read_func(file_path)
     return file_info
 
 
-def get_file_info_strings(file_path):
+def get_file_info_strings(file_path, read_func):
     """
     Get the file path information, as user-readable strings.
 
@@ -132,11 +131,11 @@ def get_file_info_strings(file_path):
         'positions': '?',
         'has_camera_fov': '?',
     }
-    file_info, mkr_data_list = mayareadfile.read(file_path)
+    file_info, mkr_data_list = read_func(file_path)
     if isinstance(mkr_data_list, list) is False:
         return info
 
-    fmt = get_file_path_format(file_path)
+    fmt = get_file_path_format(file_path, read_func)
     info['fmt'] = fmt
     info['fmt_name'] = str(fmt.name)
 
@@ -179,7 +178,7 @@ def get_file_filter():
     """
     file_fmt_names = []
     file_exts = []
-    fmt_mgr = formatmanager.get_format_manager()
+    fmt_mgr = fmtmgr.get_format_manager()
     fmts = fmt_mgr.get_formats()
     for fmt in fmts:
         file_fmt_names.append(fmt.name)
@@ -197,4 +196,3 @@ def get_file_filter():
         file_filter += name
     file_filter += 'All Files (*.*);;'
     return file_filter
-

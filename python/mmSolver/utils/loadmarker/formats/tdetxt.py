@@ -46,24 +46,28 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.logger
-import mmSolver.tools.loadmarker.lib.interface as interface
-import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
+
+import mmSolver.utils.loadfile.excep as excep
+import mmSolver.utils.loadfile.loader as loader
+import mmSolver.utils.loadmarker.markerdata as markerdata
+import mmSolver.utils.loadmarker.fileinfo as fileinfo
+import mmSolver.utils.loadmarker.formatmanager as fmtmgr
 
 LOG = mmSolver.logger.get_logger()
 
 
-def parse_int_or_none(value):
-  try:
-    return int(value)
-  except ValueError:
-    return None
+def _parse_int_or_none(value):
+    try:
+        return int(value)
+    except ValueError:
+        return None
 
 
-def parse_float_or_none(value):
-  try:
-    return float(value)
-  except ValueError:
-    return None
+def _parse_float_or_none(value):
+    try:
+        return float(value)
+    except ValueError:
+        return None
 
 
 def _remove_comments_from_lines(lines):
@@ -77,7 +81,7 @@ def _remove_comments_from_lines(lines):
     return clean_lines
 
 
-class Loader3DETXT(interface.LoaderBase):
+class Loader3DETXT(loader.LoaderBase):
 
     name = '3DEqualizer Track Points (*.txt)'
     file_exts = ['.txt']
@@ -118,11 +122,11 @@ class Loader3DETXT(interface.LoaderBase):
 
         line = lines[0]
         line = line.strip()
-        num_points = parse_int_or_none(line)
+        num_points = _parse_int_or_none(line)
         if num_points is None:
-            raise interface.ParserError('Invalid file format.')
+            raise excep.ParserError('Invalid file format.')
         if num_points < 1:
-            raise interface.ParserError('No points exist.')
+            raise excep.ParserError('No points exist.')
 
         idx = 1  # Skip the first line
         for i in range(num_points):
@@ -130,24 +134,24 @@ class Loader3DETXT(interface.LoaderBase):
             mkr_name = line.strip()
 
             # Create marker
-            mkr_data = interface.MarkerData()
+            mkr_data = markerdata.MarkerData()
             mkr_data.set_name(mkr_name)
 
             # Get point color
             idx += 1
             line = lines[idx]
             line = line.strip()
-            mkr_color = parse_int_or_none(line)
+            mkr_color = _parse_int_or_none(line)
             if mkr_color is None:
-                raise interface.ParserError('Invalid file format.')
+                raise excep.ParserError('Invalid file format.')
             mkr_data.set_color(mkr_color)
 
             idx += 1
             line = lines[idx]
             line = line.strip()
-            num_frames = parse_int_or_none(line)
+            num_frames = _parse_int_or_none(line)
             if num_frames is None:
-                raise interface.ParserError('Invalid file format.')
+                raise excep.ParserError('Invalid file format.')
             if num_frames <= 0:
                 idx += 1
                 msg = 'point has no data: %r'
@@ -169,12 +173,12 @@ class Loader3DETXT(interface.LoaderBase):
                 if len(split) != 3:
                     # We should not get here
                     msg = 'File invalid, there must be 3 numbers in line: %r'
-                    raise interface.ParserError(msg % line)
-                frame = parse_int_or_none(split[0])
-                pos_x = parse_float_or_none(split[1])
-                pos_y = parse_float_or_none(split[2])
+                    raise excep.ParserError(msg % line)
+                frame = _parse_int_or_none(split[0])
+                pos_x = _parse_float_or_none(split[1])
+                pos_y = _parse_float_or_none(split[2])
                 if frame is None or pos_x is None or pos_y is None:
-                    raise interface.ParserError('Invalid file format.')
+                    raise excep.ParserError('Invalid file format.')
                 mkr_u = pos_x * inv_image_width
                 mkr_v = pos_y * inv_image_height
                 mkr_weight = 1.0
@@ -195,7 +199,7 @@ class Loader3DETXT(interface.LoaderBase):
             mkr_data_list.append(mkr_data)
             idx += 1
 
-        file_info = interface.create_file_info()
+        file_info = fileinfo.create_file_info()
         return file_info, mkr_data_list
 
 

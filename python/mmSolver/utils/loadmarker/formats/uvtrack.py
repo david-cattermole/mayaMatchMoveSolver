@@ -140,10 +140,15 @@ from __future__ import print_function
 
 import math
 import json
+
 import mmSolver.logger
+
 import mmSolver.utils.python_compat as pycompat
-import mmSolver.tools.loadmarker.lib.interface as interface
-import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
+import mmSolver.utils.loadfile.excep as excep
+import mmSolver.utils.loadfile.loader as loader
+import mmSolver.utils.loadmarker.markerdata as markerdata
+import mmSolver.utils.loadmarker.fileinfo as fileinfo
+import mmSolver.utils.loadmarker.formatmanager as fmtmgr
 import mmSolver.tools.loadmarker.constant as const
 
 LOG = mmSolver.logger.get_logger()
@@ -153,7 +158,8 @@ def determine_format_version(file_path):
     """
     Work out the format version by reading the 'file_path'.
 
-    returns: The format version, must be one of constants.UV_TRACK_FORMAT_VERSION_LIST
+    returns: The format version, must be one of
+        constants.UV_TRACK_FORMAT_VERSION_LIST
     """
     with open(file_path) as f:
         try:
@@ -330,7 +336,7 @@ def _parse_v2_and_v3(file_path,
     )
     points = data.get('points', [])
     for point_data in points:
-        mkr_data = interface.MarkerData()
+        mkr_data = markerdata.MarkerData()
 
         # Static point information.
         mkr_data = _parse_point_info_v2_v3(mkr_data, point_data)
@@ -409,7 +415,7 @@ def parse_v1(file_path, **kwargs):
 
     num_points = int(lines[0])
     if num_points < 1:
-        raise interface.ParserError('No points exist.')
+        raise excep.ParserError('No points exist.')
 
     idx = 1  # Skip the first line
     for _ in range(num_points):
@@ -417,7 +423,7 @@ def parse_v1(file_path, **kwargs):
         mkr_name = mkr_name.strip()
 
         # Create marker
-        mkr_data = interface.MarkerData()
+        mkr_data = markerdata.MarkerData()
         mkr_data.set_name(mkr_name)
 
         idx += 1
@@ -446,7 +452,7 @@ def parse_v1(file_path, **kwargs):
                     'File invalid, there must be 4 numbers in a line'
                     ' (separated by spaces): line=%r line_num=%r'
                 )
-                raise interface.ParserError(msg % (line, idx))
+                raise excep.ParserError(msg % (line, idx))
             frame = int(split[0])
             mkr_u = float(split[1])
             mkr_v = float(split[2])
@@ -466,7 +472,7 @@ def parse_v1(file_path, **kwargs):
         mkr_data_list.append(mkr_data)
         idx += 1
 
-    file_info = interface.create_file_info(marker_undistorted=True)
+    file_info = fileinfo.create_file_info(marker_undistorted=True)
     return file_info, mkr_data_list
 
 
@@ -479,7 +485,7 @@ def parse_v2(file_path, **kwargs):
 
     :return: List of MarkerData objects.
     """
-    file_info = interface.create_file_info(marker_undistorted=True)
+    file_info = fileinfo.create_file_info(marker_undistorted=True)
     mkr_data_list = _parse_v2_and_v3(
         file_path,
         undistorted=True,
@@ -501,7 +507,7 @@ def parse_v3(file_path, **kwargs):
     """
     # Should we choose the undistorted or distorted marker data?
     undistorted = kwargs.get('undistorted', None)  # bool or None
-    file_info = interface.create_file_info(
+    file_info = fileinfo.create_file_info(
         marker_distorted=True,
         marker_undistorted=True,
         bundle_positions=True,
@@ -530,7 +536,7 @@ def parse_v4(file_path, **kwargs):
     cam_fov_list = _parse_camera_fov_v4(
         file_path,
     )
-    file_info = interface.create_file_info(
+    file_info = fileinfo.create_file_info(
         marker_distorted=True,
         marker_undistorted=True,
         bundle_positions=True,
@@ -544,7 +550,7 @@ def parse_v4(file_path, **kwargs):
     return file_info, mkr_data_list
 
 
-class LoaderUVTrack(interface.LoaderBase):
+class LoaderUVTrack(loader.LoaderBase):
 
     name = 'UV Track Points (*.uv)'
     file_exts = ['.uv']
@@ -573,7 +579,7 @@ class LoaderUVTrack(interface.LoaderBase):
             file_info, mkr_data_list = parse_v4(file_path, **kwargs)
         else:
             msg = 'Could not determine format version for UV Track file.'
-            raise interface.ParserError(msg)
+            raise excep.ParserError(msg)
         return file_info, mkr_data_list
 
 

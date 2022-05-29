@@ -35,8 +35,9 @@ import mmSolver.api as mmapi
 import mmSolver.tools.loadmarker.constant as const
 import mmSolver.tools.loadmarker.ui.ui_loadmarker_layout as ui_loadmarker_layout
 import mmSolver.tools.loadmarker.lib.fieldofview as fieldofview
-import mmSolver.tools.loadmarker.lib.fileutils as fileutils
+import mmSolver.utils.loadmarker.fileutils as fileutils
 import mmSolver.tools.loadmarker.lib.utils as lib
+import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
 import mmSolver.tools.solver.lib.state as state_lib
 import mmSolver.tools.solver.lib.collection as col_lib
 import mmSolver.tools.userpreferences.constant as userprefs_const
@@ -217,14 +218,14 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         file_path = self.getFilePath()
         if not file_path:
             return
-        file_info = fileutils.get_file_info(file_path)
+        file_info = fileutils.get_file_info(file_path, mayareadfile.read)
         self.setFileInfo(file_info)
         return
 
     def updateFileInfoText(self):
         file_path = self.getFilePath()
         info_widget = self.fileInfo_plainTextEdit
-        valid = fileutils.is_valid_file_path(file_path)
+        valid = fileutils.is_valid_file_path(file_path, mayareadfile.read)
         if valid is False:
             text = 'File path is not valid:\n'
             text += repr(file_path)
@@ -239,7 +240,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         text += 'Undistorted Data: {lens_undist}\n'
         text += 'Bundle Positions: {positions}\n'
         text += 'With Camera FOV: {has_camera_fov}\n'
-        info = fileutils.get_file_info_strings(file_path)
+        info = fileutils.get_file_info_strings(file_path, mayareadfile.read)
 
         # Change point names into single string.
         point_names = info.get('point_names', '')
@@ -368,7 +369,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
     def updateImageResEnabledState(self):
         value = False
         file_path = self.getFilePath()
-        fmt = fileutils.get_file_path_format(file_path)
+        fmt = fileutils.get_file_path_format(file_path, mayareadfile.read)
         if fmt is None:
             value = False
         else:

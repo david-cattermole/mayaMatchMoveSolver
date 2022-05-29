@@ -23,9 +23,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-# module level manager, stores an instance of 'FormatManager'.
-__format_manager = None
-
 
 class FormatManager(object):
     def __init__(self):
@@ -42,12 +39,3 @@ class FormatManager(object):
             fmt = self.__formats[key]
             format_list.append(fmt)
         return format_list
-
-
-def get_format_manager():
-    global __format_manager
-    if __format_manager is None:
-        __format_manager = FormatManager()
-    return __format_manager
-
-

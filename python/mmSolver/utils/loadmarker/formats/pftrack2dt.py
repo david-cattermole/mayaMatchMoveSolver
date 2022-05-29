@@ -62,24 +62,27 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.logger
-import mmSolver.tools.loadmarker.lib.interface as interface
-import mmSolver.tools.loadmarker.lib.formatmanager as fmtmgr
+
+import mmSolver.utils.loadfile.loader as loader
+import mmSolver.utils.loadfile.excep as excep
+import mmSolver.utils.loadmarker.fileinfo as fileinfo
+import mmSolver.utils.loadmarker.formatmanager as fmtmgr
 
 LOG = mmSolver.logger.get_logger()
 
 
-def parse_int_or_none(value):
-  try:
-    return int(value)
-  except ValueError:
-    return None
+def _parse_int_or_none(value):
+    try:
+        return int(value)
+    except ValueError:
+        return None
 
 
-def parse_float_or_none(value):
-  try:
-    return float(value)
-  except ValueError:
-    return None
+def _parse_float_or_none(value):
+    try:
+        return float(value)
+    except ValueError:
+        return None
 
 
 def _remove_comments_from_lines(lines):
@@ -93,7 +96,7 @@ def _remove_comments_from_lines(lines):
     return clean_lines
 
 
-class LoaderPFTrack2DT(interface.LoaderBase):
+class LoaderPFTrack2DT(loader.LoaderBase):
 
     name = 'PFTrack 2D Tracks (*.2dt / *.txt)'
     file_exts = ['.2dt', '.txt']
@@ -153,7 +156,7 @@ class LoaderPFTrack2DT(interface.LoaderBase):
             # camera name should be used in mmSolver.
             cam_name = None
             line = lines[i]
-            clip_number = parse_int_or_none(line)
+            clip_number = _parse_int_or_none(line)
             if clip_number is not None:
                 i += 1
             elif line.startswith('"') and line.endswith('"'):
@@ -164,21 +167,21 @@ class LoaderPFTrack2DT(interface.LoaderBase):
                     'File invalid, '
                     'expecting a camera name (string) in line: %r'
                 )
-                raise interface.ParserError(msg % line)
+                raise excep.ParserError(msg % line)
 
             # Create marker
-            mkr_data = interface.MarkerData()
+            mkr_data = markerdata.MarkerData()
             mkr_data.set_name(mkr_name)
 
             # Number of frames.
             line = lines[i]
-            number_of_frames = parse_int_or_none(line)
+            number_of_frames = _parse_int_or_none(line)
             if number_of_frames is None:
                 msg = (
                     'File invalid, '
                     'expecting a number of frames (integer) in line: %r'
                 )
-                raise interface.ParserError(msg % line)
+                raise excep.ParserError(msg % line)
             i += 1
 
             # Parse per-frame data.
@@ -196,13 +199,13 @@ class LoaderPFTrack2DT(interface.LoaderBase):
                         'File invalid, '
                         'there must be 4 or 5 numbers in line: %r'
                     )
-                    raise interface.ParserError(msg % line)
+                    raise excep.ParserError(msg % line)
 
-                frame = parse_int_or_none(line_split[0])
-                pos_x = parse_float_or_none(line_split[1])
-                pos_y = parse_float_or_none(line_split[2])
+                frame = _parse_int_or_none(line_split[0])
+                pos_x = _parse_float_or_none(line_split[1])
+                pos_y = _parse_float_or_none(line_split[2])
                 if frame is None or pos_x is None or pos_y is None:
-                    raise interface.ParserError('Invalid file format.')
+                    raise excep.ParserError('Invalid file format.')
 
                 # PFTrack treats the center of the pixel as "0.0",
                 # which is different from other matchmove
@@ -211,9 +214,9 @@ class LoaderPFTrack2DT(interface.LoaderBase):
                 mkr_v = (pos_y + 0.5) * inv_image_height
 
                 # # There is no need for residual or the Z-depth for now.
-                # residual = parse_float_or_none(line_split[3])
+                # residual = _parse_float_or_none(line_split[3])
                 # if len(line_split) == 5:
-                #     zdepth = parse_float_or_none(line_split[4])
+                #     zdepth = _parse_float_or_none(line_split[4])
 
                 mkr_weight = 1.0
                 mkr_data.weight.set_value(frame, mkr_weight)
@@ -232,7 +235,7 @@ class LoaderPFTrack2DT(interface.LoaderBase):
 
             mkr_data_list.append(mkr_data)
 
-        file_info = interface.create_file_info()
+        file_info = fileinfo.create_file_info()
         return file_info, mkr_data_list
 
 

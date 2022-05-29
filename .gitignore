@@ -4,7 +4,6 @@
 .DS_Store
 #*
 *~
-*_.*
 *.bak
 *.pyc
 *cppcheck-build-*

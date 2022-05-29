@@ -1,4 +1,4 @@
-# Copyright (C) 2019 David Cattermole.
+# Copyright (C) 2018 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -16,14 +16,21 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-File Formats for loadmarker tool.
-
-This file is used to automatically load all formats so the user doesn't need
-to import each format individually.
+A manager class for registering new marker file formats.
 """
 
-import mmSolver.tools.loadmarker.lib.formats.rz2
-# import mmSolver.tools.loadmarker.lib.formats.rzml
-import mmSolver.tools.loadmarker.lib.formats.tdetxt
-import mmSolver.tools.loadmarker.lib.formats.uvtrack
-import mmSolver.tools.loadmarker.lib.formats.pftrack2dt
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import mmSolver.utils.loadfile.formatmanager as fmtmgr
+
+# module level manager, stores an instance of 'FormatManager'.
+__format_manager = None
+
+
+def get_format_manager():
+    global __format_manager
+    if __format_manager is None:
+        __format_manager = fmtmgr.FormatManager()
+    return __format_manager

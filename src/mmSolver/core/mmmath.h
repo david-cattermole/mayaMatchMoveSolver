@@ -36,6 +36,13 @@ lerp(const float min_value, const float max_value, const float mix);
 double
 lerp(const double min_value, const double max_value, const double mix);
 
+inline
+float
+clamp(const float v, const float min, const float max) {
+    const float x = v < min ? min : v;
+    return x > max ? max : x;
+}
+
 // https://martin.ankerl.com/2007/10/04/optimized-pow-approximation-for-java-and-c-c/
 inline double
 fast_pow(const double a, const double b) {

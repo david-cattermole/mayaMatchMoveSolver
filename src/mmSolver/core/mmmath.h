@@ -36,6 +36,29 @@ lerp(const float min_value, const float max_value, const float mix);
 double
 lerp(const double min_value, const double max_value, const double mix);
 
+// https://martin.ankerl.com/2007/10/04/optimized-pow-approximation-for-java-and-c-c/
+inline double
+fast_pow(const double a, const double b) {
+    union {
+        double d;
+        int x[2];
+    } u = { a };
+    u.x[1] = static_cast<int>(b * (u.x[1] - 1072632447) + 1072632447);
+    u.x[0] = 0;
+    return u.d;
+}
+
+// https://martin.ankerl.com/2007/10/04/optimized-pow-approximation-for-java-and-c-c/
+inline float
+fast_pow(const float a, const float b) {
+    union {
+        float f;
+        int i;
+    } u = { a };
+    u.i = static_cast<int>(b * (u.i - 1065307417) + 1065307417);
+    return u.f;
+}
+
 double
 length(mmdata::Point2D a);
 

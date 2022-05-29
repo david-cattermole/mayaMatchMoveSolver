@@ -97,7 +97,8 @@ def parse_file(file_path):
                 node_name = values
             else:
                 if times is None:
-                    is_digit = values.replace('.', '').isdigit()
+                    clean_string = values.replace('.', '').replace('-', '')
+                    is_digit = clean_string.isdigit()
                     if is_digit:
                         values = float(values)
                     else:
@@ -237,7 +238,8 @@ def apply_to_lens(lens_object, lens):
     set_attributes_count = 0
     for param_name, value in lens_parameters.items():
         key = (object_node_type, param_name)
-        attr_names = const.NODE_TYPE_PARAMETER_NAME_TO_ATTRIBUTE_NAMES.get(key, [])
+        attr_map = const.NODE_TYPE_PARAMETER_NAME_TO_ATTRIBUTE_NAMES
+        attr_names = attr_map.get(key, [])
         if len(attr_names) == 0:
             continue
 

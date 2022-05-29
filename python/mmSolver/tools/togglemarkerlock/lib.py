@@ -43,7 +43,7 @@ def markers_lock_toggle(mkr_nodes):
     Performs a toggle lock for the given Marker nodes.
     """
     marker_attrs = get_marker_attrs(mkr_nodes)
-    
+
     # Determine the lock state to toggle.
     is_locked = False
     for attr in marker_attrs:

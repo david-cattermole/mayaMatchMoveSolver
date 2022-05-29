@@ -78,8 +78,6 @@ import maya.cmds
 import mmSolver.logger
 
 import mmSolver.utils.time as time_utils
-import mmSolver.utils.node as node_utils
-import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.transform as tfm_utils
 import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.copypastecamera.constant as const

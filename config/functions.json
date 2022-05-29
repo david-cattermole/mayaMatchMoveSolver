@@ -205,7 +205,7 @@
                 "import mmSolver.tools.attributebake.tool;",
                 "mmSolver.tools.attributebake.tool.open_window();"
             ]
-        },         
+        },
         "aim_at_camera_manipulator": {
             "name": "Aim At Camera (Screen-Z Manipulator)",
             "tooltip": "Screen-space Z manipulator.",
@@ -316,6 +316,26 @@
             "command": [
                 "import mmSolver.tools.loadmarker.tool;",
                 "mmSolver.tools.loadmarker.tool.open_window();"
+            ]
+        },
+        "save_marker_file": {
+            "name": "Save Marker File...",
+            "name_shelf": "SvMkr",
+            "tooltip": "Save a Marker file.",
+            "icon_shelf": "menuIconFile.png",
+            "command": [
+                "import mmSolver.tools.savemarkerfile.tool;",
+                "mmSolver.tools.savemarkerfile.tool.main();"
+            ]
+        },
+        "copy_marker_to_clipboard": {
+            "name": "Copy Marker to Clipboard",
+            "name_shelf": "CpyMkr",
+            "tooltip": "Copy selected markers to a temp file.",
+            "icon_shelf": "menuIconFile.png",
+            "command": [
+                "import mmSolver.tools.copypastemarker.tool;",
+                "mmSolver.tools.copypastemarker.tool.main();"
             ]
         },
         "copy_camera_to_clipboard": {
@@ -569,7 +589,7 @@
                 "import mmSolver.tools.screenspacerigbake.tool;",
                 "mmSolver.tools.screenspacerigbake.tool.open_window();"
             ]
-        },        
+        },
         "undo_scene": {
             "name": "Undo (without UI update)",
             "name_shelf": "Undo",

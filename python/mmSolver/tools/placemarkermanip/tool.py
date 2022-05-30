@@ -105,6 +105,9 @@ def place_marker():
         return
     assert len(coord) == 3
 
+    # TODO: Calculate the lens distortion (if any) for the current 2D
+    # coordinate.
+
     # Set the marker position
     for mkr in mkr_list:
         mkr_grp = mkr.get_marker_group()

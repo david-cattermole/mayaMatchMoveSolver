@@ -45,7 +45,7 @@ viewport.
      - Link
 
    * - Press **C** key
-     - Centre 2D on Selected
+     - Center 2D on Selected
      - :ref:`Link <center-2d-on-selection-tool-ref>`
 
    * - Press **Z** key

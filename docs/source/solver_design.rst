@@ -349,6 +349,55 @@ Primary Frames / Root Frames.
 #. Hierarchical merging of sub-sequences
 #. Incremental bundle adjustment
 
+.. _solver-design-solver-scene-graph:
+
+Solver Scene Graph
+------------------
+
+Starting with v0.4.0, mmSolver supports the choice of the 'scene
+graph' used for scene construction and evaluation. Before the v0.4.0,
+mmSolver only used the Maya DAG to construct and evaluate Markers,
+Cameras and Bundles.
+
+`Maya DAG` uses the regular Maya DAG hierachies and DG nodes and
+triggers Maya to evaluate these for each iteration of mmSolver. The
+`Maya DAG` is fantastic because it supports all Maya nodes, by
+definition, however because it is very general and supports so much,
+this comes at the cost of performance.
+
+`MM Scene Graph` is an alternative scene graph to `Maya DAG` and
+supports only a limited number of node and scene graph structures,
+however because of the reduced support the performance is tuned for
+MatchMove solving tasks and is much faster (around 10+ times faster in
+some cases).
+
+`MM Scene Graph` cannot be used with the following features:
+
+- Maya Nodes
+
+  - Instanced nodes are *not supported*.
+
+  - Input connections to the transform values are *not supported*.
+
+    - For example point, orient and parent constraints are *not supported*.
+
+  - Non-zero pivot-point (or pivot point translation) transform
+    values are *not supported*
+
+- Attributes
+
+  - Connections to attributes are *not supported*, only static and
+    animated attributes with values or animation curves are supported.
+
+- Solver
+
+  - Smoothness and Stiffness Attribute Details are not currently
+    supported.
+
+If `MM SCene Graph` detects any of these features are being used in
+the scene graph you are solving, then it will immediately fail with an
+error, and request you switch to `Maya DAG`.
+
 .. _solver-design-solver-options:
 
 Solver Options

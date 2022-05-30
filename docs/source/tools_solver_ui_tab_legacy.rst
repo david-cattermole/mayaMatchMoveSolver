@@ -1,5 +1,18 @@
-Legacy Solver Tab
-=================
+Legacy Solver Tab (Deprecated)
+==============================
+
+.. note::
+
+   The *Legacy* tab is deprecated and has been removed in v0.4.0+. The
+   documentation here is kept for historical reasons.
+
+   It is recommended to use the *Basic* or *Standard* tabs rather than
+   the *Legacy* tab.
+
+   The *Legacy* tab is named "legacy" because is not directly
+   maintained it will be removed in future versions of *mmSolver*. The
+   *Basic* and *Standard* Tabs provide the same functionality as the
+   *Legacy* tab, but provide more options and are actively developed.
 
 .. figure:: images/tools_solver_ui_solver_tab_legacy.png
     :alt: Solver Legacy Tab
@@ -26,16 +39,6 @@ Each Solver “step” contains:
 -  Frames
 -  Attributes
 -  Strategy
-
-.. note::
-
-   It is recommended to use the *Basic* or *Standard* tabs rather than
-   the *Legacy* tab.
-
-   The *Legacy* tab is named "legacy" because is not directly
-   maintained it will be removed in future versions of *mmSolver*. The
-   *Basic* and *Standard* Tabs provide the same functionality as the
-   *Legacy* tab, but provide more options and are actively developed.
 
 Enabled
 -------

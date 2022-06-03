@@ -24,5 +24,6 @@ Pages dedicated to specific tools:
     tools_markerbundletools
     tools_bundletools
     tools_markertools
+    tools_linetools
     tools_generaltools
     tools_hotkeys

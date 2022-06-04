@@ -32,3 +32,7 @@ jobs:
       - name: Analysing the C++ code with CppLint
         run: |
           ./scripts/python_linter_run_cpplint.bash
+
+      - name: Analysing the Python code with flake8
+        run: |
+          ./scripts/python_linter_run_flake8_errors_only.bash

@@ -8,7 +8,8 @@ ignore =
     F841,
     W293,
     W391,
-    W503
+    W503,
+    C901  # "function is too complex"
 exclude =
     # No need to traverse our git directory
     .git,

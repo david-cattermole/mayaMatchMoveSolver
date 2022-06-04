@@ -9,18 +9,26 @@ jobs:
       matrix:
         python-version: ["3.7"]
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements-dev.txt
-    - name: Analysing the code with pylint
-      run: |
-        ./scripts/python_linter_run_pylint.bash
-    - name: Analysing the code with flake8
-      run: |
-        ./scripts/python_linter_run_flake8.bash
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Analysing the Python code with pylint
+        run: |
+          ./scripts/python_linter_run_pylint.bash
+
+      - name: Analysing the Python code with flake8
+        run: |
+          ./scripts/python_linter_run_flake8.bash
+
+      - name: Analysing the C++ code with CppLint
+        run: |
+          ./scripts/python_linter_run_cpplint.bash

@@ -1,8 +1,8 @@
 ---
 Language:        Cpp
 # BasedOnStyle:  Google
-AccessModifierOffset: -1
 AlignAfterOpenBracket: Align
+AccessModifierOffset: -4
 AlignConsecutiveMacros: None
 AlignConsecutiveAssignments: None
 AlignConsecutiveBitFields: None

@@ -21,10 +21,13 @@
 #   Software.
 #
 
-import cmath, sys
+import cmath
+import sys
+
 
 # For python 2.
 range = xrange  # noqa: F821
+
 
 # For Python 2.6; 'int.bit_length()' was added in Python 2.7
 def _bit_length(x):
@@ -102,9 +105,9 @@ def transform_bluestein(vector, inverse):
     coef = (1j if inverse else -1j) * cmath.pi / n
     exptable = [cmath.exp((i * i % (n * 2)) * coef) for i in range(n)]  # Trigonometric table
     a = [(x * y) for (x, y) in zip(vector, exptable)] + [0] * (m - n)  # Temporary vectors and preprocessing
-    b = exptable[ : n] + [0] * (m - (n * 2 - 1)) + exptable[ : 0 : -1]
+    b = exptable[:n] + [0] * (m - (n * 2 - 1)) + exptable[:0:-1]
     b = [x.conjugate() for x in b]
-    c = convolve(a, b, False)[ : n]  # Convolution
+    c = convolve(a, b, False)[:n]  # Convolution
     return [(x * y) for (x, y) in zip(c, exptable)]  # Postprocessing
 
 

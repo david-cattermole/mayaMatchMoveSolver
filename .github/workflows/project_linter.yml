@@ -20,7 +20,7 @@ jobs:
         pip install -r requirements-dev.txt
     - name: Building Documentation
       run: |
-        ./scripts/internal/travisci_build_docs.sh
+        ./scripts/internal/build_docs.bash
     - name: Analysing the code with pylint
       run: |
         ./scripts/python_linter_run_pylint.bash

@@ -132,7 +132,7 @@ SolverTypePair getSolverTypeDefault() {
     }
     SolverTypePair solverType(solverTypeIndex, solverTypeName);
     return solverType;
-};
+}
 
 void lossFunctionTrivial(const double z, double &rho0, double &rho1,
                          double &rho2) {
@@ -140,7 +140,7 @@ void lossFunctionTrivial(const double z, double &rho0, double &rho1,
     rho0 = z;
     rho1 = 1.0;
     rho2 = 0.0;
-};
+}
 
 void lossFunctionSoftL1(const double z, double &rho0, double &rho1,
                         double &rho2) {
@@ -149,7 +149,7 @@ void lossFunctionSoftL1(const double z, double &rho0, double &rho1,
     rho0 = 2.0 * (std::pow(t, 0.5 - 1.0));
     rho1 = std::pow(t, -0.5);
     rho2 = -0.5 * std::pow(t, -1.5);
-};
+}
 
 void lossFunctionCauchy(const double z, double &rho0, double &rho1,
                         double &rho2) {
@@ -158,7 +158,7 @@ void lossFunctionCauchy(const double z, double &rho0, double &rho1,
     double t = 1.0 + z;
     rho1 = 1.0 / t;
     rho2 = -1.0 / std::pow(t, 2.0);
-};
+}
 
 void applyLossFunctionToErrors(const int numberOfErrors, double *f,
                                const int loss_type, const double loss_scale) {
@@ -634,7 +634,7 @@ void logResultsSolveDetails(SolverResult &solverResult, SolverData &userData,
         resultStr += mmstring::numberToString<double>(d / num);
         outResult.append(MString(resultStr.c_str()));
     }
-};
+}
 
 MStatus logResultsObjectCounts(const int numberOfParameters,
                                const int numberOfErrors,
@@ -1596,4 +1596,4 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
     }
 
     return solveResult.success;
-};
+}

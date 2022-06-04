@@ -34,7 +34,7 @@ global proc AEmmLensModel3deTemplate(string $nodeName)
     editorTemplate -addSeparator;
     editorTemplate -addControl "lensModel";
 
-    editorTemplate -beginLayout "3DE Classic LD Model" -collapse 1;
+    editorTemplate -beginLayout "3DE Classic LD Model" -collapse 0;
     editorTemplate -addControl "tdeClassic_distortion";
     editorTemplate -addControl "tdeClassic_anamorphicSqueeze";
     editorTemplate -addControl "tdeClassic_curvatureX";
@@ -53,7 +53,7 @@ global proc AEmmLensModel3deTemplate(string $nodeName)
     editorTemplate -addControl "tdeRadialDeg4_cylindricBending";
     editorTemplate -endLayout;
 
-    editorTemplate -beginLayout "3DE4 Anamorphic - Standard, Degree 4" -collapse 1;
+    editorTemplate -beginLayout "3DE4 Anamorphic - Standard, Degree 4" -collapse 0;
     editorTemplate -addControl "tdeAnamorphicDeg4_degree2_cx02";
     editorTemplate -addControl "tdeAnamorphicDeg4_degree2_cy02";
     editorTemplate -addControl "tdeAnamorphicDeg4_degree2_cx22";

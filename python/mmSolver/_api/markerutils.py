@@ -97,10 +97,10 @@ def calculate_marker_deviation(
     assert len(mkr_pos) == len(bnd_pos)
 
     # 2D Distance
-    mkr_x = mkr_pos[0 : len(mkr_pos) : 3]
-    mkr_y = mkr_pos[1 : len(mkr_pos) : 3]
-    bnd_x = bnd_pos[0 : len(mkr_pos) : 3]
-    bnd_y = bnd_pos[1 : len(mkr_pos) : 3]
+    mkr_x = mkr_pos[0:len(mkr_pos):3]
+    mkr_y = mkr_pos[1:len(mkr_pos):3]
+    bnd_x = bnd_pos[0:len(mkr_pos):3]
+    bnd_y = bnd_pos[1:len(mkr_pos):3]
     iterator = enumerate(zip(mkr_x, mkr_y, bnd_x, bnd_y, enabled_list, weights_list))
     for i, (mx, my, bx, by, enabled, weight) in iterator:
         if enabled <= 0 or weight <= 0.0:

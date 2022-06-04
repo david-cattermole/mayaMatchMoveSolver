@@ -48,9 +48,6 @@
 #endif
 
 // Debug defines...
-//#ifndef NDEBUG
-//#  define MMSOLVER_DBG(x)
-//#else
 #ifdef _WIN32  // Windows MSVC
 #define MMSOLVER_DBG(x)                                              \
     __pragma(warning(push)) __pragma(warning(disable : 4127)) do {   \
@@ -67,7 +64,6 @@
             << __FILE__ << ':' << __LINE__ << ' ' << x << std::endl; \
     } while (0)
 #endif
-//#endif // NDEBUG
 
 #ifdef _WIN32  // Windows MSVC
 #define MMSOLVER_VRB(x)                                            \

@@ -23,7 +23,7 @@ SETLOCAL
 
 SET PROJECT_ROOT=%CD%
 
-python -m black -S --diff ^
+python -m black -S ^
        "%PROJECT_ROOT%\3dequalizer\python" ^
        "%PROJECT_ROOT%\3dequalizer\scriptdb" ^
        "%PROJECT_ROOT%\mel" ^

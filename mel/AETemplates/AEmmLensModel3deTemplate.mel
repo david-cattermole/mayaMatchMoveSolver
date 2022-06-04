@@ -79,7 +79,7 @@ global proc AEmmLensModel3deTemplate(string $nodeName)
 
     editorTemplate -suppress "tdeClassic_heading";
     editorTemplate -suppress "tdeRadialDeg4_heading";
-    editorTemplate -suppress "tdeAnamorphicDeg4RotateSqueezeXY_heading";
+    editorTemplate -suppress "tdeAnamorphicDeg4_heading";
     editorTemplate -suppress "outLens";
     editorTemplate -suppress "inLens";
 

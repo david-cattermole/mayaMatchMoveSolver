@@ -33,38 +33,51 @@
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/mayahelper/maya_camera.h"  // getProjectionMatrix, computeFrustumCoordinates
 
-MStatus reprojection(MMatrix tfmMatrix,
-                     MMatrix camMatrix,
+MStatus reprojection(const MMatrix tfmMatrix,
+                     const MMatrix camMatrix,
 
                      // Camera
-                     double focalLength,
-                     double horizontalFilmAperture,
-                     double verticalFilmAperture,
-                     double horizontalFilmOffset,
-                     double verticalFilmOffset,
-                     short filmFit,
-                     double nearClipPlane,
-                     double farClipPlane,
-                     double cameraScale,
+                     const double focalLength,
+                     const double horizontalFilmAperture,
+                     const double verticalFilmAperture,
+                     const double horizontalFilmOffset,
+                     const double verticalFilmOffset,
+                     const short filmFit,
+                     const double nearClipPlane,
+                     const double farClipPlane,
+                     const double cameraScale,
 
                      // Image
-                     double imageWidth,
-                     double imageHeight,
+                     const double imageWidth,
+                     const double imageHeight,
 
                      // Manipulation
-                     MMatrix applyMatrix,
-                     bool overrideScreenX, bool overrideScreenY, bool overrideScreenZ,
-                     double screenX, double screenY, double screenZ,
-                     double depthScale,
+                     const MMatrix applyMatrix,
+                     const bool overrideScreenX,
+                     const bool overrideScreenY,
+                     const bool overrideScreenZ,
+                     const double screenX,
+                     const double screenY,
+                     const double screenZ,
+                     const double depthScale,
 
                      // Outputs
-                     double &outCoordX, double &outCoordY,
-                     double &outNormCoordX, double &outNormCoordY,
-                     double &outMarkerCoordX, double &outMarkerCoordY, double &outMarkerCoordZ,
-                     double &outPixelX, double &outPixelY,
+                     double &outCoordX,
+                     double &outCoordY,
+                     double &outNormCoordX,
+                     double &outNormCoordY,
+                     double &outMarkerCoordX,
+                     double &outMarkerCoordY,
+                     double &outMarkerCoordZ,
+                     double &outPixelX,
+                     double &outPixelY,
                      bool &outInsideFrustum,
-                     double &outPointX, double &outPointY, double &outPointZ,
-                     double &outWorldPointX, double &outWorldPointY, double &outWorldPointZ,
+                     double &outPointX,
+                     double &outPointY,
+                     double &outPointZ,
+                     double &outWorldPointX,
+                     double &outWorldPointY,
+                     double &outWorldPointZ,
                      MMatrix &outMatrix,
                      MMatrix &outWorldMatrix,
                      MMatrix &outCameraProjectionMatrix,
@@ -92,31 +105,31 @@ MStatus reprojection(MMatrix tfmMatrix,
     MMatrix camWorldProjMatrix = camMatrix.inverse() * camProjMatrix;
 
     // Convert to screen-space
-    tfmMatrix = tfmMatrix * camWorldProjMatrix;
+    MMatrix matrix = tfmMatrix * camWorldProjMatrix;
 
     // Do screen-space overrides
     if (overrideScreenX) {
-        tfmMatrix[3][0] = screenX;
+        matrix[3][0] = screenX;
     }
     if (overrideScreenY) {
-        tfmMatrix[3][1] = screenY;
+        matrix[3][1] = screenY;
     }
     if (overrideScreenZ) {
-        tfmMatrix[3][2] = screenZ;
+        matrix[3][2] = screenZ;
     }
 
     // Apply screen-space matrix
-    tfmMatrix = tfmMatrix * applyMatrix;
+    matrix = matrix * applyMatrix;
 
     // Scale the screen-space depth.
-    tfmMatrix *= depthScale;
+    matrix *= depthScale;
 
     // Get (screen-space) point. Screen-space is also called NDC
     // (normalised device coordinates) space.
-    MPoint posScreen(tfmMatrix[3][0],
-                     tfmMatrix[3][1],
-                     tfmMatrix[3][2],
-                     tfmMatrix[3][3]);
+    MPoint posScreen(matrix[3][0],
+                     matrix[3][1],
+                     matrix[3][2],
+                     matrix[3][3]);
     posScreen.cartesianize();
     MPoint coord(posScreen.x,
                  posScreen.y,
@@ -133,7 +146,7 @@ MStatus reprojection(MMatrix tfmMatrix,
     }
 
     // Convert back to world space
-    MMatrix worldTfmMatrix = tfmMatrix * camWorldProjMatrix.inverse();
+    MMatrix worldTfmMatrix = matrix * camWorldProjMatrix.inverse();
     MPoint worldPos(worldTfmMatrix[3][0],
                     worldTfmMatrix[3][1],
                     worldTfmMatrix[3][2],
@@ -181,7 +194,7 @@ MStatus reprojection(MMatrix tfmMatrix,
     outWorldPointZ = worldPos.z;
 
     // Output Matrix (camera-space)
-    outMatrix = tfmMatrix;
+    outMatrix = matrix;
 
     // Output Matrix (world-space)
     outWorldMatrix = worldTfmMatrix;

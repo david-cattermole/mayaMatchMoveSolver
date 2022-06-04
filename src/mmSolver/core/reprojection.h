@@ -29,29 +29,33 @@
 #include <maya/MStatus.h>
 
 
-MStatus reprojection(MMatrix tfmMatrix,
-                     MMatrix camMatrix,
+MStatus reprojection(const MMatrix tfmMatrix,
+                     const MMatrix camMatrix,
 
                      // Camera
-                     double focalLength,
-                     double horizontalFilmAperture,
-                     double verticalFilmAperture,
-                     double horizontalFilmOffset,
-                     double verticalFilmOffset,
-                     short filmFit,
-                     double nearClipPlane,
-                     double farClipPlane,
-                     double cameraScale,
+                     const double focalLength,
+                     const double horizontalFilmAperture,
+                     const double verticalFilmAperture,
+                     const double horizontalFilmOffset,
+                     const double verticalFilmOffset,
+                     const short filmFit,
+                     const double nearClipPlane,
+                     const double farClipPlane,
+                     const double cameraScale,
 
                      // Image
-                     double imageWidth,
-                     double imageHeight,
+                     const double imageWidth,
+                     const double imageHeight,
 
                      // Manipulation
-                     MMatrix applyMatrix,
-                     bool overrideScreenX, bool overrideScreenY, bool overrideScreenZ,
-                     double screenX, double screenY, double screenZ,
-                     double depthScale,
+                     const MMatrix applyMatrix,
+                     const bool overrideScreenX,
+                     const bool overrideScreenY,
+                     const bool overrideScreenZ,
+                     const double screenX,
+                     const double screenY,
+                     const double screenZ,
+                     const double depthScale,
 
                      // Outputs
                      double &outCoordX, double &outCoordY,

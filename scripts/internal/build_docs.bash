@@ -18,8 +18,8 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# Run on TravisCI, builds the documentation for mmSolver, ready to be
-# uploaded to GitHub pages.
+# Builds the documentation for mmSolver, ready to be uploaded to
+# GitHub pages.
 
 # The -e flag causes the script to exit as soon as one command returns
 # a non-zero exit code.
@@ -39,6 +39,6 @@ make html
 
 # Makes 'jekyll build' run by GitHub Pages ignore the files in this
 # directory.
-touch build_linux_maya2022/html/.nojekyll
+touch build_linux_maya/html/.nojekyll
 
 cd ${PROJECT_ROOT}

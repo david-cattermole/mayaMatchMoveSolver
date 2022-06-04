@@ -65,6 +65,7 @@ source "${PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT}"
 if [ ${REQUIRE_PACKAGE_INSTALL} -eq 1 ]; then
     # ${PYTHON_EXE} -m pip install --upgrade pip
     ${PYTHON_EXE} -m pip install -r "${PROJECT_ROOT}/requirements-dev.txt"
+    ${PYTHON_EXE} -m pip install -r "${PROJECT_ROOT}/requirements-doc.txt"
 fi
 
 cd ${PROJECT_ROOT}

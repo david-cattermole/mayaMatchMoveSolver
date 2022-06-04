@@ -62,6 +62,7 @@ CALL %PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT%
 IF "%REQUIRE_PACKAGE_INSTALL%"=="1" (
     :: %PYTHON_EXE% -m pip install --upgrade pip
     %PYTHON_EXE% -m pip install -r "%PROJECT_ROOT%\requirements-dev.txt"
+    %PYTHON_EXE% -m pip install -r "%PROJECT_ROOT%\requirements-doc.txt"
 )
 
 :: Return back project root directory.

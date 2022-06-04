@@ -27,7 +27,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-doc.txt
 
-      - name: Building Documentation
+      - name: Building Sphinx Documentation
         run: |
           ./scripts/internal/build_docs.bash
 

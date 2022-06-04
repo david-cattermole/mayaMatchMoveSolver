@@ -65,6 +65,7 @@ import mmSolver.logger
 
 import mmSolver.utils.loadfile.loader as loader
 import mmSolver.utils.loadfile.excep as excep
+import mmSolver.utils.loadmarker.markerdata as markerdata
 import mmSolver.utils.loadmarker.fileinfo as fileinfo
 import mmSolver.utils.loadmarker.formatmanager as fmtmgr
 

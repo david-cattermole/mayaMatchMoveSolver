@@ -109,7 +109,6 @@ MString SkyDomeShapeNode::nodeName() {
 MStatus SkyDomeShapeNode::compute(const MPlug & /*plug*/,
                                   MDataBlock & /*dataBlock*/) {
     return MS::kUnknownParameter;
-    ;
 }
 
 bool SkyDomeShapeNode::isBounded() const { return false; }

@@ -14,11 +14,11 @@ Shape Nodes
 *To be written.*
 
 ``mmSkyDomeShape`` Node
-++++++++++++++++++++++
++++++++++++++++++++++++
 
 *To be written.*
 
 ``mmLineShape`` Node
-++++++++++++++++++++++
+++++++++++++++++++++
 
 *To be written.*

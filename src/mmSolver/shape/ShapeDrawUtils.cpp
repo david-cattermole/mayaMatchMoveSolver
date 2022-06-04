@@ -19,6 +19,9 @@
  *
  */
 
+// STL
+#include <cmath>
+
 // Maya
 #include <maya/MDistance.h>
 #include <maya/MPoint.h>
@@ -27,6 +30,10 @@
 
 // Maya Viewport 2.0
 #include <maya/MDrawContext.h>
+
+// MM Solver
+#include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/number_utils.h"
 
 namespace mmsolver {
 
@@ -71,40 +78,40 @@ MStatus getViewportScaleRatio(
     MPoint camera_pos(view_pos[0], view_pos[1], view_pos[2]);
 
     // Get Viewport size
-    int originX = 0;
-    int originY = 0;
+    int origin_x = 0;
+    int origin_y = 0;
     int width = 0;
     int height = 0;
-    frameContext.getViewportDimensions(originX, originY, width, height);
+    frameContext.getViewportDimensions(origin_x, origin_y, width, height);
 
     // Convert viewport window into world-space near/far clipping
     // points.
-    MPoint nearPoint1;
-    MPoint nearPoint2;
-    MPoint farPoint1;
-    MPoint farPoint2;
-    double originXd = static_cast<double>(originX);
-    double originYd = static_cast<double>(originY);
-    double widthd = static_cast<double>(width);
-    double heightd = static_cast<double>(height);
-    double y = originYd + (heightd * 0.5);
-    frameContext.viewportToWorld(originXd, y, nearPoint1, farPoint1);
-    frameContext.viewportToWorld(widthd, y, nearPoint2, farPoint2);
+    MPoint near_point1;
+    MPoint near_point2;
+    MPoint far_point1;
+    MPoint far_point2;
+    double origin_x_d = static_cast<double>(origin_x);
+    double origin_y_d = static_cast<double>(origin_y);
+    double width_d = static_cast<double>(width);
+    double height_d = static_cast<double>(height);
+    double midpoint_y = origin_y_d + (height_d * 0.5);
+    frameContext.viewportToWorld(origin_x_d, midpoint_y, near_point1, far_point1);
+    frameContext.viewportToWorld(width_d, midpoint_y, near_point2, far_point2);
 
     // Normalize the scale values.
-    auto oneUnitVector1 = MVector(
-        camera_pos.x - nearPoint1.x,
-        camera_pos.y - nearPoint1.y,
-        camera_pos.z - nearPoint1.z);
-    auto oneUnitVector2 = MVector(
-        camera_pos.x - nearPoint2.x,
-        camera_pos.y - nearPoint2.y,
-        camera_pos.z - nearPoint2.z);
-    oneUnitVector1.normalize();
-    oneUnitVector2.normalize();
-    auto oneUnitPoint1 = MPoint(oneUnitVector1);
-    auto oneUnitPoint2 = MPoint(oneUnitVector2);
-    out_scale = oneUnitPoint1.distanceTo(oneUnitPoint2);
+    auto one_unit_vector1 = MVector(
+        far_point1.x - camera_pos.x,
+        far_point1.y - camera_pos.y,
+        far_point1.z - camera_pos.z);
+    auto one_unit_vector2 = MVector(
+        far_point2.x - camera_pos.x,
+        far_point2.y - camera_pos.y,
+        far_point2.z - camera_pos.z);
+    one_unit_vector1.normalize();
+    one_unit_vector2.normalize();
+
+    auto radian_angle = one_unit_vector1.angle(one_unit_vector2);
+    out_scale = std::tan(radian_angle * 0.5);
     return status;
 }
 

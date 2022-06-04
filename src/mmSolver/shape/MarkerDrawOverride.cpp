@@ -271,7 +271,7 @@ void MarkerDrawOverride::addUIDrawables(
     double scale = 1.0;
     status = getViewportScaleRatio(frameContext, scale);
     CHECK_MSTATUS(status);
-    scale *= data->m_icon_size * 20.0;
+    scale *= data->m_icon_size * 80.0;
 
     // Remove scale and shear from marker transform.
     MTransformationMatrix tfm_matrix(matrix);

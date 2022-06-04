@@ -37,17 +37,17 @@ namespace render {
 /*
  * Command arguments and command name
  */
-#define MM_RENDERER_SWIRL_FLAG        "-s"
-#define MM_RENDERER_SWIRL_FLAG_LONG    "-swirl"
+#define MM_RENDERER_SWIRL_FLAG "-s"
+#define MM_RENDERER_SWIRL_FLAG_LONG "-swirl"
 
-#define MM_RENDERER_FISH_EYE_FLAG        "-fe"
-#define MM_RENDERER_FISH_EYE_FLAG_LONG    "-fishEye"
+#define MM_RENDERER_FISH_EYE_FLAG "-fe"
+#define MM_RENDERER_FISH_EYE_FLAG_LONG "-fishEye"
 
-#define MM_RENDERER_EDGE_DETECT_FLAG        "-ed"
-#define MM_RENDERER_EDGE_DETECT_FLAG_LONG    "-edgeDetect"
+#define MM_RENDERER_EDGE_DETECT_FLAG "-ed"
+#define MM_RENDERER_EDGE_DETECT_FLAG_LONG "-edgeDetect"
 
-#define MM_RENDERER_WIREFRAME_ALPHA_FLAG        "-wa"
-#define MM_RENDERER_WIREFRAME_ALPHA_FLAG_LONG    "-wireframeAlpha"
+#define MM_RENDERER_WIREFRAME_ALPHA_FLAG "-wa"
+#define MM_RENDERER_WIREFRAME_ALPHA_FLAG_LONG "-wireframeAlpha"
 
 /*
  * MM Renderer command.
@@ -73,7 +73,7 @@ private:
     double m_wireframe_alpha;
 };
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver
 
-#endif //MAYA_MM_SOLVER_RENDER_MM_RENDERER_CMD_H
+#endif  // MAYA_MM_SOLVER_RENDER_MM_RENDERER_CMD_H

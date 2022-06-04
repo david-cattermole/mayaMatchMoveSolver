@@ -25,30 +25,30 @@
 #include <algorithm>
 
 // Maya
-#include <maya/MString.h>
-#include <maya/MPlug.h>
-#include <maya/MPlugArray.h>
 #include <maya/MColor.h>
 #include <maya/MDistance.h>
 #include <maya/MEventMessage.h>
 #include <maya/MFnDependencyNode.h>
-#include <maya/MPoint.h>
-#include <maya/MTransformationMatrix.h>
-#include <maya/MPointArray.h>
 #include <maya/MFnMatrixData.h>
+#include <maya/MPlug.h>
+#include <maya/MPlugArray.h>
+#include <maya/MPoint.h>
+#include <maya/MPointArray.h>
+#include <maya/MString.h>
+#include <maya/MTransformationMatrix.h>
 
 // Maya Viewport 2.0
-#include <maya/MPxDrawOverride.h>
-#include <maya/MUserData.h>
 #include <maya/MDrawContext.h>
 #include <maya/MHWGeometryUtilities.h>
+#include <maya/MPxDrawOverride.h>
+#include <maya/MUserData.h>
 
 #include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
 
-MStatus get_position_from_connected_node(const MPlug &plug,
-                            double &x, double &y, double &z) {
+MStatus get_position_from_connected_node(const MPlug &plug, double &x,
+                                         double &y, double &z) {
     MStatus status = MS::kSuccess;
     if (!plug.isNull() && plug.isConnected()) {
         MPlugArray connected_plugs;
@@ -82,9 +82,9 @@ MStatus get_position_from_connected_node(const MPlug &plug,
 // MPxDrawOverride constructor is set to nullptr in order to achieve
 // better performance.
 LineDrawOverride::LineDrawOverride(const MObject &obj)
-        : MHWRender::MPxDrawOverride(obj,
-                                     /*callback=*/ nullptr,
-                                     /*isAlwaysDirty=*/ true) {
+    : MHWRender::MPxDrawOverride(obj,
+                                 /*callback=*/nullptr,
+                                 /*isAlwaysDirty=*/true) {
     m_model_editor_changed_callback_id = MEventMessage::addEventCallback(
         "modelEditorChanged", on_model_editor_changed_func, this);
 
@@ -107,8 +107,7 @@ void LineDrawOverride::on_model_editor_changed_func(void *clientData) {
     // switch among wireframe and shaded.
     LineDrawOverride *ovr = static_cast<LineDrawOverride *>(clientData);
     if (ovr && ovr->m_node) {
-        MHWRender::MRenderer::setGeometryDrawDirty(
-                ovr->m_node->thisMObject());
+        MHWRender::MRenderer::setGeometryDrawDirty(ovr->m_node->thisMObject());
     }
 }
 
@@ -123,9 +122,7 @@ bool LineDrawOverride::isBounded(const MDagPath & /*objPath*/,
 }
 
 MBoundingBox LineDrawOverride::boundingBox(
-        const MDagPath &objPath,
-        const MDagPath &/*cameraPath*/) const
-{
+    const MDagPath &objPath, const MDagPath & /*cameraPath*/) const {
     MStatus status;
 
     MPoint corner1;
@@ -144,7 +141,8 @@ MBoundingBox LineDrawOverride::boundingBox(
                 MPlug plugElement = plug.elementByPhysicalIndex(i, &status);
                 CHECK_MSTATUS(status);
                 if (!plugElement.isNull()) {
-                    status = get_position_from_connected_node(plugElement, x, y, z);
+                    status =
+                        get_position_from_connected_node(plugElement, x, y, z);
                     CHECK_MSTATUS(status);
 
                     corner1[0] = std::min(corner1[0], x);
@@ -164,10 +162,8 @@ MBoundingBox LineDrawOverride::boundingBox(
 
 // Called by Maya each time the object needs to be drawn.
 MUserData *LineDrawOverride::prepareForDraw(
-        const MDagPath &objPath,
-        const MDagPath &/*cameraPath*/,
-        const MHWRender::MFrameContext &/*frameContext*/,
-        MUserData *oldData) {
+    const MDagPath &objPath, const MDagPath & /*cameraPath*/,
+    const MHWRender::MFrameContext & /*frameContext*/, MUserData *oldData) {
     LineDrawData *data = dynamic_cast<LineDrawData *>(oldData);
     if (!data) {
         data = new LineDrawData();
@@ -186,7 +182,8 @@ MUserData *LineDrawOverride::prepareForDraw(
     MMatrix obj_matrix = matrix_inverse;
 
     // CHECK_MSTATUS(status);
-    status = getNodeAttr(objPath, LineShapeNode::m_outer_scale, data->m_outer_scale);
+    status =
+        getNodeAttr(objPath, LineShapeNode::m_outer_scale, data->m_outer_scale);
     CHECK_MSTATUS(status);
 
     // Color
@@ -194,49 +191,41 @@ MUserData *LineDrawOverride::prepareForDraw(
     MColor point_color(0.0f, 0.0f, 0.0f, 1.0f);
     MColor inner_color(0.0f, 0.0f, 0.0f, 1.0f);
     MColor outer_color(0.0f, 0.0f, 0.0f, 1.0f);
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_text_color, text_color);
+    status = getNodeAttr(objPath, LineShapeNode::m_text_color, text_color);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_point_color, point_color);
+    status = getNodeAttr(objPath, LineShapeNode::m_point_color, point_color);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_inner_color, inner_color);
+    status = getNodeAttr(objPath, LineShapeNode::m_inner_color, inner_color);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_outer_color, outer_color);
+    status = getNodeAttr(objPath, LineShapeNode::m_outer_color, outer_color);
     CHECK_MSTATUS(status);
 
     // Alpha
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_text_alpha, text_color[3]);
+    status = getNodeAttr(objPath, LineShapeNode::m_text_alpha, text_color[3]);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_point_alpha, point_color[3]);
+    status = getNodeAttr(objPath, LineShapeNode::m_point_alpha, point_color[3]);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_inner_alpha, inner_color[3]);
+    status = getNodeAttr(objPath, LineShapeNode::m_inner_alpha, inner_color[3]);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_outer_alpha, outer_color[3]);
+    status = getNodeAttr(objPath, LineShapeNode::m_outer_alpha, outer_color[3]);
     CHECK_MSTATUS(status);
 
     // Line Width
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_inner_line_width, data->m_inner_line_width);
+    status = getNodeAttr(objPath, LineShapeNode::m_inner_line_width,
+                         data->m_inner_line_width);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_outer_line_width, data->m_outer_line_width);
+    status = getNodeAttr(objPath, LineShapeNode::m_outer_line_width,
+                         data->m_outer_line_width);
     CHECK_MSTATUS(status);
 
     // Point Size
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_point_size, data->m_point_size);
+    status =
+        getNodeAttr(objPath, LineShapeNode::m_point_size, data->m_point_size);
     CHECK_MSTATUS(status);
 
     // Draw Name
-    status = getNodeAttr(
-        objPath, LineShapeNode::m_draw_name, data->m_draw_name);
+    status =
+        getNodeAttr(objPath, LineShapeNode::m_draw_name, data->m_draw_name);
     CHECK_MSTATUS(status);
 
     // Colors
@@ -245,14 +234,15 @@ MUserData *LineDrawOverride::prepareForDraw(
     float val = 0.0;
     float alpha = 0.0;
     auto display_status = MHWRender::MGeometryUtilities::displayStatus(objPath);
-    if ((display_status == MHWRender::kLead)
-        || (display_status == MHWRender::kLead)
-        || (display_status == MHWRender::kActive)
-        || (display_status == MHWRender::kHilite)
-        || (display_status == MHWRender::kActiveComponent)) {
+    if ((display_status == MHWRender::kLead) ||
+        (display_status == MHWRender::kLead) ||
+        (display_status == MHWRender::kActive) ||
+        (display_status == MHWRender::kHilite) ||
+        (display_status == MHWRender::kActiveComponent)) {
         // The line is selected/active.
         data->m_active = true;
-        data->m_depth_priority = MHWRender::MRenderItem::sActiveWireDepthPriority;
+        data->m_depth_priority =
+            MHWRender::MRenderItem::sActiveWireDepthPriority;
 
         // Text
         text_color.get(MColor::kHSV, hue, sat, val, alpha);
@@ -280,7 +270,8 @@ MUserData *LineDrawOverride::prepareForDraw(
     } else {
         // The line is not selected.
         data->m_active = false;
-        data->m_depth_priority = MHWRender::MRenderItem::sDormantFilledDepthPriority;
+        data->m_depth_priority =
+            MHWRender::MRenderItem::sDormantFilledDepthPriority;
     }
     data->m_text_color = text_color;
     data->m_point_color = point_color;
@@ -303,7 +294,8 @@ MUserData *LineDrawOverride::prepareForDraw(
                 MPlug plugElement = plug.elementByPhysicalIndex(i, &status);
                 CHECK_MSTATUS(status);
                 if (!plugElement.isNull()) {
-                    status = get_position_from_connected_node(plugElement, x, y, z);
+                    status =
+                        get_position_from_connected_node(plugElement, x, y, z);
                     CHECK_MSTATUS(status);
 
                     point = MPoint(x, y, z);
@@ -325,12 +317,11 @@ MUserData *LineDrawOverride::prepareForDraw(
 }
 
 void LineDrawOverride::addUIDrawables(
-        const MDagPath &/*objPath*/,
-        MHWRender::MUIDrawManager &drawManager,
-        const MHWRender::MFrameContext &/*frameContext*/,
-        const MUserData *userData) {
+    const MDagPath & /*objPath*/, MHWRender::MUIDrawManager &drawManager,
+    const MHWRender::MFrameContext & /*frameContext*/,
+    const MUserData *userData) {
     MStatus status;
-    LineDrawData *data = (LineDrawData *) userData;
+    LineDrawData *data = (LineDrawData *)userData;
     if (!data) {
         return;
     }
@@ -362,22 +353,18 @@ void LineDrawOverride::addUIDrawables(
     MPointArray outer_line_list(num_outer_points);
     auto first_point_index = 0;
     auto last_point_index = num_inner_points - 1;
-    auto dir = MVector(data->m_point_list[first_point_index] - data->m_point_list[last_point_index]);
+    auto dir = MVector(data->m_point_list[first_point_index] -
+                       data->m_point_list[last_point_index]);
     dir.normalize();
     dir *= data->m_outer_scale;
 
     auto temp0 = data->m_point_list[first_point_index];
     auto temp1 = data->m_point_list[last_point_index];
-    MPoint vertex0 = MPoint(
-        temp0.x + dir.x,
-        temp0.y + dir.y,
-        temp0.z + dir.z);
+    MPoint vertex0 = MPoint(temp0.x + dir.x, temp0.y + dir.y, temp0.z + dir.z);
     MPoint vertex1 = data->m_point_list[first_point_index];
     MPoint vertex2 = data->m_point_list[last_point_index];
-    MPoint vertex3 = MPoint(
-        temp1.x + (dir.x * -1.0),
-        temp1.y + (dir.y * -1.0),
-        temp1.z + (dir.z * -1.0));
+    MPoint vertex3 = MPoint(temp1.x + (dir.x * -1.0), temp1.y + (dir.y * -1.0),
+                            temp1.z + (dir.z * -1.0));
 
     outer_line_list.set(vertex0, 0);
     outer_line_list.set(vertex1, 1);
@@ -400,9 +387,8 @@ void LineDrawOverride::addUIDrawables(
         drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
         drawManager.setDepthPriority(data->m_depth_priority);
 
-        drawManager.mesh(
-            MHWRender::MUIDrawManager::kLineStrip,
-            inner_line_list);
+        drawManager.mesh(MHWRender::MUIDrawManager::kLineStrip,
+                         inner_line_list);
 
         drawManager.endDrawInXray();
         drawManager.endDrawable();
@@ -424,9 +410,7 @@ void LineDrawOverride::addUIDrawables(
         drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
         drawManager.setDepthPriority(data->m_depth_priority);
 
-        drawManager.mesh(
-            MHWRender::MUIDrawManager::kLines,
-            outer_line_list);
+        drawManager.mesh(MHWRender::MUIDrawManager::kLines, outer_line_list);
 
         drawManager.endDrawInXray();
         drawManager.endDrawable();
@@ -448,9 +432,8 @@ void LineDrawOverride::addUIDrawables(
         drawManager.setPointSize(static_cast<float>(data->m_point_size));
         drawManager.setDepthPriority(data->m_depth_priority);
 
-        drawManager.mesh(
-            MHWRender::MUIDrawManager::kPoints,
-            data->m_point_list);
+        drawManager.mesh(MHWRender::MUIDrawManager::kPoints,
+                         data->m_point_list);
 
         drawManager.endDrawInXray();
         drawManager.endDrawable();
@@ -477,8 +460,10 @@ void LineDrawOverride::addUIDrawables(
         // - Draw 'max deviation'.
         if (data->m_draw_name && data->m_active) {
             // TODO: Add attribute to multiply the font size.
-            drawManager.setFontSize(MHWRender::MUIDrawManager::kDefaultFontSize);
-            drawManager.text(middle_point, data->m_name, MHWRender::MUIDrawManager::kLeft);
+            drawManager.setFontSize(
+                MHWRender::MUIDrawManager::kDefaultFontSize);
+            drawManager.text(middle_point, data->m_name,
+                             MHWRender::MUIDrawManager::kLeft);
         }
 
         drawManager.endDrawInXray();
@@ -486,4 +471,4 @@ void LineDrawOverride::addUIDrawables(
     }
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

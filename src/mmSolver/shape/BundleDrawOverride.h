@@ -25,19 +25,19 @@
 #include "BundleShapeNode.h"
 
 // Maya
-#include <maya/MString.h>
 #include <maya/MColor.h>
+#include <maya/MEventMessage.h>
 #include <maya/MGlobal.h>
 #include <maya/MPointArray.h>
 #include <maya/MStreamUtils.h>
-#include <maya/MEventMessage.h>
+#include <maya/MString.h>
 
 // Maya Viewport 2.0
-#include <maya/MPxDrawOverride.h>
-#include <maya/MDrawRegistry.h>
-#include <maya/MUserData.h>
 #include <maya/MDrawContext.h>
+#include <maya/MDrawRegistry.h>
 #include <maya/MHWGeometryUtilities.h>
+#include <maya/MPxDrawOverride.h>
+#include <maya/MUserData.h>
 
 // MM Solver
 #include "BundleShapeNode.h"
@@ -48,17 +48,15 @@ namespace mmsolver {
 class BundleDrawData : public MUserData {
 public:
     BundleDrawData()
-            : MUserData(/*deleteAfterUse=*/ true) // let Maya clean up
-            , m_depth_priority(0)
-            , m_line_width(1.0)
-            , m_point_size(1.0)
-            , m_icon_size(1.0)
-            , m_active(false)
-            , m_draw_name(false)
-    {}
+        : MUserData(/*deleteAfterUse=*/true)  // let Maya clean up
+        , m_depth_priority(0)
+        , m_line_width(1.0)
+        , m_point_size(1.0)
+        , m_icon_size(1.0)
+        , m_active(false)
+        , m_draw_name(false) {}
 
-    ~BundleDrawData() override {
-    }
+    ~BundleDrawData() override {}
 
     MString m_name;
     bool m_active;
@@ -84,27 +82,23 @@ public:
 
     MHWRender::DrawAPI supportedDrawAPIs() const override;
 
-    bool isBounded(
-            const MDagPath &objPath,
-            const MDagPath &cameraPath) const override;
+    bool isBounded(const MDagPath &objPath,
+                   const MDagPath &cameraPath) const override;
 
-    MBoundingBox boundingBox(
-            const MDagPath &objPath,
-            const MDagPath &cameraPath) const override;
+    MBoundingBox boundingBox(const MDagPath &objPath,
+                             const MDagPath &cameraPath) const override;
 
-    MUserData *prepareForDraw(
-            const MDagPath &objPath,
-            const MDagPath &cameraPath,
-            const MHWRender::MFrameContext &frameContext,
-            MUserData *oldData) override;
+    MUserData *prepareForDraw(const MDagPath &objPath,
+                              const MDagPath &cameraPath,
+                              const MHWRender::MFrameContext &frameContext,
+                              MUserData *oldData) override;
 
     bool hasUIDrawables() const override { return true; }
 
-    void addUIDrawables(
-            const MDagPath &objPath,
-            MHWRender::MUIDrawManager &drawManager,
-            const MHWRender::MFrameContext &frameContext,
-            const MUserData *userData) override;
+    void addUIDrawables(const MDagPath &objPath,
+                        MHWRender::MUIDrawManager &drawManager,
+                        const MHWRender::MFrameContext &frameContext,
+                        const MUserData *userData) override;
 
     bool traceCallSequence() const override {
         // Return true if internal tracing is desired.
@@ -125,6 +119,6 @@ private:
     MCallbackId m_model_editor_changed_callback_id;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_BUNDLE_DRAW_OVERRIDE_H
+#endif  // MM_BUNDLE_DRAW_OVERRIDE_H

@@ -25,8 +25,8 @@
 // Maya
 #include <maya/MDistance.h>
 #include <maya/MPoint.h>
-#include <maya/MVector.h>
 #include <maya/MTransformationMatrix.h>
+#include <maya/MVector.h>
 
 // Maya Viewport 2.0
 #include <maya/MDrawContext.h>
@@ -37,11 +37,8 @@
 
 namespace mmsolver {
 
-MStatus objectIsBelowCamera(
-    const MDagPath &objPath,
-    const MDagPath &cameraPath,
-    bool &belowCamera
-) {
+MStatus objectIsBelowCamera(const MDagPath &objPath, const MDagPath &cameraPath,
+                            bool &belowCamera) {
     MStatus status = MS::kSuccess;
     belowCamera = false;
 
@@ -65,15 +62,13 @@ MStatus objectIsBelowCamera(
     return status;
 }
 
-MStatus getViewportScaleRatio(
-    const MHWRender::MFrameContext &frameContext,
-    double &out_scale)
-{
+MStatus getViewportScaleRatio(const MHWRender::MFrameContext &frameContext,
+                              double &out_scale) {
     MStatus status = MS::kSuccess;
 
     // Use the camera position.
-    MDoubleArray view_pos = frameContext.getTuple(
-        MFrameContext::kViewPosition, &status);
+    MDoubleArray view_pos =
+        frameContext.getTuple(MFrameContext::kViewPosition, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     MPoint camera_pos(view_pos[0], view_pos[1], view_pos[2]);
 
@@ -95,18 +90,17 @@ MStatus getViewportScaleRatio(
     double width_d = static_cast<double>(width);
     double height_d = static_cast<double>(height);
     double midpoint_y = origin_y_d + (height_d * 0.5);
-    frameContext.viewportToWorld(origin_x_d, midpoint_y, near_point1, far_point1);
+    frameContext.viewportToWorld(origin_x_d, midpoint_y, near_point1,
+                                 far_point1);
     frameContext.viewportToWorld(width_d, midpoint_y, near_point2, far_point2);
 
     // Normalize the scale values.
-    auto one_unit_vector1 = MVector(
-        far_point1.x - camera_pos.x,
-        far_point1.y - camera_pos.y,
-        far_point1.z - camera_pos.z);
-    auto one_unit_vector2 = MVector(
-        far_point2.x - camera_pos.x,
-        far_point2.y - camera_pos.y,
-        far_point2.z - camera_pos.z);
+    auto one_unit_vector1 =
+        MVector(far_point1.x - camera_pos.x, far_point1.y - camera_pos.y,
+                far_point1.z - camera_pos.z);
+    auto one_unit_vector2 =
+        MVector(far_point2.x - camera_pos.x, far_point2.y - camera_pos.y,
+                far_point2.z - camera_pos.z);
     one_unit_vector1.normalize();
     one_unit_vector2.normalize();
 
@@ -115,4 +109,4 @@ MStatus getViewportScaleRatio(
     return status;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

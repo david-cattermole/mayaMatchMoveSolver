@@ -26,26 +26,26 @@
 #include "MMTestCameraMatrixCmd.h"
 
 // STL
-#include <cmath>
 #include <cassert>
+#include <cmath>
 
 // Maya
-#include <maya/MString.h>
-#include <maya/MStringArray.h>
-#include <maya/MMatrix.h>
 #include <maya/MFloatMatrix.h>
+#include <maya/MFnCamera.h>
+#include <maya/MFnDependencyNode.h>
+#include <maya/MMatrix.h>
 #include <maya/MObject.h>
 #include <maya/MPlug.h>
-#include <maya/MFnDependencyNode.h>
-#include <maya/MFnCamera.h>
+#include <maya/MString.h>
+#include <maya/MStringArray.h>
 
 // MM Solver
 #include "mmSolver/adjust/adjust_defines.h"
-#include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/utilities/number_utils.h"
-#include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/number_utils.h"
 
 namespace mmsolver {
 
@@ -55,20 +55,14 @@ MString MMTestCameraMatrixCmd::cmdName() {
     return MString("mmTestCameraMatrix");
 }
 
-void *MMTestCameraMatrixCmd::creator() {
-    return new MMTestCameraMatrixCmd();
-}
+void *MMTestCameraMatrixCmd::creator() { return new MMTestCameraMatrixCmd(); }
 
 /*
  * Tell Maya we have a syntax function.
  */
-bool MMTestCameraMatrixCmd::hasSyntax() const {
-    return true;
-}
+bool MMTestCameraMatrixCmd::hasSyntax() const { return true; }
 
-bool MMTestCameraMatrixCmd::isUndoable() const {
-    return false;
-}
+bool MMTestCameraMatrixCmd::isUndoable() const { return false; }
 
 /*
  * Add flags to the command syntax
@@ -120,21 +114,20 @@ MStatus MMTestCameraMatrixCmd::parseArgs(const MArgList &args) {
     return status;
 }
 
-
 MStatus MMTestCameraMatrixCmd::doIt(const MArgList &args) {
-//
-//  Description:
-//    implements the MEL mmTestCameraMatrix command.
-//
-//  Arguments:
-//    argList - the argument list that was passes to the command from MEL
-//
-//  Return Value:
-//    MS::kSuccess - command succeeded
-//    MS::kFailure - command failed (returning this value will cause the
-//                     MEL script that is being run to terminate unless the
-//                     error is caught using a "catch" statement.
-//
+    //
+    //  Description:
+    //    implements the MEL mmTestCameraMatrix command.
+    //
+    //  Arguments:
+    //    argList - the argument list that was passes to the command from MEL
+    //
+    //  Return Value:
+    //    MS::kSuccess - command succeeded
+    //    MS::kFailure - command failed (returning this value will cause the
+    //                     MEL script that is being run to terminate unless the
+    //                     error is caught using a "catch" statement.
+    //
     MStatus status = MStatus::kSuccess;
     const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     // MMSOLVER_DBG("MMTestCameraMatrixCmd::doIt()");
@@ -170,14 +163,13 @@ MStatus MMTestCameraMatrixCmd::doIt(const MArgList &args) {
 
     // Print Matches
     if (!matches) {
-        for (unsigned int i = 0; i<4; ++i) {
-            for (unsigned int j = 0; j<4; ++j) {
-                MMSOLVER_INFO("[" << i << "]["<< j << "] "
-                         << value(i, j) << " == " << value_maya(i, j)
-                         << " | "
-                         << number::isApproxEqual<double>(value(i, j),
-                                                          value_maya(i, j),
-                                                          tolerance));
+        for (unsigned int i = 0; i < 4; ++i) {
+            for (unsigned int j = 0; j < 4; ++j) {
+                MMSOLVER_INFO("["
+                              << i << "][" << j << "] " << value(i, j)
+                              << " == " << value_maya(i, j) << " | "
+                              << number::isApproxEqual<double>(
+                                     value(i, j), value_maya(i, j), tolerance));
             }
         }
     }
@@ -185,4 +177,4 @@ MStatus MMTestCameraMatrixCmd::doIt(const MArgList &args) {
     return status;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

@@ -23,29 +23,28 @@
 #include "RenderGlobalsNode.h"
 
 // STL
-#include <cstring>
 #include <cmath>
+#include <cstring>
 
 // Maya
-#include <maya/MGlobal.h>
-#include <maya/MStreamUtils.h>
-#include <maya/MPlug.h>
+#include <maya/M3dView.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
-#include <maya/MFnNumericAttribute.h>
 #include <maya/MFnEnumAttribute.h>
+#include <maya/MFnNumericAttribute.h>
 #include <maya/MFnNumericData.h>
+#include <maya/MGlobal.h>
 #include <maya/MMessage.h>
 #include <maya/MNodeMessage.h>
+#include <maya/MPlug.h>
+#include <maya/MStreamUtils.h>
 #include <maya/MViewport2Renderer.h>
-#include <maya/M3dView.h>
 
-#include "mmSolver/nodeTypeIds.h"
 #include "RenderOverride.h"
+#include "mmSolver/nodeTypeIds.h"
 
 namespace mmsolver {
 namespace render {
-
 
 MTypeId RenderGlobalsNode::m_id(MM_RENDER_GLOBALS_TYPE_ID);
 
@@ -57,11 +56,9 @@ MObject RenderGlobalsNode::a_wireframeAlpha;
 MObject RenderGlobalsNode::a_edgeThickness;
 MObject RenderGlobalsNode::a_edgeThreshold;
 
-RenderGlobalsNode::RenderGlobalsNode()
-        : m_attr_change_callback(0) {}
+RenderGlobalsNode::RenderGlobalsNode() : m_attr_change_callback(0) {}
 
 RenderGlobalsNode::~RenderGlobalsNode() {
-
     if (m_attr_change_callback) {
         MMessage::removeCallback(m_attr_change_callback);
     }
@@ -73,9 +70,9 @@ MString RenderGlobalsNode::nodeName() {
 
 void RenderGlobalsNode::postConstructor() {
     MObject obj = thisMObject();
-    if((m_attr_change_callback == 0) && (!obj.isNull())) {
-        m_attr_change_callback = MNodeMessage::addAttributeChangedCallback(
-            obj, attr_change_func);
+    if ((m_attr_change_callback == 0) && (!obj.isNull())) {
+        m_attr_change_callback =
+            MNodeMessage::addAttributeChangedCallback(obj, attr_change_func);
     }
 
     // TODO: When the node is created for the first time, it should
@@ -83,11 +80,9 @@ void RenderGlobalsNode::postConstructor() {
     // node.
 }
 
-
 void RenderGlobalsNode::attr_change_func(MNodeMessage::AttributeMessage msg,
-                                         MPlug &plug,
-                                         MPlug & /*other_plug*/,
-                                         void* /*client_data*/) {
+                                         MPlug &plug, MPlug & /*other_plug*/,
+                                         void * /*client_data*/) {
     MStatus status = MS::kFailure;
     if (msg & MNodeMessage::kAttributeSet) {
         MStreamUtils::stdOutStream()
@@ -96,13 +91,12 @@ void RenderGlobalsNode::attr_change_func(MNodeMessage::AttributeMessage msg,
         return;
     }
     MString plug_name = plug.partialName(
-        /*includeNodeName=*/ false,
-        /*includeNonMandatoryIndices=*/ false,
-        /*includeInstancedIndices=*/ false,
-        /*useAlias=*/ false,
-        /*useFullAttributePath=*/ false,
-        /*useLongNames=*/ true,
-        &status);
+        /*includeNodeName=*/false,
+        /*includeNonMandatoryIndices=*/false,
+        /*includeInstancedIndices=*/false,
+        /*useAlias=*/false,
+        /*useFullAttributePath=*/false,
+        /*useLongNames=*/true, &status);
     if (status != MS::kSuccess) {
         return;
     }
@@ -114,8 +108,7 @@ void RenderGlobalsNode::attr_change_func(MNodeMessage::AttributeMessage msg,
     }
 
     RenderOverride *override_ptr =
-        (RenderOverride *) renderer->findRenderOverride(
-            MM_RENDERER_NAME);
+        (RenderOverride *)renderer->findRenderOverride(MM_RENDERER_NAME);
     if (override_ptr == nullptr) {
         MGlobal::displayError("mmRenderer is not registered.");
         return;
@@ -151,20 +144,17 @@ void RenderGlobalsNode::attr_change_func(MNodeMessage::AttributeMessage msg,
         MGlobal::displayWarning("Failed to find an active 3d view.");
         return;
     }
-    view.refresh(/*all=*/ false, /*force=*/ true);
+    view.refresh(/*all=*/false, /*force=*/true);
     return;
 }
 
-
-MStatus RenderGlobalsNode::compute(const MPlug &/*plug*/,
-                                   MDataBlock &/*data*/) {
+MStatus RenderGlobalsNode::compute(const MPlug & /*plug*/,
+                                   MDataBlock & /*data*/) {
     // This node does not compute any values.
     return MS::kUnknownParameter;
 }
 
-void *RenderGlobalsNode::creator() {
-    return (new RenderGlobalsNode());
-}
+void *RenderGlobalsNode::creator() { return (new RenderGlobalsNode()); }
 
 MStatus RenderGlobalsNode::initialize() {
     MStatus status;
@@ -172,27 +162,25 @@ MStatus RenderGlobalsNode::initialize() {
     MFnEnumAttribute eAttr;
 
     // Render Format; 0=8-bit float, 1=16-bit float, 2=32-bit float
-    a_renderFormat = eAttr.create(
-        "renderFormat", "rndfmt",
-        static_cast<short>(RenderFormat::kRGBA8BitInt),
-        &status);
+    a_renderFormat =
+        eAttr.create("renderFormat", "rndfmt",
+                     static_cast<short>(RenderFormat::kRGBA8BitInt), &status);
     CHECK_MSTATUS(status);
-    CHECK_MSTATUS(eAttr.addField(
-                      "RGBA 8-Bit (integer)",
-                      static_cast<short>(RenderFormat::kRGBA8BitInt)));
-    CHECK_MSTATUS(eAttr.addField(
-                      "RGBA 16-Bit (float)",
-                      static_cast<short>(RenderFormat::kRGBA16BitFloat)));
-    CHECK_MSTATUS(eAttr.addField(
-                      "RGBA 32-Bit (float)",
-                      static_cast<short>(RenderFormat::kRGBA32BitFloat)));
+    CHECK_MSTATUS(
+        eAttr.addField("RGBA 8-Bit (integer)",
+                       static_cast<short>(RenderFormat::kRGBA8BitInt)));
+    CHECK_MSTATUS(
+        eAttr.addField("RGBA 16-Bit (float)",
+                       static_cast<short>(RenderFormat::kRGBA16BitFloat)));
+    CHECK_MSTATUS(
+        eAttr.addField("RGBA 32-Bit (float)",
+                       static_cast<short>(RenderFormat::kRGBA32BitFloat)));
     CHECK_MSTATUS(eAttr.setStorable(true));
     CHECK_MSTATUS(eAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_renderFormat));
 
     // Render Format; 0=8-bit float, 1=16-bit float, 2=32-bit float
-    a_mode = eAttr.create(
-        "mode", "md", 0, &status);
+    a_mode = eAttr.create("mode", "md", 0, &status);
     CHECK_MSTATUS(status);
     CHECK_MSTATUS(eAttr.addField("Zero", 0));
     CHECK_MSTATUS(eAttr.addField("One", 1));
@@ -206,9 +194,8 @@ MStatus RenderGlobalsNode::initialize() {
     // Multi-Sample Count
     auto sample_min = 1;
     auto sample_max = 128;
-    a_multiSampleCount = nAttr.create(
-        "multiSampleCount", "mssmpct",
-        MFnNumericData::kInt, 1);
+    a_multiSampleCount =
+        nAttr.create("multiSampleCount", "mssmpct", MFnNumericData::kInt, 1);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(sample_min));
@@ -218,9 +205,9 @@ MStatus RenderGlobalsNode::initialize() {
     // Wireframe Alpha
     auto alpha_min = 0.0;
     auto alpha_max = 1.0;
-    a_wireframeAlpha = nAttr.create(
-        "wireframeAlpha", "wralp",
-        MFnNumericData::kDouble, kWireframeAlphaDefault);
+    a_wireframeAlpha =
+        nAttr.create("wireframeAlpha", "wralp", MFnNumericData::kDouble,
+                     kWireframeAlphaDefault);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(alpha_min));
@@ -230,9 +217,9 @@ MStatus RenderGlobalsNode::initialize() {
     // Edge Thickness
     auto thickness_min = 0.0;
     // auto thickness_max = 1.0;
-    a_edgeThickness = nAttr.create(
-        "edgeThickness", "edgthk",
-        MFnNumericData::kDouble, kEdgeThicknessDefault);
+    a_edgeThickness =
+        nAttr.create("edgeThickness", "edgthk", MFnNumericData::kDouble,
+                     kEdgeThicknessDefault);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(thickness_min));
@@ -242,9 +229,9 @@ MStatus RenderGlobalsNode::initialize() {
     // Edge Threshold
     auto threshold_min = 0.0;
     auto threshold_max = 1.0;
-    a_edgeThreshold = nAttr.create(
-        "edgeThreshold", "edgthd",
-        MFnNumericData::kDouble, kEdgeThresholdDefault);
+    a_edgeThreshold =
+        nAttr.create("edgeThreshold", "edgthd", MFnNumericData::kDouble,
+                     kEdgeThresholdDefault);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(threshold_min));
@@ -254,5 +241,5 @@ MStatus RenderGlobalsNode::initialize() {
     return MS::kSuccess;
 }
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver

@@ -19,7 +19,6 @@
  *
  */
 
-
 #include "mmcamera.h"
 
 // STL
@@ -30,19 +29,13 @@
 
 namespace mmcamera {
 
-double
-angleOfViewFromFocalLengthFactor(
-        double focalLengthFactor)
-{
+double angleOfViewFromFocalLengthFactor(double focalLengthFactor) {
     return 2.0 * std::atan(1.0 / focalLengthFactor);
 }
 
-double
-focalLengthFromAngleOfView(
-        const double angleOfView_radians,
-        const double filmBack_mm)
-{
+double focalLengthFromAngleOfView(const double angleOfView_radians,
+                                  const double filmBack_mm) {
     return (0.5 * filmBack_mm) / std::tan(angleOfView_radians * 0.5);
 }
 
-} // namespace mmcamera
+}  // namespace mmcamera

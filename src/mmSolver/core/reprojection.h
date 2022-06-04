@@ -23,59 +23,43 @@
 #ifndef MM_SOLVER_CORE_REPROJECTION_H
 #define MM_SOLVER_CORE_REPROJECTION_H
 
-
 // Maya
 #include <maya/MMatrix.h>
 #include <maya/MStatus.h>
 
+MStatus reprojection(
+    const MMatrix tfmMatrix, const MMatrix camMatrix,
 
-MStatus reprojection(const MMatrix tfmMatrix,
-                     const MMatrix camMatrix,
+    // Camera
+    const double focalLength, const double horizontalFilmAperture,
+    const double verticalFilmAperture, const double horizontalFilmOffset,
+    const double verticalFilmOffset, const short filmFit,
+    const double nearClipPlane, const double farClipPlane,
+    const double cameraScale,
 
-                     // Camera
-                     const double focalLength,
-                     const double horizontalFilmAperture,
-                     const double verticalFilmAperture,
-                     const double horizontalFilmOffset,
-                     const double verticalFilmOffset,
-                     const short filmFit,
-                     const double nearClipPlane,
-                     const double farClipPlane,
-                     const double cameraScale,
+    // Image
+    const double imageWidth, const double imageHeight,
 
-                     // Image
-                     const double imageWidth,
-                     const double imageHeight,
+    // Manipulation
+    const MMatrix applyMatrix, const bool overrideScreenX,
+    const bool overrideScreenY, const bool overrideScreenZ,
+    const double screenX, const double screenY, const double screenZ,
+    const double depthScale,
 
-                     // Manipulation
-                     const MMatrix applyMatrix,
-                     const bool overrideScreenX,
-                     const bool overrideScreenY,
-                     const bool overrideScreenZ,
-                     const double screenX,
-                     const double screenY,
-                     const double screenZ,
-                     const double depthScale,
+    // Outputs
+    double &outCoordX, double &outCoordY, double &outNormCoordX,
+    double &outNormCoordY, double &outMarkerCoordX, double &outMarkerCoordY,
+    double &outMarkerCoord, double &outPixelX, double &outPixelY,
+    bool &outInsideFrustum, double &outPointX, double &outPointY,
+    double &outPointZ, double &outWorldPointX, double &outWorldPointY,
+    double &outWorldPointZ, MMatrix &outMatrix, MMatrix &outWorldMatrix,
+    MMatrix &outCameraProjectionMatrix,
+    MMatrix &outInverseCameraProjectionMatrix,
+    MMatrix &outWorldCameraProjectionMatrix,
+    MMatrix &outWorldInverseCameraProjectionMatrix, double &outHorizontalPan,
+    double &outVerticalPan);
 
-                     // Outputs
-                     double &outCoordX, double &outCoordY,
-                     double &outNormCoordX, double &outNormCoordY,
-                     double &outMarkerCoordX, double &outMarkerCoordY, double &outMarkerCoord,
-                     double &outPixelX, double &outPixelY,
-                     bool &outInsideFrustum,
-                     double &outPointX, double &outPointY, double &outPointZ,
-                     double &outWorldPointX, double &outWorldPointY, double &outWorldPointZ,
-                     MMatrix &outMatrix,
-                     MMatrix &outWorldMatrix,
-                     MMatrix &outCameraProjectionMatrix,
-                     MMatrix &outInverseCameraProjectionMatrix,
-                     MMatrix &outWorldCameraProjectionMatrix,
-                     MMatrix &outWorldInverseCameraProjectionMatrix,
-                     double &outHorizontalPan,
-                     double &outVerticalPan);
-
-MStatus calculateCameraFacingRatio(MMatrix tfmMatrix,
-                                   MMatrix camMatrix,
+MStatus calculateCameraFacingRatio(MMatrix tfmMatrix, MMatrix camMatrix,
                                    double &outCameraDirRatio);
 
-#endif // MM_SOLVER_CORE_REPROJECTION_H
+#endif  // MM_SOLVER_CORE_REPROJECTION_H

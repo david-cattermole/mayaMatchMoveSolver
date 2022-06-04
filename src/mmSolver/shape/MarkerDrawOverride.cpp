@@ -22,25 +22,25 @@
 #include "MarkerDrawOverride.h"
 
 // Maya
-#include <maya/MString.h>
-#include <maya/MPlug.h>
 #include <maya/MColor.h>
 #include <maya/MDistance.h>
 #include <maya/MEventMessage.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MPlug.h>
 #include <maya/MPoint.h>
+#include <maya/MString.h>
 #include <maya/MTransformationMatrix.h>
 
 // Maya Viewport 2.0
-#include <maya/MPxDrawOverride.h>
-#include <maya/MUserData.h>
 #include <maya/MDrawContext.h>
 #include <maya/MHWGeometryUtilities.h>
+#include <maya/MPxDrawOverride.h>
+#include <maya/MUserData.h>
 
 // MM Solver
-#include "mmSolver/mayahelper/maya_utils.h"
 #include "MarkerConstants.h"
 #include "ShapeDrawUtils.h"
+#include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
 
@@ -53,15 +53,16 @@ namespace mmsolver {
 // MPxDrawOverride constructor is set to nullptr in order to achieve
 // better performance.
 MarkerDrawOverride::MarkerDrawOverride(const MObject &obj)
-        : MHWRender::MPxDrawOverride(obj,
-                                     /*callback=*/ nullptr,
-                                     /*isAlwaysDirty=*/ true) {
+    : MHWRender::MPxDrawOverride(obj,
+                                 /*callback=*/nullptr,
+                                 /*isAlwaysDirty=*/true) {
     m_model_editor_changed_callback_id = MEventMessage::addEventCallback(
         "modelEditorChanged", on_model_editor_changed_func, this);
 
     MStatus status;
     MFnDependencyNode node(obj, &status);
-    m_node = status ? dynamic_cast<MarkerShapeNode *>(node.userNode()) : nullptr;
+    m_node =
+        status ? dynamic_cast<MarkerShapeNode *>(node.userNode()) : nullptr;
 }
 
 MarkerDrawOverride::~MarkerDrawOverride() {
@@ -78,8 +79,7 @@ void MarkerDrawOverride::on_model_editor_changed_func(void *clientData) {
     // switch among wireframe and shaded.
     MarkerDrawOverride *ovr = static_cast<MarkerDrawOverride *>(clientData);
     if (ovr && ovr->m_node) {
-        MHWRender::MRenderer::setGeometryDrawDirty(
-                ovr->m_node->thisMObject());
+        MHWRender::MRenderer::setGeometryDrawDirty(ovr->m_node->thisMObject());
     }
 }
 
@@ -94,13 +94,13 @@ bool MarkerDrawOverride::isBounded(const MDagPath & /*objPath*/,
 }
 
 MBoundingBox MarkerDrawOverride::boundingBox(
-        const MDagPath &objPath,
-        const MDagPath &/*cameraPath*/) const {
+    const MDagPath &objPath, const MDagPath & /*cameraPath*/) const {
     MPoint corner1(-1.0, -1.0, -1.0);
     MPoint corner2(1.0, 1.0, 1.0);
 
     double icon_size = 0.0;
-    MStatus status = getNodeAttr(objPath, MarkerShapeNode::m_icon_size, icon_size);
+    MStatus status =
+        getNodeAttr(objPath, MarkerShapeNode::m_icon_size, icon_size);
 
     corner1 = corner1 * icon_size;
     corner2 = corner2 * icon_size;
@@ -109,10 +109,8 @@ MBoundingBox MarkerDrawOverride::boundingBox(
 
 // Called by Maya each time the object needs to be drawn.
 MUserData *MarkerDrawOverride::prepareForDraw(
-        const MDagPath &objPath,
-        const MDagPath &cameraPath,
-        const MHWRender::MFrameContext &frameContext,
-        MUserData *oldData) {
+    const MDagPath &objPath, const MDagPath &cameraPath,
+    const MHWRender::MFrameContext &frameContext, MUserData *oldData) {
     MarkerDrawData *data = dynamic_cast<MarkerDrawData *>(oldData);
     if (!data) {
         data = new MarkerDrawData();
@@ -126,15 +124,14 @@ MUserData *MarkerDrawOverride::prepareForDraw(
     data->m_name = dependNodeFn.name();
 
     bool showInCameraOnly = false;
-    status = getNodeAttr(
-        objPath,
-        MarkerShapeNode::m_show_in_camera_only,
-        showInCameraOnly);
+    status = getNodeAttr(objPath, MarkerShapeNode::m_show_in_camera_only,
+                         showInCameraOnly);
     CHECK_MSTATUS(status);
 
     data->m_visible = true;
     if (showInCameraOnly) {
-        status = objectIsBelowCamera(transformPath, cameraPath, data->m_visible);
+        status =
+            objectIsBelowCamera(transformPath, cameraPath, data->m_visible);
         CHECK_MSTATUS(status);
     }
 
@@ -143,20 +140,22 @@ MUserData *MarkerDrawOverride::prepareForDraw(
     // Detect if the translateX/Y attributes are locked and if so, add
     // a 'lock' icon, and change the marker shape.
     data->m_locked = false;
-    MPlug plug_tx = dependNodeFn.findPlug(
-        "translateX", /*wantNetworkedPlug=*/ true, &status);
+    MPlug plug_tx = dependNodeFn.findPlug("translateX",
+                                          /*wantNetworkedPlug=*/true, &status);
     CHECK_MSTATUS(status);
-    MPlug plug_ty = dependNodeFn.findPlug(
-        "translateY", /*wantNetworkedPlug=*/ true, &status);
+    MPlug plug_ty = dependNodeFn.findPlug("translateY",
+                                          /*wantNetworkedPlug=*/true, &status);
     CHECK_MSTATUS(status);
     if (!plug_tx.isNull() && !plug_ty.isNull()) {
         bool checkParents = false;
         bool checkChildren = false;
-        bool tx_can_change = plug_tx.isFreeToChange(
-            checkParents, checkChildren, &status) == MPlug::kFreeToChange;
+        bool tx_can_change =
+            plug_tx.isFreeToChange(checkParents, checkChildren, &status) ==
+            MPlug::kFreeToChange;
         CHECK_MSTATUS(status);
-        bool ty_can_change = plug_ty.isFreeToChange(
-            checkParents, checkChildren, &status) == MPlug::kFreeToChange;
+        bool ty_can_change =
+            plug_ty.isFreeToChange(checkParents, checkChildren, &status) ==
+            MPlug::kFreeToChange;
         CHECK_MSTATUS(status);
         if (!tx_can_change || !ty_can_change) {
             data->m_locked = true;
@@ -173,30 +172,26 @@ MUserData *MarkerDrawOverride::prepareForDraw(
     data->m_icon_size = icon_size * pixel_size_x;
 
     MColor user_color(0.0f, 0.0f, 0.0f, 0.0f);
-    status = getNodeAttr(
-        objPath, MarkerShapeNode::m_color, user_color);
+    status = getNodeAttr(objPath, MarkerShapeNode::m_color, user_color);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, MarkerShapeNode::m_alpha, user_color[3]);
+    status = getNodeAttr(objPath, MarkerShapeNode::m_alpha, user_color[3]);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, MarkerShapeNode::m_line_width, data->m_line_width);
+    status =
+        getNodeAttr(objPath, MarkerShapeNode::m_line_width, data->m_line_width);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, MarkerShapeNode::m_point_size, data->m_point_size);
+    status =
+        getNodeAttr(objPath, MarkerShapeNode::m_point_size, data->m_point_size);
     CHECK_MSTATUS(status);
 
-    status = getNodeAttr(
-        objPath, MarkerShapeNode::m_draw_name, data->m_draw_name);
+    status =
+        getNodeAttr(objPath, MarkerShapeNode::m_draw_name, data->m_draw_name);
     CHECK_MSTATUS(status);
 
     // The cross icon
     data->m_cross_line_list.clear();
     for (int i = 0; i < shape_a_points_count; i++) {
         data->m_cross_line_list.append(
-            shape_a_points[i][0],
-            shape_a_points[i][1],
-            shape_a_points[i][2]);
+            shape_a_points[i][0], shape_a_points[i][1], shape_a_points[i][2]);
     }
 
     data->m_cross_line_index_list.clear();
@@ -210,10 +205,9 @@ MUserData *MarkerDrawOverride::prepareForDraw(
     if (!data->m_locked) {
         // Use unlocked icon.
         for (int i = 0; i < shape_b_points_count; i++) {
-            data->m_box_line_list.append(
-                shape_b_points[i][0],
-                shape_b_points[i][1],
-                shape_b_points[i][2]);
+            data->m_box_line_list.append(shape_b_points[i][0],
+                                         shape_b_points[i][1],
+                                         shape_b_points[i][2]);
         }
         for (int i = 0; i < shape_b_line_indexes_count; i++) {
             data->m_box_line_index_list.append(shape_b_line_indexes[i][0]);
@@ -226,14 +220,15 @@ MUserData *MarkerDrawOverride::prepareForDraw(
     float val = 0.0;
     float alpha = 0.0;
     auto display_status = MHWRender::MGeometryUtilities::displayStatus(objPath);
-    if ((display_status == MHWRender::kLead)
-        || (display_status == MHWRender::kLead)
-        || (display_status == MHWRender::kActive)
-        || (display_status == MHWRender::kHilite)
-        || (display_status == MHWRender::kActiveComponent)) {
+    if ((display_status == MHWRender::kLead) ||
+        (display_status == MHWRender::kLead) ||
+        (display_status == MHWRender::kActive) ||
+        (display_status == MHWRender::kHilite) ||
+        (display_status == MHWRender::kActiveComponent)) {
         // The marker is selected/active.
         data->m_active = true;
-        data->m_depth_priority = MHWRender::MRenderItem::sActiveWireDepthPriority;
+        data->m_depth_priority =
+            MHWRender::MRenderItem::sActiveWireDepthPriority;
         user_color.get(MColor::kHSV, hue, sat, val, alpha);
         sat *= 0.95f;
         val *= 1.05f;
@@ -241,7 +236,8 @@ MUserData *MarkerDrawOverride::prepareForDraw(
     } else {
         // The marker is not selected.
         data->m_active = false;
-        data->m_depth_priority = MHWRender::MRenderItem::sDormantFilledDepthPriority;
+        data->m_depth_priority =
+            MHWRender::MRenderItem::sDormantFilledDepthPriority;
     }
     data->m_color = user_color;
 
@@ -249,12 +245,10 @@ MUserData *MarkerDrawOverride::prepareForDraw(
 }
 
 void MarkerDrawOverride::addUIDrawables(
-        const MDagPath &objPath,
-        MHWRender::MUIDrawManager &drawManager,
-        const MHWRender::MFrameContext &frameContext,
-        const MUserData *userData) {
+    const MDagPath &objPath, MHWRender::MUIDrawManager &drawManager,
+    const MHWRender::MFrameContext &frameContext, const MUserData *userData) {
     MStatus status;
-    MarkerDrawData *data = (MarkerDrawData *) userData;
+    MarkerDrawData *data = (MarkerDrawData *)userData;
     if (!data) {
         return;
     }
@@ -284,20 +278,14 @@ void MarkerDrawOverride::addUIDrawables(
     MPointArray cross_line_list(data->m_cross_line_list.length());
     for (uint32_t i = 0; i < data->m_cross_line_list.length(); i++) {
         MPoint orig = data->m_cross_line_list[i];
-        MPoint pnt = MPoint(
-            orig.x * scale,
-            orig.y * scale,
-            orig.z * scale);
+        MPoint pnt = MPoint(orig.x * scale, orig.y * scale, orig.z * scale);
         cross_line_list.set(pnt * obj_matrix, i);
     }
 
     MPointArray box_line_list(data->m_box_line_list.length());
     for (uint32_t i = 0; i < data->m_box_line_list.length(); i++) {
         MPoint orig = data->m_box_line_list[i];
-        MPoint pnt = MPoint(
-            orig.x * scale,
-            orig.y * scale,
-            orig.z * scale);
+        MPoint pnt = MPoint(orig.x * scale, orig.y * scale, orig.z * scale);
         box_line_list.set(pnt * obj_matrix, i);
     }
 
@@ -318,24 +306,14 @@ void MarkerDrawOverride::addUIDrawables(
     drawManager.setDepthPriority(data->m_depth_priority);
     // Draw point directly in the center of the object transform.
     MPointArray point_list(1);
-    drawManager.mesh(
-        MHWRender::MUIDrawManager::kPoints,
-        point_list);
+    drawManager.mesh(MHWRender::MUIDrawManager::kPoints, point_list);
     // Draw cross
-    drawManager.mesh(
-        MHWRender::MUIDrawManager::kLines,
-        cross_line_list,
-        nullptr,
-        nullptr,
-        &data->m_cross_line_index_list);
+    drawManager.mesh(MHWRender::MUIDrawManager::kLines, cross_line_list,
+                     nullptr, nullptr, &data->m_cross_line_index_list);
     // Draw box.
     if (!data->m_locked) {
-        drawManager.mesh(
-            MHWRender::MUIDrawManager::kLines,
-            box_line_list,
-            nullptr,
-            nullptr,
-            &data->m_box_line_index_list);
+        drawManager.mesh(MHWRender::MUIDrawManager::kLines, box_line_list,
+                         nullptr, nullptr, &data->m_box_line_index_list);
     }
     drawManager.endDrawInXray();
 
@@ -357,4 +335,4 @@ void MarkerDrawOverride::addUIDrawables(
     drawManager.endDrawable();
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

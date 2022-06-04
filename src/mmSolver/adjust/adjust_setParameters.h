@@ -21,16 +21,12 @@
  * effect.
  */
 
-
 #ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_SET_PARAMETERS_H
 #define MM_SOLVER_CORE_BUNDLE_ADJUST_SET_PARAMETERS_H
 
 #include "adjust_data.h"
 
-MStatus
-setParameters(
-        const int numberOfParameters,
-        const double *parameters,
-        SolverData *ud);
+MStatus setParameters(const int numberOfParameters, const double *parameters,
+                      SolverData *ud);
 
-#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_SET_PARAMETERS_H
+#endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_SET_PARAMETERS_H

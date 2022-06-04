@@ -21,7 +21,4 @@
 
 #include "mmhash.h"
 
-namespace mmhash {
-
-} // namespace mmhash
-
+namespace mmhash {}  // namespace mmhash

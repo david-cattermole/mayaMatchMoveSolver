@@ -50,13 +50,8 @@ const float cross_shape_points[][3] = {
 const int cross_shape_points_count = 2 * 6;
 
 const unsigned int cross_shape_line_indexes[][2] = {
-    {0, 1},
-    {2, 3},
-    {4, 5},
-    {6, 7},
-    {8, 9},
-    {10, 11},
+    {0, 1}, {2, 3}, {4, 5}, {6, 7}, {8, 9}, {10, 11},
 };
 const int cross_shape_line_indexes_count = 6;
 
-} // namespace mmsolver
+}  // namespace mmsolver

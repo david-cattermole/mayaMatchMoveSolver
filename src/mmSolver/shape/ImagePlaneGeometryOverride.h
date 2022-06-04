@@ -23,19 +23,19 @@
 #define MM_IMAGE_PLANE_GEOMETRY_OVERRIDE_H
 
 // Maya
-#include <maya/MString.h>
 #include <maya/MColor.h>
+#include <maya/MEventMessage.h>
 #include <maya/MGlobal.h>
 #include <maya/MPointArray.h>
 #include <maya/MStreamUtils.h>
-#include <maya/MEventMessage.h>
+#include <maya/MString.h>
 
 // Maya Viewport 2.0
-#include <maya/MPxGeometryOverride.h>
-#include <maya/MDrawRegistry.h>
-#include <maya/MUserData.h>
 #include <maya/MDrawContext.h>
+#include <maya/MDrawRegistry.h>
 #include <maya/MHWGeometryUtilities.h>
+#include <maya/MPxGeometryOverride.h>
+#include <maya/MUserData.h>
 
 // MM Solver
 #include "ImagePlaneShapeNode.h"
@@ -51,26 +51,21 @@ public:
 
     ~ImagePlaneGeometryOverride() override;
 
-    MHWRender::DrawAPI
-    supportedDrawAPIs() const override;
+    MHWRender::DrawAPI supportedDrawAPIs() const override;
 
     bool hasUIDrawables() const override;
 
     void updateDG() override;
 
-    void updateRenderItems(
-        const MDagPath &path,
-        MRenderItemList &list) override;
+    void updateRenderItems(const MDagPath &path,
+                           MRenderItemList &list) override;
 
-    void addUIDrawables(
-        const MDagPath &path,
-        MUIDrawManager &drawManager,
-        const MFrameContext &frameContext) override;
+    void addUIDrawables(const MDagPath &path, MUIDrawManager &drawManager,
+                        const MFrameContext &frameContext) override;
 
-    void populateGeometry(
-        const MGeometryRequirements &requirements,
-        const MRenderItemList &renderItems,
-        MGeometry &data) override;
+    void populateGeometry(const MGeometryRequirements &requirements,
+                          const MRenderItemList &renderItems,
+                          MGeometry &data) override;
 
     void cleanUp() override;
 
@@ -115,6 +110,6 @@ protected:
     MCallbackId m_model_editor_changed_callback_id;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_IMAGE_PLANE_GEOMETRY_OVERRIDE_H
+#endif  // MM_IMAGE_PLANE_GEOMETRY_OVERRIDE_H

@@ -24,13 +24,11 @@
 #ifndef MM_CAMERA_CALIBRATION_NODE_H
 #define MM_CAMERA_CALIBRATION_NODE_H
 
-#include <maya/MPxNode.h>
-
-#include <maya/MString.h>
-#include <maya/MObject.h>
-#include <maya/MTime.h>
-
 #include <maya/MFnDependencyNode.h>
+#include <maya/MObject.h>
+#include <maya/MPxNode.h>
+#include <maya/MString.h>
+#include <maya/MTime.h>
 #include <maya/MTypeId.h>
 
 namespace mmsolver {
@@ -53,7 +51,6 @@ enum class CalibrationMode {
     // 2 point perspective (rectangle)
     TwoVanishingPoints = 3,
 };
-
 
 class MMCameraCalibrateNode : public MPxNode {
 public:
@@ -153,6 +150,6 @@ public:
     static MObject a_outVanishingPointBY;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_CAMERA_CALIBRATION_NODE_H
+#endif  // MM_CAMERA_CALIBRATION_NODE_H

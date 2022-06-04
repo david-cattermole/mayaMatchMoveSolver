@@ -23,66 +23,47 @@
 #include "MMLensData.h"
 
 // MM Solver
-#include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/lens/lens_model.h"
+#include "mmSolver/nodeTypeIds.h"
 
 namespace mmsolver {
 
 const MTypeId MMLensData::m_id(MM_LENS_DATA_TYPE_ID);
 const MString MMLensData::m_typeName(MM_LENS_DATA_TYPE_NAME);
 
+void* MMLensData::creator() { return new MMLensData; }
 
-void* MMLensData::creator() {
-    return new MMLensData;
-}
-
-MMLensData::MMLensData()
-    : m_value(nullptr), MPxData() {
-}
+MMLensData::MMLensData() : m_value(nullptr), MPxData() {}
 
 MMLensData::~MMLensData() {}
 
-std::shared_ptr<LensModel> MMLensData::getValue() const {
-    return m_value;
-}
+std::shared_ptr<LensModel> MMLensData::getValue() const { return m_value; }
 
-void MMLensData::setValue(std::shared_ptr<LensModel> value) {
-    m_value = value;
-}
+void MMLensData::setValue(std::shared_ptr<LensModel> value) { m_value = value; }
 
 void MMLensData::copy(const MPxData& other) {
     m_value = ((const MMLensData&)other).m_value;
 }
 
-MTypeId MMLensData::typeId() const {
-    return MMLensData::m_id;
-}
+MTypeId MMLensData::typeId() const { return MMLensData::m_id; }
 
 // Function required by base-class.
-MString MMLensData::name() const {
-    return MMLensData::m_typeName;
-}
+MString MMLensData::name() const { return MMLensData::m_typeName; }
 
 // This is static, so to be called by plug-in initlaiize functions.
-MString MMLensData::typeName() {
-    return MString(MM_LENS_DATA_TYPE_NAME);
-}
+MString MMLensData::typeName() { return MString(MM_LENS_DATA_TYPE_NAME); }
 
 MStatus MMLensData::readASCII(const MArgList& /*args*/,
                               unsigned& /*lastParsedElement*/) {
     return MS::kSuccess;
 }
 
-MStatus MMLensData::writeASCII(ostream& /*out*/) {
-    return MS::kSuccess;
-}
+MStatus MMLensData::writeASCII(ostream& /*out*/) { return MS::kSuccess; }
 
 MStatus MMLensData::readBinary(istream& /*in*/, unsigned) {
     return MS::kSuccess;
 }
 
-MStatus MMLensData::writeBinary(ostream& /*out*/) {
-    return MS::kSuccess;
-}
+MStatus MMLensData::writeBinary(ostream& /*out*/) { return MS::kSuccess; }
 
-} // namespace mmsolver
+}  // namespace mmsolver

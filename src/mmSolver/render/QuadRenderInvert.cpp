@@ -21,8 +21,8 @@
 
 #include "QuadRenderInvert.h"
 
-#include <maya/MStreamUtils.h>
 #include <maya/MShaderManager.h>
+#include <maya/MStreamUtils.h>
 
 #include "constants.h"
 
@@ -34,10 +34,9 @@ namespace render {
 // Reads from 'auxiliary' Target, and writes to 'main' Target.
 //
 QuadRenderInvert::QuadRenderInvert(const MString &name)
-        : QuadRenderBase(name)
-        , m_shader_instance(nullptr)
-        , m_target_index_input(0) {
-}
+    : QuadRenderBase(name)
+    , m_shader_instance(nullptr)
+    , m_target_index_input(0) {}
 
 QuadRenderInvert::~QuadRenderInvert() {
     // Release all shaders.
@@ -59,8 +58,8 @@ QuadRenderInvert::~QuadRenderInvert() {
 // Determine the targets to be used.
 //
 // Called by Maya.
-MHWRender::MRenderTarget *const *
-QuadRenderInvert::targetOverrideList(unsigned int &listSize) {
+MHWRender::MRenderTarget *const *QuadRenderInvert::targetOverrideList(
+    unsigned int &listSize) {
     if (m_targets && (m_target_count > 0)) {
         listSize = m_target_count;
         return &m_targets[m_target_index];
@@ -71,15 +70,15 @@ QuadRenderInvert::targetOverrideList(unsigned int &listSize) {
 
 // Maya calls this method to know what shader should be used for this
 // quad render operation.
-const MHWRender::MShaderInstance *
-QuadRenderInvert::shader() {
+const MHWRender::MShaderInstance *QuadRenderInvert::shader() {
     // Compile shader
     if (!m_shader_instance) {
         MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
         if (!renderer) {
             return nullptr;
         }
-        const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+        const MHWRender::MShaderManager *shaderMgr =
+            renderer->getShaderManager();
         if (!shaderMgr) {
             return nullptr;
         }
@@ -88,8 +87,7 @@ QuadRenderInvert::shader() {
         MString file_name = "Invert";
         MString shader_technique = "";
         m_shader_instance = shaderMgr->getEffectsFileShader(
-            file_name.asChar(),
-            shader_technique.asChar());
+            file_name.asChar(), shader_technique.asChar());
     }
 
     // Set default parameters
@@ -104,13 +102,13 @@ QuadRenderInvert::shader() {
                 MStreamUtils::stdOutStream()
                     << "QuadRenderInvert: Assign texture1 to shader...\n";
                 assignment1.target = target1;
-                CHECK_MSTATUS(m_shader_instance->setParameter(
-                                  "gInputTex", assignment1));
+                CHECK_MSTATUS(
+                    m_shader_instance->setParameter("gInputTex", assignment1));
             }
         }
     }
     return m_shader_instance;
 }
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver

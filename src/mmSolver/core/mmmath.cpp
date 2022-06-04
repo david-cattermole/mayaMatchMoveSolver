@@ -38,42 +38,31 @@
 
 namespace mmmath {
 
-
 // Return 'min_value' to 'max_value' linearly, for a 'mix' value
 // between 0.0 and 1.0.
-float
-lerp(const float min_value, const float max_value, const float mix) {
-  return ((1 - mix) * min_value) + (mix * max_value);
+float lerp(const float min_value, const float max_value, const float mix) {
+    return ((1 - mix) * min_value) + (mix * max_value);
 }
 
-double
-lerp(const double min_value, const double max_value, const double mix) {
-  return ((1 - mix) * min_value) + (mix * max_value);
+double lerp(const double min_value, const double max_value, const double mix) {
+    return ((1 - mix) * min_value) + (mix * max_value);
 }
 
-double
-length(mmdata::Point2D a)
-{
+double length(mmdata::Point2D a) {
     return std::sqrt(a.x_ * a.x_ + a.y_ * a.y_);
 }
 
-double
-length(mmdata::Vector3D a)
-{
+double length(mmdata::Vector3D a) {
     return std::sqrt(a.x_ * a.x_ + a.y_ * a.y_ + a.z_ * a.z_);
 }
 
-double
-distance(mmdata::Point2D a, mmdata::Point2D b)
-{
+double distance(mmdata::Point2D a, mmdata::Point2D b) {
     auto dx = a.x_ - b.x_;
     auto dy = a.y_ - b.y_;
     return std::sqrt(dx * dx + dy * dy);
 }
 
-double
-distance(mmdata::Vector3D a, mmdata::Vector3D b)
-{
+double distance(mmdata::Vector3D a, mmdata::Vector3D b) {
     auto dx = a.x_ - b.x_;
     auto dy = a.y_ - b.y_;
     auto dz = a.z_ - b.z_;
@@ -81,9 +70,7 @@ distance(mmdata::Vector3D a, mmdata::Vector3D b)
 }
 
 // https://www.euclideanspace.com/maths/vectors/normals/index.htm
-mmdata::Point2D
-normalize(mmdata::Point2D vector)
-{
+mmdata::Point2D normalize(mmdata::Point2D vector) {
     auto mag = mmmath::length(vector);
     // Avoid dividing by zero.
     if (mag == 0.0) {
@@ -93,9 +80,7 @@ normalize(mmdata::Point2D vector)
 }
 
 // https://www.euclideanspace.com/maths/vectors/normals/index.htm
-mmdata::Vector3D
-normalize(mmdata::Vector3D vector)
-{
+mmdata::Vector3D normalize(mmdata::Vector3D vector) {
     auto mag = mmmath::length(vector);
     // Avoid dividing by zero.
     if (mag == 0.0) {
@@ -104,40 +89,26 @@ normalize(mmdata::Vector3D vector)
     return mmdata::Vector3D(vector.x_ / mag, vector.y_ / mag, vector.z_ / mag);
 }
 
-mmdata::Point2D
-subtract(mmdata::Point2D a, mmdata::Point2D b)
-{
-    return mmdata::Point2D(
-        a.x_ - b.x_,
-        a.y_ - b.y_);
+mmdata::Point2D subtract(mmdata::Point2D a, mmdata::Point2D b) {
+    return mmdata::Point2D(a.x_ - b.x_, a.y_ - b.y_);
 }
 
-double
-dot(mmdata::Point2D a, mmdata::Point2D b)
-{
+double dot(mmdata::Point2D a, mmdata::Point2D b) {
     return a.x_ * b.x_ + a.y_ * b.y_;
 }
 
-double
-dot(mmdata::Vector3D a, mmdata::Vector3D b)
-{
+double dot(mmdata::Vector3D a, mmdata::Vector3D b) {
     return a.x_ * b.x_ + a.y_ * b.y_ + a.z_ * b.z_;
 }
 
-mmdata::Vector3D
-cross(mmdata::Vector3D a, mmdata::Vector3D b)
-{
-    return mmdata::Vector3D(
-        a.y_ * b.z_ - a.z_ * b.y_,
-        a.z_ * b.x_ - a.x_ * b.z_,
-        a.x_ * b.y_ - a.y_ * b.x_
-    );
+mmdata::Vector3D cross(mmdata::Vector3D a, mmdata::Vector3D b) {
+    return mmdata::Vector3D(a.y_ * b.z_ - a.z_ * b.y_,
+                            a.z_ * b.x_ - a.x_ * b.z_,
+                            a.x_ * b.y_ - a.y_ * b.x_);
 }
 
 // http://www.euclideanspace.com/maths/algebra/matrix/functions/determinant/fourD/index.htm
-double
-determinant(mmdata::Matrix4x4 m)
-{
+double determinant(mmdata::Matrix4x4 m) {
     auto m00 = m.m00_;
     auto m01 = m.m01_;
     auto m02 = m.m02_;
@@ -159,24 +130,22 @@ determinant(mmdata::Matrix4x4 m)
     auto m33 = m.m33_;
 
     auto r0 = m03 * m12 * m21 * m30 - m02 * m13 * m21 * m30 -
-        m03 * m11 * m22 * m30 + m01 * m13 * m22 * m30;
+              m03 * m11 * m22 * m30 + m01 * m13 * m22 * m30;
     auto r1 = m02 * m11 * m23 * m30 - m01 * m12 * m23 * m30 -
-        m03 * m12 * m20 * m31 + m02 * m13 * m20 * m31;
+              m03 * m12 * m20 * m31 + m02 * m13 * m20 * m31;
     auto r2 = m03 * m10 * m22 * m31 - m00 * m13 * m22 * m31 -
-        m02 * m10 * m23 * m31 + m00 * m12 * m23 * m31;
+              m02 * m10 * m23 * m31 + m00 * m12 * m23 * m31;
     auto r3 = m03 * m11 * m20 * m32 - m01 * m13 * m20 * m32 -
-        m03 * m10 * m21 * m32 + m00 * m13 * m21 * m32;
+              m03 * m10 * m21 * m32 + m00 * m13 * m21 * m32;
     auto r4 = m01 * m10 * m23 * m32 - m00 * m11 * m23 * m32 -
-        m02 * m11 * m20 * m33 + m01 * m12 * m20 * m33;
+              m02 * m11 * m20 * m33 + m01 * m12 * m20 * m33;
     auto r5 = m02 * m10 * m21 * m33 - m00 * m12 * m21 * m33 -
-        m01 * m10 * m22 * m33 + m00 * m11 * m22 * m33;
+              m01 * m10 * m22 * m33 + m00 * m11 * m22 * m33;
     return r0 + r1 + r2 + r3 + r4 + r5;
 }
 
 // http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
-mmdata::Matrix4x4
-inverse(mmdata::Matrix4x4 m)
-{
+mmdata::Matrix4x4 inverse(mmdata::Matrix4x4 m) {
     auto s = 1.0 / determinant(m);
 
     auto m00 = m.m00_;
@@ -201,37 +170,37 @@ inverse(mmdata::Matrix4x4 m)
 
     auto r = mmdata::Matrix4x4();
     r.m00_ = m12 * m23 * m31 - m13 * m22 * m31 + m13 * m21 * m32 -
-        m11 * m23 * m32 - m12 * m21 * m33 + m11 * m22 * m33;
+             m11 * m23 * m32 - m12 * m21 * m33 + m11 * m22 * m33;
     r.m01_ = m03 * m22 * m31 - m02 * m23 * m31 - m03 * m21 * m32 +
-        m01 * m23 * m32 + m02 * m21 * m33 - m01 * m22 * m33;
+             m01 * m23 * m32 + m02 * m21 * m33 - m01 * m22 * m33;
     r.m02_ = m02 * m13 * m31 - m03 * m12 * m31 + m03 * m11 * m32 -
-        m01 * m13 * m32 - m02 * m11 * m33 + m01 * m12 * m33;
+             m01 * m13 * m32 - m02 * m11 * m33 + m01 * m12 * m33;
     r.m03_ = m03 * m12 * m21 - m02 * m13 * m21 - m03 * m11 * m22 +
-        m01 * m13 * m22 + m02 * m11 * m23 - m01 * m12 * m23;
+             m01 * m13 * m22 + m02 * m11 * m23 - m01 * m12 * m23;
     r.m10_ = m13 * m22 * m30 - m12 * m23 * m30 - m13 * m20 * m32 +
-        m10 * m23 * m32 + m12 * m20 * m33 - m10 * m22 * m33;
+             m10 * m23 * m32 + m12 * m20 * m33 - m10 * m22 * m33;
     r.m11_ = m02 * m23 * m30 - m03 * m22 * m30 + m03 * m20 * m32 -
-        m00 * m23 * m32 - m02 * m20 * m33 + m00 * m22 * m33;
+             m00 * m23 * m32 - m02 * m20 * m33 + m00 * m22 * m33;
     r.m12_ = m03 * m12 * m30 - m02 * m13 * m30 - m03 * m10 * m32 +
-        m00 * m13 * m32 + m02 * m10 * m33 - m00 * m12 * m33;
+             m00 * m13 * m32 + m02 * m10 * m33 - m00 * m12 * m33;
     r.m13_ = m02 * m13 * m20 - m03 * m12 * m20 + m03 * m10 * m22 -
-        m00 * m13 * m22 - m02 * m10 * m23 + m00 * m12 * m23;
+             m00 * m13 * m22 - m02 * m10 * m23 + m00 * m12 * m23;
     r.m20_ = m11 * m23 * m30 - m13 * m21 * m30 + m13 * m20 * m31 -
-        m10 * m23 * m31 - m11 * m20 * m33 + m10 * m21 * m33;
+             m10 * m23 * m31 - m11 * m20 * m33 + m10 * m21 * m33;
     r.m21_ = m03 * m21 * m30 - m01 * m23 * m30 - m03 * m20 * m31 +
-        m00 * m23 * m31 + m01 * m20 * m33 - m00 * m21 * m33;
+             m00 * m23 * m31 + m01 * m20 * m33 - m00 * m21 * m33;
     r.m22_ = m01 * m13 * m30 - m03 * m11 * m30 + m03 * m10 * m31 -
-        m00 * m13 * m31 - m01 * m10 * m33 + m00 * m11 * m33;
+             m00 * m13 * m31 - m01 * m10 * m33 + m00 * m11 * m33;
     r.m23_ = m03 * m11 * m20 - m01 * m13 * m20 - m03 * m10 * m21 +
-        m00 * m13 * m21 + m01 * m10 * m23 - m00 * m11 * m23;
+             m00 * m13 * m21 + m01 * m10 * m23 - m00 * m11 * m23;
     r.m30_ = m12 * m21 * m30 - m11 * m22 * m30 - m12 * m20 * m31 +
-        m10 * m22 * m31 + m11 * m20 * m32 - m10 * m21 * m32;
+             m10 * m22 * m31 + m11 * m20 * m32 - m10 * m21 * m32;
     r.m31_ = m01 * m22 * m30 - m02 * m21 * m30 + m02 * m20 * m31 -
-        m00 * m22 * m31 - m01 * m20 * m32 + m00 * m21 * m32;
+             m00 * m22 * m31 - m01 * m20 * m32 + m00 * m21 * m32;
     r.m32_ = m02 * m11 * m30 - m01 * m12 * m30 - m02 * m10 * m31 +
-        m00 * m12 * m31 + m01 * m10 * m32 - m00 * m11 * m32;
+             m00 * m12 * m31 + m01 * m10 * m32 - m00 * m11 * m32;
     r.m33_ = m01 * m12 * m20 - m02 * m11 * m20 + m02 * m10 * m21 -
-        m00 * m12 * m21 - m01 * m10 * m22 + m00 * m11 * m22;
+             m00 * m12 * m21 - m01 * m10 * m22 + m00 * m11 * m22;
 
     r.m00_ *= s;
     r.m01_ *= s;
@@ -257,10 +226,7 @@ inverse(mmdata::Matrix4x4 m)
 // https://www.euclideanspace.com/maths/algebra/matrix/arithmetic/fourD/index.htm
 //
 // The implementation is long, because it has all loops unrolled.
-mmdata::Matrix4x4
-matrixMultiply(mmdata::Matrix4x4 a,
-               mmdata::Matrix4x4 b)
-{
+mmdata::Matrix4x4 matrixMultiply(mmdata::Matrix4x4 a, mmdata::Matrix4x4 b) {
     auto r = mmdata::Matrix4x4();
 
     // Column 0, Row 0
@@ -383,11 +349,8 @@ matrixMultiply(mmdata::Matrix4x4 a,
 }
 
 // https://www.euclideanspace.com/maths/geometry/transform/index.htm
-void
-transform(mmdata::Matrix4x4 m,
-          mmdata::Point3D point,
-          mmdata::Point3D &outPoint)
-{
+void transform(mmdata::Matrix4x4 m, mmdata::Point3D point,
+               mmdata::Point3D &outPoint) {
     // Column 0
     outPoint.x_ = 0.0;
     outPoint.x_ += m.m00_ * point.x_;
@@ -422,16 +385,13 @@ transform(mmdata::Matrix4x4 m,
 // http://paulbourke.net/geometry/pointlineplane/
 bool infiniteLineIntersection(
     // Line 1
-    mmdata::Point2D pointA,
-    mmdata::Point2D pointB,
+    mmdata::Point2D pointA, mmdata::Point2D pointB,
 
     // Line 2
-    mmdata::Point2D pointC,
-    mmdata::Point2D pointD,
+    mmdata::Point2D pointC, mmdata::Point2D pointD,
 
     // Output
-    mmdata::Point2D &outPoint)
-{
+    mmdata::Point2D &outPoint) {
     auto x1 = pointA.x_;
     auto y1 = pointA.y_;
 
@@ -470,21 +430,15 @@ bool infiniteLineIntersection(
 
 // Compute the cosine of the angle between 2 2D lines.
 // When the cosine of the angle is near 1.0, the lines are almost parallel.
-double cosineAngleBetweenLines(
-    mmdata::LinePair2D linePair)
-{
+double cosineAngleBetweenLines(mmdata::LinePair2D linePair) {
     mmdata::Line2D lineA = linePair.lineA_;
     mmdata::Line2D lineB = linePair.lineB_;
-    auto directionA = mmmath::normalize(
-            mmmath::subtract(lineA.pointA_,
-                             lineA.pointB_)
-    );
-    auto directionB = mmmath::normalize(
-            mmmath::subtract(lineB.pointA_,
-                             lineB.pointB_)
-    );
+    auto directionA =
+        mmmath::normalize(mmmath::subtract(lineA.pointA_, lineA.pointB_));
+    auto directionB =
+        mmmath::normalize(mmmath::subtract(lineB.pointA_, lineB.pointB_));
     auto angle_cosine = std::abs(mmmath::dot(directionA, directionB));
     return angle_cosine;
 }
 
-} // namespace math
+}  // namespace mmmath

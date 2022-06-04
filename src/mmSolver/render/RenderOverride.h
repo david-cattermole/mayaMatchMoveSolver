@@ -24,16 +24,16 @@
 #ifndef MM_SOLVER_RENDER_MAIN_OVERRIDE_H
 #define MM_SOLVER_RENDER_MAIN_OVERRIDE_H
 
-#include "constants.h"
-#include "RenderGlobalsNode.h"
-
-#include <maya/MString.h>
 #include <maya/MBoundingBox.h>
-#include <maya/MObjectHandle.h>
-#include <maya/MUiMessage.h>
 #include <maya/MDagMessage.h>
-#include <maya/MViewport2Renderer.h>
+#include <maya/MObjectHandle.h>
 #include <maya/MRenderTargetManager.h>
+#include <maya/MString.h>
+#include <maya/MUiMessage.h>
+#include <maya/MViewport2Renderer.h>
+
+#include "RenderGlobalsNode.h"
+#include "constants.h"
 
 namespace mmsolver {
 namespace render {
@@ -101,7 +101,7 @@ public:
         kNumberOfOps
     };
 
-    RenderOverride(const MString &name);
+    RenderOverride(const MString& name);
 
     ~RenderOverride() override;
 
@@ -109,61 +109,45 @@ public:
 
     bool startOperationIterator() override;
 
-    MHWRender::MRenderOperation *renderOperation() override;
+    MHWRender::MRenderOperation* renderOperation() override;
 
     bool nextRenderOperation() override;
 
     // Basic setup and cleanup
-    MStatus setup(const MString &destination) override;
+    MStatus setup(const MString& destination) override;
     MStatus cleanup() override;
 
     // Called by Maya to determine the name in the "Renderers" menu.
-    MString uiName() const override {
-        return m_ui_name;
-    }
+    MString uiName() const override { return m_ui_name; }
 
     // The Maya panel name this override is locked to.
-    const MString &panelName() const {
-        return m_panel_name;
-    }
+    const MString& panelName() const { return m_panel_name; }
 
     // The blend value between wireframe and non-wireframe.
-    double wireframeAlpha() const {
-        return m_wireframe_alpha;
-    }
-    void setWireframeAlpha(const double value) {
-        m_wireframe_alpha = value;
-    }
+    double wireframeAlpha() const { return m_wireframe_alpha; }
+    void setWireframeAlpha(const double value) { m_wireframe_alpha = value; }
 
-    double edgeThickness() const {
-        return m_edge_thickness;
-    }
-    void setEdgeThickness(const double value) {
-        m_edge_thickness = value;
-    }
+    double edgeThickness() const { return m_edge_thickness; }
+    void setEdgeThickness(const double value) { m_edge_thickness = value; }
 
-    double edgeThreshold() const {
-        return m_edge_threshold;
-    }
-    void setEdgeThreshold(const double value) {
-        m_edge_threshold = value;
-    }
+    double edgeThreshold() const { return m_edge_threshold; }
+    void setEdgeThreshold(const double value) { m_edge_threshold = value; }
 
 protected:
     MStatus updateParameters();
     MStatus updateRenderOperations();
     MStatus updateRenderTargets();
-    MStatus setPanelNames(const MString &name);
+    MStatus setPanelNames(const MString& name);
 
     // Operation lists
-    MHWRender::MRenderOperation *m_ops[kNumberOfOps];
+    MHWRender::MRenderOperation* m_ops[kNumberOfOps];
     MString m_op_names[kNumberOfOps];
     int32_t m_current_op;
 
     // Shared render target list
     MString m_target_override_names[kTargetCount];
-    MHWRender::MRenderTargetDescription *m_target_descs[kTargetCount];
-    MHWRender::MRenderTarget *m_targets[kTargetCount];
+    MHWRender::MRenderTargetDescription* m_target_descs[kTargetCount];
+    MHWRender::MRenderTarget* m_targets[kTargetCount];
     bool m_target_supports_sRGB_write[kTargetCount];
 
     // UI name
@@ -172,16 +156,14 @@ protected:
     // Callback IDs for tracking viewport changes
     MCallbackId m_renderer_change_callback;
     MCallbackId m_render_override_change_callback;
-    static void renderer_change_func(
-            const MString& panel_name,
-            const MString& old_renderer,
-            const MString& new_renderer,
-            void* client_data);
-    static void render_override_change_func(
-            const MString& panel_name,
-            const MString& old_renderer,
-            const MString& new_renderer,
-            void* client_data);
+    static void renderer_change_func(const MString& panel_name,
+                                     const MString& old_renderer,
+                                     const MString& new_renderer,
+                                     void* client_data);
+    static void render_override_change_func(const MString& panel_name,
+                                            const MString& old_renderer,
+                                            const MString& new_renderer,
+                                            void* client_data);
 
     // Allow the command to access this class.
     friend class MMRendererCmd;
@@ -205,7 +187,7 @@ private:
     double m_edge_threshold;
 };
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver
 
-#endif //MAYA_MM_SOLVER_RENDER_MAIN_OVERRIDE_H
+#endif  // MAYA_MM_SOLVER_RENDER_MAIN_OVERRIDE_H

@@ -25,91 +25,69 @@
 
 // STL
 #include <cmath>
-#include <vector>
-#include <unordered_map>  // unordered_map
 #include <memory>
+#include <unordered_map>  // unordered_map
+#include <vector>
 
 // Maya
-#include <maya/MStatus.h>
-#include <maya/MObject.h>
 #include <maya/MMatrix.h>
+#include <maya/MObject.h>
 #include <maya/MPoint.h>
-#include <maya/MVector.h>
+#include <maya/MStatus.h>
 #include <maya/MString.h>
+#include <maya/MVector.h>
 
-#include "mmSolver/utilities/number_utils.h"
 #include "maya_attr.h"
+#include "mmSolver/utilities/number_utils.h"
 
 typedef std::pair<double, MMatrix> DoubleMatrixPair;
 typedef std::unordered_map<double, MMatrix> DoubleMatrixMap;
 typedef DoubleMatrixMap::const_iterator DoubleMatrixMapCIt;
 typedef DoubleMatrixMap::iterator DoubleMatrixMapIt;
 
+MStatus getAngleOfView(const double filmBackSize, const double focalLength,
+                       double &angleOfView, bool asDegrees = true);
 
-MStatus getAngleOfView(
-        const double filmBackSize,
-        const double focalLength,
-        double &angleOfView,
-        bool asDegrees = true);
+MStatus getCameraPlaneScale(const double filmBackSize, const double focalLength,
+                            double &scale);
 
-
-MStatus getCameraPlaneScale(
-        const double filmBackSize,
-        const double focalLength,
-        double &scale);
-
-
-MStatus computeFrustumCoordinates(
-        const double focalLength,     // millimetres
-        const double filmBackWidth,   // inches
-        const double filmBackHeight,  // inches
-        const double filmOffsetX,     // inches
-        const double filmOffsetY,     // inches
-        const double nearClipPlane,   // centimetres
-        const double cameraScale,
-        double &left, double &right,
-        double &top, double &bottom);
-
+MStatus computeFrustumCoordinates(const double focalLength,     // millimetres
+                                  const double filmBackWidth,   // inches
+                                  const double filmBackHeight,  // inches
+                                  const double filmOffsetX,     // inches
+                                  const double filmOffsetY,     // inches
+                                  const double nearClipPlane,   // centimetres
+                                  const double cameraScale, double &left,
+                                  double &right, double &top, double &bottom);
 
 MStatus applyFilmFitLogic(
-        const double frustumLeft, const double frustumRight,
-        const double frustumTop, const double frustumBottom,
-        const double imageAspectRatio, const double filmAspectRatio,
-        const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
-        double &filmFitScaleX, double &filmFitScaleY,
-        double &screenSizeX, double &screenSizeY,
-        double &screenRight, double &screenLeft,
-        double &screenTop, double &screenBottom);
-
+    const double frustumLeft, const double frustumRight,
+    const double frustumTop, const double frustumBottom,
+    const double imageAspectRatio, const double filmAspectRatio,
+    const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
+    double &filmFitScaleX, double &filmFitScaleY, double &screenSizeX,
+    double &screenSizeY, double &screenRight, double &screenLeft,
+    double &screenTop, double &screenBottom);
 
 MStatus computeProjectionMatrix(
-        const double filmFitScaleX,
-        const double filmFitScaleY,
-        const double screenSizeX,
-        const double screenSizeY,
-        const double screenLeft,
-        const double screenRight,
-        const double screenTop,
-        const double screenBottom,
-        const double nearClipPlane, // centimetres
-        const double farClipPlane,  // centimetres
-        MMatrix &projectionMatrix);
-
+    const double filmFitScaleX, const double filmFitScaleY,
+    const double screenSizeX, const double screenSizeY, const double screenLeft,
+    const double screenRight, const double screenTop, const double screenBottom,
+    const double nearClipPlane,  // centimetres
+    const double farClipPlane,   // centimetres
+    MMatrix &projectionMatrix);
 
 MStatus getProjectionMatrix(
-        const double focalLength,     // millimetres
-        const double filmBackWidth,   // inches
-        const double filmBackHeight,  // inches
-        const double filmOffsetX,     // inches
-        const double filmOffsetY,     // inches
-        const double imageWidth,      // pixels
-        const double imageHeight,     // pixels
-        const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
-        const double nearClipPlane,
-        const double farClipPlane,
-        const double cameraScale,
-        MMatrix &projectionMatrix);
-
+    const double focalLength,     // millimetres
+    const double filmBackWidth,   // inches
+    const double filmBackHeight,  // inches
+    const double filmOffsetX,     // inches
+    const double filmOffsetY,     // inches
+    const double imageWidth,      // pixels
+    const double imageHeight,     // pixels
+    const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
+    const double nearClipPlane, const double farClipPlane,
+    const double cameraScale, MMatrix &projectionMatrix);
 
 class Camera {
 public:
@@ -165,47 +143,28 @@ public:
     int getRenderHeightValue();
     double getRenderAspectValue();
 
-    MStatus getFrustum(
-        double &left, double &right,
-        double &top, double &bottom,
-        const MTime &time,
-        const int timeEvalMode);
+    MStatus getFrustum(double &left, double &right, double &top, double &bottom,
+                       const MTime &time, const int timeEvalMode);
 
-    MStatus getProjMatrix(
-        MMatrix &value,
-        const MTime &time,
-        const int timeEvalMode);
+    MStatus getProjMatrix(MMatrix &value, const MTime &time,
+                          const int timeEvalMode);
 
-    MStatus getProjMatrix(
-        MMatrix &value,
-        const int timeEvalMode);
+    MStatus getProjMatrix(MMatrix &value, const int timeEvalMode);
 
-    MStatus getWorldPosition(
-        MPoint &value,
-        const MTime &time,
-        const int timeEvalMode);
+    MStatus getWorldPosition(MPoint &value, const MTime &time,
+                             const int timeEvalMode);
 
-    MStatus getWorldPosition(
-        MPoint &value,
-        const int timeEvalMode);
+    MStatus getWorldPosition(MPoint &value, const int timeEvalMode);
 
-    MStatus getForwardDirection(
-        MVector &value,
-        const MTime &time,
-        const int timeEvalMode);
+    MStatus getForwardDirection(MVector &value, const MTime &time,
+                                const int timeEvalMode);
 
-    MStatus getForwardDirection(
-        MVector &value,
-        const int timeEvalMode);
+    MStatus getForwardDirection(MVector &value, const int timeEvalMode);
 
-    MStatus getWorldProjMatrix(
-        MMatrix &value,
-        const MTime &time,
-        const int timeEvalMode);
+    MStatus getWorldProjMatrix(MMatrix &value, const MTime &time,
+                               const int timeEvalMode);
 
-    MStatus getWorldProjMatrix(
-        MMatrix &value,
-        const int timeEvalMode);
+    MStatus getWorldProjMatrix(MMatrix &value, const int timeEvalMode);
 
     MStatus clearAuxilaryAttrsCache();
 
@@ -250,9 +209,9 @@ private:
     double m_cameraScaleValue;
     double m_nearClipPlaneValue;
     double m_farClipPlaneValue;
-    short  m_filmFitValue;
-    int    m_renderWidthValue;
-    int    m_renderHeightValue;
+    short m_filmFitValue;
+    int m_renderWidthValue;
+    int m_renderHeightValue;
     double m_renderAspectValue;
 
     DoubleMatrixMap m_projMatrixCache;
@@ -266,4 +225,4 @@ typedef std::shared_ptr<Camera> CameraPtr;
 typedef std::vector<std::shared_ptr<Camera> > CameraPtrList;
 typedef CameraPtrList::iterator CameraPtrListIt;
 
-#endif // MM_SOLVER_MAYA_HELPER_MAYA_CAMERA_H
+#endif  // MM_SOLVER_MAYA_HELPER_MAYA_CAMERA_H

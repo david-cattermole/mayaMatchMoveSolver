@@ -24,9 +24,9 @@
 #define STRING_UTILS_H
 
 // STL
-#include <string>
-#include <sstream>  // stringstream
 #include <cmath>    // fabs
+#include <sstream>  // stringstream
+#include <string>
 
 namespace mmstring {
 
@@ -36,7 +36,7 @@ namespace mmstring {
  * @param num
  * @return
  */
-template<typename NUM_TYPE>
+template <typename NUM_TYPE>
 std::string numberToString(NUM_TYPE num) {
     std::stringstream ss;
     ss << num;
@@ -49,7 +49,7 @@ std::string numberToString(NUM_TYPE num) {
  * @param text
  * @return
  */
-template<typename NUM_TYPE>
+template <typename NUM_TYPE>
 NUM_TYPE stringToNumber(const std::string &text) {
     std::stringstream ss(text);
     NUM_TYPE result;
@@ -60,6 +60,6 @@ NUM_TYPE stringToNumber(const std::string &text) {
     return result;
 }
 
-} // namespace mmstring
+}  // namespace mmstring
 
-#endif // STRING_UTILS_H
+#endif  // STRING_UTILS_H

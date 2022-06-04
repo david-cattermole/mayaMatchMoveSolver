@@ -23,6 +23,8 @@
 #include "adjust_lensModel.h"
 
 // STL
+#include <stdio.h>
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -31,17 +33,16 @@
 #include <iostream>
 #include <limits>
 #include <memory>
-#include <stdio.h>
 #include <string>
-#include <vector>
-#include <unordered_set>
 #include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
 // Maya
 #include <maya/MAnimCurveChange.h>
 #include <maya/MComputation.h>
-#include <maya/MDagPath.h>
 #include <maya/MDGContext.h>
+#include <maya/MDagPath.h>
 #include <maya/MFnAnimCurve.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MFnPluginData.h>
@@ -50,8 +51,8 @@
 #include <maya/MObject.h>
 #include <maya/MPoint.h>
 #include <maya/MProfiler.h>
-#include <maya/MStreamUtils.h>
 #include <maya/MSelectionList.h>
+#include <maya/MStreamUtils.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 #include <maya/MVector.h>
@@ -64,131 +65,182 @@
 #include <mmscenegraph/mmscenegraph.h>
 
 // MM Solver
+#include "adjust_base.h"
+#include "adjust_data.h"
 #include "mmSolver/core/mmdata.h"
 #include "mmSolver/core/mmmath.h"
+#include "mmSolver/lens/lens_model.h"
 #include "mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.h"
 #include "mmSolver/lens/lens_model_3de_classic.h"
 #include "mmSolver/lens/lens_model_3de_radial_decentered_deg_4_cylindric.h"
 #include "mmSolver/lens/lens_model_passthrough.h"
-#include "mmSolver/lens/lens_model.h"
-#include "mmSolver/node/MMLensData.h"
-#include "mmSolver/mayahelper/maya_utils.h"
-#include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/utilities/number_utils.h"
+#include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/node/MMLensData.h"
 #include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/utilities/string_utils.h"
-#include "adjust_base.h"
-#include "adjust_data.h"
 
-
-MStatus
-setLensModelAttributeValue(
-    std::shared_ptr<LensModel> &lensModel,
-    const AttrSolverType solverAttrType,
-    const double value
-) {
+MStatus setLensModelAttributeValue(std::shared_ptr<LensModel> &lensModel,
+                                   const AttrSolverType solverAttrType,
+                                   const double value) {
     MStatus status = MS::kSuccess;
     if (!lensModel) {
         return status;
     }
-    LensModel* lensModelPtr = lensModel.get();
+    LensModel *lensModelPtr = lensModel.get();
     if (!lensModelPtr) {
         status = MS::kFailure;
         return status;
     }
 
     auto is_model_3de_classic = 0;
-    is_model_3de_classic += solverAttrType == AttrSolverType::kLens3deClassicDistortion;
-    is_model_3de_classic += solverAttrType == AttrSolverType::kLens3deClassicAnamorphicSqueeze;
-    is_model_3de_classic += solverAttrType == AttrSolverType::kLens3deClassicCurvatureX;
-    is_model_3de_classic += solverAttrType == AttrSolverType::kLens3deClassicCurvatureY;
-    is_model_3de_classic += solverAttrType == AttrSolverType::kLens3deClassicQuarticDistortion;
+    is_model_3de_classic +=
+        solverAttrType == AttrSolverType::kLens3deClassicDistortion;
+    is_model_3de_classic +=
+        solverAttrType == AttrSolverType::kLens3deClassicAnamorphicSqueeze;
+    is_model_3de_classic +=
+        solverAttrType == AttrSolverType::kLens3deClassicCurvatureX;
+    is_model_3de_classic +=
+        solverAttrType == AttrSolverType::kLens3deClassicCurvatureY;
+    is_model_3de_classic +=
+        solverAttrType == AttrSolverType::kLens3deClassicQuarticDistortion;
 
     auto is_model_3de_radial_deg_4 = 0;
-    is_model_3de_radial_deg_4 += solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree2Distortion;
-    is_model_3de_radial_deg_4 += solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree2U;
-    is_model_3de_radial_deg_4 += solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree2V;
-    is_model_3de_radial_deg_4 += solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree4Distortion;
-    is_model_3de_radial_deg_4 += solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree4U;
-    is_model_3de_radial_deg_4 += solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree4V;
-    is_model_3de_radial_deg_4 += solverAttrType == AttrSolverType::kLens3deRadialDeg4Direction;
-    is_model_3de_radial_deg_4 += solverAttrType == AttrSolverType::kLens3deRadialDeg4Bending;
+    is_model_3de_radial_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree2Distortion;
+    is_model_3de_radial_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree2U;
+    is_model_3de_radial_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree2V;
+    is_model_3de_radial_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree4Distortion;
+    is_model_3de_radial_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree4U;
+    is_model_3de_radial_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree4V;
+    is_model_3de_radial_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deRadialDeg4Direction;
+    is_model_3de_radial_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deRadialDeg4Bending;
 
     auto is_model_3de_anamorphic_deg_4 = 0;
-    is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree2Cx02;
-    is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree2Cy02;
-    is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree2Cx22;
-    is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree2Cy22;
-    is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx04;
-    is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy04;
-    is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx24;
-    is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy24;
-    is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx44;
-    is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy44;
-    is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4LensRotation;
-    is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4SqueezeX;
-    is_model_3de_anamorphic_deg_4 += solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4SqueezeY;
+    is_model_3de_anamorphic_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree2Cx02;
+    is_model_3de_anamorphic_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree2Cy02;
+    is_model_3de_anamorphic_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree2Cx22;
+    is_model_3de_anamorphic_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree2Cy22;
+    is_model_3de_anamorphic_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx04;
+    is_model_3de_anamorphic_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy04;
+    is_model_3de_anamorphic_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx24;
+    is_model_3de_anamorphic_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy24;
+    is_model_3de_anamorphic_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx44;
+    is_model_3de_anamorphic_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy44;
+    is_model_3de_anamorphic_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4LensRotation;
+    is_model_3de_anamorphic_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4SqueezeX;
+    is_model_3de_anamorphic_deg_4 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4SqueezeY;
 
     if (is_model_3de_classic > 0) {
-        auto ptr = reinterpret_cast<LensModel3deClassic*>(lensModelPtr);
+        auto ptr = reinterpret_cast<LensModel3deClassic *>(lensModelPtr);
         if (solverAttrType == AttrSolverType::kLens3deClassicDistortion) {
             ptr->setDistortion(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deClassicAnamorphicSqueeze) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deClassicAnamorphicSqueeze) {
             ptr->setAnamorphicSqueeze(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deClassicCurvatureX) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deClassicCurvatureX) {
             ptr->setCurvatureX(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deClassicCurvatureY) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deClassicCurvatureY) {
             ptr->setCurvatureY(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deClassicQuarticDistortion) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deClassicQuarticDistortion) {
             ptr->setQuarticDistortion(value);
         }
     } else if (is_model_3de_radial_deg_4 > 0) {
-        auto ptr = reinterpret_cast<LensModel3deRadialDecenteredDeg4Cylindric*>(lensModelPtr);
-        if (solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree2Distortion) {
+        auto ptr =
+            reinterpret_cast<LensModel3deRadialDecenteredDeg4Cylindric *>(
+                lensModelPtr);
+        if (solverAttrType ==
+            AttrSolverType::kLens3deRadialDeg4Degree2Distortion) {
             ptr->setDegree2Distortion(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree2U) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deRadialDeg4Degree2U) {
             ptr->setDegree2U(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree2V) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deRadialDeg4Degree2V) {
             ptr->setDegree2V(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree4Distortion) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deRadialDeg4Degree4Distortion) {
             ptr->setDegree4Distortion(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree4U) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deRadialDeg4Degree4U) {
             ptr->setDegree4U(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deRadialDeg4Degree4V) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deRadialDeg4Degree4V) {
             ptr->setDegree4V(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deRadialDeg4Direction) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deRadialDeg4Direction) {
             ptr->setCylindricDirection(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deRadialDeg4Bending) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deRadialDeg4Bending) {
             ptr->setCylindricBending(value);
         }
     } else if (is_model_3de_anamorphic_deg_4 > 0) {
-        auto ptr = reinterpret_cast<LensModel3deAnamorphicDeg4RotateSqueezeXY*>(lensModelPtr);
-        if (solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree2Cx02) {
+        auto ptr =
+            reinterpret_cast<LensModel3deAnamorphicDeg4RotateSqueezeXY *>(
+                lensModelPtr);
+        if (solverAttrType ==
+            AttrSolverType::kLens3deAnamorphicDeg4Degree2Cx02) {
             ptr->setDegree2Cx02(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree2Cy02) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg4Degree2Cy02) {
             ptr->setDegree2Cy02(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree2Cx22) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg4Degree2Cx22) {
             ptr->setDegree2Cx22(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree2Cy22) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg4Degree2Cy22) {
             ptr->setDegree2Cy22(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx04) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx04) {
             ptr->setDegree4Cx04(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy04) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy04) {
             ptr->setDegree4Cy04(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx24) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx24) {
             ptr->setDegree4Cx24(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy24) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy24) {
             ptr->setDegree4Cy24(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx44) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx44) {
             ptr->setDegree4Cx44(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy44) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy44) {
             ptr->setDegree4Cy44(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4LensRotation) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg4LensRotation) {
             ptr->setLensRotation(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4SqueezeX) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg4SqueezeX) {
             ptr->setSqueezeX(value);
-        } else if (solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4SqueezeY) {
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg4SqueezeY) {
             ptr->setSqueezeY(value);
         }
     } else {
@@ -199,12 +251,8 @@ setLensModelAttributeValue(
     return status;
 }
 
-MStatus getNodePlug(
-    const MObject &node,
-    const MString &attrName,
-    MPlug &out_plug,
-    const bool wantNetworkedPlug=true)
-{
+MStatus getNodePlug(const MObject &node, const MString &attrName,
+                    MPlug &out_plug, const bool wantNetworkedPlug = true) {
     MStatus status = MS::kSuccess;
 
     MFnDependencyNode mfnDependNode(node, &status);
@@ -214,11 +262,8 @@ MStatus getNodePlug(
     return status;
 }
 
-MStatus getNodeEnabledState(
-    const MObject &node,
-    const MString &attrName,
-    bool &out_enabled)
-{
+MStatus getNodeEnabledState(const MObject &node, const MString &attrName,
+                            bool &out_enabled) {
     MStatus status = MS::kSuccess;
 
     MPlug plug;
@@ -235,10 +280,8 @@ MStatus getNodeEnabledState(
     return status;
 }
 
-MStatus getLensModelFromPlug(
-    const MPlug &plug,
-    std::shared_ptr<LensModel> &out_lensModel)
-{
+MStatus getLensModelFromPlug(const MPlug &plug,
+                             std::shared_ptr<LensModel> &out_lensModel) {
     MStatus status = MS::kSuccess;
 
     MObject data_object = plug.asMObject(&status);
@@ -249,8 +292,8 @@ MStatus getLensModelFromPlug(
     }
 
     MFnPluginData pluginDataFn(data_object);
-    const mmsolver::MMLensData* outputLensData =
-        (const mmsolver::MMLensData*) pluginDataFn.constData(&status);
+    const mmsolver::MMLensData *outputLensData =
+        (const mmsolver::MMLensData *)pluginDataFn.constData(&status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     if (outputLensData == nullptr) {
         status = MS::kFailure;
@@ -277,19 +320,13 @@ MStatus getLensModelFromPlug(
 // with 'node' as a MObject for 'camera' and 'inputAttrName' set as
 // "inLens", this function will return the MObject for the
 // 'mmLensModel3de' node.
-MStatus getConnectedLensNode(
-    const MObject &node,
-    const MString &inputAttrName,
-    MObject &out_node)
-{
+MStatus getConnectedLensNode(const MObject &node, const MString &inputAttrName,
+                             MObject &out_node) {
     MStatus status = MS::kSuccess;
     out_node = MObject();
 
     MPlug inputPlug;
-    status = getNodePlug(
-        node,
-        inputAttrName,
-        inputPlug);
+    status = getNodePlug(node, inputAttrName, inputPlug);
     if (inputPlug.isNull()) {
         return status;
     }
@@ -303,10 +340,7 @@ MStatus getConnectedLensNode(
     return status;
 }
 
-MStatus getUniqueNodeName(
-    MObject &node,
-    MString &out_uniqueNodeName)
-{
+MStatus getUniqueNodeName(MObject &node, MString &out_uniqueNodeName) {
     MStatus status = MS::kSuccess;
 
     MDagPath dagPath;
@@ -331,8 +365,8 @@ MStatus getLensesFromCameraList(
     std::unordered_map<std::string, int32_t> &out_cameraNodeNameToCameraIndex,
     std::vector<std::vector<MString>> &out_cameraLensNodeNames,
     std::vector<MString> &out_lensNodeNamesVec,
-    std::unordered_map<std::string, std::shared_ptr<LensModel>> &out_lensNodeNameToLensModel)
-{
+    std::unordered_map<std::string, std::shared_ptr<LensModel>>
+        &out_lensNodeNameToLensModel) {
     MStatus status = MS::kSuccess;
 
     const MString inputAttrName = "inLens";
@@ -354,17 +388,13 @@ MStatus getLensesFromCameraList(
         // connected) and ensure the node is active. If the node is
         // not active, the camera doesn't have any lens distortion and
         // can be ignored.
-        status = getConnectedLensNode(
-            camera_shape_node_object,
-            outputAttrName,
-            node_object);
+        status = getConnectedLensNode(camera_shape_node_object, outputAttrName,
+                                      node_object);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         bool lens_toggle_enabled = false;
-        status = getNodeEnabledState(
-            node_object,
-            enableAttrName,
-            lens_toggle_enabled);
+        status = getNodeEnabledState(node_object, enableAttrName,
+                                     lens_toggle_enabled);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         if (!lens_toggle_enabled) {
             // The 'mmLensModelToggle' node will disable all downstream
@@ -374,19 +404,15 @@ MStatus getLensesFromCameraList(
             continue;
         }
 
-        status = getConnectedLensNode(
-            camera_shape_node_object,
-            inputAttrName,
-            node_object);
+        status = getConnectedLensNode(camera_shape_node_object, inputAttrName,
+                                      node_object);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         std::vector<MString> lensNodeNames;
         for (uint32_t node_depth = 0; !node_object.isNull(); ++node_depth) {
             bool lens_model_enabled = false;
-            status = getNodeEnabledState(
-                node_object,
-                enableAttrName,
-                lens_model_enabled);
+            status = getNodeEnabledState(node_object, enableAttrName,
+                                         lens_model_enabled);
             CHECK_MSTATUS_AND_RETURN_IT(status);
             if (lens_model_enabled) {
                 MString lensNodeName;
@@ -396,10 +422,10 @@ MStatus getLensesFromCameraList(
 
                 lensNodeNames.push_back(lensNodeName);
 
-                bool found = std::find(
-                    out_lensNodeNamesVec.cbegin(),
-                    out_lensNodeNamesVec.cend(),
-                    lensNodeName) != out_lensNodeNamesVec.cend();
+                bool found =
+                    std::find(out_lensNodeNamesVec.cbegin(),
+                              out_lensNodeNamesVec.cend(),
+                              lensNodeName) != out_lensNodeNamesVec.cend();
                 if (!found) {
                     out_lensNodeNamesVec.push_back(lensNodeName);
                 }
@@ -410,10 +436,11 @@ MStatus getLensesFromCameraList(
                     CHECK_MSTATUS_AND_RETURN_IT(status);
 
                     const bool wantNetworkedPlug = true;
-                    MPlug outputPlug = mfnDependNode.findPlug(outputAttrName, wantNetworkedPlug, &status);
+                    MPlug outputPlug = mfnDependNode.findPlug(
+                        outputAttrName, wantNetworkedPlug, &status);
                     if (status != MS::kSuccess) {
-                        // The camera may not have an 'outLens' attribute and may
-                        // not have a lens node connected to it.
+                        // The camera may not have an 'outLens' attribute and
+                        // may not have a lens node connected to it.
                         status = MS::kSuccess;
                         continue;
                     }
@@ -424,15 +451,14 @@ MStatus getLensesFromCameraList(
                         continue;
                     }
 
-                    out_lensNodeNameToLensModel.insert({lensNodeNameStr, lensModel});
+                    out_lensNodeNameToLensModel.insert(
+                        {lensNodeNameStr, lensModel});
                 }
             }
 
             MObject upstream_node;
-            status = getConnectedLensNode(
-                node_object,
-                inputAttrName,
-                upstream_node);
+            status =
+                getConnectedLensNode(node_object, inputAttrName, upstream_node);
             CHECK_MSTATUS_AND_RETURN_IT(status);
             if (upstream_node.isNull()) {
                 // There is nothing upstream anymore.
@@ -448,11 +474,8 @@ MStatus getLensesFromCameraList(
     return status;
 }
 
-MStatus getAttrsFromLensNode(
-    const MObject &node,
-    const MString &nodeName,
-    std::vector<Attr> &out_attrs
-) {
+MStatus getAttrsFromLensNode(const MObject &node, const MString &nodeName,
+                             std::vector<Attr> &out_attrs) {
     MStatus status = MS::kSuccess;
     out_attrs.clear();
 
@@ -462,10 +485,7 @@ MStatus getAttrsFromLensNode(
     const MString enableAttrName = "enable";
 
     bool nodeEnabled = false;
-    status = getNodeEnabledState(
-        node,
-        enableAttrName,
-        nodeEnabled);
+    status = getNodeEnabledState(node, enableAttrName, nodeEnabled);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     if (!nodeEnabled) {
         return status;
@@ -536,14 +556,13 @@ MStatus getAttrsFromLensNode(
 // on a single lens node is adjusted, the lens distortion should
 // change for all connected cameras.
 MStatus constructLenses(
-    const std::vector<MString> &lensNodeNames,
-    const CameraPtrList &cameraList,
+    const std::vector<MString> &lensNodeNames, const CameraPtrList &cameraList,
     const MTimeArray &frameList,
     const std::vector<std::vector<MString>> &cameraLensNodeNames,
-    const std::unordered_map<std::string, std::shared_ptr<LensModel>> &lensNodeNameToLensModel,
+    const std::unordered_map<std::string, std::shared_ptr<LensModel>>
+        &lensNodeNameToLensModel,
     std::unordered_map<std::string, uint32_t> &out_lensNodeNameToLensModelIndex,
-    std::vector<std::shared_ptr<LensModel>> &out_lensModelList)
-{
+    std::vector<std::shared_ptr<LensModel>> &out_lensModelList) {
     MStatus status = MS::kSuccess;
 
     auto num_cameras = cameraList.size();
@@ -560,19 +579,19 @@ MStatus constructLenses(
         status = getAsObject(lensNodeName, node);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         if (node.isNull()) {
-            MMSOLVER_ERR(
-                "Node name "
-                << "\"" << lensNodeNameStr << "\""
-                " is not valid, skipping.");
+            MMSOLVER_ERR("Node name "
+                         << "\"" << lensNodeNameStr
+                         << "\""
+                            " is not valid, skipping.");
             continue;
         }
 
         auto search = lensNodeNameToLensModel.find(lensNodeNameStr);
         if (search == lensNodeNameToLensModel.end()) {
-            MMSOLVER_ERR(
-                "Lens node name "
-                << "\"" << lensNodeNameStr << "\""
-                << " does not have a LensModel object, this should not happen. ");
+            MMSOLVER_ERR("Lens node name "
+                         << "\"" << lensNodeNameStr << "\""
+                         << " does not have a LensModel object, this should "
+                            "not happen. ");
             continue;
         }
         std::shared_ptr<LensModel> lensModel = search->second;
@@ -582,7 +601,8 @@ MStatus constructLenses(
 
         // Fill out_lensModelList.
         for (uint32_t j = 0; j < num_frames; j++) {
-            std::shared_ptr<LensModel> lensModelClone = lensModel->cloneAsSharedPtr();
+            std::shared_ptr<LensModel> lensModelClone =
+                lensModel->cloneAsSharedPtr();
             out_lensModelList.push_back(lensModelClone);
         }
 
@@ -595,7 +615,8 @@ MStatus constructLenses(
 
         for (uint32_t j = 0; j < num_frames; j++) {
             auto lensFrameIndex = lensIndex + j;
-            std::shared_ptr<LensModel> lensModel = out_lensModelList[lensFrameIndex];
+            std::shared_ptr<LensModel> lensModel =
+                out_lensModelList[lensFrameIndex];
             if (!lensModel) {
                 continue;
             }
@@ -610,10 +631,8 @@ MStatus constructLenses(
                 const auto solverAttrType = lensAttrs[k].getSolverAttrType();
 
                 // Set attribute on the LensModel object.
-                status = setLensModelAttributeValue(
-                    lensModel,
-                    solverAttrType,
-                    value);
+                status = setLensModelAttributeValue(lensModel, solverAttrType,
+                                                    value);
                 CHECK_MSTATUS_AND_RETURN_IT(status);
             }
         }
@@ -624,12 +643,11 @@ MStatus constructLenses(
 
 // Connect up the lenses, in reverse connection order (last to first).
 MStatus connectLensModels(
-    const std::vector<MString> &lensNodeNames,
-    const MTimeArray &frameList,
+    const std::vector<MString> &lensNodeNames, const MTimeArray &frameList,
     const std::vector<std::vector<MString>> &cameraLensNodeNames,
-    const std::unordered_map<std::string, uint32_t> &lensNodeNameToLensModelIndex,
-    std::vector<std::shared_ptr<LensModel>> &inout_lensModelList)
-{
+    const std::unordered_map<std::string, uint32_t>
+        &lensNodeNameToLensModelIndex,
+    std::vector<std::shared_ptr<LensModel>> &inout_lensModelList) {
     MStatus status = MS::kSuccess;
 
     auto num_frames = frameList.length();
@@ -648,10 +666,12 @@ MStatus connectLensModels(
                 auto lensIndex = search->second;
 
                 for (uint32_t j = 0; j < num_frames; j++) {
-                    std::shared_ptr<LensModel> previousLensModel = previousLensModels[j];
+                    std::shared_ptr<LensModel> previousLensModel =
+                        previousLensModels[j];
 
                     auto lensFrameIndex = lensIndex + j;
-                    std::shared_ptr<LensModel> lensModel = inout_lensModelList[lensFrameIndex];
+                    std::shared_ptr<LensModel> lensModel =
+                        inout_lensModelList[lensFrameIndex];
                     lensModel->setInputLensModel(previousLensModel);
 
                     previousLensModels[j] = lensModel;
@@ -665,14 +685,13 @@ MStatus connectLensModels(
 
 // Marker to LensModel data structure.
 MStatus constructMarkerToLensModelMap(
-    const MarkerPtrList &markerList,
-    const MTimeArray &frameList,
+    const MarkerPtrList &markerList, const MTimeArray &frameList,
     const std::unordered_map<std::string, int32_t> &cameraNodeNameToCameraIndex,
     const std::vector<std::vector<MString>> &cameraLensNodeNames,
-    const std::unordered_map<std::string, uint32_t> &lensNodeNameToLensModelIndex,
+    const std::unordered_map<std::string, uint32_t>
+        &lensNodeNameToLensModelIndex,
     const std::vector<std::shared_ptr<LensModel>> &lensModelList,
-    std::vector<std::shared_ptr<LensModel>> &out_markerFrameToLensModelList)
-{
+    std::vector<std::shared_ptr<LensModel>> &out_markerFrameToLensModelList) {
     MStatus status = MS::kSuccess;
 
     auto num_markers = markerList.size();
@@ -691,9 +710,9 @@ MStatus constructMarkerToLensModelMap(
             // This should not happen as long as the cameras all have
             // shape node names (which is expected to always be true).
             MMSOLVER_ERR(
-                "Camera node name \"" << cameraShapeName
-                << "\" not found in camera names lookup map, cannot continue!"
-            );
+                "Camera node name \""
+                << cameraShapeName
+                << "\" not found in camera names lookup map, cannot continue!");
             status = MS::kFailure;
             CHECK_MSTATUS_AND_RETURN_IT(status);
         }
@@ -718,8 +737,10 @@ MStatus constructMarkerToLensModelMap(
                 for (uint32_t j = 0; j < num_frames; j++) {
                     auto markerFrameIndex = (i * num_frames) + j;
                     auto lensFrameIndex = lensIndex + j;
-                    std::shared_ptr<LensModel> lensModel = lensModelList[lensFrameIndex];
-                    out_markerFrameToLensModelList[markerFrameIndex] = lensModel;
+                    std::shared_ptr<LensModel> lensModel =
+                        lensModelList[lensFrameIndex];
+                    out_markerFrameToLensModelList[markerFrameIndex] =
+                        lensModel;
                 }
             }
         }
@@ -731,12 +752,11 @@ MStatus constructMarkerToLensModelMap(
 // Create a mapping data structure between Attribute (index) and the
 // corresponding Lens (index).
 MStatus constructAttributeToLensModelMap(
-    const AttrPtrList &attrList,
-    const MTimeArray &frameList,
-    const std::unordered_map<std::string, uint32_t> &lensNodeNameToLensModelIndex,
+    const AttrPtrList &attrList, const MTimeArray &frameList,
+    const std::unordered_map<std::string, uint32_t>
+        &lensNodeNameToLensModelIndex,
     const std::vector<std::shared_ptr<LensModel>> &lensModelList,
-    std::vector<std::shared_ptr<LensModel>> &out_attrFrameToLensModelList)
-{
+    std::vector<std::shared_ptr<LensModel>> &out_attrFrameToLensModelList) {
     MStatus status = MS::kSuccess;
 
     auto num_attrs = attrList.size();
@@ -757,10 +777,10 @@ MStatus constructAttributeToLensModelMap(
 
         auto search = lensNodeNameToLensModelIndex.find(nodeNameStr);
         if (search == lensNodeNameToLensModelIndex.end()) {
-            MMSOLVER_WRN(
-                "Lens node name \"" << nodeName
-                << "\" not found in lens names lookup map, lens node will be ignored!"
-            );
+            MMSOLVER_WRN("Lens node name \""
+                         << nodeName
+                         << "\" not found in lens names lookup map, lens node "
+                            "will be ignored!");
             continue;
         }
         auto lensIndex = search->second;
@@ -778,66 +798,46 @@ MStatus constructAttributeToLensModelMap(
 
 // Construct the data structures that will be re-used in the
 // 'measureErrors*' and 'setParameters*' functions.
-MStatus
-constructLensModelList(
-        const CameraPtrList &cameraList,
-        const MarkerPtrList &markerList,
-        const AttrPtrList &attrList,
-        const MTimeArray &frameList,
-        // TODO: Can we reduce the indirection by one level and store the direct pointer?
-        //  If so, we must ensure out_lensList is not destroyed until we are finished solving.
-        std::vector<std::shared_ptr<LensModel>> &out_markerFrameToLensModelList,
-        std::vector<std::shared_ptr<LensModel>> &out_attrFrameToLensModelList,
-        std::vector<std::shared_ptr<LensModel>> &out_lensModelList
-) {
+MStatus constructLensModelList(
+    const CameraPtrList &cameraList, const MarkerPtrList &markerList,
+    const AttrPtrList &attrList, const MTimeArray &frameList,
+    // TODO: Can we reduce the indirection by one level and store the direct
+    // pointer?
+    //  If so, we must ensure out_lensList is not destroyed until we are
+    //  finished solving.
+    std::vector<std::shared_ptr<LensModel>> &out_markerFrameToLensModelList,
+    std::vector<std::shared_ptr<LensModel>> &out_attrFrameToLensModelList,
+    std::vector<std::shared_ptr<LensModel>> &out_lensModelList) {
     MStatus status = MS::kSuccess;
 
     std::unordered_map<std::string, int32_t> cameraNodeNameToCameraIndex;
     std::vector<std::vector<MString>> cameraLensNodeNames;
     std::vector<MString> lensNodeNamesVec;
-    std::unordered_map<std::string, std::shared_ptr<LensModel>> lensNodeNameToLensModel;
-    status = getLensesFromCameraList(
-            cameraList,
-        cameraNodeNameToCameraIndex,
-        cameraLensNodeNames,
-        lensNodeNamesVec,
-        lensNodeNameToLensModel);
+    std::unordered_map<std::string, std::shared_ptr<LensModel>>
+        lensNodeNameToLensModel;
+    status = getLensesFromCameraList(cameraList, cameraNodeNameToCameraIndex,
+                                     cameraLensNodeNames, lensNodeNamesVec,
+                                     lensNodeNameToLensModel);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     std::unordered_map<std::string, uint32_t> lensNodeNameToLensModelIndex;
-    status = constructLenses(
-        lensNodeNamesVec,
-        cameraList,
-        frameList,
-        cameraLensNodeNames,
-        lensNodeNameToLensModel,
-        lensNodeNameToLensModelIndex,
-        out_lensModelList);
+    status = constructLenses(lensNodeNamesVec, cameraList, frameList,
+                             cameraLensNodeNames, lensNodeNameToLensModel,
+                             lensNodeNameToLensModelIndex, out_lensModelList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = connectLensModels(
-        lensNodeNamesVec,
-        frameList,
-        cameraLensNodeNames,
-        lensNodeNameToLensModelIndex,
-        out_lensModelList);
+    status = connectLensModels(lensNodeNamesVec, frameList, cameraLensNodeNames,
+                               lensNodeNameToLensModelIndex, out_lensModelList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = constructMarkerToLensModelMap(
-        markerList,
-        frameList,
-        cameraNodeNameToCameraIndex,
-        cameraLensNodeNames,
-        lensNodeNameToLensModelIndex,
-        out_lensModelList,
+        markerList, frameList, cameraNodeNameToCameraIndex, cameraLensNodeNames,
+        lensNodeNameToLensModelIndex, out_lensModelList,
         out_markerFrameToLensModelList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = constructAttributeToLensModelMap(
-        attrList,
-        frameList,
-        lensNodeNameToLensModelIndex,
-        out_lensModelList,
+        attrList, frameList, lensNodeNameToLensModelIndex, out_lensModelList,
         out_attrFrameToLensModelList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 

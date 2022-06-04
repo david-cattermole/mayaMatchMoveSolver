@@ -29,37 +29,40 @@
 #include "BundleShapeNode.h"
 
 // Maya
+#include <maya/MColor.h>
+#include <maya/MDataBlock.h>
+#include <maya/MDataHandle.h>
+#include <maya/MDistance.h>
+#include <maya/MFnEnumAttribute.h>
+#include <maya/MFnNumericAttribute.h>
+#include <maya/MFnNumericData.h>
+#include <maya/MFnUnitAttribute.h>
+#include <maya/MPlug.h>
 #include <maya/MPxLocatorNode.h>
 #include <maya/MString.h>
 #include <maya/MTypeId.h>
-#include <maya/MPlug.h>
 #include <maya/MVector.h>
-#include <maya/MDataBlock.h>
-#include <maya/MDataHandle.h>
-#include <maya/MColor.h>
-#include <maya/MDistance.h>
-#include <maya/MFnUnitAttribute.h>
-#include <maya/MFnNumericAttribute.h>
-#include <maya/MFnEnumAttribute.h>
-#include <maya/MFnNumericData.h>
 
 #if MAYA_API_VERSION >= 20190000
-#include <maya/MEvaluationNode.h>
 #include <assert.h>
+#include <maya/MEvaluationNode.h>
 #endif
 
-#include "mmSolver/nodeTypeIds.h"
 #include "BundleConstants.h"
 #include "BundleDrawOverride.h"
+#include "mmSolver/nodeTypeIds.h"
 
 namespace mmsolver {
 
 MTypeId BundleShapeNode::m_id(MM_BUNDLE_SHAPE_TYPE_ID);
 MString BundleShapeNode::m_draw_db_classification(MM_BUNDLE_DRAW_CLASSIFY);
 MString BundleShapeNode::m_draw_registrant_id(MM_BUNDLE_DRAW_REGISTRANT_ID);
-MString BundleShapeNode::m_selection_type_name(MM_BUNDLE_SHAPE_SELECTION_TYPE_NAME);
-MString BundleShapeNode::m_display_filter_name(MM_BUNDLE_SHAPE_DISPLAY_FILTER_NAME);
-MString BundleShapeNode::m_display_filter_label(MM_BUNDLE_SHAPE_DISPLAY_FILTER_LABEL);
+MString BundleShapeNode::m_selection_type_name(
+    MM_BUNDLE_SHAPE_SELECTION_TYPE_NAME);
+MString BundleShapeNode::m_display_filter_name(
+    MM_BUNDLE_SHAPE_DISPLAY_FILTER_NAME);
+MString BundleShapeNode::m_display_filter_label(
+    MM_BUNDLE_SHAPE_DISPLAY_FILTER_LABEL);
 
 // Attributes
 MObject BundleShapeNode::m_color;
@@ -78,15 +81,13 @@ MString BundleShapeNode::nodeName() {
     return MString(MM_BUNDLE_SHAPE_TYPE_NAME);
 }
 
-MStatus
-BundleShapeNode::compute(const MPlug &/*plug*/,
-                         MDataBlock &/*dataBlock*/) {
-    return MS::kUnknownParameter;;
+MStatus BundleShapeNode::compute(const MPlug & /*plug*/,
+                                 MDataBlock & /*dataBlock*/) {
+    return MS::kUnknownParameter;
+    ;
 }
 
-bool BundleShapeNode::isBounded() const {
-    return true;
-}
+bool BundleShapeNode::isBounded() const { return true; }
 
 MBoundingBox BundleShapeNode::boundingBox() const {
     MPoint corner1(-1.0, -1.0, -1.0);
@@ -112,9 +113,8 @@ bool BundleShapeNode::excludeAsLocator() const {
 // Called before this node is evaluated by Evaluation Manager
 //
 #if MAYA_API_VERSION >= 20190000
-MStatus BundleShapeNode::preEvaluation(
-        const MDGContext &context,
-        const MEvaluationNode &evaluationNode) {
+MStatus BundleShapeNode::preEvaluation(const MDGContext &context,
+                                       const MEvaluationNode &evaluationNode) {
     if (context.isNormal()) {
         MStatus status;
         if (evaluationNode.dirtyPlugExists(m_icon_size, &status) && status) {
@@ -139,9 +139,7 @@ void BundleShapeNode::getCacheSetup(const MEvaluationNode &evalNode,
 }
 #endif
 
-void *BundleShapeNode::creator() {
-    return new BundleShapeNode();
-}
+void *BundleShapeNode::creator() { return new BundleShapeNode(); }
 
 MStatus BundleShapeNode::initialize() {
     MStatus status;
@@ -150,8 +148,7 @@ MStatus BundleShapeNode::initialize() {
     MFnEnumAttribute eAttr;
 
     // Color
-    m_color = nAttr.createColor(
-        "color", "clr");
+    m_color = nAttr.createColor("color", "clr");
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setDefault(0.0f, 1.0f, 0.0f));
@@ -160,9 +157,8 @@ MStatus BundleShapeNode::initialize() {
     auto alpha_min = 0.0;
     auto alpha_max = 1.0;
     auto alpha_default = 1.0;
-    m_alpha = nAttr.create(
-        "alpha", "alp",
-        MFnNumericData::kDouble, alpha_default);
+    m_alpha =
+        nAttr.create("alpha", "alp", MFnNumericData::kDouble, alpha_default);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(alpha_min));
@@ -172,9 +168,8 @@ MStatus BundleShapeNode::initialize() {
     auto line_width_min = 0.01;
     auto line_width_soft_min = 0.1;
     auto line_width_soft_max = 10.0;
-    m_line_width = nAttr.create(
-        "lineWidth", "lnwd",
-        MFnNumericData::kDouble, 1.0);
+    m_line_width =
+        nAttr.create("lineWidth", "lnwd", MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(line_width_min));
@@ -185,9 +180,8 @@ MStatus BundleShapeNode::initialize() {
     auto point_size_min = 0.0;
     auto point_size_soft_min = 0.5;
     auto point_size_soft_max = 10.0;
-    m_point_size = nAttr.create(
-        "pointSize", "ptsz",
-        MFnNumericData::kDouble, 4.0);
+    m_point_size =
+        nAttr.create("pointSize", "ptsz", MFnNumericData::kDouble, 4.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(point_size_min));
@@ -196,24 +190,21 @@ MStatus BundleShapeNode::initialize() {
 
     // Icon Size
     auto icon_size_min = 0.0;
-    m_icon_size = nAttr.create(
-        "iconSize", "icnsz",
-        MFnNumericData::kDouble, 10.0);
+    m_icon_size =
+        nAttr.create("iconSize", "icnsz", MFnNumericData::kDouble, 10.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(icon_size_min));
 
     // Draw Name
-    m_draw_name = nAttr.create(
-        "drawName", "drwnm",
-        MFnNumericData::kBoolean, 1);
+    m_draw_name =
+        nAttr.create("drawName", "drwnm", MFnNumericData::kBoolean, 1);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
 
     // Draw on Top
-    m_draw_on_top = nAttr.create(
-        "drawOnTop", "drwtp",
-        MFnNumericData::kBoolean, 0);
+    m_draw_on_top =
+        nAttr.create("drawOnTop", "drwtp", MFnNumericData::kBoolean, 0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
 
@@ -228,4 +219,4 @@ MStatus BundleShapeNode::initialize() {
     return MS::kSuccess;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

@@ -24,9 +24,9 @@
 #define MM_LENS_MODEL_3DE_NODE_H
 
 // Maya
+#include <maya/MObject.h>
 #include <maya/MPxNode.h>
 #include <maya/MString.h>
-#include <maya/MObject.h>
 #include <maya/MTypeId.h>
 
 namespace mmsolver {
@@ -90,6 +90,6 @@ public:
     static MObject a_outLens;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif //MM_LENS_MODEL_3DE_NODE_H
+#endif  // MM_LENS_MODEL_3DE_NODE_H

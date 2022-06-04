@@ -27,15 +27,15 @@
 #include <cmath>
 
 // Maya
+#include <maya/MArgDatabase.h>
+#include <maya/MArgList.h>
 #include <maya/MGlobal.h>
 #include <maya/MIOStream.h>
-#include <maya/MPxCommand.h>
-#include <maya/MArgList.h>
-#include <maya/MArgDatabase.h>
-#include <maya/MSyntax.h>
-#include <maya/MSelectionList.h>
-#include <maya/MTime.h>
 #include <maya/MPoint.h>
+#include <maya/MPxCommand.h>
+#include <maya/MSelectionList.h>
+#include <maya/MSyntax.h>
+#include <maya/MTime.h>
 #include <maya/MTimeArray.h>
 
 // MM Solver
@@ -44,70 +44,70 @@
 // Command arguments and command name:
 
 // World-space Point to reproject, rather than giving a node.
-#define WORLD_POINT_FLAG            "-wp"
-#define WORLD_POINT_FLAG_LONG       "-worldPoint"
+#define WORLD_POINT_FLAG "-wp"
+#define WORLD_POINT_FLAG_LONG "-worldPoint"
 
 // Camera to reproject into.
-#define CAMERA_FLAG            "-c"
-#define CAMERA_FLAG_LONG       "-camera"
+#define CAMERA_FLAG "-c"
+#define CAMERA_FLAG_LONG "-camera"
 
 // Image Resolution
-#define IMAGE_RES_FLAG       "-ir"
-#define IMAGE_RES_FLAG_LONG  "-imageResolution"
+#define IMAGE_RES_FLAG "-ir"
+#define IMAGE_RES_FLAG_LONG "-imageResolution"
 
 // Time
-#define TIME_FLAG              "-t"
-#define TIME_FLAG_LONG         "-time"
+#define TIME_FLAG "-t"
+#define TIME_FLAG_LONG "-time"
 
 // Query as Camera Point?
-#define AS_CAM_POINT_FLAG       "-cpt"
-#define AS_CAM_POINT_FLAG_LONG  "-asCameraPoint"
+#define AS_CAM_POINT_FLAG "-cpt"
+#define AS_CAM_POINT_FLAG_LONG "-asCameraPoint"
 
 // Query as World Point?
-#define AS_WORLD_POINT_FLAG       "-wpt"
-#define AS_WORLD_POINT_FLAG_LONG  "-asWorldPoint"
+#define AS_WORLD_POINT_FLAG "-wpt"
+#define AS_WORLD_POINT_FLAG_LONG "-asWorldPoint"
 
 // Query as Coordinate?
-#define AS_COORD_FLAG       "-cd"
-#define AS_COORD_FLAG_LONG  "-asCoordinate"
+#define AS_COORD_FLAG "-cd"
+#define AS_COORD_FLAG_LONG "-asCoordinate"
 
 // Query as Pixel Coordinate?
-#define AS_PIXEL_COORD_FLAG       "-pcd"
-#define AS_PIXEL_COORD_FLAG_LONG  "-asPixelCoordinate"
+#define AS_PIXEL_COORD_FLAG "-pcd"
+#define AS_PIXEL_COORD_FLAG_LONG "-asPixelCoordinate"
 
 // Query as Normalized Coordinate?
-#define AS_NORM_COORD_FLAG       "-ncd"
-#define AS_NORM_COORD_FLAG_LONG  "-asNormalizedCoordinate"
+#define AS_NORM_COORD_FLAG "-ncd"
+#define AS_NORM_COORD_FLAG_LONG "-asNormalizedCoordinate"
 
 // Query as Normalized Coordinate?
-#define AS_MARKER_COORD_FLAG       "-mcd"
-#define AS_MARKER_COORD_FLAG_LONG  "-asMarkerCoordinate"
+#define AS_MARKER_COORD_FLAG "-mcd"
+#define AS_MARKER_COORD_FLAG_LONG "-asMarkerCoordinate"
 
 // Add Camera Direction Ratio to the list of data returned for each
 // point.
 //
 // This is helpful to find out if a transform is behind the camera or
 // not.
-#define WITH_CAMERA_DIR_RATIO_FLAG       "-wcd"
-#define WITH_CAMERA_DIR_RATIO_FLAG_LONG  "-withCameraDirectionRatio"
+#define WITH_CAMERA_DIR_RATIO_FLAG "-wcd"
+#define WITH_CAMERA_DIR_RATIO_FLAG_LONG "-withCameraDirectionRatio"
 
 namespace mmsolver {
 
 class MMReprojectionCmd : public MPxCommand {
 public:
-
-    MMReprojectionCmd() : m_nodeList(),
-                          m_givenWorldPoint(false),
-                          m_worldPoint(),
-                          m_camera(),
-                          m_timeList(),
-                          m_asCameraPoint(false),
-                          m_asWorldPoint(false),
-                          m_asCoordinate(false),
-                          m_asNormalizedCoordinate(false),
-                          m_asMarkerCoordinate(false),
-                          m_asPixelCoordinate(false),
-                          m_withCameraDirRatio(false) {};
+    MMReprojectionCmd()
+        : m_nodeList()
+        , m_givenWorldPoint(false)
+        , m_worldPoint()
+        , m_camera()
+        , m_timeList()
+        , m_asCameraPoint(false)
+        , m_asWorldPoint(false)
+        , m_asCoordinate(false)
+        , m_asNormalizedCoordinate(false)
+        , m_asMarkerCoordinate(false)
+        , m_asPixelCoordinate(false)
+        , m_withCameraDirRatio(false){};
 
     virtual ~MMReprojectionCmd();
 
@@ -123,7 +123,7 @@ public:
     static MString cmdName();
 
 private:
-    MStatus parseArgs( const MArgList& args );
+    MStatus parseArgs(const MArgList &args);
 
     MSelectionList m_nodeList;
     bool m_givenWorldPoint;
@@ -142,6 +142,6 @@ private:
     bool m_withCameraDirRatio;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MAYA_MM_REPROJECTION_CMD_H
+#endif  // MAYA_MM_REPROJECTION_CMD_H

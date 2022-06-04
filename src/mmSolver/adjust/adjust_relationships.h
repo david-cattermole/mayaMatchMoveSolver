@@ -21,89 +21,71 @@
  * Parameters (Attributes).
  */
 
-
 #ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_RELATIONSHIPS_H
 #define MM_SOLVER_CORE_BUNDLE_ADJUST_RELATIONSHIPS_H
 
 // STL
-#include <string>
-#include <vector>
-#include <utility>
-#include <cmath>
 #include <cassert>
+#include <cmath>
+#include <string>
+#include <utility>
+#include <vector>
 
 // Maya
+#include <maya/MAnimCurveChange.h>
+#include <maya/MComputation.h>
+#include <maya/MDGModifier.h>
 #include <maya/MPoint.h>
 #include <maya/MStringArray.h>
-#include <maya/MAnimCurveChange.h>
-#include <maya/MDGModifier.h>
-#include <maya/MComputation.h>
 
 // MM Solver
-#include "mmSolver/utilities/debug_utils.h"
+#include "adjust_data.h"
+#include "adjust_defines.h"
+#include "adjust_solveFunc.h"
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "adjust_defines.h"
-#include "adjust_data.h"
-#include "adjust_solveFunc.h"
-
+#include "mmSolver/utilities/debug_utils.h"
 
 typedef std::vector<std::vector<bool> > BoolList2D;
 typedef std::pair<int, int> IndexPair;
 typedef std::vector<std::pair<int, int> > IndexPairList;
 
 int countUpNumberOfErrors(
-    const MarkerPtrList &markerList,
-    const StiffAttrsPtrList &stiffAttrsList,
-    const SmoothAttrsPtrList &smoothAttrsList,
-    const MTimeArray &frameList,
-    MarkerPtrList &out_validMarkerList,
-    std::vector<MPoint> &out_markerPosList,
+    const MarkerPtrList &markerList, const StiffAttrsPtrList &stiffAttrsList,
+    const SmoothAttrsPtrList &smoothAttrsList, const MTimeArray &frameList,
+    MarkerPtrList &out_validMarkerList, std::vector<MPoint> &out_markerPosList,
     std::vector<double> &out_markerWeightList,
-    IndexPairList &out_errorToMarkerList,
-    int &out_numberOfMarkerErrors,
-    int &out_numberOfAttrStiffnessErrors,
-    int &out_numberOfAttrSmoothnessErrors,
+    IndexPairList &out_errorToMarkerList, int &out_numberOfMarkerErrors,
+    int &out_numberOfAttrStiffnessErrors, int &out_numberOfAttrSmoothnessErrors,
     MStatus &status);
 
 int countUpNumberOfUnknownParameters(
-    const AttrPtrList &attrList,
-    const MTimeArray &frameList,
-    AttrPtrList &out_camStaticAttrList,
-    AttrPtrList &out_camAnimAttrList,
-    AttrPtrList &out_staticAttrList,
-    AttrPtrList &out_animAttrList,
+    const AttrPtrList &attrList, const MTimeArray &frameList,
+    AttrPtrList &out_camStaticAttrList, AttrPtrList &out_camAnimAttrList,
+    AttrPtrList &out_staticAttrList, AttrPtrList &out_animAttrList,
     std::vector<double> &out_paramLowerBoundList,
     std::vector<double> &out_paramUpperBoundList,
     std::vector<double> &out_paramWeightList,
-    IndexPairList &out_paramToAttrList,
-    BoolList2D &out_paramFrameList,
+    IndexPairList &out_paramToAttrList, BoolList2D &out_paramFrameList,
     MStatus &out_status);
 
-void findMarkerToAttributeRelationship(
-    const MarkerPtrList &markerList,
-    const AttrPtrList &attrList,
-    BoolList2D &out_markerToAttrList,
-    MStatus &out_status);
+void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
+                                       const AttrPtrList &attrList,
+                                       BoolList2D &out_markerToAttrList,
+                                       MStatus &out_status);
 
-void getMarkerToAttributeRelationship(
-    const MarkerPtrList &markerList,
-    const AttrPtrList &attrList,
-    BoolList2D &out_markerToAttrList,
-    MStatus &out_status);
+void getMarkerToAttributeRelationship(const MarkerPtrList &markerList,
+                                      const AttrPtrList &attrList,
+                                      BoolList2D &out_markerToAttrList,
+                                      MStatus &out_status);
 
 void findErrorToParameterRelationship(
-    const MarkerPtrList &markerList,
-    const AttrPtrList &attrList,
-    const MTimeArray &frameList,
-    const int numParameters,
-    const int numMarkerErrors,
-    const IndexPairList &paramToAttrList,
-    const IndexPairList &errorToMarkerList,
-    const BoolList2D &markerToAttrList,
-    BoolList2D &out_errorToParamList,
-    MStatus &out_status);
+    const MarkerPtrList &markerList, const AttrPtrList &attrList,
+    const MTimeArray &frameList, const int numParameters,
+    const int numMarkerErrors, const IndexPairList &paramToAttrList,
+    const IndexPairList &errorToMarkerList, const BoolList2D &markerToAttrList,
+    BoolList2D &out_errorToParamList, MStatus &out_status);
 
-#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_RELATIONSHIPS_H
+#endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_RELATIONSHIPS_H

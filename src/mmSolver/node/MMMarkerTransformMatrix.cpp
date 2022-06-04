@@ -24,11 +24,11 @@
 #include "MMMarkerTransformMatrix.h"
 
 // Maya
-#include <maya/MPxTransformationMatrix.h>
-#include <maya/MGlobal.h>
 #include <maya/MFnNumericAttribute.h>
-#include <maya/MTransformationMatrix.h>
+#include <maya/MGlobal.h>
 #include <maya/MIOStream.h>
+#include <maya/MPxTransformationMatrix.h>
+#include <maya/MTransformationMatrix.h>
 
 // MM Solver
 #include "mmSolver/nodeTypeIds.h"
@@ -36,7 +36,6 @@
 namespace mmsolver {
 
 MTypeId MMMarkerTransformMatrix::m_id(MM_MARKER_TRANSFORM_MATRIX_TYPE_ID);
-
 
 MMMarkerTransformMatrix::MMMarkerTransformMatrix() : m_value(nullptr) {}
 
@@ -51,7 +50,6 @@ std::shared_ptr<LensModel> MMMarkerTransformMatrix::getLensModel() const {
 void MMMarkerTransformMatrix::setLensModel(std::shared_ptr<LensModel> value) {
     m_value = value;
 }
-
 
 // This method will be used to return information to Maya. Use the
 // attributes which are outside of the regular transform attributes to
@@ -73,9 +71,8 @@ MMatrix MMMarkerTransformMatrix::asMatrix() const {
 
         double temp_out_x = translate.x;
         double temp_out_y = translate.y;
-        lensModel->applyModelUndistort(
-            translate.x, translate.y,
-            temp_out_x, temp_out_y);
+        lensModel->applyModelUndistort(translate.x, translate.y, temp_out_x,
+                                       temp_out_y);
         if (std::isfinite(temp_out_x)) {
             out_translate.x = temp_out_x;
         }
@@ -99,4 +96,4 @@ MMatrix MMMarkerTransformMatrix::asMatrix(double percent) const {
     return m;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

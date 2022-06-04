@@ -26,10 +26,10 @@
 
 // Maya
 #include <maya/MMatrix.h>
-#include <maya/MTransformationMatrix.h>
-#include <maya/MTypeId.h>
 #include <maya/MPxTransform.h>
 #include <maya/MPxTransformationMatrix.h>
+#include <maya/MTransformationMatrix.h>
+#include <maya/MTypeId.h>
 
 // MM Solver
 #include "MMMarkerTransformMatrix.h"
@@ -40,7 +40,7 @@ class MMMarkerTransformNode : public MPxTransform {
 public:
     MMMarkerTransformNode();
 #if MAYA_API_VERSION < 20200000
-    MMMarkerTransformNode(MPxTransformationMatrix*);
+    MMMarkerTransformNode(MPxTransformationMatrix *);
 #endif
 
     virtual ~MMMarkerTransformNode();
@@ -55,12 +55,12 @@ public:
     virtual void resetTransformation(const MMatrix &);
 
 #if MAYA_API_VERSION < 20180000
-    virtual MStatus validateAndSetValue(const MPlug& plug,
-                                        const MDataHandle& handle,
-                                        const MDGContext& context);
+    virtual MStatus validateAndSetValue(const MPlug &plug,
+                                        const MDataHandle &handle,
+                                        const MDGContext &context);
 #else
-    virtual MStatus validateAndSetValue(const MPlug& plug,
-                                        const MDataHandle& handle);
+    virtual MStatus validateAndSetValue(const MPlug &plug,
+                                        const MDataHandle &handle);
 #endif
 
     // Utility for getting the related matrix pointer
@@ -77,6 +77,6 @@ protected:
     typedef MPxTransform ParentClass;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_MARKER_TRANSFORM_NODE_H
+#endif  // MM_MARKER_TRANSFORM_NODE_H

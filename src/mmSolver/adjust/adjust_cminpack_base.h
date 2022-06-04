@@ -27,20 +27,19 @@
 #include <vector>
 
 // Maya
+#include <maya/MAnimCurveChange.h>
+#include <maya/MComputation.h>
+#include <maya/MDGModifier.h>
 #include <maya/MPoint.h>
 #include <maya/MStringArray.h>
-#include <maya/MAnimCurveChange.h>
-#include <maya/MDGModifier.h>
-#include <maya/MComputation.h>
 
 // MM Solver
+#include "adjust_base.h"
+#include "adjust_solveFunc.h"
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "adjust_solveFunc.h"
-#include "adjust_base.h"
-
 
 // CMinpack 'lmdif' Termination Reasons:
 //
@@ -49,33 +48,37 @@
 // description of fcn. Otherwise, info is set as follows.
 //
 const std::string cminpackReasons[9] = {
-        // reason 0
-        "Improper input parameters",
+    // reason 0
+    "Improper input parameters",
 
-        // reason 1
-        "Both actual and predicted relative reductions in the sum of squares are at most ftol.",
+    // reason 1
+    "Both actual and predicted relative reductions in the sum of squares are "
+    "at most ftol.",
 
-        // reason 2
-        "Relative error between two consecutive iterates is at most xtol.",
+    // reason 2
+    "Relative error between two consecutive iterates is at most xtol.",
 
-        // reason 3
-        "Conditions for info = 1 and info = 2 both hold.",
+    // reason 3
+    "Conditions for info = 1 and info = 2 both hold.",
 
-        // reason 4
-        "The cosine of the angle between fvec and any column of the Jacobian is at most gtol in absolute value.",
+    // reason 4
+    "The cosine of the angle between fvec and any column of the Jacobian is at "
+    "most gtol in absolute value.",
 
-        // reason 5
-        "Number of calls to fcn has reached or exceeded maxfev.",
+    // reason 5
+    "Number of calls to fcn has reached or exceeded maxfev.",
 
-        // reason 6
-        "\'ftol\' is too small. No further reduction in the sum of squares is possible.",
+    // reason 6
+    "\'ftol\' is too small. No further reduction in the sum of squares is "
+    "possible.",
 
-        // reason 7
-        "\'xtol\' is too small. No further improvement in the approximate solution x is possible.",
+    // reason 7
+    "\'xtol\' is too small. No further improvement in the approximate solution "
+    "x is possible.",
 
-        // reason 8
-        "\'gtol\' is too small. fvec is orthogonal to the columns of the Jacobian to machine precision.",
+    // reason 8
+    "\'gtol\' is too small. fvec is orthogonal to the columns of the Jacobian "
+    "to machine precision.",
 };
 
-
-#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_BASE_H
+#endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_BASE_H

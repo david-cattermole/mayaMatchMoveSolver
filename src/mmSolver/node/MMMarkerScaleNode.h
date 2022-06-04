@@ -17,19 +17,20 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Simple computation node to keep markers in screen-space when the camera filmback/focal length is modified.
+ * Simple computation node to keep markers in screen-space when the camera
+ * filmback/focal length is modified.
  */
 
 #ifndef MM_MARKER_SCALE_NODE_H
 #define MM_MARKER_SCALE_NODE_H
 
 // Maya
+#include <maya/MFnDependencyNode.h>
 #include <maya/MPxNode.h>
 #include <maya/MString.h>
-#include <maya/MVector.h>
 #include <maya/MTime.h>
-#include <maya/MFnDependencyNode.h>
 #include <maya/MTypeId.h>
+#include <maya/MVector.h>
 
 namespace mmsolver {
 
@@ -77,6 +78,6 @@ public:
     static MObject a_outScaleZ;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_MARKER_SCALE_NODE_H
+#endif  // MM_MARKER_SCALE_NODE_H

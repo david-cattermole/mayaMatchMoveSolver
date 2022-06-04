@@ -29,24 +29,22 @@
 #include <maya/MGlobal.h>
 #include <maya/MIOStream.h>
 #include <maya/MPxCommand.h>
-#include <maya/MSyntax.h>
 #include <maya/MSelectionList.h>
 #include <maya/MString.h>
+#include <maya/MSyntax.h>
 
 // Command arguments and command name:
-#define FILE_PATH_FLAG            "-fp"
-#define FILE_PATH_FLAG_LONG       "-filePath"
+#define FILE_PATH_FLAG "-fp"
+#define FILE_PATH_FLAG_LONG "-filePath"
 
-#define WIDTH_HEIGHT_FLAG         "-wh"
-#define WIDTH_HEIGHT_FLAG_LONG    "-widthHeight"
+#define WIDTH_HEIGHT_FLAG "-wh"
+#define WIDTH_HEIGHT_FLAG_LONG "-widthHeight"
 
 namespace mmsolver {
 
 class MMReadImageCmd : public MPxCommand {
 public:
-
-    MMReadImageCmd()
-            : m_file_path() {};
+    MMReadImageCmd() : m_file_path(){};
 
     virtual ~MMReadImageCmd();
 
@@ -62,12 +60,12 @@ public:
     static MString cmdName();
 
 private:
-    MStatus parseArgs( const MArgList& args );
+    MStatus parseArgs(const MArgList &args);
 
     MString m_file_path;
     bool m_query_width_height;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MAYA_MM_READ_IMAGE_CMD_H
+#endif  // MAYA_MM_READ_IMAGE_CMD_H

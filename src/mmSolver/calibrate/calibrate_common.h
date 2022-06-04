@@ -26,7 +26,6 @@
 // MM Solver
 #include "mmSolver/core/mmdata.h"
 
-
 namespace calibrate {
 
 // How to orient the camera calibration to a specific plane.
@@ -61,92 +60,66 @@ struct CameraParameters {
     mmdata::Point2D vanishingPointB_;
 
     CameraParameters()
-            : focalLength_mm_(35.0)
-            , filmBackWidth_mm_(36.0)
-            , filmBackHeight_mm_(24.0)
-            , principalPoint_()
-            , transformMatrix_()
-            , vanishingPointA_(0.0, 1.0)
-            , vanishingPointB_(1.0, 0.0) {}
+        : focalLength_mm_(35.0)
+        , filmBackWidth_mm_(36.0)
+        , filmBackHeight_mm_(24.0)
+        , principalPoint_()
+        , transformMatrix_()
+        , vanishingPointA_(0.0, 1.0)
+        , vanishingPointB_(1.0, 0.0) {}
 };
 
 // Intersection of two parallel 2D lines in a projective camera,
 // creating a vanishing point.
-bool
-calcVanishingPointFromLinePair(
-    mmdata::LinePair2D linePair,
-    mmdata::Point2D &outPoint);
+bool calcVanishingPointFromLinePair(mmdata::LinePair2D linePair,
+                                    mmdata::Point2D &outPoint);
 
 // With a single vanishing point (vpA), and a direction of the horizon
 // line, and the focal length we can re-arrange and estimate a second
 // vanishing point.
-mmdata::Point2D
-estimateSecondVanishingPoint(
-    mmdata::Point2D vpA,
-    mmdata::Point2D principalPoint,
-    mmdata::Point2D horizonDirection,
-    double focalLengthFactor);
+mmdata::Point2D estimateSecondVanishingPoint(mmdata::Point2D vpA,
+                                             mmdata::Point2D principalPoint,
+                                             mmdata::Point2D horizonDirection,
+                                             double focalLengthFactor);
 
 // Compute the focal length from two vanishing points.
-bool
-calcFocalLength(
-    mmdata::Point2D vpA,
-    mmdata::Point2D vpB,
-    mmdata::Point2D principalPoint,
-    double &outFocalLength);
+bool calcFocalLength(mmdata::Point2D vpA, mmdata::Point2D vpB,
+                     mmdata::Point2D principalPoint, double &outFocalLength);
 
 // Calculate the rotation matrix from two vanishing points.
-bool
-calcCameraRotationMatrix(
-    mmdata::Point2D vpA,
-    mmdata::Point2D vpB,
-    mmdata::Point2D principalPoint,
-    double focalLengthFactor,
-    mmdata::Matrix4x4 &outMatrix);
+bool calcCameraRotationMatrix(mmdata::Point2D vpA, mmdata::Point2D vpB,
+                              mmdata::Point2D principalPoint,
+                              double focalLengthFactor,
+                              mmdata::Matrix4x4 &outMatrix);
 
 // Create an orientation matrix, to align the camera calibration.
-mmdata::Matrix4x4
-createOrientationMatrix(
-    OrientationPlane orientPlane,
-    bool flipX,
-    bool flipY,
-    bool flipZ);
+mmdata::Matrix4x4 createOrientationMatrix(OrientationPlane orientPlane,
+                                          bool flipX, bool flipY, bool flipZ);
 
 // Calculate the translation of the camera.
-bool
-calcTranslationVector(
-    mmdata::Point2D originPoint,
-    mmdata::Point2D principalPoint,
-    double angleOfView_radians,
-    mmdata::Vector3D &outVector);
+bool calcTranslationVector(mmdata::Point2D originPoint,
+                           mmdata::Point2D principalPoint,
+                           double angleOfView_radians,
+                           mmdata::Vector3D &outVector);
 
 // Scale the camera transform based on the scene scale logic and a
 // single distance value.
-bool
-applySceneScale(
-    mmdata::Matrix4x4 cameraTransform,
-    SceneScaleMode sceneScaleMode,
-    double distance_cm,
-    mmdata::Matrix4x4 &outCameraTransform);
+bool applySceneScale(mmdata::Matrix4x4 cameraTransform,
+                     SceneScaleMode sceneScaleMode, double distance_cm,
+                     mmdata::Matrix4x4 &outCameraTransform);
 
 // Calculate the camera parameters, both intrinsic (angle of view) and
 // extrinsic (rotations and translations).
 //
 // The scale is arbitrary, but the 'sceneScaleMode' can be used to
 // scale the camera.
-bool
-calcCameraParameters(
-    mmdata::Point2D originPoint,
-    mmdata::Point2D principalPoint,
-    mmdata::Point2D vanishingPointA,
-    mmdata::Point2D vanishingPointB,
-    SceneScaleMode sceneScaleMode,
-    double sceneScaleDistance_cm,
-    double focalLengthFactor,
-    double filmBackWidth_mm,
-    double filmBackHeight_mm,
+bool calcCameraParameters(
+    mmdata::Point2D originPoint, mmdata::Point2D principalPoint,
+    mmdata::Point2D vanishingPointA, mmdata::Point2D vanishingPointB,
+    SceneScaleMode sceneScaleMode, double sceneScaleDistance_cm,
+    double focalLengthFactor, double filmBackWidth_mm, double filmBackHeight_mm,
     CameraParameters &outCameraParameters);
 
-} // namespace calibrate
+}  // namespace calibrate
 
-#endif //MAYA_MM_SOLVER_CORE_CALIBRATE_COMMON_H
+#endif  // MAYA_MM_SOLVER_CORE_CALIBRATE_COMMON_H

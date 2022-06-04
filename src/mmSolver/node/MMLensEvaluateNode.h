@@ -24,11 +24,11 @@
 #define MM_LENS_EVALUATE_NODE_H
 
 // Maya
+#include <maya/MFnDependencyNode.h>
+#include <maya/MObject.h>
 #include <maya/MPxNode.h>
 #include <maya/MString.h>
-#include <maya/MObject.h>
 #include <maya/MTime.h>
-#include <maya/MFnDependencyNode.h>
 #include <maya/MTypeId.h>
 
 namespace mmsolver {
@@ -60,6 +60,6 @@ public:
     static MObject a_outHash;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_LENS_EVALUATE_NODE_H
+#endif  // MM_LENS_EVALUATE_NODE_H

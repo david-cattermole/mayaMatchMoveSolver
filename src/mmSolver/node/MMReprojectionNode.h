@@ -24,11 +24,11 @@
 #define MM_REPROJECTION_NODE_H
 
 // Maya
+#include <maya/MFnDependencyNode.h>
+#include <maya/MObject.h>
 #include <maya/MPxNode.h>
 #include <maya/MString.h>
-#include <maya/MObject.h>
 #include <maya/MTime.h>
-#include <maya/MFnDependencyNode.h>
 #include <maya/MTypeId.h>
 
 namespace mmsolver {
@@ -57,16 +57,16 @@ public:
     static MObject a_cameraWorldMatrix;
 
     // 'Apply matrix'; a matrix we apply when in screen-space.
-     static MObject a_applyMatrix;
+    static MObject a_applyMatrix;
 
     // Force a new screen-space position
     static MObject a_overrideScreenX;
     static MObject a_overrideScreenY;
     static MObject a_overrideScreenZ;
-    static MObject a_screenX;    // Overrides the screenX to this number.
-    static MObject a_screenY;    // Overrides the screenY to this number.
-    static MObject a_screenZ;    // Overrides the screenZ to this number.
-    static MObject a_depthScale; // Multiply the calculated depth value
+    static MObject a_screenX;     // Overrides the screenX to this number.
+    static MObject a_screenY;     // Overrides the screenY to this number.
+    static MObject a_screenZ;     // Overrides the screenZ to this number.
+    static MObject a_depthScale;  // Multiply the calculated depth value
 
     // The camera attributes to calculate camera projection matrix
     static MObject a_focalLength;
@@ -152,6 +152,6 @@ public:
     static MObject a_outCameraDirectionRatio;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_REPROJECTION_NODE_H
+#endif  // MM_REPROJECTION_NODE_H

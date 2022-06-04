@@ -66,79 +66,59 @@ enum class Point2DSpace {
     CameraFilmBackInches,
 };
 
+mmdata::Point2D convertCoordPointMarkerToImageNormalized(mmdata::Point2D point,
+                                                         double width,
+                                                         double height);
 
-mmdata::Point2D
-convertCoordPointMarkerToImageNormalized(
-    mmdata::Point2D point,
-    double width,
-    double height);
+mmdata::Point2D convertPoint2DImageNormalizedToMarker(mmdata::Point2D point,
+                                                      double width,
+                                                      double height);
 
-mmdata::Point2D
-convertPoint2DImageNormalizedToMarker(
-    mmdata::Point2D point,
-    double width,
-    double height);
+mmdata::Point2D convertCoordPointMarkerToCameraFilmBackInches(
+    mmdata::Point2D point, double width_inches, double height_inches);
 
-mmdata::Point2D
-convertCoordPointMarkerToCameraFilmBackInches(
-    mmdata::Point2D point,
-    double width_inches,
-    double height_inches);
-
-inline
-mmdata::Point2D
-convertPoint2D(
-    const Point2DSpace from,
-    const Point2DSpace to,
-    mmdata::Point2D point,
-    double width = 100,
-    double height = 100) {
-
+inline mmdata::Point2D convertPoint2D(const Point2DSpace from,
+                                      const Point2DSpace to,
+                                      mmdata::Point2D point, double width = 100,
+                                      double height = 100) {
     auto result = mmdata::Point2D();
 
     switch (from) {
-    case Point2DSpace::Marker:
-        switch (to) {
-        case Point2DSpace::ImageNormalized: {
-            result = convertCoordPointMarkerToImageNormalized(
-                point,
-                width,
-                height);
-            break;
-        }
-        case Point2DSpace::CameraFilmBackInches: {
-            result = convertCoordPointMarkerToCameraFilmBackInches(
-                point,
-                width,
-                height);
-            break;
-        }
+        case Point2DSpace::Marker:
+            switch (to) {
+                case Point2DSpace::ImageNormalized: {
+                    result = convertCoordPointMarkerToImageNormalized(
+                        point, width, height);
+                    break;
+                }
+                case Point2DSpace::CameraFilmBackInches: {
+                    result = convertCoordPointMarkerToCameraFilmBackInches(
+                        point, width, height);
+                    break;
+                }
+                default: {
+                    assert(false);
+                }
+            }
+        case Point2DSpace::ImageNormalized:
+            switch (to) {
+                case Point2DSpace::Marker: {
+                    result = convertPoint2DImageNormalizedToMarker(point, width,
+                                                                   height);
+                    break;
+                }
+                default: {
+                    assert(false);
+                }
+            }
         default: {
             assert(false);
         }
-        }
-    case Point2DSpace::ImageNormalized:
-        switch (to) {
-        case Point2DSpace::Marker: {
-            result = convertPoint2DImageNormalizedToMarker(
-                point,
-                width,
-                height);
-            break;
-        }
-        default: {
-            assert(false);
-        }
-        }
-    default: {
-        assert(false);
-    }
     }
 
     return result;
 }
 
+}  // namespace mmcoord
 
-} // namespace mmcoord
-
-#endif // MM_SOLVER_CORE_MM_COORD_H
+#endif  // MM_SOLVER_CORE_MM_COORD_H

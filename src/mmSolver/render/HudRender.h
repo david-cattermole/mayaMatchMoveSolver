@@ -22,9 +22,9 @@
 #ifndef MM_SOLVER_RENDER_HUD_RENDER_H
 #define MM_SOLVER_RENDER_HUD_RENDER_H
 
+#include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
-#include <maya/MRenderTargetManager.h>
 
 namespace mmsolver {
 namespace render {
@@ -35,17 +35,15 @@ public:
     HudRender();
     ~HudRender() override;
 
-    MHWRender::MRenderTarget *const *
-    targetOverrideList(unsigned int &listSize) override;
+    MHWRender::MRenderTarget *const *targetOverrideList(
+        unsigned int &listSize) override;
 
     bool hasUIDrawables() const override;
     void addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
                         const MHWRender::MFrameContext &frameContext) override;
 
-    void
-    setRenderTargets(MHWRender::MRenderTarget **targets,
-                     const uint32_t index,
-                     const uint32_t count) {
+    void setRenderTargets(MHWRender::MRenderTarget **targets,
+                          const uint32_t index, const uint32_t count) {
         m_targets = targets;
         m_target_index = index;
         m_target_count = count;
@@ -59,10 +57,9 @@ protected:
     // are able to give the exact targets.
     uint32_t m_target_index;
     uint32_t m_target_count;
-
 };
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver
 
-#endif //MAYA_MM_SOLVER_RENDER_HUD_RENDER_H
+#endif  // MAYA_MM_SOLVER_RENDER_HUD_RENDER_H

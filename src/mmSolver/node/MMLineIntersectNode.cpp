@@ -22,65 +22,56 @@
 #include "MMLineIntersectNode.h"
 
 // STL
-#include <cstring>
 #include <cmath>
+#include <cstring>
 
 // Maya
-#include <maya/MMatrix.h>
-#include <maya/MPlug.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
-#include <maya/MObject.h>
-#include <maya/MObjectArray.h>
-#include <maya/MFnNumericAttribute.h>
+#include <maya/MFnCompoundAttribute.h>
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MFnMatrixAttribute.h>
-#include <maya/MFnCompoundAttribute.h>
-#include <maya/MFnNumericData.h>
 #include <maya/MFnMatrixData.h>
+#include <maya/MFnNumericAttribute.h>
+#include <maya/MFnNumericData.h>
+#include <maya/MMatrix.h>
+#include <maya/MObject.h>
+#include <maya/MObjectArray.h>
+#include <maya/MPlug.h>
 #include <maya/MStreamUtils.h>
 
 // MM Solver
+#include "mmSolver/calibrate/calibrate_common.h"
+#include "mmSolver/core/mmcamera.h"
+#include "mmSolver/core/mmdata.h"
+#include "mmSolver/core/mmmath.h"
+#include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
-#include "mmSolver/mayahelper/maya_utils.h"
-#include "mmSolver/core/mmdata.h"
-#include "mmSolver/core/mmmath.h"
-#include "mmSolver/core/mmcamera.h"
-#include "mmSolver/calibrate/calibrate_common.h"
 
 namespace mmsolver {
 
-MStatus getLineAttributeValues(
-        MDataBlock &data,
-        MObject &attr_pointAX,
-        MObject &attr_pointAY,
-        MObject &attr_pointBX,
-        MObject &attr_pointBY,
-        mmdata::Line2D &output)
-{
+MStatus getLineAttributeValues(MDataBlock &data, MObject &attr_pointAX,
+                               MObject &attr_pointAY, MObject &attr_pointBX,
+                               MObject &attr_pointBY, mmdata::Line2D &output) {
     MStatus status = MS::kUnknownParameter;
 
     ///////////////////////////////
-    MDataHandle pointAXHandle = data.inputValue(
-            attr_pointAX, &status);
+    MDataHandle pointAXHandle = data.inputValue(attr_pointAX, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     double ax = pointAXHandle.asDouble();
 
-    MDataHandle pointAYHandle = data.inputValue(
-            attr_pointAY, &status);
+    MDataHandle pointAYHandle = data.inputValue(attr_pointAY, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     double ay = pointAYHandle.asDouble();
 
     ///////////////////////////////
-    MDataHandle pointBXHandle = data.inputValue(
-            attr_pointBX, &status);
+    MDataHandle pointBXHandle = data.inputValue(attr_pointBX, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     double bx = pointBXHandle.asDouble();
 
-    MDataHandle pointBYHandle = data.inputValue(
-            attr_pointBY, &status);
+    MDataHandle pointBYHandle = data.inputValue(attr_pointBY, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     double by = pointBYHandle.asDouble();
 
@@ -89,7 +80,6 @@ MStatus getLineAttributeValues(
     output = mmdata::Line2D(a, b);
     return MS::kSuccess;
 }
-
 
 MTypeId MMLineIntersectNode::m_id(MM_LINE_INTERSECT_TYPE_ID);
 
@@ -117,7 +107,6 @@ MObject MMLineIntersectNode::a_outVanishingPointY;
 
 MObject MMLineIntersectNode::a_outCosineAngle;
 
-
 MMLineIntersectNode::MMLineIntersectNode() {}
 
 MMLineIntersectNode::~MMLineIntersectNode() {}
@@ -129,30 +118,16 @@ MString MMLineIntersectNode::nodeName() {
 MStatus MMLineIntersectNode::compute(const MPlug &plug, MDataBlock &data) {
     MStatus status = MS::kUnknownParameter;
 
-    if ((plug == a_outVanishingPoint)
-        || (plug == a_outVanishingPointX)
-        || (plug == a_outVanishingPointY)) {
-
+    if ((plug == a_outVanishingPoint) || (plug == a_outVanishingPointX) ||
+        (plug == a_outVanishingPointY)) {
         // Get Data Handles
         auto lineA = mmdata::Line2D();
-        CHECK_MSTATUS_AND_RETURN_IT(
-            getLineAttributeValues(
-                    data,
-                    a_pointAX,
-                    a_pointAY,
-                    a_pointBX,
-                    a_pointBY,
-                    lineA));
+        CHECK_MSTATUS_AND_RETURN_IT(getLineAttributeValues(
+            data, a_pointAX, a_pointAY, a_pointBX, a_pointBY, lineA));
 
         auto lineB = mmdata::Line2D();
-        CHECK_MSTATUS_AND_RETURN_IT(
-            getLineAttributeValues(
-                    data,
-                    a_pointCX,
-                    a_pointCY,
-                    a_pointDX,
-                    a_pointDY,
-                    lineB));
+        CHECK_MSTATUS_AND_RETURN_IT(getLineAttributeValues(
+            data, a_pointCX, a_pointCY, a_pointDX, a_pointDY, lineB));
 
         auto linePair = mmdata::LinePair2D(lineA, lineB);
 
@@ -163,9 +138,8 @@ MStatus MMLineIntersectNode::compute(const MPlug &plug, MDataBlock &data) {
 
         // Calculate the input vanishing point
         auto vanishingPoint = mmdata::Point2D();
-        auto ok = calibrate::calcVanishingPointFromLinePair(
-                linePair,
-                vanishingPoint);
+        auto ok =
+            calibrate::calcVanishingPointFromLinePair(linePair, vanishingPoint);
         if (!ok) {
             MStreamUtils::stdErrorStream()
                 << "Failed calculateVanishingPointFromLinePair." << '\n';
@@ -176,14 +150,14 @@ MStatus MMLineIntersectNode::compute(const MPlug &plug, MDataBlock &data) {
 #ifdef DEBUG
         MStreamUtils::stdErrorStream()
             << "outCameraParameters vanishingPoint:"
-            << " x=" << vanishingPoint.x_
-            << " y=" << vanishingPoint.y_
-            << '\n';
+            << " x=" << vanishingPoint.x_ << " y=" << vanishingPoint.y_ << '\n';
 #endif
 
         // Output Vanishing Point
-        MDataHandle outVanishingPointXHandle = data.outputValue(a_outVanishingPointX);
-        MDataHandle outVanishingPointYHandle = data.outputValue(a_outVanishingPointY);
+        MDataHandle outVanishingPointXHandle =
+            data.outputValue(a_outVanishingPointX);
+        MDataHandle outVanishingPointYHandle =
+            data.outputValue(a_outVanishingPointY);
         outVanishingPointXHandle.setDouble(vanishingPoint.x_);
         outVanishingPointYHandle.setDouble(vanishingPoint.y_);
         outVanishingPointXHandle.setClean();
@@ -198,9 +172,7 @@ MStatus MMLineIntersectNode::compute(const MPlug &plug, MDataBlock &data) {
     return status;
 }
 
-void *MMLineIntersectNode::creator() {
-    return (new MMLineIntersectNode());
-}
+void *MMLineIntersectNode::creator() { return (new MMLineIntersectNode()); }
 
 MStatus MMLineIntersectNode::initialize() {
     MStatus status;
@@ -210,21 +182,17 @@ MStatus MMLineIntersectNode::initialize() {
     //////////////////////////////////////////////////////////////////////////
 
     {
-        a_pointAX = numericAttr.create(
-            "pointAX", "pntax",
-            MFnNumericData::kDouble, 0.0);
+        a_pointAX = numericAttr.create("pointAX", "pntax",
+                                       MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
 
-        a_pointAY = numericAttr.create(
-            "pointAY", "pntay",
-            MFnNumericData::kDouble, 0.0);
+        a_pointAY = numericAttr.create("pointAY", "pntay",
+                                       MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
 
-        a_pointA = compoundAttr.create(
-            "pointA", "pnta",
-            &status);
+        a_pointA = compoundAttr.create("pointA", "pnta", &status);
         CHECK_MSTATUS(status);
         compoundAttr.addChild(a_pointAX);
         compoundAttr.addChild(a_pointAY);
@@ -232,21 +200,17 @@ MStatus MMLineIntersectNode::initialize() {
     }
 
     {
-        a_pointBX = numericAttr.create(
-            "pointBX", "pntbx",
-            MFnNumericData::kDouble, 0.0);
+        a_pointBX = numericAttr.create("pointBX", "pntbx",
+                                       MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
 
-        a_pointBY = numericAttr.create(
-            "pointBY", "pntby",
-            MFnNumericData::kDouble, 0.0);
+        a_pointBY = numericAttr.create("pointBY", "pntby",
+                                       MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
 
-        a_pointB = compoundAttr.create(
-            "pointB", "pntb",
-            &status);
+        a_pointB = compoundAttr.create("pointB", "pntb", &status);
         CHECK_MSTATUS(status);
         compoundAttr.addChild(a_pointBX);
         compoundAttr.addChild(a_pointBY);
@@ -254,21 +218,17 @@ MStatus MMLineIntersectNode::initialize() {
     }
 
     {
-        a_pointCX = numericAttr.create(
-            "pointCX", "pntcx",
-            MFnNumericData::kDouble, 0.0);
+        a_pointCX = numericAttr.create("pointCX", "pntcx",
+                                       MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
 
-        a_pointCY = numericAttr.create(
-            "pointCY", "pntcy",
-            MFnNumericData::kDouble, 0.0);
+        a_pointCY = numericAttr.create("pointCY", "pntcy",
+                                       MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
 
-        a_pointC = compoundAttr.create(
-            "pointC", "pntc",
-            &status);
+        a_pointC = compoundAttr.create("pointC", "pntc", &status);
         CHECK_MSTATUS(status);
         compoundAttr.addChild(a_pointCX);
         compoundAttr.addChild(a_pointCY);
@@ -276,21 +236,17 @@ MStatus MMLineIntersectNode::initialize() {
     }
 
     {
-        a_pointDX = numericAttr.create(
-            "pointDX", "pntdx",
-            MFnNumericData::kDouble, 0.0);
+        a_pointDX = numericAttr.create("pointDX", "pntdx",
+                                       MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
 
-        a_pointDY = numericAttr.create(
-            "pointDY", "pntdy",
-            MFnNumericData::kDouble, 0.0);
+        a_pointDY = numericAttr.create("pointDY", "pntdy",
+                                       MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
 
-        a_pointD = compoundAttr.create(
-            "pointD", "pntd",
-            &status);
+        a_pointD = compoundAttr.create("pointD", "pntd", &status);
         CHECK_MSTATUS(status);
         compoundAttr.addChild(a_pointDX);
         compoundAttr.addChild(a_pointDY);
@@ -301,21 +257,18 @@ MStatus MMLineIntersectNode::initialize() {
 
     // Out Vanishing Point
     {
-        a_outVanishingPointX = numericAttr.create(
-            "outVanishingPointX", "ovpax",
-            MFnNumericData::kDouble, 0.0);
+        a_outVanishingPointX = numericAttr.create("outVanishingPointX", "ovpax",
+                                                  MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
 
-        a_outVanishingPointY = numericAttr.create(
-            "outVanishingPointY", "ovpay",
-            MFnNumericData::kDouble, 0.0);
+        a_outVanishingPointY = numericAttr.create("outVanishingPointY", "ovpay",
+                                                  MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
 
-        a_outVanishingPoint = compoundAttr.create(
-            "outVanishingPoint", "ovpa",
-            &status);
+        a_outVanishingPoint =
+            compoundAttr.create("outVanishingPoint", "ovpa", &status);
         CHECK_MSTATUS(status);
         compoundAttr.addChild(a_outVanishingPointX);
         compoundAttr.addChild(a_outVanishingPointY);
@@ -324,9 +277,8 @@ MStatus MMLineIntersectNode::initialize() {
 
     // Out Cosine Angle.
     {
-        a_outCosineAngle = numericAttr.create(
-            "outCosineAngle", "ocsang",
-            MFnNumericData::kDouble, 0.0);
+        a_outCosineAngle = numericAttr.create("outCosineAngle", "ocsang",
+                                              MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(addAttribute(a_outCosineAngle));
@@ -359,11 +311,10 @@ MStatus MMLineIntersectNode::initialize() {
 
     outputAttrs.append(a_outCosineAngle);
 
-    CHECK_MSTATUS(MMNodeInitUtils::attributeAffectsMulti(
-                      inputAttrs,
-                      outputAttrs));
+    CHECK_MSTATUS(
+        MMNodeInitUtils::attributeAffectsMulti(inputAttrs, outputAttrs));
 
     return MS::kSuccess;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

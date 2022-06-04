@@ -22,20 +22,20 @@
 #include "BundleDrawOverride.h"
 
 // Maya
-#include <maya/MString.h>
-#include <maya/MPlug.h>
 #include <maya/MColor.h>
 #include <maya/MDistance.h>
 #include <maya/MEventMessage.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MPlug.h>
 #include <maya/MPoint.h>
+#include <maya/MString.h>
 #include <maya/MTransformationMatrix.h>
 
 // Maya Viewport 2.0
-#include <maya/MPxDrawOverride.h>
-#include <maya/MUserData.h>
 #include <maya/MDrawContext.h>
 #include <maya/MHWGeometryUtilities.h>
+#include <maya/MPxDrawOverride.h>
+#include <maya/MUserData.h>
 
 // MM Solver
 #include "BundleConstants.h"
@@ -52,15 +52,16 @@ namespace mmsolver {
 // MPxDrawOverride constructor is set to nullptr in order to achieve
 // better performance.
 BundleDrawOverride::BundleDrawOverride(const MObject &obj)
-        : MHWRender::MPxDrawOverride(obj,
-                                     /*callback=*/ nullptr,
-                                     /*isAlwaysDirty=*/ true) {
-        m_model_editor_changed_callback_id = MEventMessage::addEventCallback(
-                "modelEditorChanged", on_model_editor_changed_func, this);
+    : MHWRender::MPxDrawOverride(obj,
+                                 /*callback=*/nullptr,
+                                 /*isAlwaysDirty=*/true) {
+    m_model_editor_changed_callback_id = MEventMessage::addEventCallback(
+        "modelEditorChanged", on_model_editor_changed_func, this);
 
     MStatus status;
     MFnDependencyNode node(obj, &status);
-        m_node = status ? dynamic_cast<BundleShapeNode *>(node.userNode()) : nullptr;
+    m_node =
+        status ? dynamic_cast<BundleShapeNode *>(node.userNode()) : nullptr;
 }
 
 BundleDrawOverride::~BundleDrawOverride() {
@@ -77,8 +78,7 @@ void BundleDrawOverride::on_model_editor_changed_func(void *clientData) {
     // switch among wireframe and shaded.
     BundleDrawOverride *ovr = static_cast<BundleDrawOverride *>(clientData);
     if (ovr && ovr->m_node) {
-        MHWRender::MRenderer::setGeometryDrawDirty(
-                ovr->m_node->thisMObject());
+        MHWRender::MRenderer::setGeometryDrawDirty(ovr->m_node->thisMObject());
     }
 }
 
@@ -93,13 +93,13 @@ bool BundleDrawOverride::isBounded(const MDagPath & /*objPath*/,
 }
 
 MBoundingBox BundleDrawOverride::boundingBox(
-        const MDagPath &objPath,
-        const MDagPath &/*cameraPath*/) const {
+    const MDagPath &objPath, const MDagPath & /*cameraPath*/) const {
     MPoint corner1(-1.0, -1.0, -1.0);
     MPoint corner2(1.0, 1.0, 1.0);
 
     double icon_size = 0.0;
-    MStatus status = getNodeAttr(objPath, BundleShapeNode::m_icon_size, icon_size);
+    MStatus status =
+        getNodeAttr(objPath, BundleShapeNode::m_icon_size, icon_size);
 
     corner1 = corner1 * icon_size;
     corner2 = corner2 * icon_size;
@@ -108,10 +108,8 @@ MBoundingBox BundleDrawOverride::boundingBox(
 
 // Called by Maya each time the object needs to be drawn.
 MUserData *BundleDrawOverride::prepareForDraw(
-        const MDagPath &objPath,
-        const MDagPath &/*cameraPath*/,
-        const MHWRender::MFrameContext &frameContext,
-        MUserData *oldData) {
+    const MDagPath &objPath, const MDagPath & /*cameraPath*/,
+    const MHWRender::MFrameContext &frameContext, MUserData *oldData) {
     BundleDrawData *data = dynamic_cast<BundleDrawData *>(oldData);
     if (!data) {
         data = new BundleDrawData();
@@ -134,32 +132,29 @@ MUserData *BundleDrawOverride::prepareForDraw(
     data->m_icon_size = icon_size * pixel_size_x;
 
     MColor user_color(0.0f, 0.0f, 0.0f, 0.0f);
-    status = getNodeAttr(
-        objPath, BundleShapeNode::m_color, user_color);
+    status = getNodeAttr(objPath, BundleShapeNode::m_color, user_color);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, BundleShapeNode::m_alpha, user_color[3]);
+    status = getNodeAttr(objPath, BundleShapeNode::m_alpha, user_color[3]);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, BundleShapeNode::m_line_width, data->m_line_width);
+    status =
+        getNodeAttr(objPath, BundleShapeNode::m_line_width, data->m_line_width);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, BundleShapeNode::m_point_size, data->m_point_size);
+    status =
+        getNodeAttr(objPath, BundleShapeNode::m_point_size, data->m_point_size);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, BundleShapeNode::m_draw_name, data->m_draw_name);
+    status =
+        getNodeAttr(objPath, BundleShapeNode::m_draw_name, data->m_draw_name);
     CHECK_MSTATUS(status);
-    status = getNodeAttr(
-        objPath, BundleShapeNode::m_draw_on_top, data->m_draw_on_top);
+    status = getNodeAttr(objPath, BundleShapeNode::m_draw_on_top,
+                         data->m_draw_on_top);
     CHECK_MSTATUS(status);
 
     // The cross icon
     data->m_cross_line_list.clear();
     for (int i = 0; i < cross_shape_points_count; i++) {
-        data->m_cross_line_list.append(
-            cross_shape_points[i][0],
-            cross_shape_points[i][1],
-            cross_shape_points[i][2]);
+        data->m_cross_line_list.append(cross_shape_points[i][0],
+                                       cross_shape_points[i][1],
+                                       cross_shape_points[i][2]);
     }
 
     data->m_cross_line_index_list.clear();
@@ -173,14 +168,15 @@ MUserData *BundleDrawOverride::prepareForDraw(
     float val = 0.0;
     float alpha = 0.0;
     auto display_status = MHWRender::MGeometryUtilities::displayStatus(objPath);
-    if ((display_status == MHWRender::kLead)
-        || (display_status == MHWRender::kLead)
-        || (display_status == MHWRender::kActive)
-        || (display_status == MHWRender::kHilite)
-        || (display_status == MHWRender::kActiveComponent)) {
+    if ((display_status == MHWRender::kLead) ||
+        (display_status == MHWRender::kLead) ||
+        (display_status == MHWRender::kActive) ||
+        (display_status == MHWRender::kHilite) ||
+        (display_status == MHWRender::kActiveComponent)) {
         // The bundle is selected/active.
         data->m_active = true;
-        data->m_depth_priority = MHWRender::MRenderItem::sActiveWireDepthPriority;
+        data->m_depth_priority =
+            MHWRender::MRenderItem::sActiveWireDepthPriority;
         user_color.get(MColor::kHSV, hue, sat, val, alpha);
         sat *= 0.95f;
         val *= 1.05f;
@@ -188,7 +184,8 @@ MUserData *BundleDrawOverride::prepareForDraw(
     } else {
         // The bundle is not selected.
         data->m_active = false;
-        data->m_depth_priority = MHWRender::MRenderItem::sDormantFilledDepthPriority;
+        data->m_depth_priority =
+            MHWRender::MRenderItem::sDormantFilledDepthPriority;
     }
     data->m_color = user_color;
 
@@ -196,19 +193,17 @@ MUserData *BundleDrawOverride::prepareForDraw(
 }
 
 void BundleDrawOverride::addUIDrawables(
-        const MDagPath &objPath,
-        MHWRender::MUIDrawManager &drawManager,
-        const MHWRender::MFrameContext &frameContext,
-        const MUserData *userData) {
+    const MDagPath &objPath, MHWRender::MUIDrawManager &drawManager,
+    const MHWRender::MFrameContext &frameContext, const MUserData *userData) {
     MStatus status;
-    BundleDrawData *data = (BundleDrawData *) userData;
+    BundleDrawData *data = (BundleDrawData *)userData;
     if (!data) {
         return;
     }
 
     // Get the camera position.
-    MDoubleArray view_pos = frameContext.getTuple(
-        MFrameContext::kViewPosition, &status);
+    MDoubleArray view_pos =
+        frameContext.getTuple(MFrameContext::kViewPosition, &status);
     CHECK_MSTATUS(status);
     MPoint camera_pos(view_pos[0], view_pos[1], view_pos[2]);
 
@@ -233,10 +228,7 @@ void BundleDrawOverride::addUIDrawables(
     MPointArray cross_line_list(data->m_cross_line_list.length());
     for (uint32_t i = 0; i < data->m_cross_line_list.length(); i++) {
         MPoint orig = data->m_cross_line_list[i];
-        MPoint pnt = MPoint(
-            orig.x * scale,
-            orig.y * scale,
-            orig.z * scale);
+        MPoint pnt = MPoint(orig.x * scale, orig.y * scale, orig.z * scale);
         cross_line_list.set(pnt * obj_matrix, i);
     }
 
@@ -260,17 +252,11 @@ void BundleDrawOverride::addUIDrawables(
 
     // Draw point directly in the center of the object transform.
     MPointArray point_list(1);
-    drawManager.mesh(
-        MHWRender::MUIDrawManager::kPoints,
-        point_list);
+    drawManager.mesh(MHWRender::MUIDrawManager::kPoints, point_list);
 
     // Draw cross
-    drawManager.mesh(
-        MHWRender::MUIDrawManager::kLines,
-        cross_line_list,
-        nullptr,
-        nullptr,
-        &data->m_cross_line_index_list);
+    drawManager.mesh(MHWRender::MUIDrawManager::kLines, cross_line_list,
+                     nullptr, nullptr, &data->m_cross_line_index_list);
 
     if (data->m_active || data->m_draw_on_top) {
         drawManager.endDrawInXray();
@@ -289,4 +275,4 @@ void BundleDrawOverride::addUIDrawables(
     drawManager.endDrawable();
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

@@ -29,16 +29,13 @@
 namespace mmcamera {
 
 // Returns the angle of view (in degrees) from a relative focal length factor.
-double
-angleOfViewFromFocalLengthFactor(
-    double focalLengthFactor);
+double angleOfViewFromFocalLengthFactor(double focalLengthFactor);
 
-// Returns the focal length (in millimeters), from the field of view (in radians) and the film back (in millimeters).
-double
-focalLengthFromAngleOfView(
-    const double angleOfView_radians,
-    const double filmBack_mm);
+// Returns the focal length (in millimeters), from the field of view (in
+// radians) and the film back (in millimeters).
+double focalLengthFromAngleOfView(const double angleOfView_radians,
+                                  const double filmBack_mm);
 
-} // namespace mmcamera
+}  // namespace mmcamera
 
-#endif // MM_SOLVER_CORE_MM_CAMERA_H
+#endif  // MM_SOLVER_CORE_MM_CAMERA_H

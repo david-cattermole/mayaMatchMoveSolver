@@ -20,7 +20,6 @@
  * Common data structures for all bundle adjustment algorithms.
  */
 
-
 #ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H
 #define MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H
 
@@ -32,24 +31,24 @@
 #include <vector>
 
 // Maya
+#include <maya/MAnimCurveChange.h>
+#include <maya/MComputation.h>
+#include <maya/MDGModifier.h>
 #include <maya/MGlobal.h>
 #include <maya/MPoint.h>
 #include <maya/MStringArray.h>
-#include <maya/MAnimCurveChange.h>
-#include <maya/MDGModifier.h>
-#include <maya/MComputation.h>
 
 // MM Scene Graph
 #include <mmscenegraph/mmscenegraph.h>
 
 // MM Solver
-#include "mmSolver/utilities/debug_utils.h"
+#include "adjust_defines.h"
+#include "mmSolver/lens/lens_model.h"
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/lens/lens_model.h"
-#include "adjust_defines.h"
+#include "mmSolver/utilities/debug_utils.h"
 
 // Group all the benchmark timers together.
 struct SolverTimer {
@@ -66,15 +65,13 @@ struct SolverTimer {
     debug::CPUBenchmark paramBenchTicks;
 };
 
-enum class FrameSolveMode
-{
+enum class FrameSolveMode {
     kPerFrame = FRAME_SOLVE_MODE_PER_FRAME,
     kAllFrameAtOnce = FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE,
     kNumFrameSolveMode,
 };
 
-enum class SceneGraphMode
-{
+enum class SceneGraphMode {
     kMayaDag = SCENE_GRAPH_MODE_MAYA_DAG,
     kMMSceneGraph = SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
     kNumSceneGraphModes,
@@ -117,7 +114,6 @@ struct SolverOptions {
     bool solverSupportsRobustLoss;
 };
 
-
 // The user data given to the solve function.
 struct SolverData {
     // Solver Objects.
@@ -145,8 +141,8 @@ struct SolverData {
     std::vector<mmscenegraph::AttrId> mmsgAttrIdList;
 
     // Relational mapping indexes.
-    std::vector<std::pair<int, int> > paramToAttrList;
-    std::vector<std::pair<int, int> > errorToMarkerList;
+    std::vector<std::pair<int, int>> paramToAttrList;
+    std::vector<std::pair<int, int>> errorToMarkerList;
     std::vector<MPoint> markerPosList;
     std::vector<double> markerWeightList;
     std::vector<std::vector<bool>> paramFrameList;
@@ -194,7 +190,6 @@ struct SolverData {
     bool verbose;
 };
 
-
 struct SolverResult {
     bool success;
     double errorAvg;
@@ -208,4 +203,4 @@ struct SolverResult {
     double errorFinal;
 };
 
-#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H
+#endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H

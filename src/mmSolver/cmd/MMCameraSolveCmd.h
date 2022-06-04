@@ -23,29 +23,27 @@
 #ifndef MAYA_MM_CAMERA_SOLVE_CMD_H
 #define MAYA_MM_CAMERA_SOLVE_CMD_H
 
-
 // STL
 #include <cmath>
 #include <vector>
 
 // Maya
+#include <maya/MArgDatabase.h>
+#include <maya/MArgList.h>
 #include <maya/MGlobal.h>
 #include <maya/MIOStream.h>
-#include <maya/MPxCommand.h>
-#include <maya/MArgList.h>
-#include <maya/MArgDatabase.h>
-#include <maya/MSyntax.h>
-#include <maya/MSelectionList.h>
-#include <maya/MTime.h>
 #include <maya/MPoint.h>
+#include <maya/MPxCommand.h>
+#include <maya/MSelectionList.h>
+#include <maya/MSyntax.h>
+#include <maya/MTime.h>
 #include <maya/MTimeArray.h>
 
 namespace mmsolver {
 
 class MMCameraSolveCmd : public MPxCommand {
 public:
-
-    MMCameraSolveCmd() {};
+    MMCameraSolveCmd(){};
 
     virtual ~MMCameraSolveCmd();
 
@@ -61,7 +59,7 @@ public:
     static MString cmdName();
 
 private:
-    MStatus parseArgs( const MArgList& args );
+    MStatus parseArgs(const MArgList &args);
 
     // OpenMVG
     int32_t m_image_width_a;
@@ -76,6 +74,6 @@ private:
     uint32_t m_endFrame;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MAYA_MM_CAMERA_SOLVE_CMD_H
+#endif  // MAYA_MM_CAMERA_SOLVE_CMD_H

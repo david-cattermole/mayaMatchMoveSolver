@@ -23,27 +23,27 @@
 #include "MMReprojectionNode.h"
 
 // STL
-#include <cstring>
 #include <cmath>
+#include <cstring>
 
 // Maya
-#include <maya/MPlug.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
-#include <maya/MFnNumericAttribute.h>
+#include <maya/MFnCompoundAttribute.h>
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MFnMatrixAttribute.h>
-#include <maya/MFnCompoundAttribute.h>
-#include <maya/MFnNumericData.h>
 #include <maya/MFnMatrixData.h>
+#include <maya/MFnNumericAttribute.h>
+#include <maya/MFnNumericData.h>
+#include <maya/MPlug.h>
 
 // MM Solver
+#include "mmSolver/core/reprojection.h"
+#include "mmSolver/mayahelper/maya_camera.h"  // getProjectionMatrix, computeFrustumCoordinates
+#include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
-#include "mmSolver/mayahelper/maya_camera.h"  // getProjectionMatrix, computeFrustumCoordinates
-#include "mmSolver/core/reprojection.h"
-#include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
 
@@ -108,7 +108,6 @@ MObject MMReprojectionNode::a_outHorizontalPan;
 MObject MMReprojectionNode::a_outVerticalPan;
 MObject MMReprojectionNode::a_outCameraDirectionRatio;
 
-
 MMReprojectionNode::MMReprojectionNode() {}
 
 MMReprojectionNode::~MMReprojectionNode() {}
@@ -120,46 +119,32 @@ MString MMReprojectionNode::nodeName() {
 MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
     MStatus status = MS::kUnknownParameter;
 
-    if ((plug == a_outCoord)
-        || (plug == a_outCoordX)
-        || (plug == a_outCoordY)
-        || (plug == a_outNormCoord)
-        || (plug == a_outNormCoordX)
-        || (plug == a_outNormCoordY)
-        || (plug == a_outMarkerCoord)
-        || (plug == a_outMarkerCoordX)
-        || (plug == a_outMarkerCoordY)
-        || (plug == a_outMarkerCoordZ)
-        || (plug == a_outPixel)
-        || (plug == a_outPixelX)
-        || (plug == a_outPixelY)
-        || (plug == a_outInsideFrustum)
-        || (plug == a_outPoint)
-        || (plug == a_outPointX)
-        || (plug == a_outPointY)
-        || (plug == a_outPointZ)
-        || (plug == a_outWorldPoint)
-        || (plug == a_outWorldPointX)
-        || (plug == a_outWorldPointY)
-        || (plug == a_outWorldPointZ)
-        || (plug == a_outMatrix)
-        || (plug == a_outWorldMatrix)
-        || (plug == a_outCameraProjectionMatrix)
-        || (plug == a_outInverseCameraProjectionMatrix)
-        || (plug == a_outWorldCameraProjectionMatrix)
-        || (plug == a_outWorldInverseCameraProjectionMatrix)
-        || (plug == a_outPan)
-        || (plug == a_outHorizontalPan)
-        || (plug == a_outVerticalPan)
-        || (plug == a_outCameraDirectionRatio)) {
+    if ((plug == a_outCoord) || (plug == a_outCoordX) ||
+        (plug == a_outCoordY) || (plug == a_outNormCoord) ||
+        (plug == a_outNormCoordX) || (plug == a_outNormCoordY) ||
+        (plug == a_outMarkerCoord) || (plug == a_outMarkerCoordX) ||
+        (plug == a_outMarkerCoordY) || (plug == a_outMarkerCoordZ) ||
+        (plug == a_outPixel) || (plug == a_outPixelX) ||
+        (plug == a_outPixelY) || (plug == a_outInsideFrustum) ||
+        (plug == a_outPoint) || (plug == a_outPointX) ||
+        (plug == a_outPointY) || (plug == a_outPointZ) ||
+        (plug == a_outWorldPoint) || (plug == a_outWorldPointX) ||
+        (plug == a_outWorldPointY) || (plug == a_outWorldPointZ) ||
+        (plug == a_outMatrix) || (plug == a_outWorldMatrix) ||
+        (plug == a_outCameraProjectionMatrix) ||
+        (plug == a_outInverseCameraProjectionMatrix) ||
+        (plug == a_outWorldCameraProjectionMatrix) ||
+        (plug == a_outWorldInverseCameraProjectionMatrix) ||
+        (plug == a_outPan) || (plug == a_outHorizontalPan) ||
+        (plug == a_outVerticalPan) || (plug == a_outCameraDirectionRatio)) {
         // Get Data Handles
-        MDataHandle tfmMatrixHandle = data.inputValue(a_transformWorldMatrix,
-                                                      &status);
+        MDataHandle tfmMatrixHandle =
+            data.inputValue(a_transformWorldMatrix, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMatrix tfmMatrix = tfmMatrixHandle.asMatrix();
 
-        MDataHandle camMatrixHandle = data.inputValue(a_cameraWorldMatrix,
-                                                      &status);
+        MDataHandle camMatrixHandle =
+            data.inputValue(a_cameraWorldMatrix, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMatrix camMatrix = camMatrixHandle.asMatrix();
 
@@ -171,23 +156,23 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double focalLength = focalLengthHandle.asDouble();
 
-        MDataHandle horizontalFilmApertureHandle = data.inputValue(a_horizontalFilmAperture,
-                                                                   &status);
+        MDataHandle horizontalFilmApertureHandle =
+            data.inputValue(a_horizontalFilmAperture, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double horizontalFilmAperture = horizontalFilmApertureHandle.asDouble();
 
-        MDataHandle verticalFilmApertureHandle = data.inputValue(a_verticalFilmAperture,
-                                                                 &status);
+        MDataHandle verticalFilmApertureHandle =
+            data.inputValue(a_verticalFilmAperture, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double verticalFilmAperture = verticalFilmApertureHandle.asDouble();
 
-        MDataHandle horizontalFilmOffsetHandle = data.inputValue(a_horizontalFilmOffset,
-                                                                 &status);
+        MDataHandle horizontalFilmOffsetHandle =
+            data.inputValue(a_horizontalFilmOffset, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double horizontalFilmOffset = horizontalFilmOffsetHandle.asDouble();
 
-        MDataHandle verticalFilmOffsetHandle = data.inputValue(a_verticalFilmOffset,
-                                                               &status);
+        MDataHandle verticalFilmOffsetHandle =
+            data.inputValue(a_verticalFilmOffset, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double verticalFilmOffset = verticalFilmOffsetHandle.asDouble();
 
@@ -204,8 +189,8 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         // does't work. Why? No idea.
         double nearClipPlane = 0.1;
 
-        MDataHandle farClipPlaneHandle = data.inputValue(a_farClipPlane,
-                                                         &status);
+        MDataHandle farClipPlaneHandle =
+            data.inputValue(a_farClipPlane, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double farClipPlane = farClipPlaneHandle.asDouble();
 
@@ -221,18 +206,18 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         double imageHeight = imageHeightHandle.asDouble();
 
-        MDataHandle overrideScreenXHandle = data.inputValue(a_overrideScreenX,
-                                                            &status);
+        MDataHandle overrideScreenXHandle =
+            data.inputValue(a_overrideScreenX, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         bool overrideScreenX = overrideScreenXHandle.asBool();
 
-        MDataHandle overrideScreenYHandle = data.inputValue(a_overrideScreenY,
-                                                            &status);
+        MDataHandle overrideScreenYHandle =
+            data.inputValue(a_overrideScreenY, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         bool overrideScreenY = overrideScreenYHandle.asBool();
 
-        MDataHandle overrideScreenZHandle = data.inputValue(a_overrideScreenZ,
-                                                            &status);
+        MDataHandle overrideScreenZHandle =
+            data.inputValue(a_overrideScreenZ, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         bool overrideScreenZ = overrideScreenZHandle.asBool();
 
@@ -280,50 +265,29 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
 
         // Query the reprojection.
         status = reprojection(
-                tfmMatrix,
-                camMatrix,
+            tfmMatrix, camMatrix,
 
-                // Camera
-                focalLength,
-                horizontalFilmAperture,
-                verticalFilmAperture,
-                horizontalFilmOffset,
-                verticalFilmOffset,
-                filmFit,
-                nearClipPlane,
-                farClipPlane,
-                cameraScale,
+            // Camera
+            focalLength, horizontalFilmAperture, verticalFilmAperture,
+            horizontalFilmOffset, verticalFilmOffset, filmFit, nearClipPlane,
+            farClipPlane, cameraScale,
 
-                // Image
-                imageWidth,
-                imageHeight,
+            // Image
+            imageWidth, imageHeight,
 
-                // Manipulation
-                applyMatrix,
-                overrideScreenX,
-                overrideScreenY,
-                overrideScreenZ,
-                screenX,
-                screenY,
-                screenZ,
-                depthScale,
+            // Manipulation
+            applyMatrix, overrideScreenX, overrideScreenY, overrideScreenZ,
+            screenX, screenY, screenZ, depthScale,
 
-                // Outputs
-                outCoordX, outCoordY,
-                outNormCoordX, outNormCoordY,
-                outMarkerCoordX, outMarkerCoordY, outMarkerCoordZ,
-                outPixelX, outPixelY,
-                outInsideFrustum,
-                outPointX, outPointY, outPointZ,
-                outWorldPointX, outWorldPointY, outWorldPointZ,
-                outMatrix,
-                outWorldMatrix,
-                outCameraProjectionMatrix,
-                outInverseCameraProjectionMatrix,
-                outWorldCameraProjectionMatrix,
-                outWorldInverseCameraProjectionMatrix,
-                outHorizontalPan,
-                outVerticalPan);
+            // Outputs
+            outCoordX, outCoordY, outNormCoordX, outNormCoordY, outMarkerCoordX,
+            outMarkerCoordY, outMarkerCoordZ, outPixelX, outPixelY,
+            outInsideFrustum, outPointX, outPointY, outPointZ, outWorldPointX,
+            outWorldPointY, outWorldPointZ, outMatrix, outWorldMatrix,
+            outCameraProjectionMatrix, outInverseCameraProjectionMatrix,
+            outWorldCameraProjectionMatrix,
+            outWorldInverseCameraProjectionMatrix, outHorizontalPan,
+            outVerticalPan);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Camera Direction Ratio - A.K.A. dot product of camera
@@ -372,7 +336,8 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
 
         // Output 'Inside Frustum'; is the input matrix inside the
         // camera frustrum or not?
-        MDataHandle outInsideFrustumHandle = data.outputValue(a_outInsideFrustum);
+        MDataHandle outInsideFrustumHandle =
+            data.outputValue(a_outInsideFrustum);
         outInsideFrustumHandle.setBool(outInsideFrustum);
         outInsideFrustumHandle.setClean();
 
@@ -409,28 +374,35 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         outWorldMatrixHandle.setClean();
 
         // Output Camera Projection Matrix
-        MDataHandle outCameraProjectionMatrixHandle = data.outputValue(a_outCameraProjectionMatrix);
+        MDataHandle outCameraProjectionMatrixHandle =
+            data.outputValue(a_outCameraProjectionMatrix);
         outCameraProjectionMatrixHandle.setMMatrix(outCameraProjectionMatrix);
         outCameraProjectionMatrixHandle.setClean();
 
         // Output Inverse Camera Projection Matrix
-        MDataHandle outInverseCameraProjectionMatrixHandle = data.outputValue(a_outInverseCameraProjectionMatrix);
-        outInverseCameraProjectionMatrixHandle.setMMatrix(outInverseCameraProjectionMatrix);
+        MDataHandle outInverseCameraProjectionMatrixHandle =
+            data.outputValue(a_outInverseCameraProjectionMatrix);
+        outInverseCameraProjectionMatrixHandle.setMMatrix(
+            outInverseCameraProjectionMatrix);
         outInverseCameraProjectionMatrixHandle.setClean();
 
         // Output World Camera Projection Matrix
-        MDataHandle outWorldCameraProjectionMatrixHandle = data.outputValue(a_outWorldCameraProjectionMatrix);
-        outWorldCameraProjectionMatrixHandle.setMMatrix(outWorldCameraProjectionMatrix);
+        MDataHandle outWorldCameraProjectionMatrixHandle =
+            data.outputValue(a_outWorldCameraProjectionMatrix);
+        outWorldCameraProjectionMatrixHandle.setMMatrix(
+            outWorldCameraProjectionMatrix);
         outWorldCameraProjectionMatrixHandle.setClean();
 
         // Output World Inverse Camera Projection Matrix
-        MDataHandle outWorldInverseCameraProjectionMatrixHandle = data.outputValue(
-                a_outWorldInverseCameraProjectionMatrix);
-        outWorldInverseCameraProjectionMatrixHandle.setMMatrix(outWorldInverseCameraProjectionMatrix);
+        MDataHandle outWorldInverseCameraProjectionMatrixHandle =
+            data.outputValue(a_outWorldInverseCameraProjectionMatrix);
+        outWorldInverseCameraProjectionMatrixHandle.setMMatrix(
+            outWorldInverseCameraProjectionMatrix);
         outWorldInverseCameraProjectionMatrixHandle.setClean();
 
         // Output Pan
-        MDataHandle outHorizontalPanHandle = data.outputValue(a_outHorizontalPan);
+        MDataHandle outHorizontalPanHandle =
+            data.outputValue(a_outHorizontalPan);
         MDataHandle outVerticalPanHandle = data.outputValue(a_outVerticalPan);
         outHorizontalPanHandle.setDouble(outHorizontalPan);
         outVerticalPanHandle.setDouble(outVerticalPan);
@@ -438,8 +410,8 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
         outVerticalPanHandle.setClean();
 
         // Output Camera Direction Ratio
-        MDataHandle outCameraDirectionRatioHandle = data.outputValue(
-            a_outCameraDirectionRatio);
+        MDataHandle outCameraDirectionRatioHandle =
+            data.outputValue(a_outCameraDirectionRatio);
         outCameraDirectionRatioHandle.setDouble(outCameraDirectionRatio);
         outCameraDirectionRatioHandle.setClean();
 
@@ -449,9 +421,7 @@ MStatus MMReprojectionNode::compute(const MPlug &plug, MDataBlock &data) {
     return status;
 }
 
-void *MMReprojectionNode::creator() {
-    return (new MMReprojectionNode());
-}
+void *MMReprojectionNode::creator() { return (new MMReprojectionNode()); }
 
 MStatus MMReprojectionNode::initialize() {
     MStatus status;
@@ -462,9 +432,9 @@ MStatus MMReprojectionNode::initialize() {
 
     {
         // Transform World Matrix
-        a_transformWorldMatrix = matrixAttr.create(
-                "transformWorldMatrix", "twm",
-                MFnMatrixAttribute::kDouble, &status);
+        a_transformWorldMatrix =
+            matrixAttr.create("transformWorldMatrix", "twm",
+                              MFnMatrixAttribute::kDouble, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(matrixAttr.setStorable(true));
         CHECK_MSTATUS(matrixAttr.setConnectable(true));
@@ -472,17 +442,15 @@ MStatus MMReprojectionNode::initialize() {
 
         // Camera World Matrix
         a_cameraWorldMatrix = matrixAttr.create(
-                "cameraWorldMatrix", "cwm",
-                MFnMatrixAttribute::kDouble, &status);
+            "cameraWorldMatrix", "cwm", MFnMatrixAttribute::kDouble, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(matrixAttr.setStorable(true));
         CHECK_MSTATUS(matrixAttr.setConnectable(true));
         CHECK_MSTATUS(addAttribute(a_cameraWorldMatrix));
 
         // Apply Matrix
-        a_applyMatrix = matrixAttr.create(
-                "applyMatrix", "aplym",
-                MFnMatrixAttribute::kDouble, &status);
+        a_applyMatrix = matrixAttr.create("applyMatrix", "aplym",
+                                          MFnMatrixAttribute::kDouble, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(matrixAttr.setStorable(true));
         CHECK_MSTATUS(matrixAttr.setConnectable(true));
@@ -493,57 +461,50 @@ MStatus MMReprojectionNode::initialize() {
 
     {
         // Override Screen X
-        a_overrideScreenX = numericAttr.create(
-                "overrideScreenX", "ovrdscx",
-                MFnNumericData::kBoolean, false);
+        a_overrideScreenX = numericAttr.create("overrideScreenX", "ovrdscx",
+                                               MFnNumericData::kBoolean, false);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_overrideScreenX));
 
         // Override Screen Y
-        a_overrideScreenY = numericAttr.create(
-                "overrideScreenY", "ovrdscy",
-                MFnNumericData::kBoolean, false);
+        a_overrideScreenY = numericAttr.create("overrideScreenY", "ovrdscy",
+                                               MFnNumericData::kBoolean, false);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_overrideScreenY));
 
         // Override Screen Z
-        a_overrideScreenZ = numericAttr.create(
-                "overrideScreenZ", "ovrdscz",
-                MFnNumericData::kBoolean, false);
+        a_overrideScreenZ = numericAttr.create("overrideScreenZ", "ovrdscz",
+                                               MFnNumericData::kBoolean, false);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_overrideScreenZ));
 
         // ScreenX (Left-Right)
-        a_screenX = numericAttr.create(
-                "screenX", "scx",
-                MFnNumericData::kDouble, 0.0);
+        a_screenX =
+            numericAttr.create("screenX", "scx", MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_screenX));
 
         // ScreenY (Up-Down)
-        a_screenY = numericAttr.create(
-                "screenY", "scy",
-                MFnNumericData::kDouble, 0.0);
+        a_screenY =
+            numericAttr.create("screenY", "scy", MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_screenY));
 
         // ScreenZ (Depth)
-        a_screenZ = numericAttr.create(
-                "screenZ", "scz",
-                MFnNumericData::kDouble, 1.0);
+        a_screenZ =
+            numericAttr.create("screenZ", "scz", MFnNumericData::kDouble, 1.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_screenZ));
 
         // Depth Scale
-        a_depthScale = numericAttr.create(
-                "depthScale", "dptscl",
-                MFnNumericData::kDouble, 1.0);
+        a_depthScale = numericAttr.create("depthScale", "dptscl",
+                                          MFnNumericData::kDouble, 1.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_depthScale));
@@ -553,31 +514,27 @@ MStatus MMReprojectionNode::initialize() {
 
     {
         // Focal Length (millimetres)
-        a_focalLength = numericAttr.create(
-                "focalLength", "fl",
-                MFnNumericData::kDouble, 35.0);
+        a_focalLength = numericAttr.create("focalLength", "fl",
+                                           MFnNumericData::kDouble, 35.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_focalLength));
 
         // Horizontal Film Aperture (inches)
         a_horizontalFilmAperture = numericAttr.create(
-                "horizontalFilmAperture", "hfa",
-                MFnNumericData::kDouble, 1.41732);
+            "horizontalFilmAperture", "hfa", MFnNumericData::kDouble, 1.41732);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         // Vertical Film Aperture (inches)
         a_verticalFilmAperture = numericAttr.create(
-                "verticalFilmAperture", "vfa",
-                MFnNumericData::kDouble, 0.94488);
+            "verticalFilmAperture", "vfa", MFnNumericData::kDouble, 0.94488);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         // Film Offset (parent of filmOffset* attributes)
-        a_cameraAperture = compoundAttr.create(
-                "cameraAperture", "cap",
-                &status);
+        a_cameraAperture =
+            compoundAttr.create("cameraAperture", "cap", &status);
         CHECK_MSTATUS(status);
         compoundAttr.addChild(a_horizontalFilmAperture);
         compoundAttr.addChild(a_verticalFilmAperture);
@@ -585,30 +542,25 @@ MStatus MMReprojectionNode::initialize() {
 
         // Horizontal Film Offset (inches)
         a_horizontalFilmOffset = numericAttr.create(
-                "horizontalFilmOffset", "hfo",
-                MFnNumericData::kDouble, 0.0);
+            "horizontalFilmOffset", "hfo", MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         // Vertical Film Offset (inches)
-        a_verticalFilmOffset = numericAttr.create(
-                "verticalFilmOffset", "vfo",
-                MFnNumericData::kDouble, 0.0);
+        a_verticalFilmOffset = numericAttr.create("verticalFilmOffset", "vfo",
+                                                  MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
 
         // Film Offset (parent of filmOffset* attributes)
-        a_filmOffset = compoundAttr.create(
-                "filmOffset", "fio",
-                &status);
+        a_filmOffset = compoundAttr.create("filmOffset", "fio", &status);
         CHECK_MSTATUS(status);
         compoundAttr.addChild(a_horizontalFilmOffset);
         compoundAttr.addChild(a_verticalFilmOffset);
         CHECK_MSTATUS(addAttribute(a_filmOffset));
 
         // Film Fit; 0=fill, 1=horizontal, 2=vertical, 3=overscan
-        a_filmFit = enumAttr.create(
-                "filmFit", "ff", 0, &status);
+        a_filmFit = enumAttr.create("filmFit", "ff", 0, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(enumAttr.addField("Fit", 0));
         CHECK_MSTATUS(enumAttr.addField("Horizontal", 1));
@@ -619,25 +571,22 @@ MStatus MMReprojectionNode::initialize() {
         CHECK_MSTATUS(addAttribute(a_filmFit));
 
         // Near Clip Plane
-        a_nearClipPlane = numericAttr.create(
-                "nearClipPlane", "ncp",
-                MFnNumericData::kDouble, 0.1);
+        a_nearClipPlane = numericAttr.create("nearClipPlane", "ncp",
+                                             MFnNumericData::kDouble, 0.1);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_nearClipPlane));
 
         // Far Clip Plane
-        a_farClipPlane = numericAttr.create(
-                "farClipPlane", "fcp",
-                MFnNumericData::kDouble, 10000.0);
+        a_farClipPlane = numericAttr.create("farClipPlane", "fcp",
+                                            MFnNumericData::kDouble, 10000.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_farClipPlane));
 
         // Camera Scale
-        a_cameraScale = numericAttr.create(
-                "cameraScale", "cs",
-                MFnNumericData::kDouble, 1.0);
+        a_cameraScale = numericAttr.create("cameraScale", "cs",
+                                           MFnNumericData::kDouble, 1.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_cameraScale));
@@ -647,17 +596,15 @@ MStatus MMReprojectionNode::initialize() {
 
     {
         // Image Width
-        a_imageWidth = numericAttr.create(
-                "imageWidth", "iw",
-                MFnNumericData::kDouble, 1920.0);
+        a_imageWidth = numericAttr.create("imageWidth", "iw",
+                                          MFnNumericData::kDouble, 1920.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_imageWidth));
 
         // Image Height
-        a_imageHeight = numericAttr.create(
-                "imageHeight", "ih",
-                MFnNumericData::kDouble, 1080.0);
+        a_imageHeight = numericAttr.create("imageHeight", "ih",
+                                           MFnNumericData::kDouble, 1080.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_imageHeight));
@@ -667,18 +614,16 @@ MStatus MMReprojectionNode::initialize() {
 
     {
         // Out Coord X
-        a_outCoordX = numericAttr.create(
-                "outCoordX", "ocdx",
-                MFnNumericData::kDouble, 0.0);
+        a_outCoordX = numericAttr.create("outCoordX", "ocdx",
+                                         MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
         CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Coord Y
-        a_outCoordY = numericAttr.create(
-                "outCoordY", "ocdy",
-                MFnNumericData::kDouble, 0.0);
+        a_outCoordY = numericAttr.create("outCoordY", "ocdy",
+                                         MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
@@ -696,18 +641,16 @@ MStatus MMReprojectionNode::initialize() {
 
     {
         // Out Normalised Coord X
-        a_outNormCoordX = numericAttr.create(
-                "outNormCoordX", "oncdx",
-                MFnNumericData::kDouble, 0.0);
+        a_outNormCoordX = numericAttr.create("outNormCoordX", "oncdx",
+                                             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
         CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Normalised Coord Y
-        a_outNormCoordY = numericAttr.create(
-                "outNormCoordY", "oncdy",
-                MFnNumericData::kDouble, 0.0);
+        a_outNormCoordY = numericAttr.create("outNormCoordY", "oncdy",
+                                             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
@@ -725,34 +668,32 @@ MStatus MMReprojectionNode::initialize() {
 
     {
         // Out Marker Coord X
-        a_outMarkerCoordX = numericAttr.create(
-                "outMarkerCoordX", "omcdx",
-                MFnNumericData::kDouble, 0.0);
+        a_outMarkerCoordX = numericAttr.create("outMarkerCoordX", "omcdx",
+                                               MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
         CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Marker Coord Y
-        a_outMarkerCoordY = numericAttr.create(
-                "outMarkerCoordY", "omcdy",
-                MFnNumericData::kDouble, 0.0);
+        a_outMarkerCoordY = numericAttr.create("outMarkerCoordY", "omcdy",
+                                               MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
         CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Marker Coord Z
-        a_outMarkerCoordZ = numericAttr.create(
-                "outMarkerCoordZ", "omcdz",
-                MFnNumericData::kDouble, 0.0);
+        a_outMarkerCoordZ = numericAttr.create("outMarkerCoordZ", "omcdz",
+                                               MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
         CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Marker Coord (parent of outMarkerCoord* attributes)
-        a_outMarkerCoord = compoundAttr.create("outMarkerCoord", "omcd", &status);
+        a_outMarkerCoord =
+            compoundAttr.create("outMarkerCoord", "omcd", &status);
         CHECK_MSTATUS(status);
         compoundAttr.addChild(a_outMarkerCoordX);
         compoundAttr.addChild(a_outMarkerCoordY);
@@ -764,18 +705,16 @@ MStatus MMReprojectionNode::initialize() {
 
     {
         // Out Pixel Coord X
-        a_outPixelX = numericAttr.create(
-                "outPixelX", "opixx",
-                MFnNumericData::kDouble, 0.0);
+        a_outPixelX = numericAttr.create("outPixelX", "opixx",
+                                         MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
         CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Pixel Coord Y
-        a_outPixelY = numericAttr.create(
-                "outPixelY", "opixy",
-                MFnNumericData::kDouble, 0.0);
+        a_outPixelY = numericAttr.create("outPixelY", "opixy",
+                                         MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
@@ -794,8 +733,7 @@ MStatus MMReprojectionNode::initialize() {
     {
         // Out Inside Frustum
         a_outInsideFrustum = numericAttr.create(
-                "outInsideFrustum", "oinftm",
-                MFnNumericData::kBoolean, false);
+            "outInsideFrustum", "oinftm", MFnNumericData::kBoolean, false);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
@@ -807,27 +745,24 @@ MStatus MMReprojectionNode::initialize() {
 
     {
         // Out Point X
-        a_outPointX = numericAttr.create(
-                "outPointX", "opx",
-                MFnNumericData::kDouble, 0.0);
+        a_outPointX = numericAttr.create("outPointX", "opx",
+                                         MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
         CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Point Y
-        a_outPointY = numericAttr.create(
-                "outPointY", "opy",
-                MFnNumericData::kDouble, 0.0);
+        a_outPointY = numericAttr.create("outPointY", "opy",
+                                         MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
         CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Point Z
-        a_outPointZ = numericAttr.create(
-                "outPointZ", "opz",
-                MFnNumericData::kDouble, 0.0, &status);
+        a_outPointZ = numericAttr.create("outPointZ", "opz",
+                                         MFnNumericData::kDouble, 0.0, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
@@ -847,18 +782,16 @@ MStatus MMReprojectionNode::initialize() {
 
     {
         // Out Point X (world-space)
-        a_outWorldPointX = numericAttr.create(
-                "outWorldPointX", "owpx",
-                MFnNumericData::kDouble, 0.0);
+        a_outWorldPointX = numericAttr.create("outWorldPointX", "owpx",
+                                              MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
         CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Point Y (world-space)
-        a_outWorldPointY = numericAttr.create(
-                "outWorldPointY", "owpy",
-                MFnNumericData::kDouble, 0.0);
+        a_outWorldPointY = numericAttr.create("outWorldPointY", "owpy",
+                                              MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
@@ -866,8 +799,7 @@ MStatus MMReprojectionNode::initialize() {
 
         // Out Point Z (world-space)
         a_outWorldPointZ = numericAttr.create(
-                "outWorldPointZ", "owpz",
-                MFnNumericData::kDouble, 0.0, &status);
+            "outWorldPointZ", "owpz", MFnNumericData::kDouble, 0.0, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
@@ -887,9 +819,8 @@ MStatus MMReprojectionNode::initialize() {
 
     {
         // Out Matrix (camera-space)
-        a_outMatrix = matrixAttr.create(
-                "outMatrix", "omt",
-                MFnMatrixAttribute::kDouble, &status);
+        a_outMatrix = matrixAttr.create("outMatrix", "omt",
+                                        MFnMatrixAttribute::kDouble, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(matrixAttr.setStorable(false));
         CHECK_MSTATUS(matrixAttr.setKeyable(false));
@@ -899,8 +830,7 @@ MStatus MMReprojectionNode::initialize() {
 
         // Out World Matrix (world-space)
         a_outWorldMatrix = matrixAttr.create(
-                "outWorldMatrix", "owmt",
-                MFnMatrixAttribute::kDouble, &status);
+            "outWorldMatrix", "owmt", MFnMatrixAttribute::kDouble, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(matrixAttr.setStorable(false));
         CHECK_MSTATUS(matrixAttr.setKeyable(false));
@@ -913,9 +843,9 @@ MStatus MMReprojectionNode::initialize() {
 
     {
         // Out Camera Projection Matrix (camera-space)
-        a_outCameraProjectionMatrix = matrixAttr.create(
-                "outCameraProjectionMatrix", "ocpmt",
-                MFnMatrixAttribute::kDouble, &status);
+        a_outCameraProjectionMatrix =
+            matrixAttr.create("outCameraProjectionMatrix", "ocpmt",
+                              MFnMatrixAttribute::kDouble, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(matrixAttr.setStorable(false));
         CHECK_MSTATUS(matrixAttr.setKeyable(false));
@@ -924,9 +854,9 @@ MStatus MMReprojectionNode::initialize() {
         CHECK_MSTATUS(addAttribute(a_outCameraProjectionMatrix));
 
         // Out Inverse Camera Projection Matrix (camera-space)
-        a_outInverseCameraProjectionMatrix = matrixAttr.create(
-                "outInverseCameraProjectionMatrix", "oicpmt",
-                MFnMatrixAttribute::kDouble, &status);
+        a_outInverseCameraProjectionMatrix =
+            matrixAttr.create("outInverseCameraProjectionMatrix", "oicpmt",
+                              MFnMatrixAttribute::kDouble, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(matrixAttr.setStorable(false));
         CHECK_MSTATUS(matrixAttr.setKeyable(false));
@@ -939,9 +869,9 @@ MStatus MMReprojectionNode::initialize() {
 
     {
         // Out World Camera Projection Matrix (world-space)
-        a_outWorldCameraProjectionMatrix = matrixAttr.create(
-                "outWorldCameraProjectionMatrix", "owcpmt",
-                MFnMatrixAttribute::kDouble, &status);
+        a_outWorldCameraProjectionMatrix =
+            matrixAttr.create("outWorldCameraProjectionMatrix", "owcpmt",
+                              MFnMatrixAttribute::kDouble, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(matrixAttr.setStorable(false));
         CHECK_MSTATUS(matrixAttr.setKeyable(false));
@@ -950,9 +880,9 @@ MStatus MMReprojectionNode::initialize() {
         CHECK_MSTATUS(addAttribute(a_outWorldCameraProjectionMatrix));
 
         // Out World Inverse Camera Projection Matrix (world-space)
-        a_outWorldInverseCameraProjectionMatrix = matrixAttr.create(
-                "outWorldInverseCameraProjectionMatrix", "owicpmt",
-                MFnMatrixAttribute::kDouble, &status);
+        a_outWorldInverseCameraProjectionMatrix =
+            matrixAttr.create("outWorldInverseCameraProjectionMatrix",
+                              "owicpmt", MFnMatrixAttribute::kDouble, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(matrixAttr.setStorable(false));
         CHECK_MSTATUS(matrixAttr.setKeyable(false));
@@ -965,18 +895,16 @@ MStatus MMReprojectionNode::initialize() {
 
     {
         // Out Horizontal Pan
-        a_outHorizontalPan = numericAttr.create(
-                "outHorizonalPan", "ohpn",
-                MFnNumericData::kDouble, 0.0);
+        a_outHorizontalPan = numericAttr.create("outHorizonalPan", "ohpn",
+                                                MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
         CHECK_MSTATUS(numericAttr.setWritable(false));
 
         // Out Vertical Pan
-        a_outVerticalPan = numericAttr.create(
-                "outVerticalPan", "ovpn",
-                MFnNumericData::kDouble, 0.0);
+        a_outVerticalPan = numericAttr.create("outVerticalPan", "ovpn",
+                                              MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
@@ -993,8 +921,7 @@ MStatus MMReprojectionNode::initialize() {
     {
         // Out Camera Direction Ratio
         a_outCameraDirectionRatio = numericAttr.create(
-                "outCameraDirectionRatio", "ocdr",
-                MFnNumericData::kDouble, 0.0);
+            "outCameraDirectionRatio", "ocdr", MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
         CHECK_MSTATUS(numericAttr.setReadable(true));
@@ -1002,11 +929,11 @@ MStatus MMReprojectionNode::initialize() {
         CHECK_MSTATUS(addAttribute(a_outCameraDirectionRatio));
     }
 
-
     //////////////////////////////////////////////////////////////////////////
 
     // Attribute Affects
-    // TODO: Check and make sure there are no unneeded attribute affects relationships.
+    // TODO: Check and make sure there are no unneeded attribute affects
+    // relationships.
 
     // Attribute Affects
     MObjectArray inputAttrs;
@@ -1068,11 +995,10 @@ MStatus MMReprojectionNode::initialize() {
     outputAttrs.append(a_outVerticalPan);
     outputAttrs.append(a_outCameraDirectionRatio);
 
-    CHECK_MSTATUS(MMNodeInitUtils::attributeAffectsMulti(
-                      inputAttrs,
-                      outputAttrs));
+    CHECK_MSTATUS(
+        MMNodeInitUtils::attributeAffectsMulti(inputAttrs, outputAttrs));
 
     return MS::kSuccess;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

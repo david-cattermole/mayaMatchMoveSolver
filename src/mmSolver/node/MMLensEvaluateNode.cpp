@@ -23,20 +23,20 @@
 #include "MMLensEvaluateNode.h"
 
 // STL
-#include <cstring>
 #include <cmath>
+#include <cstring>
 
 // Maya
-#include <maya/MPlug.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
-#include <maya/MFnNumericAttribute.h>
-#include <maya/MFnTypedAttribute.h>
 #include <maya/MFnCompoundAttribute.h>
+#include <maya/MFnNumericAttribute.h>
 #include <maya/MFnNumericData.h>
+#include <maya/MFnPluginData.h>
+#include <maya/MFnTypedAttribute.h>
+#include <maya/MPlug.h>
 #include <maya/MString.h>
 #include <maya/MTypeId.h>
-#include <maya/MFnPluginData.h>
 
 // MM Solver
 #include "MMLensData.h"
@@ -58,14 +58,11 @@ MObject MMLensEvaluateNode::a_outX;
 MObject MMLensEvaluateNode::a_outY;
 MObject MMLensEvaluateNode::a_outHash;
 
-
 MMLensEvaluateNode::MMLensEvaluateNode() {}
 
 MMLensEvaluateNode::~MMLensEvaluateNode() {}
 
-MString MMLensEvaluateNode::nodeName() {
-    return MString("mmLensEvaluate");
-}
+MString MMLensEvaluateNode::nodeName() { return MString("mmLensEvaluate"); }
 
 MStatus MMLensEvaluateNode::compute(const MPlug &plug, MDataBlock &data) {
     MStatus status = MS::kUnknownParameter;
@@ -87,7 +84,7 @@ MStatus MMLensEvaluateNode::compute(const MPlug &plug, MDataBlock &data) {
         // Get Input Lens
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
+        MMLensData *inputLensData = (MMLensData *)inLensHandle.asPluginData();
         if (inputLensData != nullptr) {
             // Evaluate the lens distortion, at (x, y)
             std::shared_ptr<LensModel> lensModel = inputLensData->getValue();
@@ -122,9 +119,7 @@ MStatus MMLensEvaluateNode::compute(const MPlug &plug, MDataBlock &data) {
     return status;
 }
 
-void *MMLensEvaluateNode::creator() {
-    return (new MMLensEvaluateNode());
-}
+void *MMLensEvaluateNode::creator() { return (new MMLensEvaluateNode()); }
 
 MStatus MMLensEvaluateNode::initialize() {
     MStatus status;
@@ -133,9 +128,7 @@ MStatus MMLensEvaluateNode::initialize() {
 
     // In Lens
     MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
-    a_inLens = typedAttr.create(
-        "inLens", "ilns",
-        data_type_id);
+    a_inLens = typedAttr.create("inLens", "ilns", data_type_id);
     CHECK_MSTATUS(typedAttr.setStorable(false));
     CHECK_MSTATUS(typedAttr.setKeyable(false));
     CHECK_MSTATUS(typedAttr.setReadable(true));
@@ -143,25 +136,19 @@ MStatus MMLensEvaluateNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_inLens));
 
     // In X
-    a_inX = numericAttr.create(
-        "inX", "ix",
-        MFnNumericData::kDouble, false);
+    a_inX = numericAttr.create("inX", "ix", MFnNumericData::kDouble, false);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_inX));
 
     // In Y
-    a_inY = numericAttr.create(
-        "inY", "iy",
-        MFnNumericData::kDouble, false);
+    a_inY = numericAttr.create("inY", "iy", MFnNumericData::kDouble, false);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_inY));
 
     // Out X
-    a_outX = numericAttr.create(
-        "outX", "ox",
-        MFnNumericData::kDouble, 0.0);
+    a_outX = numericAttr.create("outX", "ox", MFnNumericData::kDouble, 0.0);
     CHECK_MSTATUS(numericAttr.setStorable(false));
     CHECK_MSTATUS(numericAttr.setKeyable(false));
     CHECK_MSTATUS(numericAttr.setReadable(true));
@@ -169,9 +156,7 @@ MStatus MMLensEvaluateNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_outX));
 
     // Out Y
-    a_outY = numericAttr.create(
-        "outY", "oy",
-        MFnNumericData::kDouble, 0.0);
+    a_outY = numericAttr.create("outY", "oy", MFnNumericData::kDouble, 0.0);
     CHECK_MSTATUS(numericAttr.setStorable(false));
     CHECK_MSTATUS(numericAttr.setKeyable(false));
     CHECK_MSTATUS(numericAttr.setReadable(true));
@@ -179,9 +164,8 @@ MStatus MMLensEvaluateNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_outY));
 
     // Out Hash
-    a_outHash = numericAttr.create(
-            "outHash", "outHash",
-            MFnNumericData::kInt64, 0);
+    a_outHash =
+        numericAttr.create("outHash", "outHash", MFnNumericData::kInt64, 0);
     CHECK_MSTATUS(numericAttr.setStorable(false));
     CHECK_MSTATUS(numericAttr.setKeyable(false));
     CHECK_MSTATUS(numericAttr.setReadable(true));
@@ -204,4 +188,4 @@ MStatus MMLensEvaluateNode::initialize() {
     return MS::kSuccess;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

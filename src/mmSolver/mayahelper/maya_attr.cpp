@@ -25,9 +25,9 @@
 #include "maya_attr.h"
 
 // STL
-#include <cmath>     // trunc, isfinite
-#include <cassert>   // assert
-#include <limits>    // numeric_limits<double>::max and min
+#include <cassert>  // assert
+#include <cmath>    // trunc, isfinite
+#include <limits>   // numeric_limits<double>::max and min
 
 // Provides C++ compatibility.
 // Between Maya 2018 and 2020.
@@ -36,35 +36,33 @@
 #endif
 
 // Maya
-#include <maya/MFn.h>
-#include <maya/MGlobal.h>
+#include <maya/MAnimCurveChange.h>
+#include <maya/MAnimUtil.h>
 #include <maya/MDGContext.h>
-#include <maya/MStatus.h>
+#include <maya/MFn.h>
+#include <maya/MFnAnimCurve.h>
+#include <maya/MFnAttribute.h>
+#include <maya/MFnMatrixData.h>
+#include <maya/MGlobal.h>
+#include <maya/MMatrix.h>
 #include <maya/MObject.h>
 #include <maya/MObjectArray.h>
 #include <maya/MPlug.h>
 #include <maya/MPlugArray.h>
+#include <maya/MStatus.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
-#include <maya/MMatrix.h>
-#include <maya/MFnMatrixData.h>
-#include <maya/MAnimCurveChange.h>
-#include <maya/MAnimUtil.h>
-#include <maya/MFnAnimCurve.h>
-#include <maya/MFnAttribute.h>
 
 #if MAYA_API_VERSION >= 20180000
 #include <maya/MDGContextGuard.h>
 #endif
 
-#include "mmSolver/adjust/adjust_defines.h"
 #include "maya_utils.h"
-
+#include "mmSolver/adjust/adjust_defines.h"
 
 // Turning USE_DG_CONTEXT on seems to slow down running the test suite by
 // approximately 33% (inside 'mayapy', without a GUI).
 #define USE_DG_CONTEXT_IN_GUI 1
-
 
 bool useDgContext(const int timeEvalMode) {
     MStatus status;
@@ -78,43 +76,39 @@ bool useDgContext(const int timeEvalMode) {
     return use_dg_ctx;
 }
 
+Attr::Attr()
+    : m_nodeName("")
+    , m_attrName("")
+    , m_object()
+    , m_plug()
+    , m_animCurveName("")
+    , m_animated(-1)
+    , m_connected(-1)
+    , m_isFreeToChange(-1)
+    , m_minValue(-std::numeric_limits<float>::max())
+    , m_maxValue(std::numeric_limits<float>::max())
+    , m_offsetValue(0.0)
+    , m_scaleValue(1.0)
+    , m_objectType(ObjectType::kUninitialized)
+    , m_solverAttrType(AttrSolverType::kUninitialized) {
+    MDistance distanceOne(1.0, MDistance::internalUnit());
+    m_linearFactor = distanceOne.as(MDistance::uiUnit());
+    m_linearFactorInv = 1.0 / m_linearFactor;
 
-Attr::Attr() :
-        m_nodeName(""),
-        m_attrName(""),
-        m_object(),
-        m_plug(),
-        m_animCurveName(""),
-        m_animated(-1),
-        m_connected(-1),
-        m_isFreeToChange(-1),
-        m_minValue(-std::numeric_limits<float>::max()),
-        m_maxValue(std::numeric_limits<float>::max()),
-        m_offsetValue(0.0),
-        m_scaleValue(1.0),
-        m_objectType(ObjectType::kUninitialized),
-        m_solverAttrType(AttrSolverType::kUninitialized) {
-     MDistance distanceOne(1.0, MDistance::internalUnit());
-     m_linearFactor = distanceOne.as(MDistance::uiUnit());
-     m_linearFactorInv = 1.0 / m_linearFactor;
-
-     MAngle angularOne(1.0, MAngle::internalUnit());
-     m_angularFactor = angularOne.as(MAngle::uiUnit());
-     m_angularFactorInv = 1.0 / m_angularFactor;
+    MAngle angularOne(1.0, MAngle::internalUnit());
+    m_angularFactor = angularOne.as(MAngle::uiUnit());
+    m_angularFactorInv = 1.0 / m_angularFactor;
 }
 
-MString Attr::getName() const {
-    return m_nodeName + "." + m_attrName;
-}
+MString Attr::getName() const { return m_nodeName + "." + m_attrName; }
 
 MStatus Attr::setName(MString value) {
     MStatus status;
     MStringArray values;
     status = value.split('.', values);
     if (status != MStatus::kSuccess) {
-        MMSOLVER_ERR(
-            "Attr::setName: Error splitting name: "
-            << "\"" << value.asChar() << "\"");
+        MMSOLVER_ERR("Attr::setName: Error splitting name: "
+                     << "\"" << value.asChar() << "\"");
         return MS::kFailure;
     }
     if (values.length() == 2) {
@@ -122,9 +116,7 @@ MStatus Attr::setName(MString value) {
         Attr::setAttrName(values[1]);
 
         auto object_type = Attr::getObjectType();
-        auto solverAttrType = computeSolverAttrType(
-            object_type,
-            values[1]);
+        auto solverAttrType = computeSolverAttrType(object_type, values[1]);
         Attr::setSolverAttrType(solverAttrType);
     } else {
         MMSOLVER_ERR(
@@ -135,9 +127,7 @@ MStatus Attr::setName(MString value) {
     return status;
 }
 
-MString Attr::getNodeName() const {
-    return m_nodeName;
-}
+MString Attr::getNodeName() const { return m_nodeName; }
 
 MStatus Attr::setNodeName(const MString &value) {
     if (value != m_nodeName) {
@@ -155,9 +145,7 @@ MStatus Attr::setNodeName(const MString &value) {
     return MS::kSuccess;
 }
 
-MString Attr::getAttrName() const {
-    return m_attrName;
-}
+MString Attr::getAttrName() const { return m_attrName; }
 
 MStatus Attr::setAttrName(const MString &value) {
     if (value != m_attrName) {
@@ -218,7 +206,6 @@ MPlug Attr::getPlug() {
     return m_plug;
 }
 
-
 MObject Attr::getAttribute() {
     MPlug plug = Attr::getPlug();
     MObject attrObj;
@@ -231,19 +218,18 @@ MObject Attr::getAttribute() {
 /*
  * Get the attribute type; linear, angle or numeric.
  */
-AttrDataType
-Attr::getAttrType() {
+AttrDataType Attr::getAttrType() {
     auto attrType = AttrDataType::kUnknown;
     MObject attrObj = Attr::getAttribute();
     MFn::Type mfnAttrType = attrObj.apiType();
     if ((mfnAttrType == MFn::Type::kDoubleLinearAttribute) ||
         (mfnAttrType == MFn::Type::kFloatLinearAttribute)) {
-         attrType = AttrDataType::kLinear;
+        attrType = AttrDataType::kLinear;
     } else if ((mfnAttrType == MFn::Type::kDoubleAngleAttribute) ||
                (mfnAttrType == MFn::Type::kFloatAngleAttribute)) {
-         attrType = AttrDataType::kAngle;
+        attrType = AttrDataType::kAngle;
     } else {
-         attrType = AttrDataType::kNumeric;
+        attrType = AttrDataType::kNumeric;
     }
     return attrType;
 }
@@ -259,9 +245,9 @@ bool Attr::isFreeToChange() {
     if (m_isFreeToChange < 0) {
         MPlug plug = Attr::getPlug();
         if (plug.isFreeToChange() == MPlug::kFreeToChange) {
-             m_isFreeToChange = 1;
+            m_isFreeToChange = 1;
         } else {
-             m_isFreeToChange = 0;
+            m_isFreeToChange = 0;
         }
     }
     return m_isFreeToChange != 0;
@@ -306,8 +292,8 @@ bool Attr::isAnimated() {
             animated = false;  // lets assume that if it failed, the
                                // plug cannot be animated.
         }
-        m_connected = (int) isDest;
-        m_animated = (int) animated;
+        m_connected = (int)isDest;
+        m_animated = (int)animated;
     }
     return m_animated != 0;
 }
@@ -323,13 +309,12 @@ bool Attr::isConnected() {
     if (m_connected < 0) {
         const bool isDest = plug.isDestination(&status);
         CHECK_MSTATUS(status);
-        m_connected = (int) isDest;
+        m_connected = (int)isDest;
     }
     return m_connected != 0;
 }
 
-MString Attr::getAnimCurveName()
-{
+MString Attr::getAnimCurveName() {
     MString result = "";
     // isAnimated will compute 'm_animCurveName' for us.
     const bool animated = Attr::isAnimated();
@@ -340,7 +325,7 @@ MString Attr::getAnimCurveName()
 }
 
 // Windows MSVC doesn't have 'trunc' function, so we create our own.
-inline double my_trunc(double d){
+inline double my_trunc(double d) {
     return (d > 0) ? std::floor(d) : std::ceil(d);
 }
 
@@ -399,7 +384,7 @@ MStatus Attr::getValue(int &value, const MTime &time, const int timeEvalMode) {
         double curveValue = 0;
         status = curveFn.evaluate(time, curveValue);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        value = (int) curveValue;
+        value = (int)curveValue;
     } else if (connected) {
         if (use_dg_ctx) {
 #if MAYA_API_VERSION >= 20180000
@@ -428,7 +413,8 @@ MStatus Attr::getValue(int &value, const MTime &time, const int timeEvalMode) {
     return MS::kSuccess;
 }
 
-MStatus Attr::getValue(short &value, const MTime &time, const int timeEvalMode) {
+MStatus Attr::getValue(short &value, const MTime &time,
+                       const int timeEvalMode) {
     MStatus status;
     const bool connected = Attr::isConnected();
     const bool animated = Attr::isAnimated();
@@ -441,7 +427,7 @@ MStatus Attr::getValue(short &value, const MTime &time, const int timeEvalMode) 
         double curveValue = 0;
         status = curveFn.evaluate(time, curveValue);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        value = (short) curveValue;
+        value = (short)curveValue;
     } else if (connected) {
         if (use_dg_ctx) {
 #if MAYA_API_VERSION >= 20180000
@@ -470,7 +456,8 @@ MStatus Attr::getValue(short &value, const MTime &time, const int timeEvalMode) 
     return MS::kSuccess;
 }
 
-MStatus Attr::getValue(double &value, const MTime &time, const int timeEvalMode) {
+MStatus Attr::getValue(double &value, const MTime &time,
+                       const int timeEvalMode) {
     MStatus status;
     const bool connected = Attr::isConnected();
     const bool animated = Attr::isAnimated();
@@ -506,12 +493,13 @@ MStatus Attr::getValue(double &value, const MTime &time, const int timeEvalMode)
 
     auto attrType = Attr::getAttrType();
     if (attrType == AttrDataType::kAngle) {
-         value *= m_angularFactor;
+        value *= m_angularFactor;
     }
     return MS::kSuccess;
 }
 
-MStatus Attr::getValue(MMatrix &value, const MTime &time, const int timeEvalMode) {
+MStatus Attr::getValue(MMatrix &value, const MTime &time,
+                       const int timeEvalMode) {
     MStatus status;
     MPlug plug = Attr::getPlug();
     const bool use_dg_ctx = useDgContext(timeEvalMode);
@@ -572,8 +560,8 @@ MStatus Attr::getValue(MMatrix &value, const int timeEvalMode) {
     return Attr::getValue(value, time, timeEvalMode);
 }
 
-MStatus Attr::setValue(double value, const MTime &time,
-                       MDGModifier &dgmod, MAnimCurveChange &animChange) {
+MStatus Attr::setValue(double value, const MTime &time, MDGModifier &dgmod,
+                       MAnimCurveChange &animChange) {
     MStatus status = MS::kSuccess;
 
     MPlug plug = Attr::getPlug();
@@ -582,10 +570,8 @@ MStatus Attr::setValue(double value, const MTime &time,
         MString name = Attr::getName();
         MString plugName = plug.name(&status);
         MMSOLVER_ERR("Set attribute with non-finite value;"
-                     << " name=" << name
-                     << " plug=" << plugName
-                     << " value=" << value
-                     << " time=" << time.value());
+                     << " name=" << name << " plug=" << plugName
+                     << " value=" << value << " time=" << time.value());
         return status;
     }
 
@@ -594,7 +580,7 @@ MStatus Attr::setValue(double value, const MTime &time,
 
     auto attrType = Attr::getAttrType();
     if (attrType == AttrDataType::kAngle) {
-         value *= m_angularFactorInv;
+        value *= m_angularFactorInv;
     }
 
     if (animated) {
@@ -617,8 +603,8 @@ MStatus Attr::setValue(double value, const MTime &time,
         MString name = Attr::getName();
         MString plugName = plug.name(&status);
         MMSOLVER_ERR("Dynamic attributes that aren't animated cannot be set; "
-                    << "name=" << name << " "
-                    << "plug=" << plugName);
+                     << "name=" << name << " "
+                     << "plug=" << plugName);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
         dgmod.newPlugValueDouble(plug, value);
@@ -626,56 +612,33 @@ MStatus Attr::setValue(double value, const MTime &time,
     return status;
 }
 
-MStatus Attr::setValue(const double value,
-                       MDGModifier &dgmod,
+MStatus Attr::setValue(const double value, MDGModifier &dgmod,
                        MAnimCurveChange &animChange) {
     MTime time = MAnimControl::currentTime();
     return Attr::setValue(value, time, dgmod, animChange);
 }
 
-double Attr::getMinimumValue() const {
-    return m_minValue;
-}
+double Attr::getMinimumValue() const { return m_minValue; }
 
-void Attr::setMinimumValue(const double value) {
-    m_minValue = value;
-}
+void Attr::setMinimumValue(const double value) { m_minValue = value; }
 
-double Attr::getMaximumValue() const {
-    return m_maxValue;
-}
+double Attr::getMaximumValue() const { return m_maxValue; }
 
-void Attr::setMaximumValue(const double value) {
-    m_maxValue = value;
-}
+void Attr::setMaximumValue(const double value) { m_maxValue = value; }
 
-double Attr::getOffsetValue() const {
-    return m_offsetValue;
-}
+double Attr::getOffsetValue() const { return m_offsetValue; }
 
-void Attr::setOffsetValue(const double value) {
-    m_offsetValue = value;
-}
+void Attr::setOffsetValue(const double value) { m_offsetValue = value; }
 
-double Attr::getScaleValue() const {
-    return m_scaleValue;
-}
+double Attr::getScaleValue() const { return m_scaleValue; }
 
-void Attr::setScaleValue(const double value) {
-    m_scaleValue = value;
-}
+void Attr::setScaleValue(const double value) { m_scaleValue = value; }
 
-ObjectType Attr::getObjectType() const {
-    return m_objectType;
-}
+ObjectType Attr::getObjectType() const { return m_objectType; }
 
-void Attr::setObjectType(const ObjectType value) {
-    m_objectType = value;
-}
+void Attr::setObjectType(const ObjectType value) { m_objectType = value; }
 
-AttrSolverType Attr::getSolverAttrType() const {
-    return m_solverAttrType;
-}
+AttrSolverType Attr::getSolverAttrType() const { return m_solverAttrType; }
 
 void Attr::setSolverAttrType(const AttrSolverType value) {
     m_solverAttrType = value;
@@ -700,9 +663,8 @@ MString Attr::getLongNodeName() {
         nodeName = dependFn.name();
     } else {
         nodeName = Attr::getNodeName();
-        MMSOLVER_ERR(
-            "Attr::getLongNodeName: Invalid object: "
-            << "\"" << nodeName.asChar() << "\"");
+        MMSOLVER_ERR("Attr::getLongNodeName: Invalid object: "
+                     << "\"" << nodeName.asChar() << "\"");
     }
 
     return nodeName;
@@ -725,6 +687,5 @@ MString Attr::getLongName() {
     result += attrName;
     return result;
 }
-
 
 #undef USE_DG_CONTEXT_IN_GUI

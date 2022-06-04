@@ -50,4 +50,4 @@ protected:
     std::shared_ptr<LensModel> m_value;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver

@@ -26,35 +26,27 @@
 #include <vector>
 
 // Maya
+#include <maya/MAnimCurveChange.h>
+#include <maya/MComputation.h>
+#include <maya/MDGModifier.h>
 #include <maya/MPoint.h>
 #include <maya/MStringArray.h>
-#include <maya/MAnimCurveChange.h>
-#include <maya/MDGModifier.h>
-#include <maya/MComputation.h>
 
 // MM Solver
+#include "adjust_data.h"
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "adjust_data.h"
-
 
 bool solve_3d_cminpack_lmdif(SolverOptions &solverOptions,
-                             int numberOfParameters,
-                             int numberOfErrors,
+                             int numberOfParameters, int numberOfErrors,
                              std::vector<double> &paramList,
                              std::vector<double> &errorList,
                              std::vector<double> &paramWeightList,
-                             SolverData &userData,
-                             SolverResult &solveResult);
+                             SolverData &userData, SolverResult &solveResult);
 
+int solveFunc_cminpack_lmdif(void *data, int n, int m, const double *p,
+                             double *x, int iflag);
 
-int solveFunc_cminpack_lmdif(void *data,
-                             int n,
-                             int m,
-                             const double *p,
-                             double *x,
-                             int iflag);
-
-#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDIF_H
+#endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDIF_H

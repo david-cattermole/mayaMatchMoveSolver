@@ -26,10 +26,10 @@
 
 // Maya
 #include <maya/MMatrix.h>
-#include <maya/MTransformationMatrix.h>
-#include <maya/MTypeId.h>
 #include <maya/MPxTransform.h>
 #include <maya/MPxTransformationMatrix.h>
+#include <maya/MTransformationMatrix.h>
+#include <maya/MTypeId.h>
 
 namespace mmsolver {
 
@@ -56,6 +56,6 @@ public:
     static MTypeId m_id;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_MARKER_GROUP_TRANSFORM_NODE_H
+#endif  // MM_MARKER_GROUP_TRANSFORM_NODE_H

@@ -28,59 +28,57 @@
 #include <vector>
 
 // Maya
-#include <maya/MGlobal.h>
-#include <maya/MIOStream.h>
-#include <maya/MPxCommand.h>
-#include <maya/MArgList.h>
+#include <maya/MAnimCurveChange.h>
 #include <maya/MArgDatabase.h>
-#include <maya/MSyntax.h>
-#include <maya/MSelectionList.h>
-#include <maya/MDagPath.h>
+#include <maya/MArgList.h>
+#include <maya/MComputation.h>
 #include <maya/MDGModifier.h>
 #include <maya/MDagModifier.h>
+#include <maya/MDagPath.h>
+#include <maya/MDoubleArray.h>
 #include <maya/MFnDagNode.h>
+#include <maya/MGlobal.h>
+#include <maya/MIOStream.h>
+#include <maya/MMatrix.h>
 #include <maya/MPlug.h>
 #include <maya/MPlugArray.h>
-#include <maya/MAnimCurveChange.h>
-#include <maya/MComputation.h>
 #include <maya/MPoint.h>
-#include <maya/MVector.h>
-#include <maya/MMatrix.h>
+#include <maya/MPxCommand.h>
+#include <maya/MSelectionList.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
-#include <maya/MDoubleArray.h>
+#include <maya/MSyntax.h>
+#include <maya/MVector.h>
 
 // MM Solver
+#include "mmSolver/adjust/adjust_base.h"
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/adjust/adjust_base.h"
-
 
 // Command arguments and command name:
 
 // List of Solver Types
-#define MM_SOLVER_TYPE_LIST_FLAG           ("-ls")
-#define MM_SOLVER_TYPE_LIST_FLAG_LONG      ("-list")
+#define MM_SOLVER_TYPE_LIST_FLAG ("-ls")
+#define MM_SOLVER_TYPE_LIST_FLAG_LONG ("-list")
 
 // Solver Type Name
-#define MM_SOLVER_TYPE_NAME_FLAG           ("-n")
-#define MM_SOLVER_TYPE_NAME_FLAG_LONG      ("-name")
+#define MM_SOLVER_TYPE_NAME_FLAG ("-n")
+#define MM_SOLVER_TYPE_NAME_FLAG_LONG ("-name")
 
 // Solver Type Index
-#define MM_SOLVER_TYPE_INDEX_FLAG           ("-idx")
-#define MM_SOLVER_TYPE_INDEX_FLAG_LONG      ("-index")
+#define MM_SOLVER_TYPE_INDEX_FLAG ("-idx")
+#define MM_SOLVER_TYPE_INDEX_FLAG_LONG ("-index")
 
 // Solver Type Default
-#define MM_SOLVER_TYPE_DEFAULT_FLAG           ("-def")
-#define MM_SOLVER_TYPE_DEFAULT_FLAG_LONG      ("-default")
+#define MM_SOLVER_TYPE_DEFAULT_FLAG ("-def")
+#define MM_SOLVER_TYPE_DEFAULT_FLAG_LONG ("-default")
 
 namespace mmsolver {
 
 class MMSolverTypeCmd : public MPxCommand {
 public:
-
     MMSolverTypeCmd() {
         m_default = false;
         m_list = false;
@@ -102,14 +100,14 @@ public:
     static MString cmdName();
 
 private:
-    MStatus parseArgs( const MArgList& args );
+    MStatus parseArgs(const MArgList &args);
 
-    bool  m_default;
-    bool  m_list;
-    bool  m_name;
-    bool  m_index;
+    bool m_default;
+    bool m_list;
+    bool m_name;
+    bool m_index;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_SOLVER_TYPE_CMD_H
+#endif  // MM_SOLVER_TYPE_CMD_H

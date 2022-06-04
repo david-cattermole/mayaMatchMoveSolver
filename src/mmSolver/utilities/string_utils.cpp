@@ -21,6 +21,4 @@
 
 #include "string_utils.h"
 
-namespace mmstring {
-
-} // namespace mmstring
+namespace mmstring {}  // namespace mmstring

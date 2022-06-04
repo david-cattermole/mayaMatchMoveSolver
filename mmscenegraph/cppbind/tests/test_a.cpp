@@ -19,9 +19,11 @@
  *
  */
 
-#include <iostream>
-#include <mmscenegraph/mmscenegraph.h>
 #include "test_a.h"
+
+#include <mmscenegraph/mmscenegraph.h>
+
+#include <iostream>
 
 namespace mmsg = mmscenegraph;
 
@@ -53,11 +55,9 @@ int test_a() {
         one_attr,
     };
     auto root_rotate_order = mmsg::RotateOrder::kXYZ;
-    auto root_node = sg.create_transform_node(
-        root_translate_attrs,
-        root_rotate_attrs,
-        root_scale_attrs,
-        root_rotate_order);
+    auto root_node =
+        sg.create_transform_node(root_translate_attrs, root_rotate_attrs,
+                                 root_scale_attrs, root_rotate_order);
 
     // Bundle to be reprojected
     mmsg::Real px = -0.5;
@@ -82,11 +82,8 @@ int test_a() {
         one_attr,
     };
     auto bnd_rotate_order = mmsg::RotateOrder::kXYZ;
-    auto bnd_node = sg.create_bundle_node(
-        bnd_translate_attrs,
-        bnd_rotate_attrs,
-        bnd_scale_attrs,
-        bnd_rotate_order);
+    auto bnd_node = sg.create_bundle_node(bnd_translate_attrs, bnd_rotate_attrs,
+                                          bnd_scale_attrs, bnd_rotate_order);
 
     // Camera Values
     mmsg::Real tx = -2.0;
@@ -128,12 +125,9 @@ int test_a() {
         cam_focal_length_attr,
     };
     auto cam_rotate_order = mmsg::RotateOrder::kZXY;
-    auto cam_node = sg.create_camera_node(
-        cam_translate_attrs,
-        cam_rotate_attrs,
-        cam_scale_attrs,
-        cam_attrs,
-        cam_rotate_order);
+    auto cam_node =
+        sg.create_camera_node(cam_translate_attrs, cam_rotate_attrs,
+                              cam_scale_attrs, cam_attrs, cam_rotate_order);
 
     // Marker to be reprojected
     mmsg::Real mx = 0.0;
@@ -150,22 +144,14 @@ int test_a() {
     auto mkr_node = sg.create_marker_node(mkr_attrs);
 
     // Print number of nodes in the scene graph.
-    std::cout
-        << "SceneGraph num_transform_nodes: "
-        << sg.num_transform_nodes()
-        << '\n';
-    std::cout
-        << "SceneGraph num_bundle_nodes: "
-        << sg.num_bundle_nodes()
-        << '\n';
-    std::cout
-        << "SceneGraph num_camera_nodes: "
-        << sg.num_camera_nodes()
-        << '\n';
-    std::cout
-        << "SceneGraph num_marker_nodes: "
-        << sg.num_marker_nodes()
-        << '\n';
+    std::cout << "SceneGraph num_transform_nodes: " << sg.num_transform_nodes()
+              << '\n';
+    std::cout << "SceneGraph num_bundle_nodes: " << sg.num_bundle_nodes()
+              << '\n';
+    std::cout << "SceneGraph num_camera_nodes: " << sg.num_camera_nodes()
+              << '\n';
+    std::cout << "SceneGraph num_marker_nodes: " << sg.num_marker_nodes()
+              << '\n';
 
     // Create Marker, Bundle and Camera relationships.
     sg.link_marker_to_camera(mkr_node.id, cam_node.id);
@@ -182,45 +168,28 @@ int test_a() {
     eval_objects.add_marker(mkr_node);
 
     // Print number of nodes in the scene graph.
-    std::cout
-        << "EvaluationObjects num_bundles: "
-        << eval_objects.num_bundles()
-        << '\n';
-    std::cout
-        << "EvaluationObjects num_cameras: "
-        << eval_objects.num_cameras()
-        << '\n';
-    std::cout
-        << "EvaluationObjects num_markers: "
-        << eval_objects.num_markers()
-        << '\n';
+    std::cout << "EvaluationObjects num_bundles: " << eval_objects.num_bundles()
+              << '\n';
+    std::cout << "EvaluationObjects num_cameras: " << eval_objects.num_cameras()
+              << '\n';
+    std::cout << "EvaluationObjects num_markers: " << eval_objects.num_markers()
+              << '\n';
 
-    auto flat_scene = mmsg::bake_scene_graph(
-        sg,
-        eval_objects
-    );
-    std::cout
-        << "FlatScene BEFORE num_points: "
-        << flat_scene.num_points()
-        << '\n';
-    std::cout
-        << "FlatScene BEFORE num_deviations: "
-        << flat_scene.num_deviations()
-        << '\n';
+    auto flat_scene = mmsg::bake_scene_graph(sg, eval_objects);
+    std::cout << "FlatScene BEFORE num_points: " << flat_scene.num_points()
+              << '\n';
+    std::cout << "FlatScene BEFORE num_deviations: "
+              << flat_scene.num_deviations() << '\n';
 
     auto frames = std::vector<mmsg::FrameValue>();
     frames.push_back(1);
 
     // Evaluate
     flat_scene.evaluate(attrdb, frames);
-    std::cout
-        << "FlatScene AFTER num_points: "
-        << flat_scene.num_points()
-        << '\n';
-    std::cout
-        << "FlatScene AFTER num_deviations: "
-        << flat_scene.num_deviations()
-        << '\n';
+    std::cout << "FlatScene AFTER num_points: " << flat_scene.num_points()
+              << '\n';
+    std::cout << "FlatScene AFTER num_deviations: "
+              << flat_scene.num_deviations() << '\n';
     auto num_points = flat_scene.num_points();
     assert(num_points == flat_scene.num_deviations());
 
@@ -233,10 +202,8 @@ int test_a() {
         auto point_y = out_point_list[index + 1];
         auto dev_x = out_deviation_list[index + 0];
         auto dev_y = out_deviation_list[index + 1];
-        std::cout
-            << "point: " << point_x << ", " << point_y
-            << "dev: " << dev_x << ", " << dev_y
-            << '\n';
+        std::cout << "point: " << point_x << ", " << point_y << "dev: " << dev_x
+                  << ", " << dev_y << '\n';
     }
 
     return 0;

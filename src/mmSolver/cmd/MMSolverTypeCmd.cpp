@@ -29,48 +29,40 @@
 #include "MMSolverTypeCmd.h"
 
 // STL
-#include <cmath>
 #include <cassert>
+#include <cmath>
 #include <cstdlib>
 
 // Maya
-#include <maya/MStatus.h>
-#include <maya/MArgList.h>
 #include <maya/MArgDatabase.h>
-#include <maya/MString.h>
-#include <maya/MStringArray.h>
+#include <maya/MArgList.h>
+#include <maya/MFnDependencyNode.h>
 #include <maya/MObject.h>
 #include <maya/MPlug.h>
-#include <maya/MFnDependencyNode.h>
+#include <maya/MStatus.h>
+#include <maya/MString.h>
+#include <maya/MStringArray.h>
 
 // MM Solver
-#include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/utilities/string_utils.h"
 #include "mmSolver/adjust/adjust_base.h"
 #include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/string_utils.h"
 
 namespace mmsolver {
 
 MMSolverTypeCmd::~MMSolverTypeCmd() {}
 
-void *MMSolverTypeCmd::creator() {
-    return new MMSolverTypeCmd();
-}
+void *MMSolverTypeCmd::creator() { return new MMSolverTypeCmd(); }
 
-MString MMSolverTypeCmd::cmdName() {
-    return MString("mmSolverType");
-}
+MString MMSolverTypeCmd::cmdName() { return MString("mmSolverType"); }
 
 /*
  * Tell Maya we have a syntax function.
  */
-bool MMSolverTypeCmd::hasSyntax() const {
-    return true;
-}
+bool MMSolverTypeCmd::hasSyntax() const { return true; }
 
-bool MMSolverTypeCmd::isUndoable() const {
-    return false;
-}
+bool MMSolverTypeCmd::isUndoable() const { return false; }
 
 /*
  * Add flags to the command syntax
@@ -81,10 +73,14 @@ MSyntax MMSolverTypeCmd::newSyntax() {
     syntax.enableEdit(false);
 
     // Flags
-    syntax.addFlag(MM_SOLVER_TYPE_DEFAULT_FLAG, MM_SOLVER_TYPE_DEFAULT_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(MM_SOLVER_TYPE_LIST_FLAG, MM_SOLVER_TYPE_LIST_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(MM_SOLVER_TYPE_NAME_FLAG, MM_SOLVER_TYPE_NAME_FLAG_LONG, MSyntax::kString);
-    syntax.addFlag(MM_SOLVER_TYPE_INDEX_FLAG, MM_SOLVER_TYPE_INDEX_FLAG_LONG, MSyntax::kUnsigned);
+    syntax.addFlag(MM_SOLVER_TYPE_DEFAULT_FLAG,
+                   MM_SOLVER_TYPE_DEFAULT_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(MM_SOLVER_TYPE_LIST_FLAG, MM_SOLVER_TYPE_LIST_FLAG_LONG,
+                   MSyntax::kBoolean);
+    syntax.addFlag(MM_SOLVER_TYPE_NAME_FLAG, MM_SOLVER_TYPE_NAME_FLAG_LONG,
+                   MSyntax::kString);
+    syntax.addFlag(MM_SOLVER_TYPE_INDEX_FLAG, MM_SOLVER_TYPE_INDEX_FLAG_LONG,
+                   MSyntax::kUnsigned);
 
     return syntax;
 }
@@ -113,7 +109,8 @@ MStatus MMSolverTypeCmd::parseArgs(const MArgList &args) {
     // Get 'default'
     m_default = false;
     if (argData.isFlagSet(MM_SOLVER_TYPE_DEFAULT_FLAG)) {
-        status = argData.getFlagArgument(MM_SOLVER_TYPE_DEFAULT_FLAG, 0, m_default);
+        status =
+            argData.getFlagArgument(MM_SOLVER_TYPE_DEFAULT_FLAG, 0, m_default);
         if (status != MStatus::kSuccess) {
             status.perror("mmSolverType could not get 'default' flag value");
             return status;
@@ -132,7 +129,9 @@ MStatus MMSolverTypeCmd::parseArgs(const MArgList &args) {
 
     if ((m_list && m_default) || (!m_list && !m_default)) {
         status = MStatus::kFailure;
-        status.perror("mmSolverType; must give 'list' or 'default' flag, not both flags at once");
+        status.perror(
+            "mmSolverType; must give 'list' or 'default' flag, not both flags "
+            "at once");
         return status;
     }
 
@@ -171,21 +170,21 @@ MStatus MMSolverTypeCmd::parseArgs(const MArgList &args) {
     return status;
 }
 
-
 MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
-//
-//  Description:
-//    implements the MEL mmSolver command.
-//
-//  Arguments:
-//    argList - the argument list that was passes to the command from MEL
-//
-//  Return Value:
-//    MStatus::kSuccess - command succeeded
-//    MStatus::kFailure - command failed (returning this value will cause the
-//                     MEL script that is being run to terminate unless the
-//                     error is caught using a "catch" statement.
-//
+    //
+    //  Description:
+    //    implements the MEL mmSolver command.
+    //
+    //  Arguments:
+    //    argList - the argument list that was passes to the command from MEL
+    //
+    //  Return Value:
+    //    MStatus::kSuccess - command succeeded
+    //    MStatus::kFailure - command failed (returning this value will cause
+    //    the
+    //                     MEL script that is being run to terminate unless the
+    //                     error is caught using a "catch" statement.
+    //
     MStatus status = MStatus::kSuccess;
 
     // Read all the flag arguments.
@@ -202,13 +201,14 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
         if (m_name) {
             MStringArray outResult;
 
-            for (cit = solverTypes.cbegin(); cit != solverTypes.cend(); ++cit){
+            for (cit = solverTypes.cbegin(); cit != solverTypes.cend(); ++cit) {
                 int index = cit->first;
                 std::string name = cit->second;
 
                 MString item = "";
                 if (m_index) {
-                    std::string index_string = mmstring::numberToString<int>(index);
+                    std::string index_string =
+                        mmstring::numberToString<int>(index);
                     item += MString(index_string.c_str());
                     item += "=";
                 }
@@ -220,7 +220,7 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
         } else if (!m_name && m_index) {
             MIntArray outResult;
 
-            for (cit = solverTypes.cbegin(); cit != solverTypes.cend(); ++cit){
+            for (cit = solverTypes.cbegin(); cit != solverTypes.cend(); ++cit) {
                 int index = cit->first;
                 outResult.append(index);
             }
@@ -257,4 +257,4 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
     return status;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

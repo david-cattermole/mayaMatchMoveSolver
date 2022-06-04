@@ -23,19 +23,18 @@
 #ifndef MM_SOLVER_MAYA_HELPER_MAYA_MARKER_H
 #define MM_SOLVER_MAYA_HELPER_MAYA_MARKER_H
 
-#include <vector>
-#include <memory>
-
 #include <maya/MObject.h>
-#include <maya/MString.h>
 #include <maya/MPlug.h>
+#include <maya/MString.h>
+
+#include <memory>
+#include <vector>
 
 #include "maya_attr.h"
 
 class Camera;
 
 class Bundle;
-
 
 class Marker {
 public:
@@ -57,51 +56,22 @@ public:
     Attr &getEnableAttr();
     Attr &getWeightAttr();
 
-    MStatus getMatrix(
-        MMatrix &value,
-        const MTime &time,
-        const int timeEvalMode);
-    MStatus getMatrix(
-        MMatrix &value,
-        const int timeEvalMode);
+    MStatus getMatrix(MMatrix &value, const MTime &time,
+                      const int timeEvalMode);
+    MStatus getMatrix(MMatrix &value, const int timeEvalMode);
 
-    MStatus getPos(
-        double &x,
-        double &y,
-        double &z,
-        const MTime &time,
-        const int timeEvalMode);
-    MStatus getPos(
-        MPoint &point,
-        const MTime &time,
-        const int timeEvalMode);
-    MStatus getPos(
-        double &x,
-        double &y,
-        double &z,
-        const int timeEvalMode);
-    MStatus getPos(
-        MPoint &point,
-        const int timeEvalMode);
+    MStatus getPos(double &x, double &y, double &z, const MTime &time,
+                   const int timeEvalMode);
+    MStatus getPos(MPoint &point, const MTime &time, const int timeEvalMode);
+    MStatus getPos(double &x, double &y, double &z, const int timeEvalMode);
+    MStatus getPos(MPoint &point, const int timeEvalMode);
 
-    MStatus getPosXY(
-        double &x,
-        double &y,
-        const MTime &time,
-        const int timeEvalMode);
-    MStatus getPosXY(
-        double &x,
-        double &y,
-        const int timeEvalMode);
+    MStatus getPosXY(double &x, double &y, const MTime &time,
+                     const int timeEvalMode);
+    MStatus getPosXY(double &x, double &y, const int timeEvalMode);
 
-    MStatus getEnable(
-        bool &value,
-        const MTime &time,
-        const int timeEvalMode);
-    MStatus getWeight(
-        double &value,
-        const MTime &time,
-        const int timeEvalMode);
+    MStatus getEnable(bool &value, const MTime &time, const int timeEvalMode);
+    MStatus getWeight(double &value, const MTime &time, const int timeEvalMode);
 
     MString getLongNodeName();
 
@@ -119,7 +89,6 @@ private:
     Attr m_weight;
 };
 
-
 typedef std::vector<Marker> MarkerList;
 typedef MarkerList::iterator MarkerListIt;
 
@@ -128,4 +97,4 @@ typedef std::vector<std::shared_ptr<Marker> > MarkerPtrList;
 typedef MarkerPtrList::iterator MarkerPtrListIt;
 typedef MarkerPtrList::const_iterator MarkerPtrListCIt;
 
-#endif // MM_SOLVER_MAYA_HELPER_MAYA_MARKER_H
+#endif  // MM_SOLVER_MAYA_HELPER_MAYA_MARKER_H

@@ -20,28 +20,22 @@
  * Lens model adjustment.
  */
 
-
 #ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_LENS_MODEL_H
 #define MM_SOLVER_CORE_BUNDLE_ADJUST_LENS_MODEL_H
 
+#include "adjust_data.h"
 #include "mmSolver/lens/lens_model.h"
 #include "mmSolver/mayahelper/maya_attr.h"
-#include "adjust_data.h"
 
-MStatus
-setLensModelAttributeValue(
-    std::shared_ptr<LensModel> &lensModel,
-    const AttrSolverType attrType,
-    const double value);
+MStatus setLensModelAttributeValue(std::shared_ptr<LensModel> &lensModel,
+                                   const AttrSolverType attrType,
+                                   const double value);
 
-MStatus
-constructLensModelList(
-    const CameraPtrList &cameraList,
-    const MarkerPtrList &markerList,
-    const AttrPtrList &attrList,
-    const MTimeArray &frameList,
+MStatus constructLensModelList(
+    const CameraPtrList &cameraList, const MarkerPtrList &markerList,
+    const AttrPtrList &attrList, const MTimeArray &frameList,
     std::vector<std::shared_ptr<LensModel>> &out_markerFrameToLensModelList,
     std::vector<std::shared_ptr<LensModel>> &out_attrFrameToLensModelList,
     std::vector<std::shared_ptr<LensModel>> &out_lensModelList);
 
-#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_LENS_MODEL_H
+#endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_LENS_MODEL_H

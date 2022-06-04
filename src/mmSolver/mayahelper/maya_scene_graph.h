@@ -24,44 +24,40 @@
 
 // STL
 #include <memory>
-#include <vector>
 #include <string>
+#include <vector>
 
 // Maya
-#include <maya/MTypes.h>
-#include <maya/MStreamUtils.h>
+#include <maya/MComputation.h>
 #include <maya/MDagPath.h>
 #include <maya/MObject.h>
+#include <maya/MStreamUtils.h>
+#include <maya/MString.h>
 #include <maya/MTime.h>
 #include <maya/MTimeArray.h>
-#include <maya/MComputation.h>
-#include <maya/MString.h>
+#include <maya/MTypes.h>
 
 // MM Scene Graph
 #include "mmscenegraph/mmscenegraph.h"
 
 // MM Solver
-#include "maya_camera.h"
 #include "maya_attr.h"
-#include "maya_marker.h"
 #include "maya_bundle.h"
+#include "maya_camera.h"
+#include "maya_marker.h"
 #include "maya_utils.h"
 
 MStatus construct_scene_graph(
-        CameraPtrList &cameraList,
-        MarkerPtrList &markerList,
-        BundlePtrList &bundleList,
-        AttrPtrList &attrList,
-        const MTimeArray &frameList,
-        const int timeEvalMode,
-        mmscenegraph::SceneGraph &out_sceneGraph,
-        mmscenegraph::AttrDataBlock &out_attrDataBlock,
-        mmscenegraph::FlatScene &out_flatScene,
-        std::vector<mmscenegraph::FrameValue> &out_frameList,
-        std::vector<mmscenegraph::CameraNode> &out_cameraNodes,
-        std::vector<mmscenegraph::BundleNode> &out_bundleNodes,
-        std::vector<mmscenegraph::MarkerNode> &out_markerNodes,
-        std::vector<mmscenegraph::AttrId> &out_attrIdList
-);
+    CameraPtrList &cameraList, MarkerPtrList &markerList,
+    BundlePtrList &bundleList, AttrPtrList &attrList,
+    const MTimeArray &frameList, const int timeEvalMode,
+    mmscenegraph::SceneGraph &out_sceneGraph,
+    mmscenegraph::AttrDataBlock &out_attrDataBlock,
+    mmscenegraph::FlatScene &out_flatScene,
+    std::vector<mmscenegraph::FrameValue> &out_frameList,
+    std::vector<mmscenegraph::CameraNode> &out_cameraNodes,
+    std::vector<mmscenegraph::BundleNode> &out_bundleNodes,
+    std::vector<mmscenegraph::MarkerNode> &out_markerNodes,
+    std::vector<mmscenegraph::AttrId> &out_attrIdList);
 
 #endif  // MM_SOLVER_MAYA_SCENE_GRAPH_H

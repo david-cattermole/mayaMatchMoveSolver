@@ -23,9 +23,9 @@
 #ifndef MM_SOLVER_RENDER_QUAD_RENDER_BASE_H
 #define MM_SOLVER_RENDER_QUAD_RENDER_BASE_H
 
+#include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
-#include <maya/MRenderTargetManager.h>
 
 namespace mmsolver {
 namespace render {
@@ -37,34 +37,24 @@ public:
 
     MHWRender::MClearOperation &clearOperation() override;
 
-    void
-    setRenderTargets(MHWRender::MRenderTarget **targets,
-                     const uint32_t index,
-                     const uint32_t count) {
+    void setRenderTargets(MHWRender::MRenderTarget **targets,
+                          const uint32_t index, const uint32_t count) {
         m_targets = targets;
         m_target_index = index;
         m_target_count = count;
     }
 
-    const MFloatPoint & viewRectangle() const {
-        return m_view_rectangle;
-    }
+    const MFloatPoint &viewRectangle() const { return m_view_rectangle; }
 
-    void setViewRectangle(const MFloatPoint & rect) {
-        m_view_rectangle = rect;
-    }
+    void setViewRectangle(const MFloatPoint &rect) { m_view_rectangle = rect; }
 
-    uint32_t clearMask() {
-        return m_clear_mask;
-    }
+    uint32_t clearMask() { return m_clear_mask; }
 
-    void setClearMask(const uint32_t clear_mask) {
-        m_clear_mask = clear_mask;
-    }
+    void setClearMask(const uint32_t clear_mask) { m_clear_mask = clear_mask; }
 
 protected:
     // Targets used as input parameters to mShaderInstance;
-    MHWRender::MRenderTarget** m_targets;
+    MHWRender::MRenderTarget **m_targets;
 
     // The index (and count) into the m_targets list of pointers. We
     // are able to give the exact targets.
@@ -78,7 +68,7 @@ protected:
     uint32_t m_clear_mask;
 };
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver
 
-#endif // MM_SOLVER_RENDER_QUAD_RENDER_BASE_H
+#endif  // MM_SOLVER_RENDER_QUAD_RENDER_BASE_H

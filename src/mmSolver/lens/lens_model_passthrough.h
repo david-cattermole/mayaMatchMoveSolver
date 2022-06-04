@@ -32,39 +32,25 @@
 
 class LensModelPassthrough : public LensModel {
 public:
+    LensModelPassthrough() : LensModel{LensModelType::kPassthrough} {}
 
-    LensModelPassthrough()
-            : LensModel{LensModelType::kPassthrough}
-        {}
+    LensModelPassthrough(const LensModelPassthrough &rhs) : LensModel{rhs} {}
 
-    LensModelPassthrough(const LensModelPassthrough &rhs)
-            : LensModel{rhs}
-        {}
-
-    std::unique_ptr<LensModel>
-    cloneAsUniquePtr() const override {
+    std::unique_ptr<LensModel> cloneAsUniquePtr() const override {
         return std::unique_ptr<LensModel>(new LensModelPassthrough(*this));
     }
 
-    std::shared_ptr<LensModel>
-    cloneAsSharedPtr() const override {
+    std::shared_ptr<LensModel> cloneAsSharedPtr() const override {
         return std::shared_ptr<LensModel>(new LensModelPassthrough(*this));
     }
 
-    virtual void applyModelUndistort(
-        const double x,
-        const double y,
-        double &out_x,
-        double &out_y);
+    virtual void applyModelUndistort(const double x, const double y,
+                                     double &out_x, double &out_y);
 
-    virtual void applyModelDistort(
-        const double x,
-        const double y,
-        double &out_x,
-        double &out_y);
+    virtual void applyModelDistort(const double x, const double y,
+                                   double &out_x, double &out_y);
 
     virtual mmhash::HashValue hashValue();
 };
 
-
-#endif // MM_SOLVER_CORE_LENS_MODEL_PASSTHROUGH_H
+#endif  // MM_SOLVER_CORE_LENS_MODEL_PASSTHROUGH_H

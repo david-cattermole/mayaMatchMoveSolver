@@ -21,8 +21,8 @@
 
 #include "QuadRenderBlend.h"
 
-#include <maya/MStreamUtils.h>
 #include <maya/MShaderManager.h>
+#include <maya/MStreamUtils.h>
 
 #include "constants.h"
 
@@ -34,12 +34,11 @@ namespace render {
 // Reads from 'auxiliary' Target, and writes to 'main' Target.
 //
 QuadRenderBlend::QuadRenderBlend(const MString &name)
-        : QuadRenderBase(name)
-        , m_shader_instance(nullptr)
-        , m_target_index_input1(0)
-        , m_target_index_input2(0)
-        , m_blend(0.0f) {
-}
+    : QuadRenderBase(name)
+    , m_shader_instance(nullptr)
+    , m_target_index_input1(0)
+    , m_target_index_input2(0)
+    , m_blend(0.0f) {}
 
 QuadRenderBlend::~QuadRenderBlend() {
     // Release all shaders.
@@ -48,7 +47,8 @@ QuadRenderBlend::~QuadRenderBlend() {
         if (!renderer) {
             return;
         }
-        const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+        const MHWRender::MShaderManager *shaderMgr =
+            renderer->getShaderManager();
         if (!shaderMgr) {
             return;
         }
@@ -62,8 +62,8 @@ QuadRenderBlend::~QuadRenderBlend() {
 // Determine the targets to be used.
 //
 // Called by Maya.
-MHWRender::MRenderTarget *const *
-QuadRenderBlend::targetOverrideList(unsigned int &listSize) {
+MHWRender::MRenderTarget *const *QuadRenderBlend::targetOverrideList(
+    unsigned int &listSize) {
     if (m_targets && (m_target_count > 0)) {
         listSize = m_target_count;
         return &m_targets[m_target_index];
@@ -74,26 +74,24 @@ QuadRenderBlend::targetOverrideList(unsigned int &listSize) {
 
 // Maya calls this method to know what shader should be used for this
 // quad render operation.
-const MHWRender::MShaderInstance *
-QuadRenderBlend::shader() {
+const MHWRender::MShaderInstance *QuadRenderBlend::shader() {
     // Compile shader
     if (!m_shader_instance) {
         MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
         if (!renderer) {
             return nullptr;
         }
-        const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+        const MHWRender::MShaderManager *shaderMgr =
+            renderer->getShaderManager();
         if (!shaderMgr) {
             return nullptr;
         }
 
-        MStreamUtils::stdOutStream()
-            << "QuadRenderBlend: Compile shader...\n";
+        MStreamUtils::stdOutStream() << "QuadRenderBlend: Compile shader...\n";
         MString file_name = "Blend";
         MString shader_technique = "Main";
         m_shader_instance = shaderMgr->getEffectsFileShader(
-            file_name.asChar(),
-            shader_technique.asChar());
+            file_name.asChar(), shader_technique.asChar());
     }
 
     // Set default parameters
@@ -103,23 +101,25 @@ QuadRenderBlend::shader() {
 
         if (m_targets) {
             MHWRender::MRenderTargetAssignment assignment1;
-            MHWRender::MRenderTarget *target1 = m_targets[m_target_index_input1];
+            MHWRender::MRenderTarget *target1 =
+                m_targets[m_target_index_input1];
             if (target1) {
                 MStreamUtils::stdOutStream()
                     << "QuadRenderBlend: Assign texture1 to shader...\n";
                 assignment1.target = target1;
-                CHECK_MSTATUS(m_shader_instance->setParameter(
-                                  "gSourceTex", assignment1));
+                CHECK_MSTATUS(
+                    m_shader_instance->setParameter("gSourceTex", assignment1));
             }
 
             MHWRender::MRenderTargetAssignment assignment2;
-            MHWRender::MRenderTarget *target2 = m_targets[m_target_index_input2];
+            MHWRender::MRenderTarget *target2 =
+                m_targets[m_target_index_input2];
             if (target2) {
                 MStreamUtils::stdOutStream()
                     << "QuadRenderBlend: Assign texture2 to shader...\n";
                 assignment2.target = target2;
-                CHECK_MSTATUS(m_shader_instance->setParameter(
-                                  "gSourceTex2", assignment2));
+                CHECK_MSTATUS(m_shader_instance->setParameter("gSourceTex2",
+                                                              assignment2));
             }
         }
 
@@ -129,5 +129,5 @@ QuadRenderBlend::shader() {
     return m_shader_instance;
 }
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver

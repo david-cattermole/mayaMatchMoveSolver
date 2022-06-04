@@ -23,11 +23,12 @@
 #include "MMReadImageCmd.h"
 
 // Maya
-#include <maya/MArgList.h>
 #include <maya/MArgDatabase.h>
+#include <maya/MArgList.h>
 #include <maya/MDagPath.h>
 #include <maya/MFileObject.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MImage.h>
 #include <maya/MMatrix.h>
 #include <maya/MMatrixArray.h>
 #include <maya/MObject.h>
@@ -35,7 +36,6 @@
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 #include <maya/MSyntax.h>
-#include <maya/MImage.h>
 
 // MM Solver
 #include "mmSolver/utilities/debug_utils.h"
@@ -44,24 +44,16 @@ namespace mmsolver {
 
 MMReadImageCmd::~MMReadImageCmd() {}
 
-void *MMReadImageCmd::creator() {
-    return new MMReadImageCmd();
-}
+void *MMReadImageCmd::creator() { return new MMReadImageCmd(); }
 
-MString MMReadImageCmd::cmdName() {
-    return MString("mmReadImage");
-}
+MString MMReadImageCmd::cmdName() { return MString("mmReadImage"); }
 
 /*
  * Tell Maya we have a syntax function.
  */
-bool MMReadImageCmd::hasSyntax() const {
-    return true;
-}
+bool MMReadImageCmd::hasSyntax() const { return true; }
 
-bool MMReadImageCmd::isUndoable() const {
-    return false;
-}
+bool MMReadImageCmd::isUndoable() const { return false; }
 
 /*
  * Add flags to the command syntax
@@ -73,15 +65,10 @@ MSyntax MMReadImageCmd::newSyntax() {
 
     auto minNumObjects = 1;
     auto maxNumObjects = 1;
-    syntax.setObjectType(
-        MSyntax::kStringObjects,
-        minNumObjects,
-        maxNumObjects);
+    syntax.setObjectType(MSyntax::kStringObjects, minNumObjects, maxNumObjects);
 
-    syntax.addFlag(
-        WIDTH_HEIGHT_FLAG,
-        WIDTH_HEIGHT_FLAG_LONG,
-        MSyntax::kBoolean);
+    syntax.addFlag(WIDTH_HEIGHT_FLAG, WIDTH_HEIGHT_FLAG_LONG,
+                   MSyntax::kBoolean);
     return syntax;
 }
 
@@ -130,7 +117,6 @@ MStatus MMReadImageCmd::parseArgs(const MArgList &args) {
     return status;
 }
 
-
 MStatus MMReadImageCmd::doIt(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
@@ -146,10 +132,9 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
     if (!path_exists) {
         MString resolved_file_path = file_object.resolvedFullName();
         status = MS::kFailure;
-        MMSOLVER_WRN(
-            "mmReadImage: Could not find file path "
-            << "\"" << m_file_path.asChar() << "\", resolved path "
-            << "\"" << resolved_file_path.asChar() << "\".");
+        MMSOLVER_WRN("mmReadImage: Could not find file path "
+                     << "\"" << m_file_path.asChar() << "\", resolved path "
+                     << "\"" << resolved_file_path.asChar() << "\".");
         return status;
     }
     MString resolved_file_path = file_object.resolvedFullName();
@@ -170,10 +155,9 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
         );
         if (status != MS::kSuccess) {
             status = MS::kSuccess;
-            MMSOLVER_WRN(
-                "mmReadImage: "
-                << "Image file path could not be read: "
-                << m_file_path.asChar());
+            MMSOLVER_WRN("mmReadImage: "
+                         << "Image file path could not be read: "
+                         << m_file_path.asChar());
             return status;
         }
 
@@ -189,4 +173,4 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
     return status;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

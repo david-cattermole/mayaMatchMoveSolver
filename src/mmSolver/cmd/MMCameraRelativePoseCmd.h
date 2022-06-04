@@ -28,31 +28,30 @@
 #include <vector>
 
 // Maya
+#include <maya/MAnimCurveChange.h>
+#include <maya/MArgDatabase.h>
+#include <maya/MArgList.h>
+#include <maya/MDGModifier.h>
 #include <maya/MGlobal.h>
 #include <maya/MIOStream.h>
 #include <maya/MPxCommand.h>
-#include <maya/MArgList.h>
-#include <maya/MArgDatabase.h>
-#include <maya/MSyntax.h>
 #include <maya/MSelectionList.h>
+#include <maya/MSyntax.h>
 #include <maya/MTime.h>
 #include <maya/MTimeArray.h>
-#include <maya/MDGModifier.h>
-#include <maya/MAnimCurveChange.h>
 
 // Maya helpers
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
 
 class MMCameraRelativePoseCmd : public MPxCommand {
 public:
-
-    MMCameraRelativePoseCmd() {};
+    MMCameraRelativePoseCmd(){};
     virtual ~MMCameraRelativePoseCmd();
 
     virtual bool hasSyntax() const;
@@ -115,6 +114,6 @@ private:
     MAnimCurveChange m_curveChange;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_SOLVER_MM_CAMERA_RELATIVE_POSE_CMD_H
+#endif  // MM_SOLVER_MM_CAMERA_RELATIVE_POSE_CMD_H

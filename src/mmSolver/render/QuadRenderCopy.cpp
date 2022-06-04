@@ -21,8 +21,8 @@
 
 #include "QuadRenderCopy.h"
 
-#include <maya/MStreamUtils.h>
 #include <maya/MShaderManager.h>
+#include <maya/MStreamUtils.h>
 
 #include "constants.h"
 
@@ -30,10 +30,9 @@ namespace mmsolver {
 namespace render {
 
 QuadRenderCopy::QuadRenderCopy(const MString &name)
-        : QuadRenderBase(name)
-        , m_shader_instance(nullptr)
-        , m_target_index_input(0) {
-}
+    : QuadRenderBase(name)
+    , m_shader_instance(nullptr)
+    , m_target_index_input(0) {}
 
 QuadRenderCopy::~QuadRenderCopy() {
     // Release all shaders.
@@ -42,7 +41,8 @@ QuadRenderCopy::~QuadRenderCopy() {
         if (!renderer) {
             return;
         }
-        const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+        const MHWRender::MShaderManager *shaderMgr =
+            renderer->getShaderManager();
         if (!shaderMgr) {
             return;
         }
@@ -55,8 +55,8 @@ QuadRenderCopy::~QuadRenderCopy() {
 // Determine the targets to be used.
 //
 // Called by Maya.
-MHWRender::MRenderTarget *const *
-QuadRenderCopy::targetOverrideList(unsigned int &listSize) {
+MHWRender::MRenderTarget *const *QuadRenderCopy::targetOverrideList(
+    unsigned int &listSize) {
     if (m_targets && (m_target_count > 0)) {
         listSize = m_target_count;
         return &m_targets[m_target_index];
@@ -67,26 +67,24 @@ QuadRenderCopy::targetOverrideList(unsigned int &listSize) {
 
 // Maya calls this method to know what shader should be used for this
 // quad render operation.
-const MHWRender::MShaderInstance *
-QuadRenderCopy::shader() {
+const MHWRender::MShaderInstance *QuadRenderCopy::shader() {
     // Compile shader
     if (!m_shader_instance) {
         MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
         if (!renderer) {
             return nullptr;
         }
-        const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+        const MHWRender::MShaderManager *shaderMgr =
+            renderer->getShaderManager();
         if (!shaderMgr) {
             return nullptr;
         }
 
-        MStreamUtils::stdOutStream()
-            << "QuardRenderCopy: Compile shader...\n";
+        MStreamUtils::stdOutStream() << "QuardRenderCopy: Compile shader...\n";
         MString file_name = "Copy";
         MString shader_technique = "Main";
         m_shader_instance = shaderMgr->getEffectsFileShader(
-            file_name.asChar(),
-            shader_technique.asChar());
+            file_name.asChar(), shader_technique.asChar());
     }
 
     // Set default parameters
@@ -101,8 +99,8 @@ QuadRenderCopy::shader() {
                 MStreamUtils::stdOutStream()
                     << "QuardRenderCopy: Assign texture to shader...\n";
                 assignment.target = target;
-                CHECK_MSTATUS(m_shader_instance->setParameter(
-                                  "gInputTex", assignment));
+                CHECK_MSTATUS(
+                    m_shader_instance->setParameter("gInputTex", assignment));
             }
         }
 
@@ -112,5 +110,5 @@ QuadRenderCopy::shader() {
     return m_shader_instance;
 }
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver

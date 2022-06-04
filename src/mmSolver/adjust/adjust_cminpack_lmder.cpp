@@ -27,46 +27,43 @@
 #include "adjust_cminpack_lmder.h"
 
 // STL
-#include <ctime>
-#include <cmath>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <cassert>
-#include <limits>
 #include <math.h>
 
+#include <cassert>
+#include <cmath>
+#include <ctime>
+#include <iostream>
+#include <limits>
+#include <string>
+#include <vector>
+
 // Maya
+#include <maya/MAnimCurveChange.h>
+#include <maya/MComputation.h>
+#include <maya/MFnAnimCurve.h>
+#include <maya/MMatrix.h>
+#include <maya/MObject.h>
 #include <maya/MPoint.h>
+#include <maya/MProfiler.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
-#include <maya/MObject.h>
-#include <maya/MFnAnimCurve.h>
-#include <maya/MAnimCurveChange.h>
-#include <maya/MMatrix.h>
-#include <maya/MComputation.h>
-#include <maya/MProfiler.h>
 
 // CMinpack
 #include <cminpack.h>
 
 // MM Solver
+#include "adjust_cminpack_base.h"
+#include "adjust_solveFunc.h"
+#include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
-#include "mmSolver/mayahelper/maya_utils.h"
-#include "adjust_solveFunc.h"
-#include "adjust_cminpack_base.h"
 
-
-bool solve_3d_cminpack_lmder(
-        SolverOptions &solverOptions,
-        int numberOfParameters,
-        int numberOfErrors,
-        std::vector<double> &paramList,
-        std::vector<double> &errorList,
-        std::vector<double> &paramWeightList,
-        SolverData &userData,
-        SolverResult &solveResult){
+bool solve_3d_cminpack_lmder(SolverOptions &solverOptions,
+                             int numberOfParameters, int numberOfErrors,
+                             std::vector<double> &paramList,
+                             std::vector<double> &errorList,
+                             std::vector<double> &paramWeightList,
+                             SolverData &userData, SolverResult &solveResult) {
     int solverType = SOLVER_TYPE_CMINPACK_LMDER;
     int ret = 0;
     std::string resultStr;
@@ -74,22 +71,22 @@ bool solve_3d_cminpack_lmder(
     userData.solverType = solverType;
 
     std::vector<double> jacobianList(1);
-    jacobianList.resize((unsigned long) numberOfParameters * numberOfErrors, 0);
+    jacobianList.resize((unsigned long)numberOfParameters * numberOfErrors, 0);
 
     std::vector<int> ipvtList(1);
-    ipvtList.resize((unsigned long) numberOfParameters, 0);
+    ipvtList.resize((unsigned long)numberOfParameters, 0);
 
     std::vector<double> qtfList(1);
-    qtfList.resize((unsigned long) numberOfParameters, 0);
+    qtfList.resize((unsigned long)numberOfParameters, 0);
 
     std::vector<double> wa1List(1);
     std::vector<double> wa2List(1);
     std::vector<double> wa3List(1);
     std::vector<double> wa4List(1);
-    wa1List.resize((unsigned long) numberOfParameters, 0);
-    wa2List.resize((unsigned long) numberOfParameters, 0);
-    wa3List.resize((unsigned long) numberOfParameters, 0);
-    wa4List.resize((unsigned long) numberOfErrors, 0);
+    wa1List.resize((unsigned long)numberOfParameters, 0);
+    wa2List.resize((unsigned long)numberOfParameters, 0);
+    wa3List.resize((unsigned long)numberOfParameters, 0);
+    wa4List.resize((unsigned long)numberOfErrors, 0);
 
     int ldfjac = numberOfErrors;
     if (numberOfParameters >= numberOfErrors) {
@@ -100,9 +97,9 @@ bool solve_3d_cminpack_lmder(
     double xtol = solverOptions.eps2;
     double gtol = solverOptions.eps3;
 
-    int mode = 2; // Off
+    int mode = 2;  // Off
     if (solverOptions.autoParamScale == 1) {
-        mode = 1; // On
+        mode = 1;  // On
     }
 
     // cminpack uses a 'tau' value of between 0.0 to 100.0;
@@ -112,79 +109,76 @@ bool solve_3d_cminpack_lmder(
     int njev = 0;
     double error_norm_value = 0.0;
     int info = __cminpack_func__(lmder)(
-            // Function to call
-            solveFunc_cminpack_lmder,
+        // Function to call
+        solveFunc_cminpack_lmder,
 
-            // Input user data.
-            (void *) &userData,
+        // Input user data.
+        (void *)&userData,
 
-            // Number of errors.
-            numberOfErrors,
+        // Number of errors.
+        numberOfErrors,
 
-            // Number of parameters.
-            numberOfParameters,
+        // Number of parameters.
+        numberOfParameters,
 
-            // Parameters
-            &paramList[0],
+        // Parameters
+        &paramList[0],
 
-            // Errors
-            &errorList[0],
+        // Errors
+        &errorList[0],
 
-            // Jacobian (of length numberOfErrors * numberOfParameters)
-            //
-            // 'fjac' is an output numberOfParameters by n
-            // array. The upper n by n submatrix of fjac contains
-            // an upper triangular matrix r with diagonal elements
-            // of nonincreasing magnitude.
-            &jacobianList[0],
+        // Jacobian (of length numberOfErrors * numberOfParameters)
+        //
+        // 'fjac' is an output numberOfParameters by n
+        // array. The upper n by n submatrix of fjac contains
+        // an upper triangular matrix r with diagonal elements
+        // of nonincreasing magnitude.
+        &jacobianList[0],
 
-            // Longest Dimension of Jacobian Matrix
-            ldfjac,
+        // Longest Dimension of Jacobian Matrix
+        ldfjac,
 
-            // Tolerance to stop solving.
-            ftol, xtol, gtol,
+        // Tolerance to stop solving.
+        ftol, xtol, gtol,
 
-            // Iteration maximum
-            iterMax,
+        // Iteration maximum
+        iterMax,
 
-            // Weight list (diagonal scaling)
-            &paramWeightList[0],
+        // Weight list (diagonal scaling)
+        &paramWeightList[0],
 
-            // Auto-parameter-scaling mode
-            mode,
+        // Auto-parameter-scaling mode
+        mode,
 
-            // Tau factor (scale factor for initialTransform mu)
-            factor,
+        // Tau factor (scale factor for initialTransform mu)
+        factor,
 
-            // Should we print at each iteration?
-            nprint,
+        // Should we print at each iteration?
+        nprint,
 
-            // 'nfev' is an integer output variable set to the
-            // number of calls to 'fcn'.
-            &calls,
+        // 'nfev' is an integer output variable set to the
+        // number of calls to 'fcn'.
+        &calls,
 
-            // Number of Jacobian calls.
-            &njev,
+        // Number of Jacobian calls.
+        &njev,
 
-            // 'ipvt' is an integer output array of length n. ipvt
-            // defines a permutation matrix p such that jac*p =
-            // q*r, where jac is the final calculated Jacobian, q
-            // is orthogonal (not stored), and r is upper
-            // triangular with diagonal elements of non-increasing
-            // magnitude. Column j of p is column ipvt(j) of the
-            // identity matrix
-            &ipvtList[0],
+        // 'ipvt' is an integer output array of length n. ipvt
+        // defines a permutation matrix p such that jac*p =
+        // q*r, where jac is the final calculated Jacobian, q
+        // is orthogonal (not stored), and r is upper
+        // triangular with diagonal elements of non-increasing
+        // magnitude. Column j of p is column ipvt(j) of the
+        // identity matrix
+        &ipvtList[0],
 
-            // 'qtf' is an output array of length n which contains
-            // the first n elements of the vector `(q transpose) *
-            // fvec`.
-            &qtfList[0],
+        // 'qtf' is an output array of length n which contains
+        // the first n elements of the vector `(q transpose) *
+        // fvec`.
+        &qtfList[0],
 
-            // Working memory arrays
-            &wa1List[0],
-            &wa2List[0],
-            &wa3List[0],
-            &wa4List[0]);
+        // Working memory arrays
+        &wa1List[0], &wa2List[0], &wa3List[0], &wa4List[0]);
     error_norm_value = __cminpack_func__(enorm)(numberOfErrors, &errorList[0]);
     ret = userData.iterNum;
 
@@ -199,7 +193,6 @@ bool solve_3d_cminpack_lmder(
     solveResult.errorFinal = error_norm_value;
     return true;
 }
-
 
 // Run the cminpack 'lmder' solve function.
 //
@@ -225,13 +218,8 @@ bool solve_3d_cminpack_lmder(
 // fjac array (m or n).
 //
 // 'iflag' tells us what type of call this function is expected to perform.
-int solveFunc_cminpack_lmder(void *data,
-                             int m,
-                             int n,
-                             const double *x,
-                             double *fvec,
-                             double *fjac,
-                             int ldfjac,
+int solveFunc_cminpack_lmder(void *data, int m, int n, const double *x,
+                             double *fvec, double *fjac, int ldfjac,
                              int iflag) {
     assert(ldfjac == n ? m <= n : m);
     UNUSED(ldfjac);
@@ -253,5 +241,4 @@ int solveFunc_cminpack_lmder(void *data,
     return info;
 }
 
-
-#endif // MMSOLVER_USE_CMINPACK
+#endif  // MMSOLVER_USE_CMINPACK

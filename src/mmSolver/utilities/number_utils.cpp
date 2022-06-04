@@ -22,7 +22,7 @@
 #include "number_utils.h"
 
 // STL
-#include <cmath>    // fabs
+#include <cmath>  // fabs
 
 namespace number {
 
@@ -31,4 +31,4 @@ bool floatApproxEqual(const float left, const float right) {
     return fabs(left - right) < eps;
 }
 
-} // namespace number
+}  // namespace number

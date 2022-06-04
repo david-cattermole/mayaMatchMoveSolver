@@ -24,10 +24,10 @@
 #include <memory>
 
 // Maya
-#include <maya/MIOStream.h>
-#include <maya/MString.h>
 #include <maya/MArgList.h>
+#include <maya/MIOStream.h>
 #include <maya/MPxData.h>
+#include <maya/MString.h>
 #include <maya/MTypeId.h>
 
 // MM Solver
@@ -62,4 +62,4 @@ private:
     std::shared_ptr<LensModel> m_value;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver

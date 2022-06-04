@@ -31,13 +31,11 @@ namespace mmhash {
 using HashValue = int64_t;
 
 template <class T>
-inline void
-combine(HashValue& seed, const T& v)
-{
+inline void combine(HashValue& seed, const T& v) {
     std::hash<T> hasher;
     seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
-} // namespace mmhash
+}  // namespace mmhash
 
-#endif // MM_SOLVER_CORE_MM_HASH_H
+#endif  // MM_SOLVER_CORE_MM_HASH_H

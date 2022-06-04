@@ -22,9 +22,9 @@
 #ifndef MM_SOLVER_RENDER_PRESENT_TARGET_H
 #define MM_SOLVER_RENDER_PRESENT_TARGET_H
 
+#include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
-#include <maya/MRenderTargetManager.h>
 
 namespace mmsolver {
 namespace render {
@@ -35,13 +35,11 @@ public:
 
     ~PresentTarget() override;
 
-    MHWRender::MRenderTarget *const *
-    targetOverrideList(unsigned int &listSize) override;
+    MHWRender::MRenderTarget *const *targetOverrideList(
+        unsigned int &listSize) override;
 
-    void
-    setRenderTargets(MHWRender::MRenderTarget **targets,
-                     const uint32_t index,
-                     const uint32_t count) {
+    void setRenderTargets(MHWRender::MRenderTarget **targets,
+                          const uint32_t index, const uint32_t count) {
         m_targets = targets;
         m_target_index = index;
         m_target_count = count;
@@ -55,10 +53,9 @@ protected:
     // are able to give the exact targets.
     uint32_t m_target_index;
     uint32_t m_target_count;
-
 };
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver
 
-#endif //MAYA_MM_SOLVER_RENDER_PRESENT_TARGET_H
+#endif  // MAYA_MM_SOLVER_RENDER_PRESENT_TARGET_H

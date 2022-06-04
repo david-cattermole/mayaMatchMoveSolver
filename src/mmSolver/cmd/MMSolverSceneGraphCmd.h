@@ -27,39 +27,36 @@
 #include <cmath>
 
 // Maya
+#include <maya/MArgDatabase.h>
+#include <maya/MArgList.h>
 #include <maya/MGlobal.h>
 #include <maya/MIOStream.h>
-#include <maya/MPxCommand.h>
-#include <maya/MArgList.h>
-#include <maya/MArgDatabase.h>
-#include <maya/MSyntax.h>
-#include <maya/MSelectionList.h>
-#include <maya/MTime.h>
 #include <maya/MPoint.h>
+#include <maya/MPxCommand.h>
+#include <maya/MSelectionList.h>
+#include <maya/MSyntax.h>
+#include <maya/MTime.h>
 #include <maya/MTimeArray.h>
 
 // MM Solver
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/adjust/adjust_data.h"
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
+#include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_marker.h"
 
 // Command arguments:
 
 // The type of mode for the mmSolverSceneGraph command.
-#define COMMAND_MODE_FLAG            "-md"
-#define COMMAND_MODE_FLAG_LONG       "-mode"
-
+#define COMMAND_MODE_FLAG "-md"
+#define COMMAND_MODE_FLAG_LONG "-mode"
 
 // Possible values for the 'mode' flag.
 #define MODE_VALUE_DEBUG_CONSTRUCT "debugConstruct"
 
-
 namespace mmsolver {
 
-enum class CommandMode
-{
+enum class CommandMode {
     kUndefined = 0,
     kDebugConstruct = 1,
     kNumSceneGraphCommandMode,
@@ -67,8 +64,7 @@ enum class CommandMode
 
 class MMSolverSceneGraphCmd : public MPxCommand {
 public:
-
-    MMSolverSceneGraphCmd() {};
+    MMSolverSceneGraphCmd(){};
 
     virtual ~MMSolverSceneGraphCmd();
 
@@ -84,26 +80,26 @@ public:
     static MString cmdName();
 
 private:
-    MStatus parseArgs( const MArgList& args );
+    MStatus parseArgs(const MArgList &args);
 
     // The mode of this command.
     CommandMode m_commandMode;
 
     // Objects
-    CameraPtrList      m_cameraList;
-    MarkerPtrList      m_markerList;
-    BundlePtrList      m_bundleList;
-    AttrPtrList        m_attrList;
-    StiffAttrsPtrList  m_stiffAttrsList;
+    CameraPtrList m_cameraList;
+    MarkerPtrList m_markerList;
+    BundlePtrList m_bundleList;
+    AttrPtrList m_attrList;
+    StiffAttrsPtrList m_stiffAttrsList;
     SmoothAttrsPtrList m_smoothAttrsList;
 
     // Frames
-    MTimeArray        m_frameList;
+    MTimeArray m_frameList;
 
     // Whhat Scene Graph to construct.
     SceneGraphMode m_sceneGraphMode;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_SOLVER_SCENE_GRAPH_CMD_H
+#endif  // MM_SOLVER_SCENE_GRAPH_CMD_H

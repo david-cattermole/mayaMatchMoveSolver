@@ -22,6 +22,4 @@
 // MM Solver
 #include "mmdata.h"
 
-namespace mmdata {
-
-} // namespace mmdata
+namespace mmdata {}  // namespace mmdata

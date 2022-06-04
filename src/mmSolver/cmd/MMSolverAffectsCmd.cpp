@@ -35,27 +35,27 @@
 #include "MMSolverAffectsCmd.h"
 
 // STL
-#include <vector>
-#include <cmath>
 #include <cassert>
+#include <cmath>
+#include <vector>
 
 // Maya
-#include <maya/MSyntax.h>
-#include <maya/MArgList.h>
 #include <maya/MArgDatabase.h>
-#include <maya/MString.h>
-#include <maya/MStringArray.h>
-#include <maya/MObject.h>
-#include <maya/MPlug.h>
-#include <maya/MTime.h>
-#include <maya/MTimeArray.h>
-#include <maya/MMatrix.h>
-#include <maya/MMatrixArray.h>
+#include <maya/MArgList.h>
 #include <maya/MDagPath.h>
 #include <maya/MFnDependencyNode.h>
-#include <maya/MUuid.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnNumericData.h>
+#include <maya/MMatrix.h>
+#include <maya/MMatrixArray.h>
+#include <maya/MObject.h>
+#include <maya/MPlug.h>
+#include <maya/MString.h>
+#include <maya/MStringArray.h>
+#include <maya/MSyntax.h>
+#include <maya/MTime.h>
+#include <maya/MTimeArray.h>
+#include <maya/MUuid.h>
 
 // MM Solver
 #include "mmSolver/adjust/adjust_base.h"
@@ -71,24 +71,13 @@ namespace mmsolver {
 
 MMSolverAffectsCmd::~MMSolverAffectsCmd() {}
 
-void *MMSolverAffectsCmd::creator() {
-    return new MMSolverAffectsCmd();
-}
+void *MMSolverAffectsCmd::creator() { return new MMSolverAffectsCmd(); }
 
-MString MMSolverAffectsCmd::cmdName() {
-    return MString("mmSolverAffects");
-}
+MString MMSolverAffectsCmd::cmdName() { return MString("mmSolverAffects"); }
 
+bool MMSolverAffectsCmd::hasSyntax() const { return true; }
 
-bool MMSolverAffectsCmd::hasSyntax() const {
-    return true;
-}
-
-
-bool MMSolverAffectsCmd::isUndoable() const {
-    return true;
-}
-
+bool MMSolverAffectsCmd::isUndoable() const { return true; }
 
 MSyntax MMSolverAffectsCmd::newSyntax() {
     MSyntax syntax;
@@ -101,7 +90,6 @@ MSyntax MMSolverAffectsCmd::newSyntax() {
     return syntax;
 }
 
-
 MStatus MMSolverAffectsCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
@@ -111,28 +99,23 @@ MStatus MMSolverAffectsCmd::parseArgs(const MArgList &args) {
     // Get 'Mode'
     MMSolverAffectsCmd::m_mode = "";
     if (argData.isFlagSet(MODE_FLAG)) {
-        status = argData.getFlagArgument(MODE_FLAG, 0, MMSolverAffectsCmd::m_mode);
+        status =
+            argData.getFlagArgument(MODE_FLAG, 0, MMSolverAffectsCmd::m_mode);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    parseSolveObjectArguments(
-        argData,
-        m_cameraList,
-        m_markerList,
-        m_bundleList,
-        m_attrList);
+    parseSolveObjectArguments(argData, m_cameraList, m_markerList, m_bundleList,
+                              m_attrList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
-
 
 /*
  * Create attributes representing the affects relationship, onto the
  * Marker nodes. This is a technique of persistent storageg, so that
  * many functions can re-use the (cached) data.
  */
-MStatus setAttrsOnMarkers(MarkerPtrList markerList,
-                          AttrPtrList attrList,
+MStatus setAttrsOnMarkers(MarkerPtrList markerList, AttrPtrList attrList,
                           BoolList2D markerToAttrMapping,
                           MDGModifier &addAttr_dgmod,
                           MDGModifier &setAttr_dgmod) {
@@ -142,8 +125,7 @@ MStatus setAttrsOnMarkers(MarkerPtrList markerList,
     const MFnNumericData::Type unitType = MFnNumericData::Type::kByte;
 
     // Create all needed attributes
-    for (AttrPtrListIt ait = attrList.begin();
-         ait != attrList.end(); ++ait) {
+    for (AttrPtrListIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
         AttrPtr attr = *ait;
         MObject attrNodeObject = attr->getObject();
         MFnDependencyNode attrNodeFn(attrNodeObject);
@@ -156,23 +138,18 @@ MStatus setAttrsOnMarkers(MarkerPtrList markerList,
         MString attrName = "";
         MFnAttribute attrAttrFn(attrObject);
         MString nodeAttrName = attrAttrFn.name();
-        status = constructAttrAffectsName(
-            nodeAttrName,
-            attrUuidStr,
-            attrName);
+        status = constructAttrAffectsName(nodeAttrName, attrUuidStr, attrName);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
-        for (MarkerPtrListIt mit = markerList.begin();
-             mit != markerList.end(); ++mit) {
+        for (MarkerPtrListIt mit = markerList.begin(); mit != markerList.end();
+             ++mit) {
             MarkerPtr marker = *mit;
             MObject markerObject = marker->getObject();
             MFnDependencyNode markerNodeFn(markerObject);
 
             MFnNumericAttribute markerAttrFn(markerObject);
             MObject attributeObj = markerAttrFn.create(
-                attrName, attrName,
-                unitType, defaultValue,
-                &status);
+                attrName, attrName, unitType, defaultValue, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
             bool hasAttr = markerNodeFn.hasAttribute(attrName, &status);
@@ -189,15 +166,11 @@ MStatus setAttrsOnMarkers(MarkerPtrList markerList,
     BoolList2D::const_iterator cit_outer;
     int markerIndex = 0;
     for (cit_outer = markerToAttrMapping.cbegin();
-         cit_outer != markerToAttrMapping.cend();
-         ++cit_outer){
-
+         cit_outer != markerToAttrMapping.cend(); ++cit_outer) {
         int attrIndex = 0;
         std::vector<bool> inner = *cit_outer;
-        for (cit_inner = inner.cbegin();
-             cit_inner != inner.cend();
-             ++cit_inner){
-
+        for (cit_inner = inner.cbegin(); cit_inner != inner.cend();
+             ++cit_inner) {
             MarkerPtr marker = markerList[markerIndex];
             AttrPtr attr = attrList[attrIndex];
 
@@ -215,14 +188,13 @@ MStatus setAttrsOnMarkers(MarkerPtrList markerList,
             MString attrName = "";
             MFnAttribute attrFn(attrObject);
             MString nodeAttrName = attrFn.name();
-            status = constructAttrAffectsName(
-                nodeAttrName,
-                attrUuidStr,
-                attrName);
+            status =
+                constructAttrAffectsName(nodeAttrName, attrUuidStr, attrName);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
             bool wantNetworkedPlug = true;
-            MPlug attrPlug = markerNodeFn.findPlug(attrName, wantNetworkedPlug, &status);
+            MPlug attrPlug =
+                markerNodeFn.findPlug(attrName, wantNetworkedPlug, &status);
 
             bool value = *cit_inner;
             int plugValue = static_cast<int>(value);
@@ -238,7 +210,6 @@ MStatus setAttrsOnMarkers(MarkerPtrList markerList,
     return status;
 }
 
-
 MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
@@ -253,27 +224,17 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
     }
 
     BoolList2D markerToAttrList;
-    findMarkerToAttributeRelationship(
-            m_markerList,
-            m_attrList,
-            markerToAttrList,
-            status);
+    findMarkerToAttributeRelationship(m_markerList, m_attrList,
+                                      markerToAttrList, status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_mode == MODE_VALUE_ADD_ATTRS_TO_MARKERS) {
-        status = setAttrsOnMarkers(
-            m_markerList,
-            m_attrList,
-            markerToAttrList,
-            m_addAttr_dgmod,
-            m_setAttr_dgmod);
+        status = setAttrsOnMarkers(m_markerList, m_attrList, markerToAttrList,
+                                   m_addAttr_dgmod, m_setAttr_dgmod);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else if (m_mode == MODE_VALUE_RETURN_STRING) {
-        status = logResultsMarkerAffectsAttribute(
-            m_markerList,
-            m_attrList,
-            markerToAttrList,
-            outResult);
+        status = logResultsMarkerAffectsAttribute(m_markerList, m_attrList,
+                                                  markerToAttrList, outResult);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMSolverAffectsCmd::setResult(outResult);
     } else {
@@ -296,4 +257,4 @@ MStatus MMSolverAffectsCmd::undoIt() {
     return status;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

@@ -26,9 +26,9 @@
 #include "MMLensModel3deNode.h"
 
 // STL
-#include <cstring>
-#include <cmath>
 #include <algorithm>
+#include <cmath>
+#include <cstring>
 
 // Maya
 #include <maya/MDataBlock.h>
@@ -37,19 +37,19 @@
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnNumericData.h>
-#include <maya/MFnTypedAttribute.h>
 #include <maya/MFnPluginData.h>
-#include <maya/MString.h>
+#include <maya/MFnTypedAttribute.h>
 #include <maya/MPlug.h>
+#include <maya/MString.h>
 #include <maya/MTypeId.h>
 
 // MM Solver
 #include "MMLensData.h"
-#include "mmSolver/lens/lens_model_3de_classic.h"
+#include "mmSolver/lens/lens_model.h"
 #include "mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.h"
+#include "mmSolver/lens/lens_model_3de_classic.h"
 #include "mmSolver/lens/lens_model_3de_radial_decentered_deg_4_cylindric.h"
 #include "mmSolver/lens/lens_model_passthrough.h"
-#include "mmSolver/lens/lens_model.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/utilities/debug_utils.h"
@@ -103,16 +103,16 @@ MMLensModel3deNode::MMLensModel3deNode() {}
 
 MMLensModel3deNode::~MMLensModel3deNode() {}
 
-MString MMLensModel3deNode::nodeName() {
-    return MString("mmLensModel3de");
-}
+MString MMLensModel3deNode::nodeName() { return MString("mmLensModel3de"); }
 
 void MMLensModel3deNode::postConstructor() {
     MObject thisNode = thisMObject();
 
     MPlug tdeClassicPlug(thisNode, MMLensModel3deNode::a_tdeClassic_heading);
-    MPlug tdeRadialDeg4Plug(thisNode, MMLensModel3deNode::a_tdeRadialDeg4_heading);
-    MPlug tdeAnamorphicDeg4Plug(thisNode, MMLensModel3deNode::a_tdeAnamorphicDeg4_heading);
+    MPlug tdeRadialDeg4Plug(thisNode,
+                            MMLensModel3deNode::a_tdeRadialDeg4_heading);
+    MPlug tdeAnamorphicDeg4Plug(
+        thisNode, MMLensModel3deNode::a_tdeAnamorphicDeg4_heading);
 
     tdeClassicPlug.setLocked(true);
     tdeRadialDeg4Plug.setLocked(true);
@@ -142,7 +142,7 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
         // Get Input Lens
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
+        MMLensData *inputLensData = (MMLensData *)inLensHandle.asPluginData();
         std::shared_ptr<LensModel> inputLensModel;
         if (inputLensData != nullptr) {
             inputLensModel = inputLensData->getValue();
@@ -150,12 +150,12 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
 
         // Output Lens
         MDataHandle outLensHandle = data.outputValue(a_outLens);
-        MMLensData* newLensData = (MMLensData*) fnPluginData.data(&status);
+        MMLensData *newLensData = (MMLensData *)fnPluginData.data(&status);
         if (!enable) {
             // Create a lens distortion function to be passed to the
             // MMLensData.
             auto newLensModel = std::shared_ptr<LensModelPassthrough>(
-                    new LensModelPassthrough());
+                new LensModelPassthrough());
 
             newLensModel->setInputLensModel(inputLensModel);
 
@@ -165,15 +165,20 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
             status = MS::kSuccess;
 
         } else if (lensModelType == LensModelType::k3deClassic) {
-            MDataHandle k1Handle = data.inputValue(a_tdeClassic_distortion, &status);
+            MDataHandle k1Handle =
+                data.inputValue(a_tdeClassic_distortion, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle squeezeHandle = data.inputValue(a_tdeClassic_anamorphicSqueeze, &status);
+            MDataHandle squeezeHandle =
+                data.inputValue(a_tdeClassic_anamorphicSqueeze, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle cxHandle = data.inputValue(a_tdeClassic_curvatureX, &status);
+            MDataHandle cxHandle =
+                data.inputValue(a_tdeClassic_curvatureX, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle cyHandle = data.inputValue(a_tdeClassic_curvatureY, &status);
+            MDataHandle cyHandle =
+                data.inputValue(a_tdeClassic_curvatureY, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle k2Handle = data.inputValue(a_tdeClassic_quarticDistortion, &status);
+            MDataHandle k2Handle =
+                data.inputValue(a_tdeClassic_quarticDistortion, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
             double distortion = k1Handle.asDouble();
@@ -201,23 +206,31 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
             status = MS::kSuccess;
 
         } else if (lensModelType == LensModelType::k3deRadialDeg4) {
-            MDataHandle deg2DistortionHandle = data.inputValue(a_tdeRadialDeg4_degree2_distortion, &status);
+            MDataHandle deg2DistortionHandle =
+                data.inputValue(a_tdeRadialDeg4_degree2_distortion, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle deg2UHandle = data.inputValue(a_tdeRadialDeg4_degree2_u, &status);
+            MDataHandle deg2UHandle =
+                data.inputValue(a_tdeRadialDeg4_degree2_u, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle deg2VHandle = data.inputValue(a_tdeRadialDeg4_degree2_v, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-
-            MDataHandle deg4DistortionHandle = data.inputValue(a_tdeRadialDeg4_degree4_distortion, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle deg4UHandle = data.inputValue(a_tdeRadialDeg4_degree4_u, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle deg4VHandle = data.inputValue(a_tdeRadialDeg4_degree4_v, &status);
+            MDataHandle deg2VHandle =
+                data.inputValue(a_tdeRadialDeg4_degree2_v, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
-            MDataHandle cylindricDirHandle = data.inputValue(a_tdeRadialDeg4_cylindricDirection, &status);
+            MDataHandle deg4DistortionHandle =
+                data.inputValue(a_tdeRadialDeg4_degree4_distortion, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle cylindricBendHandle = data.inputValue(a_tdeRadialDeg4_cylindricBending, &status);
+            MDataHandle deg4UHandle =
+                data.inputValue(a_tdeRadialDeg4_degree4_u, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle deg4VHandle =
+                data.inputValue(a_tdeRadialDeg4_degree4_v, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+
+            MDataHandle cylindricDirHandle =
+                data.inputValue(a_tdeRadialDeg4_cylindricDirection, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle cylindricBendHandle =
+                data.inputValue(a_tdeRadialDeg4_cylindricBending, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
             double deg2Distortion = deg2DistortionHandle.asDouble();
@@ -231,8 +244,9 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
 
             // Create a lens distortion function to be passed to the
             // MMLensData.
-            auto newLensModel = std::shared_ptr<LensModel3deRadialDecenteredDeg4Cylindric>(
-                new LensModel3deRadialDecenteredDeg4Cylindric());
+            auto newLensModel =
+                std::shared_ptr<LensModel3deRadialDecenteredDeg4Cylindric>(
+                    new LensModel3deRadialDecenteredDeg4Cylindric());
 
             // Connect the input lens to the newly created lens object.
             newLensModel->setInputLensModel(inputLensModel);
@@ -251,36 +265,49 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
             status = MS::kSuccess;
 
         } else if (lensModelType == LensModelType::k3deAnamorphicDeg4) {
-            MDataHandle deg2Cx02Handle = data.inputValue(a_tdeAnamorphicDeg4_degree2_cx02, &status);
+            MDataHandle deg2Cx02Handle =
+                data.inputValue(a_tdeAnamorphicDeg4_degree2_cx02, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle deg2Cy02Handle = data.inputValue(a_tdeAnamorphicDeg4_degree2_cy02, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-
-            MDataHandle deg2Cx22Handle = data.inputValue(a_tdeAnamorphicDeg4_degree2_cx22, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle deg2Cy22Handle = data.inputValue(a_tdeAnamorphicDeg4_degree2_cy22, &status);
+            MDataHandle deg2Cy02Handle =
+                data.inputValue(a_tdeAnamorphicDeg4_degree2_cy02, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
-            MDataHandle deg4Cx04Handle = data.inputValue(a_tdeAnamorphicDeg4_degree4_cx04, &status);
+            MDataHandle deg2Cx22Handle =
+                data.inputValue(a_tdeAnamorphicDeg4_degree2_cx22, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle deg4Cy04Handle = data.inputValue(a_tdeAnamorphicDeg4_degree4_cy04, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-
-            MDataHandle deg4Cx24Handle = data.inputValue(a_tdeAnamorphicDeg4_degree4_cx24, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle deg4Cy24Handle = data.inputValue(a_tdeAnamorphicDeg4_degree4_cy24, &status);
+            MDataHandle deg2Cy22Handle =
+                data.inputValue(a_tdeAnamorphicDeg4_degree2_cy22, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
-            MDataHandle deg4Cx44Handle = data.inputValue(a_tdeAnamorphicDeg4_degree4_cx44, &status);
+            MDataHandle deg4Cx04Handle =
+                data.inputValue(a_tdeAnamorphicDeg4_degree4_cx04, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle deg4Cy44Handle = data.inputValue(a_tdeAnamorphicDeg4_degree4_cy44, &status);
+            MDataHandle deg4Cy04Handle =
+                data.inputValue(a_tdeAnamorphicDeg4_degree4_cy04, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
-            MDataHandle lensRotationHandle = data.inputValue(a_tdeAnamorphicDeg4_lensRotation, &status);
+            MDataHandle deg4Cx24Handle =
+                data.inputValue(a_tdeAnamorphicDeg4_degree4_cx24, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle squeezeXHandle = data.inputValue(a_tdeAnamorphicDeg4_squeeze_x, &status);
+            MDataHandle deg4Cy24Handle =
+                data.inputValue(a_tdeAnamorphicDeg4_degree4_cy24, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            MDataHandle squeezeYHandle = data.inputValue(a_tdeAnamorphicDeg4_squeeze_y, &status);
+
+            MDataHandle deg4Cx44Handle =
+                data.inputValue(a_tdeAnamorphicDeg4_degree4_cx44, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle deg4Cy44Handle =
+                data.inputValue(a_tdeAnamorphicDeg4_degree4_cy44, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+
+            MDataHandle lensRotationHandle =
+                data.inputValue(a_tdeAnamorphicDeg4_lensRotation, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle squeezeXHandle =
+                data.inputValue(a_tdeAnamorphicDeg4_squeeze_x, &status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MDataHandle squeezeYHandle =
+                data.inputValue(a_tdeAnamorphicDeg4_squeeze_y, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
             double deg2Cx02 = deg2Cx02Handle.asDouble();
@@ -304,8 +331,9 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
 
             // Create a lens distortion function to be passed to the
             // MMLensData.
-            auto newLensModel = std::shared_ptr<LensModel3deAnamorphicDeg4RotateSqueezeXY>(
-                new LensModel3deAnamorphicDeg4RotateSqueezeXY());
+            auto newLensModel =
+                std::shared_ptr<LensModel3deAnamorphicDeg4RotateSqueezeXY>(
+                    new LensModel3deAnamorphicDeg4RotateSqueezeXY());
 
             // Connect the input lens to the newly created lens object.
             newLensModel->setInputLensModel(inputLensModel);
@@ -334,15 +362,15 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
             status = MS::kSuccess;
 
         } else {
-            MMSOLVER_ERR(
-                "LensModelType value is invalid: nodeName=" << name().asChar()
-                << " lensModelType=" << static_cast<int>(lensModelType));
+            MMSOLVER_ERR("LensModelType value is invalid: nodeName="
+                         << name().asChar() << " lensModelType="
+                         << static_cast<int>(lensModelType));
             status = MS::kFailure;
 
             // Create a lens distortion function to be passed to the
             // MMLensData.
             auto newLensModel = std::shared_ptr<LensModelPassthrough>(
-                    new LensModelPassthrough());
+                new LensModelPassthrough());
 
             newLensData->setValue(newLensModel);
         }
@@ -351,9 +379,7 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
     return status;
 }
 
-void *MMLensModel3deNode::creator() {
-    return (new MMLensModel3deNode());
-}
+void *MMLensModel3deNode::creator() { return (new MMLensModel3deNode()); }
 
 MStatus MMLensModel3deNode::initialize() {
     MStatus status;
@@ -363,9 +389,7 @@ MStatus MMLensModel3deNode::initialize() {
 
     // In Lens
     MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
-    a_inLens = typedAttr.create(
-        "inLens", "ilns",
-        data_type_id);
+    a_inLens = typedAttr.create("inLens", "ilns", data_type_id);
     CHECK_MSTATUS(typedAttr.setStorable(false));
     CHECK_MSTATUS(typedAttr.setKeyable(false));
     CHECK_MSTATUS(typedAttr.setReadable(true));
@@ -373,33 +397,32 @@ MStatus MMLensModel3deNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_inLens));
 
     // Enable
-    a_enable = numericAttr.create(
-        "enable", "enb",
-        MFnNumericData::kBoolean, true);
+    a_enable =
+        numericAttr.create("enable", "enb", MFnNumericData::kBoolean, true);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_enable));
 
     // Lens Model
     auto defaultLensModel = static_cast<short>(LensModelType::k3deRadialDeg4);
-    a_lensModel = enumAttr.create(
-        "lensModel", "lnsmdl", defaultLensModel, &status);
+    a_lensModel =
+        enumAttr.create("lensModel", "lnsmdl", defaultLensModel, &status);
     CHECK_MSTATUS(status);
+    CHECK_MSTATUS(
+        enumAttr.addField("3DE Classic LD Model",
+                          static_cast<short>(LensModelType::k3deClassic)));
+    CHECK_MSTATUS(
+        enumAttr.addField("3DE4 Radial - Standard, Degree 4",
+                          static_cast<short>(LensModelType::k3deRadialDeg4)));
     CHECK_MSTATUS(enumAttr.addField(
-                      "3DE Classic LD Model",
-                      static_cast<short>(LensModelType::k3deClassic)));
-    CHECK_MSTATUS(enumAttr.addField(
-                      "3DE4 Radial - Standard, Degree 4",
-                      static_cast<short>(LensModelType::k3deRadialDeg4)));
-    CHECK_MSTATUS(enumAttr.addField(
-                      "3DE4 Anamorphic - Standard, Degree 4",
-                      static_cast<short>(LensModelType::k3deAnamorphicDeg4)));
-//     CHECK_MSTATUS(enumAttr.addField(
-//             "3DE4 Anamorphic - Rescaled, Degree 4",
-//             static_cast<short>(LensModelType::k3deClassic)));
-//     CHECK_MSTATUS(enumAttr.addField(
-//             "3DE4 Anamorphic, Degree 6",
-//             static_cast<short>(LensModelType::k3deClassic)));
+        "3DE4 Anamorphic - Standard, Degree 4",
+        static_cast<short>(LensModelType::k3deAnamorphicDeg4)));
+    //     CHECK_MSTATUS(enumAttr.addField(
+    //             "3DE4 Anamorphic - Rescaled, Degree 4",
+    //             static_cast<short>(LensModelType::k3deClassic)));
+    //     CHECK_MSTATUS(enumAttr.addField(
+    //             "3DE4 Anamorphic, Degree 6",
+    //             static_cast<short>(LensModelType::k3deClassic)));
     CHECK_MSTATUS(enumAttr.setStorable(true));
     CHECK_MSTATUS(enumAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_lensModel));
@@ -409,9 +432,7 @@ MStatus MMLensModel3deNode::initialize() {
         // Channel Box heading for the lens model. This attribute does
         // nothing to the output of the node.
         a_tdeClassic_heading = enumAttr.create(
-                "tdeClassic_heading",
-                "tdeClassic_heading",
-                0, &status);
+            "tdeClassic_heading", "tdeClassic_heading", 0, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(enumAttr.addField("--------", 0));
         CHECK_MSTATUS(enumAttr.setStorable(false));
@@ -420,10 +441,9 @@ MStatus MMLensModel3deNode::initialize() {
         CHECK_MSTATUS(enumAttr.setNiceNameOverride("3DE Classic LD Model"));
         CHECK_MSTATUS(addAttribute(a_tdeClassic_heading));
 
-        a_tdeClassic_distortion = numericAttr.create(
-            "tdeClassic_distortion",
-            "tdeClassic_distortion",
-            MFnNumericData::kDouble, 0.0);
+        a_tdeClassic_distortion =
+            numericAttr.create("tdeClassic_distortion", "tdeClassic_distortion",
+                               MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
@@ -433,8 +453,7 @@ MStatus MMLensModel3deNode::initialize() {
 
         // Anamorphic Squeeze
         a_tdeClassic_anamorphicSqueeze = numericAttr.create(
-            "tdeClassic_anamorphicSqueeze",
-            "tdeClassic_anamorphicSqueeze",
+            "tdeClassic_anamorphicSqueeze", "tdeClassic_anamorphicSqueeze",
             MFnNumericData::kDouble, 1.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
@@ -446,10 +465,9 @@ MStatus MMLensModel3deNode::initialize() {
         CHECK_MSTATUS(addAttribute(a_tdeClassic_anamorphicSqueeze));
 
         // Curvature X
-        a_tdeClassic_curvatureX = numericAttr.create(
-            "tdeClassic_curvatureX",
-            "tdeClassic_curvatureX",
-            MFnNumericData::kDouble, 0.0);
+        a_tdeClassic_curvatureX =
+            numericAttr.create("tdeClassic_curvatureX", "tdeClassic_curvatureX",
+                               MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
@@ -458,10 +476,9 @@ MStatus MMLensModel3deNode::initialize() {
         CHECK_MSTATUS(addAttribute(a_tdeClassic_curvatureX));
 
         // Curvature Y
-        a_tdeClassic_curvatureY = numericAttr.create(
-            "tdeClassic_curvatureY",
-            "tdeClassic_curvatureY",
-            MFnNumericData::kDouble, 0.0);
+        a_tdeClassic_curvatureY =
+            numericAttr.create("tdeClassic_curvatureY", "tdeClassic_curvatureY",
+                               MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
@@ -471,8 +488,7 @@ MStatus MMLensModel3deNode::initialize() {
 
         // Quartic Distortion
         a_tdeClassic_quarticDistortion = numericAttr.create(
-            "tdeClassic_quarticDistortion",
-            "tdeClassic_quarticDistortion",
+            "tdeClassic_quarticDistortion", "tdeClassic_quarticDistortion",
             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
@@ -487,22 +503,20 @@ MStatus MMLensModel3deNode::initialize() {
         // Channel Box heading for the lens model. This attribute does
         // nothing to the output of the node.
         a_tdeRadialDeg4_heading = enumAttr.create(
-                "tdeRadialDeg4_heading",
-                "tdeRadialDeg4_heading",
-                0, &status);
+            "tdeRadialDeg4_heading", "tdeRadialDeg4_heading", 0, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(enumAttr.addField("--------", 0));
         CHECK_MSTATUS(enumAttr.setStorable(false));
         CHECK_MSTATUS(enumAttr.setKeyable(false));
         CHECK_MSTATUS(enumAttr.setChannelBox(true));
-        CHECK_MSTATUS(enumAttr.setNiceNameOverride("3DE4 Radial - Standard, Degree 4"));
+        CHECK_MSTATUS(
+            enumAttr.setNiceNameOverride("3DE4 Radial - Standard, Degree 4"));
         CHECK_MSTATUS(addAttribute(a_tdeRadialDeg4_heading));
 
         // Distortion - Degree 2
         a_tdeRadialDeg4_degree2_distortion = numericAttr.create(
             "tdeRadialDeg4_degree2_distortion",
-            "tdeRadialDeg4_degree2_distortion",
-            MFnNumericData::kDouble, 0.0);
+            "tdeRadialDeg4_degree2_distortion", MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
@@ -512,8 +526,7 @@ MStatus MMLensModel3deNode::initialize() {
 
         // U - Degree 2
         a_tdeRadialDeg4_degree2_u = numericAttr.create(
-            "tdeRadialDeg4_degree2_u",
-            "tdeRadialDeg4_degree2_u",
+            "tdeRadialDeg4_degree2_u", "tdeRadialDeg4_degree2_u",
             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
@@ -524,8 +537,7 @@ MStatus MMLensModel3deNode::initialize() {
 
         // V - Degree 2
         a_tdeRadialDeg4_degree2_v = numericAttr.create(
-            "tdeRadialDeg4_degree2_v",
-            "tdeRadialDeg4_degree2_v",
+            "tdeRadialDeg4_degree2_v", "tdeRadialDeg4_degree2_v",
             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
@@ -537,19 +549,18 @@ MStatus MMLensModel3deNode::initialize() {
         // Quartic Distortion - Degree 4
         a_tdeRadialDeg4_degree4_distortion = numericAttr.create(
             "tdeRadialDeg4_degree4_distortion",
-            "tdeRadialDeg4_degree4_distortion",
-            MFnNumericData::kDouble, 0.0);
+            "tdeRadialDeg4_degree4_distortion", MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
         CHECK_MSTATUS(numericAttr.setSoftMax(0.5));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Quartic Distortion - Degree 4"));
+        CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Quartic Distortion - Degree 4"));
         CHECK_MSTATUS(addAttribute(a_tdeRadialDeg4_degree4_distortion));
 
         // U - Degree 4
         a_tdeRadialDeg4_degree4_u = numericAttr.create(
-            "tdeRadialDeg4_degree4_u",
-            "tdeRadialDeg4_degree4_u",
+            "tdeRadialDeg4_degree4_u", "tdeRadialDeg4_degree4_u",
             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
@@ -560,8 +571,7 @@ MStatus MMLensModel3deNode::initialize() {
 
         // V - Degree 4
         a_tdeRadialDeg4_degree4_v = numericAttr.create(
-            "tdeRadialDeg4_degree4_v",
-            "tdeRadialDeg4_degree4_v",
+            "tdeRadialDeg4_degree4_v", "tdeRadialDeg4_degree4_v",
             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
@@ -573,19 +583,18 @@ MStatus MMLensModel3deNode::initialize() {
         // Phi - Cylindric Direction
         a_tdeRadialDeg4_cylindricDirection = numericAttr.create(
             "tdeRadialDeg4_cylindricDirection",
-            "tdeRadialDeg4_cylindricDirection",
-            MFnNumericData::kDouble, 0.0);
+            "tdeRadialDeg4_cylindricDirection", MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(numericAttr.setSoftMin(-90.0));
         CHECK_MSTATUS(numericAttr.setSoftMax(90.0));
-        CHECK_MSTATUS(numericAttr.setNiceNameOverride("Phi - Cylindric Direction"));
+        CHECK_MSTATUS(
+            numericAttr.setNiceNameOverride("Phi - Cylindric Direction"));
         CHECK_MSTATUS(addAttribute(a_tdeRadialDeg4_cylindricDirection));
 
         // B - Cylindric Bending
         a_tdeRadialDeg4_cylindricBending = numericAttr.create(
-            "tdeRadialDeg4_cylindricBending",
-            "tdeRadialDeg4_cylindricBending",
+            "tdeRadialDeg4_cylindricBending", "tdeRadialDeg4_cylindricBending",
             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
@@ -599,23 +608,22 @@ MStatus MMLensModel3deNode::initialize() {
     {
         // Channel Box heading for the lens model. This attribute does
         // nothing to the output of the node.
-        a_tdeAnamorphicDeg4_heading = enumAttr.create(
-                "tdeAnamorphicDeg4_heading",
-                "tdeAnamorphicDeg4_heading",
-                0, &status);
+        a_tdeAnamorphicDeg4_heading =
+            enumAttr.create("tdeAnamorphicDeg4_heading",
+                            "tdeAnamorphicDeg4_heading", 0, &status);
         CHECK_MSTATUS(status);
         CHECK_MSTATUS(enumAttr.addField("--------", 0));
         CHECK_MSTATUS(enumAttr.setStorable(false));
         CHECK_MSTATUS(enumAttr.setKeyable(false));
         CHECK_MSTATUS(enumAttr.setChannelBox(true));
-        CHECK_MSTATUS(enumAttr.setNiceNameOverride("3DE4 Anamorphic - Standard, Degree 4"));
+        CHECK_MSTATUS(enumAttr.setNiceNameOverride(
+            "3DE4 Anamorphic - Standard, Degree 4"));
         CHECK_MSTATUS(addAttribute(a_tdeAnamorphicDeg4_heading));
 
         // Cx02 - Degree 2
         a_tdeAnamorphicDeg4_degree2_cx02 = numericAttr.create(
-                "tdeAnamorphicDeg4_degree2_cx02",
-                "tdeAnamorphicDeg4_degree2_cx02",
-                MFnNumericData::kDouble, 0.0);
+            "tdeAnamorphicDeg4_degree2_cx02", "tdeAnamorphicDeg4_degree2_cx02",
+            MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
@@ -625,9 +633,8 @@ MStatus MMLensModel3deNode::initialize() {
 
         // Cy02 - Degree 2
         a_tdeAnamorphicDeg4_degree2_cy02 = numericAttr.create(
-                "tdeAnamorphicDeg4_degree2_cy02",
-                "tdeAnamorphicDeg4_degree2_cy02",
-                MFnNumericData::kDouble, 0.0);
+            "tdeAnamorphicDeg4_degree2_cy02", "tdeAnamorphicDeg4_degree2_cy02",
+            MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
@@ -637,9 +644,8 @@ MStatus MMLensModel3deNode::initialize() {
 
         // Cx22 - Degree 2
         a_tdeAnamorphicDeg4_degree2_cx22 = numericAttr.create(
-                "tdeAnamorphicDeg4_degree2_cx22",
-                "tdeAnamorphicDeg4_degree2_cx22",
-                MFnNumericData::kDouble, 0.0);
+            "tdeAnamorphicDeg4_degree2_cx22", "tdeAnamorphicDeg4_degree2_cx22",
+            MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
@@ -649,9 +655,8 @@ MStatus MMLensModel3deNode::initialize() {
 
         // Cy22 - Degree 2
         a_tdeAnamorphicDeg4_degree2_cy22 = numericAttr.create(
-                "tdeAnamorphicDeg4_degree2_cy22",
-                "tdeAnamorphicDeg4_degree2_cy22",
-                MFnNumericData::kDouble, 0.0);
+            "tdeAnamorphicDeg4_degree2_cy22", "tdeAnamorphicDeg4_degree2_cy22",
+            MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(numericAttr.setSoftMin(-0.5));
@@ -661,8 +666,7 @@ MStatus MMLensModel3deNode::initialize() {
 
         // Cx04 - Degree 4
         a_tdeAnamorphicDeg4_degree4_cx04 = numericAttr.create(
-            "tdeAnamorphicDeg4_degree4_cx04",
-            "tdeAnamorphicDeg4_degree4_cx04",
+            "tdeAnamorphicDeg4_degree4_cx04", "tdeAnamorphicDeg4_degree4_cx04",
             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
@@ -673,8 +677,7 @@ MStatus MMLensModel3deNode::initialize() {
 
         // Cy04 - Degree 4
         a_tdeAnamorphicDeg4_degree4_cy04 = numericAttr.create(
-            "tdeAnamorphicDeg4_degree4_cy04",
-            "tdeAnamorphicDeg4_degree4_cy04",
+            "tdeAnamorphicDeg4_degree4_cy04", "tdeAnamorphicDeg4_degree4_cy04",
             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
@@ -685,8 +688,7 @@ MStatus MMLensModel3deNode::initialize() {
 
         // Cx24 - Degree 4
         a_tdeAnamorphicDeg4_degree4_cx24 = numericAttr.create(
-            "tdeAnamorphicDeg4_degree4_cx24",
-            "tdeAnamorphicDeg4_degree4_cx24",
+            "tdeAnamorphicDeg4_degree4_cx24", "tdeAnamorphicDeg4_degree4_cx24",
             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
@@ -697,8 +699,7 @@ MStatus MMLensModel3deNode::initialize() {
 
         // Cy24 - Degree 4
         a_tdeAnamorphicDeg4_degree4_cy24 = numericAttr.create(
-            "tdeAnamorphicDeg4_degree4_cy24",
-            "tdeAnamorphicDeg4_degree4_cy24",
+            "tdeAnamorphicDeg4_degree4_cy24", "tdeAnamorphicDeg4_degree4_cy24",
             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
@@ -709,8 +710,7 @@ MStatus MMLensModel3deNode::initialize() {
 
         // Cx44 - Degree 4
         a_tdeAnamorphicDeg4_degree4_cx44 = numericAttr.create(
-            "tdeAnamorphicDeg4_degree4_cx44",
-            "tdeAnamorphicDeg4_degree4_cx44",
+            "tdeAnamorphicDeg4_degree4_cx44", "tdeAnamorphicDeg4_degree4_cx44",
             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
@@ -721,8 +721,7 @@ MStatus MMLensModel3deNode::initialize() {
 
         // Cy44 - Degree 4
         a_tdeAnamorphicDeg4_degree4_cy44 = numericAttr.create(
-            "tdeAnamorphicDeg4_degree4_cy44",
-            "tdeAnamorphicDeg4_degree4_cy44",
+            "tdeAnamorphicDeg4_degree4_cy44", "tdeAnamorphicDeg4_degree4_cy44",
             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
@@ -733,8 +732,7 @@ MStatus MMLensModel3deNode::initialize() {
 
         // Lens Rotation
         a_tdeAnamorphicDeg4_lensRotation = numericAttr.create(
-            "tdeAnamorphicDeg4_lensRotation",
-            "tdeAnamorphicDeg4_lensRotation",
+            "tdeAnamorphicDeg4_lensRotation", "tdeAnamorphicDeg4_lensRotation",
             MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
@@ -745,9 +743,8 @@ MStatus MMLensModel3deNode::initialize() {
 
         // Squeeze X
         a_tdeAnamorphicDeg4_squeeze_x = numericAttr.create(
-                "tdeAnamorphicDeg4_squeeze_x",
-                "tdeAnamorphicDeg4_squeeze_x",
-                MFnNumericData::kDouble, 1.0);
+            "tdeAnamorphicDeg4_squeeze_x", "tdeAnamorphicDeg4_squeeze_x",
+            MFnNumericData::kDouble, 1.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(numericAttr.setSoftMin(0.9));
@@ -757,9 +754,8 @@ MStatus MMLensModel3deNode::initialize() {
 
         // Squeeze Y
         a_tdeAnamorphicDeg4_squeeze_y = numericAttr.create(
-                "tdeAnamorphicDeg4_squeeze_y",
-                "tdeAnamorphicDeg4_squeeze_y",
-                MFnNumericData::kDouble, 1.0);
+            "tdeAnamorphicDeg4_squeeze_y", "tdeAnamorphicDeg4_squeeze_y",
+            MFnNumericData::kDouble, 1.0);
         CHECK_MSTATUS(numericAttr.setStorable(true));
         CHECK_MSTATUS(numericAttr.setKeyable(true));
         CHECK_MSTATUS(numericAttr.setSoftMin(0.9));
@@ -769,9 +765,7 @@ MStatus MMLensModel3deNode::initialize() {
     }
 
     // Out Lens
-    a_outLens = typedAttr.create(
-        "outLens", "olns",
-        data_type_id);
+    a_outLens = typedAttr.create("outLens", "olns", data_type_id);
     CHECK_MSTATUS(typedAttr.setStorable(false));
     CHECK_MSTATUS(typedAttr.setKeyable(false));
     CHECK_MSTATUS(typedAttr.setReadable(true));
@@ -816,11 +810,10 @@ MStatus MMLensModel3deNode::initialize() {
     MObjectArray outputAttrs;
     outputAttrs.append(a_outLens);
 
-    CHECK_MSTATUS(MMNodeInitUtils::attributeAffectsMulti(
-                      inputAttrs,
-                      outputAttrs));
+    CHECK_MSTATUS(
+        MMNodeInitUtils::attributeAffectsMulti(inputAttrs, outputAttrs));
 
     return MS::kSuccess;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

@@ -27,38 +27,28 @@
 #include <vector>
 
 // Maya
+#include <maya/MAnimCurveChange.h>
+#include <maya/MComputation.h>
+#include <maya/MDGModifier.h>
 #include <maya/MPoint.h>
 #include <maya/MStringArray.h>
-#include <maya/MAnimCurveChange.h>
-#include <maya/MDGModifier.h>
-#include <maya/MComputation.h>
 
 // MM Solver
+#include "adjust_base.h"
+#include "adjust_solveFunc.h"
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "adjust_solveFunc.h"
-#include "adjust_base.h"
-
 
 bool solve_3d_cminpack_lmder(SolverOptions &solverOptions,
-                             int numberOfParameters,
-                             int numberOfErrors,
+                             int numberOfParameters, int numberOfErrors,
                              std::vector<double> &paramList,
                              std::vector<double> &errorList,
                              std::vector<double> &paramWeightList,
-                             SolverData &userData,
-                             SolverResult &solveResult);
+                             SolverData &userData, SolverResult &solveResult);
 
+int solveFunc_cminpack_lmder(void *data, int m, int n, const double *x,
+                             double *fvec, double *fjac, int ldfjac, int iflag);
 
-int solveFunc_cminpack_lmder(void *data,
-                             int m,
-                             int n,
-                             const double *x,
-                             double *fvec,
-                             double *fjac,
-                             int ldfjac,
-                             int iflag);
-
-#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDER_H
+#endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDER_H

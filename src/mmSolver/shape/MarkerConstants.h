@@ -73,8 +73,7 @@ const float shape_b_points[][3] = {
     // Bottom right
     {0.50f, -1.00f, 0.0f},
     {1.00f, -1.00f, 0.0f},
-    {1.00f, -0.50f, 0.0f}
-};
+    {1.00f, -0.50f, 0.0f}};
 
 const unsigned int shape_b_line_indexes[][2] = {
     // Top left
@@ -94,4 +93,4 @@ const unsigned int shape_b_line_indexes[][2] = {
 const int shape_b_points_count = 3 * 4;
 const int shape_b_line_indexes_count = 2 * 4;
 
-} // namespace mmsolver
+}  // namespace mmsolver

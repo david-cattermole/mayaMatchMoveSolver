@@ -24,7 +24,7 @@
 #if defined(_MSC_VER)
 #define MMSCENEGRAPH_API_EXPORT __declspec(dllexport)
 #elif defined(__GNUC__)
-    #define MMSCENEGRAPH_API_EXPORT __attribute__((visibility("default")))
+#define MMSCENEGRAPH_API_EXPORT __attribute__((visibility("default")))
 #else
-    #define MMSCENEGRAPH_API_EXPORT
+#define MMSCENEGRAPH_API_EXPORT
 #endif

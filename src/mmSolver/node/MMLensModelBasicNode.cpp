@@ -23,20 +23,20 @@
 #include "MMLensModelBasicNode.h"
 
 // STL
-#include <cstring>
 #include <cmath>
+#include <cstring>
 
 // Maya
-#include <maya/MPlug.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
-#include <maya/MFnNumericAttribute.h>
-#include <maya/MFnTypedAttribute.h>
 #include <maya/MFnCompoundAttribute.h>
+#include <maya/MFnNumericAttribute.h>
 #include <maya/MFnNumericData.h>
+#include <maya/MFnPluginData.h>
+#include <maya/MFnTypedAttribute.h>
+#include <maya/MPlug.h>
 #include <maya/MString.h>
 #include <maya/MTypeId.h>
-#include <maya/MFnPluginData.h>
 
 // MM Solver
 #include "MMLensData.h"
@@ -58,14 +58,11 @@ MObject MMLensModelBasicNode::a_k2;
 // Output Attributes
 MObject MMLensModelBasicNode::a_outLens;
 
-
 MMLensModelBasicNode::MMLensModelBasicNode() {}
 
 MMLensModelBasicNode::~MMLensModelBasicNode() {}
 
-MString MMLensModelBasicNode::nodeName() {
-    return MString("mmLensModelBasic");
-}
+MString MMLensModelBasicNode::nodeName() { return MString("mmLensModelBasic"); }
 
 MStatus MMLensModelBasicNode::compute(const MPlug &plug, MDataBlock &data) {
     MStatus status = MS::kUnknownParameter;
@@ -86,7 +83,7 @@ MStatus MMLensModelBasicNode::compute(const MPlug &plug, MDataBlock &data) {
         // Get Input Lens
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
+        MMLensData *inputLensData = (MMLensData *)inLensHandle.asPluginData();
         std::shared_ptr<LensModel> inputLensModel;
         if (inputLensData != nullptr) {
             inputLensModel = inputLensData->getValue();
@@ -94,9 +91,8 @@ MStatus MMLensModelBasicNode::compute(const MPlug &plug, MDataBlock &data) {
 
         // Output Lens
         MDataHandle outLensHandle = data.outputValue(a_outLens);
-        MMLensData* newLensData = (MMLensData*) fnPluginData.data(&status);
+        MMLensData *newLensData = (MMLensData *)fnPluginData.data(&status);
         if (enable) {
-
             // K1 Attribute
             MDataHandle k1Handle = data.inputValue(a_k1, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -128,9 +124,7 @@ MStatus MMLensModelBasicNode::compute(const MPlug &plug, MDataBlock &data) {
     return status;
 }
 
-void *MMLensModelBasicNode::creator() {
-    return (new MMLensModelBasicNode());
-}
+void *MMLensModelBasicNode::creator() { return (new MMLensModelBasicNode()); }
 
 MStatus MMLensModelBasicNode::initialize() {
     MStatus status;
@@ -139,9 +133,7 @@ MStatus MMLensModelBasicNode::initialize() {
 
     // In Lens
     MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
-    a_inLens = typedAttr.create(
-            "inLens", "ilns",
-            data_type_id);
+    a_inLens = typedAttr.create("inLens", "ilns", data_type_id);
     CHECK_MSTATUS(typedAttr.setStorable(false));
     CHECK_MSTATUS(typedAttr.setKeyable(false));
     CHECK_MSTATUS(typedAttr.setReadable(true));
@@ -149,33 +141,26 @@ MStatus MMLensModelBasicNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_inLens));
 
     // Enable
-    a_enable = numericAttr.create(
-            "enable", "enb",
-            MFnNumericData::kBoolean, true);
+    a_enable =
+        numericAttr.create("enable", "enb", MFnNumericData::kBoolean, true);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_enable));
 
     // K1
-    a_k1 = numericAttr.create(
-        "k1", "k1",
-        MFnNumericData::kDouble, 0.0);
+    a_k1 = numericAttr.create("k1", "k1", MFnNumericData::kDouble, 0.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_k1));
 
     // K2
-    a_k2 = numericAttr.create(
-        "k2", "k2",
-        MFnNumericData::kDouble, 0.0);
+    a_k2 = numericAttr.create("k2", "k2", MFnNumericData::kDouble, 0.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_k2));
 
     // Out Lens
-    a_outLens = typedAttr.create(
-            "outLens", "olns",
-            data_type_id);
+    a_outLens = typedAttr.create("outLens", "olns", data_type_id);
     CHECK_MSTATUS(typedAttr.setStorable(false));
     CHECK_MSTATUS(typedAttr.setKeyable(false));
     CHECK_MSTATUS(typedAttr.setReadable(true));
@@ -191,4 +176,4 @@ MStatus MMLensModelBasicNode::initialize() {
     return MS::kSuccess;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

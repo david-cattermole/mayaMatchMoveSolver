@@ -21,8 +21,8 @@
 
 #include "QuadRenderEdgeDetect.h"
 
-#include <maya/MStreamUtils.h>
 #include <maya/MShaderManager.h>
+#include <maya/MStreamUtils.h>
 
 #include "constants.h"
 
@@ -30,12 +30,11 @@ namespace mmsolver {
 namespace render {
 
 QuadRenderEdgeDetect::QuadRenderEdgeDetect(const MString &name)
-        : QuadRenderBase(name)
-        , m_shader_instance(nullptr)
-        , m_target_index_input(0)
-        , m_thickness(1.5f)
-        , m_threshold(0.2f) {
-}
+    : QuadRenderBase(name)
+    , m_shader_instance(nullptr)
+    , m_target_index_input(0)
+    , m_thickness(1.5f)
+    , m_threshold(0.2f) {}
 
 QuadRenderEdgeDetect::~QuadRenderEdgeDetect() {
     // Release all shaders.
@@ -44,7 +43,8 @@ QuadRenderEdgeDetect::~QuadRenderEdgeDetect() {
         if (!renderer) {
             return;
         }
-        const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+        const MHWRender::MShaderManager *shaderMgr =
+            renderer->getShaderManager();
         if (!shaderMgr) {
             return;
         }
@@ -57,8 +57,8 @@ QuadRenderEdgeDetect::~QuadRenderEdgeDetect() {
 // Determine the targets to be used.
 //
 // Called by Maya.
-MHWRender::MRenderTarget *const *
-QuadRenderEdgeDetect::targetOverrideList(unsigned int &listSize) {
+MHWRender::MRenderTarget *const *QuadRenderEdgeDetect::targetOverrideList(
+    unsigned int &listSize) {
     if (m_targets && (m_target_count > 0)) {
         listSize = m_target_count;
         return &m_targets[m_target_index];
@@ -69,16 +69,15 @@ QuadRenderEdgeDetect::targetOverrideList(unsigned int &listSize) {
 
 // Maya calls this method to know what shader should be used for this
 // quad render operation.
-const MHWRender::MShaderInstance *
-QuadRenderEdgeDetect::shader() {
-
+const MHWRender::MShaderInstance *QuadRenderEdgeDetect::shader() {
     // Compile shader
     if (!m_shader_instance) {
         MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
         if (!renderer) {
             return nullptr;
         }
-        const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+        const MHWRender::MShaderManager *shaderMgr =
+            renderer->getShaderManager();
         if (!shaderMgr) {
             return nullptr;
         }
@@ -88,8 +87,7 @@ QuadRenderEdgeDetect::shader() {
         MString file_name = "mmSilhouette";
         MString shader_technique = "Sobel";
         m_shader_instance = shaderMgr->getEffectsFileShader(
-            file_name.asChar(),
-            shader_technique.asChar());
+            file_name.asChar(), shader_technique.asChar());
     }
 
     // Set default parameters
@@ -104,24 +102,28 @@ QuadRenderEdgeDetect::shader() {
                 MStreamUtils::stdOutStream()
                     << "QuardRenderEdgeDetect: Assign texture to shader...\n";
                 assignment.target = target;
-                CHECK_MSTATUS(m_shader_instance->setParameter(
-                                  "gDepthTex", assignment));
+                CHECK_MSTATUS(
+                    m_shader_instance->setParameter("gDepthTex", assignment));
             }
         }
 
         // The edge thickness.
-        CHECK_MSTATUS(m_shader_instance->setParameter("gThickness", m_thickness));
+        CHECK_MSTATUS(
+            m_shader_instance->setParameter("gThickness", m_thickness));
 
         // The edge detection threshold.
-        CHECK_MSTATUS(m_shader_instance->setParameter("gThreshold", m_threshold));
+        CHECK_MSTATUS(
+            m_shader_instance->setParameter("gThreshold", m_threshold));
 
         // Colors
-        CHECK_MSTATUS(m_shader_instance->setParameter("gLineColor", kEdgeColorDefault));
-        CHECK_MSTATUS(m_shader_instance->setParameter("gBackgroundColor", kTransparentBlackColor));
+        CHECK_MSTATUS(
+            m_shader_instance->setParameter("gLineColor", kEdgeColorDefault));
+        CHECK_MSTATUS(m_shader_instance->setParameter("gBackgroundColor",
+                                                      kTransparentBlackColor));
     }
     // }
     return m_shader_instance;
 }
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver

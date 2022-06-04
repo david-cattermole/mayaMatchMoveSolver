@@ -27,30 +27,36 @@
 #include "mmSolver/core/mmhash.h"
 
 void LensModel3deRadialDecenteredDeg4Cylindric::applyModelUndistort(
-    const double xd,
-    const double yd,
-    double &xu,
-    double &yu
-) {
+    const double xd, const double yd, double &xu, double &yu) {
     if (m_state != LensModelState::kClean) {
         // LDPK models must be initialized to work.
-        m_lensPlugin->setParameterValue("tde4_focal_length_cm", LensModel::m_focalLength_cm);
-        m_lensPlugin->setParameterValue("tde4_filmback_width_cm", LensModel::m_filmBackWidth_cm);
-        m_lensPlugin->setParameterValue("tde4_filmback_height_cm", LensModel::m_filmBackHeight_cm);
-        m_lensPlugin->setParameterValue("tde4_pixel_aspect", LensModel::m_pixelAspect);
-        m_lensPlugin->setParameterValue("tde4_lens_center_offset_x_cm", LensModel::m_lensCenterOffsetX_cm);
-        m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm", LensModel::m_lensCenterOffsetY_cm);
+        m_lensPlugin->setParameterValue("tde4_focal_length_cm",
+                                        LensModel::m_focalLength_cm);
+        m_lensPlugin->setParameterValue("tde4_filmback_width_cm",
+                                        LensModel::m_filmBackWidth_cm);
+        m_lensPlugin->setParameterValue("tde4_filmback_height_cm",
+                                        LensModel::m_filmBackHeight_cm);
+        m_lensPlugin->setParameterValue("tde4_pixel_aspect",
+                                        LensModel::m_pixelAspect);
+        m_lensPlugin->setParameterValue("tde4_lens_center_offset_x_cm",
+                                        LensModel::m_lensCenterOffsetX_cm);
+        m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm",
+                                        LensModel::m_lensCenterOffsetY_cm);
 
-        m_lensPlugin->setParameterValue("Distortion - Degree 2", m_degree2_distortion);
+        m_lensPlugin->setParameterValue("Distortion - Degree 2",
+                                        m_degree2_distortion);
         m_lensPlugin->setParameterValue("U - Degree 2", m_degree2_u);
         m_lensPlugin->setParameterValue("V - Degree 2", m_degree2_v);
 
-        m_lensPlugin->setParameterValue("Quartic Distortion - Degree 4", m_degree4_distortion);
+        m_lensPlugin->setParameterValue("Quartic Distortion - Degree 4",
+                                        m_degree4_distortion);
         m_lensPlugin->setParameterValue("U - Degree 4", m_degree4_u);
         m_lensPlugin->setParameterValue("V - Degree 4", m_degree4_v);
 
-        m_lensPlugin->setParameterValue("Phi - Cylindric Direction", m_cylindricDirection);
-        m_lensPlugin->setParameterValue("B - Cylindric Bending", m_cylindricBending);
+        m_lensPlugin->setParameterValue("Phi - Cylindric Direction",
+                                        m_cylindricDirection);
+        m_lensPlugin->setParameterValue("B - Cylindric Bending",
+                                        m_cylindricBending);
 
         m_lensPlugin->initializeParameters();
         m_state = LensModelState::kClean;
@@ -73,30 +79,36 @@ void LensModel3deRadialDecenteredDeg4Cylindric::applyModelUndistort(
 }
 
 void LensModel3deRadialDecenteredDeg4Cylindric::applyModelDistort(
-    const double xd,
-    const double yd,
-    double &xu,
-    double &yu
-) {
+    const double xd, const double yd, double &xu, double &yu) {
     if (m_state != LensModelState::kClean) {
         // LDPK models must be initialized to work.
-        m_lensPlugin->setParameterValue("tde4_focal_length_cm", LensModel::m_focalLength_cm);
-        m_lensPlugin->setParameterValue("tde4_filmback_width_cm", LensModel::m_filmBackWidth_cm);
-        m_lensPlugin->setParameterValue("tde4_filmback_height_cm", LensModel::m_filmBackHeight_cm);
-        m_lensPlugin->setParameterValue("tde4_pixel_aspect", LensModel::m_pixelAspect);
-        m_lensPlugin->setParameterValue("tde4_lens_center_offset_x_cm", LensModel::m_lensCenterOffsetX_cm);
-        m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm", LensModel::m_lensCenterOffsetY_cm);
+        m_lensPlugin->setParameterValue("tde4_focal_length_cm",
+                                        LensModel::m_focalLength_cm);
+        m_lensPlugin->setParameterValue("tde4_filmback_width_cm",
+                                        LensModel::m_filmBackWidth_cm);
+        m_lensPlugin->setParameterValue("tde4_filmback_height_cm",
+                                        LensModel::m_filmBackHeight_cm);
+        m_lensPlugin->setParameterValue("tde4_pixel_aspect",
+                                        LensModel::m_pixelAspect);
+        m_lensPlugin->setParameterValue("tde4_lens_center_offset_x_cm",
+                                        LensModel::m_lensCenterOffsetX_cm);
+        m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm",
+                                        LensModel::m_lensCenterOffsetY_cm);
 
-        m_lensPlugin->setParameterValue("Distortion - Degree 2", m_degree2_distortion);
+        m_lensPlugin->setParameterValue("Distortion - Degree 2",
+                                        m_degree2_distortion);
         m_lensPlugin->setParameterValue("U - Degree 2", m_degree2_u);
         m_lensPlugin->setParameterValue("V - Degree 2", m_degree2_v);
 
-        m_lensPlugin->setParameterValue("Quartic Distortion - Degree 4", m_degree4_distortion);
+        m_lensPlugin->setParameterValue("Quartic Distortion - Degree 4",
+                                        m_degree4_distortion);
         m_lensPlugin->setParameterValue("U - Degree 4", m_degree4_u);
         m_lensPlugin->setParameterValue("V - Degree 4", m_degree4_v);
 
-        m_lensPlugin->setParameterValue("Phi - Cylindric Direction", m_cylindricDirection);
-        m_lensPlugin->setParameterValue("B - Cylindric Bending", m_cylindricBending);
+        m_lensPlugin->setParameterValue("Phi - Cylindric Direction",
+                                        m_cylindricDirection);
+        m_lensPlugin->setParameterValue("B - Cylindric Bending",
+                                        m_cylindricBending);
 
         m_lensPlugin->initializeParameters();
         m_state = LensModelState::kClean;
@@ -130,8 +142,10 @@ mmhash::HashValue LensModel3deRadialDecenteredDeg4Cylindric::hashValue() {
     mmhash::combine(hash, std::hash<double>()(LensModel::m_filmBackWidth_cm));
     mmhash::combine(hash, std::hash<double>()(LensModel::m_filmBackHeight_cm));
     mmhash::combine(hash, std::hash<double>()(LensModel::m_pixelAspect));
-    mmhash::combine(hash, std::hash<double>()(LensModel::m_lensCenterOffsetX_cm));
-    mmhash::combine(hash, std::hash<double>()(LensModel::m_lensCenterOffsetY_cm));
+    mmhash::combine(hash,
+                    std::hash<double>()(LensModel::m_lensCenterOffsetX_cm));
+    mmhash::combine(hash,
+                    std::hash<double>()(LensModel::m_lensCenterOffsetY_cm));
 
     mmhash::combine(hash, std::hash<double>()(m_degree2_distortion));
     mmhash::combine(hash, std::hash<double>()(m_degree2_u));

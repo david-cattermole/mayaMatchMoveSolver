@@ -24,16 +24,15 @@
 #define MM_SOLVER_RENDER_CONSTANTS_H
 
 // Maya
+#include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
-#include <maya/MRenderTargetManager.h>
 
 namespace mmsolver {
 namespace render {
 
 // Enumerate the target indexing
-enum TargetId
-{
+enum TargetId {
     kMyColorTarget = 0,
     kMyDepthTarget,
     kMyAuxColorTarget,
@@ -43,9 +42,9 @@ enum TargetId
 };
 
 // Renderer Target names.
-#define kMyColorTargetName  "__mmRenderer_ColorTarget1__"
-#define kMyDepthTargetName  "__mmRenderer_DepthTarget1__"
-#define kMyAuxColorTargetName  "__mmRenderer_ColorTarget2__"
+#define kMyColorTargetName "__mmRenderer_ColorTarget1__"
+#define kMyDepthTargetName "__mmRenderer_DepthTarget1__"
+#define kMyAuxColorTargetName "__mmRenderer_ColorTarget2__"
 
 // Constant values
 const char kRendererUiName[] = "mmRenderer (beta)";
@@ -57,7 +56,7 @@ const float kWireframeAlphaDefault = 1.0f;
 const float kEdgeThicknessDefault = 1.5f;
 const float kEdgeThresholdDefault = 0.05f;
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver
 
-#endif // MM_SOLVER_RENDER_CONSTANTS_H
+#endif  // MM_SOLVER_RENDER_CONSTANTS_H

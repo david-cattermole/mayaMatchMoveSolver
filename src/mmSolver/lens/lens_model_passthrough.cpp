@@ -22,13 +22,8 @@
 
 #include "lens_model_passthrough.h"
 
-
-void LensModelPassthrough::applyModelUndistort(
-    const double xd,
-    const double yd,
-    double &xu,
-    double &yu
-) {
+void LensModelPassthrough::applyModelUndistort(const double xd, const double yd,
+                                               double &xu, double &yu) {
     // Apply the 'previous' lens model in the chain.
     std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
     double xdd = xd;
@@ -43,13 +38,8 @@ void LensModelPassthrough::applyModelUndistort(
     return;
 }
 
-
-void LensModelPassthrough::applyModelDistort(
-    const double xd,
-    const double yd,
-    double &xu,
-    double &yu
-) {
+void LensModelPassthrough::applyModelDistort(const double xd, const double yd,
+                                             double &xu, double &yu) {
     // Apply the 'previous' lens model in the chain.
     std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
     double xdd = xd;

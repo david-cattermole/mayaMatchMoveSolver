@@ -20,26 +20,17 @@
  * Measure the deviation/error distances between Markers and Bundles.
  */
 
-
 #ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_MEASURE_ERRORS_H
 #define MM_SOLVER_CORE_BUNDLE_ADJUST_MEASURE_ERRORS_H
 
 #include "adjust_data.h"
 
+void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
+                   const int numberOfAttrStiffnessErrors,
+                   const int numberOfAttrSmoothnessErrors,
+                   const std::vector<bool> &frameIndexEnable,
+                   const std::vector<bool> &errorMeasurements, double *errors,
+                   SolverData *ud, double &error_avg, double &error_max,
+                   double &error_min, MStatus &status);
 
-void measureErrors(
-        const int numberOfErrors,
-        const int numberOfMarkerErrors,
-        const int numberOfAttrStiffnessErrors,
-        const int numberOfAttrSmoothnessErrors,
-        const std::vector<bool> &frameIndexEnable,
-        const std::vector<bool> &errorMeasurements,
-        double *errors,
-        SolverData *ud,
-        double &error_avg,
-        double &error_max,
-        double &error_min,
-        MStatus &status);
-
-
-#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_MEASURE_ERRORS_H
+#endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_MEASURE_ERRORS_H

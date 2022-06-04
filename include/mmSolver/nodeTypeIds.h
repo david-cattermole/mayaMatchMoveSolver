@@ -39,16 +39,17 @@
  * plug-ins, even internal ones. This can prevent significant headaches later if
  * the plans for your plug-ins change.
  *
- * There are 2 forms of the constructor for this class that can be used depending
- * on whether the plug-in id is internal or globally unique.
+ * There are 2 forms of the constructor for this class that can be used
+ * depending on whether the plug-in id is internal or globally unique.
  *
  * For plug-ins that will forever be internal to your site use the constructor
- * that takes a single unsigned int parameter. The numeric range 0 - 0x7ffff (524288 ids)
- * has been reserved for such plug-ins.
+ * that takes a single unsigned int parameter. The numeric range 0 - 0x7ffff
+ * (524288 ids) has been reserved for such plug-ins.
  *
  * The example plug-ins provided with Maya in the plug-in development kit will
  * use ids in the range 0x80000 - 0xfffff (524288 ids). If you customize one
- * of these example plug-ins, you should change the id to avoid future conflicts.
+ * of these example plug-ins, you should change the id to avoid future
+ * conflicts.
  *
  * Plug-ins that are intended to be shared between sites will need to have a
  * globally unique id. The Autodesk Developer Network (ADN) will provide such
@@ -145,4 +146,4 @@
 
 #define OCGM_IMAGE_PLANE_SHAPE_TYPE_ID 0x0012F18B
 
-#endif // MM_SOLVER_NODE_TYPE_IDS_H
+#endif  // MM_SOLVER_NODE_TYPE_IDS_H

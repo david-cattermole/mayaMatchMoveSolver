@@ -24,67 +24,62 @@
 #include "adjust_relationships.h"
 
 // STL
-#include <ctime>
+#include <algorithm>
+#include <cassert>
 #include <cmath>
-#include <iostream>
+#include <cstdlib>
+#include <ctime>
 #include <fstream>
+#include <iostream>
+#include <limits>
+#include <map>
 #include <string>
 #include <vector>
-#include <cassert>
-#include <limits>
-#include <algorithm>
-#include <cstdlib>
-#include <map>
 
 // Maya
+#include <maya/MAnimCurveChange.h>
+#include <maya/MComputation.h>
+#include <maya/MFloatMatrix.h>
+#include <maya/MFnAnimCurve.h>
+#include <maya/MFnAttribute.h>
+#include <maya/MFnCamera.h>
+#include <maya/MFnDependencyNode.h>
 #include <maya/MGlobal.h>
+#include <maya/MItDependencyGraph.h>
+#include <maya/MMatrix.h>
+#include <maya/MObject.h>
 #include <maya/MPoint.h>
-#include <maya/MVector.h>
+#include <maya/MProfiler.h>
+#include <maya/MSelectionList.h>
+#include <maya/MStreamUtils.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
-#include <maya/MObject.h>
-#include <maya/MFnAnimCurve.h>
-#include <maya/MAnimCurveChange.h>
-#include <maya/MSelectionList.h>
-#include <maya/MItDependencyGraph.h>
-#include <maya/MFnDependencyNode.h>
-#include <maya/MMatrix.h>
-#include <maya/MFloatMatrix.h>
-#include <maya/MFnCamera.h>
-#include <maya/MComputation.h>
-#include <maya/MProfiler.h>
-#include <maya/MStreamUtils.h>
 #include <maya/MUuid.h>
-#include <maya/MFnAttribute.h>
+#include <maya/MVector.h>
 
 // MM Solver
-#include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/utilities/string_utils.h"
-#include "mmSolver/utilities/number_utils.h"
-#include "mmSolver/mayahelper/maya_utils.h"
 #include "adjust_base.h"
-#include "adjust_levmar_bc_dif.h"
 #include "adjust_cminpack_base.h"
-#include "adjust_cminpack_lmdif.h"
 #include "adjust_cminpack_lmder.h"
+#include "adjust_cminpack_lmdif.h"
+#include "adjust_levmar_bc_dif.h"
 #include "adjust_solveFunc.h"
-
+#include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/number_utils.h"
+#include "mmSolver/utilities/string_utils.h"
 
 /*
  * Count up number of errors to be measured in the solve.
  */
-int countUpNumberOfErrors(const MarkerPtrList &markerList,
-                          const StiffAttrsPtrList &stiffAttrsList,
-                          const SmoothAttrsPtrList &smoothAttrsList,
-                          const MTimeArray &frameList,
-                          MarkerPtrList &out_validMarkerList,
-                          std::vector<MPoint> &out_markerPosList,
-                          std::vector<double> &out_markerWeightList,
-                          IndexPairList &out_errorToMarkerList,
-                          int &out_numberOfMarkerErrors,
-                          int &out_numberOfAttrStiffnessErrors,
-                          int &out_numberOfAttrSmoothnessErrors,
-                          MStatus &status) {
+int countUpNumberOfErrors(
+    const MarkerPtrList &markerList, const StiffAttrsPtrList &stiffAttrsList,
+    const SmoothAttrsPtrList &smoothAttrsList, const MTimeArray &frameList,
+    MarkerPtrList &out_validMarkerList, std::vector<MPoint> &out_markerPosList,
+    std::vector<double> &out_markerWeightList,
+    IndexPairList &out_errorToMarkerList, int &out_numberOfMarkerErrors,
+    int &out_numberOfAttrStiffnessErrors, int &out_numberOfAttrSmoothnessErrors,
+    MStatus &status) {
     status = MStatus::kSuccess;
 
     // For each marker on each frame that it is valid, we add
@@ -112,11 +107,10 @@ int countUpNumberOfErrors(const MarkerPtrList &markerList,
     const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
 
     // Get all the marker data
-    for (MarkerPtrListCIt mit = markerList.cbegin();
-         mit != markerList.cend();
+    for (MarkerPtrListCIt mit = markerList.cbegin(); mit != markerList.cend();
          ++mit) {
         MarkerPtr marker = *mit;
-        for (j = 0; j < (int) frameList.length(); ++j) {
+        for (j = 0; j < (int)frameList.length(); ++j) {
             MTime frame = frameList[j];
 
             bool enable = false;
@@ -169,8 +163,7 @@ int countUpNumberOfErrors(const MarkerPtrList &markerList,
     // computed above.
     i = 0;
     for (IndexPairListCIt eit = out_errorToMarkerList.cbegin();
-         eit != out_errorToMarkerList.cend();
-         ++eit) {
+         eit != out_errorToMarkerList.cend(); ++eit) {
         double weight = out_markerWeightList[i];
 
         int frameIndex = eit->second;
@@ -187,8 +180,7 @@ int countUpNumberOfErrors(const MarkerPtrList &markerList,
     // Compute number of errors from Attributes.
     double stiffValue = 0.0;
     for (StiffAttrsPtrListCIt ait = stiffAttrsList.cbegin();
-         ait != stiffAttrsList.cend();
-         ++ait) {
+         ait != stiffAttrsList.cend(); ++ait) {
         StiffAttrsPtr stiffAttrs = *ait;
 
         // Determine if the attribute will use stiffness values. Don't
@@ -204,8 +196,7 @@ int countUpNumberOfErrors(const MarkerPtrList &markerList,
 
     double smoothValue = 0.0;
     for (SmoothAttrsPtrListCIt ait = smoothAttrsList.cbegin();
-         ait != smoothAttrsList.cend();
-         ++ait) {
+         ait != smoothAttrsList.cend(); ++ait) {
         SmoothAttrsPtr smoothAttrs = *ait;
 
         // Determine if the attribute will use smoothness values. Don't
@@ -225,24 +216,20 @@ int countUpNumberOfErrors(const MarkerPtrList &markerList,
     return numErrors;
 }
 
-
-int countUpNumberOfUnknownParameters(const AttrPtrList &attrList,
-                                     const MTimeArray &frameList,
-                                     AttrPtrList &out_camStaticAttrList,
-                                     AttrPtrList &out_camAnimAttrList,
-                                     AttrPtrList &out_staticAttrList,
-                                     AttrPtrList &out_animAttrList,
-                                     std::vector<double> &out_paramLowerBoundList,
-                                     std::vector<double> &out_paramUpperBoundList,
-                                     std::vector<double> &out_paramWeightList,
-                                     IndexPairList &out_paramToAttrList,
-                                     BoolList2D &out_paramFrameList,
-                                     MStatus &out_status) {
+int countUpNumberOfUnknownParameters(
+    const AttrPtrList &attrList, const MTimeArray &frameList,
+    AttrPtrList &out_camStaticAttrList, AttrPtrList &out_camAnimAttrList,
+    AttrPtrList &out_staticAttrList, AttrPtrList &out_animAttrList,
+    std::vector<double> &out_paramLowerBoundList,
+    std::vector<double> &out_paramUpperBoundList,
+    std::vector<double> &out_paramWeightList,
+    IndexPairList &out_paramToAttrList, BoolList2D &out_paramFrameList,
+    MStatus &out_status) {
     out_status = MStatus::kSuccess;
 
     // Count up number of unknown parameters
-    int i = 0;      // index of marker
-    int j = 0;      // index of frame
+    int i = 0;  // index of marker
+    int j = 0;  // index of frame
     int numUnknowns = 0;
 
     // Reset data structures, because we assume we start with an empty
@@ -257,8 +244,7 @@ int countUpNumberOfUnknownParameters(const AttrPtrList &attrList,
     out_staticAttrList.clear();
     out_animAttrList.clear();
 
-    for (AttrPtrListCIt ait = attrList.cbegin();
-         ait != attrList.cend();
+    for (AttrPtrListCIt ait = attrList.cbegin(); ait != attrList.cend();
          ++ait) {
         AttrPtr attr = *ait;
         MObject nodeObj = attr->getObject();
@@ -281,7 +267,7 @@ int countUpNumberOfUnknownParameters(const AttrPtrList &attrList,
             // Animated parameter (affects a subset of frames -
             // usually only 1 frame).
             numUnknowns += frameList.length();
-            for (j = 0; j < (int) frameList.length(); ++j) {
+            for (j = 0; j < (int)frameList.length(); ++j) {
                 // first index is into 'attrList'
                 // second index is into 'frameList'
                 IndexPair attrPair(i, j);
@@ -346,7 +332,6 @@ int countUpNumberOfUnknownParameters(const AttrPtrList &attrList,
     return numUnknowns;
 }
 
-
 /*
  * Use the Maya DG graph structure to determine the
  * sparsity structure, a relation of cause and effect; which
@@ -385,8 +370,8 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
     int i, j;
 
     // Command execution options
-    bool display = false;  // print out what happens in the python
-                           // command.
+    bool display = false;   // print out what happens in the python
+                            // command.
     bool undoable = false;  // we won't modify the scene in any way,
                             // only make queries.
     MString cmd = "";
@@ -395,9 +380,8 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
 
     // Calculate the relationship between attributes and markers.
     out_markerToAttrList.resize(markerList.size());
-    i = 0;      // index of marker
-    for (MarkerPtrListCIt mit = markerList.cbegin();
-         mit != markerList.cend();
+    i = 0;  // index of marker
+    for (MarkerPtrListCIt mit = markerList.cbegin(); mit != markerList.cend();
          ++mit) {
         MarkerPtr marker = *mit;
         CameraPtr cam = marker->getCamera();
@@ -416,9 +400,8 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
         cmd += bundleName;
         cmd += "\", None);";
         // MMSOLVER_WRN("Running: " + cmd);
-        out_status = MGlobal::executePythonCommand(
-            cmd, bundleAffectsResult,
-            display, undoable);
+        out_status = MGlobal::executePythonCommand(cmd, bundleAffectsResult,
+                                                   display, undoable);
         CHECK_MSTATUS(out_status);
 
         // Find list of plug names that are affected by the marker
@@ -433,17 +416,15 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
         cmd += "\"";
         cmd += ");";
         // MMSOLVER_WRN("Running: " + cmd);
-        out_status = MGlobal::executePythonCommand(
-            cmd, markerAffectsResult,
-            display, undoable);
+        out_status = MGlobal::executePythonCommand(cmd, markerAffectsResult,
+                                                   display, undoable);
         CHECK_MSTATUS(out_status);
 
         // Determine if the marker can affect the attribute.
-        j = 0;      // index of attribute
+        j = 0;  // index of attribute
         MString affectedPlugName;
         out_markerToAttrList[i].resize(attrList.size(), false);
-        for (AttrPtrListCIt ait = attrList.begin();
-             ait != attrList.end();
+        for (AttrPtrListCIt ait = attrList.begin(); ait != attrList.end();
              ++ait) {
             AttrPtr attr = *ait;
 
@@ -452,7 +433,8 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
             MObject attrNode = plug.node();
             MFnDagNode attrFnDagNode(attrNode);
             MString attrNodeName = attrFnDagNode.fullPathName();
-            MString attrAttrName = plug.partialName(false, true, true, false, false, true);
+            MString attrAttrName =
+                plug.partialName(false, true, true, false, false, true);
             MString attrName = attrNodeName + "." + attrAttrName;
 
             // Bundle affects attribute
@@ -501,19 +483,19 @@ void getMarkerToAttributeRelationship(const MarkerPtrList &markerList,
 
     // Calculate the relationship between attributes and markers.
     out_markerToAttrList.resize(markerList.size());
-    int i = 0;      // index of marker
-    for (MarkerPtrListCIt mit = markerList.cbegin();
-         mit != markerList.cend();
+    int i = 0;  // index of marker
+    for (MarkerPtrListCIt mit = markerList.cbegin(); mit != markerList.cend();
          ++mit) {
         MarkerPtr marker = *mit;
         MObject markerObject = marker->getObject();
         MFnDependencyNode markerNodeFn(markerObject);
 
         // Determine if the marker can affect the attribute.
-        int j = 0;      // index of attribute
+        int j = 0;  // index of attribute
         MString affectedPlugName;
         out_markerToAttrList[i].resize(attrList.size(), defaultValue);
-        for (AttrPtrListCIt ait = attrList.begin(); ait != attrList.end(); ++ait) {
+        for (AttrPtrListCIt ait = attrList.begin(); ait != attrList.end();
+             ++ait) {
             AttrPtr attr = *ait;
 
             // Get Attribute's Node Name.
@@ -531,10 +513,8 @@ void getMarkerToAttributeRelationship(const MarkerPtrList &markerList,
             // Calculate the naming format that is expected to be on
             // the Marker transform node.
             MString attrName = "";
-            out_status = constructAttrAffectsName(
-                nodeAttrName,
-                attrUuidStr,
-                attrName);
+            out_status =
+                constructAttrAffectsName(nodeAttrName, attrUuidStr, attrName);
             CHECK_MSTATUS(out_status);
 
             // Get plug value
@@ -561,7 +541,6 @@ void getMarkerToAttributeRelationship(const MarkerPtrList &markerList,
     return;
 }
 
-
 /*
  * Calculate the relationship between errors and parameters.
  *
@@ -579,16 +558,12 @@ void getMarkerToAttributeRelationship(const MarkerPtrList &markerList,
  * markerToAttrList is already true, otherwise we can assume
  * such error/parameter combinations will not be required.
  */
-void findErrorToParameterRelationship(const MarkerPtrList &markerList,
-                                      const AttrPtrList &attrList,
-                                      const MTimeArray &frameList,
-                                      const int numParameters,
-                                      const int numMarkerErrors,
-                                      const IndexPairList &paramToAttrList,
-                                      const IndexPairList &errorToMarkerList,
-                                      const BoolList2D &markerToAttrList,
-                                      BoolList2D &out_errorToParamList,
-                                      MStatus &out_status){
+void findErrorToParameterRelationship(
+    const MarkerPtrList &markerList, const AttrPtrList &attrList,
+    const MTimeArray &frameList, const int numParameters,
+    const int numMarkerErrors, const IndexPairList &paramToAttrList,
+    const IndexPairList &errorToMarkerList, const BoolList2D &markerToAttrList,
+    BoolList2D &out_errorToParamList, MStatus &out_status) {
     out_status = MStatus::kSuccess;
 
     int numberOfMarkers = numMarkerErrors / ERRORS_PER_MARKER;
@@ -622,7 +597,8 @@ void findErrorToParameterRelationship(const MarkerPtrList &markerList,
             bool paramAffectsError = markerAffectsAttr;
             if (paramAffectsError == true) {
                 // Time based mapping information.
-                // Only markers on the current frame can affect the current attribute.
+                // Only markers on the current frame can affect the current
+                // attribute.
                 if (attrFrameIndex >= 0) {
                     paramAffectsError = number::isApproxEqual<double>(
                         markerFrame.value(), attrFrame.value());

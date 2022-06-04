@@ -34,17 +34,14 @@ namespace mmscenegraph {
 
 class AttrDataBlock {
 public:
-
     MMSCENEGRAPH_API_EXPORT
     AttrDataBlock() noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    rust::Box<ShimAttrDataBlock>
-    get_inner() noexcept;
+    rust::Box<ShimAttrDataBlock> get_inner() noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    void
-    set_inner(rust::Box<ShimAttrDataBlock> &value) noexcept;
+    void set_inner(rust::Box<ShimAttrDataBlock> &value) noexcept;
 
     MMSCENEGRAPH_API_EXPORT
     void clear() noexcept;
@@ -59,31 +56,19 @@ public:
     AttrId create_attr_static(Real value) noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    AttrId
-    create_attr_anim_dense(
-        rust::Vec<Real> values,
-        FrameValue frame_start
-    ) noexcept;
+    AttrId create_attr_anim_dense(rust::Vec<Real> values,
+                                  FrameValue frame_start) noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    Real
-    get_attr_value(
-        AttrId attr_id,
-        FrameValue frame
-    ) const noexcept;
+    Real get_attr_value(AttrId attr_id, FrameValue frame) const noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    bool
-    set_attr_value(
-        AttrId attr_id,
-        FrameValue frame,
-        Real value
-    ) noexcept;
+    bool set_attr_value(AttrId attr_id, FrameValue frame, Real value) noexcept;
 
 private:
     rust::Box<ShimAttrDataBlock> inner_;
 };
 
-} // namespace mmscenegraph
+}  // namespace mmscenegraph
 
 #endif  // MM_SOLVER_MM_SCENE_GRAPH_ATTR_DATA_BLOCK_H

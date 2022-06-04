@@ -22,25 +22,22 @@
 #include "maya_utils.h"
 
 // Maya
-#include <maya/MStatus.h>
-#include <maya/MPoint.h>
-#include <maya/MVector.h>
-#include <maya/MString.h>
-#include <maya/MStringArray.h>
+#include <maya/MDagPath.h>
+#include <maya/MFnDependencyNode.h>
 #include <maya/MObject.h>
 #include <maya/MObjectArray.h>
-#include <maya/MDagPath.h>
 #include <maya/MPlug.h>
-#include <maya/MSelectionList.h>
-#include <maya/MFnDependencyNode.h>
+#include <maya/MPoint.h>
 #include <maya/MPxNode.h>
+#include <maya/MSelectionList.h>
+#include <maya/MStatus.h>
 #include <maya/MStreamUtils.h>
+#include <maya/MString.h>
+#include <maya/MStringArray.h>
+#include <maya/MVector.h>
 
-MStatus
-MMNodeInitUtils::attributeAffectsMulti(
-        const MObjectArray &inputAttrs,
-        const MObjectArray &outputAttrs
-) {
+MStatus MMNodeInitUtils::attributeAffectsMulti(
+    const MObjectArray &inputAttrs, const MObjectArray &outputAttrs) {
     MStatus status = MS::kSuccess;
     for (unsigned int i = 0; i < inputAttrs.length(); i++) {
         for (unsigned int j = 0; j < outputAttrs.length(); j++) {
@@ -50,9 +47,7 @@ MMNodeInitUtils::attributeAffectsMulti(
             if (status != MS::kSuccess) {
                 MStreamUtils::stdErrorStream()
                     << "ERROR: attributeAffects failed at "
-                    << "input_index=" << i
-                    << " output_index=" << j
-                    << '\n';
+                    << "input_index=" << i << " output_index=" << j << '\n';
                 CHECK_MSTATUS(status);
             }
         }
@@ -60,11 +55,8 @@ MMNodeInitUtils::attributeAffectsMulti(
     return status;
 }
 
-
-MStatus getAsSelectionList(
-    const MStringArray &nodeNames,
-    MSelectionList &selList
-) {
+MStatus getAsSelectionList(const MStringArray &nodeNames,
+                           MSelectionList &selList) {
     MStatus status;
     for (unsigned int i = 0; i < nodeNames.length(); ++i) {
         status = selList.add(nodeNames[i]);
@@ -77,21 +69,13 @@ MStatus getAsSelectionList(
     return status;
 }
 
-
-MStatus getAsSelectionList(
-    const MString nodeName,
-    MSelectionList &selList
-) {
+MStatus getAsSelectionList(const MString nodeName, MSelectionList &selList) {
     MStringArray nodeNames;
     nodeNames.append(nodeName);
     return getAsSelectionList(nodeNames, selList);
 }
 
-
-MStatus nodeExistsAndIsType(
-    const MString &nodeName,
-    const MFn::Type nodeType
-) {
+MStatus nodeExistsAndIsType(const MString &nodeName, const MFn::Type nodeType) {
     MStatus status;
     MSelectionList selList;
     selList.clear();
@@ -108,8 +92,7 @@ MStatus nodeExistsAndIsType(
 
     if (nodeObj.apiType() != nodeType) {
         MMSOLVER_ERR("Node type is not correct;"
-            << " node=" << nodeName
-            << " type=" << nodeType);
+                     << " node=" << nodeName << " type=" << nodeType);
         status = MS::kFailure;
         status.perror("Node Type is not correct");
         return status;
@@ -117,11 +100,7 @@ MStatus nodeExistsAndIsType(
     return status;
 }
 
-
-MStatus getAsObject(
-    const MString &nodeName,
-    MObject &object
-) {
+MStatus getAsObject(const MString &nodeName, MObject &object) {
     MStatus status;
     MSelectionList selList;
     status = getAsSelectionList(nodeName, selList);
@@ -133,11 +112,7 @@ MStatus getAsObject(
     return status;
 }
 
-
-MStatus getAsDagPath(
-    const MString &nodeName,
-    MDagPath &nodeDagPath
-) {
+MStatus getAsDagPath(const MString &nodeName, MDagPath &nodeDagPath) {
     MStatus status;
     MSelectionList selList;
     status = getAsSelectionList(nodeName, selList);
@@ -149,19 +124,14 @@ MStatus getAsDagPath(
     return status;
 }
 
-
-bool hasAttrName(MFnDependencyNode &dependFn,
-                 const MString &attrName) {
+bool hasAttrName(MFnDependencyNode &dependFn, const MString &attrName) {
     MStatus status = MStatus::kSuccess;
     auto network_plug = true;
     MPlug plug = dependFn.findPlug(attrName, network_plug, &status);
     return !plug.isNull();
 }
 
-
-ObjectType computeDgObjectType(
-    const MObject &node_obj
-) {
+ObjectType computeDgObjectType(const MObject &node_obj) {
     MStatus status = MStatus::kSuccess;
     ObjectType objectType = ObjectType::kUnknown;
 
@@ -177,9 +147,8 @@ ObjectType computeDgObjectType(
     const int char_index_end = 10;
     const MString node_type = dependFn.typeName();
     if (node_type.length() >= char_index_end) {
-        const MString start_string = node_type.substringW(
-            char_index_start,
-            char_index_end);
+        const MString start_string =
+            node_type.substringW(char_index_start, char_index_end);
         node_is_lens = start_string == base_node_type_name;
     }
 
@@ -190,19 +159,16 @@ ObjectType computeDgObjectType(
     return objectType;
 }
 
-
-ObjectType computeDagObjectType(
-    const MObject &node_obj,
-    MDagPath &nodeDagPath
-) {
+ObjectType computeDagObjectType(const MObject &node_obj,
+                                MDagPath &nodeDagPath) {
     MStatus status = MStatus::kSuccess;
     ObjectType objectType = ObjectType::kUnknown;
 
     // TODO: Add support for detecting ObjectType::kLine objects.
 
     MFn::Type node_tid = nodeDagPath.apiType();
-    bool hasTransformNode = (node_tid == MFn::kTransform)
-        || (node_tid == MFn::kPluginTransformNode);
+    bool hasTransformNode = (node_tid == MFn::kTransform) ||
+                            (node_tid == MFn::kPluginTransformNode);
 
     bool hasLocatorShape = false;
     bool hasCameraShape = false;
@@ -218,7 +184,8 @@ ObjectType computeDagObjectType(
         }
 
         MFn::Type shape_tid = childNodeDagPath.apiType();
-        if (shape_tid == MFn::kLocator || shape_tid == MFn::kPluginLocatorNode) {
+        if (shape_tid == MFn::kLocator ||
+            shape_tid == MFn::kPluginLocatorNode) {
             hasLocatorShape = true;
         } else if (shape_tid == MFn::kCamera) {
             hasCameraShape = true;
@@ -241,11 +208,8 @@ ObjectType computeDagObjectType(
     bool hasAttrWeight = hasAttrName(dependFn, attrNameWeight);
     bool hasAttrBundle = hasAttrName(dependFn, attrNameBundle);
     bool hasAttrSolverList = hasAttrName(dependFn, attrNameSolverList);
-    if (hasTransformNode
-        && hasLocatorShape
-        && hasAttrEnable
-        && hasAttrWeight
-        && hasAttrBundle) {
+    if (hasTransformNode && hasLocatorShape && hasAttrEnable && hasAttrWeight &&
+        hasAttrBundle) {
         objectType = ObjectType::kMarker;
     } else if (hasTransformNode && hasLocatorShape) {
         objectType = ObjectType::kBundle;
@@ -266,7 +230,6 @@ ObjectType computeDagObjectType(
     return objectType;
 }
 
-
 // Analogous to the Python function "mmSolver.api.get_object_type()"
 ObjectType computeObjectType(
     const MObject &node_obj,
@@ -280,13 +243,12 @@ ObjectType computeObjectType(
         objectType = computeDgObjectType(node_obj);
     } else {
         MMSOLVER_ERR(
-            "computeObjectType: node_obj is not a DG or DAG compatible object."
-        );
+            "computeObjectType: node_obj is not a DG or DAG compatible "
+            "object.");
     }
 
     return objectType;
 }
-
 
 ObjectType computeObjectType(const MObject &node_obj) {
     ObjectType objectType = ObjectType::kUnknown;
@@ -296,8 +258,7 @@ ObjectType computeObjectType(const MObject &node_obj) {
         MStatus status = MDagPath::getAPathTo(node_obj, nodeDagPath);
         if (status != MS::kSuccess) {
             MMSOLVER_ERR(
-                "computeObjectType: node_obj is not a DAG compatible object."
-            );
+                "computeObjectType: node_obj is not a DAG compatible object.");
             return objectType;
         }
         objectType = computeDagObjectType(node_obj, nodeDagPath);
@@ -305,19 +266,16 @@ ObjectType computeObjectType(const MObject &node_obj) {
         objectType = computeDgObjectType(node_obj);
     } else {
         MMSOLVER_ERR(
-            "computeObjectType: node_obj is not a DG or DAG compatible object."
-        );
+            "computeObjectType: node_obj is not a DG or DAG compatible "
+            "object.");
     }
 
     return objectType;
 }
 
-
-MStatus constructAttrAffectsName(
-    const MString attrName,
-    const MString attrUuidStr,
-    MString &outAttrName
-) {
+MStatus constructAttrAffectsName(const MString attrName,
+                                 const MString attrUuidStr,
+                                 MString &outAttrName) {
     MStatus status = MStatus::kSuccess;
 
     const MString attrNamePrefix = "node_";

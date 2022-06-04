@@ -30,4 +30,4 @@ using Real = double;
 using NodeIndex = size_t;
 using AttrIndex = size_t;
 
-} // namespace mmscenegraph
+}  // namespace mmscenegraph

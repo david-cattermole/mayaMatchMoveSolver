@@ -23,56 +23,48 @@
 #include "MMReprojectionCmd.h"
 
 // STL
-#include <vector>
-#include <cmath>
 #include <cassert>
+#include <cmath>
+#include <vector>
 
 // Maya
-#include <maya/MSyntax.h>
-#include <maya/MArgList.h>
 #include <maya/MArgDatabase.h>
-#include <maya/MString.h>
-#include <maya/MStringArray.h>
-#include <maya/MObject.h>
-#include <maya/MPlug.h>
-#include <maya/MTime.h>
-#include <maya/MTimeArray.h>
-#include <maya/MMatrix.h>
-#include <maya/MMatrixArray.h>
+#include <maya/MArgList.h>
 #include <maya/MDagPath.h>
 #include <maya/MFnDependencyNode.h>
+#include <maya/MMatrix.h>
+#include <maya/MMatrixArray.h>
+#include <maya/MObject.h>
+#include <maya/MPlug.h>
+#include <maya/MString.h>
+#include <maya/MStringArray.h>
+#include <maya/MSyntax.h>
+#include <maya/MTime.h>
+#include <maya/MTimeArray.h>
 
 // MM Solver
+#include "mmSolver/adjust/adjust_base.h"
+#include "mmSolver/adjust/adjust_defines.h"
+#include "mmSolver/core/reprojection.h"
+#include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
-#include "mmSolver/mayahelper/maya_utils.h"
-#include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/adjust/adjust_defines.h"
-#include "mmSolver/adjust/adjust_base.h"
-#include "mmSolver/core/reprojection.h"
 
 namespace mmsolver {
 
 MMReprojectionCmd::~MMReprojectionCmd() {}
 
-void *MMReprojectionCmd::creator() {
-    return new MMReprojectionCmd();
-}
+void *MMReprojectionCmd::creator() { return new MMReprojectionCmd(); }
 
-MString MMReprojectionCmd::cmdName() {
-    return MString("mmReprojection");
-}
+MString MMReprojectionCmd::cmdName() { return MString("mmReprojection"); }
 
 /*
  * Tell Maya we have a syntax function.
  */
-bool MMReprojectionCmd::hasSyntax() const {
-    return true;
-}
+bool MMReprojectionCmd::hasSyntax() const { return true; }
 
-bool MMReprojectionCmd::isUndoable() const {
-    return false;
-}
+bool MMReprojectionCmd::isUndoable() const { return false; }
 
 /*
  * Add flags to the command syntax
@@ -86,28 +78,26 @@ MSyntax MMReprojectionCmd::newSyntax() {
     syntax.setObjectType(MSyntax::kSelectionList, minNumObjects);
 
     // Flags
-    syntax.addFlag(WORLD_POINT_FLAG, WORLD_POINT_FLAG_LONG,
-            MSyntax::kDouble, MSyntax::kDouble, MSyntax::kDouble);
-    syntax.addFlag(CAMERA_FLAG, CAMERA_FLAG_LONG,
-            MSyntax::kString, MSyntax::kString);
-    syntax.addFlag(TIME_FLAG, TIME_FLAG_LONG,
-            MSyntax::kDouble);
-    syntax.addFlag(IMAGE_RES_FLAG, IMAGE_RES_FLAG_LONG,
-            MSyntax::kDouble, MSyntax::kDouble);
+    syntax.addFlag(WORLD_POINT_FLAG, WORLD_POINT_FLAG_LONG, MSyntax::kDouble,
+                   MSyntax::kDouble, MSyntax::kDouble);
+    syntax.addFlag(CAMERA_FLAG, CAMERA_FLAG_LONG, MSyntax::kString,
+                   MSyntax::kString);
+    syntax.addFlag(TIME_FLAG, TIME_FLAG_LONG, MSyntax::kDouble);
+    syntax.addFlag(IMAGE_RES_FLAG, IMAGE_RES_FLAG_LONG, MSyntax::kDouble,
+                   MSyntax::kDouble);
     syntax.addFlag(AS_CAM_POINT_FLAG, AS_CAM_POINT_FLAG_LONG,
-            MSyntax::kBoolean);
+                   MSyntax::kBoolean);
     syntax.addFlag(AS_WORLD_POINT_FLAG, AS_WORLD_POINT_FLAG_LONG,
-            MSyntax::kBoolean);
-    syntax.addFlag(AS_COORD_FLAG, AS_COORD_FLAG_LONG,
-            MSyntax::kBoolean);
+                   MSyntax::kBoolean);
+    syntax.addFlag(AS_COORD_FLAG, AS_COORD_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(AS_NORM_COORD_FLAG, AS_NORM_COORD_FLAG_LONG,
-            MSyntax::kBoolean);
+                   MSyntax::kBoolean);
     syntax.addFlag(AS_MARKER_COORD_FLAG, AS_MARKER_COORD_FLAG_LONG,
-            MSyntax::kBoolean);
+                   MSyntax::kBoolean);
     syntax.addFlag(AS_PIXEL_COORD_FLAG, AS_PIXEL_COORD_FLAG_LONG,
-            MSyntax::kBoolean);
+                   MSyntax::kBoolean);
     syntax.addFlag(WITH_CAMERA_DIR_RATIO_FLAG, WITH_CAMERA_DIR_RATIO_FLAG_LONG,
-            MSyntax::kBoolean);
+                   MSyntax::kBoolean);
 
     syntax.makeFlagMultiUse(TIME_FLAG);
 
@@ -135,7 +125,8 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     m_asWorldPoint = false;
     bool worldPointFlagIsSet = argData.isFlagSet(AS_WORLD_POINT_FLAG, &status);
     if (worldPointFlagIsSet == true) {
-        status = argData.getFlagArgument(AS_WORLD_POINT_FLAG, 0, m_asWorldPoint);
+        status =
+            argData.getFlagArgument(AS_WORLD_POINT_FLAG, 0, m_asWorldPoint);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -151,15 +142,18 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     m_asNormalizedCoordinate = false;
     bool normCoordFlagIsSet = argData.isFlagSet(AS_NORM_COORD_FLAG, &status);
     if (normCoordFlagIsSet == true) {
-        status = argData.getFlagArgument(AS_NORM_COORD_FLAG, 0, m_asNormalizedCoordinate);
+        status = argData.getFlagArgument(AS_NORM_COORD_FLAG, 0,
+                                         m_asNormalizedCoordinate);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get Marker Coordinate flag
     m_asMarkerCoordinate = false;
-    bool markerCoordFlagIsSet = argData.isFlagSet(AS_MARKER_COORD_FLAG, &status);
+    bool markerCoordFlagIsSet =
+        argData.isFlagSet(AS_MARKER_COORD_FLAG, &status);
     if (markerCoordFlagIsSet == true) {
-        status = argData.getFlagArgument(AS_MARKER_COORD_FLAG, 0, m_asMarkerCoordinate);
+        status = argData.getFlagArgument(AS_MARKER_COORD_FLAG, 0,
+                                         m_asMarkerCoordinate);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -167,8 +161,9 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     m_asPixelCoordinate = false;
     bool pixelCoordFlagIsSet = argData.isFlagSet(AS_PIXEL_COORD_FLAG, &status);
     if (pixelCoordFlagIsSet == true) {
-         status = argData.getFlagArgument(AS_PIXEL_COORD_FLAG, 0, m_asPixelCoordinate);
-         CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = argData.getFlagArgument(AS_PIXEL_COORD_FLAG, 0,
+                                         m_asPixelCoordinate);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get Image Resolution flag
@@ -184,12 +179,12 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
 
     // Get 'With Camera Direction Ratio' flag
     m_withCameraDirRatio = false;
-    bool withCameraDirRatioFlagIsSet = argData.isFlagSet(
-        WITH_CAMERA_DIR_RATIO_FLAG, &status);
+    bool withCameraDirRatioFlagIsSet =
+        argData.isFlagSet(WITH_CAMERA_DIR_RATIO_FLAG, &status);
     if (withCameraDirRatioFlagIsSet == true) {
-         status = argData.getFlagArgument(
-             WITH_CAMERA_DIR_RATIO_FLAG, 0, m_withCameraDirRatio);
-         CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = argData.getFlagArgument(WITH_CAMERA_DIR_RATIO_FLAG, 0,
+                                         m_withCameraDirRatio);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Get World Flag flag or Get Transforms
@@ -258,8 +253,9 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
     if (cameraArgs.length() != 2) {
         status = MStatus::kFailure;
-        status.perror("\'camera\' flag must have 2 arguments; "
-                      "\"cameraTransform\", \"cameraShape\".");
+        status.perror(
+            "\'camera\' flag must have 2 arguments; "
+            "\"cameraTransform\", \"cameraShape\".");
         return status;
     }
 
@@ -278,21 +274,21 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     return status;
 }
 
-
 MStatus MMReprojectionCmd::doIt(const MArgList &args) {
-//
-//  Description:
-//    implements the MEL mmReprojection command.
-//
-//  Arguments:
-//    argList - the argument list that was passes to the command from MEL
-//
-//  Return Value:
-//    MStatus::kSuccess - command succeeded
-//    MStatus::kFailure - command failed (returning this value will cause the
-//                     MEL script that is being run to terminate unless the
-//                     error is caught using a "catch" statement.
-//
+    //
+    //  Description:
+    //    implements the MEL mmReprojection command.
+    //
+    //  Arguments:
+    //    argList - the argument list that was passes to the command from MEL
+    //
+    //  Return Value:
+    //    MStatus::kSuccess - command succeeded
+    //    MStatus::kFailure - command failed (returning this value will cause
+    //    the
+    //                     MEL script that is being run to terminate unless the
+    //                     error is caught using a "catch" statement.
+    //
     MStatus status = MStatus::kSuccess;
 
     // Command Outputs
@@ -399,10 +395,14 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
 
             // Possibly Animated
             focalLength = m_camera.getFocalLengthValue(time, timeEvalMode);
-            horizontalFilmAperture = m_camera.getFilmbackWidthValue(time, timeEvalMode);
-            verticalFilmAperture = m_camera.getFilmbackHeightValue(time, timeEvalMode);
-            horizontalFilmOffset = m_camera.getFilmbackOffsetXValue(time, timeEvalMode);
-            verticalFilmOffset = m_camera.getFilmbackOffsetYValue(time, timeEvalMode);
+            horizontalFilmAperture =
+                m_camera.getFilmbackWidthValue(time, timeEvalMode);
+            verticalFilmAperture =
+                m_camera.getFilmbackHeightValue(time, timeEvalMode);
+            horizontalFilmOffset =
+                m_camera.getFilmbackOffsetXValue(time, timeEvalMode);
+            verticalFilmOffset =
+                m_camera.getFilmbackOffsetYValue(time, timeEvalMode);
 
             focalLengthList.push_back(focalLength);
             horizontalFilmApertureList.push_back(horizontalFilmAperture);
@@ -428,17 +428,22 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
 
                 MMatrix camMatrix;
                 MMatrix tfmMatrix;
-                status = cameraMatrixAttr.getValue(camMatrix, time, timeEvalMode);
+                status =
+                    cameraMatrixAttr.getValue(camMatrix, time, timeEvalMode);
                 status = tfmMatrixAttr.getValue(tfmMatrix, time, timeEvalMode);
                 camMatrixList.append(camMatrix);
                 tfmMatrixList.append(tfmMatrix);
 
                 // Possibly Animated
                 focalLength = m_camera.getFocalLengthValue(time, timeEvalMode);
-                horizontalFilmAperture = m_camera.getFilmbackWidthValue(time, timeEvalMode);
-                verticalFilmAperture = m_camera.getFilmbackHeightValue(time, timeEvalMode);
-                horizontalFilmOffset = m_camera.getFilmbackOffsetXValue(time, timeEvalMode);
-                verticalFilmOffset = m_camera.getFilmbackOffsetYValue(time, timeEvalMode);
+                horizontalFilmAperture =
+                    m_camera.getFilmbackWidthValue(time, timeEvalMode);
+                verticalFilmAperture =
+                    m_camera.getFilmbackHeightValue(time, timeEvalMode);
+                horizontalFilmOffset =
+                    m_camera.getFilmbackOffsetXValue(time, timeEvalMode);
+                verticalFilmOffset =
+                    m_camera.getFilmbackOffsetYValue(time, timeEvalMode);
 
                 focalLengthList.push_back(focalLength);
                 horizontalFilmApertureList.push_back(horizontalFilmAperture);
@@ -465,50 +470,29 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
 
         // Query the reprojection.
         status = reprojection(
-                tfmMatrix,
-                camMatrix,
+            tfmMatrix, camMatrix,
 
-                // Camera
-                focalLength,
-                horizontalFilmAperture,
-                verticalFilmAperture,
-                horizontalFilmOffset,
-                verticalFilmOffset,
-                filmFit,
-                nearClipPlane,
-                farClipPlane,
-                cameraScale,
+            // Camera
+            focalLength, horizontalFilmAperture, verticalFilmAperture,
+            horizontalFilmOffset, verticalFilmOffset, filmFit, nearClipPlane,
+            farClipPlane, cameraScale,
 
-                // Image
-                imageWidth,
-                imageHeight,
+            // Image
+            imageWidth, imageHeight,
 
-                // Manipulation
-                applyMatrix,
-                overrideScreenX,
-                overrideScreenY,
-                overrideScreenZ,
-                screenX,
-                screenY,
-                screenZ,
-                depthScale,
+            // Manipulation
+            applyMatrix, overrideScreenX, overrideScreenY, overrideScreenZ,
+            screenX, screenY, screenZ, depthScale,
 
-                // Outputs
-                outCoordX, outCoordY,
-                outNormCoordX, outNormCoordY,
-                outMarkerCoordX, outMarkerCoordY, outMarkerCoordZ,
-                outPixelX, outPixelY,
-                outInsideFrustum,
-                outPointX, outPointY, outPointZ,
-                outWorldPointX, outWorldPointY, outWorldPointZ,
-                outMatrix,
-                outWorldMatrix,
-                outCameraProjectionMatrix,
-                outInverseCameraProjectionMatrix,
-                outWorldCameraProjectionMatrix,
-                outWorldInverseCameraProjectionMatrix,
-                outHorizontalPan,
-                outVerticalPan);
+            // Outputs
+            outCoordX, outCoordY, outNormCoordX, outNormCoordY, outMarkerCoordX,
+            outMarkerCoordY, outMarkerCoordZ, outPixelX, outPixelY,
+            outInsideFrustum, outPointX, outPointY, outPointZ, outWorldPointX,
+            outWorldPointY, outWorldPointZ, outMatrix, outWorldMatrix,
+            outCameraProjectionMatrix, outInverseCameraProjectionMatrix,
+            outWorldCameraProjectionMatrix,
+            outWorldInverseCameraProjectionMatrix, outHorizontalPan,
+            outVerticalPan);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         if (m_asCameraPoint == true) {
@@ -555,4 +539,4 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     return status;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

@@ -23,9 +23,9 @@
 #ifndef MM_SOLVER_RENDER_QUAD_RENDER_BLEND_H
 #define MM_SOLVER_RENDER_QUAD_RENDER_BLEND_H
 
+#include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
-#include <maya/MRenderTargetManager.h>
 
 #include "QuadRenderBase.h"
 
@@ -37,24 +37,20 @@ public:
     QuadRenderBlend(const MString &name);
     ~QuadRenderBlend() override;
 
-    MHWRender::MRenderTarget* const* targetOverrideList(unsigned int &listSize) override;
+    MHWRender::MRenderTarget *const *targetOverrideList(
+        unsigned int &listSize) override;
 
     const MHWRender::MShaderInstance *shader() override;
 
-    void
-    setInputTarget1(const uint32_t index) {
+    void setInputTarget1(const uint32_t index) {
         m_target_index_input1 = index;
     }
 
-    void
-    setInputTarget2(const uint32_t index) {
+    void setInputTarget2(const uint32_t index) {
         m_target_index_input2 = index;
     }
 
-    void
-    setBlend(const float value) {
-        m_blend = value;
-    }
+    void setBlend(const float value) { m_blend = value; }
 
 protected:
     // Shader to use for the quad render
@@ -67,7 +63,7 @@ protected:
     float m_blend;
 };
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver
 
-#endif // MM_SOLVER_RENDER_QUAD_RENDER_BLEND_H
+#endif  // MM_SOLVER_RENDER_QUAD_RENDER_BLEND_H

@@ -36,17 +36,17 @@
 #include <dlfcn.h>
 
 // LDPK
-#pragma warning( push )
+#pragma warning(push)
 
-#pragma warning( disable : 4201 )
-#pragma warning( disable : 4459 )
-#pragma warning( disable : 4100 )
+#pragma warning(disable : 4201)
+#pragma warning(disable : 4459)
+#pragma warning(disable : 4100)
 
 #include <ldpk/ldpk.h>
 #include <ldpk/tde4_ld_plugin.h>
 #include <ldpk/tde4_ldp_classic_3de_mixed.h>
 
-#pragma warning( pop )
+#pragma warning(pop)
 
 // MM Solver
 #include "lens_model.h"
@@ -57,56 +57,52 @@ using LensPluginClassic = tde4_ldp_classic_3de_mixed<ldpk::vec2d, ldpk::mat2d>;
 
 class LensModel3deClassic : public LensModel {
 public:
-
     LensModel3deClassic()
-            : LensModel{LensModelType::k3deClassic}
-            , m_distortion(0.0)
-            , m_anamorphicSqueeze(1.0)
-            , m_curvatureX(0.0)
-            , m_curvatureY(0.0)
-            , m_quarticDistortion(0.0)
-            , m_lensPlugin(std::unique_ptr<LensPluginBase>(new LensPluginClassic()))
-        {}
+        : LensModel{LensModelType::k3deClassic}
+        , m_distortion(0.0)
+        , m_anamorphicSqueeze(1.0)
+        , m_curvatureX(0.0)
+        , m_curvatureY(0.0)
+        , m_quarticDistortion(0.0)
+        , m_lensPlugin(
+              std::unique_ptr<LensPluginBase>(new LensPluginClassic())) {}
 
     LensModel3deClassic(const double distortion,
                         const double anamorphic_squeeze,
-                        const double curvature_x,
-                        const double curvature_y,
+                        const double curvature_x, const double curvature_y,
                         const double quartic_distortion)
-            : LensModel{LensModelType::k3deClassic}
-            , m_distortion(distortion)
-            , m_anamorphicSqueeze(anamorphic_squeeze)
-            , m_curvatureX(curvature_x)
-            , m_curvatureY(curvature_y)
-            , m_quarticDistortion(quartic_distortion)
-            , m_lensPlugin(std::unique_ptr<LensPluginBase>(new LensPluginClassic()))
-        {}
+        : LensModel{LensModelType::k3deClassic}
+        , m_distortion(distortion)
+        , m_anamorphicSqueeze(anamorphic_squeeze)
+        , m_curvatureX(curvature_x)
+        , m_curvatureY(curvature_y)
+        , m_quarticDistortion(quartic_distortion)
+        , m_lensPlugin(
+              std::unique_ptr<LensPluginBase>(new LensPluginClassic())) {}
 
     LensModel3deClassic(const LensModel3deClassic &rhs)
-            : LensModel{rhs}
-            , m_distortion(rhs.getDistortion())
-            , m_anamorphicSqueeze(rhs.getAnamorphicSqueeze())
-            , m_curvatureX(rhs.getCurvatureX())
-            , m_curvatureY(rhs.getCurvatureY())
-            , m_quarticDistortion(rhs.getQuarticDistortion())
-            , m_lensPlugin{std::unique_ptr<LensPluginBase>(new LensPluginClassic())}
-        {}
+        : LensModel{rhs}
+        , m_distortion(rhs.getDistortion())
+        , m_anamorphicSqueeze(rhs.getAnamorphicSqueeze())
+        , m_curvatureX(rhs.getCurvatureX())
+        , m_curvatureY(rhs.getCurvatureY())
+        , m_quarticDistortion(rhs.getQuarticDistortion())
+        , m_lensPlugin{
+              std::unique_ptr<LensPluginBase>(new LensPluginClassic())} {}
 
-    std::unique_ptr<LensModel>
-    cloneAsUniquePtr() const override {
+    std::unique_ptr<LensModel> cloneAsUniquePtr() const override {
         return std::unique_ptr<LensModel>(new LensModel3deClassic(*this));
     }
 
-    std::shared_ptr<LensModel>
-    cloneAsSharedPtr() const override {
+    std::shared_ptr<LensModel> cloneAsSharedPtr() const override {
         return std::shared_ptr<LensModel>(new LensModel3deClassic(*this));
     }
 
-    double getDistortion() const {return m_distortion;}
-    double getAnamorphicSqueeze() const {return m_anamorphicSqueeze;}
-    double getCurvatureX() const {return m_curvatureX;}
-    double getCurvatureY() const {return m_curvatureY;}
-    double getQuarticDistortion() const {return m_quarticDistortion;}
+    double getDistortion() const { return m_distortion; }
+    double getAnamorphicSqueeze() const { return m_anamorphicSqueeze; }
+    double getCurvatureX() const { return m_curvatureX; }
+    double getCurvatureY() const { return m_curvatureY; }
+    double getQuarticDistortion() const { return m_quarticDistortion; }
 
     void setDistortion(const double value) {
         bool same_value = m_distortion == value;
@@ -148,29 +144,22 @@ public:
         }
     }
 
-    virtual void applyModelUndistort(
-        const double x,
-        const double y,
-        double &out_x,
-        double &out_y);
+    virtual void applyModelUndistort(const double x, const double y,
+                                     double &out_x, double &out_y);
 
-    virtual void applyModelDistort(
-        const double x,
-        const double y,
-        double &out_x,
-        double &out_y);
+    virtual void applyModelDistort(const double x, const double y,
+                                   double &out_x, double &out_y);
 
     virtual mmhash::HashValue hashValue();
 
 private:
     std::unique_ptr<LensPluginBase> m_lensPlugin;
 
-    double m_distortion;        // "Distortion"
-    double m_anamorphicSqueeze; // "Anamorphic Squeeze"
-    double m_curvatureX;        // "Curvature X"
-    double m_curvatureY;        // "Curvature Y"
-    double m_quarticDistortion; // "Quartic Distortion"
+    double m_distortion;         // "Distortion"
+    double m_anamorphicSqueeze;  // "Anamorphic Squeeze"
+    double m_curvatureX;         // "Curvature X"
+    double m_curvatureY;         // "Curvature Y"
+    double m_quarticDistortion;  // "Quartic Distortion"
 };
 
-
-#endif // MM_SOLVER_CORE_LENS_MODEL_3DE_CLASSIC_H
+#endif  // MM_SOLVER_CORE_LENS_MODEL_3DE_CLASSIC_H

@@ -23,15 +23,15 @@
 #define MM_SOLVER_RENDER_SCENE_RENDER_H
 
 // Maya
-#include <maya/MString.h>
-#include <maya/MDrawTraversal.h>
-#include <maya/MSelectionList.h>
 #include <maya/M3dView.h>
 #include <maya/MDrawContext.h>
+#include <maya/MDrawTraversal.h>
 #include <maya/MFrameContext.h>
 #include <maya/MMessage.h>
-#include <maya/MViewport2Renderer.h>
 #include <maya/MRenderTargetManager.h>
+#include <maya/MSelectionList.h>
+#include <maya/MString.h>
+#include <maya/MViewport2Renderer.h>
 
 // MM Solver
 #include "constants.h"
@@ -44,8 +44,8 @@ public:
     SceneRender(const MString &name);
     ~SceneRender() override;
 
-    MHWRender::MRenderTarget *const *
-    targetOverrideList(unsigned int &listSize) override;
+    MHWRender::MRenderTarget *const *targetOverrideList(
+        unsigned int &listSize) override;
 
     MHWRender::MSceneRender::MSceneFilterOption renderFilterOverride() override;
     MHWRender::MSceneRender::MDisplayMode displayModeOverride() override;
@@ -55,77 +55,53 @@ public:
     MHWRender::MClearOperation &clearOperation() override;
 
     void setRenderTargets(MHWRender::MRenderTarget **targets,
-                          const uint32_t index,
-                          const uint32_t count) {
+                          const uint32_t index, const uint32_t count) {
         m_targets = targets;
         m_target_index = index;
         m_target_count = count;
     }
 
-    const MString &panelName() const {
-        return m_panel_name;
-    }
+    const MString &panelName() const { return m_panel_name; }
 
-    void setPanelName(const MString &name) {
-        m_panel_name.set(name.asChar());
-    }
+    void setPanelName(const MString &name) { m_panel_name.set(name.asChar()); }
 
-    const MFloatPoint &viewRectangle() const {
-        return m_view_rectangle;
-    }
+    const MFloatPoint &viewRectangle() const { return m_view_rectangle; }
 
-    void setViewRectangle(const MFloatPoint &rect) {
-        m_view_rectangle = rect;
-    }
+    void setViewRectangle(const MFloatPoint &rect) { m_view_rectangle = rect; }
 
     const MHWRender::MSceneRender::MSceneFilterOption sceneFilter() const {
         return m_scene_filter;
     }
 
-    void setSceneFilter(const MHWRender::MSceneRender::MSceneFilterOption value) {
+    void setSceneFilter(
+        const MHWRender::MSceneRender::MSceneFilterOption value) {
         m_scene_filter = value;
     }
 
-    const uint32_t clearMask() const {
-        return m_clear_mask;
-    }
+    const uint32_t clearMask() const { return m_clear_mask; }
 
-    void setClearMask(const uint32_t value) {
-        m_clear_mask = value;
-    }
+    void setClearMask(const uint32_t value) { m_clear_mask = value; }
 
-    const MUint64 excludeTypes() const {
-        return m_exclude_types;
-    }
+    const MUint64 excludeTypes() const { return m_exclude_types; }
 
-    void setExcludeTypes(const MUint64 value) {
-        m_exclude_types = value;
-    }
+    void setExcludeTypes(const MUint64 value) { m_exclude_types = value; }
 
-    const MHWRender::MSceneRender::MDisplayMode
-    displayModeOverride() const {
+    const MHWRender::MSceneRender::MDisplayMode displayModeOverride() const {
         return m_display_mode_override;
     }
 
-    void setDisplayModeOverride(const MHWRender::MSceneRender::MDisplayMode value) {
+    void setDisplayModeOverride(
+        const MHWRender::MSceneRender::MDisplayMode value) {
         m_display_mode_override = value;
     }
 
-    const bool doSelectable() const {
-        return m_do_selectable;
-    }
+    const bool doSelectable() const { return m_do_selectable; }
 
-    void setDoSelectable(const bool value) {
-        m_do_selectable = value;
-    }
+    void setDoSelectable(const bool value) { m_do_selectable = value; }
 
-    const bool doBackground() const {
-        return m_do_background;
-    }
+    const bool doBackground() const { return m_do_background; }
 
-    void setDoBackground(const bool value) {
-        m_do_background = value;
-    }
+    void setDoBackground(const bool value) { m_do_background = value; }
 
 protected:
     MSelectionList mSelectionList;
@@ -169,7 +145,7 @@ protected:
     M3dView::DisplayStyle m_prev_display_style;
 };
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver
 
-#endif //MAYA_MM_SOLVER_RENDER_SCENE_RENDER_H
+#endif  // MAYA_MM_SOLVER_RENDER_SCENE_RENDER_H

@@ -28,9 +28,9 @@
 #include "MMLensDeformerNode.h"
 
 // Maya
-#include <maya/MFnTypedAttribute.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnNumericData.h>
+#include <maya/MFnTypedAttribute.h>
 
 // MM Solver
 #include "MMLensData.h"
@@ -50,14 +50,11 @@ MObject MMLensDeformerNode::a_pixelAspect;
 MObject MMLensDeformerNode::a_horizontalFilmOffset;
 MObject MMLensDeformerNode::a_verticalFilmOffset;
 
-
 MMLensDeformerNode::MMLensDeformerNode() {}
 
 MMLensDeformerNode::~MMLensDeformerNode() {}
 
-void* MMLensDeformerNode::creator() {
-    return new MMLensDeformerNode();
-}
+void* MMLensDeformerNode::creator() { return new MMLensDeformerNode(); }
 
 MStatus MMLensDeformerNode::initialize() {
     MStatus status = MS::kSuccess;
@@ -66,47 +63,41 @@ MStatus MMLensDeformerNode::initialize() {
 
     // In Lens
     MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
-    a_inLens = typedAttr.create(
-        "inLens", "ilns",
-        data_type_id);
+    a_inLens = typedAttr.create("inLens", "ilns", data_type_id);
     CHECK_MSTATUS(typedAttr.setStorable(false));
     CHECK_MSTATUS(typedAttr.setKeyable(false));
     CHECK_MSTATUS(typedAttr.setReadable(true));
     CHECK_MSTATUS(typedAttr.setWritable(true));
 
-    a_focalLength = numericAttr.create(
-        "focalLength", "fl",
-        MFnNumericData::kDouble, 35.0, &status);
+    a_focalLength = numericAttr.create("focalLength", "fl",
+                                       MFnNumericData::kDouble, 35.0, &status);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
 
-    a_horizontalFilmAperture = numericAttr.create(
-        "horizontalFilmAperture", "fbkw",
-        MFnNumericData::kDouble, 36.0 * MM_TO_INCH, &status);
+    a_horizontalFilmAperture =
+        numericAttr.create("horizontalFilmAperture", "fbkw",
+                           MFnNumericData::kDouble, 36.0 * MM_TO_INCH, &status);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
 
-    a_verticalFilmAperture = numericAttr.create(
-        "verticalFilmAperture", "fbkh",
-        MFnNumericData::kDouble, 24.0 * MM_TO_INCH, &status);
+    a_verticalFilmAperture =
+        numericAttr.create("verticalFilmAperture", "fbkh",
+                           MFnNumericData::kDouble, 24.0 * MM_TO_INCH, &status);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
 
-    a_pixelAspect = numericAttr.create(
-        "pixelAspect", "pxasp",
-        MFnNumericData::kDouble, 1.0, &status);
+    a_pixelAspect = numericAttr.create("pixelAspect", "pxasp",
+                                       MFnNumericData::kDouble, 1.0, &status);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
 
     a_horizontalFilmOffset = numericAttr.create(
-        "horizontalFilmOffset", "lcox",
-        MFnNumericData::kDouble, 0.0, &status);
+        "horizontalFilmOffset", "lcox", MFnNumericData::kDouble, 0.0, &status);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
 
     a_verticalFilmOffset = numericAttr.create(
-        "verticalFilmOffset", "lcoy",
-        MFnNumericData::kDouble, 0.0, &status);
+        "verticalFilmOffset", "lcoy", MFnNumericData::kDouble, 0.0, &status);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
 
@@ -129,30 +120,25 @@ MStatus MMLensDeformerNode::initialize() {
     return MS::kSuccess;
 }
 
-MString MMLensDeformerNode::nodeName() {
-    return MString("mmLensDeformer");
-}
+MString MMLensDeformerNode::nodeName() { return MString("mmLensDeformer"); }
 
 // Linear interpolation function, aka 'mix' function
-inline
-double lerp(double a, double b, double x) {
-    return ((1-x) * a) + (x * b);
+inline double lerp(double a, double b, double x) {
+    return ((1 - x) * a) + (x * b);
 }
 
-MStatus
-MMLensDeformerNode::deform(MDataBlock& data,
-                           MItGeometry& iter,
-                           const MMatrix& /*m*/,
-                           unsigned int /*multiIndex*/) {
-//
-// Description:   Deform the point with a MMLensDeformer algorithm
-//
-// Arguments:
-//   data		: the datablock of the node
-//	 iter		: an iterator for the geometry to be deformed
-//   m          : matrix to transform the point into world space
-//	 multiIndex : the index of the geometry that we are deforming
-//
+MStatus MMLensDeformerNode::deform(MDataBlock& data, MItGeometry& iter,
+                                   const MMatrix& /*m*/,
+                                   unsigned int /*multiIndex*/) {
+    //
+    // Description:   Deform the point with a MMLensDeformer algorithm
+    //
+    // Arguments:
+    //   data		: the datablock of the node
+    //	 iter		: an iterator for the geometry to be deformed
+    //   m          : matrix to transform the point into world space
+    //	 multiIndex : the index of the geometry that we are deforming
+    //
     MStatus status = MS::kSuccess;
 
     // Query the envelope (the global multiplier factor for the
@@ -167,7 +153,7 @@ MMLensDeformerNode::deform(MDataBlock& data,
     // Get Input Lens
     MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
-    MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
+    MMLensData* inputLensData = (MMLensData*)inLensHandle.asPluginData();
     if (inputLensData == nullptr) {
         return status;
     }
@@ -180,15 +166,19 @@ MMLensDeformerNode::deform(MDataBlock& data,
 
     MDataHandle focalLengthHandle = data.inputValue(a_focalLength, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
-    MDataHandle horizontalFilmApertureHandle = data.inputValue(a_horizontalFilmAperture, &status);
+    MDataHandle horizontalFilmApertureHandle =
+        data.inputValue(a_horizontalFilmAperture, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
-    MDataHandle verticalFilmApertureHandle = data.inputValue(a_verticalFilmAperture, &status);
+    MDataHandle verticalFilmApertureHandle =
+        data.inputValue(a_verticalFilmAperture, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     MDataHandle pixelAspectHandle = data.inputValue(a_pixelAspect, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
-    MDataHandle horizontalFilmOffsetHandle = data.inputValue(a_horizontalFilmOffset, &status);
+    MDataHandle horizontalFilmOffsetHandle =
+        data.inputValue(a_horizontalFilmOffset, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
-    MDataHandle verticalFilmOffsetHandle = data.inputValue(a_verticalFilmOffset, &status);
+    MDataHandle verticalFilmOffsetHandle =
+        data.inputValue(a_verticalFilmOffset, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     double focalLength = focalLengthHandle.asDouble();
@@ -211,7 +201,7 @@ MMLensDeformerNode::deform(MDataBlock& data,
     lensModel->setLensCenterOffsetY(lensCenterOffsetY);
 
     // Deform each point on the input geometry.
-    for ( ; !iter.isDone(); iter.next()) {
+    for (; !iter.isDone(); iter.next()) {
         MPoint pt = iter.position();
 
         // Evaluate the lens distortion at (pt.x, pt.y).
@@ -235,4 +225,4 @@ MMLensDeformerNode::deform(MDataBlock& data,
     return status;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

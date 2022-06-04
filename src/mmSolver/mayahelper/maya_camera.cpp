@@ -22,18 +22,18 @@
 
 #include "maya_camera.h"
 
-#include <maya/MObject.h>
 #include <maya/MDataHandle.h>
+#include <maya/MFloatMatrix.h>
+#include <maya/MFnCamera.h>
 #include <maya/MFnMatrixData.h>
 #include <maya/MMatrix.h>
-#include <maya/MFloatMatrix.h>
+#include <maya/MObject.h>
 #include <maya/MPoint.h>
-#include <maya/MFnCamera.h>
 
-#include "mmSolver/utilities/number_utils.h"
-#include "mmSolver/adjust/adjust_defines.h"
-#include "maya_utils.h"
 #include "maya_marker.h"
+#include "maya_utils.h"
+#include "mmSolver/adjust/adjust_defines.h"
+#include "mmSolver/utilities/number_utils.h"
 
 // NOTE: Turning this on will slow down the solve a lot, since
 // Maya seems to switch the current time when computing the
@@ -44,12 +44,9 @@
 // The node in the Maya scene which containts the render resolution.
 #define RENDER_RES_NODE "defaultResolution"
 
-
-MStatus getAngleOfView(
-        const double filmBackSize_mm,
-        const double focalLength_mm,
-        double &angleOfView,
-        bool asDegrees) {
+MStatus getAngleOfView(const double filmBackSize_mm,
+                       const double focalLength_mm, double &angleOfView,
+                       bool asDegrees) {
     angleOfView = 2.0 * atan(filmBackSize_mm * (0.5 / focalLength_mm));
     if (asDegrees) {
         angleOfView *= RADIANS_TO_DEGREES;
@@ -57,11 +54,8 @@ MStatus getAngleOfView(
     return MS::kSuccess;
 }
 
-
-MStatus getCameraPlaneScale(
-        const double filmBackSize_mm,
-        const double focalLength_mm,
-        double &scale) {
+MStatus getCameraPlaneScale(const double filmBackSize_mm,
+                            const double focalLength_mm, double &scale) {
     double aov = 0.0;
     const bool asDegrees = true;
     getAngleOfView(filmBackSize_mm, focalLength_mm, aov, asDegrees);
@@ -72,17 +66,14 @@ MStatus getCameraPlaneScale(
     return MS::kSuccess;
 }
 
-
-MStatus computeFrustumCoordinates(
-        const double focalLength_mm,       // millimetres
-        const double filmBackWidth_inch,   // inches
-        const double filmBackHeight_inch,  // inches
-        const double filmOffsetX_inch,     // inches
-        const double filmOffsetY_inch,     // inches
-        const double nearClipPlane_cm,     // centimetres
-        const double cameraScale,
-        double &left, double &right,
-        double &top, double &bottom) {
+MStatus computeFrustumCoordinates(const double focalLength_mm,  // millimetres
+                                  const double filmBackWidth_inch,   // inches
+                                  const double filmBackHeight_inch,  // inches
+                                  const double filmOffsetX_inch,     // inches
+                                  const double filmOffsetY_inch,     // inches
+                                  const double nearClipPlane_cm,  // centimetres
+                                  const double cameraScale, double &left,
+                                  double &right, double &top, double &bottom) {
     MStatus status = MS::kSuccess;
 
     // Convert everything into millimetres
@@ -100,16 +91,14 @@ MStatus computeFrustumCoordinates(
     return status;
 }
 
-
 MStatus applyFilmFitLogic(
-        const double frustumLeft, const double frustumRight,
-        const double frustumTop, const double frustumBottom,
-        const double imageAspectRatio, const double filmAspectRatio,
-        const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
-        double &filmFitScaleX, double &filmFitScaleY,
-        double &screenSizeX, double &screenSizeY,
-        double &screenRight, double &screenLeft,
-        double &screenTop, double &screenBottom) {
+    const double frustumLeft, const double frustumRight,
+    const double frustumTop, const double frustumBottom,
+    const double imageAspectRatio, const double filmAspectRatio,
+    const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
+    double &filmFitScaleX, double &filmFitScaleY, double &screenSizeX,
+    double &screenSizeY, double &screenRight, double &screenLeft,
+    double &screenTop, double &screenBottom) {
     /*
      * 'Film Fit', from the Maya command documentation...
      *
@@ -183,7 +172,9 @@ MStatus applyFilmFitLogic(
             } else {
                 filmFitScaleY = imageAspectRatio / filmAspectRatio;
                 screenSizeX = frustumRight - frustumLeft;
-                screenSizeY = (screenSizeX * (filmAspectRatio / imageAspectRatio)) / filmAspectRatio;
+                screenSizeY =
+                    (screenSizeX * (filmAspectRatio / imageAspectRatio)) /
+                    filmAspectRatio;
             }
             break;
         case 3:
@@ -194,7 +185,8 @@ MStatus applyFilmFitLogic(
                 screenSizeY = (frustumRight - frustumLeft) / imageAspectRatio;
             } else {
                 filmFitScaleX = filmAspectRatio / imageAspectRatio;
-                screenSizeX = (frustumRight - frustumLeft) * (imageAspectRatio / filmAspectRatio);
+                screenSizeX = (frustumRight - frustumLeft) *
+                              (imageAspectRatio / filmAspectRatio);
                 screenSizeY = frustumTop - frustumBottom;
             }
             break;
@@ -207,20 +199,13 @@ MStatus applyFilmFitLogic(
     return MS::kSuccess;
 };
 
-
 MStatus computeProjectionMatrix(
-        const double filmFitScaleX,
-        const double filmFitScaleY,
-        const double screenSizeX,
-        const double screenSizeY,
-        const double screenLeft,
-        const double screenRight,
-        const double screenTop,
-        const double screenBottom,
-        const double nearClipPlane, // centimetres
-        const double farClipPlane,  // centimetres
-        MMatrix &projectionMatrix) {
-
+    const double filmFitScaleX, const double filmFitScaleY,
+    const double screenSizeX, const double screenSizeY, const double screenLeft,
+    const double screenRight, const double screenTop, const double screenBottom,
+    const double nearClipPlane,  // centimetres
+    const double farClipPlane,   // centimetres
+    MMatrix &projectionMatrix) {
     projectionMatrix[0][0] = 1.0 / (screenSizeX * 0.5) * MM_TO_CM;
     projectionMatrix[0][1] = 0;
     projectionMatrix[0][2] = 0;
@@ -231,47 +216,48 @@ MStatus computeProjectionMatrix(
     projectionMatrix[1][2] = 0;
     projectionMatrix[1][3] = 0;
 
-    projectionMatrix[2][0] = (screenRight + screenLeft) / (screenRight - screenLeft) * filmFitScaleX;
-    projectionMatrix[2][1] = (screenTop + screenBottom) / (screenTop - screenBottom) * filmFitScaleY;
-    projectionMatrix[2][2] = (farClipPlane + nearClipPlane) / (farClipPlane - nearClipPlane);
+    projectionMatrix[2][0] =
+        (screenRight + screenLeft) / (screenRight - screenLeft) * filmFitScaleX;
+    projectionMatrix[2][1] =
+        (screenTop + screenBottom) / (screenTop - screenBottom) * filmFitScaleY;
+    projectionMatrix[2][2] =
+        (farClipPlane + nearClipPlane) / (farClipPlane - nearClipPlane);
     projectionMatrix[2][3] = -1;
 
     projectionMatrix[3][0] = 0;
     projectionMatrix[3][1] = 0;
-    projectionMatrix[3][2] = 2.0 * farClipPlane * nearClipPlane / (farClipPlane - nearClipPlane);
+    projectionMatrix[3][2] =
+        2.0 * farClipPlane * nearClipPlane / (farClipPlane - nearClipPlane);
     projectionMatrix[3][3] = 0;
 
     return MS::kSuccess;
 };
 
-
 MStatus getProjectionMatrix(
-        const double focalLength_mm,       // millimetres
-        const double filmBackWidth_inch,   // inches
-        const double filmBackHeight_inch,  // inches
-        const double filmOffsetX_inch,     // inches
-        const double filmOffsetY_inch,     // inches
-        const double imageWidth_pixels,    // pixels
-        const double imageHeight_pixels,   // pixels
-        const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
-        const double nearClipPlane_cm,     // centimetres
-        const double farClipPlane_cm,      // centimetres
-        const double cameraScale,
-        MMatrix &projectionMatrix) {
+    const double focalLength_mm,       // millimetres
+    const double filmBackWidth_inch,   // inches
+    const double filmBackHeight_inch,  // inches
+    const double filmOffsetX_inch,     // inches
+    const double filmOffsetY_inch,     // inches
+    const double imageWidth_pixels,    // pixels
+    const double imageHeight_pixels,   // pixels
+    const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
+    const double nearClipPlane_cm,  // centimetres
+    const double farClipPlane_cm,   // centimetres
+    const double cameraScale, MMatrix &projectionMatrix) {
     MStatus status = MS::kSuccess;
 
     double filmAspectRatio = filmBackWidth_inch / filmBackHeight_inch;
-    double imageAspectRatio =
-        static_cast<double>(imageWidth_pixels) / static_cast<double>(imageHeight_pixels);
+    double imageAspectRatio = static_cast<double>(imageWidth_pixels) /
+                              static_cast<double>(imageHeight_pixels);
 
     double left = 0.0;
     double right = 0.0;
     double top = 0.0;
     double bottom = 0.0;
-    computeFrustumCoordinates(focalLength_mm,
-                              filmBackWidth_inch, filmBackHeight_inch,
-                              filmOffsetX_inch, filmOffsetY_inch,
-                              nearClipPlane_cm, cameraScale,
+    computeFrustumCoordinates(focalLength_mm, filmBackWidth_inch,
+                              filmBackHeight_inch, filmOffsetX_inch,
+                              filmOffsetY_inch, nearClipPlane_cm, cameraScale,
                               left, right, top, bottom);
 
     // Apply 'Film Fit'
@@ -283,52 +269,45 @@ MStatus getProjectionMatrix(
     double screenLeft = left;
     double screenTop = top;
     double screenBottom = bottom;
-    applyFilmFitLogic(
-            left, right, top, bottom,
-            imageAspectRatio, filmAspectRatio,
-            filmFit,
-            filmFitScaleX, filmFitScaleY,
-            screenSizeX, screenSizeY,
-            screenRight, screenLeft, screenTop, screenBottom);
+    applyFilmFitLogic(left, right, top, bottom, imageAspectRatio,
+                      filmAspectRatio, filmFit, filmFitScaleX, filmFitScaleY,
+                      screenSizeX, screenSizeY, screenRight, screenLeft,
+                      screenTop, screenBottom);
 
     // Projection Matrix
-    computeProjectionMatrix(
-            filmFitScaleX, filmFitScaleY,
-            screenSizeX, screenSizeY,
-            screenLeft, screenRight, screenTop, screenBottom,
-            nearClipPlane_cm, farClipPlane_cm,
-            projectionMatrix);
+    computeProjectionMatrix(filmFitScaleX, filmFitScaleY, screenSizeX,
+                            screenSizeY, screenLeft, screenRight, screenTop,
+                            screenBottom, nearClipPlane_cm, farClipPlane_cm,
+                            projectionMatrix);
 
     return status;
 }
 
-
-Camera::Camera() :
-        m_transformNodeName(""),
-        m_transformObject(),
-        m_shapeNodeName(""),
-        m_shapeObject(),
-        m_matrix(),
-        m_filmbackWidth(),
-        m_filmbackHeight(),
-        m_filmbackOffsetX(),
-        m_filmbackOffsetY(),
-        m_focalLength(),
-        m_cameraScaleCached(false),
-        m_nearClipPlaneCached(false),
-        m_farClipPlaneCached(false),
-        m_filmFitCached(false),
-        m_renderWidthCached(false),
-        m_renderHeightCached(false),
-        m_renderAspectCached(false),
-        m_cameraScaleValue(1.0),
-        m_nearClipPlaneValue(0.1),
-        m_farClipPlaneValue(1000.0),
-        m_filmFitValue(0),
-        m_renderWidthValue(128),
-        m_renderHeightValue(128),
-        m_renderAspectValue(1.0) {
-
+Camera::Camera()
+    : m_transformNodeName("")
+    , m_transformObject()
+    , m_shapeNodeName("")
+    , m_shapeObject()
+    , m_matrix()
+    , m_filmbackWidth()
+    , m_filmbackHeight()
+    , m_filmbackOffsetX()
+    , m_filmbackOffsetY()
+    , m_focalLength()
+    , m_cameraScaleCached(false)
+    , m_nearClipPlaneCached(false)
+    , m_farClipPlaneCached(false)
+    , m_filmFitCached(false)
+    , m_renderWidthCached(false)
+    , m_renderHeightCached(false)
+    , m_renderAspectCached(false)
+    , m_cameraScaleValue(1.0)
+    , m_nearClipPlaneValue(0.1)
+    , m_farClipPlaneValue(1000.0)
+    , m_filmFitValue(0)
+    , m_renderWidthValue(128)
+    , m_renderHeightValue(128)
+    , m_renderAspectValue(1.0) {
     // Attribute names
     m_matrix.setAttrName("worldMatrix");
     m_filmbackWidth.setAttrName("horizontalFilmAperture");
@@ -351,9 +330,7 @@ Camera::Camera() :
     m_renderAspect.setAttrName("deviceAspectRatio");
 }
 
-MString Camera::getTransformNodeName() {
-    return m_transformNodeName;
-}
+MString Camera::getTransformNodeName() { return m_transformNodeName; }
 
 void Camera::setTransformNodeName(MString value) {
     if (value != m_transformNodeName) {
@@ -374,9 +351,7 @@ MObject Camera::getTransformObject() {
     return m_transformObject;
 }
 
-MString Camera::getShapeNodeName() {
-    return m_shapeNodeName;
-}
+MString Camera::getShapeNodeName() { return m_shapeNodeName; }
 
 void Camera::setShapeNodeName(MString value) {
     if (value != m_shapeNodeName) {
@@ -405,9 +380,7 @@ MObject Camera::getShapeObject() {
     return m_shapeObject;
 }
 
-bool Camera::getProjectionDynamic() const {
-    return m_isProjectionDynamic;
-}
+bool Camera::getProjectionDynamic() const { return m_isProjectionDynamic; }
 
 MStatus Camera::setProjectionDynamic(bool value) {
     MStatus status = MS::kSuccess;
@@ -415,58 +388,31 @@ MStatus Camera::setProjectionDynamic(bool value) {
     return status;
 }
 
-Attr &Camera::getMatrixAttr() {
-    return m_matrix;
-}
+Attr &Camera::getMatrixAttr() { return m_matrix; }
 
-Attr &Camera::getFilmbackWidthAttr() {
-    return m_filmbackWidth;
-}
+Attr &Camera::getFilmbackWidthAttr() { return m_filmbackWidth; }
 
-Attr &Camera::getFilmbackHeightAttr() {
-    return m_filmbackHeight;
-}
+Attr &Camera::getFilmbackHeightAttr() { return m_filmbackHeight; }
 
-Attr &Camera::getFilmbackOffsetXAttr() {
-    return m_filmbackOffsetX;
-}
+Attr &Camera::getFilmbackOffsetXAttr() { return m_filmbackOffsetX; }
 
-Attr &Camera::getFilmbackOffsetYAttr() {
-    return m_filmbackOffsetY;
-}
+Attr &Camera::getFilmbackOffsetYAttr() { return m_filmbackOffsetY; }
 
-Attr &Camera::getFocalLengthAttr() {
-    return m_focalLength;
-}
+Attr &Camera::getFocalLengthAttr() { return m_focalLength; }
 
-Attr &Camera::getCameraScaleAttr() {
-    return m_cameraScale;
-}
+Attr &Camera::getCameraScaleAttr() { return m_cameraScale; }
 
-Attr &Camera::getNearClipPlaneAttr() {
-    return m_nearClipPlane;
-}
+Attr &Camera::getNearClipPlaneAttr() { return m_nearClipPlane; }
 
-Attr &Camera::getFarClipPlaneAttr() {
-    return m_farClipPlane;
-}
+Attr &Camera::getFarClipPlaneAttr() { return m_farClipPlane; }
 
-Attr &Camera::getFilmFitAttr() {
-    return m_filmFit;
-}
+Attr &Camera::getFilmFitAttr() { return m_filmFit; }
 
-Attr &Camera::getRenderWidthAttr() {
-    return m_renderWidth;
-}
+Attr &Camera::getRenderWidthAttr() { return m_renderWidth; }
 
-Attr &Camera::getRenderHeightAttr() {
-    return m_renderHeight;
-}
+Attr &Camera::getRenderHeightAttr() { return m_renderHeight; }
 
-Attr &Camera::getRenderAspectAttr() {
-    return m_renderAspect;
-}
-
+Attr &Camera::getRenderAspectAttr() { return m_renderAspect; }
 
 double Camera::getFilmbackWidthValue(const MTime &time,
                                      const int timeEvalMode) {
@@ -629,11 +575,9 @@ double Camera::getRenderAspectValue() {
     return value;
 }
 
-MStatus Camera::getFrustum(
-        double &left, double &right,
-        double &top, double &bottom,
-        const MTime &time,
-        const int timeEvalMode) {
+MStatus Camera::getFrustum(double &left, double &right, double &top,
+                           double &bottom, const MTime &time,
+                           const int timeEvalMode) {
     MStatus status = MS::kSuccess;
 
     double filmWidth = 0.0;
@@ -653,11 +597,8 @@ MStatus Camera::getFrustum(
     double cameraScale = getCameraScaleValue();
     double nearClip = getNearClipPlaneValue();
 
-    computeFrustumCoordinates(focal,
-                              filmWidth, filmHeight,
-                              filmOffsetX, filmOffsetY,
-                              nearClip, cameraScale,
-                              left, right,
+    computeFrustumCoordinates(focal, filmWidth, filmHeight, filmOffsetX,
+                              filmOffsetY, nearClip, cameraScale, left, right,
                               top, bottom);
     return status;
 }
@@ -680,7 +621,8 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time,
         // maths while caching various attributes.
         MFnCamera cameraFn(Camera::getShapeObject(), &status);
         MDGContext ctx(time);
-        MFloatMatrix floatProjMat_maya = cameraFn.projectionMatrix(ctx, &status);
+        MFloatMatrix floatProjMat_maya =
+            cameraFn.projectionMatrix(ctx, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMatrix floatProjMat = MMatrix(&floatProjMat_maya.matrix[0]);
 #else
@@ -716,14 +658,9 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time,
         imageHeight = static_cast<double>(getRenderHeightValue());
 
         // Compute the projection matrix
-        status = getProjectionMatrix(focal,
-                                     filmWidth, filmHeight,
-                                     filmOffsetX, filmOffsetY,
-                                     imageWidth, imageHeight,
-                                     filmFit,
-                                     nearClip, farClip,
-                                     cameraScale,
-                                     value);
+        status = getProjectionMatrix(
+            focal, filmWidth, filmHeight, filmOffsetX, filmOffsetY, imageWidth,
+            imageHeight, filmFit, nearClip, farClip, cameraScale, value);
         CHECK_MSTATUS(status);
 #endif
         // Add into the cache.
@@ -740,7 +677,6 @@ MStatus Camera::getProjMatrix(MMatrix &value, const int timeEvalMode) {
     MTime time = MAnimControl::currentTime();
     return Camera::getProjMatrix(value, time, timeEvalMode);
 }
-
 
 MStatus Camera::getWorldPosition(MPoint &value, const MTime &time,
                                  const int timeEvalMode) {
@@ -766,7 +702,6 @@ MStatus Camera::getWorldPosition(MPoint &value, const int timeEvalMode) {
     return Camera::getWorldPosition(value, time, timeEvalMode);
 }
 
-
 MStatus Camera::getForwardDirection(MVector &value, const MTime &time,
                                     const int timeEvalMode) {
     MStatus status;
@@ -787,7 +722,6 @@ MStatus Camera::getForwardDirection(MVector &value, const int timeEvalMode) {
     MTime time = MAnimControl::currentTime();
     return Camera::getForwardDirection(value, time, timeEvalMode);
 }
-
 
 MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time,
                                    const int timeEvalMode) {
@@ -833,7 +767,6 @@ MStatus Camera::clearAuxilaryAttrsCache() {
     m_renderAspectCached = false;
     return MS::kSuccess;
 }
-
 
 MStatus Camera::clearProjMatrixCache() {
     m_projMatrixCache.clear();

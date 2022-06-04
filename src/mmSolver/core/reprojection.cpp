@@ -30,75 +30,48 @@
 #include <maya/MMatrix.h>
 
 // MM Solver
-#include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/mayahelper/maya_camera.h"  // getProjectionMatrix, computeFrustumCoordinates
+#include "mmSolver/utilities/debug_utils.h"
 
-MStatus reprojection(const MMatrix tfmMatrix,
-                     const MMatrix camMatrix,
+MStatus reprojection(
+    const MMatrix tfmMatrix, const MMatrix camMatrix,
 
-                     // Camera
-                     const double focalLength,
-                     const double horizontalFilmAperture,
-                     const double verticalFilmAperture,
-                     const double horizontalFilmOffset,
-                     const double verticalFilmOffset,
-                     const short filmFit,
-                     const double nearClipPlane,
-                     const double farClipPlane,
-                     const double cameraScale,
+    // Camera
+    const double focalLength, const double horizontalFilmAperture,
+    const double verticalFilmAperture, const double horizontalFilmOffset,
+    const double verticalFilmOffset, const short filmFit,
+    const double nearClipPlane, const double farClipPlane,
+    const double cameraScale,
 
-                     // Image
-                     const double imageWidth,
-                     const double imageHeight,
+    // Image
+    const double imageWidth, const double imageHeight,
 
-                     // Manipulation
-                     const MMatrix applyMatrix,
-                     const bool overrideScreenX,
-                     const bool overrideScreenY,
-                     const bool overrideScreenZ,
-                     const double screenX,
-                     const double screenY,
-                     const double screenZ,
-                     const double depthScale,
+    // Manipulation
+    const MMatrix applyMatrix, const bool overrideScreenX,
+    const bool overrideScreenY, const bool overrideScreenZ,
+    const double screenX, const double screenY, const double screenZ,
+    const double depthScale,
 
-                     // Outputs
-                     double &outCoordX,
-                     double &outCoordY,
-                     double &outNormCoordX,
-                     double &outNormCoordY,
-                     double &outMarkerCoordX,
-                     double &outMarkerCoordY,
-                     double &outMarkerCoordZ,
-                     double &outPixelX,
-                     double &outPixelY,
-                     bool &outInsideFrustum,
-                     double &outPointX,
-                     double &outPointY,
-                     double &outPointZ,
-                     double &outWorldPointX,
-                     double &outWorldPointY,
-                     double &outWorldPointZ,
-                     MMatrix &outMatrix,
-                     MMatrix &outWorldMatrix,
-                     MMatrix &outCameraProjectionMatrix,
-                     MMatrix &outInverseCameraProjectionMatrix,
-                     MMatrix &outWorldCameraProjectionMatrix,
-                     MMatrix &outWorldInverseCameraProjectionMatrix,
-                     double &outHorizontalPan,
-                     double &outVerticalPan) {
+    // Outputs
+    double &outCoordX, double &outCoordY, double &outNormCoordX,
+    double &outNormCoordY, double &outMarkerCoordX, double &outMarkerCoordY,
+    double &outMarkerCoordZ, double &outPixelX, double &outPixelY,
+    bool &outInsideFrustum, double &outPointX, double &outPointY,
+    double &outPointZ, double &outWorldPointX, double &outWorldPointY,
+    double &outWorldPointZ, MMatrix &outMatrix, MMatrix &outWorldMatrix,
+    MMatrix &outCameraProjectionMatrix,
+    MMatrix &outInverseCameraProjectionMatrix,
+    MMatrix &outWorldCameraProjectionMatrix,
+    MMatrix &outWorldInverseCameraProjectionMatrix, double &outHorizontalPan,
+    double &outVerticalPan) {
     MStatus status = MStatus::kSuccess;
 
     // Get Camera Projection Matrix
     MMatrix camProjMatrix;
     status = getProjectionMatrix(
-            focalLength,
-            horizontalFilmAperture, verticalFilmAperture,
-            horizontalFilmOffset, verticalFilmOffset,
-            imageWidth, imageHeight,
-            filmFit,
-            nearClipPlane, farClipPlane,
-            cameraScale,
-            camProjMatrix);
+        focalLength, horizontalFilmAperture, verticalFilmAperture,
+        horizontalFilmOffset, verticalFilmOffset, imageWidth, imageHeight,
+        filmFit, nearClipPlane, farClipPlane, cameraScale, camProjMatrix);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Camera World Projection Matrix
@@ -126,38 +99,26 @@ MStatus reprojection(const MMatrix tfmMatrix,
 
     // Get (screen-space) point. Screen-space is also called NDC
     // (normalised device coordinates) space.
-    MPoint posScreen(matrix[3][0],
-                     matrix[3][1],
-                     matrix[3][2],
-                     matrix[3][3]);
+    MPoint posScreen(matrix[3][0], matrix[3][1], matrix[3][2], matrix[3][3]);
     posScreen.cartesianize();
-    MPoint coord(posScreen.x,
-                 posScreen.y,
-                 0.0,
-                 1.0);
+    MPoint coord(posScreen.x, posScreen.y, 0.0, 1.0);
 
     // Is the point inside the frustum of the camera?
     bool insideFrustum = true;
-    if ((coord.x < -1.0)
-        || (coord.x > 1.0)
-        || (coord.y < -1.0)
-        || (coord.y > 1.0)) {
+    if ((coord.x < -1.0) || (coord.x > 1.0) || (coord.y < -1.0) ||
+        (coord.y > 1.0)) {
         insideFrustum = false;
     }
 
     // Convert back to world space
     MMatrix worldTfmMatrix = matrix * camWorldProjMatrix.inverse();
-    MPoint worldPos(worldTfmMatrix[3][0],
-                    worldTfmMatrix[3][1],
-                    worldTfmMatrix[3][2],
-                    1.0);
+    MPoint worldPos(worldTfmMatrix[3][0], worldTfmMatrix[3][1],
+                    worldTfmMatrix[3][2], 1.0);
 
     // Convert world to camera space
     MMatrix cameraTfmMatrix = worldTfmMatrix * camMatrix.inverse();
-    MPoint posCamera(cameraTfmMatrix[3][0],
-                     cameraTfmMatrix[3][1],
-                     cameraTfmMatrix[3][2],
-                     cameraTfmMatrix[3][3]);
+    MPoint posCamera(cameraTfmMatrix[3][0], cameraTfmMatrix[3][1],
+                     cameraTfmMatrix[3][2], cameraTfmMatrix[3][3]);
     posCamera.cartesianize();
 
     // Output Coordinates (-1.0 to 1.0; lower-left corner is -1.0, -1.0)
@@ -218,8 +179,7 @@ MStatus reprojection(const MMatrix tfmMatrix,
     return status;
 }
 
-MStatus calculateCameraFacingRatio(MMatrix tfmMatrix,
-                                   MMatrix camMatrix,
+MStatus calculateCameraFacingRatio(MMatrix tfmMatrix, MMatrix camMatrix,
                                    double &outCameraDirRatio) {
     MStatus status = MStatus::kSuccess;
 

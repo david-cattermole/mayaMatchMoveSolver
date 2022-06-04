@@ -24,8 +24,8 @@
 #include "MMImagePlaneTransformNode.h"
 
 // Maya
-#include <maya/MTypeId.h>
 #include <maya/MPxTransformationMatrix.h>
+#include <maya/MTypeId.h>
 
 // MM Solver
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -44,7 +44,9 @@ MMImagePlaneTransformNode::MMImagePlaneTransformNode() : MPxTransform() {}
 // Maya 2020+ will manage the creation of MPxTransformationMatrix on
 // demand for us.
 #if MAYA_API_VERSION < 20200000
-MMImagePlaneTransformNode::MMImagePlaneTransformNode(MPxTransformationMatrix *tm) : MPxTransform(tm) {}
+MMImagePlaneTransformNode::MMImagePlaneTransformNode(
+    MPxTransformationMatrix *tm)
+    : MPxTransform(tm) {}
 #endif
 
 void MMImagePlaneTransformNode::postConstructor() {
@@ -56,19 +58,15 @@ void MMImagePlaneTransformNode::postConstructor() {
 #endif
 }
 
-MMImagePlaneTransformNode::~MMImagePlaneTransformNode() {
+MMImagePlaneTransformNode::~MMImagePlaneTransformNode(){
     // Empty function body rather than '= default', to allow compiling
     // under Visual Studio 2012.
 };
-
 
 void *MMImagePlaneTransformNode::creator() {
     return (new MMImagePlaneTransformNode());
 }
 
+MStatus MMImagePlaneTransformNode::initialize() { return MS::kSuccess; }
 
-MStatus MMImagePlaneTransformNode::initialize() {
-    return MS::kSuccess;
-}
-
-} // namespace mmsolver
+}  // namespace mmsolver

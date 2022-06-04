@@ -21,11 +21,11 @@
 
 #include "MMRendererCmd.h"
 
-#include <maya/MSyntax.h>
-#include <maya/MViewport2Renderer.h>
+#include <maya/M3dView.h>
 #include <maya/MArgDatabase.h>
 #include <maya/MGlobal.h>
-#include <maya/M3dView.h>
+#include <maya/MSyntax.h>
+#include <maya/MViewport2Renderer.h>
 
 // MM Solver
 #include "RenderOverride.h"
@@ -33,39 +33,28 @@
 namespace mmsolver {
 namespace render {
 
-MMRendererCmd::MMRendererCmd() :
-        m_fishEye(true), m_swirl(false), m_edgeDetect(true) {
-}
+MMRendererCmd::MMRendererCmd()
+    : m_fishEye(true), m_swirl(false), m_edgeDetect(true) {}
 
-MMRendererCmd::~MMRendererCmd() {
-}
+MMRendererCmd::~MMRendererCmd() {}
 
-void *MMRendererCmd::creator() {
-    return (void *) (new MMRendererCmd);
-}
+void *MMRendererCmd::creator() { return (void *)(new MMRendererCmd); }
 
-MString MMRendererCmd::cmdName() {
-    return MString("mmRenderer");
-}
+MString MMRendererCmd::cmdName() { return MString("mmRenderer"); }
 
 MSyntax MMRendererCmd::newSyntax() {
     MSyntax syntax;
-    syntax.addFlag(
-        MM_RENDERER_SWIRL_FLAG,
-        MM_RENDERER_SWIRL_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(
-        MM_RENDERER_FISH_EYE_FLAG,
-        MM_RENDERER_FISH_EYE_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(
-        MM_RENDERER_EDGE_DETECT_FLAG,
-        MM_RENDERER_EDGE_DETECT_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(
-        MM_RENDERER_WIREFRAME_ALPHA_FLAG,
-        MM_RENDERER_WIREFRAME_ALPHA_FLAG_LONG, MSyntax::kDouble);
+    syntax.addFlag(MM_RENDERER_SWIRL_FLAG, MM_RENDERER_SWIRL_FLAG_LONG,
+                   MSyntax::kBoolean);
+    syntax.addFlag(MM_RENDERER_FISH_EYE_FLAG, MM_RENDERER_FISH_EYE_FLAG_LONG,
+                   MSyntax::kBoolean);
+    syntax.addFlag(MM_RENDERER_EDGE_DETECT_FLAG,
+                   MM_RENDERER_EDGE_DETECT_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(MM_RENDERER_WIREFRAME_ALPHA_FLAG,
+                   MM_RENDERER_WIREFRAME_ALPHA_FLAG_LONG, MSyntax::kDouble);
     syntax.enableQuery(true);
     return syntax;
 }
-
 
 MStatus MMRendererCmd::doIt(const MArgList &args) {
     MStatus status = MStatus::kFailure;
@@ -77,8 +66,7 @@ MStatus MMRendererCmd::doIt(const MArgList &args) {
     }
 
     RenderOverride *override_ptr =
-        (RenderOverride *) renderer->findRenderOverride(
-            "mmRenderer");
+        (RenderOverride *)renderer->findRenderOverride("mmRenderer");
     if (override_ptr == nullptr) {
         MGlobal::displayError("mmRenderer is not registered.");
         return status;
@@ -135,7 +123,8 @@ MStatus MMRendererCmd::doIt(const MArgList &args) {
             m_wireframe_alpha = override_ptr->wireframeAlpha();
             MPxCommand::setResult(m_wireframe_alpha);
         } else {
-            argData.getFlagArgument(MM_RENDERER_WIREFRAME_ALPHA_FLAG, 0, m_wireframe_alpha);
+            argData.getFlagArgument(MM_RENDERER_WIREFRAME_ALPHA_FLAG, 0,
+                                    m_wireframe_alpha);
             override_ptr->setWireframeAlpha(m_wireframe_alpha);
         }
     }
@@ -151,5 +140,5 @@ MStatus MMRendererCmd::doIt(const MArgList &args) {
     return MStatus::kSuccess;
 }
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver

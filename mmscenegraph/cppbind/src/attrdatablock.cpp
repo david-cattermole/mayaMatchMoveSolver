@@ -19,71 +19,52 @@
  *
  */
 
-#include <iostream>
-#include <string>
 #include <mmscenegraph/attrdatablock.h>
 
+#include <iostream>
+#include <string>
 
 namespace mmscenegraph {
 
 AttrDataBlock::AttrDataBlock() noexcept
-        : inner_(shim_create_attr_data_block_box()) {
-}
+    : inner_(shim_create_attr_data_block_box()) {}
 
-rust::Box<ShimAttrDataBlock>
-AttrDataBlock::get_inner() noexcept {
+rust::Box<ShimAttrDataBlock> AttrDataBlock::get_inner() noexcept {
     return std::move(inner_);
 }
 
-void
-AttrDataBlock::set_inner(rust::Box<ShimAttrDataBlock> &value) noexcept {
+void AttrDataBlock::set_inner(rust::Box<ShimAttrDataBlock> &value) noexcept {
     inner_ = std::move(value);
     return;
 }
 
-void
-AttrDataBlock::clear() noexcept {
-    return inner_->clear();
-}
+void AttrDataBlock::clear() noexcept { return inner_->clear(); }
 
-size_t
-AttrDataBlock::num_attr_static() noexcept {
+size_t AttrDataBlock::num_attr_static() noexcept {
     return inner_->num_attr_static();
 }
 
-size_t
-AttrDataBlock::num_attr_anim_dense() noexcept {
+size_t AttrDataBlock::num_attr_anim_dense() noexcept {
     return inner_->num_attr_anim_dense();
 }
 
-AttrId
-AttrDataBlock::create_attr_static(Real value) noexcept {
+AttrId AttrDataBlock::create_attr_static(Real value) noexcept {
     return inner_->create_attr_static(value);
 }
 
-AttrId
-AttrDataBlock::create_attr_anim_dense(
-        rust::Vec<Real> values,
-        FrameValue frame_start
-) noexcept {
+AttrId AttrDataBlock::create_attr_anim_dense(rust::Vec<Real> values,
+                                             FrameValue frame_start) noexcept {
     return inner_->create_attr_anim_dense(values, frame_start);
 }
 
-Real
-AttrDataBlock::get_attr_value(
-        AttrId attr_id,
-        FrameValue frame
-) const noexcept {
+Real AttrDataBlock::get_attr_value(AttrId attr_id,
+                                   FrameValue frame) const noexcept {
     return inner_->get_attr_value(attr_id, frame);
 }
 
-bool
-AttrDataBlock::set_attr_value(
-        AttrId attr_id,
-        FrameValue frame,
-        Real value
-) noexcept {
+bool AttrDataBlock::set_attr_value(AttrId attr_id, FrameValue frame,
+                                   Real value) noexcept {
     return inner_->set_attr_value(attr_id, frame, value);
 }
 
-} // namespace mmscenegraph
+}  // namespace mmscenegraph

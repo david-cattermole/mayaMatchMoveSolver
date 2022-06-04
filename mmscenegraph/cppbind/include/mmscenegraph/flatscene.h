@@ -22,19 +22,19 @@
 #ifndef MM_SOLVER_MM_SCENE_GRAPH_FLAT_SCENE_H
 #define MM_SOLVER_MM_SCENE_GRAPH_FLAT_SCENE_H
 
+#include <mmscenegraph/attrdatablock.h>
+
 #include <vector>
 
 #include "_cxx.h"
 #include "_cxxbridge.h"
 #include "_symbol_export.h"
 #include "_types.h"
-#include <mmscenegraph/attrdatablock.h>
 
 namespace mmscenegraph {
 
 class FlatScene {
 public:
-
     MMSCENEGRAPH_API_EXPORT
     FlatScene() noexcept;
 
@@ -42,32 +42,25 @@ public:
     FlatScene(rust::Box<ShimFlatScene> flat_scene) noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    rust::Slice<const Real>
-    markers() const noexcept;
+    rust::Slice<const Real> markers() const noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    rust::Slice<const Real>
-    points() const noexcept;
+    rust::Slice<const Real> points() const noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    size_t
-    num_markers() const noexcept;
+    size_t num_markers() const noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    size_t
-    num_points() const noexcept;
+    size_t num_points() const noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    void
-    evaluate(
-        AttrDataBlock &attrDataBlock,
-        std::vector<FrameValue> &frames
-    ) noexcept;
+    void evaluate(AttrDataBlock &attrDataBlock,
+                  std::vector<FrameValue> &frames) noexcept;
 
 private:
     rust::Box<ShimFlatScene> inner_;
 };
 
-} // namespace mmscenegraph
+}  // namespace mmscenegraph
 
 #endif  // MM_SOLVER_MM_SCENE_GRAPH_FLAT_SCENE_H

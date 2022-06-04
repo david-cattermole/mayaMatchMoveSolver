@@ -23,9 +23,8 @@
 #define MM_SOLVER_CORE_CALIBRATE_VANISHING_POINT_H
 
 // MM Solver
-#include "mmSolver/core/mmdata.h"
 #include "mmSolver/calibrate/calibrate_common.h"
-
+#include "mmSolver/core/mmdata.h"
 
 namespace calibrate {
 
@@ -39,18 +38,14 @@ namespace calibrate {
 // resolution 1920 x 1080, with aspect ratio 16:9, then the film back
 // must have the exact same aspect ratio.
 //
-bool oneVanishingPoint(
-    double focalLength_mm,
-    double filmBackWidth_mm,
-    double filmBackHeight_mm,
-    mmdata::Point2D originPoint,
-    mmdata::Point2D principalPoint,
-    mmdata::Point2D vanishingPointA,
-    mmdata::Point2D horizonPointA,
-    mmdata::Point2D horizonPointB,
-    SceneScaleMode sceneScaleMode,
-    double sceneScaleDistance,
-    CameraParameters &outCameraParameters);
+bool oneVanishingPoint(double focalLength_mm, double filmBackWidth_mm,
+                       double filmBackHeight_mm, mmdata::Point2D originPoint,
+                       mmdata::Point2D principalPoint,
+                       mmdata::Point2D vanishingPointA,
+                       mmdata::Point2D horizonPointA,
+                       mmdata::Point2D horizonPointB,
+                       SceneScaleMode sceneScaleMode, double sceneScaleDistance,
+                       CameraParameters &outCameraParameters);
 
 // Two point perspective.
 //
@@ -62,19 +57,15 @@ bool oneVanishingPoint(
 // resolution 1920 x 1080, with aspect ratio 16:9, then the film back
 // must have the exact same aspect ratio.
 //
-bool twoVanishingPoints(
-    double focalLength_mm,
-    double filmBackWidth_mm,
-    double filmBackHeight_mm,
-    mmdata::Point2D originPoint,
-    mmdata::Point2D principalPoint,
-    mmdata::Point2D vanishingPointA,
-    mmdata::Point2D vanishingPointB,
-    SceneScaleMode sceneScaleMode,
-    double sceneScaleDistance_cm,
-    CameraParameters &outCameraParameters);
+bool twoVanishingPoints(double focalLength_mm, double filmBackWidth_mm,
+                        double filmBackHeight_mm, mmdata::Point2D originPoint,
+                        mmdata::Point2D principalPoint,
+                        mmdata::Point2D vanishingPointA,
+                        mmdata::Point2D vanishingPointB,
+                        SceneScaleMode sceneScaleMode,
+                        double sceneScaleDistance_cm,
+                        CameraParameters &outCameraParameters);
 
+}  // namespace calibrate
 
-} // namespace calibrate
-
-#endif //MAYA_MM_SOLVER_CORE_CALIBRATE_VANISHING_POINT_H
+#endif  // MAYA_MM_SOLVER_CORE_CALIBRATE_VANISHING_POINT_H

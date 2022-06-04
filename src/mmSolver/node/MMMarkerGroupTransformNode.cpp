@@ -24,8 +24,8 @@
 #include "MMMarkerGroupTransformNode.h"
 
 // Maya
-#include <maya/MTypeId.h>
 #include <maya/MPxTransformationMatrix.h>
+#include <maya/MTypeId.h>
 
 // MM Solver
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -44,7 +44,9 @@ MMMarkerGroupTransformNode::MMMarkerGroupTransformNode() : MPxTransform() {}
 // Maya 2020+ will manage the creation of MPxTransformationMatrix on
 // demand for us.
 #if MAYA_API_VERSION < 20200000
-MMMarkerGroupTransformNode::MMMarkerGroupTransformNode(MPxTransformationMatrix *tm) : MPxTransform(tm) {}
+MMMarkerGroupTransformNode::MMMarkerGroupTransformNode(
+    MPxTransformationMatrix *tm)
+    : MPxTransform(tm) {}
 #endif
 
 void MMMarkerGroupTransformNode::postConstructor() {
@@ -56,19 +58,15 @@ void MMMarkerGroupTransformNode::postConstructor() {
 #endif
 }
 
-MMMarkerGroupTransformNode::~MMMarkerGroupTransformNode() {
+MMMarkerGroupTransformNode::~MMMarkerGroupTransformNode(){
     // Empty function body rather than '= default', to allow compiling
     // under Visual Studio 2012.
 };
-
 
 void *MMMarkerGroupTransformNode::creator() {
     return (new MMMarkerGroupTransformNode());
 }
 
+MStatus MMMarkerGroupTransformNode::initialize() { return MS::kSuccess; }
 
-MStatus MMMarkerGroupTransformNode::initialize() {
-    return MS::kSuccess;
-}
-
-} // namespace mmsolver
+}  // namespace mmsolver

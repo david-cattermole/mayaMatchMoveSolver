@@ -23,9 +23,9 @@
 #ifndef MM_SOLVER_RENDER_QUAD_RENDER_EDGE_DETECT_H
 #define MM_SOLVER_RENDER_QUAD_RENDER_EDGE_DETECT_H
 
+#include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
-#include <maya/MRenderTargetManager.h>
 
 #include "QuadRenderBase.h"
 
@@ -39,22 +39,14 @@ public:
 
     const MHWRender::MShaderInstance *shader() override;
 
-    MHWRender::MRenderTarget* const* targetOverrideList(unsigned int &listSize) override;
+    MHWRender::MRenderTarget *const *targetOverrideList(
+        unsigned int &listSize) override;
 
-    void
-    setInputTarget(const uint32_t index) {
-        m_target_index_input = index;
-    }
+    void setInputTarget(const uint32_t index) { m_target_index_input = index; }
 
-    void
-    setThickness(const float value) {
-        m_thickness = value;
-    }
+    void setThickness(const float value) { m_thickness = value; }
 
-    void
-    setThreshold(const float value) {
-        m_threshold = value;
-    }
+    void setThreshold(const float value) { m_threshold = value; }
 
 protected:
     // Shader to use for the quad render
@@ -66,7 +58,7 @@ protected:
     float m_threshold;
 };
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver
 
-#endif // MM_SOLVER_RENDER_QUAD_RENDER_EDGE_DETECT_H
+#endif  // MM_SOLVER_RENDER_QUAD_RENDER_EDGE_DETECT_H

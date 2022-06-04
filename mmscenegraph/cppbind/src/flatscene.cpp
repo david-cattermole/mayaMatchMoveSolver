@@ -19,45 +19,32 @@
  *
  */
 
+#include <mmscenegraph/flatscene.h>
+
 #include <iostream>
 #include <string>
-#include <mmscenegraph/flatscene.h>
 
 namespace mmscenegraph {
 
-FlatScene::FlatScene() noexcept
-        : inner_(shim_create_flat_scene_box()) {
-}
+FlatScene::FlatScene() noexcept : inner_(shim_create_flat_scene_box()) {}
 
 FlatScene::FlatScene(rust::Box<ShimFlatScene> flat_scene) noexcept
-        : inner_(std::move(flat_scene)) {
-}
+    : inner_(std::move(flat_scene)) {}
 
-rust::Slice<const Real>
-FlatScene::markers() const noexcept {
+rust::Slice<const Real> FlatScene::markers() const noexcept {
     return inner_->markers();
 }
 
-rust::Slice<const Real>
-FlatScene::points() const noexcept {
+rust::Slice<const Real> FlatScene::points() const noexcept {
     return inner_->points();
 }
 
-size_t
-FlatScene::num_markers() const noexcept {
-    return inner_->num_markers();
-}
+size_t FlatScene::num_markers() const noexcept { return inner_->num_markers(); }
 
-size_t
-FlatScene::num_points() const noexcept {
-    return inner_->num_points();
-}
+size_t FlatScene::num_points() const noexcept { return inner_->num_points(); }
 
-void
-FlatScene::evaluate(
-        AttrDataBlock &attrDataBlock,
-        std::vector<FrameValue> &frames
-) noexcept {
+void FlatScene::evaluate(AttrDataBlock &attrDataBlock,
+                         std::vector<FrameValue> &frames) noexcept {
     auto attrDataBlock_inner = attrDataBlock.get_inner();
     rust::Slice<const FrameValue> frames_slice{frames.data(), frames.size()};
     inner_->evaluate(attrDataBlock_inner, frames_slice);
@@ -65,4 +52,4 @@ FlatScene::evaluate(
     attrDataBlock.set_inner(attrDataBlock_inner);
 }
 
-} // namespace mmscenegraph
+}  // namespace mmscenegraph

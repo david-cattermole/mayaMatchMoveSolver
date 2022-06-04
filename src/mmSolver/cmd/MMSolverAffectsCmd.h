@@ -27,29 +27,28 @@
 #include <cmath>
 
 // Maya
+#include <maya/MArgDatabase.h>
+#include <maya/MArgList.h>
 #include <maya/MGlobal.h>
 #include <maya/MIOStream.h>
-#include <maya/MPxCommand.h>
-#include <maya/MArgList.h>
-#include <maya/MArgDatabase.h>
-#include <maya/MSyntax.h>
-#include <maya/MSelectionList.h>
-#include <maya/MTime.h>
 #include <maya/MPoint.h>
+#include <maya/MPxCommand.h>
+#include <maya/MSelectionList.h>
+#include <maya/MSyntax.h>
+#include <maya/MTime.h>
 #include <maya/MTimeArray.h>
 
 // MM Solver
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_attr.h"
 
 // Command arguments:
 
 // The type of mode for the mmSolverAffects command.
-#define MODE_FLAG            "-md"
-#define MODE_FLAG_LONG       "-mode"
-
+#define MODE_FLAG "-md"
+#define MODE_FLAG_LONG "-mode"
 
 // Possible values for the 'mode' flag.
 #define MODE_VALUE_ADD_ATTRS_TO_MARKERS "addAttrsToMarkers"
@@ -59,8 +58,7 @@ namespace mmsolver {
 
 class MMSolverAffectsCmd : public MPxCommand {
 public:
-
-    MMSolverAffectsCmd() {};
+    MMSolverAffectsCmd(){};
 
     virtual ~MMSolverAffectsCmd();
 
@@ -80,17 +78,17 @@ public:
     static MString cmdName();
 
 private:
-    MStatus parseArgs( const MArgList& args );
+    MStatus parseArgs(const MArgList &args);
 
     // The 'mode' of this command.
     MString m_mode;
 
     // Objects
-    CameraPtrList      m_cameraList;
-    MarkerPtrList      m_markerList;
-    BundlePtrList      m_bundleList;
-    AttrPtrList        m_attrList;
-    StiffAttrsPtrList  m_stiffAttrsList;
+    CameraPtrList m_cameraList;
+    MarkerPtrList m_markerList;
+    BundlePtrList m_bundleList;
+    AttrPtrList m_attrList;
+    StiffAttrsPtrList m_stiffAttrsList;
     SmoothAttrsPtrList m_smoothAttrsList;
 
     // Undo/Redo
@@ -98,6 +96,6 @@ private:
     MDGModifier m_setAttr_dgmod;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_SOLVER_AFFECTS_CMD_H
+#endif  // MM_SOLVER_AFFECTS_CMD_H

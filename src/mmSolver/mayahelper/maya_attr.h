@@ -23,18 +23,18 @@
 #ifndef MM_SOLVER_MAYA_HELPER_MAYA_ATTR_H
 #define MM_SOLVER_MAYA_HELPER_MAYA_ATTR_H
 
-#include <vector>
-#include <memory>
-
-#include <maya/MObject.h>
-#include <maya/MString.h>
-#include <maya/MPlug.h>
-#include <maya/MTime.h>
-#include <maya/MFnAnimCurve.h>
+#include <maya/MAngle.h>
 #include <maya/MAnimControl.h>
 #include <maya/MDGModifier.h>
 #include <maya/MDistance.h>
-#include <maya/MAngle.h>
+#include <maya/MFnAnimCurve.h>
+#include <maya/MObject.h>
+#include <maya/MPlug.h>
+#include <maya/MString.h>
+#include <maya/MTime.h>
+
+#include <memory>
+#include <vector>
 
 #include "maya_utils.h"
 
@@ -44,8 +44,7 @@
 #define ATTR_DATA_TYPE_ANGLE (2)
 #define ATTR_DATA_TYPE_NUMERIC (3)
 
-enum class AttrDataType
-{
+enum class AttrDataType {
     kUnknown = ATTR_DATA_TYPE_UNKNOWN,
     kLinear = ATTR_DATA_TYPE_LINEAR,
     kAngle = ATTR_DATA_TYPE_ANGLE,
@@ -54,42 +53,42 @@ enum class AttrDataType
 
 // Solver Types of Attributes.
 #define ATTR_SOLVER_TYPE_UNINITIALIZED (0)
-#define ATTR_SOLVER_TYPE_UNKNOWN       (1)
-#define ATTR_SOLVER_TYPE_BUNDLE_TX     (2)
-#define ATTR_SOLVER_TYPE_BUNDLE_TY     (3)
-#define ATTR_SOLVER_TYPE_BUNDLE_TZ     (4)
-#define ATTR_SOLVER_TYPE_CAMERA_TX     (5)
-#define ATTR_SOLVER_TYPE_CAMERA_TY     (6)
-#define ATTR_SOLVER_TYPE_CAMERA_TZ     (7)
-#define ATTR_SOLVER_TYPE_CAMERA_RX     (8)
-#define ATTR_SOLVER_TYPE_CAMERA_RY     (9)
-#define ATTR_SOLVER_TYPE_CAMERA_RZ     (10)
-#define ATTR_SOLVER_TYPE_CAMERA_SX     (11)
-#define ATTR_SOLVER_TYPE_CAMERA_SY     (12)
-#define ATTR_SOLVER_TYPE_CAMERA_SZ     (13)
-#define ATTR_SOLVER_TYPE_CAMERA_FOCAL  (14)
-#define ATTR_SOLVER_TYPE_TRANSFORM_TX  (15)
-#define ATTR_SOLVER_TYPE_TRANSFORM_TY  (16)
-#define ATTR_SOLVER_TYPE_TRANSFORM_TZ  (17)
-#define ATTR_SOLVER_TYPE_TRANSFORM_RX  (18)
-#define ATTR_SOLVER_TYPE_TRANSFORM_RY  (19)
-#define ATTR_SOLVER_TYPE_TRANSFORM_RZ  (20)
-#define ATTR_SOLVER_TYPE_TRANSFORM_SX  (21)
-#define ATTR_SOLVER_TYPE_TRANSFORM_SY  (22)
-#define ATTR_SOLVER_TYPE_TRANSFORM_SZ  (23)
+#define ATTR_SOLVER_TYPE_UNKNOWN (1)
+#define ATTR_SOLVER_TYPE_BUNDLE_TX (2)
+#define ATTR_SOLVER_TYPE_BUNDLE_TY (3)
+#define ATTR_SOLVER_TYPE_BUNDLE_TZ (4)
+#define ATTR_SOLVER_TYPE_CAMERA_TX (5)
+#define ATTR_SOLVER_TYPE_CAMERA_TY (6)
+#define ATTR_SOLVER_TYPE_CAMERA_TZ (7)
+#define ATTR_SOLVER_TYPE_CAMERA_RX (8)
+#define ATTR_SOLVER_TYPE_CAMERA_RY (9)
+#define ATTR_SOLVER_TYPE_CAMERA_RZ (10)
+#define ATTR_SOLVER_TYPE_CAMERA_SX (11)
+#define ATTR_SOLVER_TYPE_CAMERA_SY (12)
+#define ATTR_SOLVER_TYPE_CAMERA_SZ (13)
+#define ATTR_SOLVER_TYPE_CAMERA_FOCAL (14)
+#define ATTR_SOLVER_TYPE_TRANSFORM_TX (15)
+#define ATTR_SOLVER_TYPE_TRANSFORM_TY (16)
+#define ATTR_SOLVER_TYPE_TRANSFORM_TZ (17)
+#define ATTR_SOLVER_TYPE_TRANSFORM_RX (18)
+#define ATTR_SOLVER_TYPE_TRANSFORM_RY (19)
+#define ATTR_SOLVER_TYPE_TRANSFORM_RZ (20)
+#define ATTR_SOLVER_TYPE_TRANSFORM_SX (21)
+#define ATTR_SOLVER_TYPE_TRANSFORM_SY (22)
+#define ATTR_SOLVER_TYPE_TRANSFORM_SZ (23)
 
 // Lens distortion models.
-#define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_DISTORTION         (26)
+#define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_DISTORTION (26)
 #define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_ANAMORPHIC_SQUEEZE (27)
-#define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_X        (28)
-#define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_Y        (29)
+#define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_X (28)
+#define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_Y (29)
 #define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_QUARTIC_DISTORTION (30)
-#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_DISTORTION    (31)
-#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_U             (32)
-#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_V             (33)
-#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_4_DISTORTION    (34)
-#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_4_U             (35)
-#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_4_V             (36)
+#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_DISTORTION (31)
+#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_U (32)
+#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_V (33)
+#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_4_DISTORTION (34)
+#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_4_U (35)
+#define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_4_V (36)
 #define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DIRECTION (37)
 #define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_BENDING (38)
 #define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_2_CX02 (39)
@@ -106,8 +105,7 @@ enum class AttrDataType
 #define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_SQUEEZE_X (50)
 #define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_SQUEEZE_Y (51)
 
-enum class AttrSolverType
-{
+enum class AttrSolverType {
     kUninitialized = ATTR_SOLVER_TYPE_UNINITIALIZED,
     kUnknown = ATTR_SOLVER_TYPE_UNKNOWN,
 
@@ -137,39 +135,59 @@ enum class AttrSolverType
     kTransformSz = ATTR_SOLVER_TYPE_TRANSFORM_SZ,
 
     kLens3deClassicDistortion = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_DISTORTION,
-    kLens3deClassicAnamorphicSqueeze = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_ANAMORPHIC_SQUEEZE,
+    kLens3deClassicAnamorphicSqueeze =
+        ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_ANAMORPHIC_SQUEEZE,
     kLens3deClassicCurvatureX = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_X,
     kLens3deClassicCurvatureY = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_Y,
-    kLens3deClassicQuarticDistortion = ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_QUARTIC_DISTORTION,
+    kLens3deClassicQuarticDistortion =
+        ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_QUARTIC_DISTORTION,
 
-    kLens3deRadialDeg4Degree2Distortion = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_DISTORTION,
-    kLens3deRadialDeg4Degree2U = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_U,
-    kLens3deRadialDeg4Degree2V = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_V,
-    kLens3deRadialDeg4Degree4Distortion = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_4_DISTORTION,
-    kLens3deRadialDeg4Degree4U = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_4_U,
-    kLens3deRadialDeg4Degree4V = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_4_V,
-    kLens3deRadialDeg4Direction = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DIRECTION,
+    kLens3deRadialDeg4Degree2Distortion =
+        ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_DISTORTION,
+    kLens3deRadialDeg4Degree2U =
+        ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_U,
+    kLens3deRadialDeg4Degree2V =
+        ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_V,
+    kLens3deRadialDeg4Degree4Distortion =
+        ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_4_DISTORTION,
+    kLens3deRadialDeg4Degree4U =
+        ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_4_U,
+    kLens3deRadialDeg4Degree4V =
+        ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_4_V,
+    kLens3deRadialDeg4Direction =
+        ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DIRECTION,
     kLens3deRadialDeg4Bending = ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_BENDING,
 
-    kLens3deAnamorphicDeg4Degree2Cx02 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_2_CX02,
-    kLens3deAnamorphicDeg4Degree2Cy02 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_2_CY02,
-    kLens3deAnamorphicDeg4Degree2Cx22 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_2_CX22,
-    kLens3deAnamorphicDeg4Degree2Cy22 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_2_CY22,
-    kLens3deAnamorphicDeg4Degree4Cx04 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_4_CX04,
-    kLens3deAnamorphicDeg4Degree4Cy04 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_4_CY04,
-    kLens3deAnamorphicDeg4Degree4Cx24 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_4_CX24,
-    kLens3deAnamorphicDeg4Degree4Cy24 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_4_CY24,
-    kLens3deAnamorphicDeg4Degree4Cx44 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_4_CX44,
-    kLens3deAnamorphicDeg4Degree4Cy44 = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_4_CY44,
-    kLens3deAnamorphicDeg4LensRotation = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_LENS_ROTATION,
-    kLens3deAnamorphicDeg4SqueezeX = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_SQUEEZE_X,
-    kLens3deAnamorphicDeg4SqueezeY = ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_SQUEEZE_Y,
+    kLens3deAnamorphicDeg4Degree2Cx02 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_2_CX02,
+    kLens3deAnamorphicDeg4Degree2Cy02 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_2_CY02,
+    kLens3deAnamorphicDeg4Degree2Cx22 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_2_CX22,
+    kLens3deAnamorphicDeg4Degree2Cy22 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_2_CY22,
+    kLens3deAnamorphicDeg4Degree4Cx04 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_4_CX04,
+    kLens3deAnamorphicDeg4Degree4Cy04 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_4_CY04,
+    kLens3deAnamorphicDeg4Degree4Cx24 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_4_CX24,
+    kLens3deAnamorphicDeg4Degree4Cy24 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_4_CY24,
+    kLens3deAnamorphicDeg4Degree4Cx44 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_4_CX44,
+    kLens3deAnamorphicDeg4Degree4Cy44 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_4_CY44,
+    kLens3deAnamorphicDeg4LensRotation =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_LENS_ROTATION,
+    kLens3deAnamorphicDeg4SqueezeX =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_SQUEEZE_X,
+    kLens3deAnamorphicDeg4SqueezeY =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_SQUEEZE_Y,
 };
 
-inline
-AttrSolverType
-computeSolverAttrType(ObjectType objectType,
-                      MString &attrName) {
+inline AttrSolverType computeSolverAttrType(ObjectType objectType,
+                                            MString &attrName) {
     auto attr_type = AttrSolverType::kUnknown;
     if (objectType == ObjectType::kBundle) {
         // A bundle node.
@@ -283,7 +301,6 @@ computeSolverAttrType(ObjectType objectType,
     return attr_type;
 }
 
-
 class Attr {
 public:
     Attr();
@@ -319,16 +336,11 @@ public:
     MStatus getValue(double &value, const int timeEvalMode);
     MStatus getValue(MMatrix &value, const int timeEvalMode);
 
-    MStatus setValue(
-        const double value,
-        const MTime &time,
-        MDGModifier &dgmod,
-        MAnimCurveChange &animChange);
+    MStatus setValue(const double value, const MTime &time, MDGModifier &dgmod,
+                     MAnimCurveChange &animChange);
 
-    MStatus setValue(
-        const double value,
-        MDGModifier &dgmod,
-        MAnimCurveChange &animChange);
+    MStatus setValue(const double value, MDGModifier &dgmod,
+                     MAnimCurveChange &animChange);
 
     double getMinimumValue() const;
     double getMaximumValue() const;
@@ -370,7 +382,6 @@ private:
     double m_angularFactorInv;
 };
 
-
 typedef std::vector<Attr> AttrList;
 typedef AttrList::iterator AttrListIt;
 
@@ -378,7 +389,6 @@ typedef std::shared_ptr<Attr> AttrPtr;
 typedef std::vector<std::shared_ptr<Attr> > AttrPtrList;
 typedef AttrPtrList::iterator AttrPtrListIt;
 typedef AttrPtrList::const_iterator AttrPtrListCIt;
-
 
 struct SmoothAttrs {
     int attrIndex;
@@ -395,7 +405,6 @@ typedef std::vector<std::shared_ptr<SmoothAttrs> > SmoothAttrsPtrList;
 typedef SmoothAttrsPtrList::iterator SmoothAttrsPtrListIt;
 typedef SmoothAttrsPtrList::const_iterator SmoothAttrsPtrListCIt;
 
-
 struct StiffAttrs {
     int attrIndex;
     AttrPtr weightAttr;
@@ -411,5 +420,4 @@ typedef std::vector<std::shared_ptr<StiffAttrs> > StiffAttrsPtrList;
 typedef StiffAttrsPtrList::iterator StiffAttrsPtrListIt;
 typedef StiffAttrsPtrList::const_iterator StiffAttrsPtrListCIt;
 
-
-#endif // MM_SOLVER_MAYA_HELPER_MAYA_ATTR_H
+#endif  // MM_SOLVER_MAYA_HELPER_MAYA_ATTR_H

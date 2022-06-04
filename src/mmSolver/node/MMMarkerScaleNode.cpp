@@ -17,30 +17,31 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Simple computation node to keep markers in screen-space when the camera filmback/focal length is modified.
+ * Simple computation node to keep markers in screen-space when the camera
+ * filmback/focal length is modified.
  */
 
 #include "MMMarkerScaleNode.h"
 
 // STL
-#include <cstring>
 #include <cmath>
+#include <cstring>
 
 // Maya
-#include <maya/MPlug.h>
-#include <maya/MObjectArray.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
-#include <maya/MFnNumericAttribute.h>
-#include <maya/MFnEnumAttribute.h>
 #include <maya/MFnCompoundAttribute.h>
+#include <maya/MFnEnumAttribute.h>
+#include <maya/MFnNumericAttribute.h>
+#include <maya/MObjectArray.h>
+#include <maya/MPlug.h>
 
 // MM Solver
+#include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
-#include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
 
@@ -84,22 +85,21 @@ MString MMMarkerScaleNode::nodeName() {
 MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {
     MStatus status = MS::kUnknownParameter;
 
-    if ((plug == a_outTranslate)
-        || (plug == a_outTranslateX)
-        || (plug == a_outTranslateY)
-        || (plug == a_outTranslateZ)
-        || (plug == a_outScale)
-        || (plug == a_outScaleX)
-        || (plug == a_outScaleY)
-        || (plug == a_outScaleZ)) {
+    if ((plug == a_outTranslate) || (plug == a_outTranslateX) ||
+        (plug == a_outTranslateY) || (plug == a_outTranslateZ) ||
+        (plug == a_outScale) || (plug == a_outScaleX) ||
+        (plug == a_outScaleY) || (plug == a_outScaleZ)) {
         // Get Data Handles
         MDataHandle focalLengthHandle = data.inputValue(a_focalLength);
         MDataHandle filmBackXHandle = data.inputValue(a_horizontalFilmAperture);
         MDataHandle filmBackYHandle = data.inputValue(a_verticalFilmAperture);
-        MDataHandle filmBackOffsetXHandle = data.inputValue(a_horizontalFilmOffset);
-        MDataHandle filmBackOffsetYHandle = data.inputValue(a_verticalFilmOffset);
+        MDataHandle filmBackOffsetXHandle =
+            data.inputValue(a_horizontalFilmOffset);
+        MDataHandle filmBackOffsetYHandle =
+            data.inputValue(a_verticalFilmOffset);
         MDataHandle depthHandle = data.inputValue(a_depth);
-        MDataHandle overscanModeHandle = data.inputValue(a_overscanMode, &status);
+        MDataHandle overscanModeHandle =
+            data.inputValue(a_overscanMode, &status);
         MDataHandle overscanHandle = data.inputValue(a_overscan);
         MDataHandle overscanXHandle = data.inputValue(a_overscanX);
         MDataHandle overscanYHandle = data.inputValue(a_overscanY);
@@ -125,12 +125,15 @@ MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {
         double scale = 0.0;
         getCameraPlaneScale(filmBackX, focalLength, scale);
 
-        double translateX = scale * depth * (filmBackOffsetX/(filmBackX * 0.5));
-        double translateY = scale * depth * (filmBackOffsetY/(filmBackY * 0.5)) * (filmBackY/filmBackX);
+        double translateX =
+            scale * depth * (filmBackOffsetX / (filmBackX * 0.5));
+        double translateY = scale * depth *
+                            (filmBackOffsetY / (filmBackY * 0.5)) *
+                            (filmBackY / filmBackX);
         double translateZ = 0.0;
 
         double scaleX = scale * depth * 2.0;
-        double scaleY = scale * depth * 2.0 * (filmBackY/filmBackX);
+        double scaleY = scale * depth * 2.0 * (filmBackY / filmBackX);
         double scaleZ = depth;
 
         // Apply Overscan factor
@@ -198,9 +201,7 @@ MStatus MMMarkerScaleNode::compute(const MPlug &plug, MDataBlock &data) {
     return status;
 }
 
-void *MMMarkerScaleNode::creator() {
-    return (new MMMarkerScaleNode());
-}
+void *MMMarkerScaleNode::creator() { return (new MMMarkerScaleNode()); }
 
 MStatus MMMarkerScaleNode::initialize() {
     MStatus status;
@@ -209,24 +210,21 @@ MStatus MMMarkerScaleNode::initialize() {
     MFnCompoundAttribute compoundAttr;
 
     // Focal Length (millimetres)
-    a_focalLength = numericAttr.create(
-            "focalLength", "fl",
-            MFnNumericData::kDouble, 35.0);
+    a_focalLength =
+        numericAttr.create("focalLength", "fl", MFnNumericData::kDouble, 35.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_focalLength));
 
     // Horizontal Film Aperture (inches)
     a_horizontalFilmAperture = numericAttr.create(
-            "horizontalFilmAperture", "hfa",
-            MFnNumericData::kDouble, 1.41732);
+        "horizontalFilmAperture", "hfa", MFnNumericData::kDouble, 1.41732);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
 
     // Vertical Film Aperture (inches)
     a_verticalFilmAperture = numericAttr.create(
-            "verticalFilmAperture", "vfa",
-            MFnNumericData::kDouble, 0.94488);
+        "verticalFilmAperture", "vfa", MFnNumericData::kDouble, 0.94488);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
 
@@ -238,16 +236,14 @@ MStatus MMMarkerScaleNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_cameraAperture));
 
     // Horizontal Film Offset (inches)
-    a_horizontalFilmOffset = numericAttr.create(
-            "horizontalFilmOffset", "hfo",
-            MFnNumericData::kDouble, 0.0);
+    a_horizontalFilmOffset = numericAttr.create("horizontalFilmOffset", "hfo",
+                                                MFnNumericData::kDouble, 0.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
 
     // Vertical Film Offset (inches)
-    a_verticalFilmOffset = numericAttr.create(
-            "verticalFilmOffset", "vfo",
-            MFnNumericData::kDouble, 0.0);
+    a_verticalFilmOffset = numericAttr.create("verticalFilmOffset", "vfo",
+                                              MFnNumericData::kDouble, 0.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
 
@@ -259,16 +255,13 @@ MStatus MMMarkerScaleNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_filmOffset));
 
     // Depth
-    a_depth = numericAttr.create(
-            "depth", "dpt",
-            MFnNumericData::kDouble, 1.0);
+    a_depth = numericAttr.create("depth", "dpt", MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_depth));
 
     // Overscan Mode; 0='uniform', 1='overscan x and y'
-    a_overscanMode = enumAttr.create(
-        "overscanMode", "ovrscnmd", 0, &status);
+    a_overscanMode = enumAttr.create("overscanMode", "ovrscnmd", 0, &status);
     CHECK_MSTATUS(status);
     CHECK_MSTATUS(enumAttr.addField("Uniform", 0));
     CHECK_MSTATUS(enumAttr.addField("Overscan X and Y", 1));
@@ -277,9 +270,8 @@ MStatus MMMarkerScaleNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_overscanMode));
 
     // Overscan
-    a_overscan = numericAttr.create(
-            "overscan", "ovrscn",
-            MFnNumericData::kDouble, 1.0);
+    a_overscan =
+        numericAttr.create("overscan", "ovrscn", MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(numericAttr.setHidden(true));
@@ -287,70 +279,62 @@ MStatus MMMarkerScaleNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_overscan));
 
     // Overscan X
-    a_overscanX = numericAttr.create(
-            "overscanX", "ovrscnx",
-            MFnNumericData::kDouble, 1.0);
+    a_overscanX = numericAttr.create("overscanX", "ovrscnx",
+                                     MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(numericAttr.setHidden(true));
     CHECK_MSTATUS(addAttribute(a_overscanX));
 
     // Overscan Y
-    a_overscanY = numericAttr.create(
-            "overscanY", "ovrscny",
-            MFnNumericData::kDouble, 1.0);
+    a_overscanY = numericAttr.create("overscanY", "ovrscny",
+                                     MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(numericAttr.setHidden(true));
     CHECK_MSTATUS(addAttribute(a_overscanY));
 
     // Overscan Inverse
-    a_overscanInverse = numericAttr.create(
-            "overscanInverse", "ovrscninv",
-            MFnNumericData::kDouble, 1.0);
+    a_overscanInverse = numericAttr.create("overscanInverse", "ovrscninv",
+                                           MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(numericAttr.setNiceNameOverride("Uniform Overscan Inverse"));
     CHECK_MSTATUS(addAttribute(a_overscanInverse));
 
     // Overscan Inverse X
-    a_overscanInverseX = numericAttr.create(
-            "overscanInverseX", "ovrscninvx",
-            MFnNumericData::kDouble, 1.0);
+    a_overscanInverseX = numericAttr.create("overscanInverseX", "ovrscninvx",
+                                            MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_overscanInverseX));
 
     // Overscan Inverse Y
-    a_overscanInverseY = numericAttr.create(
-            "overscanInverseY", "ovrscninvy",
-            MFnNumericData::kDouble, 1.0);
+    a_overscanInverseY = numericAttr.create("overscanInverseY", "ovrscninvy",
+                                            MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_overscanInverseY));
 
     // Out Translate X
-    a_outTranslateX = numericAttr.create(
-            "outTranslateX", "otx",
-            MFnNumericData::kDouble, 0.0);
+    a_outTranslateX = numericAttr.create("outTranslateX", "otx",
+                                         MFnNumericData::kDouble, 0.0);
     CHECK_MSTATUS(numericAttr.setStorable(false));
     CHECK_MSTATUS(numericAttr.setKeyable(false));
     CHECK_MSTATUS(numericAttr.setReadable(true));
     CHECK_MSTATUS(numericAttr.setWritable(false));
 
     // Out Translate Y
-    a_outTranslateY = numericAttr.create(
-            "outTranslateY", "oty",
-            MFnNumericData::kDouble, 0.0);
+    a_outTranslateY = numericAttr.create("outTranslateY", "oty",
+                                         MFnNumericData::kDouble, 0.0);
     CHECK_MSTATUS(numericAttr.setStorable(false));
     CHECK_MSTATUS(numericAttr.setKeyable(false));
     CHECK_MSTATUS(numericAttr.setReadable(true));
     CHECK_MSTATUS(numericAttr.setWritable(false));
 
     // Out Translate Z
-    a_outTranslateZ = numericAttr.create(
-            "outTranslateZ", "otz",
-            MFnNumericData::kDouble, 0.0, &status);
+    a_outTranslateZ = numericAttr.create("outTranslateZ", "otz",
+                                         MFnNumericData::kDouble, 0.0, &status);
     CHECK_MSTATUS(status);
     CHECK_MSTATUS(numericAttr.setStorable(false));
     CHECK_MSTATUS(numericAttr.setKeyable(false));
@@ -366,27 +350,24 @@ MStatus MMMarkerScaleNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_outTranslate));
 
     // Out Scale X
-    a_outScaleX = numericAttr.create(
-            "outScaleX", "osx",
-            MFnNumericData::kDouble, 1.0);
+    a_outScaleX =
+        numericAttr.create("outScaleX", "osx", MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(numericAttr.setStorable(false));
     CHECK_MSTATUS(numericAttr.setKeyable(false));
     CHECK_MSTATUS(numericAttr.setReadable(true));
     CHECK_MSTATUS(numericAttr.setWritable(false));
 
     // Out Scale Y
-    a_outScaleY = numericAttr.create(
-            "outScaleY", "osy",
-            MFnNumericData::kDouble, 1.0);
+    a_outScaleY =
+        numericAttr.create("outScaleY", "osy", MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(numericAttr.setStorable(false));
     CHECK_MSTATUS(numericAttr.setKeyable(false));
     CHECK_MSTATUS(numericAttr.setReadable(true));
     CHECK_MSTATUS(numericAttr.setWritable(false));
 
     // Out Scale Z
-    a_outScaleZ = numericAttr.create(
-            "outScaleZ", "osz",
-            MFnNumericData::kDouble, 1.0, &status);
+    a_outScaleZ = numericAttr.create("outScaleZ", "osz",
+                                     MFnNumericData::kDouble, 1.0, &status);
     CHECK_MSTATUS(status);
     CHECK_MSTATUS(numericAttr.setStorable(false));
     CHECK_MSTATUS(numericAttr.setKeyable(false));
@@ -429,11 +410,10 @@ MStatus MMMarkerScaleNode::initialize() {
     outputAttrs.append(a_outScaleY);
     outputAttrs.append(a_outScaleZ);
 
-    CHECK_MSTATUS(MMNodeInitUtils::attributeAffectsMulti(
-                      inputAttrs,
-                      outputAttrs));
+    CHECK_MSTATUS(
+        MMNodeInitUtils::attributeAffectsMulti(inputAttrs, outputAttrs));
 
     return (MS::kSuccess);
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

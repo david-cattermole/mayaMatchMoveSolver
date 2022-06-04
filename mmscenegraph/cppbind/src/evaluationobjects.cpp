@@ -19,69 +19,56 @@
  *
  */
 
+#include <mmscenegraph/evaluationobjects.h>
+
 #include <iostream>
 #include <string>
-#include <mmscenegraph/evaluationobjects.h>
 
 namespace mmscenegraph {
 
 EvaluationObjects::EvaluationObjects() noexcept
-        : inner_(shim_create_evaluation_objects_box()) {
-}
+    : inner_(shim_create_evaluation_objects_box()) {}
 
-rust::Box<ShimEvaluationObjects>
-EvaluationObjects::get_inner() noexcept {
+rust::Box<ShimEvaluationObjects> EvaluationObjects::get_inner() noexcept {
     return std::move(inner_);
 }
 
-void
-EvaluationObjects::clear_all() noexcept {
-    return inner_->clear_all();
-}
+void EvaluationObjects::clear_all() noexcept { return inner_->clear_all(); }
 
-void
-EvaluationObjects::clear_bundles() noexcept {
+void EvaluationObjects::clear_bundles() noexcept {
     return inner_->clear_bundles();
 }
 
-void
-EvaluationObjects::clear_cameras() noexcept {
+void EvaluationObjects::clear_cameras() noexcept {
     return inner_->clear_cameras();
 }
 
-void
-EvaluationObjects::clear_markers() noexcept {
+void EvaluationObjects::clear_markers() noexcept {
     return inner_->clear_markers();
 }
 
-size_t
-EvaluationObjects::num_bundles() const noexcept {
+size_t EvaluationObjects::num_bundles() const noexcept {
     return inner_->num_bundles();
 }
 
-size_t
-EvaluationObjects::num_cameras() const noexcept {
+size_t EvaluationObjects::num_cameras() const noexcept {
     return inner_->num_cameras();
 }
 
-size_t
-EvaluationObjects::num_markers() const noexcept {
+size_t EvaluationObjects::num_markers() const noexcept {
     return inner_->num_markers();
 }
 
-void
-EvaluationObjects::add_bundle(BundleNode &bnd_node) noexcept {
+void EvaluationObjects::add_bundle(BundleNode &bnd_node) noexcept {
     return inner_->add_bundle(bnd_node);
 }
 
-void
-EvaluationObjects::add_camera(CameraNode &cam_node) noexcept {
+void EvaluationObjects::add_camera(CameraNode &cam_node) noexcept {
     return inner_->add_camera(cam_node);
 }
 
-void
-EvaluationObjects::add_marker(MarkerNode &mkr_node) noexcept {
+void EvaluationObjects::add_marker(MarkerNode &mkr_node) noexcept {
     return inner_->add_marker(mkr_node);
 }
 
-} // namespace mmscenegraph
+}  // namespace mmscenegraph

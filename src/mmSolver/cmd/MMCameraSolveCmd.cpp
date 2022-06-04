@@ -29,91 +29,91 @@
 
 // Compiler Warning (level 3) C4267: conversion from 'size_t' to
 // 'object', possible loss of data.
-#pragma warning( disable : 4267 )
+#pragma warning(disable : 4267)
 
 // Compiler Warning (level 1) C4305: truncation from 'type1' to
 // 'type2'.
-#pragma warning( disable : 4305 )
+#pragma warning(disable : 4305)
 
 // Compiler Warning (level 4) C4127: conditional expression is
 // constant
-#pragma warning( disable : 4127 )
+#pragma warning(disable : 4127)
 
 // Compiler Warning (levels 3 and 4) C4244: 'conversion' conversion
 // from 'type1' to 'type2', possible loss of data.
-#pragma warning( disable : 4244 )
+#pragma warning(disable : 4244)
 
 // Compiler Warning (level 4) C4459: declaration of 'identifier' hides
 // global declaration.
-#pragma warning( disable : 4459 )
+#pragma warning(disable : 4459)
 
 // Compiler Warning (level 4) C4456: declaration of 'identifier' hides
 // previous local declaration.
-#pragma warning( disable : 4456 )
+#pragma warning(disable : 4456)
 
 // Compiler Warning (level 4) C4100: 'identifier' : unreferenced
 // formal parameter.
-#pragma warning( disable : 4100 )
+#pragma warning(disable : 4100)
 
 // Compiler Warning (level 3) C4018: 'token' : signed/unsigned
 // mismatch.
-#pragma warning( disable : 4018 )
+#pragma warning(disable : 4018)
 
 // Compiler Warning (level 4) C4714: function 'function' marked as
 // __forceinline not inlined.
-#pragma warning( disable : 4714 )
+#pragma warning(disable : 4714)
 
 // Compiler Warning (level 1) C4005: 'identifier' : macro
 // redefinition.
-#pragma warning( disable : 4005 )
+#pragma warning(disable : 4005)
 
 // Compiler Warning (level 4) C4702: unreachable code.
-#pragma warning( disable : 4702 )
+#pragma warning(disable : 4702)
 
 // Internal
 #include "MMCameraSolveCmd.h"
 
 // STL
-#include <vector>
-#include <cmath>
-#include <cassert>
-#include <list>
-#include <string>
 #include <algorithm>
+#include <cassert>
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <iterator>
-#include <map>
 #include <limits>
+#include <list>
+#include <map>
+#include <string>
+#include <vector>
 
 // Ceres Solver
 #ifdef MMSOLVER_USE_CERES
 
-#pragma warning( push )
+#pragma warning(push)
 // Compiler Warning (level 1) C4251: needs to have dll-interface to be
 // used by clients of class.
-#pragma warning( disable : 4251 )
+#pragma warning(disable : 4251)
 #include <ceres/ceres.h>
 // #include <glog/logging.h>
-#pragma warning( pop )
+#pragma warning(pop)
 
 #endif  // MMSOLVER_USE_CERES
 
 // LibMV
 #ifdef MMSOLVER_USE_LIBMV
 
+#include <libmv/base/scoped_ptr.h>
 #include <libmv/base/vector.h>
 #include <libmv/base/vector_utils.h>
-#include <libmv/base/scoped_ptr.h>
 #include <libmv/camera/pinhole_camera.h>
 #include <libmv/correspondence/export_matches_txt.h>
 #include <libmv/correspondence/feature.h>
 #include <libmv/correspondence/feature_matching.h>
-#include <libmv/correspondence/nRobustViewMatching.h>
 #include <libmv/correspondence/import_matches_txt.h>
+#include <libmv/correspondence/nRobustViewMatching.h>
 #include <libmv/correspondence/tracker.h>
-#include <libmv/detector/detector_factory.h>
 #include <libmv/descriptor/descriptor_factory.h>
+#include <libmv/detector/detector_factory.h>
 #include <libmv/image/image.h>
 #include <libmv/image/image_converter.h>
 #include <libmv/image/image_drawing.h>
@@ -123,26 +123,27 @@
 #include <libmv/reconstruction/euclidean_reconstruction.h>
 #include <libmv/reconstruction/export_blender.h>
 #include <libmv/reconstruction/export_ply.h>
-#include <libmv/tools/tool.h>
-#include <libmv/simple_pipeline/tracks.h>
-#include <libmv/simple_pipeline/keyframe_selection.h>
 #include <libmv/reconstruction/keyframe_selection.h>
 #include <libmv/simple_pipeline/camera_intrinsics.h>
+#include <libmv/simple_pipeline/keyframe_selection.h>
 #include <libmv/simple_pipeline/packed_intrinsics.h>
+#include <libmv/simple_pipeline/tracks.h>
+#include <libmv/tools/tool.h>
 
 #endif  // MMSOLVER_USE_LIBMV
 
 // OpenMVG
 #ifdef MMSOLVER_USE_OPENMVG
 
+#include <openMVG/numeric/numeric.h>
+
 #include <openMVG/features/feature.hpp>
 #include <openMVG/features/feature_container.hpp>
-#include <openMVG/matching/regions_matcher.hpp>
 #include <openMVG/matching/indMatch.hpp>
-#include <openMVG/multiview/solver_fundamental_kernel.hpp>
+#include <openMVG/matching/regions_matcher.hpp>
 #include <openMVG/multiview/conditioning.hpp>
+#include <openMVG/multiview/solver_fundamental_kernel.hpp>
 #include <openMVG/numeric/eigen_alias_definition.hpp>
-#include <openMVG/numeric/numeric.h>
 #include <openMVG/robust_estimation/robust_estimator_ACRansac.hpp>
 #include <openMVG/robust_estimation/robust_estimator_ACRansacKernelAdaptator.hpp>
 #include <openMVG/types.hpp>
@@ -150,27 +151,27 @@
 #endif  // MMSOLVER_USE_OPENMVG
 
 // Maya
-#include <maya/MSyntax.h>
-#include <maya/MArgList.h>
 #include <maya/MArgDatabase.h>
-#include <maya/MString.h>
-#include <maya/MStringArray.h>
-#include <maya/MObject.h>
-#include <maya/MPlug.h>
-#include <maya/MTime.h>
-#include <maya/MTimeArray.h>
-#include <maya/MMatrix.h>
-#include <maya/MMatrixArray.h>
+#include <maya/MArgList.h>
 #include <maya/MDagPath.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MItSelectionList.h>
+#include <maya/MMatrix.h>
+#include <maya/MMatrixArray.h>
+#include <maya/MObject.h>
+#include <maya/MPlug.h>
+#include <maya/MString.h>
+#include <maya/MStringArray.h>
+#include <maya/MSyntax.h>
+#include <maya/MTime.h>
+#include <maya/MTimeArray.h>
 
 // MM Solver
-#include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/adjust/adjust_defines.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/adjust/adjust_defines.h"
+#include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
 
@@ -191,33 +192,23 @@ using MMCamera = Camera;
 
 // #endif  // MMSOLVER_USE_GLOG
 
-using KernelType =
-    openMVG::robust::ACKernelAdaptor<
+using KernelType = openMVG::robust::ACKernelAdaptor<
     openMVG::fundamental::kernel::NormalizedEightPointKernel,
     openMVG::fundamental::kernel::SymmetricEpipolarDistanceError,
-    openMVG::UnnormalizerT,
-    openMVG::Mat3>;
+    openMVG::UnnormalizerT, openMVG::Mat3>;
 
 MMCameraSolveCmd::~MMCameraSolveCmd() {}
 
-void *MMCameraSolveCmd::creator() {
-    return new MMCameraSolveCmd();
-}
+void *MMCameraSolveCmd::creator() { return new MMCameraSolveCmd(); }
 
-MString MMCameraSolveCmd::cmdName() {
-    return MString("mmCameraSolve");
-}
+MString MMCameraSolveCmd::cmdName() { return MString("mmCameraSolve"); }
 
 /*
  * Tell Maya we have a syntax function.
  */
-bool MMCameraSolveCmd::hasSyntax() const {
-    return true;
-}
+bool MMCameraSolveCmd::hasSyntax() const { return true; }
 
-bool MMCameraSolveCmd::isUndoable() const {
-    return false;
-}
+bool MMCameraSolveCmd::isUndoable() const { return false; }
 
 /*
  * Add flags to the command syntax
@@ -236,15 +227,9 @@ MSyntax MMCameraSolveCmd::newSyntax() {
     return syntax;
 }
 
-bool get_marker_coord(
-    const uint32_t frame_num,
-    const MTime::Unit &uiUnit,
-    MMMarker &mkr,
-    double &x,
-    double &y,
-    double &weight,
-    bool &enable) {
-
+bool get_marker_coord(const uint32_t frame_num, const MTime::Unit &uiUnit,
+                      MMMarker &mkr, double &x, double &y, double &weight,
+                      bool &enable) {
     auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     auto frame = static_cast<double>(frame_num);
     MTime time = MTime(frame, uiUnit);
@@ -257,13 +242,8 @@ bool get_marker_coord(
     return weight > 0;
 }
 
-bool get_camera_image_res(
-    const uint32_t frame_num,
-    const MTime::Unit &uiUnit,
-    MMCamera &cam,
-    int &image_width,
-    int &image_height) {
-
+bool get_camera_image_res(const uint32_t frame_num, const MTime::Unit &uiUnit,
+                          MMCamera &cam, int &image_width, int &image_height) {
     auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     auto frame = static_cast<double>(frame_num);
     MTime time = MTime(frame, uiUnit);
@@ -337,18 +317,10 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
             cam.setTransformNodeName(transform_node_name);
             cam.setShapeNodeName(shape_node_name);
 
-            get_camera_image_res(
-                m_startFrame,
-                uiUnit,
-                cam,
-                m_image_width_a,
-                m_image_height_a);
-            get_camera_image_res(
-                m_endFrame,
-                uiUnit,
-                cam,
-                m_image_width_b,
-                m_image_height_b);
+            get_camera_image_res(m_startFrame, uiUnit, cam, m_image_width_a,
+                                 m_image_height_a);
+            get_camera_image_res(m_endFrame, uiUnit, cam, m_image_width_b,
+                                 m_image_height_b);
         }
     }
     MMSOLVER_INFO("image A: " << m_image_width_a << "x" << m_image_height_a);
@@ -384,22 +356,22 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
             double weight_a = 1.0;
             double weight_b = 1.0;
 
-            auto success_a = get_marker_coord(
-                m_startFrame, uiUnit, mkr,
-                x_a, y_a,
-                weight_a, enable_a);
-            auto success_b = get_marker_coord(
-                m_endFrame, uiUnit, mkr,
-                x_b, y_b,
-                weight_b, enable_b);
+            auto success_a = get_marker_coord(m_startFrame, uiUnit, mkr, x_a,
+                                              y_a, weight_a, enable_a);
+            auto success_b = get_marker_coord(m_endFrame, uiUnit, mkr, x_b, y_b,
+                                              weight_b, enable_b);
             if (success_a && success_b) {
-                double xx_a = (x_a + 0.5) * static_cast<double>(m_image_width_a);
-                double yy_a = (y_a + 0.5) * static_cast<double>(m_image_height_a);
-                double xx_b = (x_b + 0.5) * static_cast<double>(m_image_width_b);
-                double yy_b = (y_b + 0.5) * static_cast<double>(m_image_height_b);
-                MMSOLVER_INFO("x_a : " << x_a  << " y_a : " << y_a);
+                double xx_a =
+                    (x_a + 0.5) * static_cast<double>(m_image_width_a);
+                double yy_a =
+                    (y_a + 0.5) * static_cast<double>(m_image_height_a);
+                double xx_b =
+                    (x_b + 0.5) * static_cast<double>(m_image_width_b);
+                double yy_b =
+                    (y_b + 0.5) * static_cast<double>(m_image_height_b);
+                MMSOLVER_INFO("x_a : " << x_a << " y_a : " << y_a);
                 MMSOLVER_INFO("xx_a: " << xx_a << " yy_a: " << yy_a);
-                MMSOLVER_INFO("x_b : " << x_b  << " y_b : " << y_b);
+                MMSOLVER_INFO("x_b : " << x_b << " y_b : " << y_b);
                 MMSOLVER_INFO("xx_b: " << xx_b << " yy_b: " << yy_b);
                 auto xy_a = std::pair<double, double>{xx_a, yy_a};
                 auto xy_b = std::pair<double, double>{xx_b, yy_b};
@@ -412,11 +384,9 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
     return status;
 }
 
-
 #ifdef MMSOLVER_USE_LIBMV
 
-void get_file_path_extension(const std::string &file,
-                             std::string *path_name,
+void get_file_path_extension(const std::string &file, std::string *path_name,
                              std::string *ext) {
     size_t dot_pos = file.rfind(".");
     if (dot_pos != std::string::npos) {
@@ -430,11 +400,10 @@ void get_file_path_extension(const std::string &file,
 
 #endif  // MMSOLVER_USE_LIBMV
 
-
 #ifdef MMSOLVER_USE_CERES
 
 struct CostFunctor {
-    template<typename T>
+    template <typename T>
     bool operator()(const T *const x, T *residual) const {
         residual[0] = 10.0 - x[0];
         return true;
@@ -527,7 +496,7 @@ const double data[] = {
 struct ExponentialResidual {
     ExponentialResidual(double x, double y) : x_(x), y_(y) {}
 
-    template<typename T>
+    template <typename T>
     bool operator()(const T *const m, const T *const c, T *residual) const {
         residual[0] = y_ - exp(m[0] * x_ + c[0]);
         return true;
@@ -570,8 +539,7 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         // Set up the only cost function (also known as residual). This uses
         // auto-differentiation to obtain the derivative (jacobian).
         ceres::CostFunction *cost_function =
-            new ceres::AutoDiffCostFunction<CostFunctor, 1, 1>(
-                new CostFunctor);
+            new ceres::AutoDiffCostFunction<CostFunctor, 1, 1>(new CostFunctor);
         problem.AddResidualBlock(cost_function, nullptr, &x);
 
         // Run the solver!
@@ -596,11 +564,8 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         for (int i = 0; i < kNumObservations; ++i) {
             problem.AddResidualBlock(
                 new ceres::AutoDiffCostFunction<ExponentialResidual, 1, 1, 1>(
-                    new ExponentialResidual(data[2 * i],
-                                            data[2 * i + 1])),
-                nullptr,
-                &m,
-                &c);
+                    new ExponentialResidual(data[2 * i], data[2 * i + 1])),
+                nullptr, &m, &c);
         }
 
         ceres::Solver::Options options;
@@ -672,11 +637,8 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
 
         MMSOLVER_INFO("Euclidean Reconstruction From Video...");
         std::list<libmv::Reconstruction *> reconstructions;
-        EuclideanReconstructionFromVideo(
-            fg.matches_,
-            w, h,
-            focal_length,
-            &reconstructions);
+        EuclideanReconstructionFromVideo(fg.matches_, w, h, focal_length,
+                                         &reconstructions);
         MMSOLVER_INFO("Euclidean Reconstruction From Video...[DONE]");
 
         // Exports the reconstructions
@@ -688,7 +650,8 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
                        ::tolower);
 
         int i = 0;
-        std::list<libmv::Reconstruction *>::iterator iter = reconstructions.begin();
+        std::list<libmv::Reconstruction *>::iterator iter =
+            reconstructions.begin();
         if (file_ext == "ply") {
             for (; iter != reconstructions.end(); ++iter) {
                 std::stringstream s;
@@ -707,7 +670,8 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
                     s << output_file_path;
                 libmv::ExportToBlenderScript(**iter, s.str());
             }
-        }MMSOLVER_INFO("Exporting Reconstructions...[DONE]");
+        }
+        MMSOLVER_INFO("Exporting Reconstructions...[DONE]");
 
         // Cleaning
         MMSOLVER_INFO("Cleaning.");
@@ -744,10 +708,9 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         }
 
         MMSOLVER_INFO("num_markers: " << num_markers);
-        KernelType kernel(
-            marker_coords_a, m_image_width_a, m_image_height_a,
-            marker_coords_b, m_image_width_b, m_image_height_b,
-            point_to_line);
+        KernelType kernel(marker_coords_a, m_image_width_a, m_image_height_a,
+                          marker_coords_b, m_image_width_b, m_image_height_b,
+                          point_to_line);
         MMSOLVER_INFO("kernel.NumSamples(): " << kernel.NumSamples());
         MMSOLVER_INFO("kernel.logalpha0(): " << kernel.logalpha0());
         MMSOLVER_INFO("kernel.multError(): " << kernel.multError());
@@ -757,34 +720,31 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
         std::vector<uint32_t> inliers;
         openMVG::Mat3 matrix;
         const std::pair<double, double> ac_ransac_out =
-            openMVG::robust::ACRANSAC(
-                kernel,
-                inliers,
-                num_max_iteration,
-                &matrix,
-                precision,
-                verbose);
+            openMVG::robust::ACRANSAC(kernel, inliers, num_max_iteration,
+                                      &matrix, precision, verbose);
         const double &errorMax = ac_ransac_out.first;
         const double &minNFA = ac_ransac_out.second;
         auto number_of_inliers = inliers.size();
         MMSOLVER_INFO("errorMax: " << errorMax << " pixels");
         MMSOLVER_INFO("minNFA: " << minNFA);
-        MMSOLVER_INFO("KernelType::MINIMUM_SAMPLES: " << KernelType::MINIMUM_SAMPLES);
+        MMSOLVER_INFO(
+            "KernelType::MINIMUM_SAMPLES: " << KernelType::MINIMUM_SAMPLES);
         MMSOLVER_INFO("matrix: " << matrix);
         MMSOLVER_INFO("inliers.size(): " << number_of_inliers);
 
         // Check the fundamental support some point to be considered
         // as valid.
         if (number_of_inliers > minimal_samples) {
-            MMSOLVER_INFO("Found a fundamental under the confidence threshold of: "
-                 << errorMax << " pixels\n\t"
-                 << "with: " << inliers.size() << " inliers"
-                 << " from: " << num_markers
-                 << " correspondences\n");
+            MMSOLVER_INFO(
+                "Found a fundamental under the confidence threshold of: "
+                << errorMax << " pixels\n\t"
+                << "with: " << inliers.size() << " inliers"
+                << " from: " << num_markers << " correspondences\n");
             outResult.append(errorMax);
             outResult.append(minNFA);
         } else {
-            MMSOLVER_INFO("ACRANSAC was unable to estimate a rigid fundamental");
+            MMSOLVER_INFO(
+                "ACRANSAC was unable to estimate a rigid fundamental");
         }
     }
 
@@ -792,4 +752,4 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
     return status;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

@@ -23,18 +23,18 @@
 #define MM_IMAGE_PLANE_SHAPE_NODE_H
 
 // Maya
-#include <maya/MPxLocatorNode.h>
-#include <maya/MString.h>
-#include <maya/MObject.h>
-#include <maya/MTypeId.h>
-#include <maya/MPlug.h>
-#include <maya/MVector.h>
+#include <maya/MArrayDataBuilder.h>
+#include <maya/MColor.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
-#include <maya/MColor.h>
 #include <maya/MDistance.h>
 #include <maya/MFnUnitAttribute.h>
-#include <maya/MArrayDataBuilder.h>
+#include <maya/MObject.h>
+#include <maya/MPlug.h>
+#include <maya/MPxLocatorNode.h>
+#include <maya/MString.h>
+#include <maya/MTypeId.h>
+#include <maya/MVector.h>
 
 #if MAYA_API_VERSION >= 20190000
 #include <maya/MEvaluationNode.h>
@@ -59,19 +59,15 @@ public:
     bool excludeAsLocator() const;
 
 #if MAYA_API_VERSION >= 20190000
-    MStatus preEvaluation(
-        const MDGContext &context,
-        const MEvaluationNode &evaluationNode
-    ) override;
+    MStatus preEvaluation(const MDGContext &context,
+                          const MEvaluationNode &evaluationNode) override;
 #endif
 
 #if MAYA_API_VERSION >= 20200000
-    void getCacheSetup(
-        const MEvaluationNode &evalNode,
-        MNodeCacheDisablingInfo &disablingInfo,
-        MNodeCacheSetupInfo &cacheSetupInfo,
-        MObjectArray &monitoredAttributes
-    ) const override;
+    void getCacheSetup(const MEvaluationNode &evalNode,
+                       MNodeCacheDisablingInfo &disablingInfo,
+                       MNodeCacheSetupInfo &cacheSetupInfo,
+                       MObjectArray &monitoredAttributes) const override;
 #endif
 
     static void *creator();
@@ -105,6 +101,6 @@ public:
     static MObject m_camera_node;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_IMAGE_PLANE_SHAPE_NODE_H
+#endif  // MM_IMAGE_PLANE_SHAPE_NODE_H

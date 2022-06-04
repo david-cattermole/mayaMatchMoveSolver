@@ -43,27 +43,27 @@
 #include "MMSolverSceneGraphCmd.h"
 
 // STL
-#include <vector>
-#include <cmath>
 #include <cassert>
+#include <cmath>
+#include <vector>
 
 // Maya
-#include <maya/MSyntax.h>
-#include <maya/MArgList.h>
 #include <maya/MArgDatabase.h>
-#include <maya/MString.h>
-#include <maya/MStringArray.h>
-#include <maya/MObject.h>
-#include <maya/MPlug.h>
-#include <maya/MTime.h>
-#include <maya/MTimeArray.h>
-#include <maya/MMatrix.h>
-#include <maya/MMatrixArray.h>
+#include <maya/MArgList.h>
 #include <maya/MDagPath.h>
 #include <maya/MFnDependencyNode.h>
-#include <maya/MUuid.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnNumericData.h>
+#include <maya/MMatrix.h>
+#include <maya/MMatrixArray.h>
+#include <maya/MObject.h>
+#include <maya/MPlug.h>
+#include <maya/MString.h>
+#include <maya/MStringArray.h>
+#include <maya/MSyntax.h>
+#include <maya/MTime.h>
+#include <maya/MTimeArray.h>
+#include <maya/MUuid.h>
 
 // MM Solver
 #include "mmSolver/adjust/adjust_base.h"
@@ -71,10 +71,10 @@
 #include "mmSolver/adjust/adjust_defines.h"
 #include "mmSolver/adjust/adjust_relationships.h"
 #include "mmSolver/cmd/common_arg_flags.h"
+#include "mmSolver/mayahelper/maya_scene_graph.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
-#include "mmSolver/mayahelper/maya_scene_graph.h"
 
 namespace mmsg = mmscenegraph;
 
@@ -82,24 +82,15 @@ namespace mmsolver {
 
 MMSolverSceneGraphCmd::~MMSolverSceneGraphCmd() {}
 
-void *MMSolverSceneGraphCmd::creator() {
-    return new MMSolverSceneGraphCmd();
-}
+void *MMSolverSceneGraphCmd::creator() { return new MMSolverSceneGraphCmd(); }
 
 MString MMSolverSceneGraphCmd::cmdName() {
     return MString("mmSolverSceneGraph");
 }
 
+bool MMSolverSceneGraphCmd::hasSyntax() const { return true; }
 
-bool MMSolverSceneGraphCmd::hasSyntax() const {
-    return true;
-}
-
-
-bool MMSolverSceneGraphCmd::isUndoable() const {
-    return false;
-}
-
+bool MMSolverSceneGraphCmd::isUndoable() const { return false; }
 
 MSyntax MMSolverSceneGraphCmd::newSyntax() {
     MSyntax syntax;
@@ -113,7 +104,6 @@ MSyntax MMSolverSceneGraphCmd::newSyntax() {
     createSolveSceneGraphSyntax(syntax);
     return syntax;
 }
-
 
 MStatus MMSolverSceneGraphCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
@@ -130,28 +120,19 @@ MStatus MMSolverSceneGraphCmd::parseArgs(const MArgList &args) {
         if (string == MODE_VALUE_DEBUG_CONSTRUCT) {
             m_commandMode = CommandMode::kDebugConstruct;
         } else {
-            MMSOLVER_ERR(
-                "Mode value is invalid: "
-                << "mode=" << string.asChar());
+            MMSOLVER_ERR("Mode value is invalid: "
+                         << "mode=" << string.asChar());
         }
     }
 
-    status = parseSolveObjectArguments(
-        argData,
-        m_cameraList,
-        m_markerList,
-        m_bundleList,
-        m_attrList);
+    status = parseSolveObjectArguments(argData, m_cameraList, m_markerList,
+                                       m_bundleList, m_attrList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = parseSolveFramesArguments(
-        argData,
-        m_frameList);
+    status = parseSolveFramesArguments(argData, m_frameList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = parseSolveSceneGraphArguments(
-        argData,
-        m_sceneGraphMode);
+    status = parseSolveSceneGraphArguments(argData, m_sceneGraphMode);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
@@ -172,9 +153,8 @@ MStatus MMSolverSceneGraphCmd::doIt(const MArgList &args) {
 
     // kDebugConstruct is the only command mode that is supported, for now.
     if (m_commandMode != CommandMode::kDebugConstruct) {
-        MMSOLVER_ERR(
-            "Mode value is invalid: m_commandMode="
-            << static_cast<int>(m_commandMode));
+        MMSOLVER_ERR("Mode value is invalid: m_commandMode="
+                     << static_cast<int>(m_commandMode));
         status = MStatus::kFailure;
         return status;
     }
@@ -197,24 +177,13 @@ MStatus MMSolverSceneGraphCmd::doIt(const MArgList &args) {
         auto markerNodes = std::vector<mmsg::MarkerNode>();
         auto attrIdList = std::vector<mmsg::AttrId>();
 
-        status = construct_scene_graph(
-            m_cameraList,
-            m_markerList,
-            m_bundleList,
-            m_attrList,
-            m_frameList,
-            timeEvalMode,
+        status = construct_scene_graph(m_cameraList, m_markerList, m_bundleList,
+                                       m_attrList, m_frameList, timeEvalMode,
 
-            // Outputs
-            sceneGraph,
-            attrDataBlock,
-            flatScene,
-            frameList,
-            cameraNodes,
-            bundleNodes,
-            markerNodes,
-            attrIdList
-        );
+                                       // Outputs
+                                       sceneGraph, attrDataBlock, flatScene,
+                                       frameList, cameraNodes, bundleNodes,
+                                       markerNodes, attrIdList);
         if (status != MS::kSuccess) {
             CHECK_MSTATUS(status);
             // Do not allow this command to fail, we want to allow the
@@ -225,9 +194,8 @@ MStatus MMSolverSceneGraphCmd::doIt(const MArgList &args) {
         }
         MMSolverSceneGraphCmd::setResult(outResult);
     } else {
-        MMSOLVER_ERR(
-            "Scene Graph Mode value is invalid: value="
-            << static_cast<int>(m_sceneGraphMode));
+        MMSOLVER_ERR("Scene Graph Mode value is invalid: value="
+                     << static_cast<int>(m_sceneGraphMode));
         status = MS::kFailure;
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
@@ -235,4 +203,4 @@ MStatus MMSolverSceneGraphCmd::doIt(const MArgList &args) {
     return status;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

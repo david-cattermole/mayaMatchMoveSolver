@@ -20,7 +20,6 @@
  * Universal solver functions, to be used by any library.
  */
 
-
 #ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
 #define MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
 
@@ -30,13 +29,8 @@
 #define SOLVE_FUNC_SUCCESS (0)
 #define SOLVE_FUNC_FAILURE (-1)
 
-
-int solveFunc(const int numberOfParameters,
-              const int numberOfErrors,
-              const double *parameters,
-              double *errors,
-              double *jacobian,
+int solveFunc(const int numberOfParameters, const int numberOfErrors,
+              const double *parameters, double *errors, double *jacobian,
               void *userData);
 
-
-#endif // MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H
+#endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_SOLVE_FUNC_H

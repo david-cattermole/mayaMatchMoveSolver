@@ -28,26 +28,30 @@
 // MM Solver
 #include "mmSolver/core/mmhash.h"
 
-void LensModel3deClassic::applyModelUndistort(
-    const double xd,
-    const double yd,
-    double &xu,
-    double &yu
-) {
+void LensModel3deClassic::applyModelUndistort(const double xd, const double yd,
+                                              double &xu, double &yu) {
     if (m_state != LensModelState::kClean) {
         // LDPK models must be initialized to work.
-        m_lensPlugin->setParameterValue("tde4_focal_length_cm", LensModel::m_focalLength_cm);
-        m_lensPlugin->setParameterValue("tde4_filmback_width_cm", LensModel::m_filmBackWidth_cm);
-        m_lensPlugin->setParameterValue("tde4_filmback_height_cm", LensModel::m_filmBackHeight_cm);
-        m_lensPlugin->setParameterValue("tde4_pixel_aspect", LensModel::m_pixelAspect);
-        m_lensPlugin->setParameterValue("tde4_lens_center_offset_x_cm", LensModel::m_lensCenterOffsetX_cm);
-        m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm", LensModel::m_lensCenterOffsetY_cm);
+        m_lensPlugin->setParameterValue("tde4_focal_length_cm",
+                                        LensModel::m_focalLength_cm);
+        m_lensPlugin->setParameterValue("tde4_filmback_width_cm",
+                                        LensModel::m_filmBackWidth_cm);
+        m_lensPlugin->setParameterValue("tde4_filmback_height_cm",
+                                        LensModel::m_filmBackHeight_cm);
+        m_lensPlugin->setParameterValue("tde4_pixel_aspect",
+                                        LensModel::m_pixelAspect);
+        m_lensPlugin->setParameterValue("tde4_lens_center_offset_x_cm",
+                                        LensModel::m_lensCenterOffsetX_cm);
+        m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm",
+                                        LensModel::m_lensCenterOffsetY_cm);
 
         m_lensPlugin->setParameterValue("Distortion", m_distortion);
-        m_lensPlugin->setParameterValue("Anamorphic Squeeze", m_anamorphicSqueeze);
+        m_lensPlugin->setParameterValue("Anamorphic Squeeze",
+                                        m_anamorphicSqueeze);
         m_lensPlugin->setParameterValue("Curvature X", m_curvatureX);
         m_lensPlugin->setParameterValue("Curvature Y", m_curvatureY);
-        m_lensPlugin->setParameterValue("Quartic Distortion", m_quarticDistortion);
+        m_lensPlugin->setParameterValue("Quartic Distortion",
+                                        m_quarticDistortion);
 
         m_lensPlugin->initializeParameters();
         m_state = LensModelState::kClean;
@@ -69,26 +73,30 @@ void LensModel3deClassic::applyModelUndistort(
     return;
 }
 
-void LensModel3deClassic::applyModelDistort(
-    const double xd,
-    const double yd,
-    double &xu,
-    double &yu
-) {
+void LensModel3deClassic::applyModelDistort(const double xd, const double yd,
+                                            double &xu, double &yu) {
     if (m_state != LensModelState::kClean) {
         // LDPK models must be initialized to work.
-        m_lensPlugin->setParameterValue("tde4_focal_length_cm", LensModel::m_focalLength_cm);
-        m_lensPlugin->setParameterValue("tde4_filmback_width_cm", LensModel::m_filmBackWidth_cm);
-        m_lensPlugin->setParameterValue("tde4_filmback_height_cm", LensModel::m_filmBackHeight_cm);
-        m_lensPlugin->setParameterValue("tde4_pixel_aspect", LensModel::m_pixelAspect);
-        m_lensPlugin->setParameterValue("tde4_lens_center_offset_x_cm", LensModel::m_lensCenterOffsetX_cm);
-        m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm", LensModel::m_lensCenterOffsetY_cm);
+        m_lensPlugin->setParameterValue("tde4_focal_length_cm",
+                                        LensModel::m_focalLength_cm);
+        m_lensPlugin->setParameterValue("tde4_filmback_width_cm",
+                                        LensModel::m_filmBackWidth_cm);
+        m_lensPlugin->setParameterValue("tde4_filmback_height_cm",
+                                        LensModel::m_filmBackHeight_cm);
+        m_lensPlugin->setParameterValue("tde4_pixel_aspect",
+                                        LensModel::m_pixelAspect);
+        m_lensPlugin->setParameterValue("tde4_lens_center_offset_x_cm",
+                                        LensModel::m_lensCenterOffsetX_cm);
+        m_lensPlugin->setParameterValue("tde4_lens_center_offset_y_cm",
+                                        LensModel::m_lensCenterOffsetY_cm);
 
         m_lensPlugin->setParameterValue("Distortion", m_distortion);
-        m_lensPlugin->setParameterValue("Anamorphic Squeeze", m_anamorphicSqueeze);
+        m_lensPlugin->setParameterValue("Anamorphic Squeeze",
+                                        m_anamorphicSqueeze);
         m_lensPlugin->setParameterValue("Curvature X", m_curvatureX);
         m_lensPlugin->setParameterValue("Curvature Y", m_curvatureY);
-        m_lensPlugin->setParameterValue("Quartic Distortion", m_quarticDistortion);
+        m_lensPlugin->setParameterValue("Quartic Distortion",
+                                        m_quarticDistortion);
 
         m_lensPlugin->initializeParameters();
         m_state = LensModelState::kClean;
@@ -122,8 +130,10 @@ mmhash::HashValue LensModel3deClassic::hashValue() {
     mmhash::combine(hash, std::hash<double>()(LensModel::m_filmBackWidth_cm));
     mmhash::combine(hash, std::hash<double>()(LensModel::m_filmBackHeight_cm));
     mmhash::combine(hash, std::hash<double>()(LensModel::m_pixelAspect));
-    mmhash::combine(hash, std::hash<double>()(LensModel::m_lensCenterOffsetX_cm));
-    mmhash::combine(hash, std::hash<double>()(LensModel::m_lensCenterOffsetY_cm));
+    mmhash::combine(hash,
+                    std::hash<double>()(LensModel::m_lensCenterOffsetX_cm));
+    mmhash::combine(hash,
+                    std::hash<double>()(LensModel::m_lensCenterOffsetY_cm));
 
     mmhash::combine(hash, std::hash<double>()(m_distortion));
     mmhash::combine(hash, std::hash<double>()(m_anamorphicSqueeze));

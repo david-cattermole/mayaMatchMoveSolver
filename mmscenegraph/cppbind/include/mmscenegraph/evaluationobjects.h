@@ -33,7 +33,6 @@ namespace mmscenegraph {
 
 class EvaluationObjects {
 public:
-
     MMSCENEGRAPH_API_EXPORT
     EvaluationObjects() noexcept;
 
@@ -74,6 +73,6 @@ private:
     rust::Box<ShimEvaluationObjects> inner_;
 };
 
-} // namespace mmscenegraph
+}  // namespace mmscenegraph
 
 #endif  // MM_SOLVER_MM_SCENE_GRAPH_EVALUATION_OBJECTS_H

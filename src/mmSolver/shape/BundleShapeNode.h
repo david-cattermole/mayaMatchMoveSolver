@@ -23,22 +23,22 @@
 #define MM_BUNDLE_SHAPE_NODE_H
 
 // Maya
-#include <maya/MPxLocatorNode.h>
-#include <maya/MString.h>
-#include <maya/MObject.h>
-#include <maya/MTypeId.h>
-#include <maya/MPlug.h>
-#include <maya/MVector.h>
+#include <maya/MArrayDataBuilder.h>
+#include <maya/MColor.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
-#include <maya/MColor.h>
 #include <maya/MDistance.h>
 #include <maya/MFnUnitAttribute.h>
-#include <maya/MArrayDataBuilder.h>
+#include <maya/MObject.h>
+#include <maya/MPlug.h>
+#include <maya/MPxLocatorNode.h>
+#include <maya/MString.h>
+#include <maya/MTypeId.h>
+#include <maya/MVector.h>
 
 #if MAYA_API_VERSION >= 20190000
-#include <maya/MEvaluationNode.h>
 #include <assert.h>
+#include <maya/MEvaluationNode.h>
 #endif
 
 namespace mmsolver {
@@ -93,6 +93,6 @@ public:
     static MObject m_point_size;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_BUNDLE_SHAPE_NODE_H
+#endif  // MM_BUNDLE_SHAPE_NODE_H

@@ -35,22 +35,18 @@
 #include <cstdlib>
 
 // MM Solver
-#include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/core/mmcamera.h"
+#include "mmSolver/core/mmcoord.h"
 #include "mmSolver/core/mmdata.h"
 #include "mmSolver/core/mmmath.h"
-#include "mmSolver/core/mmcoord.h"
-#include "mmSolver/core/mmcamera.h"
-
+#include "mmSolver/utilities/debug_utils.h"
 
 namespace calibrate {
 
 #define EPSILON (1e-7)
 
-bool
-calcVanishingPointFromLinePair(
-    mmdata::LinePair2D linePair,
-    mmdata::Point2D &outPoint)
-{
+bool calcVanishingPointFromLinePair(mmdata::LinePair2D linePair,
+                                    mmdata::Point2D &outPoint) {
     mmdata::Line2D lineA = linePair.lineA_;
     mmdata::Line2D lineB = linePair.lineB_;
 
@@ -60,13 +56,8 @@ calcVanishingPointFromLinePair(
     mmdata::Point2D pointBB = lineB.pointB_;
 
     auto vanishingPoint = mmdata::Point2D();
-    auto success = mmmath::infiniteLineIntersection(
-        pointAA,
-        pointAB,
-        pointBA,
-        pointBB,
-        vanishingPoint
-    );
+    auto success = mmmath::infiniteLineIntersection(pointAA, pointAB, pointBA,
+                                                    pointBB, vanishingPoint);
     if (success) {
         outPoint = vanishingPoint;
     } else {
@@ -83,20 +74,19 @@ calcVanishingPointFromLinePair(
 // the position from the first vanishing point (vpA) along the horizon
 // direction.
 //
-mmdata::Point2D
-estimateSecondVanishingPoint(
-    mmdata::Point2D vpA,
-    mmdata::Point2D principalPoint,
-    mmdata::Point2D horizonDirection,
-    double focalLengthFactor)
-{
+mmdata::Point2D estimateSecondVanishingPoint(mmdata::Point2D vpA,
+                                             mmdata::Point2D principalPoint,
+                                             mmdata::Point2D horizonDirection,
+                                             double focalLengthFactor) {
     auto result = mmdata::Point2D();
     if (mmmath::distance(vpA, principalPoint) > EPSILON) {
-        auto upPoint = mmdata::Point2D(
-            vpA.x_ - principalPoint.x_,
-            vpA.y_ - principalPoint.y_);
+        auto upPoint = mmdata::Point2D(vpA.x_ - principalPoint.x_,
+                                       vpA.y_ - principalPoint.y_);
 
-        auto k = -(upPoint.x_ * upPoint.x_ + upPoint.y_ * upPoint.y_ + focalLengthFactor * focalLengthFactor) / (upPoint.x_ * horizonDirection.x_ + upPoint.y_ * horizonDirection.y_);
+        auto k = -(upPoint.x_ * upPoint.x_ + upPoint.y_ * upPoint.y_ +
+                   focalLengthFactor * focalLengthFactor) /
+                 (upPoint.x_ * horizonDirection.x_ +
+                  upPoint.y_ * horizonDirection.y_);
 
         result = mmdata::Point2D(
             upPoint.x_ + k * horizonDirection.x_ + principalPoint.x_,
@@ -115,40 +105,29 @@ estimateSecondVanishingPoint(
 // See paper "Camera calibration using two or three vanishing points"
 // (2012), section "2.A. Intrinsic parameters calculation" for
 // reference.
-bool
-calcFocalLength(
+bool calcFocalLength(
     mmdata::Point2D vpA,             // Variable 'Fu' in the paper.
     mmdata::Point2D vpB,             // Variable 'Fv' in the paper.
     mmdata::Point2D principalPoint,  // Variable 'P' in the paper.
-    double &outFocalLength)
-{
-    auto vpA_vpB = mmdata::Vector3D(
-        vpA.x_ - vpB.x_,
-        vpA.y_ - vpB.y_);
+    double &outFocalLength) {
+    auto vpA_vpB = mmdata::Vector3D(vpA.x_ - vpB.x_, vpA.y_ - vpB.y_);
     auto vpA_vpB_direction = mmmath::normalize(vpA_vpB);
 
-    auto P_vpB = mmdata::Vector3D(
-        principalPoint.x_ - vpB.x_,
-        principalPoint.y_ - vpB.y_);
+    auto P_vpB = mmdata::Vector3D(principalPoint.x_ - vpB.x_,
+                                  principalPoint.y_ - vpB.y_);
     auto projection = mmmath::dot(vpA_vpB_direction, P_vpB);
 
-    // Let 'Puv' be the orthogonal projection of 'P' on the line 'vpA_vpB_direction'.
-    auto Puv = mmdata::Point2D(
-        projection * vpA_vpB_direction.x_ + vpB.x_,
-        projection * vpA_vpB_direction.y_ + vpB.y_);
+    // Let 'Puv' be the orthogonal projection of 'P' on the line
+    // 'vpA_vpB_direction'.
+    auto Puv = mmdata::Point2D(projection * vpA_vpB_direction.x_ + vpB.x_,
+                               projection * vpA_vpB_direction.y_ + vpB.y_);
 
-    auto PPuv = mmmath::length(
-        mmdata::Vector3D(
-            principalPoint.x_ - Puv.x_,
-            principalPoint.y_ - Puv.y_));
-    auto vpA_Puv = mmmath::length(
-        mmdata::Vector3D(
-            vpB.x_ - Puv.x_,
-            vpB.y_ - Puv.y_));
-    auto vpB_Puv = mmmath::length(
-        mmdata::Vector3D(
-            vpA.x_ - Puv.x_,
-            vpA.y_ - Puv.y_));
+    auto PPuv = mmmath::length(mmdata::Vector3D(principalPoint.x_ - Puv.x_,
+                                                principalPoint.y_ - Puv.y_));
+    auto vpA_Puv =
+        mmmath::length(mmdata::Vector3D(vpB.x_ - Puv.x_, vpB.y_ - Puv.y_));
+    auto vpB_Puv =
+        mmmath::length(mmdata::Vector3D(vpA.x_ - Puv.x_, vpA.y_ - Puv.y_));
 
     auto focalLengthSquared = (vpA_Puv * vpB_Puv) - (PPuv * PPuv);
     auto ok = focalLengthSquared > 0;
@@ -168,25 +147,21 @@ calcFocalLength(
 // See paper "Using vanishing points for camera calibration and coarse
 // 3D reconstruction from a single image" (2000), section "3.3
 // Computing the rotation matrix".
-bool
-calcCameraRotationMatrix(
-    mmdata::Point2D vpA,            // Variable 'Fu' in the paper.
-    mmdata::Point2D vpB,            // Variable 'Fv' in the paper.
-    mmdata::Point2D principalPoint, // Variable 'P' in the paper.
-    double focalLengthFactor,       // Relative focal length.
-    mmdata::Matrix4x4 &outMatrix)
-{
+bool calcCameraRotationMatrix(
+    mmdata::Point2D vpA,             // Variable 'Fu' in the paper.
+    mmdata::Point2D vpB,             // Variable 'Fv' in the paper.
+    mmdata::Point2D principalPoint,  // Variable 'P' in the paper.
+    double focalLengthFactor,        // Relative focal length.
+    mmdata::Matrix4x4 &outMatrix) {
     // vpA projected into camera depth, centered around principalPoint.
-    auto O_vpA = mmdata::Vector3D(
-        vpA.x_ - principalPoint.x_,
-        vpA.y_ - principalPoint.y_,
-        -focalLengthFactor);
+    auto O_vpA =
+        mmdata::Vector3D(vpA.x_ - principalPoint.x_, vpA.y_ - principalPoint.y_,
+                         -focalLengthFactor);
 
     // vpB projected into camera depth, centered around principalPoint.
-    auto O_vpB = mmdata::Vector3D(
-        vpB.x_ - principalPoint.x_,
-        vpB.y_ - principalPoint.y_,
-        -focalLengthFactor);
+    auto O_vpB =
+        mmdata::Vector3D(vpB.x_ - principalPoint.x_, vpB.y_ - principalPoint.y_,
+                         -focalLengthFactor);
 
     auto O_vpA_magnitude = mmmath::length(O_vpA);
     auto O_vpB_magnitude = mmmath::length(O_vpB);
@@ -214,50 +189,34 @@ calcCameraRotationMatrix(
     return ok;
 }
 
-mmdata::Matrix4x4
-createOrientationMatrix(
-    OrientationPlane orientPlane,
-    bool flipX,
-    bool flipY,
-    bool flipZ)
-{
+mmdata::Matrix4x4 createOrientationMatrix(OrientationPlane orientPlane,
+                                          bool flipX, bool flipY, bool flipZ) {
     // This is essentially a look-at matrix.
     auto forward = mmdata::Vector3D();
     auto side = mmdata::Vector3D();
-    if (orientPlane == OrientationPlane::ZX)
-    {
+    if (orientPlane == OrientationPlane::ZX) {
         forward = mmdata::Vector3D(0, 0, -1);
         side = mmdata::Vector3D(1, 0, 0);
-    }
-    else if (orientPlane == OrientationPlane::ZY)
-    {
+    } else if (orientPlane == OrientationPlane::ZY) {
         forward = mmdata::Vector3D(0, 0, -1);
         side = mmdata::Vector3D(0, -1, 0);
-    }
-    else if (orientPlane == OrientationPlane::XZ)
-    {
+    } else if (orientPlane == OrientationPlane::XZ) {
         forward = mmdata::Vector3D(1, 0, 0);
         side = mmdata::Vector3D(0, 0, 1);
-    }
-    else if (orientPlane == OrientationPlane::XY)
-    {
+    } else if (orientPlane == OrientationPlane::XY) {
         forward = mmdata::Vector3D(-1, 0, 0);
         side = mmdata::Vector3D(0, 1, 0);
-    }
-    else if (orientPlane == OrientationPlane::YZ)
-    {
+    } else if (orientPlane == OrientationPlane::YZ) {
         forward = mmdata::Vector3D(0, -1, 0);
         side = mmdata::Vector3D(0, 0, 1);
-    }
-    else if (orientPlane == OrientationPlane::YX)
-    {
+    } else if (orientPlane == OrientationPlane::YX) {
         forward = mmdata::Vector3D(0, -1, 0);
         side = mmdata::Vector3D(-1, 0, 0);
-    }
-    else {
+    } else {
         MMSOLVER_INFO("ERROR: Invalid OrientationPlane: "
-             << static_cast<int>(orientPlane));
-        return mmdata::Matrix4x4();;
+                      << static_cast<int>(orientPlane));
+        return mmdata::Matrix4x4();
+        ;
     }
     auto up = mmmath::cross(forward, side);
 
@@ -291,7 +250,6 @@ createOrientationMatrix(
     return orientMatrix;
 }
 
-
 // The translations are computed by projecting a 2D point into 3D
 // space (2.5D point), and using the value to offset the camera away
 // from that point. The given point (originPoint) becomes the origin
@@ -305,19 +263,14 @@ createOrientationMatrix(
 // (2012), section "2.B. Extrinsic parameters calculation" for
 // reference.
 //
-bool
-calcTranslationVector(
-    mmdata::Point2D originPoint,
-    mmdata::Point2D principalPoint,
-    double angleOfView_radians,
-    mmdata::Vector3D &outVector)
-{
+bool calcTranslationVector(mmdata::Point2D originPoint,
+                           mmdata::Point2D principalPoint,
+                           double angleOfView_radians,
+                           mmdata::Vector3D &outVector) {
     auto focalLength = std::tan(0.5 * angleOfView_radians);
     auto originInCameraSpace = mmdata::Vector3D(
         focalLength * (originPoint.x_ - principalPoint.x_),
-        focalLength * (originPoint.y_ - principalPoint.y_),
-        -1
-    );
+        focalLength * (originPoint.y_ - principalPoint.y_), -1);
 
     // Set camera translation values.
     outVector.x_ = originInCameraSpace.x_;
@@ -328,16 +281,11 @@ calcTranslationVector(
 
 // The logic of the scale is intrinsic to the camera and a distance
 // factor. No other data is required.
-bool
-applySceneScale(
-    mmdata::Matrix4x4 cameraTransform,
-    SceneScaleMode sceneScaleMode,
-    double distance_cm,
-    mmdata::Matrix4x4 &outCameraTransform) {
+bool applySceneScale(mmdata::Matrix4x4 cameraTransform,
+                     SceneScaleMode sceneScaleMode, double distance_cm,
+                     mmdata::Matrix4x4 &outCameraTransform) {
     auto translation = mmdata::Vector3D(
-        cameraTransform.m03_,
-        cameraTransform.m13_,
-        cameraTransform.m23_);
+        cameraTransform.m03_, cameraTransform.m13_, cameraTransform.m23_);
     if (sceneScaleMode == SceneScaleMode::UniformScale) {
         translation.x_ *= distance_cm;
         translation.y_ *= distance_cm;
@@ -351,7 +299,7 @@ applySceneScale(
         translation.z_ *= scaleFactor;
     } else {
         MMSOLVER_INFO("ERROR: Invalid SceneScaleMode: "
-             << static_cast<int>(sceneScaleMode));
+                      << static_cast<int>(sceneScaleMode));
         return false;
     }
     outCameraTransform = mmdata::Matrix4x4(cameraTransform);
@@ -363,39 +311,26 @@ applySceneScale(
 
 // Combines multiple calculations such as scale, rotation and
 // translation into a single function.
-bool
-calcCameraParameters(
-    mmdata::Point2D originPoint,
-    mmdata::Point2D principalPoint,
-    mmdata::Point2D vanishingPointA,
-    mmdata::Point2D vanishingPointB,
-    SceneScaleMode sceneScaleMode,
-    double sceneScaleDistance_cm,
-    double focalLengthFactor,
-    double filmBackWidth_mm,
-    double filmBackHeight_mm,
-    CameraParameters &outCameraParameters)
-{
+bool calcCameraParameters(
+    mmdata::Point2D originPoint, mmdata::Point2D principalPoint,
+    mmdata::Point2D vanishingPointA, mmdata::Point2D vanishingPointB,
+    SceneScaleMode sceneScaleMode, double sceneScaleDistance_cm,
+    double focalLengthFactor, double filmBackWidth_mm, double filmBackHeight_mm,
+    CameraParameters &outCameraParameters) {
     auto transformInverse = mmdata::Matrix4x4();
-    auto ok = calcCameraRotationMatrix(
-        vanishingPointA,
-        vanishingPointB,
-        principalPoint,
-        focalLengthFactor,
-        transformInverse);
+    auto ok = calcCameraRotationMatrix(vanishingPointA, vanishingPointB,
+                                       principalPoint, focalLengthFactor,
+                                       transformInverse);
     if (ok) {
         MMSOLVER_INFO("ERROR: Camera Rotation calculation is invalid. ");
         return false;
     }
 
-    auto angleOfView_radians = mmcamera::angleOfViewFromFocalLengthFactor(focalLengthFactor);
+    auto angleOfView_radians =
+        mmcamera::angleOfViewFromFocalLengthFactor(focalLengthFactor);
     auto translation = mmdata::Vector3D();
-    ok = calcTranslationVector(
-        originPoint,
-        principalPoint,
-        angleOfView_radians,
-        translation
-    );
+    ok = calcTranslationVector(originPoint, principalPoint, angleOfView_radians,
+                               translation);
     if (!ok) {
         MMSOLVER_INFO("ERROR: Invalid translation vector.");
         return false;
@@ -406,14 +341,9 @@ calcCameraParameters(
     bool axisFlipY = false;
     bool axisFlipZ = false;
     auto orientPlane = OrientationPlane::XZ;
-    auto orientMatrix = createOrientationMatrix(
-        orientPlane,
-        axisFlipX,
-        axisFlipY,
-        axisFlipZ);
-    transformInverse = mmmath::matrixMultiply(
-        orientMatrix,
-        transformInverse);
+    auto orientMatrix =
+        createOrientationMatrix(orientPlane, axisFlipX, axisFlipY, axisFlipZ);
+    transformInverse = mmmath::matrixMultiply(orientMatrix, transformInverse);
 
     // Set camera translation values.
     transformInverse.m03_ = translation.x_;
@@ -426,49 +356,33 @@ calcCameraParameters(
     // We have made sure to align the world before scaling the camera
     // so that our "camera height" setting make sense.
     auto transformScaled = mmdata::Matrix4x4();
-    ok = applySceneScale(
-        transform,
-        sceneScaleMode,
-        sceneScaleDistance_cm,
-        transformScaled);
+    ok = applySceneScale(transform, sceneScaleMode, sceneScaleDistance_cm,
+                         transformScaled);
     if (!ok) {
         MMSOLVER_INFO("ERROR: Invalid scene scale. "
-             << "sceneScaleDistance_cm=" << sceneScaleDistance_cm
-             << "sceneScaleMode" << static_cast<int>(sceneScaleMode));
+                      << "sceneScaleDistance_cm=" << sceneScaleDistance_cm
+                      << "sceneScaleMode" << static_cast<int>(sceneScaleMode));
         return false;
     }
 
     // Set Camera parameters.
     outCameraParameters.filmBackWidth_mm_ = filmBackWidth_mm;
     outCameraParameters.filmBackHeight_mm_ = filmBackHeight_mm;
-    outCameraParameters.principalPoint_ =
-        mmcoord::convertPoint2D(
-            mmcoord::Point2DSpace::ImageNormalized,
-            mmcoord::Point2DSpace::Marker,
-            principalPoint,
-            filmBackWidth_mm,
-            filmBackHeight_mm);
+    outCameraParameters.principalPoint_ = mmcoord::convertPoint2D(
+        mmcoord::Point2DSpace::ImageNormalized, mmcoord::Point2DSpace::Marker,
+        principalPoint, filmBackWidth_mm, filmBackHeight_mm);
     outCameraParameters.focalLength_mm_ = mmcamera::focalLengthFromAngleOfView(
-        angleOfView_radians,
-        filmBackWidth_mm);
+        angleOfView_radians, filmBackWidth_mm);
     outCameraParameters.transformMatrix_ = transformScaled;
-    outCameraParameters.vanishingPointA_ =
-        mmcoord::convertPoint2D(
-            mmcoord::Point2DSpace::ImageNormalized,
-            mmcoord::Point2DSpace::Marker,
-            vanishingPointA,
-            filmBackWidth_mm,
-            filmBackHeight_mm);
-    outCameraParameters.vanishingPointB_ =
-        mmcoord::convertPoint2D(
-            mmcoord::Point2DSpace::ImageNormalized,
-            mmcoord::Point2DSpace::Marker,
-            vanishingPointB,
-            filmBackWidth_mm,
-            filmBackHeight_mm);
+    outCameraParameters.vanishingPointA_ = mmcoord::convertPoint2D(
+        mmcoord::Point2DSpace::ImageNormalized, mmcoord::Point2DSpace::Marker,
+        vanishingPointA, filmBackWidth_mm, filmBackHeight_mm);
+    outCameraParameters.vanishingPointB_ = mmcoord::convertPoint2D(
+        mmcoord::Point2DSpace::ImageNormalized, mmcoord::Point2DSpace::Marker,
+        vanishingPointB, filmBackWidth_mm, filmBackHeight_mm);
     return true;
 }
 
 #undef EPSILON
 
-} // namespace calibrate
+}  // namespace calibrate

@@ -24,11 +24,11 @@
 #define MM_SOLVER_RENDER_RENDER_GLOBALS_NODE_H
 
 // Maya
+#include <maya/MFnDependencyNode.h>
+#include <maya/MNodeMessage.h>
+#include <maya/MObject.h>
 #include <maya/MPxNode.h>
 #include <maya/MString.h>
-#include <maya/MObject.h>
-#include <maya/MNodeMessage.h>
-#include <maya/MFnDependencyNode.h>
 #include <maya/MTypeId.h>
 
 namespace mmsolver {
@@ -68,18 +68,14 @@ public:
     static MObject a_edgeThreshold;
 
 private:
-
     // Callback IDs for tracking viewport changes.
     MCallbackId m_attr_change_callback;
-    static void attr_change_func(
-        MNodeMessage::AttributeMessage msg,
-        MPlug &plug,
-        MPlug &other_plug,
-        void* client_data);
-
+    static void attr_change_func(MNodeMessage::AttributeMessage msg,
+                                 MPlug &plug, MPlug &other_plug,
+                                 void *client_data);
 };
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver
 
-#endif // MM_SOLVER_RENDER_RENDER_GLOBALS_NODE_H
+#endif  // MM_SOLVER_RENDER_RENDER_GLOBALS_NODE_H

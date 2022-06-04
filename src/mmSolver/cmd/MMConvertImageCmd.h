@@ -29,56 +29,52 @@
 #include <maya/MGlobal.h>
 #include <maya/MIOStream.h>
 #include <maya/MPxCommand.h>
-#include <maya/MSyntax.h>
 #include <maya/MSelectionList.h>
 #include <maya/MString.h>
-
+#include <maya/MSyntax.h>
 
 // Command arguments and command name:
-#define SRC_FILE_PATH_FLAG       "-src"
-#define SRC_FILE_PATH_FLAG_LONG  "-source"
+#define SRC_FILE_PATH_FLAG "-src"
+#define SRC_FILE_PATH_FLAG_LONG "-source"
 
-#define SRC_FRAME_START_FLAG       "-sfs"
-#define SRC_FRAME_START_FLAG_LONG  "-sourceFrameStart"
+#define SRC_FRAME_START_FLAG "-sfs"
+#define SRC_FRAME_START_FLAG_LONG "-sourceFrameStart"
 
-#define SRC_FRAME_END_FLAG       "-sfe"
-#define SRC_FRAME_END_FLAG_LONG  "-sourceFrameEnd"
+#define SRC_FRAME_END_FLAG "-sfe"
+#define SRC_FRAME_END_FLAG_LONG "-sourceFrameEnd"
 
-#define SRC_FRAME_PADDING_FLAG       "-sfp"
-#define SRC_FRAME_PADDING_FLAG_LONG  "-sourceFramePadding"
+#define SRC_FRAME_PADDING_FLAG "-sfp"
+#define SRC_FRAME_PADDING_FLAG_LONG "-sourceFramePadding"
 
-#define DST_FILE_PATH_FLAG       "-dst"
-#define DST_FILE_PATH_FLAG_LONG  "-destination"
+#define DST_FILE_PATH_FLAG "-dst"
+#define DST_FILE_PATH_FLAG_LONG "-destination"
 
-#define DST_OUTPUT_FORMAT_FLAG       "-dof"
-#define DST_OUTPUT_FORMAT_FLAG_LONG  "-destinationOutputFormat"
+#define DST_OUTPUT_FORMAT_FLAG "-dof"
+#define DST_OUTPUT_FORMAT_FLAG_LONG "-destinationOutputFormat"
 
-#define DST_FRAME_START_FLAG       "-dfs"
-#define DST_FRAME_START_FLAG_LONG  "-destinationFrameStart"
+#define DST_FRAME_START_FLAG "-dfs"
+#define DST_FRAME_START_FLAG_LONG "-destinationFrameStart"
 
-#define DST_FRAME_PADDING_FLAG       "-dfp"
-#define DST_FRAME_PADDING_FLAG_LONG  "-destinationFramePadding"
+#define DST_FRAME_PADDING_FLAG "-dfp"
+#define DST_FRAME_PADDING_FLAG_LONG "-destinationFramePadding"
 
-#define RESIZE_SCALE_FLAG      "-rzs"
-#define RESIZE_SCALE_FLAG_LONG  "-resizeScale"
-
+#define RESIZE_SCALE_FLAG "-rzs"
+#define RESIZE_SCALE_FLAG_LONG "-resizeScale"
 
 namespace mmsolver {
 
 class MMConvertImageCmd : public MPxCommand {
 public:
-
     MMConvertImageCmd()
-            : m_src_file_path()
-            , m_dst_file_path()
-            , m_dst_output_format(MString("iff"))
-            , m_src_frame_start(1)
-            , m_src_frame_end(1)
-            , m_dst_frame_start(1)
-            , m_src_frame_padding(1)
-            , m_dst_frame_padding(1)
-            , m_resize_scale(1.0F)
-        {};
+        : m_src_file_path()
+        , m_dst_file_path()
+        , m_dst_output_format(MString("iff"))
+        , m_src_frame_start(1)
+        , m_src_frame_end(1)
+        , m_dst_frame_start(1)
+        , m_src_frame_padding(1)
+        , m_dst_frame_padding(1)
+        , m_resize_scale(1.0F){};
 
     virtual ~MMConvertImageCmd();
 
@@ -94,7 +90,7 @@ public:
     static MString cmdName();
 
 private:
-    MStatus parseArgs( const MArgList& args );
+    MStatus parseArgs(const MArgList &args);
 
     MString m_src_file_path;
     MString m_dst_file_path;
@@ -111,6 +107,6 @@ private:
     double m_resize_scale;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MAYA_MM_CONVERT_IMAGE_CMD_H
+#endif  // MAYA_MM_CONVERT_IMAGE_CMD_H

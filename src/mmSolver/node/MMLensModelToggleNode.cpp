@@ -23,19 +23,19 @@
 #include "MMLensModelToggleNode.h"
 
 // STL
-#include <cstring>
 #include <cmath>
+#include <cstring>
 
 // Maya
-#include <maya/MPlug.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
 #include <maya/MFnNumericAttribute.h>
-#include <maya/MFnTypedAttribute.h>
 #include <maya/MFnNumericData.h>
+#include <maya/MFnPluginData.h>
+#include <maya/MFnTypedAttribute.h>
+#include <maya/MPlug.h>
 #include <maya/MString.h>
 #include <maya/MTypeId.h>
-#include <maya/MFnPluginData.h>
 
 // MM Solver
 #include "MMLensData.h"
@@ -54,7 +54,6 @@ MObject MMLensModelToggleNode::a_enable;
 
 // Output Attributes
 MObject MMLensModelToggleNode::a_outLens;
-
 
 MMLensModelToggleNode::MMLensModelToggleNode() {}
 
@@ -83,7 +82,7 @@ MStatus MMLensModelToggleNode::compute(const MPlug &plug, MDataBlock &data) {
         // Get Input Lens
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        MMLensData* inputLensData = (MMLensData*) inLensHandle.asPluginData();
+        MMLensData *inputLensData = (MMLensData *)inLensHandle.asPluginData();
         std::shared_ptr<LensModel> inputLensModel;
         if (inputLensData != nullptr) {
             inputLensModel = inputLensData->getValue();
@@ -91,7 +90,7 @@ MStatus MMLensModelToggleNode::compute(const MPlug &plug, MDataBlock &data) {
 
         // Output Lens
         MDataHandle outLensHandle = data.outputValue(a_outLens);
-        MMLensData* newLensData = (MMLensData*) fnPluginData.data(&status);
+        MMLensData *newLensData = (MMLensData *)fnPluginData.data(&status);
         if (enable) {
             newLensData->setValue(inputLensModel);
         } else {
@@ -105,9 +104,7 @@ MStatus MMLensModelToggleNode::compute(const MPlug &plug, MDataBlock &data) {
     return status;
 }
 
-void *MMLensModelToggleNode::creator() {
-    return (new MMLensModelToggleNode());
-}
+void *MMLensModelToggleNode::creator() { return (new MMLensModelToggleNode()); }
 
 MStatus MMLensModelToggleNode::initialize() {
     MStatus status;
@@ -116,9 +113,7 @@ MStatus MMLensModelToggleNode::initialize() {
 
     // In Lens
     MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
-    a_inLens = typedAttr.create(
-            "inLens", "ilns",
-            data_type_id);
+    a_inLens = typedAttr.create("inLens", "ilns", data_type_id);
     CHECK_MSTATUS(typedAttr.setStorable(false));
     CHECK_MSTATUS(typedAttr.setKeyable(false));
     CHECK_MSTATUS(typedAttr.setReadable(true));
@@ -126,17 +121,14 @@ MStatus MMLensModelToggleNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_inLens));
 
     // Enable
-    a_enable = numericAttr.create(
-            "enable", "enb",
-            MFnNumericData::kBoolean, true);
+    a_enable =
+        numericAttr.create("enable", "enb", MFnNumericData::kBoolean, true);
     CHECK_MSTATUS(numericAttr.setStorable(true));
     CHECK_MSTATUS(numericAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_enable));
 
     // Out Lens
-    a_outLens = typedAttr.create(
-            "outLens", "olns",
-            data_type_id);
+    a_outLens = typedAttr.create("outLens", "olns", data_type_id);
     CHECK_MSTATUS(typedAttr.setStorable(false));
     CHECK_MSTATUS(typedAttr.setKeyable(false));
     CHECK_MSTATUS(typedAttr.setReadable(true));
@@ -150,4 +142,4 @@ MStatus MMLensModelToggleNode::initialize() {
     return MS::kSuccess;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

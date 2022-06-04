@@ -22,19 +22,18 @@
 #include "SceneRender.h"
 
 // Maya
+#include <maya/M3dView.h>
+#include <maya/MDrawContext.h>
+#include <maya/MItDag.h>
+#include <maya/MPoint.h>
+#include <maya/MRenderTargetManager.h>
+#include <maya/MSelectionList.h>
+#include <maya/MShaderManager.h>
+#include <maya/MStateManager.h>
 #include <maya/MStreamUtils.h>
 #include <maya/MString.h>
-#include <maya/MSelectionList.h>
-#include <maya/MItDag.h>
-#include <maya/M3dView.h>
-#include <maya/MPoint.h>
-#include <maya/MViewport2Renderer.h>
-#include <maya/MRenderTargetManager.h>
-#include <maya/MStateManager.h>
-#include <maya/MShaderManager.h>
 #include <maya/MTextureManager.h>
-#include <maya/MDrawContext.h>
-#include <maya/MShaderManager.h>
+#include <maya/MViewport2Renderer.h>
 
 // MM Solver
 #include "constants.h"
@@ -43,23 +42,22 @@ namespace mmsolver {
 namespace render {
 
 SceneRender::SceneRender(const MString &name)
-        : MSceneRender(name),
-          m_do_background(false),
-          m_do_selectable(false),
-          m_exclude_types(kExcludeNone),
-          m_prev_display_style(M3dView::kGouraudShaded),
-          m_scene_filter(MHWRender::MSceneRender::kNoSceneFilterOverride),
-          m_clear_mask(MHWRender::MClearOperation::kClearNone),
-          m_display_mode_override(MHWRender::MSceneRender::kNoDisplayModeOverride),
-          m_targets(nullptr),
-          m_target_index(0),
-          m_target_count(0),
-          m_shader_override(nullptr) {
+    : MSceneRender(name)
+    , m_do_background(false)
+    , m_do_selectable(false)
+    , m_exclude_types(kExcludeNone)
+    , m_prev_display_style(M3dView::kGouraudShaded)
+    , m_scene_filter(MHWRender::MSceneRender::kNoSceneFilterOverride)
+    , m_clear_mask(MHWRender::MClearOperation::kClearNone)
+    , m_display_mode_override(MHWRender::MSceneRender::kNoDisplayModeOverride)
+    , m_targets(nullptr)
+    , m_target_index(0)
+    , m_target_count(0)
+    , m_shader_override(nullptr) {
     m_view_rectangle[0] = 0.0f;
     m_view_rectangle[1] = 0.0f;
     m_view_rectangle[2] = 1.0f;
     m_view_rectangle[3] = 1.0f;
-
 }
 
 SceneRender::~SceneRender() {
@@ -70,7 +68,8 @@ SceneRender::~SceneRender() {
         if (!renderer) {
             return;
         }
-        const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+        const MHWRender::MShaderManager *shaderMgr =
+            renderer->getShaderManager();
         if (!shaderMgr) {
             return;
         }
@@ -79,8 +78,8 @@ SceneRender::~SceneRender() {
     }
 }
 
-MHWRender::MRenderTarget *const *
-SceneRender::targetOverrideList(unsigned int &listSize) {
+MHWRender::MRenderTarget *const *SceneRender::targetOverrideList(
+    unsigned int &listSize) {
     if (m_targets && (m_target_count > 0)) {
         listSize = m_target_count;
         return &m_targets[m_target_index];
@@ -94,26 +93,21 @@ SceneRender::renderFilterOverride() {
     return m_scene_filter;
 }
 
-MHWRender::MSceneRender::MDisplayMode
-SceneRender::displayModeOverride() {
+MHWRender::MSceneRender::MDisplayMode SceneRender::displayModeOverride() {
     return m_display_mode_override;
 }
 
-MUint64
-SceneRender::getObjectTypeExclusions() {
-    return m_exclude_types;
-}
+MUint64 SceneRender::getObjectTypeExclusions() { return m_exclude_types; }
 
-MHWRender::MClearOperation &
-SceneRender::clearOperation() {
+MHWRender::MClearOperation &SceneRender::clearOperation() {
     // Background color override. We get the current colors from the
     // renderer and use them.
-    MHWRender::MRenderer* renderer = MHWRender::MRenderer::theRenderer();
+    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
     bool gradient = renderer->useGradient();
     MColor color1 = renderer->clearColor();
     MColor color2 = renderer->clearColor2();
-    float val1[4] = { color1[0], color1[1], color1[2], 1.0f };
-    float val2[4] = { color2[0], color2[1], color2[2], 1.0f };
+    float val1[4] = {color1[0], color1[1], color1[2], 1.0f};
+    float val2[4] = {color2[0], color2[1], color2[2], 1.0f};
 
     mClearOperation.setClearColor(val1);
     mClearOperation.setClearColor2(val2);
@@ -124,8 +118,7 @@ SceneRender::clearOperation() {
     return mClearOperation;
 }
 
-const MSelectionList *
-SceneRender::objectSetOverride() {
+const MSelectionList *SceneRender::objectSetOverride() {
     // If m_do_selectable is false and m_do_background is false: do
     // not override.
     mSelectionList.clear();
@@ -164,5 +157,5 @@ SceneRender::objectSetOverride() {
     return nullptr;
 }
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver

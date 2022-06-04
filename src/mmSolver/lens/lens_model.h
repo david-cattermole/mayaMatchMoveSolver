@@ -25,6 +25,7 @@
 
 // STL
 #include <memory>
+
 #include "mmSolver/core/mmhash.h"
 
 enum class LensModelState {
@@ -64,47 +65,44 @@ enum class LensModelType {
 
 class LensModel {
 public:
-
     virtual ~LensModel() = 0;
 
     LensModel(LensModelType type)
-            : m_type(type)
-            , m_state(LensModelState::kDirty)
-            , m_focalLength_cm(3.0)
-            , m_filmBackWidth_cm(3.6)
-            , m_filmBackHeight_cm(2.4)
-            , m_pixelAspect(1.0)
-            , m_lensCenterOffsetX_cm(0.0)
-            , m_lensCenterOffsetY_cm(0.0)
-            , m_inputLensModel{}
-        {};
+        : m_type(type)
+        , m_state(LensModelState::kDirty)
+        , m_focalLength_cm(3.0)
+        , m_filmBackWidth_cm(3.6)
+        , m_filmBackHeight_cm(2.4)
+        , m_pixelAspect(1.0)
+        , m_lensCenterOffsetX_cm(0.0)
+        , m_lensCenterOffsetY_cm(0.0)
+        , m_inputLensModel{} {};
 
     LensModel(const LensModel &rhs)
-            : m_type(rhs.getType())
-              // The 'm_state' must not be copied because otherwise
-              // the 'm_lensPlugin' LDPK plug-in will not trigger an
-              // 'm_lensPlugin->initializeParameters()' call.
-            , m_state(LensModelState::kDirty)
-            , m_focalLength_cm(rhs.getFocalLength())
-            , m_filmBackWidth_cm(rhs.getFilmBackWidth())
-            , m_filmBackHeight_cm(rhs.getFilmBackHeight())
-            , m_pixelAspect(rhs.getPixelAspect())
-            , m_lensCenterOffsetX_cm(rhs.getLensCenterOffsetX())
-            , m_lensCenterOffsetY_cm(rhs.getLensCenterOffsetY())
-            , m_inputLensModel{rhs.getInputLensModel()}
-        {};
+        : m_type(rhs.getType())
+        // The 'm_state' must not be copied because otherwise
+        // the 'm_lensPlugin' LDPK plug-in will not trigger an
+        // 'm_lensPlugin->initializeParameters()' call.
+        , m_state(LensModelState::kDirty)
+        , m_focalLength_cm(rhs.getFocalLength())
+        , m_filmBackWidth_cm(rhs.getFilmBackWidth())
+        , m_filmBackHeight_cm(rhs.getFilmBackHeight())
+        , m_pixelAspect(rhs.getPixelAspect())
+        , m_lensCenterOffsetX_cm(rhs.getLensCenterOffsetX())
+        , m_lensCenterOffsetY_cm(rhs.getLensCenterOffsetY())
+        , m_inputLensModel{rhs.getInputLensModel()} {};
 
     virtual std::unique_ptr<LensModel> cloneAsUniquePtr() const = 0;
     virtual std::shared_ptr<LensModel> cloneAsSharedPtr() const = 0;
 
-    LensModelType getType() const {return m_type;}
-    LensModelState getState() const {return m_state;}
-    double getFocalLength() const {return m_focalLength_cm;}
-    double getFilmBackWidth() const {return m_filmBackWidth_cm;}
-    double getFilmBackHeight() const {return m_filmBackHeight_cm;}
-    double getPixelAspect() const {return m_pixelAspect;}
-    double getLensCenterOffsetX() const {return m_lensCenterOffsetX_cm;}
-    double getLensCenterOffsetY() const {return m_lensCenterOffsetY_cm;}
+    LensModelType getType() const { return m_type; }
+    LensModelState getState() const { return m_state; }
+    double getFocalLength() const { return m_focalLength_cm; }
+    double getFilmBackWidth() const { return m_filmBackWidth_cm; }
+    double getFilmBackHeight() const { return m_filmBackHeight_cm; }
+    double getPixelAspect() const { return m_pixelAspect; }
+    double getLensCenterOffsetX() const { return m_lensCenterOffsetX_cm; }
+    double getLensCenterOffsetY() const { return m_lensCenterOffsetY_cm; }
 
     void setType(const LensModelType value) {
         bool same_value = m_type == value;
@@ -162,7 +160,9 @@ public:
         }
     }
 
-    std::shared_ptr<LensModel> getInputLensModel() const {return m_inputLensModel;}
+    std::shared_ptr<LensModel> getInputLensModel() const {
+        return m_inputLensModel;
+    }
     void setInputLensModel(std::shared_ptr<LensModel> value) {
         bool same_value = m_inputLensModel == value;
         if (!same_value) {
@@ -171,17 +171,11 @@ public:
         }
     }
 
-    virtual void applyModelUndistort(
-        const double x,
-        const double y,
-        double &out_x,
-        double &out_y) = 0;
+    virtual void applyModelUndistort(const double x, const double y,
+                                     double &out_x, double &out_y) = 0;
 
-    virtual void applyModelDistort(
-        const double x,
-        const double y,
-        double &out_x,
-        double &out_y) = 0;
+    virtual void applyModelDistort(const double x, const double y,
+                                   double &out_x, double &out_y) = 0;
 
     virtual mmhash::HashValue hashValue() = 0;
 
@@ -201,4 +195,4 @@ protected:
 
 inline LensModel::~LensModel() {}
 
-#endif // MM_SOLVER_CORE_LENS_MODEL_H
+#endif  // MM_SOLVER_CORE_LENS_MODEL_H

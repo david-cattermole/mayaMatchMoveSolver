@@ -23,19 +23,18 @@
 #ifndef MM_SOLVER_MAYA_HELPER_MAYA_BUNDLE_H
 #define MM_SOLVER_MAYA_HELPER_MAYA_BUNDLE_H
 
-#include <vector>
-#include <memory>
-
-#include <maya/MObject.h>
-#include <maya/MString.h>
 #include <maya/MMatrix.h>
-#include <maya/MPoint.h>
+#include <maya/MObject.h>
 #include <maya/MPlug.h>
+#include <maya/MPoint.h>
+#include <maya/MString.h>
+
+#include <memory>
+#include <vector>
 
 #include "maya_attr.h"
 
 class Marker;
-
 
 class Bundle {
 public:
@@ -50,10 +49,12 @@ public:
 
     Attr &getMatrixAttr();
 
-    MStatus getMatrix(MMatrix &value, const MTime &time, const int timeEvalMode);
+    MStatus getMatrix(MMatrix &value, const MTime &time,
+                      const int timeEvalMode);
     MStatus getMatrix(MMatrix &value, const int timeEvalMode);
 
-    MStatus getPos(double &x, double &y, double &z, const MTime &time, const int timeEvalMode);
+    MStatus getPos(double &x, double &y, double &z, const MTime &time,
+                   const int timeEvalMode);
     MStatus getPos(MPoint &point, const MTime &time, const int timeEvalMode);
     MStatus getPos(double &x, double &y, double &z, const int timeEvalMode);
     MStatus getPos(MPoint &point, const int timeEvalMode);
@@ -72,4 +73,4 @@ typedef std::shared_ptr<Bundle> BundlePtr;
 typedef std::vector<std::shared_ptr<Bundle> > BundlePtrList;
 typedef BundlePtrList::iterator BundlePtrListIt;
 
-#endif // MM_SOLVER_MAYA_HELPER_MAYA_BUNDLE_H
+#endif  // MM_SOLVER_MAYA_HELPER_MAYA_BUNDLE_H

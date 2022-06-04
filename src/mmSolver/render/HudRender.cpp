@@ -21,14 +21,14 @@
 
 #include "HudRender.h"
 
-#include <maya/MStreamUtils.h>
-#include <maya/MString.h>
-#include <maya/MPoint.h>
 #include <maya/MImage.h>
-#include <maya/MViewport2Renderer.h>
+#include <maya/MPoint.h>
 #include <maya/MRenderTargetManager.h>
 #include <maya/MShaderManager.h>
+#include <maya/MStreamUtils.h>
+#include <maya/MString.h>
 #include <maya/MTextureManager.h>
+#include <maya/MViewport2Renderer.h>
 
 // MM Solver
 #include "constants.h"
@@ -37,18 +37,13 @@ namespace mmsolver {
 namespace render {
 
 HudRender::HudRender()
-        : m_targets(nullptr),
-          m_target_index(0),
-          m_target_count(0) {
-}
+    : m_targets(nullptr), m_target_index(0), m_target_count(0) {}
 
-HudRender::~HudRender() {
-    m_targets = nullptr;
-}
+HudRender::~HudRender() { m_targets = nullptr; }
 
 // Called by Maya.
-MHWRender::MRenderTarget *const *
-HudRender::targetOverrideList(unsigned int &listSize) {
+MHWRender::MRenderTarget *const *HudRender::targetOverrideList(
+    unsigned int &listSize) {
     if (m_targets && (m_target_count > 0)) {
         listSize = m_target_count;
         return &m_targets[m_target_index];
@@ -57,14 +52,10 @@ HudRender::targetOverrideList(unsigned int &listSize) {
     return nullptr;
 }
 
-bool
-HudRender::hasUIDrawables() const /*override*/ {
-    return true;
-}
+bool HudRender::hasUIDrawables() const /*override*/ { return true; }
 
-void
-HudRender::addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
-                          const MHWRender::MFrameContext &frameContext) {
+void HudRender::addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
+                               const MHWRender::MFrameContext &frameContext) {
     // Start draw UI
     drawManager2D.beginDrawable();
     // Set font color
@@ -75,8 +66,7 @@ HudRender::addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
     // Draw renderer name
     int x = 0, y = 0, w = 0, h = 0;
     frameContext.getViewportDimensions(x, y, w, h);
-    drawManager2D.text(MPoint(w * 0.5f, h * 0.91f),
-                       MString("mmRenderer"),
+    drawManager2D.text(MPoint(w * 0.5f, h * 0.91f), MString("mmRenderer"),
                        MHWRender::MUIDrawManager::kCenter);
 
     // Draw viewport information
@@ -95,5 +85,5 @@ HudRender::addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
     drawManager2D.endDrawable();
 }
 
-} // namespace render
-} // namespace mmsolver
+}  // namespace render
+}  // namespace mmsolver

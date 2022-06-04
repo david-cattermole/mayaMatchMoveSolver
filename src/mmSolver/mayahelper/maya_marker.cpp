@@ -22,27 +22,23 @@
 
 #include "maya_marker.h"
 
-#include <memory>
-
+#include <maya/MDagPath.h>
 #include <maya/MFnDependencyNode.h>
-#include <maya/MPlug.h>
-#include <maya/MObject.h>
 #include <maya/MFnMatrixData.h>
 #include <maya/MMatrix.h>
+#include <maya/MObject.h>
+#include <maya/MPlug.h>
 #include <maya/MPoint.h>
-#include <maya/MDagPath.h>
 
-#include "mmSolver/adjust/adjust_defines.h"
-#include "maya_utils.h"
-#include "maya_camera.h"
-#include "maya_bundle.h"
+#include <memory>
+
 #include "maya_attr.h"
+#include "maya_bundle.h"
+#include "maya_camera.h"
+#include "maya_utils.h"
+#include "mmSolver/adjust/adjust_defines.h"
 
-Marker::Marker() :
-        m_nodeName(""),
-        m_object(),
-        m_camera(),
-        m_bundle() {
+Marker::Marker() : m_nodeName(""), m_object(), m_camera(), m_bundle() {
     m_matrix.setAttrName("worldMatrix");
     m_px.setAttrName("translateX");
     m_py.setAttrName("translateY");
@@ -50,9 +46,7 @@ Marker::Marker() :
     m_weight.setAttrName("weight");
 }
 
-MString Marker::getNodeName() const {
-    return MString(m_nodeName);
-}
+MString Marker::getNodeName() const { return MString(m_nodeName); }
 
 MStatus Marker::setNodeName(MString value) {
     MStatus status = MS::kSuccess;
@@ -89,43 +83,29 @@ MObject Marker::getObject() {
     return m_object;
 }
 
-CameraPtr Marker::getCamera() {
-    return m_camera;
-}
+CameraPtr Marker::getCamera() { return m_camera; }
 
 MStatus Marker::setCamera(CameraPtr &value) {
     m_camera = value;
     return MS::kSuccess;
 }
 
-BundlePtr Marker::getBundle() {
-    return m_bundle;
-}
+BundlePtr Marker::getBundle() { return m_bundle; }
 
 MStatus Marker::setBundle(BundlePtr &value) {
     m_bundle = value;
     return MS::kSuccess;
 }
 
-Attr &Marker::getMatrixAttr() {
-    return m_matrix;
-}
+Attr &Marker::getMatrixAttr() { return m_matrix; }
 
-Attr &Marker::getEnableAttr() {
-    return m_enable;
-}
+Attr &Marker::getEnableAttr() { return m_enable; }
 
-Attr &Marker::getWeightAttr() {
-    return m_weight;
-}
+Attr &Marker::getWeightAttr() { return m_weight; }
 
-Attr &Marker::getPosXAttr() {
-    return m_px;
-}
+Attr &Marker::getPosXAttr() { return m_px; }
 
-Attr &Marker::getPosYAttr() {
-    return m_py;
-}
+Attr &Marker::getPosYAttr() { return m_py; }
 
 MStatus Marker::getMatrix(MMatrix &value, const MTime &time,
                           const int timeEvalMode) {
@@ -175,7 +155,6 @@ MStatus Marker::getPos(MPoint &point, const int timeEvalMode) {
     return status;
 }
 
-
 MStatus Marker::getPosXY(double &x, double &y, const MTime &time,
                          const int timeEvalMode) {
     MStatus status;
@@ -188,13 +167,11 @@ MStatus Marker::getPosXY(double &x, double &y, const MTime &time,
     return status;
 }
 
-MStatus Marker::getPosXY(double &x, double &y,
-                         const int timeEvalMode) {
+MStatus Marker::getPosXY(double &x, double &y, const int timeEvalMode) {
     MTime time = MAnimControl::currentTime();
     MStatus status = Marker::getPosXY(x, y, time, timeEvalMode);
     return status;
 }
-
 
 MStatus Marker::getEnable(bool &value, const MTime &time,
                           const int timeEvalMode) {

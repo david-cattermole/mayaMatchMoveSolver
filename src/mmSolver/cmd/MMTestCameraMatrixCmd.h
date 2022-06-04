@@ -28,40 +28,39 @@
 #include <vector>
 
 // Maya
-#include <maya/MGlobal.h>
-#include <maya/MIOStream.h>
-#include <maya/MPxCommand.h>
-#include <maya/MArgList.h>
+#include <maya/MAnimCurveChange.h>
 #include <maya/MArgDatabase.h>
-#include <maya/MSyntax.h>
-#include <maya/MSelectionList.h>
-#include <maya/MDagPath.h>
+#include <maya/MArgList.h>
+#include <maya/MComputation.h>
 #include <maya/MDGModifier.h>
 #include <maya/MDagModifier.h>
+#include <maya/MDagPath.h>
+#include <maya/MDoubleArray.h>
 #include <maya/MFnDagNode.h>
+#include <maya/MGlobal.h>
+#include <maya/MIOStream.h>
+#include <maya/MMatrix.h>
 #include <maya/MPlug.h>
 #include <maya/MPlugArray.h>
-#include <maya/MAnimCurveChange.h>
-#include <maya/MComputation.h>
 #include <maya/MPoint.h>
-#include <maya/MVector.h>
-#include <maya/MMatrix.h>
+#include <maya/MPxCommand.h>
+#include <maya/MSelectionList.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
-#include <maya/MDoubleArray.h>
+#include <maya/MSyntax.h>
+#include <maya/MVector.h>
 
 // MM Solver
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_attr.h"
 
 namespace mmsolver {
 
 class MMTestCameraMatrixCmd : public MPxCommand {
 public:
-
-    MMTestCameraMatrixCmd() {};
+    MMTestCameraMatrixCmd(){};
 
     virtual ~MMTestCameraMatrixCmd();
 
@@ -77,11 +76,11 @@ public:
     static MString cmdName();
 
 private:
-    MStatus parseArgs(const MArgList& args);
+    MStatus parseArgs(const MArgList &args);
 
     CameraPtr m_camera;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MAYA_MM_TEST_CAMERA_MATRIX_CMD_H
+#endif  // MAYA_MM_TEST_CAMERA_MATRIX_CMD_H

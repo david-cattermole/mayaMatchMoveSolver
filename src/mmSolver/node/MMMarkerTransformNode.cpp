@@ -24,11 +24,11 @@
 #include "MMMarkerTransformNode.h"
 
 // Maya
-#include <maya/MTypeId.h>
-#include <maya/MFnTypedAttribute.h>
 #include <maya/MFnPluginData.h>
-#include <maya/MPxTransformationMatrix.h>
+#include <maya/MFnTypedAttribute.h>
 #include <maya/MGlobal.h>
+#include <maya/MPxTransformationMatrix.h>
+#include <maya/MTypeId.h>
 
 // MM Solver
 #include "MMLensData.h"
@@ -49,7 +49,8 @@ MString MMMarkerTransformNode::nodeName() {
 MMMarkerTransformNode::MMMarkerTransformNode() : MPxTransform() {}
 
 #if MAYA_API_VERSION < 20200000
-MMMarkerTransformNode::MMMarkerTransformNode(MPxTransformationMatrix *tm) : MPxTransform(tm) {}
+MMMarkerTransformNode::MMMarkerTransformNode(MPxTransformationMatrix *tm)
+    : MPxTransform(tm) {}
 #endif
 
 void MMMarkerTransformNode::postConstructor() {
@@ -61,16 +62,12 @@ void MMMarkerTransformNode::postConstructor() {
 #endif
 }
 
-MMMarkerTransformNode::~MMMarkerTransformNode() {
+MMMarkerTransformNode::~MMMarkerTransformNode(){
     // Empty function body rather than '= default', to allow compiling
     // under Visual Studio 2012.
 };
 
-
-void *MMMarkerTransformNode::creator() {
-    return (new MMMarkerTransformNode());
-}
-
+void *MMMarkerTransformNode::creator() { return (new MMMarkerTransformNode()); }
 
 MStatus MMMarkerTransformNode::initialize() {
     MStatus status;
@@ -78,9 +75,7 @@ MStatus MMMarkerTransformNode::initialize() {
 
     // In Lens
     MTypeId data_type_id(MM_LENS_DATA_TYPE_ID);
-    a_inLens = typedAttr.create(
-            "inLens", "ilns",
-            data_type_id);
+    a_inLens = typedAttr.create("inLens", "ilns", data_type_id);
     CHECK_MSTATUS(typedAttr.setStorable(false));
     CHECK_MSTATUS(typedAttr.setKeyable(false));
     CHECK_MSTATUS(typedAttr.setReadable(true));
@@ -92,25 +87,24 @@ MStatus MMMarkerTransformNode::initialize() {
     return MS::kSuccess;
 }
 
-void MMMarkerTransformNode::resetTransformation (const MMatrix &m)
-{
+void MMMarkerTransformNode::resetTransformation(const MMatrix &m) {
     ParentClass::resetTransformation(m);
 }
 
-void MMMarkerTransformNode::resetTransformation (MPxTransformationMatrix *resetMatrix )
-{
+void MMMarkerTransformNode::resetTransformation(
+    MPxTransformationMatrix *resetMatrix) {
     ParentClass::resetTransformation(resetMatrix);
 }
 
 // Ensure each plug value is validated and is used to set internal
 // data.
 #if MAYA_API_VERSION < 20180000
-MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug& plug,
-                                                   const MDataHandle& handle,
-                                                   const MDGContext& context) {
+MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug &plug,
+                                                   const MDataHandle &handle,
+                                                   const MDGContext &context) {
 #else
-MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug& plug,
-                                                   const MDataHandle& handle) {
+MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug &plug,
+                                                   const MDataHandle &handle) {
 #endif
     // Make sure that there is something interesting to process.
     if (plug.isNull()) {
@@ -121,7 +115,7 @@ MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug& plug,
         MStatus status = MS::kSuccess;
 
 #if MAYA_API_VERSION < 20180000
-        MDataBlock data = forceCache(*(MDGContext*)&context);
+        MDataBlock data = forceCache(*(MDGContext *)&context);
 #else
         MDataBlock data = forceCache();
 #endif
@@ -136,19 +130,20 @@ MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug& plug,
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Get Input Lens
-        MMLensData* inputLensData = (MMLensData*) dataHandle.asPluginData();
+        MMLensData *inputLensData = (MMLensData *)dataHandle.asPluginData();
         std::shared_ptr<LensModel> inputLensModel;
         if (inputLensData != nullptr) {
             inputLensModel = inputLensData->getValue();
         }
 
         // Update our new lens data
-        MMLensData* newLensData = (MMLensData*) fnPluginData.data(&status);
+        MMLensData *newLensData = (MMLensData *)fnPluginData.data(&status);
         newLensData->setValue(inputLensModel);
         dataHandle.setMPxData(newLensData);
 
         // Update the custom transformation matrix with new values.
-        MMMarkerTransformMatrix *ltm = MMMarkerTransformNode::getMarkerTransformMatrix();
+        MMMarkerTransformMatrix *ltm =
+            MMMarkerTransformNode::getMarkerTransformMatrix();
         if (ltm) {
             ltm->setLensModel(inputLensModel);
         } else {
@@ -174,11 +169,13 @@ MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug& plug,
 
 MMMarkerTransformMatrix *MMMarkerTransformNode::getMarkerTransformMatrix() {
 #if MAYA_API_VERSION < 20190000
-    MMMarkerTransformMatrix *ltm = (MMMarkerTransformMatrix *) baseTransformationMatrix;
+    MMMarkerTransformMatrix *ltm =
+        (MMMarkerTransformMatrix *)baseTransformationMatrix;
 #elif MAYA_API_VERSION >= 20190000
-    MMMarkerTransformMatrix *ltm = (MMMarkerTransformMatrix *) transformationMatrixPtr();
+    MMMarkerTransformMatrix *ltm =
+        (MMMarkerTransformMatrix *)transformationMatrixPtr();
 #endif
     return ltm;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

@@ -23,19 +23,19 @@
 #define MM_SKY_DOME_DRAW_OVERRIDE_H
 
 // Maya
-#include <maya/MString.h>
 #include <maya/MColor.h>
+#include <maya/MEventMessage.h>
 #include <maya/MGlobal.h>
 #include <maya/MPointArray.h>
 #include <maya/MStreamUtils.h>
-#include <maya/MEventMessage.h>
+#include <maya/MString.h>
 
 // Maya Viewport 2.0
-#include <maya/MPxDrawOverride.h>
-#include <maya/MDrawRegistry.h>
-#include <maya/MUserData.h>
 #include <maya/MDrawContext.h>
+#include <maya/MDrawRegistry.h>
 #include <maya/MHWGeometryUtilities.h>
+#include <maya/MPxDrawOverride.h>
+#include <maya/MUserData.h>
 
 // MM Solver
 #include "SkyDomeShapeNode.h"
@@ -46,42 +46,40 @@ namespace mmsolver {
 class SkyDomeDrawData : public MUserData {
 public:
     SkyDomeDrawData()
-            : MUserData(/*deleteAfterUse=*/ true) // let Maya clean up
-            , m_draw_mode(static_cast<short>(DrawMode::kDrawOnTop))
-            , m_transform_mode(static_cast<short>(TransformMode::kNoOffset))
-            , m_line_width(1.0)
-            , m_alpha(1.0)
-            , m_radius(1.0)
-            , m_resolution(32)
-            , m_axis_x_enable(true)
-            , m_axis_y_enable(true)
-            , m_axis_z_enable(true)
-            , m_axis_x_enable_top(true)
-            , m_axis_z_enable_top(true)
-            , m_axis_x_enable_bottom(true)
-            , m_axis_z_enable_bottom(true)
-            , m_axis_x_alpha(1.0f)
-            , m_axis_y_alpha(1.0f)
-            , m_axis_z_alpha(1.0f)
-            , m_axis_x_line_width(2.0f)
-            , m_axis_y_line_width(2.0f)
-            , m_axis_z_line_width(2.0f)
-            , m_grid_lat_enable(true)
-            , m_grid_long_enable(true)
-            , m_grid_lat_enable_top(true)
-            , m_grid_long_enable_top(true)
-            , m_grid_lat_enable_bottom(true)
-            , m_grid_long_enable_bottom(true)
-            , m_grid_lat_alpha(0.5f)
-            , m_grid_long_alpha(0.5f)
-            , m_grid_lat_line_width(1.0f)
-            , m_grid_long_line_width(1.0f)
-            , m_grid_lat_divisions(6)
-            , m_grid_long_divisions(6)
-    {}
+        : MUserData(/*deleteAfterUse=*/true)  // let Maya clean up
+        , m_draw_mode(static_cast<short>(DrawMode::kDrawOnTop))
+        , m_transform_mode(static_cast<short>(TransformMode::kNoOffset))
+        , m_line_width(1.0)
+        , m_alpha(1.0)
+        , m_radius(1.0)
+        , m_resolution(32)
+        , m_axis_x_enable(true)
+        , m_axis_y_enable(true)
+        , m_axis_z_enable(true)
+        , m_axis_x_enable_top(true)
+        , m_axis_z_enable_top(true)
+        , m_axis_x_enable_bottom(true)
+        , m_axis_z_enable_bottom(true)
+        , m_axis_x_alpha(1.0f)
+        , m_axis_y_alpha(1.0f)
+        , m_axis_z_alpha(1.0f)
+        , m_axis_x_line_width(2.0f)
+        , m_axis_y_line_width(2.0f)
+        , m_axis_z_line_width(2.0f)
+        , m_grid_lat_enable(true)
+        , m_grid_long_enable(true)
+        , m_grid_lat_enable_top(true)
+        , m_grid_long_enable_top(true)
+        , m_grid_lat_enable_bottom(true)
+        , m_grid_long_enable_bottom(true)
+        , m_grid_lat_alpha(0.5f)
+        , m_grid_long_alpha(0.5f)
+        , m_grid_lat_line_width(1.0f)
+        , m_grid_long_line_width(1.0f)
+        , m_grid_lat_divisions(6)
+        , m_grid_long_divisions(6) {}
 
-    ~SkyDomeDrawData() override {
-    }
+    ~SkyDomeDrawData() override {}
 
     bool m_enable;
     double m_alpha;
@@ -135,27 +133,23 @@ public:
 
     MHWRender::DrawAPI supportedDrawAPIs() const override;
 
-    bool isBounded(
-            const MDagPath &objPath,
-            const MDagPath &cameraPath) const override;
+    bool isBounded(const MDagPath &objPath,
+                   const MDagPath &cameraPath) const override;
 
-    MBoundingBox boundingBox(
-            const MDagPath &objPath,
-            const MDagPath &cameraPath) const override;
+    MBoundingBox boundingBox(const MDagPath &objPath,
+                             const MDagPath &cameraPath) const override;
 
-    MUserData *prepareForDraw(
-            const MDagPath &objPath,
-            const MDagPath &cameraPath,
-            const MHWRender::MFrameContext &frameContext,
-            MUserData *oldData) override;
+    MUserData *prepareForDraw(const MDagPath &objPath,
+                              const MDagPath &cameraPath,
+                              const MHWRender::MFrameContext &frameContext,
+                              MUserData *oldData) override;
 
     bool hasUIDrawables() const override { return true; }
 
-    void addUIDrawables(
-            const MDagPath &objPath,
-            MHWRender::MUIDrawManager &drawManager,
-            const MHWRender::MFrameContext &frameContext,
-            const MUserData *userData) override;
+    void addUIDrawables(const MDagPath &objPath,
+                        MHWRender::MUIDrawManager &drawManager,
+                        const MHWRender::MFrameContext &frameContext,
+                        const MUserData *userData) override;
 
     bool traceCallSequence() const override {
         // Return true if internal tracing is desired.
@@ -174,44 +168,28 @@ private:
     SkyDomeShapeNode *m_node;
 
     // Get attribute values from node.
-    MStatus get_node_attr(
-        const MDagPath &objPath,
-        const MObject &attr,
-        bool &value) const;
-    MStatus get_node_attr(
-        const MDagPath &objPath,
-        const MObject &attr,
-        int32_t &value) const;
-    MStatus get_node_attr(
-        const MDagPath &objPath,
-        const MObject &attr,
-        uint32_t &value) const;
-    MStatus get_node_attr(
-        const MDagPath &objPath,
-        const MObject &attr,
-        short &value) const;
-    MStatus get_node_attr(
-        const MDagPath &objPath,
-        const MObject &attr,
-        float &value) const;
-    MStatus get_node_attr(
-        const MDagPath &objPath,
-        const MObject &attr,
-        double &value) const;
-    MStatus get_node_attr(
-        const MDagPath &objPath,
-        const MObject &attr,
-        MDistance &value) const;
-    MStatus get_node_attr(
-        const MDagPath &objPath,
-        const MObject &attr,
-        MColor &value) const;
+    MStatus get_node_attr(const MDagPath &objPath, const MObject &attr,
+                          bool &value) const;
+    MStatus get_node_attr(const MDagPath &objPath, const MObject &attr,
+                          int32_t &value) const;
+    MStatus get_node_attr(const MDagPath &objPath, const MObject &attr,
+                          uint32_t &value) const;
+    MStatus get_node_attr(const MDagPath &objPath, const MObject &attr,
+                          short &value) const;
+    MStatus get_node_attr(const MDagPath &objPath, const MObject &attr,
+                          float &value) const;
+    MStatus get_node_attr(const MDagPath &objPath, const MObject &attr,
+                          double &value) const;
+    MStatus get_node_attr(const MDagPath &objPath, const MObject &attr,
+                          MDistance &value) const;
+    MStatus get_node_attr(const MDagPath &objPath, const MObject &attr,
+                          MColor &value) const;
 
     // Called when the model editor state changes.
     static void on_model_editor_changed_func(void *clientData);
     MCallbackId m_model_editor_changed_callback_id;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_SKY_DOME_DRAW_OVERRIDE_H
+#endif  // MM_SKY_DOME_DRAW_OVERRIDE_H

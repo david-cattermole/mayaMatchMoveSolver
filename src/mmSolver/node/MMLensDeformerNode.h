@@ -24,21 +24,21 @@
 #define MM_LENS_DEFORMER_NODE_H
 
 // STL
-#include <string.h>
 #include <math.h>
+#include <string.h>
 
 // Maya
-#include <maya/MIOStream.h>
-#include <maya/MPxGeometryFilter.h>
-#include <maya/MItGeometry.h>
-#include <maya/MTypeId.h>
-#include <maya/MPlug.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
-#include <maya/MFnNumericAttribute.h>
 #include <maya/MFnDependencyNode.h>
-#include <maya/MPoint.h>
+#include <maya/MFnNumericAttribute.h>
+#include <maya/MIOStream.h>
+#include <maya/MItGeometry.h>
 #include <maya/MMatrix.h>
+#include <maya/MPlug.h>
+#include <maya/MPoint.h>
+#include <maya/MPxGeometryFilter.h>
+#include <maya/MTypeId.h>
 
 namespace mmsolver {
 
@@ -54,10 +54,8 @@ public:
 
     static MString nodeName();
 
-    virtual MStatus deform(MDataBlock&    block,
-                           MItGeometry&   iter,
-                           const MMatrix& mat,
-                           unsigned int   multiIndex);
+    virtual MStatus deform(MDataBlock& block, MItGeometry& iter,
+                           const MMatrix& mat, unsigned int multiIndex);
 
 public:
     static MObject a_inLens;
@@ -70,9 +68,8 @@ public:
     static MTypeId m_id;
 
 private:
-
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_LENS_DEFORMER_NODE_H
+#endif  // MM_LENS_DEFORMER_NODE_H

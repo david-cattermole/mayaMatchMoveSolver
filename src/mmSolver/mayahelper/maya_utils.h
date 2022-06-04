@@ -20,7 +20,6 @@
  * Miscellaneous Maya utilities, related to objects and selection, etc.
  */
 
-
 #ifndef MAYA_UTILS_H
 #define MAYA_UTILS_H
 
@@ -28,41 +27,39 @@
 #include <vector>
 
 // Maya
-#include <maya/MStatus.h>
 #include <maya/MColor.h>
+#include <maya/MDagPath.h>
+#include <maya/MDataHandle.h>
 #include <maya/MDistance.h>
-#include <maya/MPoint.h>
-#include <maya/MVector.h>
+#include <maya/MFnDependencyNode.h>
 #include <maya/MMatrix.h>
-#include <maya/MString.h>
-#include <maya/MStringArray.h>
 #include <maya/MObject.h>
 #include <maya/MObjectArray.h>
-#include <maya/MDagPath.h>
 #include <maya/MPlug.h>
-#include <maya/MDataHandle.h>
-#include <maya/MSelectionList.h>
-#include <maya/MFnDependencyNode.h>
+#include <maya/MPoint.h>
 #include <maya/MPxNode.h>
+#include <maya/MSelectionList.h>
+#include <maya/MStatus.h>
+#include <maya/MString.h>
+#include <maya/MStringArray.h>
+#include <maya/MVector.h>
 
 // MM Solver
 #include "mmSolver/utilities/debug_utils.h"
 
 #define MMSOLVER_OBJECT_TYPE_UNINITIALIZED (0)
-#define MMSOLVER_OBJECT_TYPE_UNKNOWN       (1)
-#define MMSOLVER_OBJECT_TYPE_ATTRIBUTE     (2)
-#define MMSOLVER_OBJECT_TYPE_MARKER        (3)
-#define MMSOLVER_OBJECT_TYPE_BUNDLE        (4)
-#define MMSOLVER_OBJECT_TYPE_CAMERA        (5)
-#define MMSOLVER_OBJECT_TYPE_IMAGE_PLANE   (6)
-#define MMSOLVER_OBJECT_TYPE_MARKER_GROUP  (7)
-#define MMSOLVER_OBJECT_TYPE_COLLECTION    (8)
-#define MMSOLVER_OBJECT_TYPE_LINE          (9)
-#define MMSOLVER_OBJECT_TYPE_LENS          (10)
+#define MMSOLVER_OBJECT_TYPE_UNKNOWN (1)
+#define MMSOLVER_OBJECT_TYPE_ATTRIBUTE (2)
+#define MMSOLVER_OBJECT_TYPE_MARKER (3)
+#define MMSOLVER_OBJECT_TYPE_BUNDLE (4)
+#define MMSOLVER_OBJECT_TYPE_CAMERA (5)
+#define MMSOLVER_OBJECT_TYPE_IMAGE_PLANE (6)
+#define MMSOLVER_OBJECT_TYPE_MARKER_GROUP (7)
+#define MMSOLVER_OBJECT_TYPE_COLLECTION (8)
+#define MMSOLVER_OBJECT_TYPE_LINE (9)
+#define MMSOLVER_OBJECT_TYPE_LENS (10)
 
-
-enum class ObjectType
-{
+enum class ObjectType {
     kUninitialized = MMSOLVER_OBJECT_TYPE_UNINITIALIZED,
     kUnknown = MMSOLVER_OBJECT_TYPE_UNKNOWN,
     kAttribute = MMSOLVER_OBJECT_TYPE_ATTRIBUTE,
@@ -76,36 +73,18 @@ enum class ObjectType
     kLens = MMSOLVER_OBJECT_TYPE_LENS,
 };
 
+MStatus getAsSelectionList(const MStringArray &nodeNames,
+                           MSelectionList &selList);
 
-MStatus getAsSelectionList(
-    const MStringArray &nodeNames,
-    MSelectionList &selList);
+MStatus getAsSelectionList(const MString nodeName, MSelectionList &selList);
 
+MStatus nodeExistsAndIsType(const MString &nodeName, const MFn::Type nodeType);
 
-MStatus getAsSelectionList(
-    const MString nodeName,
-    MSelectionList &selList);
+MStatus getAsObject(const MString &nodeName, MObject &object);
 
+MStatus getAsDagPath(const MString &nodeName, MDagPath &nodeDagPath);
 
-MStatus nodeExistsAndIsType(
-    const MString &nodeName,
-    const MFn::Type nodeType);
-
-
-MStatus getAsObject(
-    const MString &nodeName,
-    MObject &object);
-
-
-MStatus getAsDagPath(
-    const MString &nodeName,
-    MDagPath &nodeDagPath);
-
-
-bool hasAttrName(
-    MFnDependencyNode &dependFn,
-    const MString &attrName);
-
+bool hasAttrName(MFnDependencyNode &dependFn, const MString &attrName);
 
 // Analogous to the Python function "mmSolver.api.get_object_type()"
 ObjectType computeObjectType(
@@ -116,18 +95,14 @@ ObjectType computeObjectType(const MObject &node_obj);
 
 // Generate attribute name used to set and look up 'attribute affects'
 // on nodes.
-MStatus constructAttrAffectsName(
-    const MString attrName,
-    const MString attrUuidStr,
-    MString &outAttrName);
-
+MStatus constructAttrAffectsName(const MString attrName,
+                                 const MString attrUuidStr,
+                                 MString &outAttrName);
 
 namespace mmsolver {
 
-static inline
-MStatus getNodeAttr(const MDagPath &objPath,
-                    const MObject &attr,
-                    MDistance &value) {
+static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
+                                  MDistance &value) {
     MStatus status;
     MObject node = objPath.node(&status);
     if (status) {
@@ -140,10 +115,8 @@ MStatus getNodeAttr(const MDagPath &objPath,
     return status;
 }
 
-static inline
-MStatus getNodeAttr(const MDagPath &objPath,
-                    const MObject &attr,
-                    bool &value) {
+static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
+                                  bool &value) {
     MStatus status;
     MObject node = objPath.node(&status);
     if (status) {
@@ -156,10 +129,8 @@ MStatus getNodeAttr(const MDagPath &objPath,
     return status;
 }
 
-static inline
-MStatus getNodeAttr(const MDagPath &objPath,
-                    const MObject &attr,
-                    int32_t &value) {
+static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
+                                  int32_t &value) {
     MStatus status;
     MObject node = objPath.node(&status);
     if (status) {
@@ -172,10 +143,8 @@ MStatus getNodeAttr(const MDagPath &objPath,
     return status;
 }
 
-static inline
-MStatus getNodeAttr(const MDagPath &objPath,
-                    const MObject &attr,
-                    uint32_t &value) {
+static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
+                                  uint32_t &value) {
     MStatus status;
     MObject node = objPath.node(&status);
     if (status) {
@@ -188,10 +157,8 @@ MStatus getNodeAttr(const MDagPath &objPath,
     return status;
 }
 
-static inline
-MStatus getNodeAttr(const MDagPath &objPath,
-                    const MObject &attr,
-                    short &value) {
+static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
+                                  short &value) {
     MStatus status;
     MObject node = objPath.node(&status);
     if (status) {
@@ -204,10 +171,8 @@ MStatus getNodeAttr(const MDagPath &objPath,
     return status;
 }
 
-static inline
-MStatus getNodeAttr(const MDagPath &objPath,
-                    const MObject &attr,
-                    float &value) {
+static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
+                                  float &value) {
     MStatus status;
     MObject node = objPath.node(&status);
     if (status) {
@@ -220,10 +185,8 @@ MStatus getNodeAttr(const MDagPath &objPath,
     return status;
 }
 
-static inline
-MStatus getNodeAttr(const MDagPath &objPath,
-                    const MObject &attr,
-                    double &value) {
+static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
+                                  double &value) {
     MStatus status;
     MObject node = objPath.node(&status);
     if (status) {
@@ -236,10 +199,8 @@ MStatus getNodeAttr(const MDagPath &objPath,
     return status;
 }
 
-static inline
-MStatus getNodeAttr(const MDagPath &objPath,
-                    const MObject &attr,
-                    MColor &value) {
+static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
+                                  MColor &value) {
     MStatus status;
     MObject node = objPath.node(&status);
     if (status) {
@@ -257,10 +218,8 @@ MStatus getNodeAttr(const MDagPath &objPath,
     return status;
 }
 
-static inline
-MStatus getNodeAttr(const MDagPath &objPath,
-                    const MObject &attr,
-                    MMatrix &value) {
+static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
+                                  MMatrix &value) {
     MStatus status;
     MObject node = objPath.node(&status);
     if (status) {
@@ -275,10 +234,8 @@ MStatus getNodeAttr(const MDagPath &objPath,
     return status;
 }
 
-static inline
-MStatus getNodeAttr(const MDagPath &objPath,
-                    const MObject &attr,
-                    MString &value) {
+static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
+                                  MString &value) {
     MStatus status;
     MObject node = objPath.node(&status);
     if (status) {
@@ -293,18 +250,16 @@ MStatus getNodeAttr(const MDagPath &objPath,
     return status;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
 // Static attributes to help with Maya Node initialization.
 class MMNodeInitUtils {
-  public:
-
+public:
     // Create 'MPxNode::attributeAffects' relationships for nodes, using
     // lists of attributes, rather than each relationship taking up one
     // line.
-    static MStatus attributeAffectsMulti(
-            const MObjectArray &inputAttrs,
-            const MObjectArray &outputAttrs);
+    static MStatus attributeAffectsMulti(const MObjectArray &inputAttrs,
+                                         const MObjectArray &outputAttrs);
 };
 
-#endif // MAYA_UTILS_H
+#endif  // MAYA_UTILS_H

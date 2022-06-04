@@ -25,32 +25,33 @@
 #include "adjust_cminpack_base.h"
 
 // STL
-#include <ctime>
-#include <cmath>
-#include <iostream>
-#include <string>
-#include <vector>
-#include <cassert>
-#include <limits>
 #include <math.h>
 
+#include <cassert>
+#include <cmath>
+#include <ctime>
+#include <iostream>
+#include <limits>
+#include <string>
+#include <vector>
+
 // Maya
+#include <maya/MAnimCurveChange.h>
+#include <maya/MComputation.h>
+#include <maya/MFnAnimCurve.h>
+#include <maya/MMatrix.h>
+#include <maya/MObject.h>
 #include <maya/MPoint.h>
+#include <maya/MProfiler.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
-#include <maya/MObject.h>
-#include <maya/MFnAnimCurve.h>
-#include <maya/MAnimCurveChange.h>
-#include <maya/MMatrix.h>
-#include <maya/MComputation.h>
-#include <maya/MProfiler.h>
 
 // CMinpack
 #include <cminpack.h>
 
 // MM Solver
+#include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
-#include "mmSolver/mayahelper/maya_utils.h"
 
-#endif // USE_SOLVER_CMINPACK
+#endif  // USE_SOLVER_CMINPACK

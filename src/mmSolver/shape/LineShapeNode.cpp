@@ -27,30 +27,30 @@
 #include "LineShapeNode.h"
 
 // Maya
+#include <maya/MColor.h>
+#include <maya/MDataBlock.h>
+#include <maya/MDataHandle.h>
+#include <maya/MDistance.h>
+#include <maya/MFnEnumAttribute.h>
+#include <maya/MFnMessageAttribute.h>
+#include <maya/MFnNumericAttribute.h>
+#include <maya/MFnNumericData.h>
+#include <maya/MFnUnitAttribute.h>
+#include <maya/MPlug.h>
 #include <maya/MPxLocatorNode.h>
 #include <maya/MString.h>
 #include <maya/MTypeId.h>
-#include <maya/MPlug.h>
 #include <maya/MVector.h>
-#include <maya/MDataBlock.h>
-#include <maya/MDataHandle.h>
-#include <maya/MColor.h>
-#include <maya/MDistance.h>
-#include <maya/MFnUnitAttribute.h>
-#include <maya/MFnNumericAttribute.h>
-#include <maya/MFnEnumAttribute.h>
-#include <maya/MFnNumericData.h>
-#include <maya/MFnMessageAttribute.h>
 
 #if MAYA_API_VERSION >= 20190000
-#include <maya/MViewport2Renderer.h>
-#include <maya/MEvaluationNode.h>
 #include <assert.h>
+#include <maya/MEvaluationNode.h>
+#include <maya/MViewport2Renderer.h>
 #endif
 
 // MM Solver
-#include "mmSolver/nodeTypeIds.h"
 #include "LineDrawOverride.h"
+#include "mmSolver/nodeTypeIds.h"
 
 namespace mmsolver {
 
@@ -59,7 +59,8 @@ MString LineShapeNode::m_draw_db_classification(MM_LINE_DRAW_CLASSIFY);
 MString LineShapeNode::m_draw_registrant_id(MM_LINE_DRAW_REGISTRANT_ID);
 MString LineShapeNode::m_selection_type_name(MM_LINE_SHAPE_SELECTION_TYPE_NAME);
 MString LineShapeNode::m_display_filter_name(MM_LINE_SHAPE_DISPLAY_FILTER_NAME);
-MString LineShapeNode::m_display_filter_label(MM_LINE_SHAPE_DISPLAY_FILTER_LABEL);
+MString LineShapeNode::m_display_filter_label(
+    MM_LINE_SHAPE_DISPLAY_FILTER_LABEL);
 
 // Attributes
 MObject LineShapeNode::m_draw_name;
@@ -81,22 +82,16 @@ LineShapeNode::LineShapeNode() {}
 
 LineShapeNode::~LineShapeNode() {}
 
-MString LineShapeNode::nodeName() {
-    return MString(MM_LINE_SHAPE_TYPE_NAME);
-}
+MString LineShapeNode::nodeName() { return MString(MM_LINE_SHAPE_TYPE_NAME); }
 
-MStatus
-LineShapeNode::compute(const MPlug &/*plug*/,
-                         MDataBlock &/*dataBlock*/) {
+MStatus LineShapeNode::compute(const MPlug & /*plug*/,
+                               MDataBlock & /*dataBlock*/) {
     return MS::kUnknownParameter;
 }
 
-bool LineShapeNode::isBounded() const {
-    return true;
-}
+bool LineShapeNode::isBounded() const { return true; }
 
-MBoundingBox LineShapeNode::boundingBox() const
-{
+MBoundingBox LineShapeNode::boundingBox() const {
     MPoint corner1(-1.0, -1.0, -1.0);
     MPoint corner2(1.0, 1.0, 1.0);
 
@@ -120,9 +115,8 @@ bool LineShapeNode::excludeAsLocator() const {
 // Called before this node is evaluated by Evaluation Manager
 //
 #if MAYA_API_VERSION >= 20190000
-MStatus LineShapeNode::preEvaluation(
-        const MDGContext &context,
-        const MEvaluationNode &evaluationNode) {
+MStatus LineShapeNode::preEvaluation(const MDGContext &context,
+                                     const MEvaluationNode &evaluationNode) {
     if (context.isNormal()) {
         MStatus status;
         bool ok = evaluationNode.dirtyPlugExists(m_objects, &status);
@@ -138,9 +132,9 @@ MStatus LineShapeNode::preEvaluation(
 
 #if MAYA_API_VERSION >= 20200000
 void LineShapeNode::getCacheSetup(const MEvaluationNode &evalNode,
-                                    MNodeCacheDisablingInfo &disablingInfo,
-                                    MNodeCacheSetupInfo &cacheSetupInfo,
-                                    MObjectArray &monitoredAttributes) const {
+                                  MNodeCacheDisablingInfo &disablingInfo,
+                                  MNodeCacheSetupInfo &cacheSetupInfo,
+                                  MObjectArray &monitoredAttributes) const {
     MPxLocatorNode::getCacheSetup(evalNode, disablingInfo, cacheSetupInfo,
                                   monitoredAttributes);
     assert(!disablingInfo.getCacheDisabled());
@@ -149,9 +143,7 @@ void LineShapeNode::getCacheSetup(const MEvaluationNode &evalNode,
 }
 #endif
 
-void *LineShapeNode::creator() {
-    return new LineShapeNode();
-}
+void *LineShapeNode::creator() { return new LineShapeNode(); }
 
 MStatus LineShapeNode::initialize() {
     MStatus status;
@@ -161,33 +153,28 @@ MStatus LineShapeNode::initialize() {
     MFnMessageAttribute msgAttr;
 
     // Draw Name
-    m_draw_name = nAttr.create(
-            "drawName", "drwnm",
-            MFnNumericData::kBoolean, 1);
+    m_draw_name =
+        nAttr.create("drawName", "drwnm", MFnNumericData::kBoolean, 1);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
 
     // Color
-    m_text_color = nAttr.createColor(
-            "textColor", "txtclr");
+    m_text_color = nAttr.createColor("textColor", "txtclr");
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 1.0f));
 
-    m_point_color = nAttr.createColor(
-            "pointColor", "pntclr");
+    m_point_color = nAttr.createColor("pointColor", "pntclr");
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 1.0f));
 
-    m_inner_color = nAttr.createColor(
-            "innerColor", "inrclr");
+    m_inner_color = nAttr.createColor("innerColor", "inrclr");
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.0f, 1.0f));
 
-    m_outer_color = nAttr.createColor(
-            "outerColor", "otrclr");
+    m_outer_color = nAttr.createColor("outerColor", "otrclr");
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.5f, 1.0f));
@@ -196,33 +183,29 @@ MStatus LineShapeNode::initialize() {
     auto alpha_min = 0.0;
     auto alpha_max = 1.0;
     auto alpha_default = 1.0;
-    m_text_alpha = nAttr.create(
-            "textAlpha", "txtalp",
-            MFnNumericData::kDouble, alpha_default);
+    m_text_alpha = nAttr.create("textAlpha", "txtalp", MFnNumericData::kDouble,
+                                alpha_default);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(alpha_min));
     CHECK_MSTATUS(nAttr.setMax(alpha_max));
 
-    m_point_alpha = nAttr.create(
-        "pointAlpha", "pntalp",
-        MFnNumericData::kDouble, alpha_default);
+    m_point_alpha = nAttr.create("pointAlpha", "pntalp",
+                                 MFnNumericData::kDouble, alpha_default);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(alpha_min));
     CHECK_MSTATUS(nAttr.setMax(alpha_max));
 
-    m_inner_alpha = nAttr.create(
-            "innerAlpha", "inralp",
-            MFnNumericData::kDouble, alpha_default);
+    m_inner_alpha = nAttr.create("innerAlpha", "inralp",
+                                 MFnNumericData::kDouble, alpha_default);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(alpha_min));
     CHECK_MSTATUS(nAttr.setMax(alpha_max));
 
-    m_outer_alpha = nAttr.create(
-            "outerAlpha", "otralp",
-            MFnNumericData::kDouble, alpha_default);
+    m_outer_alpha = nAttr.create("outerAlpha", "otralp",
+                                 MFnNumericData::kDouble, alpha_default);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(alpha_min));
@@ -232,18 +215,16 @@ MStatus LineShapeNode::initialize() {
     auto line_width_min = 0.01;
     auto line_width_soft_min = 0.1;
     auto line_width_soft_max = 10.0;
-    m_inner_line_width = nAttr.create(
-            "innerLineWidth", "inrlnwd",
-            MFnNumericData::kDouble, 1.0);
+    m_inner_line_width =
+        nAttr.create("innerLineWidth", "inrlnwd", MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(line_width_min));
     CHECK_MSTATUS(nAttr.setSoftMin(line_width_soft_min));
     CHECK_MSTATUS(nAttr.setSoftMax(line_width_soft_max));
 
-    m_outer_line_width = nAttr.create(
-            "outerLineWidth", "otrlnwd",
-            MFnNumericData::kDouble, 1.0);
+    m_outer_line_width =
+        nAttr.create("outerLineWidth", "otrlnwd", MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(line_width_min));
@@ -252,9 +233,8 @@ MStatus LineShapeNode::initialize() {
 
     // Scale
     auto scale_min = 0.0;
-    m_outer_scale = nAttr.create(
-        "outerScale", "otrscl",
-        MFnNumericData::kDouble, 1.0);
+    m_outer_scale =
+        nAttr.create("outerScale", "otrscl", MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(scale_min));
@@ -263,9 +243,8 @@ MStatus LineShapeNode::initialize() {
     auto point_size_min = 0.0;
     auto point_size_soft_min = 0.5;
     auto point_size_soft_max = 10.0;
-    m_point_size = nAttr.create(
-            "pointSize", "ptsz",
-            MFnNumericData::kDouble, 4.0);
+    m_point_size =
+        nAttr.create("pointSize", "ptsz", MFnNumericData::kDouble, 4.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(point_size_min));
@@ -283,7 +262,7 @@ MStatus LineShapeNode::initialize() {
     CHECK_MSTATUS(msgAttr.setWritable(true));
     CHECK_MSTATUS(msgAttr.setIndexMatters(false));
     CHECK_MSTATUS(msgAttr.setDisconnectBehavior(
-                      MFnAttribute::DisconnectBehavior::kDelete));
+        MFnAttribute::DisconnectBehavior::kDelete));
 
     // Add attributes
     CHECK_MSTATUS(addAttribute(m_draw_name));
@@ -304,4 +283,4 @@ MStatus LineShapeNode::initialize() {
     return MS::kSuccess;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

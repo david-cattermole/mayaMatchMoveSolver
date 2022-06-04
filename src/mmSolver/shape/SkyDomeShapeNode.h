@@ -23,22 +23,22 @@
 #define MM_SKY_DOME_SHAPE_NODE_H
 
 // Maya
-#include <maya/MPxLocatorNode.h>
-#include <maya/MString.h>
-#include <maya/MObject.h>
-#include <maya/MTypeId.h>
-#include <maya/MPlug.h>
-#include <maya/MVector.h>
+#include <maya/MArrayDataBuilder.h>
+#include <maya/MColor.h>
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
-#include <maya/MColor.h>
 #include <maya/MDistance.h>
 #include <maya/MFnUnitAttribute.h>
-#include <maya/MArrayDataBuilder.h>
+#include <maya/MObject.h>
+#include <maya/MPlug.h>
+#include <maya/MPxLocatorNode.h>
+#include <maya/MString.h>
+#include <maya/MTypeId.h>
+#include <maya/MVector.h>
 
 #if MAYA_API_VERSION >= 20190000
-#include <maya/MEvaluationNode.h>
 #include <assert.h>
+#include <maya/MEvaluationNode.h>
 #endif
 
 namespace mmsolver {
@@ -53,7 +53,6 @@ enum class TransformMode : short {
     kNoOffset = 0,
     kCenterOfCamera = 1,
 };
-
 
 class SkyDomeShapeNode : public MPxLocatorNode {
 public:
@@ -137,6 +136,6 @@ public:
     static MObject m_grid_long_divisions;
 };
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_SKY_DOME_SHAPE_NODE_H
+#endif  // MM_SKY_DOME_SHAPE_NODE_H

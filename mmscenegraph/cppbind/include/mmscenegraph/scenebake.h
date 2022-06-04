@@ -27,20 +27,17 @@
 #include "_cxx.h"
 #include "_cxxbridge.h"
 #include "_symbol_export.h"
-#include "scenebake.h"
-#include "flatscene.h"
-#include "scenegraph.h"
 #include "evaluationobjects.h"
+#include "flatscene.h"
+#include "scenebake.h"
+#include "scenegraph.h"
 
 namespace mmscenegraph {
 
 MMSCENEGRAPH_API_EXPORT
-FlatScene
-bake_scene_graph(
-    SceneGraph &sg,
-    EvaluationObjects &solve_objects
-) noexcept;
+FlatScene bake_scene_graph(SceneGraph &sg,
+                           EvaluationObjects &solve_objects) noexcept;
 
-} // namespace mmscenegraph
+}  // namespace mmscenegraph
 
 #endif  // MM_SOLVER_MM_SCENE_GRAPH_SCENE_BAKE_H

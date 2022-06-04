@@ -22,29 +22,26 @@
 #include "debug_utils.h"
 
 // STL
-#include <iostream> // cout, cerr, endl
-#include <iomanip>  // setfill, setw
-#include <string>   // string
+#include <iomanip>   // setfill, setw
+#include <iostream>  // cout, cerr, endl
+#include <string>    // string
 
 // Maya
-#include <maya/MTypes.h>
 #include <maya/MStreamUtils.h>
-
+#include <maya/MTypes.h>
 
 namespace debug {
 
 #ifdef _WIN32
 //  Windows
 #pragma intrinsic(__rdtsc)
-DWORD64 rdtsc(){
-    return __rdtsc();
-}
+DWORD64 rdtsc() { return __rdtsc(); }
 #else
 //  Linux/GCC
 uint64_t rdtsc() {
     uint32_t lo, hi;
-    __asm__ __volatile__ ("rdtsc" : "=a" (lo), "=d" (hi));
-    return ((uint64_t) hi << 32) | lo;
+    __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
+    return ((uint64_t)hi << 32) | lo;
 }
 #endif
 
@@ -73,17 +70,13 @@ Timestamp get_timestamp() {
     // For Linux
     struct timeval now;
     gettimeofday(&now, nullptr);
-    return now.tv_usec + (Timestamp) now.tv_sec * 1000000;
+    return now.tv_usec + (Timestamp)now.tv_sec * 1000000;
 #endif
 }
 
-void CPUBenchmark::start() {
-    ticktime = rdtsc();
-}
+void CPUBenchmark::start() { ticktime = rdtsc(); }
 
-Ticks CPUBenchmark::stop() {
-    return ticktimeTotal += rdtsc() - ticktime;
-}
+Ticks CPUBenchmark::stop() { return ticktimeTotal += rdtsc() - ticktime; }
 
 Ticks CPUBenchmark::get_ticks(uint32_t loopNums) {
     Ticks total = ticktimeTotal;
@@ -104,9 +97,7 @@ void CPUBenchmark::print(std::string heading, uint32_t loopNums) {
     MStreamUtils::stdErrorStream() << std::endl;
 }
 
-void TimestampBenchmark::start() {
-    timestamp = get_timestamp();
-}
+void TimestampBenchmark::start() { timestamp = get_timestamp(); }
 
 Timestamp TimestampBenchmark::stop() {
     return timestampTotal += get_timestamp() - timestamp;
@@ -135,4 +126,4 @@ void TimestampBenchmark::printInSec(std::string heading, uint32_t loopNums) {
     MStreamUtils::stdErrorStream() << std::endl;
 }
 
-} // namespace debug
+}  // namespace debug

@@ -25,6 +25,8 @@
 #include "adjust_solveFunc.h"
 
 // STL
+#include <stdio.h>
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -33,15 +35,14 @@
 #include <iostream>
 #include <limits>
 #include <memory>
-#include <stdio.h>
 #include <string>
 #include <vector>
 
 // Maya
 #include <maya/MAnimCurveChange.h>
 #include <maya/MComputation.h>
-#include <maya/MDagPath.h>
 #include <maya/MDGContext.h>
+#include <maya/MDagPath.h>
 #include <maya/MFnAnimCurve.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MFnPluginData.h>
@@ -50,8 +51,8 @@
 #include <maya/MObject.h>
 #include <maya/MPoint.h>
 #include <maya/MProfiler.h>
-#include <maya/MStreamUtils.h>
 #include <maya/MSelectionList.h>
+#include <maya/MStreamUtils.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 #include <maya/MVector.h>
@@ -61,33 +62,29 @@
 #endif
 
 // MM Solver
-#include "mmSolver/core/mmdata.h"
-#include "mmSolver/core/mmmath.h"
-#include "mmSolver/mayahelper/maya_utils.h"
-#include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/utilities/number_utils.h"
-#include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/utilities/string_utils.h"
 #include "adjust_base.h"
 #include "adjust_data.h"
 #include "adjust_lensModel.h"
-#include "adjust_setParameters.h"
 #include "adjust_measureErrors.h"
-
+#include "adjust_setParameters.h"
+#include "mmSolver/core/mmdata.h"
+#include "mmSolver/core/mmmath.h"
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/number_utils.h"
+#include "mmSolver/utilities/string_utils.h"
 
 // Per-attribute type delta values
 #define PER_ATTR_TYPE_DELTA_VALUE 1
 
-
-
-inline
-int getStringArrayIndexOfValue(MStringArray &array, MString &value) {
+inline int getStringArrayIndexOfValue(MStringArray &array, MString &value) {
 #if MAYA_API_VERSION >= 201700
     return array.indexOf(value);
 #else
     int index = -1;
-    for (unsigned int i=0; i<array.length(); ++i) {
+    for (unsigned int i = 0; i < array.length(); ++i) {
         if (array[i] == value) {
             index = i;
             break;
@@ -96,8 +93,6 @@ int getStringArrayIndexOfValue(MStringArray &array, MString &value) {
     return index;
 #endif
 }
-
-
 
 /*
  * Generate a 'dgdirty' MEL command listing all nodes that may be
@@ -111,9 +106,8 @@ MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *ud) {
 
         MarkerPtr marker = ud->markerList[markerPair.first];
         MString markerName = marker->getNodeName();
-        const int markerName_idx = getStringArrayIndexOfValue(
-            dgDirtyNodeNames,
-            markerName);
+        const int markerName_idx =
+            getStringArrayIndexOfValue(dgDirtyNodeNames, markerName);
         if (markerName_idx == -1) {
             dgDirtyCmd += " \"" + markerName + "\" ";
             dgDirtyNodeNames.append(markerName);
@@ -122,16 +116,14 @@ MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *ud) {
         CameraPtr camera = marker->getCamera();
         MString cameraTransformName = camera->getTransformNodeName();
         MString cameraShapeName = camera->getShapeNodeName();
-        const int cameraTransformName_idx = getStringArrayIndexOfValue(
-            dgDirtyNodeNames,
-            cameraTransformName);
+        const int cameraTransformName_idx =
+            getStringArrayIndexOfValue(dgDirtyNodeNames, cameraTransformName);
         if (cameraTransformName_idx == -1) {
             dgDirtyCmd += " \"" + cameraTransformName + "\" ";
             dgDirtyNodeNames.append(cameraTransformName);
         }
-        const int cameraShapeName_idx =  getStringArrayIndexOfValue(
-            dgDirtyNodeNames,
-            cameraShapeName);
+        const int cameraShapeName_idx =
+            getStringArrayIndexOfValue(dgDirtyNodeNames, cameraShapeName);
         if (cameraShapeName_idx == -1) {
             dgDirtyCmd += " \"" + cameraShapeName + "\" ";
             dgDirtyNodeNames.append(cameraShapeName);
@@ -139,9 +131,8 @@ MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *ud) {
 
         BundlePtr bundle = marker->getBundle();
         MString bundleName = bundle->getNodeName();
-        const int bundleName_idx = getStringArrayIndexOfValue(
-            dgDirtyNodeNames,
-            bundleName);
+        const int bundleName_idx =
+            getStringArrayIndexOfValue(dgDirtyNodeNames, bundleName);
         if (bundleName_idx == -1) {
             dgDirtyCmd += " \"" + bundleName + "\" ";
             dgDirtyNodeNames.append(bundleName);
@@ -151,13 +142,10 @@ MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *ud) {
     return dgDirtyCmd;
 }
 
-
 // Given a specific parameter, calculate the expected 'delta' value of
 // the parameter.
-double calculateParameterDelta(const double value,
-                               const double delta,
-                               const double sign,
-                               AttrPtr &attr) {
+double calculateParameterDelta(const double value, const double delta,
+                               const double sign, AttrPtr &attr) {
     MStatus status = MS::kSuccess;
     const double xmin = attr->getMinimumValue();
     const double xmax = attr->getMaximumValue();
@@ -167,8 +155,8 @@ double calculateParameterDelta(const double value,
     // Relative delta for different types of solver attribute types.
     const auto object_type = attr->getObjectType();
     const auto solver_attr_type = attr->getSolverAttrType();
-    if (object_type == ObjectType::kCamera
-        && (solver_attr_type == AttrSolverType::kCameraFocal)) {
+    if (object_type == ObjectType::kCamera &&
+        (solver_attr_type == AttrSolverType::kCameraFocal)) {
         new_delta *= 0.1;
     } else if (object_type == ObjectType::kLens) {
         new_delta *= 0.01;
@@ -190,19 +178,16 @@ double calculateParameterDelta(const double value,
     return new_delta * new_sign;
 }
 
-
 /*
  * Compare the previous and new parameters to see which parameters
  * have changed. This allows us to only update and measure the changed
  * markers and attributes - speeding up the evaluation.
  */
-void determineMarkersToBeEvaluated(int numberOfParameters,
-                                   int numberOfMarkers,
-                                   double delta,
-                                   std::vector<double> previousParamList,
-                                   const double *parameters,
-                                   std::vector<std::vector<bool>> errorToParamList,
-                                   std::vector<bool> &evalMeasurements) {
+void determineMarkersToBeEvaluated(
+    int numberOfParameters, int numberOfMarkers, double delta,
+    std::vector<double> previousParamList, const double *parameters,
+    std::vector<std::vector<bool>> errorToParamList,
+    std::vector<bool> &evalMeasurements) {
     std::vector<int> evalCount(numberOfMarkers, 0);
 
     // Get all parameters that have changed.
@@ -232,27 +217,25 @@ void determineMarkersToBeEvaluated(int numberOfParameters,
     }
 
     // Convert evalCount to list of bools
-    evalMeasurements.resize((unsigned long) numberOfMarkers, false);
+    evalMeasurements.resize((unsigned long)numberOfMarkers, false);
     for (size_t i = 0; i < evalCount.size(); ++i) {
         evalMeasurements[i] = static_cast<bool>(evalCount[i] > 0);
     }
     return;
 }
 
-
 // Add another 'normal function' evaluation to the count.
 void incrementNormalIteration(SolverData *ud) {
     ++ud->funcEvalNum;
     ++ud->iterNum;
     MStreamUtils::stdErrorStream() << "Iteration ";
-    MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw(4)
-                                   << ud->iterNum;
+    MStreamUtils::stdErrorStream()
+        << std::right << std::setfill('0') << std::setw(4) << ud->iterNum;
     MStreamUtils::stdErrorStream() << " | Eval ";
-    MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw(4)
-                                   << ud->funcEvalNum;
+    MStreamUtils::stdErrorStream()
+        << std::right << std::setfill('0') << std::setw(4) << ud->funcEvalNum;
     return;
 }
-
 
 // Add another 'jacobian function' evaluation to the count.
 void incrementJacobianIteration(SolverData *ud) {
@@ -260,11 +243,11 @@ void incrementJacobianIteration(SolverData *ud) {
     ++ud->jacIterNum;
     if (ud->verbose) {
         MStreamUtils::stdErrorStream() << "Jacobian  ";
-        MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw (4)
-                                       << ud->jacIterNum;
+        MStreamUtils::stdErrorStream() << std::right << std::setfill('0')
+                                       << std::setw(4) << ud->jacIterNum;
         MStreamUtils::stdErrorStream() << " | Eval ";
-        MStreamUtils::stdErrorStream() << std::right << std::setfill ('0') << std::setw (4)
-                                       << ud->funcEvalNum;
+        MStreamUtils::stdErrorStream() << std::right << std::setfill('0')
+                                       << std::setw(4) << ud->funcEvalNum;
         if (ud->doCalcJacobian) {
             MStreamUtils::stdErrorStream() << "\n";
         }
@@ -272,14 +255,10 @@ void incrementJacobianIteration(SolverData *ud) {
     return;
 }
 
-
 // Function run by cminpack algorithm to test the input parameters, p,
 // and compute the output errors, x.
-int solveFunc(const int numberOfParameters,
-              const int numberOfErrors,
-              const double *parameters,
-              double *errors,
-              double *jacobian,
+int solveFunc(const int numberOfParameters, const int numberOfErrors,
+              const double *parameters, double *errors, double *jacobian,
               void *userData) {
     SolverData *ud = static_cast<SolverData *>(userData);
     ud->timer.funcBenchTimer.start();
@@ -318,13 +297,14 @@ int solveFunc(const int numberOfParameters,
 
 #ifdef MAYA_PROFILE
     int profileCategory = MProfiler::getCategoryIndex("mmSolver");
-    MProfilingScope iterScope(profileCategory,
-                              MProfiler::kColorC_L1,
+    MProfilingScope iterScope(profileCategory, MProfiler::kColorC_L1,
                               "iteration");
 #endif
 
-    const bool interactive = ud->mayaSessionState == MGlobal::MMayaState::kInteractive;
-    const bool sceneGraphIsMayaDAG = ud->solverOptions->sceneGraphMode == SceneGraphMode::kMayaDag;
+    const bool interactive =
+        ud->mayaSessionState == MGlobal::MMayaState::kInteractive;
+    const bool sceneGraphIsMayaDAG =
+        ud->solverOptions->sceneGraphMode == SceneGraphMode::kMayaDag;
     if (interactive && sceneGraphIsMayaDAG) {
         MString dgDirtyCmd = generateDirtyCommand(numberOfMarkerErrors, ud);
         MGlobal::executeCommand(dgDirtyCmd);
@@ -345,14 +325,10 @@ int solveFunc(const int numberOfParameters,
             ud->timer.paramBenchTimer.start();
             ud->timer.paramBenchTicks.start();
 #ifdef MAYA_PROFILE
-            MProfilingScope setParamScope(profileCategory,
-                                          MProfiler::kColorA_L2,
-                                          "set parameters");
+            MProfilingScope setParamScope(
+                profileCategory, MProfiler::kColorA_L2, "set parameters");
 #endif
-            status = setParameters(
-                    numberOfParameters,
-                    parameters,
-                    ud);
+            status = setParameters(numberOfParameters, parameters, ud);
             ud->timer.paramBenchTimer.stop();
             ud->timer.paramBenchTicks.stop();
         }
@@ -362,20 +338,14 @@ int solveFunc(const int numberOfParameters,
             ud->timer.errorBenchTimer.start();
             ud->timer.errorBenchTicks.start();
 #ifdef MAYA_PROFILE
-            MProfilingScope setParamScope(profileCategory,
-                                          MProfiler::kColorA_L1,
-                                          "measure errors");
+            MProfilingScope setParamScope(
+                profileCategory, MProfiler::kColorA_L1, "measure errors");
 #endif
-            measureErrors(numberOfErrors,
-                          numberOfMarkerErrors,
+            measureErrors(numberOfErrors, numberOfMarkerErrors,
                           numberOfAttrStiffnessErrors,
-                          numberOfAttrSmoothnessErrors,
-                          frameIndexEnable,
-                          evalMeasurements,
-                          errors,
-                          ud,
-                          error_avg, error_max, error_min,
-                          status);
+                          numberOfAttrSmoothnessErrors, frameIndexEnable,
+                          evalMeasurements, errors, ud, error_avg, error_max,
+                          error_min, status);
             ud->timer.errorBenchTimer.stop();
             ud->timer.errorBenchTicks.stop();
         }
@@ -396,21 +366,18 @@ int solveFunc(const int numberOfParameters,
         ud->computation->setProgress(progressMin);
 
         std::vector<bool> evalMeasurements(numberOfMarkers, false);
-        determineMarkersToBeEvaluated(
-                numberOfParameters,
-                numberOfMarkers,
-                ud->solverOptions->delta,
-                ud->previousParamList,
-                parameters,
-                ud->errorToParamList,
-                evalMeasurements);
+        determineMarkersToBeEvaluated(numberOfParameters, numberOfMarkers,
+                                      ud->solverOptions->delta,
+                                      ud->previousParamList, parameters,
+                                      ud->errorToParamList, evalMeasurements);
 
         // Calculate the jacobian matrix.
         std::vector<double> paramListA(numberOfParameters, 0);
         std::vector<double> errorListA(numberOfErrors, 0);
         for (int i = 0; i < numberOfParameters; ++i) {
-            double ratio = (double) i / (double) numberOfParameters;
-            int progressNum = progressMin + static_cast<int>(ratio * progressMax);
+            double ratio = (double)i / (double)numberOfParameters;
+            int progressNum =
+                progressMin + static_cast<int>(ratio * progressMax);
             ud->computation->setProgress(progressNum);
 
             if (ud->computation->isInterruptRequested()) {
@@ -444,8 +411,7 @@ int solveFunc(const int numberOfParameters,
             CameraPtr cam = mkr->getCamera();
 
             double value = parameters[i];
-            double deltaA = calculateParameterDelta(
-                    value, delta, 1, attr);
+            double deltaA = calculateParameterDelta(value, delta, 1, attr);
 
             std::vector<bool> frameIndexEnabled = ud->paramFrameList[i];
 
@@ -455,14 +421,10 @@ int solveFunc(const int numberOfParameters,
                 ud->timer.paramBenchTimer.start();
                 ud->timer.paramBenchTicks.start();
 #ifdef MAYA_PROFILE
-                MProfilingScope setParamScope(profileCategory,
-                                              MProfiler::kColorA_L2,
-                                              "set parameters");
+                MProfilingScope setParamScope(
+                    profileCategory, MProfiler::kColorA_L2, "set parameters");
 #endif
-                status = setParameters(
-                        numberOfParameters,
-                        &paramListA[0],
-                        ud);
+                status = setParameters(numberOfParameters, &paramListA[0], ud);
                 ud->timer.paramBenchTimer.stop();
                 ud->timer.paramBenchTicks.stop();
             }
@@ -474,26 +436,18 @@ int solveFunc(const int numberOfParameters,
                 ud->timer.errorBenchTimer.start();
                 ud->timer.errorBenchTicks.start();
 #ifdef MAYA_PROFILE
-                MProfilingScope setParamScope(profileCategory,
-                                              MProfiler::kColorA_L1,
-                                              "measure errors");
+                MProfilingScope setParamScope(
+                    profileCategory, MProfiler::kColorA_L1, "measure errors");
 #endif
                 // Based on only the changed attribute value only
                 // measure the markers that can modify the attribute -
                 // we do this using 'frameIndexEnabled' and
                 // 'evalMeasurements'.
-                measureErrors(numberOfErrors,
-                              numberOfMarkerErrors,
-                              numberOfAttrStiffnessErrors,
-                              numberOfAttrSmoothnessErrors,
-                              frameIndexEnabled,
-                              evalMeasurements,
-                              &errorListA[0],
-                              ud,
-                              error_avg_tmp,
-                              error_max_tmp,
-                              error_min_tmp,
-                              status);
+                measureErrors(
+                    numberOfErrors, numberOfMarkerErrors,
+                    numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors,
+                    frameIndexEnabled, evalMeasurements, &errorListA[0], ud,
+                    error_avg_tmp, error_max_tmp, error_min_tmp, status);
                 ud->timer.errorBenchTimer.stop();
                 ud->timer.errorBenchTicks.stop();
             }
@@ -523,8 +477,7 @@ int solveFunc(const int numberOfParameters,
                 // we don't calculate a different delta value, we
                 // something has gone wrong and a second evaluation is
                 // not needed.
-                double deltaB = calculateParameterDelta(
-                        value, delta, -1, attr);
+                double deltaB = calculateParameterDelta(value, delta, -1, attr);
                 if (deltaA == deltaB) {
                     // Set the Jacobian matrix using the previously
                     // calculated errors (original and A).
@@ -536,7 +489,6 @@ int solveFunc(const int numberOfParameters,
                         jacobian[num] = x;
                     }
                 } else {
-
                     incrementJacobianIteration(ud);
                     paramListB[i] = paramListB[i] + deltaB;
                     {
@@ -547,10 +499,8 @@ int solveFunc(const int numberOfParameters,
                                                       MProfiler::kColorA_L2,
                                                       "set parameters");
 #endif
-                        status = setParameters(
-                                numberOfParameters,
-                                &paramListB[0],
-                                ud);
+                        status = setParameters(numberOfParameters,
+                                               &paramListB[0], ud);
                         ud->timer.paramBenchTimer.stop();
                         ud->timer.paramBenchTicks.stop();
                     }
@@ -566,18 +516,12 @@ int solveFunc(const int numberOfParameters,
                                                       MProfiler::kColorA_L1,
                                                       "measure errors");
 #endif
-                        measureErrors(numberOfErrors,
-                                      numberOfMarkerErrors,
+                        measureErrors(numberOfErrors, numberOfMarkerErrors,
                                       numberOfAttrStiffnessErrors,
                                       numberOfAttrSmoothnessErrors,
-                                      frameIndexEnabled,
-                                      evalMeasurements,
-                                      &errorListB[0],
-                                      ud,
-                                      error_avg_tmp,
-                                      error_max_tmp,
-                                      error_min_tmp,
-                                      status);
+                                      frameIndexEnabled, evalMeasurements,
+                                      &errorListB[0], ud, error_avg_tmp,
+                                      error_max_tmp, error_min_tmp, status);
                         ud->timer.errorBenchTimer.stop();
                         ud->timer.errorBenchTicks.stop();
                     }
@@ -585,7 +529,8 @@ int solveFunc(const int numberOfParameters,
                     // Set the Jacobian matrix using the previously
                     // calculated errors (A and B).
                     assert(errorListA.size() == errorListB.size());
-                    double inv_delta = 0.5 / (std::fabs(deltaA) + std::fabs(deltaB));
+                    double inv_delta =
+                        0.5 / (std::fabs(deltaA) + std::fabs(deltaB));
                     for (size_t j = 0; j < errorListA.size(); ++j) {
                         size_t num = (i * ldfjac) + j;
                         double x = (errorListA[j] - errorListB[j]) * inv_delta;
@@ -601,12 +546,8 @@ int solveFunc(const int numberOfParameters,
 
     if (ud->isNormalCall) {
         char formatBuffer[128];
-        sprintf(
-            formatBuffer,
-            " | error avg %8.4f   min %8.4f   max %8.4f",
-            error_avg,
-            error_min,
-            error_max);
+        sprintf(formatBuffer, " | error avg %8.4f   min %8.4f   max %8.4f",
+                error_avg, error_min, error_max);
         MStreamUtils::stdErrorStream() << std::string(formatBuffer) << "\n";
     } else {
         if (ud->verbose) {

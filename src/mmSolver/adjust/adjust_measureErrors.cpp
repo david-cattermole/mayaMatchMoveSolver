@@ -23,6 +23,8 @@
 #include "adjust_solveFunc.h"
 
 // STL
+#include <stdio.h>
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -31,15 +33,14 @@
 #include <iostream>
 #include <limits>
 #include <memory>
-#include <stdio.h>
 #include <string>
 #include <vector>
 
 // Maya
 #include <maya/MAnimCurveChange.h>
 #include <maya/MComputation.h>
-#include <maya/MDagPath.h>
 #include <maya/MDGContext.h>
+#include <maya/MDagPath.h>
 #include <maya/MFnAnimCurve.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MFnPluginData.h>
@@ -48,8 +49,8 @@
 #include <maya/MObject.h>
 #include <maya/MPoint.h>
 #include <maya/MProfiler.h>
-#include <maya/MStreamUtils.h>
 #include <maya/MSelectionList.h>
+#include <maya/MStreamUtils.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 #include <maya/MVector.h>
@@ -62,18 +63,17 @@
 #include <mmscenegraph/mmscenegraph.h>
 
 // MM Solver
-#include "mmSolver/core/mmdata.h"
-#include "mmSolver/core/mmmath.h"
-#include "mmSolver/mayahelper/maya_utils.h"
-#include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/utilities/number_utils.h"
-#include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/utilities/string_utils.h"
 #include "adjust_base.h"
 #include "adjust_data.h"
 #include "adjust_lensModel.h"
-
+#include "mmSolver/core/mmdata.h"
+#include "mmSolver/core/mmmath.h"
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/number_utils.h"
+#include "mmSolver/utilities/string_utils.h"
 
 namespace mmsg = mmscenegraph;
 
@@ -86,47 +86,36 @@ namespace mmsg = mmscenegraph;
 // performed with a bundle node the error continues to happen.
 #define FORCE_TRIGGER_EVAL 1
 
-
 // Pre-processor-level on/off switch for re-use of the Marker
 // positions. This is an optimisation to avoid re-evaluating the
 // Marker values from the Maya DG in the solving evaluation loop.
 #define USE_MARKER_POSITION_CACHE 1
 
-
 // Calculate the smoothness/stiffness error values without needing a
 // 'variance' value.
 #define CALC_SMOOTHNESS_STIFFNESS_WITHOUT_VARIANCE 0
 
-inline
-double gaussian(double x, double mean, double sigma) {
+inline double gaussian(double x, double mean, double sigma) {
     return std::exp(
-            -(std::pow((x - mean), 2.0) / (2.0 * (std::pow(sigma, 2.0))))
-    );
+        -(std::pow((x - mean), 2.0) / (2.0 * (std::pow(sigma, 2.0)))));
 }
 
-inline
-double distance_2d(
-    const double ax, const double ay,
-    const double bx, const double by
-) {
+inline double distance_2d(const double ax, const double ay, const double bx,
+                          const double by) {
     double dx = ax - bx;
     double dy = ay - by;
     return std::sqrt((dx * dx) + (dy * dy));
 }
 
-void measureErrors_mayaDag(
-        const int numberOfErrors,
-        const int numberOfMarkerErrors,
-        const int numberOfAttrStiffnessErrors,
-        const int numberOfAttrSmoothnessErrors,
-        const std::vector<bool> &frameIndexEnable,
-        const std::vector<bool> &errorMeasurements,
-        double *errors,
-        SolverData *ud,
-        double &error_avg,
-        double &error_max,
-        double &error_min,
-        MStatus &status) {
+void measureErrors_mayaDag(const int numberOfErrors,
+                           const int numberOfMarkerErrors,
+                           const int numberOfAttrStiffnessErrors,
+                           const int numberOfAttrSmoothnessErrors,
+                           const std::vector<bool> &frameIndexEnable,
+                           const std::vector<bool> &errorMeasurements,
+                           double *errors, SolverData *ud, double &error_avg,
+                           double &error_max, double &error_min,
+                           MStatus &status) {
     UNUSED(numberOfErrors);
 
     // Trigger an DG Evaluation at a different time, to help Maya
@@ -200,19 +189,22 @@ void measureErrors_mayaDag(
 #endif
         // Scale marker Y.
         {
-            double filmBackWidth = camera->getFilmbackWidthValue(frame, timeEvalMode);
-            double filmBackHeight = camera->getFilmbackHeightValue(frame, timeEvalMode);
+            double filmBackWidth =
+                camera->getFilmbackWidthValue(frame, timeEvalMode);
+            double filmBackHeight =
+                camera->getFilmbackHeightValue(frame, timeEvalMode);
             int32_t renderWidth = camera->getRenderWidthValue();
             int32_t renderHeight = camera->getRenderHeightValue();
             double filmBackAspect = filmBackWidth / filmBackHeight;
-            double renderAspect =
-                static_cast<double>(renderWidth) / static_cast<double>(renderHeight);
+            double renderAspect = static_cast<double>(renderWidth) /
+                                  static_cast<double>(renderHeight);
             double aspect = renderAspect / filmBackAspect;
             mkr_y *= aspect;
         }
 
         double mkr_weight = ud->markerWeightList[i];
-        assert(mkr_weight > 0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
+        assert(mkr_weight >
+               0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
         mkr_weight = std::sqrt(mkr_weight);
 
         // Re-project Bundle into screen-space.
@@ -235,12 +227,7 @@ void measureErrors_mayaDag(
         if (lensModel) {
             double out_x = point_x;
             double out_y = point_y;
-            lensModel->applyModelDistort(
-                point_x,
-                point_y,
-                out_x,
-                out_y
-            );
+            lensModel->applyModelDistort(point_x, point_y, out_x, out_y);
 
             // Applying the lens distortion model to large input
             // values, creates NaN undistorted points.
@@ -281,11 +268,16 @@ void measureErrors_mayaDag(
         ud->errorList[errorIndex_x] = dx * behind_camera_error_factor;
         ud->errorList[errorIndex_y] = dy * behind_camera_error_factor;
 
-        const double d = distance_2d(mkr_x, mkr_y, point_x, point_y) * ud->imageWidth;
+        const double d =
+            distance_2d(mkr_x, mkr_y, point_x, point_y) * ud->imageWidth;
         ud->errorDistanceList[i] = d;
         error_avg += d;
-        if (d > error_max) { error_max = d; }
-        if (d < error_min) { error_min = d; }
+        if (d > error_max) {
+            error_max = d;
+        }
+        if (d < error_min) {
+            error_min = d;
+        }
         ++numberOfErrorsMeasured;
     }
     if (numberOfErrorsMeasured == 0) {
@@ -325,17 +317,20 @@ void measureErrors_mayaDag(
         auto new_line = mmdata::Point2D(1.0, stiffValue - attrValue);
         auto straight_line_norm = mmmath::normalize(straight_line);
         auto new_line_norm = mmmath::normalize(new_line);
-        double error = 1.0 / std::fabs(mmmath::dot(straight_line_norm, new_line_norm));
+        double error =
+            1.0 / std::fabs(mmmath::dot(straight_line_norm, new_line_norm));
 #else
-        double error = ((1.0 / gaussian(attrValue, stiffValue, stiffVariance)) - 1.0);
+        double error =
+            ((1.0 / gaussian(attrValue, stiffValue, stiffVariance)) - 1.0);
 #endif
 
         ud->errorList[indexIntoErrorArray] = error * stiffWeight;
         errors[indexIntoErrorArray] = error * stiffWeight;
     }
 
-    // Compute the smoothness values for the the attributes of the 'error' array.
-    // Smoothness is an error weighting to the predicted next value that is smooth.
+    // Compute the smoothness values for the the attributes of the 'error'
+    // array. Smoothness is an error weighting to the predicted next value that
+    // is smooth.
     double smoothValue = 0.0;
     double smoothWeight = 0.0;
     double smoothVariance = 1.0;
@@ -361,9 +356,11 @@ void measureErrors_mayaDag(
         auto new_line = mmdata::Point2D(1.0, smoothValue - attrValue);
         auto straight_line_norm = mmmath::normalize(straight_line);
         auto new_line_norm = mmmath::normalize(new_line);
-        double error = 1.0 / std::fabs(mmmath::dot(straight_line_norm, new_line_norm));
+        double error =
+            1.0 / std::fabs(mmmath::dot(straight_line_norm, new_line_norm));
 #else
-        double error = ((1.0 / gaussian(attrValue, smoothValue, smoothVariance)) - 1.0);
+        double error =
+            ((1.0 / gaussian(attrValue, smoothValue, smoothVariance)) - 1.0);
 #endif
 
         ud->errorList[indexIntoErrorArray] = error * smoothWeight;
@@ -373,28 +370,22 @@ void measureErrors_mayaDag(
     return;
 }
 
-void measureErrors_mmSceneGraph(
-        const int numberOfErrors,
-        const int numberOfMarkerErrors,
-        const int numberOfAttrStiffnessErrors,
-        const int numberOfAttrSmoothnessErrors,
-        const std::vector<bool> &frameIndexEnable,
-        const std::vector<bool> &errorMeasurements,
-        double *errors,
-        SolverData *ud,
-        double &error_avg,
-        double &error_max,
-        double &error_min,
-        MStatus &status) {
+void measureErrors_mmSceneGraph(const int numberOfErrors,
+                                const int numberOfMarkerErrors,
+                                const int numberOfAttrStiffnessErrors,
+                                const int numberOfAttrSmoothnessErrors,
+                                const std::vector<bool> &frameIndexEnable,
+                                const std::vector<bool> &errorMeasurements,
+                                double *errors, SolverData *ud,
+                                double &error_avg, double &error_max,
+                                double &error_min, MStatus &status) {
     UNUSED(numberOfErrors);
     UNUSED(numberOfAttrStiffnessErrors);
     UNUSED(numberOfAttrSmoothnessErrors);
     UNUSED(status);
 
     // Evaluate Scene.
-    ud->mmsgFlatScene.evaluate(
-        ud->mmsgAttrDataBlock,
-        ud->mmsgFrameList);
+    ud->mmsgFlatScene.evaluate(ud->mmsgAttrDataBlock, ud->mmsgFrameList);
 
     auto num_points = ud->mmsgFlatScene.num_points();
     auto num_markers = ud->mmsgFlatScene.num_markers();
@@ -432,7 +423,8 @@ void measureErrors_mmSceneGraph(
 
         // Use pre-computed marker weight
         double mkr_weight = ud->markerWeightList[i];
-        assert(mkr_weight > 0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
+        assert(mkr_weight >
+               0.0);  // 'sqrt' will be NaN if the weight is less than 0.0.
         mkr_weight = std::sqrt(mkr_weight);
 
         // TODO: Calculate 'behind_camera_error_factor', the same as
@@ -446,18 +438,14 @@ void measureErrors_mmSceneGraph(
         auto point_x = out_point_list[mkrIndex_x];
         auto point_y = out_point_list[mkrIndex_y];
 
-#if MMSOLVER_LENS_DISTORTION == 1 && MMSOLVER_LENS_DISTORTION_MM_SCENE_GRAPH == 1
+#if MMSOLVER_LENS_DISTORTION == 1 && \
+    MMSOLVER_LENS_DISTORTION_MM_SCENE_GRAPH == 1
         auto markerFrameIndex = markerIndex + frameIndex;
         auto lensModel = ud->markerFrameToLensModelList[markerFrameIndex];
         if (lensModel) {
             double out_x = point_x;
             double out_y = point_y;
-            lensModel->applyModelDistort(
-                point_x,
-                point_y,
-                out_x,
-                out_y
-            );
+            lensModel->applyModelDistort(point_x, point_y, out_x, out_y);
 
             // Applying the lens distortion model to large input
             // values, creates NaN undistorted points.
@@ -477,8 +465,10 @@ void measureErrors_mmSceneGraph(
 
         auto errorIndex_x = i * ERRORS_PER_MARKER;
         auto errorIndex_y = errorIndex_x + 1;
-        errors[errorIndex_x] = dx_pixels * mkr_weight * behind_camera_error_factor;
-        errors[errorIndex_y] = dy_pixels * mkr_weight * behind_camera_error_factor;
+        errors[errorIndex_x] =
+            dx_pixels * mkr_weight * behind_camera_error_factor;
+        errors[errorIndex_y] =
+            dy_pixels * mkr_weight * behind_camera_error_factor;
 
         // 'ud->errorList' is the deviation shown to the user, it
         // should not have any loss functions or scaling applied to it.
@@ -488,8 +478,12 @@ void measureErrors_mmSceneGraph(
         const double d = std::sqrt((dx * dx) + (dy * dy)) * ud->imageWidth;
         ud->errorDistanceList[i] = d;
         error_avg += d;
-        if (d > error_max) { error_max = d; }
-        if (d < error_min) { error_min = d; }
+        if (d > error_max) {
+            error_max = d;
+        }
+        if (d < error_min) {
+            error_min = d;
+        }
         ++numberOfErrorsMeasured;
     }
     if (numberOfErrorsMeasured == 0) {
@@ -506,19 +500,13 @@ void measureErrors_mmSceneGraph(
     return;
 }
 
-void measureErrors(
-        const int numberOfErrors,
-        const int numberOfMarkerErrors,
-        const int numberOfAttrStiffnessErrors,
-        const int numberOfAttrSmoothnessErrors,
-        const std::vector<bool> &frameIndexEnable,
-        const std::vector<bool> &errorMeasurements,
-        double *errors,
-        SolverData *ud,
-        double &error_avg,
-        double &error_max,
-        double &error_min,
-        MStatus &status) {
+void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
+                   const int numberOfAttrStiffnessErrors,
+                   const int numberOfAttrSmoothnessErrors,
+                   const std::vector<bool> &frameIndexEnable,
+                   const std::vector<bool> &errorMeasurements, double *errors,
+                   SolverData *ud, double &error_avg, double &error_max,
+                   double &error_min, MStatus &status) {
     error_avg = 0.0;
     error_max = -0.0;
     error_min = std::numeric_limits<double>::max();
@@ -529,32 +517,14 @@ void measureErrors(
     const SceneGraphMode sceneGraphMode = ud->solverOptions->sceneGraphMode;
     if (sceneGraphMode == SceneGraphMode::kMayaDag) {
         measureErrors_mayaDag(
-            numberOfErrors,
-            numberOfMarkerErrors,
-            numberOfAttrStiffnessErrors,
-            numberOfAttrSmoothnessErrors,
-            frameIndexEnable,
-            errorMeasurements,
-            errors,
-            ud,
-            error_avg,
-            error_max,
-            error_min,
-            status);
+            numberOfErrors, numberOfMarkerErrors, numberOfAttrStiffnessErrors,
+            numberOfAttrSmoothnessErrors, frameIndexEnable, errorMeasurements,
+            errors, ud, error_avg, error_max, error_min, status);
     } else if (sceneGraphMode == SceneGraphMode::kMMSceneGraph) {
         measureErrors_mmSceneGraph(
-            numberOfErrors,
-            numberOfMarkerErrors,
-            numberOfAttrStiffnessErrors,
-            numberOfAttrSmoothnessErrors,
-            frameIndexEnable,
-            errorMeasurements,
-            errors,
-            ud,
-            error_avg,
-            error_max,
-            error_min,
-            status);
+            numberOfErrors, numberOfMarkerErrors, numberOfAttrStiffnessErrors,
+            numberOfAttrSmoothnessErrors, frameIndexEnable, errorMeasurements,
+            errors, ud, error_avg, error_max, error_min, status);
     }
 
     // Changes the errors to be scaled by the loss function.
@@ -569,7 +539,6 @@ void measureErrors(
     assert(error_min <= error_max);
     return;
 }
-
 
 // Clean up #define
 #undef FORCE_TRIGGER_EVAL

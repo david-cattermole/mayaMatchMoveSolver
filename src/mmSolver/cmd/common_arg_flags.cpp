@@ -23,17 +23,17 @@
 #include "common_arg_flags.h"
 
 // STL
-#include <cmath>
-#include <cassert>
-#include <cstdlib>
 #include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <cstdlib>
 
 // Maya
-#include <maya/MString.h>
-#include <maya/MStringArray.h>
+#include <maya/MFnDependencyNode.h>
 #include <maya/MObject.h>
 #include <maya/MPlug.h>
-#include <maya/MFnDependencyNode.h>
+#include <maya/MString.h>
+#include <maya/MStringArray.h>
 
 // Internal Objects
 #include "MMSolverCmd.h"
@@ -50,14 +50,13 @@
 namespace mmsolver {
 
 void createSolveObjectSyntax(MSyntax &syntax) {
-    syntax.addFlag(CAMERA_FLAG, CAMERA_FLAG_LONG,
+    syntax.addFlag(CAMERA_FLAG, CAMERA_FLAG_LONG, MSyntax::kString,
+                   MSyntax::kString);
+    syntax.addFlag(MARKER_FLAG, MARKER_FLAG_LONG, MSyntax::kString,
                    MSyntax::kString, MSyntax::kString);
-    syntax.addFlag(MARKER_FLAG, MARKER_FLAG_LONG,
-                   MSyntax::kString, MSyntax::kString, MSyntax::kString);
-    syntax.addFlag(ATTR_FLAG, ATTR_FLAG_LONG,
-                   MSyntax::kString,
-                   MSyntax::kString, MSyntax::kString,
-                   MSyntax::kString, MSyntax::kString);
+    syntax.addFlag(ATTR_FLAG, ATTR_FLAG_LONG, MSyntax::kString,
+                   MSyntax::kString, MSyntax::kString, MSyntax::kString,
+                   MSyntax::kString);
 
     syntax.makeFlagMultiUse(CAMERA_FLAG);
     syntax.makeFlagMultiUse(MARKER_FLAG);
@@ -65,12 +64,11 @@ void createSolveObjectSyntax(MSyntax &syntax) {
     return;
 }
 
-
 MStatus parseSolveObjectArguments(const MArgDatabase &argData,
-                                  CameraPtrList      &out_cameraList,
-                                  MarkerPtrList      &out_markerList,
-                                  BundlePtrList      &out_bundleList,
-                                  AttrPtrList        &out_attrList) {
+                                  CameraPtrList &out_cameraList,
+                                  MarkerPtrList &out_markerList,
+                                  BundlePtrList &out_bundleList,
+                                  AttrPtrList &out_attrList) {
     MStatus status = MStatus::kSuccess;
 
     out_cameraList.clear();
@@ -82,13 +80,12 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
     MString cameraShape = "";
     unsigned int cameraNum = argData.numberOfFlagUses(CAMERA_FLAG);
     for (unsigned int i = 0; i < cameraNum; ++i) {
-
         MArgList cameraArgs;
         status = argData.getFlagArgumentList(CAMERA_FLAG, i, cameraArgs);
         if (status == MStatus::kSuccess) {
             if (cameraArgs.length() != 2) {
                 MMSOLVER_ERR("Camera argument list must have 2 arguments; "
-                    << "\"cameraTransform\", \"cameraShape\".");
+                             << "\"cameraTransform\", \"cameraShape\".");
                 continue;
             }
 
@@ -125,7 +122,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
         if (status == MStatus::kSuccess) {
             if (markerArgs.length() != 3) {
                 MMSOLVER_ERR("Marker argument list must have 3 arguments; "
-                  << "\"marker\", \"cameraShape\",  \"bundle\".");
+                             << "\"marker\", \"cameraShape\",  \"bundle\".");
                 continue;
             }
 
@@ -138,7 +135,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             objectType = computeObjectType(markerObject, dagPath);
             if (objectType != ObjectType::kMarker) {
                 MMSOLVER_ERR("Given marker node is not a Marker; "
-                    << markerName.asChar());
+                             << markerName.asChar());
                 continue;
             }
 
@@ -151,7 +148,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             objectType = computeObjectType(cameraObject, dagPath);
             if (objectType != ObjectType::kCamera) {
                 MMSOLVER_ERR("Given camera node is not a Camera; "
-                    << cameraName.asChar());
+                             << cameraName.asChar());
                 continue;
             }
 
@@ -164,7 +161,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             objectType = computeObjectType(bundleObject, dagPath);
             if (objectType != ObjectType::kBundle) {
                 MMSOLVER_ERR("Given bundle node is not a Bundle; "
-                    << bundleName.asChar());
+                             << bundleName.asChar());
                 continue;
             }
 
@@ -178,9 +175,9 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             }
             if (camera->getShapeNodeName() == "") {
                 MMSOLVER_ERR("Camera shape name was not given with marker. "
-                            << "marker=" << markerName << " "
-                            << "camera=" << cameraName << " "
-                            << "bundle=" << bundleName);
+                             << "marker=" << markerName << " "
+                             << "camera=" << cameraName << " "
+                             << "bundle=" << bundleName);
             }
             // TODO: Print warnings if any of the following attributes
             // on the camera are animated/connected:
@@ -207,7 +204,8 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             // Marker
             for (unsigned int j = 0; j < out_markerList.size(); ++j) {
                 if (out_markerList[j]->getNodeName() == markerName) {
-                    MMSOLVER_ERR("Marker name cannot be specified more than once. "
+                    MMSOLVER_ERR(
+                        "Marker name cannot be specified more than once. "
                         << "markerName=" << markerName);
                 }
             }
@@ -230,9 +228,9 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
         if (status == MStatus::kSuccess) {
             if (attrArgs.length() != 5) {
                 MMSOLVER_ERR("Attribute argument list must have 5 argument; "
-                    << "\"node.attribute\", "
-                    << "\"min\", \"max\", "
-                    << "\"offset\", \"scale\".");
+                             << "\"node.attribute\", "
+                             << "\"min\", \"max\", "
+                             << "\"offset\", \"scale\".");
                 continue;
             }
 
@@ -289,29 +287,21 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
     return status;
 }
 
-
 void createAttributeDetailsSyntax(MSyntax &syntax) {
-    syntax.addFlag(STIFFNESS_FLAG, STIFFNESS_FLAG_LONG,
-                   MSyntax::kString,
-                   MSyntax::kString,
-                   MSyntax::kString,
-                   MSyntax::kString);
-    syntax.addFlag(SMOOTHNESS_FLAG, SMOOTHNESS_FLAG_LONG,
-                   MSyntax::kString,
-                   MSyntax::kString,
-                   MSyntax::kString,
-                   MSyntax::kString);
+    syntax.addFlag(STIFFNESS_FLAG, STIFFNESS_FLAG_LONG, MSyntax::kString,
+                   MSyntax::kString, MSyntax::kString, MSyntax::kString);
+    syntax.addFlag(SMOOTHNESS_FLAG, SMOOTHNESS_FLAG_LONG, MSyntax::kString,
+                   MSyntax::kString, MSyntax::kString, MSyntax::kString);
 
     syntax.makeFlagMultiUse(STIFFNESS_FLAG);
     syntax.makeFlagMultiUse(SMOOTHNESS_FLAG);
     return;
 }
 
-
-MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
-                                       const AttrPtrList   attrList,
-                                       StiffAttrsPtrList  &out_stiffAttrsList,
-                                       SmoothAttrsPtrList &out_smoothAttrsList) {
+MStatus parseAttributeDetailsArguments(
+    const MArgDatabase &argData, const AttrPtrList attrList,
+    StiffAttrsPtrList &out_stiffAttrsList,
+    SmoothAttrsPtrList &out_smoothAttrsList) {
     MStatus status = MStatus::kSuccess;
 
     out_stiffAttrsList.clear();
@@ -324,11 +314,12 @@ MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
         status = argData.getFlagArgumentList(STIFFNESS_FLAG, i, stiffnessArgs);
         if (status == MStatus::kSuccess) {
             if (stiffnessArgs.length() != 4) {
-                MMSOLVER_ERR("Attribute Stiffness argument list must have 4 argument; "
-                            << "\"node.attribute\", "
-                            << "\"node.attributeStiffWeight\", "
-                            << "\"node.attributeStiffVariance\", "
-                            << "\"node.attributeStiffValue\".");
+                MMSOLVER_ERR(
+                    "Attribute Stiffness argument list must have 4 argument; "
+                    << "\"node.attribute\", "
+                    << "\"node.attributeStiffWeight\", "
+                    << "\"node.attributeStiffVariance\", "
+                    << "\"node.attributeStiffValue\".");
                 continue;
             }
 
@@ -336,8 +327,7 @@ MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
             MString nodeAttrName = stiffnessArgs.asString(0);
             AttrPtr foundAttr;
             int foundIndex = 0;
-            for (AttrPtrListCIt ait = attrList.cbegin();
-                 ait != attrList.cend();
+            for (AttrPtrListCIt ait = attrList.cbegin(); ait != attrList.cend();
                  ++ait) {
                 AttrPtr attr = *ait;
                 if (nodeAttrName == attr->getName()) {
@@ -347,8 +337,9 @@ MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
                 foundIndex++;
             }
             if (foundAttr->getName() == ".") {
-                MMSOLVER_ERR("Attribute Stiffness name is not a declared attribute; "
-                            << nodeAttrName);
+                MMSOLVER_ERR(
+                    "Attribute Stiffness name is not a declared attribute; "
+                    << nodeAttrName);
                 continue;
             }
             AttrPtr stiffWeightAttr = AttrPtr(new Attr());
@@ -377,14 +368,16 @@ MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
     unsigned int smoothnessNum = argData.numberOfFlagUses(SMOOTHNESS_FLAG);
     for (unsigned int i = 0; i < smoothnessNum; ++i) {
         MArgList smoothnessArgs;
-        status = argData.getFlagArgumentList(SMOOTHNESS_FLAG, i, smoothnessArgs);
+        status =
+            argData.getFlagArgumentList(SMOOTHNESS_FLAG, i, smoothnessArgs);
         if (status == MStatus::kSuccess) {
             if (smoothnessArgs.length() != 4) {
-                MMSOLVER_ERR("Attribute Smoothness argument list must have 4 argument; "
-                            << "\"node.attribute\", "
-                            << "\"node.attributeSmoothWeight\", "
-                            << "\"node.attributeSmoothVariance\", "
-                            << "\"node.attributeSmoothValue\".");
+                MMSOLVER_ERR(
+                    "Attribute Smoothness argument list must have 4 argument; "
+                    << "\"node.attribute\", "
+                    << "\"node.attributeSmoothWeight\", "
+                    << "\"node.attributeSmoothVariance\", "
+                    << "\"node.attributeSmoothValue\".");
                 continue;
             }
 
@@ -392,8 +385,7 @@ MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
             MString nodeAttrName = smoothnessArgs.asString(0);
             AttrPtr foundAttr;
             int foundIndex = 0;
-            for (AttrPtrListCIt ait = attrList.cbegin();
-                 ait != attrList.cend();
+            for (AttrPtrListCIt ait = attrList.cbegin(); ait != attrList.cend();
                  ++ait) {
                 AttrPtr attr = *ait;
                 if (nodeAttrName == attr->getName()) {
@@ -403,8 +395,9 @@ MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
                 foundIndex++;
             }
             if (foundAttr->getName() == ".") {
-                MMSOLVER_ERR("Attribute Smoothness name is not a declared attribute; "
-                            << nodeAttrName);
+                MMSOLVER_ERR(
+                    "Attribute Smoothness name is not a declared attribute; "
+                    << nodeAttrName);
                 continue;
             }
             AttrPtr smoothWeightAttr = AttrPtr(new Attr());
@@ -432,17 +425,14 @@ MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
     return status;
 }
 
-
 void createSolveFramesSyntax(MSyntax &syntax) {
-    syntax.addFlag(FRAME_FLAG, FRAME_FLAG_LONG,
-                   MSyntax::kLong);
+    syntax.addFlag(FRAME_FLAG, FRAME_FLAG_LONG, MSyntax::kLong);
     syntax.makeFlagMultiUse(FRAME_FLAG);
     return;
 }
 
-
 MStatus parseSolveFramesArguments(const MArgDatabase &argData,
-                                  MTimeArray         &out_frameList) {
+                                  MTimeArray &out_frameList) {
     MStatus status = MStatus::kSuccess;
 
     // Get 'Frames'
@@ -454,13 +444,14 @@ MStatus parseSolveFramesArguments(const MArgDatabase &argData,
         status = argData.getFlagArgumentList(FRAME_FLAG, i, frameArgs);
         if (status == MStatus::kSuccess) {
             if (frameArgs.length() != 1) {
-                MMSOLVER_ERR("Attribute argument list must have 1 argument; \"frame\".");
+                MMSOLVER_ERR(
+                    "Attribute argument list must have 1 argument; \"frame\".");
                 continue;
             }
             int value = frameArgs.asInt(0, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
-            MTime frame = MTime((double) value, unit);
+            MTime frame = MTime((double)value, unit);
             out_frameList.append(frame);
         }
     }
@@ -474,15 +465,11 @@ MStatus parseSolveFramesArguments(const MArgDatabase &argData,
     return status;
 }
 
-
 void createSolveSceneGraphSyntax(MSyntax &syntax) {
-    syntax.addFlag(
-        SCENE_GRAPH_MODE_FLAG,
-        SCENE_GRAPH_MODE_FLAG_LONG,
-        MSyntax::kUnsigned);
+    syntax.addFlag(SCENE_GRAPH_MODE_FLAG, SCENE_GRAPH_MODE_FLAG_LONG,
+                   MSyntax::kUnsigned);
     return;
 }
-
 
 MStatus parseSolveSceneGraphArguments(const MArgDatabase &argData,
                                       SceneGraphMode &out_sceneGraphMode) {
@@ -491,7 +478,8 @@ MStatus parseSolveSceneGraphArguments(const MArgDatabase &argData,
     // Get 'Scene Graph Mode'
     uint32_t sceneGraphMode = SCENE_GRAPH_MODE_DEFAULT_VALUE;
     if (argData.isFlagSet(SCENE_GRAPH_MODE_FLAG)) {
-        status = argData.getFlagArgument(SCENE_GRAPH_MODE_FLAG, 0, sceneGraphMode);
+        status =
+            argData.getFlagArgument(SCENE_GRAPH_MODE_FLAG, 0, sceneGraphMode);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     out_sceneGraphMode = static_cast<SceneGraphMode>(sceneGraphMode);
@@ -499,4 +487,4 @@ MStatus parseSolveSceneGraphArguments(const MArgDatabase &argData,
     return status;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

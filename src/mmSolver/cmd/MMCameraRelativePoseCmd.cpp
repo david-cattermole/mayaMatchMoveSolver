@@ -87,125 +87,124 @@ maya.cmds.mmCameraRelativePose(
 
 // Compiler Warning (level 3) C4267: conversion from 'size_t' to
 // 'object', possible loss of data.
-#pragma warning( disable : 4267 )
+#pragma warning(disable : 4267)
 
 // Compiler Warning (level 1) C4305: truncation from 'type1' to
 // 'type2'.
-#pragma warning( disable : 4305 )
+#pragma warning(disable : 4305)
 
 // Compiler Warning (level 4) C4127: conditional expression is
 // constant
-#pragma warning( disable : 4127 )
+#pragma warning(disable : 4127)
 
 // Compiler Warning (levels 3 and 4) C4244: 'conversion' conversion
 // from 'type1' to 'type2', possible loss of data.
-#pragma warning( disable : 4244 )
+#pragma warning(disable : 4244)
 
 // Compiler Warning (level 4) C4459: declaration of 'identifier' hides
 // global declaration.
-#pragma warning( disable : 4459 )
+#pragma warning(disable : 4459)
 
 // Compiler Warning (level 4) C4456: declaration of 'identifier' hides
 // previous local declaration.
-#pragma warning( disable : 4456 )
+#pragma warning(disable : 4456)
 
 // Compiler Warning (level 4) C4100: 'identifier' : unreferenced
 // formal parameter.
-#pragma warning( disable : 4100 )
+#pragma warning(disable : 4100)
 
 // Compiler Warning (level 3) C4018: 'token' : signed/unsigned
 // mismatch.
-#pragma warning( disable : 4018 )
+#pragma warning(disable : 4018)
 
 // Compiler Warning (level 4) C4714: function 'function' marked as
 // __forceinline not inlined.
-#pragma warning( disable : 4714 )
+#pragma warning(disable : 4714)
 
 // Compiler Warning (level 1) C4005: 'identifier' : macro
 // redefinition.
-#pragma warning( disable : 4005 )
+#pragma warning(disable : 4005)
 
 // Compiler Warning (level 4) C4702: unreachable code.
-#pragma warning( disable : 4702 )
+#pragma warning(disable : 4702)
 
 #include "MMCameraRelativePoseCmd.h"
 
 // STL
-#include <vector>
-#include <cmath>
-#include <cassert>
-#include <list>
-#include <string>
 #include <algorithm>
+#include <array>
+#include <cassert>
+#include <chrono>
+#include <cmath>
 #include <fstream>
 #include <iostream>
 #include <iterator>
-#include <map>
 #include <limits>
-#include <array>
+#include <list>
+#include <map>
 #include <memory>
-
-#include <chrono>
+#include <string>
 #include <thread>
+#include <vector>
 
 // OpenMVG
 #ifdef MMSOLVER_USE_OPENMVG
 
-#include <openMVG/cameras/Camera_Pinhole.hpp>
+#include <openMVG/numeric/numeric.h>
+
 #include <openMVG/cameras/Camera_Intrinsics.hpp>
+#include <openMVG/cameras/Camera_Pinhole.hpp>
 #include <openMVG/features/feature.hpp>
 #include <openMVG/features/feature_container.hpp>
 #include <openMVG/geometry/pose3.hpp>
 #include <openMVG/matching/indMatch.hpp>
 #include <openMVG/matching/indMatchDecoratorXY.hpp>
 #include <openMVG/matching/regions_matcher.hpp>
-#include <openMVG/multiview/triangulation.hpp>
+#include <openMVG/multiview/conditioning.hpp>
 #include <openMVG/multiview/motion_from_essential.hpp>
 #include <openMVG/multiview/solver_essential_eight_point.hpp>
 #include <openMVG/multiview/solver_essential_kernel.hpp>
 #include <openMVG/multiview/solver_fundamental_kernel.hpp>
-#include <openMVG/multiview/conditioning.hpp>
+#include <openMVG/multiview/triangulation.hpp>
 #include <openMVG/numeric/eigen_alias_definition.hpp>
-#include <openMVG/numeric/numeric.h>
+#include <openMVG/robust_estimation/robust_estimator_ACRansac.hpp>
+#include <openMVG/robust_estimation/robust_estimator_ACRansacKernelAdaptator.hpp>
+#include <openMVG/sfm/pipelines/sfm_robust_model_estimation.hpp>
 #include <openMVG/sfm/sfm_data.hpp>
 #include <openMVG/sfm/sfm_data_BA.hpp>
 #include <openMVG/sfm/sfm_data_BA_ceres.hpp>
 #include <openMVG/sfm/sfm_data_io.hpp>
-#include <openMVG/sfm/pipelines/sfm_robust_model_estimation.hpp>
-#include <openMVG/robust_estimation/robust_estimator_ACRansac.hpp>
-#include <openMVG/robust_estimation/robust_estimator_ACRansacKernelAdaptator.hpp>
 #include <openMVG/types.hpp>
 
 #endif  // MMSOLVER_USE_OPENMVG
 
 // Maya
-#include <maya/MTypes.h>
-#include <maya/MSyntax.h>
-#include <maya/MArgList.h>
 #include <maya/MArgDatabase.h>
-#include <maya/MString.h>
-#include <maya/MStringArray.h>
+#include <maya/MArgList.h>
+#include <maya/MDagPath.h>
+#include <maya/MEulerRotation.h>
+#include <maya/MFnDagNode.h>
+#include <maya/MFnDependencyNode.h>
+#include <maya/MItSelectionList.h>
+#include <maya/MMatrix.h>
+#include <maya/MMatrixArray.h>
 #include <maya/MObject.h>
 #include <maya/MPlug.h>
 #include <maya/MPlugArray.h>
+#include <maya/MString.h>
+#include <maya/MStringArray.h>
+#include <maya/MSyntax.h>
 #include <maya/MTime.h>
 #include <maya/MTimeArray.h>
-#include <maya/MMatrix.h>
-#include <maya/MMatrixArray.h>
-#include <maya/MDagPath.h>
-#include <maya/MFnDependencyNode.h>
-#include <maya/MFnDagNode.h>
-#include <maya/MItSelectionList.h>
 #include <maya/MTransformationMatrix.h>
-#include <maya/MEulerRotation.h>
-
+#include <maya/MTypes.h>
 
 // Internal
 #include "mmSolver/adjust/adjust_defines.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
@@ -228,20 +227,13 @@ maya.cmds.mmCameraRelativePose(
 
 namespace mmsolver {
 
-using KernelType =
-    openMVG::robust::ACKernelAdaptor<
+using KernelType = openMVG::robust::ACKernelAdaptor<
     openMVG::fundamental::kernel::NormalizedEightPointKernel,
     openMVG::fundamental::kernel::SymmetricEpipolarDistanceError,
-    openMVG::UnnormalizerT,
-    openMVG::Mat3>;
+    openMVG::UnnormalizerT, openMVG::Mat3>;
 
-bool get_marker_coords(
-    const MTime &time,
-    MarkerPtr &mkr,
-    double &x,
-    double &y,
-    double &weight,
-    bool &enable) {
+bool get_marker_coords(const MTime &time, MarkerPtr &mkr, double &x, double &y,
+                       double &weight, bool &enable) {
     auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
 
     mkr->getPosXY(x, y, time, timeEvalMode);
@@ -252,14 +244,9 @@ bool get_marker_coords(
     return weight > 0;
 }
 
-MStatus get_camera_values(
-    const MTime &time,
-    CameraPtr &cam,
-    int &image_width,
-    int &image_height,
-    double &focal_length_mm,
-    double &sensor_width_mm,
-    double &sensor_height_mm) {
+MStatus get_camera_values(const MTime &time, CameraPtr &cam, int &image_width,
+                          int &image_height, double &focal_length_mm,
+                          double &sensor_width_mm, double &sensor_height_mm) {
     MStatus status = MStatus::kSuccess;
 
     auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
@@ -277,18 +264,13 @@ MStatus get_camera_values(
     return status;
 }
 
-
-
-bool myRobustRelativePose
-(
-    const openMVG::cameras::IntrinsicBase *intrinsics1,
-    const openMVG::cameras::IntrinsicBase *intrinsics2,
-    const openMVG::Mat &x1,
-    const openMVG::Mat &x2,
-    openMVG::sfm::RelativePose_Info &relativePose_info,
-    const std::pair<size_t, size_t> &size_ima1,
-    const std::pair<size_t, size_t> &size_ima2,
-    const size_t max_iteration_count) {
+bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
+                          const openMVG::cameras::IntrinsicBase *intrinsics2,
+                          const openMVG::Mat &x1, const openMVG::Mat &x2,
+                          openMVG::sfm::RelativePose_Info &relativePose_info,
+                          const std::pair<size_t, size_t> &size_ima1,
+                          const std::pair<size_t, size_t> &size_ima2,
+                          const size_t max_iteration_count) {
     if (!intrinsics1 || !intrinsics2) {
         return false;
     }
@@ -297,15 +279,14 @@ bool myRobustRelativePose
     // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     // Compute the bearing vectors
-    const openMVG::Mat3X
-        bearing1 = (*intrinsics1)(x1),
-        bearing2 = (*intrinsics2)(x2);
+    const openMVG::Mat3X bearing1 = (*intrinsics1)(x1),
+                         bearing2 = (*intrinsics2)(x2);
 
     // MMSOLVER_INFO("=== 2");
     // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-    auto pinhole_cameras_only = isPinhole(intrinsics1->getType())
-        && isPinhole(intrinsics2->getType());
+    auto pinhole_cameras_only =
+        isPinhole(intrinsics1->getType()) && isPinhole(intrinsics2->getType());
     auto more_than_five = x1.cols() > 5;
     auto more_than_eight = x1.cols() > 8;
 
@@ -313,10 +294,10 @@ bool myRobustRelativePose
         // MMSOLVER_INFO("=== 7");
         // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-        // Define the AContrario adaptor to use the 8 point essential matrix solver.
-        typedef openMVG::robust::ACKernelAdaptor_AngularRadianError <
-            openMVG::EightPointRelativePoseSolver,
-            openMVG::AngularError,
+        // Define the AContrario adaptor to use the 8 point essential matrix
+        // solver.
+        typedef openMVG::robust::ACKernelAdaptor_AngularRadianError<
+            openMVG::EightPointRelativePoseSolver, openMVG::AngularError,
             openMVG::Mat3>
             KernelType;
 
@@ -325,26 +306,24 @@ bool myRobustRelativePose
         // Robustly estimate the Essential matrix with A Contrario ransac
         const double upper_bound_precision =
             (relativePose_info.initial_residual_tolerance ==
-             std::numeric_limits<double>::infinity()) ?
-            std::numeric_limits<double>::infinity()
-            : openMVG::D2R(
-                relativePose_info.initial_residual_tolerance);
-        const auto ac_ransac_output =
-            openMVG::robust::ACRANSAC(kernel, relativePose_info.vec_inliers,
-                                      max_iteration_count,
-                                      &relativePose_info.essential_matrix,
-                                      upper_bound_precision, false);
+             std::numeric_limits<double>::infinity())
+                ? std::numeric_limits<double>::infinity()
+                : openMVG::D2R(relativePose_info.initial_residual_tolerance);
+        const auto ac_ransac_output = openMVG::robust::ACRANSAC(
+            kernel, relativePose_info.vec_inliers, max_iteration_count,
+            &relativePose_info.essential_matrix, upper_bound_precision, false);
         MMSOLVER_INFO("=== 8");
 
         const double &threshold = ac_ransac_output.first;
-        relativePose_info.found_residual_precision = openMVG::R2D(
-            threshold); // Degree
+        relativePose_info.found_residual_precision =
+            openMVG::R2D(threshold);  // Degree
 
         // auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES * 2.5;
         auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES;
         if (relativePose_info.vec_inliers.size() < minimum_samples) {
             MMSOLVER_INFO("=== 9");
-            return false; // no sufficient coverage (the model does not support enough samples)
+            return false;  // no sufficient coverage (the model does not support
+                           // enough samples)
         }
     } else if (more_than_five && pinhole_cameras_only) {
         // Five Point Solver only supports pinhole cameras.
@@ -352,23 +331,28 @@ bool myRobustRelativePose
         // MMSOLVER_INFO("=== 3");
         // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-        // Define the AContrario adaptor to use the 5 point essential matrix solver.
+        // Define the AContrario adaptor to use the 5 point essential matrix
+        // solver.
         using KernelType = openMVG::robust::ACKernelAdaptorEssential<
             openMVG::essential::kernel::FivePointSolver,
-            openMVG::fundamental::kernel::EpipolarDistanceError,
-            openMVG::Mat3>;
-        KernelType kernel(x1, bearing1, size_ima1.first, size_ima1.second,
-                          x2, bearing2, size_ima2.first, size_ima2.second,
-                          dynamic_cast<const openMVG::cameras::Pinhole_Intrinsic *>(intrinsics1)->K(),
-                          dynamic_cast<const openMVG::cameras::Pinhole_Intrinsic *>(intrinsics2)->K());
+            openMVG::fundamental::kernel::EpipolarDistanceError, openMVG::Mat3>;
+        KernelType kernel(
+            x1, bearing1, size_ima1.first, size_ima1.second, x2, bearing2,
+            size_ima2.first, size_ima2.second,
+            dynamic_cast<const openMVG::cameras::Pinhole_Intrinsic *>(
+                intrinsics1)
+                ->K(),
+            dynamic_cast<const openMVG::cameras::Pinhole_Intrinsic *>(
+                intrinsics2)
+                ->K());
 
         // MMSOLVER_INFO("=== 4");
         // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         // Robustly estimation of the Model and its precision
         const auto ac_ransac_output = openMVG::robust::ACRANSAC(
-            kernel, relativePose_info.vec_inliers,
-            max_iteration_count, &relativePose_info.essential_matrix,
+            kernel, relativePose_info.vec_inliers, max_iteration_count,
+            &relativePose_info.essential_matrix,
             relativePose_info.initial_residual_tolerance, false);
 
         // MMSOLVER_INFO("=== 5");
@@ -379,24 +363,21 @@ bool myRobustRelativePose
         // auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES * 2.5;
         auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES;
         if (relativePose_info.vec_inliers.size() < minimum_samples) {
-
             // MMSOLVER_INFO("=== 6");
             // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-            return false; // no sufficient coverage (the model does not support enough samples)
+            return false;  // no sufficient coverage (the model does not support
+                           // enough samples)
         }
     }
 
     // MMSOLVER_INFO("=== 10");
     // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-
     // estimation of the relative poses based on the cheirality test
     openMVG::geometry::Pose3 relative_pose;
     if (!openMVG::RelativePoseFromEssential(
-            bearing1,
-            bearing2,
-            relativePose_info.essential_matrix,
+            bearing1, bearing2, relativePose_info.essential_matrix,
             relativePose_info.vec_inliers, &relative_pose)) {
         return false;
     }
@@ -408,15 +389,12 @@ bool myRobustRelativePose
     return true;
 }
 
-
-void convert_camera_lens_mm_to_pixel_units(
-    const int32_t image_width,
-    const int32_t image_height,
-    const double focal_length_mm,
-    const double sensor_width_mm,
-    double &focal_length_pix,
-    double &ppx_pix,
-    double &ppy_pix) {
+void convert_camera_lens_mm_to_pixel_units(const int32_t image_width,
+                                           const int32_t image_height,
+                                           const double focal_length_mm,
+                                           const double sensor_width_mm,
+                                           double &focal_length_pix,
+                                           double &ppx_pix, double &ppy_pix) {
     focal_length_pix = focal_length_mm / sensor_width_mm;
     focal_length_pix *= static_cast<double>(image_width);
     ppx_pix = static_cast<double>(image_width) * 0.5;
@@ -431,43 +409,28 @@ openMVG::Mat convert_marker_coords_to_matrix(
     openMVG::Mat result(2, num);
     for (size_t k = 0; k < num; ++k) {
         auto coord = marker_coords[k];
-        result.col(k) =
-            openMVG::Vec2(std::get<0>(coord),
-                          std::get<1>(coord));
+        result.col(k) = openMVG::Vec2(std::get<0>(coord), std::get<1>(coord));
     }
     return result;
 }
 
 bool compute_relative_pose(
-    const int32_t image_width_a,
-    const int32_t image_width_b,
-    const int32_t image_height_a,
-    const int32_t image_height_b,
-    const double focal_length_pix_a,
-    const double focal_length_pix_b,
-    const double ppx_pix_a,
-    const double ppx_pix_b,
-    const double ppy_pix_a,
+    const int32_t image_width_a, const int32_t image_width_b,
+    const int32_t image_height_a, const int32_t image_height_b,
+    const double focal_length_pix_a, const double focal_length_pix_b,
+    const double ppx_pix_a, const double ppx_pix_b, const double ppy_pix_a,
     const double ppy_pix_b,
     const std::vector<std::pair<double, double>> &marker_coords_a,
     const std::vector<std::pair<double, double>> &marker_coords_b,
-    const MarkerPtrList &marker_list_a,
-    const MarkerPtrList &marker_list_b,
+    const MarkerPtrList &marker_list_a, const MarkerPtrList &marker_list_b,
     openMVG::sfm::RelativePose_Info &pose_info) {
-
     MMSOLVER_INFO("B ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     const openMVG::cameras::Pinhole_Intrinsic cam_a(
-        image_width_a,
-        image_height_a,
-        focal_length_pix_a,
-        ppx_pix_a,
+        image_width_a, image_height_a, focal_length_pix_a, ppx_pix_a,
         ppy_pix_a);
     const openMVG::cameras::Pinhole_Intrinsic cam_b(
-        image_width_b,
-        image_height_b,
-        focal_length_pix_b,
-        ppx_pix_b,
+        image_width_b, image_height_b, focal_length_pix_b, ppx_pix_b,
         ppy_pix_b);
 
     MMSOLVER_INFO("C ---");
@@ -491,13 +454,8 @@ bool compute_relative_pose(
         static_cast<size_t>(image_height_b));
     auto num_max_iter = 4096;
     bool robust_pose_ok = myRobustRelativePose(
-        &cam_a, &cam_b,
-        marker_coords_matrix_a,
-        marker_coords_matrix_b,
-        pose_info,
-        image_size_a,
-        image_size_b,
-        num_max_iter);
+        &cam_a, &cam_b, marker_coords_matrix_a, marker_coords_matrix_b,
+        pose_info, image_size_a, image_size_b, num_max_iter);
     MMSOLVER_INFO("D2 ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     if (!robust_pose_ok) {
@@ -506,20 +464,18 @@ bool compute_relative_pose(
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     MMSOLVER_INFO("Found an Essential matrix:");
-    MMSOLVER_INFO("- precision: " << pose_info.found_residual_precision << " pixels");
+    MMSOLVER_INFO("- precision: " << pose_info.found_residual_precision
+                                  << " pixels");
 
     MMSOLVER_INFO("- #matches: " << marker_coords_matrix_a.size());
-    for (auto i = 0; i < marker_coords_matrix_a.size(); i++ ) {
+    for (auto i = 0; i < marker_coords_matrix_a.size(); i++) {
         auto coord_x_a = marker_coords_matrix_a.col(i)[0];
         auto coord_y_a = marker_coords_matrix_a.col(i)[1];
         auto coord_x_b = marker_coords_matrix_b.col(i)[0];
         auto coord_y_b = marker_coords_matrix_b.col(i)[1];
-        MMSOLVER_INFO(
-            "  - #match: "
-            << i << " = "
-            << coord_x_a << "," << coord_y_a
-            << " <-> "
-            << coord_x_b << "," << coord_y_b);
+        MMSOLVER_INFO("  - #match: " << i << " = " << coord_x_a << ","
+                                     << coord_y_a << " <-> " << coord_x_b << ","
+                                     << coord_y_b);
     }
 
     MMSOLVER_INFO("- m_marker_list_a size: " << marker_list_a.size());
@@ -532,12 +488,10 @@ bool compute_relative_pose(
             auto mkr_b = marker_list_b[inlier];
             auto mkr_name_a = mkr_a->getNodeName();
             auto mkr_name_b = mkr_b->getNodeName();
-            MMSOLVER_INFO(
-                "  - #inlier A: "
-                << i << " = " << inlier << " mkr: " << mkr_name_a.asChar());
-            MMSOLVER_INFO(
-                "  - #inlier B: "
-                << i << " = " << inlier << " mkr: " << mkr_name_b.asChar());
+            MMSOLVER_INFO("  - #inlier A: " << i << " = " << inlier
+                                            << " mkr: " << mkr_name_a.asChar());
+            MMSOLVER_INFO("  - #inlier B: " << i << " = " << inlier
+                                            << " mkr: " << mkr_name_b.asChar());
         }
         ++i;
     }
@@ -549,17 +503,11 @@ bool compute_relative_pose(
 }
 
 bool construct_two_camera_sfm_data_scene(
-    const int32_t image_width_a,
-    const int32_t image_width_b,
-    const int32_t image_height_a,
-    const int32_t image_height_b,
-    const double focal_length_pix_a,
-    const double focal_length_pix_b,
-    const double ppx_pix_a,
-    const double ppx_pix_b,
-    const double ppy_pix_a,
-    const double ppy_pix_b,
-    const openMVG::sfm::RelativePose_Info &pose_info,
+    const int32_t image_width_a, const int32_t image_width_b,
+    const int32_t image_height_a, const int32_t image_height_b,
+    const double focal_length_pix_a, const double focal_length_pix_b,
+    const double ppx_pix_a, const double ppx_pix_b, const double ppy_pix_a,
+    const double ppy_pix_b, const openMVG::sfm::RelativePose_Info &pose_info,
     openMVG::sfm::SfM_Data &scene) {
     auto image_width_size_a = static_cast<size_t>(image_width_a);
     auto image_width_size_b = static_cast<size_t>(image_width_b);
@@ -569,48 +517,33 @@ bool construct_two_camera_sfm_data_scene(
     // Setup a SfM scene with two view corresponding the pictures
     MMSOLVER_INFO("E ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    scene.views[0].reset(
-        new openMVG::sfm::View(
-            /*imgPath=*/ "",
-            /*view_id=*/ 0,
-            /*intrinsic_id=*/ 0,
-            /*pose_id=*/ 0,
-            image_width_size_a,
-            image_height_size_a)
-    );
-    scene.views[1].reset(
-        new openMVG::sfm::View(
-            /*imgPath=*/ "",
-            /*view_id=*/ 1,
-            /*intrinsic_id=*/ 1,
-            /*pose_id=*/ 1,
-            image_width_size_b,
-            image_height_size_b)
-    );
+    scene.views[0].reset(new openMVG::sfm::View(
+        /*imgPath=*/"",
+        /*view_id=*/0,
+        /*intrinsic_id=*/0,
+        /*pose_id=*/0, image_width_size_a, image_height_size_a));
+    scene.views[1].reset(new openMVG::sfm::View(
+        /*imgPath=*/"",
+        /*view_id=*/1,
+        /*intrinsic_id=*/1,
+        /*pose_id=*/1, image_width_size_b, image_height_size_b));
 
     // Setup intrinsics camera data
     // Each view use it's own pinhole camera intrinsic
     MMSOLVER_INFO("F ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    scene.intrinsics[0].reset(
-        new openMVG::cameras::Pinhole_Intrinsic(
-            image_width_a,
-            image_height_a,
-            focal_length_pix_a,
-            ppx_pix_a, ppy_pix_a));
-    scene.intrinsics[1].reset(
-        new openMVG::cameras::Pinhole_Intrinsic(
-            image_width_b,
-            image_height_b,
-            focal_length_pix_b,
-            ppx_pix_b, ppy_pix_b));
+    scene.intrinsics[0].reset(new openMVG::cameras::Pinhole_Intrinsic(
+        image_width_a, image_height_a, focal_length_pix_a, ppx_pix_a,
+        ppy_pix_a));
+    scene.intrinsics[1].reset(new openMVG::cameras::Pinhole_Intrinsic(
+        image_width_b, image_height_b, focal_length_pix_b, ppx_pix_b,
+        ppy_pix_b));
 
     // Setup poses camera data
     MMSOLVER_INFO("G ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    auto pose_a = openMVG::geometry::Pose3(
-        openMVG::Mat3::Identity(),
-        openMVG::Vec3::Zero());
+    auto pose_a = openMVG::geometry::Pose3(openMVG::Mat3::Identity(),
+                                           openMVG::Vec3::Zero());
     auto pose_b = pose_info.relativePose;
     scene.poses[scene.views[0]->id_pose] = pose_a;
     scene.poses[scene.views[1]->id_pose] = pose_b;
@@ -622,10 +555,8 @@ bool triangulate_relative_pose(
     const std::vector<std::pair<double, double>> &marker_coords_a,
     const std::vector<std::pair<double, double>> &marker_coords_b,
     const std::vector<uint32_t> &vec_inliers,
-    const MarkerPtrList &marker_list_a,
-    const MarkerPtrList &marker_list_b,
-    BundlePtrList &bundle_list,
-    openMVG::sfm::SfM_Data &scene) {
+    const MarkerPtrList &marker_list_a, const MarkerPtrList &marker_list_b,
+    BundlePtrList &bundle_list, openMVG::sfm::SfM_Data &scene) {
     auto num = 0;
     openMVG::sfm::Landmarks &landmarks = scene.structure;
     openMVG::geometry::Pose3 pose_a = scene.poses[scene.views[0]->id_pose];
@@ -641,27 +572,23 @@ bool triangulate_relative_pose(
         auto coord_x_b = std::get<0>(coord_b);
         auto coord_y_b = std::get<1>(coord_b);
 
-        const auto feature_a = openMVG::features::SIOPointFeature(coord_x_a,
-                                                                  coord_y_a);
-        const auto feature_b = openMVG::features::SIOPointFeature(coord_x_b,
-                                                                  coord_y_b);
+        const auto feature_a =
+            openMVG::features::SIOPointFeature(coord_x_a, coord_y_a);
+        const auto feature_b =
+            openMVG::features::SIOPointFeature(coord_x_b, coord_y_b);
         const auto feature_coord_a = feature_a.coords().cast<double>();
         const auto feature_coord_b = feature_b.coords().cast<double>();
 
         // Point triangulation
         openMVG::Vec3 bundle_pos;
-        const auto triangulation_method = openMVG::ETriangulationMethod::DEFAULT;
+        const auto triangulation_method =
+            openMVG::ETriangulationMethod::DEFAULT;
         auto triangulate_ok = openMVG::Triangulate2View(
-            pose_a.rotation(),
-            pose_a.translation(),
-            (*scene.intrinsics[0])(feature_coord_a),
-            pose_b.rotation(),
-            pose_b.translation(),
-            (*scene.intrinsics[1])(feature_coord_b),
-            bundle_pos,
-            triangulation_method);
+            pose_a.rotation(), pose_a.translation(),
+            (*scene.intrinsics[0])(feature_coord_a), pose_b.rotation(),
+            pose_b.translation(), (*scene.intrinsics[1])(feature_coord_b),
+            bundle_pos, triangulation_method);
         if (triangulate_ok) {
-
             // TODO: Ensure the land-markers/control points are
             // centered around the 3D origin - we do not want our
             // camera to be far away from the origin.
@@ -698,52 +625,39 @@ bool bundle_adjustment(openMVG::sfm::SfM_Data &scene) {
     // TODO: Add "openMVG::sfm::Control_Point_Parameter" to allow
     // locked bundles.
     //
-    auto optimize_options =
-        openMVG::sfm::Optimize_Options(
-            openMVG::cameras::Intrinsic_Parameter_Type::ADJUST_ALL,
-            openMVG::sfm::Extrinsic_Parameter_Type::ADJUST_ALL,
-            openMVG::sfm::Structure_Parameter_Type::ADJUST_ALL);
+    auto optimize_options = openMVG::sfm::Optimize_Options(
+        openMVG::cameras::Intrinsic_Parameter_Type::ADJUST_ALL,
+        openMVG::sfm::Extrinsic_Parameter_Type::ADJUST_ALL,
+        openMVG::sfm::Structure_Parameter_Type::ADJUST_ALL);
     // TODO: use 'optimize_options.control_point_opt.bUse_control_points'
     auto bundle_adjust_verbose = true;
     auto bundle_adjust_multithreaded = false;
-    auto ceres_options = openMVG::sfm::Bundle_Adjustment_Ceres::BA_Ceres_options(
-        bundle_adjust_verbose,
-        bundle_adjust_multithreaded);
+    auto ceres_options =
+        openMVG::sfm::Bundle_Adjustment_Ceres::BA_Ceres_options(
+            bundle_adjust_verbose, bundle_adjust_multithreaded);
     ceres_options.bCeres_summary_ = true;
     ceres_options.bUse_loss_function_ = false;
-    MMSOLVER_INFO("ceres_options.bCeres_summary_: "
-         << ceres_options.bCeres_summary_);
+    MMSOLVER_INFO(
+        "ceres_options.bCeres_summary_: " << ceres_options.bCeres_summary_);
     MMSOLVER_INFO("ceres_options.linear_solver_type_: "
-         << ceres_options.linear_solver_type_);
+                  << ceres_options.linear_solver_type_);
     MMSOLVER_INFO("ceres_options.preconditioner_type_: "
-         << ceres_options.preconditioner_type_);
+                  << ceres_options.preconditioner_type_);
     MMSOLVER_INFO("ceres_options.sparse_linear_algebra_library_type_: "
-         << ceres_options.sparse_linear_algebra_library_type_);
+                  << ceres_options.sparse_linear_algebra_library_type_);
     MMSOLVER_INFO("ceres_options.bUse_loss_function_: "
-         << ceres_options.bUse_loss_function_);
+                  << ceres_options.bUse_loss_function_);
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     openMVG::sfm::Bundle_Adjustment_Ceres bundle_adjustment(ceres_options);
-    return bundle_adjustment.Adjust(
-        scene,
-        optimize_options);
+    return bundle_adjustment.Adjust(scene, optimize_options);
 }
 
 MStatus parseCameraSelectionList(
-    const MSelectionList &selection_list,
-    const MTime &time,
-    CameraPtr &camera,
-    Attr &camera_tx_attr,
-    Attr &camera_ty_attr,
-    Attr &camera_tz_attr,
-    Attr &camera_rx_attr,
-    Attr &camera_ry_attr,
-    Attr &camera_rz_attr,
-    int32_t &image_width,
-    int32_t &image_height,
-    double &focal_length_mm,
-    double &sensor_width_mm,
-    double &sensor_height_mm
-) {
+    const MSelectionList &selection_list, const MTime &time, CameraPtr &camera,
+    Attr &camera_tx_attr, Attr &camera_ty_attr, Attr &camera_tz_attr,
+    Attr &camera_rx_attr, Attr &camera_ry_attr, Attr &camera_rz_attr,
+    int32_t &image_width, int32_t &image_height, double &focal_length_mm,
+    double &sensor_width_mm, double &sensor_height_mm) {
     MMSOLVER_INFO("parseCameraSelectionList1");
     MStatus status = MStatus::kSuccess;
 
@@ -788,19 +702,13 @@ MStatus parseCameraSelectionList(
             camera_rz_attr.setAttrName(MString("rotateZ"));
 
             MMSOLVER_INFO("parseCameraSelectionList6");
-            status = get_camera_values(
-                time,
-                camera,
-                image_width,
-                image_height,
-                focal_length_mm,
-                sensor_width_mm,
-                sensor_height_mm);
+            status = get_camera_values(time, camera, image_width, image_height,
+                                       focal_length_mm, sensor_width_mm,
+                                       sensor_height_mm);
             CHECK_MSTATUS_AND_RETURN_IT(status);
         } else {
-            MMSOLVER_ERR(
-                "Given node is not a valid camera: "
-                << transform_node_name.asChar());
+            MMSOLVER_ERR("Given node is not a valid camera: "
+                         << transform_node_name.asChar());
             status = MS::kFailure;
             return status;
         }
@@ -810,23 +718,14 @@ MStatus parseCameraSelectionList(
     return status;
 }
 
-
 MStatus addMarkerBundles(
-    const MTime &time_a,
-    const MTime &time_b,
-    const int32_t image_width_a,
-    const int32_t image_height_a,
-    const int32_t image_width_b,
-    const int32_t image_height_b,
-    MarkerPtr &marker_a,
-    MarkerPtr &marker_b,
-    BundlePtr &bundle,
-    BundlePtrList &bundle_list,
-    MarkerPtrList &marker_list_a,
+    const MTime &time_a, const MTime &time_b, const int32_t image_width_a,
+    const int32_t image_height_a, const int32_t image_width_b,
+    const int32_t image_height_b, MarkerPtr &marker_a, MarkerPtr &marker_b,
+    BundlePtr &bundle, BundlePtrList &bundle_list, MarkerPtrList &marker_list_a,
     MarkerPtrList &marker_list_b,
     std::vector<std::pair<double, double>> &marker_coords_a,
-    std::vector<std::pair<double, double>> &marker_coords_b
-) {
+    std::vector<std::pair<double, double>> &marker_coords_b) {
     MMSOLVER_INFO("addMarkerBundle1");
     MStatus status = MStatus::kSuccess;
 
@@ -839,26 +738,18 @@ MStatus addMarkerBundles(
     double weight_a = 1.0;
     double weight_b = 1.0;
 
-    auto success_a = get_marker_coords(
-        time_a, marker_a,
-        x_a, y_a,
-        weight_a, enable_a);
+    auto success_a =
+        get_marker_coords(time_a, marker_a, x_a, y_a, weight_a, enable_a);
     MMSOLVER_INFO("addMarkerBundle2");
-    auto success_b = get_marker_coords(
-        time_b, marker_b,
-        x_b, y_b,
-        weight_b, enable_b);
+    auto success_b =
+        get_marker_coords(time_b, marker_b, x_b, y_b, weight_b, enable_b);
     MMSOLVER_INFO("addMarkerBundle3");
     if (success_a && success_b) {
         MMSOLVER_INFO("addMarkerBundle4");
-        double xx_a =
-            (x_a + 0.5) * static_cast<double>(image_width_a);
-        double yy_a =
-            (y_a + 0.5) * static_cast<double>(image_height_a);
-        double xx_b =
-            (x_b + 0.5) * static_cast<double>(image_width_b);
-        double yy_b =
-            (y_b + 0.5) * static_cast<double>(image_height_b);
+        double xx_a = (x_a + 0.5) * static_cast<double>(image_width_a);
+        double yy_a = (y_a + 0.5) * static_cast<double>(image_height_a);
+        double xx_b = (x_b + 0.5) * static_cast<double>(image_width_b);
+        double yy_b = (y_b + 0.5) * static_cast<double>(image_height_b);
         MMSOLVER_INFO("x_a : " << x_a << " y_a : " << y_a);
         MMSOLVER_INFO("xx_a: " << xx_a << " yy_a: " << yy_a);
         MMSOLVER_INFO("x_b : " << x_b << " y_b : " << y_b);
@@ -879,7 +770,6 @@ MStatus addMarkerBundles(
     return status;
 }
 
-
 MMCameraRelativePoseCmd::~MMCameraRelativePoseCmd() {}
 
 void *MMCameraRelativePoseCmd::creator() {
@@ -893,13 +783,9 @@ MString MMCameraRelativePoseCmd::cmdName() {
 /*
  * Tell Maya we have a syntax function.
  */
-bool MMCameraRelativePoseCmd::hasSyntax() const {
-    return true;
-}
+bool MMCameraRelativePoseCmd::hasSyntax() const { return true; }
 
-bool MMCameraRelativePoseCmd::isUndoable() const {
-    return true;
-}
+bool MMCameraRelativePoseCmd::isUndoable() const { return true; }
 
 /*
  * Add flags to the command syntax
@@ -911,33 +797,19 @@ MSyntax MMCameraRelativePoseCmd::newSyntax() {
     syntax.enableQuery(false);
     syntax.enableEdit(false);
 
-    CHECK_MSTATUS(
-        syntax.addFlag(
-            CAMERA_A_SHORT_FLAG,
-            CAMERA_A_LONG_FLAG,
-            MSyntax::kSelectionItem));
-    CHECK_MSTATUS(
-        syntax.addFlag(
-            CAMERA_B_SHORT_FLAG,
-            CAMERA_B_LONG_FLAG,
-            MSyntax::kSelectionItem));
+    CHECK_MSTATUS(syntax.addFlag(CAMERA_A_SHORT_FLAG, CAMERA_A_LONG_FLAG,
+                                 MSyntax::kSelectionItem));
+    CHECK_MSTATUS(syntax.addFlag(CAMERA_B_SHORT_FLAG, CAMERA_B_LONG_FLAG,
+                                 MSyntax::kSelectionItem));
 
-    CHECK_MSTATUS(
-        syntax.addFlag(
-            FRAME_A_SHORT_FLAG,
-            FRAME_A_LONG_FLAG,
-            MSyntax::kUnsigned));
-    CHECK_MSTATUS(
-        syntax.addFlag(
-            FRAME_B_SHORT_FLAG,
-            FRAME_B_LONG_FLAG,
-            MSyntax::kUnsigned));
+    CHECK_MSTATUS(syntax.addFlag(FRAME_A_SHORT_FLAG, FRAME_A_LONG_FLAG,
+                                 MSyntax::kUnsigned));
+    CHECK_MSTATUS(syntax.addFlag(FRAME_B_SHORT_FLAG, FRAME_B_LONG_FLAG,
+                                 MSyntax::kUnsigned));
 
-    CHECK_MSTATUS(
-        syntax.addFlag(
-            MARKER_BUNDLE_SHORT_FLAG,
-            MARKER_BUNDLE_LONG_FLAG,
-            MSyntax::kString, MSyntax::kString, MSyntax::kString));
+    CHECK_MSTATUS(syntax.addFlag(MARKER_BUNDLE_SHORT_FLAG,
+                                 MARKER_BUNDLE_LONG_FLAG, MSyntax::kString,
+                                 MSyntax::kString, MSyntax::kString));
     CHECK_MSTATUS(syntax.makeFlagMultiUse(MARKER_BUNDLE_SHORT_FLAG));
 
     return syntax;
@@ -971,8 +843,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
 
     m_frame_a = 1;
     if (argData.isFlagSet(FRAME_A_SHORT_FLAG)) {
-        status = argData.getFlagArgument(FRAME_A_SHORT_FLAG, 0,
-                                         m_frame_a);
+        status = argData.getFlagArgument(FRAME_A_SHORT_FLAG, 0, m_frame_a);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -992,19 +863,10 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
     MSelectionList camera_selection_list_a;
     argData.getFlagArgument(CAMERA_A_SHORT_FLAG, 0, camera_selection_list_a);
     status = parseCameraSelectionList(
-        camera_selection_list_a,
-        m_time_a,
-        m_camera_a,
-        m_camera_tx_attr_a,
-        m_camera_ty_attr_a,
-        m_camera_tz_attr_a,
-        m_camera_rx_attr_a,
-        m_camera_ry_attr_a,
-        m_camera_rz_attr_a,
-        m_image_width_a,
-        m_image_height_a,
-        m_focal_length_mm_a,
-        m_sensor_width_mm_a,
+        camera_selection_list_a, m_time_a, m_camera_a, m_camera_tx_attr_a,
+        m_camera_ty_attr_a, m_camera_tz_attr_a, m_camera_rx_attr_a,
+        m_camera_ry_attr_a, m_camera_rz_attr_a, m_image_width_a,
+        m_image_height_a, m_focal_length_mm_a, m_sensor_width_mm_a,
         m_sensor_height_mm_a);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -1012,33 +874,25 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
     MSelectionList camera_selection_list_b;
     argData.getFlagArgument(CAMERA_B_SHORT_FLAG, 0, camera_selection_list_b);
     status = parseCameraSelectionList(
-        camera_selection_list_b,
-        m_time_b,
-        m_camera_b,
-        m_camera_tx_attr_b,
-        m_camera_ty_attr_b,
-        m_camera_tz_attr_b,
-        m_camera_rx_attr_b,
-        m_camera_ry_attr_b,
-        m_camera_rz_attr_b,
-        m_image_width_b,
-        m_image_height_b,
-        m_focal_length_mm_b,
-        m_sensor_width_mm_b,
+        camera_selection_list_b, m_time_b, m_camera_b, m_camera_tx_attr_b,
+        m_camera_ty_attr_b, m_camera_tz_attr_b, m_camera_rx_attr_b,
+        m_camera_ry_attr_b, m_camera_rz_attr_b, m_image_width_b,
+        m_image_height_b, m_focal_length_mm_b, m_sensor_width_mm_b,
         m_sensor_height_mm_b);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MMSOLVER_INFO("image A: " << m_image_width_a << "x" << m_image_height_a);
     MMSOLVER_INFO("image B: " << m_image_width_b << "x" << m_image_height_b);
-    MMSOLVER_INFO("sensor (mm) A: " << m_sensor_width_mm_a
-         << "x" << m_sensor_height_mm_a);
-    MMSOLVER_INFO("sensor (mm) B: " << m_sensor_width_mm_b
-         << "x" << m_sensor_height_mm_b);
+    MMSOLVER_INFO("sensor (mm) A: " << m_sensor_width_mm_a << "x"
+                                    << m_sensor_height_mm_a);
+    MMSOLVER_INFO("sensor (mm) B: " << m_sensor_width_mm_b << "x"
+                                    << m_sensor_height_mm_b);
     MMSOLVER_INFO("focal (mm) A: " << m_focal_length_mm_a);
     MMSOLVER_INFO("focal (mm) B: " << m_focal_length_mm_b);
 
     // Parse objects into Camera intrinsics and Tracking Markers.
-    uint32_t numberOfMarkerBundleFlags = argData.numberOfFlagUses(MARKER_BUNDLE_SHORT_FLAG);
+    uint32_t numberOfMarkerBundleFlags =
+        argData.numberOfFlagUses(MARKER_BUNDLE_SHORT_FLAG);
     MMSOLVER_INFO("numberOfMarkerBundleFlags: " << numberOfMarkerBundleFlags);
     if (numberOfMarkerBundleFlags > 0) {
         for (uint32_t i = 0; i < numberOfMarkerBundleFlags; ++i) {
@@ -1051,13 +905,16 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             MString bundleName = "";
             MObject markerObject;
             MObject bundleObject;
-            status = argData.getFlagArgumentList(MARKER_BUNDLE_SHORT_FLAG, i, markerBundleArgs);
+            status = argData.getFlagArgumentList(MARKER_BUNDLE_SHORT_FLAG, i,
+                                                 markerBundleArgs);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
-            MMSOLVER_INFO("markerBundleArgs.length(): " << markerBundleArgs.length());
+            MMSOLVER_INFO(
+                "markerBundleArgs.length(): " << markerBundleArgs.length());
             if (markerBundleArgs.length() != 3) {
-                MMSOLVER_ERR("Marker Bundle argument list must have 3 arguments; "
-                             << "\"markerA\", \"markerB\",  \"bundle\".");
+                MMSOLVER_ERR(
+                    "Marker Bundle argument list must have 3 arguments; "
+                    << "\"markerA\", \"markerB\",  \"bundle\".");
                 continue;
             }
 
@@ -1070,7 +927,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             objectType = computeObjectType(markerObject, dagPath);
             if (objectType != ObjectType::kMarker) {
                 MMSOLVER_ERR("Given marker node is not a Marker; "
-                    << markerNameA.asChar());
+                             << markerNameA.asChar());
                 continue;
             }
             MMSOLVER_INFO("Got markerNameA: " << markerNameA.asChar());
@@ -1084,7 +941,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             objectType = computeObjectType(markerObject, dagPath);
             if (objectType != ObjectType::kMarker) {
                 MMSOLVER_ERR("Given marker node is not a Marker; "
-                    << markerNameB.asChar());
+                             << markerNameB.asChar());
                 continue;
             }
             MMSOLVER_INFO("Got markerNameB: " << markerNameB.asChar());
@@ -1098,7 +955,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             objectType = computeObjectType(bundleObject, dagPath);
             if (objectType != ObjectType::kBundle) {
                 MMSOLVER_ERR("Given bundle node is not a Bundle; "
-                    << bundleName.asChar());
+                             << bundleName.asChar());
                 continue;
             }
             MMSOLVER_INFO("Got bundleName: " << bundleName.asChar());
@@ -1117,22 +974,11 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             marker_b->setCamera(m_camera_b);
 
             MMSOLVER_INFO("run addMarkerBundles");
-            addMarkerBundles(
-                m_time_a,
-                m_time_b,
-                m_image_width_a,
-                m_image_height_a,
-                m_image_width_b,
-                m_image_height_b,
-                marker_a,
-                marker_b,
-                bundle,
-                m_bundle_list,
-                m_marker_list_a,
-                m_marker_list_b,
-                m_marker_coords_a,
-                m_marker_coords_b
-            );
+            addMarkerBundles(m_time_a, m_time_b, m_image_width_a,
+                             m_image_height_a, m_image_width_b,
+                             m_image_height_b, marker_a, marker_b, bundle,
+                             m_bundle_list, m_marker_list_a, m_marker_list_b,
+                             m_marker_coords_a, m_marker_coords_b);
         }
     }
 
@@ -1165,39 +1011,18 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     double ppy_pix_a = 0.0;
     double ppy_pix_b = 0.0;
     convert_camera_lens_mm_to_pixel_units(
-        m_image_width_a,
-        m_image_height_a,
-        m_focal_length_mm_a,
-        m_sensor_width_mm_a,
-        focal_length_pix_a,
-        ppx_pix_a,
-        ppy_pix_a);
+        m_image_width_a, m_image_height_a, m_focal_length_mm_a,
+        m_sensor_width_mm_a, focal_length_pix_a, ppx_pix_a, ppy_pix_a);
     convert_camera_lens_mm_to_pixel_units(
-        m_image_width_b,
-        m_image_height_b,
-        m_focal_length_mm_b,
-        m_sensor_width_mm_b,
-        focal_length_pix_b,
-        ppx_pix_b,
-        ppy_pix_b);
+        m_image_width_b, m_image_height_b, m_focal_length_mm_b,
+        m_sensor_width_mm_b, focal_length_pix_b, ppx_pix_b, ppy_pix_b);
 
     openMVG::sfm::RelativePose_Info pose_info;
     auto relative_pose_ok = compute_relative_pose(
-        m_image_width_a,
-        m_image_width_b,
-        m_image_height_a,
-        m_image_height_b,
-        focal_length_pix_a,
-        focal_length_pix_b,
-        ppx_pix_a,
-        ppx_pix_b,
-        ppy_pix_a,
-        ppy_pix_b,
-        m_marker_coords_a,
-        m_marker_coords_b,
-        m_marker_list_a,
-        m_marker_list_b,
-        pose_info);
+        m_image_width_a, m_image_width_b, m_image_height_a, m_image_height_b,
+        focal_length_pix_a, focal_length_pix_b, ppx_pix_a, ppx_pix_b, ppy_pix_a,
+        ppy_pix_b, m_marker_coords_a, m_marker_coords_b, m_marker_list_a,
+        m_marker_list_b, pose_info);
     if (!relative_pose_ok) {
         MMSOLVER_ERR("Compute Relative pose failed.");
         status = MS::kFailure;
@@ -1206,18 +1031,9 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
 
     openMVG::sfm::SfM_Data scene;
     auto sfm_data_ok = construct_two_camera_sfm_data_scene(
-        m_image_width_a,
-        m_image_width_b,
-        m_image_height_a,
-        m_image_height_b,
-        focal_length_pix_a,
-        focal_length_pix_b,
-        ppx_pix_a,
-        ppx_pix_b,
-        ppy_pix_a,
-        ppy_pix_b,
-        pose_info,
-        scene);
+        m_image_width_a, m_image_width_b, m_image_height_a, m_image_height_b,
+        focal_length_pix_a, focal_length_pix_b, ppx_pix_a, ppx_pix_b, ppy_pix_a,
+        ppy_pix_b, pose_info, scene);
     if (!sfm_data_ok) {
         MMSOLVER_ERR("Failed to construct two camera SfM scene.");
         status = MS::kFailure;
@@ -1231,13 +1047,8 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     MMSOLVER_INFO("H ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     auto triangulate_ok = triangulate_relative_pose(
-        m_marker_coords_a,
-        m_marker_coords_b,
-        pose_info.vec_inliers,
-        m_marker_list_a,
-        m_marker_list_b,
-        m_bundle_list,
-        scene);
+        m_marker_coords_a, m_marker_coords_b, pose_info.vec_inliers,
+        m_marker_list_a, m_marker_list_b, m_bundle_list, scene);
     if (!triangulate_ok) {
         MMSOLVER_ERR("Triangulate relative pose points failed.");
         status = MS::kFailure;
@@ -1246,10 +1057,8 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
 
     MMSOLVER_INFO("I ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    openMVG::sfm::Save(
-        scene,
-        "EssentialGeometry_before.json",
-        openMVG::sfm::ESfM_Data(openMVG::sfm::ESfM_Data::ALL));
+    openMVG::sfm::Save(scene, "EssentialGeometry_before.json",
+                       openMVG::sfm::ESfM_Data(openMVG::sfm::ESfM_Data::ALL));
 
     MMSOLVER_INFO("J ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -1262,10 +1071,8 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
 
     MMSOLVER_INFO("K ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    openMVG::sfm::Save(
-        scene,
-        "EssentialGeometry_after.json",
-        openMVG::sfm::ESfM_Data(openMVG::sfm::ESfM_Data::ALL));
+    openMVG::sfm::Save(scene, "EssentialGeometry_after.json",
+                       openMVG::sfm::ESfM_Data(openMVG::sfm::ESfM_Data::ALL));
 
     // the conversion matrix from OpenGL default coordinate system
     //  to the camera coordinate system:
@@ -1279,11 +1086,10 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     //     {0.0, -1.0,  0.0, 0.0},
     //     {0.0,  0.0, -1.0, 0.0},
     //     {0.0,  0.0,  0.0, 1.0}};
-    const double c_convert_matrix[4][4] = {
-        {1.0,  0.0,  0.0, 0.0},
-        {0.0,  1.0,  0.0, 0.0},
-        {0.0,  0.0,  1.0, 0.0},
-        {0.0,  0.0,  0.0, 1.0}};
+    const double c_convert_matrix[4][4] = {{1.0, 0.0, 0.0, 0.0},
+                                           {0.0, 1.0, 0.0, 0.0},
+                                           {0.0, 0.0, 1.0, 0.0},
+                                           {0.0, 0.0, 0.0, 1.0}};
     MMatrix maya_convert_matrix(c_convert_matrix);
 
     // TODO: Convert the sfm_data back to Maya data and set Camera and
@@ -1303,23 +1109,27 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         MMSOLVER_INFO("pose translation: " << pose_translation);
         MMSOLVER_INFO("pose rotation: " << pose_rotation);
 
-        MPoint maya_translate(
-            pose_translation[0],
-            pose_translation[1],
-            pose_translation[2]);
+        MPoint maya_translate(pose_translation[0], pose_translation[1],
+                              pose_translation[2]);
 
         // const double c_rotate_matrix[4][4] = {
-        //     {pose_rotation(0, 0),  pose_rotation(0, 1), pose_rotation(0, 2), pose_rotation(0, 3)},
-        //     {pose_rotation(1, 0),  pose_rotation(1, 1), pose_rotation(1, 2), pose_rotation(1, 3)},
-        //     {pose_rotation(2, 0),  pose_rotation(2, 1), pose_rotation(2, 2), pose_rotation(2, 3)},
-        //     {pose_rotation(3, 0),  pose_rotation(3, 1), pose_rotation(3, 2), pose_rotation(3, 3)},
+        //     {pose_rotation(0, 0),  pose_rotation(0, 1), pose_rotation(0, 2),
+        //     pose_rotation(0, 3)}, {pose_rotation(1, 0),  pose_rotation(1, 1),
+        //     pose_rotation(1, 2), pose_rotation(1, 3)}, {pose_rotation(2, 0),
+        //     pose_rotation(2, 1), pose_rotation(2, 2), pose_rotation(2, 3)},
+        //     {pose_rotation(3, 0),  pose_rotation(3, 1), pose_rotation(3, 2),
+        //     pose_rotation(3, 3)},
         // };
 
         const double c_rotate_matrix[4][4] = {
-            {pose_rotation(0, 0),  pose_rotation(1, 0), pose_rotation(2, 0), pose_rotation(3, 0)},
-            {pose_rotation(0, 1),  pose_rotation(1, 1), pose_rotation(2, 1), pose_rotation(3, 1)},
-            {pose_rotation(0, 2),  pose_rotation(1, 2), pose_rotation(2, 2), pose_rotation(3, 2)},
-            {pose_rotation(0, 3),  pose_rotation(1, 3), pose_rotation(2, 3), pose_rotation(3, 3)},
+            {pose_rotation(0, 0), pose_rotation(1, 0), pose_rotation(2, 0),
+             pose_rotation(3, 0)},
+            {pose_rotation(0, 1), pose_rotation(1, 1), pose_rotation(2, 1),
+             pose_rotation(3, 1)},
+            {pose_rotation(0, 2), pose_rotation(1, 2), pose_rotation(2, 2),
+             pose_rotation(3, 2)},
+            {pose_rotation(0, 3), pose_rotation(1, 3), pose_rotation(2, 3),
+             pose_rotation(3, 3)},
         };
         // auto maya_rotate_matrix = MMatrix(c_rotate_matrix).inverse();
         MMatrix maya_rotate_matrix(c_rotate_matrix);
@@ -1329,7 +1139,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
 
         // TODO: Expose the Rotation Order, so we can match the camera
         // that needs it.
-        auto rotate_order = MEulerRotation::kZXY; // kXYZ
+        auto rotate_order = MEulerRotation::kZXY;  // kXYZ
         auto value_time = m_time_b;
         // auto rotate_order = m_camera_b_rotate_order;
         if (pose_id == 0) {
@@ -1337,17 +1147,20 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
             value_time = m_time_a;
         }
 
-        auto euler_rotation = MEulerRotation::decompose(
-            maya_rotate_matrix,
-            rotate_order);
+        auto euler_rotation =
+            MEulerRotation::decompose(maya_rotate_matrix, rotate_order);
         auto rx = euler_rotation.x * RADIANS_TO_DEGREES;
         auto ry = euler_rotation.y * RADIANS_TO_DEGREES;
         auto rz = euler_rotation.z * RADIANS_TO_DEGREES;
-        MMSOLVER_INFO("pose euler rotation (ZXY): " << rx << "," << ry << "," << rz);
+        MMSOLVER_INFO("pose euler rotation (ZXY): " << rx << "," << ry << ","
+                                                    << rz);
 
-        m_camera_tx_attr_a.setValue(maya_translate.x, value_time, m_dgmod, m_curveChange);
-        m_camera_ty_attr_a.setValue(maya_translate.y, value_time, m_dgmod, m_curveChange);
-        m_camera_tz_attr_a.setValue(maya_translate.z, value_time, m_dgmod, m_curveChange);
+        m_camera_tx_attr_a.setValue(maya_translate.x, value_time, m_dgmod,
+                                    m_curveChange);
+        m_camera_ty_attr_a.setValue(maya_translate.y, value_time, m_dgmod,
+                                    m_curveChange);
+        m_camera_tz_attr_a.setValue(maya_translate.z, value_time, m_dgmod,
+                                    m_curveChange);
 
         m_camera_rx_attr_a.setValue(rx, value_time, m_dgmod, m_curveChange);
         m_camera_ry_attr_a.setValue(ry, value_time, m_dgmod, m_curveChange);
@@ -1372,8 +1185,8 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         double ty = pos[1];
         double tz = pos[2];
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        MMSOLVER_INFO("landmark: " << key
-                      << " x=" << tx << " y=" << ty << " z=" << tz);
+        MMSOLVER_INFO("landmark: " << key << " x=" << tx << " y=" << ty
+                                   << " z=" << tz);
 
         if (i < m_bundle_list.size()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -1421,5 +1234,4 @@ MStatus MMCameraRelativePoseCmd::undoIt() {
     return status;
 }
 
-
-} // namespace mmsolver
+}  // namespace mmsolver

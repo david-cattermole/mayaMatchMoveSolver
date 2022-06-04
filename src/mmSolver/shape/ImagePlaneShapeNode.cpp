@@ -26,15 +26,15 @@
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
 #include <maya/MDistance.h>
-#include <maya/MFnUnitAttribute.h>
 #include <maya/MFnEnumAttribute.h>
 #include <maya/MFnMessageAttribute.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnNumericData.h>
+#include <maya/MFnUnitAttribute.h>
+#include <maya/MPlug.h>
 #include <maya/MPxLocatorNode.h>
 #include <maya/MString.h>
 #include <maya/MTypeId.h>
-#include <maya/MPlug.h>
 #include <maya/MVector.h>
 #include <maya/MViewport2Renderer.h>
 
@@ -45,17 +45,22 @@
 #include <assert.h>
 
 // MM Solver
-#include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/nodeTypeIds.h"
 
 namespace mmsolver {
 
 MTypeId ImagePlaneShapeNode::m_id(MM_IMAGE_PLANE_SHAPE_TYPE_ID);
-MString ImagePlaneShapeNode::m_draw_db_classification(MM_IMAGE_PLANE_SHAPE_DRAW_CLASSIFY);
-MString ImagePlaneShapeNode::m_draw_registrant_id(MM_IMAGE_PLANE_SHAPE_DRAW_REGISTRANT_ID);
-MString ImagePlaneShapeNode::m_selection_type_name(MM_IMAGE_PLANE_SHAPE_SELECTION_TYPE_NAME);
-MString ImagePlaneShapeNode::m_display_filter_name(MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_NAME);
-MString ImagePlaneShapeNode::m_display_filter_label(MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_LABEL);
+MString ImagePlaneShapeNode::m_draw_db_classification(
+    MM_IMAGE_PLANE_SHAPE_DRAW_CLASSIFY);
+MString ImagePlaneShapeNode::m_draw_registrant_id(
+    MM_IMAGE_PLANE_SHAPE_DRAW_REGISTRANT_ID);
+MString ImagePlaneShapeNode::m_selection_type_name(
+    MM_IMAGE_PLANE_SHAPE_SELECTION_TYPE_NAME);
+MString ImagePlaneShapeNode::m_display_filter_name(
+    MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_NAME);
+MString ImagePlaneShapeNode::m_display_filter_label(
+    MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_LABEL);
 
 // Attributes
 MObject ImagePlaneShapeNode::m_visible_to_camera_only;
@@ -81,17 +86,13 @@ MString ImagePlaneShapeNode::nodeName() {
     return MString(MM_IMAGE_PLANE_SHAPE_TYPE_NAME);
 }
 
-MStatus
-ImagePlaneShapeNode::compute(
-    const MPlug &/*plug*/,
-    MDataBlock &/*dataBlock*/
+MStatus ImagePlaneShapeNode::compute(const MPlug & /*plug*/,
+                                     MDataBlock & /*dataBlock*/
 ) {
     return MS::kUnknownParameter;
 }
 
-bool ImagePlaneShapeNode::isBounded() const {
-    return true;
-}
+bool ImagePlaneShapeNode::isBounded() const { return true; }
 
 MBoundingBox ImagePlaneShapeNode::boundingBox() const {
     MObject this_node = thisMObject();
@@ -125,9 +126,7 @@ bool ImagePlaneShapeNode::excludeAsLocator() const {
 // Called before this node is evaluated by Evaluation Manager.
 #if MAYA_API_VERSION >= 20190000
 MStatus ImagePlaneShapeNode::preEvaluation(
-    const MDGContext &context,
-    const MEvaluationNode &evaluationNode
-) {
+    const MDGContext &context, const MEvaluationNode &evaluationNode) {
     if (context.isNormal()) {
         MHWRender::MRenderer::setGeometryDrawDirty(thisMObject());
     }
@@ -138,88 +137,71 @@ MStatus ImagePlaneShapeNode::preEvaluation(
 
 #if MAYA_API_VERSION >= 20200000
 void ImagePlaneShapeNode::getCacheSetup(
-    const MEvaluationNode &evalNode,
-    MNodeCacheDisablingInfo &disablingInfo,
+    const MEvaluationNode &evalNode, MNodeCacheDisablingInfo &disablingInfo,
     MNodeCacheSetupInfo &cacheSetupInfo,
-    MObjectArray &monitoredAttributes
-) const {
-    MPxLocatorNode::getCacheSetup(
-        evalNode,
-        disablingInfo,
-        cacheSetupInfo,
-        monitoredAttributes);
+    MObjectArray &monitoredAttributes) const {
+    MPxLocatorNode::getCacheSetup(evalNode, disablingInfo, cacheSetupInfo,
+                                  monitoredAttributes);
     assert(!disablingInfo.getCacheDisabled());
-    cacheSetupInfo.setPreference(
-        MNodeCacheSetupInfo::kWantToCacheByDefault,
-        true);
+    cacheSetupInfo.setPreference(MNodeCacheSetupInfo::kWantToCacheByDefault,
+                                 true);
 }
 #endif
 
-void *ImagePlaneShapeNode::creator() {
-    return new ImagePlaneShapeNode();
-}
+void *ImagePlaneShapeNode::creator() { return new ImagePlaneShapeNode(); }
 
 MStatus ImagePlaneShapeNode::initialize() {
     MStatus status;
     MFnNumericAttribute nAttr;
     MFnMessageAttribute msgAttr;
 
-    m_visible_to_camera_only = nAttr.create(
-        "visibleToCameraOnly", "viscamony",
-        MFnNumericData::kBoolean, 0);
+    m_visible_to_camera_only = nAttr.create("visibleToCameraOnly", "viscamony",
+                                            MFnNumericData::kBoolean, 0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(m_visible_to_camera_only));
 
-    m_draw_hud = nAttr.create(
-        "drawHud", "enbhud",
-        MFnNumericData::kBoolean, 1);
+    m_draw_hud = nAttr.create("drawHud", "enbhud", MFnNumericData::kBoolean, 1);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(m_draw_hud));
 
-    m_draw_image_size = nAttr.create(
-        "drawImageSize", "enbimgsz",
-        MFnNumericData::kBoolean, 1);
+    m_draw_image_size =
+        nAttr.create("drawImageSize", "enbimgsz", MFnNumericData::kBoolean, 1);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(m_draw_image_size));
 
-    m_draw_camera_size = nAttr.create(
-        "drawCameraSize", "enbcamsz",
-        MFnNumericData::kBoolean, 1);
+    m_draw_camera_size =
+        nAttr.create("drawCameraSize", "enbcamsz", MFnNumericData::kBoolean, 1);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(m_draw_camera_size));
 
-    m_image_width = nAttr.create(
-        "imageWidth", "imgwdth",
-        MFnNumericData::kInt, 1920);
+    m_image_width =
+        nAttr.create("imageWidth", "imgwdth", MFnNumericData::kInt, 1920);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(1));
     CHECK_MSTATUS(addAttribute(m_image_width));
 
-    m_image_height = nAttr.create(
-        "imageHeight", "imghght",
-        MFnNumericData::kInt, 1080);
+    m_image_height =
+        nAttr.create("imageHeight", "imghght", MFnNumericData::kInt, 1080);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(1));
     CHECK_MSTATUS(addAttribute(m_image_height));
 
-    m_image_pixel_aspect = nAttr.create(
-        "imagePixelAspect", "imgpxasp",
-        MFnNumericData::kDouble, 1.0);
+    m_image_pixel_aspect = nAttr.create("imagePixelAspect", "imgpxasp",
+                                        MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(0.1));
     CHECK_MSTATUS(nAttr.setMax(4.0));
     CHECK_MSTATUS(addAttribute(m_image_pixel_aspect));
 
-    m_camera_width_inch = nAttr.create(
-        "cameraWidthInch", "camwdthin",
-        MFnNumericData::kDouble, 1.0);
+    m_camera_width_inch = nAttr.create("cameraWidthInch", "camwdthin",
+                                       MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setConnectable(true));
     CHECK_MSTATUS(nAttr.setKeyable(false));
@@ -227,9 +209,8 @@ MStatus ImagePlaneShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Camera Width (inches)")));
     CHECK_MSTATUS(addAttribute(m_camera_width_inch));
 
-    m_camera_height_inch = nAttr.create(
-        "cameraHeightInch", "camhghtin",
-        MFnNumericData::kDouble, 1.0);
+    m_camera_height_inch = nAttr.create("cameraHeightInch", "camhghtin",
+                                        MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setConnectable(true));
     CHECK_MSTATUS(nAttr.setKeyable(false));
@@ -237,18 +218,16 @@ MStatus ImagePlaneShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Camera Height (inches)")));
     CHECK_MSTATUS(addAttribute(m_camera_height_inch));
 
-    m_lens_hash_current = nAttr.create(
-        "lensHashCurrent", "lnshshcur",
-        MFnNumericData::kInt64, 0);
+    m_lens_hash_current =
+        nAttr.create("lensHashCurrent", "lnshshcur", MFnNumericData::kInt64, 0);
     CHECK_MSTATUS(nAttr.setStorable(false));
     CHECK_MSTATUS(nAttr.setConnectable(true));
     CHECK_MSTATUS(nAttr.setKeyable(false));
     CHECK_MSTATUS(nAttr.setHidden(true));
     CHECK_MSTATUS(addAttribute(m_lens_hash_current));
 
-    m_lens_hash_previous = nAttr.create(
-        "lensHashPrevious", "lnshshprv",
-        MFnNumericData::kInt64, 0);
+    m_lens_hash_previous = nAttr.create("lensHashPrevious", "lnshshprv",
+                                        MFnNumericData::kInt64, 0);
     CHECK_MSTATUS(nAttr.setStorable(false));
     CHECK_MSTATUS(nAttr.setConnectable(false));
     CHECK_MSTATUS(nAttr.setKeyable(false));
@@ -279,4 +258,4 @@ MStatus ImagePlaneShapeNode::initialize() {
     return MS::kSuccess;
 }
 
-} // namespace mmsolver
+}  // namespace mmsolver

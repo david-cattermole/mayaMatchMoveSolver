@@ -25,23 +25,20 @@
 // Maya
 #include <maya/MDistance.h>
 #include <maya/MPoint.h>
-#include <maya/MVector.h>
 #include <maya/MTransformationMatrix.h>
+#include <maya/MVector.h>
 
 // Maya Viewport 2.0
 #include <maya/MDrawContext.h>
 
 namespace mmsolver {
 
-MStatus objectIsBelowCamera(
-    const MDagPath &objPath,
-    const MDagPath &cameraPath,
-    bool &belowCamera);
+MStatus objectIsBelowCamera(const MDagPath &objPath, const MDagPath &cameraPath,
+                            bool &belowCamera);
 
-MStatus getViewportScaleRatio(
-    const MHWRender::MFrameContext &frameContext,
-    double &out_scale);
+MStatus getViewportScaleRatio(const MHWRender::MFrameContext &frameContext,
+                              double &out_scale);
 
-} // namespace mmsolver
+}  // namespace mmsolver
 
-#endif // MM_MARKER_DRAW_UTILS_H
+#endif  // MM_MARKER_DRAW_UTILS_H

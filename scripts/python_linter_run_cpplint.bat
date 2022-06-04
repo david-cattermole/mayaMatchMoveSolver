@@ -23,4 +23,4 @@ SETLOCAL
 
 SET PROJECT_ROOT=%CD%
 
-python -m cpplint --recursive "%PROJECT_ROOT%\src" "%PROJECT_ROOT%\include"
+python -m cpplint --counting=toplevel --recursive "%PROJECT_ROOT%\src" "%PROJECT_ROOT%\include"

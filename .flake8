@@ -1,6 +1,7 @@
 [flake8]
 ignore =
     D203,
+    E203,  # Whitespace before ':'. Conflicts with 'Black'
     E226,
     E402,
     E501,

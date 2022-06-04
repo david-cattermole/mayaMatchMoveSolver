@@ -32,7 +32,6 @@ import matplotlib.pyplot as plt
 
 def generate_plot_error_per_iteration(data, ax):
     x = []
-    y_avg = []
     y_errors = []
     for it_k, it_v in data.items():
         if it_v['type'] != 'normal':

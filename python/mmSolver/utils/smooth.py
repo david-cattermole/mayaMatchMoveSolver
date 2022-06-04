@@ -290,7 +290,7 @@ def _fft_convolve_raw(signal, window):
     window = tmp
 
     r = fft.convolve(signal, window)  # , realoutput=True
-    r = r[(min(m, n) - 1):]
+    r = r[(min(m, n) - 1) :]
     return r
 
 
@@ -331,16 +331,16 @@ def _fourier_smooth_raw(data, width, filtr=None):
     window = _generate_window_raw(n, filtr=filtr)
 
     # Custom Convolve ('valid')
-    s = data[n - 1:0:-1]
+    s = data[n - 1 : 0 : -1]
     s += data
-    s += data[-2:-n - 1:-1]
+    s += data[-2 : -n - 1 : -1]
     x = _fft_convolve_raw(s, window)
     if n % 2 == 1:
         # n is odd
-        x = x[n // 2: -(n // 2)]
+        x = x[n // 2 : -(n // 2)]
     else:
         # n is even
-        x = x[(n // 2) - 1: -(n // 2)]
+        x = x[(n // 2) - 1 : -(n // 2)]
 
     assert len(x) == len(data)
     return x
@@ -436,14 +436,14 @@ def _fourier_smooth_numpy(data, width, filtr=None):
     window = _generate_window_numpy(n, filtr=filtr)
 
     # NumPy Convolve (with 'valid' mode)
-    s = np.r_[data[n - 1: 0: -1], data, data[-2: -n - 1: -1]]
+    s = np.r_[data[n - 1 : 0 : -1], data, data[-2 : -n - 1 : -1]]
     x = np.convolve(s, window, mode='valid')
     if n % 2 == 1:
         # n is odd
-        x = x[n // 2: -(n // 2)]
+        x = x[n // 2 : -(n // 2)]
     else:
         # n is even
-        x = x[(n // 2) - 1: -(n // 2)]
+        x = x[(n // 2) - 1 : -(n // 2)]
 
     assert len(x) == len(data)
     return x

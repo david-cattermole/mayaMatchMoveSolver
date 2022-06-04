@@ -681,7 +681,7 @@ class LoaderRZ2(LoaderBase):
             msg = 'Could not get the ending index from: %r'
             raise ParserError(msg % text)
 
-        imgseq = text[start_idx + 1:end_idx]
+        imgseq = text[start_idx + 1 : end_idx]
         imgseq = imgseq.strip()
         splt = imgseq.split()
         x_res = int(splt[0])
@@ -734,7 +734,7 @@ class LoaderRZ2(LoaderBase):
             for frame in frames:
                 mkr_data.enable.set_value(frame, 0)
 
-            point_track = text[start_idx + 1:end_idx]
+            point_track = text[start_idx + 1 : end_idx]
             for line in point_track.splitlines():
                 splt = line.split()
                 if len(splt) == 0:

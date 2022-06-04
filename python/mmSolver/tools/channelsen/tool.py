@@ -30,4 +30,5 @@ def main():
     Open the Channel Sensitivity window.
     """
     import mmSolver.tools.channelsen.ui.channelsen_window as window
+
     window.main()

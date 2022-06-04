@@ -31,9 +31,10 @@ range = xrange  # noqa: F821
 
 # For Python 2.6; 'int.bit_length()' was added in Python 2.7
 def _bit_length(x):
-    s = bin(x)           # binary representation:  bin(-37) --> '-0b100101'
+    s = bin(x)  # binary representation:  bin(-37) --> '-0b100101'
     s = s.lstrip('-0b')  # remove leading zeros and minus sign
-    return len(s)        # len('100101') --> 6
+    return len(s)  # len('100101') --> 6
+
 
 #
 # Computes the discrete Fourier transform (DFT) or inverse transform of the given complex vector, returning the result as a new vector.
@@ -44,7 +45,7 @@ def transform(vector, inverse):
     r = []
     if n == 0:
         return r
-    elif n & (n - 1) == 0:    # Is power of 2
+    elif n & (n - 1) == 0:  # Is power of 2
         r = transform_radix2(vector, inverse)
     else:  # More complicated algorithm for arbitrary sizes
         r = transform_bluestein(vector, inverse)
@@ -72,7 +73,9 @@ def transform_radix2(vector, inverse):
     # Now, levels = log2(n)
     coef = (2j if inverse else -2j) * cmath.pi / n
     exptable = [cmath.exp(i * coef) for i in range(n // 2)]
-    vector = [vector[reverse(i, levels)] for i in range(n)]  # Copy with bit-reversed permutation
+    vector = [
+        vector[reverse(i, levels)] for i in range(n)
+    ]  # Copy with bit-reversed permutation
 
     # Radix-2 decimation-in-time FFT
     size = 2
@@ -100,11 +103,15 @@ def transform_bluestein(vector, inverse):
     n = len(vector)
     if n == 0:
         return []
-    m = 2**(_bit_length(n * 2))
+    m = 2 ** (_bit_length(n * 2))
 
     coef = (1j if inverse else -1j) * cmath.pi / n
-    exptable = [cmath.exp((i * i % (n * 2)) * coef) for i in range(n)]  # Trigonometric table
-    a = [(x * y) for (x, y) in zip(vector, exptable)] + [0] * (m - n)  # Temporary vectors and preprocessing
+    exptable = [
+        cmath.exp((i * i % (n * 2)) * coef) for i in range(n)
+    ]  # Trigonometric table
+    a = [(x * y) for (x, y) in zip(vector, exptable)] + [0] * (
+        m - n
+    )  # Temporary vectors and preprocessing
     b = exptable[:n] + [0] * (m - (n * 2 - 1)) + exptable[:0:-1]
     b = [x.conjugate() for x in b]
     c = convolve(a, b, False)[:n]  # Convolution

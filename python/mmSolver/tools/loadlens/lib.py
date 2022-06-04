@@ -42,7 +42,8 @@ LensObject = collections.namedtuple(
         'camera_parameters',
         'fov_parameters',
         'lens_parameters',
-    ])
+    ],
+)
 
 
 def parse_file(file_path):
@@ -60,8 +61,9 @@ def parse_file(file_path):
         # ignored.
         line = line.partition('#')[0].strip()
 
-        if ((line.startswith('LD_3DE_') or line.startswith('LD_3DE4_'))
-                and line.endswith(' {')):
+        if (
+            line.startswith('LD_3DE_') or line.startswith('LD_3DE4_')
+        ) and line.endswith(' {'):
             nuke_node_type = line.partition('{')[0].strip()
             continue
 
@@ -130,20 +132,14 @@ def parse_file(file_path):
 
 def _remove_keyframes(node, attr_name):
     node_attr = '{}.{}'.format(node, attr_name)
-    anim_curves = maya.cmds.listConnections(
-        node_attr,
-        type='animCurve',
-        source=True) or []
+    anim_curves = (
+        maya.cmds.listConnections(node_attr, type='animCurve', source=True) or []
+    )
     if len(anim_curves) > 0:
         # TODO: This will delete the node along with the keyframes.
         #  This is caused by Maya's behavior to automatically delete
         #  nodes that do not have incoming connections.
-        maya.cmds.cutKey(
-            node,
-            clear=True,
-            time=(),
-            float=(),
-            attribute=attr_name)
+        maya.cmds.cutKey(node, clear=True, time=(), float=(), attribute=attr_name)
     return
 
 

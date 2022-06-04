@@ -38,10 +38,7 @@ LOG = mmSolver.logger.get_logger()
 #
 # Ideally, all frame ranges should be stored with this object. We can
 # pass this one variable around, the number of arguments.
-FrameRange = collections.namedtuple(
-    'FrameRange',
-    ['start', 'end']
-)
+FrameRange = collections.namedtuple('FrameRange', ['start', 'end'])
 
 
 def get_maya_timeline_range_inner():
@@ -92,11 +89,7 @@ def get_keyframe_times_for_node_attrs(nodes, attrs):
             settable = maya.cmds.getAttr(plug, settable=True)
             if settable is False:
                 continue
-            times = maya.cmds.keyframe(
-                plug,
-                query=True,
-                timeChange=True
-            ) or []
+            times = maya.cmds.keyframe(plug, query=True, timeChange=True) or []
             if len(times) == 0:
                 continue
             times = [int(t) for t in times]

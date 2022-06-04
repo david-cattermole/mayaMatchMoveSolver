@@ -234,8 +234,9 @@ class SolverStep(object):
                 auto_diff_type,
                 int_list,
             )
-        elif ((use_anim_attrs is True and use_static_attrs is True)
-              or (use_anim_attrs is False and use_static_attrs is True)):
+        elif (use_anim_attrs is True and use_static_attrs is True) or (
+            use_anim_attrs is False and use_static_attrs is True
+        ):
             # Solve static attributes, as well as animated attributes.
             sol_list = _solve_all_attrs(
                 max_iter_num,

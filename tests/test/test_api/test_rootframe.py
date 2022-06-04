@@ -48,14 +48,13 @@ LOG = mmSolver.logger.get_logger()
 
 # @unittest.skip
 class TestRootFrame(test_api_utils.APITestCase):
-
     def test_get_root_frames_from_markers_1(self):
         # Time Range
         start = 1001
         end = 1101
         maya.cmds.playbackOptions(
-            animationStartTime=start, minTime=start,
-            animationEndTime=end, maxTime=end)
+            animationStartTime=start, minTime=start, animationEndTime=end, maxTime=end
+        )
 
         # Create Camera and Marker Group
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
@@ -68,15 +67,15 @@ class TestRootFrame(test_api_utils.APITestCase):
         mkr_a_node = mkr_a.get_node()
         times = [1000, 1001, 1101, 1102]
         values = [0, 1, 1, 0]
-        anim_utils.create_anim_curve_node_apione(
-            times, values, mkr_a_node + '.enable')
+        anim_utils.create_anim_curve_node_apione(times, values, mkr_a_node + '.enable')
 
         # Calculate Root Frames
         min_frames_per_marker = 2
         mkr_list = [mkr_a]
         start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
         frame_nums = mod.get_root_frames_from_markers(
-            mkr_list, min_frames_per_marker, start_frame, end_frame)
+            mkr_list, min_frames_per_marker, start_frame, end_frame
+        )
         print('frames:', frame_nums)
         return
 
@@ -85,8 +84,8 @@ class TestRootFrame(test_api_utils.APITestCase):
         start = 1001
         end = 1101
         maya.cmds.playbackOptions(
-            animationStartTime=start, minTime=start,
-            animationEndTime=end, maxTime=end)
+            animationStartTime=start, minTime=start, animationEndTime=end, maxTime=end
+        )
 
         # Create Camera and Marker Group
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
@@ -99,31 +98,29 @@ class TestRootFrame(test_api_utils.APITestCase):
         mkr_a_node = mkr_a.get_node()
         times = [1000, 1001, 1101, 1102]
         values = [0, 1, 1, 0]
-        anim_utils.create_anim_curve_node_apione(
-            times, values, mkr_a_node + '.enable')
+        anim_utils.create_anim_curve_node_apione(times, values, mkr_a_node + '.enable')
 
         # Marker B
         mkr_b = mmapi.Marker().create_node()
         mkr_b_node = mkr_b.get_node()
         times = [1000, 1001, 1051, 1052]
         values = [0, 1, 1, 0]
-        anim_utils.create_anim_curve_node_apione(
-            times, values, mkr_b_node + '.enable')
+        anim_utils.create_anim_curve_node_apione(times, values, mkr_b_node + '.enable')
 
         # Marker C
         mkr_c = mmapi.Marker().create_node()
         mkr_c_node = mkr_c.get_node()
         times = [1050, 1051, 1101, 1102]
         values = [0, 1, 1, 0]
-        anim_utils.create_anim_curve_node_apione(
-            times, values, mkr_c_node + '.enable')
+        anim_utils.create_anim_curve_node_apione(times, values, mkr_c_node + '.enable')
 
         # Calculate Root Frames
         min_frames_per_marker = 2
         mkr_list = [mkr_a, mkr_b, mkr_c]
         start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
         frame_nums = mod.get_root_frames_from_markers(
-            mkr_list, min_frames_per_marker, start_frame, end_frame)
+            mkr_list, min_frames_per_marker, start_frame, end_frame
+        )
         print('frames:', frame_nums)
         return
 
@@ -132,8 +129,8 @@ class TestRootFrame(test_api_utils.APITestCase):
         start = 0
         end = 41
         maya.cmds.playbackOptions(
-            animationStartTime=start, minTime=start,
-            animationEndTime=end, maxTime=end)
+            animationStartTime=start, minTime=start, animationEndTime=end, maxTime=end
+        )
 
         # Create Camera
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
@@ -142,10 +139,7 @@ class TestRootFrame(test_api_utils.APITestCase):
 
         # Create image plane
         path = self.get_data_path('operahouse', 'frame00.jpg')
-        imgpl = maya.cmds.imagePlane(
-            camera=cam_shp,
-            fileName=path
-        )
+        imgpl = maya.cmds.imagePlane(camera=cam_shp, fileName=path)
         maya.cmds.setAttr(imgpl[1] + '.useFrameExtension', 1)
 
         # Load Marker Data
@@ -154,17 +148,14 @@ class TestRootFrame(test_api_utils.APITestCase):
 
         # Create Markers
         mkr_grp = mmapi.MarkerGroup().create_node(cam=cam)
-        mkr_list = marker_read.create_nodes(
-            mkr_data_list,
-            cam=cam,
-            mkr_grp=mkr_grp
-        )
+        mkr_list = marker_read.create_nodes(mkr_data_list, cam=cam, mkr_grp=mkr_grp)
 
         # Calculate Root Frames
         min_frames_per_marker = 3
         start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
         frame_nums = mod.get_root_frames_from_markers(
-            mkr_list, min_frames_per_marker, start_frame, end_frame)
+            mkr_list, min_frames_per_marker, start_frame, end_frame
+        )
         print('frames:', frame_nums)
         return
 

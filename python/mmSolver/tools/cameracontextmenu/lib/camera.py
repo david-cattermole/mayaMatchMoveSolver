@@ -48,5 +48,3 @@ def toggle_camera_lens_distortion_enabled(camera_shape_node):
     enable = cam.get_lens_enable()
     cam.set_lens_enable(not enable)
     return
-
-

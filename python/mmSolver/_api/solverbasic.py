@@ -87,7 +87,8 @@ class SolverBasic(solverbase.SolverBase):
         """
         return self._data.get(
             'eval_object_relationships',
-            const.SOLVER_STD_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE)
+            const.SOLVER_STD_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE,
+        )
 
     def set_eval_object_relationships(self, value):
         """
@@ -109,7 +110,8 @@ class SolverBasic(solverbase.SolverBase):
         """
         return self._data.get(
             'eval_complex_node_graphs',
-            const.SOLVER_STD_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE)
+            const.SOLVER_STD_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE,
+        )
 
     def set_eval_complex_graphs(self, value):
         """
@@ -129,9 +131,7 @@ class SolverBasic(solverbase.SolverBase):
 
         :rtype: int
         """
-        return self._data.get(
-            'solver_type',
-            const.SOLVER_STD_SOLVER_TYPE_DEFAULT_VALUE)
+        return self._data.get('solver_type', const.SOLVER_STD_SOLVER_TYPE_DEFAULT_VALUE)
 
     def set_solver_type(self, value):
         """
@@ -152,8 +152,8 @@ class SolverBasic(solverbase.SolverBase):
         :rtype: int
         """
         return self._data.get(
-            'scene_graph_mode',
-            const.SOLVER_STD_SCENE_GRAPH_MODE_DEFAULT_VALUE)
+            'scene_graph_mode', const.SOLVER_STD_SCENE_GRAPH_MODE_DEFAULT_VALUE
+        )
 
     def set_scene_graph_mode(self, value):
         """
@@ -174,8 +174,8 @@ class SolverBasic(solverbase.SolverBase):
         :rtype: bool
         """
         return self._data.get(
-            'use_single_frame',
-            const.SOLVER_STD_USE_SINGLE_FRAME_DEFAULT_VALUE)
+            'use_single_frame', const.SOLVER_STD_USE_SINGLE_FRAME_DEFAULT_VALUE
+        )
 
     def set_use_single_frame(self, value):
         """
@@ -194,8 +194,8 @@ class SolverBasic(solverbase.SolverBase):
         :rtype: Frame or None
         """
         value = self._data.get(
-            'single_frame',
-            const.SOLVER_STD_SINGLE_FRAME_DEFAULT_VALUE)
+            'single_frame', const.SOLVER_STD_SINGLE_FRAME_DEFAULT_VALUE
+        )
         frm = None
         if value is not None:
             frm = frame.Frame(value)
@@ -223,8 +223,8 @@ class SolverBasic(solverbase.SolverBase):
         :rtype: int
         """
         return self._data.get(
-            'anim_iteration_num',
-            const.SOLVER_STD_ANIM_ITERATION_NUM_DEFAULT_VALUE)
+            'anim_iteration_num', const.SOLVER_STD_ANIM_ITERATION_NUM_DEFAULT_VALUE
+        )
 
     def set_anim_iteration_num(self, value):
         """
@@ -244,8 +244,8 @@ class SolverBasic(solverbase.SolverBase):
         :rtype: int
         """
         return self._data.get(
-            'lineup_iteration_num',
-            const.SOLVER_STD_LINEUP_ITERATION_NUM_DEFAULT_VALUE)
+            'lineup_iteration_num', const.SOLVER_STD_LINEUP_ITERATION_NUM_DEFAULT_VALUE
+        )
 
     def set_lineup_iteration_num(self, value):
         """
@@ -374,25 +374,20 @@ class SolverBasic(solverbase.SolverBase):
                 use_static_attrs,
                 scene_graph_mode,
                 precomputed_data,
-                withtest)
+                withtest,
+            )
             for action, vaction in generator:
                 yield action, vaction
 
         # Pre-calculate the 'affects' relationship.
         if eval_object_relationships is True:
             generator = solverutils.compile_solver_affects(
-                col,
-                mkr_list,
-                attr_list,
-                precomputed_data,
-                withtest)
+                col, mkr_list, attr_list, precomputed_data, withtest
+            )
             for action, vaction in generator:
                 yield action, vaction
         else:
-            generator = solverutils.compile_reset_used_hints(
-                col,
-                mkr_list,
-                attr_list)
+            generator = solverutils.compile_reset_used_hints(col, mkr_list, attr_list)
             for action, vaction in generator:
                 yield action, vaction
 
@@ -412,8 +407,9 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_remove_unused_markers(remove_unused_objects)
             sol.set_remove_unused_attributes(remove_unused_objects)
             sol.set_precomputed_data(precomputed_data)
-            for action, vaction in sol.compile(col, mkr_list, attr_list,
-                                               withtest=withtest):
+            for action, vaction in sol.compile(
+                col, mkr_list, attr_list, withtest=withtest
+            ):
                 yield action, vaction
         else:
             time_eval_mode = const.TIME_EVAL_MODE_DEFAULT
@@ -444,7 +440,8 @@ class SolverBasic(solverbase.SolverBase):
                     sol.set_precomputed_data(precomputed_data)
 
                     generator = api_compile.compile_solver_with_cache(
-                        sol, col, mkr_list, attr_list, withtest, vaction_cache)
+                        sol, col, mkr_list, attr_list, withtest, vaction_cache
+                    )
                     for action, vaction in generator:
                         yield action, vaction
 
@@ -468,16 +465,14 @@ class SolverBasic(solverbase.SolverBase):
                 sol.set_remove_unused_markers(remove_unused_objects)
                 sol.set_remove_unused_attributes(remove_unused_objects)
                 sol.set_precomputed_data(precomputed_data)
-                for action, vaction in sol.compile(col, mkr_list, attr_list,
-                                                   withtest=withtest):
+                for action, vaction in sol.compile(
+                    col, mkr_list, attr_list, withtest=withtest
+                ):
                     yield action, vaction
 
             # Perform an euler filter on all unlocked rotation attributes.
             if use_euler_filter is True:
-                generator = solverutils.compile_euler_filter(
-                    attr_list,
-                    withtest
-                )
+                generator = solverutils.compile_euler_filter(attr_list, withtest)
                 for action, vaction in generator:
                     yield action, vaction
 

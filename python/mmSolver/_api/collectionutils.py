@@ -158,7 +158,8 @@ def reconnect_animcurves(kwargs, save_node_attrs, force_dg_update=True):
             maya.cmds.setKeyframe(
                 node,
                 attribute=attr_obj.get_attr(),
-                time=f, value=v,
+                time=f,
+                value=v,
                 inTangentType=tangent_type,
                 outTangentType=tangent_type,
             )
@@ -189,10 +190,7 @@ def clear_attr_keyframes(kwargs, frames):
             continue
 
         # Get Animation Curve
-        animCurves = maya.cmds.listConnections(
-            attr_name,
-            type='animCurve'
-        ) or []
+        animCurves = maya.cmds.listConnections(attr_name, type='animCurve') or []
         if len(animCurves) == 0:
             continue
         animCurve = animCurves[0]
@@ -217,7 +215,7 @@ def clear_attr_keyframes(kwargs, frames):
                 respectKeyable=False,
                 minimizeRotation=False,
                 inTangentType=tangent_type,
-                outTangentType=tangent_type
+                outTangentType=tangent_type,
             )
     return
 
@@ -262,9 +260,7 @@ def set_initial_prediction_attributes(col, attr_list, frame):
     return
 
 
-def compute_attribute_value_prediction(col,
-                                       attr_list,
-                                       frame):
+def compute_attribute_value_prediction(col, attr_list, frame):
     for attr in attr_list:
         if not attr.is_animated():
             # Only animated attributes can be predicted.
@@ -278,22 +274,22 @@ def compute_attribute_value_prediction(col,
 
         previous_mean = col.get_attribute_mean_value(attr)
         previous_variance = col.get_attribute_variance_value(attr)
-        previous_state = kalman.State(mean=previous_mean,
-                                      variance=previous_variance,
-                                      value=measure_value)
+        previous_state = kalman.State(
+            mean=previous_mean, variance=previous_variance, value=measure_value
+        )
 
         delta_value = measure_value - previous_measure
-        new_state = kalman.State(mean=measure_value,
-                                 variance=smooth_variance,
-                                 value=measure_value)
+        new_state = kalman.State(
+            mean=measure_value, variance=smooth_variance, value=measure_value
+        )
 
         # Measurement update Kalman state with new measurement
         updated_state = kalman.update(previous_state, new_state)
 
         # Prediction of next value.
-        delta_state = kalman.State(mean=delta_value,
-                                   variance=smooth_variance,
-                                   value=measure_value)
+        delta_state = kalman.State(
+            mean=delta_value, variance=smooth_variance, value=measure_value
+        )
         predicted_state = kalman.predict(updated_state, delta_state)
 
         # Set values

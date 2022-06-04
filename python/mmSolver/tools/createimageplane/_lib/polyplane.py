@@ -40,7 +40,7 @@ PolyPlaneNetworkNodes = collections.namedtuple(
         'mesh_shape_original',
         'plane_creator',
         'deformer',
-    ]
+    ],
 )
 
 
@@ -48,10 +48,7 @@ def create_poly_plane(name_mesh_shp, image_plane_tfm, cam_shp):
     """
     Create a default polygon image plane under camera.
     """
-    mesh_shp = maya.cmds.createNode(
-        'mesh',
-        name=name_mesh_shp,
-        parent=image_plane_tfm)
+    mesh_shp = maya.cmds.createNode('mesh', name=name_mesh_shp, parent=image_plane_tfm)
     creator = maya.cmds.createNode('polyPlane')
     maya.cmds.connectAttr(creator + '.output', mesh_shp + '.inMesh')
 
@@ -79,14 +76,17 @@ def create_poly_plane(name_mesh_shp, image_plane_tfm, cam_shp):
     # Get the intermediate mesh shape, so we can re-order the nodes
     # later and ensure the mmImagePlaneShape is first, so that users
     # will see the mmImagePlaneShape first in the Attribute Editor.
-    shapes = maya.cmds.listRelatives(
-        image_plane_tfm,
-        shapes=True,
-        noIntermediate=False,
-        fullPath=True,
-        type='mesh') or []
-    shapes = [x for x in shapes
-              if maya.cmds.getAttr(x + '.intermediateObject') == 1]
+    shapes = (
+        maya.cmds.listRelatives(
+            image_plane_tfm,
+            shapes=True,
+            noIntermediate=False,
+            fullPath=True,
+            type='mesh',
+        )
+        or []
+    )
+    shapes = [x for x in shapes if maya.cmds.getAttr(x + '.intermediateObject') == 1]
     assert len(shapes) == 1
     mesh_shp_original = shapes[0]
 
@@ -97,7 +97,7 @@ def create_poly_plane(name_mesh_shp, image_plane_tfm, cam_shp):
         'horizontalFilmAperture',
         'verticalFilmAperture',
         'horizontalFilmOffset',
-        'verticalFilmOffset'
+        'verticalFilmOffset',
     ]
     for attr in attrs:
         src = image_plane_tfm + '.' + attr
@@ -110,7 +110,7 @@ def create_poly_plane(name_mesh_shp, image_plane_tfm, cam_shp):
         'verticalFilmAperture',
         'pixelAspect',
         'horizontalFilmOffset',
-        'verticalFilmOffset'
+        'verticalFilmOffset',
     ]
     for attr in attrs:
         src = image_plane_tfm + '.' + attr
@@ -119,8 +119,12 @@ def create_poly_plane(name_mesh_shp, image_plane_tfm, cam_shp):
 
     # Connect marker scale to transform node.
     lib_utils.force_connect_attr(mkr_scl + '.outScale', image_plane_tfm + '.scale')
-    lib_utils.force_connect_attr(mkr_scl + '.outTranslateX', image_plane_tfm + '.translateX')
-    lib_utils.force_connect_attr(mkr_scl + '.outTranslateY', image_plane_tfm + '.translateY')
+    lib_utils.force_connect_attr(
+        mkr_scl + '.outTranslateX', image_plane_tfm + '.translateX'
+    )
+    lib_utils.force_connect_attr(
+        mkr_scl + '.outTranslateY', image_plane_tfm + '.translateY'
+    )
 
     # Connect inverted depth to the transform TZ.
     lib_utils.force_connect_attr(mkr_scl + '.depth', inv_mult + '.input1Z')
@@ -129,11 +133,24 @@ def create_poly_plane(name_mesh_shp, image_plane_tfm, cam_shp):
     maya.cmds.setAttr(inv_mult + '.input2Z', -1.0)
 
     # Lock and hide all the attributes
-    attrs = ['tx', 'ty', 'tz',
-             'rx', 'ry', 'rz',
-             'sx', 'sy', 'sz',
-             'shearXY', 'shearXZ', 'shearYZ', 'rotateOrder',
-             'rotateAxisX', 'rotateAxisY', 'rotateAxisZ']
+    attrs = [
+        'tx',
+        'ty',
+        'tz',
+        'rx',
+        'ry',
+        'rz',
+        'sx',
+        'sy',
+        'sz',
+        'shearXY',
+        'shearXZ',
+        'shearYZ',
+        'rotateOrder',
+        'rotateAxisX',
+        'rotateAxisY',
+        'rotateAxisZ',
+    ]
     for attr in attrs:
         maya.cmds.setAttr(image_plane_tfm + '.' + attr, lock=True)
         maya.cmds.setAttr(image_plane_tfm + '.' + attr, keyable=False, channelBox=False)
@@ -142,5 +159,6 @@ def create_poly_plane(name_mesh_shp, image_plane_tfm, cam_shp):
         mesh_shape=mesh_shp,
         mesh_shape_original=mesh_shp_original,
         plane_creator=creator,
-        deformer=deform_node)
+        deformer=deform_node,
+    )
     return network

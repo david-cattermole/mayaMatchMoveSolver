@@ -32,10 +32,10 @@ WINDOW_BUTTON_CLOSE_AND_STOP_LABEL = 'Stop Solve and Close'
 #
 # https://htmlcolorcodes.com/color-names/
 #
-COLOR_HTML_HEX_WHITE = '#FFFFFF'   # 'white'
+COLOR_HTML_HEX_WHITE = '#FFFFFF'  # 'white'
 COLOR_HTML_HEX_ORANGE = '#FFA500'  # 'orange'
 COLOR_HTML_HEX_YELLOW = '#FFFF00'  # 'yellow'
-COLOR_HTML_HEX_RED = '#FF0000'     # 'red'
+COLOR_HTML_HEX_RED = '#FF0000'  # 'red'
 COLOR_TEXT_DEFAULT = COLOR_HTML_HEX_WHITE
 COLOR_WARNING = COLOR_HTML_HEX_ORANGE
 COLOR_ERROR = COLOR_HTML_HEX_RED
@@ -385,9 +385,7 @@ SOLVER_SCENE_GRAPH_MODE_ATTR_TYPE = 'long'
 SOLVER_SCENE_GRAPH_MODE_DEFAULT_VALUE = SCENE_GRAPH_MODE_MM_SCENE_GRAPH
 
 # Descriptions for solvers
-SOLVER_BASIC_DESC_DEFAULT = (
-    'Solve only animated attributes on frames.'
-)
+SOLVER_BASIC_DESC_DEFAULT = 'Solve only animated attributes on frames.'
 SOLVER_STD_DESC_DEFAULT = (
     'Solve animated and static attributes on root frames, '
     'then solve animated attributes on frames.'

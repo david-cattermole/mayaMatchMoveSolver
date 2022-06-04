@@ -21,6 +21,7 @@ window.
 """
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
@@ -47,17 +48,11 @@ class SmoothKeysLayout(QtWidgets.QWidget, ui_smoothkeys_layout.Ui_Form):
             str(utils_const.SMOOTH_TYPE_FOURIER).title(),
         ]
         self.function_comboBox.addItems(modes)
-        self.function_comboBox.currentIndexChanged.connect(
-            self.modeIndexChanged
-        )
+        self.function_comboBox.currentIndexChanged.connect(self.modeIndexChanged)
 
         # Width
-        self.width_horizontalSlider.valueChanged.connect(
-            self.widthValueChanged
-        )
-        self.width_spinBox.valueChanged.connect(
-            self.widthSpinBoxValueChanged
-        )
+        self.width_horizontalSlider.valueChanged.connect(self.widthValueChanged)
+        self.width_spinBox.valueChanged.connect(self.widthSpinBoxValueChanged)
 
         # Populate the UI with data
         self.populateUi()
@@ -100,17 +95,13 @@ class SmoothKeysLayout(QtWidgets.QWidget, ui_smoothkeys_layout.Ui_Form):
         Update the UI for the first time the class is created.
         """
         name = const.CONFIG_MODE_KEY
-        value = configmaya.get_scene_option(
-            name,
-            default=const.DEFAULT_MODE)
+        value = configmaya.get_scene_option(name, default=const.DEFAULT_MODE)
         value = str(value).title()
         LOG.debug('key=%r value=%r', name, value)
         self.function_comboBox.setCurrentText(value)
 
         name = const.CONFIG_WIDTH_KEY
-        value = configmaya.get_scene_option(
-            name,
-            default=const.DEFAULT_WIDTH)
+        value = configmaya.get_scene_option(name, default=const.DEFAULT_WIDTH)
         LOG.debug('key=%r value=%r', name, value)
         self.width_horizontalSlider.setValue(value)
         self.width_spinBox.setValue(value)

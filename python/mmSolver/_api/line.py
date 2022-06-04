@@ -78,8 +78,9 @@ def _create_line_transform(name):
 
 def _create_line_shape(tfm_node):
     shp_name = tfm_node.rpartition('|')[-1] + 'Shape'
-    shp = maya.cmds.createNode(const.LINE_SHAPE_NODE_TYPE,
-                               name=shp_name, parent=tfm_node)
+    shp = maya.cmds.createNode(
+        const.LINE_SHAPE_NODE_TYPE, name=shp_name, parent=tfm_node
+    )
     maya.cmds.setAttr(shp + '.localPositionX', channelBox=False)
     maya.cmds.setAttr(shp + '.localPositionY', channelBox=False)
     maya.cmds.setAttr(shp + '.localPositionZ', channelBox=False)
@@ -105,7 +106,7 @@ def _create_line_attributes(node):
             minValue=0,
             maxValue=1,
             defaultValue=1,
-            keyable=True
+            keyable=True,
         )
 
     attr = const.LINE_ATTR_LONG_NAME_WEIGHT
@@ -116,7 +117,7 @@ def _create_line_attributes(node):
             attributeType='double',
             minValue=0.0,
             defaultValue=1.0,
-            keyable=True
+            keyable=True,
         )
     return
 
@@ -231,10 +232,10 @@ class Line(object):
         tfm = self.get_node()
         if tfm is None:
             return
-        shps = maya.cmds.listRelatives(
-            tfm,
-            shapes=True,
-            type=const.LINE_SHAPE_NODE_TYPE) or []
+        shps = (
+            maya.cmds.listRelatives(tfm, shapes=True, type=const.LINE_SHAPE_NODE_TYPE)
+            or []
+        )
         shp = None
         if len(shps) > 0:
             shp = shps[0]
@@ -242,11 +243,7 @@ class Line(object):
 
     ############################################################################
 
-    def create_node(self,
-                    name='line1',
-                    colour=None,
-                    cam=None,
-                    mkr_grp=None):
+    def create_node(self, name='line1', colour=None, cam=None, mkr_grp=None):
         """
         Create a line node network from scratch.
 
@@ -303,15 +300,9 @@ class Line(object):
 
         # Create two Markers.
         mkr_name_a = naming.get_new_marker_name('marker1')
-        mkr_a = marker.Marker().create_node(
-            mkr_grp=mkr_grp,
-            cam=cam,
-            name=mkr_name_a)
+        mkr_a = marker.Marker().create_node(mkr_grp=mkr_grp, cam=cam, name=mkr_name_a)
         mkr_name_b = naming.get_new_marker_name('marker1')
-        mkr_b = marker.Marker().create_node(
-            mkr_grp=mkr_grp,
-            cam=cam,
-            name=mkr_name_b)
+        mkr_b = marker.Marker().create_node(mkr_grp=mkr_grp, cam=cam, name=mkr_name_b)
         mkr_node_a = mkr_a.get_node()
         mkr_node_b = mkr_b.get_node()
         maya.cmds.setAttr(mkr_node_a + '.tx', -0.25)
@@ -344,9 +335,7 @@ class Line(object):
         if mkr_grp is not None:
             self.set_marker_group(mkr_grp)
 
-        event_utils.trigger_event(
-            const.EVENT_NAME_LINE_CREATED,
-            mkr=self)
+        event_utils.trigger_event(const.EVENT_NAME_LINE_CREATED, mkr=self)
         return self
 
     def delete_node(self):
@@ -396,9 +385,7 @@ class Line(object):
             v = maya.cmds.getAttr(plug, time=time)
         return v
 
-    def get_enabled_frames(self,
-                           frame_range_start=None,
-                           frame_range_end=None):
+    def get_enabled_frames(self, frame_range_start=None, frame_range_end=None):
         """
         Get the list of frames that this Line is enabled.
 
@@ -433,17 +420,14 @@ class Line(object):
 
         anim_curves = maya.cmds.listConnections(plug, type='animCurve') or []
         if len(anim_curves) == 0:
-            enable_times = list(range(frame_range_start,
-                                      frame_range_end + 1))
+            enable_times = list(range(frame_range_start, frame_range_end + 1))
         else:
             anim_curve = anim_curves[0]
-            enable_times = maya.cmds.keyframe(
-                anim_curve,
-                query=True,
-                timeChange=True) or []
+            enable_times = (
+                maya.cmds.keyframe(anim_curve, query=True, timeChange=True) or []
+            )
             if len(enable_times) == 0:
-                enable_times = list(range(frame_range_start,
-                                          frame_range_end + 1))
+                enable_times = list(range(frame_range_start, frame_range_end + 1))
 
         start_frame = int(min(enable_times))
         end_frame = int(max(enable_times))
@@ -475,9 +459,7 @@ class Line(object):
             v = maya.cmds.getAttr(plug, time=time)
         return v
 
-    def _get_enabled_solved_frames(self,
-                                   frame_range_start=None,
-                                   frame_range_end=None):
+    def _get_enabled_solved_frames(self, frame_range_start=None, frame_range_end=None):
         """
         Calculate the frames that are both solved and enabled.
         """
@@ -485,10 +467,11 @@ class Line(object):
         if len(enable_frames_set) == 0:
             enable_frames_set = set([maya.cmds.currentTime(query=True)])
 
-        dev_frames_set = set(self.get_deviation_frames(
-            frame_range_start=frame_range_start,
-            frame_range_end=frame_range_end
-        ))
+        dev_frames_set = set(
+            self.get_deviation_frames(
+                frame_range_start=frame_range_start, frame_range_end=frame_range_end
+            )
+        )
         frames = list(enable_frames_set.intersection(dev_frames_set))
         return frames
 
@@ -506,9 +489,7 @@ class Line(object):
             return None
         shps = maya.cmds.listRelatives(node, shapes=True, fullPath=True) or []
         if len(shps) == 0:
-            LOG.warn(
-                'Could not find shape to get colour. node=%r shps=%r',
-                node, shps)
+            LOG.warn('Could not find shape to get colour. node=%r shps=%r', node, shps)
             return
         shp = shps[0]
         v = node_utils.get_node_wire_colour_rgb(shp)
@@ -528,9 +509,7 @@ class Line(object):
             return
         shps = maya.cmds.listRelatives(node, shapes=True, fullPath=True) or []
         if len(shps) == 0:
-            LOG.warn(
-                'Could not find shape to set colour. node=%r shps=%r',
-                node, shps)
+            LOG.warn('Could not find shape to set colour. node=%r shps=%r', node, shps)
             return
         shp = shps[0]
         node_utils.set_node_wire_colour_rgb(shp, rgb)
@@ -620,8 +599,10 @@ class Line(object):
 
         # Create Line Group
         mkr_grp = None
-        mkr_grp_nodes = maya.cmds.ls(cam_tfm, dag=True, long=True,
-                                     type='mmMarkerGroupTransform') or []
+        mkr_grp_nodes = (
+            maya.cmds.ls(cam_tfm, dag=True, long=True, type='mmMarkerGroupTransform')
+            or []
+        )
         mkr_grp_nodes = sorted(mkr_grp_nodes)
         if len(mkr_grp_nodes) == 0:
             mkr_grp = markergroup.MarkerGroup().create_node(cam=cam)
@@ -645,10 +626,12 @@ class Line(object):
         cam = self.get_camera()
         cam_tfm = cam.get_transform_node()
         cam_shp = cam.get_shape_node()
-        if ((cam_tfm is None) or
-                (cam_shp is None) or
-                (maya.cmds.objExists(cam_tfm) is False) or
-                (maya.cmds.objExists(cam_shp) is False)):
+        if (
+            (cam_tfm is None)
+            or (cam_shp is None)
+            or (maya.cmds.objExists(cam_tfm) is False)
+            or (maya.cmds.objExists(cam_shp) is False)
+        ):
             msg = 'Line is already unlinked from all cameras, skipping.'
             msg += ' line={0} camera={1}'
             msg = msg.format(repr(mkr_node), repr(cam_shp))
@@ -741,10 +724,12 @@ class Line(object):
         cam = self.get_camera()
         cam_tfm = cam.get_transform_node()
         cam_shp = cam.get_shape_node()
-        if ((cam_tfm is None) or
-                (cam_shp is None) or
-                (maya.cmds.objExists(cam_tfm) is False) or
-                (maya.cmds.objExists(cam_shp) is False)):
+        if (
+            (cam_tfm is None)
+            or (cam_shp is None)
+            or (maya.cmds.objExists(cam_tfm) is False)
+            or (maya.cmds.objExists(cam_shp) is False)
+        ):
             msg = 'Line is already unlinked from all cameras, skipping.'
             msg += ' line={0} camera={1}'
             msg = msg.format(repr(mkr_node), repr(cam_shp))
@@ -775,20 +760,28 @@ class Line(object):
             return []
 
         node_attr = shp + '.objects'
-        conns = maya.cmds.listConnections(
-            node_attr,
-            source=True,
-            destination=False,
-            connections=True,
-            plugs=True,
-            type=const.MARKER_TRANSFORM_NODE_TYPE) or []
-        conns += maya.cmds.listConnections(
-            node_attr,
-            source=True,
-            destination=False,
-            connections=True,
-            plugs=True,
-            type=const.MARKER_TRANSFORM_OLD_NODE_TYPE) or []
+        conns = (
+            maya.cmds.listConnections(
+                node_attr,
+                source=True,
+                destination=False,
+                connections=True,
+                plugs=True,
+                type=const.MARKER_TRANSFORM_NODE_TYPE,
+            )
+            or []
+        )
+        conns += (
+            maya.cmds.listConnections(
+                node_attr,
+                source=True,
+                destination=False,
+                connections=True,
+                plugs=True,
+                type=const.MARKER_TRANSFORM_OLD_NODE_TYPE,
+            )
+            or []
+        )
 
         # Sorts the markers based on the .objects attribute
         # element index.
@@ -807,24 +800,31 @@ class Line(object):
         mkr_nodes = [x.split('#')[-1] for x in mkr_nodes]
         mkr_nodes = [x.split('.')[0] for x in mkr_nodes]
 
-        mkr_list = [marker.Marker(node=mkr_node)
-                    for mkr_node in mkr_nodes]
+        mkr_list = [marker.Marker(node=mkr_node) for mkr_node in mkr_nodes]
         return mkr_list
 
     def _clear_marker_list(self, shp):
         node_attr = shp + '.objects'
-        prev_mkr_node_list = maya.cmds.listConnections(
-            node_attr,
-            source=True,
-            destination=False,
-            plugs=False,
-            type=const.MARKER_TRANSFORM_NODE_TYPE) or []
-        prev_mkr_node_list += maya.cmds.listConnections(
-            node_attr,
-            source=True,
-            destination=False,
-            plugs=False,
-            type=const.MARKER_TRANSFORM_OLD_NODE_TYPE) or []
+        prev_mkr_node_list = (
+            maya.cmds.listConnections(
+                node_attr,
+                source=True,
+                destination=False,
+                plugs=False,
+                type=const.MARKER_TRANSFORM_NODE_TYPE,
+            )
+            or []
+        )
+        prev_mkr_node_list += (
+            maya.cmds.listConnections(
+                node_attr,
+                source=True,
+                destination=False,
+                plugs=False,
+                type=const.MARKER_TRANSFORM_OLD_NODE_TYPE,
+            )
+            or []
+        )
         for i, prev_mkr_node in enumerate(prev_mkr_node_list):
             src = prev_mkr_node + '.message'
             dst = shp + '.objects[{}]'.format(i)

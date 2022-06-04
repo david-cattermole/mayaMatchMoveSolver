@@ -53,26 +53,21 @@ def create_image_plane_on_camera(cam, name=None):
 
     poly_plane_name = name + 'MeshShape'
     poly_plane_network = lib_polyplane.create_poly_plane(
-        poly_plane_name,
-        mm_ip_tfm,
-        cam_shp)
+        poly_plane_name, mm_ip_tfm, cam_shp
+    )
 
     name_shade = name + 'Shader'
     shader_network = lib_shader.create_network(name_shade, mm_ip_tfm)
 
     name_img_shp = name + 'Shape'
     mm_ip_shp = lib_mmimageplane.create_shape_node(
-        name_img_shp,
-        mm_ip_tfm,
-        cam_shp,
-        poly_plane_network,
-        shader_network
+        name_img_shp, mm_ip_tfm, cam_shp, poly_plane_network, shader_network
     )
 
     # Shortcut connections to nodes.
     lib_utils.force_connect_attr(
-        shader_network.file_node + '.message',
-        mm_ip_tfm + '.shaderFileNode')
+        shader_network.file_node + '.message', mm_ip_tfm + '.shaderFileNode'
+    )
 
     # Logic to calculate the frame number.
     frame_expr = const.FRAME_EXPRESSION.format(node=mm_ip_shp)
@@ -110,36 +105,28 @@ def convert_image_planes_on_camera(cam):
     # Find image plane currently on the camera.
     cam_tfm = cam.get_transform_node()
     cam_shp = cam.get_shape_node()
-    image_planes = camera_utils.get_image_plane_shapes_from_camera(
-        cam_tfm, cam_shp)
+    image_planes = camera_utils.get_image_plane_shapes_from_camera(cam_tfm, cam_shp)
 
     ip_node_pairs = []
     for native_ip_shp in image_planes:
         # Convert Maya image plane into a polygon image plane.
         name = 'mmImagePlane1'
-        mm_ip_tfm = lib_mmimageplane.create_transform_node(
-            name, cam_tfm, cam_shp)
+        mm_ip_tfm = lib_mmimageplane.create_transform_node(name, cam_tfm, cam_shp)
 
         poly_plane_name = name + 'MeshShape'
         poly_plane_network = lib_polyplane.create_poly_plane(
-            poly_plane_name,
-            mm_ip_tfm,
-            cam_shp)
+            poly_plane_name, mm_ip_tfm, cam_shp
+        )
 
-        lib_nativeimageplane.copy_depth_value(
-            mm_ip_tfm,
-            native_ip_shp)
+        lib_nativeimageplane.copy_depth_value(mm_ip_tfm, native_ip_shp)
 
         name_shader = name + 'Shader'
         shader_network = lib_shader.create_network(name_shader, mm_ip_tfm)
 
         name_img_shp = name + 'Shape'
         mm_ip_shp = lib_mmimageplane.create_shape_node(
-            name_img_shp,
-            mm_ip_tfm,
-            cam_shp,
-            poly_plane_network,
-            shader_network)
+            name_img_shp, mm_ip_tfm, cam_shp, poly_plane_network, shader_network
+        )
 
         # Disable/hide the Maya image plane.
         maya.cmds.setAttr(native_ip_shp + '.displayMode', 0)  # 0 = 'None' mode
@@ -151,10 +138,7 @@ def convert_image_planes_on_camera(cam):
     return ip_node_pairs
 
 
-def set_image_sequence(
-        mm_image_plane_node,
-        image_sequence_path,
-        attr_name=None):
+def set_image_sequence(mm_image_plane_node, image_sequence_path, attr_name=None):
     if attr_name is None:
         attr_name = lib_const.DEFAULT_IMAGE_SEQUENCE_ATTR_NAME
 

@@ -65,7 +65,7 @@ def filter_nodes_into_categories(nodes):
         const.OBJECT_TYPE_BUNDLE: [],
         const.OBJECT_TYPE_ATTRIBUTE: [],
         const.OBJECT_TYPE_COLLECTION: [],
-        'other': []
+        'other': [],
     }
     for node in nodes:
         obj_type = api_utils.get_object_type(node)

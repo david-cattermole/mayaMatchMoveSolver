@@ -38,15 +38,18 @@ ActionState = collections.namedtuple(
         'parameter_number',
         'frames_number',
         'frames',
-    ]
+    ],
 )
 
 
-def create_action_state(status=None, message=None,
-                        error_number=None,
-                        parameter_number=None,
-                        frames_number=None,
-                        frames=None):
+def create_action_state(
+    status=None,
+    message=None,
+    error_number=None,
+    parameter_number=None,
+    frames_number=None,
+    frames=None,
+):
     assert status is not None
     assert status in const.ACTION_STATUS_LIST
     if error_number is None:
@@ -61,7 +64,8 @@ def create_action_state(status=None, message=None,
         error_number=error_number,
         parameter_number=parameter_number,
         frames_number=frames_number,
-        frames=frames)
+        frames=frames,
+    )
     return state
 
 
@@ -81,8 +85,8 @@ def run_validate_action(vaction):
     """
     if not isinstance(vaction, api_action.Action):
         state = create_action_state(
-            status=const.ACTION_STATUS_SUCCESS,
-            message='Action cannot be run.')
+            status=const.ACTION_STATUS_SUCCESS, message='Action cannot be run.'
+        )
         return state
     vfunc, vargs, vkwargs = api_action.action_to_components(vaction)
     vfunc_is_mmsolver = api_action.action_func_is_mmSolver(vaction)
@@ -92,8 +96,7 @@ def run_validate_action(vaction):
     frames = list(sorted(vkwargs.get('frame', [])))
     num_frames = len(frames)
     if num_frames == 0 and vfunc_is_mmsolver is True:
-        msg = ('Failed to validate number of frames: '
-               'param=%r errors=%r frames=%r')
+        msg = 'Failed to validate number of frames: ' 'param=%r errors=%r frames=%r'
         message = msg % (num_param, num_err, num_frames)
         state = create_action_state(
             status=const.ACTION_STATUS_FAILED,
@@ -101,15 +104,15 @@ def run_validate_action(vaction):
             error_number=num_err,
             parameter_number=num_param,
             frames_number=num_frames,
-            frames=frames)
+            frames=frames,
+        )
         return state
 
     # Run validate function
     solve_data = vfunc(*vargs, **vkwargs)
 
     if vfunc_is_mmsolver is False:
-        msg = ('Validated parameters, errors and frames: '
-               'param=%r errors=%r frames=%r')
+        msg = 'Validated parameters, errors and frames: ' 'param=%r errors=%r frames=%r'
         message = msg % (num_param, num_err, num_frames)
         state = create_action_state(
             status=const.ACTION_STATUS_SUCCESS,
@@ -117,7 +120,8 @@ def run_validate_action(vaction):
             error_number=num_err,
             parameter_number=num_param,
             frames_number=num_frames,
-            frames=frames)
+            frames=frames,
+        )
         return state
 
     solres = solveresult.SolveResult(solve_data)
@@ -133,11 +137,11 @@ def run_validate_action(vaction):
             error_number=num_err,
             parameter_number=num_param,
             frames_number=num_frames,
-            frames=frames)
+            frames=frames,
+        )
         return state
 
-    msg = ('Validated parameters, errors and frames: '
-           'param=%r errors=%r frames=%r')
+    msg = 'Validated parameters, errors and frames: ' 'param=%r errors=%r frames=%r'
     message = msg % (num_param, num_err, num_frames)
     state = create_action_state(
         status=const.ACTION_STATUS_SUCCESS,
@@ -145,7 +149,8 @@ def run_validate_action(vaction):
         error_number=num_err,
         parameter_number=num_param,
         frames_number=num_frames,
-        frames=frames)
+        frames=frames,
+    )
     return state
 
 
@@ -189,8 +194,10 @@ def convert_action_state_to_plain_old_data(state_list):
         if state.status != const.ACTION_STATUS_SUCCESS:
             valid = False
         message_list.append(state.message)
-        metrics = (state.error_number or 0,
-                   state.parameter_number or 0,
-                   state.frames_number or 0)
+        metrics = (
+            state.error_number or 0,
+            state.parameter_number or 0,
+            state.frames_number or 0,
+        )
         metrics_list.append(metrics)
     return valid, message_list, metrics_list

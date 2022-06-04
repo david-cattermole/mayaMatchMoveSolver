@@ -28,14 +28,11 @@ LOG = mmSolver.logger.get_logger()
 
 
 class KeyframeTimes(object):
-
     def __init__(self):
         self._frame_ranges_map = {}
         self._key_times_map = {}
 
-    def add_node_attrs(self, node, attrs,
-                       start_frame, end_frame,
-                       parents=None):
+    def add_node_attrs(self, node, attrs, start_frame, end_frame, parents=None):
         """
         Add node attributes into the keyframe times.
         """
@@ -59,11 +56,7 @@ class KeyframeTimes(object):
                 settable = maya.cmds.getAttr(plug, settable=True)
                 if settable is False:
                     continue
-                times = maya.cmds.keyframe(
-                    plug,
-                    query=True,
-                    timeChange=True
-                ) or []
+                times = maya.cmds.keyframe(plug, query=True, timeChange=True) or []
                 if len(times) == 0:
                     continue
                 if node_uuid not in self._key_times_map:

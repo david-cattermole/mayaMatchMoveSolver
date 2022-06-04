@@ -47,20 +47,14 @@ def get_camera(node):
     inherited_node_types = maya.cmds.nodeType(node, inherited=True) or []
     if 'camera' in inherited_node_types:
         cam_shp = node_utils.get_long_name(node)
-        nodes = maya.cmds.listRelatives(
-            cam_shp,
-            parent=True,
-            fullPath=True
-        ) or []
+        nodes = maya.cmds.listRelatives(cam_shp, parent=True, fullPath=True) or []
         cam_tfm = nodes[0]
     elif 'transform' in inherited_node_types:
         cam_tfm = node_utils.get_long_name(node)
-        nodes = maya.cmds.listRelatives(
-            cam_tfm,
-            shapes=True,
-            type='camera',
-            fullPath=True
-        ) or []
+        nodes = (
+            maya.cmds.listRelatives(cam_tfm, shapes=True, type='camera', fullPath=True)
+            or []
+        )
         if len(nodes) > 0:
             cam_shp = nodes[0]
         else:
@@ -68,8 +62,7 @@ def get_camera(node):
             cam_shp = None
     else:
         node_type = maya.cmds.nodeType(node)
-        msg = ('Node type not recognised as a camera! '
-               'node=%r node_type=%r')
+        msg = 'Node type not recognised as a camera! ' 'node=%r node_type=%r'
         LOG.warn(msg, node, node_type)
     return cam_tfm, cam_shp
 
@@ -117,10 +110,7 @@ def get_image_plane_shapes_from_camera(cam_tfm, cam_shp):
     assert maya.cmds.objExists(cam_shp)
     assert node_utils.attribute_exists('imagePlane', cam_shp)
     plug = '{0}.imagePlane'.format(cam_shp)
-    img_pl_shps = maya.cmds.listConnections(
-        plug,
-        type='imagePlane',
-        shapes=True) or []
+    img_pl_shps = maya.cmds.listConnections(plug, type='imagePlane', shapes=True) or []
     img_pl_shps = [node_utils.get_long_name(n) for n in img_pl_shps]
     img_pl_shps = [n for n in img_pl_shps if n is not None]
     return img_pl_shps

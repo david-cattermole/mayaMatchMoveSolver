@@ -41,13 +41,11 @@ import mmSolver._api.marker as marker
 
 # @unittest.skip
 class TestMarker(test_api_utils.APITestCase):
-
     @staticmethod
     def create_camera(name):
         cam_tfm = maya.cmds.createNode('transform', name=name)
         cam_tfm = node_utils.get_long_name(cam_tfm)
-        cam_shp = maya.cmds.createNode('camera', name=name+'Shape',
-                                       parent=cam_tfm)
+        cam_shp = maya.cmds.createNode('camera', name=name + 'Shape', parent=cam_tfm)
         cam_shp = node_utils.get_long_name(cam_shp)
         cam = camera.Camera(transform=cam_tfm, shape=cam_shp)
         return cam

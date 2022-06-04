@@ -44,8 +44,9 @@ def get_markers_from_collection(col):
     return col.get_marker_list()
 
 
-def _add_callback_to_any_node(callback_manager, callback_type, node_path,
-                              add_callbacks_func):
+def _add_callback_to_any_node(
+    callback_manager, callback_type, node_path, add_callbacks_func
+):
     msg = 'Node UUID has multiple paths: node=%r node_uuids=%r'
     node_uuids = maya.cmds.ls(node_path, uuid=True) or []
     if len(node_uuids) != 1:
@@ -75,7 +76,8 @@ def add_callbacks_to_markers(mkr_list, callback_manager):
             callback_manager,
             callback_type,
             mkr_node_path,
-            maya_callbacks.add_callbacks_to_marker)
+            maya_callbacks.add_callbacks_to_marker,
+        )
 
         # Bundle
         bnd_obj = mkr_obj.get_bundle()
@@ -84,7 +86,8 @@ def add_callbacks_to_markers(mkr_list, callback_manager):
             callback_manager,
             callback_type,
             bnd_node_path,
-            maya_callbacks.add_callbacks_to_bundle)
+            maya_callbacks.add_callbacks_to_bundle,
+        )
 
         # Marker Group
         mkrgrp_obj = mkr_obj.get_marker_group()
@@ -93,7 +96,8 @@ def add_callbacks_to_markers(mkr_list, callback_manager):
             callback_manager,
             callback_type,
             mkrgrp_node_path,
-            maya_callbacks.add_callbacks_to_marker_group)
+            maya_callbacks.add_callbacks_to_marker_group,
+        )
 
         # Camera Transform
         cam_obj = mkr_obj.get_camera()
@@ -101,7 +105,9 @@ def add_callbacks_to_markers(mkr_list, callback_manager):
         _add_callback_to_any_node(
             callback_manager,
             callback_type,
-            cam_tfm_node_path, maya_callbacks.add_callbacks_to_camera)
+            cam_tfm_node_path,
+            maya_callbacks.add_callbacks_to_camera,
+        )
 
         # Camera Shape
         cam_shp_node_path = cam_obj.get_shape_node()
@@ -109,7 +115,8 @@ def add_callbacks_to_markers(mkr_list, callback_manager):
             callback_manager,
             callback_type,
             cam_shp_node_path,
-            maya_callbacks.add_callbacks_to_camera)
+            maya_callbacks.add_callbacks_to_camera,
+        )
     return
 
 

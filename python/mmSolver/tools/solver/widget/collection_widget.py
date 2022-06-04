@@ -23,6 +23,7 @@ from __future__ import print_function
 import time
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -211,10 +212,7 @@ class CollectionWidget(QtWidgets.QWidget, ui_collection_widget.Ui_Form):
         if index < 0:
             return
         model_index = self.model.index(index, 0)
-        data = self.model.data(
-            model_index,
-            role=QtCore.Qt.UserRole
-        )
+        data = self.model.data(model_index, role=QtCore.Qt.UserRole)
         if data is None:
             return
         lib_state.set_active_collection(data)

@@ -36,17 +36,20 @@ def get_nodes_recursively(top_node):
 
 
 class Node(object):
-    def __init__(self, name,
-                 data=None,
-                 toolTip=None,
-                 statusTip=None,
-                 parent=None,
-                 icon=None,
-                 enabled=True,
-                 editable=False,
-                 selectable=True,
-                 checkable=False,
-                 neverHasChildren=False):
+    def __init__(
+        self,
+        name,
+        data=None,
+        toolTip=None,
+        statusTip=None,
+        parent=None,
+        icon=None,
+        enabled=True,
+        editable=False,
+        selectable=True,
+        checkable=False,
+        neverHasChildren=False,
+    ):
         if icon is None:
             icon = ':/mmSolver_node.png'
         self._children = []
@@ -75,9 +78,7 @@ class Node(object):
     def __repr__(self):
         result = '<{class_name}('.format(class_name=self.__class__.__name__)
         result += '{hash} name={name} data={data}'.format(
-            hash=hash(self),
-            name=self.name(),
-            data=self.data()
+            hash=hash(self), name=self.name(), data=self.data()
         )
         result += ')>'
         return result
@@ -153,6 +154,7 @@ class Node(object):
         assert isinstance(self._iconPath, str)
         if self._icon is None:
             import mmSolver.ui.uiutils as uiutils
+
             self._icon = uiutils.getIcon(self._iconPath)
         return self._icon
 

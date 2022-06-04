@@ -54,6 +54,5 @@ def sort_strings_with_digits(items):
     Helpful function from:
     https://stackoverflow.com/questions/2669059/how-to-sort-alpha-numeric-set-in-python
     """
-    key_func = lambda key: [__convert_to_integer(c)
-                            for c in re.split('([0-9]+)', key)]
+    key_func = lambda key: [__convert_to_integer(c) for c in re.split('([0-9]+)', key)]
     return sorted(items, key=key_func)

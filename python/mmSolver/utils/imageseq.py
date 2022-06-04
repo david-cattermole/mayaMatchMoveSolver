@@ -51,7 +51,7 @@ def _split_image_sequence_path(file_path):
     seq_num_int = 0
     seq_num_str = _get_string_numbers_at_end(file_name)
     if len(seq_num_str) > 0:
-        file_name = file_name[:-len(seq_num_str)]
+        file_name = file_name[: -len(seq_num_str)]
         seq_num_int = int(seq_num_str)
     return head, file_name, seq_num_int, seq_num_str, file_extension
 
@@ -67,11 +67,13 @@ def _get_image_sequence_start_end_frames(base_dir, file_name, file_extension):
     end_frame = 0
     count = 0
     for path in all_paths:
-        path_base_dir, \
-            path_file_name, \
-            path_seq_num_int, \
-            path_seq_num_str, \
-            path_file_extension = _split_image_sequence_path(path)
+        (
+            path_base_dir,
+            path_file_name,
+            path_seq_num_int,
+            path_seq_num_str,
+            path_file_extension,
+        ) = _split_image_sequence_path(path)
         start_frame = min(path_seq_num_int, start_frame)
         end_frame = max(path_seq_num_int, end_frame)
         padding_num = min(padding_num, len(path_seq_num_str))
@@ -91,17 +93,17 @@ def _get_image_sequence_start_end_frames(base_dir, file_name, file_extension):
 def expand_image_sequence_path(image_sequence_path, format_style):
     image_sequence_path = os.path.abspath(image_sequence_path)
 
-    base_dir, \
-        file_name, \
-        seq_num_int, \
-        seq_num_str, \
-        file_extension = _split_image_sequence_path(image_sequence_path)
+    (
+        base_dir,
+        file_name,
+        seq_num_int,
+        seq_num_str,
+        file_extension,
+    ) = _split_image_sequence_path(image_sequence_path)
 
-    start_frame, end_frame, padding_num = \
-        _get_image_sequence_start_end_frames(
-            base_dir,
-            file_name,
-            file_extension)
+    start_frame, end_frame, padding_num = _get_image_sequence_start_end_frames(
+        base_dir, file_name, file_extension
+    )
 
     is_seq = start_frame != end_frame and padding_num > 0
     if is_seq is False:
@@ -124,10 +126,7 @@ def expand_image_sequence_path(image_sequence_path, format_style):
             image_seq_num = str(start_frame).zfill(padding_num)
         else:
             raise NotImplementedError
-        file_pattern = '{}{}{}'.format(
-            file_name,
-            image_seq_num,
-            file_extension)
+        file_pattern = '{}{}{}'.format(file_name, image_seq_num, file_extension)
         file_pattern = os.path.join(base_dir, file_pattern)
 
     return file_pattern, start_frame, end_frame, padding_num, is_seq

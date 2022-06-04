@@ -35,7 +35,6 @@ import mmSolver.utils.node as node_utils
 
 # @unittest.skip
 class TestTriangulation(solverUtils.SolverTestCase):
-
     def test_triangulation(self):
         start = 1
         end = 10
@@ -80,15 +79,20 @@ class TestTriangulation(solverUtils.SolverTestCase):
         # Marker
         mkr_grp = self.create_marker_group('marker_group', cam_tfm)
         marker_tfm, marker_shp = self.create_marker(
-            'marker',
-            mkr_grp,
-            bnd_tfm=bundle_tfm)
+            'marker', mkr_grp, bnd_tfm=bundle_tfm
+        )
         maya.cmds.setAttr(marker_tfm + '.tz', -1)
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-0.243056042)
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=-0.048611208)
+        maya.cmds.setKeyframe(
+            marker_tfm, attribute='translateX', time=start, value=-0.243056042
+        )
+        maya.cmds.setKeyframe(
+            marker_tfm, attribute='translateX', time=end, value=-0.048611208
+        )
 
         # Connect transform and calculate reprojected world point.
-        maya.cmds.connectAttr(marker_tfm + '.worldMatrix', node + '.transformWorldMatrix')
+        maya.cmds.connectAttr(
+            marker_tfm + '.worldMatrix', node + '.transformWorldMatrix'
+        )
         point = maya.cmds.getAttr(node + '.outWorldPoint')[0]
         maya.cmds.setAttr(aim_tfm + '.translateX', point[0])
         maya.cmds.setAttr(aim_tfm + '.translateY', point[1])
@@ -104,7 +108,7 @@ class TestTriangulation(solverUtils.SolverTestCase):
             aimVector=(1, 0, 0),
             upVector=(0, 1, 0),
             worldUpType='vector',
-            worldUpVector=(0, 1, 0)
+            worldUpVector=(0, 1, 0),
         )
         if maya.cmds.objExists(aim_const[0]):
             maya.cmds.delete(aim_const[0])
@@ -112,19 +116,15 @@ class TestTriangulation(solverUtils.SolverTestCase):
         # Give the bundle an initial good depth position to start with.
         maya.cmds.setAttr(bundle_tfm + '.tx', -1.0)
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
-        markers = (
-            (marker_tfm, cam_shp, bundle_tfm),
-        )
+        cameras = ((cam_tfm, cam_shp),)
+        markers = ((marker_tfm, cam_shp, bundle_tfm),)
         # NOTE: All dynamic attributes must have a keyframe before
         # starting to solve.
         node_attrs = [
             (bundle_tfm + '.tx', 'None', 'None', 'None', 'None'),
         ]
         frames = []
-        for f in range(start, end+1):
+        for f in range(start, end + 1):
             frames.append(f)
 
         # Save before we run.
@@ -134,10 +134,8 @@ class TestTriangulation(solverUtils.SolverTestCase):
 
         affects_mode = 'addAttrsToMarkers'
         self.runSolverAffects(
-            affects_mode,
-            camera=cameras,
-            marker=markers,
-            attr=node_attrs)
+            affects_mode, camera=cameras, marker=markers, attr=node_attrs
+        )
 
         # Run solver!
         s = time.time()
@@ -147,7 +145,7 @@ class TestTriangulation(solverUtils.SolverTestCase):
             attr=node_attrs,
             frame=frames,
             iterations=10,
-            verbose=True
+            verbose=True,
         )
         e = time.time()
         print('total time:', e - s)

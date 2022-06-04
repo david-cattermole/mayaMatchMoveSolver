@@ -26,6 +26,7 @@ Usage::
 """
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -47,8 +48,7 @@ class ChannelSenWindow(BaseWindow):
     name = 'ChannelSenWindow'
 
     def __init__(self, parent=None, name=None):
-        super(ChannelSenWindow, self).__init__(parent,
-                                               name=name)
+        super(ChannelSenWindow, self).__init__(parent, name=name)
         self.setupUi(self)
         self.addSubForm(channelsen_layout.ChannelSenLayout)
 
@@ -91,9 +91,5 @@ def main(show=True, auto_raise=True, delete=False):
               opened.
     :rtype: SolverWindow or None.
     """
-    win = ChannelSenWindow.open_window(
-        show=show,
-        auto_raise=auto_raise,
-        delete=delete
-    )
+    win = ChannelSenWindow.open_window(show=show, auto_raise=auto_raise, delete=delete)
     return win

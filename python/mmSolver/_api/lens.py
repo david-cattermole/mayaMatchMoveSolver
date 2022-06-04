@@ -150,9 +150,7 @@ class Lens(object):
 
     ############################################################################
 
-    def create_node(self,
-                    name='lens1',
-                    model=None):
+    def create_node(self, name='lens1', model=None):
         """
         Create a lens node.
 
@@ -196,10 +194,10 @@ class Lens(object):
         :returns: A list of str. The list may be empty.
         """
         lens_node = self.get_node()
-        output_nodes = maya.cmds.listConnections(
-            lens_node + ".outLens",
-            shapes=False,
-            source=True) or []
+        output_nodes = (
+            maya.cmds.listConnections(lens_node + ".outLens", shapes=False, source=True)
+            or []
+        )
         return output_nodes
 
     def get_input_node(self):
@@ -208,10 +206,12 @@ class Lens(object):
         :returns: The returned object may be: str or None.
         """
         lens_node = self.get_node()
-        input_nodes = maya.cmds.listConnections(
-            lens_node + ".inLens",
-            shapes=False,
-            destination=True) or []
+        input_nodes = (
+            maya.cmds.listConnections(
+                lens_node + ".inLens", shapes=False, destination=True
+            )
+            or []
+        )
         input_node = None
         if len(input_nodes) > 0:
             assert len(input_nodes) == 1
@@ -223,13 +223,17 @@ class Lens(object):
         Disconnect all input nodes to this lens object.
         """
         assert len(lens_node) > 0
-        lens_node_connections = maya.cmds.listConnections(
-            lens_node + ".inLens",
-            shapes=False,
-            source=True,
-            destination=False,
-            connections=True,
-            plugs=True) or []
+        lens_node_connections = (
+            maya.cmds.listConnections(
+                lens_node + ".inLens",
+                shapes=False,
+                source=True,
+                destination=False,
+                connections=True,
+                plugs=True,
+            )
+            or []
+        )
         if len(lens_node_connections) > 0:
             num = len(lens_node_connections)
             src_list = lens_node_connections[1:num:2]

@@ -48,16 +48,8 @@ def get_camera_direction_to_point(camera_node, point_node):
     :return: Direction from camera to point.
     :rtype: (float, float, float)
     """
-    obj = maya.cmds.xform(
-        point_node,
-        query=True,
-        worldSpace=True,
-        translation=True)
-    cam = maya.cmds.xform(
-        camera_node,
-        query=True,
-        worldSpace=True,
-        translation=True)
+    obj = maya.cmds.xform(point_node, query=True, worldSpace=True, translation=True)
+    cam = maya.cmds.xform(camera_node, query=True, worldSpace=True, translation=True)
     cam_vec = maya.OpenMaya.MVector(*cam)
     obj_vec = maya.OpenMaya.MVector(*obj)
     distance = obj_vec - cam_vec
@@ -117,37 +109,46 @@ def find_reprojection_nodes(cam_tfm, cam_shp):
     """
     Find all the reprojection nodes on the camera.
     """
-    nodes = maya.cmds.listConnections(
-        cam_shp + '.focalLength',
-        source=False,
-        destination=True,
-        type='mmReprojection',
-        exactType=True,
-        skipConversionNodes=True
-    ) or []
+    nodes = (
+        maya.cmds.listConnections(
+            cam_shp + '.focalLength',
+            source=False,
+            destination=True,
+            type='mmReprojection',
+            exactType=True,
+            skipConversionNodes=True,
+        )
+        or []
+    )
     if not nodes:
         return nodes
     reprojection_node = nodes[0]
     # Get connected MultiplyDivide nodes connected.
-    mult_nodes = maya.cmds.listConnections(
-        reprojection_node + '.imageWidth',
-        reprojection_node + '.imageHeight',
-        source=True,
-        destination=False,
-        type='multiplyDivide',
-        exactType=True,
-        skipConversionNodes=True
-    ) or []
+    mult_nodes = (
+        maya.cmds.listConnections(
+            reprojection_node + '.imageWidth',
+            reprojection_node + '.imageHeight',
+            source=True,
+            destination=False,
+            type='multiplyDivide',
+            exactType=True,
+            skipConversionNodes=True,
+        )
+        or []
+    )
     nodes += mult_nodes
     # Get connected offset PlusMinusAverage nodes.
-    offset_plusminus_nodes = maya.cmds.listConnections(
-        reprojection_node + '.outPan',
-        source=False,
-        destination=True,
-        type='plusMinusAverage',
-        exactType=True,
-        skipConversionNodes=True
-    ) or []
+    offset_plusminus_nodes = (
+        maya.cmds.listConnections(
+            reprojection_node + '.outPan',
+            source=False,
+            destination=True,
+            type='plusMinusAverage',
+            exactType=True,
+            skipConversionNodes=True,
+        )
+        or []
+    )
     nodes += offset_plusminus_nodes
     return nodes
 

@@ -37,13 +37,11 @@ LOG = mmSolver.logger.get_logger()
 
 
 def _expand_markers_to_line_segments(line, mkr_node_list):
-    mkr_node_list = [mmapi.Marker(node=x).get_node()
-                     for x in mkr_node_list]
+    mkr_node_list = [mmapi.Marker(node=x).get_node() for x in mkr_node_list]
 
     all_mkr_list = line.get_marker_list()
     all_mkr_node_list = [x.get_node() for x in all_mkr_list]
-    all_mkr_index_list = [all_mkr_node_list.index(x)
-                          for x in all_mkr_node_list]
+    all_mkr_index_list = [all_mkr_node_list.index(x) for x in all_mkr_node_list]
 
     mkr_node_to_index = {}
     for mkr_node, mkr_index in zip(all_mkr_node_list, all_mkr_index_list):
@@ -60,8 +58,7 @@ def _expand_markers_to_line_segments(line, mkr_node_list):
         mkr_index_set.add(mkr_index)
         mkr_index_set.add(mkr_index_max)
 
-    mkr_list = [all_mkr_list[mkr_index]
-                for mkr_index in sorted(mkr_index_set)]
+    mkr_list = [all_mkr_list[mkr_index] for mkr_index in sorted(mkr_index_set)]
 
     return mkr_list
 

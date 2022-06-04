@@ -30,6 +30,7 @@ class LoaderBase(object):
     """
     Base class for all format loaders.
     """
+
     __metaclass__ = abc.ABCMeta
 
     name = None

@@ -45,6 +45,7 @@ def run_connect_markers_to_active_collection(**kwargs):
     s = time.time()
     import mmSolver.api as mmapi
     import mmSolver.tools.solver.lib.state as state_lib
+
     mmapi.load_plugin()
 
     col = state_lib.get_active_collection()
@@ -66,6 +67,7 @@ def run_update_input_objects_in_solver_ui(**kwargs):
     LOG.debug("run_update_input_objects_in_solver_ui: %r", kwargs)
     s = time.time()
     import mmSolver.tools.solver.ui.solver_window as solver_window
+
     win = solver_window.SolverWindow.get_instance()
     if win is not None:
         win.triggerInputObjectsUpdate()
@@ -78,6 +80,7 @@ def run_update_output_attributes_in_solver_ui(**kwargs):
     LOG.debug("run_update_output_attributes_in_solver_ui: %r", kwargs)
     s = time.time()
     import mmSolver.tools.solver.ui.solver_window as solver_window
+
     win = solver_window.SolverWindow.get_instance()
     if win is not None:
         win.triggerOutputAttributesUpdate()
@@ -93,6 +96,7 @@ def run_close_all_windows(**kwargs):
     LOG.debug("run_close_all_windows: %r", kwargs)
     s = time.time()
     import mmSolver.ui.base_maya_window
+
     cls = mmSolver.ui.base_maya_window.BaseMayaWindow
     cls.close_all_instances()
     e = time.time()

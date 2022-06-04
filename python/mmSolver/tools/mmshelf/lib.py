@@ -162,7 +162,7 @@ def compile_items(items, function_defs):
         sub_items_to_create = []
         for sub_item_num in range(len(item_hierarchy)):
             is_first_item = sub_item_num == 0
-            is_last_item = sub_item_num == (len(item_hierarchy)-1)
+            is_last_item = sub_item_num == (len(item_hierarchy) - 1)
 
             item_name = item_hierarchy[sub_item_num]
             item_keys.append(item_name)
@@ -171,7 +171,7 @@ def compile_items(items, function_defs):
             item_key = item_path.strip('/')
             item_name = item_keys[-1]
 
-            parent_item_path = '/'.join(item_keys[:len(item_keys)-1])
+            parent_item_path = '/'.join(item_keys[: len(item_keys) - 1])
             parent_item_key = parent_item_path.strip('/')
 
             func_def = compile_function_definition(item_name, function_defs)
@@ -183,11 +183,7 @@ def compile_items(items, function_defs):
                 break
 
             sub_items_to_create.append(
-                (item_key,
-                 parent_item_key,
-                 func_def,
-                 is_first_item,
-                 is_last_item)
+                (item_key, parent_item_key, func_def, is_first_item, is_last_item)
             )
 
         items_to_create += list(sub_items_to_create)
@@ -217,11 +213,7 @@ def create_items(items_to_create, main_parent):
         if parents is None:
             parents = [main_parent]
 
-        items = create_item(
-            parents,
-            func_def,
-            is_first_item,
-            is_last_item)
+        items = create_item(parents, func_def, is_first_item, is_last_item)
         created_items[key] = items
     return created_items
 
@@ -264,9 +256,7 @@ def create_item(parents, func_def, is_first_item, is_last_item):
                 command = str(os.linesep).join(command)
 
             if divider:
-                item = shelf_utils.create_shelf_separator(
-                    parent=parent
-                )
+                item = shelf_utils.create_shelf_separator(parent=parent)
                 items.append(item)
             else:
                 item = shelf_utils.create_shelf_button(
@@ -275,7 +265,7 @@ def create_item(parents, func_def, is_first_item, is_last_item):
                     tooltip=tooltip,
                     icon=icon,
                     cmd=command,
-                    cmdLanguage=cmdLang
+                    cmdLanguage=cmdLang,
                 )
                 items.append(item)
         elif is_last_item:
@@ -343,9 +333,7 @@ def create_item(parents, func_def, is_first_item, is_last_item):
             # activate the pop-up menu..
             for index in popupBtnIndexList:
                 item = menu_utils.create_popup_menu(
-                    parent=parent,
-                    postCmd=popupPostCmd,
-                    button=index
+                    parent=parent, postCmd=popupPostCmd, button=index
                 )
                 items.append(item)
         else:

@@ -34,14 +34,16 @@ import mmSolver.tools.screenspacemotiontrail.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def _create_trail_frame_attrs(node,
-                              use_frame_range,
-                              start_frame,
-                              end_frame,
-                              pre_frame,
-                              post_frame,
-                              increment,
-                              keyable=None):
+def _create_trail_frame_attrs(
+    node,
+    use_frame_range,
+    start_frame,
+    end_frame,
+    pre_frame,
+    post_frame,
+    increment,
+    keyable=None,
+):
     if keyable is None:
         keyable = False
 
@@ -50,11 +52,7 @@ def _create_trail_frame_attrs(node,
     attr_name = 'useFrameRange'
     if attr_name not in all_attrs:
         plug_name = node + '.' + attr_name
-        maya.cmds.addAttr(
-            node,
-            longName=attr_name,
-            attributeType='bool'
-        )
+        maya.cmds.addAttr(node, longName=attr_name, attributeType='bool')
         maya.cmds.setAttr(plug_name, keyable=keyable)
         maya.cmds.setAttr(plug_name, use_frame_range)
 
@@ -118,16 +116,18 @@ def _create_trail_frame_attrs(node,
     return
 
 
-def create_motion_trail_setup(node_tfm,
-                              trail_handle_grp,
-                              name,
-                              use_frame_range,
-                              start_frame,
-                              end_frame,
-                              pre_frame,
-                              post_frame,
-                              increment,
-                              update_mode):
+def create_motion_trail_setup(
+    node_tfm,
+    trail_handle_grp,
+    name,
+    use_frame_range,
+    start_frame,
+    end_frame,
+    pre_frame,
+    post_frame,
+    increment,
+    update_mode,
+):
     handle_tfm, trail_shp = maya.cmds.snapshot(
         node_tfm,
         name=name,
@@ -154,7 +154,8 @@ def create_motion_trail_setup(node_tfm,
         pre_frame,
         post_frame,
         increment,
-        keyable=False)
+        keyable=False,
+    )
 
     # Create attributes on handle transform node, visible to the
     # channel box.
@@ -166,7 +167,8 @@ def create_motion_trail_setup(node_tfm,
         pre_frame,
         post_frame,
         increment,
-        keyable=True)
+        keyable=True,
+    )
 
     # Drive trail_shp by attributes on handle_tfm
     attr_names = [
@@ -183,10 +185,7 @@ def create_motion_trail_setup(node_tfm,
         maya.cmds.connectAttr(src, dst)
 
     # Re-parent to the camera, so the user can see it.
-    handle_tfm = maya.cmds.parent(
-        handle_tfm, trail_handle_grp,
-        relative=True
-    )[0]
+    handle_tfm = maya.cmds.parent(handle_tfm, trail_handle_grp, relative=True)[0]
     handle_tfm = node_utils.get_long_name(handle_tfm)
 
     # Create Expression to control the calculated trail frame range.
@@ -203,14 +202,17 @@ def create_motion_trail_setup(node_tfm,
     return handle_tfm, handle_shp, trail_shp
 
 
-def create_screen_space_motion_trail(cam, tfm,
-                                     name=None,
-                                     use_frame_range=None,
-                                     pre_frame=None,
-                                     post_frame=None,
-                                     start_frame=None,
-                                     end_frame=None,
-                                     increment=None):
+def create_screen_space_motion_trail(
+    cam,
+    tfm,
+    name=None,
+    use_frame_range=None,
+    pre_frame=None,
+    post_frame=None,
+    start_frame=None,
+    end_frame=None,
+    increment=None,
+):
     """
     Create a Screen-Space Maya Locator that may be solved in Screen XYZ.
     """
@@ -237,9 +239,15 @@ def create_screen_space_motion_trail(cam, tfm,
             increment = const.PER_FRAME_INCREMENT_DEFAULT
 
     tfm_attrs = [
-        'translateX', 'translateY', 'translateZ',
-        'rotateX', 'rotateY', 'rotateZ',
-        'scaleX', 'scaleY', 'scaleZ'
+        'translateX',
+        'translateY',
+        'translateZ',
+        'rotateX',
+        'rotateY',
+        'rotateZ',
+        'scaleX',
+        'scaleY',
+        'scaleZ',
     ]
 
     maya.cmds.loadPlugin('matrixNodes', quiet=True)
@@ -255,20 +263,14 @@ def create_screen_space_motion_trail(cam, tfm,
     # Create Temporary transform node to calculate motion path on.
     temp_tfm_name = name + '_TEMP_NULL'
     temp_tfm_name = mmapi.find_valid_maya_node_name(temp_tfm_name)
-    temp_tfm = maya.cmds.createNode(
-        'transform',
-        parent=temp_grp,
-        name=temp_tfm_name
-    )
+    temp_tfm = maya.cmds.createNode('transform', parent=temp_grp, name=temp_tfm_name)
 
     # Create trail group under the camera.
     trail_handle_grp_name = const.MOTION_PATH_GROUP_NAME
     trail_handle_grp = cam_tfm + '|' + trail_handle_grp_name
     if not maya.cmds.objExists(trail_handle_grp):
         trail_handle_grp = maya.cmds.createNode(
-            'transform',
-            name=trail_handle_grp_name,
-            parent=cam_tfm
+            'transform', name=trail_handle_grp_name, parent=cam_tfm
         )
         # Trails are non-selectable by default.
         plug_name = trail_handle_grp + '.template'

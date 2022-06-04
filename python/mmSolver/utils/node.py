@@ -113,16 +113,10 @@ def get_node_parents(node):
     """
     assert isinstance(node, pycompat.TEXT_TYPE)
     parent_nodes = []
-    parents = maya.cmds.listRelatives(
-        node,
-        parent=True,
-        fullPath=True) or []
+    parents = maya.cmds.listRelatives(node, parent=True, fullPath=True) or []
     parent_nodes += parents
     while len(parents) > 0:
-        parents = maya.cmds.listRelatives(
-            parents,
-            parent=True,
-            fullPath=True) or []
+        parents = maya.cmds.listRelatives(parents, parent=True, fullPath=True) or []
         parent_nodes += parents
     return parent_nodes
 

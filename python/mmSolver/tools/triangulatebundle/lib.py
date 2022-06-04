@@ -81,30 +81,28 @@ def triangulate_bundle(bnd, relock=None):
             first_frm = frm_list[0]
             last_frm = frm_list[-1]
             first_pnt, first_dir = tri_utils.get_point_and_direction(
-                cam_tfm,
-                mkr_node,
-                first_frm
+                cam_tfm, mkr_node, first_frm
             )
             last_pnt, last_dir = tri_utils.get_point_and_direction(
-                cam_tfm,
-                mkr_node,
-                last_frm
+                cam_tfm, mkr_node, last_frm
             )
 
-            a_pnt, b_pnt = tri_utils.calculate_approx_intersection_point_between_two_3d_lines(
-                first_pnt, first_dir,
-                last_pnt, last_dir
+            (
+                a_pnt,
+                b_pnt,
+            ) = tri_utils.calculate_approx_intersection_point_between_two_3d_lines(
+                first_pnt, first_dir, last_pnt, last_dir
             )
             pnt = OpenMaya.MPoint(
                 (a_pnt.x + b_pnt.x) * 0.5,
                 (a_pnt.y + b_pnt.y) * 0.5,
-                (a_pnt.z + b_pnt.z) * 0.5
+                (a_pnt.z + b_pnt.z) * 0.5,
             )
 
             plugs = [
                 '%s.translateX' % bnd_node,
                 '%s.translateY' % bnd_node,
-                '%s.translateZ' % bnd_node
+                '%s.translateZ' % bnd_node,
             ]
             lock_state = {}
             for plug in plugs:
@@ -113,9 +111,7 @@ def triangulate_bundle(bnd, relock=None):
                 maya.cmds.setAttr(plug, lock=False)
 
             maya.cmds.xform(
-                bnd_node,
-                translation=(pnt.x, pnt.y, pnt.z),
-                worldSpace=True
+                bnd_node, translation=(pnt.x, pnt.y, pnt.z), worldSpace=True
             )
 
             if relock is True:

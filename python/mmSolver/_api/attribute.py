@@ -57,6 +57,7 @@ class Attribute(object):
         1  # 1 == ATTR_STATE_STATIC
 
     """
+
     def __init__(self, name=None, node=None, attr=None):
         """
         Initialise an Attribute object.
@@ -81,8 +82,9 @@ class Attribute(object):
             attr = part[-1]
 
         self._plug = None
-        if (isinstance(node, pycompat.TEXT_TYPE)
-                and isinstance(attr, pycompat.TEXT_TYPE)):
+        if isinstance(node, pycompat.TEXT_TYPE) and isinstance(
+            attr, pycompat.TEXT_TYPE
+        ):
             assert maya.cmds.objExists(node)
             # Long and short names must be checked.
             attr_list_long = maya.cmds.listAttr(node, shortNames=False) or []
@@ -170,7 +172,7 @@ class Attribute(object):
                 include_instanced_indices,
                 use_alias,
                 use_full_attribute_path,
-                long_name  # use long name.
+                long_name,  # use long name.
             )
         return name
 
@@ -178,8 +180,9 @@ class Attribute(object):
         name = None
         node = self.get_node(full_path=full_path)
         attr = self.get_attr(long_name=full_path)
-        if (isinstance(node, pycompat.TEXT_TYPE)
-                and isinstance(attr, pycompat.TEXT_TYPE)):
+        if isinstance(node, pycompat.TEXT_TYPE) and isinstance(
+            attr, pycompat.TEXT_TYPE
+        ):
             name = node + '.' + attr
         return name
 
@@ -195,9 +198,9 @@ class Attribute(object):
 
         check_parents = False
         animPlugs = OpenMaya.MPlugArray()
-        OpenMayaAnim.MAnimUtil.findAnimatedPlugs(self._plug.node(),
-                                                 animPlugs,
-                                                 check_parents)
+        OpenMayaAnim.MAnimUtil.findAnimatedPlugs(
+            self._plug.node(), animPlugs, check_parents
+        )
         for i in range(animPlugs.length()):
             plug = animPlugs[i]
             if self._plug.name() == plug.name():
@@ -230,12 +233,13 @@ class Attribute(object):
         attr_type = None
         node_name = self.get_node()
         attr_name = self.get_attr()
-        if (isinstance(node_name, pycompat.TEXT_TYPE)
-                and isinstance(attr_name, pycompat.TEXT_TYPE)):
-            attr_type = maya.cmds.attributeQuery(
-                attr_name,
-                node=node_name,
-                attributeType=True) or None
+        if isinstance(node_name, pycompat.TEXT_TYPE) and isinstance(
+            attr_name, pycompat.TEXT_TYPE
+        ):
+            attr_type = (
+                maya.cmds.attributeQuery(attr_name, node=node_name, attributeType=True)
+                or None
+            )
         return attr_type
 
     def get_min_value(self):

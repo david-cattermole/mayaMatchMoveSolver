@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -40,15 +41,18 @@ LOG = mmSolver.logger.get_logger()
 
 
 class ObjectNode(uinodes.Node):
-    def __init__(self, name,
-                 parent=None,
-                 data=None,
-                 icon=None,
-                 enabled=True,
-                 editable=False,
-                 selectable=True,
-                 checkable=False,
-                 neverHasChildren=False):
+    def __init__(
+        self,
+        name,
+        parent=None,
+        data=None,
+        icon=None,
+        enabled=True,
+        editable=False,
+        selectable=True,
+        checkable=False,
+        neverHasChildren=False,
+    ):
         if icon is None:
             icon = const.OBJECT_ICON_NAME
         super(ObjectNode, self).__init__(
@@ -60,7 +64,8 @@ class ObjectNode(uinodes.Node):
             selectable=selectable,
             editable=editable,
             checkable=checkable,
-            neverHasChildren=neverHasChildren)
+            neverHasChildren=neverHasChildren,
+        )
         self.typeInfo = 'object'
 
     def objectColor(self):
@@ -87,17 +92,11 @@ class ObjectNode(uinodes.Node):
 
 
 class MarkerNode(ObjectNode):
-    def __init__(self, name,
-                 data=None,
-                 parent=None):
+    def __init__(self, name, data=None, parent=None):
         icon = const.MARKER_ICON_NAME
         super(MarkerNode, self).__init__(
-            name,
-            data=data,
-            parent=parent,
-            icon=icon,
-            selectable=True,
-            editable=False)
+            name, data=data, parent=parent, icon=icon, selectable=True, editable=False
+        )
         self.typeInfo = 'marker'
 
     def status(self):
@@ -195,17 +194,11 @@ class MarkerNode(ObjectNode):
 
 
 class CameraNode(ObjectNode):
-    def __init__(self, name,
-                 data=None,
-                 parent=None):
+    def __init__(self, name, data=None, parent=None):
         icon = const.CAMERA_ICON_NAME
         super(CameraNode, self).__init__(
-            name,
-            data=data,
-            parent=parent,
-            icon=icon,
-            selectable=True,
-            editable=False)
+            name, data=data, parent=parent, icon=icon, selectable=True, editable=False
+        )
         self.typeInfo = 'camera'
 
     def objectColor(self):
@@ -234,17 +227,11 @@ class CameraNode(ObjectNode):
 
 
 class BundleNode(ObjectNode):
-    def __init__(self, name,
-                 data=None,
-                 parent=None):
+    def __init__(self, name, data=None, parent=None):
         icon = const.BUNDLE_ICON_NAME
         super(BundleNode, self).__init__(
-            name,
-            data=data,
-            parent=parent,
-            icon=icon,
-            selectable=True,
-            editable=False)
+            name, data=data, parent=parent, icon=icon, selectable=True, editable=False
+        )
         self.typeInfo = 'bundle'
 
     def objectColor(self):
@@ -264,7 +251,6 @@ class BundleNode(ObjectNode):
 
 
 class ObjectModel(uimodels.ItemModel):
-
     def __init__(self, root, font=None):
         super(ObjectModel, self).__init__(root, font=font)
         return

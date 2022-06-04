@@ -93,7 +93,9 @@ def _convert_to(name, key, typ, value, index):
     if typ is float and not isinstance(value[index], (pycompat.TEXT_TYPE, float)):
         return typ()
 
-    if typ is str and not isinstance(value[index], (pycompat.TEXT_TYPE, float, int, bool)):
+    if typ is str and not isinstance(
+        value[index], (pycompat.TEXT_TYPE, float, int, bool)
+    ):
         return typ()
 
     if typ is int:
@@ -125,6 +127,7 @@ class SolveResult(object):
     needed. This class never modifies data, it only stores and queries
     data.
     """
+
     def __init__(self, cmd_data):
         """
         Create a new SolveResult using command data from
@@ -511,9 +514,7 @@ def format_timestamp(value):
     assert isinstance(value, float)
     ts = datetime.datetime.fromtimestamp(value)
     # Remove microseconds from the datetime object.
-    stamp = ts.replace(
-        ts.year, ts.month, ts.day,
-        ts.hour, ts.minute, ts.second, 0)
+    stamp = ts.replace(ts.year, ts.month, ts.day, ts.hour, ts.minute, ts.second, 0)
     stamp = stamp.isoformat(' ')
     assert isinstance(stamp, str)
     return stamp

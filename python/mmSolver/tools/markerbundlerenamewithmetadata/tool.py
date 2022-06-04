@@ -47,9 +47,7 @@ def main():
     bnd_prefix = const.BUNDLE_PREFIX
     bnd_suffix = const.BUNDLE_SUFFIX
     nodes = lib.rename_markers_and_bundles_with_metadata(
-        sel_mkr_nodes, sel_bnd_nodes,
-        mkr_prefix, bnd_prefix,
-        mkr_suffix, bnd_suffix
+        sel_mkr_nodes, sel_bnd_nodes, mkr_prefix, bnd_prefix, mkr_suffix, bnd_suffix
     )
     if len(nodes) == 0:
         maya.cmds.select(selection, replace=True)

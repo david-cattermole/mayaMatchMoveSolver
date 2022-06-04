@@ -31,6 +31,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -42,7 +43,6 @@ import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
 class TestSolver5(solverUtils.SolverTestCase):
-
     def do_solve(self, solver_name, solver_index, scene_graph_mode):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
@@ -71,21 +71,24 @@ class TestSolver5(solverUtils.SolverTestCase):
         mkr_grp = self.create_marker_group('marker_group', cam_tfm)
 
         marker_tfm, marker_shp = self.create_marker(
-            'marker',
-            mkr_grp,
-            bnd_tfm=bundle_tfm)
+            'marker', mkr_grp, bnd_tfm=bundle_tfm
+        )
         maya.cmds.setAttr(marker_tfm + '.tz', -1.0)
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-0.243056042)
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=0.29166725)
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateY', time=start, value=0.218750438)
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateY', time=end, value=0.189583713)
+        maya.cmds.setKeyframe(
+            marker_tfm, attribute='translateX', time=start, value=-0.243056042
+        )
+        maya.cmds.setKeyframe(
+            marker_tfm, attribute='translateX', time=end, value=0.29166725
+        )
+        maya.cmds.setKeyframe(
+            marker_tfm, attribute='translateY', time=start, value=0.218750438
+        )
+        maya.cmds.setKeyframe(
+            marker_tfm, attribute='translateY', time=end, value=0.189583713
+        )
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
-        markers = (
-            (marker_tfm, cam_shp, bundle_tfm),
-        )
+        cameras = ((cam_tfm, cam_shp),)
+        markers = ((marker_tfm, cam_shp, bundle_tfm),)
         # NOTE: All dynamic attributes must have a keyframe before starting to solve.
         node_attrs = [
             (cam_tfm + '.rx', 'None', 'None', 'None', 'None'),
@@ -93,8 +96,7 @@ class TestSolver5(solverUtils.SolverTestCase):
         ]
 
         # save the output
-        file_name = 'solver_test5_{}_{}_before.ma'.format(
-            solver_name, scene_graph_name)
+        file_name = 'solver_test5_{}_{}_before.ma'.format(solver_name, scene_graph_name)
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -111,7 +113,7 @@ class TestSolver5(solverUtils.SolverTestCase):
         # Run solver!
         results = []
         s = time.time()
-        for f in range(start, end+1):
+        for f in range(start, end + 1):
             frames = f
             result = maya.cmds.mmSolver(
                 frame=frames,
@@ -119,15 +121,14 @@ class TestSolver5(solverUtils.SolverTestCase):
                 solverType=solver_index,
                 sceneGraphMode=scene_graph_mode,
                 verbose=True,
-                **kwargs
+                **kwargs,
             )
             results.append(result)
         e = time.time()
         print('total time:', e - s)
 
         # save the output
-        file_name = 'solver_test5_{}_{}_after.ma'.format(
-            solver_name, scene_graph_name)
+        file_name = 'solver_test5_{}_{}_after.ma'.format(solver_name, scene_graph_name)
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -141,19 +142,37 @@ class TestSolver5(solverUtils.SolverTestCase):
         self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
     def test_init_ceres_mmscenegraph(self):
-        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+        )
 
     def test_init_cminpack_lmdif_maya_dag(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_init_cminpack_lmdif_mmscenegraph(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
     def test_init_cminpack_lmder_maya_dag(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_init_cminpack_lmder_mmscenegraph(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
 
 if __name__ == '__main__':

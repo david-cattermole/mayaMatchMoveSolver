@@ -119,8 +119,7 @@ def _camera_to_camera_data(cam, frames):
 
     res_x = 0
     res_y = 0
-    imgpl_shps = camera_utils.get_image_plane_shapes_from_camera(
-        cam_tfm, cam_shp)
+    imgpl_shps = camera_utils.get_image_plane_shapes_from_camera(cam_tfm, cam_shp)
     for shp in imgpl_shps:
         attr_coverage_x = shp + '.coverageX'
         attr_coverage_y = shp + '.coverageY'
@@ -144,10 +143,7 @@ def _camera_to_camera_data(cam, frames):
     for f in frames:
         focal_length_mm = maya.cmds.getAttr(attr_focal_length, time=f)
         focal_length_cm = focal_length_mm * 0.1
-        frame_data = {
-            'frame': f,
-            'focal_length_cm': focal_length_cm
-        }
+        frame_data = {'frame': f, 'focal_length_cm': focal_length_cm}
         per_frame_data.append(frame_data)
 
     camera_data['per_frame'] = per_frame_data
@@ -187,8 +183,7 @@ def generate(mkr_list, frame_range):
         cam_mkrs = []
         for k, v in cameras_map.items():
             cam_mkrs.append(v)
-        LOG.error('Cannot export markers from multiple cameras: %r',
-                  cam_mkrs)
+        LOG.error('Cannot export markers from multiple cameras: %r', cam_mkrs)
         return []
 
     assert cam is not None
@@ -215,11 +210,7 @@ def write_temp_file(data):
     data_str = json.dumps(data)
     assert isinstance(data_str, pycompat.TEXT_TYPE)
     file_ext = const.EXT
-    f = tempfile.NamedTemporaryFile(
-        mode='w',
-        suffix=file_ext,
-        delete=False
-    )
+    f = tempfile.NamedTemporaryFile(mode='w', suffix=file_ext, delete=False)
     if f.closed:
         LOG.error("Error: Couldn't open file.\n%r", f.name)
         return False

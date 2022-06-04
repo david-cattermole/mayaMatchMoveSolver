@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -45,29 +46,25 @@ import mmSolver.tools.solver.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def calculate_root_frames(mkr_list,
-                          start_frame,
-                          end_frame,
-                          extra_frames,
-                          use_per_marker_frames,
-                          per_marker_frames,
-                          use_span_frames,
-                          span_frames):
+def calculate_root_frames(
+    mkr_list,
+    start_frame,
+    end_frame,
+    extra_frames,
+    use_per_marker_frames,
+    per_marker_frames,
+    use_span_frames,
+    span_frames,
+):
     frames = extra_frames
     if use_per_marker_frames and len(mkr_list) > 0:
         frames = mmapi.get_root_frames_from_markers(
-            mkr_list,
-            per_marker_frames,
-            start_frame,
-            end_frame)
-    frames = mmapi.root_frames_list_combine(
-        frames,
-        extra_frames)
+            mkr_list, per_marker_frames, start_frame, end_frame
+        )
+    frames = mmapi.root_frames_list_combine(frames, extra_frames)
 
     if use_span_frames:
-        frames = mmapi.root_frames_subdivide(
-            frames,
-            span_frames)
+        frames = mmapi.root_frames_subdivide(frames, span_frames)
 
     return frames
 
@@ -85,7 +82,9 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         self.userFrames_lineEdit.editingFinished.connect(self.userFramesTextEntered)
 
         self.perMarkerFrames_checkBox.toggled.connect(self.usePerMarkerFramesToggled)
-        self.perMarkerFrames_spinBox.valueChanged.connect(self.perMarkerFramesValueChanged)
+        self.perMarkerFrames_spinBox.valueChanged.connect(
+            self.perMarkerFramesValueChanged
+        )
 
         self.spanFrames_checkBox.toggled.connect(self.useSpanFramesToggled)
         self.spanFrames_spinBox.valueChanged.connect(self.spanFramesValueChanged)
@@ -172,7 +171,8 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
             use_per_marker_frames,
             per_marker_frames,
             use_span_frames,
-            span_frames)
+            span_frames,
+        )
         if len(root_frames) < 2:
             LOG.warn('Auto Root Frames failed to calculate.')
         root_string = convert_types.intListToString(root_frames)
@@ -308,9 +308,7 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
             return
         cur_frame = lib_maya_utils.get_current_frame()
         int_list = convert_types.stringToIntList(frames_string)
-        next_frame = navigaterootframes_lib.get_next_frame(
-            cur_frame, int_list
-        )
+        next_frame = navigaterootframes_lib.get_next_frame(cur_frame, int_list)
         if next_frame is None:
             next_frame = cur_frame
         lib_maya_utils.set_current_frame(next_frame)
@@ -327,7 +325,8 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         cur_frame = lib_maya_utils.get_current_frame()
         int_list = convert_types.stringToIntList(frames_string)
         previous_frame = navigaterootframes_lib.get_prev_frame(
-            cur_frame, int_list,
+            cur_frame,
+            int_list,
         )
         if previous_frame is None:
             previous_frame = cur_frame

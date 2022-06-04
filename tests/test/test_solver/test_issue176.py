@@ -39,6 +39,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -50,22 +51,20 @@ import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
 class TestSolverIssue176(solverUtils.SolverTestCase):
-
     def do_solve(self, solver_name, solver_index):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
 
         # Open File Path
-        scenePath = self.get_data_path(
-            'scenes', 'mmSolver_nodeaffects_rig_rivet.ma')
+        scenePath = self.get_data_path('scenes', 'mmSolver_nodeaffects_rig_rivet.ma')
         maya.cmds.file(
             scenePath,
             open=True,
             force=True,
             typ='mayaAscii',
             ignoreVersion=True,
-            options='v=0'
+            options='v=0',
         )
 
         cam_tfm = '|mainCamera'
@@ -75,12 +74,8 @@ class TestSolverIssue176(solverUtils.SolverTestCase):
         plug_x = 'woman_rig2:IKSpine1_M.translateX'
         plug_y = 'woman_rig2:IKSpine1_M.translateY'
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
-        markers = (
-            (marker_tfm, cam_shp, bundle_tfm),
-        )
+        cameras = ((cam_tfm, cam_shp),)
+        markers = ((marker_tfm, cam_shp, bundle_tfm),)
         node_attrs = [
             (plug_x, 'None', 'None', 'None', 'None'),
             (plug_y, 'None', 'None', 'None', 'None'),
@@ -109,7 +104,8 @@ class TestSolverIssue176(solverUtils.SolverTestCase):
                 timeEvalMode=1,  # 1 = 'set time' eval mode.
                 iterations=10,
                 verbose=True,
-                **kwargs)
+                **kwargs,
+            )
             results.append(result)
         e = time.time()
         print('total time:', e - s)

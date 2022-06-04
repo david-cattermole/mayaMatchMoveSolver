@@ -46,48 +46,45 @@ AttrDetail = collections.namedtuple(
     "AttrDetail",
     (
         "state",
-
         "min_enable",
         "min_value",
-
         "max_enable",
         "max_value",
-
         "smoothness_enable",
         "smoothness_variance",
         "smoothness_weight",
-
         "stiffness_enable",
         "stiffness_variance",
         "stiffness_weight",
-
         "curve_min",
         "curve_max",
         "curve_mean",
         "curve_variance",
         "curve_frame_variance",
-        "curve_max_variance"
-    )
+        "curve_max_variance",
+    ),
 )
 
 
-def create_attr_detail(state=None,
-                       min_enable=None,
-                       min_value=None,
-                       max_enable=None,
-                       max_value=None,
-                       smoothness_enable=None,
-                       smoothness_variance=None,
-                       smoothness_weight=None,
-                       stiffness_enable=None,
-                       stiffness_variance=None,
-                       stiffness_weight=None,
-                       curve_min=None,
-                       curve_max=None,
-                       curve_mean=None,
-                       curve_variance=None,
-                       curve_frame_variance=None,
-                       curve_max_variance=None):
+def create_attr_detail(
+    state=None,
+    min_enable=None,
+    min_value=None,
+    max_enable=None,
+    max_value=None,
+    smoothness_enable=None,
+    smoothness_variance=None,
+    smoothness_weight=None,
+    stiffness_enable=None,
+    stiffness_variance=None,
+    stiffness_weight=None,
+    curve_min=None,
+    curve_max=None,
+    curve_mean=None,
+    curve_variance=None,
+    curve_frame_variance=None,
+    curve_max_variance=None,
+):
     value = AttrDetail(
         state=state,
         min_enable=min_enable,
@@ -110,24 +107,26 @@ def create_attr_detail(state=None,
     return value
 
 
-def attr_detail_from_previous(value,
-                              state=None,
-                              min_enable=None,
-                              min_value=None,
-                              max_enable=None,
-                              max_value=None,
-                              smoothness_enable=None,
-                              smoothness_variance=None,
-                              smoothness_weight=None,
-                              stiffness_enable=None,
-                              stiffness_variance=None,
-                              stiffness_weight=None,
-                              curve_min=None,
-                              curve_max=None,
-                              curve_mean=None,
-                              curve_variance=None,
-                              curve_frame_variance=None,
-                              curve_max_variance=None):
+def attr_detail_from_previous(
+    value,
+    state=None,
+    min_enable=None,
+    min_value=None,
+    max_enable=None,
+    max_value=None,
+    smoothness_enable=None,
+    smoothness_variance=None,
+    smoothness_weight=None,
+    stiffness_enable=None,
+    stiffness_variance=None,
+    stiffness_weight=None,
+    curve_min=None,
+    curve_max=None,
+    curve_mean=None,
+    curve_variance=None,
+    curve_frame_variance=None,
+    curve_max_variance=None,
+):
     assert isinstance(value, AttrDetail)
 
     if state is None:
@@ -199,16 +198,18 @@ CurveStatistics = collections.namedtuple(
         "variance",
         "frame_variance",
         "max_variance",
-    )
+    ),
 )
 
 
-def create_curve_statistics(min_value=None,
-                            max_value=None,
-                            mean_value=None,
-                            variance=None,
-                            frame_variance=None,
-                            max_variance=None):
+def create_curve_statistics(
+    min_value=None,
+    max_value=None,
+    mean_value=None,
+    variance=None,
+    frame_variance=None,
+    max_variance=None,
+):
     value = CurveStatistics(
         min_value=min_value,
         max_value=max_value,
@@ -228,9 +229,7 @@ def get_active_collection():
               is active.
     :rtype: Collection or None
     """
-    uid = scene_data.get_scene_data(
-        solver_const.SCENE_DATA_ACTIVE_COLLECTION_UID
-    )
+    uid = scene_data.get_scene_data(solver_const.SCENE_DATA_ACTIVE_COLLECTION_UID)
     if uid is None:
         return None
     nodes = maya.cmds.ls(uid, long=True) or []
@@ -251,10 +250,7 @@ def _get_channel_box_ui_name():
     :return: UI path str.
     :rtype: str or None
     """
-    cmd = (
-        'global string $gChannelBoxName;'
-        'string $temp = $gChannelBoxName;'
-    )
+    cmd = 'global string $gChannelBoxName;' 'string $temp = $gChannelBoxName;'
     return maya.mel.eval(cmd)
 
 
@@ -271,44 +267,28 @@ def get_selected_maya_attributes():
     name = _get_channel_box_ui_name()
 
     # Main Nodes and Attribute
-    main_nodes = maya.cmds.channelBox(
-        name, query=True,
-        mainObjectList=True
-    ) or []
-    main_attrs = maya.cmds.channelBox(
-        name, query=True,
-        selectedMainAttributes=True
-    ) or []
+    main_nodes = maya.cmds.channelBox(name, query=True, mainObjectList=True) or []
+    main_attrs = (
+        maya.cmds.channelBox(name, query=True, selectedMainAttributes=True) or []
+    )
 
     # Shape Nodes and Attribute
-    shape_nodes = maya.cmds.channelBox(
-        name, query=True,
-        shapeObjectList=True
-    ) or []
-    shape_attrs = maya.cmds.channelBox(
-        name, query=True,
-        selectedShapeAttributes=True
-    ) or []
+    shape_nodes = maya.cmds.channelBox(name, query=True, shapeObjectList=True) or []
+    shape_attrs = (
+        maya.cmds.channelBox(name, query=True, selectedShapeAttributes=True) or []
+    )
 
     # History Nodes and Attribute
-    history_nodes = maya.cmds.channelBox(
-        name, query=True,
-        historyObjectList=True
-    ) or []
-    history_attrs = maya.cmds.channelBox(
-        name, query=True,
-        selectedHistoryAttributes=True
-    ) or []
+    history_nodes = maya.cmds.channelBox(name, query=True, historyObjectList=True) or []
+    history_attrs = (
+        maya.cmds.channelBox(name, query=True, selectedHistoryAttributes=True) or []
+    )
 
     # Output Nodes and Attribute
-    output_nodes = maya.cmds.channelBox(
-        name, query=True,
-        outputObjectList=True
-    ) or []
-    output_attrs = maya.cmds.channelBox(
-        name, query=True,
-        selectedOutputAttributes=True
-    ) or []
+    output_nodes = maya.cmds.channelBox(name, query=True, outputObjectList=True) or []
+    output_attrs = (
+        maya.cmds.channelBox(name, query=True, selectedOutputAttributes=True) or []
+    )
 
     attr_list = []
     nodes_and_attrs = [
@@ -371,23 +351,28 @@ def get_selected_node_default_attributes():
                 ]
         else:
             # Fallback - get all logical attributes.
-            attrs = maya.cmds.listAttr(
-                node,
-                keyable=True,
-                settable=True,
-                scalar=True,
-                shortNames=False,
-            ) or []
+            attrs = (
+                maya.cmds.listAttr(
+                    node,
+                    keyable=True,
+                    settable=True,
+                    scalar=True,
+                    shortNames=False,
+                )
+                or []
+            )
             attr_types = [
                 'doubleLinear',
                 'doubleAngle',
                 'double',
                 'float',
             ]
-            attr_names += [n for n in attrs
-                           if maya.cmds.attributeQuery(
-                                  n, node=node,
-                                  attributeType=True) in attr_types]
+            attr_names += [
+                n
+                for n in attrs
+                if maya.cmds.attributeQuery(n, node=node, attributeType=True)
+                in attr_types
+            ]
 
         for attr_name in attr_names:
             attr_obj = mmapi.Attribute(node=node, attr=attr_name)
@@ -555,9 +540,7 @@ def set_attribute_state(attr, state):
         if not node_utils.node_is_referenced(node):
             maya.cmds.setAttr(plug_name, lock=False)
         # Break the connection going in to the attribute.
-        src = maya.cmds.connectionInfo(
-            plug_name,
-            sourceFromDestination=True) or None
+        src = maya.cmds.connectionInfo(plug_name, sourceFromDestination=True) or None
         if src is None:
             return
         dst = plug_name

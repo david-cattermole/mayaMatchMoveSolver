@@ -31,21 +31,14 @@ from __future__ import division
 from __future__ import print_function
 
 
-from mmSolver._api._execute.options import (
-    ExecuteOptions,
-    create_execute_options
-)
+from mmSolver._api._execute.options import ExecuteOptions, create_execute_options
 from mmSolver._api._execute.actionstate import ActionState
-from mmSolver._api._execute.main import (
-    validate,
-    execute
-)
+from mmSolver._api._execute.main import validate, execute
 
 __all__ = [
     # Classes
     'ExecuteOptions',
     'ActionState',
-
     'create_execute_options',
     'execute',
     'validate',

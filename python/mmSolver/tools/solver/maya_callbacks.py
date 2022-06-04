@@ -72,9 +72,7 @@ class CallbackManager(object):
         # Level 0 key = callback_type
         # Level 1 key = node_uuid (or None if no node is used)
         # Level 2 set = Set of callback ids for the callback_type and node_uuid
-        self._callbacks = collections.defaultdict(
-            lambda: collections.defaultdict(set)
-        )
+        self._callbacks = collections.defaultdict(lambda: collections.defaultdict(set))
 
     def __del__(self):
         callback_ids = list(self.get_all_ids())
@@ -140,19 +138,12 @@ def add_callbacks_new_scene(obj_UI):
     :return: Maya callback ids.
     :rtype: list of maya.OpenMaya.MCallbackId
     """
-    msgs = [
-        OpenMaya.MSceneMessage.kBeforeNew,
-        OpenMaya.MSceneMessage.kBeforeOpen
-    ]
+    msgs = [OpenMaya.MSceneMessage.kBeforeNew, OpenMaya.MSceneMessage.kBeforeOpen]
     clientData = obj_UI
     func = new_scene_func
     callback_ids = []
     for msg in msgs:
-        callback_id = OpenMaya.MSceneMessage.addCallback(
-            msg,
-            func,
-            clientData
-        )
+        callback_id = OpenMaya.MSceneMessage.addCallback(msg, func, clientData)
         callback_ids.append(callback_id)
     return callback_ids
 
@@ -389,9 +380,8 @@ def add_selection_changed_callback(obj_UI):
     clientData = obj_UI
     func = selection_changed_func
     callback_id = OpenMaya.MEventMessage.addEventCallback(
-        "SelectionChanged",
-        func,
-        clientData)
+        "SelectionChanged", func, clientData
+    )
 
     callback_ids.append(callback_id)
     return callback_ids
@@ -420,21 +410,22 @@ def attribute_changed_func(callback_msg, plugA, plugB, clientData):
     :return: Nothing.
     :rtype: None
     """
-    if (callback_msg & OpenMaya.MNodeMessage.kConnectionMade
-            or callback_msg & OpenMaya.MNodeMessage.kConnectionBroken
-            or callback_msg & OpenMaya.MNodeMessage.kAttributeLocked
-            or callback_msg & OpenMaya.MNodeMessage.kAttributeUnlocked
-            or callback_msg & OpenMaya.MNodeMessage.kAttributeKeyable
-            or callback_msg & OpenMaya.MNodeMessage.kAttributeUnkeyable
-            or callback_msg & OpenMaya.MNodeMessage.kAttributeRemoved
-            or callback_msg & OpenMaya.MNodeMessage.kAttributeRenamed):
+    if (
+        callback_msg & OpenMaya.MNodeMessage.kConnectionMade
+        or callback_msg & OpenMaya.MNodeMessage.kConnectionBroken
+        or callback_msg & OpenMaya.MNodeMessage.kAttributeLocked
+        or callback_msg & OpenMaya.MNodeMessage.kAttributeUnlocked
+        or callback_msg & OpenMaya.MNodeMessage.kAttributeKeyable
+        or callback_msg & OpenMaya.MNodeMessage.kAttributeUnkeyable
+        or callback_msg & OpenMaya.MNodeMessage.kAttributeRemoved
+        or callback_msg & OpenMaya.MNodeMessage.kAttributeRenamed
+    ):
         if mmapi.is_solver_running() is True:
             return
         node_uuid = clientData
         event_utils.trigger_event(
-            mmapi.EVENT_NAME_ATTRIBUTE_STATE_CHANGED,
-            node=node_uuid,
-            plug=plugA)
+            mmapi.EVENT_NAME_ATTRIBUTE_STATE_CHANGED, node=node_uuid, plug=plugA
+        )
     return
 
 
@@ -462,13 +453,14 @@ def attribute_connection_changed_func(callback_msg, plugA, plugB, clientData):
     :rtype: None
     """
     node_uuid = clientData
-    if (callback_msg & OpenMaya.MNodeMessage.kConnectionMade
-            or callback_msg & OpenMaya.MNodeMessage.kConnectionBroken
-            or callback_msg & OpenMaya.MNodeMessage.kAttributeRemoved):
+    if (
+        callback_msg & OpenMaya.MNodeMessage.kConnectionMade
+        or callback_msg & OpenMaya.MNodeMessage.kConnectionBroken
+        or callback_msg & OpenMaya.MNodeMessage.kAttributeRemoved
+    ):
         event_utils.trigger_event(
-            mmapi.EVENT_NAME_ATTRIBUTE_CONNECTION_CHANGED,
-            node=node_uuid,
-            plug=plugA)
+            mmapi.EVENT_NAME_ATTRIBUTE_CONNECTION_CHANGED, node=node_uuid, plug=plugA
+        )
     return
 
 
@@ -491,9 +483,8 @@ def node_name_changed_func(node, prevName, clientData):
     node_uuid = clientData
     LOG.debug('node_name_changed: %r', node_uuid)
     event_utils.trigger_event(
-        mmapi.EVENT_NAME_NODE_NAME_CHANGED,
-        node=node_uuid,
-        previous_name=prevName)
+        mmapi.EVENT_NAME_NODE_NAME_CHANGED, node=node_uuid, previous_name=prevName
+    )
     return
 
 
@@ -509,18 +500,14 @@ def node_deleted_func(clientData):
     """
     node_uuid = clientData
     LOG.debug('node_deleted: %r', node_uuid)
-    event_utils.trigger_event(
-        mmapi.EVENT_NAME_NODE_DELETED,
-        node=node_uuid)
+    event_utils.trigger_event(mmapi.EVENT_NAME_NODE_DELETED, node=node_uuid)
     return
 
 
 def membership_change_func(node_obj, clientData):
     node_uuid = clientData
     LOG.debug('membership_changed: %r', node_uuid)
-    event_utils.trigger_event(
-        mmapi.EVENT_NAME_MEMBERSHIP_CHANGED,
-        node=node_uuid)
+    event_utils.trigger_event(mmapi.EVENT_NAME_MEMBERSHIP_CHANGED, node=node_uuid)
     return
 
 

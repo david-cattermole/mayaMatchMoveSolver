@@ -50,7 +50,6 @@ LOG = mmSolver.logger.get_logger()
 
 # @unittest.skip
 class TestSolveBadPerFrameSolve(test_api_utils.APITestCase):
-
     def test_badPerFrameSolve(self):
         s = time.time()
 
@@ -156,7 +155,8 @@ class TestSolveBadPerFrameSolve(test_api_utils.APITestCase):
 
         # save the output
         file_name = 'test_solve_badPerFrameSolve_solverstandard_{}_{}_after.ma'.format(
-            solver_name, scene_graph_name)
+            solver_name, scene_graph_name
+        )
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -168,19 +168,37 @@ class TestSolveBadPerFrameSolve(test_api_utils.APITestCase):
         self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
     def test_ceres_mmscenegraph(self):
-        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+        )
 
     def test_cminpack_lmdif_maya_dag(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_cminpack_lmdif_mmscenegraph(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
     def test_cminpack_lmder_maya_dag(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_cminpack_lmder_mmscenegraph(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
 
 if __name__ == '__main__':

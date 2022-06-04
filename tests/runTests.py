@@ -62,6 +62,7 @@ sys.path.insert(0, tests_path)
 def main(path_list):
     try:
         import maya.standalone
+
         maya.standalone.initialize()
     except RuntimeError:
         raise
@@ -71,6 +72,7 @@ def main(path_list):
     maya.cmds.loadPlugin('mmSolver')
 
     import unittest
+
     loader = unittest.TestLoader()
     final_suite = None
     if len(path_list) == 0:

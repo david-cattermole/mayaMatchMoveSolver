@@ -51,24 +51,19 @@ def main():
         return
     cam_tfm, cam_shp = viewport_utils.get_viewport_camera(editor)
     if cam_tfm is None or cam_shp is None:
-        LOG.error('Please select a camera; cam_tfm=%r cam_shp=%r',
-                  cam_tfm, cam_shp)
+        LOG.error('Please select a camera; cam_tfm=%r cam_shp=%r', cam_tfm, cam_shp)
         return
     cam = mmapi.Camera(transform=cam_tfm, shape=cam_shp)
     img_width = maya.cmds.getAttr(cam_shp + '.horizontalFilmAperture') * 100.0
     img_height = maya.cmds.getAttr(cam_shp + '.verticalFilmAperture') * 100.0
 
-    nodes = maya.cmds.ls(
-        selection=True,
-        long=True,
-        type='transform'
-    ) or []
+    nodes = maya.cmds.ls(selection=True, long=True, type='transform') or []
     if len(nodes) == 0:
         LOG.error('Please select transform nodes; %r', nodes)
         return
 
     start_frame, end_frame = utils_time.get_maya_timeline_range_inner()
-    times = range(start_frame, end_frame+1)
+    times = range(start_frame, end_frame + 1)
 
     created_loc_tfms = []
     for node in nodes:
@@ -90,22 +85,19 @@ def main():
         plug = loc_tfm + '.translateX'
         values_x = values[0:stop:step]
         animfn_x = anim_utils.create_anim_curve_node_apione(
-            times, values_x,
-            node_attr=plug
+            times, values_x, node_attr=plug
         )
 
         plug = loc_tfm + '.translateY'
         values_y = values[1:stop:step]
         animfn_y = anim_utils.create_anim_curve_node_apione(
-            times, values_y,
-            node_attr=plug
+            times, values_y, node_attr=plug
         )
 
         plug = depth_tfm + '.scaleX'
         values_z = values[2:stop:step]
         animfn_z = anim_utils.create_anim_curve_node_apione(
-            times, values_z,
-            node_attr=plug
+            times, values_z, node_attr=plug
         )
 
     if len(created_loc_tfms) > 0:

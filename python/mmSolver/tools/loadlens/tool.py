@@ -55,18 +55,18 @@ def prompt_user_for_lens_file(start_dir=None):
     file_path = None
     if start_dir is None:
         start_dir = _get_start_directory()
-    multiple_filters = (
-        'Nuke Script (*.nk);;'
-        'All Files (*.*)'
+    multiple_filters = 'Nuke Script (*.nk);;' 'All Files (*.*)'
+    results = (
+        maya.cmds.fileDialog2(
+            caption='Select Lens File',
+            okCaption='Open',
+            fileMode=1,  # 1 = A single existing file.
+            setProjectBtnEnabled=True,
+            fileFilter=multiple_filters,
+            startingDirectory=start_dir,
+        )
+        or []
     )
-    results = maya.cmds.fileDialog2(
-        caption='Select Lens File',
-        okCaption='Open',
-        fileMode=1,  # 1 = A single existing file.
-        setProjectBtnEnabled=True,
-        fileFilter=multiple_filters,
-        startingDirectory=start_dir,
-    ) or []
     if len(results) == 0:
         # User cancelled.
         return file_path

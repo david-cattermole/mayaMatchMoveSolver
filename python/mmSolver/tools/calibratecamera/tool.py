@@ -112,8 +112,7 @@ def update():
 
     cam = _get_camera_for_update(sel)
     if cam is None:
-        msg = ('No valid nodes selected; '
-               'Select a Camera, Marker Group or Markers.')
+        msg = 'No valid nodes selected; ' 'Select a Camera, Marker Group or Markers.'
         LOG.warn(msg)
         return
 
@@ -124,8 +123,7 @@ def update():
         LOG.warn('Could not find camera with calibration node connected.')
 
     if calib_node is not None:
-        with tools_utils.tool_context(use_undo_chunk=True,
-                                      disable_viewport=False):
+        with tools_utils.tool_context(use_undo_chunk=True, disable_viewport=False):
             lib.update_calibrate_values(calib_node)
     else:
         LOG.warn('Could not find calibration node.')

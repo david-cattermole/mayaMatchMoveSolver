@@ -62,7 +62,7 @@ if IS_PYTHON_2 is True:
     INT_TYPES = (int, long)  # noqa: F821
 else:
     TEXT_TYPE = str
-    INT_TYPES = (int, )
+    INT_TYPES = (int,)
 
 # GUI Constants
 TITLE = 'Paste Camera (MM Solver)...'
@@ -121,19 +121,15 @@ BUILD_WIDGET_LIST = [
     PLATE_LOAD_WIDGET,
     PLATE_PATH_WIDGET,
     PLATE_RANGE_WIDGET,
-
     CAMERA_NAME_WIDGET,
-
     START_FRAME_WIDGET,
     END_FRAME_WIDGET,
-
     ATTR_FBK_SIZE_WIDGET,
     ATTR_FBK_OFFSET_WIDGET,
     PIXEL_ASPECT_WIDGET,
     ATTR_FOCAL_LENGTH_WIDGET,
     ATTR_TRANSLATE_WIDGET,
     ATTR_ROTATE_WIDGET,
-
     SEP_01_WIDGET,
     SEP_03_WIDGET,
     SEP_04_WIDGET,
@@ -338,9 +334,7 @@ def _build_widgets_with_data(req, pgroup_id, cam_id, lens_id, file_data):
     attr_names = list(attrs_data.keys())
 
     if not start_frame or not end_frame:
-        msg = (
-            'File contains invalid frame range: {file_start}-{file_end}'
-        )
+        msg = 'File contains invalid frame range: {file_start}-{file_end}'
         msg = msg.format(
             file_start=start_frame,
             file_end=end_frame,
@@ -372,7 +366,7 @@ def _build_widgets_with_data(req, pgroup_id, cam_id, lens_id, file_data):
                 file_start=start_frame,
                 file_end=end_frame,
                 cam_start=cam_start,
-                cam_end=cam_end
+                cam_end=cam_end,
             )
             tde4.postQuestionRequester(TITLE, msg, 'Ok')
             return
@@ -392,7 +386,9 @@ def _build_widgets_with_data(req, pgroup_id, cam_id, lens_id, file_data):
     if camera_name:
         tde4.addToggleWidget(req, CAMERA_NAME_WIDGET, CAMERA_NAME_LABEL, True)
 
-    tde4.addTextFieldWidget(req, START_FRAME_WIDGET, START_FRAME_LABEL, str(start_frame))
+    tde4.addTextFieldWidget(
+        req, START_FRAME_WIDGET, START_FRAME_LABEL, str(start_frame)
+    )
     tde4.addTextFieldWidget(req, END_FRAME_WIDGET, END_FRAME_LABEL, str(end_frame))
 
     has_fbk_w = ATTR_FBK_WIDTH in attr_names
@@ -476,9 +472,7 @@ def _build_gui(file_path):
         file_path,
     )
     tde4.setWidgetCallbackFunction(
-        window_requester,
-        FILE_BROWSER_WIDGET,
-        '_build_widgets'
+        window_requester, FILE_BROWSER_WIDGET, '_build_widgets'
     )
 
     pgroup_id, cam_id, lens_id = _query_selection_state()
@@ -486,7 +480,9 @@ def _build_gui(file_path):
     if has_vaild_data is not True or not pgroup_id or not cam_id or not lens_id:
         _build_widgets(window_requester, FILE_BROWSER_WIDGET, 0)
     else:
-        _build_widgets_with_data(window_requester, pgroup_id, cam_id, lens_id, file_data)
+        _build_widgets_with_data(
+            window_requester, pgroup_id, cam_id, lens_id, file_data
+        )
     return window_requester
 
 
@@ -539,15 +535,8 @@ if pgroup_id and cam_id and lens_id:
     _paste_camera_mmsolver_requester = requester
 
     button_pressed = tde4.postCustomRequester(
-        _paste_camera_mmsolver_requester,
-        TITLE, WIDTH, HEIGHT,
-        'Paste', 'Cancel'
+        _paste_camera_mmsolver_requester, TITLE, WIDTH, HEIGHT, 'Paste', 'Cancel'
     )
     if button_pressed == 1:
         # Button index pressed is 1-based; 1=='Paste', 2='Cancel'.
-        _run_gui(
-            _paste_camera_mmsolver_requester,
-            pgroup_id,
-            cam_id,
-            lens_id
-        )
+        _run_gui(_paste_camera_mmsolver_requester, pgroup_id, cam_id, lens_id)

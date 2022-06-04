@@ -40,9 +40,7 @@ def main(preset_name=None):
 
     mmapi.load_plugin()
     tfm = maya.cmds.createNode("transform", name="mmSkyDome1")
-    shp = maya.cmds.createNode(
-        "mmSkyDomeShape", name="mmSkyDomeShape1", parent=tfm
-    )
+    shp = maya.cmds.createNode("mmSkyDomeShape", name="mmSkyDomeShape1", parent=tfm)
 
     if preset_name == const.PRESET_SKY_DOME_NAME:
         maya.cmds.setAttr(shp + '.axisEnableX', True)

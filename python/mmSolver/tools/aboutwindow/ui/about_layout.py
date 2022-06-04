@@ -20,6 +20,7 @@ The 'About' layout, the contents of the about window.
 """
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore

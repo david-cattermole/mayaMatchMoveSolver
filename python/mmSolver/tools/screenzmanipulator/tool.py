@@ -47,17 +47,14 @@ def screen_space_z(camera_tfm):
         return
 
     cam_position = maya.cmds.xform(
-        camera_tfm,
-        worldSpace=True,
-        query=True,
-        translation=True
+        camera_tfm, worldSpace=True, query=True, translation=True
     )
     maya.cmds.manipMoveContext(
         const.MANIP_CONTEXT,
         edit=True,
         mode=6,  # 6 = 'Custom Axis Orientation'
         activeHandle=0,
-        orientTowards=cam_position
+        orientTowards=cam_position,
     )
     return
 
@@ -84,11 +81,7 @@ def main():
         return
     manip_context = const.MANIP_CONTEXT
 
-    move_manip_mode = maya.cmds.manipMoveContext(
-        manip_context,
-        query=True,
-        mode=True
-    )
+    move_manip_mode = maya.cmds.manipMoveContext(manip_context, query=True, mode=True)
 
     manip_move_super_context = const.MANIP_MOVE_SUPER_CONTEXT
     maya.cmds.setToolTo(manip_move_super_context)
@@ -97,21 +90,12 @@ def main():
     move_manip_world = const.MOVE_MANIP_MODE_WORLD
     move_manip_custom = const.MOVE_MANIP_MODE_CUSTOM
 
-    if (move_manip_mode == move_manip_object
-        or move_manip_mode == move_manip_world):
-        maya.cmds.manipMoveContext(
-            manip_context,
-            edit=True,
-            mode=move_manip_custom
-        )
+    if move_manip_mode == move_manip_object or move_manip_mode == move_manip_world:
+        maya.cmds.manipMoveContext(manip_context, edit=True, mode=move_manip_custom)
         screen_space_z(camera_tfm)
         LOG.info('Move tool set to Screen-Z')
 
     elif move_manip_mode == move_manip_custom:
-        maya.cmds.manipMoveContext(
-            manip_context,
-            edit=True,
-            mode=move_manip_object
-        )
+        maya.cmds.manipMoveContext(manip_context, edit=True, mode=move_manip_object)
         LOG.info('Move tool set to Object')
     return

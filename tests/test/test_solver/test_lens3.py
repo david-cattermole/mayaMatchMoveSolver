@@ -30,6 +30,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -41,7 +42,6 @@ import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
 class TestLens3(solverUtils.SolverTestCase):
-
     def do_solve(self, solver_name, solver_index):
         """
         Solve nodal camera on a single frame
@@ -70,10 +70,17 @@ class TestLens3(solverUtils.SolverTestCase):
         node_attrs = []
         markers = []
         x_amount_list = [
-            -1.1231859675317912, -1.1871395352225662, -1.1109997312441933,
-            -1.1428886155934697, -1.1278301401493243, -1.1706081159505088,
-            -1.026174880111348, -1.0396101080616948, -1.007821380899889,
-            -1.0505157687955868]  # [random.uniform(-1.0, -1.2) for x in range(10)]
+            -1.1231859675317912,
+            -1.1871395352225662,
+            -1.1109997312441933,
+            -1.1428886155934697,
+            -1.1278301401493243,
+            -1.1706081159505088,
+            -1.026174880111348,
+            -1.0396101080616948,
+            -1.007821380899889,
+            -1.0505157687955868,
+        ]  # [random.uniform(-1.0, -1.2) for x in range(10)]
         num = len(x_amount_list)
         for i, x_amount in enumerate(x_amount_list):
             y_amount = -3.0 + ((float(i) / num) * 6.0)
@@ -87,7 +94,8 @@ class TestLens3(solverUtils.SolverTestCase):
             )
 
             marker_tfm, marker_shp = self.create_marker(
-                'marker', cam_tfm, bnd_tfm=bundle_tfm)
+                'marker', cam_tfm, bnd_tfm=bundle_tfm
+            )
             maya.cmds.setAttr(marker_tfm + '.tz', -10)
 
             eval_node = maya.cmds.createNode('mmLensEvaluate')
@@ -115,11 +123,15 @@ class TestLens3(solverUtils.SolverTestCase):
             (lens_node + '.tdeClassic_distortion', 'None', 'None', 'None', 'None'),
         )
         node_attrs.append(
-            (lens_node + '.tdeClassic_quarticDistortion', 'None', 'None', 'None', 'None'),
+            (
+                lens_node + '.tdeClassic_quarticDistortion',
+                'None',
+                'None',
+                'None',
+                'None',
+            ),
         )
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
+        cameras = ((cam_tfm, cam_shp),)
         frames = [
             (1),
         ]

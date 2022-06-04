@@ -27,6 +27,7 @@ from __future__ import print_function
 import time
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -83,7 +84,8 @@ class SolverStateWidget(QtWidgets.QWidget, ui_solverstate_widget.Ui_Form):
             solres_list,
             timestamp=timestamp,
             total_time=total_time,
-            status_fn=info_fn)
+            status_fn=info_fn,
+        )
         return
 
     @QtCore.Slot(str)

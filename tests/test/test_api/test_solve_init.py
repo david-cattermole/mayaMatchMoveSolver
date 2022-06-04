@@ -44,14 +44,10 @@ LOG = mmSolver.logger.get_logger()
 
 # @unittest.skip
 class TestSolve(test_api_utils.APITestCase):
-
     def test_init(self):
         # Camera
-        cam_tfm = maya.cmds.createNode('transform',
-                                       name='cam_tfm')
-        cam_shp = maya.cmds.createNode('camera',
-                                       name='cam_shp',
-                                       parent=cam_tfm)
+        cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
+        cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
         maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
@@ -77,9 +73,7 @@ class TestSolve(test_api_utils.APITestCase):
         attr_ty = mmapi.Attribute(bundle_tfm + '.ty')
 
         # Frames
-        frm_list = [
-            mmapi.Frame(1, primary=True)
-        ]
+        frm_list = [mmapi.Frame(1, primary=True)]
 
         # Solver
         sol = mmapi.Solver()
@@ -119,7 +113,9 @@ class TestSolve(test_api_utils.APITestCase):
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
         return
 
-    def do_solve_init_solverstandard(self, solver_name, solver_type_index, scene_graph_mode):
+    def do_solve_init_solverstandard(
+        self, solver_name, solver_type_index, scene_graph_mode
+    ):
         """
         Single Frame solve, using the standard solver
         """
@@ -131,11 +127,8 @@ class TestSolve(test_api_utils.APITestCase):
         print('Scene Graph:', scene_graph_label)
 
         # Camera
-        cam_tfm = maya.cmds.createNode('transform',
-                                       name='cam_tfm')
-        cam_shp = maya.cmds.createNode('camera',
-                                       name='cam_shp',
-                                       parent=cam_tfm)
+        cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
+        cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
         maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
@@ -161,9 +154,7 @@ class TestSolve(test_api_utils.APITestCase):
         attr_ty = mmapi.Attribute(bundle_tfm + '.ty')
 
         # Frames
-        frm_list = [
-            mmapi.Frame(1, primary=True)
-        ]
+        frm_list = [mmapi.Frame(1, primary=True)]
 
         # Solver
         sol = mmapi.SolverStandard()
@@ -206,22 +197,42 @@ class TestSolve(test_api_utils.APITestCase):
         return
 
     def test_init_solverstandard_ceres_maya_dag(self):
-        self.do_solve_init_solverstandard('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve_init_solverstandard(
+            'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG
+        )
 
     def test_init_solverstandard_ceres_mmscenegraph(self):
-        self.do_solve_init_solverstandard('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve_init_solverstandard(
+            'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+        )
 
     def test_init_solverstandard_cminpack_lmdif_maya_dag(self):
-        self.do_solve_init_solverstandard('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve_init_solverstandard(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_init_solverstandard_cminpack_lmdif_mmscenegraph(self):
-        self.do_solve_init_solverstandard('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve_init_solverstandard(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
     def test_init_solverstandard_cminpack_lmder_maya_dag(self):
-        self.do_solve_init_solverstandard('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve_init_solverstandard(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_init_solverstandard_cminpack_lmder_mmscenegraph(self):
-        self.do_solve_init_solverstandard('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve_init_solverstandard(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
 
 if __name__ == '__main__':

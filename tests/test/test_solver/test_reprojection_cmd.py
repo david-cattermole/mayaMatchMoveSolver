@@ -34,25 +34,19 @@ import mmSolver.utils.node as node_utils
 
 # @unittest.skip
 class TestReprojectionNode(solverUtils.SolverTestCase):
-
     @staticmethod
-    def compare_explicit_world_point(name, in_tfm,
-                                     cam_tfm, cam_shp,
-                                     pnt_x, pnt_y, pnt_z,
-                                     times,
-                                     **kwargs):
+    def compare_explicit_world_point(
+        name, in_tfm, cam_tfm, cam_shp, pnt_x, pnt_y, pnt_z, times, **kwargs
+    ):
         values = maya.cmds.mmReprojection(
-            in_tfm,
-            camera=(cam_tfm, cam_shp),
-            time=times,
-            **kwargs
+            in_tfm, camera=(cam_tfm, cam_shp), time=times, **kwargs
         )
         print(name, repr(values))
         values_b = maya.cmds.mmReprojection(
             worldPoint=(pnt_x, pnt_y, pnt_z),
             camera=(cam_tfm, cam_shp),
             time=times,
-            **kwargs
+            **kwargs,
         )
         print(str(name + '_b'), repr(values_b))
         return values, values_b
@@ -99,8 +93,10 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         # directly, or a single world point (XYZ) argument.
         test_args = [
             ('coord_values', {'asCoordinate': True}),
-            ('pix_coord_values', {'imageResolution': (512, 512),
-                                  'asPixelCoordinate': True}),
+            (
+                'pix_coord_values',
+                {'imageResolution': (512, 512), 'asPixelCoordinate': True},
+            ),
             ('norm_coord_values', {'asNormalizedCoordinate': True}),
             ('marker_coord_values', {'asMarkerCoordinate': True}),
             ('camera_point_values', {'asCameraPoint': True}),
@@ -109,27 +105,34 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         times = (1001.0, 1002.0, 1003.0, 1004.0, 1005.0)
         for name, kwargs in test_args:
             values, values_b = self.compare_explicit_world_point(
-                name,
-                in_tfm, cam_tfm, cam_shp,
-                pnt_x, pnt_y, pnt_z,
-                times,
-                **kwargs)
+                name, in_tfm, cam_tfm, cam_shp, pnt_x, pnt_y, pnt_z, times, **kwargs
+            )
             self.assertGreater(len(values), 0)
             self.assertListEqual(values, values_b)
 
         # Test World Values
         name = 'world_point_values'
-        world_point_values, world_point_values_b = \
-            self.compare_explicit_world_point(
-                name,
-                in_tfm, cam_tfm, cam_shp,
-                pnt_x, pnt_y, pnt_z,
-                times,
-                asWorldPoint=True)
+        world_point_values, world_point_values_b = self.compare_explicit_world_point(
+            name,
+            in_tfm,
+            cam_tfm,
+            cam_shp,
+            pnt_x,
+            pnt_y,
+            pnt_z,
+            times,
+            asWorldPoint=True,
+        )
         self.assertGreater(len(world_point_values), 0)
         self.assertListEqual(world_point_values, world_point_values_b)
 
-        times = (1001.0, 1002.0, 1003.0, 1004.0, 1005.0,)
+        times = (
+            1001.0,
+            1002.0,
+            1003.0,
+            1004.0,
+            1005.0,
+        )
         out_tfm = maya.cmds.createNode('transform', name='OUTPUT')
         out_shp = maya.cmds.createNode('locator', parent=out_tfm)
         for i, time in enumerate(times):

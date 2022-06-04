@@ -34,7 +34,6 @@ import mmSolver.tools.reparent.lib as lib
 
 # @unittest.skip
 class TestReparent(test_tools_utils.ToolsTestCase):
-
     def create_scene_a(self):
         """
         Simple scene, two transforms, both without any keyframes.
@@ -60,9 +59,9 @@ class TestReparent(test_tools_utils.ToolsTestCase):
         Transform node with no keyframes.
         """
         tfm_node_a, tfm_node_b = self.create_scene_a()
-        tfm_nodes = lib.reparent([tfm_node_a], tfm_node_b,
-                                 sparse=True,
-                                 delete_static_anim_curves=True)
+        tfm_nodes = lib.reparent(
+            [tfm_node_a], tfm_node_b, sparse=True, delete_static_anim_curves=True
+        )
 
         # save the output
         name = 'reparent_no_keyframes_after.ma'
@@ -109,9 +108,9 @@ class TestReparent(test_tools_utils.ToolsTestCase):
         Unparent to world, with no keyframes.
         """
         tfm_node_a, tfm_node_b, tfm_node_c = self.create_scene_b()
-        tfm_nodes = lib.reparent([tfm_node_b, tfm_node_c], None,
-                                 sparse=True,
-                                 delete_static_anim_curves=True)
+        tfm_nodes = lib.reparent(
+            [tfm_node_b, tfm_node_c], None, sparse=True, delete_static_anim_curves=True
+        )
 
         # save the output
         name = 'reparent_to_world_no_keyframes_after.ma'
@@ -163,9 +162,9 @@ class TestReparent(test_tools_utils.ToolsTestCase):
         start = 1001
         end = 1101
         tfm_node_a, tfm_node_b = self.create_scene_c(start, end)
-        tfm_nodes = lib.reparent([tfm_node_a], tfm_node_b,
-                                 sparse=True,
-                                 delete_static_anim_curves=True)
+        tfm_nodes = lib.reparent(
+            [tfm_node_a], tfm_node_b, sparse=True, delete_static_anim_curves=True
+        )
 
         # save the output
         name = 'reparent_with_keyframes_after.ma'
@@ -223,9 +222,9 @@ class TestReparent(test_tools_utils.ToolsTestCase):
         start = 1001
         end = 1101
         tfm_node_a, tfm_node_b, tfm_node_c = self.create_scene_d(start, end)
-        tfm_nodes = lib.reparent([tfm_node_b, tfm_node_c], None,
-                                 sparse=True,
-                                 delete_static_anim_curves=True)
+        tfm_nodes = lib.reparent(
+            [tfm_node_b, tfm_node_c], None, sparse=True, delete_static_anim_curves=True
+        )
 
         # save the output
         name = 'reparent_to_world_with_keyframes_after.ma'
@@ -250,17 +249,14 @@ class TestReparent(test_tools_utils.ToolsTestCase):
         tfm_node_b = tfm_utils.TransformNode(node=tfm_b)
 
         # Parent sphere under cube.
-        tfm_nodes = lib.reparent([tfm_node_a], tfm_node_b,
-                                 sparse=True,
-                                 delete_static_anim_curves=True)
+        tfm_nodes = lib.reparent(
+            [tfm_node_a], tfm_node_b, sparse=True, delete_static_anim_curves=True
+        )
         tfm_node_c = tfm_nodes[0]
 
         node = tfm_node_c.get_node()
         plug = node + '.translateX'
-        times = maya.cmds.keyframe(
-            plug,
-            query=True,
-            timeChange=True)
+        times = maya.cmds.keyframe(plug, query=True, timeChange=True)
         self.assertEqual(len(times), 5)
         self.assertEqual(sorted(times), sorted([1, 16, 61, 98, 120]))
         self.assertEqual(len(tfm_nodes), 1)
@@ -268,9 +264,9 @@ class TestReparent(test_tools_utils.ToolsTestCase):
         self.assertEqual(new_parent, tfm_node_b)
 
         # Unparent sphere to world
-        tfm_nodes = lib.reparent([tfm_node_c], None,
-                                 sparse=True,
-                                 delete_static_anim_curves=True)
+        tfm_nodes = lib.reparent(
+            [tfm_node_c], None, sparse=True, delete_static_anim_curves=True
+        )
         tfm_node_d = tfm_nodes[0]
 
         # save the output
@@ -281,10 +277,7 @@ class TestReparent(test_tools_utils.ToolsTestCase):
 
         node = tfm_node_d.get_node()
         plug = node + '.translateX'
-        times = maya.cmds.keyframe(
-            plug,
-            query=True,
-            timeChange=True)
+        times = maya.cmds.keyframe(plug, query=True, timeChange=True)
         self.assertEqual(len(times), 5)
         self.assertEqual(sorted(times), sorted([1, 16, 61, 98, 120]))
         self.assertEqual(len(tfm_nodes), 1)

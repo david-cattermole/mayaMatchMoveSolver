@@ -73,11 +73,13 @@ def lock_selected_attributes(attr_list):
     def func(plug_name):
         maya.cmds.setAttr(plug_name, lock=True)
 
-    with tools_utils.tool_context(pre_update_frame=False,
-                                  restore_current_frame=False,
-                                  use_undo_chunk=True,
-                                  use_dg_evaluation_mode=False,
-                                  disable_viewport=False):
+    with tools_utils.tool_context(
+        pre_update_frame=False,
+        restore_current_frame=False,
+        use_undo_chunk=True,
+        use_dg_evaluation_mode=False,
+        disable_viewport=False,
+    ):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -88,11 +90,13 @@ def unlock_selected_attributes(attr_list):
     def func(plug_name):
         maya.cmds.setAttr(plug_name, lock=False)
 
-    with tools_utils.tool_context(pre_update_frame=False,
-                                  restore_current_frame=False,
-                                  use_undo_chunk=True,
-                                  use_dg_evaluation_mode=False,
-                                  disable_viewport=False):
+    with tools_utils.tool_context(
+        pre_update_frame=False,
+        restore_current_frame=False,
+        use_undo_chunk=True,
+        use_dg_evaluation_mode=False,
+        disable_viewport=False,
+    ):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -103,11 +107,13 @@ def set_keyframe_on_selected_attributes(attr_list):
     def func(plug_name):
         maya.cmds.setKeyframe(plug_name)
 
-    with tools_utils.tool_context(pre_update_frame=False,
-                                  restore_current_frame=False,
-                                  use_undo_chunk=True,
-                                  use_dg_evaluation_mode=False,
-                                  disable_viewport=False):
+    with tools_utils.tool_context(
+        pre_update_frame=False,
+        restore_current_frame=False,
+        use_undo_chunk=True,
+        use_dg_evaluation_mode=False,
+        disable_viewport=False,
+    ):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -121,11 +127,13 @@ def delete_keyframe_current_frame_on_selected_attributes(attr_list):
         time_range = (current_frame,)
         maya.cmds.cutKey(node_name, attribute=attr_name, time=time_range)
 
-    with tools_utils.tool_context(pre_update_frame=False,
-                                  restore_current_frame=False,
-                                  use_undo_chunk=True,
-                                  use_dg_evaluation_mode=False,
-                                  disable_viewport=False):
+    with tools_utils.tool_context(
+        pre_update_frame=False,
+        restore_current_frame=False,
+        use_undo_chunk=True,
+        use_dg_evaluation_mode=False,
+        disable_viewport=False,
+    ):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -139,11 +147,13 @@ def delete_keyframe_all_frames_on_selected_attributes(attr_list):
         time_range = (frame_range.start, frame_range.end)
         maya.cmds.cutKey(node_name, attribute=attr_name, time=time_range)
 
-    with tools_utils.tool_context(pre_update_frame=True,
-                                  restore_current_frame=True,
-                                  use_undo_chunk=True,
-                                  use_dg_evaluation_mode=True,
-                                  disable_viewport=True):
+    with tools_utils.tool_context(
+        pre_update_frame=True,
+        restore_current_frame=True,
+        use_undo_chunk=True,
+        use_dg_evaluation_mode=True,
+        disable_viewport=True,
+    ):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -153,17 +163,15 @@ def delete_static_channel_on_selected_attributes(attr_list):
 
     def func(plug_name):
         node_name, sep, attr_name = plug_name.partition('.')
-        maya.cmds.delete(
-            node_name,
-            attribute=attr_name,
-            staticChannels=True
-        )
+        maya.cmds.delete(node_name, attribute=attr_name, staticChannels=True)
 
-    with tools_utils.tool_context(pre_update_frame=False,
-                                  restore_current_frame=False,
-                                  use_undo_chunk=True,
-                                  use_dg_evaluation_mode=False,
-                                  disable_viewport=False):
+    with tools_utils.tool_context(
+        pre_update_frame=False,
+        restore_current_frame=False,
+        use_undo_chunk=True,
+        use_dg_evaluation_mode=False,
+        disable_viewport=False,
+    ):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -172,9 +180,7 @@ def break_connections_on_selected_attributes(attr_list):
     LOG.debug('break_connections_on_selected_attributes: %r', attr_list)
 
     def func(plug_name):
-        src = maya.cmds.connectionInfo(
-            plug_name,
-            sourceFromDestination=True) or None
+        src = maya.cmds.connectionInfo(plug_name, sourceFromDestination=True) or None
         if src is None:
             return
         dst = plug_name
@@ -183,11 +189,13 @@ def break_connections_on_selected_attributes(attr_list):
             maya.cmds.disconnectAttr(src, dst)
         return
 
-    with tools_utils.tool_context(pre_update_frame=False,
-                                  restore_current_frame=False,
-                                  use_undo_chunk=True,
-                                  use_dg_evaluation_mode=False,
-                                  disable_viewport=False):
+    with tools_utils.tool_context(
+        pre_update_frame=False,
+        restore_current_frame=False,
+        use_undo_chunk=True,
+        use_dg_evaluation_mode=False,
+        disable_viewport=False,
+    ):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -197,15 +205,14 @@ def bake_selected_attributes(attr_list):
     frame_range = time_utils.get_maya_timeline_range_outer()
     plug_names = _get_plug_names_as_set(attr_list)
     plug_names = list(sorted(plug_names))
-    with tools_utils.tool_context(pre_update_frame=True,
-                                  restore_current_frame=True,
-                                  use_undo_chunk=True,
-                                  use_dg_evaluation_mode=True,
-                                  disable_viewport=True):
-        maya.cmds.bakeResults(
-            plug_names,
-            time=(frame_range.start, frame_range.end)
-        )
+    with tools_utils.tool_context(
+        pre_update_frame=True,
+        restore_current_frame=True,
+        use_undo_chunk=True,
+        use_dg_evaluation_mode=True,
+        disable_viewport=True,
+    ):
+        maya.cmds.bakeResults(plug_names, time=(frame_range.start, frame_range.end))
     return
 
 
@@ -214,17 +221,19 @@ def reset_values_on_selected_attributes(attr_list):
 
     def func(plug_name):
         node_name, sep, attr_name = plug_name.partition('.')
-        values = maya.cmds.attributeQuery(
-            attr_name, node=node_name,
-            listDefault=True) or []
+        values = (
+            maya.cmds.attributeQuery(attr_name, node=node_name, listDefault=True) or []
+        )
         if len(values) > 0:
             maya.cmds.setAttr(plug_name, values[0])
 
-    with tools_utils.tool_context(pre_update_frame=False,
-                                  restore_current_frame=False,
-                                  use_undo_chunk=True,
-                                  use_dg_evaluation_mode=False,
-                                  disable_viewport=False):
+    with tools_utils.tool_context(
+        pre_update_frame=False,
+        restore_current_frame=False,
+        use_undo_chunk=True,
+        use_dg_evaluation_mode=False,
+        disable_viewport=False,
+    ):
         _apply_function_to_attrs(attr_list, func)
     return
 
@@ -252,7 +261,7 @@ def add_callbacks_to_attributes(attr_list, callback_manager):
             callback_ids,
         )
     e = time.time()
-    LOG.debug('add_callbacks_to_attributes: t=%s', e-s)
+    LOG.debug('add_callbacks_to_attributes: t=%s', e - s)
     return
 
 

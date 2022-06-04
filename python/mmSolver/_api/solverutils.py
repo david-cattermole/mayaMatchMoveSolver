@@ -36,9 +36,7 @@ import mmSolver._api.solverscenegraph as solverscenegraph
 LOG = mmSolver.logger.get_logger()
 
 
-def compile_solver_affects(col, mkr_list, attr_list,
-                           precomputed_data,
-                           withtest):
+def compile_solver_affects(col, mkr_list, attr_list, precomputed_data, withtest):
     # Reset the used hints to 'unknown' before setting 'used' or
     # 'unused' flags.
     generator = compile_reset_used_hints(col, mkr_list, attr_list)
@@ -50,18 +48,23 @@ def compile_solver_affects(col, mkr_list, attr_list,
 
     cache = api_compile.create_compile_solver_cache()
     generator = api_compile.compile_solver_with_cache(
-        sol, col, mkr_list, attr_list, withtest, cache)
+        sol, col, mkr_list, attr_list, withtest, cache
+    )
     for action, vaction in generator:
         yield action, vaction
     return
 
 
-def compile_solver_scene_graph(col, mkr_list, attr_list,
-                               use_animated_attrs,
-                               use_static_attrs,
-                               scene_graph_mode,
-                               precomputed_data,
-                               withtest):
+def compile_solver_scene_graph(
+    col,
+    mkr_list,
+    attr_list,
+    use_animated_attrs,
+    use_static_attrs,
+    scene_graph_mode,
+    precomputed_data,
+    withtest,
+):
     sol = solverscenegraph.SolverSceneGraph()
     sol.set_attributes_use_animated(use_animated_attrs)
     sol.set_attributes_use_static(use_static_attrs)
@@ -70,7 +73,8 @@ def compile_solver_scene_graph(col, mkr_list, attr_list,
 
     cache = api_compile.create_compile_solver_cache()
     generator = api_compile.compile_solver_with_cache(
-        sol, col, mkr_list, attr_list, withtest, cache)
+        sol, col, mkr_list, attr_list, withtest, cache
+    )
     for action, vaction in generator:
         yield action, vaction
     return
@@ -81,20 +85,14 @@ def compile_reset_used_hints(col, mkr_list, attr_list):
     mkr_nodes = [mkr.get_node() for mkr in mkr_list]
     args = [mkr_nodes]
     kwargs = {}
-    action = api_action.Action(
-        func=func,
-        args=args,
-        kwargs=kwargs)
+    action = api_action.Action(func=func, args=args, kwargs=kwargs)
     yield action, None
 
     func = 'mmSolver._api.solveraffects.reset_attr_used_hints'
     node_attr_list = [attr.get_name() for attr in attr_list]
     args = [col.get_node(), node_attr_list]
     kwargs = {}
-    action = api_action.Action(
-        func=func,
-        args=args,
-        kwargs=kwargs)
+    action = api_action.Action(func=func, args=args, kwargs=kwargs)
     yield action, None
     return
 
@@ -134,9 +132,6 @@ def compile_euler_filter(attr_list, withtest):
         func = 'mmSolver.utils.animcurve.euler_filter_plug'
         args = [node_name, attr_name]
         kwargs = {}
-        action = api_action.Action(
-            func=func,
-            args=args,
-            kwargs=kwargs)
+        action = api_action.Action(func=func, args=args, kwargs=kwargs)
         yield action, None
     return

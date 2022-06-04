@@ -47,8 +47,7 @@ def main():
     # getting camera from the selected marker
     cam_from_mkr = mkr.get_camera()
     mkr_name = mmapi.get_new_marker_name('avgMarker1')
-    new_mkr = mmapi.Marker().create_node(cam=cam_from_mkr,
-                                         name=mkr_name)
+    new_mkr = mmapi.Marker().create_node(cam=cam_from_mkr, name=mkr_name)
 
     new_mkr_node = new_mkr.get_node()
     bnd_name = mmapi.get_new_bundle_name('avgBundle1')
@@ -57,14 +56,12 @@ def main():
     new_mkr.set_bundle(new_bnd)
 
     # getting first frame and last frame from the selected markers
-    start_frame, end_frame = mmapi.get_markers_start_end_frames(
-        selected_markers)
+    start_frame, end_frame = mmapi.get_markers_start_end_frames(selected_markers)
 
     # Running average from selected markers for giving frame range
-    lib.__set_average_marker_position(selected_markers,
-                                      start_frame,
-                                      end_frame,
-                                      new_mkr_node)
+    lib.__set_average_marker_position(
+        selected_markers, start_frame, end_frame, new_mkr_node
+    )
 
     maya.cmds.select(new_mkr_node)
     # dgdirty for Channel box value update

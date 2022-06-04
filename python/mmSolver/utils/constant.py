@@ -51,26 +51,9 @@ SCENE_DATA_ATTR = 'data'
 EVAL_MODE_API_DG_CONTEXT = 'api_dg_context'
 EVAL_MODE_TIME_SWITCH_GET_ATTR = 'time_switch_get_attr'
 EVAL_MODE_DEFAULT = EVAL_MODE_API_DG_CONTEXT
-EVAL_MODE_LIST = [
-    EVAL_MODE_API_DG_CONTEXT,
-    EVAL_MODE_TIME_SWITCH_GET_ATTR
-]
-ROTATE_ORDER_STR_LIST = [
-    'xyz',
-    'yzx',
-    'zxy',
-    'xzy',
-    'yxz',
-    'zyx'
-]
-ROTATE_ORDER_INDEX_TO_STR = {
-    0: 'xyz',
-    1: 'yzx',
-    2: 'zxy',
-    3: 'xzy',
-    4: 'yxz',
-    5: 'zyx'
-}
+EVAL_MODE_LIST = [EVAL_MODE_API_DG_CONTEXT, EVAL_MODE_TIME_SWITCH_GET_ATTR]
+ROTATE_ORDER_STR_LIST = ['xyz', 'yzx', 'zxy', 'xzy', 'yxz', 'zyx']
+ROTATE_ORDER_INDEX_TO_STR = {0: 'xyz', 1: 'yzx', 2: 'zxy', 3: 'xzy', 4: 'yxz', 5: 'zyx'}
 ROTATE_ORDER_STR_TO_INDEX = {
     'xyz': 0,
     'yzx': 1,

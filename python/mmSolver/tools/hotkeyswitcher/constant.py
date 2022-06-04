@@ -21,8 +21,7 @@ Hotkey Set Switcher constants.
 
 HOTKEY_SET_NAME_DEFAULT = 'Maya_Default'
 MENU_CMD = (
-    'import mmSolver.tools.hotkeyswitcher.tool as tool;'
-    'tool.main(name="{name}");'
+    'import mmSolver.tools.hotkeyswitcher.tool as tool;' 'tool.main(name="{name}");'
 )
 MENU_CMD_LANG = 'python'
 MENU_TOOLTIP = 'Switch to Hotkey Set {name}'

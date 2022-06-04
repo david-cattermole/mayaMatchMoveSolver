@@ -33,6 +33,7 @@ import datetime
 import uuid
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -60,16 +61,18 @@ def _open_help():
     return
 
 
-def _generate_details_text(marker_nodes=None,
-                           bundle_nodes=None,
-                           mkr_group_nodes=None,
-                           line_nodes=None,
-                           lens_nodes=None,
-                           imageplane_nodes=None,
-                           collection_nodes=None,
-                           display_nodes=None,
-                           config_nodes=None,
-                           other_nodes=None):
+def _generate_details_text(
+    marker_nodes=None,
+    bundle_nodes=None,
+    mkr_group_nodes=None,
+    line_nodes=None,
+    lens_nodes=None,
+    imageplane_nodes=None,
+    collection_nodes=None,
+    display_nodes=None,
+    config_nodes=None,
+    other_nodes=None,
+):
     details = 'Nodes to delete...\n'
 
     def _format_node_list(nodes):
@@ -121,18 +124,20 @@ def _generate_details_text(marker_nodes=None,
     return details
 
 
-def _generate_message_text(nodes_to_delete=None,
-                           unknown_node_found=None,
-                           marker_nodes=None,
-                           bundle_nodes=None,
-                           mkr_group_nodes=None,
-                           line_nodes=None,
-                           lens_nodes=None,
-                           imageplane_nodes=None,
-                           collection_nodes=None,
-                           display_nodes=None,
-                           config_nodes=None,
-                           other_nodes=None):
+def _generate_message_text(
+    nodes_to_delete=None,
+    unknown_node_found=None,
+    marker_nodes=None,
+    bundle_nodes=None,
+    mkr_group_nodes=None,
+    line_nodes=None,
+    lens_nodes=None,
+    imageplane_nodes=None,
+    collection_nodes=None,
+    display_nodes=None,
+    config_nodes=None,
+    other_nodes=None,
+):
     marker_count = len(marker_nodes)
     bundle_count = len(bundle_nodes)
     mkr_group_count = len(mkr_group_nodes)
@@ -183,9 +188,7 @@ def _generate_message_text(nodes_to_delete=None,
 def _run_tool(window_parent, save_scene, what_to_delete_dict):
     assert isinstance(save_scene, bool)
     assert isinstance(what_to_delete_dict, dict)
-    found_nodes_map, unknown_node_found = lib.filter_nodes(
-        what_to_delete_dict
-    )
+    found_nodes_map, unknown_node_found = lib.filter_nodes(what_to_delete_dict)
 
     marker_nodes = found_nodes_map.get('markers', [])
     bundle_nodes = found_nodes_map.get('bundles', [])
@@ -206,8 +209,7 @@ def _run_tool(window_parent, save_scene, what_to_delete_dict):
 
     title = const.WINDOW_TITLE
     if len(nodes_to_delete) == 0:
-        msg = ('No nodes found, '
-               'please choose different options in the window.\n')
+        msg = 'No nodes found, ' 'please choose different options in the window.\n'
         QtWidgets.QMessageBox.warning(window_parent, title, msg)
         return False
 
@@ -221,7 +223,8 @@ def _run_tool(window_parent, save_scene, what_to_delete_dict):
         collection_nodes=collection_nodes,
         display_nodes=display_nodes,
         config_nodes=config_nodes,
-        other_nodes=other_nodes)
+        other_nodes=other_nodes,
+    )
 
     msg = _generate_message_text(
         unknown_node_found=unknown_node_found,
@@ -235,17 +238,19 @@ def _run_tool(window_parent, save_scene, what_to_delete_dict):
         collection_nodes=collection_nodes,
         display_nodes=display_nodes,
         config_nodes=config_nodes,
-        other_nodes=other_nodes)
+        other_nodes=other_nodes,
+    )
 
     inform_text = 'Are you sure you want to delete?'
-    dialog = QtWidgets.QMessageBox(window_parent, )
+    dialog = QtWidgets.QMessageBox(
+        window_parent,
+    )
     dialog.setWindowTitle(title)
     dialog.setIcon(QtWidgets.QMessageBox.Question)
     dialog.setText(msg)
     dialog.setInformativeText(inform_text)
     dialog.setDetailedText(details)
-    dialog.setStandardButtons(
-        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
+    dialog.setStandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
     # No is default button because we don't want users to accidentally
     # delete nodes - users must make a choice.
     dialog.setDefaultButton(QtWidgets.QMessageBox.No)
@@ -262,9 +267,9 @@ def _run_tool(window_parent, save_scene, what_to_delete_dict):
     undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
     undo_id += ' '
     undo_id += str(uuid.uuid4())
-    with tools_utils.tool_context(use_undo_chunk=True,
-                                  undo_chunk_name=undo_id,
-                                  restore_current_frame=True):
+    with tools_utils.tool_context(
+        use_undo_chunk=True, undo_chunk_name=undo_id, restore_current_frame=True
+    ):
         lib.delete_nodes(nodes_to_delete)
     return True
 
@@ -298,14 +303,12 @@ class RemoveSolverNodesWindow(BaseWindow):
     def add_menus(self, menubar):
         edit_menu = QtWidgets.QMenu('Edit', menubar)
         commonmenus.create_edit_menu_items(
-            edit_menu,
-            reset_settings_func=self.reset_options)
+            edit_menu, reset_settings_func=self.reset_options
+        )
         menubar.addMenu(edit_menu)
 
         help_menu = QtWidgets.QMenu('Help', menubar)
-        commonmenus.create_help_menu_items(
-            help_menu,
-            tool_help_func=_open_help)
+        commonmenus.create_help_menu_items(help_menu, tool_help_func=_open_help)
         menubar.addMenu(help_menu)
 
     def reset_options(self):
@@ -325,7 +328,7 @@ class RemoveSolverNodesWindow(BaseWindow):
             'collections': self.subForm.collections_checkBox.isChecked(),
             'display_nodes': self.subForm.displayNodes_checkBox.isChecked(),
             'configuration_nodes': self.subForm.configuration_checkBox.isChecked(),
-            'other_nodes': self.subForm.otherNodes_checkBox.isChecked()
+            'other_nodes': self.subForm.otherNodes_checkBox.isChecked(),
         }
         ok = _run_tool(self, save_scene, what_to_delete_dict)
         if ok is True:
@@ -354,8 +357,6 @@ def main(show=True, auto_raise=True, delete=False):
     :rtype: RemoveSolverNodesWindow or None.
     """
     win = RemoveSolverNodesWindow.open_window(
-        show=show,
-        auto_raise=auto_raise,
-        delete=delete
+        show=show, auto_raise=auto_raise, delete=delete
     )
     return win

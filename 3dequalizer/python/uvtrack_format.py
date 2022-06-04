@@ -44,7 +44,7 @@ if IS_PYTHON_2 is True:
     INT_TYPES = (int, long)  # noqa: F821
 else:
     TEXT_TYPE = str
-    INT_TYPES = (int, )
+    INT_TYPES = (int,)
 
 # UV Track format
 # This is copied from 'mmSolver.tools.loadmarker.constant module',
@@ -90,9 +90,11 @@ RS_DISTANCE_KEY = 'rscontentdistance='
 
 def _parse_rs_distance_line(line, original_line):
     value = None
-    msg = ('Could not get Rolling Shutter Content Distance from '
-           '3DE Project Notes.\nLine is incorrectly formatted: %r\n'
-           'Correct formatting is: %r')
+    msg = (
+        'Could not get Rolling Shutter Content Distance from '
+        '3DE Project Notes.\nLine is incorrectly formatted: %r\n'
+        'Correct formatting is: %r'
+    )
     start, sep, end = line.partition(RS_DISTANCE_KEY)
     found = len(sep) > 0
     if found is True:
@@ -199,10 +201,9 @@ def _apply_rs_correction(dt, q_minus, q_center, q_plus):
     return a + dt * b + dt * dt * c
 
 
-def _convert_2d_to_3d_point_undistort(point_group, camera,
-                                      fbw, fbh, lcox, lcoy,
-                                      camera_fov,
-                                      frame, pos, depth):
+def _convert_2d_to_3d_point_undistort(
+    point_group, camera, fbw, fbh, lcox, lcoy, camera_fov, frame, pos, depth
+):
     """
     Convert a 2D point (undistorted) into a 3D point, in world space.
 
@@ -231,8 +232,7 @@ def _convert_2d_to_3d_point_undistort(point_group, camera,
     p2d[1] = (pos[1] - bottom) / (top - bottom)
     p2d = tde4.removeDistortion2D(camera, frame, p2d)
 
-    p2d_cm = vl_sdv.vec2d((p2d[0] - 0.5) * fbw - lcox,
-                          (p2d[1] - 0.5) * fbh - lcoy)
+    p2d_cm = vl_sdv.vec2d((p2d[0] - 0.5) * fbw - lcox, (p2d[1] - 0.5) * fbh - lcoy)
     homogeneous_point = r3d * vl_sdv.vec3d(p2d_cm[0], p2d_cm[1], -focal).unit()
     out_point = homogeneous_point * depth + p3d
     return out_point
@@ -272,27 +272,39 @@ def _remove_rs_from_2d_point(point_group, camera, frame, input_2d, depth):
     prev_frame = frame - 1
     if frame > 1:
         prev_pos = _convert_2d_to_3d_point_undistort(
-            point_group, camera,
-            fbw, fbh, lcox, lcoy,
+            point_group,
+            camera,
+            fbw,
+            fbh,
+            lcox,
+            lcoy,
             camera_fov,
-            prev_frame, input_2d, depth)
+            prev_frame,
+            input_2d,
+            depth,
+        )
 
     # Sample at next frame
     next_pos = vl_sdv.vec3d(0, 0, 0)
     next_frame = frame + 1
     if frame < num_frames:
         next_pos = _convert_2d_to_3d_point_undistort(
-            point_group, camera,
-            fbw, fbh, lcox, lcoy,
+            point_group,
+            camera,
+            fbw,
+            fbh,
+            lcox,
+            lcoy,
             camera_fov,
-            next_frame, input_2d, depth)
+            next_frame,
+            input_2d,
+            depth,
+        )
 
     # Sample at current frame
     curr_pos = _convert_2d_to_3d_point_undistort(
-        point_group, camera,
-        fbw, fbh, lcox, lcoy,
-        camera_fov,
-        frame, input_2d, depth)
+        point_group, camera, fbw, fbh, lcox, lcoy, camera_fov, frame, input_2d, depth
+    )
 
     # Blend previous, next and current frame values based on the
     # position of the 2D point vertical position and the rolling
@@ -314,8 +326,7 @@ def _remove_rs_from_2d_point(point_group, camera, frame, input_2d, depth):
     p2d[1] = (d[1] * focal / (-d[2] * fbh)) + (lcoy / fbh) + 0.5
     p = tde4.applyDistortion2D(camera, frame, p2d)
     left, right, bottom, top = camera_fov
-    p = vl_sdv.vec2d((p[0] * (right - left)) + left,
-                     (p[1] * (top - bottom)) + bottom)
+    p = vl_sdv.vec2d((p[0] * (right - left)) + left, (p[1] * (top - bottom)) + bottom)
     v = (input_2d + (input_2d - p)).list()
     return v
 
@@ -370,17 +381,21 @@ def _is_valid_position(pos_2d, camera_fov, valid_mode):
     if valid_mode == 'POINT_VALID_ALWAYS':
         pass
     elif valid_mode == 'POINT_VALID_INSIDE_FRAME':
-        if ((pos_2d[0] < 0.0)
-                or (pos_2d[0] > 1.0)
-                or (pos_2d[1] < 0.0)
-                or (pos_2d[1] > 1.0)):
+        if (
+            (pos_2d[0] < 0.0)
+            or (pos_2d[0] > 1.0)
+            or (pos_2d[1] < 0.0)
+            or (pos_2d[1] > 1.0)
+        ):
             value = False
     elif valid_mode == 'POINT_VALID_INSIDE_FOV':
         left, right, bottom, top = camera_fov
-        if ((pos_2d[0] < left)
-                or (pos_2d[0] > right)
-                or (pos_2d[1] < bottom)
-                or (pos_2d[1] > top)):
+        if (
+            (pos_2d[0] < left)
+            or (pos_2d[0] > right)
+            or (pos_2d[1] < bottom)
+            or (pos_2d[1] > top)
+        ):
             value = False
     return value
 
@@ -409,12 +424,7 @@ def _get_point_weight(point_group, point, camera, frame):
     """
     weight = 1.0
     if SUPPORT_POINT_WEIGHT_BY_FRAME is True:
-        weight = tde4.getPointWeightByFrame(
-            point_group,
-            point,
-            camera,
-            frame
-        )
+        weight = tde4.getPointWeightByFrame(point_group, point, camera, frame)
     return weight
 
 
@@ -502,10 +512,9 @@ def generate(point_group, camera, points, fmt=None, **kwargs):
     return data
 
 
-def _generate_v1(point_group, camera, points,
-                 start_frame=None,
-                 undistort=False,
-                 rs_distance=None):
+def _generate_v1(
+    point_group, camera, points, start_frame=None, undistort=False, rs_distance=None
+):
     """
     Generate the UV file format contents, using a basic ASCII format.
 
@@ -564,8 +573,7 @@ def _generate_v1(point_group, camera, points,
     for point in points:
         name = tde4.getPointName(point_group, point)
         c2d = tde4.getPointPosition2DBlock(
-            point_group, point, camera,
-            1, cam_num_frames
+            point_group, point, camera, 1, cam_num_frames
         )
         valid_mode = _get_point_valid_mode(point_group, point)
 
@@ -581,12 +589,7 @@ def _generate_v1(point_group, camera, points,
                 continue
 
             # Does the 2D point go outside the camera FOV? Is that ok?
-            valid = tde4.isPointPos2DValid(
-                point_group,
-                point,
-                camera,
-                frame
-            )
+            valid = tde4.isPointPos2DValid(point_group, point, camera, frame)
             if valid == 0:
                 # No valid data here.
                 frame += 1
@@ -604,8 +607,7 @@ def _generate_v1(point_group, camera, points,
             f = frame + frame0
             if rs_distance is not None:
                 v = vl_sdv.vec2d(v[0], v[1])
-                v = _remove_rs_from_2d_point(
-                    point_group, camera, frame, v, rs_distance)
+                v = _remove_rs_from_2d_point(point_group, camera, frame, v, rs_distance)
             if undistort is True:
                 v = tde4.removeDistortion2D(camera, frame, v)
             weight = _get_point_weight(point_group, point, camera, frame)
@@ -657,9 +659,7 @@ def _generate_camera_data(camera, lens, frame0):
     return camera_data
 
 
-def _generate_v2_v3_and_v4(point_group, camera, points,
-                           version=None,
-                           **kwargs):
+def _generate_v2_v3_and_v4(point_group, camera, points, version=None, **kwargs):
     """
     Generate the UV file format contents, using JSON format.
 
@@ -701,9 +701,11 @@ def _generate_v2_v3_and_v4(point_group, camera, points,
     assert isinstance(camera, TEXT_TYPE)
     assert isinstance(points, (list, tuple))
     assert isinstance(version, INT_TYPES)
-    assert version in [UV_TRACK_FORMAT_VERSION_2,
-                       UV_TRACK_FORMAT_VERSION_3,
-                       UV_TRACK_FORMAT_VERSION_4]
+    assert version in [
+        UV_TRACK_FORMAT_VERSION_2,
+        UV_TRACK_FORMAT_VERSION_3,
+        UV_TRACK_FORMAT_VERSION_4,
+    ]
 
     start_frame = kwargs.get('start_frame')
     assert start_frame is None or isinstance(start_frame, int)
@@ -762,16 +764,14 @@ def _generate_v2_v3_and_v4(point_group, camera, points,
         valid_mode = _get_point_valid_mode(point_group, point)
 
         # Get the 3D point position
-        if version in [UV_TRACK_FORMAT_VERSION_3,
-                       UV_TRACK_FORMAT_VERSION_4]:
+        if version in [UV_TRACK_FORMAT_VERSION_3, UV_TRACK_FORMAT_VERSION_4]:
             point_data['3d'] = _get_3d_data_from_point(point_group, point)
 
         # Write per-frame position data
         frame = 1  # 3DE starts at frame '1' regardless of the 'start frame'.
         point_data['per_frame'] = []
         pos_block = tde4.getPointPosition2DBlock(
-            point_group, point, camera,
-            1, cam_num_frames
+            point_group, point, camera, 1, cam_num_frames
         )
         for pos in pos_block:
             if pos[0] == -1.0 or pos[1] == -1.0:
@@ -780,12 +780,7 @@ def _generate_v2_v3_and_v4(point_group, camera, points,
                 continue
 
             # Is the 2D point obscured?
-            valid = tde4.isPointPos2DValid(
-                point_group,
-                point,
-                camera,
-                frame
-            )
+            valid = tde4.isPointPos2DValid(point_group, point, camera, frame)
             if valid == 0:
                 # No valid data here.
                 frame += 1
@@ -801,20 +796,15 @@ def _generate_v2_v3_and_v4(point_group, camera, points,
             if rs_distance is not None:
                 pos_undist = vl_sdv.vec2d(pos_undist[0], pos_undist[1])
                 pos_undist = _remove_rs_from_2d_point(
-                    point_group, camera, frame, pos_undist, rs_distance)
+                    point_group, camera, frame, pos_undist, rs_distance
+                )
             if undistort is True or undistort is None:
-                pos_undist = tde4.removeDistortion2D(
-                    camera, frame, pos_undist)
+                pos_undist = tde4.removeDistortion2D(camera, frame, pos_undist)
             weight = _get_point_weight(point_group, point, camera, frame)
 
             f = frame + frame0
-            frame_data = {
-                'frame': f,
-                'pos': pos_undist,
-                'weight': weight
-            }
-            if version in [UV_TRACK_FORMAT_VERSION_3,
-                           UV_TRACK_FORMAT_VERSION_4]:
+            frame_data = {'frame': f, 'pos': pos_undist, 'weight': weight}
+            if version in [UV_TRACK_FORMAT_VERSION_3, UV_TRACK_FORMAT_VERSION_4]:
                 frame_data['pos_dist'] = pos
             point_data['per_frame'].append(frame_data)
             frame += 1
@@ -829,10 +819,9 @@ def _generate_v2_v3_and_v4(point_group, camera, points,
     return data_str
 
 
-def _generate_v2(point_group, camera, points,
-                 start_frame=None,
-                 undistort=False,
-                 rs_distance=None):
+def _generate_v2(
+    point_group, camera, points, start_frame=None, undistort=False, rs_distance=None
+):
     """
     Generate the UV file format contents, using JSON format.
 
@@ -876,13 +865,11 @@ def _generate_v2(point_group, camera, points,
         version=UV_TRACK_FORMAT_VERSION_2,
         start_frame=start_frame,
         undistort=undistort,
-        rs_distance=rs_distance
+        rs_distance=rs_distance,
     )
 
 
-def _generate_v3(point_group, camera, points,
-                 start_frame=None,
-                 rs_distance=None):
+def _generate_v3(point_group, camera, points, start_frame=None, rs_distance=None):
     """
     Generate the UV file format contents, using JSON format.
 
@@ -923,13 +910,11 @@ def _generate_v3(point_group, camera, points,
         points,
         version=UV_TRACK_FORMAT_VERSION_3,
         start_frame=start_frame,
-        rs_distance=rs_distance
+        rs_distance=rs_distance,
     )
 
 
-def _generate_v4(point_group, camera, points,
-                 start_frame=None,
-                 rs_distance=None):
+def _generate_v4(point_group, camera, points, start_frame=None, rs_distance=None):
     """
     Generate the UV file format contents, using JSON format.
 
@@ -970,5 +955,5 @@ def _generate_v4(point_group, camera, points,
         points,
         version=UV_TRACK_FORMAT_VERSION_4,
         start_frame=start_frame,
-        rs_distance=rs_distance
+        rs_distance=rs_distance,
     )

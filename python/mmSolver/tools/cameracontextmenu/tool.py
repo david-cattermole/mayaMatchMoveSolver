@@ -62,11 +62,12 @@ def _get_active_camera_nodes():
             parent_nodes = [x for x in parent_nodes if maya.cmds.objExists(x)]
             camera_nodes |= set(mmapi.filter_camera_nodes(parent_nodes))
         else:
-            image_plane_shapes = maya.cmds.listRelatives(
-                image_plane_node,
-                type='imagePlane',
-                shapes=True,
-                fullPath=True) or []
+            image_plane_shapes = (
+                maya.cmds.listRelatives(
+                    image_plane_node, type='imagePlane', shapes=True, fullPath=True
+                )
+                or []
+            )
             for image_plane_shape in image_plane_shapes:
                 parent_nodes = node_utils.get_all_parent_nodes(image_plane_shape)
                 parent_nodes = [x for x in parent_nodes if maya.cmds.objExists(x)]
@@ -74,22 +75,25 @@ def _get_active_camera_nodes():
 
     lens_nodes = node_filtered['lens']
     for lens_node in lens_nodes:
-        upstream_nodes = maya.cmds.listHistory(
-            lens_node,
-            allConnections=True,
-            future=True,
-            allFuture=False,
-            breadthFirst=False,
-        ) or []
+        upstream_nodes = (
+            maya.cmds.listHistory(
+                lens_node,
+                allConnections=True,
+                future=True,
+                allFuture=False,
+                breadthFirst=False,
+            )
+            or []
+        )
         camera_nodes |= set(mmapi.filter_camera_nodes(upstream_nodes))
 
     # Ensure we only have camera shape nodes.
     camera_nodes = [camera_utils.get_camera(x) for x in camera_nodes]
-    camera_nodes = [(tfm, shp) for tfm, shp in camera_nodes
-                    if shp is not None]
+    camera_nodes = [(tfm, shp) for tfm, shp in camera_nodes if shp is not None]
 
-    camera_nodes = [(tfm, shp) for tfm, shp in camera_nodes
-                    if camera_utils.is_not_startup_cam(shp)]
+    camera_nodes = [
+        (tfm, shp) for tfm, shp in camera_nodes if camera_utils.is_not_startup_cam(shp)
+    ]
     if len(camera_nodes) > 0:
         return list(sorted(camera_nodes))
 

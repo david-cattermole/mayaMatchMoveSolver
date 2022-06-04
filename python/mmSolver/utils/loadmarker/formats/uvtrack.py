@@ -234,8 +234,7 @@ def _parse_point_3d_data_v3(mkr_data, point_data):
     return mkr_data
 
 
-def _parse_per_frame_v2_v3_v4(mkr_data, per_frame_data,
-                              pos_key=None):
+def _parse_per_frame_v2_v3_v4(mkr_data, per_frame_data, pos_key=None):
     """
     Get the MarkerData per-frame, including X, Y, weight and enabled
     values.
@@ -287,7 +286,7 @@ def _parse_marker_occluded_frames_v1_v2_v3(mkr_data, frames):
 
     :rtype: MarkerData
     """
-    all_frames = list(range(min(frames), max(frames)+1))
+    all_frames = list(range(min(frames), max(frames) + 1))
     for frame in all_frames:
         mkr_enable = int(frame in frames)
         mkr_data.enable.set_value(frame, mkr_enable)
@@ -296,9 +295,7 @@ def _parse_marker_occluded_frames_v1_v2_v3(mkr_data, frames):
     return mkr_data
 
 
-def _parse_v2_and_v3(file_path,
-                     undistorted=None,
-                     with_3d_pos=None):
+def _parse_v2_and_v3(file_path, undistorted=None, with_3d_pos=None):
     """
     Parse the UV file format, using JSON.
 
@@ -330,10 +327,7 @@ def _parse_v2_and_v3(file_path,
     with open(file_path) as f:
         data = json.load(f)
 
-    msg = (
-        'Per-frame tracking data was not found on marker, skipping. '
-        'name=%r'
-    )
+    msg = 'Per-frame tracking data was not found on marker, skipping. ' 'name=%r'
     points = data.get('points', [])
     for point_data in points:
         mkr_data = markerdata.MarkerData()
@@ -486,11 +480,7 @@ def parse_v2(file_path, **kwargs):
     :return: List of MarkerData objects.
     """
     file_info = fileinfo.create_file_info(marker_undistorted=True)
-    mkr_data_list = _parse_v2_and_v3(
-        file_path,
-        undistorted=True,
-        with_3d_pos=False
-    )
+    mkr_data_list = _parse_v2_and_v3(file_path, undistorted=True, with_3d_pos=False)
     return file_info, mkr_data_list
 
 

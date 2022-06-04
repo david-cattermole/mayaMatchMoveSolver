@@ -72,7 +72,7 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         'shearYZ',
         'translateX',
         'translateY',
-        'translateZ'
+        'translateZ',
     ]
 
     @staticmethod
@@ -83,8 +83,7 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         cam_tfm = maya.cmds.createNode(tfm_node_type, name=name)
         cam_tfm = node_utils.get_long_name(cam_tfm)
         shp_name = name + 'Shape'
-        cam_shp = maya.cmds.createNode(
-            'camera', name=shp_name, parent=cam_tfm)
+        cam_shp = maya.cmds.createNode('camera', name=shp_name, parent=cam_tfm)
         cam_shp = node_utils.get_long_name(cam_shp)
         return cam_tfm, cam_shp
 
@@ -100,12 +99,12 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         """
         cam_tfm, cam_shp = self.create_camera('myCamera')
 
-        top_node = maya.cmds.createNode(
-            'transform', name='top_node')
+        top_node = maya.cmds.createNode('transform', name='top_node')
         top_node = node_utils.get_long_name(top_node)
 
         bot_node = maya.cmds.createNode(
-            'transform', name='bottom_node', parent=top_node)
+            'transform', name='bottom_node', parent=top_node
+        )
         bot_node = node_utils.get_long_name(bot_node)
 
         # Plugs should only be the 'top' node.
@@ -140,14 +139,15 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         """
         # Open File Path
         scenePath = self.get_data_path(
-            'scenes', 'mmSolver_nodeaffects_constrained_transforms.ma')
+            'scenes', 'mmSolver_nodeaffects_constrained_transforms.ma'
+        )
         maya.cmds.file(
             scenePath,
             open=True,
             force=True,
             typ='mayaAscii',
             ignoreVersion=True,
-            options='v=0'
+            options='v=0',
         )
         tfm_node = 'null1'
         plugs = nodeaffects.find_plugs_affecting_transform(tfm_node, None)
@@ -158,15 +158,14 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         A transform node parented under a rivet.mel rivet.
         """
         # Open File Path
-        scenePath = self.get_data_path(
-            'scenes', 'mmSolver_nodeaffects_simple_rivet.ma')
+        scenePath = self.get_data_path('scenes', 'mmSolver_nodeaffects_simple_rivet.ma')
         maya.cmds.file(
             scenePath,
             open=True,
             force=True,
             typ='mayaAscii',
             ignoreVersion=True,
-            options='v=0'
+            options='v=0',
         )
 
         tfm_node = 'rivet1'
@@ -180,15 +179,14 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         GitHub Issue 176.
         """
         # Open File Path
-        scenePath = self.get_data_path(
-            'scenes', 'mmSolver_nodeaffects_rig_rivet.ma')
+        scenePath = self.get_data_path('scenes', 'mmSolver_nodeaffects_rig_rivet.ma')
         maya.cmds.file(
             scenePath,
             open=True,
             force=True,
             typ='mayaAscii',
             ignoreVersion=True,
-            options='v=0'
+            options='v=0',
         )
 
         tfm_node = 'Avg_Point_03_BND'

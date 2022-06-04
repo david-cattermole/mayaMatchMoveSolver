@@ -161,8 +161,7 @@ def attributesToUINodes(col, attr_list, show_anm, show_stc, show_lck):
             # object. Other attributes will be added as they come up.
             node_data['data'] = [attr]
             short_name = full_name.rpartition('|')[-1]
-            maya_node = attr_nodes.MayaNode(
-                short_name, data=node_data, parent=root)
+            maya_node = attr_nodes.MayaNode(short_name, data=node_data, parent=root)
             maya_node.setNeverHasChildren(False)
             maya_nodes[full_name] = maya_node
         else:

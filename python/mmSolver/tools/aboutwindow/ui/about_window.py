@@ -23,6 +23,7 @@ import os
 from functools import partial
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -78,9 +79,5 @@ def main(show=True, auto_raise=True, delete=False):
               opened.
     :rtype: AboutWindow or None.
     """
-    win = AboutWindow.open_window(
-        show=show,
-        auto_raise=auto_raise,
-        delete=delete
-    )
+    win = AboutWindow.open_window(show=show, auto_raise=auto_raise, delete=delete)
     return win

@@ -77,10 +77,13 @@ def validate(col, as_state=None):
         attr_list = col.get_attribute_list()
         action_list, vaction_list = api_compile.collection_compile(
             col,
-            sol_list, mkr_list, attr_list,
+            sol_list,
+            mkr_list,
+            attr_list,
             withtest=True,
             prog_fn=None,
-            status_fn=None)
+            status_fn=None,
+        )
     except excep.NotValid as e:
         LOG.warn(e)
         state = actionstate.create_action_state(
@@ -88,7 +91,8 @@ def validate(col, as_state=None):
             message=str(e),
             error_number=0,
             parameter_number=0,
-            frames_number=0)
+            frames_number=0,
+        )
         state_list.append(state)
         if as_state is False:
             return actionstate.convert_action_state_to_plain_old_data(state_list)
@@ -102,13 +106,15 @@ def validate(col, as_state=None):
     return state_list
 
 
-def execute(col,
-            options=None,
-            validate_mode=None,
-            log_level=None,
-            prog_fn=None,
-            status_fn=None,
-            info_fn=None):
+def execute(
+    col,
+    options=None,
+    validate_mode=None,
+    log_level=None,
+    prog_fn=None,
+    status_fn=None,
+    info_fn=None,
+):
     """
     Compile the collection, then pass that data to the 'mmSolver' command.
 
@@ -163,10 +169,7 @@ def execute(col,
     assert 'mmSolver' in dir(maya.cmds)
 
     vp2_state = viewport_utils.get_viewport2_active_state()
-    current_eval_manager_mode = maya.cmds.evaluationManager(
-        query=True,
-        mode=True
-    )
+    current_eval_manager_mode = maya.cmds.evaluationManager(query=True, mode=True)
 
     panels = viewport_utils.get_all_model_panels()
     panel_objs, panel_node_type_vis = executepresolve.preSolve_queryViewportState(
@@ -195,8 +198,10 @@ def execute(col,
 
         # Check for validity and compile actions.
         solres_list = []
-        withtest = validate_mode in [const.VALIDATE_MODE_PRE_VALIDATE_VALUE,
-                                     const.VALIDATE_MODE_AT_RUNTIME_VALUE]
+        withtest = validate_mode in [
+            const.VALIDATE_MODE_PRE_VALIDATE_VALUE,
+            const.VALIDATE_MODE_AT_RUNTIME_VALUE,
+        ]
         sol_list = col.get_solver_list()
         mkr_list = col.get_marker_list()
         attr_list = col.get_attribute_list()
@@ -208,7 +213,7 @@ def execute(col,
                 attr_list,
                 withtest=withtest,
                 prog_fn=prog_fn,
-                status_fn=status_fn
+                status_fn=status_fn,
             )
         except excep.NotValid as e:
             LOG.warn(e)
@@ -225,9 +230,7 @@ def execute(col,
         executepresolve.preSolve_triggerEvaluation(action_list, cur_frame, options)
 
         # Ensure prediction attributes are created and initialised.
-        collectionutils.set_initial_prediction_attributes(
-            col, attr_list, cur_frame
-        )
+        collectionutils.set_initial_prediction_attributes(col, attr_list, cur_frame)
 
         # Run Solver Actions...
         message_hashes = set()
@@ -324,13 +327,14 @@ def execute(col,
                 # Calculate the mean, variance values, and predict the
                 # next attribute value.
                 collectionutils.compute_attribute_value_prediction(
-                    col, attr_list, single_frame,
+                    col,
+                    attr_list,
+                    single_frame,
                 )
 
             # Update Progress
             interrupt = executepostsolve.postSolve_setUpdateProgress(
-                start, i, total, solres,
-                prog_fn, status_fn
+                start, i, total, solres, prog_fn, status_fn
             )
             if interrupt is True:
                 break
@@ -352,19 +356,13 @@ def execute(col,
         )
         collectionutils.run_status_func(status_fn, 'Solve Ended')
         collectionutils.run_progress_func(prog_fn, 100)
-        maya.cmds.evaluationManager(
-            mode=current_eval_manager_mode[0]
-        )
+        maya.cmds.evaluationManager(mode=current_eval_manager_mode[0])
         maya.cmds.cycleCheck(evaluation=prev_cycle_check)
         maya.cmds.autoKeyframe(edit=True, state=prev_auto_key_state)
         api_state.set_solver_running(False)
         if options.disable_viewport_two is True:
             viewport_utils.set_viewport2_active_state(vp2_state)
-        maya.cmds.currentTime(
-            cur_frame,
-            edit=True,
-            update=options.force_update
-        )
+        maya.cmds.currentTime(cur_frame, edit=True, update=options.force_update)
 
     # Store output information of the solver.
     end_time = time.time()

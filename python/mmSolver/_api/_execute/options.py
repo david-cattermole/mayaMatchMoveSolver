@@ -28,27 +28,31 @@ LOG = mmSolver.logger.get_logger()
 
 ExecuteOptions = collections.namedtuple(
     'ExecuteOptions',
-    ('verbose',
-     'refresh',
-     'disable_viewport_two',
-     'force_update',
-     'pre_solve_force_eval',
-     'do_isolate',
-     'display_grid',
-     'display_node_types',
-     'use_minimal_ui')
+    (
+        'verbose',
+        'refresh',
+        'disable_viewport_two',
+        'force_update',
+        'pre_solve_force_eval',
+        'do_isolate',
+        'display_grid',
+        'display_node_types',
+        'use_minimal_ui',
+    ),
 )
 
 
-def create_execute_options(verbose=False,
-                           refresh=False,
-                           disable_viewport_two=True,
-                           force_update=False,
-                           do_isolate=False,
-                           pre_solve_force_eval=True,
-                           display_grid=True,
-                           display_node_types=None,
-                           use_minimal_ui=None):
+def create_execute_options(
+    verbose=False,
+    refresh=False,
+    disable_viewport_two=True,
+    force_update=False,
+    do_isolate=False,
+    pre_solve_force_eval=True,
+    display_grid=True,
+    display_node_types=None,
+    use_minimal_ui=None,
+):
     """
     Create :py:class:`ExecuteOptions` object.
 
@@ -106,6 +110,6 @@ def create_execute_options(verbose=False,
         pre_solve_force_eval=pre_solve_force_eval,
         display_grid=display_grid,
         display_node_types=display_node_types,
-        use_minimal_ui=use_minimal_ui
+        use_minimal_ui=use_minimal_ui,
     )
     return options

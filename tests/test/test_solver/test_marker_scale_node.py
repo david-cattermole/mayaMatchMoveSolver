@@ -27,6 +27,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -39,7 +40,6 @@ import mmSolver._api.utils as api_utils
 
 # @unittest.skip
 class TestMarkerScaleNode(solverUtils.SolverTestCase):
-
     def test_marker_scale_node(self):
         """
         Test marker scale node values.

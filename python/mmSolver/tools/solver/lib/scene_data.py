@@ -51,11 +51,7 @@ def _get_scene_data_node():
     # Ensure attribute exists.
     attrs = maya.cmds.listAttr(node_name)
     if attr_name not in attrs:
-        maya.cmds.addAttr(
-            node,
-            longName=attr_name,
-            dataType='string'
-        )
+        maya.cmds.addAttr(node, longName=attr_name, dataType='string')
         value = json.dumps(dict())
         maya.cmds.setAttr(plug, value, type='string')
         maya.cmds.setAttr(plug, lock=True)

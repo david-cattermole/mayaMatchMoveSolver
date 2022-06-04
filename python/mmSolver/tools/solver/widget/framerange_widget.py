@@ -21,6 +21,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -41,8 +42,7 @@ import mmSolver.tools.solver.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-class FrameRangeWidget(QtWidgets.QWidget,
-                       ui_framerange_widget.Ui_Form):
+class FrameRangeWidget(QtWidgets.QWidget, ui_framerange_widget.Ui_Form):
 
     rangeTypeChanged = QtCore.Signal()
     framesChanged = QtCore.Signal()
@@ -55,23 +55,21 @@ class FrameRangeWidget(QtWidgets.QWidget,
         # Range Type Combo Box.
         self.model = uimodels.StringDataListModel()
         self.rangeType_comboBox.setModel(self.model)
-        self.rangeType_comboBox.currentIndexChanged.connect(
-            self.rangeTypeIndexChanged)
+        self.rangeType_comboBox.currentIndexChanged.connect(self.rangeTypeIndexChanged)
 
         # Frames Line Edit
-        self.frames_lineEdit.editingFinished.connect(
-            self.framesTextEntered)
+        self.frames_lineEdit.editingFinished.connect(self.framesTextEntered)
 
         # Increment by Frames Line Edit
         self.incrementByFrame_spinBox.valueChanged.connect(
-            self.incrementByFrameValueChanged)
+            self.incrementByFrameValueChanged
+        )
 
         self.rangeTypeChanged.connect(self.updateModel)
         return
 
     def getRangeTypeStringDataList(self):
-        values = zip(const.RANGE_TYPE_NAME_LIST,
-                     const.RANGE_TYPE_VALUE_LIST)
+        values = zip(const.RANGE_TYPE_NAME_LIST, const.RANGE_TYPE_VALUE_LIST)
         return list(values)
 
     def getRangeTypeValue(self, col):
@@ -188,10 +186,7 @@ class FrameRangeWidget(QtWidgets.QWidget,
         if col is None:
             return
         model_index = self.model.index(index, 0)
-        data = self.model.data(
-            model_index,
-            role=QtCore.Qt.UserRole
-        )
+        data = self.model.data(model_index, role=QtCore.Qt.UserRole)
         if data is None:
             return
         assert isinstance(data, pycompat.INT_TYPES)

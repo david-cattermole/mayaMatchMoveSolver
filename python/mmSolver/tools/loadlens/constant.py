@@ -32,9 +32,7 @@ NUKE_3DE4_ANAMORPHIC_RESCALED_DEG4 = 'LD_3DE4_Anamorphic_Rescaled_Degree_4'
 NUKE_3DE4_ANAMORPHIC_DEG6 = 'LD_3DE4_Anamorphic_Degree_6'
 
 NUKE_NODE_TYPE_TO_NODE_TYPE_TO_VALUE = {
-    NUKE_3DE4_CLASSIC: {
-            MAYA_MM_LENS_MODEL_3DE: 2
-    },
+    NUKE_3DE4_CLASSIC: {MAYA_MM_LENS_MODEL_3DE: 2},
     NUKE_3DE4_RADIAL_STANDARD_DEG4: {
         MAYA_MM_LENS_MODEL_3DE: 3,
     },
@@ -50,7 +48,6 @@ NUKE_NODE_TYPE_TO_NODE_TYPE_TO_VALUE = {
 }
 
 NODE_TYPE_PARAMETER_NAME_TO_ATTRIBUTE_NAMES = {
-
     # NUKE_3DE4_CLASSIC
     (NUKE_3DE4_CLASSIC, 'Distortion'): [
         'tdeClassic_distortion',
@@ -67,7 +64,6 @@ NODE_TYPE_PARAMETER_NAME_TO_ATTRIBUTE_NAMES = {
     (NUKE_3DE4_CLASSIC, 'Quartic_Distortion'): [
         'tdeClassic_quarticDistortion',
     ],
-
     # NUKE_3DE4_RADIAL_STANDARD_DEG4
     (NUKE_3DE4_RADIAL_STANDARD_DEG4, 'Distortion_Degree_2'): [
         'tdeRadialDeg4_degree2_distortion',
@@ -93,7 +89,6 @@ NODE_TYPE_PARAMETER_NAME_TO_ATTRIBUTE_NAMES = {
     (NUKE_3DE4_RADIAL_STANDARD_DEG4, 'B_Cylindric_Bending'): [
         'tdeRadialDeg4_cylindricBending',
     ],
-
     # NUKE_3DE4_ANAMORPHIC_DEG4
     (NUKE_3DE4_ANAMORPHIC_DEG4, 'Cx02_Degree_2'): [
         'tdeAnamorphicDeg4_degree2_cx02',
@@ -107,7 +102,6 @@ NODE_TYPE_PARAMETER_NAME_TO_ATTRIBUTE_NAMES = {
     (NUKE_3DE4_ANAMORPHIC_DEG4, 'Cy22_Degree_2'): [
         'tdeAnamorphicDeg4_degree2_cy22',
     ],
-
     (NUKE_3DE4_ANAMORPHIC_DEG4, 'Cx04_Degree_4'): [
         'tdeAnamorphicDeg4_degree4_cx04',
     ],
@@ -126,7 +120,6 @@ NODE_TYPE_PARAMETER_NAME_TO_ATTRIBUTE_NAMES = {
     (NUKE_3DE4_ANAMORPHIC_DEG4, 'Cy44_Degree_4'): [
         'tdeAnamorphicDeg4_degree4_cy44',
     ],
-
     (NUKE_3DE4_ANAMORPHIC_DEG4, 'Lens_Rotation'): [
         'tdeAnamorphicDeg4_lensRotation',
     ],
@@ -136,7 +129,6 @@ NODE_TYPE_PARAMETER_NAME_TO_ATTRIBUTE_NAMES = {
     (NUKE_3DE4_ANAMORPHIC_DEG4, 'Squeeze_Y'): [
         'tdeAnamorphicDeg4_squeeze_y',
     ],
-
     # NUKE_3DE4_ANAMORPHIC_RESCALED_DEG4
     (NUKE_3DE4_ANAMORPHIC_RESCALED_DEG4, 'Cx02_Degree_2'): [
         'tdeAnamorphicDeg4_degree2_cx02',
@@ -150,7 +142,6 @@ NODE_TYPE_PARAMETER_NAME_TO_ATTRIBUTE_NAMES = {
     (NUKE_3DE4_ANAMORPHIC_RESCALED_DEG4, 'Cy22_Degree_2'): [
         'tdeAnamorphicDeg4_degree2_cy22',
     ],
-
     (NUKE_3DE4_ANAMORPHIC_RESCALED_DEG4, 'Cx04_Degree_4'): [
         'tdeAnamorphicDeg4_degree4_cx04',
     ],
@@ -169,7 +160,6 @@ NODE_TYPE_PARAMETER_NAME_TO_ATTRIBUTE_NAMES = {
     (NUKE_3DE4_ANAMORPHIC_RESCALED_DEG4, 'Cy44_Degree_4'): [
         'tdeAnamorphicDeg4_degree4_cy44',
     ],
-
     (NUKE_3DE4_ANAMORPHIC_RESCALED_DEG4, 'Lens_Rotation'): [
         'tdeAnamorphicDeg4_lensRotation',
     ],
@@ -182,7 +172,6 @@ NODE_TYPE_PARAMETER_NAME_TO_ATTRIBUTE_NAMES = {
     (NUKE_3DE4_ANAMORPHIC_RESCALED_DEG4, 'Rescale'): [
         'tdeAnamorphicDeg4_rescale',
     ],
-    
     # NUKE_3DE4_ANAMORPHIC_DEG6
     (NUKE_3DE4_ANAMORPHIC_DEG6, 'Cx02_Degree_2'): [
         'tdeAnamorphicDeg6_degree2_cx02',
@@ -196,7 +185,6 @@ NODE_TYPE_PARAMETER_NAME_TO_ATTRIBUTE_NAMES = {
     (NUKE_3DE4_ANAMORPHIC_DEG6, 'Cy22_Degree_2'): [
         'tdeAnamorphicDeg6_degree2_cy22',
     ],
-
     (NUKE_3DE4_ANAMORPHIC_DEG6, 'Cx04_Degree_4'): [
         'tdeAnamorphicDeg6_degree4_cx04',
     ],
@@ -215,7 +203,6 @@ NODE_TYPE_PARAMETER_NAME_TO_ATTRIBUTE_NAMES = {
     (NUKE_3DE4_ANAMORPHIC_DEG6, 'Cy44_Degree_4'): [
         'tdeAnamorphicDeg6_degree4_cy44',
     ],
-
     (NUKE_3DE4_ANAMORPHIC_DEG6, 'Cx06_Degree_6'): [
         'tdeAnamorphicDeg6_degree6_cx06',
     ],

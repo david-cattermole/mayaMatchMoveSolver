@@ -189,7 +189,7 @@ class Loader3DETXT(loader.LoaderBase):
                 frames.append(frame)
 
             # Fill in occluded point frames
-            all_frames = list(range(min(frames), max(frames)+1))
+            all_frames = list(range(min(frames), max(frames) + 1))
             for frame in all_frames:
                 mkr_enable = bool(frame in frames)
                 mkr_data.enable.set_value(frame, int(mkr_enable))

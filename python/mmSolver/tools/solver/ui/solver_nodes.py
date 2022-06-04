@@ -59,7 +59,6 @@ LOG = mmSolver.logger.get_logger()
 
 
 class StrategyComboBoxDelegate(uimodels.ComboBoxDelegate):
-
     def __init__(self, parent=None):
         super(StrategyComboBoxDelegate, self).__init__(parent)
 
@@ -72,7 +71,6 @@ class StrategyComboBoxDelegate(uimodels.ComboBoxDelegate):
 
 
 class AttributeComboBoxDelegate(uimodels.ComboBoxDelegate):
-
     def __init__(self, parent=None):
         super(AttributeComboBoxDelegate, self).__init__(parent)
 
@@ -85,15 +83,19 @@ class AttributeComboBoxDelegate(uimodels.ComboBoxDelegate):
 
 
 class SolverStepNode(nodes.Node):
-    def __init__(self, name, col_node,
-                 parent=None,
-                 data=None,
-                 icon=None,
-                 enabled=True,
-                 editable=True,
-                 selectable=True,
-                 checkable=True,
-                 neverHasChildren=False):
+    def __init__(
+        self,
+        name,
+        col_node,
+        parent=None,
+        data=None,
+        icon=None,
+        enabled=True,
+        editable=True,
+        selectable=True,
+        checkable=True,
+        neverHasChildren=False,
+    ):
         if isinstance(name, pycompat.TEXT_TYPE) is False:
             raise TypeError
         if icon is None:
@@ -110,7 +112,8 @@ class SolverStepNode(nodes.Node):
             selectable=selectable,
             editable=editable,
             checkable=checkable,
-            neverHasChildren=neverHasChildren)
+            neverHasChildren=neverHasChildren,
+        )
         self.typeInfo = 'solverStep'
 
     def collectionNode(self):
@@ -332,22 +335,28 @@ class SolverModel(uimodels.TableModel):
                 return False
 
         # The step is enabled!
-        if column_name in [const.SOLVER_COLUMN_NAME_FRAMES,
-                           const.SOLVER_COLUMN_NAME_ATTRIBUTES]:
+        if column_name in [
+            const.SOLVER_COLUMN_NAME_FRAMES,
+            const.SOLVER_COLUMN_NAME_ATTRIBUTES,
+        ]:
             enabled = True
         elif column_name == const.SOLVER_COLUMN_NAME_STRATEGY:
             # The 'strategy' column should be disabled if
             # 'attrs' is set to use either 'No Attributes' or
             # 'Animated Only'.
             attrs = node.attrs()
-            if attrs in [const.ATTR_FILTER_STATIC_ONLY_LABEL,
-                         const.ATTR_FILTER_STATIC_AND_ANIM_LABEL]:
+            if attrs in [
+                const.ATTR_FILTER_STATIC_ONLY_LABEL,
+                const.ATTR_FILTER_STATIC_AND_ANIM_LABEL,
+            ]:
                 enabled = True
 
         # When 'Override Current Frame' is on, frames and strategy
         # should be editable.
-        if column_name in [const.SOLVER_COLUMN_NAME_FRAMES,
-                           const.SOLVER_COLUMN_NAME_STRATEGY]:
+        if column_name in [
+            const.SOLVER_COLUMN_NAME_FRAMES,
+            const.SOLVER_COLUMN_NAME_STRATEGY,
+        ]:
             col = node.collectionNode()
             cur_frame = lib_collection.get_override_current_frame_from_collection(col)
             if cur_frame is True:

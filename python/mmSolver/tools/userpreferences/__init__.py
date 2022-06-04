@@ -18,4 +18,3 @@
 """
 The user preferences for mmSolver.
 """
-

@@ -94,11 +94,9 @@ def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
     return
 
 
-def postSolve_setUpdateProgress(progress_min,
-                                progress_value,
-                                progress_max,
-                                solres,
-                                prog_fn, status_fn):
+def postSolve_setUpdateProgress(
+    progress_min, progress_value, progress_max, solres, prog_fn, status_fn
+):
     """
     Update the Maya GUI with progress information, and detects users
     wanting to cancel the solve.

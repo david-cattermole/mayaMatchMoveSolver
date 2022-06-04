@@ -83,16 +83,8 @@ def get_point_and_direction(camera_node, point_node, frame):
     :rtype: (OpenMaya.MPoint, OpenMaya.MVector)
     """
     maya.cmds.currentTime(frame, update=True)
-    obj = maya.cmds.xform(
-        point_node,
-        query=True,
-        worldSpace=True,
-        translation=True)
-    cam = maya.cmds.xform(
-        camera_node,
-        query=True,
-        worldSpace=True,
-        translation=True)
+    obj = maya.cmds.xform(point_node, query=True, worldSpace=True, translation=True)
+    cam = maya.cmds.xform(camera_node, query=True, worldSpace=True, translation=True)
     cam_vec = OpenMaya.MVector(*cam)
     obj_vec = OpenMaya.MVector(*obj)
     direction = obj_vec - cam_vec
@@ -102,9 +94,9 @@ def get_point_and_direction(camera_node, point_node, frame):
     return pnt, direction
 
 
-def calculate_approx_intersection_point_between_two_3d_lines(a_pnt, a_dir,
-                                                             b_pnt, b_dir,
-                                                             eps=None):
+def calculate_approx_intersection_point_between_two_3d_lines(
+    a_pnt, a_dir, b_pnt, b_dir, eps=None
+):
     """
     Calculate approximate intersection between two lines in 3D.
 
@@ -162,10 +154,6 @@ def calculate_approx_intersection_point_between_two_3d_lines(a_pnt, a_dir,
     mua = numer / denom
     mub = (d1343 + d4321 * mua) / d4343
 
-    pa = OpenMaya.MPoint(p1.x + mua * p21.x,
-                         p1.y + mua * p21.y,
-                         p1.z + mua * p21.z)
-    pb = OpenMaya.MPoint(p3.x + mub * p43.x,
-                         p3.y + mub * p43.y,
-                         p3.z + mub * p43.z)
+    pa = OpenMaya.MPoint(p1.x + mua * p21.x, p1.y + mua * p21.y, p1.z + mua * p21.z)
+    pb = OpenMaya.MPoint(p3.x + mub * p43.x, p3.y + mub * p43.y, p3.z + mub * p43.z)
     return pa, pb

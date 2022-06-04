@@ -127,9 +127,7 @@ def _default_to_regular(d):
     return d
 
 
-def _markers_to_data_lists(mkr_list,
-                           start_frame, end_frame,
-                           min_frames_per_marker):
+def _markers_to_data_lists(mkr_list, start_frame, end_frame, min_frames_per_marker):
     mkr_node_list = []
     mkr_enabled_frames = {}
     mkr_min_frames_count = {}
@@ -138,8 +136,8 @@ def _markers_to_data_lists(mkr_list,
         mkr_node = mkr.get_node()
         mkr_node_list.append(mkr_node)
         enabled_frames = mkr.get_enabled_frames(
-            frame_range_start=start_frame,
-            frame_range_end=end_frame)
+            frame_range_start=start_frame, frame_range_end=end_frame
+        )
 
         min_frames_count = _get_minimum_number_of_root_frames_for_marker(mkr)
         min_frames_count = max(min_frames_per_marker, min_frames_count)
@@ -150,8 +148,9 @@ def _markers_to_data_lists(mkr_list,
     return mkr_node_list, mkr_enabled_frames, mkr_min_frames_count
 
 
-def get_root_frames_from_markers(mkr_list, min_frames_per_marker,
-                                 start_frame, end_frame):
+def get_root_frames_from_markers(
+    mkr_list, min_frames_per_marker, start_frame, end_frame
+):
     """
     Get root frames numbers from the markers.
 
@@ -192,9 +191,9 @@ def get_root_frames_from_markers(mkr_list, min_frames_per_marker,
     root_frame_mkr_list = collections.defaultdict(set)
 
     # Convert Markers to data lists.
-    mkr_node_list, mkr_enabled_frames, mkr_min_frames_count = \
-        _markers_to_data_lists(
-            mkr_list, start_frame, end_frame, min_frames_per_marker)
+    mkr_node_list, mkr_enabled_frames, mkr_min_frames_count = _markers_to_data_lists(
+        mkr_list, start_frame, end_frame, min_frames_per_marker
+    )
 
     # Create maps for frames and markers.
     for mkr_node in mkr_node_list:
@@ -205,8 +204,8 @@ def get_root_frames_from_markers(mkr_list, min_frames_per_marker,
                 root_frame_mkr_list[f].add(mkr_node)
 
     common_nodes = collections.defaultdict(
-        lambda: collections.defaultdict(
-            lambda: collections.defaultdict(set)))
+        lambda: collections.defaultdict(lambda: collections.defaultdict(set))
+    )
     for mkr_node in sorted(mkr_node_list):
         min_frames_count = mkr_min_frames_count[mkr_node] - 1
         enabled_frames = mkr_enabled_frames[mkr_node]
@@ -319,14 +318,14 @@ def root_frames_subdivide(root_frames, max_frame_span):
 
     # Make the largest distance between two frames 'max_frame_span' or
     # less.
-    max_frame_distance, frame_a, frame_b = \
-        _frame_list_max_frame_distance(root_frames)
+    max_frame_distance, frame_a, frame_b = _frame_list_max_frame_distance(root_frames)
     while max_frame_distance > max_frame_span:
         frame_mid = frame_a + int(round((frame_b - frame_a) * 0.5))
         if frame_mid not in root_frames:
             root_frames.append(frame_mid)
-        max_frame_distance, frame_a, frame_b = \
-            _frame_list_max_frame_distance(root_frames)
+        max_frame_distance, frame_a, frame_b = _frame_list_max_frame_distance(
+            root_frames
+        )
 
     return list(sorted(set(root_frames)))
 

@@ -48,10 +48,7 @@ def main():
     cam = None
     mkr_grp = None
     if len(cams) > 0 and len(mkr_grps) > 0:
-        msg = (
-            'Please select a camera or marker group; '
-            'both node types are selected.'
-        )
+        msg = 'Please select a camera or marker group; ' 'both node types are selected.'
         LOG.error(msg)
         return
 
@@ -101,17 +98,10 @@ def main():
         return
 
     bnd_name = mmapi.get_new_bundle_name('bundle1')
-    bnd = mmapi.Bundle().create_node(
-        name=bnd_name
-    )
+    bnd = mmapi.Bundle().create_node(name=bnd_name)
 
     mkr_name = mmapi.get_new_marker_name('marker1')
-    mkr = mmapi.Marker().create_node(
-        name=mkr_name,
-        cam=cam,
-        mkr_grp=mkr_grp,
-        bnd=bnd
-    )
+    mkr = mmapi.Marker().create_node(name=mkr_name, cam=cam, mkr_grp=mkr_grp, bnd=bnd)
 
     maya.cmds.select(mkr.get_node(), replace=True)
     return

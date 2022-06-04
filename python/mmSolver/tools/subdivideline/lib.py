@@ -73,11 +73,7 @@ def _create_n_new_markers(mkr_grp, line_tfm, mkr_list, current_all_mkr_list):
     mkr_list_end = mkr_list[1:]
     mkr_pairs = list(zip(mkr_list_start, mkr_list_end))
     for mkr_start, mkr_end in mkr_pairs:
-        mkr_new = _create_new_marker_pair(
-            mkr_grp,
-            line_tfm,
-            mkr_start,
-            mkr_end)
+        mkr_new = _create_new_marker_pair(mkr_grp, line_tfm, mkr_start, mkr_end)
 
         mkr_index = new_all_mkr_node_list.index(mkr_start.get_node())
         mkr_next_index = mkr_index + 1
@@ -122,9 +118,7 @@ def subdivide_line(line, mkr_list):
     else:
         current_all_mkr_list = line.get_marker_list()
         all_mkr_list, new_mkr_list = _create_n_new_markers(
-            mkr_grp,
-            line_tfm,
-            mkr_list,
-            current_all_mkr_list)
+            mkr_grp, line_tfm, mkr_list, current_all_mkr_list
+        )
 
     return all_mkr_list, new_mkr_list

@@ -103,8 +103,14 @@ class TestSolveIssue53(test_api_utils.APITestCase):
         cam_shp = cam.get_shape_node()
         maya.cmds.setAttr('{}.filmFit'.format(cam_shp), 1)  # 1 = Horizontal
         cam_attr_list = []
-        attrs = ['translateX', 'translateY', 'translateZ',
-                 'rotateX', 'rotateY', 'rotateZ']
+        attrs = [
+            'translateX',
+            'translateY',
+            'translateZ',
+            'rotateX',
+            'rotateY',
+            'rotateZ',
+        ]
         for attr_name in attrs:
             attr = mmapi.Attribute(node=cam_tfm, attr=attr_name)
             cam_attr_list.append(attr)
@@ -125,7 +131,8 @@ class TestSolveIssue53(test_api_utils.APITestCase):
         end_frame = 94
         min_frames_per_marker = 2
         f_list = mmapi.get_root_frames_from_markers(
-            mkr_list, min_frames_per_marker, start_frame, end_frame)
+            mkr_list, min_frames_per_marker, start_frame, end_frame
+        )
         f_list = mmapi.root_frames_list_combine(f_list, [start_frame, end_frame])
         max_frame_span = 5
         f_list = mmapi.root_frames_subdivide(f_list, max_frame_span)
@@ -156,7 +163,8 @@ class TestSolveIssue53(test_api_utils.APITestCase):
 
         # save the output, before.
         file_name = 'test_solve_issue53_{}_{}_before.ma'.format(
-            solver_name, scene_graph_name)
+            solver_name, scene_graph_name
+        )
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -173,7 +181,8 @@ class TestSolveIssue53(test_api_utils.APITestCase):
 
         # save the output
         file_name = 'test_solve_issue53_{}_{}_after.ma'.format(
-            solver_name, scene_graph_name)
+            solver_name, scene_graph_name
+        )
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -185,19 +194,37 @@ class TestSolveIssue53(test_api_utils.APITestCase):
         self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
     def test_ceres_mmscenegraph(self):
-        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+        )
 
     def test_cminpack_lmdif_maya_dag(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_cminpack_lmdif_mmscenegraph(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
     def test_cminpack_lmder_maya_dag(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_cminpack_lmder_mmscenegraph(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
 
 if __name__ == '__main__':

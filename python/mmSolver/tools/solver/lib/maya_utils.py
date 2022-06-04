@@ -55,10 +55,7 @@ def _get_channel_box_ui_name():
     :return: UI path str.
     :rtype: str or None
     """
-    cmd = (
-        'global string $gChannelBoxName;'
-        'string $temp = $gChannelBoxName;'
-    )
+    cmd = 'global string $gChannelBoxName;' 'string $temp = $gChannelBoxName;'
     return maya.mel.eval(cmd)
 
 
@@ -144,8 +141,8 @@ def set_current_frame(value, update=None):
     :return: Frame number
     :rtype: int
     """
-    assert isinstance(value, (float, ) + pycompat.INT_TYPES)
-    if isinstance(update, (bool, ) + pycompat.INT_TYPES):
+    assert isinstance(value, (float,) + pycompat.INT_TYPES)
+    if isinstance(update, (bool,) + pycompat.INT_TYPES):
         maya.cmds.currentTime(value, update=update)
     else:
         maya.cmds.currentTime(value)
@@ -235,44 +232,28 @@ def get_selected_maya_attributes():
     name = _get_channel_box_ui_name()
 
     # Main Nodes and Attribute
-    main_nodes = maya.cmds.channelBox(
-        name, query=True,
-        mainObjectList=True
-    ) or []
-    main_attrs = maya.cmds.channelBox(
-        name, query=True,
-        selectedMainAttributes=True
-    ) or []
+    main_nodes = maya.cmds.channelBox(name, query=True, mainObjectList=True) or []
+    main_attrs = (
+        maya.cmds.channelBox(name, query=True, selectedMainAttributes=True) or []
+    )
 
     # Shape Nodes and Attribute
-    shape_nodes = maya.cmds.channelBox(
-        name, query=True,
-        shapeObjectList=True
-    ) or []
-    shape_attrs = maya.cmds.channelBox(
-        name, query=True,
-        selectedShapeAttributes=True
-    ) or []
+    shape_nodes = maya.cmds.channelBox(name, query=True, shapeObjectList=True) or []
+    shape_attrs = (
+        maya.cmds.channelBox(name, query=True, selectedShapeAttributes=True) or []
+    )
 
     # History Nodes and Attribute
-    history_nodes = maya.cmds.channelBox(
-        name, query=True,
-        historyObjectList=True
-    ) or []
-    history_attrs = maya.cmds.channelBox(
-        name, query=True,
-        selectedHistoryAttributes=True
-    ) or []
+    history_nodes = maya.cmds.channelBox(name, query=True, historyObjectList=True) or []
+    history_attrs = (
+        maya.cmds.channelBox(name, query=True, selectedHistoryAttributes=True) or []
+    )
 
     # Output Nodes and Attribute
-    output_nodes = maya.cmds.channelBox(
-        name, query=True,
-        outputObjectList=True
-    ) or []
-    output_attrs = maya.cmds.channelBox(
-        name, query=True,
-        selectedOutputAttributes=True
-    ) or []
+    output_nodes = maya.cmds.channelBox(name, query=True, outputObjectList=True) or []
+    output_attrs = (
+        maya.cmds.channelBox(name, query=True, selectedOutputAttributes=True) or []
+    )
 
     attr_list = []
     nodes_and_attrs = [
@@ -334,23 +315,28 @@ def get_node_default_attributes(nodes):
                 ]
         else:
             # Fallback - get all logical attributes.
-            attrs = maya.cmds.listAttr(
-                node,
-                keyable=True,
-                settable=True,
-                scalar=True,
-                shortNames=False,
-            ) or []
+            attrs = (
+                maya.cmds.listAttr(
+                    node,
+                    keyable=True,
+                    settable=True,
+                    scalar=True,
+                    shortNames=False,
+                )
+                or []
+            )
             attr_types = [
                 'doubleLinear',
                 'doubleAngle',
                 'double',
                 'float',
             ]
-            attr_names += [n for n in attrs
-                           if maya.cmds.attributeQuery(
-                                  n, node=node,
-                                  attributeType=True) in attr_types]
+            attr_names += [
+                n
+                for n in attrs
+                if maya.cmds.attributeQuery(n, node=node, attributeType=True)
+                in attr_types
+            ]
 
         for attr_name in attr_names:
             attr_obj = mmapi.Attribute(node=node, attr=attr_name)

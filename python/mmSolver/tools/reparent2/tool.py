@@ -68,15 +68,14 @@ def __get_node_settable_data(settable_map):
         non_settable_nodes,
         non_settable_node_axis_t,
         non_settable_node_axis_r,
-        non_settable_node_axis_s
+        non_settable_node_axis_s,
     )
     return settable_data
 
 
-def __format_node_status(node,
-                         non_settable_node_axis_t,
-                         non_settable_node_axis_r,
-                         non_settable_node_axis_s):
+def __format_node_status(
+    node, non_settable_node_axis_t, non_settable_node_axis_r, non_settable_node_axis_s
+):
     axis_t = list(sorted(non_settable_node_axis_t[node]))
     axis_r = list(sorted(non_settable_node_axis_r[node]))
     axis_s = list(sorted(non_settable_node_axis_s[node]))
@@ -110,32 +109,40 @@ def __check_modify_nodes(node_list):
     prompt_user = False
 
     attr_list = [
-        'translateX', 'translateY', 'translateZ',
-        'rotateX', 'rotateY', 'rotateZ',
-        'scaleX', 'scaleY', 'scaleZ'
+        'translateX',
+        'translateY',
+        'translateZ',
+        'rotateX',
+        'rotateY',
+        'rotateZ',
+        'scaleX',
+        'scaleY',
+        'scaleZ',
     ]
-    settable_map, \
-        settable_count, \
-        non_settable_count = lib.nodes_attrs_settable(
-            node_list,
-            attr_list)
+    settable_map, settable_count, non_settable_count = lib.nodes_attrs_settable(
+        node_list, attr_list
+    )
 
     full_msg = ''
     confirm_msg = ''
     if non_settable_count > 0:
         prompt_user = True
-        non_settable_nodes, \
-            non_settable_node_axis_t, \
-            non_settable_node_axis_r, \
-            non_settable_node_axis_s = __get_node_settable_data(settable_map)
+        (
+            non_settable_nodes,
+            non_settable_node_axis_t,
+            non_settable_node_axis_r,
+            non_settable_node_axis_s,
+        ) = __get_node_settable_data(settable_map)
 
         non_settable_nodes = list(sorted(non_settable_nodes))
         non_settable_node_count = len(non_settable_nodes)
         max_display_count = 9
 
-        msg = ("The following nodes have locked or "
-               "connected attributes and cannot be modified "
-               "during re-parenting.\n\n")
+        msg = (
+            "The following nodes have locked or "
+            "connected attributes and cannot be modified "
+            "during re-parenting.\n\n"
+        )
         msg += "Cannot modify {} nodes:\n".format(non_settable_node_count)
         full_msg = msg
         confirm_msg = msg
@@ -145,7 +152,8 @@ def __check_modify_nodes(node_list):
                 node,
                 non_settable_node_axis_t,
                 non_settable_node_axis_r,
-                non_settable_node_axis_s)
+                non_settable_node_axis_s,
+            )
 
             node_msg = "  {}\n".format(node_status)
             full_msg += node_msg
@@ -163,11 +171,11 @@ def _reparent_under_node_selection():
     """
     Get selection for Re-parenting the selection under the last selected node.
     """
-    nodes = maya.cmds.ls(selection=True, long=True,
-                         type='transform') or []
+    nodes = maya.cmds.ls(selection=True, long=True, type='transform') or []
     if len(nodes) < 2:
-        msg = ('Not enough objects selected, '
-               'select at least 1 child and 1 parent node.')
+        msg = (
+            'Not enough objects selected, ' 'select at least 1 child and 1 parent node.'
+        )
         LOG.warn(msg)
         return None
     children = nodes[:-1]
@@ -194,11 +202,9 @@ def _unparent_to_world_selection():
     """
     Get selection for Un-parenting the selected nodes into world space.
     """
-    children = maya.cmds.ls(selection=True, long=True,
-                            type='transform') or []
+    children = maya.cmds.ls(selection=True, long=True, type='transform') or []
     if len(children) == 0:
-        msg = ('Not enough objects selected, '
-               'select at least 1 transform node.')
+        msg = 'Not enough objects selected, ' 'select at least 1 transform node.'
         LOG.warn(msg)
         return None
     parent = None
@@ -236,28 +242,28 @@ def reparent(children, parent):
 
     # Get all saved re-parent options.
     frame_range_mode = configmaya.get_scene_option(
-        const.CONFIG_FRAME_RANGE_MODE_KEY,
-        default=const.DEFAULT_FRAME_RANGE_MODE)
+        const.CONFIG_FRAME_RANGE_MODE_KEY, default=const.DEFAULT_FRAME_RANGE_MODE
+    )
     start_frame = configmaya.get_scene_option(
-        const.CONFIG_FRAME_START_KEY,
-        default=const.DEFAULT_FRAME_START)
+        const.CONFIG_FRAME_START_KEY, default=const.DEFAULT_FRAME_START
+    )
     end_frame = configmaya.get_scene_option(
-        const.CONFIG_FRAME_END_KEY,
-        default=const.DEFAULT_FRAME_END)
+        const.CONFIG_FRAME_END_KEY, default=const.DEFAULT_FRAME_END
+    )
     bake_mode = configmaya.get_scene_option(
-        const.CONFIG_BAKE_MODE_KEY,
-        default=const.DEFAULT_BAKE_MODE)
+        const.CONFIG_BAKE_MODE_KEY, default=const.DEFAULT_BAKE_MODE
+    )
     rotate_order = configmaya.get_scene_option(
-        const.CONFIG_ROTATE_ORDER_MODE_KEY,
-        default=const.DEFAULT_ROTATE_ORDER_MODE)
+        const.CONFIG_ROTATE_ORDER_MODE_KEY, default=const.DEFAULT_ROTATE_ORDER_MODE
+    )
     delete_static_anim_curves = configmaya.get_scene_option(
         const.CONFIG_DELETE_STATIC_ANIM_CURVES_KEY,
-        default=const.DEFAULT_DELETE_STATIC_ANIM_CURVES)
+        default=const.DEFAULT_DELETE_STATIC_ANIM_CURVES,
+    )
     viewport_mode = const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE
 
     # Check the children nodes and prompt the user what to do
-    prompt_user, settable_map, full_msg, confirm_msg = \
-        __check_modify_nodes(children)
+    prompt_user, settable_map, full_msg, confirm_msg = __check_modify_nodes(children)
     if prompt_user is True:
         LOG.warn(full_msg)
         cancel_button = 'Cancel'
@@ -268,19 +274,23 @@ def reparent(children, parent):
             button=[continue_button, cancel_button],
             defaultButton=continue_button,
             cancelButton=cancel_button,
-            dismissString=cancel_button)
+            dismissString=cancel_button,
+        )
         if button == cancel_button:
             LOG.warn('User canceled Re-parent.')
             return
 
-    with tools_utils.tool_context(disable_viewport=True,
-                                  use_undo_chunk=True,
-                                  use_dg_evaluation_mode=False,
-                                  restore_current_frame=True,
-                                  pre_update_frame=False,
-                                  disable_viewport_mode=viewport_mode):
+    with tools_utils.tool_context(
+        disable_viewport=True,
+        use_undo_chunk=True,
+        use_dg_evaluation_mode=False,
+        restore_current_frame=True,
+        pre_update_frame=False,
+        disable_viewport_mode=viewport_mode,
+    ):
         lib.reparent(
-            children_nodes, parent_node,
+            children_nodes,
+            parent_node,
             frame_range_mode=frame_range_mode,
             start_frame=start_frame,
             end_frame=end_frame,
@@ -298,6 +308,7 @@ def reparent(children, parent):
 
 def reparent_under_node_open_window():
     import mmSolver.tools.reparent2.ui.reparent2_window as window
+
     win = window.main()
 
     result = _reparent_under_node_selection()
@@ -311,6 +322,7 @@ def reparent_under_node_open_window():
 
 def unparent_to_world_open_window():
     import mmSolver.tools.reparent2.ui.reparent2_window as window
+
     win = window.main()
 
     result = _unparent_to_world_selection()
@@ -324,4 +336,5 @@ def unparent_to_world_open_window():
 
 def open_window():
     import mmSolver.tools.reparent2.ui.reparent2_window as window
+
     window.main()

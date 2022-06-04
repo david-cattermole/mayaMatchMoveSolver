@@ -94,28 +94,25 @@ def _triangulate_bundle(bnd_node, mkr_cam_node_frm_list):
             first_frm = frm_list[0]
             last_frm = frm_list[-1]
             first_pnt, first_dir = tri_utils.get_point_and_direction(
-                cam_tfm,
-                mkr_node,
-                first_frm)
-            last_pnt, last_dir = tri_utils.get_point_and_direction(
-                cam_tfm,
-                mkr_node,
-                last_frm
+                cam_tfm, mkr_node, first_frm
             )
-            a_pnt, b_pnt = tri_utils.calculate_approx_intersection_point_between_two_3d_lines(
-                first_pnt, first_dir,
-                last_pnt, last_dir
+            last_pnt, last_dir = tri_utils.get_point_and_direction(
+                cam_tfm, mkr_node, last_frm
+            )
+            (
+                a_pnt,
+                b_pnt,
+            ) = tri_utils.calculate_approx_intersection_point_between_two_3d_lines(
+                first_pnt, first_dir, last_pnt, last_dir
             )
             pnt = OpenMaya.MPoint(
                 (a_pnt.x + b_pnt.x) * 0.5,
                 (a_pnt.y + b_pnt.y) * 0.5,
-                (a_pnt.z + b_pnt.z) * 0.5
+                (a_pnt.z + b_pnt.z) * 0.5,
             )
 
             maya.cmds.xform(
-                bnd_node,
-                translation=(pnt.x, pnt.y, pnt.z),
-                worldSpace=True
+                bnd_node, translation=(pnt.x, pnt.y, pnt.z), worldSpace=True
             )
     finally:
         maya.cmds.currentTime(prev_frame, update=False)
@@ -172,32 +169,28 @@ class SolverTriangulate(solverbase.SolverBase):
             bnd = bundle.Bundle(node=node)
             bnd_node = bnd.get_node()
             mkr_node_list = [x.get_node() for x in mkr_list]
-            bnd_mkr_list = [x for x in bnd.get_marker_list()
-                            if x.get_node() in mkr_node_list]
+            bnd_mkr_list = [
+                x for x in bnd.get_marker_list() if x.get_node() in mkr_node_list
+            ]
             bnd_mkr_node_list = [x.get_node() for x in bnd_mkr_list]
-            bnd_cam_node_list = [x.get_camera().get_transform_node()
-                                 for x in bnd_mkr_list]
-            bnd_mkr_frm_list = [_get_marker_first_last_frame_list(x, self.root_frame_list)
-                                for x in bnd_mkr_node_list]
+            bnd_cam_node_list = [
+                x.get_camera().get_transform_node() for x in bnd_mkr_list
+            ]
+            bnd_mkr_frm_list = [
+                _get_marker_first_last_frame_list(x, self.root_frame_list)
+                for x in bnd_mkr_node_list
+            ]
             bnd_mkr_cam_frm_list = zip(
-                bnd_mkr_node_list,
-                bnd_cam_node_list,
-                bnd_mkr_frm_list
+                bnd_mkr_node_list, bnd_cam_node_list, bnd_mkr_frm_list
             )
 
             # TODO: We must detect if the newly calculated position is
             #  behind the camera, if so, we reject the new values.
             args = [bnd_node, bnd_mkr_cam_frm_list]
             kwargs = {}
-            action = api_action.Action(
-                _triangulate_bundle,
-                args=args,
-                kwargs=kwargs
-            )
-            LOG.debug('adding _triangulate_bundle: func=%r',
-                      _triangulate_bundle,
-                      args,
-                      kwargs
+            action = api_action.Action(_triangulate_bundle, args=args, kwargs=kwargs)
+            LOG.debug(
+                'adding _triangulate_bundle: func=%r', _triangulate_bundle, args, kwargs
             )
             # actions.append(action)
             yield action, None

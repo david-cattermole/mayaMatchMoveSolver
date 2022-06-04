@@ -46,10 +46,7 @@ def main():
     cam = None
     mkr_grp = None
     if len(cams) > 0 and len(mkr_grps) > 0:
-        msg = (
-            'Please select a camera or marker group; '
-            'both node types are selected.'
-        )
+        msg = 'Please select a camera or marker group; ' 'both node types are selected.'
         LOG.error(msg)
         return
 

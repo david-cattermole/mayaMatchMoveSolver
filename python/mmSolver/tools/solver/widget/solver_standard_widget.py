@@ -26,6 +26,7 @@ from __future__ import print_function
 import time
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -68,7 +69,6 @@ def _getAllowObjectRelations():
 
 
 class StandardRootFrameWidget(rootframe_widget.RootFrameWidget):
-
     def getUserFramesValue(self, col):
         value = lib_col_state.get_solver_user_frames_from_collection(col)
         return value
@@ -115,7 +115,6 @@ class StandardRootFrameWidget(rootframe_widget.RootFrameWidget):
 
 
 class StandardFrameRangeWidget(framerange_widget.FrameRangeWidget):
-
     def getRangeTypeValue(self, col):
         value = lib_col_state.get_solver_range_type_from_collection(col)
         return value
@@ -141,8 +140,7 @@ class StandardFrameRangeWidget(framerange_widget.FrameRangeWidget):
         return
 
 
-class SolverStandardWidget(QtWidgets.QWidget,
-                           ui_solver_standard_widget.Ui_Form):
+class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form):
 
     viewUpdated = QtCore.Signal()
     dataChanged = QtCore.Signal()
@@ -166,17 +164,22 @@ class SolverStandardWidget(QtWidgets.QWidget,
 
         # Scene Graph Mode Combo Box.
         self.sceneGraphMode_model = uimodels.StringDataListModel()
-        self.sceneGraphMode_model.setStringDataList(const.SCENE_GRAPH_MODE_LABEL_VALUE_LIST)
+        self.sceneGraphMode_model.setStringDataList(
+            const.SCENE_GRAPH_MODE_LABEL_VALUE_LIST
+        )
         self.sceneGraphMode_comboBox.setModel(self.sceneGraphMode_model)
         self.sceneGraphMode_comboBox.currentIndexChanged.connect(
-            self.sceneGraphModeIndexChanged)
+            self.sceneGraphModeIndexChanged
+        )
 
         self.globalSolve_checkBox.toggled.connect(self.globalSolveValueToggled)
         self.onlyRootFrames_checkBox.toggled.connect(self.onlyRootFramesValueToggled)
         self.evalObjectRelationships_checkBox.toggled.connect(
-            self.evalObjectRelationshipsValueToggled)
+            self.evalObjectRelationshipsValueToggled
+        )
         self.evalComplexGraphs_checkBox.toggled.connect(
-            self.evalComplexGraphsValueToggled)
+            self.evalComplexGraphsValueToggled
+        )
 
         desc = const.SOLVER_STD_DESC_DEFAULT
         self.description_label.setText(desc)
@@ -274,8 +277,7 @@ class SolverStandardWidget(QtWidgets.QWidget,
         if col is None:
             return
 
-        scene_graph_mode = self.getSceneGraphActiveIndex(
-            self.sceneGraphMode_model, col)
+        scene_graph_mode = self.getSceneGraphActiveIndex(self.sceneGraphMode_model, col)
         if scene_graph_mode is None:
             LOG.error('Could not get the active scene graph mode index.')
             return
@@ -376,10 +378,7 @@ class SolverStandardWidget(QtWidgets.QWidget,
         if col is None:
             return
         model_index = self.sceneGraphMode_model.index(index, 0)
-        data = self.sceneGraphMode_model.data(
-            model_index,
-            role=QtCore.Qt.UserRole
-        )
+        data = self.sceneGraphMode_model.data(model_index, role=QtCore.Qt.UserRole)
         if data is None:
             return
         assert isinstance(data, pycompat.INT_TYPES)

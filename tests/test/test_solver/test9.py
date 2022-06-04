@@ -30,6 +30,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -41,7 +42,6 @@ import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
 class TestSolver9(solverUtils.SolverTestCase):
-
     def do_solve(self, solver_name, solver_index, scene_graph_mode):
         """
         Solve an animated bundle across time.
@@ -70,9 +70,8 @@ class TestSolver9(solverUtils.SolverTestCase):
 
         mkr_grp = self.create_marker_group('marker_group', cam_tfm)
         marker_tfm, marker_shp = self.create_marker(
-            'marker',
-            mkr_grp,
-            bnd_tfm=bundle_tfm)
+            'marker', mkr_grp, bnd_tfm=bundle_tfm
+        )
         maya.cmds.setAttr(marker_tfm + '.tx', 0)
         maya.cmds.setAttr(marker_tfm + '.ty', 0)
         maya.cmds.setAttr(marker_tfm + '.tz', -1)
@@ -84,7 +83,6 @@ class TestSolver9(solverUtils.SolverTestCase):
             -100.0,
             -1000.0,
             -10000.0,
-
             # These depths produce errors.
             -100000.0,
             -1000000.0,
@@ -103,12 +101,8 @@ class TestSolver9(solverUtils.SolverTestCase):
             if d > 0:
                 maya.cmds.setAttr(cam_shp + '.farClipPlane', d * 1.1)
 
-            cameras = (
-                (cam_tfm, cam_shp),
-            )
-            markers = (
-                (marker_tfm, cam_shp, bundle_tfm),
-            )
+            cameras = ((cam_tfm, cam_shp),)
+            markers = ((marker_tfm, cam_shp, bundle_tfm),)
             # NOTE: All dynamic attributes must have a keyframe before
             # starting to solve.
             node_attrs = [
@@ -128,15 +122,12 @@ class TestSolver9(solverUtils.SolverTestCase):
             # Run solver!
             s = time.time()
             frames = []
-            for f in range(start, end+1):
+            for f in range(start, end + 1):
                 frames = [f]
 
                 # Default values for the solver should get us a good solve.
                 result = maya.cmds.mmSolver(
-                    frame=frames,
-                    solverType=solver_index,
-                    verbose=True,
-                    **kwargs
+                    frame=frames, solverType=solver_index, verbose=True, **kwargs
                 )
                 # Ensure the values are correct
                 self.assertEqual(result[0], 'success=1')
@@ -146,8 +137,7 @@ class TestSolver9(solverUtils.SolverTestCase):
             print('total time:', e - s)
 
         # save the output
-        file_name = 'solver_test9_{}_{}_after.ma'.format(
-            solver_name, scene_graph_name)
+        file_name = 'solver_test9_{}_{}_after.ma'.format(solver_name, scene_graph_name)
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -156,19 +146,37 @@ class TestSolver9(solverUtils.SolverTestCase):
         self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
     def test_init_ceres_mmscenegraph(self):
-        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+        )
 
     def test_init_cminpack_lmdif_maya_dag(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_init_cminpack_lmdif_mmscenegraph(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
     def test_init_cminpack_lmder_maya_dag(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_init_cminpack_lmder_mmscenegraph(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
 
 if __name__ == '__main__':

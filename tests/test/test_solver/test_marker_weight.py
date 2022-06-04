@@ -30,6 +30,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -41,7 +42,6 @@ import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
 class TestSolverMarkerWeight(solverUtils.SolverTestCase):
-
     def create_scene(self, w1, w2):
         """
         Create a test scene; 2 markers, 1 camera and two bundles under a single group.
@@ -61,22 +61,29 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
 
         mkr_grp = self.create_marker_group('marker_group', cam_tfm)
         marker_01_tfm, marker_01_shp = self.create_marker(
-            'marker_01', mkr_grp, bnd_tfm=bundle_01_tfm)
+            'marker_01', mkr_grp, bnd_tfm=bundle_01_tfm
+        )
         maya.cmds.setAttr(marker_01_tfm + '.tx', -0.243056042)
         maya.cmds.setAttr(marker_01_tfm + '.ty', 0.189583713)
         maya.cmds.setAttr(marker_01_tfm + '.tz', -1.0)
         maya.cmds.setAttr(marker_01_tfm + '.weight', w1)
 
         marker_02_tfm, marker_02_shp = self.create_marker(
-            'marker_02', mkr_grp, bnd_tfm=bundle_02_tfm)
+            'marker_02', mkr_grp, bnd_tfm=bundle_02_tfm
+        )
         maya.cmds.setAttr(marker_02_tfm + '.tx', 0.243056042)
         maya.cmds.setAttr(marker_02_tfm + '.ty', 0.189583713)
         maya.cmds.setAttr(marker_02_tfm + '.tz', -1.0)
         maya.cmds.setAttr(marker_02_tfm + '.weight', w2)
-        return (cam_tfm, cam_shp,
-                marker_01_tfm, marker_02_tfm,
-                bundle_01_tfm, bundle_02_tfm,
-                grp)
+        return (
+            cam_tfm,
+            cam_shp,
+            marker_01_tfm,
+            marker_02_tfm,
+            bundle_01_tfm,
+            bundle_02_tfm,
+            grp,
+        )
 
     def test_single_frame_high_weight(self):
         """
@@ -88,13 +95,17 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         w2 = 1.0
         nodes = self.create_scene(w1, w2)
         # tuple unpack all the node names
-        cam_tfm, cam_shp, \
-            marker_01_tfm, marker_02_tfm, \
-            bundle_01_tfm, bundle_02_tfm, grp = nodes
+        (
+            cam_tfm,
+            cam_shp,
+            marker_01_tfm,
+            marker_02_tfm,
+            bundle_01_tfm,
+            bundle_02_tfm,
+            grp,
+        ) = nodes
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
+        cameras = ((cam_tfm, cam_shp),)
         markers = (
             (marker_01_tfm, cam_shp, bundle_01_tfm),
             (marker_02_tfm, cam_shp, bundle_02_tfm),
@@ -118,16 +129,14 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        result = maya.cmds.mmSolver(
-            frame=frames,
-            verbose=True,
-            **kwargs
-        )
+        result = maya.cmds.mmSolver(frame=frames, verbose=True, **kwargs)
         e = time.time()
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path('solver_marker_weight_staticframe_highweight_after.ma')
+        path = self.get_data_path(
+            'solver_marker_weight_staticframe_highweight_after.ma'
+        )
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -148,13 +157,17 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         w2 = 0.01
         nodes = self.create_scene(w1, w2)
         # tuple unpack all the node names
-        cam_tfm, cam_shp, \
-            marker_01_tfm, marker_02_tfm, \
-            bundle_01_tfm, bundle_02_tfm, grp = nodes
+        (
+            cam_tfm,
+            cam_shp,
+            marker_01_tfm,
+            marker_02_tfm,
+            bundle_01_tfm,
+            bundle_02_tfm,
+            grp,
+        ) = nodes
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
+        cameras = ((cam_tfm, cam_shp),)
         markers = (
             (marker_01_tfm, cam_shp, bundle_01_tfm),
             (marker_02_tfm, cam_shp, bundle_02_tfm),
@@ -178,11 +191,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        result = maya.cmds.mmSolver(
-            frame=frames,
-            verbose=True,
-            **kwargs
-        )
+        result = maya.cmds.mmSolver(frame=frames, verbose=True, **kwargs)
         e = time.time()
         print('total time:', e - s)
 
@@ -208,9 +217,15 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         w2 = 50.0
         nodes = self.create_scene(w1, w2)
         # tuple unpack all the node names
-        cam_tfm, cam_shp, \
-            marker_01_tfm, marker_02_tfm, \
-            bundle_01_tfm, bundle_02_tfm, grp = nodes
+        (
+            cam_tfm,
+            cam_shp,
+            marker_01_tfm,
+            marker_02_tfm,
+            bundle_01_tfm,
+            bundle_02_tfm,
+            grp,
+        ) = nodes
         maya.cmds.setAttr(cam_tfm + '.tx', 0.0)
         maya.cmds.setAttr(cam_tfm + '.ty', 0.0)
         maya.cmds.setAttr(cam_tfm + '.tz', 0.0)
@@ -218,9 +233,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         maya.cmds.setAttr(marker_01_tfm + '.tx', -0.097222417)
         maya.cmds.setAttr(marker_02_tfm + '.tx', 0.097222417)
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
+        cameras = ((cam_tfm, cam_shp),)
         markers = (
             (marker_01_tfm, cam_shp, bundle_01_tfm),
             (marker_02_tfm, cam_shp, bundle_02_tfm),
@@ -244,16 +257,14 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        result = maya.cmds.mmSolver(
-            frame=frames,
-            verbose=True,
-            **kwargs
-        )
+        result = maya.cmds.mmSolver(frame=frames, verbose=True, **kwargs)
         e = time.time()
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path('solver_marker_weight_staticframe_ratioweight_after.ma')
+        path = self.get_data_path(
+            'solver_marker_weight_staticframe_ratioweight_after.ma'
+        )
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -274,13 +285,17 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         w2 = 0.5
         nodes = self.create_scene(w1, w2)
         # tuple unpack all the node names
-        cam_tfm, cam_shp, \
-            marker_01_tfm, marker_02_tfm, \
-            bundle_01_tfm, bundle_02_tfm, grp = nodes
+        (
+            cam_tfm,
+            cam_shp,
+            marker_01_tfm,
+            marker_02_tfm,
+            bundle_01_tfm,
+            bundle_02_tfm,
+            grp,
+        ) = nodes
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
+        cameras = ((cam_tfm, cam_shp),)
         markers = (
             (marker_01_tfm, cam_shp, bundle_01_tfm),
             (marker_02_tfm, cam_shp, bundle_02_tfm),
@@ -304,16 +319,14 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        result = maya.cmds.mmSolver(
-            frame=frames,
-            verbose=True,
-            **kwargs
-        )
+        result = maya.cmds.mmSolver(frame=frames, verbose=True, **kwargs)
         e = time.time()
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path('solver_marker_weight_staticframe_sameweight_after.ma')
+        path = self.get_data_path(
+            'solver_marker_weight_staticframe_sameweight_after.ma'
+        )
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -336,13 +349,17 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         w2 = 0.0
         nodes = self.create_scene(w1, w2)
         # tuple unpack all the node names
-        cam_tfm, cam_shp, \
-            marker_01_tfm, marker_02_tfm, \
-            bundle_01_tfm, bundle_02_tfm, grp = nodes
+        (
+            cam_tfm,
+            cam_shp,
+            marker_01_tfm,
+            marker_02_tfm,
+            bundle_01_tfm,
+            bundle_02_tfm,
+            grp,
+        ) = nodes
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
+        cameras = ((cam_tfm, cam_shp),)
         markers = (
             (marker_01_tfm, cam_shp, bundle_01_tfm),
             (marker_02_tfm, cam_shp, bundle_02_tfm),
@@ -366,11 +383,7 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        result = maya.cmds.mmSolver(
-            frame=frames,
-            verbose=True,
-            **kwargs
-        )
+        result = maya.cmds.mmSolver(frame=frames, verbose=True, **kwargs)
         e = time.time()
         print('total time:', e - s)
 

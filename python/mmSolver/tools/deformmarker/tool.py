@@ -104,29 +104,16 @@ def bake_offset():
         maya.cmds.setKeyframe(attrs)
 
     for attr in attrs:
-        first_frame, last_frame = lib.__get_first_last_frame(attr,
-                                                             anim_layer)
-        input_a, input_b = lib.get_attr_blend_plugs(attr,
-                                                    anim_layer)
-        input_a_value = lib.__get_attr_value_array(input_a,
-                                                   first_frame,
-                                                   last_frame)
-        input_b_value = lib.__get_attr_value_array(input_b,
-                                                   first_frame,
-                                                   last_frame)
+        first_frame, last_frame = lib.__get_first_last_frame(attr, anim_layer)
+        input_a, input_b = lib.get_attr_blend_plugs(attr, anim_layer)
+        input_a_value = lib.__get_attr_value_array(input_a, first_frame, last_frame)
+        input_b_value = lib.__get_attr_value_array(input_b, first_frame, last_frame)
         new_array = list(map(operator.add, input_a_value, input_b_value))
 
-        maya.cmds.animLayer(anim_layer,
-                            removeAttribute=attr,
-                            edit=True)
-        lib.set_attr_value_array(attr,
-                                 new_array,
-                                 first_frame,
-                                 last_frame)
+        maya.cmds.animLayer(anim_layer, removeAttribute=attr, edit=True)
+        lib.set_attr_value_array(attr, new_array, first_frame, last_frame)
 
-    if maya.cmds.animLayer(anim_layer,
-                           attribute=True,
-                           query=True) is None:
+    if maya.cmds.animLayer(anim_layer, attribute=True, query=True) is None:
         maya.cmds.delete(anim_layer)
 
     maya.cmds.select(selected_markers)
@@ -161,12 +148,8 @@ def remove_layer_override():
     attrs = lib.get_attrs_for_offset(marker_nodes)
     anim_layer = const.ANIM_LAYER
     for attr in attrs:
-        maya.cmds.animLayer(anim_layer,
-                            removeAttribute=attr,
-                            edit=True)
+        maya.cmds.animLayer(anim_layer, removeAttribute=attr, edit=True)
 
-    if maya.cmds.animLayer(anim_layer,
-                           attribute=True,
-                           query=True) is None:
+    if maya.cmds.animLayer(anim_layer, attribute=True, query=True) is None:
         maya.cmds.delete(anim_layer)
     return

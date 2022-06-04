@@ -53,9 +53,7 @@ def _create_camera_attributes(cam_shp):
 
     already_exists = node_utils.attribute_exists('inLens', cam_shp)
     if already_exists is False:
-        attr_obj = typedAttr.create(
-            "inLens", "ilns",
-            data_type_id)
+        attr_obj = typedAttr.create("inLens", "ilns", data_type_id)
         typedAttr.setStorable(False)
         typedAttr.setKeyable(False)
         typedAttr.setReadable(True)
@@ -64,9 +62,7 @@ def _create_camera_attributes(cam_shp):
 
     already_exists = node_utils.attribute_exists('outLens', cam_shp)
     if already_exists is False:
-        attr_obj = typedAttr.create(
-            "outLens", "olns",
-            data_type_id)
+        attr_obj = typedAttr.create("outLens", "olns", data_type_id)
         typedAttr.setStorable(False)
         typedAttr.setKeyable(False)
         typedAttr.setReadable(True)
@@ -79,14 +75,15 @@ def _create_lens_toggle_setup(cam_tfm, cam_shp):
     # When linking to a camera, if an attribute 'lens'
     # does not already exist, create it.
     _create_camera_attributes(cam_shp)
-    toggle_nodes = maya.cmds.listConnections(
-        cam_shp + ".inLens",
-        shapes=False,
-        destination=True) or []
+    toggle_nodes = (
+        maya.cmds.listConnections(cam_shp + ".inLens", shapes=False, destination=True)
+        or []
+    )
     if len(toggle_nodes) == 0:
         api_utils.load_plugin()
-        toggle_node = maya.cmds.createNode('mmLensModelToggle',
-                                           name=const.LENS_TOGGLE_NODE_NAME)
+        toggle_node = maya.cmds.createNode(
+            'mmLensModelToggle', name=const.LENS_TOGGLE_NODE_NAME
+        )
         maya.cmds.connectAttr(cam_shp + '.inLens', toggle_node + '.inLens')
         maya.cmds.connectAttr(toggle_node + '.outLens', cam_shp + '.outLens')
     else:
@@ -109,13 +106,17 @@ def _link_lens_to_camera(cam_tfm, cam_shp, lens):
 
 def _unlink_lens_from_camera(cam_tfm, cam_shp):
     """Disconnect Lens(es) from the Camera attribute."""
-    lens_node_connections = maya.cmds.listConnections(
-        cam_shp + ".inLens",
-        shapes=False,
-        source=True,
-        destination=False,
-        connections=True,
-        plugs=True) or []
+    lens_node_connections = (
+        maya.cmds.listConnections(
+            cam_shp + ".inLens",
+            shapes=False,
+            source=True,
+            destination=False,
+            connections=True,
+            plugs=True,
+        )
+        or []
+    )
     if len(lens_node_connections) > 0:
         num = len(lens_node_connections)
         src_list = lens_node_connections[1:num:2]
@@ -342,8 +343,7 @@ class Camera(object):
         :return: Tuple of X and Y resolution.
         :rtype: (int, int)
         """
-        resolution = (const.DEFAULT_PLATE_WIDTH,
-                      const.DEFAULT_PLATE_HEIGHT)
+        resolution = (const.DEFAULT_PLATE_WIDTH, const.DEFAULT_PLATE_HEIGHT)
         shp = self.get_shape_node()
         if shp is None:
             LOG.warning('Could not get Camera shape node.')
@@ -462,19 +462,18 @@ class Camera(object):
         :rtype: Marker
         """
         import mmSolver._api.marker
+
         node = self.get_transform_node()
-        below_nodes = maya.cmds.ls(
-            node,
-            dag=True,
-            long=True,
-            type='transform') or []
+        below_nodes = maya.cmds.ls(node, dag=True, long=True, type='transform') or []
 
         mkr_list = []
         ver = maya.cmds.about(apiVersion=True)
         if ver < 201600:
-            mkr_list = [mmSolver._api.marker.Marker(node=n)
-                        for n in below_nodes
-                        if api_utils.get_object_type(n) == const.OBJECT_TYPE_MARKER]
+            mkr_list = [
+                mmSolver._api.marker.Marker(node=n)
+                for n in below_nodes
+                if api_utils.get_object_type(n) == const.OBJECT_TYPE_MARKER
+            ]
         else:
             # Note: Use UUIDs to cache nodes, this is only supported
             # on Maya 2016 and above.
@@ -499,10 +498,12 @@ class Camera(object):
         """
         cam_tfm = self.get_transform_node()
         cam_shp = self.get_shape_node()
-        if ((cam_tfm is None) or
-                (cam_shp is None) or
-                (maya.cmds.objExists(cam_tfm) is False) or
-                (maya.cmds.objExists(cam_shp) is False)):
+        if (
+            (cam_tfm is None)
+            or (cam_shp is None)
+            or (maya.cmds.objExists(cam_tfm) is False)
+            or (maya.cmds.objExists(cam_shp) is False)
+        ):
             return False
         return True
 
@@ -552,11 +553,12 @@ class Camera(object):
             LOG.warn(msg, self)
             return lens
         _create_lens_toggle_setup(cam_tfm, cam_shp)
-        nodes = maya.cmds.listConnections(
-            cam_shp + '.inLens',
-            source=True,
-            destination=False,
-            shapes=False) or []
+        nodes = (
+            maya.cmds.listConnections(
+                cam_shp + '.inLens', source=True, destination=False, shapes=False
+            )
+            or []
+        )
         if len(nodes) > 0:
             assert len(nodes) == 1
             lens = lensmodule.Lens(node=nodes[0])

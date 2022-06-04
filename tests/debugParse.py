@@ -73,10 +73,7 @@ def generate_plot_error_min_avg_max(data, ax):
     ax.set_title('Error Min/Avg/Max')
     ax.set_xlabel('Iteration')
     ax.set_ylabel('Errors')
-    ax.plot(
-        x, y_min,
-        x, y_avg,
-        x, y_max)
+    ax.plot(x, y_min, x, y_avg, x, y_max)
     ax.grid(True)
     return ax
 
@@ -105,11 +102,7 @@ def generate_plot_value_dots(data, ax):
     ax.set_title('Parameter Values')
     ax.set_xlabel('Iteration')
     ax.set_ylabel('Values')
-    ax.scatter(
-        x_parm, y_parm,
-        c=color,
-        s=size
-    )
+    ax.scatter(x_parm, y_parm, c=color, s=size)
     ax.grid(True)
     return ax
 
@@ -127,7 +120,7 @@ def generate_plot_value_lines(data, ax):
             continue
         it_num = it_v['number']
         s = (float(it_num) / float(it_num_max)) - (1.0 / float(it_num_max))
-        s = (s - 0.5)
+        s = s - 0.5
         for i, v in enumerate(it_v['parm']):
             if len(x_parm) < (i + 1):
                 x_parm.append([])
@@ -160,7 +153,7 @@ def read_log(file_path):
         for line in f:
             name = 'iteration '
             if line.startswith(name):
-                line = line[len(name):]
+                line = line[len(name) :]
                 it_type = str(line.split(':')[0])
                 it_num = int(line.split(':')[-1])
                 it_key = it_key_fmt % (it_type, str(it_num).zfill(8))
@@ -185,7 +178,7 @@ def read_log(file_path):
 
             name = 'error dist '
             if line.startswith(name):
-                line = line[len(name):]
+                line = line[len(name) :]
                 err_num = line.split(' ')[0]
                 err_val = line.split(' ')[-1]
                 err_num = int(err_num.split('=')[-1])
@@ -239,13 +232,7 @@ def main(file_paths):
 def parse():
     text = 'Create an image from debug mmSolver data logs..'
     parser = argparse.ArgumentParser(description=text)
-    parser.add_argument(
-        'files',
-        metavar='FILE',
-        type=str,
-        nargs='+',
-        help='Input file'
-    )
+    parser.add_argument('files', metavar='FILE', type=str, nargs='+', help='Input file')
     args = parser.parse_args()
     return args
 

@@ -44,7 +44,6 @@ LOG = mmSolver.logger.get_logger()
 
 # @unittest.skip
 class TestSolveMarkerEnable(test_api_utils.APITestCase):
-
     def do_solve(self, solver_name, solver_type_index, scene_graph_mode):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
@@ -58,18 +57,12 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
 
         # Set Time Range
         maya.cmds.playbackOptions(
-            animationStartTime=start,
-            minTime=start,
-            animationEndTime=end,
-            maxTime=end
+            animationStartTime=start, minTime=start, animationEndTime=end, maxTime=end
         )
 
         # Camera
-        cam_tfm = maya.cmds.createNode('transform',
-                                       name='cam_tfm')
-        cam_shp = maya.cmds.createNode('camera',
-                                       name='cam_shp',
-                                       parent=cam_tfm)
+        cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
+        cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
         maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
@@ -90,49 +83,102 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
         aov = math.degrees(2.0 * math.atan(fbw * (0.5 / f)))
 
         # Set Camera Anim
-        maya.cmds.setKeyframe(cam_tfm, attribute='rotateY', time=start, value=-(aov/2),
-                              inTangentType='linear',
-                              outTangentType='linear')
-        maya.cmds.setKeyframe(cam_tfm, attribute='rotateY', time=end, value=(aov/2),
-                              inTangentType='linear',
-                              outTangentType='linear')
+        maya.cmds.setKeyframe(
+            cam_tfm,
+            attribute='rotateY',
+            time=start,
+            value=-(aov / 2),
+            inTangentType='linear',
+            outTangentType='linear',
+        )
+        maya.cmds.setKeyframe(
+            cam_tfm,
+            attribute='rotateY',
+            time=end,
+            value=(aov / 2),
+            inTangentType='linear',
+            outTangentType='linear',
+        )
 
         # Marker
         mkr = mmapi.Marker().create_node(cam=cam, bnd=bnd)
         marker_tfm = mkr.get_node()
         assert mmapi.get_object_type(marker_tfm) == 'marker'
         mid_value = 0.23534346
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-0.5,
-                              inTangentType='linear',
-                              outTangentType='linear')
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start+1,
-                              value=-mid_value,
-                              inTangentType='linear',
-                              outTangentType='linear')
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end-1,
-                              value=mid_value,
-                              inTangentType='linear',
-                              outTangentType='linear')
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=0.5,
-                              inTangentType='linear',
-                              outTangentType='linear')
+        maya.cmds.setKeyframe(
+            marker_tfm,
+            attribute='translateX',
+            time=start,
+            value=-0.5,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
+        maya.cmds.setKeyframe(
+            marker_tfm,
+            attribute='translateX',
+            time=start + 1,
+            value=-mid_value,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
+        maya.cmds.setKeyframe(
+            marker_tfm,
+            attribute='translateX',
+            time=end - 1,
+            value=mid_value,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
+        maya.cmds.setKeyframe(
+            marker_tfm,
+            attribute='translateX',
+            time=end,
+            value=0.5,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
         maya.cmds.setAttr(marker_tfm + '.ty', 0.0)
 
-        maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=1, value=1,
-                              inTangentType='linear',
-                              outTangentType='linear')
-        maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=2, value=1,
-                              inTangentType='linear',
-                              outTangentType='linear')
-        maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=3, value=0,
-                              inTangentType='linear',
-                              outTangentType='linear')
-        maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=4, value=1,
-                              inTangentType='linear',
-                              outTangentType='linear')
-        maya.cmds.setKeyframe(marker_tfm, attribute='enable', time=5, value=1,
-                              inTangentType='linear',
-                              outTangentType='linear')
+        maya.cmds.setKeyframe(
+            marker_tfm,
+            attribute='enable',
+            time=1,
+            value=1,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
+        maya.cmds.setKeyframe(
+            marker_tfm,
+            attribute='enable',
+            time=2,
+            value=1,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
+        maya.cmds.setKeyframe(
+            marker_tfm,
+            attribute='enable',
+            time=3,
+            value=0,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
+        maya.cmds.setKeyframe(
+            marker_tfm,
+            attribute='enable',
+            time=4,
+            value=1,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
+        maya.cmds.setKeyframe(
+            marker_tfm,
+            attribute='enable',
+            time=5,
+            value=1,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
 
         # Create Sphere
         sph_tfm, shp_node = maya.cmds.polySphere()
@@ -150,7 +196,7 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
             mmapi.Frame(2, primary=True),
             mmapi.Frame(3, primary=True),
             mmapi.Frame(4, primary=True),
-            mmapi.Frame(5, primary=True)
+            mmapi.Frame(5, primary=True),
         ]
 
         # Solver
@@ -172,7 +218,8 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
 
         # save the output
         file_name = 'test_solve_marker_enabled_{}_{}_before.ma'.format(
-            solver_name, scene_graph_name)
+            solver_name, scene_graph_name
+        )
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -187,8 +234,13 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
             print('error stats: ' + pprint.pformat(res.get_error_stats()))
             print('timer stats: ' + pprint.pformat(res.get_timer_stats()))
             print('solver stats: ' + pprint.pformat(res.get_solver_stats()))
-            print('frame error list: ' + pprint.pformat(dict(res.get_frame_error_list())))
-            print('marker error list: ' + pprint.pformat(dict(res.get_marker_error_list())))
+            print(
+                'frame error list: ' + pprint.pformat(dict(res.get_frame_error_list()))
+            )
+            print(
+                'marker error list: '
+                + pprint.pformat(dict(res.get_marker_error_list()))
+            )
 
             self.assertTrue(success)
             # self.assertGreater(0.001, err)
@@ -201,7 +253,8 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
 
         # save the output
         file_name = 'test_solve_marker_enabled_{}_{}_after.ma'.format(
-            solver_name, scene_graph_name)
+            solver_name, scene_graph_name
+        )
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -213,19 +266,37 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
         self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
     def test_ceres_mmscenegraph(self):
-        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+        )
 
     def test_cminpack_lmdif_maya_dag(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_cminpack_lmdif_mmscenegraph(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
     def test_cminpack_lmder_maya_dag(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_cminpack_lmder_mmscenegraph(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
 
 if __name__ == '__main__':

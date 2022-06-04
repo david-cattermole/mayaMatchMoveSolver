@@ -36,10 +36,8 @@ LOG = mmSolver.logger.get_logger()
 def add_attr_float3_color(node, attr_name, default_value):
     min_value = 0.0
     maya.cmds.addAttr(
-        node,
-        longName=attr_name,
-        usedAsColor=True,
-        attributeType='float3')
+        node, longName=attr_name, usedAsColor=True, attributeType='float3'
+    )
 
     maya.cmds.addAttr(
         node,
@@ -47,21 +45,24 @@ def add_attr_float3_color(node, attr_name, default_value):
         attributeType='float',
         minValue=min_value,
         defaultValue=default_value,
-        parent=attr_name)
+        parent=attr_name,
+    )
     maya.cmds.addAttr(
         node,
         longName=attr_name + 'G',
         attributeType='float',
         minValue=min_value,
         defaultValue=default_value,
-        parent=attr_name)
+        parent=attr_name,
+    )
     maya.cmds.addAttr(
         node,
         longName=attr_name + 'B',
         attributeType='float',
         minValue=min_value,
         defaultValue=default_value,
-        parent=attr_name)
+        parent=attr_name,
+    )
 
     node_attr = node + '.' + attr_name
     maya.cmds.setAttr(node_attr + 'R', keyable=True)
@@ -79,11 +80,12 @@ def force_connect_attr(src_attr, dst_attr):
     if dst_lock_state is True:
         maya.cmds.setAttr(dst_attr, lock=False)
 
-    conns = maya.cmds.listConnections(
-        dst_attr,
-        source=True,
-        plugs=True,
-        skipConversionNodes=True) or []
+    conns = (
+        maya.cmds.listConnections(
+            dst_attr, source=True, plugs=True, skipConversionNodes=True
+        )
+        or []
+    )
     conns = [x for x in conns if maya.cmds.isConnected(x, dst_attr)]
     for conn in conns:
         maya.cmds.disconnectAttr(conn, dst_attr)

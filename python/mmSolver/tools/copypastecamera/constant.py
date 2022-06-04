@@ -23,10 +23,7 @@ Contains constant values for the Copy/Paste Camera tool.
 # Keep this in-sync with the 3DEqualizer exporter 'mmcamera_format.py'
 MM_CAMERA_FORMAT_VERSION_UNKNOWN = -1
 MM_CAMERA_FORMAT_VERSION_1 = 1
-MM_CAMERA_HEADER_VERSION_1 = {
-    'version': MM_CAMERA_FORMAT_VERSION_1,
-    'data': {}
-}
+MM_CAMERA_HEADER_VERSION_1 = {'version': MM_CAMERA_FORMAT_VERSION_1, 'data': {}}
 
 
 EXT = '.mmcamera'

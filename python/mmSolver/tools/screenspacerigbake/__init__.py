@@ -18,4 +18,3 @@
 """
 Tools for screen-space rig baking.
 """
-

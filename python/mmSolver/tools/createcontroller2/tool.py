@@ -19,5 +19,5 @@
 
 def open_window():
     import mmSolver.tools.createcontroller2.ui.createcontroller_window as window
-    window.main()
 
+    window.main()

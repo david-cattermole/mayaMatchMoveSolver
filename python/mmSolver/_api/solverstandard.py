@@ -65,9 +65,7 @@ def _gen_two_frame_fwd(int_list):
     """
     if len(int_list) == 1:
         num = int_list[0]
-        batch_list = [
-            [frame.Frame(num), frame.Frame(num)]
-        ]
+        batch_list = [[frame.Frame(num), frame.Frame(num)]]
         return batch_list
     end = len(int_list) - 1
     batch_list = []
@@ -133,13 +131,8 @@ def _split_mkr_attr_into_categories(mkr_list, attr_list):
     meta_mkr_list = []
     meta_attr_list = []
 
-    mkr_attr_map = markerutils.find_marker_attr_mapping(
-        mkr_list,
-        attr_list
-    )
-    attrs_in_categories = api_compile.categorise_attributes(
-        attr_list
-    )
+    mkr_attr_map = markerutils.find_marker_attr_mapping(mkr_list, attr_list)
+    attrs_in_categories = api_compile.categorise_attributes(attr_list)
     for category in ATTR_CATEGORIES:
         category_node_attrs = attrs_in_categories[category]
         for node, attrs in category_node_attrs.items():
@@ -162,7 +155,8 @@ def _split_mkr_attr_into_categories(mkr_list, attr_list):
             if len(new_mkr_list) == 0 or len(new_attr_list) == 0:
                 msg = (
                     'No markers found affecting attribute. '
-                    'node=%r attrs=%r category=%r')
+                    'node=%r attrs=%r category=%r'
+                )
                 LOG.warn(msg, node, attrs, category)
                 continue
             meta_mkr_list.append(new_mkr_list)
@@ -171,17 +165,19 @@ def _split_mkr_attr_into_categories(mkr_list, attr_list):
     return meta_mkr_list, meta_attr_list
 
 
-def _compile_multi_root_frames(col,
-                               mkr_list,
-                               attr_list,
-                               batch_frame_list,
-                               root_iter_num,
-                               remove_unused_objects,
-                               solver_type,
-                               scene_graph_mode,
-                               precomputed_data,
-                               withtest,
-                               verbose):
+def _compile_multi_root_frames(
+    col,
+    mkr_list,
+    attr_list,
+    batch_frame_list,
+    root_iter_num,
+    remove_unused_objects,
+    solver_type,
+    scene_graph_mode,
+    precomputed_data,
+    withtest,
+    verbose,
+):
     """
     Compile actions for solving Root frames.
 
@@ -239,15 +235,11 @@ def _compile_multi_root_frames(col,
     for frm_list in batch_frame_list:
         # Get root markers
         root_mkr_list, non_root_mkr_list = _filter_mkr_list_by_frame_list(
-            mkr_list,
-            frm_list
+            mkr_list, frm_list
         )
         assert len(root_mkr_list) > 0
 
-        mkr_attr_map = markerutils.find_marker_attr_mapping(
-            root_mkr_list,
-            attr_list
-        )
+        mkr_attr_map = markerutils.find_marker_attr_mapping(root_mkr_list, attr_list)
         root_attr_list = []
         for i, mkr in enumerate(root_mkr_list):
             for j, attr in enumerate(attr_list):
@@ -272,18 +264,16 @@ def _compile_multi_root_frames(col,
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, col, root_mkr_list, root_attr_list, withtest, cache)
+            sol, col, root_mkr_list, root_attr_list, withtest, cache
+        )
         for action, vaction in generator:
             yield action, vaction
     return
 
 
-def _compile_remove_inbetween_frames(attr_list,
-                                     non_root_frame_list,
-                                     start_frame,
-                                     end_frame,
-                                     withtest,
-                                     verbose):
+def _compile_remove_inbetween_frames(
+    attr_list, non_root_frame_list, start_frame, end_frame, withtest, verbose
+):
     """
     Compile actions to delete keyframes for all attributes with-in a
     specific start/end frame range.
@@ -328,10 +318,7 @@ def _compile_remove_inbetween_frames(attr_list,
         func = 'maya.cmds.cutKey'
         args = attr_names
         kwargs = {'time': (frame_num, frame_num)}
-        action = api_action.Action(
-            func=func,
-            args=args,
-            kwargs=kwargs)
+        action = api_action.Action(func=func, args=args, kwargs=kwargs)
         yield action, None
 
     # Change all attribute keyframes to linear tangents.
@@ -339,28 +326,27 @@ def _compile_remove_inbetween_frames(attr_list,
     kwargs = {
         'inTangentType': 'linear',
         'outTangentType': 'linear',
-        'time': (start_frame.get_number() - 1,
-                 end_frame.get_number() + 1)}
-    action = api_action.Action(
-        func=func,
-        args=attr_names,
-        kwargs=kwargs)
+        'time': (start_frame.get_number() - 1, end_frame.get_number() + 1),
+    }
+    action = api_action.Action(func=func, args=attr_names, kwargs=kwargs)
     yield action, None
 
 
-def _compile_multi_inbetween_frames(col,
-                                    mkr_list,
-                                    attr_list,
-                                    all_frame_list,
-                                    global_solve,
-                                    eval_complex_graphs,
-                                    anim_iter_num,
-                                    remove_unused_objects,
-                                    solver_type,
-                                    scene_graph_mode,
-                                    precomputed_data,
-                                    withtest,
-                                    verbose):
+def _compile_multi_inbetween_frames(
+    col,
+    mkr_list,
+    attr_list,
+    all_frame_list,
+    global_solve,
+    eval_complex_graphs,
+    anim_iter_num,
+    remove_unused_objects,
+    solver_type,
+    scene_graph_mode,
+    precomputed_data,
+    withtest,
+    verbose,
+):
     """
     Solve only animated attributes on frames between the root frames.
 
@@ -447,7 +433,8 @@ def _compile_multi_inbetween_frames(col,
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, col, mkr_list, attr_list, withtest, cache)
+            sol, col, mkr_list, attr_list, withtest, cache
+        )
         for action, vaction in generator:
             yield action, vaction
     else:
@@ -479,7 +466,8 @@ def _compile_multi_inbetween_frames(col,
                 sol.set_precomputed_data(precomputed_data)
 
                 generator = api_compile.compile_solver_with_cache(
-                    sol, col, mkr_list, attr_list, withtest, cache)
+                    sol, col, mkr_list, attr_list, withtest, cache
+                )
                 for action, vaction in generator:
                     yield action, vaction
         elif scene_graph_mode == const.SCENE_GRAPH_MODE_MM_SCENE_GRAPH:
@@ -503,33 +491,36 @@ def _compile_multi_inbetween_frames(col,
             sol.set_precomputed_data(precomputed_data)
 
             generator = api_compile.compile_solver_with_cache(
-                sol, col, mkr_list, attr_list, withtest, cache)
+                sol, col, mkr_list, attr_list, withtest, cache
+            )
             for action, vaction in generator:
                 yield action, vaction
     return
 
 
-def _compile_multi_frame(col,
-                         mkr_list,
-                         attr_list,
-                         root_frame_list,
-                         frame_list,
-                         auto_attr_blocks,
-                         block_iter_num,
-                         only_root_frames,
-                         root_iter_num,
-                         anim_iter_num,
-                         global_solve,
-                         eval_complex_graphs,
-                         root_frame_strategy,
-                         triangulate_bundles,
-                         use_euler_filter,
-                         remove_unused_objects,
-                         solver_type,
-                         scene_graph_mode,
-                         precomputed_data,
-                         withtest,
-                         verbose):
+def _compile_multi_frame(
+    col,
+    mkr_list,
+    attr_list,
+    root_frame_list,
+    frame_list,
+    auto_attr_blocks,
+    block_iter_num,
+    only_root_frames,
+    root_iter_num,
+    anim_iter_num,
+    global_solve,
+    eval_complex_graphs,
+    root_frame_strategy,
+    triangulate_bundles,
+    use_euler_filter,
+    remove_unused_objects,
+    solver_type,
+    scene_graph_mode,
+    precomputed_data,
+    withtest,
+    verbose,
+):
     """
     Generate Actions to solve multiple-frames.
 
@@ -662,15 +653,15 @@ def _compile_multi_frame(col,
         # sol.root_frame_list = root_frame_list_num
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, col, mkr_list, attr_list, withtest, cache)
+            sol, col, mkr_list, attr_list, withtest, cache
+        )
         for action, vaction in generator:
             yield action, vaction
 
     # Solver root frames, breaking attributes into little blocks
     # to solve.
     root_mkr_list, non_root_mkr_list = _filter_mkr_list_by_frame_list(
-        mkr_list,
-        root_frame_list
+        mkr_list, root_frame_list
     )
     if len(root_mkr_list) == 0:
         # TODO: Test we have enough markers to solve with, if not warn
@@ -682,8 +673,7 @@ def _compile_multi_frame(col,
         return
     if auto_attr_blocks is True:
         meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
-            root_mkr_list,
-            attr_list
+            root_mkr_list, attr_list
         )
         for new_mkr_list, new_attr_list in zip(meta_mkr_list, meta_attr_list):
             sol = solverstep.SolverStep()
@@ -703,7 +693,8 @@ def _compile_multi_frame(col,
 
             cache = api_compile.create_compile_solver_cache()
             generator = api_compile.compile_solver_with_cache(
-                sol, col, new_mkr_list, new_attr_list, withtest, cache)
+                sol, col, new_mkr_list, new_attr_list, withtest, cache
+            )
             for action, vaction in generator:
                 yield action, vaction
 
@@ -745,7 +736,8 @@ def _compile_multi_frame(col,
 
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
-            sol, col, root_mkr_list, attr_list, withtest, cache)
+            sol, col, root_mkr_list, attr_list, withtest, cache
+        )
         for action, vaction in generator:
             yield action, vaction
     else:
@@ -766,7 +758,8 @@ def _compile_multi_frame(col,
             # 3 frames at a time, incrementing by 3 frames, moving
             # forward.
             frame_tmp_list = rootframe.generate_increment_frame_forward(
-                root_frame_list_num)
+                root_frame_list_num
+            )
             for frame_tmp in frame_tmp_list:
                 batch_frame_list.append([frame.Frame(f) for f in frame_tmp])
 
@@ -790,7 +783,7 @@ def _compile_multi_frame(col,
             solver_type,
             scene_graph_mode,
             withtest,
-            verbose
+            verbose,
         )
         for action, vaction in generator:
             yield action, vaction
@@ -799,12 +792,7 @@ def _compile_multi_frame(col,
     # helps us use the new solve root frames to hint the 'in-between'
     # frame solve.
     generator = _compile_remove_inbetween_frames(
-        attr_list,
-        non_root_frame_list,
-        start_frame,
-        end_frame,
-        withtest,
-        verbose
+        attr_list, non_root_frame_list, start_frame, end_frame, withtest, verbose
     )
     for action, vaction in generator:
         yield action, vaction
@@ -813,10 +801,7 @@ def _compile_multi_frame(col,
 
     # Perform an euler filter on all unlocked rotation attributes.
     if use_euler_filter is True:
-        generator = solverutils.compile_euler_filter(
-            attr_list,
-            withtest
-        )
+        generator = solverutils.compile_euler_filter(attr_list, withtest)
         for action, vaction in generator:
             yield action, vaction
 
@@ -840,19 +825,21 @@ def _compile_multi_frame(col,
     return
 
 
-def _compile_single_frame(col,
-                          mkr_list,
-                          attr_list,
-                          single_frame,
-                          block_iter_num,
-                          lineup_iter_num,
-                          auto_attr_blocks,
-                          remove_unused_objects,
-                          solver_type,
-                          scene_graph_mode,
-                          precomputed_data,
-                          withtest,
-                          verbose):
+def _compile_single_frame(
+    col,
+    mkr_list,
+    attr_list,
+    single_frame,
+    block_iter_num,
+    lineup_iter_num,
+    auto_attr_blocks,
+    remove_unused_objects,
+    solver_type,
+    scene_graph_mode,
+    precomputed_data,
+    withtest,
+    verbose,
+):
     """
     Compile to Actions for a solve of a single frame.
 
@@ -920,8 +907,7 @@ def _compile_single_frame(col,
 
     if auto_attr_blocks is True:
         meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
-            mkr_list,
-            attr_list
+            mkr_list, attr_list
         )
         for new_mkr_list, new_attr_list in zip(meta_mkr_list, meta_attr_list):
             sol = solverstep.SolverStep()
@@ -941,7 +927,8 @@ def _compile_single_frame(col,
 
             cache = api_compile.create_compile_solver_cache()
             generator = api_compile.compile_solver_with_cache(
-                sol, col, new_mkr_list, new_attr_list, withtest, cache)
+                sol, col, new_mkr_list, new_attr_list, withtest, cache
+            )
             for action, vaction in generator:
                 yield action, vaction
 
@@ -963,7 +950,8 @@ def _compile_single_frame(col,
 
     cache = api_compile.create_compile_solver_cache()
     generator = api_compile.compile_solver_with_cache(
-        sol, col, mkr_list, attr_list, withtest, cache)
+        sol, col, mkr_list, attr_list, withtest, cache
+    )
     for action, vaction in generator:
         yield action, vaction
     return
@@ -1039,8 +1027,8 @@ class SolverStandard(solverbase.SolverBase):
         :rtype: bool
         """
         return self._data.get(
-            'use_single_frame',
-            const.SOLVER_STD_USE_SINGLE_FRAME_DEFAULT_VALUE)
+            'use_single_frame', const.SOLVER_STD_USE_SINGLE_FRAME_DEFAULT_VALUE
+        )
 
     def set_use_single_frame(self, value):
         """
@@ -1059,8 +1047,8 @@ class SolverStandard(solverbase.SolverBase):
         :rtype: Frame or None
         """
         value = self._data.get(
-            'single_frame',
-            const.SOLVER_STD_SINGLE_FRAME_DEFAULT_VALUE)
+            'single_frame', const.SOLVER_STD_SINGLE_FRAME_DEFAULT_VALUE
+        )
         frm = None
         if value is not None:
             frm = frame.Frame(value)
@@ -1088,8 +1076,8 @@ class SolverStandard(solverbase.SolverBase):
         :rtype: bool
         """
         return self._data.get(
-            'only_root_frames',
-            const.SOLVER_STD_ONLY_ROOT_FRAMES_DEFAULT_VALUE)
+            'only_root_frames', const.SOLVER_STD_ONLY_ROOT_FRAMES_DEFAULT_VALUE
+        )
 
     def set_only_root_frames(self, value):
         """
@@ -1110,8 +1098,8 @@ class SolverStandard(solverbase.SolverBase):
         :rtype: bool
         """
         return self._data.get(
-            'global_solve',
-            const.SOLVER_STD_GLOBAL_SOLVE_DEFAULT_VALUE)
+            'global_solve', const.SOLVER_STD_GLOBAL_SOLVE_DEFAULT_VALUE
+        )
 
     def set_global_solve(self, value):
         """
@@ -1133,7 +1121,8 @@ class SolverStandard(solverbase.SolverBase):
         """
         return self._data.get(
             'eval_object_relationships',
-            const.SOLVER_STD_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE)
+            const.SOLVER_STD_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE,
+        )
 
     def set_eval_object_relationships(self, value):
         """
@@ -1155,7 +1144,8 @@ class SolverStandard(solverbase.SolverBase):
         """
         return self._data.get(
             'eval_complex_node_graphs',
-            const.SOLVER_STD_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE)
+            const.SOLVER_STD_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE,
+        )
 
     def set_eval_complex_graphs(self, value):
         """
@@ -1179,9 +1169,7 @@ class SolverStandard(solverbase.SolverBase):
 
         :rtype: int
         """
-        return self._data.get(
-            'solver_type',
-            const.SOLVER_STD_SOLVER_TYPE_DEFAULT_VALUE)
+        return self._data.get('solver_type', const.SOLVER_STD_SOLVER_TYPE_DEFAULT_VALUE)
 
     def set_solver_type(self, value):
         """
@@ -1202,8 +1190,8 @@ class SolverStandard(solverbase.SolverBase):
         :rtype: int
         """
         return self._data.get(
-            'scene_graph_mode',
-            const.SOLVER_STD_SCENE_GRAPH_MODE_DEFAULT_VALUE)
+            'scene_graph_mode', const.SOLVER_STD_SCENE_GRAPH_MODE_DEFAULT_VALUE
+        )
 
     def set_scene_graph_mode(self, value):
         """
@@ -1224,8 +1212,8 @@ class SolverStandard(solverbase.SolverBase):
         :rtype: bool
         """
         return self._data.get(
-            'root_frame_strategy',
-            const.SOLVER_STD_ROOT_FRAME_STRATEGY_DEFAULT_VALUE)
+            'root_frame_strategy', const.SOLVER_STD_ROOT_FRAME_STRATEGY_DEFAULT_VALUE
+        )
 
     def set_root_frame_strategy(self, value):
         """
@@ -1250,8 +1238,8 @@ class SolverStandard(solverbase.SolverBase):
         :rtype: bool
         """
         return self._data.get(
-            'block_iteration_num',
-            const.SOLVER_STD_BLOCK_ITERATION_NUM_DEFAULT_VALUE)
+            'block_iteration_num', const.SOLVER_STD_BLOCK_ITERATION_NUM_DEFAULT_VALUE
+        )
 
     def set_block_iteration_num(self, value):
         """
@@ -1271,8 +1259,8 @@ class SolverStandard(solverbase.SolverBase):
         :rtype: bool
         """
         return self._data.get(
-            'root_iteration_num',
-            const.SOLVER_STD_ROOT_ITERATION_NUM_DEFAULT_VALUE)
+            'root_iteration_num', const.SOLVER_STD_ROOT_ITERATION_NUM_DEFAULT_VALUE
+        )
 
     def set_root_iteration_num(self, value):
         """
@@ -1292,8 +1280,8 @@ class SolverStandard(solverbase.SolverBase):
         :rtype: int
         """
         return self._data.get(
-            'anim_iteration_num',
-            const.SOLVER_STD_ANIM_ITERATION_NUM_DEFAULT_VALUE)
+            'anim_iteration_num', const.SOLVER_STD_ANIM_ITERATION_NUM_DEFAULT_VALUE
+        )
 
     def set_anim_iteration_num(self, value):
         """
@@ -1313,8 +1301,8 @@ class SolverStandard(solverbase.SolverBase):
         :rtype: int
         """
         return self._data.get(
-            'lineup_iteration_num',
-            const.SOLVER_STD_LINEUP_ITERATION_NUM_DEFAULT_VALUE)
+            'lineup_iteration_num', const.SOLVER_STD_LINEUP_ITERATION_NUM_DEFAULT_VALUE
+        )
 
     def set_lineup_iteration_num(self, value):
         """
@@ -1545,25 +1533,20 @@ class SolverStandard(solverbase.SolverBase):
                 use_static_attrs,
                 scene_graph_mode,
                 precomputed_data,
-                withtest)
+                withtest,
+            )
             for action, vaction in generator:
                 yield action, vaction
 
         # Pre-calculate the 'affects' relationship.
         if eval_object_relationships is True:
             generator = solverutils.compile_solver_affects(
-                col,
-                mkr_list,
-                attr_list,
-                precomputed_data,
-                withtest)
+                col, mkr_list, attr_list, precomputed_data, withtest
+            )
             for action, vaction in generator:
                 yield action, vaction
         else:
-            generator = solverutils.compile_reset_used_hints(
-                col,
-                mkr_list,
-                attr_list)
+            generator = solverutils.compile_reset_used_hints(col, mkr_list, attr_list)
             for action, vaction in generator:
                 yield action, vaction
 

@@ -18,29 +18,21 @@ import mmSolver.utils.nodeaffects as affects_utils
 
 # @unittest.skip
 class TestMarkerAttrMapping(apiUtils.APITestCase):
-
     def test_find_marker_attr_mapping(self):
         # top level transform
         root = maya.cmds.createNode('transform', name='top1')
 
         # Camera A, don't parent under the root.
-        cam_tfm_a = maya.cmds.createNode('transform',
-                                         name='camA_tfm')
-        cam_shp_a = maya.cmds.createNode('camera',
-                                         name='camA_shp',
-                                         parent=cam_tfm_a)
+        cam_tfm_a = maya.cmds.createNode('transform', name='camA_tfm')
+        cam_shp_a = maya.cmds.createNode('camera', name='camA_shp', parent=cam_tfm_a)
         maya.cmds.setAttr(cam_tfm_a + '.tx', -1.0)
         maya.cmds.setAttr(cam_tfm_a + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm_a + '.tz', -5.0)
         cam_a = mmapi.Camera(shape=cam_shp_a)
 
         # Camera B, parent under the root
-        cam_tfm_b = maya.cmds.createNode('transform',
-                                         name='camB_tfm',
-                                         parent=root)
-        cam_shp_b = maya.cmds.createNode('camera',
-                                         name='camB_shp',
-                                         parent=cam_tfm_b)
+        cam_tfm_b = maya.cmds.createNode('transform', name='camB_tfm', parent=root)
+        cam_shp_b = maya.cmds.createNode('camera', name='camB_shp', parent=cam_tfm_b)
         maya.cmds.setAttr(cam_tfm_b + '.tx', 1.0)
         maya.cmds.setAttr(cam_tfm_b + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm_b + '.tz', -5.0)
@@ -56,8 +48,7 @@ class TestMarkerAttrMapping(apiUtils.APITestCase):
         multDivide = maya.cmds.createNode('multiplyDivide', name='multDiv')
         multDivide2 = maya.cmds.createNode('multiplyDivide', name='multDiv2')
         child1 = maya.cmds.createNode('transform', name='child1', parent=top)
-        child2 = maya.cmds.createNode('transform', name='child2',
-                                      parent=child1)
+        child2 = maya.cmds.createNode('transform', name='child2', parent=child1)
         child1 = maya.cmds.ls(child1, long=True)[0]
         child2 = maya.cmds.ls(child2, long=True)[0]
 
@@ -129,15 +120,12 @@ class TestMarkerAttrMapping(apiUtils.APITestCase):
             attr_tx,
             attr_ty,
             attr_top_tz,
-
             attr_top_rx,
             attr_child1_ty,
             attr_child1_rx,
-
             attr_root_ty,
             attr_cam_a_ty,
             attr_cam_a_focal,
-
             attr_nothing_tx,
         ]
 
@@ -157,7 +145,7 @@ class TestMarkerAttrMapping(apiUtils.APITestCase):
         ret = mmapi.find_marker_attr_mapping(mkr_list, attr_list)
         expected = [
             [True, True, True, True, True, True, False, True, True, False],
-            [True, True, True, True, True, True, True, False, False, False]
+            [True, True, True, True, True, True, True, False, False, False],
         ]
         assert ret == expected
 

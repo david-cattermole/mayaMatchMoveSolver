@@ -68,8 +68,7 @@ def trigger_event(event_name, **kwargs):
     """
     Inform the event-driven system that 'event_name' has occurred.
     """
-    LOG.debug('trigger_event: event_name=%r kwargs=%r',
-              event_name, kwargs)
+    LOG.debug('trigger_event: event_name=%r kwargs=%r', event_name, kwargs)
     assert isinstance(event_name, pycompat.TEXT_TYPE)
     __EVENT_ARGUMENTS[event_name].append(kwargs)
 
@@ -114,8 +113,12 @@ def __call_functions(event_name):
 
 
 def add_function_to_event(event_name, func, deferred=True):
-    LOG.debug('add_function_to_event: event_name=%r func=%r deferred=%r',
-              event_name, func, deferred)
+    LOG.debug(
+        'add_function_to_event: event_name=%r func=%r deferred=%r',
+        event_name,
+        func,
+        deferred,
+    )
     assert isinstance(event_name, pycompat.TEXT_TYPE)
     assert callable(func) is True
     assert isinstance(deferred, bool)

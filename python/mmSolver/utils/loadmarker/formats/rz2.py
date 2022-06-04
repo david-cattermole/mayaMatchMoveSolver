@@ -56,17 +56,17 @@ class LoaderRZ2(loader.LoaderBase):
             msg = "Could not get 'imageSequence' index from: %r"
             raise excep.ParserError(msg % text)
 
-        start_idx = text.find('{', idx+1)
+        start_idx = text.find('{', idx + 1)
         if start_idx == -1:
             msg = 'Could not get the starting index from: %r'
             raise excep.ParserError(msg % text)
 
-        end_idx = text.find('}', start_idx+1)
+        end_idx = text.find('}', start_idx + 1)
         if end_idx == -1:
             msg = 'Could not get the ending index from: %r'
             raise excep.ParserError(msg % text)
 
-        imgseq = text[start_idx+1:end_idx]
+        imgseq = text[start_idx + 1 : end_idx]
         imgseq = imgseq.strip()
         splt = imgseq.split()
         x_res = int(splt[0])
@@ -92,20 +92,19 @@ class LoaderRZ2(loader.LoaderBase):
 
         idx = end_idx
         while True:
-            idx = text.find('pointTrack', idx+1)
+            idx = text.find('pointTrack', idx + 1)
             if idx == -1:
                 break
-            start_idx = text.find('{', idx+1)
+            start_idx = text.find('{', idx + 1)
             if start_idx == -1:
                 break
-            end_idx = text.find('}', start_idx+1)
+            end_idx = text.find('}', start_idx + 1)
             if end_idx == -1:
                 break
 
             # Get point track name
             point_track_header = text[idx:start_idx]
-            track_regex = re.search(
-                r'pointTrack\s*\"(.*)\".*', point_track_header)
+            track_regex = re.search(r'pointTrack\s*\"(.*)\".*', point_track_header)
             if track_regex is None:
                 continue
             track_grps = track_regex.groups()
@@ -120,7 +119,7 @@ class LoaderRZ2(loader.LoaderBase):
             for frame in frames:
                 mkr_data.enable.set_value(frame, 0)
 
-            point_track = text[start_idx + 1:end_idx]
+            point_track = text[start_idx + 1 : end_idx]
             for line in point_track.splitlines():
                 splt = line.split()
                 if len(splt) == 0:

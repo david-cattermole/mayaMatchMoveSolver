@@ -84,10 +84,7 @@ def preSolve_queryViewportState(options, panels):
 
     if options.do_isolate is True:
         for panel in panels:
-            state = maya.cmds.isolateSelect(
-                panel,
-                query=True,
-                state=True)
+            state = maya.cmds.isolateSelect(panel, query=True, state=True)
             nodes = None
             if state is True:
                 nodes = viewport_utils.get_isolated_nodes(panel)
@@ -161,5 +158,5 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
             cur_frame + 1,
             edit=True,
             update=options.force_update,
-            )
+        )
     return

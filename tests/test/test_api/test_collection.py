@@ -146,11 +146,7 @@ class TestCollection(test_api_utils.APITestCase):
         self.assertEqual(len(sol_list1), 10)
         self.assertIsInstance(sol_list1, list)
 
-        x.add_solver_list([
-            solver.Solver(),
-            solver.Solver(),
-            solver.Solver()
-        ])
+        x.add_solver_list([solver.Solver(), solver.Solver(), solver.Solver()])
         sol_list2 = x.get_solver_list()
         self.assertEqual(len(sol_list2), 13)
         self.assertIsInstance(sol_list2, list)

@@ -53,7 +53,7 @@ ROTATE_ORDER_STR_TO_APITWO_CONSTANT = {
     'yxz': OpenMaya2.MTransformationMatrix.kYXZ,
     'yzx': OpenMaya2.MTransformationMatrix.kYZX,
     'zxy': OpenMaya2.MTransformationMatrix.kZXY,
-    'zyx': OpenMaya2.MTransformationMatrix.kZYX
+    'zyx': OpenMaya2.MTransformationMatrix.kZYX,
 }
 LOG = mmSolver.logger.get_logger()
 
@@ -169,7 +169,7 @@ def detect_rotate_pivot_non_zero(tfm_node):
     plug = node + '.rotatePivot'
     rp = maya.cmds.getAttr(plug)[0]
     rp = [abs(v) for v in rp]
-    return sum(rp) > 0.
+    return sum(rp) > 0.0
 
 
 class TransformNode(object):
@@ -300,10 +300,7 @@ class TransformNode(object):
         :rtype: TransformNode or None
         """
         node = self.get_node()
-        parents = maya.cmds.listRelatives(
-            node,
-            parent=True,
-            fullPath=True) or []
+        parents = maya.cmds.listRelatives(node, parent=True, fullPath=True) or []
         parent_tfm_node = None
         if len(parents) > 0:
             parent_tfm_node = TransformNode(node=parents[0])
@@ -317,10 +314,7 @@ class TransformNode(object):
         :rtype: [TransformNode, ..]
         """
         node = self.get_node()
-        parents = maya.cmds.listRelatives(
-            node,
-            allParents=True,
-            fullPath=True) or []
+        parents = maya.cmds.listRelatives(node, allParents=True, fullPath=True) or []
         parent_tfm_nodes = []
         for parent in parents:
             n = TransformNode(node=parent)
@@ -470,7 +464,7 @@ class TransformMatrixCache(object):
         return
 
     def __process_with_api(self, map_uuid_to_node, time, ctx):
-        """Process the TransformMatrixCache, with API functions. """
+        """Process the TransformMatrixCache, with API functions."""
         process_list = self.__get_process_list(map_uuid_to_node)
         for uuid, attr_name, plug, plug_name in process_list:
             attr_name_lower = attr_name.lower()
@@ -570,11 +564,9 @@ class TransformMatrixCache(object):
     get_node_attr_matrix = get_node_attr
 
 
-def get_transform_matrix_list(tfm_matrix_cache,
-                              times,
-                              src_tfm_node,
-                              rotate_order=None,
-                              eval_mode=None):
+def get_transform_matrix_list(
+    tfm_matrix_cache, times, src_tfm_node, rotate_order=None, eval_mode=None
+):
     """
     Get the transform values, as raw MTransformationMatrix.
 
@@ -660,11 +652,9 @@ def get_transform_matrix_list(tfm_matrix_cache,
         assert len(rot_piv_z_list) == len(times)
 
         # Reconstruct World-Matrix, accounting for pivot point.
-        loop_iter = zip(mat_list,
-                        par_inv_mat_list,
-                        rot_piv_x_list,
-                        rot_piv_y_list,
-                        rot_piv_z_list)
+        loop_iter = zip(
+            mat_list, par_inv_mat_list, rot_piv_x_list, rot_piv_y_list, rot_piv_z_list
+        )
         for local_mat, par_inv_mat, rot_piv_x, rot_piv_y, rot_piv_z in loop_iter:
             assert local_mat is not None
             assert par_inv_mat is not None
@@ -673,12 +663,26 @@ def get_transform_matrix_list(tfm_matrix_cache,
             assert rot_piv_z is not None
             mat = OpenMaya2.MTransformationMatrix(local_mat)
 
-            rotate_pivot_mat = OpenMaya2.MMatrix([
-                1.0, 0.0, 0.0, 0.0,
-                0.0, 1.0, 0.0, 0.0,
-                0.0, 0.0, 1.0, 0.0,
-                rot_piv_x, rot_piv_y, rot_piv_z, 1.0,
-            ])
+            rotate_pivot_mat = OpenMaya2.MMatrix(
+                [
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    0.0,
+                    rot_piv_x,
+                    rot_piv_y,
+                    rot_piv_z,
+                    1.0,
+                ]
+            )
             rotate_pivot_mat = local_mat.inverse() * rotate_pivot_mat * local_mat
 
             world_mat = (mat.asMatrix() * rotate_pivot_mat) * par_inv_mat.inverse()
@@ -723,29 +727,27 @@ def decompose_matrix(tfm_matrix, prv_rot):
     # Convert and clean rotation values
     trans = (trans[0], trans[1], trans[2])
     scl = (scl[0], scl[1], scl[2])
-    rot = (
-        math.degrees(rot[0]),
-        math.degrees(rot[1]),
-        math.degrees(rot[2])
-    )
+    rot = (math.degrees(rot[0]), math.degrees(rot[1]), math.degrees(rot[2]))
     if prv_rot is not None:
         rot = (
             animcurve_utils.euler_filter_value(prv_rot[0], rot[0]),
             animcurve_utils.euler_filter_value(prv_rot[1], rot[1]),
-            animcurve_utils.euler_filter_value(prv_rot[2], rot[2])
+            animcurve_utils.euler_filter_value(prv_rot[2], rot[2]),
         )
     prv_rot = rot
 
     return tuple(trans + rot + scl)
 
 
-def set_transform_values(tfm_matrix_cache,
-                         times,
-                         src_tfm_node,
-                         dst_tfm_node,
-                         rotate_order=None,
-                         delete_static_anim_curves=False,
-                         eval_mode=None):
+def set_transform_values(
+    tfm_matrix_cache,
+    times,
+    src_tfm_node,
+    dst_tfm_node,
+    rotate_order=None,
+    delete_static_anim_curves=False,
+    eval_mode=None,
+):
     """
     Set transform node values on a destination node at times,
     using previously evaluated cached values.
@@ -797,22 +799,22 @@ def set_transform_values(tfm_matrix_cache,
     current_frame = maya.cmds.currentTime(query=True)
     space = OpenMaya2.MSpace.kWorld
     attrs = [
-        'translateX', 'translateY', 'translateZ',
-        'rotateX', 'rotateY', 'rotateZ',
-        'scaleX', 'scaleY', 'scaleZ'
+        'translateX',
+        'translateY',
+        'translateZ',
+        'rotateX',
+        'rotateY',
+        'rotateZ',
+        'scaleX',
+        'scaleY',
+        'scaleZ',
     ]
 
     dst_node = dst_tfm_node.get_node()
     if rotate_order is None:
-        rotate_order = maya.cmds.xform(
-            dst_node,
-            query=True,
-            rotateOrder=True)
+        rotate_order = maya.cmds.xform(dst_node, query=True, rotateOrder=True)
     else:
-        maya.cmds.xform(
-            dst_node,
-            edit=True,
-            rotateOrder=rotate_order)
+        maya.cmds.xform(dst_node, edit=True, rotateOrder=rotate_order)
     assert rotate_order in const.ROTATE_ORDER_STR_LIST
     rotate_order_api = ROTATE_ORDER_STR_TO_APITWO_CONSTANT[rotate_order]
 
@@ -823,10 +825,8 @@ def set_transform_values(tfm_matrix_cache,
 
     # Query the matrix of nodes.
     world_mat_list = get_transform_matrix_list(
-        tfm_matrix_cache,
-        times,
-        src_tfm_node,
-        rotate_order=rotate_order)
+        tfm_matrix_cache, times, src_tfm_node, rotate_order=rotate_order
+    )
     assert len(world_mat_list) == len(times)
 
     # Set transform
@@ -839,10 +839,7 @@ def set_transform_values(tfm_matrix_cache,
         parent_inv_mat = None
         if eval_mode == const.EVAL_MODE_API_DG_CONTEXT:
             ctx = create_dg_context_apitwo(t)
-            parent_inv_mat = get_matrix_from_plug_apitwo(
-                parent_inv_matrix_plug,
-                ctx
-            )
+            parent_inv_mat = get_matrix_from_plug_apitwo(parent_inv_matrix_plug, ctx)
         elif eval_mode == const.EVAL_MODE_TIME_SWITCH_GET_ATTR:
             maya.cmds.currentTime(t, update=True)
             plug_name = parent_inv_matrix_plug.name()
@@ -864,16 +861,12 @@ def set_transform_values(tfm_matrix_cache,
         # Convert and clean rotation values
         trans = (trans[0], trans[1], trans[2])
         scl = (scl[0], scl[1], scl[2])
-        rot = (
-            math.degrees(rot[0]),
-            math.degrees(rot[1]),
-            math.degrees(rot[2])
-        )
+        rot = (math.degrees(rot[0]), math.degrees(rot[1]), math.degrees(rot[2]))
         if prv_rot is not None:
             rot = (
                 animcurve_utils.euler_filter_value(prv_rot[0], rot[0]),
                 animcurve_utils.euler_filter_value(prv_rot[1], rot[1]),
-                animcurve_utils.euler_filter_value(prv_rot[2], rot[2])
+                animcurve_utils.euler_filter_value(prv_rot[2], rot[2]),
             )
         prv_rot = rot
 

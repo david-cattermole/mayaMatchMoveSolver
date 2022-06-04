@@ -30,6 +30,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -41,12 +42,17 @@ import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
 class TestProjectionMatrix(solverUtils.SolverTestCase):
-
-    def run_camera_matrix(self, filmback_width=1.0, filmback_height=1.0,
-                          filmback_offset_x=0.0, filmback_offset_y=0.0,
-                          focal_length=50.0,
-                          film_fit=0,
-                          render_width=1920, render_height=1080):
+    def run_camera_matrix(
+        self,
+        filmback_width=1.0,
+        filmback_height=1.0,
+        filmback_offset_x=0.0,
+        filmback_offset_y=0.0,
+        focal_length=50.0,
+        film_fit=0,
+        render_width=1920,
+        render_height=1080,
+    ):
         cam_tfm, cam_shp = self.create_camera('cam')
         maya.cmds.setAttr(cam_tfm + '.horizontalFilmAperture', filmback_width)
         maya.cmds.setAttr(cam_tfm + '.verticalFilmAperture', filmback_height)
@@ -60,7 +66,7 @@ class TestProjectionMatrix(solverUtils.SolverTestCase):
 
         # Render settings resolution
         res = 'defaultResolution'
-        imageAspectRatio = float(render_width)/float(render_height)
+        imageAspectRatio = float(render_width) / float(render_height)
         maya.cmds.setAttr(res + '.width', render_width)
         maya.cmds.setAttr(res + '.height', render_height)
         maya.cmds.setAttr(res + '.deviceAspectRatio', imageAspectRatio)
@@ -74,67 +80,107 @@ class TestProjectionMatrix(solverUtils.SolverTestCase):
 
         print(line)
         print('Normal usage, square filmback, no offsets')
-        self.run_camera_matrix(filmback_width=1.0, filmback_height=1.0,
-                               filmback_offset_x=0.0, filmback_offset_y=0.0,
-                               focal_length=50.0,
-                               film_fit=film_fit,
-                               render_width=1920, render_height=1080)
+        self.run_camera_matrix(
+            filmback_width=1.0,
+            filmback_height=1.0,
+            filmback_offset_x=0.0,
+            filmback_offset_y=0.0,
+            focal_length=50.0,
+            film_fit=film_fit,
+            render_width=1920,
+            render_height=1080,
+        )
 
         print(line)
         print('Square filmback with offset values')
-        self.run_camera_matrix(filmback_width=1.0, filmback_height=1.0,
-                               filmback_offset_x=0.5, filmback_offset_y=0.5,
-                               focal_length=50.0,
-                               film_fit=film_fit,
-                               render_width=1920, render_height=1080)
+        self.run_camera_matrix(
+            filmback_width=1.0,
+            filmback_height=1.0,
+            filmback_offset_x=0.5,
+            filmback_offset_y=0.5,
+            focal_length=50.0,
+            film_fit=film_fit,
+            render_width=1920,
+            render_height=1080,
+        )
 
         print(line)
         print("'Landscape' sized filmback (width longer than height)")
-        self.run_camera_matrix(filmback_width=2.0, filmback_height=1.0,
-                               filmback_offset_x=0.0, filmback_offset_y=0.0,
-                               focal_length=50.0,
-                               film_fit=film_fit,
-                               render_width=1920, render_height=1080)
+        self.run_camera_matrix(
+            filmback_width=2.0,
+            filmback_height=1.0,
+            filmback_offset_x=0.0,
+            filmback_offset_y=0.0,
+            focal_length=50.0,
+            film_fit=film_fit,
+            render_width=1920,
+            render_height=1080,
+        )
 
         print(line)
         print("'Landscape' sized filmback (width longer than height), with offsets")
-        self.run_camera_matrix(filmback_width=2.0, filmback_height=1.0,
-                               filmback_offset_x=1.0, filmback_offset_y=1.0,
-                               focal_length=50.0,
-                               film_fit=film_fit,
-                               render_width=1920, render_height=1080)
+        self.run_camera_matrix(
+            filmback_width=2.0,
+            filmback_height=1.0,
+            filmback_offset_x=1.0,
+            filmback_offset_y=1.0,
+            focal_length=50.0,
+            film_fit=film_fit,
+            render_width=1920,
+            render_height=1080,
+        )
 
         print(line)
         print("'Portrait' sized filmback (height longer than width)")
-        self.run_camera_matrix(filmback_width=1.0, filmback_height=2.0,
-                               filmback_offset_x=0.0, filmback_offset_y=0.0,
-                               focal_length=50.0,
-                               film_fit=film_fit,
-                               render_width=1920, render_height=1080)
+        self.run_camera_matrix(
+            filmback_width=1.0,
+            filmback_height=2.0,
+            filmback_offset_x=0.0,
+            filmback_offset_y=0.0,
+            focal_length=50.0,
+            film_fit=film_fit,
+            render_width=1920,
+            render_height=1080,
+        )
 
         print(line)
         print("'Portrait' sized filmback (height longer than width), with offsets")
-        self.run_camera_matrix(filmback_width=1.0, filmback_height=2.0,
-                               filmback_offset_x=1.0, filmback_offset_y=1.0,
-                               focal_length=50.0,
-                               film_fit=film_fit,
-                               render_width=1920, render_height=1080)
+        self.run_camera_matrix(
+            filmback_width=1.0,
+            filmback_height=2.0,
+            filmback_offset_x=1.0,
+            filmback_offset_y=1.0,
+            focal_length=50.0,
+            film_fit=film_fit,
+            render_width=1920,
+            render_height=1080,
+        )
 
         print(line)
         print('Non-standard render resolution')
-        self.run_camera_matrix(filmback_width=1.0, filmback_height=1.0,
-                               filmback_offset_x=0.0, filmback_offset_y=0.0,
-                               focal_length=50.0,
-                               film_fit=film_fit,
-                               render_width=1080, render_height=1920)
+        self.run_camera_matrix(
+            filmback_width=1.0,
+            filmback_height=1.0,
+            filmback_offset_x=0.0,
+            filmback_offset_y=0.0,
+            focal_length=50.0,
+            film_fit=film_fit,
+            render_width=1080,
+            render_height=1920,
+        )
 
         print(line)
         print('Non-standard render resolution, with offsets')
-        self.run_camera_matrix(filmback_width=1.0, filmback_height=1.0,
-                               filmback_offset_x=1.0, filmback_offset_y=1.0,
-                               focal_length=50.0,
-                               film_fit=film_fit,
-                               render_width=1080, render_height=1920)
+        self.run_camera_matrix(
+            filmback_width=1.0,
+            filmback_height=1.0,
+            filmback_offset_x=1.0,
+            filmback_offset_y=1.0,
+            focal_length=50.0,
+            film_fit=film_fit,
+            render_width=1080,
+            render_height=1920,
+        )
 
     def test_film_fit(self):
         # Test all film fit values;

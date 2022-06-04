@@ -39,7 +39,6 @@ import mmSolver.tools.createmarker.tool as create_marker
 
 # @unittest.skip
 class TestLoadMarker(test_tools_utils.ToolsTestCase):
-
     def test_get_cameras(self):
         """
         Get all cameras.
@@ -130,7 +129,9 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
             # mkr_list = [mkr]
             _, mkr_data_list = marker_read.read(path)
             mkr_list = lib_utils.get_selected_markers()
-            marker_read.update_nodes(mkr_list, mkr_data_list, load_bundle_position=False)
+            marker_read.update_nodes(
+                mkr_list, mkr_data_list, load_bundle_position=False
+            )
             marker_read.update_nodes(mkr_list, mkr_data_list, load_bundle_position=True)
         return
 
@@ -237,9 +238,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         for path, res in paths:
             print('Reading... %r (%s x %s)' % (path, res[0], res[1]))
             _, tmp_list = marker_read.read(
-                path,
-                image_width=res[0],
-                image_height=res[1]
+                path, image_width=res[0], image_height=res[1]
             )
             self.assertNotEqual(tmp_list, None)
             mkr_data_list += tmp_list
@@ -276,17 +275,25 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         mkr_data_list = []
         paths = [
             (self.get_data_path('pftrack', 'pftrack_corners_v001.txt'), (716.0, 572.0)),
-            (self.get_data_path('pftrack', 'pftrack_corners_v002.txt'), (1920.0, 1080.0)),
-            (self.get_data_path('pftrack', 'pftrack_hollywoodcameraworks_headtracking.txt'), (1920.0, 1080.0)),
-
-            (self.get_data_path('pftrack', 'pftrack_user_track_docs.txt'), (1920.0, 1080.0)),
+            (
+                self.get_data_path('pftrack', 'pftrack_corners_v002.txt'),
+                (1920.0, 1080.0),
+            ),
+            (
+                self.get_data_path(
+                    'pftrack', 'pftrack_hollywoodcameraworks_headtracking.txt'
+                ),
+                (1920.0, 1080.0),
+            ),
+            (
+                self.get_data_path('pftrack', 'pftrack_user_track_docs.txt'),
+                (1920.0, 1080.0),
+            ),
         ]
         for path, res in paths:
             print('Reading... %r (%s x %s)' % (path, res[0], res[1]))
             _, tmp_list = marker_read.read(
-                path,
-                image_width=res[0],
-                image_height=res[1]
+                path, image_width=res[0], image_height=res[1]
             )
             self.assertNotEqual(tmp_list, None)
             mkr_data_list += tmp_list

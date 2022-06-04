@@ -198,7 +198,9 @@ def get_image_path_multi_frame(image_path, test_disk):
             image_file_path = os.path.join(head, pattern)
             multi_frame = True
     else:
-        image_file_path, multi_frame = get_image_path_single_frame(image_path, test_disk)
+        image_file_path, multi_frame = get_image_path_single_frame(
+            image_path, test_disk
+        )
     return image_file_path, multi_frame
 
 
@@ -249,7 +251,9 @@ def get_image_path_pattern(image_name, use_frame_ext, test_disk=None):
 
     image_file_path = None
     if use_frame_ext is False:
-        image_file_path, multi_frame = get_image_path_single_frame(image_name, test_disk)
+        image_file_path, multi_frame = get_image_path_single_frame(
+            image_name, test_disk
+        )
     else:
         image_file_path, multi_frame = get_image_path_multi_frame(image_name, test_disk)
     return image_file_path, multi_frame
@@ -375,22 +379,19 @@ def query_plate_data(cam_tfm, cam_shp, img_pl_shp, test_disk):
         use_frame_ext = maya.cmds.getAttr(plug)
 
         image_file_path, _ = get_image_path_pattern(
-            image_name,
-            use_frame_ext,
-            test_disk=test_disk
+            image_name, use_frame_ext, test_disk=test_disk
         )
         if image_file_path is not None:
-            image_wh = maya.cmds.imagePlane(img_pl_shp, query=True, imageSize=True) or None
+            image_wh = (
+                maya.cmds.imagePlane(img_pl_shp, query=True, imageSize=True) or None
+            )
             if image_wh is not None:
                 assert len(image_wh) == 2
                 image_width, image_height = image_wh
                 image_width = int(image_width)
                 image_height = int(image_height)
             image_pixel_aspect = guess_pixel_aspect_ratio(
-                cam_tfm,
-                cam_shp,
-                img_pl_shp,
-                image_file_path
+                cam_tfm, cam_shp, img_pl_shp, image_file_path
             )
 
     data = {
@@ -402,11 +403,7 @@ def query_plate_data(cam_tfm, cam_shp, img_pl_shp, test_disk):
     return data
 
 
-def query_camera_data(cam_tfm,
-                      cam_shp,
-                      frames,
-                      rotate_order,
-                      test_disk):
+def query_camera_data(cam_tfm, cam_shp, frames, rotate_order, test_disk):
     """
     Get the camera information from the given cameras
     """
@@ -431,8 +428,7 @@ def query_camera_data(cam_tfm,
     tfm_cache.add_node(tfm_node, frames)
     tfm_cache.process()
     tfm_mat_list = tfm_utils.get_transform_matrix_list(
-        tfm_cache, frames, tfm_node,
-        rotate_order=rotate_order
+        tfm_cache, frames, tfm_node, rotate_order=rotate_order
     )
     assert len(tfm_mat_list) == len(frames)
     tx_values = []
@@ -519,11 +515,7 @@ def write_temp_file(data_str):
     """
     assert isinstance(data_str, pycompat.TEXT_TYPE)
     file_ext = const.EXT
-    f = tempfile.NamedTemporaryFile(
-        mode='w',
-        suffix=file_ext,
-        delete=False
-    )
+    f = tempfile.NamedTemporaryFile(mode='w', suffix=file_ext, delete=False)
     if f.closed:
         LOG.error("Error: Couldn't open file.\n%r", f.name)
         return False

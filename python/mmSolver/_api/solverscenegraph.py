@@ -42,6 +42,7 @@ class SolverSceneGraph(solverbase.SolverBase):
     The SolverSceneGraph contains no properties, other than the base
     Markers, and Attributes lists.
     """
+
     def __init__(self, *args, **kwargs):
         """
         Create a SolverSceneGraph class with default values.
@@ -80,8 +81,8 @@ class SolverSceneGraph(solverbase.SolverBase):
         :rtype: int
         """
         return self._data.get(
-            'scene_graph_mode',
-            const.SOLVER_STD_SCENE_GRAPH_MODE_DEFAULT_VALUE)
+            'scene_graph_mode', const.SOLVER_STD_SCENE_GRAPH_MODE_DEFAULT_VALUE
+        )
 
     def set_scene_graph_mode(self, value):
         """
@@ -134,15 +135,13 @@ class SolverSceneGraph(solverbase.SolverBase):
 
         # Get precomputed data to reduce re-querying Maya for data.
         precomputed_data = self.get_precomputed_data()
-        mkr_state_values = precomputed_data.get(
-            solverbase.MARKER_STATIC_VALUES_KEY)
-        attr_state_values = precomputed_data.get(
-            solverbase.ATTR_STATIC_VALUES_KEY)
+        mkr_state_values = precomputed_data.get(solverbase.MARKER_STATIC_VALUES_KEY)
+        attr_state_values = precomputed_data.get(solverbase.ATTR_STATIC_VALUES_KEY)
 
         # Get Markers and Cameras
         markers, cameras = api_compile.markersAndCameras_compile_flags(
-            mkr_list,
-            mkr_static_values=mkr_state_values)
+            mkr_list, mkr_static_values=mkr_state_values
+        )
         if len(markers) == 0 and len(cameras) == 0:
             LOG.warning('No Markers or Cameras found!')
             return
@@ -161,7 +160,8 @@ class SolverSceneGraph(solverbase.SolverBase):
             attr_list,
             use_animated,
             use_static,
-            attr_static_values=attr_state_values)
+            attr_static_values=attr_state_values,
+        )
         if len(attrs) == 0:
             LOG.warning('No Attributes found!')
             return
@@ -180,9 +180,5 @@ class SolverSceneGraph(solverbase.SolverBase):
         kwargs['attr'] = attrs
         kwargs['frame'] = frames
 
-        action = api_action.Action(
-            func=func,
-            args=args,
-            kwargs=kwargs
-        )
+        action = api_action.Action(func=func, args=args, kwargs=kwargs)
         yield action, action

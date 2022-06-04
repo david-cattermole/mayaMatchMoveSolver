@@ -93,13 +93,15 @@ def main():
     # GUI
     req = tde4.createCustomRequester()
     tde4.addFileWidget(req, 'file_browser_widget', 'Filename...', pattern)
-    tde4.addTextFieldWidget(
-        req, 'start_frame_widget', 'Start Frame', str(start_frame))
+    tde4.addTextFieldWidget(req, 'start_frame_widget', 'Start Frame', str(start_frame))
     if rs_enabled is True:
         rs_distance = uvtrack_format.get_rs_distance(camera)
         tde4.addTextFieldWidget(
-            req, 'rs_distance_widget',
-            'Rolling Shutter Content Distance [cm]', str(rs_distance))
+            req,
+            'rs_distance_widget',
+            'Rolling Shutter Content Distance [cm]',
+            str(rs_distance),
+        )
     ret = tde4.postCustomRequester(req, TITLE, 900, 0, 'Ok', 'Cancel')
     if ret == 1:
         # Query GUI Widgets
@@ -113,14 +115,16 @@ def main():
 
         # Generate file contents
         data_str = uvtrack_format.generate(
-            point_group, camera, points,
+            point_group,
+            camera,
+            points,
             start_frame=start_frame,
             rs_distance=rs_distance,
             fmt=uvtrack_format.UV_TRACK_FORMAT_VERSION_PREFERRED,
         )
 
         # Write file.
-        if path.find(EXT, len(path)-3) == -1:
+        if path.find(EXT, len(path) - 3) == -1:
             # Ensure the file path ends with the extension, if not add it.
             path += EXT
         f = open(path, 'w')

@@ -64,7 +64,7 @@ if IS_PYTHON_2 is True:
     INT_TYPES = (int, long)  # noqa: F821
 else:
     TEXT_TYPE = str
-    INT_TYPES = (int, )
+    INT_TYPES = (int,)
 
 # MM Camera format
 # This is copied from 'mmSolver.tools.copypastecamera.constant module',
@@ -144,19 +144,15 @@ BUILD_WIDGET_LIST = [
     PLATE_LOAD_WIDGET,
     PLATE_PATH_WIDGET,
     PLATE_RANGE_WIDGET,
-
     CAMERA_NAME_WIDGET,
-
     START_FRAME_WIDGET,
     END_FRAME_WIDGET,
-
     ATTR_FBK_SIZE_WIDGET,
     ATTR_FBK_OFFSET_WIDGET,
     PIXEL_ASPECT_WIDGET,
     ATTR_FOCAL_LENGTH_WIDGET,
     ATTR_TRANSLATE_WIDGET,
     ATTR_ROTATE_WIDGET,
-
     SEP_01_WIDGET,
     SEP_03_WIDGET,
     SEP_04_WIDGET,
@@ -189,9 +185,14 @@ def parse(file_path):
     return data
 
 
-def _get_frame_list_to_set_values(cam_id, samples_list,
-                                  file_start_frame, file_end_frame,
-                                  chosen_start_frame, chosen_end_frame):
+def _get_frame_list_to_set_values(
+    cam_id,
+    samples_list,
+    file_start_frame,
+    file_end_frame,
+    chosen_start_frame,
+    chosen_end_frame,
+):
     """
     Calculate the frame numbers that are valid to set values with.
 
@@ -259,10 +260,17 @@ def detect_samples_are_static(samples):
     return is_static
 
 
-def _set_camera_translation(pgroup_id, cam_id,
-                            tx_samples, ty_samples, tz_samples,
-                            file_start_frame, file_end_frame,
-                            chosen_start_frame, chosen_end_frame):
+def _set_camera_translation(
+    pgroup_id,
+    cam_id,
+    tx_samples,
+    ty_samples,
+    tz_samples,
+    file_start_frame,
+    file_end_frame,
+    chosen_start_frame,
+    chosen_end_frame,
+):
     """
     Set the camera translation values on the given 3DE camera ids.
 
@@ -310,15 +318,16 @@ def _set_camera_translation(pgroup_id, cam_id,
 
     samples_list = (tx_samples, ty_samples, tz_samples)
     frames = _get_frame_list_to_set_values(
-        cam_id, samples_list,
-        file_start_frame, file_end_frame,
-        chosen_start_frame, chosen_end_frame
+        cam_id,
+        samples_list,
+        file_start_frame,
+        file_end_frame,
+        chosen_start_frame,
+        chosen_end_frame,
     )
 
     translate_data = dict()
-    for component_index, samples in [(0, tx_samples),
-                                     (1, ty_samples),
-                                     (2, tz_samples)]:
+    for component_index, samples in [(0, tx_samples), (1, ty_samples), (2, tz_samples)]:
         for frame, value in samples:
             frame = int(frame)
             if frame not in translate_data:
@@ -336,10 +345,17 @@ def _set_camera_translation(pgroup_id, cam_id,
     return values_were_set
 
 
-def _set_camera_rotation(pgroup_id, cam_id,
-                         rx_samples, ry_samples, rz_samples,
-                         file_start_frame, file_end_frame,
-                         chosen_start_frame, chosen_end_frame):
+def _set_camera_rotation(
+    pgroup_id,
+    cam_id,
+    rx_samples,
+    ry_samples,
+    rz_samples,
+    file_start_frame,
+    file_end_frame,
+    chosen_start_frame,
+    chosen_end_frame,
+):
     """
     Set the camera rotation values on the given 3DE camera ids.
 
@@ -387,15 +403,16 @@ def _set_camera_rotation(pgroup_id, cam_id,
 
     samples_list = (rx_samples, ry_samples, rz_samples)
     frames = _get_frame_list_to_set_values(
-        cam_id, samples_list,
-        file_start_frame, file_end_frame,
-        chosen_start_frame, chosen_end_frame
+        cam_id,
+        samples_list,
+        file_start_frame,
+        file_end_frame,
+        chosen_start_frame,
+        chosen_end_frame,
     )
 
     rotate_data = dict()
-    for component_index, samples in [(0, rx_samples),
-                                     (1, ry_samples),
-                                     (2, rz_samples)]:
+    for component_index, samples in [(0, rx_samples), (1, ry_samples), (2, rz_samples)]:
         for frame, value in samples:
             frame = int(frame)
             if frame not in rotate_data:
@@ -412,7 +429,7 @@ def _set_camera_rotation(pgroup_id, cam_id,
         r3d0 = [
             [r3d[0][0], r3d[0][1], r3d[0][2]],
             [r3d[1][0], r3d[1][1], r3d[1][2]],
-            [r3d[2][0], r3d[2][1], r3d[2][2]]
+            [r3d[2][0], r3d[2][1], r3d[2][2]],
         ]
         # Internally, 3DE always starts at frame 1.
         raw_frame = 1 + (global_frame - file_start_frame)
@@ -421,10 +438,15 @@ def _set_camera_rotation(pgroup_id, cam_id,
     return values_were_set
 
 
-def _set_camera_focal_length(cam_id, lens_id,
-                             samples,
-                             file_start_frame, file_end_frame,
-                             chosen_start_frame, chosen_end_frame):
+def _set_camera_focal_length(
+    cam_id,
+    lens_id,
+    samples,
+    file_start_frame,
+    file_end_frame,
+    chosen_start_frame,
+    chosen_end_frame,
+):
     """
     Set the focal length on the given camera/lens.
 
@@ -460,11 +482,14 @@ def _set_camera_focal_length(cam_id, lens_id,
     assert isinstance(chosen_end_frame, INT_TYPES)
     assert samples
 
-    samples_list = (samples, )
+    samples_list = (samples,)
     frames = _get_frame_list_to_set_values(
-        cam_id, samples_list,
-        file_start_frame, file_end_frame,
-        chosen_start_frame, chosen_end_frame
+        cam_id,
+        samples_list,
+        file_start_frame,
+        file_end_frame,
+        chosen_start_frame,
+        chosen_end_frame,
     )
 
     focal_length_is_static = detect_samples_are_static(samples)
@@ -517,10 +542,12 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
     file_end_frame = camera_data.get('end_frame')
     plate_load = options.get('plate_load')
     plate_path = options.get('plate_path')
-    if (plate_load
-            and file_start_frame is not None
-            and file_end_frame is not None
-            and plate_path):
+    if (
+        plate_load
+        and file_start_frame is not None
+        and file_end_frame is not None
+        and plate_path
+    ):
         # Set plate frame range
         file_start = int(file_start_frame)
         file_end = int(file_end_frame)
@@ -536,8 +563,7 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
         if SUPPORT_CAMERA_PLAYBACK_RANGE is True:
             playback_start = 1  # 3DE always starts at frame 1.
             playback_end = tde4.getCameraNoFrames(cam_id)
-            tde4.setCameraPlaybackRange(
-                cam_id, playback_start, playback_end)
+            tde4.setCameraPlaybackRange(cam_id, playback_start, playback_end)
 
     # Set pixel aspect ratio
     par = options.get('par')
@@ -587,20 +613,26 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
     chosen_end_frame = options.get('end_frame')
     fl = options.get('fl')
     focalLengthSamples = attr_data.get('focalLength')
-    if (fl and focalLengthSamples
-            and isinstance(file_start_frame, INT_TYPES)
-            and isinstance(file_end_frame, INT_TYPES)
-            and isinstance(chosen_start_frame, TEXT_TYPE)
-            and isinstance(chosen_end_frame, TEXT_TYPE)):
+    if (
+        fl
+        and focalLengthSamples
+        and isinstance(file_start_frame, INT_TYPES)
+        and isinstance(file_end_frame, INT_TYPES)
+        and isinstance(chosen_start_frame, TEXT_TYPE)
+        and isinstance(chosen_end_frame, TEXT_TYPE)
+    ):
         file_start = int(file_start_frame)
         file_end = int(file_end_frame)
         chosen_start = int(chosen_start_frame)
         chosen_end = int(chosen_end_frame)
         focal_length_set = _set_camera_focal_length(
-            cam_id, lens_id,
+            cam_id,
+            lens_id,
             focalLengthSamples,
-            file_start, file_end,
-            chosen_start, chosen_end,
+            file_start,
+            file_end,
+            chosen_start,
+            chosen_end,
         )
 
     # Set translation and rotation
@@ -608,10 +640,12 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
     file_end_frame = camera_data.get('end_frame')
     chosen_start_frame = options.get('start_frame')
     chosen_end_frame = options.get('end_frame')
-    if (isinstance(file_start_frame, INT_TYPES)
-            and isinstance(file_end_frame, INT_TYPES)
-            and isinstance(chosen_start_frame, TEXT_TYPE)
-            and isinstance(chosen_end_frame, TEXT_TYPE)):
+    if (
+        isinstance(file_start_frame, INT_TYPES)
+        and isinstance(file_end_frame, INT_TYPES)
+        and isinstance(chosen_start_frame, TEXT_TYPE)
+        and isinstance(chosen_end_frame, TEXT_TYPE)
+    ):
         file_start = int(file_start_frame)
         file_end = int(file_end_frame)
         chosen_start = int(chosen_start_frame)
@@ -625,10 +659,15 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
         tz_samples = attr_data.get('translateZ')
         if translate and tx_samples and ty_samples and tz_samples:
             translate_set = _set_camera_translation(
-                pgroup_id, cam_id,
-                tx_samples, ty_samples, tz_samples,
-                file_start, file_end,
-                chosen_start, chosen_end
+                pgroup_id,
+                cam_id,
+                tx_samples,
+                ty_samples,
+                tz_samples,
+                file_start,
+                file_end,
+                chosen_start,
+                chosen_end,
             )
 
         # Set Rotation
@@ -639,10 +678,15 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
         rz_samples = attr_data.get('rotateZ')
         if rotate and rx_samples and ry_samples and rz_samples:
             rotate_set = _set_camera_rotation(
-                pgroup_id, cam_id,
-                rx_samples, ry_samples, rz_samples,
-                file_start, file_end,
-                chosen_start, chosen_end
+                pgroup_id,
+                cam_id,
+                rx_samples,
+                ry_samples,
+                rz_samples,
+                file_start,
+                file_end,
+                chosen_start,
+                chosen_end,
             )
 
         if translate_set or rotate_set:
@@ -848,9 +892,7 @@ def _build_widgets_with_data(req, pgroup_id, cam_id, lens_id, file_data):
     attr_names = list(attrs_data.keys())
 
     if not start_frame or not end_frame:
-        msg = (
-            'File contains invalid frame range: {file_start}-{file_end}'
-        )
+        msg = 'File contains invalid frame range: {file_start}-{file_end}'
         msg = msg.format(
             file_start=start_frame,
             file_end=end_frame,
@@ -882,7 +924,7 @@ def _build_widgets_with_data(req, pgroup_id, cam_id, lens_id, file_data):
                 file_start=start_frame,
                 file_end=end_frame,
                 cam_start=cam_start,
-                cam_end=cam_end
+                cam_end=cam_end,
             )
             tde4.postQuestionRequester(TITLE, msg, 'Ok')
             return
@@ -902,7 +944,9 @@ def _build_widgets_with_data(req, pgroup_id, cam_id, lens_id, file_data):
     if camera_name:
         tde4.addToggleWidget(req, CAMERA_NAME_WIDGET, CAMERA_NAME_LABEL, True)
 
-    tde4.addTextFieldWidget(req, START_FRAME_WIDGET, START_FRAME_LABEL, str(start_frame))
+    tde4.addTextFieldWidget(
+        req, START_FRAME_WIDGET, START_FRAME_LABEL, str(start_frame)
+    )
     tde4.addTextFieldWidget(req, END_FRAME_WIDGET, END_FRAME_LABEL, str(end_frame))
 
     has_fbk_w = ATTR_FBK_WIDTH in attr_names
@@ -986,9 +1030,7 @@ def _build_gui(file_path):
         file_path,
     )
     tde4.setWidgetCallbackFunction(
-        window_requester,
-        FILE_BROWSER_WIDGET,
-        '_build_widgets'
+        window_requester, FILE_BROWSER_WIDGET, '_build_widgets'
     )
 
     pgroup_id, cam_id, lens_id = _query_selection_state()
@@ -996,7 +1038,9 @@ def _build_gui(file_path):
     if has_vaild_data is not True or not pgroup_id or not cam_id or not lens_id:
         _build_widgets(window_requester, FILE_BROWSER_WIDGET, 0)
     else:
-        _build_widgets_with_data(window_requester, pgroup_id, cam_id, lens_id, file_data)
+        _build_widgets_with_data(
+            window_requester, pgroup_id, cam_id, lens_id, file_data
+        )
     return window_requester
 
 
@@ -1049,15 +1093,8 @@ if pgroup_id and cam_id and lens_id:
     _paste_camera_mmsolver_requester = requester
 
     button_pressed = tde4.postCustomRequester(
-        _paste_camera_mmsolver_requester,
-        TITLE, WIDTH, HEIGHT,
-        'Paste', 'Cancel'
+        _paste_camera_mmsolver_requester, TITLE, WIDTH, HEIGHT, 'Paste', 'Cancel'
     )
     if button_pressed == 1:
         # Button index pressed is 1-based; 1=='Paste', 2='Cancel'.
-        _run_gui(
-            _paste_camera_mmsolver_requester,
-            pgroup_id,
-            cam_id,
-            lens_id
-        )
+        _run_gui(_paste_camera_mmsolver_requester, pgroup_id, cam_id, lens_id)

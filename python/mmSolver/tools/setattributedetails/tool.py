@@ -52,8 +52,7 @@ def open_window(col=None, attr_list=None):
     if attr_list is None or len(attr_list) == 0:
         title = 'No Attribute.'
         text = (
-            'No selected attributes.\n\n'
-            'Please select attributes in the Channel Box.'
+            'No selected attributes.\n\n' 'Please select attributes in the Channel Box.'
         )
         set_attr_details_dialog.warn_user(title, text)
         return

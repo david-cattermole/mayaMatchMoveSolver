@@ -28,6 +28,7 @@ class ParserWarning(Warning):
     """
     Raised when a format parser needs to warn about non-error conditions.
     """
+
     pass
 
 
@@ -35,4 +36,5 @@ class ParserError(Exception):
     """
     Raised when a format parser cannot continue.
     """
+
     pass

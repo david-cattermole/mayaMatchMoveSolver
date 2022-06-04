@@ -70,4 +70,3 @@ def main_remove_frame():
             if window_instance is not None:
                 window_instance.triggerCollectionUpdate()
     return
-

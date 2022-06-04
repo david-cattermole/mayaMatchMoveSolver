@@ -42,9 +42,7 @@ def is_in_layer(attr, anim_layer):
     attr = str(attr)
 
     attr_short_name = attr.split('|')[-1]
-    anim_layer_attrs = maya.cmds.animLayer(anim_layer,
-                                           attribute=True,
-                                           query=True) or []
+    anim_layer_attrs = maya.cmds.animLayer(anim_layer, attribute=True, query=True) or []
     return attr_short_name in anim_layer_attrs
 
 
@@ -68,9 +66,7 @@ def get_attr_blend_plugs(attr, anim_layer):
     node_attr = attr
     anim_blend_node = const.ANIM_BLEND_NODE
     anim_blend_connection = maya.cmds.listConnections(
-        node_attr,
-        type=anim_blend_node,
-        source=True
+        node_attr, type=anim_blend_node, source=True
     )
     plugs = const.PLUGS
     inputs = []
@@ -98,9 +94,8 @@ def __get_attr_value_array(attr, first_frame, last_frame):
     :rtype: list
     """
     new_array = []
-    for frame in range(int(first_frame), int(last_frame+1)):
-        new_array.append(maya.cmds.getAttr('%s.output' % attr[-1],
-                                           time=frame))
+    for frame in range(int(first_frame), int(last_frame + 1)):
+        new_array.append(maya.cmds.getAttr('%s.output' % attr[-1], time=frame))
     return new_array
 
 
@@ -143,13 +138,9 @@ def get_min_and_max_from_plugs(plug):
     :return: minimum and maximum keyframe
     :rtype: int, int
     """
-    plug_min = min(maya.cmds.keyframe(plug,
-                                      query=True,
-                                      timeChange=True))
+    plug_min = min(maya.cmds.keyframe(plug, query=True, timeChange=True))
 
-    plug_max = max(maya.cmds.keyframe(plug,
-                                      query=True,
-                                      timeChange=True))
+    plug_max = max(maya.cmds.keyframe(plug, query=True, timeChange=True))
     return plug_min, plug_max
 
 
@@ -171,8 +162,7 @@ def set_attr_value_array(attr, new_array, first_frame, last_frame):
 
     :return: None
     """
-    for value, frame in zip(new_array, range(int(first_frame),
-                                             int(last_frame+1))):
+    for value, frame in zip(new_array, range(int(first_frame), int(last_frame + 1))):
         maya.cmds.setKeyframe(attr, value=value, time=frame)
     return
 
@@ -188,8 +178,7 @@ def is_key_framed(attrs):
     :rtype: bool
     """
     for attr in attrs:
-        if maya.cmds.keyframe(attr, timeChange=True,
-                              query=True) is None:
+        if maya.cmds.keyframe(attr, timeChange=True, query=True) is None:
             return False
     return True
 

@@ -31,6 +31,7 @@ import cProfile as profile
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -40,7 +41,6 @@ import mmSolver.api as mmapi
 
 
 class TestBase(unittest.TestCase):
-
     def setUp(self):
         print('')
         print('-' * 80)

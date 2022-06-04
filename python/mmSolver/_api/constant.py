@@ -26,9 +26,7 @@ from __future__ import print_function
 import maya.OpenMaya as OpenMaya
 
 # Plug-in names
-PLUGIN_NAMES = [
-    'mmSolver'
-]
+PLUGIN_NAMES = ['mmSolver']
 
 LOG_LEVEL_DEFAULT = 'info'
 
@@ -44,10 +42,37 @@ LINE_NAME_SUFFIX = '_LN'
 # list of characters that are not supported in maya for node names.
 # Note, only ':' and '_' are not in the list.
 BAD_MAYA_CHARS = [
-    ' ', '#', '-', '@', '!', '$', '%', '^', '&', '*',
-    '+', '=', '/', '\\', '~', '`', '.', ',', '?', ';', '|',
-    '(', ')', '[', ']', '{', '}', '<', '>',
-    '\'', '\"',
+    ' ',
+    '#',
+    '-',
+    '@',
+    '!',
+    '$',
+    '%',
+    '^',
+    '&',
+    '*',
+    '+',
+    '=',
+    '/',
+    '\\',
+    '~',
+    '`',
+    '.',
+    ',',
+    '?',
+    ';',
+    '|',
+    '(',
+    ')',
+    '[',
+    ']',
+    '{',
+    '}',
+    '<',
+    '>',
+    '\'',
+    '\"',
 ]
 
 
@@ -169,9 +194,7 @@ CAMERA_TRANSFORM_NODE_API_TYPES = (
     OpenMaya.MFn.kPluginTransformNode,
     OpenMaya.MFn.kUnknownTransform,
 )
-CAMERA_SHAPE_NODE_API_TYPES = (
-    OpenMaya.MFn.kCamera,
-)
+CAMERA_SHAPE_NODE_API_TYPES = (OpenMaya.MFn.kCamera,)
 LINE_TRANSFORM_NODE_TYPE = 'transform'
 LINE_SHAPE_NODE_TYPE = 'mmLineShape'
 LENS_NODE_TYPE_DEFAULT = 'mmLensModel3de'

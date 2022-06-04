@@ -37,4 +37,5 @@ def main():
     Open the 'Remove Solver Nodes' window.
     """
     import mmSolver.tools.removesolvernodes.ui.removesolvernodes_window as window
+
     window.main()

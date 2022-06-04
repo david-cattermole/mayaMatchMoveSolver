@@ -30,6 +30,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -39,7 +40,6 @@ import test.baseutils as baseUtils
 
 
 class ToolsTestCase(baseUtils.TestBase):
-
     def setUp(self):
         maya.cmds.file(new=True, force=True)
         self.reload_solver()
@@ -47,4 +47,3 @@ class ToolsTestCase(baseUtils.TestBase):
 
     def tearDown(self):
         super(ToolsTestCase, self).tearDown()
-

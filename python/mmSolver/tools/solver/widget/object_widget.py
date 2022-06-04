@@ -26,6 +26,7 @@ from __future__ import print_function
 import time
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt as Qt
@@ -76,11 +77,9 @@ def _lookupUINodesFromIndexes(indexes, model):
 
 
 class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
-
     def __init__(self, parent=None, *args, **kwargs):
         s = time.time()
-        super(ObjectBrowserWidget, self).__init__(
-            parent=parent, *args, **kwargs)
+        super(ObjectBrowserWidget, self).__init__(parent=parent, *args, **kwargs)
 
         self.ui.title_label.setText('Input Objects')
 
@@ -134,10 +133,7 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.filterModel = QtCore.QSortFilterProxyModel()
         self.filterModel.setSourceModel(self.model)
         self.filterModel.setDynamicSortFilter(False)
-        self.header = QtWidgets.QHeaderView(
-            QtCore.Qt.Horizontal,
-            parent=self.treeView
-        )
+        self.header = QtWidgets.QHeaderView(QtCore.Qt.Horizontal, parent=self.treeView)
         Qt.QtCompat.QHeaderView.setSectionResizeMode(
             self.header, QtWidgets.QHeaderView.ResizeToContents
         )
@@ -152,9 +148,7 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         # Always hide the UUID Column - it's used for selection of
         # ModelIndexes with Maya node UUIDs only.
         hidden = True
-        column = self.model.getColumnIndexFromColumnName(
-            const.OBJECT_COLUMN_NAME_UUID
-        )
+        column = self.model.getColumnIndexFromColumnName(const.OBJECT_COLUMN_NAME_UUID)
         self.treeView.setColumnHidden(column, hidden)
         return
 
@@ -199,9 +193,7 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
                     bnd_node = bnd.get_node()
                     bnd_list.add(bnd_node)
 
-        text = (
-            'Camera {cam} | Markers {mkr} | Bundles {bnd}'
-        ).format(
+        text = ('Camera {cam} | Markers {mkr} | Bundles {bnd}').format(
             cam=len(cam_list),
             mkr=len(mkr_list),
             bnd=len(bnd_list),
@@ -253,7 +245,8 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             self.treeView.model(),
             self.treeView.rootIndex(),
             expand=True,
-            recurse=True)
+            recurse=True,
+        )
 
         widgets = [self]
         nodebrowser_utils._populateWidgetsEnabled(col, widgets)
@@ -281,10 +274,7 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         # Add Callbacks
         callback_manager = self.callback_manager
         if callback_manager is not None:
-            lib_marker.add_callbacks_to_markers(
-                mkr_list,
-                callback_manager
-            )
+            lib_marker.add_callbacks_to_markers(mkr_list, callback_manager)
 
         # Restore selection.
         lib_maya_utils.set_scene_selection(sel)
@@ -296,20 +286,14 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             return
 
         sel = lib_maya_utils.get_scene_selection()
-        ui_nodes = lib_uiquery.get_selected_ui_nodes(
-            self.treeView,
-            self.filterModel
-        )
+        ui_nodes = lib_uiquery.get_selected_ui_nodes(self.treeView, self.filterModel)
         nodes = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'marker')
         lib_marker.remove_markers_from_collection(nodes, col)
 
         # Remove Callbacks
         callback_manager = self.callback_manager
         if callback_manager is not None:
-            lib_marker.remove_callbacks_from_markers(
-                nodes,
-                callback_manager
-            )
+            lib_marker.remove_callbacks_from_markers(nodes, callback_manager)
 
         self.dataChanged.emit()
         self.viewUpdated.emit()
@@ -374,14 +358,8 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         """
         select_indexes = [idx for idx in selected.indexes()]
         deselect_indexes = [idx for idx in deselected.indexes()]
-        select_nodes = _lookupUINodesFromIndexes(
-            select_indexes,
-            self.filterModel
-        )
-        deselect_nodes = _lookupUINodesFromIndexes(
-            deselect_indexes,
-            self.filterModel
-        )
+        select_nodes = _lookupUINodesFromIndexes(select_indexes, self.filterModel)
+        deselect_nodes = _lookupUINodesFromIndexes(deselect_indexes, self.filterModel)
         if self.isActiveWindow() is True:
             # Only allow Maya selection changes when the user has the
             # UI focused. This breaks the Maya and Qt selection
@@ -397,9 +375,7 @@ class ObjectBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
     @QtCore.Slot(bool)
     def displayWeightColumnChanged(self, value):
         lib_state.set_display_object_weight_state(value)
-        idx = self.model.getColumnIndexFromColumnName(
-            const.OBJECT_COLUMN_NAME_WEIGHT
-        )
+        idx = self.model.getColumnIndexFromColumnName(const.OBJECT_COLUMN_NAME_WEIGHT)
         self.treeView.setColumnHidden(idx, not value)
         return
 

@@ -43,11 +43,8 @@ def create_example_solve_scene():
     :return: API Collection object.
     """
     # Camera
-    cam_tfm = maya.cmds.createNode('transform',
-                                   name='cam_tfm')
-    cam_shp = maya.cmds.createNode('camera',
-                                   name='cam_shp',
-                                   parent=cam_tfm)
+    cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
+    cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
     maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
     maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
     maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
@@ -73,9 +70,7 @@ def create_example_solve_scene():
     attr_ty = mmapi.Attribute(bundle_tfm + '.ty')
 
     # Frames
-    frm_list = [
-        mmapi.Frame(1, primary=True)
-    ]
+    frm_list = [mmapi.Frame(1, primary=True)]
 
     # Solver
     sol = mmapi.Solver()
@@ -106,8 +101,14 @@ class TestSolveResult(test_api_utils.APITestCase):
         print('error stats: ' + pprint.pformat(results[0].get_error_stats()))
         print('timer stats: ' + pprint.pformat(results[0].get_timer_stats()))
         print('solver stats: ' + pprint.pformat(results[0].get_solver_stats()))
-        print('frame error list: ' + pprint.pformat(dict(results[0].get_frame_error_list())))
-        print('marker error list: ' + pprint.pformat(dict(results[0].get_marker_error_list())))
+        print(
+            'frame error list: '
+            + pprint.pformat(dict(results[0].get_frame_error_list()))
+        )
+        print(
+            'marker error list: '
+            + pprint.pformat(dict(results[0].get_marker_error_list()))
+        )
 
     def test_combine_timer_stats(self):
         col = create_example_solve_scene()
@@ -146,11 +147,7 @@ class TestSolveResult(test_api_utils.APITestCase):
         assert len(frame_list) > 0
 
     def test_get_average_frame_error_list(self):
-        frame_error_list = {
-            1: 0,
-            2: 0.5,
-            3: 1.0
-        }
+        frame_error_list = {1: 0, 2: 0.5, 3: 1.0}
         v = mmapi.get_average_frame_error_list(frame_error_list)
         assert self.approx_equal(v, 0.5)
 
@@ -175,11 +172,7 @@ class TestSolveResult(test_api_utils.APITestCase):
         assert isinstance(v, float)
 
     def test_get_max_frame_error(self):
-        frame_error_list = {
-            1: 0,
-            2: 0.5,
-            3: 1.0
-        }
+        frame_error_list = {1: 0, 2: 0.5, 3: 1.0}
         frm, val = mmapi.get_max_frame_error(frame_error_list)
         assert self.approx_equal(frm, 3) and isinstance(frm, int)
         assert self.approx_equal(val, 1.0)

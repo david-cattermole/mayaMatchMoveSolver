@@ -33,19 +33,21 @@ def reparent_under_node():
     Re-parent the selection under the last selected node.
     """
     frame = maya.cmds.currentTime(query=True)
-    nodes = maya.cmds.ls(selection=True, long=True,
-                         type='transform') or []
+    nodes = maya.cmds.ls(selection=True, long=True, type='transform') or []
 
     if len(nodes) < 2:
-        msg = ('Not enough objects selected, '
-               'select at least 1 child and 1 parent node.')
+        msg = (
+            'Not enough objects selected, ' 'select at least 1 child and 1 parent node.'
+        )
         LOG.warn(msg)
         return
-    with tools_utils.tool_context(disable_viewport=True,
-                                  use_undo_chunk=False,
-                                  use_dg_evaluation_mode=False,
-                                  restore_current_frame=False,
-                                  pre_update_frame=False):
+    with tools_utils.tool_context(
+        disable_viewport=True,
+        use_undo_chunk=False,
+        use_dg_evaluation_mode=False,
+        restore_current_frame=False,
+        pre_update_frame=False,
+    ):
         children = nodes[:-1]
         parent = nodes[-1]
         children_tfm_nodes = [tfm_utils.TransformNode(node=n) for n in children]
@@ -65,19 +67,19 @@ def unparent_to_world():
     Un-parent the selected nodes into world space.
     """
     frame = maya.cmds.currentTime(query=True)
-    nodes = maya.cmds.ls(selection=True, long=True,
-                         type='transform') or []
+    nodes = maya.cmds.ls(selection=True, long=True, type='transform') or []
 
     if len(nodes) == 0:
-        msg = ('Not enough objects selected, '
-               'select at least 1 transform node.')
+        msg = 'Not enough objects selected, ' 'select at least 1 transform node.'
         LOG.warn(msg)
         return
-    with tools_utils.tool_context(disable_viewport=True,
-                                  use_undo_chunk=True,
-                                  use_dg_evaluation_mode=False,
-                                  restore_current_frame=False,
-                                  pre_update_frame=False):
+    with tools_utils.tool_context(
+        disable_viewport=True,
+        use_undo_chunk=True,
+        use_dg_evaluation_mode=False,
+        restore_current_frame=False,
+        pre_update_frame=False,
+    ):
         tfm_nodes = [tfm_utils.TransformNode(node=n) for n in nodes]
         lib.reparent(tfm_nodes, None, sparse=True)
         nodes = [tn.get_node() for tn in tfm_nodes]

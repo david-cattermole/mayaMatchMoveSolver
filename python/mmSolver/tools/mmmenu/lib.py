@@ -98,7 +98,9 @@ def compile_items(items, function_defs):
                 LOG.warning(msg, item_name, item)
                 continue
 
-            sub_items_to_create.append((item_key, parent_item_key, func_def, is_sub_menu))
+            sub_items_to_create.append(
+                (item_key, parent_item_key, func_def, is_sub_menu)
+            )
 
         items_to_create += list(reversed(sub_items_to_create))
 
@@ -127,7 +129,7 @@ def create_item(parent_menu, func_def, is_sub_menu):
         cmdLanguage=command_language,
         divider=divider,
         subMenu=is_sub_menu,
-        tearOff=tearoff
+        tearOff=tearoff,
     )
 
     # Create option box for menu item

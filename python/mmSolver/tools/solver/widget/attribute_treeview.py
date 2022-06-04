@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt as Qt
@@ -62,7 +63,6 @@ def _get_selected_attrs(cls_obj):
 
 
 class AttributeTreeView(QtWidgets.QTreeView):
-
     def __init__(self, parent=None, *args, **kwargs):
         super(AttributeTreeView, self).__init__(parent, *args, **kwargs)
         return
@@ -131,53 +131,49 @@ class AttributeTreeView(QtWidgets.QTreeView):
 
         label = 'Edit Details...'
         edit_act = QtWidgets.QAction(label, self)
-        edit_act.triggered.connect(
-            self.set_details_selected_attributes)
+        edit_act.triggered.connect(self.set_details_selected_attributes)
 
         label = 'Lock Attributes'
         lock_act = QtWidgets.QAction(label, self)
-        lock_act.triggered.connect(
-            self.lock_selected_attributes)
+        lock_act.triggered.connect(self.lock_selected_attributes)
 
         label = 'Unlock Attributes'
         unlock_act = QtWidgets.QAction(label, self)
-        unlock_act.triggered.connect(
-            self.unlock_selected_attributes)
+        unlock_act.triggered.connect(self.unlock_selected_attributes)
 
         label = 'Set Keyframe'
         set_key_act = QtWidgets.QAction(label, self)
-        set_key_act.triggered.connect(
-            self.set_keyframe_on_selected_attributes)
+        set_key_act.triggered.connect(self.set_keyframe_on_selected_attributes)
 
         label = 'Delete Keyframe'
         delete_key_current_frame_act = QtWidgets.QAction(label, self)
         delete_key_current_frame_act.triggered.connect(
-            self.delete_keyframe_current_frame_on_selected_attributes)
+            self.delete_keyframe_current_frame_on_selected_attributes
+        )
 
         label = 'Delete Keyframes (Timeline)'
         delete_key_all_frames_act = QtWidgets.QAction(label, self)
         delete_key_all_frames_act.triggered.connect(
-            self.delete_keyframe_all_frames_on_selected_attributes)
+            self.delete_keyframe_all_frames_on_selected_attributes
+        )
 
         label = 'Delete Static Channels'
         delete_static_keys_act = QtWidgets.QAction(label, self)
         delete_static_keys_act.triggered.connect(
-            self.delete_static_channel_on_selected_attributes)
+            self.delete_static_channel_on_selected_attributes
+        )
 
         label = 'Break Connections'
         break_conn_act = QtWidgets.QAction(label, self)
-        break_conn_act.triggered.connect(
-            self.break_connections_on_selected_attributes)
+        break_conn_act.triggered.connect(self.break_connections_on_selected_attributes)
 
         label = 'Bake Attributes'
         bake_attr_act = QtWidgets.QAction(label, self)
-        bake_attr_act.triggered.connect(
-            self.bake_selected_attributes)
+        bake_attr_act.triggered.connect(self.bake_selected_attributes)
 
         label = 'Reset Values'
         reset_values_act = QtWidgets.QAction(label, self)
-        reset_values_act.triggered.connect(
-            self.reset_values_on_selected_attributes)
+        reset_values_act.triggered.connect(self.reset_values_on_selected_attributes)
 
         menu.addAction(edit_act)
         menu.addSeparator()

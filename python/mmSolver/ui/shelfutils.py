@@ -74,11 +74,7 @@ def create_shelf(parent=None, name=None):
     exists = maya.cmds.shelfLayout(shelf, exists=True)
     if exists:
         # delete the shelf.
-        children = maya.cmds.shelfLayout(
-            name,
-            query=True,
-            childArray=True
-        ) or []
+        children = maya.cmds.shelfLayout(name, query=True, childArray=True) or []
         for c in children:
             maya.cmds.deleteUI(c)
         maya.cmds.deleteUI(shelf)
@@ -88,20 +84,13 @@ def create_shelf(parent=None, name=None):
         name,
         parent=parent,
     )
-    shelf = maya.cmds.shelfLayout(
-        name,
-        query=True,
-        fullPathName=True
-    )
+    shelf = maya.cmds.shelfLayout(name, query=True, fullPathName=True)
     return shelf
 
 
-def create_shelf_button(parent=None,
-                        name=None,
-                        tooltip=None,
-                        icon=None,
-                        cmd=None,
-                        cmdLanguage=None):
+def create_shelf_button(
+    parent=None, name=None, tooltip=None, icon=None, cmd=None, cmdLanguage=None
+):
     """
     Create a shelf button.
 
@@ -178,7 +167,7 @@ def create_shelf_button(parent=None,
         imageOverlayLabel=imageOverlayLabel,
         noDefaultPopup=True,
         preventOverride=True,
-        **kwargs
+        **kwargs,
     )
     return button
 
@@ -195,11 +184,7 @@ def create_shelf_separator(parent=None):
     """
     assert parent is not None
     assert isinstance(parent, pycompat.TEXT_TYPE)
-    control = maya.cmds.separator(
-        parent=parent,
-        style='shelf',
-        horizontal=False
-    )
+    control = maya.cmds.separator(parent=parent, style='shelf', horizontal=False)
     return control
 
 
@@ -207,6 +192,7 @@ def create_popup_menu(*args, **kwargs):
     msg = 'Deprecated, please use mmSolver.ui.menuutils.create_popup_menu'
     warnings.warn(msg)
     import mmSolver.ui.menuutils as menu_utils
+
     return menu_utils.create_popup_menu(*args, **kwargs)
 
 
@@ -214,4 +200,5 @@ def create_menu_item(*args, **kwargs):
     msg = 'Deprecated, please use mmSolver.ui.menuutils.create_menu_item'
     warnings.warn(msg)
     import mmSolver.ui.menuutils as menu_utils
+
     return menu_utils.create_menu_item(*args, **kwargs)

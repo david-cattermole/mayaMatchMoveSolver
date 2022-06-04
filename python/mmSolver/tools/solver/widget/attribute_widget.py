@@ -26,6 +26,7 @@ from __future__ import print_function
 import time
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt as Qt
@@ -88,20 +89,17 @@ def _lookupMayaNodesFromAttrUINodes(indexes, model):
         if isinstance(ui_node, attr_nodes.AttrNode):
             nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], 'data')
             node_names = [x.get_node() for x in nodes]
-            maya_nodes += [x for x in node_names
-                           if x not in maya_nodes]
+            maya_nodes += [x for x in node_names if x not in maya_nodes]
         elif isinstance(ui_node, attr_nodes.MayaNode):
             node_uuid = ui_node.data().get('uuid')
             node_names = lib_maya_utils.get_node_names_from_uuids([node_uuid])
-            maya_nodes += [x for x in node_names
-                           if x not in maya_nodes]
+            maya_nodes += [x for x in node_names if x not in maya_nodes]
         else:
             LOG.error("Invalid node type: %r", ui_node)
     return maya_nodes
 
 
 class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
-
     def __init__(self, parent=None, *args, **kwargs):
         s = time.time()
         super(AttributeBrowserWidget, self).__init__(parent, *args, **kwargs)
@@ -158,10 +156,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         self.filterModel = QtCore.QSortFilterProxyModel()
         self.filterModel.setSourceModel(self.model)
         self.filterModel.setDynamicSortFilter(False)
-        self.header = QtWidgets.QHeaderView(
-            QtCore.Qt.Horizontal,
-            parent=self.treeView
-        )
+        self.header = QtWidgets.QHeaderView(QtCore.Qt.Horizontal, parent=self.treeView)
         Qt.QtCompat.QHeaderView.setSectionResizeMode(
             self.header, QtWidgets.QHeaderView.ResizeToContents
         )
@@ -177,9 +172,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         # Always hide the UUID Column - it's used for selection of
         # ModelIndexes with Maya node UUIDs only.
         hidden = True
-        column = self.model.getColumnIndexFromColumnName(
-            const.ATTR_COLUMN_NAME_UUID
-        )
+        column = self.model.getColumnIndexFromColumnName(const.ATTR_COLUMN_NAME_UUID)
         self.treeView.setColumnHidden(column, hidden)
         return
 
@@ -209,11 +202,8 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
                 callback_manager,
             )
         root = convert_to_ui.attributesToUINodes(
-            col,
-            attr_list,
-            show_anm,
-            show_stc,
-            show_lck)
+            col, attr_list, show_anm, show_stc, show_lck
+        )
         model.setRootNode(root)
 
         e = time.time()
@@ -237,9 +227,9 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             stc_count = attr_state_list.count(mmapi.ATTR_STATE_STATIC)
             lck_count = attr_state_list.count(mmapi.ATTR_STATE_LOCKED)
 
-        text = (
-            'Animated {anm} | Static {stc} | Locked {lck}'
-        ).format(anm=anm_count, stc=stc_count, lck=lck_count)
+        text = ('Animated {anm} | Static {stc} | Locked {lck}').format(
+            anm=anm_count, stc=stc_count, lck=lck_count
+        )
         self.ui.info_label.setText(text)
 
         e = time.time()
@@ -293,7 +283,8 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             self.treeView.model(),
             self.treeView.rootIndex(),
             expand=True,
-            recurse=False)
+            recurse=False,
+        )
 
         e = time.time()
         LOG.debug('updateModel: %r', e - s)
@@ -363,8 +354,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             s = time.time()
             sel = lib_maya_utils.get_scene_selection()
             ui_nodes = lib_uiquery.get_selected_ui_nodes(
-                self.treeView,
-                self.filterModel
+                self.treeView, self.filterModel
             )
             node_list = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'data')
             e = time.time()
@@ -381,10 +371,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             s = time.time()
             callback_manager = self.callback_manager
             if callback_manager is not None:
-                lib_attr.remove_callbacks_from_attributes(
-                    attr_list,
-                    callback_manager
-                )
+                lib_attr.remove_callbacks_from_attributes(attr_list, callback_manager)
             e = time.time()
             LOG.debug("attribute removeClicked4: t=%s", e - s)
         finally:
@@ -450,15 +437,13 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         select_indexes = [idx for idx in selected.indexes()]
         deselect_indexes = [idx for idx in deselected.indexes()]
         selected_indexes = self.selModel.selectedRows()
-        select_nodes = _lookupMayaNodesFromAttrUINodes(
-            select_indexes,
-            self.filterModel)
+        select_nodes = _lookupMayaNodesFromAttrUINodes(select_indexes, self.filterModel)
         deselect_nodes = _lookupMayaNodesFromAttrUINodes(
-            deselect_indexes,
-            self.filterModel)
+            deselect_indexes, self.filterModel
+        )
         selected_nodes = _lookupMayaNodesFromAttrUINodes(
-            selected_indexes,
-            self.filterModel)
+            selected_indexes, self.filterModel
+        )
         if self.isActiveWindow() is True:
             # Only allow Maya selection changes when the user has the
             # UI focused. This breaks the Maya and Qt selection
@@ -479,9 +464,7 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
     @QtCore.Slot(bool)
     def displayStateColumnChanged(self, value):
         lib_state.set_display_attribute_state_state(value)
-        idx = self.model.getColumnIndexFromColumnName(
-            const.ATTR_COLUMN_NAME_STATE
-        )
+        idx = self.model.getColumnIndexFromColumnName(const.ATTR_COLUMN_NAME_STATE)
         self.treeView.setColumnHidden(idx, not value)
         return
 

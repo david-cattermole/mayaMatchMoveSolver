@@ -34,4 +34,5 @@ def open_window():
     """Open the Load Marker GUI."""
     mmapi.load_plugin()
     import mmSolver.tools.loadmarker.ui.loadmarker_window as loadmarker_window
+
     loadmarker_window.main()

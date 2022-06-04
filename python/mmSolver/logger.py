@@ -100,7 +100,6 @@ def add_maya_viewport_handler(logger, level=None):
 
 
 class MayaViewportHandler(logging.StreamHandler):
-
     def __init__(self, *args, **kwargs):
         super(MayaViewportHandler, self).__init__(*args, **kwargs)
         self._last_few_message_hashes = collections.deque([], maxlen=3)
@@ -152,10 +151,13 @@ class MayaViewportHandler(logging.StreamHandler):
             message = pre_text + record_format + post_text
 
             import maya.cmds
-            maya.cmds.inViewMessage(statusMessage=message,
-                                    fadeStayTime=fade_time,
-                                    fade=True,
-                                    position='botLeft')
+
+            maya.cmds.inViewMessage(
+                statusMessage=message,
+                fadeStayTime=fade_time,
+                fade=True,
+                position='botLeft',
+            )
         except (KeyboardInterrupt, SystemExit):
             raise
         except BaseException:

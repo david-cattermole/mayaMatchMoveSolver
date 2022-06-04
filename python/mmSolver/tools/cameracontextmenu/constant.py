@@ -43,15 +43,13 @@ MM_IMAGE_PLANE_SHAPE_NODE_TYPE = 'mmImagePlaneShape'
 MM_IMAGE_PLANE_TRANSFORM_NODE_TYPE = 'mmImagePlaneTransform'
 MM_IMAGE_PLANE_NODE_TYPES = [
     MM_IMAGE_PLANE_SHAPE_NODE_TYPE,
-    MM_IMAGE_PLANE_TRANSFORM_NODE_TYPE
+    MM_IMAGE_PLANE_TRANSFORM_NODE_TYPE,
 ]
 
 SELECT_CAMERA_NODE_TOOLTIP = 'Select camera node "{name}".'
 SELECT_CAMERA_NODE_CMD_LANG = 'python'
 SELECT_CAMERA_NODE_CMD = (
-    'import maya.cmds;'
-    'node = "{node}";'
-    'maya.cmds.select(node, replace=True);'
+    'import maya.cmds;' 'node = "{node}";' 'maya.cmds.select(node, replace=True);'
 )
 
 
@@ -74,7 +72,9 @@ SELECT_LENS_NODE_CMD = (
 
 
 TOGGLE_CAMERA_LENS_DISTORTION_ENABLED_LABEL = 'Toggle Camera Distortion'
-TOGGLE_CAMERA_LENS_DISTORTION_ENABLED_TOOLTIP = 'Toggles the lens distortion on the camera.'
+TOGGLE_CAMERA_LENS_DISTORTION_ENABLED_TOOLTIP = (
+    'Toggles the lens distortion on the camera.'
+)
 TOGGLE_CAMERA_LENS_DISTORTION_ENABLED_CMD_LANG = 'python'
 TOGGLE_CAMERA_LENS_DISTORTION_ENABLED_CMD = (
     'import mmSolver.tools.cameracontextmenu.lib as lib;'
@@ -82,7 +82,9 @@ TOGGLE_CAMERA_LENS_DISTORTION_ENABLED_CMD = (
 )
 
 
-SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_TOOLTIP = 'Select and show node in Attribute Editor.'
+SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_TOOLTIP = (
+    'Select and show node in Attribute Editor.'
+)
 SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_CMD_LANG = 'python'
 SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_CMD = (
     'import maya.cmds;'
@@ -105,8 +107,7 @@ CREATE_CAMERA_LABEL = 'Create Camera'
 CREATE_CAMERA_TOOLTIP = 'Create a camera.'
 CREATE_CAMERA_CMD_LANG = 'python'
 CREATE_CAMERA_CMD = (
-    'import mmSolver.tools.cameracontextmenu.lib as lib;'
-    'lib.create_camera();'
+    'import mmSolver.tools.cameracontextmenu.lib as lib;' 'lib.create_camera();'
 )
 
 

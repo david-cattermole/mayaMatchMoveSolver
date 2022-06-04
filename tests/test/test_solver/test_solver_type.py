@@ -27,6 +27,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -39,7 +40,6 @@ import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
 class TestMMSolverType(solverUtils.SolverTestCase):
-
     def test_command_exists(self):
         """
         The command must exist as maya.cmds.mmSolverType
@@ -91,11 +91,7 @@ class TestMMSolverType(solverUtils.SolverTestCase):
         """
         # Not asking for a name or index is an error.
         with self.assertRaises(RuntimeError):
-            maya.cmds.mmSolverType(
-                query=True,
-                list=True,
-                name=False,
-                index=False)
+            maya.cmds.mmSolverType(query=True, list=True, name=False, index=False)
         return
 
     def test_get_default(self):

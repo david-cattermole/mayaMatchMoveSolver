@@ -44,10 +44,7 @@ def get_nurbs_curve_nodes(nodes):
     for node in nodes:
         node_type = maya.cmds.nodeType(node)
         if node_type == 'transform':
-            shps = maya.cmds.listRelatives(
-                node,
-                shapes=True,
-                type='nurbsCurve') or []
+            shps = maya.cmds.listRelatives(node, shapes=True, type='nurbsCurve') or []
             crv_shp_nodes += shps
         elif node_type == 'nurbsCurve':
             crv_shp_nodes.append(node)
@@ -135,7 +132,8 @@ def connect_transform_to_nurbs_curve(tfm_node, crv_shp_node, attr_name):
         minValue=min_value,
         maxValue=max_value,
         defaultValue=default_value,
-        keyable=True)
+        keyable=True,
+    )
 
     info_node = maya.cmds.createNode('pointOnCurveInfo')
     plug = info_node + '.turnOnPercentage'
@@ -185,18 +183,9 @@ def attach_bundle_to_curve(bnd_node, crv_shp_node, attr_name):
     :rtype: str
 
     """
-    pos = maya.cmds.xform(
-        bnd_node,
-        query=True,
-        worldSpace=True,
-        translation=True)
-    crv_pos, crv_param = get_closest_point_on_nurbs_curve(
-        pos,
-        crv_shp_node)
-    connect_transform_to_nurbs_curve(
-        bnd_node,
-        crv_shp_node,
-        attr_name)
+    pos = maya.cmds.xform(bnd_node, query=True, worldSpace=True, translation=True)
+    crv_pos, crv_param = get_closest_point_on_nurbs_curve(pos, crv_shp_node)
+    connect_transform_to_nurbs_curve(bnd_node, crv_shp_node, attr_name)
     do_remap = const.REMAP_TO_ONE_HUNDRED
     value = crv_param
     if do_remap is True:

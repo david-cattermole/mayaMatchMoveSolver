@@ -26,6 +26,7 @@ from __future__ import print_function
 import time
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -39,6 +40,7 @@ import mmSolver.tools.solver.lib.collectionstate as lib_col_state
 import mmSolver.tools.solver.widget.ui_solver_widget as ui_solver_widget
 import mmSolver.tools.solver.widget.solver_standard_widget as solver_standard_widget
 import mmSolver.tools.solver.widget.solver_basic_widget as solver_basic_widget
+
 # import mmSolver.tools.solver.widget.solver_legacy_widget as solver_legacy_widget  # Deprecated.
 import mmSolver.tools.userpreferences.constant as userprefs_const
 import mmSolver.tools.userpreferences.lib as userprefs_lib
@@ -134,7 +136,9 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
 
         self.basic_widget.frameRange_widget.rangeTypeChanged.connect(self.updateInfo)
         self.basic_widget.frameRange_widget.framesChanged.connect(self.updateInfo)
-        self.basic_widget.frameRange_widget.incrementByFrameChanged.connect(self.updateInfo)
+        self.basic_widget.frameRange_widget.incrementByFrameChanged.connect(
+            self.updateInfo
+        )
         self.standard_widget.frameRange_widget.rangeTypeChanged.connect(self.updateInfo)
         self.validate_pushButton.clicked.connect(self.runUpdateInfo)
 

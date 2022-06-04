@@ -77,8 +77,9 @@ def _create_marker_transform(name):
 
 def _create_marker_shape(tfm_node):
     shp_name = tfm_node.rpartition('|')[-1] + 'Shape'
-    shp = maya.cmds.createNode(const.MARKER_SHAPE_NODE_TYPE,
-                               name=shp_name, parent=tfm_node)
+    shp = maya.cmds.createNode(
+        const.MARKER_SHAPE_NODE_TYPE, name=shp_name, parent=tfm_node
+    )
     maya.cmds.setAttr(shp + '.localPositionX', channelBox=False)
     maya.cmds.setAttr(shp + '.localPositionY', channelBox=False)
     maya.cmds.setAttr(shp + '.localPositionZ', channelBox=False)
@@ -104,7 +105,7 @@ def _create_marker_attributes(node):
             minValue=0,
             maxValue=1,
             defaultValue=1,
-            keyable=True
+            keyable=True,
         )
 
     attr = const.MARKER_ATTR_LONG_NAME_WEIGHT
@@ -115,7 +116,7 @@ def _create_marker_attributes(node):
             attributeType='double',
             minValue=0.0,
             defaultValue=1.0,
-            keyable=True
+            keyable=True,
         )
 
     attr = const.MARKER_ATTR_LONG_NAME_DEVIATION
@@ -126,7 +127,7 @@ def _create_marker_attributes(node):
             attributeType='double',
             minValue=-1.0,
             defaultValue=-1.0,
-            keyable=True
+            keyable=True,
         )
         plug = '{0}.{1}'.format(node, attr)
         maya.cmds.setAttr(plug, lock=True)
@@ -139,7 +140,7 @@ def _create_marker_attributes(node):
             attributeType='double',
             minValue=-1.0,
             defaultValue=-1.0,
-            keyable=True
+            keyable=True,
         )
         plug = '{0}.{1}'.format(node, attr)
         maya.cmds.setAttr(plug, lock=True)
@@ -152,7 +153,7 @@ def _create_marker_attributes(node):
             attributeType='double',
             minValue=-1.0,
             defaultValue=-1.0,
-            keyable=True
+            keyable=True,
         )
         plug = '{0}.{1}'.format(node, attr)
         maya.cmds.setAttr(plug, lock=True)
@@ -165,37 +166,24 @@ def _create_marker_attributes(node):
             attributeType='long',
             minValue=-1,
             defaultValue=-1,
-            keyable=True
+            keyable=True,
         )
         plug = '{0}.{1}'.format(node, attr)
         maya.cmds.setAttr(plug, lock=True)
 
     attr = const.MARKER_ATTR_LONG_NAME_BUNDLE
     if not node_utils.attribute_exists(attr, node):
-        maya.cmds.addAttr(
-            node,
-            longName=attr,
-            attributeType='message'
-        )
+        maya.cmds.addAttr(node, longName=attr, attributeType='message')
 
     attr = const.MARKER_ATTR_LONG_NAME_MARKER_NAME
     if not node_utils.attribute_exists(attr, node):
-        maya.cmds.addAttr(
-            node,
-            longName=attr,
-            dataType='string'
-        )
+        maya.cmds.addAttr(node, longName=attr, dataType='string')
         plug = '{0}.{1}'.format(node, attr)
         maya.cmds.setAttr(plug, lock=True)
 
     attr = const.MARKER_ATTR_LONG_NAME_MARKER_ID
     if not node_utils.attribute_exists(attr, node):
-        maya.cmds.addAttr(
-            node,
-            longName=attr,
-            attributeType='long',
-            defaultValue=-1
-        )
+        maya.cmds.addAttr(node, longName=attr, attributeType='long', defaultValue=-1)
         plug = '{0}.{1}'.format(node, attr)
         maya.cmds.setAttr(plug, lock=True)
 
@@ -206,7 +194,7 @@ def _create_marker_attributes(node):
             longName=attr,
             attributeType='long',
             defaultValue=const.MARKER_USED_HINT_UNKNOWN_VALUE,
-            keyable=True
+            keyable=True,
         )
         plug = '{0}.{1}'.format(node, attr)
         maya.cmds.setAttr(plug, lock=True)
@@ -425,12 +413,9 @@ class Marker(object):
 
     ############################################################################
 
-    def create_node(self,
-                    name='marker1',
-                    colour=None,
-                    cam=None,
-                    mkr_grp=None,
-                    bnd=None):
+    def create_node(
+        self, name='marker1', colour=None, cam=None, mkr_grp=None, bnd=None
+    ):
         """
         Create a marker node network from scratch.
 
@@ -516,9 +501,7 @@ class Marker(object):
             if not maya.cmds.isConnected(src, dst):
                 maya.cmds.connectAttr(src, dst)
 
-        event_utils.trigger_event(
-            const.EVENT_NAME_MARKER_CREATED,
-            mkr=self)
+        event_utils.trigger_event(const.EVENT_NAME_MARKER_CREATED, mkr=self)
         return self
 
     def delete_node(self):
@@ -592,12 +575,15 @@ class Marker(object):
 
         bnd_node = bnd.get_node()
         dev_list = markerutils.calculate_marker_deviation(
-            node, bnd_node,
-            cam_tfm, cam_shp,
+            node,
+            bnd_node,
+            cam_tfm,
+            cam_shp,
             times,
             weights_list,
             enabled_list,
-            image_width, image_height
+            image_width,
+            image_height,
         )
         if dev_list is None:
             dev_list = [-1.0] * times
@@ -626,9 +612,7 @@ class Marker(object):
             v = maya.cmds.getAttr(plug, time=time)
         return v
 
-    def get_enabled_frames(self,
-                           frame_range_start=None,
-                           frame_range_end=None):
+    def get_enabled_frames(self, frame_range_start=None, frame_range_end=None):
         """
         Get the list of frames that this Marker is enabled.
 
@@ -663,17 +647,14 @@ class Marker(object):
 
         anim_curves = maya.cmds.listConnections(plug, type='animCurve') or []
         if len(anim_curves) == 0:
-            enable_times = list(range(frame_range_start,
-                                      frame_range_end + 1))
+            enable_times = list(range(frame_range_start, frame_range_end + 1))
         else:
             anim_curve = anim_curves[0]
-            enable_times = maya.cmds.keyframe(
-                anim_curve,
-                query=True,
-                timeChange=True) or []
+            enable_times = (
+                maya.cmds.keyframe(anim_curve, query=True, timeChange=True) or []
+            )
             if len(enable_times) == 0:
-                enable_times = list(range(frame_range_start,
-                                          frame_range_end + 1))
+                enable_times = list(range(frame_range_start, frame_range_end + 1))
 
         start_frame = int(min(enable_times))
         end_frame = int(max(enable_times))
@@ -779,9 +760,7 @@ class Marker(object):
             maya.cmds.setAttr(frame_plug, lock=True)
         return
 
-    def get_deviation_frames(self,
-                             frame_range_start=None,
-                             frame_range_end=None):
+    def get_deviation_frames(self, frame_range_start=None, frame_range_end=None):
         """
         Get the list of frames that this Marker has deviation set.
 
@@ -815,8 +794,7 @@ class Marker(object):
         anim_curve_fn = self.get_deviation_anim_curve_fn()
 
         if anim_curve_fn is None:
-            enable_times = range(frame_range_start,
-                                 frame_range_end + 1)
+            enable_times = range(frame_range_start, frame_range_end + 1)
             enable_times = list(enable_times)
         else:
             num_keys = anim_curve_fn.numKeys()
@@ -825,8 +803,7 @@ class Marker(object):
                 mtime = anim_curve_fn.time(i)
                 enable_times[i] = int(mtime.value())
             if num_keys == 0:
-                enable_times = range(frame_range_start,
-                                     frame_range_end + 1)
+                enable_times = range(frame_range_start, frame_range_end + 1)
                 enable_times = list(enable_times)
 
         start_frame = int(min(enable_times))
@@ -838,9 +815,7 @@ class Marker(object):
                 times.append(frm)
         return times
 
-    def _get_enabled_solved_frames(self,
-                                   frame_range_start=None,
-                                   frame_range_end=None):
+    def _get_enabled_solved_frames(self, frame_range_start=None, frame_range_end=None):
         """
         Calculate the frames that are both solved and enabled.
         """
@@ -848,10 +823,11 @@ class Marker(object):
         if len(enable_frames_set) == 0:
             enable_frames_set = set([maya.cmds.currentTime(query=True)])
 
-        dev_frames_set = set(self.get_deviation_frames(
-            frame_range_start=frame_range_start,
-            frame_range_end=frame_range_end
-        ))
+        dev_frames_set = set(
+            self.get_deviation_frames(
+                frame_range_start=frame_range_start, frame_range_end=frame_range_end
+            )
+        )
         frames = list(enable_frames_set.intersection(dev_frames_set))
         return frames
 
@@ -928,9 +904,11 @@ class Marker(object):
         try:
             maya.cmds.setAttr(plug, lock=False)
             anim_curve_fn = anim_utils.create_anim_curve_node_apione(
-                times, values,
+                times,
+                values,
                 node_attr=plug,
-                anim_type=OpenMayaAnim.MFnAnimCurve.kAnimCurveTU)
+                anim_type=OpenMayaAnim.MFnAnimCurve.kAnimCurveTU,
+            )
             self.set_deviation_anim_curve_fn(anim_curve_fn)
         finally:
             maya.cmds.setAttr(plug, lock=True)
@@ -950,9 +928,7 @@ class Marker(object):
             return None
         shps = maya.cmds.listRelatives(node, shapes=True, fullPath=True) or []
         if len(shps) == 0:
-            LOG.warn(
-                'Could not find shape to get colour. node=%r shps=%r',
-                node, shps)
+            LOG.warn('Could not find shape to get colour. node=%r shps=%r', node, shps)
             return
         shp = shps[0]
         v = node_utils.get_node_wire_colour_rgb(shp)
@@ -972,9 +948,7 @@ class Marker(object):
             return
         shps = maya.cmds.listRelatives(node, shapes=True, fullPath=True) or []
         if len(shps) == 0:
-            LOG.warn(
-                'Could not find shape to set colour. node=%r shps=%r',
-                node, shps)
+            LOG.warn('Could not find shape to set colour. node=%r shps=%r', node, shps)
             return
         shp = shps[0]
         node_utils.set_node_wire_colour_rgb(shp, rgb)
@@ -995,9 +969,12 @@ class Marker(object):
             assert maya.cmds.objExists(node)
             bnd_node = None
             node_attr = node + '.bundle'
-            bnd_nodes = maya.cmds.listConnections(
-                node_attr,
-                type=const.BUNDLE_TRANSFORM_NODE_TYPE) or []
+            bnd_nodes = (
+                maya.cmds.listConnections(
+                    node_attr, type=const.BUNDLE_TRANSFORM_NODE_TYPE
+                )
+                or []
+            )
             if len(bnd_nodes) > 0:
                 bnd_node = bnd_nodes[0]
             if bnd_node is not None and len(bnd_node) > 0:
@@ -1174,8 +1151,10 @@ class Marker(object):
 
         # Create Marker Group
         mkr_grp = None
-        mkr_grp_nodes = maya.cmds.ls(cam_tfm, dag=True, long=True,
-                                     type='mmMarkerGroupTransform') or []
+        mkr_grp_nodes = (
+            maya.cmds.ls(cam_tfm, dag=True, long=True, type='mmMarkerGroupTransform')
+            or []
+        )
         mkr_grp_nodes = sorted(mkr_grp_nodes)
         if len(mkr_grp_nodes) == 0:
             mkr_grp = markergroup.MarkerGroup().create_node(cam=cam)
@@ -1199,10 +1178,12 @@ class Marker(object):
         cam = self.get_camera()
         cam_tfm = cam.get_transform_node()
         cam_shp = cam.get_shape_node()
-        if ((cam_tfm is None) or
-                (cam_shp is None) or
-                (maya.cmds.objExists(cam_tfm) is False) or
-                (maya.cmds.objExists(cam_shp) is False)):
+        if (
+            (cam_tfm is None)
+            or (cam_shp is None)
+            or (maya.cmds.objExists(cam_tfm) is False)
+            or (maya.cmds.objExists(cam_shp) is False)
+        ):
             msg = 'Marker is already unlinked from all cameras, skipping.'
             msg += ' marker={0} camera={1}'
             msg = msg.format(repr(mkr_node), repr(cam_shp))
@@ -1295,10 +1276,12 @@ class Marker(object):
         cam = self.get_camera()
         cam_tfm = cam.get_transform_node()
         cam_shp = cam.get_shape_node()
-        if ((cam_tfm is None) or
-                (cam_shp is None) or
-                (maya.cmds.objExists(cam_tfm) is False) or
-                (maya.cmds.objExists(cam_shp) is False)):
+        if (
+            (cam_tfm is None)
+            or (cam_shp is None)
+            or (maya.cmds.objExists(cam_tfm) is False)
+            or (maya.cmds.objExists(cam_shp) is False)
+        ):
             msg = 'Marker is already unlinked from all cameras, skipping.'
             msg += ' marker={0} camera={1}'
             msg = msg.format(repr(mkr_node), repr(cam_shp))
@@ -1379,7 +1362,9 @@ def update_deviation_on_markers(mkr_list, solres_list):
             deviation_list = mkr.compute_deviation(mkr_frames)
 
             # Note: Extra frame is given at start and end.
-            frame_range_set = set(range(min(mkr_frames_set) - 1, max(mkr_frames_set) + 2))
+            frame_range_set = set(
+                range(min(mkr_frames_set) - 1, max(mkr_frames_set) + 2)
+            )
             diff_set = frame_range_set.difference(mkr_frames_set)
 
             frm_list = list(sorted(frame_range_set))
@@ -1404,6 +1389,7 @@ def update_deviation_on_markers(mkr_list, solres_list):
 
             # Max Deviation
             max_dev, max_frm = markerutils.calculate_maximum_deviation(
-                frm_list, dev_list)
+                frm_list, dev_list
+            )
             mkr.set_maximum_deviation(max_dev, int(max_frm))
     return

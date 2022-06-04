@@ -28,6 +28,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -39,7 +40,6 @@ import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
 class TestSolverMinMaxValues(solverUtils.SolverTestCase):
-
     def test_single_frame(self):
         """
         Test 2 markers, one enabled, one disabled; only the "enabled"
@@ -55,17 +55,14 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
 
         mkr_grp = self.create_marker_group('marker_group', cam_tfm)
         marker_01_tfm, marker_01_shp = self.create_marker(
-            'marker_01', mkr_grp, bnd_tfm=bundle_01_tfm)
+            'marker_01', mkr_grp, bnd_tfm=bundle_01_tfm
+        )
         maya.cmds.setAttr(marker_01_tfm + '.tx', -0.486112083)
         maya.cmds.setAttr(marker_01_tfm + '.ty', 0.189583713)
         maya.cmds.setAttr(marker_01_tfm + '.tz', -1)
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
-        markers = (
-            (marker_01_tfm, cam_shp, bundle_01_tfm),
-        )
+        cameras = ((cam_tfm, cam_shp),)
+        markers = ((marker_01_tfm, cam_shp, bundle_01_tfm),)
         node_attrs = [
             (bundle_01_tfm + '.tx', '-5.0', '5.0', 'None', 'None'),
             (bundle_01_tfm + '.ty', 'None', 'None', 'None', 'None'),
@@ -85,11 +82,7 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        result = maya.cmds.mmSolver(
-            frame=frames,
-            verbose=True,
-            **kwargs
-        )
+        result = maya.cmds.mmSolver(frame=frames, verbose=True, **kwargs)
         e = time.time()
         print('total time:', e - s)
 
@@ -122,17 +115,14 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
 
         mkr_grp = self.create_marker_group('marker_group', cam_tfm)
         marker_01_tfm, marker_01_shp = self.create_marker(
-            'marker_01', mkr_grp, bnd_tfm=bundle_01_tfm)
+            'marker_01', mkr_grp, bnd_tfm=bundle_01_tfm
+        )
         maya.cmds.setAttr(marker_01_tfm + '.tx', -0.486112083)
         maya.cmds.setAttr(marker_01_tfm + '.ty', 0.189583713)
         maya.cmds.setAttr(marker_01_tfm + '.tz', -1)
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
-        markers = (
-            (marker_01_tfm, cam_shp, bundle_01_tfm),
-        )
+        cameras = ((cam_tfm, cam_shp),)
+        markers = ((marker_01_tfm, cam_shp, bundle_01_tfm),)
         node_attrs = [
             (bundle_01_tfm + '.tx', '-5.0', 'None', 'None', 'None'),
             (bundle_01_tfm + '.ty', 'None', 'None', 'None', 'None'),
@@ -152,16 +142,14 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        result = maya.cmds.mmSolver(
-            frame=frames,
-            verbose=True,
-            **kwargs
-        )
+        result = maya.cmds.mmSolver(frame=frames, verbose=True, **kwargs)
         e = time.time()
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path('solver_min_max_values_staticframe_lower_bound_only_after.ma')
+        path = self.get_data_path(
+            'solver_min_max_values_staticframe_lower_bound_only_after.ma'
+        )
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -186,17 +174,14 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
 
         mkr_grp = self.create_marker_group('marker_group', cam_tfm)
         marker_01_tfm, marker_01_shp = self.create_marker(
-            'marker_01', mkr_grp, bnd_tfm=bundle_01_tfm)
+            'marker_01', mkr_grp, bnd_tfm=bundle_01_tfm
+        )
         maya.cmds.setAttr(marker_01_tfm + '.tx', -0.486112083)
         maya.cmds.setAttr(marker_01_tfm + '.ty', 0.189583713)
         maya.cmds.setAttr(marker_01_tfm + '.tz', -1)
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
-        markers = (
-            (marker_01_tfm, cam_shp, bundle_01_tfm),
-        )
+        cameras = ((cam_tfm, cam_shp),)
+        markers = ((marker_01_tfm, cam_shp, bundle_01_tfm),)
         node_attrs = [
             (bundle_01_tfm + '.tx', 'None', '5.0', 'None', 'None'),
             (bundle_01_tfm + '.ty', 'None', 'None', 'None', 'None'),
@@ -216,16 +201,14 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        result = maya.cmds.mmSolver(
-            frame=frames,
-            verbose=True,
-            **kwargs
-        )
+        result = maya.cmds.mmSolver(frame=frames, verbose=True, **kwargs)
         e = time.time()
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path('solver_min_max_values_staticframe_upper_bound_only_after.ma')
+        path = self.get_data_path(
+            'solver_min_max_values_staticframe_upper_bound_only_after.ma'
+        )
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

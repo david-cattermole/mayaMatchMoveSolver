@@ -29,6 +29,7 @@ import maya.cmds
 import mmSolver.logger
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtGui as QtGui
@@ -44,10 +45,7 @@ LOG = mmSolver.logger.get_logger()
 
 
 def main():
-    nodes = maya.cmds.ls(
-        selection=True,
-        long=True,
-        type='transform') or []
+    nodes = maya.cmds.ls(selection=True, long=True, type='transform') or []
     if len(nodes) == 0:
         LOG.warn("Please select some Marker nodes.")
         return
@@ -59,9 +57,9 @@ def main():
     frame_range = time_utils.get_maya_timeline_range_outer()
 
     data = None
-    with tools_utils.tool_context(use_undo_chunk=False,
-                                  use_dg_evaluation_mode=True,
-                                  disable_viewport=True):
+    with tools_utils.tool_context(
+        use_undo_chunk=False, use_dg_evaluation_mode=True, disable_viewport=True
+    ):
         data = lib.generate(mkr_list, frame_range)
     if data is None:
         return None

@@ -27,6 +27,7 @@ import time
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -39,7 +40,6 @@ import test.baseutils as baseUtils
 
 
 class SolverTestCase(baseUtils.TestBase):
-
     def setUp(self):
         maya.cmds.file(new=True, force=True)
         self.reload_solver()
@@ -66,9 +66,7 @@ class SolverTestCase(baseUtils.TestBase):
     def runSolverAffects(affects_mode, **kwargs):
         assert 'mmSolverAffects' in dir(maya.cmds)
         s = time.time()
-        result = maya.cmds.mmSolverAffects(
-            mode=affects_mode,
-            **kwargs)
+        result = maya.cmds.mmSolverAffects(mode=affects_mode, **kwargs)
         e = time.time()
         print('mmSolverAffects time:', e - s)
         return result
@@ -102,9 +100,8 @@ class SolverTestCase(baseUtils.TestBase):
         cam_tfm, cam_shp = camera_utils.get_camera(cam_tfm)
 
         mkr_grp = maya.cmds.createNode(
-            'mmMarkerGroupTransform',
-            name=name,
-            parent=cam_tfm)
+            'mmMarkerGroupTransform', name=name, parent=cam_tfm
+        )
         mkr_grp = node_utils.get_long_name(mkr_grp)
         mkr_scl = maya.cmds.createNode('mmMarkerScale')
 
@@ -135,21 +132,15 @@ class SolverTestCase(baseUtils.TestBase):
             at='short',
             minValue=0,
             maxValue=1,
-            defaultValue=True
+            defaultValue=True,
         )
         maya.cmds.addAttr(
-            tfm,
-            longName='weight',
-            at='double',
-            minValue=0.0,
-            defaultValue=1.0)
+            tfm, longName='weight', at='double', minValue=0.0, defaultValue=1.0
+        )
         maya.cmds.setAttr(tfm + '.enable', keyable=True, channelBox=True)
         maya.cmds.setAttr(tfm + '.weight', keyable=True, channelBox=True)
 
-        maya.cmds.addAttr(
-            tfm,
-            longName='bundle',
-            at='message')
+        maya.cmds.addAttr(tfm, longName='bundle', at='message')
 
         if bnd_tfm is not None:
             src = bnd_tfm + '.message'

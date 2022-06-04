@@ -22,6 +22,7 @@ The main component of the user interface for the loadmarker window.
 import os
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -102,15 +103,20 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
     def createConnections(self):
         """Set up callback connections"""
         self.loadMode_comboBox.currentIndexChanged[str].connect(
-            lambda x: self.updateLoadMode())
+            lambda x: self.updateLoadMode()
+        )
         self.camera_comboBox.currentIndexChanged[str].connect(
-            lambda x: self.markerGroupUpdateClicked())
+            lambda x: self.markerGroupUpdateClicked()
+        )
         self.camera_comboBox.currentIndexChanged[str].connect(
-            lambda x: self.updateOverscanValues())
+            lambda x: self.updateOverscanValues()
+        )
         self.markerGroup_comboBox.currentIndexChanged[str].connect(
-            lambda x: self.updateOverscanValues())
+            lambda x: self.updateOverscanValues()
+        )
         self.collection_checkBox.clicked[bool].connect(
-            lambda x: self.updateCollectionEnabledState())
+            lambda x: self.updateCollectionEnabledState()
+        )
 
         self.cameraUpdate_pushButton.clicked.connect(self.cameraUpdateClicked)
         self.markerGroupUpdate_pushButton.clicked.connect(self.markerGroupUpdateClicked)
@@ -138,9 +144,8 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.fileInfo_plainTextEdit.setReadOnly(True)
 
         value = get_config_value(
-            config,
-            'data/load_bundle_position',
-            const.LOAD_BUNDLE_POS_DEFAULT_VALUE)
+            config, 'data/load_bundle_position', const.LOAD_BUNDLE_POS_DEFAULT_VALUE
+        )
         self.loadBndPositions_checkBox.setChecked(value)
 
         # Get the file path from the clipboard.
@@ -162,7 +167,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             self.camera_model,
             all_camera_nodes,
             selected_cameras,
-            active_camera
+            active_camera,
         )
         active_camera = self.getCameraData()
         mkr_grp_nodes = lib.get_marker_groups(active_camera)
@@ -171,16 +176,13 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             self.markerGroup_comboBox,
             self.markerGroup_model,
             active_mkr_grp,
-            mkr_grp_nodes
+            mkr_grp_nodes,
         )
 
         col_list = col_lib.get_collections()
         active_col = state_lib.get_active_collection()
         self.updateCollectionList(
-            self.collection_comboBox,
-            self.collection_model,
-            active_col,
-            col_list
+            self.collection_comboBox, self.collection_model, active_col, col_list
         )
         # If the user's preferences say to add the marker to the
         # collection, then turn on the feature.
@@ -189,27 +191,22 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.updateCollectionEnabledState()
 
         value = get_config_value(
-            config,
-            "data/load_mode",
-            const.LOAD_MODE_DEFAULT_VALUE
+            config, "data/load_mode", const.LOAD_MODE_DEFAULT_VALUE
         )
         self.populateLoadModeModel(self.loadMode_model)
         index = self.loadMode_model.stringList().index(value)
         self.loadMode_comboBox.setCurrentIndex(index)
 
         value = get_config_value(
-            config,
-            "data/distortion_mode",
-            const.DISTORTION_MODE_DEFAULT_VALUE
+            config, "data/distortion_mode", const.DISTORTION_MODE_DEFAULT_VALUE
         )
         self.populateDistortionModeModel(self.distortionMode_model)
         index = self.distortionMode_model.stringList().index(value)
         self.distortionMode_comboBox.setCurrentIndex(index)
 
         value = get_config_value(
-            config,
-            'data/use_overscan',
-            const.USE_OVERSCAN_DEFAULT_VALUE)
+            config, 'data/use_overscan', const.USE_OVERSCAN_DEFAULT_VALUE
+        )
         self.overscan_checkBox.setChecked(value)
         self.updateOverscanValues()
         return
@@ -293,9 +290,11 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
 
         file_info = self.getFileInfo()
         camera = self.getCameraData()
-        has_file_data = (file_info is not None
-                         and camera is not None
-                         and isinstance(file_info.camera_field_of_view, list))
+        has_file_data = (
+            file_info is not None
+            and camera is not None
+            and isinstance(file_info.camera_field_of_view, list)
+        )
         if load_mode_text == const.LOAD_MODE_NEW_VALUE:
             if has_file_data is True:
                 data_source = 'from file'
@@ -304,11 +303,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
                 # value shown to the user.
                 mkr_grp = None
                 file_fovs = file_info.camera_field_of_view
-                x, y = fieldofview.calculate_overscan_ratio(
-                    camera,
-                    mkr_grp,
-                    file_fovs
-                )
+                x, y = fieldofview.calculate_overscan_ratio(camera, mkr_grp, file_fovs)
                 # NOTE: Inverse the overscan value, because the user will
                 # be more comfortable with numbers above 100%.
                 x = 1.0 / x
@@ -346,8 +341,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         value = False
         file_info = self.getFileInfo()
         if file_info is not None:
-            value = (file_info.marker_distorted
-                     and file_info.marker_undistorted)
+            value = file_info.marker_distorted and file_info.marker_undistorted
         self.distortionMode_label.setEnabled(value)
         self.distortionMode_comboBox.setEnabled(value)
         return
@@ -383,28 +377,24 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.imageResHeight_spinBox.setEnabled(value)
         return
 
-    def updateCameraList(self, comboBox, model, all_camera_nodes,
-                         selected_cameras, active_camera):
+    def updateCameraList(
+        self, comboBox, model, all_camera_nodes, selected_cameras, active_camera
+    ):
         self.populateCameraModel(model, all_camera_nodes)
-        index = self.getDefaultCameraIndex(
-            model, selected_cameras, active_camera)
+        index = self.getDefaultCameraIndex(model, selected_cameras, active_camera)
         comboBox.setCurrentIndex(index)
         return
 
-    def updateMarkerGroupList(self, comboBox, model, active_mkr_grp,
-                              mkr_grp_nodes):
+    def updateMarkerGroupList(self, comboBox, model, active_mkr_grp, mkr_grp_nodes):
         self.populateMarkerGroupModel(model, active_mkr_grp, mkr_grp_nodes)
-        index = self.getDefaultMarkerGroupIndex(
-            model, active_mkr_grp, mkr_grp_nodes)
+        index = self.getDefaultMarkerGroupIndex(model, active_mkr_grp, mkr_grp_nodes)
         comboBox.setCurrentIndex(index)
         self.updateOverscanValues()
         return
 
-    def updateCollectionList(self, comboBox, model, active_col,
-                             col_list):
+    def updateCollectionList(self, comboBox, model, active_col, col_list):
         self.populateCollectionModel(model, active_col, col_list)
-        index = self.getDefaultCollectionIndex(
-            model, active_col, col_list)
+        index = self.getDefaultCollectionIndex(model, active_col, col_list)
         comboBox.setCurrentIndex(index)
         self.updateCollectionEnabledState()
         return
@@ -589,7 +579,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
             self.camera_model,
             all_camera_nodes,
             selected_cameras,
-            active_camera
+            active_camera,
         )
         return
 
@@ -621,10 +611,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         file_filter = fileutils.get_file_filter()
         start_dir = lib.get_start_directory(self.getFilePath())
         result = QtWidgets.QFileDialog.getOpenFileName(
-            self,
-            title,
-            start_dir,
-            file_filter
+            self, title, start_dir, file_filter
         )
         if result is not None:
             file_path = result[0]

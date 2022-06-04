@@ -64,7 +64,8 @@ def _bake_nodes(nodes, frame_range, smart_bake=False):
             disableImplicitControl=True,
             preserveOutsideKeys=True,
             controlPoints=False,
-            shape=False)
+            shape=False,
+        )
     else:
         maya.cmds.bakeResults(
             nodes,
@@ -75,7 +76,8 @@ def _bake_nodes(nodes, frame_range, smart_bake=False):
             disableImplicitControl=True,
             preserveOutsideKeys=True,
             controlPoints=False,
-            shape=False)
+            shape=False,
+        )
     return
 
 
@@ -124,13 +126,16 @@ def nodes_attrs_settable(node_list, attr_list):
     return settable_map, settable_count, non_settable_count
 
 
-def reparent(children_nodes, parent_node,
-             frame_range_mode=None,
-             start_frame=None,
-             end_frame=None,
-             bake_mode=None,
-             rotate_order_mode=None,
-             delete_static_anim_curves=None):
+def reparent(
+    children_nodes,
+    parent_node,
+    frame_range_mode=None,
+    start_frame=None,
+    end_frame=None,
+    bake_mode=None,
+    rotate_order_mode=None,
+    delete_static_anim_curves=None,
+):
     """
     Reparent the children under the given parent.
 
@@ -185,9 +190,8 @@ def reparent(children_nodes, parent_node,
 
     # Get frame range
     frame_range = time_utils.get_frame_range(
-        frame_range_mode,
-        start_frame=start_frame,
-        end_frame=end_frame)
+        frame_range_mode, start_frame=start_frame, end_frame=end_frame
+    )
 
     # Get bake mode.
     sparse = None
@@ -258,9 +262,11 @@ def reparent(children_nodes, parent_node,
         scale_skip = _get_node_attr_skip(child, 'scale')
 
         # Warn if the child transform is completely locked.
-        if (translate_skip == SKIP_ALL
-                and rotate_skip == SKIP_ALL
-                and scale_skip == SKIP_ALL):
+        if (
+            translate_skip == SKIP_ALL
+            and rotate_skip == SKIP_ALL
+            and scale_skip == SKIP_ALL
+        ):
             msg = 'Skipping Re-Parent! Cannot modify any attributes: node=%r'
             LOG.warn(msg, child)
             continue

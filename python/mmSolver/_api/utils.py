@@ -107,59 +107,62 @@ def get_object_type(node):
         return object_type
 
     node_type = maya.cmds.nodeType(node)
-    shape_nodes = maya.cmds.listRelatives(
-        node,
-        children=True,
-        shapes=True,
-        fullPath=True) or []
+    shape_nodes = (
+        maya.cmds.listRelatives(node, children=True, shapes=True, fullPath=True) or []
+    )
     shape_node_types = []
     for shape_node in shape_nodes:
         shape_node_type = maya.cmds.nodeType(shape_node)
         shape_node_types.append(shape_node_type)
     attrs = maya.cmds.listAttr(node)
-    plugs = ['{0}.{1}'.format(node, attr) for attr in attrs
-             if '.' not in attr]
-    locked_attrs = [plug.split('.')[-1] for plug in plugs
-                    if maya.cmds.getAttr(plug, lock=True)]
-    keyable_attrs = [plug.split('.')[-1] for plug in plugs
-                     if maya.cmds.getAttr(plug, keyable=True)]
+    plugs = ['{0}.{1}'.format(node, attr) for attr in attrs if '.' not in attr]
+    locked_attrs = [
+        plug.split('.')[-1] for plug in plugs if maya.cmds.getAttr(plug, lock=True)
+    ]
+    keyable_attrs = [
+        plug.split('.')[-1] for plug in plugs if maya.cmds.getAttr(plug, keyable=True)
+    ]
 
     object_type = const.OBJECT_TYPE_UNKNOWN
-    if ((node_type in ['transform', 'mmMarkerTransform'])
-          and (('mmMarkerShape' in shape_node_types)
-               or ('locator' in shape_node_types))
-          and ('enable' in attrs)
-          and ('weight' in attrs)
-          and ('bundle' in attrs)):
+    if (
+        (node_type in ['transform', 'mmMarkerTransform'])
+        and (('mmMarkerShape' in shape_node_types) or ('locator' in shape_node_types))
+        and ('enable' in attrs)
+        and ('weight' in attrs)
+        and ('bundle' in attrs)
+    ):
         object_type = const.OBJECT_TYPE_MARKER
 
-    elif ((node_type == 'transform')
-          and (('mmBundleShape' in shape_node_types)
-               or ('locator' in shape_node_types))
-          and ('shearXY' in locked_attrs)
-          and ('shearXZ' in locked_attrs)
-          and ('shearYZ' in locked_attrs)
-          and ('shearXY' not in keyable_attrs)
-          and ('shearXZ' not in keyable_attrs)
-          and ('shearYZ' not in keyable_attrs)):
+    elif (
+        (node_type == 'transform')
+        and (('mmBundleShape' in shape_node_types) or ('locator' in shape_node_types))
+        and ('shearXY' in locked_attrs)
+        and ('shearXZ' in locked_attrs)
+        and ('shearYZ' in locked_attrs)
+        and ('shearXY' not in keyable_attrs)
+        and ('shearXZ' not in keyable_attrs)
+        and ('shearYZ' not in keyable_attrs)
+    ):
         object_type = const.OBJECT_TYPE_BUNDLE
 
-    if ((node_type == 'transform')
-          and ('mmLineShape' in shape_node_types)
-          and ('enable' in attrs)
-          and ('weight' in attrs)):
+    if (
+        (node_type == 'transform')
+        and ('mmLineShape' in shape_node_types)
+        and ('enable' in attrs)
+        and ('weight' in attrs)
+    ):
         object_type = const.OBJECT_TYPE_LINE
 
     # TODO: Ensure other types of camera transform nodes are supported.
-    elif ((node_type == 'transform') and
-          ('camera' in shape_node_types)):
+    elif (node_type == 'transform') and ('camera' in shape_node_types):
         object_type = const.OBJECT_TYPE_CAMERA
 
     elif node_type == 'camera':
         object_type = const.OBJECT_TYPE_CAMERA
 
-    elif ((node_type == 'mmImagePlaneTransform') and
-          ('mmImagePlaneShape' in shape_node_types)):
+    elif (node_type == 'mmImagePlaneTransform') and (
+        'mmImagePlaneShape' in shape_node_types
+    ):
         object_type = const.OBJECT_TYPE_IMAGE_PLANE
 
     elif node_type == 'mmImagePlaneTransform':
@@ -174,8 +177,7 @@ def get_object_type(node):
     elif node_type == 'mmMarkerGroupTransform':
         object_type = const.OBJECT_TYPE_MARKER_GROUP
 
-    elif ((node_type == 'objectSet')
-          and ('solver_list' in attrs)):
+    elif (node_type == 'objectSet') and ('solver_list' in attrs):
         object_type = const.OBJECT_TYPE_COLLECTION
 
     return object_type
@@ -218,10 +220,13 @@ def get_line_above_node(node):
     dag = node_utils.get_as_dag_path(node)
     while dag.length() != 0:
         name = dag.fullPathName()
-        shps = maya.cmds.listRelatives(
-            name, shapes=True, type=const.LINE_SHAPE_NODE_TYPE) or []
-        if ((maya.cmds.nodeType(name) == const.LINE_TRANSFORM_NODE_TYPE)
-                and (len(shps) > 0)):
+        shps = (
+            maya.cmds.listRelatives(name, shapes=True, type=const.LINE_SHAPE_NODE_TYPE)
+            or []
+        )
+        if (maya.cmds.nodeType(name) == const.LINE_TRANSFORM_NODE_TYPE) and (
+            len(shps) > 0
+        ):
             line_node = name
             break
         dag.pop(1)
@@ -243,10 +248,7 @@ def get_data_on_node_attr(node_name, attr_name):
     """
     msg = 'Use `mmSolver.utils.configmaya` module'
     warnings.warn(msg, DeprecationWarning)
-    value = configmaya.get_node_option_structure(
-        node_name,
-        attr_name
-    )
+    value = configmaya.get_node_option_structure(node_name, attr_name)
     return value
 
 
@@ -268,9 +270,7 @@ def set_data_on_node_attr(node_name, attr_name, data):
     """
     msg = 'Use `mmSolver.utils.configmaya` module'
     warnings.warn(msg, DeprecationWarning)
-    configmaya.set_node_option_structure(
-        node_name, attr_name, data,
-        add_attr=True)
+    configmaya.set_node_option_structure(node_name, attr_name, data, add_attr=True)
     return
 
 

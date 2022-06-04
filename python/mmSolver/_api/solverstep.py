@@ -67,6 +67,7 @@ class SolverStep(solverbase.SolverBase):
 
     See the individual methods for more information.
     """
+
     def __init__(self, *args, **kwargs):
         """
         Create a SolverStep class with default values.
@@ -289,9 +290,7 @@ class SolverStep(solverbase.SolverBase):
     ############################################################################
 
     def get_frame_solve_mode(self):
-        return self._data.get(
-            'frame_solve_mode',
-            const.FRAME_SOLVE_MODE_DEFAULT)
+        return self._data.get('frame_solve_mode', const.FRAME_SOLVE_MODE_DEFAULT)
 
     def set_frame_solve_mode(self, value):
         assert value in const.FRAME_SOLVE_MODE_LIST
@@ -474,19 +473,19 @@ class SolverStep(solverbase.SolverBase):
 
         # Get precomputed data to reduce re-querying Maya for data.
         precomputed_data = self.get_precomputed_data()
-        mkr_state_values = precomputed_data.get(
-            solverbase.MARKER_STATIC_VALUES_KEY)
-        attr_state_values = precomputed_data.get(
-            solverbase.ATTR_STATIC_VALUES_KEY)
+        mkr_state_values = precomputed_data.get(solverbase.MARKER_STATIC_VALUES_KEY)
+        attr_state_values = precomputed_data.get(solverbase.ATTR_STATIC_VALUES_KEY)
         attr_stiff_state_values = precomputed_data.get(
-            solverbase.ATTR_STIFFNESS_STATIC_VALUES_KEY)
+            solverbase.ATTR_STIFFNESS_STATIC_VALUES_KEY
+        )
         attr_smooth_state_values = precomputed_data.get(
-            solverbase.ATTR_SMOOTHNESS_STATIC_VALUES_KEY)
+            solverbase.ATTR_SMOOTHNESS_STATIC_VALUES_KEY
+        )
 
         # Get Markers and Cameras
         markers, cameras = api_compile.markersAndCameras_compile_flags(
-            mkr_list,
-            mkr_static_values=mkr_state_values)
+            mkr_list, mkr_static_values=mkr_state_values
+        )
         if len(markers) == 0 and len(cameras) == 0:
             LOG.warning('No Markers or Cameras found!')
             return
@@ -505,7 +504,8 @@ class SolverStep(solverbase.SolverBase):
             attr_list,
             use_animated,
             use_static,
-            attr_static_values=attr_state_values)
+            attr_static_values=attr_state_values,
+        )
         if len(attrs) == 0:
             LOG.warning('No Attributes found!')
             return
@@ -610,11 +610,7 @@ class SolverStep(solverbase.SolverBase):
         # TODO: Add 'robustLossScale' flag.
         # TODO: Add 'autoParamScaling' flag.
 
-        action = api_action.Action(
-            func=func,
-            args=args,
-            kwargs=kwargs
-        )
+        action = api_action.Action(func=func, args=args, kwargs=kwargs)
 
         # Check the inputs and outputs are valid.
         vaction = None
@@ -628,11 +624,7 @@ class SolverStep(solverbase.SolverBase):
                 if key in vkwargs:
                     del vkwargs[key]
             vkwargs['printStatistics'] = ['inputs']
-            vaction = api_action.Action(
-                func=vfunc,
-                args=vargs,
-                kwargs=vkwargs
-            )
+            vaction = api_action.Action(func=vfunc, args=vargs, kwargs=vkwargs)
 
         yield action, vaction
 

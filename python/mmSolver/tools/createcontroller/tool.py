@@ -57,12 +57,14 @@ def create():
     Create a controller for selected nodes.
     """
     nodes = maya.cmds.ls(selection=True, long=True) or []
-    with tools_utils.tool_context(use_undo_chunk=True,
-                                  pre_update_frame=True,
-                                  post_update_frame=True,
-                                  restore_current_frame=True,
-                                  use_dg_evaluation_mode=True,
-                                  disable_viewport=True):
+    with tools_utils.tool_context(
+        use_undo_chunk=True,
+        pre_update_frame=True,
+        post_update_frame=True,
+        restore_current_frame=True,
+        use_dg_evaluation_mode=True,
+        disable_viewport=True,
+    ):
         ctrls = lib.create(nodes)
         if len(ctrls) > 0:
             maya.cmds.select(ctrls, replace=True)
@@ -77,12 +79,14 @@ def remove():
     Remove selected controllers and bake data on controlled nodes.
     """
     nodes = maya.cmds.ls(selection=True, long=True) or []
-    with tools_utils.tool_context(use_undo_chunk=True,
-                                  pre_update_frame=True,
-                                  post_update_frame=True,
-                                  restore_current_frame=True,
-                                  use_dg_evaluation_mode=True,
-                                  disable_viewport=True):
+    with tools_utils.tool_context(
+        use_undo_chunk=True,
+        pre_update_frame=True,
+        post_update_frame=True,
+        restore_current_frame=True,
+        use_dg_evaluation_mode=True,
+        disable_viewport=True,
+    ):
         orig_nodes = lib.remove(nodes)
         if len(orig_nodes) > 0:
             maya.cmds.select(orig_nodes, replace=True)

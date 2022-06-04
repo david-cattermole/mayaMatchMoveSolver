@@ -50,7 +50,6 @@ LOG = mmSolver.logger.get_logger()
 
 # @unittest.skip
 class TestSolveRefineGoodSolveStA(test_api_utils.APITestCase):
-
     def test_stA_refine_good_solve(self):
         start_frame = 0
         end_frame = 94
@@ -73,10 +72,9 @@ class TestSolveRefineGoodSolveStA(test_api_utils.APITestCase):
         # Markers
         mkr_list = []
         bnd_list = []
-        mkr_nodes = maya.cmds.listRelatives(
-            mkr_grp_node,
-            children=True,
-            shapes=False) or []
+        mkr_nodes = (
+            maya.cmds.listRelatives(mkr_grp_node, children=True, shapes=False) or []
+        )
         for node in mkr_nodes:
             if node.endswith('_MKR') is False:
                 continue
@@ -120,7 +118,8 @@ class TestSolveRefineGoodSolveStA(test_api_utils.APITestCase):
         not_root_frm_list = []
         min_frames_per_marker = 2
         frame_nums = mmapi.get_root_frames_from_markers(
-            mkr_list, min_frames_per_marker, start_frame, end_frame)
+            mkr_list, min_frames_per_marker, start_frame, end_frame
+        )
         for f in frame_nums:
             frm = mmapi.Frame(f)
             root_frm_list.append(frm)

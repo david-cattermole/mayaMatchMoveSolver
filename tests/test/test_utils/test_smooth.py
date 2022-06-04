@@ -31,29 +31,52 @@ import mmSolver.utils.smooth as smooth_utils
 
 # Some random numbers.
 DATA_ONE = [
-    0.2540983642613156, 0.7831634753872109, 0.002591692790079203,
-    0.41595045018499655, 0.6360617637325738, 0.11174422210135437,
-    0.19632980357666963, 0.433340268169374, 0.07028804556375579,
-    0.24322363800544966
+    0.2540983642613156,
+    0.7831634753872109,
+    0.002591692790079203,
+    0.41595045018499655,
+    0.6360617637325738,
+    0.11174422210135437,
+    0.19632980357666963,
+    0.433340268169374,
+    0.07028804556375579,
+    0.24322363800544966,
 ]
 
 # A single spike (length 5 - odd)
 DATA_TWO = [
-    0.0, 0.0, 1.0, 0.0, 0.0,
+    0.0,
+    0.0,
+    1.0,
+    0.0,
+    0.0,
 ]
 
 # A single spike (length 8 - even).
 DATA_THREE = [
-    0.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0,
+    0.0,
+    0.0,
+    0.0,
+    1.0,
+    1.0,
+    0.0,
+    0.0,
+    0.0,
 ]
 
 
 # Some random numbers, same as DATA_ONE, but negative numbers.
 DATA_FOUR = [
-    -0.2540983642613156, -0.7831634753872109, -0.002591692790079203,
-    -0.41595045018499655, -0.6360617637325738, -0.11174422210135437,
-    -0.19632980357666963, -0.433340268169374, -0.07028804556375579,
-    -0.24322363800544966
+    -0.2540983642613156,
+    -0.7831634753872109,
+    -0.002591692790079203,
+    -0.41595045018499655,
+    -0.6360617637325738,
+    -0.11174422210135437,
+    -0.19632980357666963,
+    -0.433340268169374,
+    -0.07028804556375579,
+    -0.24322363800544966,
 ]
 
 
@@ -149,7 +172,11 @@ class TestSmooth(test_utils.UtilsTestCase):
         data = list(DATA_TWO)
         x = smooth_utils.fourier_smooth(data, 2.0, filtr='box')
         data = [
-            0.0, 0.3333333333333333, 0.3333333333333333, 0.3333333333333333, 0.0,
+            0.0,
+            0.3333333333333333,
+            0.3333333333333333,
+            0.3333333333333333,
+            0.0,
         ]
         for a, b in zip(list(x), data):
             self.assertAlmostEqual(a, b)
@@ -157,7 +184,11 @@ class TestSmooth(test_utils.UtilsTestCase):
         data = list(DATA_TWO)
         x = smooth_utils.fourier_smooth(data, 2.0, filtr='triangle')
         data = [
-            0.0, 0.2, 0.6, 0.2, 0.0,
+            0.0,
+            0.2,
+            0.6,
+            0.2,
+            0.0,
         ]
         for a, b in zip(list(x), data):
             self.assertAlmostEqual(a, b)
@@ -165,8 +196,11 @@ class TestSmooth(test_utils.UtilsTestCase):
         data = list(DATA_TWO)
         x = smooth_utils.fourier_smooth(data, 2.0, filtr='gaussian')
         data = [
-
-            0.0, 0.27406862, 0.45186276, 0.27406862, 0.0,
+            0.0,
+            0.27406862,
+            0.45186276,
+            0.27406862,
+            0.0,
         ]
         for a, b in zip(list(x), data):
             self.assertAlmostEqual(a, b)
@@ -193,8 +227,14 @@ class TestSmooth(test_utils.UtilsTestCase):
         data = list(DATA_THREE)
         x = smooth_utils.fourier_smooth(data, 2.0, filtr='box')
         data = [
-            0.0, 0.0, 0.3333333333333, 0.66666666666666,
-            0.66666666666666, 0.3333333333333, 0.0, 0.0,
+            0.0,
+            0.0,
+            0.3333333333333,
+            0.66666666666666,
+            0.66666666666666,
+            0.3333333333333,
+            0.0,
+            0.0,
         ]
         for a, b in zip(list(x), data):
             self.assertAlmostEqual(a, b)
@@ -202,8 +242,14 @@ class TestSmooth(test_utils.UtilsTestCase):
         data = list(DATA_THREE)
         x = smooth_utils.fourier_smooth(data, 2.0, filtr='triangle')
         data = [
-            0.0, 0.0, 0.2, 0.8,
-            0.8, 0.2, 0.0, 0.0,
+            0.0,
+            0.0,
+            0.2,
+            0.8,
+            0.8,
+            0.2,
+            0.0,
+            0.0,
         ]
         for a, b in zip(list(x), data):
             self.assertAlmostEqual(a, b)
@@ -211,8 +257,14 @@ class TestSmooth(test_utils.UtilsTestCase):
         data = list(DATA_THREE)
         x = smooth_utils.fourier_smooth(data, 2.0, filtr='gaussian')
         data = [
-            0.0, 0.0, 0.27406862, 0.72593138,
-            0.72593138, 0.27406862, 0.0, 0.0,
+            0.0,
+            0.0,
+            0.27406862,
+            0.72593138,
+            0.72593138,
+            0.27406862,
+            0.0,
+            0.0,
         ]
         for a, b in zip(list(x), data):
             self.assertAlmostEqual(a, b)

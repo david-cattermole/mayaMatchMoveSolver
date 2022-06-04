@@ -29,6 +29,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -40,7 +41,6 @@ import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
 class TestSolver10(solverUtils.SolverTestCase):
-
     def do_solve(self, solver_name, solver_index, scene_graph_mode):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
@@ -71,14 +71,16 @@ class TestSolver10(solverUtils.SolverTestCase):
 
         # Marker 1
         marker1_tfm, marker1_shp = self.create_marker(
-            'marker1', mkr_grp, bnd_tfm=bundle1_tfm)
+            'marker1', mkr_grp, bnd_tfm=bundle1_tfm
+        )
         maya.cmds.setAttr(marker1_tfm + '.tx', -0.2)
         maya.cmds.setAttr(marker1_tfm + '.ty', 0.13)
         maya.cmds.setAttr(marker1_tfm + '.tz', -1.0)
 
         # Marker 2
         marker2_tfm, marker2_shp = self.create_marker(
-            'marker2', mkr_grp, bnd_tfm=bundle2_tfm)
+            'marker2', mkr_grp, bnd_tfm=bundle2_tfm
+        )
         maya.cmds.setAttr(marker2_tfm + '.tx', 0.2)
         maya.cmds.setAttr(marker2_tfm + '.ty', 0.13)
         maya.cmds.setAttr(marker2_tfm + '.tz', -1.0)
@@ -88,9 +90,7 @@ class TestSolver10(solverUtils.SolverTestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
+        cameras = ((cam_tfm, cam_shp),)
         markers = (
             (marker1_tfm, cam_shp, bundle1_tfm),
             (marker2_tfm, cam_shp, bundle2_tfm),
@@ -122,14 +122,13 @@ class TestSolver10(solverUtils.SolverTestCase):
             solverType=solver_index,
             sceneGraphMode=scene_graph_mode,
             verbose=True,
-            **kwargs
+            **kwargs,
         )
         e = time.time()
         print('total time:', e - s)
 
         # save the output
-        file_name = 'solver_test10_{}_{}_after.ma'.format(
-            solver_name, scene_graph_name)
+        file_name = 'solver_test10_{}_{}_after.ma'.format(solver_name, scene_graph_name)
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -141,19 +140,37 @@ class TestSolver10(solverUtils.SolverTestCase):
         self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
     def test_init_ceres_mmscenegraph(self):
-        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+        )
 
     def test_init_cminpack_lmdif_maya_dag(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_init_cminpack_lmdif_mmscenegraph(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
     def test_init_cminpack_lmder_maya_dag(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_init_cminpack_lmder_mmscenegraph(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
 
 if __name__ == '__main__':

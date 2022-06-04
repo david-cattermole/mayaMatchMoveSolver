@@ -48,7 +48,6 @@ LOG = mmSolver.logger.get_logger()
 
 # @unittest.skip
 class TestSolveOperaHouse(test_api_utils.APITestCase):
-
     def do_solve(self, solver_name, solver_type_index, scene_graph_mode):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
@@ -61,15 +60,12 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
         start = 0
         end = 41
         maya.cmds.playbackOptions(
-            animationStartTime=start, minTime=start,
-            animationEndTime=end, maxTime=end)
+            animationStartTime=start, minTime=start, animationEndTime=end, maxTime=end
+        )
 
         # Camera
-        cam_tfm = maya.cmds.createNode('transform',
-                                       name='cam_tfm')
-        cam_shp = maya.cmds.createNode('camera',
-                                       name='cam_shp',
-                                       parent=cam_tfm)
+        cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
+        cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.rotateOrder', 2)  # zxy
         maya.cmds.setAttr(cam_shp + '.focalLength', 14)
         maya.cmds.setAttr(cam_shp + '.horizontalFilmAperture', 5.4187 / 25.4)
@@ -78,9 +74,30 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
 
         # Set Camera Keyframes
         cam_data = {
-            '0': (-0.19889791581420663, 0.5591321634949238, 7.258789219735233, -1.9999507874015703, -0.3999999999999992, 0.0),
-            '22': (-4.840404384215566, 0.7543627646977502, 6.3465857678271425, -3.0709513272069815, -36.91024116734281, 0.0),
-            '41': (-8.584368967987194, 0.6990718939718145, 5.508167213044364, -1.4738793091011815, -54.30997787050599, 0.0)
+            '0': (
+                -0.19889791581420663,
+                0.5591321634949238,
+                7.258789219735233,
+                -1.9999507874015703,
+                -0.3999999999999992,
+                0.0,
+            ),
+            '22': (
+                -4.840404384215566,
+                0.7543627646977502,
+                6.3465857678271425,
+                -3.0709513272069815,
+                -36.91024116734281,
+                0.0,
+            ),
+            '41': (
+                -8.584368967987194,
+                0.6990718939718145,
+                5.508167213044364,
+                -1.4738793091011815,
+                -54.30997787050599,
+                0.0,
+            ),
         }
         for key in sorted(cam_data.keys()):
             frame = int(key)
@@ -96,10 +113,7 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
 
         # Create image plane
         path = self.get_data_path('operahouse', 'frame00.jpg')
-        imgpl = maya.cmds.imagePlane(
-            camera=cam_shp,
-            fileName=path
-        )
+        imgpl = maya.cmds.imagePlane(camera=cam_shp, fileName=path)
         maya.cmds.setAttr(imgpl[1] + '.useFrameExtension', 1)
         maya.cmds.setAttr(imgpl[1] + '.depth', 2000)
         maya.cmds.setAttr(imgpl[1] + '.frameCache', 0)
@@ -124,13 +138,11 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
         # Bundle Group
         bnd_grp = maya.cmds.createNode('transform', name='bundleGroup')
         bnd_fg_grp = maya.cmds.createNode(
-            'transform',
-            name='bundles_fg',
-            parent=bnd_grp)
+            'transform', name='bundles_fg', parent=bnd_grp
+        )
         bnd_bg_grp = maya.cmds.createNode(
-            'transform',
-            name='bundles_bg',
-            parent=bnd_grp)
+            'transform', name='bundles_bg', parent=bnd_grp
+        )
 
         # Load Markers
         fg_points = [
@@ -175,7 +187,11 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
             'Track_12': (45.11056705173852, 2.602519222901666, -43.16772737415769),
             'Track_13': (-11.331222134074189, -0.9161249928992397, -63.60343691220178),
             'Track_28': (12.97847320083373, 0.4908757961951475, -6.558878377403925),
-            'Track_24': (-0.9577362080844809, 0.11947272894636578, -0.29860515939718035),
+            'Track_24': (
+                -0.9577362080844809,
+                0.11947272894636578,
+                -0.29860515939718035,
+            ),
             'Track_25': (-0.3816240705349317, 0.09511793539283707, 0.5968218516602972),
             'Track_05': (-0.5497538933513093, 0.9121450956455763, 0.0689419211208016),
             'Track_06': (0.6442115545215732, 0.09146863102772763, 0.2698159600733472),
@@ -188,7 +204,11 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
             'Track_07': (24.82344439444535, 3.8981611004590917, -62.57148439047777),
             'Track_26': (-1.036542158437551, 0.1301250303434169, 0.6183349238312523),
             'Track_11': (-1.2868698932117608, 0.07508027422294668, -0.6923287330737453),
-            'Track_09': (-1.1210978513200678, -0.0009538700668097195, -0.7481409812887209),
+            'Track_09': (
+                -1.1210978513200678,
+                -0.0009538700668097195,
+                -0.7481409812887209,
+            ),
             'Track_20': (0.5370453995103619, 0.32144750391315535, 0.10037404391850258),
             'Track_08': (-0.35711469535141427, 0.8134673956410489, -0.8873816770491396),
             'Track_19': (-1.0708190128497155, 0.5849715587489718, 0.22909459498373133),
@@ -200,21 +220,13 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
             'Track_29': (15.264518808431728, 1.8337698745022983, -62.076762425418536),
             'Track_03': (311.42375656555913, 16.402469194090923, -179.38329132993437),
             'Track_01': (-1.0890118590423876, 0.5109764471108498, -0.707187214616633),
-            'Track_04': (209.73939576288353, 12.878819985707446, -150.30617721944793)
+            'Track_04': (209.73939576288353, 12.878819985707446, -150.30617721944793),
         }
-        mkr_fg_grp = maya.cmds.createNode('transform',
-                                          name='fg',
-                                          parent=mkr_grp_node)
-        mkr_bg_grp = maya.cmds.createNode('transform',
-                                          name='bg',
-                                          parent=mkr_grp_node)
+        mkr_fg_grp = maya.cmds.createNode('transform', name='fg', parent=mkr_grp_node)
+        mkr_bg_grp = maya.cmds.createNode('transform', name='bg', parent=mkr_grp_node)
         path = self.get_data_path('match_mover', 'loadmarker.rz2')
         _, mkr_data_list = marker_read.read(path)
-        mkr_list = marker_read.create_nodes(
-            mkr_data_list,
-            cam=cam,
-            mkr_grp=mkr_grp
-        )
+        mkr_list = marker_read.create_nodes(mkr_data_list, cam=cam, mkr_grp=mkr_grp)
         mkr_fg_list = []
         mkr_bg_list = []
         for mkr in mkr_list:
@@ -265,7 +277,8 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
         not_root_frm_list = []
         min_frames_per_marker = 2
         frame_nums = mmapi.get_root_frames_from_markers(
-            mkr_list, min_frames_per_marker, start, end)
+            mkr_list, min_frames_per_marker, start, end
+        )
         frame_nums = mmapi.root_frames_list_combine(frame_nums, [start, end])
         max_frame_span = 5
         frame_nums = mmapi.root_frames_subdivide(frame_nums, max_frame_span)
@@ -332,7 +345,8 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
 
         # save the output
         file_name = 'test_solve_operahouse_{}_{}_before.ma'.format(
-            solver_name, scene_graph_name)
+            solver_name, scene_graph_name
+        )
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -352,7 +366,8 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
 
         # save the output
         file_name = 'test_solve_operahouse_{}_{}_after.ma'.format(
-            solver_name, scene_graph_name)
+            solver_name, scene_graph_name
+        )
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -364,19 +379,37 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
         self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
     def test_ceres_mmscenegraph(self):
-        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+        )
 
     def test_cminpack_lmdif_maya_dag(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_cminpack_lmdif_mmscenegraph(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
     def test_cminpack_lmder_maya_dag(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_cminpack_lmder_mmscenegraph(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
 
 if __name__ == '__main__':

@@ -45,8 +45,7 @@ def main():
     """
     model_panel = viewport_utils.get_active_model_panel()
     if model_panel is None:
-        LOG.error('Please select an active viewport; model_panel=%r',
-                  model_panel)
+        LOG.error('Please select an active viewport; model_panel=%r', model_panel)
         return
     lib.toggle_geometry_visibility(model_panel)
     return

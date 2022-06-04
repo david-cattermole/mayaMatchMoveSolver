@@ -18,4 +18,3 @@
 """
 User Preferences window.
 """
-

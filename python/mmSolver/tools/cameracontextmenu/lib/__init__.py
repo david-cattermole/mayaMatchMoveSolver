@@ -36,7 +36,7 @@ from .lens import (
     create_lens,
     get_camera_lens_nodes,
     lens_node_enabled,
-    toggle_lens_enabled
+    toggle_lens_enabled,
 )
 
 from .utilities import (
@@ -49,18 +49,15 @@ __all__ = [
     'create_camera',
     'camera_lens_distortion_enabled',
     'toggle_camera_lens_distortion_enabled',
-
     # Image Plane
     'create_image_plane',
     'get_camera_image_planes',
     'get_image_plane_type_name_label',
-
     # Lens
     'create_lens',
     'get_camera_lens_nodes',
     'lens_node_enabled',
     'toggle_lens_enabled',
-
     # Utilities
     'open_node_in_attribute_editor',
     'open_node_in_node_editor',

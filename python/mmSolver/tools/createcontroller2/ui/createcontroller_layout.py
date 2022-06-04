@@ -21,6 +21,7 @@ window.
 """
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
@@ -39,10 +40,12 @@ LOG = mmSolver.logger.get_logger()
 
 
 def _transform_has_constraints(tfm_node):
-    constraints = cmds.listRelatives(
-        tfm_node, children=True, type='pointConstraint') or []
-    constraints += cmds.listRelatives(
-        tfm_node, children=True, type='parentConstraint') or []
+    constraints = (
+        cmds.listRelatives(tfm_node, children=True, type='pointConstraint') or []
+    )
+    constraints += (
+        cmds.listRelatives(tfm_node, children=True, type='parentConstraint') or []
+    )
     has_constraints = len(constraints) > 0
     return has_constraints
 
@@ -72,32 +75,27 @@ def _is_world_space_node(node, start_frame, end_frame):
     cmds.loadPlugin('matrixNodes', quiet=True)
     worldspace_check_matrix_node = None
     result_decomp_node = None
-    worldspace_check_matrix_node = cmds.createNode(
-        'multMatrix',
-        skipSelect=True)
-    result_decomp_node = cmds.createNode(
-        'decomposeMatrix',
-        skipSelect=True)
+    worldspace_check_matrix_node = cmds.createNode('multMatrix', skipSelect=True)
+    result_decomp_node = cmds.createNode('decomposeMatrix', skipSelect=True)
     cmds.connectAttr(
         node + '.parentMatrix[0]',
         worldspace_check_matrix_node + '.matrixIn[1]',
-        force=True)
+        force=True,
+    )
     cmds.connectAttr(
-        node + '.xformMatrix',
-        worldspace_check_matrix_node + '.matrixIn[2]',
-        force=True)
+        node + '.xformMatrix', worldspace_check_matrix_node + '.matrixIn[2]', force=True
+    )
     cmds.connectAttr(
         worldspace_check_matrix_node + '.matrixSum',
         result_decomp_node + '.inputMatrix',
-        force=True)
+        force=True,
+    )
 
     # Get single frame pos and rotation sum
-    pos = cmds.getAttr(
-        result_decomp_node + '.outputTranslate',
-        time=int(start_frame))[0]
-    rot = cmds.getAttr(
-        result_decomp_node + '.outputRotate',
-        time=int(end_frame))[0]
+    pos = cmds.getAttr(result_decomp_node + '.outputTranslate', time=int(start_frame))[
+        0
+    ]
+    rot = cmds.getAttr(result_decomp_node + '.outputRotate', time=int(end_frame))[0]
     stored_sum = sum(pos) + sum(rot)
 
     # Check stored sum in all frames.
@@ -106,12 +104,8 @@ def _is_world_space_node(node, start_frame, end_frame):
     # False = object is in local space
     world_space_state = True
     for frame in range(start_frame, end_frame + 1):
-        pos = cmds.getAttr(
-            result_decomp_node + '.outputTranslate',
-            time=frame)[0]
-        rot = cmds.getAttr(
-            result_decomp_node + '.outputRotate',
-            time=frame)[0]
+        pos = cmds.getAttr(result_decomp_node + '.outputTranslate', time=frame)[0]
+        rot = cmds.getAttr(result_decomp_node + '.outputRotate', time=frame)[0]
         pos_rot_sum = sum(pos) + sum(rot)
         if not pos_rot_sum == stored_sum:
             world_space_state = False
@@ -150,7 +144,9 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.pivot_object_btn.clicked.connect(self.get_pivot_object)
         self.smart_bake_rdo_btn.clicked.connect(self.smart_bake_radio_button_clicked)
         self.full_bake_rdo_btn.clicked.connect(self.fullbake_space_radio_button_clicked)
-        self.current_frame_rdo_btn.clicked.connect(self.fullbake_space_radio_button_clicked)
+        self.current_frame_rdo_btn.clicked.connect(
+            self.fullbake_space_radio_button_clicked
+        )
 
         self.reset_options()
 
@@ -255,7 +251,8 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             end_frame,
             space,
             smart_bake,
-            camera)
+            camera,
+        )
         cmds.select(controller_nodes, replace=True)
         LOG.warn('Success: Create Controllers.')
 

@@ -69,14 +69,17 @@ def prompt_user_for_image_sequence(start_dir=None):
         'Targa (*.tga);;'
         'All Files (*.*)'
     )
-    results = maya.cmds.fileDialog2(
-        caption='Select Image Sequence',
-        okCaption='Open',
-        fileMode=1,  # 1 = A single existing file.
-        setProjectBtnEnabled=True,
-        fileFilter=multiple_filters,
-        startingDirectory=start_dir,
-    ) or []
+    results = (
+        maya.cmds.fileDialog2(
+            caption='Select Image Sequence',
+            okCaption='Open',
+            fileMode=1,  # 1 = A single existing file.
+            setProjectBtnEnabled=True,
+            fileFilter=multiple_filters,
+            startingDirectory=start_dir,
+        )
+        or []
+    )
     if len(results) == 0:
         # User cancelled.
         return image_sequence_path

@@ -21,6 +21,7 @@ window.
 """
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
@@ -39,15 +40,9 @@ class ChannelSenLayout(QtWidgets.QWidget, ui_channelsen_layout.Ui_Form):
         self.setupUi(self)
 
         # Connect Buttons
-        self.up_pushButton.clicked.connect(
-            self.upValueClicked
-        )
-        self.down_pushButton.clicked.connect(
-            self.downValueClicked
-        )
-        self.default_pushButton.clicked.connect(
-            self.defaultValueClicked
-        )
+        self.up_pushButton.clicked.connect(self.upValueClicked)
+        self.down_pushButton.clicked.connect(self.downValueClicked)
+        self.default_pushButton.clicked.connect(self.defaultValueClicked)
 
         # Populate the UI with data
         self.populateUi()

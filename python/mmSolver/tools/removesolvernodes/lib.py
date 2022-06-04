@@ -49,11 +49,10 @@ def _collect_bundles(node_categories):
         if cmds.objectType(node) != 'transform':
             continue
         nodes_to_delete.add(node)
-        children = cmds.listRelatives(
-            node,
-            type='transform',
-            children=True,
-            fullPath=True) or []
+        children = (
+            cmds.listRelatives(node, type='transform', children=True, fullPath=True)
+            or []
+        )
         for child in children:
             if mmapi.get_object_type(child) != mmapi.OBJECT_TYPE_BUNDLE:
                 unknown_node_found = True
@@ -103,12 +102,14 @@ def _collect_configuration_nodes(node_categories):
     nodes_to_delete = set()
     node_types_to_delete = [
         (const_utils.SCENE_DATA_NODE_TYPE, const_utils.SCENE_DATA_ATTR),
-        (solver_const.MM_SOLVER_DATA_NODE_TYPE, solver_const.MM_SOLVER_DATA_ATTR_NAME)]
+        (solver_const.MM_SOLVER_DATA_NODE_TYPE, solver_const.MM_SOLVER_DATA_ATTR_NAME),
+    ]
     other_nodes = node_categories.get('other', [])
     for node in other_nodes:
         for node_type, attr_name in node_types_to_delete:
-            if (cmds.nodeType(node) == node_type
-                    and node_utils.attribute_exists(attr_name, node)):
+            if cmds.nodeType(node) == node_type and node_utils.attribute_exists(
+                attr_name, node
+            ):
                 nodes_to_delete.add(node)
     return list(sorted(nodes_to_delete))
 
@@ -119,15 +120,18 @@ def _collect_collections(node_categories):
 
 
 def _collect_misc_nodes():
-    misc_nodes = cmds.ls(
-        long=True,
-        type=[
-            'mmMarkerScale',
-            'mmReprojection',
-            'mmLineIntersect',
-            'mmCameraCalibrate'
-        ]
-    ) or []
+    misc_nodes = (
+        cmds.ls(
+            long=True,
+            type=[
+                'mmMarkerScale',
+                'mmReprojection',
+                'mmLineIntersect',
+                'mmCameraCalibrate',
+            ],
+        )
+        or []
+    )
     return list(sorted(set(misc_nodes)))
 
 

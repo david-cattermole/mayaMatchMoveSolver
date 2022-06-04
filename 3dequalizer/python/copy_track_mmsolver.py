@@ -103,16 +103,20 @@ def main():
         rs_enabled = bool(tde4.getCameraRollingShutterEnabledFlag(camera))
     if rs_enabled is True:
         rs_distance = uvtrack_format.get_rs_distance(camera)
-        if (uvtrack_format.SUPPORT_PROJECT_NOTES is True
-                and uvtrack_format.SUPPORT_RS_DISTANCE is False):
+        if (
+            uvtrack_format.SUPPORT_PROJECT_NOTES is True
+            and uvtrack_format.SUPPORT_RS_DISTANCE is False
+        ):
             uvtrack_format.set_rs_distance_into_project_notes(rs_distance)
 
     # Generate file contents
     data_str = uvtrack_format.generate(
-        point_group, camera, points,
+        point_group,
+        camera,
+        points,
         start_frame=start_frame,
         rs_distance=rs_distance,
-        fmt=uvtrack_format.UV_TRACK_FORMAT_VERSION_PREFERRED
+        fmt=uvtrack_format.UV_TRACK_FORMAT_VERSION_PREFERRED,
     )
 
     # Write file.
@@ -122,10 +126,7 @@ def main():
     now_str = time.strftime('%Y-%m-%d_%H_%M')
     prefix = 'tmp_{0}_'.format(now_str)
     f = tempfile.NamedTemporaryFile(
-        mode='w',
-        prefix=prefix,
-        suffix=file_ext,
-        delete=False
+        mode='w', prefix=prefix, suffix=file_ext, delete=False
     )
     if f.closed:
         msg = "Error: Couldn't open file.\n%r"

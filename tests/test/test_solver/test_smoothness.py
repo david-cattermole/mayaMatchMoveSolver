@@ -28,6 +28,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -39,7 +40,6 @@ import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
 class TestSolverSmoothness(solverUtils.SolverTestCase):
-
     def do_solve(self, solver_name, solver_index):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
@@ -65,11 +65,12 @@ class TestSolverSmoothness(solverUtils.SolverTestCase):
         maya.cmds.setAttr(bundle_tfm + '.tz', -15.0)
 
         marker_tfm, marker_shp = self.create_marker(
-            'marker',
-            cam_tfm,
-            bnd_tfm=bundle_tfm)
+            'marker', cam_tfm, bnd_tfm=bundle_tfm
+        )
         maya.cmds.setAttr(marker_tfm + '.tz', -10)
-        maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=start, value=-2.5)
+        maya.cmds.setKeyframe(
+            marker_tfm, attribute='translateX', time=start, value=-2.5
+        )
         maya.cmds.setKeyframe(marker_tfm, attribute='translateX', time=end, value=3.0)
         maya.cmds.setKeyframe(marker_tfm, attribute='translateY', time=start, value=1.5)
         maya.cmds.setKeyframe(marker_tfm, attribute='translateY', time=end, value=1.3)
@@ -82,12 +83,8 @@ class TestSolverSmoothness(solverUtils.SolverTestCase):
         maya.cmds.setAttr(cam_tfm + '.varianceValue', 0.5)
         maya.cmds.setAttr(cam_tfm + '.smoothValue', 10.0)
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
-        markers = (
-            (marker_tfm, cam_shp, bundle_tfm),
-        )
+        cameras = ((cam_tfm, cam_shp),)
+        markers = ((marker_tfm, cam_shp, bundle_tfm),)
         # NOTE: All animated attributes must have a keyframe before
         # starting to solve.
         node_attrs = [
@@ -95,14 +92,16 @@ class TestSolverSmoothness(solverUtils.SolverTestCase):
             (cam_tfm + '.ry', 'None', 'None', 'None', 'None'),
         ]
         frames = []
-        for f in range(start, end+1):
+        for f in range(start, end + 1):
             frames.append(f)
 
         smooth_flags = [
-            (cam_tfm + '.rx',
-             cam_tfm + '.weightValue',
-             cam_tfm + '.varianceValue',
-             cam_tfm + '.smoothValue',)
+            (
+                cam_tfm + '.rx',
+                cam_tfm + '.weightValue',
+                cam_tfm + '.varianceValue',
+                cam_tfm + '.smoothValue',
+            )
         ]
 
         # save the output
@@ -127,7 +126,7 @@ class TestSolverSmoothness(solverUtils.SolverTestCase):
             solverType=solver_index,
             iterations=10,
             verbose=True,
-            **kwargs
+            **kwargs,
         )
         e = time.time()
         print('total time:', e - s)

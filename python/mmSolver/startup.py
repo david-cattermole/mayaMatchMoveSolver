@@ -38,6 +38,7 @@ def mmsolver_create_shelf():
     Build the mmSolver shelf.
     """
     import mmSolver.tools.mmshelf.tool
+
     mmSolver.tools.mmshelf.tool.build_shelf()
 
 
@@ -46,6 +47,7 @@ def mmsolver_create_menu():
     Build the mmSolver menu.
     """
     import mmSolver.tools.mmmenu.tool
+
     mmSolver.tools.mmmenu.tool.build_menu()
 
 
@@ -54,6 +56,7 @@ def mmsolver_create_hotkey_set():
     Create the mmSolver Hotkey Set.
     """
     import mmSolver.tools.mmhotkeyset.tool
+
     mmSolver.tools.mmhotkeyset.tool.build_hotkey_set()
 
 
@@ -62,6 +65,7 @@ def mmsolver_register_events():
     Initialise the built-in (non-maya) events for mmSolver.
     """
     import mmSolver.tools.registerevents.tool
+
     mmSolver.tools.registerevents.tool.register_events()
 
 

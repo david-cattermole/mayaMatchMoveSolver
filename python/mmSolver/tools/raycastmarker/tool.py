@@ -45,7 +45,8 @@ def _get_active_or_selected_camera(cam_node_list):
         model_editor = viewport_utils.get_active_model_editor()
         if model_editor is not None:
             active_cam_tfm, active_cam_shp = viewport_utils.get_viewport_camera(
-                model_editor)
+                model_editor
+            )
     return active_cam_tfm, active_cam_shp
 
 
@@ -95,11 +96,9 @@ def _get_markers(mkr_node_list, bnd_node_list, active_cam_shp):
 
 def _get_selected_meshes():
     mesh_nodes = []
-    selected_meshes = maya.cmds.ls(
-        sl=True,
-        type='mesh',
-        dagObjects=True,
-        noIntermediate=True) or []
+    selected_meshes = (
+        maya.cmds.ls(sl=True, type='mesh', dagObjects=True, noIntermediate=True) or []
+    )
     if len(selected_meshes) > 0:
         mesh_nodes = selected_meshes
     else:
@@ -149,25 +148,23 @@ def main():
         return
 
     # The camera used to determine where bundles will be projected from.
-    active_cam_tfm, active_cam_shp = _get_active_or_selected_camera(
-        cam_node_list)
+    active_cam_tfm, active_cam_shp = _get_active_or_selected_camera(cam_node_list)
 
     # Get Markers
-    mkr_list, use_camera = _get_markers(
-        mkr_node_list, bnd_node_list, active_cam_shp)
+    mkr_list, use_camera = _get_markers(mkr_node_list, bnd_node_list, active_cam_shp)
     if use_camera and active_cam_shp is None:
         LOG.warn('Please activate a viewport to ray-cast Bundles from.')
 
     frame_range_mode = configmaya.get_scene_option(
-        const.CONFIG_FRAME_RANGE_MODE_KEY,
-        default=const.DEFAULT_FRAME_RANGE_MODE)
+        const.CONFIG_FRAME_RANGE_MODE_KEY, default=const.DEFAULT_FRAME_RANGE_MODE
+    )
 
     frame_start = configmaya.get_scene_option(
-        const.CONFIG_FRAME_START_KEY,
-        default=const.DEFAULT_FRAME_START)
+        const.CONFIG_FRAME_START_KEY, default=const.DEFAULT_FRAME_START
+    )
     frame_end = configmaya.get_scene_option(
-        const.CONFIG_FRAME_END_KEY,
-        default=const.DEFAULT_FRAME_END)
+        const.CONFIG_FRAME_END_KEY, default=const.DEFAULT_FRAME_END
+    )
     if frame_range_mode == const.FRAME_RANGE_MODE_CURRENT_FRAME_VALUE:
         frame_start = int(maya.cmds.currentTime(query=True))
         frame_end = frame_start
@@ -179,11 +176,12 @@ def main():
 
     use_smooth_mesh = True
     bundle_rotate_mode = configmaya.get_scene_option(
-        const.CONFIG_BUNDLE_ROTATE_MODE_KEY,
-        default=const.DEFAULT_BUNDLE_ROTATE_MODE)
+        const.CONFIG_BUNDLE_ROTATE_MODE_KEY, default=const.DEFAULT_BUNDLE_ROTATE_MODE
+    )
     bundle_unlock_relock = configmaya.get_scene_option(
         const.CONFIG_BUNDLE_UNLOCK_RELOCK_KEY,
-        default=const.DEFAULT_BUNDLE_UNLOCK_RELOCK)
+        default=const.DEFAULT_BUNDLE_UNLOCK_RELOCK,
+    )
 
     # Do not disable the viewport if we're only baking a single frame.
     disable_viewport = True
@@ -192,17 +190,20 @@ def main():
 
     mesh_nodes = _get_selected_meshes()
     with tools_utils.tool_context(
-            use_undo_chunk=True,
-            restore_current_frame=True,
-            use_dg_evaluation_mode=True,
-            disable_viewport=disable_viewport):
+        use_undo_chunk=True,
+        restore_current_frame=True,
+        use_dg_evaluation_mode=True,
+        disable_viewport=disable_viewport,
+    ):
         bnd_nodes = lib.raycast_markers_onto_meshes(
-            mkr_list, mesh_nodes,
+            mkr_list,
+            mesh_nodes,
             frame_range=frame_range,
             unlock_bnd_attrs=bundle_unlock_relock,
             relock_bnd_attrs=bundle_unlock_relock,
             use_smooth_mesh=use_smooth_mesh,
-            bundle_rotate_mode=bundle_rotate_mode)
+            bundle_rotate_mode=bundle_rotate_mode,
+        )
         if len(bnd_nodes) > 0:
             maya.cmds.select(bnd_nodes)
         else:
@@ -212,4 +213,5 @@ def main():
 
 def open_window():
     import mmSolver.tools.raycastmarker.ui.raycastmarker_window as window
+
     window.main()

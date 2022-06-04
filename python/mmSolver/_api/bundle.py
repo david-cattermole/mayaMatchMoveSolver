@@ -37,15 +37,17 @@ import mmSolver._api.marker
 LOG = mmSolver.logger.get_logger()
 
 
-def _lock_and_display_bundle_attributes(tfm,
-                            lock_translate=None,
-                            lock_rotate=None,
-                            lock_scale=None,
-                            lock_shear=None,
-                            display_translate=None,
-                            display_rotate=None,
-                            display_scale=None,
-                            display_shear=None):
+def _lock_and_display_bundle_attributes(
+    tfm,
+    lock_translate=None,
+    lock_rotate=None,
+    lock_scale=None,
+    lock_shear=None,
+    display_translate=None,
+    display_rotate=None,
+    display_scale=None,
+    display_shear=None,
+):
     """
     Create the attributes expected to be on a Marker.
 
@@ -91,8 +93,9 @@ def _lock_and_display_bundle_attributes(tfm,
 
 def _create_bundle_shape(tfm_node):
     shp_name = tfm_node.rpartition('|')[-1] + 'Shape'
-    shp = maya.cmds.createNode(const.BUNDLE_SHAPE_NODE_TYPE,
-                               name=shp_name, parent=tfm_node)
+    shp = maya.cmds.createNode(
+        const.BUNDLE_SHAPE_NODE_TYPE, name=shp_name, parent=tfm_node
+    )
     maya.cmds.setAttr(shp + '.localPositionX', channelBox=False)
     maya.cmds.setAttr(shp + '.localPositionY', channelBox=False)
     maya.cmds.setAttr(shp + '.localPositionZ', channelBox=False)
@@ -237,9 +240,7 @@ class Bundle(object):
 
     ############################################################################
 
-    def create_node(self,
-                    name='bundle1',
-                    colour=None):
+    def create_node(self, name='bundle1', colour=None):
         """
         Create a Bundle.
 
@@ -259,8 +260,7 @@ class Bundle(object):
             assert len(colour) == 3
 
         # Transform
-        tfm = maya.cmds.createNode(const.BUNDLE_TRANSFORM_NODE_TYPE,
-                                   name=name)
+        tfm = maya.cmds.createNode(const.BUNDLE_TRANSFORM_NODE_TYPE, name=name)
         tfm = node_utils.get_long_name(tfm)
 
         # Show the bundle transform attributes in the channel box, but
@@ -294,9 +294,7 @@ class Bundle(object):
             green = (0.0, 1.0, 0.0)
             self.set_colour_rgb(green)
 
-        event_utils.trigger_event(
-            const.EVENT_NAME_BUNDLE_CREATED,
-            bnd=self)
+        event_utils.trigger_event(const.EVENT_NAME_BUNDLE_CREATED, bnd=self)
         return self
 
     def delete_node(self):
@@ -370,14 +368,22 @@ class Bundle(object):
         """
         node = self.get_node()
         node_attr = node + '.message'
-        conns = maya.cmds.listConnections(
-            node_attr,
-            type=const.MARKER_TRANSFORM_NODE_TYPE,
-            skipConversionNodes=True) or []
-        conns += maya.cmds.listConnections(
-            node_attr,
-            type=const.MARKER_TRANSFORM_OLD_NODE_TYPE,
-            skipConversionNodes=True) or []
+        conns = (
+            maya.cmds.listConnections(
+                node_attr,
+                type=const.MARKER_TRANSFORM_NODE_TYPE,
+                skipConversionNodes=True,
+            )
+            or []
+        )
+        conns += (
+            maya.cmds.listConnections(
+                node_attr,
+                type=const.MARKER_TRANSFORM_OLD_NODE_TYPE,
+                skipConversionNodes=True,
+            )
+            or []
+        )
         mkr_list = []
         for conn in sorted(set(conns)):
             mkr = mmSolver._api.marker.Marker(node=conn)

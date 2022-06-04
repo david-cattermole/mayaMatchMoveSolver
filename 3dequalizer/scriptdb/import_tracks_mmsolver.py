@@ -52,7 +52,7 @@ if IS_PYTHON_2 is True:
     INT_TYPES = (int, long)  # noqa: F821
 else:
     TEXT_TYPE = str
-    INT_TYPES = (int, )
+    INT_TYPES = (int,)
 
 
 # UV Track format
@@ -84,6 +84,7 @@ class ParserWarning(Warning):
     """
     Raised when a format parser needs to warn about non-error conditions.
     """
+
     pass
 
 
@@ -91,6 +92,7 @@ class ParserError(Exception):
     """
     Raised when a format parser cannot continue.
     """
+
     pass
 
 
@@ -424,14 +426,16 @@ FileInfo = collections.namedtuple(
         'marker_undistorted',
         'bundle_positions',
         'camera_field_of_view',
-    ]
+    ],
 )
 
 
-def create_file_info(marker_distorted=None,
-                     marker_undistorted=None,
-                     bundle_positions=None,
-                     camera_field_of_view=None):
+def create_file_info(
+    marker_distorted=None,
+    marker_undistorted=None,
+    bundle_positions=None,
+    camera_field_of_view=None,
+):
     if marker_distorted is None:
         marker_distorted = False
     if marker_undistorted is None:
@@ -598,6 +602,7 @@ class LoaderBase(object):
     """
     Base class for all format loaders.
     """
+
     __metaclass__ = abc.ABCMeta
 
     name = None
@@ -666,17 +671,17 @@ class LoaderRZ2(LoaderBase):
             msg = "Could not get 'imageSequence' index from: %r"
             raise ParserError(msg % text)
 
-        start_idx = text.find('{', idx+1)
+        start_idx = text.find('{', idx + 1)
         if start_idx == -1:
             msg = 'Could not get the starting index from: %r'
             raise ParserError(msg % text)
 
-        end_idx = text.find('}', start_idx+1)
+        end_idx = text.find('}', start_idx + 1)
         if end_idx == -1:
             msg = 'Could not get the ending index from: %r'
             raise ParserError(msg % text)
 
-        imgseq = text[start_idx+1:end_idx]
+        imgseq = text[start_idx + 1 : end_idx]
         imgseq = imgseq.strip()
         splt = imgseq.split()
         x_res = int(splt[0])
@@ -702,20 +707,19 @@ class LoaderRZ2(LoaderBase):
 
         idx = end_idx
         while True:
-            idx = text.find('pointTrack', idx+1)
+            idx = text.find('pointTrack', idx + 1)
             if idx == -1:
                 break
-            start_idx = text.find('{', idx+1)
+            start_idx = text.find('{', idx + 1)
             if start_idx == -1:
                 break
-            end_idx = text.find('}', start_idx+1)
+            end_idx = text.find('}', start_idx + 1)
             if end_idx == -1:
                 break
 
             # Get point track name
             point_track_header = text[idx:start_idx]
-            track_regex = re.search(
-                r'pointTrack\s*\"(.*)\".*', point_track_header)
+            track_regex = re.search(r'pointTrack\s*\"(.*)\".*', point_track_header)
             if track_regex is None:
                 continue
             track_grps = track_regex.groups()
@@ -730,7 +734,7 @@ class LoaderRZ2(LoaderBase):
             for frame in frames:
                 mkr_data.enable.set_value(frame, 0)
 
-            point_track = text[start_idx + 1:end_idx]
+            point_track = text[start_idx + 1 : end_idx]
             for line in point_track.splitlines():
                 splt = line.split()
                 if len(splt) == 0:
@@ -857,7 +861,7 @@ class Loader3DETXT(LoaderBase):
                 frames.append(frame)
 
             # Fill in occluded point frames
-            all_frames = list(range(min(frames), max(frames)+1))
+            all_frames = list(range(min(frames), max(frames) + 1))
             for frame in all_frames:
                 mkr_enable = int(frame in frames)
                 mkr_data.enable.set_value(frame, mkr_enable)
@@ -956,8 +960,7 @@ def _parse_point_3d_data_v3(mkr_data, point_data):
     return mkr_data
 
 
-def _parse_per_frame_v2_v3_v4(mkr_data, per_frame_data,
-                              pos_key=None):
+def _parse_per_frame_v2_v3_v4(mkr_data, per_frame_data, pos_key=None):
     """
     Get the MarkerData per-frame, including X, Y, weight and enabled
     values.
@@ -1009,7 +1012,7 @@ def _parse_marker_occluded_frames_v1_v2_v3(mkr_data, frames):
 
     :rtype: MarkerData
     """
-    all_frames = list(range(min(frames), max(frames)+1))
+    all_frames = list(range(min(frames), max(frames) + 1))
     for frame in all_frames:
         mkr_enable = int(frame in frames)
         mkr_data.enable.set_value(frame, mkr_enable)
@@ -1018,9 +1021,7 @@ def _parse_marker_occluded_frames_v1_v2_v3(mkr_data, frames):
     return mkr_data
 
 
-def _parse_v2_and_v3(file_path,
-                     undistorted=None,
-                     with_3d_pos=None):
+def _parse_v2_and_v3(file_path, undistorted=None, with_3d_pos=None):
     """
     Parse the UV file format, using JSON.
 
@@ -1052,10 +1053,7 @@ def _parse_v2_and_v3(file_path,
     with open(file_path) as f:
         data = json.load(f)
 
-    msg = (
-        'Per-frame tracking data was not found on marker, skipping. '
-        'name=%r'
-    )
+    msg = 'Per-frame tracking data was not found on marker, skipping. ' 'name=%r'
     points = data.get('points', [])
     for point_data in points:
         mkr_data = MarkerData()
@@ -1208,11 +1206,7 @@ def parse_v2(file_path, **kwargs):
     :return: List of MarkerData objects.
     """
     file_info = create_file_info(marker_undistorted=True)
-    mkr_data_list = _parse_v2_and_v3(
-        file_path,
-        undistorted=True,
-        with_3d_pos=False
-    )
+    mkr_data_list = _parse_v2_and_v3(file_path, undistorted=True, with_3d_pos=False)
     return file_info, mkr_data_list
 
 
@@ -1370,21 +1364,19 @@ def create_markers(c, pg, start_frame, file_info, mkr_data_list):
         tde4.setPointPosition2DBlock(pg, p, c, tde_start_frame, curve)
         point_list.append(p)
 
-        bundle_pos = [
-            mkr_data.bundle_x,
-            mkr_data.bundle_y,
-            mkr_data.bundle_z
-        ]
+        bundle_pos = [mkr_data.bundle_x, mkr_data.bundle_y, mkr_data.bundle_z]
         tde4.setPointCalculated3D(pg, p, 1)
         tde4.setPointSurveyPosition3D(pg, p, bundle_pos)
         tde4.setPointSurveyMode(pg, p, 'SURVEY_EXACT')
 
         if SUPPORT_POINT_SURVEY_XYZ_ENABLED is True:
             tde4.setPointSurveyXYZEnabledFlags(
-                pg, p,
+                pg,
+                p,
                 mkr_data.bundle_x_lock,
                 mkr_data.bundle_y_lock,
-                mkr_data.bundle_z_lock)
+                mkr_data.bundle_z_lock,
+            )
 
     return point_list
 
@@ -1394,15 +1386,9 @@ c = tde4.getCurrentCamera()
 pg = tde4.getCurrentPGroup()
 if c is not None and pg is not None:
     req = tde4.createCustomRequester()
-    tde4.addFileWidget(
-        req, 'file_browser', 'File Name...', '*.uv'
-    )
+    tde4.addFileWidget(req, 'file_browser', 'File Name...', '*.uv')
 
-    ret = tde4.postCustomRequester(
-        req,
-        WINDOW_TITLE,
-        500, 120,
-        'Ok', 'Cancel')
+    ret = tde4.postCustomRequester(req, WINDOW_TITLE, 500, 120, 'Ok', 'Cancel')
     if ret == 1:
         file_path = tde4.getWidgetValue(req, 'file_browser')
         if file_path is not None and os.path.isfile(file_path):
@@ -1416,6 +1402,5 @@ if c is not None and pg is not None:
             create_markers(c, pg, start_frame, file_info, mkr_data_list)
 else:
     tde4.postQuestionRequester(
-        WINDOW_TITLE,
-        'There is no current Point Group or Camera.',
-        'Ok')
+        WINDOW_TITLE, 'There is no current Point Group or Camera.', 'Ok'
+    )

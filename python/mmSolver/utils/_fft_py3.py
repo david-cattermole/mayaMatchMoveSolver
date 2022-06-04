@@ -65,7 +65,9 @@ def transform_radix2(vector, inverse):
     # Now, levels = log2(n)
     coef = (2j if inverse else -2j) * cmath.pi / n
     exptable = [cmath.exp(i * coef) for i in range(n // 2)]
-    vector = [vector[reverse(i, levels)] for i in range(n)]  # Copy with bit-reversed permutation
+    vector = [
+        vector[reverse(i, levels)] for i in range(n)
+    ]  # Copy with bit-reversed permutation
 
     # Radix-2 decimation-in-time FFT
     size = 2
@@ -93,11 +95,15 @@ def transform_bluestein(vector, inverse):
     n = len(vector)
     if n == 0:
         return []
-    m = 2**((n * 2).bit_length())
+    m = 2 ** ((n * 2).bit_length())
 
     coef = (1j if inverse else -1j) * cmath.pi / n
-    exptable = [cmath.exp((i * i % (n * 2)) * coef) for i in range(n)]  # Trigonometric table
-    a = [(x * y) for (x, y) in zip(vector, exptable)] + [0] * (m - n)  # Temporary vectors and preprocessing
+    exptable = [
+        cmath.exp((i * i % (n * 2)) * coef) for i in range(n)
+    ]  # Trigonometric table
+    a = [(x * y) for (x, y) in zip(vector, exptable)] + [0] * (
+        m - n
+    )  # Temporary vectors and preprocessing
     b = exptable[:n] + [0] * (m - (n * 2 - 1)) + exptable[:0:-1]
     b = [x.conjugate() for x in b]
     c = convolve(a, b, False)[:n]  # Convolution

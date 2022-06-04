@@ -71,9 +71,8 @@ def get_next_frame(cur_frame, int_list):
     :rtype: int or None
     """
     assert isinstance(int_list, (list, tuple))
-    assert isinstance(cur_frame, (float, ) + pycompat.INT_TYPES)
-    future_frames = [int(f) for f in int_list
-                     if float(f) > float(cur_frame)]
+    assert isinstance(cur_frame, (float,) + pycompat.INT_TYPES)
+    future_frames = [int(f) for f in int_list if float(f) > float(cur_frame)]
     future_frames = list(sorted(future_frames))
     next_frame = cur_frame
     if len(future_frames) == 0:
@@ -103,9 +102,8 @@ def get_prev_frame(cur_frame, int_list):
     :rtype: int or None
     """
     assert isinstance(int_list, (list, tuple))
-    assert isinstance(cur_frame, (float, ) + pycompat.INT_TYPES)
-    past_frames = [f for f in int_list
-                   if float(f) < float(cur_frame)]
+    assert isinstance(cur_frame, (float,) + pycompat.INT_TYPES)
+    past_frames = [f for f in int_list if float(f) < float(cur_frame)]
     past_frames = list(sorted(past_frames))
     previous_frame = cur_frame
     if len(past_frames) == 0:

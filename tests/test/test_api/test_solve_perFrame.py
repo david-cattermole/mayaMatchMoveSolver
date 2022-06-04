@@ -44,7 +44,6 @@ LOG = mmSolver.logger.get_logger()
 
 # @unittest.skip
 class TestSolvePerFrame(test_api_utils.APITestCase):
-
     def do_solve(self, solver_name, solver_type_index, scene_graph_mode):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
@@ -54,11 +53,8 @@ class TestSolvePerFrame(test_api_utils.APITestCase):
         print('Scene Graph:', scene_graph_label)
 
         # Camera
-        cam_tfm = maya.cmds.createNode('transform',
-                                       name='cam_tfm')
-        cam_shp = maya.cmds.createNode('camera',
-                                       name='cam_shp',
-                                       parent=cam_tfm)
+        cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
+        cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
         maya.cmds.setAttr(cam_tfm + '.ty', 1.0)
         maya.cmds.setAttr(cam_tfm + '.tz', -5.0)
@@ -71,21 +67,30 @@ class TestSolvePerFrame(test_api_utils.APITestCase):
         maya.cmds.setAttr(bundle_tfm + '.ty', 6.4)
         maya.cmds.setAttr(bundle_tfm + '.tz', -25.0)
         assert mmapi.get_object_type(bundle_tfm) == 'bundle'
-        maya.cmds.setKeyframe(bundle_tfm,
-                              attribute='translateX',
-                              time=1, value=5.5,
-                              inTangentType='linear',
-                              outTangentType='linear')
-        maya.cmds.setKeyframe(bundle_tfm,
-                              attribute='translateY',
-                              time=1, value=6.4,
-                              inTangentType='linear',
-                              outTangentType='linear')
-        maya.cmds.setKeyframe(bundle_tfm,
-                              attribute='translateZ',
-                              time=1, value=-25.0,
-                              inTangentType='linear',
-                              outTangentType='linear')
+        maya.cmds.setKeyframe(
+            bundle_tfm,
+            attribute='translateX',
+            time=1,
+            value=5.5,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
+        maya.cmds.setKeyframe(
+            bundle_tfm,
+            attribute='translateY',
+            time=1,
+            value=6.4,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
+        maya.cmds.setKeyframe(
+            bundle_tfm,
+            attribute='translateZ',
+            time=1,
+            value=-25.0,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
 
         # Marker
         mkr = mmapi.Marker().create_node(cam=cam, bnd=bnd)
@@ -93,26 +98,38 @@ class TestSolvePerFrame(test_api_utils.APITestCase):
         assert mmapi.get_object_type(marker_tfm) == 'marker'
         # maya.cmds.setAttr(marker_tfm + '.tx', 0.0)
         # maya.cmds.setAttr(marker_tfm + '.ty', 0.0)
-        maya.cmds.setKeyframe(marker_tfm,
-                              attribute='translateX',
-                              time=1, value=-0.5,
-                              inTangentType='linear',
-                              outTangentType='linear')
-        maya.cmds.setKeyframe(marker_tfm,
-                              attribute='translateX',
-                              time=5, value=0.5,
-                              inTangentType='linear',
-                              outTangentType='linear')
-        maya.cmds.setKeyframe(marker_tfm,
-                              attribute='translateY',
-                              time=1, value=-0.5,
-                              inTangentType='linear',
-                              outTangentType='linear')
-        maya.cmds.setKeyframe(marker_tfm,
-                              attribute='translateY',
-                              time=5, value=0.5,
-                              inTangentType='linear',
-                              outTangentType='linear')
+        maya.cmds.setKeyframe(
+            marker_tfm,
+            attribute='translateX',
+            time=1,
+            value=-0.5,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
+        maya.cmds.setKeyframe(
+            marker_tfm,
+            attribute='translateX',
+            time=5,
+            value=0.5,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
+        maya.cmds.setKeyframe(
+            marker_tfm,
+            attribute='translateY',
+            time=1,
+            value=-0.5,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
+        maya.cmds.setKeyframe(
+            marker_tfm,
+            attribute='translateY',
+            time=5,
+            value=0.5,
+            inTangentType='linear',
+            outTangentType='linear',
+        )
 
         # Attributes
         attr_tx = mmapi.Attribute(bundle_tfm + '.tx')
@@ -148,7 +165,8 @@ class TestSolvePerFrame(test_api_utils.APITestCase):
 
         # save the output
         file_name = 'test_solve_per_frame_{}_{}_before.ma'.format(
-            solver_name, scene_graph_name)
+            solver_name, scene_graph_name
+        )
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -162,7 +180,8 @@ class TestSolvePerFrame(test_api_utils.APITestCase):
 
         # save the output
         file_name = 'test_solve_per_frame_{}_{}_after.ma'.format(
-            solver_name, scene_graph_name)
+            solver_name, scene_graph_name
+        )
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -174,19 +193,37 @@ class TestSolvePerFrame(test_api_utils.APITestCase):
         self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
 
     def test_per_frame_ceres_mmscenegraph(self):
-        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+        )
 
     def test_per_frame_cminpack_lmdif_maya_dag(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_per_frame_cminpack_lmdif_mmscenegraph(self):
-        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
     def test_per_frame_cminpack_lmder_maya_dag(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
 
     def test_per_frame_cminpack_lmder_mmscenegraph(self):
-        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH)
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
 
 if __name__ == '__main__':

@@ -67,58 +67,64 @@ import mmSolver.utils.node as node_utils
 
 LOG = mmSolver.logger.get_logger()
 
-VALID_ATTR_TYPES = set([
-    'double',
-    'doubleLinear',
-    'doubleAngle',
-    'time',
-    'float',
-])
+VALID_ATTR_TYPES = set(
+    [
+        'double',
+        'doubleLinear',
+        'doubleAngle',
+        'time',
+        'float',
+    ]
+)
 
-CAMERA_ATTRS = set([
-    'nearClipPlane',
-    'farClipPlane',
-    'focalLength',
-    'horizontalFilmAperture',
-    'verticalFilmAperture',
-    'cameraScale',
-    'filmFitOffset',
-    'horizontalFilmOffset',
-    'verticalFilmOffset',
-    'lensSqueezeRatio',
-])
+CAMERA_ATTRS = set(
+    [
+        'nearClipPlane',
+        'farClipPlane',
+        'focalLength',
+        'horizontalFilmAperture',
+        'verticalFilmAperture',
+        'cameraScale',
+        'filmFitOffset',
+        'horizontalFilmOffset',
+        'verticalFilmOffset',
+        'lensSqueezeRatio',
+    ]
+)
 
 
-LENS_ATTRS = set([
-    'k1',
-    'k2',
-    'tdeClassic_distortion',
-    'tdeClassic_anamorphicSqueeze',
-    'tdeClassic_curvatureX',
-    'tdeClassic_curvatureY',
-    'tdeClassic_quarticDistortion',
-    'tdeRadialDecenteredDeg4Cylindric_degree2_distortion',
-    'tdeRadialDecenteredDeg4Cylindric_degree2_u',
-    'tdeRadialDecenteredDeg4Cylindric_degree2_v',
-    'tdeRadialDecenteredDeg4Cylindric_degree4_distortion',
-    'tdeRadialDecenteredDeg4Cylindric_degree4_u',
-    'tdeRadialDecenteredDeg4Cylindric_degree4_v',
-    'tdeRadialDecenteredDeg4Cylindric_cylindricDirection',
-    'tdeRadialDecenteredDeg4Cylindric_cylindricBending',
-    'tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx02',
-    'tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy02',
-    'tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx22',
-    'tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy22',
-    'tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx04',
-    'tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy04',
-    'tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx24',
-    'tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy24',
-    'tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx44',
-    'tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy44',
-    'tdeAnamorphicDeg4RotateSqueezeXY_lensRotation',
-    'tdeAnamorphicDeg4RotateSqueezeXY_squeeze_x',
-    'tdeAnamorphicDeg4RotateSqueezeXY_squeeze_y',
-])
+LENS_ATTRS = set(
+    [
+        'k1',
+        'k2',
+        'tdeClassic_distortion',
+        'tdeClassic_anamorphicSqueeze',
+        'tdeClassic_curvatureX',
+        'tdeClassic_curvatureY',
+        'tdeClassic_quarticDistortion',
+        'tdeRadialDecenteredDeg4Cylindric_degree2_distortion',
+        'tdeRadialDecenteredDeg4Cylindric_degree2_u',
+        'tdeRadialDecenteredDeg4Cylindric_degree2_v',
+        'tdeRadialDecenteredDeg4Cylindric_degree4_distortion',
+        'tdeRadialDecenteredDeg4Cylindric_degree4_u',
+        'tdeRadialDecenteredDeg4Cylindric_degree4_v',
+        'tdeRadialDecenteredDeg4Cylindric_cylindricDirection',
+        'tdeRadialDecenteredDeg4Cylindric_cylindricBending',
+        'tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx02',
+        'tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy02',
+        'tdeAnamorphicDeg4RotateSqueezeXY_degree2_cx22',
+        'tdeAnamorphicDeg4RotateSqueezeXY_degree2_cy22',
+        'tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx04',
+        'tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy04',
+        'tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx24',
+        'tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy24',
+        'tdeAnamorphicDeg4RotateSqueezeXY_degree4_cx44',
+        'tdeAnamorphicDeg4RotateSqueezeXY_degree4_cy44',
+        'tdeAnamorphicDeg4RotateSqueezeXY_lensRotation',
+        'tdeAnamorphicDeg4RotateSqueezeXY_squeeze_x',
+        'tdeAnamorphicDeg4RotateSqueezeXY_squeeze_y',
+    ]
+)
 
 
 def _get_full_path_plug(plug):
@@ -143,18 +149,30 @@ def _get_upstream_nodes(node_name):
     out_nodes = []
     if 'dagNode' in node_types:
         # DAG upstream
-        out_nodes = maya.cmds.listConnections(
-            node_name, source=True, destination=False,
-            plugs=False, shapes=False, connections=False,
-            skipConversionNodes=False) or []
+        out_nodes = (
+            maya.cmds.listConnections(
+                node_name,
+                source=True,
+                destination=False,
+                plugs=False,
+                shapes=False,
+                connections=False,
+                skipConversionNodes=False,
+            )
+            or []
+        )
     else:
         # DG upstream
-        out_nodes = maya.cmds.listHistory(
-            node_name,
-            allConnections=True,
-            leaf=False,
-            levels=0,
-            pruneDagObjects=False) or []
+        out_nodes = (
+            maya.cmds.listHistory(
+                node_name,
+                allConnections=True,
+                leaf=False,
+                levels=0,
+                pruneDagObjects=False,
+            )
+            or []
+        )
     out_nodes = [str(node_utils.get_long_name(n)) for n in out_nodes]
     return out_nodes
 
@@ -173,8 +191,7 @@ def _get_connected_nodes(tfm_node):
             out_nodes = list(set(out_nodes).difference(all_nodes))
             all_nodes += out_nodes
         if iter_count > max_iter_count:
-            msg = ('Gathering connected nodes exceeded %r iterations,'
-                   ' stopping.')
+            msg = 'Gathering connected nodes exceeded %r iterations,' ' stopping.'
             LOG.warn(msg, max_iter_count)
             break
     return sorted(list(set(all_nodes)))
@@ -190,9 +207,9 @@ def __get_and_fill_cache_value(cache, key, func):
     return value
 
 
-def _convert_node_to_plugs(node, attr, node_type,
-                           worldspace_cache=None,
-                           type_cache=None):
+def _convert_node_to_plugs(
+    node, attr, node_type, worldspace_cache=None, type_cache=None
+):
     """
     Logic to decide if this attribute will affect the node.
 
@@ -215,7 +232,8 @@ def _convert_node_to_plugs(node, attr, node_type,
         ws = __get_and_fill_cache_value(
             worldspace_cache,
             node_type_plug,
-            lambda: maya.cmds.attributeQuery(attr, node=node, affectsWorldspace=True))
+            lambda: maya.cmds.attributeQuery(attr, node=node, affectsWorldspace=True),
+        )
         if ws is False:
             return plugs
 
@@ -223,19 +241,17 @@ def _convert_node_to_plugs(node, attr, node_type,
     settable = maya.cmds.getAttr(node_attr, settable=True)
     if settable is True:
         typ = __get_and_fill_cache_value(
-            type_cache,
-            node_type_plug,
-            lambda: maya.cmds.getAttr(node_attr, type=True))
+            type_cache, node_type_plug, lambda: maya.cmds.getAttr(node_attr, type=True)
+        )
         if typ in VALID_ATTR_TYPES:
             plugs.add(node_attr)
         return plugs
 
     # Get plugs connected to this attribute, recursively
-    conn_attrs = maya.cmds.listConnections(
-        node_attr,
-        source=True,
-        destination=False,
-        plugs=True) or []
+    conn_attrs = (
+        maya.cmds.listConnections(node_attr, source=True, destination=False, plugs=True)
+        or []
+    )
     while len(conn_attrs) > 0:
         node_attr = conn_attrs.pop()
         node_attr = _get_full_path_plug(node_attr)
@@ -247,17 +263,19 @@ def _convert_node_to_plugs(node, attr, node_type,
             typ = __get_and_fill_cache_value(
                 type_cache,
                 node_type_plug,
-                lambda: maya.cmds.getAttr(node_attr, type=True))
+                lambda: maya.cmds.getAttr(node_attr, type=True),
+            )
             if typ in VALID_ATTR_TYPES:
                 plugs.add(node_attr)
             continue
 
         # Get the plugs that affect this plug.
-        tmp_list = maya.cmds.listConnections(
-            node_attr,
-            source=True,
-            destination=False,
-            plugs=True) or []
+        tmp_list = (
+            maya.cmds.listConnections(
+                node_attr, source=True, destination=False, plugs=True
+            )
+            or []
+        )
 
         # Filter by valid plug types.
         for tmp in tmp_list:
@@ -293,13 +311,17 @@ def _get_attribute_plugs(nodes):
         attrs = __get_and_fill_cache_value(
             node_type_attrs_cache,
             node_type,
-            lambda: maya.cmds.listAttr(node, leaf=True, userDefined=False) or [])
+            lambda: maya.cmds.listAttr(node, leaf=True, userDefined=False) or [],
+        )
         attrs = set(attrs)
         for attr in attrs:
             plugs |= _convert_node_to_plugs(
-                node, attr, node_type,
+                node,
+                attr,
+                node_type,
                 worldspace_cache=worldspace_cache,
-                type_cache=type_cache)
+                type_cache=type_cache,
+            )
         user_attrs = maya.cmds.listAttr(node, leaf=True, userDefined=True) or []
         user_attrs = set(user_attrs).difference(set(attrs))
         for attr in user_attrs:
@@ -332,10 +354,7 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
     if cam_tfm is not None:
         assert maya.cmds.objExists(cam_tfm) is True
         cam_tfm_node = maya.cmds.ls(cam_tfm, long=True)[0]
-        cam_shp_node = maya.cmds.listRelatives(
-            cam_tfm,
-            shapes=True,
-            fullPath=True)[0]
+        cam_shp_node = maya.cmds.listRelatives(cam_tfm, shapes=True, fullPath=True)[0]
         if cam_tfm_node not in camera_nodes:
             camera_nodes.append(cam_tfm_node)
         if cam_shp_node not in camera_nodes:
@@ -345,15 +364,19 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
         if node_utils.attribute_exists('inLens', cam_shp_node):
             lens_in_attr = cam_shp_node + '.inLens'
             conn_nodes = maya.cmds.listConnections(lens_in_attr) or []
-            conn_nodes = [x for x in conn_nodes
-                          if maya.cmds.nodeType(x).startswith('mmLensModel')]
+            conn_nodes = [
+                x for x in conn_nodes if maya.cmds.nodeType(x).startswith('mmLensModel')
+            ]
             while len(conn_nodes) > 0:
                 lens_node = conn_nodes.pop()
                 lens_in_attr = lens_node + '.inLens'
                 if node_utils.attribute_exists('inLens', lens_node):
                     tmp_nodes = maya.cmds.listConnections(lens_in_attr) or []
-                    conn_nodes += [x for x in tmp_nodes
-                                  if maya.cmds.nodeType(x).startswith('mmLensModel')]
+                    conn_nodes += [
+                        x
+                        for x in tmp_nodes
+                        if maya.cmds.nodeType(x).startswith('mmLensModel')
+                    ]
                 camera_nodes.append(lens_node)
         camera_nodes = list(sorted(set(camera_nodes)))
 
@@ -361,16 +384,10 @@ def find_plugs_affecting_transform(tfm_node, cam_tfm):
     parent_nodes = []
     get_parent_nodes = camera_nodes + [tfm_node]
     for node in get_parent_nodes:
-        parents = maya.cmds.listRelatives(
-            node,
-            parent=True,
-            fullPath=True) or []
+        parents = maya.cmds.listRelatives(node, parent=True, fullPath=True) or []
         parent_nodes += parents
         while len(parents) > 0:
-            parents = maya.cmds.listRelatives(
-                parents,
-                parent=True,
-                fullPath=True) or []
+            parents = maya.cmds.listRelatives(parents, parent=True, fullPath=True) or []
             parent_nodes += parents
     nodes = [tfm_node] + camera_nodes + parent_nodes
 

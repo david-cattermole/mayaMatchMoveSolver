@@ -70,16 +70,14 @@ from __future__ import print_function
 from mmSolver.tools.createimageplane._lib.main import (
     set_image_sequence,
     create_image_plane_on_camera,
-    convert_image_planes_on_camera
+    convert_image_planes_on_camera,
 )
 
 from mmSolver.tools.createimageplane._lib.constant import (
-    DEFAULT_IMAGE_SEQUENCE_ATTR_NAME
+    DEFAULT_IMAGE_SEQUENCE_ATTR_NAME,
 )
 
-from mmSolver.tools.createimageplane._lib.utilities import (
-    get_default_image_path
-)
+from mmSolver.tools.createimageplane._lib.utilities import get_default_image_path
 
 
 # Stop users from accessing the internal functions of this sub-module.
@@ -88,5 +86,5 @@ __all__ = [
     'convert_image_planes_on_camera',
     'set_image_sequence',
     'get_default_image_path',
-    'DEFAULT_IMAGE_SEQUENCE_ATTR_NAME'
+    'DEFAULT_IMAGE_SEQUENCE_ATTR_NAME',
 ]

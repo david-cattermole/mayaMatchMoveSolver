@@ -32,6 +32,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -43,12 +44,7 @@ import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
 class TestSolverIssue54(solverUtils.SolverTestCase):
-
-    def setup_scene(self,
-                    cam_translate,
-                    cam_rotate,
-                    cam_rotate_offset,
-                    bnd_translate):
+    def setup_scene(self, cam_translate, cam_rotate, cam_rotate_offset, bnd_translate):
         """
         Create a scene file ready for solving.
         """
@@ -64,7 +60,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
 
         mkr_grp = self.create_marker_group('marker_group', cam_tfm)
         marker_tfm, marker_shp = self.create_marker(
-            'marker', mkr_grp, bnd_tfm=bundle_tfm)
+            'marker', mkr_grp, bnd_tfm=bundle_tfm
+        )
         maya.cmds.setAttr(marker_tfm + '.tx', 0.0)
         maya.cmds.setAttr(marker_tfm + '.ty', 0.0)
         maya.cmds.setAttr(marker_tfm + '.tz', -1.0)
@@ -73,12 +70,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         maya.cmds.setAttr(cam_tfm + '.ry', cam_rotate[1])
         maya.cmds.setAttr(cam_tfm + '.rz', cam_rotate[2])
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
-        markers = (
-            (marker_tfm, cam_shp, bundle_tfm),
-        )
+        cameras = ((cam_tfm, cam_shp),)
+        markers = ((marker_tfm, cam_shp, bundle_tfm),)
         node_attrs = [
             (cam_tfm + '.rx', 'None', 'None', cam_rotate_offset[0], 'None'),
             (cam_tfm + '.ry', 'None', 'None', cam_rotate_offset[1], 'None'),
@@ -98,10 +91,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         cam_rotate_offset = ['360', '360', 'None']
         bnd_translate = [-1.0, 1.0, -25.0]
         cameras, markers, node_attrs, frames = self.setup_scene(
-            cam_translate,
-            cam_rotate,
-            cam_rotate_offset,
-            bnd_translate)
+            cam_translate, cam_rotate, cam_rotate_offset, bnd_translate
+        )
         cam_tfm, cam_shp = cameras[0]
 
         kwargs = {
@@ -122,11 +113,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            frame=frames,
-            iterations=10,
-            solverType=solver_index,
-            verbose=True,
-            **kwargs
+            frame=frames, iterations=10, solverType=solver_index, verbose=True, **kwargs
         )
         e = time.time()
         print('total time:', e - s)
@@ -156,10 +143,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         cam_rotate_offset = ['360', '360', 'None']
         bnd_translate = [-1.0, 1.0, -25.0]
         cameras, markers, node_attrs, frames = self.setup_scene(
-            cam_translate,
-            cam_rotate,
-            cam_rotate_offset,
-            bnd_translate)
+            cam_translate, cam_rotate, cam_rotate_offset, bnd_translate
+        )
         cam_tfm, cam_shp = cameras[0]
 
         kwargs = {
@@ -180,11 +165,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            frame=frames,
-            iterations=10,
-            solverType=solver_index,
-            verbose=True,
-            **kwargs
+            frame=frames, iterations=10, solverType=solver_index, verbose=True, **kwargs
         )
         e = time.time()
         print('total time:', e - s)
@@ -214,10 +195,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         cam_rotate_offset = ['360', '360', 'None']
         bnd_translate = [-1.0, 1.0, -25.0]
         cameras, markers, node_attrs, frames = self.setup_scene(
-            cam_translate,
-            cam_rotate,
-            cam_rotate_offset,
-            bnd_translate)
+            cam_translate, cam_rotate, cam_rotate_offset, bnd_translate
+        )
         cam_tfm, cam_shp = cameras[0]
 
         kwargs = {
@@ -238,11 +217,7 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            frame=frames,
-            iterations=10,
-            solverType=solver_index,
-            verbose=True,
-            **kwargs
+            frame=frames, iterations=10, solverType=solver_index, verbose=True, **kwargs
         )
         e = time.time()
         print('total time:', e - s)

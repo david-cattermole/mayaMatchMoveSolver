@@ -46,20 +46,48 @@ LOG = mmSolver.logger.get_logger()
 
 
 # Function aliases, for the 'collectionstate' module.
-get_override_current_frame_from_collection = col_state.get_override_current_frame_from_collection
-set_override_current_frame_on_collection = col_state.set_override_current_frame_on_collection
-get_attribute_toggle_animated_from_collection = col_state.get_attribute_toggle_animated_from_collection
-set_attribute_toggle_animated_on_collection = col_state.set_attribute_toggle_animated_on_collection
-get_attribute_toggle_static_from_collection = col_state.get_attribute_toggle_static_from_collection
-set_attribute_toggle_static_on_collection = col_state.set_attribute_toggle_static_on_collection
-get_attribute_toggle_locked_from_collection = col_state.get_attribute_toggle_locked_from_collection
-set_attribute_toggle_locked_on_collection = col_state.set_attribute_toggle_locked_on_collection
-get_object_toggle_camera_from_collection = col_state.get_object_toggle_camera_from_collection
-set_object_toggle_camera_on_collection = col_state.set_object_toggle_camera_on_collection
-get_object_toggle_marker_from_collection = col_state.get_object_toggle_marker_from_collection
-set_object_toggle_marker_on_collection = col_state.set_object_toggle_marker_on_collection
-get_object_toggle_bundle_from_collection = col_state.get_object_toggle_bundle_from_collection
-set_object_toggle_bundle_on_collection = col_state.set_object_toggle_bundle_on_collection
+get_override_current_frame_from_collection = (
+    col_state.get_override_current_frame_from_collection
+)
+set_override_current_frame_on_collection = (
+    col_state.set_override_current_frame_on_collection
+)
+get_attribute_toggle_animated_from_collection = (
+    col_state.get_attribute_toggle_animated_from_collection
+)
+set_attribute_toggle_animated_on_collection = (
+    col_state.set_attribute_toggle_animated_on_collection
+)
+get_attribute_toggle_static_from_collection = (
+    col_state.get_attribute_toggle_static_from_collection
+)
+set_attribute_toggle_static_on_collection = (
+    col_state.set_attribute_toggle_static_on_collection
+)
+get_attribute_toggle_locked_from_collection = (
+    col_state.get_attribute_toggle_locked_from_collection
+)
+set_attribute_toggle_locked_on_collection = (
+    col_state.set_attribute_toggle_locked_on_collection
+)
+get_object_toggle_camera_from_collection = (
+    col_state.get_object_toggle_camera_from_collection
+)
+set_object_toggle_camera_on_collection = (
+    col_state.set_object_toggle_camera_on_collection
+)
+get_object_toggle_marker_from_collection = (
+    col_state.get_object_toggle_marker_from_collection
+)
+set_object_toggle_marker_on_collection = (
+    col_state.set_object_toggle_marker_on_collection
+)
+get_object_toggle_bundle_from_collection = (
+    col_state.get_object_toggle_bundle_from_collection
+)
+set_object_toggle_bundle_on_collection = (
+    col_state.set_object_toggle_bundle_on_collection
+)
 
 
 def get_collections():
@@ -210,10 +238,9 @@ def get_previous_collection(cols, current_col):
     return prev_col
 
 
-def log_solve_results(log, solres_list,
-                      timestamp=None,
-                      total_time=None,
-                      status_fn=None):
+def log_solve_results(
+    log, solres_list, timestamp=None, total_time=None, status_fn=None
+):
     """
     Displays / saves the Solve Results.
 
@@ -371,9 +398,7 @@ def compile_solvers_from_steps(col, step_list, prog_fn=None):
     use_cur_frame = col_state.get_override_current_frame_from_collection(col)
     sol_list = []
     for i, step in enumerate(step_list):
-        sol_list += step.compile(
-            col,
-            override_current_frame=use_cur_frame)
+        sol_list += step.compile(col, override_current_frame=use_cur_frame)
         if prog_fn is not None:
             ratio = float(i) / len(step_list)
             percent = int(ratio * 100.0)
@@ -430,10 +455,10 @@ def __compile_frame_list(range_type, frame_string, by_frame):
     frame_nums = []
     if range_type == const.RANGE_TYPE_TIMELINE_INNER_VALUE:
         start, end = utils_time.get_maya_timeline_range_inner()
-        frame_nums = [f for f in range(start, end+1, by_frame)]
+        frame_nums = [f for f in range(start, end + 1, by_frame)]
     elif range_type == const.RANGE_TYPE_TIMELINE_OUTER_VALUE:
         start, end = utils_time.get_maya_timeline_range_outer()
-        frame_nums = [f for f in range(start, end+1, by_frame)]
+        frame_nums = [f for f in range(start, end + 1, by_frame)]
     elif range_type == const.RANGE_TYPE_CUSTOM_FRAMES_VALUE:
         if frame_string is None:
             start, end = utils_time.get_maya_timeline_range_inner()
@@ -442,8 +467,7 @@ def __compile_frame_list(range_type, frame_string, by_frame):
 
         # Apply 'by_frame' to custom frame ranges.
         start = min(frame_nums)
-        frame_nums = [n for n in frame_nums
-                      if (float(n - start) % by_frame) == 0]
+        frame_nums = [n for n in frame_nums if (float(n - start) % by_frame) == 0]
     return frame_nums
 
 
@@ -482,8 +506,12 @@ def compile_collection(col, prog_fn=None):
             frames = [mmapi.Frame(f) for f in frame_nums]
             sol.set_frame_list(frames)
 
-        eval_obj_relations = col_state.get_solver_eval_object_relationships_from_collection(col)
-        eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
+        eval_obj_relations = (
+            col_state.get_solver_eval_object_relationships_from_collection(col)
+        )
+        eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(
+            col
+        )
         sol.set_scene_graph_mode(scene_graph_mode)
         sol.set_eval_object_relationships(eval_obj_relations)
         sol.set_eval_complex_graphs(eval_complex_graphs)
@@ -504,22 +532,27 @@ def compile_collection(col, prog_fn=None):
             frame_nums = __compile_frame_list(range_type, frame_string, by_frame)
 
             # Root frame numbers
-            root_frame_num_string = col_state.get_solver_root_frames_from_collection(col)
+            root_frame_num_string = col_state.get_solver_root_frames_from_collection(
+                col
+            )
             if root_frame_num_string is None:
                 start, end = utils_time.get_maya_timeline_range_inner()
                 root_frame_num_string = '{0},{1}'.format(start, end)
             root_frame_nums = converttypes.stringToIntList(root_frame_num_string)
 
-            frames = [mmapi.Frame(f) for f in frame_nums
-                      if f not in root_frame_nums]
+            frames = [mmapi.Frame(f) for f in frame_nums if f not in root_frame_nums]
             root_frames = [mmapi.Frame(f) for f in root_frame_nums]
             sol.set_root_frame_list(root_frames)
             sol.set_frame_list(frames)
 
         global_solve = col_state.get_solver_global_solve_from_collection(col)
         only_root = col_state.get_solver_only_root_frames_from_collection(col)
-        eval_obj_relations = col_state.get_solver_eval_object_relationships_from_collection(col)
-        eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
+        eval_obj_relations = (
+            col_state.get_solver_eval_object_relationships_from_collection(col)
+        )
+        eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(
+            col
+        )
         sol.set_global_solve(global_solve)
         sol.set_only_root_frames(only_root)
         sol.set_scene_graph_mode(scene_graph_mode)
@@ -564,7 +597,9 @@ def gather_execute_options():
     config = userprefs_lib.get_config()
     key = userprefs_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY
     minimal_ui = userprefs_lib.get_value(config, key)
-    minimal_ui = minimal_ui == userprefs_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_TRUE_VALUE
+    minimal_ui = (
+        minimal_ui == userprefs_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_TRUE_VALUE
+    )
 
     options = mmapi.create_execute_options(
         refresh=refresh_state,
@@ -573,17 +608,14 @@ def gather_execute_options():
         do_isolate=do_isolate_state,
         pre_solve_force_eval=pre_solve_force_eval,
         display_node_types=disp_node_types,
-        use_minimal_ui=minimal_ui
+        use_minimal_ui=minimal_ui,
     )
     return options
 
 
-def execute_collection(col,
-                       options=None,
-                       log_level=None,
-                       prog_fn=None,
-                       status_fn=None,
-                       info_fn=None):
+def execute_collection(
+    col, options=None, log_level=None, prog_fn=None, status_fn=None, info_fn=None
+):
     """
     Execute the entire collection; Solvers, Markers, Bundles, etc.
 
@@ -622,14 +654,18 @@ def execute_collection(col,
         'status_fn=%r '
         'info_fn=%r'
     )
-    LOG.debug(msg,
-              col,
-              log_level,
-              options.refresh,
-              options.force_update,
-              options.display_grid,
-              options.display_node_types,
-              prog_fn, status_fn, info_fn)
+    LOG.debug(
+        msg,
+        col,
+        log_level,
+        options.refresh,
+        options.force_update,
+        options.display_grid,
+        options.display_node_types,
+        prog_fn,
+        status_fn,
+        info_fn,
+    )
 
     assert isinstance(options.refresh, bool)
     assert isinstance(options.force_update, bool)
@@ -664,11 +700,7 @@ def execute_collection(col,
     # Display Solver results
     timestamp = e
     log_solve_results(
-        log,
-        solres_list,
-        timestamp=timestamp,
-        total_time=total_time,
-        status_fn=info_fn
+        log, solres_list, timestamp=timestamp, total_time=total_time, status_fn=info_fn
     )
 
     # Calculate marker deviation, and set it on the marker.
@@ -715,8 +747,9 @@ def query_solver_info_text(col):
         compile_collection(col)
         state_list = mmapi.validate(col, as_state=True)
         status_list = [state.status for state in state_list]
-        only_failure_status = [x for x in status_list
-                               if x != mmapi.ACTION_STATUS_SUCCESS]
+        only_failure_status = [
+            x for x in status_list if x != mmapi.ACTION_STATUS_SUCCESS
+        ]
         failed_num = len(only_failure_status)
         success_num = len(status_list) - failed_num
         some_failure = bool(failed_num)
@@ -754,10 +787,7 @@ def query_solver_info_text(col):
     return text
 
 
-def run_solve_ui(col,
-                 options,
-                 log_level,
-                 window):
+def run_solve_ui(col, options, log_level, window):
     """
     Run the active "solve" (UI state information), and update the UI.
 

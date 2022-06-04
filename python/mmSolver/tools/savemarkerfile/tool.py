@@ -35,10 +35,7 @@ LOG = mmSolver.logger.get_logger()
 
 
 def main():
-    nodes = maya.cmds.ls(
-        selection=True,
-        long=True,
-        type='transform') or []
+    nodes = maya.cmds.ls(selection=True, long=True, type='transform') or []
     if len(nodes) == 0:
         LOG.warn("Please select some Marker nodes.")
         return
@@ -59,7 +56,8 @@ def main():
         fileMode=0,  # 0="Any file, whether it exists or not."
         fileFilter=basic_filter,
         returnFilter=False,
-        dialogStyle=2)
+        dialogStyle=2,
+    )
     file_path = file_path[0]
 
     result = lib.write_file(file_path, data)

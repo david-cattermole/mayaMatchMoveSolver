@@ -89,7 +89,9 @@ def _create_image_plane_menu_items(parent, camera_shape_node, image_plane_nodes)
         )
         items.append(item)
 
-    tooltip = const.CREATE_IMAGE_PLANE_TOOLTIP.format(camera_shape_name=camera_shape_name)
+    tooltip = const.CREATE_IMAGE_PLANE_TOOLTIP.format(
+        camera_shape_name=camera_shape_name
+    )
     cmd = const.CREATE_IMAGE_PLANE_CMD.format(camera_shape_node=camera_shape_node)
     cmd_lang = const.CREATE_IMAGE_PLANE_CMD_LANG
     label = const.CREATE_IMAGE_PLANE_LABEL
@@ -140,7 +142,9 @@ def _create_lens_menu_items(parent, camera_shape_node, lens_nodes):
     camera_lenses_enabled = lib.camera_lens_distortion_enabled(camera_shape_node)
     label = const.TOGGLE_CAMERA_LENS_DISTORTION_ENABLED_LABEL
     tooltip = const.TOGGLE_CAMERA_LENS_DISTORTION_ENABLED_TOOLTIP
-    cmd = const.TOGGLE_CAMERA_LENS_DISTORTION_ENABLED_CMD.format(camera_shape_node=camera_shape_node)
+    cmd = const.TOGGLE_CAMERA_LENS_DISTORTION_ENABLED_CMD.format(
+        camera_shape_node=camera_shape_node
+    )
     cmd_lang = const.TOGGLE_CAMERA_LENS_DISTORTION_ENABLED_CMD_LANG
     item = maya.cmds.menuItem(
         parent=parent,
@@ -256,7 +260,9 @@ def create_camera_menu_items(parent, camera_node_pairs):
         )
         items.append(item)
 
-        tooltip = const.SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_TOOLTIP.format(name=tfm_name)
+        tooltip = const.SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_TOOLTIP.format(
+            name=tfm_name
+        )
         cmd = const.SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_CMD.format(node=tfm)
         cmd_lang = const.SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_CMD_LANG
         item = maya.cmds.menuItem(
@@ -283,7 +289,9 @@ def create_camera_menu_items(parent, camera_node_pairs):
         )
         items.append(item)
 
-        tooltip = const.SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_TOOLTIP.format(name=shp_name)
+        tooltip = const.SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_TOOLTIP.format(
+            name=shp_name
+        )
         cmd = const.SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_CMD.format(node=shp)
         cmd_lang = const.SELECT_NODE_AND_SHOW_IN_ATTR_EDITOR_CMD_LANG
         item = maya.cmds.menuItem(
@@ -310,18 +318,10 @@ def create_camera_menu_items(parent, camera_node_pairs):
         )
         items.append(item)
 
-        image_plane_nodes = lib.get_camera_image_planes(
-            shp)
-        items += _create_image_plane_menu_items(
-            parent,
-            shp,
-            image_plane_nodes)
+        image_plane_nodes = lib.get_camera_image_planes(shp)
+        items += _create_image_plane_menu_items(parent, shp, image_plane_nodes)
 
-        lens_nodes = lib.get_camera_lens_nodes(
-            shp)
-        items += _create_lens_menu_items(
-            parent,
-            shp,
-            lens_nodes)
+        lens_nodes = lib.get_camera_lens_nodes(shp)
+        items += _create_lens_menu_items(parent, shp, lens_nodes)
 
     return items

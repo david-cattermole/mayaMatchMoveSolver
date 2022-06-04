@@ -26,16 +26,10 @@ from __future__ import print_function
 # All the objects for the user API.
 from mmSolver._api.camera import Camera
 from mmSolver._api.bundle import Bundle
-from mmSolver._api.marker import (
-    Marker,
-    update_deviation_on_markers
-)
+from mmSolver._api.marker import Marker, update_deviation_on_markers
 from mmSolver._api.markergroup import MarkerGroup
 from mmSolver._api.attribute import Attribute
-from mmSolver._api.collection import (
-    Collection,
-    update_deviation_on_collection
-)
+from mmSolver._api.collection import Collection, update_deviation_on_collection
 from mmSolver._api.line import Line
 from mmSolver._api.lens import Lens
 from mmSolver._api.execute import (
@@ -146,12 +140,10 @@ from mmSolver._api.constant import (
     OBJECT_TYPE_COLLECTION,
     OBJECT_TYPE_IMAGE_PLANE,
     OBJECT_TYPE_LIST,
-
     ATTR_STATE_INVALID,
     ATTR_STATE_STATIC,
     ATTR_STATE_ANIMATED,
     ATTR_STATE_LOCKED,
-
     SOLVER_TYPE_LEVMAR,
     SOLVER_TYPE_CMINPACK_LM,
     SOLVER_TYPE_CMINPACK_LMDIF,
@@ -159,7 +151,6 @@ from mmSolver._api.constant import (
     SOLVER_TYPE_CERES,
     SOLVER_TYPE_DEFAULT,
     SOLVER_TYPE_LIST,
-
     SCENE_GRAPH_MODE_MAYA_DAG,
     SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
     SCENE_GRAPH_MODE_DEFAULT,
@@ -170,34 +161,28 @@ from mmSolver._api.constant import (
     SCENE_GRAPH_MODE_MAYA_DAG_LABEL,
     SCENE_GRAPH_MODE_MM_SCENE_GRAPH_LABEL,
     SCENE_GRAPH_MODE_LABEL_LIST,
-
     TIME_EVAL_MODE_DG_CONTEXT,
     TIME_EVAL_MODE_SET_TIME,
     TIME_EVAL_MODE_DEFAULT,
     TIME_EVAL_MODE_LIST,
-
     AUTO_DIFF_TYPE_FORWARD,
     AUTO_DIFF_TYPE_CENTRAL,
     AUTO_DIFF_TYPE_LIST,
-
     ROOT_FRAME_STRATEGY_GLOBAL_VALUE,
     ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE,
     ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE,
     ROOT_FRAME_STRATEGY_FWD_INCREMENT_VALUE,
     ROOT_FRAME_STRATEGY_VALUE_LIST,
     ROOT_FRAME_STRATEGY_DEFAULT_VALUE,
-
     ROBUST_LOSS_TYPE_TRIVIAL_VALUE,
     ROBUST_LOSS_TYPE_SOFT_L_ONE_VALUE,
     ROBUST_LOSS_TYPE_CAUCHY_VALUE,
     ROBUST_LOSS_TYPE_VALUE_LIST,
     ROBUST_LOSS_TYPE_DEFAULT_VALUE,
-
     VALIDATE_MODE_PRE_VALIDATE_VALUE,
     VALIDATE_MODE_AT_RUNTIME_VALUE,
     VALIDATE_MODE_NONE_VALUE,
     VALIDATE_MODE_VALUE_LIST,
-
     EVENT_NAME_MARKER_CREATED,
     EVENT_NAME_BUNDLE_CREATED,
     EVENT_NAME_LINE_CREATED,
@@ -211,17 +196,14 @@ from mmSolver._api.constant import (
     EVENT_NAME_MEMBERSHIP_CHANGED,
     EVENT_NAME_MAYA_SCENE_CLOSING,
     EVENT_NAME_LIST,
-
     ATTRIBUTE_USED_HINT_DEFAULT_VALUE,
     ATTRIBUTE_USED_HINT_USED_VALUE,
     ATTRIBUTE_USED_HINT_NOT_USED_VALUE,
     ATTRIBUTE_USED_HINT_LIST,
-
     MARKER_USED_HINT_DEFAULT_VALUE,
     MARKER_USED_HINT_USED_VALUE,
     MARKER_USED_HINT_NOT_USED_VALUE,
     MARKER_USED_HINT_LIST,
-
     ACTION_STATUS_SUCCESS,
     ACTION_STATUS_FAILED,
     ACTION_STATUS_LIST,
@@ -241,6 +223,7 @@ from mmSolver._api.utils import (
 from mmSolver.utils.undo import (
     undo_chunk_context,
 )
+
 undo_chunk = undo_chunk_context
 from mmSolver.utils.animcurve import (
     create_anim_curve_node,
@@ -250,7 +233,7 @@ from mmSolver.utils.node import (
     get_as_selection_list,
     get_as_dag_path,
     get_as_object,
-    get_as_plug
+    get_as_plug,
 )
 
 __all__ = [
@@ -273,7 +256,6 @@ __all__ = [
     'SolverBasic',
     'SolverStep',
     'SolveResult',
-
     # Constants
     'OBJECT_TYPE_UNKNOWN',
     'OBJECT_TYPE_ATTRIBUTE',
@@ -286,12 +268,10 @@ __all__ = [
     'OBJECT_TYPE_COLLECTION',
     'OBJECT_TYPE_IMAGE_PLANE',
     'OBJECT_TYPE_LIST',
-
     'ATTR_STATE_INVALID',
     'ATTR_STATE_STATIC',
     'ATTR_STATE_ANIMATED',
     'ATTR_STATE_LOCKED',
-
     'SOLVER_TYPE_LEVMAR',
     'SOLVER_TYPE_CMINPACK_LM',
     'SOLVER_TYPE_CMINPACK_LMDIF',
@@ -299,7 +279,6 @@ __all__ = [
     'SOLVER_TYPE_CERES',
     'SOLVER_TYPE_DEFAULT',
     'SOLVER_TYPE_LIST',
-
     'SCENE_GRAPH_MODE_MAYA_DAG',
     'SCENE_GRAPH_MODE_MM_SCENE_GRAPH',
     'SCENE_GRAPH_MODE_DEFAULT',
@@ -310,34 +289,28 @@ __all__ = [
     'SCENE_GRAPH_MODE_MAYA_DAG_LABEL',
     'SCENE_GRAPH_MODE_MM_SCENE_GRAPH_LABEL',
     'SCENE_GRAPH_MODE_LABEL_LIST',
-
     'TIME_EVAL_MODE_DG_CONTEXT',
     'TIME_EVAL_MODE_SET_TIME',
     'TIME_EVAL_MODE_DEFAULT',
     'TIME_EVAL_MODE_LIST',
-
     'AUTO_DIFF_TYPE_FORWARD',
     'AUTO_DIFF_TYPE_CENTRAL',
     'AUTO_DIFF_TYPE_LIST',
-
     'ROOT_FRAME_STRATEGY_GLOBAL_VALUE',
     'ROOT_FRAME_STRATEGY_FWD_PAIR_VALUE',
     'ROOT_FRAME_STRATEGY_FWD_PAIR_AND_GLOBAL_VALUE',
     'ROOT_FRAME_STRATEGY_FWD_INCREMENT_VALUE',
     'ROOT_FRAME_STRATEGY_VALUE_LIST',
     'ROOT_FRAME_STRATEGY_DEFAULT_VALUE',
-
     'ROBUST_LOSS_TYPE_TRIVIAL_VALUE',
     'ROBUST_LOSS_TYPE_SOFT_L_ONE_VALUE',
     'ROBUST_LOSS_TYPE_CAUCHY_VALUE',
     'ROBUST_LOSS_TYPE_VALUE_LIST',
     'ROBUST_LOSS_TYPE_DEFAULT_VALUE',
-
     'VALIDATE_MODE_PRE_VALIDATE_VALUE',
     'VALIDATE_MODE_AT_RUNTIME_VALUE',
     'VALIDATE_MODE_NONE_VALUE',
     'VALIDATE_MODE_VALUE_LIST',
-
     'EVENT_NAME_MARKER_CREATED',
     'EVENT_NAME_LINE_CREATED',
     'EVENT_NAME_BUNDLE_CREATED',
@@ -351,21 +324,17 @@ __all__ = [
     'EVENT_NAME_MEMBERSHIP_CHANGED',
     'EVENT_NAME_MAYA_SCENE_CLOSING',
     'EVENT_NAME_LIST',
-
     'ATTRIBUTE_USED_HINT_DEFAULT_VALUE',
     'ATTRIBUTE_USED_HINT_USED_VALUE',
     'ATTRIBUTE_USED_HINT_NOT_USED_VALUE',
     'ATTRIBUTE_USED_HINT_LIST',
-
     'MARKER_USED_HINT_DEFAULT_VALUE',
     'MARKER_USED_HINT_USED_VALUE',
     'MARKER_USED_HINT_NOT_USED_VALUE',
     'MARKER_USED_HINT_LIST',
-
     'ACTION_STATUS_SUCCESS',
     'ACTION_STATUS_FAILED',
     'ACTION_STATUS_LIST',
-
     # Exceptions
     'MMException',
     'NotValid',
@@ -373,13 +342,10 @@ __all__ = [
     'AlreadyUnlinked',
     'NotEnoughMarkers',
     'SolverNotAvailable',
-
     # Marker
     'update_deviation_on_markers',
-
     # Collection
     'update_deviation_on_collection',
-
     # Collection Utils
     'run_progress_func',
     'run_status_func',
@@ -388,47 +354,39 @@ __all__ = [
     'reconnect_animcurves',
     'clear_attr_keyframes',
     'generate_isolate_nodes',
-
     # Action
     'action_func_is_mmSolver',
     'action_func_is_mmSolverAffects',
     'func_str_to_callable',
     'action_to_components',
-
     # Execute
     'create_execute_options',
     'execute',
     'validate',
-
     # Marker Utils
     'calculate_marker_deviation',
     'get_markers_start_end_frames',
     'find_marker_attr_mapping',
     'calculate_average_deviation',
     'calculate_maximum_deviation',
-
     # Naming
     'find_valid_maya_node_name',
     'get_new_marker_name',
     'get_new_bundle_name',
     'get_new_line_name',
-
     # State
     'is_solver_running',
     'set_solver_running',
     'get_user_interrupt',
     'set_user_interrupt',
-
     # Root Frame
     'get_root_frames_from_markers',
     'root_frames_subdivide',
     'root_frames_list_combine',
-
     # Node Conversion
     'get_bundle_nodes_from_marker_nodes',
     'get_marker_nodes_from_bundle_nodes',
     'get_camera_nodes_from_marker_nodes',
-
     # Node Filter
     'filter_nodes_into_categories',
     'filter_marker_nodes',
@@ -439,7 +397,6 @@ __all__ = [
     'filter_bundle_nodes',
     'filter_camera_nodes',
     'filter_collection_nodes',
-
     # Utilities Functions
     'load_plugin',
     'get_object_type',
@@ -452,14 +409,12 @@ __all__ = [
     'set_value_on_node_attr',
     'get_marker_group_above_node',
     'get_line_above_node',
-
     # Nodes
     'get_long_name',
     'get_as_selection_list',
     'get_as_dag_path',
     'get_as_object',
     'get_as_plug',
-
     # Solver Result.
     'combine_timer_stats',
     'merge_frame_list',

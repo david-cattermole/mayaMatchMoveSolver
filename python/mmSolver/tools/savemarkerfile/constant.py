@@ -76,7 +76,7 @@ DEFAULT_DATA_VERSION_4 = {
     'num_points': 0,
     'is_undistorted': None,  # Deprecated
     'points': [],
-    'camera': {}
+    'camera': {},
 }
 
 
@@ -91,8 +91,8 @@ DEFAULT_POINT_DATA_VERSION_4 = {
         'z': None,
         'x_lock': None,
         'y_lock': None,
-        'z_lock': None
-    }
+        'z_lock': None,
+    },
 }
 
 

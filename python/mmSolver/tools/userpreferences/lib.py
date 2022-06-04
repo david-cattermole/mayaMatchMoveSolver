@@ -100,4 +100,3 @@ def get_value_from_label(key, label):
     idx = labels.index(label)
     value = values[idx]
     return value
-

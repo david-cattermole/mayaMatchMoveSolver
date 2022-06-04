@@ -164,10 +164,7 @@ class LoaderPFTrack2DT(loader.LoaderBase):
                 cam_name = line[1:-1]
                 i += 1
             else:
-                msg = (
-                    'File invalid, '
-                    'expecting a camera name (string) in line: %r'
-                )
+                msg = 'File invalid, ' 'expecting a camera name (string) in line: %r'
                 raise excep.ParserError(msg % line)
 
             # Create marker
@@ -196,10 +193,7 @@ class LoaderPFTrack2DT(loader.LoaderBase):
                 residual = None
                 zdepth = None
                 if len(line_split) not in [4, 5]:
-                    msg = (
-                        'File invalid, '
-                        'there must be 4 or 5 numbers in line: %r'
-                    )
+                    msg = 'File invalid, ' 'there must be 4 or 5 numbers in line: %r'
                     raise excep.ParserError(msg % line)
 
                 frame = _parse_int_or_none(line_split[0])
@@ -227,7 +221,7 @@ class LoaderPFTrack2DT(loader.LoaderBase):
                 i += 1
 
             # Fill in occluded frames
-            all_frames = list(range(min(frames), max(frames)+1))
+            all_frames = list(range(min(frames), max(frames) + 1))
             for frame in all_frames:
                 mkr_enable = int(frame in frames)
                 mkr_data.enable.set_value(frame, mkr_enable)

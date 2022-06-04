@@ -35,12 +35,14 @@ import mmSolver.logger
 LOG = mmSolver.logger.get_logger()
 
 
-def find_valid_maya_node_name(name,
-                              prefix=None,
-                              auto_add_num=True,
-                              auto_add_num_padding=3,
-                              auto_inc=True,
-                              auto_inc_try_limit=999):
+def find_valid_maya_node_name(
+    name,
+    prefix=None,
+    auto_add_num=True,
+    auto_add_num_padding=3,
+    auto_inc=True,
+    auto_inc_try_limit=999,
+):
     """
     Get a new valid Maya name - canonical function to get valid Maya node names.
 

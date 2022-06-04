@@ -112,7 +112,9 @@ class MarkerGroup(object):
         self._mfn_tfm = None
         tfm_dag = node_utils.get_as_dag_path(node)
         if tfm_dag is not None:
-            assert maya.cmds.nodeType(tfm_dag.fullPathName()) == 'mmMarkerGroupTransform'
+            assert (
+                maya.cmds.nodeType(tfm_dag.fullPathName()) == 'mmMarkerGroupTransform'
+            )
             self._mfn_tfm = OpenMaya.MFnDagNode(tfm_dag)
 
         if self._mfn_tfm is None:
@@ -158,16 +160,18 @@ class MarkerGroup(object):
         cam_tfm = cam.get_transform_node()
         cam_shp = cam.get_shape_node()
 
-        mkr_grp = maya.cmds.createNode('mmMarkerGroupTransform',
-                                       name=name, parent=cam_tfm)
+        mkr_grp = maya.cmds.createNode(
+            'mmMarkerGroupTransform', name=name, parent=cam_tfm
+        )
         mkr_grp = node_utils.get_long_name(mkr_grp)
         mkr_scl = maya.cmds.createNode('mmMarkerScale')
         self.set_node(mkr_grp)
 
         # Add attr and connect depth
         depth = 2.0
-        maya.cmds.addAttr(mkr_grp, longName='depth', at='double', minValue=0.0,
-                          defaultValue=1.0)
+        maya.cmds.addAttr(
+            mkr_grp, longName='depth', at='double', minValue=0.0, defaultValue=1.0
+        )
         maya.cmds.setAttr(mkr_grp + '.depth', keyable=True)
         maya.cmds.setAttr(mkr_grp + '.depth', depth)
         maya.cmds.connectAttr(mkr_grp + '.depth', mkr_scl + '.depth')
@@ -178,8 +182,9 @@ class MarkerGroup(object):
         maya.cmds.setAttr(mode_attr, mode)
         for axis in ['x', 'y']:
             attr_name = 'overscan' + axis.upper()
-            maya.cmds.addAttr(mkr_grp, longName=attr_name, at='double',
-                              minValue=0.0, defaultValue=1.0)
+            maya.cmds.addAttr(
+                mkr_grp, longName=attr_name, at='double', minValue=0.0, defaultValue=1.0
+            )
             src = mkr_grp + '.' + attr_name
             dst = mkr_scl + '.overscanInverse' + axis.upper()
             maya.cmds.setAttr(src, keyable=True)
@@ -195,11 +200,24 @@ class MarkerGroup(object):
         maya.cmds.connectAttr(mkr_scl + '.outTranslate', mkr_grp + '.translate')
 
         # Lock and hide all the attributes
-        attrs = ['tx', 'ty', 'tz',
-                 'rx', 'ry', 'rz',
-                 'sx', 'sy', 'sz',
-                 'shearXY', 'shearXZ', 'shearYZ', 'rotateOrder',
-                 'rotateAxisX', 'rotateAxisY', 'rotateAxisZ']
+        attrs = [
+            'tx',
+            'ty',
+            'tz',
+            'rx',
+            'ry',
+            'rz',
+            'sx',
+            'sy',
+            'sz',
+            'shearXY',
+            'shearXZ',
+            'shearYZ',
+            'rotateOrder',
+            'rotateAxisX',
+            'rotateAxisY',
+            'rotateAxisZ',
+        ]
         for attr in attrs:
             maya.cmds.setAttr(mkr_grp + '.' + attr, lock=True)
             maya.cmds.setAttr(mkr_grp + '.' + attr, keyable=False, channelBox=False)

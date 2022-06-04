@@ -26,6 +26,7 @@ from __future__ import print_function
 import maya.cmds
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -41,15 +42,18 @@ LOG = mmSolver.logger.get_logger()
 
 
 class PlugNode(nodes.Node):
-    def __init__(self, name,
-                 parent=None,
-                 data=None,
-                 icon=None,
-                 enabled=True,
-                 editable=False,
-                 selectable=True,
-                 checkable=False,
-                 neverHasChildren=False):
+    def __init__(
+        self,
+        name,
+        parent=None,
+        data=None,
+        icon=None,
+        enabled=True,
+        editable=False,
+        selectable=True,
+        checkable=False,
+        neverHasChildren=False,
+    ):
         if icon is None:
             icon = const.PLUG_ICON_NAME
         super(PlugNode, self).__init__(
@@ -61,7 +65,8 @@ class PlugNode(nodes.Node):
             selectable=selectable,
             editable=editable,
             checkable=checkable,
-            neverHasChildren=neverHasChildren)
+            neverHasChildren=neverHasChildren,
+        )
         self.typeInfo = 'plug'
 
     def uuid(self):
@@ -119,9 +124,7 @@ def _get_attr_type(attr):
 
 
 class AttrNode(PlugNode):
-    def __init__(self, name,
-                 data=None,
-                 parent=None):
+    def __init__(self, name, data=None, parent=None):
         attr = None
         if data is not None:
             attr = data.get('data')
@@ -146,7 +149,8 @@ class AttrNode(PlugNode):
             icon=icon,
             selectable=True,
             editable=False,
-            neverHasChildren=True)
+            neverHasChildren=True,
+        )
         self.typeInfo = 'attr'
 
     def status(self):
@@ -237,9 +241,7 @@ class AttrNode(PlugNode):
 
 
 class MayaNode(PlugNode):
-    def __init__(self, name,
-                 data=None,
-                 parent=None):
+    def __init__(self, name, data=None, parent=None):
         icon = const.NODE_ICON_NAME
         super(MayaNode, self).__init__(
             name,
@@ -248,7 +250,8 @@ class MayaNode(PlugNode):
             icon=icon,
             selectable=True,
             editable=False,
-            neverHasChildren=False)
+            neverHasChildren=False,
+        )
         self.typeInfo = 'node'
 
     def mayaNodeName(self):

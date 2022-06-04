@@ -28,6 +28,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -39,7 +40,6 @@ import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
 class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
-
     def do_solve(self, solver_name, solver_index):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
@@ -92,9 +92,7 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
             asPixelCoordinate=True,
         )
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
+        cameras = ((cam_tfm, cam_shp),)
         markers = (
             (mkr_topRight, cam_shp, bnd_topRight),
             (mkr_middleLeft, cam_shp, bnd_middleLeft),
@@ -122,7 +120,7 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
             solverType=solver_index,
             printStatistics=('deviation', 'inputs'),
             removeUnusedMarkers=False,
-            **kwargs
+            **kwargs,
         )
         num_params = result[0]
         num_errors = result[1]
@@ -135,11 +133,15 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
         print('mkr_middleLeft_values:', mkr_middleLeft_values)
         eps = 0.00001
         self.assertTrue(self.approx_equal(mkr_topRight_values[0], 2048.0, eps=eps))
-        self.assertTrue(self.approx_equal(mkr_topRight_values[1], 1258.6666666, eps=eps))
+        self.assertTrue(
+            self.approx_equal(mkr_topRight_values[1], 1258.6666666, eps=eps)
+        )
         self.assertTrue(self.approx_equal(mkr_topLeft_values[0], 0.0, eps=eps))
         self.assertTrue(self.approx_equal(mkr_topLeft_values[1], 1258.6666666, eps=eps))
         self.assertTrue(self.approx_equal(mkr_middleTop_values[0], 1024.0, eps=eps))
-        self.assertTrue(self.approx_equal(mkr_middleTop_values[1], 1258.6666666, eps=eps))
+        self.assertTrue(
+            self.approx_equal(mkr_middleTop_values[1], 1258.6666666, eps=eps)
+        )
         self.assertTrue(self.approx_equal(mkr_middleLeft_values[0], 0.0, eps=eps))
         self.assertTrue(self.approx_equal(mkr_middleLeft_values[1], 576.0, eps=eps))
         return

@@ -28,6 +28,7 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -39,7 +40,6 @@ import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
 class TestSolverPrintStatistics(solverUtils.SolverTestCase):
-
     def do_solve(self, solver_name, solver_index):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
@@ -55,34 +55,30 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
         maya.cmds.setAttr(bundle_tfm + '.ty', 6.4)
         maya.cmds.setAttr(bundle_tfm + '.tz', -25.0)
 
-        bundleUnadjustable_tfm, bundleUnadjustable_shp = \
-            self.create_bundle('bundleUnadjustable')
+        bundleUnadjustable_tfm, bundleUnadjustable_shp = self.create_bundle(
+            'bundleUnadjustable'
+        )
         maya.cmds.setAttr(bundleUnadjustable_tfm + '.tx', 5.5)
         maya.cmds.setAttr(bundleUnadjustable_tfm + '.ty', 6.4)
         maya.cmds.setAttr(bundleUnadjustable_tfm + '.tz', -25.0)
 
         # This bundle is not affected by any marker.
-        bundleUnused_tfm, bundleUnused_shp = \
-            self.create_bundle('bundleUnused')
+        bundleUnused_tfm, bundleUnused_shp = self.create_bundle('bundleUnused')
 
         marker_tfm, marker_shp = self.create_marker(
-            'marker',
-            cam_tfm,
-            bnd_tfm=bundle_tfm)
+            'marker', cam_tfm, bnd_tfm=bundle_tfm
+        )
         maya.cmds.setAttr(marker_tfm + '.tx', -2.5)
         maya.cmds.setAttr(marker_tfm + '.ty', 1.3)
         maya.cmds.setAttr(marker_tfm + '.tz', -10)
 
         # This marker is not affected by any marker.
-        markerUnused_tfm, markerUnused_shp = self.create_marker(
-            'markerUnused', cam_tfm)
+        markerUnused_tfm, markerUnused_shp = self.create_marker('markerUnused', cam_tfm)
         maya.cmds.setAttr(markerUnused_tfm + '.tx', 0.0)
         maya.cmds.setAttr(markerUnused_tfm + '.ty', 0.0)
         maya.cmds.setAttr(markerUnused_tfm + '.tz', -10)
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
+        cameras = ((cam_tfm, cam_shp),)
         markers = (
             (marker_tfm, cam_shp, bundle_tfm),
             (markerUnused_tfm, cam_shp, bundleUnadjustable_tfm),
@@ -112,7 +108,7 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
             solverType=solver_index,
             verbose=True,
             printStatistics=('inputs', 'affects', 'usedSolveObjects', 'deviation'),
-            **kwargs
+            **kwargs,
         )
         num_params = result[0]
         num_errors = result[1]
@@ -121,8 +117,9 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
         self.assertEqual(num_errors, 'numberOfErrors=2')
 
         # Ensure all unused markers/bundles are found.
-        affects_results = [x for x in result
-                           if x.startswith('marker_affects_attribute=')]
+        affects_results = [
+            x for x in result if x.startswith('marker_affects_attribute=')
+        ]
         print('affects result:', affects_results)
         for res in affects_results:
             self.assertGreater(len(res), 0)
@@ -133,8 +130,7 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
 
         def _parse_usage_list(key, input_results):
             split_char = '#'
-            results_list = [x for x in input_results
-                            if x.startswith(key)]
+            results_list = [x for x in input_results if x.startswith(key)]
             results_list = [x.partition(key)[-1] for x in results_list]
             results_list = split_char.join(results_list)
             results_list = results_list.split(split_char)

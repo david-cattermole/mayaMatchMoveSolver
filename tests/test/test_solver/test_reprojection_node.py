@@ -34,7 +34,6 @@ import mmSolver.utils.node as node_utils
 
 # @unittest.skip
 class TestReprojectionNode(solverUtils.SolverTestCase):
-
     @staticmethod
     def query_output_attrs(node):
         data = {}
@@ -73,7 +72,9 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         outCameraProjectionMatrix = data.get('outCameraProjectionMatrix')
         outInverseCameraProjectionMatrix = data.get('outInverseCameraProjectionMatrix')
         outWorldCameraProjectionMatrix = data.get('outWorldCameraProjectionMatrix')
-        outWorldInverseCameraProjectionMatrix = data.get('outWorldInverseCameraProjectionMatrix')
+        outWorldInverseCameraProjectionMatrix = data.get(
+            'outWorldInverseCameraProjectionMatrix'
+        )
         outPan = data.get('outPan')
         outCameraDirectionRatio = data.get('outCameraDirectionRatio')
         print('=== Printing Node ===')
@@ -90,7 +91,10 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         print('outCameraProjectionMatrix', outCameraProjectionMatrix)
         print('outInverseCameraProjectionMatrix', outInverseCameraProjectionMatrix)
         print('outWorldCameraProjectionMatrix', outWorldCameraProjectionMatrix)
-        print('outWorldInverseCameraProjectionMatrix', outWorldInverseCameraProjectionMatrix)
+        print(
+            'outWorldInverseCameraProjectionMatrix',
+            outWorldInverseCameraProjectionMatrix,
+        )
         print('-' * 5)
         print('outPan', outPan)
         print('-' * 5)
@@ -155,76 +159,91 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         maya.cmds.connectAttr(node + '.outPan', cam_shp + '.pan')
 
         # Output Coordinates
-        out_coord_tfm = maya.cmds.createNode('transform',
-                                             name='outputCoord',
-                                             parent=cam_tfm)
-        out_coord_shp = maya.cmds.createNode('locator',
-                                             parent=out_coord_tfm)
+        out_coord_tfm = maya.cmds.createNode(
+            'transform', name='outputCoord', parent=cam_tfm
+        )
+        out_coord_shp = maya.cmds.createNode('locator', parent=out_coord_tfm)
         maya.cmds.connectAttr(node + '.outCoordX', out_coord_tfm + '.translateX')
         maya.cmds.connectAttr(node + '.outCoordY', out_coord_tfm + '.translateY')
         maya.cmds.connectAttr(node + '.outInsideFrustum', out_coord_tfm + '.visibility')
         maya.cmds.setAttr(out_coord_tfm + '.translateZ', -1.0)
 
         # Output Normalised Coordinates
-        out_norm_coord_tfm = maya.cmds.createNode('transform',
-                                                  name='outputNormCoord',
-                                                  parent=cam_tfm)
-        out_norm_coord_shp = maya.cmds.createNode('locator',
-                                                  parent=out_norm_coord_tfm)
-        maya.cmds.connectAttr(node + '.outNormCoordX', out_norm_coord_tfm + '.translateX')
-        maya.cmds.connectAttr(node + '.outNormCoordY', out_norm_coord_tfm + '.translateY')
-        maya.cmds.connectAttr(node + '.outInsideFrustum', out_norm_coord_tfm + '.visibility')
+        out_norm_coord_tfm = maya.cmds.createNode(
+            'transform', name='outputNormCoord', parent=cam_tfm
+        )
+        out_norm_coord_shp = maya.cmds.createNode('locator', parent=out_norm_coord_tfm)
+        maya.cmds.connectAttr(
+            node + '.outNormCoordX', out_norm_coord_tfm + '.translateX'
+        )
+        maya.cmds.connectAttr(
+            node + '.outNormCoordY', out_norm_coord_tfm + '.translateY'
+        )
+        maya.cmds.connectAttr(
+            node + '.outInsideFrustum', out_norm_coord_tfm + '.visibility'
+        )
         maya.cmds.setAttr(out_norm_coord_tfm + '.translateZ', -1.0)
 
         # Output Pixel
-        out_pixel_tfm = maya.cmds.createNode('transform',
-                                             name='outputPixel',
-                                             parent=cam_tfm)
-        out_pixel_shp = maya.cmds.createNode('locator',
-                                             parent=out_pixel_tfm)
+        out_pixel_tfm = maya.cmds.createNode(
+            'transform', name='outputPixel', parent=cam_tfm
+        )
+        out_pixel_shp = maya.cmds.createNode('locator', parent=out_pixel_tfm)
         maya.cmds.connectAttr(node + '.outPixelX', out_pixel_tfm + '.translateX')
         maya.cmds.connectAttr(node + '.outPixelY', out_pixel_tfm + '.translateY')
         maya.cmds.connectAttr(node + '.outInsideFrustum', out_pixel_tfm + '.visibility')
         maya.cmds.setAttr(out_pixel_tfm + '.translateZ', -2000.0)
 
         # Output camera-space transform
-        out_cam_matrix_tfm = maya.cmds.createNode('transform',
-                                                  name='outputTransform_inCameraSpace',
-                                                  parent=cam_tfm)
-        out_cam_matrix_shp = maya.cmds.createNode('locator',
-                                                  parent=out_cam_matrix_tfm)
+        out_cam_matrix_tfm = maya.cmds.createNode(
+            'transform', name='outputTransform_inCameraSpace', parent=cam_tfm
+        )
+        out_cam_matrix_shp = maya.cmds.createNode('locator', parent=out_cam_matrix_tfm)
         decompose = maya.cmds.createNode('decomposeMatrix')
         maya.cmds.connectAttr(node + '.outMatrix', decompose + '.inputMatrix')
-        maya.cmds.connectAttr(decompose + '.outputTranslate', out_cam_matrix_tfm + '.translate')
-        maya.cmds.connectAttr(decompose + '.outputRotate', out_cam_matrix_tfm + '.rotate')
+        maya.cmds.connectAttr(
+            decompose + '.outputTranslate', out_cam_matrix_tfm + '.translate'
+        )
+        maya.cmds.connectAttr(
+            decompose + '.outputRotate', out_cam_matrix_tfm + '.rotate'
+        )
         maya.cmds.connectAttr(decompose + '.outputScale', out_cam_matrix_tfm + '.scale')
         maya.cmds.connectAttr(decompose + '.outputShear', out_cam_matrix_tfm + '.shear')
 
         # Output world-space transform
-        out_world_matrix_tfm = maya.cmds.createNode('transform',
-                                                    name='outputTransform_inWorldSpace')
-        out_world_matrix_shp = maya.cmds.createNode('locator',
-                                                    parent=out_world_matrix_tfm)
+        out_world_matrix_tfm = maya.cmds.createNode(
+            'transform', name='outputTransform_inWorldSpace'
+        )
+        out_world_matrix_shp = maya.cmds.createNode(
+            'locator', parent=out_world_matrix_tfm
+        )
         decompose = maya.cmds.createNode('decomposeMatrix')
         maya.cmds.connectAttr(node + '.outWorldMatrix', decompose + '.inputMatrix')
-        maya.cmds.connectAttr(decompose + '.outputTranslate', out_world_matrix_tfm + '.translate')
-        maya.cmds.connectAttr(decompose + '.outputRotate', out_world_matrix_tfm + '.rotate')
-        maya.cmds.connectAttr(decompose + '.outputScale', out_world_matrix_tfm + '.scale')
-        maya.cmds.connectAttr(decompose + '.outputShear', out_world_matrix_tfm + '.shear')
+        maya.cmds.connectAttr(
+            decompose + '.outputTranslate', out_world_matrix_tfm + '.translate'
+        )
+        maya.cmds.connectAttr(
+            decompose + '.outputRotate', out_world_matrix_tfm + '.rotate'
+        )
+        maya.cmds.connectAttr(
+            decompose + '.outputScale', out_world_matrix_tfm + '.scale'
+        )
+        maya.cmds.connectAttr(
+            decompose + '.outputShear', out_world_matrix_tfm + '.shear'
+        )
 
         # Output camera-space point
-        out_cam_pnt_tfm = maya.cmds.createNode('transform',
-                                               name='outputPoint_inCameraSpace',
-                                               parent=cam_tfm)
-        out_cam_pnt_shp = maya.cmds.createNode('locator',
-                                               parent=out_cam_pnt_tfm)
+        out_cam_pnt_tfm = maya.cmds.createNode(
+            'transform', name='outputPoint_inCameraSpace', parent=cam_tfm
+        )
+        out_cam_pnt_shp = maya.cmds.createNode('locator', parent=out_cam_pnt_tfm)
         maya.cmds.connectAttr(node + '.outPoint', out_cam_pnt_tfm + '.translate')
 
         # Output world-space point
-        out_world_pnt_tfm = maya.cmds.createNode('transform',
-                                                 name='outputPoint_inWorldSpace')
-        out_world_pnt_shp = maya.cmds.createNode('locator',
-                                                 parent=out_world_pnt_tfm)
+        out_world_pnt_tfm = maya.cmds.createNode(
+            'transform', name='outputPoint_inWorldSpace'
+        )
+        out_world_pnt_shp = maya.cmds.createNode('locator', parent=out_world_pnt_tfm)
         maya.cmds.connectAttr(node + '.outPoint', out_world_pnt_tfm + '.translate')
 
         # Query output

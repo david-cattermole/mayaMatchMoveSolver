@@ -39,4 +39,4 @@ jobs:
 
       - name: Check C++ Code with Clang-Format
         run: |
-          sudo apt-get install -y clang-format clang-tidy
+          ./scripts/cpp_formatter_run_clang_format_check.bash

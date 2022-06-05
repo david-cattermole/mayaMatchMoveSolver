@@ -37,10 +37,6 @@ jobs:
         run: |
           ./scripts/python_formatter_run_black_check.bash
 
-      - name: Install Clang-Format
-        run: |
-          sudo apt-get install -y clang-format
-
       - name: Check C++ Code with Clang-Format
         run: |
           sudo apt-get install -y clang-format clang-tidy

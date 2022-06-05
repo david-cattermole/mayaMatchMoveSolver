@@ -20,6 +20,10 @@
 #
 # Runs 'clang-format' for the project.
 
+# Any subsequent commands which fail will cause the shell script to
+# exit immediately.
+set -e
+
 PROJECT_ROOT=`pwd`
 
 find \

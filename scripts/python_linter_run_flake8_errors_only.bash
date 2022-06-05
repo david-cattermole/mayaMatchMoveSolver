@@ -20,7 +20,7 @@
 #
 # Runs Flake8 for the project.
 
-# Any subsequent(*) commands which fail will cause the shell script to
+# Any subsequent commands which fail will cause the shell script to
 # exit immediately.
 set -e
 

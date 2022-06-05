@@ -1,7 +1,7 @@
 [tool.black]
-line-length = 88  # The black default a good compromise.
+line-length = 88  # The black default is a good compromise.
 target-version = ['py37']
-include = '\.pyi?$'
+include = '\.py$'
 extend-exclude = '''
 /(
   \.toml

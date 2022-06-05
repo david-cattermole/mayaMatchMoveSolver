@@ -20,6 +20,9 @@ SETLOCAL
 :: ---------------------------------------------------------------------
 ::
 :: Runs 'clang-format' for the project.
+::
+:: The Bash/Linux version of this script can exclude files with names
+:: "cxx", but this is not implmented in the Windoers script.
 
 SET PROJECT_ROOT=%CD%
 

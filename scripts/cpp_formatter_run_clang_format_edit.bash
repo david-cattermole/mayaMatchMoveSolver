@@ -22,10 +22,13 @@
 
 PROJECT_ROOT=`pwd`
 
-find ${PROJECT_ROOT}/src -iname *.h -o -iname *.cpp | xargs clang-format -i -style=file
-find ${PROJECT_ROOT}/include -iname *.h -o -iname *.cpp | xargs clang-format -i -style=file
-find ${PROJECT_ROOT}/mmscenegraph/cppbind/src -iname *.h -o -iname *.cpp | xargs clang-format -i -style=file
-find ${PROJECT_ROOT}/mmscenegraph/cppbind/include -iname *.h -o -iname *.cpp | xargs clang-format -i -style=file
-find ${PROJECT_ROOT}/mmscenegraph/cppbind/tests -iname *.h -o -iname *.cpp | xargs clang-format -i -style=file
+find \
+    ${PROJECT_ROOT}/src \
+    ${PROJECT_ROOT}/include \
+    ${PROJECT_ROOT}/mmscenegraph/cppbind/src \
+    ${PROJECT_ROOT}/mmscenegraph/cppbind/include \
+    ${PROJECT_ROOT}/mmscenegraph/cppbind/tests \
+    -not -iname *cxx* -iname *.h -or -not -iname *cxx* -iname *.cpp \
+    | xargs clang-format -i -style=file
 
 cd ${PROJECT_ROOT}

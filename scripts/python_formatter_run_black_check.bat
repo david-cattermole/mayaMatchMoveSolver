@@ -23,7 +23,9 @@ SETLOCAL
 
 SET PROJECT_ROOT=%CD%
 
-python -m black -S ^
+python -m black ^
+       --skip-string-normalization ^
+       --check ^
        "%PROJECT_ROOT%\3dequalizer\python" ^
        "%PROJECT_ROOT%\3dequalizer\scriptdb" ^
        "%PROJECT_ROOT%\mel" ^

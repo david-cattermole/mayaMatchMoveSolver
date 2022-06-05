@@ -14,7 +14,7 @@
 # $ ./scripts/python_linter_run_pylint.bash
 # $ ./scripts/python_linter_run_flake8.bash
 # $ ./scripts/python_linter_run_cpplint.bash
-# $ ./scripts/python_formatter_run_black.bash
+# $ ./scripts/python_formatter_run_black_check.bash
 # $ deactivate
 #
 #

@@ -33,6 +33,6 @@ find \
     ${PROJECT_ROOT}/mmscenegraph/cppbind/include \
     ${PROJECT_ROOT}/mmscenegraph/cppbind/tests \
     -not -iname *cxx* -iname *.h -or -not -iname *cxx* -iname *.cpp \
-    | xargs clang-format -i -style=file --Werror
+    | xargs clang-format --dry-run --style=file --Werror
 
 cd ${PROJECT_ROOT}

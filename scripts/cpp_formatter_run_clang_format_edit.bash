@@ -29,6 +29,6 @@ find \
     ${PROJECT_ROOT}/mmscenegraph/cppbind/include \
     ${PROJECT_ROOT}/mmscenegraph/cppbind/tests \
     -not -iname *cxx* -iname *.h -or -not -iname *cxx* -iname *.cpp \
-    | xargs clang-format -i -style=file
+    | xargs clang-format -i --style=file
 
 cd ${PROJECT_ROOT}

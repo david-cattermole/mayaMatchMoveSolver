@@ -26,7 +26,7 @@ SETLOCAL
 
 SET PROJECT_ROOT=%CD%
 
-clang-format -i -style=file ^
+clang-format --dry-run --style=file --Werror ^
        "%PROJECT_ROOT%\src\mmSolver\calibrate\*.cpp" ^
        "%PROJECT_ROOT%\src\mmSolver\calibrate\*.h" ^
        "%PROJECT_ROOT%\src\mmSolver\adjust\*.cpp" ^

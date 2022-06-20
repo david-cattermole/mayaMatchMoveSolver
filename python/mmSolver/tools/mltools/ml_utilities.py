@@ -2539,7 +2539,7 @@ class Vector:
             raise TypeError("Can't divide {} by {}".format(self, other))
 
     def magnitude(self):
-        return math.sqrt(sum([x**2 for x in self]))
+        return math.sqrt(sum([x ** 2 for x in self]))
 
     def normalize(self):
         d = self.magnitude()

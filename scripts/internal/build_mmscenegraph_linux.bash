@@ -68,7 +68,7 @@ echo "Building mmSceneGraph... (${MMSCENEGRAPH_ROOT})"
 # using this value:
 # './mmscenegraph/cppbind/Cargo.toml'
 # './scripts/internal/build_mmscenegraph_windows64.bat'
-${RUST_CARGO_EXE} install cxxbridge-cmd --version 1.0.66
+${RUST_CARGO_EXE} install cxxbridge-cmd --version 1.0.69
 
 echo "Building C++ Bindings... (${MMSCENEGRAPH_CPP_DIR})"
 cd "${MMSCENEGRAPH_CPP_DIR}"

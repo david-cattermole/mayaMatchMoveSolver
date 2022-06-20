@@ -16,7 +16,7 @@ crate_type = ["staticlib"]
 # NOTE: When changing this version number ensure to also update the
 # installed 'cxxbridge-cmd' version so it stays in sync; Update it
 # here: './scripts/internal/build_mmSolver_*.*'
-cxx = "=1.0.66"
+cxx = "=1.0.69"
 
 [dependencies.mmscenegraph_rust]
 path = "../rust"

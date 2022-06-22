@@ -130,6 +130,13 @@ directory. The `mayaMatchMoveSolver.cppcheck` can be used with
 
 C++ code linting is not (yet) enforced.
 
+# Rust Tools
+
+To format all Rust code please use `rustfmt` that comes with Rust.
+
+To check your Rust code for common issues use the `cargo clippy`
+command.
+
 # Testing
 
 Testing is an essential step in the Maya Matchmove Solver project, all

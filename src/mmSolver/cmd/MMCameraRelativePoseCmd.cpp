@@ -271,6 +271,16 @@ bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
                           const std::pair<size_t, size_t> &size_ima1,
                           const std::pair<size_t, size_t> &size_ima2,
                           const size_t max_iteration_count) {
+    MMSOLVER_INFO("myRobustRelativePose: intrinsics1: " << intrinsics1);
+    MMSOLVER_INFO("myRobustRelativePose: intrinsics2: " << intrinsics2);
+    MMSOLVER_INFO("myRobustRelativePose: x1: " << x1);
+    MMSOLVER_INFO("myRobustRelativePose: x2: " << x2);
+    MMSOLVER_INFO("myRobustRelativePose: size_ima1: " << size_ima1.first << ", "
+                                                      << size_ima1.second);
+    MMSOLVER_INFO("myRobustRelativePose: size_ima2: " << size_ima2.first << ", "
+                                                      << size_ima2.second);
+    MMSOLVER_INFO(
+        "myRobustRelativePose: max_iteration_count: " << max_iteration_count);
     if (!intrinsics1 || !intrinsics2) {
         return false;
     }
@@ -303,7 +313,7 @@ bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
 
         KernelType kernel(bearing1, bearing2);
 
-        // Robustly estimate the Essential matrix with A Contrario ransac
+        // Robustly estimate the Essential matrix with A Contrario RANSAC
         const double upper_bound_precision =
             (relativePose_info.initial_residual_tolerance ==
              std::numeric_limits<double>::infinity())
@@ -311,20 +321,26 @@ bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
                 : openMVG::D2R(relativePose_info.initial_residual_tolerance);
         const auto ac_ransac_output = openMVG::robust::ACRANSAC(
             kernel, relativePose_info.vec_inliers, max_iteration_count,
-            &relativePose_info.essential_matrix, upper_bound_precision, false);
+            &relativePose_info.essential_matrix, upper_bound_precision,
+            /*bVerbose=*/true);
         MMSOLVER_INFO("=== 8");
 
         const double &threshold = ac_ransac_output.first;
         relativePose_info.found_residual_precision =
             openMVG::R2D(threshold);  // Degree
 
-        // auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES * 2.5;
         auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES;
+        MMSOLVER_INFO(
+            "myRobustRelativePose: minimum_samples: " << minimum_samples);
+        MMSOLVER_INFO("myRobustRelativePose: samples: "
+                      << relativePose_info.vec_inliers.size());
         if (relativePose_info.vec_inliers.size() < minimum_samples) {
             MMSOLVER_INFO("=== 9");
-            return false;  // no sufficient coverage (the model does not support
-                           // enough samples)
+            // no sufficient coverage (the model does not support enough
+            // samples)
+            return false;
         }
+
     } else if (more_than_five && pinhole_cameras_only) {
         // Five Point Solver only supports pinhole cameras.
 
@@ -351,23 +367,26 @@ bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
 
         // Robustly estimation of the Model and its precision
         const auto ac_ransac_output = openMVG::robust::ACRANSAC(
-            kernel, relativePose_info.vec_inliers, max_iteration_count,
+            kernel, relativePose_info.vec_inliers max_iteration_count,
             &relativePose_info.essential_matrix,
-            relativePose_info.initial_residual_tolerance, false);
+            relativePose_info.initial_residual_tolerance,
+            /*bVerbose=*/true);
 
         // MMSOLVER_INFO("=== 5");
         // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         relativePose_info.found_residual_precision = ac_ransac_output.first;
 
-        // auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES * 2.5;
         auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES;
+        MMSOLVER_INFO("minimum_samples: " << minimum_samples);
+        MMSOLVER_INFO("samples: " << relativePose_info.vec_inliers.size());
         if (relativePose_info.vec_inliers.size() < minimum_samples) {
             // MMSOLVER_INFO("=== 6");
             // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
-            return false;  // no sufficient coverage (the model does not support
-                           // enough samples)
+            // no sufficient coverage (the model does not support
+            // enough samples)
+            return false;
         }
     }
 
@@ -602,7 +621,7 @@ bool triangulate_relative_pose(
             landmark.obs[id_view_b] =
                 openMVG::sfm::Observation(feature_coord_b, inlier_idx);
             landmark.X = bundle_pos;
-            landmarks.insert({landmarks.size(), landmark});
+            landmarks.insert({inlier_idx, landmark});
 
             auto mkr_a = marker_list_a[inlier_idx];
             auto mkr_b = marker_list_b[inlier_idx];
@@ -1040,11 +1059,16 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         return status;
     }
 
+    MMSOLVER_INFO("H ---");
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    openMVG::sfm::Save(scene, "EssentialGeometry_construct.json",
+                       openMVG::sfm::ESfM_Data(openMVG::sfm::ESfM_Data::ALL));
+
     // Triangulate and check valid points. Invalid points that do not
     // work are discarded (removed from the list of inliers).
     //
     // Init structure by inlier triangulation
-    MMSOLVER_INFO("H ---");
+    MMSOLVER_INFO("I ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     auto triangulate_ok = triangulate_relative_pose(
         m_marker_coords_a, m_marker_coords_b, pose_info.vec_inliers,
@@ -1054,24 +1078,20 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         status = MS::kFailure;
         return status;
     }
-
-    MMSOLVER_INFO("I ---");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    openMVG::sfm::Save(scene, "EssentialGeometry_before.json",
+    openMVG::sfm::Save(scene, "EssentialGeometry_triangulate.json",
                        openMVG::sfm::ESfM_Data(openMVG::sfm::ESfM_Data::ALL));
 
-    MMSOLVER_INFO("J ---");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    auto adjust_ok = bundle_adjustment(scene);
-    if (!adjust_ok) {
-        MMSOLVER_ERR("Bundle Adjustment failed.");
-        status = MS::kFailure;
-        return status;
-    }
-
+    // MMSOLVER_INFO("J ---");
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // auto adjust_ok = bundle_adjustment(scene);
+    // if (!adjust_ok) {
+    //     MMSOLVER_ERR("Bundle Adjustment failed.");
+    //     status = MS::kFailure;
+    //     return status;
+    // }
     MMSOLVER_INFO("K ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    openMVG::sfm::Save(scene, "EssentialGeometry_after.json",
+    openMVG::sfm::Save(scene, "EssentialGeometry_bundle_adjustment.json",
                        openMVG::sfm::ESfM_Data(openMVG::sfm::ESfM_Data::ALL));
 
     // the conversion matrix from OpenGL default coordinate system
@@ -1092,7 +1112,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
                                            {0.0, 0.0, 0.0, 1.0}};
     MMatrix maya_convert_matrix(c_convert_matrix);
 
-    // TODO: Convert the sfm_data back to Maya data and set Camera and
+    // Convert the sfm_data back to Maya data and set Camera and
     // Bundles.
     auto views = scene.GetViews();
     auto poses = scene.GetPoses();
@@ -1104,33 +1124,49 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         MMSOLVER_INFO("view: " << key << "=" << pose_id);
 
         auto pose = scene.GetPoseOrDie(&view);
+        auto pose_center = pose.center();
         auto pose_translation = pose.translation();
         auto pose_rotation = pose.rotation();
+        MMSOLVER_INFO("pose center: " << pose_center);
         MMSOLVER_INFO("pose translation: " << pose_translation);
         MMSOLVER_INFO("pose rotation: " << pose_rotation);
 
-        MPoint maya_translate(pose_translation[0], pose_translation[1],
-                              pose_translation[2]);
+        // OpenMVG and Maya have different conventions for the camera Z axis:
+        //
+        // - In OpenMVG the camera points down +Z.
+        //
+        // - In Maya the camera points down -Z.
+        //
+        // The Camera Z axis is inverse scaled, therefore to correct
+        // the OpenMVG data for Maya we must:
+        //
+        // - Invert Camera TX, RX and RY values.
+        //
+        // - Invert Bundle TZ value (see bundle section).
+        MPoint maya_translate(pose_center[0], pose_center[1], -pose_center[2]);
 
-        // const double c_rotate_matrix[4][4] = {
-        //     {pose_rotation(0, 0),  pose_rotation(0, 1), pose_rotation(0, 2),
-        //     pose_rotation(0, 3)}, {pose_rotation(1, 0),  pose_rotation(1, 1),
-        //     pose_rotation(1, 2), pose_rotation(1, 3)}, {pose_rotation(2, 0),
-        //     pose_rotation(2, 1), pose_rotation(2, 2), pose_rotation(2, 3)},
-        //     {pose_rotation(3, 0),  pose_rotation(3, 1), pose_rotation(3, 2),
-        //     pose_rotation(3, 3)},
-        // };
-
+        // This is the correct one.
         const double c_rotate_matrix[4][4] = {
-            {pose_rotation(0, 0), pose_rotation(1, 0), pose_rotation(2, 0),
-             pose_rotation(3, 0)},
-            {pose_rotation(0, 1), pose_rotation(1, 1), pose_rotation(2, 1),
-             pose_rotation(3, 1)},
-            {pose_rotation(0, 2), pose_rotation(1, 2), pose_rotation(2, 2),
-             pose_rotation(3, 2)},
-            {pose_rotation(0, 3), pose_rotation(1, 3), pose_rotation(2, 3),
+            // clang-format off
+            {pose_rotation(0, 0),
+             pose_rotation(0, 1),
+             pose_rotation(0, 2),
+             pose_rotation(0, 3)},
+            {pose_rotation(1, 0),
+             pose_rotation(1, 1),
+             pose_rotation(1, 2),
+             pose_rotation(1, 3)},
+            {pose_rotation(2, 0),
+             pose_rotation(2, 1),
+             pose_rotation(2, 2),
+             pose_rotation(2, 3)},
+            {pose_rotation(3, 0),
+             pose_rotation(3, 1),
+             pose_rotation(3, 2),
              pose_rotation(3, 3)},
+            // clang-format on
         };
+
         // auto maya_rotate_matrix = MMatrix(c_rotate_matrix).inverse();
         MMatrix maya_rotate_matrix(c_rotate_matrix);
 
@@ -1149,8 +1185,9 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
 
         auto euler_rotation =
             MEulerRotation::decompose(maya_rotate_matrix, rotate_order);
-        auto rx = euler_rotation.x * RADIANS_TO_DEGREES;
-        auto ry = euler_rotation.y * RADIANS_TO_DEGREES;
+        // Fixes the Camera +Z/-Z issue with Maya compared to OpenMVG.
+        auto rx = -euler_rotation.x * RADIANS_TO_DEGREES;
+        auto ry = -euler_rotation.y * RADIANS_TO_DEGREES;
         auto rz = euler_rotation.z * RADIANS_TO_DEGREES;
         MMSOLVER_INFO("pose euler rotation (ZXY): " << rx << "," << ry << ","
                                                     << rz);
@@ -1183,10 +1220,9 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         auto pos = landmark.X;
         double tx = pos[0];
         double ty = pos[1];
-        double tz = pos[2];
+        // Fixes the Camera +Z/-Z issue with Maya compared to OpenMVG.
+        double tz = -pos[2];
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        MMSOLVER_INFO("landmark: " << key << " x=" << tx << " y=" << ty
-                                   << " z=" << tz);
 
         if (i < m_bundle_list.size()) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
@@ -1194,7 +1230,9 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
             auto bnd_name = bnd->getNodeName();
             std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            MMSOLVER_INFO("landmark bnd: " << bnd_name.asChar());
+            MMSOLVER_INFO("landmark bnd: " << bnd_name.asChar() << " | " << key
+                                           << " x=" << tx << " y=" << ty
+                                           << " z=" << tz);
 
             attr_tx.setNodeName(bnd_name);
             attr_ty.setNodeName(bnd_name);
@@ -1204,7 +1242,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
             attr_ty.setAttrName(MString("translateY"));
             attr_tz.setAttrName(MString("translateZ"));
 
-            MPoint maya_translate(pos[0], pos[1], pos[2]);
+            MPoint maya_translate(tx, ty, tz);
             maya_translate = maya_translate * maya_convert_matrix;
 
             attr_tx.setValue(maya_translate.x, m_dgmod, m_curveChange);

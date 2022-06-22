@@ -42,11 +42,37 @@ import test.test_solver.solverutils as solverUtils
 # @unittest.skip
 class TestRelativeCameraPose(solverUtils.SolverTestCase):
     def test(self):
+        frame_a = 90
+        frame_b = 227
+        maya.cmds.playbackOptions(edit=True, minTime=frame_a)
+        maya.cmds.playbackOptions(edit=True, maxTime=frame_b)
+
         cam_tfm, cam_shp = self.create_camera('cam')
         mkr_grp = self.create_marker_group('marker_group', cam_tfm)
 
-        frame_a = 90
-        frame_b = 227
+        fb_width = 1.41732
+        fb_height = 0.79724409
+        focal_length = 35.0
+        maya.cmds.setAttr(cam_tfm + '.rotateOrder', 2)  # 2 = ZXY
+        maya.cmds.setAttr(cam_shp + '.horizontalFilmAperture', fb_width)
+        maya.cmds.setAttr(cam_shp + '.verticalFilmAperture', fb_height)
+        maya.cmds.setAttr(cam_shp + '.focalLength', focal_length)
+        maya.cmds.setAttr(cam_shp + '.displayCameraFrustum', 1)
+        maya.cmds.setAttr(cam_shp + '.displayFilmGate', 1)
+        maya.cmds.setAttr(cam_shp + '.overscan', 1.5)
+
+        attrs = [
+            'translateX',
+            'translateY',
+            'translateZ',
+            'rotateX',
+            'rotateY',
+            'rotateZ',
+        ]
+        for frame in [frame_a, frame_b]:
+            for attr in attrs:
+                maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=frame_a, value=0.0)
+
         marker_data_list = [
             # Marker 1
             [
@@ -88,6 +114,16 @@ class TestRelativeCameraPose(solverUtils.SolverTestCase):
                 [-0.3557417274046072, -0.36241117044613047],
                 [-0.3943178470132531, -0.24449776807901671],
             ],
+            # Marker 9
+            [
+                [-0.030209309850007183, 0.4380787465980631],
+                [-0.3439804204951894, 0.4583753755158096],
+            ],
+            # Marker 10
+            [
+                [0.19923110354181264, 0.057848519369854835],
+                [0.06719591143730845, 0.16515035978433498],
+            ],
         ]
 
         mkr_bnd_list = []
@@ -98,9 +134,18 @@ class TestRelativeCameraPose(solverUtils.SolverTestCase):
             )
             mkr_bnd_list.append([marker_tfm, marker_tfm, bundle_tfm])
 
+            maya.cmds.setAttr(marker_shp + '.localScaleX', 0.1)
+            maya.cmds.setAttr(marker_shp + '.localScaleY', 0.1)
+            maya.cmds.setAttr(marker_shp + '.localScaleZ', 0.1)
+
+            maya.cmds.setAttr(bundle_shp + '.localScaleX', 0.1)
+            maya.cmds.setAttr(bundle_shp + '.localScaleY', 0.1)
+            maya.cmds.setAttr(bundle_shp + '.localScaleZ', 0.1)
+
             data_a = marker_data[0]
             data_b = marker_data[1]
 
+            maya.cmds.setAttr(marker_tfm + '.translateZ', -1.0)
             maya.cmds.setKeyframe(
                 marker_tfm, attribute='translateX', time=frame_a, value=data_a[0]
             )

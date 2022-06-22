@@ -22,7 +22,7 @@ SETLOCAL
 :: Runs 'clang-format' for the project.
 ::
 :: The Bash/Linux version of this script can exclude files with names
-:: "cxx", but this is not implmented in the Windoers script.
+:: "cxx", but this is not implmented in the Windows script.
 
 SET PROJECT_ROOT=%CD%
 
@@ -43,6 +43,8 @@ clang-format -i --style=file ^
        "%PROJECT_ROOT%\src\mmSolver\node\*.h" ^
        "%PROJECT_ROOT%\src\mmSolver\render\*.cpp" ^
        "%PROJECT_ROOT%\src\mmSolver\render\*.h" ^
+       "%PROJECT_ROOT%\src\mmSolver\sfm\*.cpp" ^
+       "%PROJECT_ROOT%\src\mmSolver\sfm\*.h" ^
        "%PROJECT_ROOT%\src\mmSolver\shape\*.cpp" ^
        "%PROJECT_ROOT%\src\mmSolver\shape\*.h" ^
        "%PROJECT_ROOT%\src\mmSolver\utilities\*.cpp" ^

@@ -87,6 +87,7 @@ set(SOURCE_FILES
   mmSolver/render/RenderGlobalsNode.cpp
   mmSolver/render/RenderOverride.cpp
   mmSolver/render/SceneRender.cpp
+  mmSolver/sfm/camera_relative_pose.cpp
   mmSolver/shape/ShapeDrawUtils.cpp
   mmSolver/shape/MarkerShapeNode.cpp
   mmSolver/shape/MarkerDrawOverride.cpp

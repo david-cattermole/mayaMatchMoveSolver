@@ -632,6 +632,15 @@
                 "mmSolver.tools.createcontroller2.tool.open_window();"
             ]
         },
+        "create_controller3": {
+            "name": "Create Controller...",
+            "name_shelf": "CrCtrl",
+            "tooltip": "Create Controller for selected node. (version 3)",
+            "command": [
+                "import mmSolver.tools.createcontroller3.tool;",
+                "mmSolver.tools.createcontroller3.tool.open_window();"
+            ]
+        },        
         "remove_controller": {
             "name": "Remove Controller (v1)",
             "name_shelf": "RmCtrl",

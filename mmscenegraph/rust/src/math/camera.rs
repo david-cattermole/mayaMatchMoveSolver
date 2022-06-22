@@ -85,7 +85,7 @@ mod tests {
         let image_width = 2048.0;
         let image_height = 1556.0;
         let film_fit = FilmFit::Horizontal;
-        let near_clip_plane_cm = 0.01;  // This value will be ignored and treated as 0.1
+        let near_clip_plane_cm = 0.01; // This value will be ignored and treated as 0.1
         let far_clip_plane_cm = 10000.0;
         let camera_scale = 1.0;
         let camera_projection_matrix = get_projection_matrix(
@@ -265,7 +265,8 @@ pub fn compute_projection_matrix(
             * film_fit_scale.x,
         (screen.top + screen.bottom) / (screen.top - screen.bottom)
             * film_fit_scale.y,
-        (far_clip_plane_cm + near_clip_plane_cm) / (far_clip_plane_cm - near_clip_plane_cm),
+        (far_clip_plane_cm + near_clip_plane_cm)
+            / (far_clip_plane_cm - near_clip_plane_cm),
         2.0 * far_clip_plane_cm * near_clip_plane_cm
             / (far_clip_plane_cm - near_clip_plane_cm),
         // Forth Row

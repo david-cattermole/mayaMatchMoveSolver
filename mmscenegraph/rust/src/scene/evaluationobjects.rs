@@ -24,15 +24,13 @@ use crate::node::marker::MarkerNode;
 
 /// The objects stored and required for an evaluation of the scene graph.
 #[derive(Debug, Clone)]
-pub struct EvaluationObjects
-{
+pub struct EvaluationObjects {
     bnd_nodes: Vec<Box<BundleNode>>,
     cam_nodes: Vec<Box<CameraNode>>,
     mkr_nodes: Vec<Box<MarkerNode>>,
 }
 
-impl EvaluationObjects
-{
+impl EvaluationObjects {
     pub fn new() -> Self {
         Self {
             bnd_nodes: Vec::new(),

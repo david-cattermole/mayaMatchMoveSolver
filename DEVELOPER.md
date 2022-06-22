@@ -7,9 +7,12 @@ great!
 
 Below is a list of the conventions used on the project.
 
-## Python
+## Python Code Style
 
-This project uses [PEP 8 codingstyle](https://www.python.org/dev/peps/pep-0008/).
+This project uses [PEP 8
+codingstyle](https://www.python.org/dev/peps/pep-0008/), and uses the
+[Black](https://pypi.org/project/black/) formatting tool to enforce
+the format.
 
 Here is a specific list, some are listed in PEP 8, some are not: 
 - Line limit of 80 characters, exceptions to this rule are allowed if
@@ -30,9 +33,13 @@ Here is a specific list, some are listed in PEP 8, some are not:
 - Do not use `global` variables, unless you really, really need to.
 - Remove all redundant white space in source code.
 
-## C++
+## C++ Code Style
 
-- The coding style is K+R.
+The coding style is based on the Google coding style, and is
+configured in the `.clang-format` file in the root
+directory. [Clang-format](https://clang.llvm.org/docs/ClangFormat.html)
+is used to automatically format C++ files.
+
 - Line limit of 120 characters maximum, but keeping code below 80
   characters is advised.
 - Function names use lower camel case: `myFunctionName`.
@@ -153,8 +160,9 @@ tests in the directory.
 Before pushing code, *always* run all tests and fix any errors that
 occur. After a code push, none of the tests should fail.
 
-Please read the [tests/README.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/tests/README.md) file for more details on 
-running the test suite.
+Please read the
+[tests/README.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/tests/README.md)
+file for more details on running the test suite.
 
 ## Writing Tests
 

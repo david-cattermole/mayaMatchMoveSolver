@@ -68,7 +68,7 @@ def transform_radix2(vector, inverse):
     # Initialization
     n = len(vector)
     levels = _bit_length(n) - 1
-    if 2 ** levels != n:
+    if 2**levels != n:
         raise ValueError("Length is not a power of 2")
     # Now, levels = log2(n)
     coef = (2j if inverse else -2j) * cmath.pi / n

@@ -26,5 +26,5 @@ LOG = mmSolver.logger.get_logger()
 
 
 def open_window():
-    import mmSolver.tools.createcamerabodytrackscalerigbake.ui.camerabodytrackscalerigbake_window as window
+    import mmSolver.tools.createcamerabodytrackscalerigbake.ui.createcamerabodytrackscalerigbake_window as window
     window.main()

@@ -29,9 +29,9 @@ import mmSolver.utils.transform as tfm_utils
 import mmSolver.utils.time as time_utils
 import mmSolver.tools.createcamerabodytrackscalerigbake.constant as const
 import mmSolver.tools.attributebake.lib as fastbake_lib
-import mmSolver.tools.createcontroller2.lib as createcontroller2_lib
-import mmSolver.tools.createcontroller2.constant as createcontroller2_const
-import mmSolver.tools.reparent2.lib as reparent2_lib
+import mmSolver.tools.createcontroller3.lib as createcontroller_lib
+import mmSolver.tools.createcontroller3.constant as createcontroller_const
+import mmSolver.tools.reparent2.lib as reparent_lib
 
 LOG = mmSolver.logger.get_logger()
 
@@ -120,7 +120,7 @@ def create_camera_body_track_scale_rig(name,
     
     # Create camera witness
     attrs = ['tx', 'ty', 'tz', 'rx', 'ry', 'rz']
-    controller_type = createcontroller2_const.CONTROLLER_TYPE_WORLD_SPACE
+    controller_type = createcontroller_const.CONTROLLER_TYPE_WORLD_SPACE
     if scale_rig_type == const.SCALE_RIG_TYPE_BODY_TRACK:     
         camera_witness = _create_scale_rig_main_grp(name+suffix+main_grp_suffix,
                                                     str(scene),
@@ -138,10 +138,10 @@ def create_camera_body_track_scale_rig(name,
     # Create rig controls witness
     body_track_controls_witness = []
     for control in body_track_controls:
-        control_witness = createcontroller2_lib.create_controller(name,
+        control_witness = createcontroller_lib.create_controller(name,
                                                 control,
                                                 control,
-                                                cmds.spaceLocator(),
+                                                cmds.group(empty=True),
                                                 frame_start,
                                                 frame_end,
                                                 controller_type,
@@ -152,7 +152,7 @@ def create_camera_body_track_scale_rig(name,
     # Reparent
     children_nodes = [tfm_utils.TransformNode(node=n) for n in body_track_controls_witness]
     parent_node = tfm_utils.TransformNode(node=camera_witness[0])
-    reparent2_lib.reparent(children_nodes, parent_node,
+    reparent_lib.reparent(children_nodes, parent_node,
                            frame_range_mode='timeline_inner',
                            start_frame=frame_start,
                            end_frame=frame_end,
@@ -182,7 +182,7 @@ def create_camera_body_track_scale_rig(name,
                                                     maintainOffset=False)
         cmds.delete(con)        
         grand_parent_node = tfm_utils.TransformNode(node=grand_parent)
-        reparent2_lib.reparent([parent_node], grand_parent_node,
+        reparent_lib.reparent([parent_node], grand_parent_node,
                                frame_range_mode='timeline_inner',
                                start_frame=frame_start,
                                end_frame=frame_end,

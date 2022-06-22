@@ -38,7 +38,6 @@ import mmSolver.ui.Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
-import mmSolver.ui.commonmenus as commonmenus
 import mmSolver.tools.screenspacerigbake2.constant as const
 import mmSolver.tools.screenspacerigbake2.ui.screenspacerigbake_layout as screenspacerigbake_layout
 
@@ -55,8 +54,7 @@ def _open_help():
 
 
 class ScreenSpaceRigBakeWindow(BaseWindow):
-    name = 'ScreenSpaceRigBakeWindow'
-
+    name = 'ScreenSpaceRigBake2Window'
     def __init__(self, parent=None, name=None):
         super(ScreenSpaceRigBakeWindow, self).__init__(parent, name=name)
         self.setupUi(self)
@@ -64,13 +62,13 @@ class ScreenSpaceRigBakeWindow(BaseWindow):
 
         self.setWindowTitle(const.WINDOW_TITLE)
         self.setWindowFlags(QtCore.Qt.Tool)
-
-        # Standard Buttons
+        # Hide irrelevant stuff
         form = self.getSubForm()
         self.baseHideStandardButtons()
-
-        # Hide irrelevant stuff
         self.baseHideProgressBar()
+        # Set menubar
+        self.setMenuBar(form.menu_bar)
+               
 
 def main(show=True, auto_raise=True, delete=False):
     win = ScreenSpaceRigBakeWindow.open_window(show=show,

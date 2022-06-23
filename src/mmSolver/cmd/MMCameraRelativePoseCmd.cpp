@@ -593,6 +593,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     // on Windows only. It appears that the use of Ceres on Windows
     // seems to cause a crash, but it works fine on Linux. The build
     // script for building OpenMVG and/or Ceres is likely wrong.
+#ifndef _WIN32
     MMSOLVER_INFO("J ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     auto adjust_ok = sfm::bundle_adjustment(scene);
@@ -601,6 +602,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         status = MS::kFailure;
         return status;
     }
+#endif
     MMSOLVER_INFO("K ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     openMVG::sfm::Save(scene, "EssentialGeometry_bundle_adjustment.json",

@@ -570,6 +570,8 @@ bool bundle_adjustment(openMVG::sfm::SfM_Data &scene) {
     ceres_options.bUse_loss_function_ = false;
     MMSOLVER_INFO(
         "ceres_options.bCeres_summary_: " << ceres_options.bCeres_summary_);
+    MMSOLVER_INFO("ceres_options.nb_threads_: "
+                  << ceres_options.nb_threads_);
     MMSOLVER_INFO("ceres_options.linear_solver_type_: "
                   << ceres_options.linear_solver_type_);
     MMSOLVER_INFO("ceres_options.preconditioner_type_: "

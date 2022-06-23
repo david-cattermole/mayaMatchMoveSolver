@@ -23,7 +23,7 @@ $ ./scripts/build_thirdparty_linux_mayaXXXX.bash
 $ ./scripts/build_mmSolver_linux_mayaXXXX.bash
 ```
 
-Note: Replace XXXX, with the Maya version use build for.
+Note: Replace XXXX, with the Maya version to build for.
 
 Note: The host computer should have 10GB (or more) storage space
 available to build with Docker.
@@ -42,7 +42,7 @@ $ cd <project root>
 $ ./scripts/build_thirdparty_linux_mayaXXXX.bash
 ```
 
-Note: Replace XXXX, with the Maya version use build for.
+Note: Replace XXXX, with the Maya version to build for.
 
 If the commands above have worked, you should see the following
 directories under `<project root>/external/install`.
@@ -70,7 +70,7 @@ $ make test
 $ cd ..
 ```
 
-Note: Replace XXXX, with the Maya version use build for.
+Note: Replace XXXX, with the Maya version to build for.
 
 Following the steps above you will have the Maya plug-in compiled, and
 installed into your `~/maya/MAYA_VERSION/modules` directory.

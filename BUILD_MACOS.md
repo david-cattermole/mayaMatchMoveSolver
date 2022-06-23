@@ -14,7 +14,7 @@ $ bash scripts/build_thirdparty_mac_mayaXXXX.bash
 $ bash scripts/build_mmSolver_mac_mayaXXXX.bash
 ```
 
-Note: Replace XXXX, with the Maya version use build for.
+Note: Replace XXXX, with the Maya version to build for.
 
 The sections below explain the process in more detail.
 
@@ -122,7 +122,7 @@ $ cd /path/to/project/root
 $ bash scripts/build_thirdparty_mac_mayaXXXX.bash
 ```
 
-Note: Replace XXXX, with the Maya version use build for.
+Note: Replace XXXX, with the Maya version to build for.
 
 If the commands above have worked, you should see the following
 directories under `<project root>/external/install`.
@@ -150,7 +150,7 @@ $ make test
 $ cd ..
 ```
 
-Note: Replace XXXX, with the Maya version use build for.
+Note: Replace XXXX, with the Maya version to build for.
 
 The build script (using CMake) will perform the following tasks:
 - Build documentation using Sphinx.

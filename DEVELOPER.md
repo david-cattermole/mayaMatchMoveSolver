@@ -90,6 +90,67 @@ SET BUILD_CONFIG=1
 SET BUILD_TESTS=1
 ```
 
+# Setup Linux Environment With Docker
+
+If you are developing on Windows and need to test for Linux, or if you
+are using Linux but you don't want to modify your computer's system
+environment, or you are running an incompatible, newer or older Linux
+distribution, it is highly recommended you use
+[Docker](https://www.docker.com/) to help install and configure the
+exact dependencies needed for building. These Dockerfiles are used for
+the final releases of mayaMatchMoveSolver - so they are perfectly
+compatible and will work on any supported Linux Maya installation.
+
+Note: Although Docker can be used for building and testing, Docker
+does not allow the Maya UI to be run. Therefore you must test on a
+Linux installation with the `mayaMatchMoveSolver` files that are
+built.
+
+The mayaMatchMoveSolver project comes with pre-configured Dockerfiles
+in the project root, named as `Dockerfile_mayaXXXX` for each supported
+Maya version.
+
+To get started with development on Windows, first install [Docker
+Desktop](https://www.docker.com/products/docker-desktop/) which
+includes the core `docker` command and a GUI. Once Docker Desktop is
+installed your computer will need to be restarted, before it's fully
+working.
+
+To set up the Docker environment with a Maya installation available
+and ready for building/testing you must download the Maya Linux
+installation file from the [Autodesk Maya
+website](https://www.autodesk.com/products/maya/overview), and place
+it into the `<project root>/external/archives/` directory. The Maya
+installation file should look like
+`Autodesk_Maya_2022_ML_Linux_64bit.tgz`, or a similar naming
+convention. The `Dockerfile_mayaXXXX` file will install Maya using
+this file - if the file name is slightly different you can change the
+Dockerfile.
+
+Next, open a Windows Powershell, navigate to the `mayaMatchMoveSolver`
+project root and run the docker container in PowerShell:
+
+```
+PS > cd <project root>
+PS > docker build --file Dockerfile_mayaXXXX -t mmsolver-linux-mayaXXXX-build .
+PS > docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-mayaXXXX-build
+```
+
+Note: Replace XXXX, with the Maya version to build for.
+
+For further help open the `Dockerfile_mayaXXXX` files in a text editor
+to see helpful information at the top of each file.
+
+Once the `docker run` command is run, you will have a Linux (bash)
+shell you can type commands into. To build mmSolver inside Docker
+simply run the build commands as normal:
+
+```
+$ ./scripts/build_thirdparty_linux_maya2022.bash
+$ ./scripts/build_mmSolver_linux_maya2022.bash
+$ mayapy tests/runTests.py
+```
+
 # C++ Tools
 
 ## C++ Code Formatting

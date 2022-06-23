@@ -13,7 +13,7 @@ On Windows:
 > scripts\build_mmSolver_windows64_mayaXXXX.bat
 ```
 
-Note: Replace XXXX, with the Maya version use build for.
+Note: Replace XXXX, with the Maya version to build for.
 
 The sections below explain the process in more detail.
 
@@ -44,7 +44,7 @@ On Windows:
 > scripts\build_thirdparty_windows64_mayaXXXX.bat
 ```
 
-Note: Replace XXXX, with the Maya version use build for.
+Note: Replace XXXX, with the Maya version to build for.
 
 If the commands above have worked, you should see the following
 directories under `<project root>\external\install`.
@@ -72,7 +72,7 @@ Run these commands, on Windows:
 < CD ..
 ```
  
-Note: Replace XXXX, with the Maya version use build for.
+Note: Replace XXXX, with the Maya version to build for.
  
 The build script (using CMake) will perform the following tasks:
  - Build documentation using Sphinx.

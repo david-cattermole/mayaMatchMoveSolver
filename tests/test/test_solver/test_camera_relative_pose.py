@@ -38,12 +38,9 @@ import mmSolver.api as mmapi
 
 import test.test_solver.solverutils as solverUtils
 
-
 # @unittest.skip
 class TestRelativeCameraPose(solverUtils.SolverTestCase):
-    def test(self):
-        frame_a = 90
-        frame_b = 227
+    def create_scene(self, frame_a, frame_b, marker_data_list):
         maya.cmds.playbackOptions(edit=True, minTime=frame_a)
         maya.cmds.playbackOptions(edit=True, maxTime=frame_b)
 
@@ -72,6 +69,53 @@ class TestRelativeCameraPose(solverUtils.SolverTestCase):
         for frame in [frame_a, frame_b]:
             for attr in attrs:
                 maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=frame_a, value=0.0)
+
+        mkr_bnd_list = []
+        for marker_data in marker_data_list:
+            bundle_tfm, bundle_shp = self.create_bundle('bundle')
+            marker_tfm, marker_shp = self.create_marker(
+                'marker', mkr_grp, bnd_tfm=bundle_tfm
+            )
+            mkr_bnd_list.append([marker_tfm, marker_tfm, bundle_tfm])
+
+            maya.cmds.setAttr(marker_shp + '.localScaleX', 0.1)
+            maya.cmds.setAttr(marker_shp + '.localScaleY', 0.1)
+            maya.cmds.setAttr(marker_shp + '.localScaleZ', 0.1)
+
+            maya.cmds.setAttr(bundle_shp + '.localScaleX', 0.1)
+            maya.cmds.setAttr(bundle_shp + '.localScaleY', 0.1)
+            maya.cmds.setAttr(bundle_shp + '.localScaleZ', 0.1)
+
+            data_a = marker_data[0]
+            data_b = marker_data[1]
+
+            maya.cmds.setAttr(marker_tfm + '.translateZ', -1.0)
+            maya.cmds.setKeyframe(
+                marker_tfm, attribute='translateX', time=frame_a, value=data_a[0]
+            )
+            maya.cmds.setKeyframe(
+                marker_tfm, attribute='translateY', time=frame_a, value=data_a[1]
+            )
+
+            maya.cmds.setKeyframe(
+                marker_tfm, attribute='translateX', time=frame_b, value=data_b[0]
+            )
+            maya.cmds.setKeyframe(
+                marker_tfm, attribute='translateY', time=frame_b, value=data_b[1]
+            )
+
+        kwargs = {
+            'frameA': frame_a,
+            'frameB': frame_b,
+            'cameraA': cam_tfm,
+            'cameraB': cam_tfm,
+            'markerBundle': mkr_bnd_list,
+        }
+        return kwargs
+
+    def test_eight_point_pose1(self):
+        frame_a = 90
+        frame_b = 227
 
         marker_data_list = [
             # Marker 1
@@ -125,54 +169,13 @@ class TestRelativeCameraPose(solverUtils.SolverTestCase):
                 [0.06719591143730845, 0.16515035978433498],
             ],
         ]
-
-        mkr_bnd_list = []
-        for marker_data in marker_data_list:
-            bundle_tfm, bundle_shp = self.create_bundle('bundle')
-            marker_tfm, marker_shp = self.create_marker(
-                'marker', mkr_grp, bnd_tfm=bundle_tfm
-            )
-            mkr_bnd_list.append([marker_tfm, marker_tfm, bundle_tfm])
-
-            maya.cmds.setAttr(marker_shp + '.localScaleX', 0.1)
-            maya.cmds.setAttr(marker_shp + '.localScaleY', 0.1)
-            maya.cmds.setAttr(marker_shp + '.localScaleZ', 0.1)
-
-            maya.cmds.setAttr(bundle_shp + '.localScaleX', 0.1)
-            maya.cmds.setAttr(bundle_shp + '.localScaleY', 0.1)
-            maya.cmds.setAttr(bundle_shp + '.localScaleZ', 0.1)
-
-            data_a = marker_data[0]
-            data_b = marker_data[1]
-
-            maya.cmds.setAttr(marker_tfm + '.translateZ', -1.0)
-            maya.cmds.setKeyframe(
-                marker_tfm, attribute='translateX', time=frame_a, value=data_a[0]
-            )
-            maya.cmds.setKeyframe(
-                marker_tfm, attribute='translateY', time=frame_a, value=data_a[1]
-            )
-
-            maya.cmds.setKeyframe(
-                marker_tfm, attribute='translateX', time=frame_b, value=data_b[0]
-            )
-            maya.cmds.setKeyframe(
-                marker_tfm, attribute='translateY', time=frame_b, value=data_b[1]
-            )
+        kwargs = self.create_scene(frame_a, frame_b, marker_data_list)
 
         # save the output
-        file_name = 'solver_relative_camera_pose_before.ma'
+        file_name = 'solver_relative_camera_pose_eight_point_pose1_before.ma'
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
-
-        kwargs = {
-            'frameA': frame_a,
-            'frameB': frame_b,
-            'cameraA': cam_tfm,
-            'cameraB': cam_tfm,
-            'markerBundle': mkr_bnd_list,
-        }
 
         # Run solver!
         assert 'mmSolver' in dir(maya.cmds)
@@ -182,7 +185,7 @@ class TestRelativeCameraPose(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         # save the output
-        file_name = 'solver_relative_camera_pose_after.ma'
+        file_name = 'solver_relative_camera_pose_eight_point_pose1_after.ma'
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)

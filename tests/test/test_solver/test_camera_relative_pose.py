@@ -169,7 +169,7 @@ class TestRelativeCameraPose(solverUtils.SolverTestCase):
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
-    
+
     def test_eight_point_pose1(self):
         frame_a = 90
         frame_b = 227

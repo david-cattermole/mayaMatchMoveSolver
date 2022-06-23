@@ -153,10 +153,19 @@ $ mayapy tests/runTests.py
 
 # C++ Tools
 
+For C++ code use
+[clang-format](https://clang.llvm.org/docs/ClangFormat.html) (which is
+part of the [LLVM](https://llvm.org/) Clang toolset) for automatic
+code formatting.
+
+To check for common issues you can use
+[cpplint](https://pypi.org/project/cpplint/) or
+[cppcheck](http://cppcheck.net/).
+
 ## C++ Code Formatting
 
-The C++ code in mmSolver should be automatically formatted using the
-following scripts:
+The C++ code in mmSolver should be automatically formatted with
+`clang-format` using the following scripts:
 ```
 $ cd <project root>
 $ ./scripts/cpp_formatter_run_clang_format_check.bash  # checks files match formatting rules.
@@ -165,14 +174,14 @@ $ ./scripts/cpp_formatter_run_clang_format_edit.bash   # edits the files
 
 NOTE: On Windows, use the `.bat` scripts instead.
 
-These scripts use `clang-format`, which is part of the
-[LLVM](https://llvm.org/) Clang toolset.
-
 On Linux you can usually install the Clang via the package management
 system (although the packages in CentOS 7 are far too old to be used).
 
 On Windows you can install the LLVM/Clang toolset as part of Visual
 Studio 2017 or 2019.
+
+The configuration of the formatting is already defined in the
+`.clang-format` file in the project root.
 
 ## C++ Linting
 
@@ -188,6 +197,10 @@ Alternatively you may use [cppcheck](https://cppcheck.net/). Simply
 install and run the GUI or tool with the mayaMatchMoveSolver project
 directory. The `mayaMatchMoveSolver.cppcheck` can be used with
 `cppcheck` for all configuration settings.
+
+Currently [clang-tidy](https://clang.llvm.org/extra/clang-tidy/) is
+not set up for mayaMatchMoveSolver (feel free to add
+support/documentation and submit a PR).
 
 C++ code linting is not (yet) enforced.
 

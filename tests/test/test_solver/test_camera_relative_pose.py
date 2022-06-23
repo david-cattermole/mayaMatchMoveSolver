@@ -113,6 +113,63 @@ class TestRelativeCameraPose(solverUtils.SolverTestCase):
         }
         return kwargs
 
+    def test_five_point_pose1(self):
+        frame_a = 90
+        frame_b = 227
+
+        marker_data_list = [
+            # Marker 1
+            [
+                [-0.22213842759755273, 0.43804316401489374],
+                [-0.08642928582293867, 0.3234780288109984],
+            ],
+            # Marker 2
+            [
+                [-0.20545909173698554, -0.3558258316920981],
+                [-0.04548909780154666, -0.02291302704077903],
+            ],
+            # Marker 3
+            [
+                [0.2585297058387899, 0.30999977761054015],
+                [0.08112222441275806, 0.2938258761699901],
+            ],
+            # Marker 4
+            [
+                [0.2934046808199758, -0.24530417184834036],
+                [0.11675535102396956, 0.020217376800687425],
+            ],
+            # Marker 5
+            [
+                [0.11827165428402146, 0.42186926257434304],
+                [-0.14480696133492332, 0.42321708769438915],
+            ],
+            # Marker 6
+            [
+                [-0.04170971192586818, -0.36059376305425983],
+                [-0.15328309655861172, -0.18145432634896919],
+            ],
+        ]
+        kwargs = self.create_scene(frame_a, frame_b, marker_data_list)
+
+        # save the output
+        file_name = 'solver_relative_camera_pose_five_point_pose1_before.ma'
+        path = self.get_data_path(file_name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        # Run solver!
+        assert 'mmSolver' in dir(maya.cmds)
+        s = time.time()
+        result = maya.cmds.mmCameraRelativePose(**kwargs)
+        e = time.time()
+        print('total time:', e - s)
+
+        # save the output
+        file_name = 'solver_relative_camera_pose_five_point_pose1_after.ma'
+        path = self.get_data_path(file_name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+    
     def test_eight_point_pose1(self):
         frame_a = 90
         frame_b = 227

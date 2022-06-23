@@ -606,24 +606,6 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     openMVG::sfm::Save(scene, "EssentialGeometry_bundle_adjustment.json",
                        openMVG::sfm::ESfM_Data(openMVG::sfm::ESfM_Data::ALL));
 
-    // the conversion matrix from OpenGL default coordinate system
-    //  to the camera coordinate system:
-    //
-    // [ 1  0  0  0] * [ x ] = [ x ]
-    //   0 -1  0  0      y      -y
-    //   0  0 -1  0      z      -z
-    //   0  0  0  1      1       1
-    // const double c_convert_matrix[4][4] = {
-    //     {1.0,  0.0,  0.0, 0.0},
-    //     {0.0, -1.0,  0.0, 0.0},
-    //     {0.0,  0.0, -1.0, 0.0},
-    //     {0.0,  0.0,  0.0, 1.0}};
-    const double c_convert_matrix[4][4] = {{1.0, 0.0, 0.0, 0.0},
-                                           {0.0, 1.0, 0.0, 0.0},
-                                           {0.0, 0.0, 1.0, 0.0},
-                                           {0.0, 0.0, 0.0, 1.0}};
-    MMatrix maya_convert_matrix(c_convert_matrix);
-
     // Convert the sfm_data back to Maya data and set Camera and
     // Bundles.
     auto views = scene.GetViews();
@@ -681,9 +663,6 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
 
         // auto maya_rotate_matrix = MMatrix(c_rotate_matrix).inverse();
         MMatrix maya_rotate_matrix(c_rotate_matrix);
-
-        maya_rotate_matrix = maya_rotate_matrix * maya_convert_matrix;
-        maya_translate = maya_translate * maya_convert_matrix;
 
         // TODO: Expose the Rotation Order, so we can match the camera
         // that needs it.
@@ -755,8 +734,6 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
             attr_tz.setAttrName(MString("translateZ"));
 
             MPoint maya_translate(tx, ty, tz);
-            maya_translate = maya_translate * maya_convert_matrix;
-
             attr_tx.setValue(maya_translate.x, m_dgmod, m_curveChange);
             attr_ty.setValue(maya_translate.y, m_dgmod, m_curveChange);
             attr_tz.setValue(maya_translate.z, m_dgmod, m_curveChange);

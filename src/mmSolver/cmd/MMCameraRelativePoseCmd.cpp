@@ -589,14 +589,18 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     openMVG::sfm::Save(scene, "EssentialGeometry_triangulate.json",
                        openMVG::sfm::ESfM_Data(openMVG::sfm::ESfM_Data::ALL));
 
-    // MMSOLVER_INFO("J ---");
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    // auto adjust_ok = bundle_adjustment(scene);
-    // if (!adjust_ok) {
-    //     MMSOLVER_ERR("Bundle Adjustment failed.");
-    //     status = MS::kFailure;
-    //     return status;
-    // }
+    // TODO: Using the 'bundle_adjustment' function causes a segfault
+    // on Windows only. It appears that the use of Ceres on Windows
+    // seems to cause a crash, but it works fine on Linux. The build
+    // script for building OpenMVG and/or Ceres is likely wrong.
+    MMSOLVER_INFO("J ---");
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    auto adjust_ok = sfm::bundle_adjustment(scene);
+    if (!adjust_ok) {
+        MMSOLVER_ERR("Bundle Adjustment failed.");
+        status = MS::kFailure;
+        return status;
+    }
     MMSOLVER_INFO("K ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     openMVG::sfm::Save(scene, "EssentialGeometry_bundle_adjustment.json",

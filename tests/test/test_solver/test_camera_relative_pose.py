@@ -39,7 +39,7 @@ import mmSolver.api as mmapi
 import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
-class TestRelativeCameraPose(solverUtils.SolverTestCase):
+class TestCameraRelativePose(solverUtils.SolverTestCase):
     def create_scene(self, frame_a, frame_b, marker_data_list):
         maya.cmds.playbackOptions(edit=True, minTime=frame_a)
         maya.cmds.playbackOptions(edit=True, maxTime=frame_b)

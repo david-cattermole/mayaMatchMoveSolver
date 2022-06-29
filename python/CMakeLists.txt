@@ -218,8 +218,8 @@ if (BUILD_QT_UI)
             )
 
     add_ui_compile("screenspacerigbake2"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/screenspacerigbake2/ui/screenspacerigbake2_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/screenspacerigbake2/ui/ui_screenspacerigbake2_layout.py
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/screenspacerigbake2/ui/screenspacerigbake_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/screenspacerigbake2/ui/ui_screenspacerigbake_layout.py
             )
 
 endif ()

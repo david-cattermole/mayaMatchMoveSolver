@@ -167,7 +167,6 @@ if (BUILD_QT_UI)
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/ui_solver_standard_widget.py
             )
 
-
     add_ui_compile("solver_solverstate_widget"
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/solverstate_widget.ui
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/ui_solverstate_widget.py
@@ -208,4 +207,8 @@ if (BUILD_QT_UI)
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/createcontroller2/ui/ui_createcontroller_layout.py
             )
 
+    add_ui_compile("createcontroller3"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/createcontroller3/ui/createcontroller_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/createcontroller3/ui/ui_createcontroller_layout.py
+            )
 endif ()

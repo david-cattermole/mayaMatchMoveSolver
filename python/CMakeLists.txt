@@ -217,9 +217,9 @@ if (BUILD_QT_UI)
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/createcamerabodytrackscalerigbake/ui/ui_createcamerabodytrackscalerigbake_layout.py
             )
 
-    add_ui_compile("screenspacerigbake2"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/screenspacerigbake2/ui/screenspacerigbake_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/screenspacerigbake2/ui/ui_screenspacerigbake_layout.py
+    add_ui_compile("screenspacerigbake"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/screenspacerigbake/ui/screenspacerigbake_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/screenspacerigbake/ui/ui_screenspacerigbake_layout.py
             )
 
 endif ()

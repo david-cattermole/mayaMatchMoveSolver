@@ -25,7 +25,7 @@ qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
-import maya.cmds as cmds
+import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.time as time_utils
@@ -34,19 +34,23 @@ import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.constant as const_utils
 import mmSolver.ui.commonmenus as commonmenus
 import mmSolver.utils.configmaya as configmaya
-import mmSolver.tools.createcontroller3.constant as const
+import mmSolver.tools.createcontroller2.constant as const
+import mmSolver.tools.createcontroller2.lib as lib
 import mmSolver.tools.createcontroller3.ui.ui_createcontroller_layout as ui_layout
-import mmSolver.tools.createcontroller3.lib as lib
 
 LOG = mmSolver.logger.get_logger()
 
+
+# TODO: Move this into another file.
 def _transform_has_constraints(tfm_node):
-    constraints = cmds.listRelatives(
+    constraints = maya.cmds.listRelatives(
         tfm_node, children=True, type='pointConstraint') or []
-    constraints += cmds.listRelatives(
+    constraints += maya.cmds.listRelatives(
         tfm_node, children=True, type='parentConstraint') or []
     return len(constraints) > 0
 
+
+# TODO: Move this into another file.
 def _is_world_space_node(node, start_frame, end_frame):
     """
     Find out if a node is effectively in world-space or not.
@@ -56,37 +60,37 @@ def _is_world_space_node(node, start_frame, end_frame):
         local space.
     :rtype: bool
     """
-    if len(node) == 0 or not cmds.objExists(node):
+    if len(node) == 0 or not maya.cmds.objExists(node):
         return False
 
     # Create node network to check if object is in world space.
-    cmds.loadPlugin('matrixNodes', quiet=True)
+    maya.cmds.loadPlugin('matrixNodes', quiet=True)
     worldspace_check_matrix_node = None
     result_decomp_node = None
-    worldspace_check_matrix_node = cmds.createNode(
+    worldspace_check_matrix_node = maya.cmds.createNode(
         'multMatrix',
         skipSelect=True)
-    result_decomp_node = cmds.createNode(
+    result_decomp_node = maya.cmds.createNode(
         'decomposeMatrix',
         skipSelect=True)
-    cmds.connectAttr(
+    maya.cmds.connectAttr(
         node + '.parentMatrix[0]',
         worldspace_check_matrix_node + '.matrixIn[1]',
         force=True)
-    cmds.connectAttr(
+    maya.cmds.connectAttr(
         node + '.xformMatrix',
         worldspace_check_matrix_node + '.matrixIn[2]',
         force=True)
-    cmds.connectAttr(
+    maya.cmds.connectAttr(
         worldspace_check_matrix_node + '.matrixSum',
         result_decomp_node + '.inputMatrix',
         force=True)
 
     # Get single frame pos and rotation sum
-    pos = cmds.getAttr(
+    pos = maya.cmds.getAttr(
         result_decomp_node + '.outputTranslate',
         time=int(start_frame))[0]
-    rot = cmds.getAttr(
+    rot = maya.cmds.getAttr(
         result_decomp_node + '.outputRotate',
         time=int(end_frame))[0]
     stored_sum = sum(pos) + sum(rot)
@@ -96,27 +100,30 @@ def _is_world_space_node(node, start_frame, end_frame):
     # False = object is in local space
     world_space_state = True
     for frame in range(start_frame, end_frame + 1):
-        pos = cmds.getAttr(
+        pos = maya.cmds.getAttr(
             result_decomp_node + '.outputTranslate',
             time=frame)[0]
-        rot = cmds.getAttr(
+        rot = maya.cmds.getAttr(
             result_decomp_node + '.outputRotate',
             time=frame)[0]
         pos_rot_sum = sum(pos) + sum(rot)
         if pos_rot_sum != stored_sum:
             world_space_state = False
             break
-    if worldspace_check_matrix_node and cmds.objExists(worldspace_check_matrix_node):
-        cmds.delete(worldspace_check_matrix_node)
-    if result_decomp_node and cmds.objExists(result_decomp_node):
-        cmds.delete(result_decomp_node)
+    if worldspace_check_matrix_node and maya.cmds.objExists(
+            worldspace_check_matrix_node):
+        maya.cmds.delete(worldspace_check_matrix_node)
+    if result_decomp_node and maya.cmds.objExists(result_decomp_node):
+        maya.cmds.delete(result_decomp_node)
     return world_space_state
+
 
 def _open_help():
     src = helputils.get_help_source()
     page = 'tools_generaltools.html#create-controller'
     helputils.open_help_in_browser(page=page, help_source=src)
     return
+
 
 class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
     def __init__(self, parent=None, *args, **kwargs):
@@ -125,11 +132,12 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         # Add menus
         self.menu_bar = QtWidgets.QMenuBar(self)
         self.edit_menu = QtWidgets.QMenu('Edit', self.menu_bar)
-        commonmenus.create_edit_menu_items(self.edit_menu,
-                                         reset_settings_func=self.reset_options)
+        commonmenus.create_edit_menu_items(
+            self.edit_menu,
+            reset_settings_func=self.reset_options)
         self.menu_bar.addMenu(self.edit_menu)
         # Type menu
-        self.type_menu = QtWidgets.QMenu('Controller Type', self.menu_bar)        
+        self.type_menu = QtWidgets.QMenu('Controller Type', self.menu_bar)
         self.type_action_group = QtWidgets.QActionGroup(self.type_menu)
         self.group_action = QtWidgets.QAction('Group', self.type_menu)
         self.group_action.setCheckable(True)
@@ -139,23 +147,25 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.locator_action.setCheckable(True)
         self.locator_action.setChecked(True)
         self.type_menu.addAction(self.locator_action)
-        self.locator_action.setActionGroup(self.type_action_group)      
-        self.menu_bar.addMenu(self.type_menu)       
+        self.locator_action.setActionGroup(self.type_action_group)
+        self.menu_bar.addMenu(self.type_menu)
         # Help menu        
         help_menu = QtWidgets.QMenu('Help', self.menu_bar)
         commonmenus.create_help_menu_items(help_menu, tool_help_func=_open_help)
         self.menu_bar.addMenu(help_menu)
-        
+
         # Create connections
         self.setMainObjectButton.clicked.connect(self.set_main_object_clicked)
         self.setPivotObjectButton.clicked.connect(self.set_pivot_object_clicked)
-        self.createcontrollerButtton.clicked.connect(self.create_controller_button_clicked)
-        self.selectInOutlinerButton.clicked.connect(self.select_in_outliner_clicked)
+        self.createcontrollerButtton.clicked.connect(
+            self.create_controller_button_clicked)
+        self.selectInOutlinerButton.clicked.connect(
+            self.select_in_outliner_clicked)
         self.locator_action.triggered.connect(self.type_locator_rdo_toggled)
         self.group_action.triggered.connect(self.type_group_rdo_toggled)
-        
-        self.populate_ui()        
-        
+
+        self.populate_ui()
+
     def populate_ui(self):
         name = const.CONFIG_CONTROLLER_TYPE
         default_value = const.CONFIG_CONTROLLER_TYPE_LOCATOR
@@ -164,81 +174,82 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             self.locator_action.setChecked(True)
         elif ctrl_type == const.CONFIG_CONTROLLER_TYPE_GROUP:
             self.group_action.setChecked(True)
-            
+
     def type_locator_rdo_toggled(self):
         if self.locator_action.isChecked():
             name = const.CONFIG_CONTROLLER_TYPE
             value = const.CONFIG_CONTROLLER_TYPE_LOCATOR
             configmaya.set_scene_option(name, value, add_attr=True)
-            
+
     def type_group_rdo_toggled(self):
         if self.group_action.isChecked():
             name = const.CONFIG_CONTROLLER_TYPE
             value = const.CONFIG_CONTROLLER_TYPE_GROUP
-            configmaya.set_scene_option(name, value, add_attr=True)            
-        
+            configmaya.set_scene_option(name, value, add_attr=True)
+
     def get_existing_names_from_ui(self, column):
         names = []
         row_count = self.mainTableWidget.rowCount()
         for row in range(row_count):
             name = self.mainTableWidget.item(row, column).text()
             names.append(name)
-        return names        
+        return names
 
     def set_object_helper(self, column, main=False, pivot=False):
         if main:
             warn_msg_obj = 'Main object'
         elif pivot:
-            warn_msg_obj = 'Pivot object'            
+            warn_msg_obj = 'Pivot object'
         selected_item = self.mainTableWidget.selectedItems() or []
         if selected_item:
             item_column = self.mainTableWidget.column(selected_item[0])
         if len(selected_item) != 1 or item_column != column:
-            LOG.warn('Please select exactly one '+warn_msg_obj.lower()+' cell from UI.')
-            return        
-        selection = cmds.ls(selection=True, long=True) or []
+            LOG.warn('Please select exactly one %s cell from UI.',
+                     warn_msg_obj.lower())
+            return
+        selection = maya.cmds.ls(selection=True, long=True) or []
         if len(selection) != 1:
             LOG.warn('Please select exactly one maya object.')
             return
         if main:
             existing_names = self.get_existing_names_from_ui(column)
             if selection[0] in existing_names:
-                LOG.warn(warn_msg_obj+' already exists.')
+                LOG.warn(warn_msg_obj + ' already exists.')
                 return
             # Check if main node has constraints already
             has_constraints = _transform_has_constraints(selection[0])
             if has_constraints is True:
                 LOG.warn('Main object has constraints already.')
-                return            
+                return
         selected_item[0].setText(str(selection[0]))
-        
+
     def set_main_object_clicked(self):
         self.set_object_helper(const.COLUMN_MAIN_OBJECT_INDEX, True, False)
-        
+
     def set_pivot_object_clicked(self):
-        self.set_object_helper(const.COLUMN_PIVOT_OBJECT_INDEX, False, True) 
+        self.set_object_helper(const.COLUMN_PIVOT_OBJECT_INDEX, False, True)
 
     def create_locator_group(self, name, main_text, pivot_text):
         if pivot_text == '' or main_text == '':
             LOG.warn('Please get both pivot and main objects.')
             return
-        if not cmds.objExists(pivot_text):
+        if not maya.cmds.objExists(pivot_text):
             LOG.warn('Could not find pivot object: %r', pivot_text)
             return
-        if not cmds.objExists(main_text):
+        if not maya.cmds.objExists(main_text):
             LOG.warn('Could not find main object: %r', main_text)
             return
         if not name:
             LOG.warn('Controller name not found.')
             return
         if self.group_action.isChecked():
-            return cmds.group(empty=True, name=name)
+            return maya.cmds.group(empty=True, name=name)
         else:
-            return cmds.spaceLocator(name=name)
-        
+            return maya.cmds.spaceLocator(name=name)
+
     def get_combo_box_value(self, row, column):
         return self.mainTableWidget.cellWidget(row, column).currentText()
-    
+
     def get_selected_rows(self):
         selected_items = self.mainTableWidget.selectedItems()
         rows = []
@@ -246,18 +257,18 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             row = self.mainTableWidget.row(item)
             if row not in rows:
                 rows.append(row)
-        return rows 
-    
+        return rows
+
     def select_in_outliner_clicked(self):
         selected_items = self.mainTableWidget.selectedItems()
         for item in selected_items:
             column = self.mainTableWidget.column(item)
             if column not in [const.COLUMN_MAIN_OBJECT_INDEX,
-                          const.COLUMN_PIVOT_OBJECT_INDEX]:
+                              const.COLUMN_PIVOT_OBJECT_INDEX]:
                 LOG.warn('Please select main object or pivot object cell.')
                 return
             text = item.text()
-            cmds.select(text, replace=True)
+            maya.cmds.select(text, replace=True)
 
     def create_controller_button_clicked(self):
         rows = self.mainTableWidget.rowCount()
@@ -269,27 +280,36 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
             bake_value = self.get_combo_box_value(row, const.COLUMN_BAKE_INDEX)
             if bake_value == const.BAKE_ITEM_CURRENT_FRAME_BAKE:
-                start_frame = int(cmds.currentTime(query=True))
+                start_frame = int(maya.cmds.currentTime(query=True))
                 end_frame = start_frame
 
             # Get widgets data
-            controller_name = self.mainTableWidget.item(row,
-                                      const.COLUMN_CONTROLLER_NAME_INDEX).text()
-            main_node = self.mainTableWidget.item(row,
-                                      const.COLUMN_MAIN_OBJECT_INDEX).text()
-            pivot_node = self.mainTableWidget.item(row,
-                                      const.COLUMN_PIVOT_OBJECT_INDEX).text()
+            controller_name = self.mainTableWidget.item(
+                row,
+                const.COLUMN_CONTROLLER_NAME_INDEX).text()
+            main_node = self.mainTableWidget.item(
+                row,
+                const.COLUMN_MAIN_OBJECT_INDEX).text()
+            pivot_node = self.mainTableWidget.item(
+                row,
+                const.COLUMN_PIVOT_OBJECT_INDEX).text()
             camera = self.get_combo_box_value(row, const.COLUMN_CAMERA_INDEX)
-            space = None
-            
-            pivot_type = self.get_combo_box_value(row, const.COLUMN_PIVOT_TYPE_INDEX)
+
+            pivot_type = self.get_combo_box_value(
+                row,
+                const.COLUMN_PIVOT_TYPE_INDEX)
             dynamic_pivot = pivot_type == const.PIVOT_TYPE_ITEM_DYNAMIC
-            
-            loc_grp_node = self.create_locator_group(controller_name,
-                                                     main_node, pivot_node)
+
+            loc_grp_node = self.create_locator_group(
+                controller_name,
+                main_node,
+                pivot_node)
 
             # Space options
-            space_option = self.get_combo_box_value(row, const.COLUMN_SPACE_INDEX)
+            space_option = self.get_combo_box_value(
+                row,
+                const.COLUMN_SPACE_INDEX)
+            space = None
             if space_option == const.SPACE_ITEM_WORLD_SPACE:
                 space = const.CONTROLLER_TYPE_WORLD_SPACE
             elif space_option == const.SPACE_ITEM_OBJECT_SPACE:
@@ -301,9 +321,9 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
                 return
             if space_option == const.SPACE_ITEM_SCREEN_SPACE and not camera:
                 LOG.warn('Please select camera from UI.')
-                if cmds.objExists(loc_grp_node[0]):
-                    cmds.delete(loc_grp_node[0])
-                return            
+                if maya.cmds.objExists(loc_grp_node[0]):
+                    maya.cmds.delete(loc_grp_node[0])
+                return
 
             # Bake options
             bake_option = self.get_combo_box_value(row, const.COLUMN_BAKE_INDEX)
@@ -315,16 +335,16 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             has_constraints = _transform_has_constraints(main_node)
             if has_constraints is True:
                 LOG.warn('Main object has constraints already.')
-                cmds.delete(loc_grp_node)
+                maya.cmds.delete(loc_grp_node)
                 return
-            
+
             ctx = tools_utils.tool_context(
                 use_undo_chunk=True,
                 restore_current_frame=True,
                 use_dg_evaluation_mode=True,
                 disable_viewport=True,
                 disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE)
-            with ctx:           
+            with ctx:
                 controller_nodes = lib.create_controller(
                     controller_name,
                     pivot_node,
@@ -336,7 +356,7 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
                     smart_bake,
                     camera,
                     dynamic_pivot)
-                cmds.select(controller_nodes, replace=True)
+                maya.cmds.select(controller_nodes, replace=True)
                 LOG.warn('Success: Create Controller(s).')
         self.reset_options()
 

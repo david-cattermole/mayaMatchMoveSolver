@@ -19,21 +19,21 @@
 camerabodytrackscalerigbake constants.
 """
 
-WINDOW_TITLE = 'Camera/BodyTrack Scale Rig Bake'
+WINDOW_TITLE = 'Adjust Camera/Object Scale'
 
 # Custom attribute names
 SCALE_RIG_IDENTIFIER_ATTR_NAME = 'mmsolver_scale_rig_identifier'
 SCALE_RIG_TYPE_ATTR_NAME = 'mmsolver_scale_rig_type'
 SCALE_RIG_SCENE_ATTR_NAME = 'mmsolver_scale_rig_scene'
-SCALE_RIG_BODY_TRACK_CONTROLS_ATTR_NAME = 'mmsolver_scale_rig_body_track_controls'
+SCALE_RIG_BODY_TRACK_CONTROLS_ATTR_NAME = 'mmsolver_scale_rig_object_track_controls'
 
 # Suffix
-SCALE_RIG_SUFFIX = '_cameraBodyTrackScaleRig'
+SCALE_RIG_SUFFIX = '_cameraObjectScaleRig'
 SCALE_RIG_MAIN_GRP_SUFFIX = 'MainGRP'
 
 # Scale rig type
-SCALE_RIG_TYPE_CAMERA_TRACK = 'cameratrack_scale_rig'
-SCALE_RIG_TYPE_BODY_TRACK = 'bodytrack_scale_rig'
+SCALE_RIG_TYPE_CAMERA_TRACK = 'cameraTrack_scale_rig'
+SCALE_RIG_TYPE_BODY_TRACK = 'objectTrack_scale_rig'
 
 
 

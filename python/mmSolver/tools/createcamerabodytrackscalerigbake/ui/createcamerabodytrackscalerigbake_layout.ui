@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>300</width>
-    <height>290</height>
+    <width>381</width>
+    <height>278</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,26 +39,32 @@
     </layout>
    </item>
    <item>
-    <widget class="QGroupBox" name="nodes_groupBox">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QGroupBox" name="formGroupBox">
      <property name="title">
       <string>Nodes</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
+     <layout class="QFormLayout" name="formLayout">
+      <property name="leftMargin">
+       <number>9</number>
+      </property>
+      <property name="topMargin">
+       <number>9</number>
+      </property>
+      <property name="rightMargin">
+       <number>9</number>
+      </property>
+      <property name="bottomMargin">
+       <number>9</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="sceneLabel">
+        <property name="text">
+         <string>Scene</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
        <layout class="QHBoxLayout" name="scene_layout">
-        <item>
-         <widget class="QLabel" name="sceneLabel">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <property name="text">
-           <string>   Scene</string>
-          </property>
-         </widget>
-        </item>
         <item>
          <widget class="QLineEdit" name="sceneLineEdit">
           <property name="enabled">
@@ -93,35 +99,25 @@
         </item>
        </layout>
       </item>
-      <item>
-       <layout class="QHBoxLayout" name="horizontalLayout">
-        <item>
-         <widget class="QLabel" name="cameraLabel">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Camera</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="cameraListComboBox"/>
-        </item>
-       </layout>
+      <item row="1" column="0">
+       <widget class="QLabel" name="cameraLabel">
+        <property name="text">
+         <string>Camera</string>
+        </property>
+       </widget>
       </item>
-      <item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="cameraListComboBox"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="rigsLabel">
+        <property name="text">
+         <string>Object(s)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
        <layout class="QHBoxLayout" name="rigs_layout">
-        <item>
-         <widget class="QLabel" name="rigsLabel">
-          <property name="text">
-           <string>Control(s)</string>
-          </property>
-         </widget>
-        </item>
         <item>
          <widget class="QLineEdit" name="rigsLineEdit">
           <property name="enabled">
@@ -134,7 +130,7 @@
            <bool>true</bool>
           </property>
           <property name="placeholderText">
-           <string>&lt;bodytrack control(s)&gt;</string>
+           <string>&lt;node(s)&gt;</string>
           </property>
          </widget>
         </item>
@@ -157,25 +153,25 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="options_groupBox">
+    <widget class="QGroupBox" name="mode_groupBox">
      <property name="title">
-      <string>Options</string>
+      <string>Mode</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
        <widget class="QRadioButton" name="cameraTrackScaleRadioButton">
         <property name="text">
-         <string>Camera Track Scale (Keep Body Track Consistent)</string>
+         <string>Adjust Camera Scale</string>
         </property>
         <property name="checked">
          <bool>false</bool>
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
+      <item>
        <widget class="QRadioButton" name="bodyTrackScaleRadioButton">
         <property name="text">
-         <string>Body Track Scale (Keep Camera Track Consistent)</string>
+         <string>Adjust Object Scale</string>
         </property>
         <property name="checked">
          <bool>true</bool>

@@ -529,16 +529,7 @@
                 "import mmSolver.tools.screenspacerigbake.tool;",
                 "mmSolver.tools.screenspacerigbake.tool.open_window();"
             ]
-        },  
-        "screen_space_rig_bake2": {
-            "name": "Screen-Space Rig Bake...",
-            "name_shelf": "ScrnRgBk",
-            "tooltip": "Bake transforms into screen-space, with helper rig.",
-            "command": [
-                "import mmSolver.tools.screenspacerigbake2.tool;",
-                "mmSolver.tools.screenspacerigbake2.tool.open_window();"
-            ]
-        },              
+        },
         "undo_scene": {
             "name": "Undo (without UI update)",
             "name_shelf": "Undo",
@@ -660,18 +651,18 @@
             ]
         },
         "create_camera_body_track_scale_rig": {
-            "name": "Create Camera/Body Track Scale Rig...",
+            "name": "Adjust Camera/Object Scale...",
             "name_shelf": "CrSclRig",
-            "tooltip": "Create Camera/Body Track Sclae Rig",
+            "tooltip": "Adjust the scale of a camera or object solve.",
             "command": [
                 "import mmSolver.tools.createcamerabodytrackscalerigbake.tool;",
                 "mmSolver.tools.createcamerabodytrackscalerigbake.tool.open_window();"
             ]
         }, 
         "remove_camera_body_track_scale_rig": {
-            "name": "Remove Camera/Body Track Scale Rig",
+            "name": "Bake Camera/Object Scale Adjustment",
             "name_shelf": "RmSclRig",
-            "tooltip": "Remove Camera/Body Track Sclae Rig",
+            "tooltip": "Bake and remove camera/object scale adjustment setup.",
             "command": [
                 "import mmSolver.tools.removecamerabodytrackscalerigbake.tool;",
                 "mmSolver.tools.removecamerabodytrackscalerigbake.tool.main();"

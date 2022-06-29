@@ -69,7 +69,7 @@ class CameraBodyTrackScaleRigBakeWindow(BaseWindow):
         self.baseHideStandardButtons()
         self.applyBtn.show()
         self.closeBtn.show()
-        self.applyBtn.setText('Create Scale Rig') 
+        self.applyBtn.setText('Create')
         self.applyBtn.clicked.connect(form.create_scale_rig_button_clicked)
 
         # Hide irrelevant stuff
@@ -99,8 +99,10 @@ class CameraBodyTrackScaleRigBakeWindow(BaseWindow):
     def close_button_clicked(self):
         self.close()
 
+
 def main(show=True, auto_raise=True, delete=False):
-    win = CameraBodyTrackScaleRigBakeWindow.open_window(show=show,
-                                                        auto_raise=auto_raise,
-                                                        delete=delete)
+    win = CameraBodyTrackScaleRigBakeWindow.open_window(
+        show=show,
+        auto_raise=auto_raise,
+        delete=delete)
     return win

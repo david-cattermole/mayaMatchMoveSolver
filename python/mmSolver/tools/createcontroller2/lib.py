@@ -165,7 +165,7 @@ def _world_bake(pivot, main, loc_grp, start, end,
             con = maya.cmds.pointConstraint(
                 pivot, loc_grp,
                 maintainOffset=False)
-        if dynamic_pivot is False:
+        else:
             point_con = maya.cmds.pointConstraint(
                 pivot, loc_grp,
                 maintainOffset=False)
@@ -455,9 +455,11 @@ def create_controller(name,
     :param main_node: The node to be controlled
     :type main_node: str
 
-    :param loc_grp_node: Transform (locator or group) node that will be
-        used to create rig.
-    :type loc_grp_node: str
+    :param loc_grp_node: The nodes for the Locator or Group node that
+        will be used to create rig. If a Locator is used, a list of
+        both transform and shape nodes should be provided. If a Group
+        is provided, just use a list with the transform node.
+    :type loc_grp_node: [str]
 
     :param start_frame: bake range start frame
     :type start_frame: int
@@ -478,6 +480,8 @@ def create_controller(name,
     :param dynamic_pivot: When True, the pivot_node is considered animated.
     :type: bool
 
+    :returns: The controller node locator/group created. This should
+        be the same as 'loc_grp_node' given to the function.
     :rtype: [str, ..]
     """
     current_frame = False

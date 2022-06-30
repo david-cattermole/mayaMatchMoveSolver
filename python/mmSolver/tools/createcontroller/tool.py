@@ -35,12 +35,6 @@ Usage::
 """
 
 
-# Ideas::
-#
-#   - Have a flag to allow maintaining the relative hierarchy of the
-#     input transforms.
-
-
 import maya.cmds
 
 import mmSolver.logger

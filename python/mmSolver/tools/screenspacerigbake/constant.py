@@ -16,15 +16,18 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+WINDOW_TITLE = 'Screen Space Rig Bake'
 
-import mmSolver.logger
-
-LOG = mmSolver.logger.get_logger()
-
-
-def open_window():
-    import mmSolver.tools.screenspacerigbake2.ui.screenspacerigbake_window as window
-    window.main()
+RIG_SUFFIX_NAME = '_screenSpaceRig'
+FREEZE_RIG_SUFFIX_NAME = '_freezeRig'
+FREEZE_RIG_ANIM_LAYER = '_freezeRigLayer'
+ATTRIBUTE_IDENTIFIER_NAME = 'screenzrigidentifier'
+ATTRIBUTE_IDENTIFIER_NICE_NAME = 'ScreenZRigIdentifier'
+SCREEN_Z_DEPTH_ATTR_NAME = 'screenzdepth'
+SCREEN_Z_MASTER_NAME = '_screenZMaster'
+SCREEN_XY_MASTER_NAME = '_screenXYMaster'
+TRANSFORM_ATTR_LIST = [
+    'tx', 'ty', 'tz',
+    'rx', 'ry', 'rz',
+    'sx', 'sy', 'sz'
+]

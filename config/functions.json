@@ -205,7 +205,7 @@
                 "import mmSolver.tools.attributebake.tool;",
                 "mmSolver.tools.attributebake.tool.open_window();"
             ]
-        },         
+        },
         "aim_at_camera_manipulator": {
             "name": "Aim At Camera (Screen-Z Manipulator)",
             "tooltip": "Screen-space Z manipulator.",
@@ -631,7 +631,16 @@
                 "import mmSolver.tools.createcontroller3.tool;",
                 "mmSolver.tools.createcontroller3.tool.open_window();"
             ]
-        },        
+        },
+        "create_world_controllers2": {
+            "name": "Create (World-Space) Controllers",
+            "name_shelf": "WldCtrl",
+            "tooltip": "Create (World-Space) Controller for selected nodes. (version 2)",
+            "command": [
+                "import mmSolver.tools.createcontroller2.tool;",
+                "mmSolver.tools.createcontroller2.tool.create_world_controllers();"
+            ]
+        },
         "remove_controller": {
             "name": "Remove Controller (v1)",
             "name_shelf": "RmCtrl",
@@ -658,7 +667,7 @@
                 "import mmSolver.tools.createcamerabodytrackscalerigbake.tool;",
                 "mmSolver.tools.createcamerabodytrackscalerigbake.tool.open_window();"
             ]
-        }, 
+        },
         "remove_camera_body_track_scale_rig": {
             "name": "Bake Camera/Object Scale Adjustment",
             "name_shelf": "RmSclRig",
@@ -667,7 +676,7 @@
                 "import mmSolver.tools.removecamerabodytrackscalerigbake.tool;",
                 "mmSolver.tools.removecamerabodytrackscalerigbake.tool.main();"
             ]
-        },         
+        },
         "deform_marker": {
             "name": "Deform Marker",
             "name_shelf": "MkrOff",

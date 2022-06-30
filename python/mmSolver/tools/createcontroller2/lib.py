@@ -22,20 +22,20 @@ import maya.cmds
 import maya.mel
 
 import mmSolver.logger
-import mmSolver.tools.attributebake.lib as fastbake_lib
-import mmSolver.tools.createcontroller2.constant as const
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.python_compat as pycompat
+import mmSolver.tools.attributebake.lib as fastbake_lib
+import mmSolver.tools.createcontroller2.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
-IDENTIFIER_ATTR_NAME = "mmsolver_cc_identifier"
-WORLD_SPACE_RIG_ZERO_SUFFIX = "_worldSpaceZero"
-OBJECT_SPACE_RIG_ZERO_SUFFIX = "_objectSpaceZero"
-SCREEN_SPACE_RIG_SUFFIX = "_screenSpace"
-SCREEN_SPACE_RIG_ZERO_SUFFIX = "_screenSpaceZero"
-MAIN_DRIVER_SUFFIX_NAME = "_mainDriver"
+IDENTIFIER_ATTR_NAME = 'mmsolver_cc_identifier'
+WORLD_SPACE_RIG_ZERO_SUFFIX = '_worldSpaceZero'
+OBJECT_SPACE_RIG_ZERO_SUFFIX = '_objectSpaceZero'
+SCREEN_SPACE_RIG_SUFFIX = '_screenSpace'
+SCREEN_SPACE_RIG_ZERO_SUFFIX = '_screenSpaceZero'
+MAIN_DRIVER_SUFFIX_NAME = '_mainDriver'
 TRANSFORM_ATTRS = [
     'translateX', 'translateY', 'translateZ',
     'rotateX', 'rotateY', 'rotateZ',
@@ -70,48 +70,48 @@ def _get_selected_channel_box_attrs():
 
 
 def _skip_translate_attributes(node):
-    attr_list = ["x", "y", "z"]
+    attr_list = ['x', 'y', 'z']
 
-    plug = node + ".translateX"
+    plug = node + '.translateX'
     if maya.cmds.getAttr(plug, keyable=True) and maya.cmds.getAttr(
             plug,
             settable=True):
-        attr_list.remove("x")
+        attr_list.remove('x')
 
-    plug = node + ".translateY"
+    plug = node + '.translateY'
     if maya.cmds.getAttr(plug, keyable=True) and maya.cmds.getAttr(
             plug,
             settable=True):
-        attr_list.remove("y")
+        attr_list.remove('y')
 
-    plug = node + ".translateZ"
+    plug = node + '.translateZ'
     if maya.cmds.getAttr(plug, keyable=True) and maya.cmds.getAttr(
             plug,
             settable=True):
-        attr_list.remove("z")
+        attr_list.remove('z')
     return attr_list
 
 
 def _skip_rotate_attributes(node):
-    attr_list = ["x", "y", "z"]
+    attr_list = ['x', 'y', 'z']
 
-    plug = node + ".rotateX"
+    plug = node + '.rotateX'
     if maya.cmds.getAttr(plug, keyable=True) and maya.cmds.getAttr(
             plug,
             settable=True):
-        attr_list.remove("x")
+        attr_list.remove('x')
 
-    plug = node + ".rotateY"
+    plug = node + '.rotateY'
     if maya.cmds.getAttr(plug, keyable=True) and maya.cmds.getAttr(
             plug,
             settable=True):
-        attr_list.remove("y")
+        attr_list.remove('y')
 
-    plug = node + ".rotateZ"
+    plug = node + '.rotateZ'
     if maya.cmds.getAttr(plug, keyable=True) and maya.cmds.getAttr(
             plug,
             settable=True):
-        attr_list.remove("z")
+        attr_list.remove('z')
     return attr_list
 
 
@@ -138,7 +138,7 @@ def _set_lod_visibility(node, visibility=False):
     if shape:
         # TODO: Remove the need for a try/except.
         try:
-            maya.cmds.setAttr(shape[0] + ".lodVisibility", visibility)
+            maya.cmds.setAttr(shape[0] + '.lodVisibility', visibility)
         except:
             pass
     return
@@ -151,7 +151,7 @@ def _world_bake(pivot, main, loc_grp, start, end,
     assert isinstance(dynamic_pivot, bool)
 
     attrs = []
-    if "vtx" in pivot:
+    if 'vtx' in pivot:
         current_time = maya.cmds.currentTime(query=True)
         for frame in range(start, end + 1):
             maya.cmds.currentTime(frame, edit=True)
@@ -193,7 +193,7 @@ def _world_bake(pivot, main, loc_grp, start, end,
 def _create_main_driver(parent, main):
     start, end = time_utils.get_maya_timeline_range_inner()
     main_driver_loc = maya.cmds.duplicate(parent)
-    maya.cmds.setAttr(main_driver_loc[0] + ".visibility", 0)
+    maya.cmds.setAttr(main_driver_loc[0] + '.visibility', 0)
     maya.cmds.parent(main_driver_loc, parent)
     parent_con = maya.cmds.parentConstraint(main, main_driver_loc)
 
@@ -203,16 +203,16 @@ def _create_main_driver(parent, main):
         main_driver_loc, attrs, start, end, smart_bake=False)
     maya.cmds.delete(parent_con)
 
-    maya.cmds.setAttr(main_driver_loc[0] + ".hiddenInOutliner", 1)
+    maya.cmds.setAttr(main_driver_loc[0] + '.hiddenInOutliner', 1)
     return main_driver_loc
 
 
 def _find_constraints_from_node(node):
     constraints = maya.cmds.listConnections(
-        node + ".parentMatrix[0]",
+        node + '.parentMatrix[0]',
         destination=True,
         source=False,
-        type="constraint") or []
+        type='constraint') or []
     constraints = [n for n in constraints
                    if node_utils.node_is_referenced(n) is False]
     constraints = list(set(constraints))
@@ -223,10 +223,11 @@ def _remove_constraint_blend_attr_from_nodes(nodes):
     for node in nodes:
         attr_list = maya.cmds.listAttr(node)
         for attr in attr_list:
-            if ("blendPoint" in attr
-                    or "blendOrient" in attr
-                    or "blendParent" in attr):
-                maya.cmds.deleteAttr(str(node) + "." + str(attr))
+            if ('blendPoint' in attr
+                    or 'blendOrient' in attr
+                    or 'blendParent' in attr):
+                node_attr = '{}.{}'.format(node, attr)
+                maya.cmds.deleteAttr(node_attr)
     return
 
 
@@ -284,6 +285,7 @@ def _create_controller_object_space(name,
                                     smart_bake,
                                     current_frame,
                                     dynamic_pivot=False):
+    assert isinstance(smart_bake, bool)
     assert isinstance(dynamic_pivot, bool)
     skip_translate_attr = _skip_translate_attributes(main_node)
     skip_rotate_attr = _skip_rotate_attributes(main_node)
@@ -352,8 +354,8 @@ def _create_controller_screen_space(name,
     skip_translate_attr = _skip_translate_attributes(main_node)
     if len(skip_translate_attr) != 0:
         LOG.error((
-            "Main object all translation attributes(tx,ty,tz)"
-            " are not available."
+            'Main object all translation attributes(tx,ty,tz)'
+            ' are not available.'
         ))
         # TODO: Should the locator be deleted?
         maya.cmds.delete(loc_grp_node)
@@ -488,11 +490,11 @@ def create_controller(name,
     maya.cmds.addAttr(
         loc_grp_node[0],
         longName=IDENTIFIER_ATTR_NAME,
-        dataType="string", keyable=False)
+        dataType='string', keyable=False)
     maya.cmds.setAttr(
         str(loc_grp_node[0]) + '.' + IDENTIFIER_ATTR_NAME,
         str(loc_grp_node[0] + str(random.randint(1, 100000000))),
-        type="string", lock=True)
+        type='string', lock=True)
 
     if controller_type == const.CONTROLLER_TYPE_WORLD_SPACE:
         loc_grp_node = _create_controller_world_space(
@@ -532,7 +534,7 @@ def create_controller(name,
             dynamic_pivot=dynamic_pivot)
 
     else:
-        LOG.error("Invalid space.")
+        LOG.error('Invalid space.')
 
     return loc_grp_node
 

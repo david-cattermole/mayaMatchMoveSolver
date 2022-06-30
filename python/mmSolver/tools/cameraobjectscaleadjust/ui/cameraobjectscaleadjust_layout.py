@@ -36,10 +36,10 @@ import mmSolver.ui.Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.constant as const_utils
-import mmSolver.tools.createcamerabodytrackscalerigbake.constant as const
-import mmSolver.tools.createcamerabodytrackscalerigbake.ui.ui_createcamerabodytrackscalerigbake_layout as ui_layout
+import mmSolver.tools.cameraobjectscaleadjust.constant as const
+import mmSolver.tools.cameraobjectscaleadjust.ui.ui_cameraobjectscaleadjust_layout as ui_layout
 import mmSolver.tools.loadmarker.lib.utils as cam_lib
-import mmSolver.tools.createcamerabodytrackscalerigbake.lib as lib
+import mmSolver.tools.cameraobjectscaleadjust.lib as lib
 
 
 LOG = mmSolver.logger.get_logger()
@@ -70,9 +70,9 @@ def unlock_node_attrs(tfm_node):
                 maya.cmds.setAttr(node_attr, lock=False)
 
 
-class CameraBodyTrackScaleRigBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
+class CameraObjectScaleAdjustLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
     def __init__(self, parent=None, *args, **kwargs):
-        super(CameraBodyTrackScaleRigBakeLayout, self).__init__(*args, **kwargs)
+        super(CameraObjectScaleAdjustLayout, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
         # Create Button Groups (because we get compile errors if
@@ -178,18 +178,18 @@ class CameraBodyTrackScaleRigBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
                 if None in [name, camera, rig_controls]:
                     LOG.warn('Please select scale rig name, camera and rigs.')
                     return
-                lib.create_camera_body_track_scale_rig(
+                lib.create_scale_rig(
                     name,
                     camera,
                     scene,
                     rig_controls,
-                    const.SCALE_RIG_TYPE_BODY_TRACK)
+                    const.SCALE_RIG_TYPE_OBJECT_TRACK)
             if self.cameraTrackScaleRadioButton.isChecked() == True:
                 if None in [name, camera, scene, rig_controls]:
                     LOG.warn(
                         'Please select scale rig name, camera, scene and rigs.')
                     return
-                lib.create_camera_body_track_scale_rig(
+                lib.create_scale_rig(
                     name,
                     camera,
                     scene,

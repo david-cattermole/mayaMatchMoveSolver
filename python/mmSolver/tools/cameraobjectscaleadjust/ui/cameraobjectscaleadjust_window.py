@@ -20,7 +20,7 @@ Window for the camera/bodytrackscalerigbake tool.
 
 Usage::
 
-   import mmSolver.tools.camerabodytrackscalerigbake.ui.camerabodytrackscalerigbake_window as window
+   import mmSolver.tools.cameraobjectscaleadjust.ui.cameraobjectscaleadjust_window as window
    window.main()
 """
 
@@ -39,8 +39,8 @@ import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.ui.commonmenus as commonmenus
-import mmSolver.tools.createcamerabodytrackscalerigbake.constant as const
-import mmSolver.tools.createcamerabodytrackscalerigbake.ui.createcamerabodytrackscalerigbake_layout as camerabodytrackscalerigbake_layout
+import mmSolver.tools.cameraobjectscaleadjust.constant as const
+import mmSolver.tools.cameraobjectscaleadjust.ui.cameraobjectscaleadjust_layout as ui_layout
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
@@ -53,13 +53,13 @@ def _open_help():
     return
 
 
-class CameraBodyTrackScaleRigBakeWindow(BaseWindow):
-    name = 'CameraBodyTrackScaleRigBakeWindow'
+class CameraObjectScaleAdjustWindow(BaseWindow):
+    name = 'CameraObjectScaleAdjustWindow'
 
     def __init__(self, parent=None, name=None):
-        super(CameraBodyTrackScaleRigBakeWindow, self).__init__(parent, name=name)
+        super(CameraObjectScaleAdjustWindow, self).__init__(parent, name=name)
         self.setupUi(self)
-        self.addSubForm(camerabodytrackscalerigbake_layout.CameraBodyTrackScaleRigBakeLayout)
+        self.addSubForm(ui_layout.CameraObjectScaleAdjustLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
         self.setWindowFlags(QtCore.Qt.Tool)
@@ -95,13 +95,13 @@ class CameraBodyTrackScaleRigBakeWindow(BaseWindow):
         form = self.getSubForm()
         form.reset_options()
         return
-    
+
     def close_button_clicked(self):
         self.close()
 
 
 def main(show=True, auto_raise=True, delete=False):
-    win = CameraBodyTrackScaleRigBakeWindow.open_window(
+    win = CameraObjectScaleAdjustWindow.open_window(
         show=show,
         auto_raise=auto_raise,
         delete=delete)

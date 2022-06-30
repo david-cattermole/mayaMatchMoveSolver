@@ -212,9 +212,9 @@ if (BUILD_QT_UI)
             ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/createcontroller3/ui/ui_createcontroller_layout.py
             )
 
-    add_ui_compile("createcamerabodytrackscalerigbake"
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/createcamerabodytrackscalerigbake/ui/createcamerabodytrackscalerigbake_layout.ui
-            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/createcamerabodytrackscalerigbake/ui/ui_createcamerabodytrackscalerigbake_layout.py
+    add_ui_compile("cameraobjectscaleadjust"
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/cameraobjectscaleadjust/ui/cameraobjectscaleadjust_layout.ui
+            ${CMAKE_SOURCE_DIR}/python/mmSolver/tools/cameraobjectscaleadjust/ui/ui_cameraobjectscaleadjust_layout.py
             )
 
     add_ui_compile("screenspacerigbake"

@@ -27,7 +27,7 @@ import mmSolver.logger
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.transform as tfm_utils
 import mmSolver.utils.time as time_utils
-import mmSolver.tools.createcamerabodytrackscalerigbake.constant as const
+import mmSolver.tools.cameraobjectscaleadjust.constant as const
 import mmSolver.tools.attributebake.lib as fastbake_lib
 import mmSolver.tools.createcontroller2.lib as createcontroller_lib
 import mmSolver.tools.createcontroller2.constant as createcontroller_const
@@ -68,7 +68,7 @@ def _create_scale_rig_main_grp(scale_rig_name,
     attrs = [const.SCALE_RIG_IDENTIFIER_ATTR_NAME,
              const.SCALE_RIG_TYPE_ATTR_NAME,
              const.SCALE_RIG_SCENE_ATTR_NAME,
-             const.SCALE_RIG_BODY_TRACK_CONTROLS_ATTR_NAME]
+             const.SCALE_RIG_OBJECT_TRACK_CONTROLS_ATTR_NAME]
     for attr in attrs:
         maya.cmds.addAttr(main_grp, longName=attr, dataType="string",
                           keyable=False)
@@ -80,7 +80,7 @@ def _create_scale_rig_main_grp(scale_rig_name,
         text += str(control_name) + ', '
     text = text.strip(' ').strip(',')
     maya.cmds.setAttr(
-        main_grp + '.' + const.SCALE_RIG_BODY_TRACK_CONTROLS_ATTR_NAME,
+        main_grp + '.' + const.SCALE_RIG_OBJECT_TRACK_CONTROLS_ATTR_NAME,
         text, type="string", lock=True)
     if rig_type == const.SCALE_RIG_TYPE_CAMERA_TRACK:
         maya.cmds.setAttr(main_grp + '.' + const.SCALE_RIG_TYPE_ATTR_NAME,
@@ -88,7 +88,7 @@ def _create_scale_rig_main_grp(scale_rig_name,
                           type="string", lock=True)
     else:
         maya.cmds.setAttr(main_grp + '.' + const.SCALE_RIG_TYPE_ATTR_NAME,
-                          const.SCALE_RIG_TYPE_BODY_TRACK,
+                          const.SCALE_RIG_TYPE_OBJECT_TRACK,
                           type="string", lock=True)
     return main_grp
 
@@ -101,16 +101,17 @@ def _break_scale_attributes(tfm_nodes):
             continue
         for attr in attrs:
             node_attr = node + '.' + attr
-            # TODO: Replace this will a explicit 'maya.cmds.disconnectAttr' calls.
-            maya.mel.eval(
-                "source channelBoxCommand; CBdeleteConnection \"%s\"" % node_attr)
+            # TODO: Replace this will a explicit 'maya.cmds.disconnectAttr'
+            #  calls.
+            cmd = 'source channelBoxCommand; CBdeleteConnection "{}"'
+            maya.mel.eval(cmd.format(node_attr))
 
 
-def create_camera_body_track_scale_rig(name,
-                                       camera,
-                                       scene,
-                                       body_track_controls,
-                                       scale_rig_type):
+def create_scale_rig(name,
+                     camera,
+                     scene,
+                     object_track_controls,
+                     scale_rig_type):
     """
     Create a camera track scale rig.
 
@@ -123,11 +124,11 @@ def create_camera_body_track_scale_rig(name,
     :param scene: Scene node.
     :type scene: Transform node or None
 
-    :param body_track_controls: Body track controls transforms.
-    :type body_track_controls: Transforms list or []
+    :param object_track_controls: Object track controls transforms.
+    :type object_track_controls: Transforms list or []
 
     :param scale_rig_type: Which type of scale rig to be created?
-        mmSolver.tools.camerabodytrackscalerigbake.constant.SCALE_RIG_LIST.
+        mmSolver.tools.cameraobjectscaleadjust.constant.SCALE_RIG_LIST.
     :type: str
 
     :rtype: [str]
@@ -136,12 +137,12 @@ def create_camera_body_track_scale_rig(name,
     attrs = ['tx', 'ty', 'tz', 'rx', 'ry', 'rz']
     controller_type = createcontroller_const.CONTROLLER_TYPE_WORLD_SPACE
     camera_witness = None
-    if scale_rig_type == const.SCALE_RIG_TYPE_BODY_TRACK:
+    if scale_rig_type == const.SCALE_RIG_TYPE_OBJECT_TRACK:
         camera_witness = _create_scale_rig_main_grp(
             name + suffix + main_grp_suffix,
             str(scene),
-            body_track_controls,
-            const.SCALE_RIG_TYPE_BODY_TRACK)
+            object_track_controls,
+            const.SCALE_RIG_TYPE_OBJECT_TRACK)
     if scale_rig_type == const.SCALE_RIG_TYPE_CAMERA_TRACK:
         camera_witness = maya.cmds.group(name=name + suffix, empty=True)
     assert camera_witness is not None
@@ -154,8 +155,8 @@ def create_camera_body_track_scale_rig(name,
     maya.cmds.delete(parent_con)
 
     # Create rig controls witness
-    body_track_controls_witness = []
-    for control in body_track_controls:
+    object_track_controls_witness = []
+    for control in object_track_controls:
         null_node = maya.cmds.createNode('transform')
         control_witness = createcontroller_lib.create_controller(
             name,
@@ -167,11 +168,11 @@ def create_camera_body_track_scale_rig(name,
             controller_type,
             smart_bake=False,
             camera=None)
-        body_track_controls_witness.append(control_witness[0])
+        object_track_controls_witness.append(control_witness[0])
 
     # Reparent
     children_nodes = [tfm_utils.TransformNode(node=n) for n in
-                      body_track_controls_witness]
+                      object_track_controls_witness]
     parent_node = tfm_utils.TransformNode(node=camera_witness[0])
     reparent_lib.reparent(
         children_nodes,
@@ -184,14 +185,14 @@ def create_camera_body_track_scale_rig(name,
         delete_static_anim_curves=False)
     _break_scale_attributes(children_nodes)
 
-    # Body track scale rig
-    if scale_rig_type == const.SCALE_RIG_TYPE_BODY_TRACK:
-        # Break body track controls witness scale attributes
-        body_track_control_nodes = [tfm_utils.TransformNode(node=n) for n in
-                                    body_track_controls]
-        _break_scale_attributes(body_track_control_nodes)
-        # Scale constraint to body track controls
-        for node in body_track_control_nodes:
+    # Object track scale rig
+    if scale_rig_type == const.SCALE_RIG_TYPE_OBJECT_TRACK:
+        # Break object track controls witness scale attributes
+        object_track_control_nodes = [tfm_utils.TransformNode(node=n) for n in
+                                    object_track_controls]
+        _break_scale_attributes(object_track_control_nodes)
+        # Scale constraint to object track controls
+        for node in object_track_control_nodes:
             maya.cmds.scaleConstraint(parent_node.get_node(),
                                       node.get_node(), maintainOffset=True)
         maya.cmds.select(parent_node.get_node(), replace=True)
@@ -201,7 +202,7 @@ def create_camera_body_track_scale_rig(name,
         grand_parent = _create_scale_rig_main_grp(
             name + suffix + main_grp_suffix,
             str(scene),
-            body_track_controls,
+            object_track_controls,
             const.SCALE_RIG_TYPE_CAMERA_TRACK)
         con = maya.cmds.parentConstraint(parent_node.get_node(), grand_parent,
                                          maintainOffset=False)
@@ -240,23 +241,22 @@ def create_camera_body_track_scale_rig(name,
     return
 
 
-def remove_camera_body_track_scale_rig(rigs_list):
+def remove_scale_rig(rigs_list):
     """
     Bake and remove scale rig(s).
 
     :param rigs_list: Scale rig(s).
     :type rigs_list: list
     """
-
     attrs = ['tx', 'ty', 'tz', 'rx', 'ry', 'rz', 'sx', 'sy', 'sz']
     for node in rigs_list:
-        body_track_attr_value = _get_rig_node_identifier(
+        object_track_attr_value = _get_rig_node_identifier(
             node,
-            const.SCALE_RIG_BODY_TRACK_CONTROLS_ATTR_NAME)
-        if body_track_attr_value == None:
+            const.SCALE_RIG_OBJECT_TRACK_CONTROLS_ATTR_NAME)
+        if object_track_attr_value is None:
             LOG.warn('Please select scale rig(s) only.')
             return
-        nodes_to_be_baked = body_track_attr_value.split(',')
+        nodes_to_be_baked = object_track_attr_value.split(',')
         rig_type = _get_rig_node_identifier(
             node,
             const.SCALE_RIG_TYPE_ATTR_NAME)
@@ -272,3 +272,4 @@ def remove_camera_body_track_scale_rig(rigs_list):
             frame_end,
             smart_bake=False)
         maya.cmds.delete(node)
+    return

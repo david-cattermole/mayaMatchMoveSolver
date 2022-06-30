@@ -1,5 +1,5 @@
 # Copyright (C) 2022 Patcha Saheb Binginapalli.
-
+#
 # This file is part of mmSolver.
 #
 # mmSolver is free software: you can redistribute it and/or modify it
@@ -15,16 +15,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-import mmSolver.logger
-
-LOG = mmSolver.logger.get_logger()
-
-
-def open_window():
-    import mmSolver.tools.createcamerabodytrackscalerigbake.ui.createcamerabodytrackscalerigbake_window as window
-    window.main()
+"""
+Camera/Object Track Scale Adjustment.
+"""

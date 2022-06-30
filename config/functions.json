@@ -659,22 +659,22 @@
                 "mmSolver.tools.removecontroller2.tool.main();"
             ]
         },
-        "create_camera_body_track_scale_rig": {
+        "camera_object_scale_adjust": {
             "name": "Adjust Camera/Object Scale...",
             "name_shelf": "CrSclRig",
             "tooltip": "Adjust the scale of a camera or object solve.",
             "command": [
-                "import mmSolver.tools.createcamerabodytrackscalerigbake.tool;",
-                "mmSolver.tools.createcamerabodytrackscalerigbake.tool.open_window();"
+                "import mmSolver.tools.cameraobjectscaleadjust.tool;",
+                "mmSolver.tools.cameraobjectscaleadjust.tool.open_window();"
             ]
         },
-        "remove_camera_body_track_scale_rig": {
-            "name": "Bake Camera/Object Scale Adjustment",
+        "camera_object_scale_remove": {
+            "name": "Remove Camera/Object Scale Adjustment",
             "name_shelf": "RmSclRig",
             "tooltip": "Bake and remove camera/object scale adjustment setup.",
             "command": [
-                "import mmSolver.tools.removecamerabodytrackscalerigbake.tool;",
-                "mmSolver.tools.removecamerabodytrackscalerigbake.tool.main();"
+                "import mmSolver.tools.cameraobjectscaleremove.tool;",
+                "mmSolver.tools.cameraobjectscaleremove.tool.main();"
             ]
         },
         "deform_marker": {

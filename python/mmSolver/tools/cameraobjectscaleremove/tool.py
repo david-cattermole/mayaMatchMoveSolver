@@ -16,19 +16,25 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-import maya.cmds as cmds
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.constant as const_utils
-import mmSolver.tools.createcamerabodytrackscalerigbake.lib as lib
+import mmSolver.tools.cameraobjectscaleadjust.lib as lib
+
 
 LOG = mmSolver.logger.get_logger()
 
+
 def main():
-    selection = cmds.ls(selection=True, long=True, type='transform') or []
+    selection = maya.cmds.ls(selection=True, long=True, type='transform') or []
     if not selection:
-        LOG.warn('Please select scale rig(s) only.')
+        LOG.warn('Please select scale rig(s) nodes.')
         return
     ctx = tools_utils.tool_context(
         use_undo_chunk=True,
@@ -37,4 +43,4 @@ def main():
         disable_viewport=True,
         disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE)
     with ctx:   
-        lib.remove_camera_body_track_scale_rig(selection)
+        lib.remove_scale_rig(selection)

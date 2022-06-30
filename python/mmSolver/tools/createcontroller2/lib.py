@@ -475,6 +475,9 @@ def create_controller(name,
     :param camera: Camera transform node for screen space rig
     :type: str or None
 
+    :param dynamic_pivot: When True, the pivot_node is considered animated.
+    :type: bool
+
     :rtype: [str, ..]
     """
     current_frame = False

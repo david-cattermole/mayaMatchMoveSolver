@@ -29,13 +29,14 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.time as time_utils
-import mmSolver.ui.helputils as helputils
 import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.constant as const_utils
-import mmSolver.ui.commonmenus as commonmenus
 import mmSolver.utils.configmaya as configmaya
+import mmSolver.ui.helputils as helputils
+import mmSolver.ui.commonmenus as commonmenus
 import mmSolver.tools.createcontroller2.constant as const
 import mmSolver.tools.createcontroller2.lib as lib
+import mmSolver.tools.createcontroller3.ui.constant as ui_const
 import mmSolver.tools.createcontroller3.ui.ui_createcontroller_layout as ui_layout
 
 LOG = mmSolver.logger.get_logger()
@@ -167,24 +168,24 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.populate_ui()
 
     def populate_ui(self):
-        name = const.CONFIG_CONTROLLER_TYPE
-        default_value = const.CONFIG_CONTROLLER_TYPE_LOCATOR
+        name = ui_const.CONFIG_CONTROLLER_TYPE
+        default_value = ui_const.CONFIG_CONTROLLER_TYPE_LOCATOR
         ctrl_type = configmaya.get_scene_option(name, default_value)
-        if ctrl_type == const.CONFIG_CONTROLLER_TYPE_LOCATOR:
+        if ctrl_type == ui_const.CONFIG_CONTROLLER_TYPE_LOCATOR:
             self.locator_action.setChecked(True)
-        elif ctrl_type == const.CONFIG_CONTROLLER_TYPE_GROUP:
+        elif ctrl_type == ui_const.CONFIG_CONTROLLER_TYPE_GROUP:
             self.group_action.setChecked(True)
 
     def type_locator_rdo_toggled(self):
         if self.locator_action.isChecked():
-            name = const.CONFIG_CONTROLLER_TYPE
-            value = const.CONFIG_CONTROLLER_TYPE_LOCATOR
+            name = ui_const.CONFIG_CONTROLLER_TYPE
+            value = ui_const.CONFIG_CONTROLLER_TYPE_LOCATOR
             configmaya.set_scene_option(name, value, add_attr=True)
 
     def type_group_rdo_toggled(self):
         if self.group_action.isChecked():
-            name = const.CONFIG_CONTROLLER_TYPE
-            value = const.CONFIG_CONTROLLER_TYPE_GROUP
+            name = ui_const.CONFIG_CONTROLLER_TYPE
+            value = ui_const.CONFIG_CONTROLLER_TYPE_GROUP
             configmaya.set_scene_option(name, value, add_attr=True)
 
     def get_existing_names_from_ui(self, column):
@@ -196,10 +197,13 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         return names
 
     def set_object_helper(self, column, main=False, pivot=False):
+        warn_msg_obj = ''
         if main:
             warn_msg_obj = 'Main object'
         elif pivot:
             warn_msg_obj = 'Pivot object'
+
+        item_column = None
         selected_item = self.mainTableWidget.selectedItems() or []
         if selected_item:
             item_column = self.mainTableWidget.column(selected_item[0])
@@ -214,7 +218,7 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         if main:
             existing_names = self.get_existing_names_from_ui(column)
             if selection[0] in existing_names:
-                LOG.warn(warn_msg_obj + ' already exists.')
+                LOG.warn('%s already exists.', warn_msg_obj)
                 return
             # Check if main node has constraints already
             has_constraints = _transform_has_constraints(selection[0])
@@ -224,10 +228,10 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         selected_item[0].setText(str(selection[0]))
 
     def set_main_object_clicked(self):
-        self.set_object_helper(const.COLUMN_MAIN_OBJECT_INDEX, True, False)
+        self.set_object_helper(ui_const.COLUMN_MAIN_OBJECT_INDEX, True, False)
 
     def set_pivot_object_clicked(self):
-        self.set_object_helper(const.COLUMN_PIVOT_OBJECT_INDEX, False, True)
+        self.set_object_helper(ui_const.COLUMN_PIVOT_OBJECT_INDEX, False, True)
 
     def create_locator_group(self, name, main_text, pivot_text):
         if pivot_text == '' or main_text == '':
@@ -263,8 +267,8 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         selected_items = self.mainTableWidget.selectedItems()
         for item in selected_items:
             column = self.mainTableWidget.column(item)
-            if column not in [const.COLUMN_MAIN_OBJECT_INDEX,
-                              const.COLUMN_PIVOT_OBJECT_INDEX]:
+            if column not in [ui_const.COLUMN_MAIN_OBJECT_INDEX,
+                              ui_const.COLUMN_PIVOT_OBJECT_INDEX]:
                 LOG.warn('Please select main object or pivot object cell.')
                 return
             text = item.text()
@@ -275,10 +279,13 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         if not rows:
             LOG.warn('No rows found to create controller.')
             return
+
         for row in range(rows):
             # Set time
             start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
-            bake_value = self.get_combo_box_value(row, const.COLUMN_BAKE_INDEX)
+            bake_value = self.get_combo_box_value(
+                row,
+                ui_const.COLUMN_BAKE_INDEX)
             if bake_value == const.BAKE_ITEM_CURRENT_FRAME_BAKE:
                 start_frame = int(maya.cmds.currentTime(query=True))
                 end_frame = start_frame
@@ -286,18 +293,18 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             # Get widgets data
             controller_name = self.mainTableWidget.item(
                 row,
-                const.COLUMN_CONTROLLER_NAME_INDEX).text()
+                ui_const.COLUMN_CONTROLLER_NAME_INDEX).text()
             main_node = self.mainTableWidget.item(
                 row,
-                const.COLUMN_MAIN_OBJECT_INDEX).text()
+                ui_const.COLUMN_MAIN_OBJECT_INDEX).text()
             pivot_node = self.mainTableWidget.item(
                 row,
-                const.COLUMN_PIVOT_OBJECT_INDEX).text()
-            camera = self.get_combo_box_value(row, const.COLUMN_CAMERA_INDEX)
+                ui_const.COLUMN_PIVOT_OBJECT_INDEX).text()
+            camera = self.get_combo_box_value(row, ui_const.COLUMN_CAMERA_INDEX)
 
             pivot_type = self.get_combo_box_value(
                 row,
-                const.COLUMN_PIVOT_TYPE_INDEX)
+                ui_const.COLUMN_PIVOT_TYPE_INDEX)
             dynamic_pivot = pivot_type == const.PIVOT_TYPE_ITEM_DYNAMIC
 
             loc_grp_node = self.create_locator_group(
@@ -306,10 +313,10 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
                 pivot_node)
 
             # Space options
+            space = None
             space_option = self.get_combo_box_value(
                 row,
-                const.COLUMN_SPACE_INDEX)
-            space = None
+                ui_const.COLUMN_SPACE_INDEX)
             if space_option == const.SPACE_ITEM_WORLD_SPACE:
                 space = const.CONTROLLER_TYPE_WORLD_SPACE
             elif space_option == const.SPACE_ITEM_OBJECT_SPACE:
@@ -326,7 +333,9 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
                 return
 
             # Bake options
-            bake_option = self.get_combo_box_value(row, const.COLUMN_BAKE_INDEX)
+            bake_option = self.get_combo_box_value(
+                row,
+                ui_const.COLUMN_BAKE_INDEX)
             smart_bake = bake_option == const.BAKE_ITEM_SMART_BAKE
             if not controller_name or not pivot_node or not main_node:
                 return

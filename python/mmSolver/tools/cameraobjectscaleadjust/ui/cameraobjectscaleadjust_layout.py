@@ -66,8 +66,9 @@ def unlock_node_attrs(tfm_node):
     for axis in axes:
         for attr in attrs:
             node_attr = tfm_node + '.' + attr + axis
-            if maya.cmds.getAttr(node_attr, lock=True) == True:
+            if maya.cmds.getAttr(node_attr, lock=True):
                 maya.cmds.setAttr(node_attr, lock=False)
+    return
 
 
 class CameraObjectScaleAdjustLayout(QtWidgets.QWidget, ui_layout.Ui_Form):

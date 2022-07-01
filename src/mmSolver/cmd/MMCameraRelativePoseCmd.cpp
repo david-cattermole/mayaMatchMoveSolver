@@ -126,6 +126,7 @@ maya.cmds.mmCameraRelativePose(
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/sfm/camera_relative_pose.h"
+#include "mmSolver/sfm/sfm_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
@@ -147,155 +148,8 @@ maya.cmds.mmCameraRelativePose(
 
 namespace mmsolver {
 
-bool get_marker_coords(const MTime &time, MarkerPtr &mkr, double &x, double &y,
-                       double &weight, bool &enable) {
-    auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
-
-    mkr->getPosXY(x, y, time, timeEvalMode);
-    mkr->getEnable(enable, time, timeEvalMode);
-    mkr->getWeight(weight, time, timeEvalMode);
-
-    weight *= static_cast<double>(enable);
-    return weight > 0;
-}
-
-MStatus get_camera_values(const MTime &time, CameraPtr &cam, int &image_width,
-                          int &image_height, double &focal_length_mm,
-                          double &sensor_width_mm, double &sensor_height_mm) {
-    MStatus status = MStatus::kSuccess;
-
-    auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
-
-    auto filmBackWidth_inch = cam->getFilmbackWidthValue(time, timeEvalMode);
-    auto filmBackHeight_inch = cam->getFilmbackHeightValue(time, timeEvalMode);
-    sensor_width_mm = filmBackWidth_inch * INCH_TO_MM;
-    sensor_height_mm = filmBackHeight_inch * INCH_TO_MM;
-
-    focal_length_mm = cam->getFocalLengthValue(time, timeEvalMode);
-
-    image_width = static_cast<int>(sensor_width_mm * 1000.0);
-    image_height = static_cast<int>(sensor_height_mm * 1000.0);
-
-    return status;
-}
-
-MStatus parseCameraSelectionList(
-    const MSelectionList &selection_list, const MTime &time, CameraPtr &camera,
-    Attr &camera_tx_attr, Attr &camera_ty_attr, Attr &camera_tz_attr,
-    Attr &camera_rx_attr, Attr &camera_ry_attr, Attr &camera_rz_attr,
-    int32_t &image_width, int32_t &image_height, double &focal_length_mm,
-    double &sensor_width_mm, double &sensor_height_mm) {
-    MMSOLVER_INFO("parseCameraSelectionList1");
-    MStatus status = MStatus::kSuccess;
-
-    MDagPath nodeDagPath;
-    MObject node_obj;
-
-    if (selection_list.length() > 0) {
-        status = selection_list.getDagPath(0, nodeDagPath);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-        status = selection_list.getDependNode(0, node_obj);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-
-        MString transform_node_name = nodeDagPath.fullPathName();
-        MMSOLVER_INFO("Camera name: " << transform_node_name.asChar());
-
-        auto object_type = computeObjectType(node_obj, nodeDagPath);
-        if (object_type == ObjectType::kCamera) {
-            MMSOLVER_INFO("parseCameraSelectionList2");
-            status = nodeDagPath.extendToShapeDirectlyBelow(0);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            MString shape_node_name = nodeDagPath.fullPathName();
-
-            MMSOLVER_INFO("parseCameraSelectionList3");
-            camera = CameraPtr(new Camera());
-            camera->setTransformNodeName(transform_node_name);
-            camera->setShapeNodeName(shape_node_name);
-
-            MMSOLVER_INFO("parseCameraSelectionList4");
-            camera_tx_attr.setNodeName(transform_node_name);
-            camera_ty_attr.setNodeName(transform_node_name);
-            camera_tz_attr.setNodeName(transform_node_name);
-            camera_rx_attr.setNodeName(transform_node_name);
-            camera_ry_attr.setNodeName(transform_node_name);
-            camera_rz_attr.setNodeName(transform_node_name);
-
-            MMSOLVER_INFO("parseCameraSelectionList5");
-            camera_tx_attr.setAttrName(MString("translateX"));
-            camera_ty_attr.setAttrName(MString("translateY"));
-            camera_tz_attr.setAttrName(MString("translateZ"));
-            camera_rx_attr.setAttrName(MString("rotateX"));
-            camera_ry_attr.setAttrName(MString("rotateY"));
-            camera_rz_attr.setAttrName(MString("rotateZ"));
-
-            MMSOLVER_INFO("parseCameraSelectionList6");
-            status = get_camera_values(time, camera, image_width, image_height,
-                                       focal_length_mm, sensor_width_mm,
-                                       sensor_height_mm);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-        } else {
-            MMSOLVER_ERR("Given node is not a valid camera: "
-                         << transform_node_name.asChar());
-            status = MS::kFailure;
-            return status;
-        }
-    }
-
-    MMSOLVER_INFO("parseCameraSelectionList7");
-    return status;
-}
-
-MStatus addMarkerBundles(
-    const MTime &time_a, const MTime &time_b, const int32_t image_width_a,
-    const int32_t image_height_a, const int32_t image_width_b,
-    const int32_t image_height_b, MarkerPtr &marker_a, MarkerPtr &marker_b,
-    BundlePtr &bundle, BundlePtrList &bundle_list, MarkerPtrList &marker_list_a,
-    MarkerPtrList &marker_list_b,
-    std::vector<std::pair<double, double>> &marker_coords_a,
-    std::vector<std::pair<double, double>> &marker_coords_b) {
-    MMSOLVER_INFO("addMarkerBundle1");
-    MStatus status = MStatus::kSuccess;
-
-    double x_a = 0.0;
-    double x_b = 0.0;
-    double y_a = 0.0;
-    double y_b = 0.0;
-    bool enable_a = true;
-    bool enable_b = true;
-    double weight_a = 1.0;
-    double weight_b = 1.0;
-
-    auto success_a =
-        get_marker_coords(time_a, marker_a, x_a, y_a, weight_a, enable_a);
-    MMSOLVER_INFO("addMarkerBundle2");
-    auto success_b =
-        get_marker_coords(time_b, marker_b, x_b, y_b, weight_b, enable_b);
-    MMSOLVER_INFO("addMarkerBundle3");
-    if (success_a && success_b) {
-        MMSOLVER_INFO("addMarkerBundle4");
-        double xx_a = (x_a + 0.5) * static_cast<double>(image_width_a);
-        double yy_a = (y_a + 0.5) * static_cast<double>(image_height_a);
-        double xx_b = (x_b + 0.5) * static_cast<double>(image_width_b);
-        double yy_b = (y_b + 0.5) * static_cast<double>(image_height_b);
-        MMSOLVER_INFO("x_a : " << x_a << " y_a : " << y_a);
-        MMSOLVER_INFO("xx_a: " << xx_a << " yy_a: " << yy_a);
-        MMSOLVER_INFO("x_b : " << x_b << " y_b : " << y_b);
-        MMSOLVER_INFO("xx_b: " << xx_b << " yy_b: " << yy_b);
-        auto xy_a = std::pair<double, double>{xx_a, yy_a};
-        auto xy_b = std::pair<double, double>{xx_b, yy_b};
-        MMSOLVER_INFO("addMarkerBundle5");
-        marker_coords_a.push_back(xy_a);
-        marker_coords_b.push_back(xy_b);
-
-        MMSOLVER_INFO("addMarkerBundle6");
-        marker_list_a.push_back(marker_a);
-        marker_list_b.push_back(marker_b);
-        bundle_list.push_back(bundle);
-    }
-
-    MMSOLVER_INFO("addMarkerBundle7");
-    return status;
-}
+// using MMMarker = Marker;
+// using MMCamera = Camera;
 
 MMCameraRelativePoseCmd::~MMCameraRelativePoseCmd() {}
 
@@ -389,7 +243,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
     MMSOLVER_INFO("run parseCameraSelectionList A");
     MSelectionList camera_selection_list_a;
     argData.getFlagArgument(CAMERA_A_SHORT_FLAG, 0, camera_selection_list_a);
-    status = parseCameraSelectionList(
+    status = ::mmsolver::sfm::parseCameraSelectionList(
         camera_selection_list_a, m_time_a, m_camera_a, m_camera_tx_attr_a,
         m_camera_ty_attr_a, m_camera_tz_attr_a, m_camera_rx_attr_a,
         m_camera_ry_attr_a, m_camera_rz_attr_a, m_image_width_a,
@@ -400,7 +254,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
     MMSOLVER_INFO("run parseCameraSelectionList B");
     MSelectionList camera_selection_list_b;
     argData.getFlagArgument(CAMERA_B_SHORT_FLAG, 0, camera_selection_list_b);
-    status = parseCameraSelectionList(
+    status = ::mmsolver::sfm::parseCameraSelectionList(
         camera_selection_list_b, m_time_b, m_camera_b, m_camera_tx_attr_b,
         m_camera_ty_attr_b, m_camera_tz_attr_b, m_camera_rx_attr_b,
         m_camera_ry_attr_b, m_camera_rz_attr_b, m_image_width_b,
@@ -501,7 +355,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             marker_b->setCamera(m_camera_b);
 
             MMSOLVER_INFO("run addMarkerBundles");
-            addMarkerBundles(m_time_a, m_time_b, m_image_width_a,
+            ::mmsolver::sfm::addMarkerBundles(m_time_a, m_time_b, m_image_width_a,
                              m_image_height_a, m_image_width_b,
                              m_image_height_b, marker_a, marker_b, bundle,
                              m_bundle_list, m_marker_list_a, m_marker_list_b,
@@ -537,15 +391,15 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     double ppx_pix_b = 0.0;
     double ppy_pix_a = 0.0;
     double ppy_pix_b = 0.0;
-    sfm::convert_camera_lens_mm_to_pixel_units(
+    ::mmsolver::sfm::convert_camera_lens_mm_to_pixel_units(
         m_image_width_a, m_image_height_a, m_focal_length_mm_a,
         m_sensor_width_mm_a, focal_length_pix_a, ppx_pix_a, ppy_pix_a);
-    sfm::convert_camera_lens_mm_to_pixel_units(
+    ::mmsolver::sfm::convert_camera_lens_mm_to_pixel_units(
         m_image_width_b, m_image_height_b, m_focal_length_mm_b,
         m_sensor_width_mm_b, focal_length_pix_b, ppx_pix_b, ppy_pix_b);
 
     openMVG::sfm::RelativePose_Info pose_info;
-    auto relative_pose_ok = sfm::compute_relative_pose(
+    auto relative_pose_ok = ::mmsolver::sfm::compute_relative_pose(
         m_image_width_a, m_image_width_b, m_image_height_a, m_image_height_b,
         focal_length_pix_a, focal_length_pix_b, ppx_pix_a, ppx_pix_b, ppy_pix_a,
         ppy_pix_b, m_marker_coords_a, m_marker_coords_b, m_marker_list_a,
@@ -557,7 +411,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     }
 
     openMVG::sfm::SfM_Data scene;
-    auto sfm_data_ok = sfm::construct_two_camera_sfm_data_scene(
+    auto sfm_data_ok = ::mmsolver::sfm::construct_two_camera_sfm_data_scene(
         m_image_width_a, m_image_width_b, m_image_height_a, m_image_height_b,
         focal_length_pix_a, focal_length_pix_b, ppx_pix_a, ppx_pix_b, ppy_pix_a,
         ppy_pix_b, pose_info, scene);
@@ -578,7 +432,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     // Init structure by inlier triangulation
     MMSOLVER_INFO("I ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    auto triangulate_ok = sfm::triangulate_relative_pose(
+    auto triangulate_ok = ::mmsolver::sfm::triangulate_relative_pose(
         m_marker_coords_a, m_marker_coords_b, pose_info.vec_inliers,
         m_marker_list_a, m_marker_list_b, m_bundle_list, scene);
     if (!triangulate_ok) {
@@ -596,7 +450,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
 #ifndef _WIN32
     MMSOLVER_INFO("J ---");
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    auto adjust_ok = sfm::bundle_adjustment(scene);
+    auto adjust_ok = ::mmsolver::sfm::bundle_adjustment(scene);
     if (!adjust_ok) {
         MMSOLVER_ERR("Bundle Adjustment failed.");
         status = MS::kFailure;

@@ -86,9 +86,8 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
-#include <string>
 #include <utility>
+#include <vector>
 
 // Ceres Solver
 #ifdef MMSOLVER_USE_CERES
@@ -120,7 +119,6 @@
 
 #include "openMVG/cameras/Camera_Common.hpp"
 #include "openMVG/cameras/Cameras_Common_command_line_helper.hpp"
-
 #include "openMVG/sfm/pipelines/sfm_features_provider.hpp"
 #include "openMVG/sfm/pipelines/sfm_matches_provider.hpp"
 #include "openMVG/sfm/sfm_data.hpp"
@@ -131,13 +129,13 @@
 #include "openMVG/types.hpp"
 
 // SfM Engines
-#include "openMVG/sfm/pipelines/sequential/sequential_SfM.hpp"
-#include "openMVG/sfm/pipelines/sequential/sequential_SfM2.hpp"
-#include "openMVG/sfm/pipelines/sequential/SfmSceneInitializerMaxPair.hpp"
-#include "openMVG/sfm/pipelines/sequential/SfmSceneInitializerStellar.hpp"
 #include "openMVG/sfm/pipelines/global/GlobalSfM_rotation_averaging.hpp"
 #include "openMVG/sfm/pipelines/global/GlobalSfM_translation_averaging.hpp"
 #include "openMVG/sfm/pipelines/global/sfm_global_engine_relative_motions.hpp"
+#include "openMVG/sfm/pipelines/sequential/SfmSceneInitializerMaxPair.hpp"
+#include "openMVG/sfm/pipelines/sequential/SfmSceneInitializerStellar.hpp"
+#include "openMVG/sfm/pipelines/sequential/sequential_SfM.hpp"
+#include "openMVG/sfm/pipelines/sequential/sequential_SfM2.hpp"
 
 #endif  // MMSOLVER_USE_OPENMVG
 
@@ -270,11 +268,9 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
             cam.setShapeNodeName(shape_node_name);
 
             ::mmsolver::sfm::get_camera_image_res(
-                m_startFrame, uiUnit, cam, m_image_width_a,
-                m_image_height_a);
+                m_startFrame, uiUnit, cam, m_image_width_a, m_image_height_a);
             ::mmsolver::sfm::get_camera_image_res(
-                m_endFrame, uiUnit, cam, m_image_width_b,
-                m_image_height_b);
+                m_endFrame, uiUnit, cam, m_image_width_b, m_image_height_b);
         }
     }
     MMSOLVER_INFO("image A: " << m_image_width_a << "x" << m_image_height_a);
@@ -314,11 +310,9 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
             MTime endTime = MTime(static_cast<double>(m_endFrame), uiUnit);
 
             auto success_a = ::mmsolver::sfm::get_marker_coord(
-                startTime, mkr, x_a,
-                y_a, weight_a, enable_a);
+                startTime, mkr, x_a, y_a, weight_a, enable_a);
             auto success_b = ::mmsolver::sfm::get_marker_coord(
-                endTime, mkr, x_b, y_b,
-                weight_b, enable_b);
+                endTime, mkr, x_b, y_b, weight_b, enable_b);
             if (success_a && success_b) {
                 double xx_a =
                     (x_a + 0.5) * static_cast<double>(m_image_width_a);

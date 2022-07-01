@@ -355,11 +355,11 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             marker_b->setCamera(m_camera_b);
 
             MMSOLVER_INFO("run addMarkerBundles");
-            ::mmsolver::sfm::addMarkerBundles(m_time_a, m_time_b, m_image_width_a,
-                             m_image_height_a, m_image_width_b,
-                             m_image_height_b, marker_a, marker_b, bundle,
-                             m_bundle_list, m_marker_list_a, m_marker_list_b,
-                             m_marker_coords_a, m_marker_coords_b);
+            ::mmsolver::sfm::addMarkerBundles(
+                m_time_a, m_time_b, m_image_width_a, m_image_height_a,
+                m_image_width_b, m_image_height_b, marker_a, marker_b, bundle,
+                m_bundle_list, m_marker_list_a, m_marker_list_b,
+                m_marker_coords_a, m_marker_coords_b);
         }
     }
 

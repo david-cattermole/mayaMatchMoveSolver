@@ -64,9 +64,8 @@ namespace sfm {
 bool get_marker_coords(const MTime &time, MarkerPtr &mkr, double &x, double &y,
                        double &weight, bool &enable);
 
-bool get_marker_coord(const MTime time,
-                      Marker &mkr, double &x, double &y, double &weight,
-                      bool &enable);
+bool get_marker_coord(const MTime time, Marker &mkr, double &x, double &y,
+                      double &weight, bool &enable);
 
 MStatus get_camera_values(const MTime &time, CameraPtr &cam, int &image_width,
                           int &image_height, double &focal_length_mm,

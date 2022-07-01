@@ -170,9 +170,8 @@ bool get_marker_coords(const MTime &time, MarkerPtr &mkr, double &x, double &y,
 }
 
 // TODO: Replace this function wtih 'get_marker_coords'
-bool get_marker_coord(const MTime time,
-                      MMMarker &mkr, double &x, double &y, double &weight,
-                      bool &enable) {
+bool get_marker_coord(const MTime time, MMMarker &mkr, double &x, double &y,
+                      double &weight, bool &enable) {
     auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
 
     mkr.getPosXY(x, y, time, timeEvalMode);

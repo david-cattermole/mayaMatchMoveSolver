@@ -71,6 +71,7 @@ set(CMINPACK_PATCH_DST_1 ${CMINPACK_SOURCE_DIR})
 ExternalProject_Add(cminpack
     PREFIX ${CMINPACK_PREFIX}
     URL "https://github.com/devernay/cminpack/archive/v1.3.8.tar.gz"
+    URL_HASH MD5=8fa8ae3c7a3e6259f26c51c62045af99
     INSTALL_DIR ${CMINPACK_INSTALL_PATH}
     PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${CMINPACK_PATCH_SRC_1} ${CMINPACK_PATCH_DST_1}
     CMAKE_ARGS
@@ -335,6 +336,7 @@ ExternalProject_Add(ldpk
     PREFIX ${LDPK_PREFIX}
     DEPENDS ${LDPK_DEPENDS}
     URL "https://www.3dequalizer.com/user_daten/sections/tech_docs/archives/ldpk-2.7.tgz"
+    URL_HASH MD5=4b8eb9cd970c671f5ef37e5001979bf2
     DOWNLOAD_DIR ${LDPK_DOWNLOAD_DIR}
     SOURCE_DIR ${LDPK_SOURCE_DIR}
     INSTALL_DIR ${LDPK_INSTALL_PATH}

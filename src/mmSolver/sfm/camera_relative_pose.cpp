@@ -92,6 +92,8 @@
 // OpenMVG
 #ifdef MMSOLVER_USE_OPENMVG
 
+#include <ceres/ceres.h>
+
 #include <openMVG/numeric/numeric.h>
 
 #include <openMVG/cameras/Camera_Intrinsics.hpp>
@@ -568,6 +570,11 @@ bool bundle_adjustment(openMVG::sfm::SfM_Data &scene) {
             bundle_adjust_verbose, bundle_adjust_multithreaded);
     ceres_options.bCeres_summary_ = true;
     ceres_options.bUse_loss_function_ = false;
+
+    ceres_options.linear_solver_type_ = static_cast<int>(ceres::DENSE_NORMAL_CHOLESKY);
+    ceres_options.preconditioner_type_ = static_cast<int>(ceres::JACOBI);
+    ceres_options.sparse_linear_algebra_library_type_ = static_cast<int>(ceres::NO_SPARSE);
+
     MMSOLVER_INFO(
         "ceres_options.bCeres_summary_: " << ceres_options.bCeres_summary_);
     MMSOLVER_INFO("ceres_options.nb_threads_: " << ceres_options.nb_threads_);

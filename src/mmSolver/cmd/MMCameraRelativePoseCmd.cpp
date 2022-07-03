@@ -130,7 +130,6 @@ maya.cmds.mmCameraRelativePose(
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
-// TODO: Add these flags to the command to allow querying two different cameras.
 #define CAMERA_A_SHORT_FLAG "-ca"
 #define CAMERA_A_LONG_FLAG "-cameraA"
 

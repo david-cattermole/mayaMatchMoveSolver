@@ -66,8 +66,6 @@ function(set_global_maya_plugin_compile_options)
     # doesn't support it.
     add_compile_definitions(GLOG_NO_ABBREVIATED_SEVERITIES)
 
-    add_compile_definitions(GFLAGS_DLL_DECL)
-
     # Ceres running on Windows can trigger a MSVC warning:
     #
     # "Compiler Warning (level 3) C4996: Your code uses a function,

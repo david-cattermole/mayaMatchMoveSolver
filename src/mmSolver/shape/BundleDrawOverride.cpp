@@ -232,8 +232,6 @@ void BundleDrawOverride::addUIDrawables(
         cross_line_list.set(pnt * obj_matrix, i);
     }
 
-    // X-Ray mode disregards depth testing and will always draw
-    // on-top.
     drawManager.beginDrawable(MHWRender::MUIDrawManager::kSelectable);
     drawManager.setColor(data->m_color);
     drawManager.setLineWidth(static_cast<float>(data->m_line_width));
@@ -241,7 +239,9 @@ void BundleDrawOverride::addUIDrawables(
     drawManager.setPointSize(static_cast<float>(data->m_point_size));
     drawManager.setDepthPriority(data->m_depth_priority);
 
-    if (data->m_active || data->m_draw_on_top) {
+    // X-Ray mode disregards depth testing and will always draw
+    // on-top.
+    if (data->m_draw_on_top) {
         drawManager.beginDrawInXray();
         drawManager.setColor(data->m_color);
         drawManager.setLineWidth(static_cast<float>(data->m_line_width));
@@ -258,7 +258,7 @@ void BundleDrawOverride::addUIDrawables(
     drawManager.mesh(MHWRender::MUIDrawManager::kLines, cross_line_list,
                      nullptr, nullptr, &data->m_cross_line_index_list);
 
-    if (data->m_active || data->m_draw_on_top) {
+    if (data->m_draw_on_top) {
         drawManager.endDrawInXray();
     }
 

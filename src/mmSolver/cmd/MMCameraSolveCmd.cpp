@@ -166,7 +166,6 @@
 
 namespace mmsolver {
 
-
 using MMMarker = Marker;
 using MMCamera = Camera;
 

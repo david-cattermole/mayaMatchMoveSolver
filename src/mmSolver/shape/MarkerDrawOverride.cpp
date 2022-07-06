@@ -289,8 +289,6 @@ void MarkerDrawOverride::addUIDrawables(
         box_line_list.set(pnt * obj_matrix, i);
     }
 
-    // X-Ray mode disregards depth testing and will always draw
-    // on-top.
     drawManager.beginDrawable(MHWRender::MUIDrawManager::kSelectable);
     drawManager.setColor(data->m_color);
     drawManager.setLineWidth(static_cast<float>(data->m_line_width));
@@ -298,15 +296,19 @@ void MarkerDrawOverride::addUIDrawables(
     drawManager.setPointSize(static_cast<float>(data->m_point_size));
     drawManager.setDepthPriority(data->m_depth_priority);
 
+    // X-Ray mode disregards depth testing and will always draw
+    // on-top.
     drawManager.beginDrawInXray();
     drawManager.setColor(data->m_color);
     drawManager.setLineWidth(static_cast<float>(data->m_line_width));
     drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
     drawManager.setPointSize(static_cast<float>(data->m_point_size));
     drawManager.setDepthPriority(data->m_depth_priority);
+
     // Draw point directly in the center of the object transform.
     MPointArray point_list(1);
     drawManager.mesh(MHWRender::MUIDrawManager::kPoints, point_list);
+
     // Draw cross
     drawManager.mesh(MHWRender::MUIDrawManager::kLines, cross_line_list,
                      nullptr, nullptr, &data->m_cross_line_index_list);

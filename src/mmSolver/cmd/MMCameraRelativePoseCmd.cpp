@@ -382,7 +382,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
 
     // Essential geometry filtering of putative matches
     MMSOLVER_INFO("Compute Essential geometry...");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     double focal_length_pix_a = 0.0;
     double focal_length_pix_b = 0.0;
@@ -421,7 +421,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     }
 
     MMSOLVER_INFO("H ---");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     openMVG::sfm::Save(scene, "EssentialGeometry_construct.json",
                        openMVG::sfm::ESfM_Data(openMVG::sfm::ESfM_Data::ALL));
 
@@ -430,7 +430,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     //
     // Init structure by inlier triangulation
     MMSOLVER_INFO("I ---");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     auto triangulate_ok = ::mmsolver::sfm::triangulate_relative_pose(
         m_marker_coords_a, m_marker_coords_b, pose_info.vec_inliers,
         m_marker_list_a, m_marker_list_b, m_bundle_list, scene);
@@ -448,7 +448,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     // script for building OpenMVG and/or Ceres is likely wrong.
 #ifndef _WIN32
     MMSOLVER_INFO("J ---");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     auto adjust_ok = ::mmsolver::sfm::bundle_adjustment(scene);
     if (!adjust_ok) {
         MMSOLVER_ERR("Bundle Adjustment failed.");
@@ -457,7 +457,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     }
 #endif
     MMSOLVER_INFO("K ---");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     openMVG::sfm::Save(scene, "EssentialGeometry_bundle_adjustment.json",
                        openMVG::sfm::ESfM_Data(openMVG::sfm::ESfM_Data::ALL));
 
@@ -556,7 +556,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
 
     MMSOLVER_INFO("m_bundle_list size: " << m_bundle_list.size());
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     auto landmarks = scene.GetLandmarks();
     auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     auto i = 0;
@@ -568,14 +568,14 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         double ty = pos[1];
         // Fixes the Camera +Z/-Z issue with Maya compared to OpenMVG.
         double tz = -pos[2];
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         if (i < m_bundle_list.size()) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            // std::this_thread::sleep_for(std::chrono::milliseconds(10));
             auto bnd = m_bundle_list[i];
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            // std::this_thread::sleep_for(std::chrono::milliseconds(10));
             auto bnd_name = bnd->getNodeName();
-            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+            // std::this_thread::sleep_for(std::chrono::milliseconds(10));
             MMSOLVER_INFO("landmark bnd: " << bnd_name.asChar() << " | " << key
                                            << " x=" << tx << " y=" << ty
                                            << " z=" << tz);

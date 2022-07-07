@@ -357,7 +357,7 @@ bool compute_relative_pose(
     const MarkerPtrList &marker_list_a, const MarkerPtrList &marker_list_b,
     openMVG::sfm::RelativePose_Info &pose_info) {
     MMSOLVER_INFO("B ---");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     const openMVG::cameras::Pinhole_Intrinsic cam_a(
         image_width_a, image_height_a, focal_length_pix_a, ppx_pix_a,
         ppy_pix_a);
@@ -366,7 +366,7 @@ bool compute_relative_pose(
         ppy_pix_b);
 
     MMSOLVER_INFO("C ---");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     openMVG::Mat marker_coords_matrix_a =
         convert_marker_coords_to_matrix(marker_coords_a);
@@ -374,7 +374,7 @@ bool compute_relative_pose(
         convert_marker_coords_to_matrix(marker_coords_b);
 
     MMSOLVER_INFO("D ---");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     // Compute the relative pose thanks to an essential matrix
     // estimation.
@@ -389,12 +389,12 @@ bool compute_relative_pose(
         &cam_a, &cam_b, marker_coords_matrix_a, marker_coords_matrix_b,
         pose_info, image_size_a, image_size_b, num_max_iter);
     MMSOLVER_INFO("D2 ---");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     if (!robust_pose_ok) {
         MMSOLVER_ERR("Robust relative pose estimation failure.");
         return false;
     }
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     MMSOLVER_INFO("Found an Essential matrix:");
     MMSOLVER_INFO("- precision: " << pose_info.found_residual_precision
                                   << " pixels");
@@ -431,7 +431,7 @@ bool compute_relative_pose(
     MMSOLVER_INFO("- Center: " << pose_info.relativePose.center());
     MMSOLVER_INFO("- Translation: " << pose_info.relativePose.translation());
     MMSOLVER_INFO("- Rotation: " << pose_info.relativePose.rotation());
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     return true;
 }
 
@@ -449,7 +449,7 @@ bool construct_two_camera_sfm_data_scene(
 
     // Setup a SfM scene with two view corresponding the pictures
     MMSOLVER_INFO("E ---");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     scene.views[0].reset(new openMVG::sfm::View(
         /*imgPath=*/"",
         /*view_id=*/0,
@@ -464,7 +464,7 @@ bool construct_two_camera_sfm_data_scene(
     // Setup intrinsics camera data
     // Each view use it's own pinhole camera intrinsic
     MMSOLVER_INFO("F ---");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     scene.intrinsics[0].reset(new openMVG::cameras::Pinhole_Intrinsic(
         image_width_a, image_height_a, focal_length_pix_a, ppx_pix_a,
         ppy_pix_a));
@@ -474,7 +474,7 @@ bool construct_two_camera_sfm_data_scene(
 
     // Setup poses camera data
     MMSOLVER_INFO("G ---");
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     auto pose_a = openMVG::geometry::Pose3(openMVG::Mat3::Identity(),
                                            openMVG::Vec3::Zero());
     auto pose_b = pose_info.relativePose;
@@ -495,7 +495,7 @@ bool triangulate_relative_pose(
     openMVG::geometry::Pose3 pose_a = scene.poses[scene.views[0]->id_pose];
     openMVG::geometry::Pose3 pose_b = scene.poses[scene.views[1]->id_pose];
     for (const auto inlier_idx : vec_inliers) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(10));
         MMSOLVER_INFO("triangulate inlier_idx: " << inlier_idx);
 
         auto coord_a = marker_coords_a[inlier_idx];
@@ -586,7 +586,7 @@ bool bundle_adjustment(openMVG::sfm::SfM_Data &scene) {
                   << ceres_options.sparse_linear_algebra_library_type_);
     MMSOLVER_INFO("ceres_options.bUse_loss_function_: "
                   << ceres_options.bUse_loss_function_);
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     openMVG::sfm::Bundle_Adjustment_Ceres bundle_adjustment(ceres_options);
     return bundle_adjustment.Adjust(scene, optimize_options);
 }

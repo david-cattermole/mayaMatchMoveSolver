@@ -405,7 +405,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         m_marker_list_b, pose_info);
     if (!relative_pose_ok) {
         MMSOLVER_ERR("Compute Relative pose failed.");
-        status = MS::kFailure;
+        MMCameraRelativePoseCmd::setResult(false);
         return status;
     }
 
@@ -416,7 +416,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         ppy_pix_b, pose_info, scene);
     if (!sfm_data_ok) {
         MMSOLVER_ERR("Failed to construct two camera SfM scene.");
-        status = MS::kFailure;
+        MMCameraRelativePoseCmd::setResult(false);
         return status;
     }
 
@@ -436,7 +436,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         m_marker_list_a, m_marker_list_b, m_bundle_list, scene);
     if (!triangulate_ok) {
         MMSOLVER_ERR("Triangulate relative pose points failed.");
-        status = MS::kFailure;
+        MMCameraRelativePoseCmd::setResult(false);
         return status;
     }
     openMVG::sfm::Save(scene, "EssentialGeometry_triangulate.json",
@@ -453,6 +453,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     if (!adjust_ok) {
         MMSOLVER_ERR("Bundle Adjustment failed.");
         status = MS::kFailure;
+        MMCameraRelativePoseCmd::setResult(false);
         return status;
     }
 #endif
@@ -598,7 +599,9 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     }
     m_dgmod.doIt();
 
-    MMCameraRelativePoseCmd::setResult(outResult);
+    // TODO: Set result to something that is helpful.
+    // MMCameraRelativePoseCmd::setResult(outResults);
+    MMCameraRelativePoseCmd::setResult(true);
     return status;
 }
 

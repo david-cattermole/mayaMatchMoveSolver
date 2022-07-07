@@ -666,7 +666,7 @@ class Marker(object):
 
     def get_weight(self, time=None):
         """
-        Get the current wire-frame colour of the Marker.
+        Get the weight value Marker.
 
         :param time: The time to query the weight, if not given the
                      current frame is used.

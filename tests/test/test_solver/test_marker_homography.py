@@ -40,6 +40,12 @@ import mmSolver.api as mmapi
 
 import test.test_solver.solverutils as solverUtils
 
+def matrix_dot_product(matrix_a, matrix_b):
+    r = 0.0
+    for a, b in zip(matrix_a, matrix_b):
+        r += a * b
+    return r
+
 
 # @unittest.skip
 class TestMarkerHomography(solverUtils.SolverTestCase):
@@ -156,6 +162,13 @@ class TestMarkerHomography(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         print('result:', result)
+        assert len(result) == 9
+
+        identity = [1.0, 0.0, 0.0,
+                    0.0, 1.0, 0.0,
+                    0.0, 0.0, 1.0]
+        scalar = matrix_dot_product(identity, result)
+        print('scalar:', scalar)
         return
 
     def test_eight_point1(self):
@@ -230,6 +243,13 @@ class TestMarkerHomography(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         print('result:', result)
+        assert len(result) == 9
+
+        identity = [1.0, 0.0, 0.0,
+                    0.0, 1.0, 0.0,
+                    0.0, 0.0, 1.0]
+        scalar = matrix_dot_product(identity, result)
+        print('scalar:', scalar)
         return
 
 

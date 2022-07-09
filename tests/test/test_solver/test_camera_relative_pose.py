@@ -38,6 +38,43 @@ import mmSolver.api as mmapi
 
 import test.test_solver.solverutils as solverUtils
 
+
+def deconstruct_result(command_kwargs, result):
+    # TODO: Deconstruct the result values and set node attribute
+    # values.
+    if len(result) == 0:
+        print('Solve did not complete.')
+        return
+
+    print('command_kwargs:', command_kwargs)
+    print('result:', result)
+
+    cam_tfm_a = command_kwargs['cameraA']
+    cam_tfm_b = command_kwargs['cameraB']
+    cam_a = mmapi.Camera(transform=cam_tfm_a)
+    cam_b = mmapi.Camera(transform=cam_tfm_b)
+
+    mkr_bnd_list = command_kwargs['markerBundle']
+
+    cam_matrix_a = result[0:16]
+    cam_matrix_b = result[16:32]
+    print('cam_matrix_a:', cam_matrix_a)
+    print('cam_matrix_b:', cam_matrix_b)
+
+    bnd_results = result[32:]
+    assert (len(bnd_results) % 4) == 0
+    bnd_result_num = len(bnd_results) // 4
+    for i in range(bnd_result_num):
+        result_index = i * 4
+        index = int(bnd_results[result_index])
+        bnd_node = mkr_bnd_list[index][2]
+        tx = bnd_results[result_index + 1]
+        ty = bnd_results[result_index + 2]
+        tz = bnd_results[result_index + 3]
+        print('bnd:', bnd_node, 'pos:', tx, ty, tz)
+    return
+
+
 # @unittest.skip
 class TestCameraRelativePose(solverUtils.SolverTestCase):
     def create_scene(self, frame_a, frame_b, marker_data_list):
@@ -47,8 +84,8 @@ class TestCameraRelativePose(solverUtils.SolverTestCase):
         cam_tfm, cam_shp = self.create_camera('cam')
         mkr_grp = self.create_marker_group('marker_group', cam_tfm)
 
-        fb_width = 1.41732
-        fb_height = 0.79724409
+        fb_width = 36.0 / 25.4
+        fb_height = 24.0 / 25.4
         focal_length = 35.0
         maya.cmds.setAttr(cam_tfm + '.rotateOrder', 2)  # 2 = ZXY
         maya.cmds.setAttr(cam_shp + '.horizontalFilmAperture', fb_width)
@@ -58,6 +95,11 @@ class TestCameraRelativePose(solverUtils.SolverTestCase):
         maya.cmds.setAttr(cam_shp + '.displayFilmGate', 1)
         maya.cmds.setAttr(cam_shp + '.overscan', 1.5)
 
+        # Set some initial values for the camera. As long as the
+        # 'useCameraTransform' flag is given to mmCameraRelativePose,
+        # then these values should be taken into consideration and the
+        # solved camera pose should be relative to the initial camera
+        # transform.
         attrs = [
             'translateX',
             'translateY',
@@ -68,7 +110,7 @@ class TestCameraRelativePose(solverUtils.SolverTestCase):
         ]
         for frame in [frame_a, frame_b]:
             for attr in attrs:
-                maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=frame_a, value=0.0)
+                maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=frame_a, value=10.0)
 
         mkr_bnd_list = []
         for marker_data in marker_data_list:
@@ -150,6 +192,8 @@ class TestCameraRelativePose(solverUtils.SolverTestCase):
             ],
         ]
         kwargs = self.create_scene(frame_a, frame_b, marker_data_list)
+        kwargs['useCameraTransform'] = True
+        kwargs['setValues'] = True
 
         # save the output
         file_name = 'solver_relative_camera_pose_five_point_pose1_before.ma'
@@ -163,6 +207,8 @@ class TestCameraRelativePose(solverUtils.SolverTestCase):
         result = maya.cmds.mmCameraRelativePose(**kwargs)
         e = time.time()
         print('total time:', e - s)
+
+        deconstruct_result(kwargs, result)
 
         # save the output
         file_name = 'solver_relative_camera_pose_five_point_pose1_after.ma'
@@ -227,6 +273,8 @@ class TestCameraRelativePose(solverUtils.SolverTestCase):
             ],
         ]
         kwargs = self.create_scene(frame_a, frame_b, marker_data_list)
+        kwargs['useCameraTransform'] = True
+        kwargs['setValues'] = True
 
         # save the output
         file_name = 'solver_relative_camera_pose_eight_point_pose1_before.ma'
@@ -240,6 +288,8 @@ class TestCameraRelativePose(solverUtils.SolverTestCase):
         result = maya.cmds.mmCameraRelativePose(**kwargs)
         e = time.time()
         print('total time:', e - s)
+
+        deconstruct_result(kwargs, result)
 
         # save the output
         file_name = 'solver_relative_camera_pose_eight_point_pose1_after.ma'

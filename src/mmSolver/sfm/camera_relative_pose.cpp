@@ -93,7 +93,6 @@
 #ifdef MMSOLVER_USE_OPENMVG
 
 #include <ceres/ceres.h>
-
 #include <openMVG/numeric/numeric.h>
 
 #include <openMVG/cameras/Camera_Intrinsics.hpp>
@@ -153,22 +152,6 @@
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
-// TODO: Add these flags to the command to allow querying two different cameras.
-#define CAMERA_A_SHORT_FLAG "-ca"
-#define CAMERA_A_LONG_FLAG "-cameraA"
-
-#define CAMERA_B_SHORT_FLAG "-cb"
-#define CAMERA_B_LONG_FLAG "-cameraB"
-
-#define FRAME_A_SHORT_FLAG "-fa"
-#define FRAME_A_LONG_FLAG "-frameA"
-
-#define FRAME_B_SHORT_FLAG "-fb"
-#define FRAME_B_LONG_FLAG "-frameB"
-
-#define MARKER_BUNDLE_SHORT_FLAG "-mb"
-#define MARKER_BUNDLE_LONG_FLAG "-markerBundle"
-
 namespace mmsolver {
 namespace sfm {
 
@@ -184,29 +167,26 @@ bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
                           const std::pair<size_t, size_t> &size_ima1,
                           const std::pair<size_t, size_t> &size_ima2,
                           const size_t max_iteration_count) {
-    MMSOLVER_INFO("myRobustRelativePose: intrinsics1: " << intrinsics1);
-    MMSOLVER_INFO("myRobustRelativePose: intrinsics2: " << intrinsics2);
-    MMSOLVER_INFO("myRobustRelativePose: x1: " << x1);
-    MMSOLVER_INFO("myRobustRelativePose: x2: " << x2);
-    MMSOLVER_INFO("myRobustRelativePose: size_ima1: " << size_ima1.first << ", "
-                                                      << size_ima1.second);
-    MMSOLVER_INFO("myRobustRelativePose: size_ima2: " << size_ima2.first << ", "
-                                                      << size_ima2.second);
-    MMSOLVER_INFO(
+    // Enable to print out 'MMSOLVER_VRB' results.
+    const bool verbose = false;
+
+    MMSOLVER_VRB("myRobustRelativePose: intrinsics1: " << intrinsics1);
+    MMSOLVER_VRB("myRobustRelativePose: intrinsics2: " << intrinsics2);
+    MMSOLVER_VRB("myRobustRelativePose: x1: " << x1);
+    MMSOLVER_VRB("myRobustRelativePose: x2: " << x2);
+    MMSOLVER_VRB("myRobustRelativePose: size_ima1: " << size_ima1.first << ", "
+                                                     << size_ima1.second);
+    MMSOLVER_VRB("myRobustRelativePose: size_ima2: " << size_ima2.first << ", "
+                                                     << size_ima2.second);
+    MMSOLVER_VRB(
         "myRobustRelativePose: max_iteration_count: " << max_iteration_count);
     if (!intrinsics1 || !intrinsics2) {
         return false;
     }
 
-    // MMSOLVER_INFO("=== 1");
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
     // Compute the bearing vectors
     const openMVG::Mat3X bearing1 = (*intrinsics1)(x1),
                          bearing2 = (*intrinsics2)(x2);
-
-    // MMSOLVER_INFO("=== 2");
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     auto pinhole_cameras_only =
         isPinhole(intrinsics1->getType()) && isPinhole(intrinsics2->getType());
@@ -214,9 +194,6 @@ bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
     auto more_than_eight = x1.cols() > 8;
 
     if (more_than_eight) {
-        // MMSOLVER_INFO("=== 7");
-        // std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
         // Define the AContrario adaptor to use the 8 point essential matrix
         // solver.
         typedef openMVG::robust::ACKernelAdaptor_AngularRadianError<
@@ -236,19 +213,17 @@ bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
             kernel, relativePose_info.vec_inliers, max_iteration_count,
             &relativePose_info.essential_matrix, upper_bound_precision,
             /*bVerbose=*/true);
-        MMSOLVER_INFO("=== 8");
 
         const double &threshold = ac_ransac_output.first;
         relativePose_info.found_residual_precision =
             openMVG::R2D(threshold);  // Degree
 
         auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES;
-        MMSOLVER_INFO(
+        MMSOLVER_VRB(
             "myRobustRelativePose: minimum_samples: " << minimum_samples);
-        MMSOLVER_INFO("myRobustRelativePose: samples: "
-                      << relativePose_info.vec_inliers.size());
+        MMSOLVER_VRB("myRobustRelativePose: samples: "
+                     << relativePose_info.vec_inliers.size());
         if (relativePose_info.vec_inliers.size() < minimum_samples) {
-            MMSOLVER_INFO("=== 9");
             // no sufficient coverage (the model does not support enough
             // samples)
             return false;
@@ -256,9 +231,6 @@ bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
 
     } else if (more_than_five && pinhole_cameras_only) {
         // Five Point Solver only supports pinhole cameras.
-
-        // MMSOLVER_INFO("=== 3");
-        // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
         // Define the AContrario adaptor to use the 5 point essential matrix
         // solver.
@@ -275,9 +247,6 @@ bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
                 intrinsics2)
                 ->K());
 
-        // MMSOLVER_INFO("=== 4");
-        // std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
         // Robustly estimation of the Model and its precision
         const auto ac_ransac_output = openMVG::robust::ACRANSAC(
             kernel, relativePose_info.vec_inliers, max_iteration_count,
@@ -285,26 +254,17 @@ bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
             relativePose_info.initial_residual_tolerance,
             /*bVerbose=*/true);
 
-        // MMSOLVER_INFO("=== 5");
-        // std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
         relativePose_info.found_residual_precision = ac_ransac_output.first;
 
         auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES;
-        MMSOLVER_INFO("minimum_samples: " << minimum_samples);
-        MMSOLVER_INFO("samples: " << relativePose_info.vec_inliers.size());
+        MMSOLVER_VRB("minimum_samples: " << minimum_samples);
+        MMSOLVER_VRB("samples: " << relativePose_info.vec_inliers.size());
         if (relativePose_info.vec_inliers.size() < minimum_samples) {
-            // MMSOLVER_INFO("=== 6");
-            // std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
             // no sufficient coverage (the model does not support
             // enough samples)
             return false;
         }
     }
-
-    // MMSOLVER_INFO("=== 10");
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     // estimation of the relative poses based on the cheirality test
     openMVG::geometry::Pose3 relative_pose;
@@ -313,9 +273,6 @@ bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
             relativePose_info.vec_inliers, &relative_pose)) {
         return false;
     }
-
-    // MMSOLVER_INFO("=== 11");
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     relativePose_info.relativePose = relative_pose;
     return true;
@@ -356,8 +313,9 @@ bool compute_relative_pose(
     const std::vector<std::pair<double, double>> &marker_coords_b,
     const MarkerPtrList &marker_list_a, const MarkerPtrList &marker_list_b,
     openMVG::sfm::RelativePose_Info &pose_info) {
-    MMSOLVER_INFO("B ---");
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    // Enable to print out 'MMSOLVER_VRB' results.
+    const bool verbose = false;
+
     const openMVG::cameras::Pinhole_Intrinsic cam_a(
         image_width_a, image_height_a, focal_length_pix_a, ppx_pix_a,
         ppy_pix_a);
@@ -365,16 +323,10 @@ bool compute_relative_pose(
         image_width_b, image_height_b, focal_length_pix_b, ppx_pix_b,
         ppy_pix_b);
 
-    MMSOLVER_INFO("C ---");
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
     openMVG::Mat marker_coords_matrix_a =
         convert_marker_coords_to_matrix(marker_coords_a);
     openMVG::Mat marker_coords_matrix_b =
         convert_marker_coords_to_matrix(marker_coords_b);
-
-    MMSOLVER_INFO("D ---");
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
 
     // Compute the relative pose thanks to an essential matrix
     // estimation.
@@ -388,31 +340,28 @@ bool compute_relative_pose(
     bool robust_pose_ok = myRobustRelativePose(
         &cam_a, &cam_b, marker_coords_matrix_a, marker_coords_matrix_b,
         pose_info, image_size_a, image_size_b, num_max_iter);
-    MMSOLVER_INFO("D2 ---");
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     if (!robust_pose_ok) {
         MMSOLVER_ERR("Robust relative pose estimation failure.");
         return false;
     }
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    MMSOLVER_INFO("Found an Essential matrix:");
-    MMSOLVER_INFO("- precision: " << pose_info.found_residual_precision
-                                  << " pixels");
+    MMSOLVER_VRB("Found an Essential matrix:");
+    MMSOLVER_VRB("- precision: " << pose_info.found_residual_precision
+                                 << " pixels");
 
-    MMSOLVER_INFO("- #matches: " << marker_coords_matrix_a.size());
+    MMSOLVER_VRB("- #matches: " << marker_coords_matrix_a.size());
     for (auto i = 0; i < marker_coords_matrix_a.size(); i++) {
         auto coord_x_a = marker_coords_matrix_a.col(i)[0];
         auto coord_y_a = marker_coords_matrix_a.col(i)[1];
         auto coord_x_b = marker_coords_matrix_b.col(i)[0];
         auto coord_y_b = marker_coords_matrix_b.col(i)[1];
-        MMSOLVER_INFO("  - #match: " << i << " = " << coord_x_a << ","
-                                     << coord_y_a << " <-> " << coord_x_b << ","
-                                     << coord_y_b);
+        MMSOLVER_VRB("  - #match: " << i << " = " << coord_x_a << ","
+                                    << coord_y_a << " <-> " << coord_x_b << ","
+                                    << coord_y_b);
     }
 
-    MMSOLVER_INFO("- marker_list_a size: " << marker_list_a.size());
-    MMSOLVER_INFO("- marker_list_b size: " << marker_list_b.size());
-    MMSOLVER_INFO("- #inliers: " << pose_info.vec_inliers.size());
+    MMSOLVER_VRB("- marker_list_a size: " << marker_list_a.size());
+    MMSOLVER_VRB("- marker_list_b size: " << marker_list_b.size());
+    MMSOLVER_VRB("- #inliers: " << pose_info.vec_inliers.size());
     auto i = 0;
     for (auto inlier : pose_info.vec_inliers) {
         if (inlier < marker_list_a.size()) {
@@ -420,18 +369,17 @@ bool compute_relative_pose(
             auto mkr_b = marker_list_b[inlier];
             auto mkr_name_a = mkr_a->getNodeName();
             auto mkr_name_b = mkr_b->getNodeName();
-            MMSOLVER_INFO("  - #inlier A: " << i << " = " << inlier
-                                            << " mkr: " << mkr_name_a.asChar());
-            MMSOLVER_INFO("  - #inlier B: " << i << " = " << inlier
-                                            << " mkr: " << mkr_name_b.asChar());
+            MMSOLVER_VRB("  - #inlier A: " << i << " = " << inlier
+                                           << " mkr: " << mkr_name_a.asChar());
+            MMSOLVER_VRB("  - #inlier B: " << i << " = " << inlier
+                                           << " mkr: " << mkr_name_b.asChar());
         }
         ++i;
     }
 
-    MMSOLVER_INFO("- Center: " << pose_info.relativePose.center());
-    MMSOLVER_INFO("- Translation: " << pose_info.relativePose.translation());
-    MMSOLVER_INFO("- Rotation: " << pose_info.relativePose.rotation());
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    MMSOLVER_VRB("- Center: " << pose_info.relativePose.center());
+    MMSOLVER_VRB("- Translation: " << pose_info.relativePose.translation());
+    MMSOLVER_VRB("- Rotation: " << pose_info.relativePose.rotation());
     return true;
 }
 
@@ -448,8 +396,6 @@ bool construct_two_camera_sfm_data_scene(
     auto image_height_size_b = static_cast<size_t>(image_height_b);
 
     // Setup a SfM scene with two view corresponding the pictures
-    MMSOLVER_INFO("E ---");
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     scene.views[0].reset(new openMVG::sfm::View(
         /*imgPath=*/"",
         /*view_id=*/0,
@@ -463,8 +409,6 @@ bool construct_two_camera_sfm_data_scene(
 
     // Setup intrinsics camera data
     // Each view use it's own pinhole camera intrinsic
-    MMSOLVER_INFO("F ---");
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     scene.intrinsics[0].reset(new openMVG::cameras::Pinhole_Intrinsic(
         image_width_a, image_height_a, focal_length_pix_a, ppx_pix_a,
         ppy_pix_a));
@@ -473,8 +417,6 @@ bool construct_two_camera_sfm_data_scene(
         ppy_pix_b));
 
     // Setup poses camera data
-    MMSOLVER_INFO("G ---");
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
     auto pose_a = openMVG::geometry::Pose3(openMVG::Mat3::Identity(),
                                            openMVG::Vec3::Zero());
     auto pose_b = pose_info.relativePose;
@@ -490,14 +432,14 @@ bool triangulate_relative_pose(
     const std::vector<uint32_t> &vec_inliers,
     const MarkerPtrList &marker_list_a, const MarkerPtrList &marker_list_b,
     BundlePtrList &bundle_list, openMVG::sfm::SfM_Data &scene) {
+    // Enable to print out 'MMSOLVER_VRB' results.
+    const bool verbose = false;
+
     auto num = 0;
     openMVG::sfm::Landmarks &landmarks = scene.structure;
     openMVG::geometry::Pose3 pose_a = scene.poses[scene.views[0]->id_pose];
     openMVG::geometry::Pose3 pose_b = scene.poses[scene.views[1]->id_pose];
     for (const auto inlier_idx : vec_inliers) {
-        // std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        MMSOLVER_INFO("triangulate inlier_idx: " << inlier_idx);
-
         auto coord_a = marker_coords_a[inlier_idx];
         auto coord_b = marker_coords_b[inlier_idx];
         auto coord_x_a = std::get<0>(coord_a);
@@ -543,9 +485,9 @@ bool triangulate_relative_pose(
             auto mkr_name_a = mkr_a->getNodeName();
             auto mkr_name_b = mkr_b->getNodeName();
             auto bnd_name = bnd->getNodeName();
-            MMSOLVER_INFO("triangulated Marker A: " << mkr_name_a.asChar());
-            MMSOLVER_INFO("triangulated Marker B: " << mkr_name_b.asChar());
-            MMSOLVER_INFO("triangulated bundle: " << bnd_name.asChar());
+            MMSOLVER_VRB("triangulated Marker A: " << mkr_name_a.asChar());
+            MMSOLVER_VRB("triangulated Marker B: " << mkr_name_b.asChar());
+            MMSOLVER_VRB("triangulated bundle: " << bnd_name.asChar());
             num++;
         }
     }
@@ -553,6 +495,9 @@ bool triangulate_relative_pose(
 }
 
 bool bundle_adjustment(openMVG::sfm::SfM_Data &scene) {
+    // Enable to print out 'MMSOLVER_VRB' results.
+    const bool verbose = false;
+
     // Perform Bundle Adjustment of the scene.
     //
     // TODO: Add "openMVG::sfm::Control_Point_Parameter" to allow
@@ -571,22 +516,24 @@ bool bundle_adjustment(openMVG::sfm::SfM_Data &scene) {
     ceres_options.bCeres_summary_ = true;
     ceres_options.bUse_loss_function_ = false;
 
-    ceres_options.linear_solver_type_ = static_cast<int>(ceres::DENSE_NORMAL_CHOLESKY);
+    ceres_options.linear_solver_type_ =
+        static_cast<int>(ceres::DENSE_NORMAL_CHOLESKY);
     ceres_options.preconditioner_type_ = static_cast<int>(ceres::JACOBI);
-    ceres_options.sparse_linear_algebra_library_type_ = static_cast<int>(ceres::NO_SPARSE);
+    ceres_options.sparse_linear_algebra_library_type_ =
+        static_cast<int>(ceres::NO_SPARSE);
 
-    MMSOLVER_INFO(
+    MMSOLVER_VRB(
         "ceres_options.bCeres_summary_: " << ceres_options.bCeres_summary_);
-    MMSOLVER_INFO("ceres_options.nb_threads_: " << ceres_options.nb_threads_);
-    MMSOLVER_INFO("ceres_options.linear_solver_type_: "
-                  << ceres_options.linear_solver_type_);
-    MMSOLVER_INFO("ceres_options.preconditioner_type_: "
-                  << ceres_options.preconditioner_type_);
-    MMSOLVER_INFO("ceres_options.sparse_linear_algebra_library_type_: "
-                  << ceres_options.sparse_linear_algebra_library_type_);
-    MMSOLVER_INFO("ceres_options.bUse_loss_function_: "
-                  << ceres_options.bUse_loss_function_);
-    // std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    MMSOLVER_VRB("ceres_options.nb_threads_: " << ceres_options.nb_threads_);
+    MMSOLVER_VRB("ceres_options.linear_solver_type_: "
+                 << ceres_options.linear_solver_type_);
+    MMSOLVER_VRB("ceres_options.preconditioner_type_: "
+                 << ceres_options.preconditioner_type_);
+    MMSOLVER_VRB("ceres_options.sparse_linear_algebra_library_type_: "
+                 << ceres_options.sparse_linear_algebra_library_type_);
+    MMSOLVER_VRB("ceres_options.bUse_loss_function_: "
+                 << ceres_options.bUse_loss_function_);
+
     openMVG::sfm::Bundle_Adjustment_Ceres bundle_adjustment(ceres_options);
     return bundle_adjustment.Adjust(scene, optimize_options);
 }

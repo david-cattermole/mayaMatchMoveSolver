@@ -169,7 +169,8 @@ bool get_marker_coords(const MTime &time, MarkerPtr &mkr, double &x, double &y,
     return weight > 0;
 }
 
-// TODO: Replace this function wtih 'get_marker_coords'
+// TODO: Refactor, replace and combine this function with
+// 'get_marker_coords'.
 bool get_marker_coord(const MTime time, MMMarker &mkr, double &x, double &y,
                       double &weight, bool &enable) {
     auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
@@ -221,8 +222,10 @@ MStatus parseCameraSelectionList(
     Attr &camera_rx_attr, Attr &camera_ry_attr, Attr &camera_rz_attr,
     int32_t &image_width, int32_t &image_height, double &focal_length_mm,
     double &sensor_width_mm, double &sensor_height_mm) {
-    MMSOLVER_INFO("parseCameraSelectionList1");
     MStatus status = MStatus::kSuccess;
+
+    // Enable to print out 'MMSOLVER_VRB' results.
+    const bool verbose = false;
 
     MDagPath nodeDagPath;
     MObject node_obj;
@@ -234,21 +237,18 @@ MStatus parseCameraSelectionList(
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         MString transform_node_name = nodeDagPath.fullPathName();
-        MMSOLVER_INFO("Camera name: " << transform_node_name.asChar());
+        MMSOLVER_VRB("Camera name: " << transform_node_name.asChar());
 
         auto object_type = computeObjectType(node_obj, nodeDagPath);
         if (object_type == ObjectType::kCamera) {
-            MMSOLVER_INFO("parseCameraSelectionList2");
             status = nodeDagPath.extendToShapeDirectlyBelow(0);
             CHECK_MSTATUS_AND_RETURN_IT(status);
             MString shape_node_name = nodeDagPath.fullPathName();
 
-            MMSOLVER_INFO("parseCameraSelectionList3");
             camera = CameraPtr(new Camera());
             camera->setTransformNodeName(transform_node_name);
             camera->setShapeNodeName(shape_node_name);
 
-            MMSOLVER_INFO("parseCameraSelectionList4");
             camera_tx_attr.setNodeName(transform_node_name);
             camera_ty_attr.setNodeName(transform_node_name);
             camera_tz_attr.setNodeName(transform_node_name);
@@ -256,7 +256,6 @@ MStatus parseCameraSelectionList(
             camera_ry_attr.setNodeName(transform_node_name);
             camera_rz_attr.setNodeName(transform_node_name);
 
-            MMSOLVER_INFO("parseCameraSelectionList5");
             camera_tx_attr.setAttrName(MString("translateX"));
             camera_ty_attr.setAttrName(MString("translateY"));
             camera_tz_attr.setAttrName(MString("translateZ"));
@@ -264,7 +263,6 @@ MStatus parseCameraSelectionList(
             camera_ry_attr.setAttrName(MString("rotateY"));
             camera_rz_attr.setAttrName(MString("rotateZ"));
 
-            MMSOLVER_INFO("parseCameraSelectionList6");
             status = get_camera_values(time, camera, image_width, image_height,
                                        focal_length_mm, sensor_width_mm,
                                        sensor_height_mm);
@@ -277,7 +275,6 @@ MStatus parseCameraSelectionList(
         }
     }
 
-    MMSOLVER_INFO("parseCameraSelectionList7");
     return status;
 }
 
@@ -289,7 +286,6 @@ MStatus addMarkerBundles(
     MarkerPtrList &marker_list_b,
     std::vector<std::pair<double, double>> &marker_coords_a,
     std::vector<std::pair<double, double>> &marker_coords_b) {
-    MMSOLVER_INFO("addMarkerBundle1");
     MStatus status = MStatus::kSuccess;
 
     double x_a = 0.0;
@@ -303,33 +299,23 @@ MStatus addMarkerBundles(
 
     auto success_a =
         get_marker_coords(time_a, marker_a, x_a, y_a, weight_a, enable_a);
-    MMSOLVER_INFO("addMarkerBundle2");
     auto success_b =
         get_marker_coords(time_b, marker_b, x_b, y_b, weight_b, enable_b);
-    MMSOLVER_INFO("addMarkerBundle3");
     if (success_a && success_b) {
-        MMSOLVER_INFO("addMarkerBundle4");
         double xx_a = (x_a + 0.5) * static_cast<double>(image_width_a);
         double yy_a = (y_a + 0.5) * static_cast<double>(image_height_a);
         double xx_b = (x_b + 0.5) * static_cast<double>(image_width_b);
         double yy_b = (y_b + 0.5) * static_cast<double>(image_height_b);
-        MMSOLVER_INFO("x_a : " << x_a << " y_a : " << y_a);
-        MMSOLVER_INFO("xx_a: " << xx_a << " yy_a: " << yy_a);
-        MMSOLVER_INFO("x_b : " << x_b << " y_b : " << y_b);
-        MMSOLVER_INFO("xx_b: " << xx_b << " yy_b: " << yy_b);
         auto xy_a = std::pair<double, double>{xx_a, yy_a};
         auto xy_b = std::pair<double, double>{xx_b, yy_b};
-        MMSOLVER_INFO("addMarkerBundle5");
         marker_coords_a.push_back(xy_a);
         marker_coords_b.push_back(xy_b);
 
-        MMSOLVER_INFO("addMarkerBundle6");
         marker_list_a.push_back(marker_a);
         marker_list_b.push_back(marker_b);
         bundle_list.push_back(bundle);
     }
 
-    MMSOLVER_INFO("addMarkerBundle7");
     return status;
 }
 

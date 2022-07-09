@@ -40,6 +40,7 @@ import mmSolver.api as mmapi
 
 import test.test_solver.solverutils as solverUtils
 
+
 def matrix_dot_product(matrix_a, matrix_b):
     r = 0.0
     for a, b in zip(matrix_a, matrix_b):
@@ -163,9 +164,7 @@ class TestMarkerHomography(solverUtils.SolverTestCase):
         print('result:', result)
         assert len(result) == 9
 
-        identity = [1.0, 0.0, 0.0,
-                    0.0, 1.0, 0.0,
-                    0.0, 0.0, 1.0]
+        identity = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
         scalar = matrix_dot_product(identity, result)
         print('scalar:', scalar)
         return
@@ -244,9 +243,7 @@ class TestMarkerHomography(solverUtils.SolverTestCase):
         print('result:', result)
         assert len(result) == 9
 
-        identity = [1.0, 0.0, 0.0,
-                    0.0, 1.0, 0.0,
-                    0.0, 0.0, 1.0]
+        identity = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
         scalar = matrix_dot_product(identity, result)
         print('scalar:', scalar)
         return

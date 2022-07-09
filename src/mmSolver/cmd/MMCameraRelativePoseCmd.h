@@ -68,6 +68,8 @@ public:
 private:
     MStatus parseArgs(const MArgList &args);
 
+    bool m_set_values;
+
     // OpenMVG
     int32_t m_image_width_a;
     int32_t m_image_height_a;
@@ -98,6 +100,9 @@ private:
     Attr m_camera_rx_attr_b;
     Attr m_camera_ry_attr_b;
     Attr m_camera_rz_attr_b;
+
+    bool m_use_camera_transform;
+    MMatrix m_camera_transform_matrix;
 
     MarkerPtrList m_marker_list_a;
     MarkerPtrList m_marker_list_b;

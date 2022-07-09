@@ -61,7 +61,7 @@
 namespace mmsolver {
 namespace sfm {
 
-bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
+bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
                           const openMVG::cameras::IntrinsicBase *intrinsics2,
                           const openMVG::Mat &x1, const openMVG::Mat &x2,
                           openMVG::sfm::RelativePose_Info &relativePose_info,

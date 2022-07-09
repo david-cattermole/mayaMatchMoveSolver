@@ -160,7 +160,7 @@ using KernelType = openMVG::robust::ACKernelAdaptor<
     openMVG::fundamental::kernel::SymmetricEpipolarDistanceError,
     openMVG::UnnormalizerT, openMVG::Mat3>;
 
-bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
+bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
                           const openMVG::cameras::IntrinsicBase *intrinsics2,
                           const openMVG::Mat &x1, const openMVG::Mat &x2,
                           openMVG::sfm::RelativePose_Info &relativePose_info,
@@ -170,16 +170,16 @@ bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
     // Enable to print out 'MMSOLVER_VRB' results.
     const bool verbose = false;
 
-    MMSOLVER_VRB("myRobustRelativePose: intrinsics1: " << intrinsics1);
-    MMSOLVER_VRB("myRobustRelativePose: intrinsics2: " << intrinsics2);
-    MMSOLVER_VRB("myRobustRelativePose: x1: " << x1);
-    MMSOLVER_VRB("myRobustRelativePose: x2: " << x2);
-    MMSOLVER_VRB("myRobustRelativePose: size_ima1: " << size_ima1.first << ", "
+    MMSOLVER_VRB("robust_relative_pose: intrinsics1: " << intrinsics1);
+    MMSOLVER_VRB("robust_relative_pose: intrinsics2: " << intrinsics2);
+    MMSOLVER_VRB("robust_relative_pose: x1: " << x1);
+    MMSOLVER_VRB("robust_relative_pose: x2: " << x2);
+    MMSOLVER_VRB("robust_relative_pose: size_ima1: " << size_ima1.first << ", "
                                                      << size_ima1.second);
-    MMSOLVER_VRB("myRobustRelativePose: size_ima2: " << size_ima2.first << ", "
+    MMSOLVER_VRB("robust_relative_pose: size_ima2: " << size_ima2.first << ", "
                                                      << size_ima2.second);
     MMSOLVER_VRB(
-        "myRobustRelativePose: max_iteration_count: " << max_iteration_count);
+        "robust_relative_pose: max_iteration_count: " << max_iteration_count);
     if (!intrinsics1 || !intrinsics2) {
         return false;
     }
@@ -220,8 +220,8 @@ bool myRobustRelativePose(const openMVG::cameras::IntrinsicBase *intrinsics1,
 
         auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES;
         MMSOLVER_VRB(
-            "myRobustRelativePose: minimum_samples: " << minimum_samples);
-        MMSOLVER_VRB("myRobustRelativePose: samples: "
+            "robust_relative_pose: minimum_samples: " << minimum_samples);
+        MMSOLVER_VRB("robust_relative_pose: samples: "
                      << relativePose_info.vec_inliers.size());
         if (relativePose_info.vec_inliers.size() < minimum_samples) {
             // no sufficient coverage (the model does not support enough
@@ -337,7 +337,7 @@ bool compute_relative_pose(
         static_cast<size_t>(image_width_b),
         static_cast<size_t>(image_height_b));
     auto num_max_iter = 4096;
-    bool robust_pose_ok = myRobustRelativePose(
+    bool robust_pose_ok = robust_relative_pose(
         &cam_a, &cam_b, marker_coords_matrix_a, marker_coords_matrix_b,
         pose_info, image_size_a, image_size_b, num_max_iter);
     if (!robust_pose_ok) {

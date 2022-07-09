@@ -194,7 +194,8 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
     auto more_than_five = x1.cols() > 5;
     auto more_than_eight = x1.cols() > 8;
 
-    relativePose_info.initial_residual_tolerance = 2.5 * 2.5;
+    relativePose_info.initial_residual_tolerance =
+        std::numeric_limits<double>::infinity();
 
     if (more_than_eight) {
         // Define the AContrario adaptor to use the 8 point essential matrix
@@ -206,16 +207,15 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
 
         KernelType kernel(bearing1, bearing2);
 
-        // double upper_bound_precision =
-        // std::numeric_limits<double>::infinity();
-        double upper_bound_precision =
-            openMVG::D2R(relativePose_info.initial_residual_tolerance);
+        // relativePose_info.initial_residual_tolerance =
+        //     openMVG::D2R(relativePose_info.initial_residual_tolerance);
 
         // Robustly estimate the Essential matrix with A Contrario
         // (AC) RANSAC
         const auto ac_ransac_output = openMVG::robust::ACRANSAC(
             kernel, relativePose_info.vec_inliers, max_iteration_count,
-            &relativePose_info.essential_matrix, upper_bound_precision,
+            &relativePose_info.essential_matrix,
+            relativePose_info.initial_residual_tolerance,
             verbose);
 
         const double &threshold = ac_ransac_output.first;

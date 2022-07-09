@@ -101,6 +101,32 @@ double dot(mmdata::Vector3D a, mmdata::Vector3D b) {
     return a.x_ * b.x_ + a.y_ * b.y_ + a.z_ * b.z_;
 }
 
+double dot(mmdata::Matrix4x4 a, mmdata::Matrix4x4 b) {
+    double r = 0.0;
+
+    r += a.m00_ * b.m00_;
+    r += a.m01_ * b.m01_;
+    r += a.m02_ * b.m02_;
+    r += a.m03_ * b.m03_;
+
+    r += a.m10_ * b.m10_;
+    r += a.m11_ * b.m11_;
+    r += a.m12_ * b.m12_;
+    r += a.m13_ * b.m13_;
+
+    r += a.m20_ * b.m20_;
+    r += a.m21_ * b.m21_;
+    r += a.m22_ * b.m22_;
+    r += a.m23_ * b.m23_;
+
+    r += a.m30_ * b.m30_;
+    r += a.m31_ * b.m31_;
+    r += a.m32_ * b.m32_;
+    r += a.m33_ * b.m33_;
+
+    return r;
+}
+
 mmdata::Vector3D cross(mmdata::Vector3D a, mmdata::Vector3D b) {
     return mmdata::Vector3D(a.y_ * b.z_ - a.z_ * b.y_,
                             a.z_ * b.x_ - a.x_ * b.z_,

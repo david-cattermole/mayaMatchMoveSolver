@@ -82,6 +82,7 @@ double dot(mmdata::Point2D a, mmdata::Point2D b);
 
 // Dot product.
 double dot(mmdata::Vector3D a, mmdata::Vector3D b);
+double dot(mmdata::Matrix4x4 a, mmdata::Matrix4x4 b);
 
 // Cross product.
 mmdata::Vector3D cross(mmdata::Vector3D a, mmdata::Vector3D b);

@@ -135,7 +135,8 @@ bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
 
     // Change the translation to be in the range 0.0 to (-/+) 1.0.
     homography_matrix.row(0)[2] = homography_matrix.row(0)[2] / size_ima2.first;
-    homography_matrix.row(1)[2] = homography_matrix.row(0)[2] / size_ima2.second;
+    homography_matrix.row(1)[2] =
+        homography_matrix.row(0)[2] / size_ima2.second;
 
     MMSOLVER_VRB("Found a Homography matrix:");
     MMSOLVER_VRB("- matrix: " << homography_matrix);

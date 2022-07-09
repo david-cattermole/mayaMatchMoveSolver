@@ -165,9 +165,6 @@ bool compute_homography(
     const std::vector<std::pair<double, double>> &marker_coords_b,
     const MarkerPtrList &marker_list_a, const MarkerPtrList &marker_list_b,
     openMVG::Mat3 &homography_matrix) {
-    // Enable to print out 'MMSOLVER_VRB' results.
-    const bool verbose = false;
-
     openMVG::Mat marker_coords_matrix_a =
         convert_marker_coords_to_matrix(marker_coords_a);
     openMVG::Mat marker_coords_matrix_b =

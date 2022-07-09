@@ -74,6 +74,16 @@ MStatus get_camera_values(const MTime &time, CameraPtr &cam, int &image_width,
 bool get_camera_image_res(const uint32_t frame_num, const MTime::Unit &uiUnit,
                           Camera &cam, int &image_width, int &image_height);
 
+void convert_camera_lens_mm_to_pixel_units(const int32_t image_width,
+                                           const int32_t image_height,
+                                           const double focal_length_mm,
+                                           const double sensor_width_mm,
+                                           double &focal_length_pix,
+                                           double &ppx_pix, double &ppy_pix);
+
+openMVG::Mat convert_marker_coords_to_matrix(
+    const std::vector<std::pair<double, double>> &marker_coords);
+
 MStatus parseCameraSelectionList(
     const MSelectionList &selection_list, const MTime &time, CameraPtr &camera,
     Attr &camera_tx_attr, Attr &camera_ty_attr, Attr &camera_tz_attr,
@@ -86,6 +96,14 @@ MStatus parse_camera_argument(const MSelectionList &selection_list,
                               Attr &camera_ty_attr, Attr &camera_tz_attr,
                               Attr &camera_rx_attr, Attr &camera_ry_attr,
                               Attr &camera_rz_attr);
+
+MStatus add_markers(const MTime &time_a, const MTime &time_b,
+                    const int32_t image_width_a, const int32_t image_height_a,
+                    const int32_t image_width_b, const int32_t image_height_b,
+                    MarkerPtr &marker_a, MarkerPtr &marker_b,
+                    MarkerPtrList &marker_list_a, MarkerPtrList &marker_list_b,
+                    std::vector<std::pair<double, double>> &marker_coords_a,
+                    std::vector<std::pair<double, double>> &marker_coords_b);
 
 MStatus addMarkerBundles(
     const MTime &time_a, const MTime &time_b, const int32_t image_width_a,

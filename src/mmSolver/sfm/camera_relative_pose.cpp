@@ -142,13 +142,14 @@
 #include <maya/MTransformationMatrix.h>
 #include <maya/MTypes.h>
 
-// Internal
+// MM Solver
 #include "mmSolver/adjust/adjust_defines.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/sfm/sfm_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
@@ -276,31 +277,6 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
 
     relativePose_info.relativePose = relative_pose;
     return true;
-}
-
-void convert_camera_lens_mm_to_pixel_units(const int32_t image_width,
-                                           const int32_t image_height,
-                                           const double focal_length_mm,
-                                           const double sensor_width_mm,
-                                           double &focal_length_pix,
-                                           double &ppx_pix, double &ppy_pix) {
-    focal_length_pix = focal_length_mm / sensor_width_mm;
-    focal_length_pix *= static_cast<double>(image_width);
-    ppx_pix = static_cast<double>(image_width) * 0.5;
-    ppy_pix = static_cast<double>(image_height) * 0.5;
-    return;
-}
-
-// Prepare the corresponding 2D marker data.
-openMVG::Mat convert_marker_coords_to_matrix(
-    const std::vector<std::pair<double, double>> &marker_coords) {
-    auto num = marker_coords.size();
-    openMVG::Mat result(2, num);
-    for (size_t k = 0; k < num; ++k) {
-        auto coord = marker_coords[k];
-        result.col(k) = openMVG::Vec2(std::get<0>(coord), std::get<1>(coord));
-    }
-    return result;
 }
 
 bool compute_relative_pose(

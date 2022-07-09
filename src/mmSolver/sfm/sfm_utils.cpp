@@ -216,6 +216,31 @@ bool get_camera_image_res(const uint32_t frame_num, const MTime::Unit &uiUnit,
     return true;
 }
 
+void convert_camera_lens_mm_to_pixel_units(const int32_t image_width,
+                                           const int32_t image_height,
+                                           const double focal_length_mm,
+                                           const double sensor_width_mm,
+                                           double &focal_length_pix,
+                                           double &ppx_pix, double &ppy_pix) {
+    focal_length_pix = focal_length_mm / sensor_width_mm;
+    focal_length_pix *= static_cast<double>(image_width);
+    ppx_pix = static_cast<double>(image_width) * 0.5;
+    ppy_pix = static_cast<double>(image_height) * 0.5;
+    return;
+}
+
+// Prepare the corresponding 2D marker data.
+openMVG::Mat convert_marker_coords_to_matrix(
+    const std::vector<std::pair<double, double>> &marker_coords) {
+    auto num = marker_coords.size();
+    openMVG::Mat result(2, num);
+    for (size_t k = 0; k < num; ++k) {
+        auto coord = marker_coords[k];
+        result.col(k) = openMVG::Vec2(std::get<0>(coord), std::get<1>(coord));
+    }
+    return result;
+}
+
 MStatus parseCameraSelectionList(
     const MSelectionList &selection_list, const MTime &time, CameraPtr &camera,
     Attr &camera_tx_attr, Attr &camera_ty_attr, Attr &camera_tz_attr,
@@ -329,6 +354,48 @@ MStatus parse_camera_argument(const MSelectionList &selection_list,
             status = MS::kFailure;
             return status;
         }
+    }
+
+    return status;
+}
+
+MStatus add_markers(const MTime &time_a, const MTime &time_b,
+                    const int32_t image_width_a, const int32_t image_height_a,
+                    const int32_t image_width_b, const int32_t image_height_b,
+                    MarkerPtr &marker_a, MarkerPtr &marker_b,
+                    MarkerPtrList &marker_list_a, MarkerPtrList &marker_list_b,
+                    std::vector<std::pair<double, double>> &marker_coords_a,
+                    std::vector<std::pair<double, double>> &marker_coords_b) {
+    MStatus status = MStatus::kSuccess;
+
+    double x_a = 0.0;
+    double x_b = 0.0;
+    double y_a = 0.0;
+    double y_b = 0.0;
+    bool enable_a = true;
+    bool enable_b = true;
+    double weight_a = 1.0;
+    double weight_b = 1.0;
+
+    auto success_a =
+        get_marker_coords(time_a, marker_a, x_a, y_a, weight_a, enable_a);
+    auto success_b =
+        get_marker_coords(time_b, marker_b, x_b, y_b, weight_b, enable_b);
+    if (success_a && success_b) {
+        double xx_a = (x_a + 0.5) * static_cast<double>(image_width_a);
+        double yy_a = (y_a + 0.5) * static_cast<double>(image_height_a);
+        double xx_b = (x_b + 0.5) * static_cast<double>(image_width_b);
+        double yy_b = (y_b + 0.5) * static_cast<double>(image_height_b);
+        auto xy_a = std::pair<double, double>{xx_a, yy_a};
+        auto xy_b = std::pair<double, double>{xx_b, yy_b};
+        marker_coords_a.push_back(xy_a);
+        marker_coords_b.push_back(xy_b);
+
+        marker_list_a.push_back(marker_a);
+        marker_list_b.push_back(marker_b);
+    } else {
+        MMSOLVER_ERR("Failed to get marker coordinates.");
+        status = MStatus::kFailure;
     }
 
     return status;

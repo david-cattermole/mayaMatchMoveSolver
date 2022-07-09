@@ -69,16 +69,6 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
                           const std::pair<size_t, size_t> &size_ima2,
                           const size_t max_iteration_count);
 
-void convert_camera_lens_mm_to_pixel_units(const int32_t image_width,
-                                           const int32_t image_height,
-                                           const double focal_length_mm,
-                                           const double sensor_width_mm,
-                                           double &focal_length_pix,
-                                           double &ppx_pix, double &ppy_pix);
-
-openMVG::Mat convert_marker_coords_to_matrix(
-    const std::vector<std::pair<double, double>> &marker_coords);
-
 bool compute_relative_pose(
     const int32_t image_width_a, const int32_t image_width_b,
     const int32_t image_height_a, const int32_t image_height_b,

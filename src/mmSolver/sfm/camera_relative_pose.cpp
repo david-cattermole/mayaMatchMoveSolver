@@ -215,8 +215,7 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
         const auto ac_ransac_output = openMVG::robust::ACRANSAC(
             kernel, relativePose_info.vec_inliers, max_iteration_count,
             &relativePose_info.essential_matrix,
-            relativePose_info.initial_residual_tolerance,
-            verbose);
+            relativePose_info.initial_residual_tolerance, verbose);
 
         const double &threshold = ac_ransac_output.first;
         relativePose_info.found_residual_precision =

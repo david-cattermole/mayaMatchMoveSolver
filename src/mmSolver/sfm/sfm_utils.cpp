@@ -278,6 +278,62 @@ MStatus parseCameraSelectionList(
     return status;
 }
 
+MStatus parse_camera_argument(const MSelectionList &selection_list,
+                              CameraPtr &camera, Attr &camera_tx_attr,
+                              Attr &camera_ty_attr, Attr &camera_tz_attr,
+                              Attr &camera_rx_attr, Attr &camera_ry_attr,
+                              Attr &camera_rz_attr) {
+    MStatus status = MStatus::kSuccess;
+
+    // Enable to print out 'MMSOLVER_VRB' results.
+    const bool verbose = false;
+
+    MDagPath nodeDagPath;
+    MObject node_obj;
+
+    if (selection_list.length() > 0) {
+        status = selection_list.getDagPath(0, nodeDagPath);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = selection_list.getDependNode(0, node_obj);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        MString transform_node_name = nodeDagPath.fullPathName();
+        MMSOLVER_VRB("Camera name: " << transform_node_name.asChar());
+
+        auto object_type = computeObjectType(node_obj, nodeDagPath);
+        if (object_type == ObjectType::kCamera) {
+            status = nodeDagPath.extendToShapeDirectlyBelow(0);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MString shape_node_name = nodeDagPath.fullPathName();
+
+            camera = CameraPtr(new Camera());
+            camera->setTransformNodeName(transform_node_name);
+            camera->setShapeNodeName(shape_node_name);
+
+            camera_tx_attr.setNodeName(transform_node_name);
+            camera_ty_attr.setNodeName(transform_node_name);
+            camera_tz_attr.setNodeName(transform_node_name);
+            camera_rx_attr.setNodeName(transform_node_name);
+            camera_ry_attr.setNodeName(transform_node_name);
+            camera_rz_attr.setNodeName(transform_node_name);
+
+            camera_tx_attr.setAttrName(MString("translateX"));
+            camera_ty_attr.setAttrName(MString("translateY"));
+            camera_tz_attr.setAttrName(MString("translateZ"));
+            camera_rx_attr.setAttrName(MString("rotateX"));
+            camera_ry_attr.setAttrName(MString("rotateY"));
+            camera_rz_attr.setAttrName(MString("rotateZ"));
+        } else {
+            MMSOLVER_ERR("Given node is not a valid camera: "
+                         << transform_node_name.asChar());
+            status = MS::kFailure;
+            return status;
+        }
+    }
+
+    return status;
+}
+
 MStatus addMarkerBundles(
     const MTime &time_a, const MTime &time_b, const int32_t image_width_a,
     const int32_t image_height_a, const int32_t image_width_b,

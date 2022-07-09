@@ -81,6 +81,12 @@ MStatus parseCameraSelectionList(
     int32_t &image_width, int32_t &image_height, double &focal_length_mm,
     double &sensor_width_mm, double &sensor_height_mm);
 
+MStatus parse_camera_argument(const MSelectionList &selection_list,
+                              CameraPtr &camera, Attr &camera_tx_attr,
+                              Attr &camera_ty_attr, Attr &camera_tz_attr,
+                              Attr &camera_rx_attr, Attr &camera_ry_attr,
+                              Attr &camera_rz_attr);
+
 MStatus addMarkerBundles(
     const MTime &time_a, const MTime &time_b, const int32_t image_width_a,
     const int32_t image_height_a, const int32_t image_width_b,

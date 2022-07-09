@@ -213,7 +213,7 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
         const auto ac_ransac_output = openMVG::robust::ACRANSAC(
             kernel, relativePose_info.vec_inliers, max_iteration_count,
             &relativePose_info.essential_matrix, upper_bound_precision,
-            /*bVerbose=*/true);
+            verbose);
 
         const double &threshold = ac_ransac_output.first;
         relativePose_info.found_residual_precision =
@@ -252,8 +252,7 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
         const auto ac_ransac_output = openMVG::robust::ACRANSAC(
             kernel, relativePose_info.vec_inliers, max_iteration_count,
             &relativePose_info.essential_matrix,
-            relativePose_info.initial_residual_tolerance,
-            /*bVerbose=*/true);
+            relativePose_info.initial_residual_tolerance, verbose);
 
         relativePose_info.found_residual_precision = ac_ransac_output.first;
 
@@ -484,7 +483,7 @@ bool bundle_adjustment(openMVG::sfm::SfM_Data &scene) {
         openMVG::sfm::Extrinsic_Parameter_Type::ADJUST_ALL,
         openMVG::sfm::Structure_Parameter_Type::ADJUST_ALL);
     // TODO: use 'optimize_options.control_point_opt.bUse_control_points'
-    auto bundle_adjust_verbose = true;
+    auto bundle_adjust_verbose = verbose;
     auto bundle_adjust_multithreaded = false;
     auto ceres_options =
         openMVG::sfm::Bundle_Adjustment_Ceres::BA_Ceres_options(

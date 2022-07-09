@@ -31,7 +31,6 @@ namespace mmmath {
 // Return 'min_value' to 'max_value' linearly, for a 'mix' value
 // between 0.0 and 1.0.
 float lerp(const float min_value, const float max_value, const float mix);
-
 double lerp(const double min_value, const double max_value, const double mix);
 
 inline float clamp(const float v, const float min, const float max) {
@@ -61,17 +60,13 @@ inline float fast_pow(const float a, const float b) {
 }
 
 double length(mmdata::Point2D a);
-
 double length(mmdata::Vector3D a);
 
 // Distance between A and B.
 double distance(mmdata::Point2D a, mmdata::Point2D b);
-
-// Distance between A and B.
 double distance(mmdata::Vector3D a, mmdata::Vector3D b);
 
 mmdata::Point2D normalize(mmdata::Point2D vector);
-
 mmdata::Vector3D normalize(mmdata::Vector3D vector);
 
 // Difference between A and B points.
@@ -79,8 +74,6 @@ mmdata::Point2D subtract(mmdata::Point2D a, mmdata::Point2D b);
 
 // Dot product.
 double dot(mmdata::Point2D a, mmdata::Point2D b);
-
-// Dot product.
 double dot(mmdata::Vector3D a, mmdata::Vector3D b);
 double dot(mmdata::Matrix4x4 a, mmdata::Matrix4x4 b);
 

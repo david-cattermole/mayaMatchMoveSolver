@@ -314,6 +314,9 @@ MStatus addMarkerBundles(
         marker_list_a.push_back(marker_a);
         marker_list_b.push_back(marker_b);
         bundle_list.push_back(bundle);
+    } else {
+        MMSOLVER_ERR("Failed to get marker coordinates.");
+        status = MStatus::kFailure;
     }
 
     return status;

@@ -40,6 +40,7 @@ set(SOURCE_FILES
   mmSolver/cmd/MMCameraRelativePoseCmd.cpp
   mmSolver/cmd/MMCameraSolveCmd.cpp
   mmSolver/cmd/MMConvertImageCmd.cpp
+  mmSolver/cmd/MMMarkerHomographyCmd.cpp
   mmSolver/cmd/MMReadImageCmd.cpp
   mmSolver/cmd/MMReprojectionCmd.cpp
   mmSolver/cmd/MMSolverAffectsCmd.cpp
@@ -88,6 +89,7 @@ set(SOURCE_FILES
   mmSolver/render/RenderOverride.cpp
   mmSolver/render/SceneRender.cpp
   mmSolver/sfm/camera_relative_pose.cpp
+  mmSolver/sfm/homography.cpp
   mmSolver/sfm/sfm_utils.cpp
   mmSolver/shape/ShapeDrawUtils.cpp
   mmSolver/shape/MarkerShapeNode.cpp

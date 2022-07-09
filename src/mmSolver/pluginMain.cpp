@@ -39,6 +39,7 @@
 #include "mmSolver/cmd/MMCameraRelativePoseCmd.h"
 #include "mmSolver/cmd/MMCameraSolveCmd.h"
 #include "mmSolver/cmd/MMConvertImageCmd.h"
+#include "mmSolver/cmd/MMMarkerHomographyCmd.h"
 #include "mmSolver/cmd/MMReadImageCmd.h"
 #include "mmSolver/cmd/MMReprojectionCmd.h"
 #include "mmSolver/cmd/MMSolverAffectsCmd.h"
@@ -233,6 +234,10 @@ MStatus initializePlugin(MObject obj) {
     REGISTER_COMMAND(plugin, mmsolver::MMConvertImageCmd::cmdName(),
                      mmsolver::MMConvertImageCmd::creator,
                      mmsolver::MMConvertImageCmd::newSyntax, status);
+
+    REGISTER_COMMAND(plugin, mmsolver::MMMarkerHomographyCmd::cmdName(),
+                     mmsolver::MMMarkerHomographyCmd::creator,
+                     mmsolver::MMMarkerHomographyCmd::newSyntax, status);
 
     REGISTER_COMMAND(plugin, mmsolver::MMReadImageCmd::cmdName(),
                      mmsolver::MMReadImageCmd::creator,
@@ -522,6 +527,8 @@ MStatus uninitializePlugin(MObject obj) {
                        status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMCameraSolveCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMConvertImageCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, mmsolver::MMMarkerHomographyCmd::cmdName(),
+                       status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMReadImageCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::render::MMRendererCmd::cmdName(),
                        status);

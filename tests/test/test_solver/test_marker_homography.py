@@ -70,9 +70,7 @@ class TestMarkerHomography(solverUtils.SolverTestCase):
 
         mkr_pair_list = []
         for marker_data in marker_data_list:
-            marker_tfm, marker_shp = self.create_marker(
-                'marker', mkr_grp
-            )
+            marker_tfm, marker_shp = self.create_marker('marker', mkr_grp)
             mkr_pair_list.append([marker_tfm, marker_tfm])
 
             maya.cmds.setAttr(marker_shp + '.localScaleX', 0.1)

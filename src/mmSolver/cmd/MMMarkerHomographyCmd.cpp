@@ -174,8 +174,7 @@ MSyntax MMMarkerHomographyCmd::newSyntax() {
                                  MSyntax::kUnsigned));
 
     CHECK_MSTATUS(syntax.addFlag(MARKER_PAIR_SHORT_FLAG, MARKER_PAIR_LONG_FLAG,
-                                 MSyntax::kString, MSyntax::kString,
-                                 MSyntax::kString));
+                                 MSyntax::kString, MSyntax::kString));
     CHECK_MSTATUS(syntax.makeFlagMultiUse(MARKER_PAIR_SHORT_FLAG));
 
     return syntax;
@@ -269,7 +268,7 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
                                                  markerArgs);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
-            if (markerArgs.length() != 3) {
+            if (markerArgs.length() != 2) {
                 MMSOLVER_ERR("Marker argument list must have 2 arguments; "
                              << "\"markerA\", \"markerB\".");
                 continue;

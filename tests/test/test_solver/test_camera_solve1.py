@@ -238,7 +238,7 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
 
 # @unittest.skip
 class TestCameraSolve(solverUtils.SolverTestCase):
-    def test_camera_solve1(self):
+    def test_camera_solve1_stA(self):
         frame_a = 0
         frame_b = 94
         root_frame_a = frame_a
@@ -303,7 +303,7 @@ class TestCameraSolve(solverUtils.SolverTestCase):
         root_frames = mmapi.root_frames_subdivide(root_frames, max_frame_span)
 
         # save the output
-        file_name = 'solver_camera_solve1_before.ma'
+        file_name = 'solver_camera_solve1_stA_before.ma'
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -316,7 +316,7 @@ class TestCameraSolve(solverUtils.SolverTestCase):
         print('total time:', e - s)
 
         # save the output
-        file_name = 'solver_camera_solve1_after.ma'
+        file_name = 'solver_camera_solve1_stA_after.ma'
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)

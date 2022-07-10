@@ -152,7 +152,7 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         try:
             clippy = QtGui.QClipboard()
             text = str(clippy.text()).strip()
-            if fileutils.is_valid_file_path(text):
+            if fileutils.is_valid_file_path(text, mayareadfile.read):
                 self.setFilePath(text)
         except Exception as e:
             msg = 'Could not get file path from clipboard.'

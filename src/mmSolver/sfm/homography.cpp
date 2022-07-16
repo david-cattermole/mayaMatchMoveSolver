@@ -100,6 +100,12 @@ bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
     // Enable to print out 'MMSOLVER_VRB' results.
     const bool verbose = false;
 
+    // Upper bound pixel tolerance for residual errors.
+    const double error_max = std::numeric_limits<double>::infinity();
+
+    // The amount of pixel error that is computed.
+    double out_error_max = std::numeric_limits<double>::infinity();
+
     MMSOLVER_VRB("robust_homography: x1: " << x1);
     MMSOLVER_VRB("robust_homography: x2: " << x2);
     MMSOLVER_VRB("robust_homography: size_ima1: " << size_ima1.first << ", "
@@ -108,6 +114,11 @@ bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
                                                   << size_ima2.second);
     MMSOLVER_VRB(
         "robust_homography: max_iteration_count: " << max_iteration_count);
+
+    double error_upper_bound = std::numeric_limits<double>::infinity();
+    if (error_max != std::numeric_limits<double>::infinity()) {
+        error_upper_bound = (error_max * error_max);
+    }
 
     // point to point error model.
     auto point_to_line = false;
@@ -118,11 +129,10 @@ bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
     // Robustly estimate the Homography matrix with A Contrario (AC)
     // RANSAC.
     std::vector<uint32_t> vec_inliers;
-    auto upper_bound_precision = std::numeric_limits<double>::infinity();
     const auto ac_ransac_output = openMVG::robust::ACRANSAC(
         kernel, vec_inliers, max_iteration_count, &homography_matrix,
-        upper_bound_precision, verbose);
-    const double &threshold = ac_ransac_output.first;
+        error_upper_bound, verbose);
+    out_error_max = ac_ransac_output.first;
 
     auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES;
     MMSOLVER_VRB("robust_homography: minimum_samples: " << minimum_samples);
@@ -140,8 +150,7 @@ bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
 
     MMSOLVER_VRB("Found a Homography matrix:");
     MMSOLVER_VRB("- matrix: " << homography_matrix);
-
-    MMSOLVER_VRB("- confidence threshold: " << threshold << " pixels");
+    MMSOLVER_VRB("- error: " << out_error_max << " pixels");
 
     MMSOLVER_VRB("- #matches: " << x1.size());
     for (auto i = 0; i < x1.size(); i++) {

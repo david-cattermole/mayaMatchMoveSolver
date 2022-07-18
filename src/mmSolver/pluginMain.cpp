@@ -36,6 +36,7 @@
 #include "mmSolver/nodeTypeIds.h"
 
 // Solver and nodes
+#include "mmSolver/cmd/MMCameraPoseResectionCmd.h"
 #include "mmSolver/cmd/MMCameraRelativePoseCmd.h"
 #include "mmSolver/cmd/MMCameraSolveCmd.h"
 #include "mmSolver/cmd/MMConvertImageCmd.h"
@@ -222,6 +223,10 @@ MStatus initializePlugin(MObject obj) {
     REGISTER_COMMAND(plugin, mmsolver::MMTestCameraMatrixCmd::cmdName(),
                      mmsolver::MMTestCameraMatrixCmd::creator,
                      mmsolver::MMTestCameraMatrixCmd::newSyntax, status);
+
+    REGISTER_COMMAND(plugin, mmsolver::MMCameraPoseResectionCmd::cmdName(),
+                     mmsolver::MMCameraPoseResectionCmd::creator,
+                     mmsolver::MMCameraPoseResectionCmd::newSyntax, status);
 
     REGISTER_COMMAND(plugin, mmsolver::MMCameraRelativePoseCmd::cmdName(),
                      mmsolver::MMCameraRelativePoseCmd::creator,
@@ -522,6 +527,8 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, mmsolver::MMSolverSceneGraphCmd::cmdName(),
                        status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMTestCameraMatrixCmd::cmdName(),
+                       status);
+    DEREGISTER_COMMAND(plugin, mmsolver::MMCameraPoseResectionCmd::cmdName(),
                        status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMCameraRelativePoseCmd::cmdName(),
                        status);

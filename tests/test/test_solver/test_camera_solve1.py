@@ -221,8 +221,6 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
     if root_frame_a in possible_frames:
         possible_frames.remove(root_frame_a)
 
-
-
     mkr_nodes_a = _compute_enabled_marker_nodes(mkr_list, root_frame_a)
 
     new_possible_frames = []
@@ -352,7 +350,6 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
         adjust_bundle_positions=False,
         adjust_focal_length=False,
     )
-
 
     #     frame_stack.remove(root_frame_a)
 

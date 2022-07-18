@@ -17,7 +17,7 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Command for calculating camera relative poses.
+ * Command for calculating a 2D homography matrix.
 
 import maya.cmds
 
@@ -256,70 +256,72 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
     // Parse objects into Camera intrinsics and Tracking Markers.
     uint32_t numberOfMarkerFlags =
         argData.numberOfFlagUses(MARKER_PAIR_SHORT_FLAG);
-    if (numberOfMarkerFlags > 0) {
-        for (uint32_t i = 0; i < numberOfMarkerFlags; ++i) {
-            MArgList markerArgs;
-            ObjectType objectType = ObjectType::kUnknown;
-            MDagPath dagPath;
-            MString markerNameA = "";
-            MString markerNameB = "";
-            MObject markerObject;
-            status = argData.getFlagArgumentList(MARKER_PAIR_SHORT_FLAG, i,
-                                                 markerArgs);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+    for (uint32_t i = 0; i < numberOfMarkerFlags; ++i) {
+        MArgList markerArgs;
+        ObjectType objectType = ObjectType::kUnknown;
+        MDagPath dagPath;
+        MString markerNameA = "";
+        MString markerNameB = "";
+        MObject markerObject;
+        status =
+            argData.getFlagArgumentList(MARKER_PAIR_SHORT_FLAG, i, markerArgs);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
 
-            if (markerArgs.length() != 2) {
-                MMSOLVER_ERR("Marker argument list must have 2 arguments; "
-                             << "\"markerA\", \"markerB\".");
-                continue;
-            }
+        if (markerArgs.length() != 2) {
+            MMSOLVER_ERR("Marker argument list must have 2 arguments; "
+                         << "\"markerA\", \"markerB\".");
+            continue;
+        }
 
-            markerNameA = markerArgs.asString(0, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            status = getAsObject(markerNameA, markerObject);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            status = getAsDagPath(markerNameA, dagPath);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            objectType = computeObjectType(markerObject, dagPath);
-            if (objectType != ObjectType::kMarker) {
-                MMSOLVER_ERR("Given marker node is not a Marker; "
-                             << markerNameA.asChar());
-                continue;
-            }
-            MMSOLVER_VRB("Got markerNameA: " << markerNameA.asChar());
+        markerNameA = markerArgs.asString(0, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = getAsObject(markerNameA, markerObject);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = getAsDagPath(markerNameA, dagPath);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        objectType = computeObjectType(markerObject, dagPath);
+        if (objectType != ObjectType::kMarker) {
+            MMSOLVER_ERR("Given marker node is not a Marker; "
+                         << markerNameA.asChar());
+            continue;
+        }
+        MMSOLVER_VRB("Got markerNameA: " << markerNameA.asChar());
 
-            markerNameB = markerArgs.asString(1, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            status = getAsObject(markerNameB, markerObject);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            status = getAsDagPath(markerNameB, dagPath);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            objectType = computeObjectType(markerObject, dagPath);
-            if (objectType != ObjectType::kMarker) {
-                MMSOLVER_ERR("Given marker node is not a Marker; "
-                             << markerNameB.asChar());
-                continue;
-            }
-            MMSOLVER_VRB("Got markerNameB: " << markerNameB.asChar());
+        markerNameB = markerArgs.asString(1, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = getAsObject(markerNameB, markerObject);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = getAsDagPath(markerNameB, dagPath);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        objectType = computeObjectType(markerObject, dagPath);
+        if (objectType != ObjectType::kMarker) {
+            MMSOLVER_ERR("Given marker node is not a Marker; "
+                         << markerNameB.asChar());
+            continue;
+        }
+        MMSOLVER_VRB("Got markerNameB: " << markerNameB.asChar());
 
-            MarkerPtr marker_a = MarkerPtr(new Marker());
-            marker_a->setNodeName(markerNameA);
-            marker_a->setCamera(m_camera_a);
+        MarkerPtr marker_a = MarkerPtr(new Marker());
+        marker_a->setNodeName(markerNameA);
+        marker_a->setCamera(m_camera_a);
 
-            MarkerPtr marker_b = MarkerPtr(new Marker());
-            marker_b->setNodeName(markerNameB);
-            marker_b->setCamera(m_camera_b);
+        MarkerPtr marker_b = MarkerPtr(new Marker());
+        marker_b->setNodeName(markerNameB);
+        marker_b->setCamera(m_camera_b);
 
-            ::mmsolver::sfm::add_markers(m_time_a, m_time_b, m_image_width_a,
-                                         m_image_height_a, m_image_width_b,
-                                         m_image_height_b, marker_a, marker_b,
-                                         m_marker_list_a, m_marker_list_b,
-                                         m_marker_coords_a, m_marker_coords_b);
+        auto success = ::mmsolver::sfm::add_marker_pair_at_frame(
+            m_time_a, m_time_b, m_image_width_a, m_image_width_b,
+            m_image_height_a, m_image_height_b, marker_a, marker_b,
+            m_marker_coords_a, m_marker_coords_b);
+        if (success) {
+            m_marker_list_a.push_back(marker_a);
+            m_marker_list_b.push_back(marker_b);
         }
     }
 
     MMSOLVER_VRB("parse m_marker_list_a size: " << m_marker_list_a.size());
     MMSOLVER_VRB("parse m_marker_list_b size: " << m_marker_list_b.size());
+    assert(m_marker_list_a.size() == m_marker_list_b.size());
 
     return status;
 }

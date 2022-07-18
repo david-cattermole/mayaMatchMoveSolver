@@ -25,16 +25,14 @@
 
 // STL
 #include <cmath>
+#include <tuple>
 #include <vector>
 
 // OpenMVG
 #ifdef MMSOLVER_USE_OPENMVG
 
-#include <openMVG/sfm/pipelines/sfm_robust_model_estimation.hpp>
-#include <openMVG/sfm/sfm_data.hpp>
-#include <openMVG/sfm/sfm_data_BA.hpp>
-#include <openMVG/sfm/sfm_data_BA_ceres.hpp>
-#include <openMVG/sfm/sfm_data_io.hpp>
+#include <openMVG/geometry/pose3.hpp>
+#include <openMVG/types.hpp>
 
 #endif  // MMSOLVER_USE_OPENMVG
 
@@ -61,11 +59,14 @@
 namespace mmsolver {
 namespace sfm {
 
-bool get_marker_coords(const MTime &time, MarkerPtr &mkr, double &x, double &y,
-                       double &weight, bool &enable);
+bool get_marker_coords_at_frame(const MTime &time, MarkerPtr &mkr, double &x,
+                                double &y, double &weight, bool &enable);
 
-bool get_marker_coord(const MTime time, Marker &mkr, double &x, double &y,
-                      double &weight, bool &enable);
+bool get_marker_coords_at_frame(const MTime time, Marker &mkr, double &x,
+                                double &y, double &weight, bool &enable);
+
+bool get_bundle_coords_at_frame(const MTime &time, BundlePtr &bnd, double &x,
+                                double &y, double &z, double &weight);
 
 MStatus get_camera_values(const MTime &time, CameraPtr &cam, int &image_width,
                           int &image_height, double &focal_length_mm,
@@ -84,6 +85,9 @@ void convert_camera_lens_mm_to_pixel_units(const int32_t image_width,
 openMVG::Mat convert_marker_coords_to_matrix(
     const std::vector<std::pair<double, double>> &marker_coords);
 
+openMVG::Mat convert_bundle_coords_to_matrix(
+    const std::vector<std::tuple<double, double, double>> &bundle_coords);
+
 MStatus parseCameraSelectionList(
     const MSelectionList &selection_list, const MTime &time, CameraPtr &camera,
     Attr &camera_tx_attr, Attr &camera_ty_attr, Attr &camera_tz_attr,
@@ -97,22 +101,23 @@ MStatus parse_camera_argument(const MSelectionList &selection_list,
                               Attr &camera_rx_attr, Attr &camera_ry_attr,
                               Attr &camera_rz_attr);
 
-MStatus add_markers(const MTime &time_a, const MTime &time_b,
-                    const int32_t image_width_a, const int32_t image_height_a,
-                    const int32_t image_width_b, const int32_t image_height_b,
-                    MarkerPtr &marker_a, MarkerPtr &marker_b,
-                    MarkerPtrList &marker_list_a, MarkerPtrList &marker_list_b,
-                    std::vector<std::pair<double, double>> &marker_coords_a,
-                    std::vector<std::pair<double, double>> &marker_coords_b);
+bool add_marker_at_frame(const MTime &time, const int32_t image_width,
+                         const int32_t image_height, MarkerPtr &marker,
+                         std::vector<std::pair<double, double>> &marker_coords);
 
-MStatus addMarkerBundles(
+bool add_marker_pair_at_frame(
     const MTime &time_a, const MTime &time_b, const int32_t image_width_a,
-    const int32_t image_height_a, const int32_t image_width_b,
+    const int32_t image_width_b, const int32_t image_height_a,
     const int32_t image_height_b, MarkerPtr &marker_a, MarkerPtr &marker_b,
-    BundlePtr &bundle, BundlePtrList &bundle_list, MarkerPtrList &marker_list_a,
-    MarkerPtrList &marker_list_b,
     std::vector<std::pair<double, double>> &marker_coords_a,
     std::vector<std::pair<double, double>> &marker_coords_b);
+
+bool add_bundle_at_frame(
+    const MTime &time, BundlePtr &bundle,
+    std::vector<std::tuple<double, double, double>> &bundle_coords);
+
+MTransformationMatrix convert_pose_to_maya_transform_matrix(
+    openMVG::geometry::Pose3 &pose);
 
 }  // namespace sfm
 }  // namespace mmsolver

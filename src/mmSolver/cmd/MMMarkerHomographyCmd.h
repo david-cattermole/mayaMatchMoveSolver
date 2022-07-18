@@ -17,7 +17,7 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Header for mmCameraSolve Maya command.
+ * Header for mmMarkerHomography Maya command.
  */
 
 #ifndef MM_SOLVER_MM_MARKER_HOMOGRAPHY_CMD_H

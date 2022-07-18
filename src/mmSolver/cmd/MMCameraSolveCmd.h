@@ -72,6 +72,8 @@ private:
     // Frame range
     uint32_t m_startFrame;
     uint32_t m_endFrame;
+    MTime m_startTime;
+    MTime m_endTime;
 };
 
 }  // namespace mmsolver

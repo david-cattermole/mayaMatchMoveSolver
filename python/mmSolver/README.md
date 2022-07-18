@@ -12,4 +12,4 @@ serves a purpose.
 | mmSolver.startup  | Functions to start mmSolver      |
 | mmSolver.tools    | mmSolver Tools                   |
 | mmSolver.ui       | Functions needing a desktop      |
-| mmSolver.utils    | Standalone Maya helper functions |
+| mmSolver.utils    | mmSolver helper functions        |

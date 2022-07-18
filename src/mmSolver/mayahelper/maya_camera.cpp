@@ -23,6 +23,7 @@
 #include "maya_camera.h"
 
 #include <maya/MDataHandle.h>
+#include <maya/MEulerRotation.h>
 #include <maya/MFloatMatrix.h>
 #include <maya/MFnCamera.h>
 #include <maya/MFnMatrixData.h>
@@ -319,6 +320,7 @@ Camera::Camera()
     m_nearClipPlane.setAttrName("nearClipPlane");
     m_farClipPlane.setAttrName("farClipPlane");
     m_filmFit.setAttrName("filmFit");
+    m_rotateOrder.setAttrName("rotateOrder");
 
     // Default Resolution node exists in every scene.
     // These attributes are used when constructing the camera projection matrix
@@ -337,6 +339,7 @@ void Camera::setTransformNodeName(MString value) {
         m_transformObject = MObject();
         m_shapeObject = MObject();
         m_matrix.setNodeName(value);
+        m_rotateOrder.setNodeName(value);
         m_transformNodeName = value;
     }
 }
@@ -389,6 +392,8 @@ MStatus Camera::setProjectionDynamic(bool value) {
 }
 
 Attr &Camera::getMatrixAttr() { return m_matrix; }
+
+Attr &Camera::getRotateOrderAttr() { return m_rotateOrder; }
 
 Attr &Camera::getFilmbackWidthAttr() { return m_filmbackWidth; }
 
@@ -753,6 +758,40 @@ MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time,
         // MMSOLVER_INFO("camera world proj matrix cache hit");
         value = found->second;
     }
+    return status;
+}
+
+MStatus Camera::getRotateOrder(MEulerRotation::RotationOrder &value,
+                               const MTime &time, const int timeEvalMode) {
+    MStatus status;
+
+    short attr_value = 0;
+    m_rotateOrder.getValue(attr_value, time, timeEvalMode);
+
+    switch (attr_value) {
+        break;
+        case 0:
+            value = MEulerRotation::kXYZ;
+            break;
+        case 1:
+            value = MEulerRotation::kYZX;
+            break;
+        case 2:
+            value = MEulerRotation::kZXY;
+            break;
+        case 3:
+            value = MEulerRotation::kXZY;
+            break;
+        case 4:
+            value = MEulerRotation::kYXZ;
+            break;
+        case 5:
+            value = MEulerRotation::kZYX;
+            break;
+        default:
+            value = MEulerRotation::kXYZ;
+    }
+
     return status;
 }
 

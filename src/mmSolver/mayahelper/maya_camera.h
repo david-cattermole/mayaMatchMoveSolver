@@ -30,6 +30,7 @@
 #include <vector>
 
 // Maya
+#include <maya/MEulerRotation.h>
 #include <maya/MMatrix.h>
 #include <maya/MObject.h>
 #include <maya/MPoint.h>
@@ -112,6 +113,7 @@ public:
     MStatus setProjectionDynamic(bool value);
 
     Attr &getMatrixAttr();
+    Attr &getRotateOrderAttr();
 
     Attr &getFilmbackWidthAttr();
     Attr &getFilmbackHeightAttr();
@@ -166,6 +168,9 @@ public:
 
     MStatus getWorldProjMatrix(MMatrix &value, const int timeEvalMode);
 
+    MStatus getRotateOrder(MEulerRotation::RotationOrder &value,
+                           const MTime &time, const int timeEvalMode);
+
     MStatus clearAuxilaryAttrsCache();
 
     MStatus clearProjMatrixCache();
@@ -197,6 +202,7 @@ private:
     Attr m_renderWidth;
     Attr m_renderHeight;
     Attr m_renderAspect;
+    Attr m_rotateOrder;
 
     bool m_cameraScaleCached;
     bool m_nearClipPlaneCached;

@@ -14,7 +14,7 @@ codingstyle](https://www.python.org/dev/peps/pep-0008/), and uses the
 [Black](https://pypi.org/project/black/) formatting tool to enforce
 the format.
 
-Here is a specific list, some are listed in PEP 8, some are not: 
+Here is a specific list, some are listed in PEP 8, some are not:
 - Line limit of 80 characters, exceptions to this rule are allowed if
   required.
 - Use 4 spaces for indentation, do not use tabs.
@@ -23,7 +23,7 @@ Here is a specific list, some are listed in PEP 8, some are not:
 - All modules should should have a doc-string, with a brief
   description in a single at minimum.
 - Functions should have a doc-string.
-- Doc-strings should use triple double-quote characters: 
+- Doc-strings should use triple double-quote characters:
   `"""My doc-string"""`
 - Private variables are specified by `_`; `_variable`. These variables
   should not be called directly, getters and setters should be
@@ -110,12 +110,12 @@ To be written.
 
 # Building Individual Components
 
-To speed up compilation you may turn off individual components of the 
-CMake build. For example, the BUILD_PLUGIN and BUILD_DOCS is slower to 
+To speed up compilation you may turn off individual components of the
+CMake build. For example, the BUILD_PLUGIN and BUILD_DOCS is slower to
 build than just BUILD_PYTHON.
 
-You may control this with the Build options below, which are defined 
-(all ON) in the provided ```./scripts/build_mmSolver_*``` scripts. 
+You may control this with the Build options below, which are defined
+(all ON) in the provided `./scripts/build_mmSolver_*` scripts.
 
 In the Bash Shell scripts:
 ```shell script
@@ -145,7 +145,7 @@ SET BUILD_CONFIG=1
 SET BUILD_TESTS=1
 ```
 
-# Setup Linux Environment With Docker
+# Setup Linux Build Environment With Docker
 
 If you are developing on Windows and need to test for Linux, or if you
 are using Linux but you don't want to modify your computer's system
@@ -319,7 +319,7 @@ C++ code linting is not (yet) enforced.
 
 # Rust Tools
 
-To format all Rust code please use `rustfmt` that comes with Rust.
+To format all Rust code please use `cargo fmt` that comes with Rust.
 
 To check your Rust code for common issues use the `cargo clippy`
 command.

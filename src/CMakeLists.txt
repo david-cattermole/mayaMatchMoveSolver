@@ -19,7 +19,8 @@
 # Building the C++ code for mmSolver.
 #
 
-# Explicitly enable features
+# This allows us to use the 'RPATH' embedded in a shared object to
+# find binaries releative to the current binary.
 set(CMAKE_MACOSX_RPATH 1)
 
 

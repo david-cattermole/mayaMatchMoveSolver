@@ -30,11 +30,13 @@
 // OpenMVG
 #ifdef MMSOLVER_USE_OPENMVG
 
+#include <openMVG/cameras/Camera_Intrinsics.hpp>
+#include <openMVG/cameras/Camera_Pinhole.hpp>
+#include <openMVG/geometry/pose3.hpp>
+#include <openMVG/numeric/eigen_alias_definition.hpp>
 #include <openMVG/sfm/pipelines/sfm_robust_model_estimation.hpp>
 #include <openMVG/sfm/sfm_data.hpp>
-#include <openMVG/sfm/sfm_data_BA.hpp>
-#include <openMVG/sfm/sfm_data_BA_ceres.hpp>
-#include <openMVG/sfm/sfm_data_io.hpp>
+#include <openMVG/types.hpp>
 
 #endif  // MMSOLVER_USE_OPENMVG
 

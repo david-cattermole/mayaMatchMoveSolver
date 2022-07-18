@@ -108,11 +108,16 @@ def _sort_root_frames(cam, mkr_list, frames):
     return sorted_frames
 
 
-def _bundle_adjust(cam_tfm, cam_shp, accumulated_mkr_nodes, frames,
-                   adjust_camera_translate=None,
-                   adjust_camera_rotate=None,
-                   adjust_bundle_positions=None,
-                   adjust_focal_length=None):
+def _bundle_adjust(
+    cam_tfm,
+    cam_shp,
+    accumulated_mkr_nodes,
+    frames,
+    adjust_camera_translate=None,
+    adjust_camera_rotate=None,
+    adjust_bundle_positions=None,
+    adjust_focal_length=None,
+):
     if adjust_camera_translate is None:
         adjust_camera_translate = False
     if adjust_camera_rotate is None:
@@ -134,26 +139,14 @@ def _bundle_adjust(cam_tfm, cam_shp, accumulated_mkr_nodes, frames,
     solver_node_attrs = []
 
     if adjust_camera_translate is True:
-        solver_node_attrs.append(
-            (cam_tfm + '.tx', 'None', 'None', 'None', 'None')
-        )
-        solver_node_attrs.append(
-            (cam_tfm + '.ty', 'None', 'None', 'None', 'None')
-        )
-        solver_node_attrs.append(
-            (cam_tfm + '.tz', 'None', 'None', 'None', 'None')
-        )
+        solver_node_attrs.append((cam_tfm + '.tx', 'None', 'None', 'None', 'None'))
+        solver_node_attrs.append((cam_tfm + '.ty', 'None', 'None', 'None', 'None'))
+        solver_node_attrs.append((cam_tfm + '.tz', 'None', 'None', 'None', 'None'))
 
     if adjust_camera_rotate is True:
-        solver_node_attrs.append(
-            (cam_tfm + '.rx', 'None', 'None', 'None', 'None')
-        )
-        solver_node_attrs.append(
-            (cam_tfm + '.ry', 'None', 'None', 'None', 'None')
-        )
-        solver_node_attrs.append(
-            (cam_tfm + '.rz', 'None', 'None', 'None', 'None')
-        )
+        solver_node_attrs.append((cam_tfm + '.rx', 'None', 'None', 'None', 'None'))
+        solver_node_attrs.append((cam_tfm + '.ry', 'None', 'None', 'None', 'None'))
+        solver_node_attrs.append((cam_tfm + '.rz', 'None', 'None', 'None', 'None'))
 
     if adjust_focal_length is True:
         value = (cam_shp + '.focalLength', 'None', 'None', 'None', 'None')
@@ -283,10 +276,12 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
     resection_result = []
     resection_frames = list(sorted(resection_frames))
     if len(resection_frames) > 0:
-        accumulated_bnd_nodes = [mmapi.Marker(node=n).get_bundle()
-                                 for n in accumulated_mkr_nodes]
-        accumulated_bnd_nodes = [n.get_node() for n in accumulated_bnd_nodes
-                                 if n is not None]
+        accumulated_bnd_nodes = [
+            mmapi.Marker(node=n).get_bundle() for n in accumulated_mkr_nodes
+        ]
+        accumulated_bnd_nodes = [
+            n.get_node() for n in accumulated_bnd_nodes if n is not None
+        ]
 
         resection_kwargs = {
             'frame': resection_frames,
@@ -306,7 +301,7 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
             if worked:
                 solved_frames.add(frame)
             else:
-                maya.cmds.cutKey(cam_nodes, time=(frame, ))
+                maya.cmds.cutKey(cam_nodes, time=(frame,))
                 resection_bad_frames.add(frame)
         # print('resection bad frames:', pprint.pformat(sorted(resection_bad_frames)))
 
@@ -322,35 +317,41 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
     # Refine the solve.
     frames = list(sorted(solved_frames))
     _bundle_adjust(
-        cam_tfm, cam_shp,
+        cam_tfm,
+        cam_shp,
         accumulated_mkr_nodes,
         frames,
         adjust_camera_translate=False,
         adjust_camera_rotate=False,
         adjust_bundle_positions=True,
-        adjust_focal_length=False)
+        adjust_focal_length=False,
+    )
 
     _bundle_adjust(
-        cam_tfm, cam_shp,
+        cam_tfm,
+        cam_shp,
         accumulated_mkr_nodes,
         frames,
         adjust_camera_translate=True,
         adjust_camera_rotate=True,
         adjust_bundle_positions=True,
-        adjust_focal_length=True)
+        adjust_focal_length=True,
+    )
 
     # Solve per-frame
     start_frame = min(frames)
     end_frame = max(frames)
     frames = list(range(start_frame, end_frame + 1))
     _bundle_adjust(
-        cam_tfm, cam_shp,
+        cam_tfm,
+        cam_shp,
         accumulated_mkr_nodes,
         frames,
         adjust_camera_translate=True,
         adjust_camera_rotate=True,
         adjust_bundle_positions=False,
-        adjust_focal_length=False)
+        adjust_focal_length=False,
+    )
 
 
     #     frame_stack.remove(root_frame_a)
@@ -488,6 +489,7 @@ class TestCameraSolve(solverUtils.SolverTestCase):
 
         mkr_bnd_list = []
         for mkr in mkr_list:
+
             bnd = mkr.get_bundle()
             if bnd is None:
                 print('mkr (%r) could not get bundle.')
@@ -566,12 +568,14 @@ class TestCameraSolve(solverUtils.SolverTestCase):
             maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=frame_a, value=0.0)
 
         marker_file_path = self.get_data_path('pftrack', 'pftrack5_garage.2dt')
-        _, mkr_data_list = marker_read.read(marker_file_path,
-                                            image_width=960, image_height=540)
+        _, mkr_data_list = marker_read.read(
+            marker_file_path, image_width=960, image_height=540
+        )
         mkr_list = marker_read.create_nodes(mkr_data_list, cam=cam, mkr_grp=mkr_grp)
 
         mkr_bnd_list = []
         for mkr in mkr_list:
+
             bnd = mkr.get_bundle()
             if bnd is None:
                 print('mkr (%r) could not get bundle.')

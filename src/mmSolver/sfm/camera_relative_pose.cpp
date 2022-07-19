@@ -20,56 +20,6 @@
  * Calculate camera relative poses.
  */
 
-// NOTE: The following (MSVC) warnings are disabled because of
-// OpenMVG, and are mostly caused by Eigen. Annoyingly the warnings
-// must be disabled at the top-level of the source file to fully get
-// rid of the warnings - it's not possible to wrap these in
-// 'push/pop'. Some warnings are also triggered in 'libmv', but not as
-// many as 'OpenMVG'.
-
-// Compiler Warning (level 3) C4267: conversion from 'size_t' to
-// 'object', possible loss of data.
-#pragma warning(disable : 4267)
-
-// Compiler Warning (level 1) C4305: truncation from 'type1' to
-// 'type2'.
-#pragma warning(disable : 4305)
-
-// Compiler Warning (level 4) C4127: conditional expression is
-// constant
-#pragma warning(disable : 4127)
-
-// Compiler Warning (levels 3 and 4) C4244: 'conversion' conversion
-// from 'type1' to 'type2', possible loss of data.
-#pragma warning(disable : 4244)
-
-// Compiler Warning (level 4) C4459: declaration of 'identifier' hides
-// global declaration.
-#pragma warning(disable : 4459)
-
-// Compiler Warning (level 4) C4456: declaration of 'identifier' hides
-// previous local declaration.
-#pragma warning(disable : 4456)
-
-// Compiler Warning (level 4) C4100: 'identifier' : unreferenced
-// formal parameter.
-#pragma warning(disable : 4100)
-
-// Compiler Warning (level 3) C4018: 'token' : signed/unsigned
-// mismatch.
-#pragma warning(disable : 4018)
-
-// Compiler Warning (level 4) C4714: function 'function' marked as
-// __forceinline not inlined.
-#pragma warning(disable : 4714)
-
-// Compiler Warning (level 1) C4005: 'identifier' : macro
-// redefinition.
-#pragma warning(disable : 4005)
-
-// Compiler Warning (level 4) C4702: unreachable code.
-#pragma warning(disable : 4702)
-
 #include "camera_relative_pose.h"
 
 // STL

@@ -19,7 +19,8 @@
 # Building the C++ code for mmSolver.
 #
 
-# Explicitly enable features
+# This allows us to use the 'RPATH' embedded in a shared object to
+# find binaries releative to the current binary.
 set(CMAKE_MACOSX_RPATH 1)
 
 
@@ -37,6 +38,7 @@ set(SOURCE_FILES
   mmSolver/calibrate/calibrate_common.cpp
   mmSolver/calibrate/vanishing_point.cpp
   mmSolver/cmd/common_arg_flags.cpp
+  mmSolver/cmd/MMCameraPoseResectionCmd.cpp
   mmSolver/cmd/MMCameraRelativePoseCmd.cpp
   mmSolver/cmd/MMCameraSolveCmd.cpp
   mmSolver/cmd/MMConvertImageCmd.cpp
@@ -89,6 +91,7 @@ set(SOURCE_FILES
   mmSolver/render/RenderOverride.cpp
   mmSolver/render/SceneRender.cpp
   mmSolver/sfm/camera_relative_pose.cpp
+  mmSolver/sfm/camera_resection.cpp
   mmSolver/sfm/homography.cpp
   mmSolver/sfm/sfm_utils.cpp
   mmSolver/shape/ShapeDrawUtils.cpp

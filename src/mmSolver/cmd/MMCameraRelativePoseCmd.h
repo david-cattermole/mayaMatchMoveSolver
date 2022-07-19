@@ -32,6 +32,7 @@
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MDGModifier.h>
+#include <maya/MEulerRotation.h>
 #include <maya/MGlobal.h>
 #include <maya/MIOStream.h>
 #include <maya/MPxCommand.h>
@@ -100,6 +101,9 @@ private:
     Attr m_camera_rx_attr_b;
     Attr m_camera_ry_attr_b;
     Attr m_camera_rz_attr_b;
+
+    MEulerRotation::RotationOrder m_camera_rotate_order_a;
+    MEulerRotation::RotationOrder m_camera_rotate_order_b;
 
     bool m_use_camera_transform;
     MMatrix m_camera_transform_matrix;

@@ -210,8 +210,13 @@ MSyntax MMCameraSolveCmd::newSyntax() {
 MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
+    // Enable to print out 'MMSOLVER_VRB' results.
+    const bool verbose = false;
+
     MArgDatabase argData(syntax(), args, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    auto uiUnit = MTime::uiUnit();
 
     m_startFrame = 1;
     if (argData.isFlagSet("-sf")) {
@@ -225,11 +230,12 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
+    m_startTime = MTime(static_cast<double>(m_startFrame), uiUnit);
+    m_endTime = MTime(static_cast<double>(m_endFrame), uiUnit);
+
     auto objects = MSelectionList();
     status = argData.getObjects(objects);
     CHECK_MSTATUS_AND_RETURN_IT(status);
-
-    auto uiUnit = MTime::uiUnit();
 
     // Reset saved data structures.
     m_marker_coords_a.clear();
@@ -250,12 +256,12 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto node_name = nodeDagPath.fullPathName();
-        // MMSOLVER_INFO("Node name: " << node_name.asChar());
+        // MMSOLVER_VRB("Node name: " << node_name.asChar());
 
         auto object_type = computeObjectType(node_obj, nodeDagPath);
         if (object_type == ObjectType::kCamera) {
             // Add Cameras
-            MMSOLVER_INFO("Camera name: " << node_name.asChar());
+            MMSOLVER_VRB("Camera name: " << node_name.asChar());
             MString transform_node_name = nodeDagPath.fullPathName();
 
             status = nodeDagPath.extendToShapeDirectlyBelow(0);
@@ -272,8 +278,8 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
                 m_endFrame, uiUnit, cam, m_image_width_b, m_image_height_b);
         }
     }
-    MMSOLVER_INFO("image A: " << m_image_width_a << "x" << m_image_height_a);
-    MMSOLVER_INFO("image B: " << m_image_width_b << "x" << m_image_height_b);
+    MMSOLVER_VRB("image A: " << m_image_width_a << "x" << m_image_height_a);
+    MMSOLVER_VRB("image B: " << m_image_width_b << "x" << m_image_height_b);
 
     // Parse objects into Camera intrinsics and Tracking Markers.
     MItSelectionList iter2(objects);
@@ -287,49 +293,19 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto node_name = nodeDagPath.fullPathName();
-        // MMSOLVER_INFO("Node name: " << node_name.asChar());
+        MMSOLVER_VRB("Node name: " << node_name.asChar());
 
         auto object_type = computeObjectType(node_obj, nodeDagPath);
         if (object_type == ObjectType::kMarker) {
             // Add Markers
-            MMSOLVER_INFO("Marker name: " << node_name.asChar());
-            auto mkr = MMMarker();
-            mkr.setNodeName(node_name);
+            MMSOLVER_VRB("Marker name: " << node_name.asChar());
+            MarkerPtr marker = MarkerPtr(new Marker());
+            marker->setNodeName(node_name);
 
-            double x_a = 0.0;
-            double x_b = 0.0;
-            double y_a = 0.0;
-            double y_b = 0.0;
-            bool enable_a = true;
-            bool enable_b = true;
-            double weight_a = 1.0;
-            double weight_b = 1.0;
-
-            MTime startTime = MTime(static_cast<double>(m_startFrame), uiUnit);
-            MTime endTime = MTime(static_cast<double>(m_endFrame), uiUnit);
-
-            auto success_a = ::mmsolver::sfm::get_marker_coord(
-                startTime, mkr, x_a, y_a, weight_a, enable_a);
-            auto success_b = ::mmsolver::sfm::get_marker_coord(
-                endTime, mkr, x_b, y_b, weight_b, enable_b);
-            if (success_a && success_b) {
-                double xx_a =
-                    (x_a + 0.5) * static_cast<double>(m_image_width_a);
-                double yy_a =
-                    (y_a + 0.5) * static_cast<double>(m_image_height_a);
-                double xx_b =
-                    (x_b + 0.5) * static_cast<double>(m_image_width_b);
-                double yy_b =
-                    (y_b + 0.5) * static_cast<double>(m_image_height_b);
-                MMSOLVER_INFO("x_a : " << x_a << " y_a : " << y_a);
-                MMSOLVER_INFO("xx_a: " << xx_a << " yy_a: " << yy_a);
-                MMSOLVER_INFO("x_b : " << x_b << " y_b : " << y_b);
-                MMSOLVER_INFO("xx_b: " << xx_b << " yy_b: " << yy_b);
-                auto xy_a = std::pair<double, double>{xx_a, yy_a};
-                auto xy_b = std::pair<double, double>{xx_b, yy_b};
-                m_marker_coords_a.push_back(xy_a);
-                m_marker_coords_b.push_back(xy_b);
-            }
+            auto success = ::mmsolver::sfm::add_marker_pair_at_frame(
+                m_startTime, m_endTime, m_image_width_a, m_image_width_b,
+                m_image_height_a, m_image_height_b, marker, marker,
+                m_marker_coords_a, m_marker_coords_b);
         }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 David Cattermole.
+ * Copyright (C) 2022 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -17,65 +17,83 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Header for mmCameraSolve Maya command.
+ * Header for mmCameraPoseResection Maya command.
  */
 
-#ifndef MAYA_MM_CAMERA_SOLVE_CMD_H
-#define MAYA_MM_CAMERA_SOLVE_CMD_H
+#ifndef MM_SOLVER_MM_CAMERA_POSE_RESECTION_CMD_H
+#define MM_SOLVER_MM_CAMERA_POSE_RESECTION_CMD_H
 
 // STL
 #include <cmath>
+#include <tuple>
 #include <vector>
 
 // Maya
+#include <maya/MAnimCurveChange.h>
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
+#include <maya/MDGModifier.h>
+#include <maya/MEulerRotation.h>
 #include <maya/MGlobal.h>
 #include <maya/MIOStream.h>
-#include <maya/MPoint.h>
 #include <maya/MPxCommand.h>
 #include <maya/MSelectionList.h>
 #include <maya/MSyntax.h>
 #include <maya/MTime.h>
 #include <maya/MTimeArray.h>
 
+// Maya helpers
+#include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_bundle.h"
+#include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_utils.h"
+
 namespace mmsolver {
 
-class MMCameraSolveCmd : public MPxCommand {
+class MMCameraPoseResectionCmd : public MPxCommand {
 public:
-    MMCameraSolveCmd(){};
-
-    virtual ~MMCameraSolveCmd();
+    MMCameraPoseResectionCmd(){};
+    virtual ~MMCameraPoseResectionCmd();
 
     virtual bool hasSyntax() const;
     static MSyntax newSyntax();
 
     virtual MStatus doIt(const MArgList &args);
-
     virtual bool isUndoable() const;
+    virtual MStatus undoIt();
+    virtual MStatus redoIt();
 
     static void *creator();
-
     static MString cmdName();
 
 private:
     MStatus parseArgs(const MArgList &args);
 
-    // OpenMVG
-    int32_t m_image_width_a;
-    int32_t m_image_height_a;
-    int32_t m_image_width_b;
-    int32_t m_image_height_b;
-    std::vector<std::pair<double, double>> m_marker_coords_a;
-    std::vector<std::pair<double, double>> m_marker_coords_b;
+    bool m_set_values;
 
-    // Frame range
-    uint32_t m_startFrame;
-    uint32_t m_endFrame;
-    MTime m_startTime;
-    MTime m_endTime;
+    // Maya Objects
+    CameraPtr m_camera;
+    Attr m_camera_tx_attr;
+    Attr m_camera_ty_attr;
+    Attr m_camera_tz_attr;
+    Attr m_camera_rx_attr;
+    Attr m_camera_ry_attr;
+    Attr m_camera_rz_attr;
+    MEulerRotation::RotationOrder m_camera_rotate_order;
+
+    MarkerPtrList m_marker_list;
+    BundlePtrList m_bundle_list;
+
+    // Frames
+    std::vector<uint32_t> m_frames;
+    std::vector<MTime> m_times;
+
+    // Undo/Redo
+    MDGModifier m_dgmod;
+    MAnimCurveChange m_curveChange;
 };
 
 }  // namespace mmsolver
 
-#endif  // MAYA_MM_CAMERA_SOLVE_CMD_H
+#endif  // MM_SOLVER_MM_CAMERA_POSE_RESECTION_CMD_H

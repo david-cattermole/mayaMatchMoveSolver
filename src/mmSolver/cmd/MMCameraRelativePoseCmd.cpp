@@ -286,6 +286,14 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         m_sensor_height_mm_b);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
+    {
+        auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+        m_camera_a->getRotateOrder(m_camera_rotate_order_a, m_time_a,
+                                   timeEvalMode);
+        m_camera_b->getRotateOrder(m_camera_rotate_order_b, m_time_b,
+                                   timeEvalMode);
+    }
+
     MMSOLVER_VRB("image A: " << m_image_width_a << "x" << m_image_height_a);
     MMSOLVER_VRB("image B: " << m_image_width_b << "x" << m_image_height_b);
     MMSOLVER_VRB("sensor (mm) A: " << m_sensor_width_mm_a << "x"
@@ -319,92 +327,96 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
     // Parse objects into Camera intrinsics and Tracking Markers.
     uint32_t numberOfMarkerBundleFlags =
         argData.numberOfFlagUses(MARKER_BUNDLE_SHORT_FLAG);
-    if (numberOfMarkerBundleFlags > 0) {
-        for (uint32_t i = 0; i < numberOfMarkerBundleFlags; ++i) {
-            MArgList markerBundleArgs;
-            ObjectType objectType = ObjectType::kUnknown;
-            MDagPath dagPath;
-            MString markerNameA = "";
-            MString markerNameB = "";
-            MString bundleName = "";
-            MObject markerObject;
-            MObject bundleObject;
-            status = argData.getFlagArgumentList(MARKER_BUNDLE_SHORT_FLAG, i,
-                                                 markerBundleArgs);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
+    for (uint32_t i = 0; i < numberOfMarkerBundleFlags; ++i) {
+        MArgList markerBundleArgs;
+        ObjectType objectType = ObjectType::kUnknown;
+        MDagPath dagPath;
+        MString markerNameA = "";
+        MString markerNameB = "";
+        MString bundleName = "";
+        MObject markerObject;
+        MObject bundleObject;
+        status = argData.getFlagArgumentList(MARKER_BUNDLE_SHORT_FLAG, i,
+                                             markerBundleArgs);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
 
-            if (markerBundleArgs.length() != 3) {
-                MMSOLVER_ERR(
-                    "Marker Bundle argument list must have 3 arguments; "
-                    << "\"markerA\", \"markerB\",  \"bundle\".");
-                continue;
-            }
+        if (markerBundleArgs.length() != 3) {
+            MMSOLVER_ERR("Marker Bundle argument list must have 3 arguments; "
+                         << "\"markerA\", \"markerB\",  \"bundle\".");
+            continue;
+        }
 
-            markerNameA = markerBundleArgs.asString(0, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            status = getAsObject(markerNameA, markerObject);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            status = getAsDagPath(markerNameA, dagPath);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            objectType = computeObjectType(markerObject, dagPath);
-            if (objectType != ObjectType::kMarker) {
-                MMSOLVER_ERR("Given marker node is not a Marker; "
-                             << markerNameA.asChar());
-                continue;
-            }
-            MMSOLVER_VRB("Got markerNameA: " << markerNameA.asChar());
+        markerNameA = markerBundleArgs.asString(0, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = getAsObject(markerNameA, markerObject);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = getAsDagPath(markerNameA, dagPath);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        objectType = computeObjectType(markerObject, dagPath);
+        if (objectType != ObjectType::kMarker) {
+            MMSOLVER_ERR("Given marker node is not a Marker; "
+                         << markerNameA.asChar());
+            continue;
+        }
+        MMSOLVER_VRB("Got markerNameA: " << markerNameA.asChar());
 
-            markerNameB = markerBundleArgs.asString(1, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            status = getAsObject(markerNameB, markerObject);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            status = getAsDagPath(markerNameB, dagPath);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            objectType = computeObjectType(markerObject, dagPath);
-            if (objectType != ObjectType::kMarker) {
-                MMSOLVER_ERR("Given marker node is not a Marker; "
-                             << markerNameB.asChar());
-                continue;
-            }
-            MMSOLVER_VRB("Got markerNameB: " << markerNameB.asChar());
+        markerNameB = markerBundleArgs.asString(1, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = getAsObject(markerNameB, markerObject);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = getAsDagPath(markerNameB, dagPath);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        objectType = computeObjectType(markerObject, dagPath);
+        if (objectType != ObjectType::kMarker) {
+            MMSOLVER_ERR("Given marker node is not a Marker; "
+                         << markerNameB.asChar());
+            continue;
+        }
+        MMSOLVER_VRB("Got markerNameB: " << markerNameB.asChar());
 
-            bundleName = markerBundleArgs.asString(2, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            status = getAsObject(bundleName, bundleObject);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            status = getAsDagPath(bundleName, dagPath);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            objectType = computeObjectType(bundleObject, dagPath);
-            if (objectType != ObjectType::kBundle) {
-                MMSOLVER_ERR("Given bundle node is not a Bundle; "
-                             << bundleName.asChar());
-                continue;
-            }
-            MMSOLVER_VRB("Got bundleName: " << bundleName.asChar());
+        bundleName = markerBundleArgs.asString(2, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = getAsObject(bundleName, bundleObject);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        status = getAsDagPath(bundleName, dagPath);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        objectType = computeObjectType(bundleObject, dagPath);
+        if (objectType != ObjectType::kBundle) {
+            MMSOLVER_ERR("Given bundle node is not a Bundle; "
+                         << bundleName.asChar());
+            continue;
+        }
+        MMSOLVER_VRB("Got bundleName: " << bundleName.asChar());
 
-            BundlePtr bundle = BundlePtr(new Bundle());
-            bundle->setNodeName(bundleName);
+        BundlePtr bundle = BundlePtr(new Bundle());
+        bundle->setNodeName(bundleName);
 
-            MarkerPtr marker_a = MarkerPtr(new Marker());
-            marker_a->setNodeName(markerNameA);
-            marker_a->setBundle(bundle);
-            marker_a->setCamera(m_camera_a);
+        MarkerPtr marker_a = MarkerPtr(new Marker());
+        marker_a->setNodeName(markerNameA);
+        marker_a->setBundle(bundle);
+        marker_a->setCamera(m_camera_a);
 
-            MarkerPtr marker_b = MarkerPtr(new Marker());
-            marker_b->setNodeName(markerNameB);
-            marker_b->setBundle(bundle);
-            marker_b->setCamera(m_camera_b);
+        MarkerPtr marker_b = MarkerPtr(new Marker());
+        marker_b->setNodeName(markerNameB);
+        marker_b->setBundle(bundle);
+        marker_b->setCamera(m_camera_b);
 
-            ::mmsolver::sfm::addMarkerBundles(
-                m_time_a, m_time_b, m_image_width_a, m_image_height_a,
-                m_image_width_b, m_image_height_b, marker_a, marker_b, bundle,
-                m_bundle_list, m_marker_list_a, m_marker_list_b,
-                m_marker_coords_a, m_marker_coords_b);
+        auto success = ::mmsolver::sfm::add_marker_pair_at_frame(
+            m_time_a, m_time_b, m_image_width_a, m_image_width_b,
+            m_image_height_a, m_image_height_b, marker_a, marker_b,
+            m_marker_coords_a, m_marker_coords_b);
+        if (success) {
+            m_marker_list_a.push_back(marker_a);
+            m_marker_list_b.push_back(marker_b);
+            m_bundle_list.push_back(bundle);
         }
     }
 
     MMSOLVER_VRB("parse m_marker_list_a size: " << m_marker_list_a.size());
     MMSOLVER_VRB("parse m_marker_list_b size: " << m_marker_list_b.size());
+    MMSOLVER_VRB("parse m_bundle_list size: " << m_bundle_list.size());
+    assert(m_marker_list_a.size() == m_marker_list_b.size());
+    assert(m_marker_list_a.size() == m_bundle_list.size());
 
     return status;
 }
@@ -505,56 +517,6 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         auto pose_id = view.id_pose;
         MMSOLVER_VRB("view: " << key << "=" << pose_id);
 
-        auto pose = scene.GetPoseOrDie(&view);
-        auto pose_center = pose.center();
-        auto pose_translation = pose.translation();
-        auto pose_rotation = pose.rotation();
-        MMSOLVER_VRB("pose center: " << pose_center);
-        MMSOLVER_VRB("pose translation: " << pose_translation);
-        MMSOLVER_VRB("pose rotation: " << pose_rotation);
-
-        // OpenMVG and Maya have different conventions for the camera Z axis:
-        //
-        // - In OpenMVG the camera points down +Z.
-        //
-        // - In Maya the camera points down -Z.
-        //
-        // The Camera Z axis is inverse scaled, therefore to correct
-        // the OpenMVG data for Maya we must:
-        //
-        // - Invert Camera TX, RX and RY values.
-        //
-        // - Invert Bundle TZ value (see bundle section).
-        MPoint maya_translate(pose_center[0], pose_center[1], -pose_center[2]);
-        MVector maya_translate_vector(pose_center[0], pose_center[1],
-                                      -pose_center[2]);
-        const double c_rotate_matrix[4][4] = {
-            // clang-format off
-            {pose_rotation(0, 0),
-             pose_rotation(0, 1),
-             pose_rotation(0, 2),
-             pose_rotation(0, 3)},
-            {pose_rotation(1, 0),
-             pose_rotation(1, 1),
-             pose_rotation(1, 2),
-             pose_rotation(1, 3)},
-            {pose_rotation(2, 0),
-             pose_rotation(2, 1),
-             pose_rotation(2, 2),
-             pose_rotation(2, 3)},
-            {pose_rotation(3, 0),
-             pose_rotation(3, 1),
-             pose_rotation(3, 2),
-             pose_rotation(3, 3)},
-            // clang-format on
-        };
-        MMatrix maya_rotate_matrix(c_rotate_matrix);
-
-        // TODO: Expose the Rotation Order, so we can match the camera
-        // that needs it.
-        const auto rotate_order = MEulerRotation::kZXY;
-        const auto transform_rotate_order = MTransformationMatrix::kZXY;
-
         // Per-camera values
         auto attr_tx = m_camera_tx_attr_b;
         auto attr_ty = m_camera_ty_attr_b;
@@ -562,6 +524,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         auto attr_rx = m_camera_rx_attr_b;
         auto attr_ry = m_camera_ry_attr_b;
         auto attr_rz = m_camera_rz_attr_b;
+        auto rotate_order = m_camera_rotate_order_b;
         auto value_time = m_time_b;
         if (pose_id == 0) {
             value_time = m_time_a;
@@ -571,26 +534,14 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
             attr_rx = m_camera_rx_attr_a;
             attr_ry = m_camera_ry_attr_a;
             attr_rz = m_camera_rz_attr_a;
+            rotate_order = m_camera_rotate_order_a;
         }
 
-        const auto euler_rotation =
-            MEulerRotation::decompose(maya_rotate_matrix, rotate_order);
-        // Fixes the Camera +Z/-Z issue with Maya compared to OpenMVG.
-        const auto rx = -euler_rotation.x * RADIANS_TO_DEGREES;
-        const auto ry = -euler_rotation.y * RADIANS_TO_DEGREES;
-        const auto rz = euler_rotation.z * RADIANS_TO_DEGREES;
-        double rotate_radians[3] = {-euler_rotation.x, -euler_rotation.y,
-                                    euler_rotation.z};
-        MMSOLVER_VRB("pose euler rotation (ZXY): " << rx << "," << ry << ","
-                                                   << rz);
-
-        // Convert back into matrix.
-        MTransformationMatrix transform;
-        transform.setRotation(rotate_radians, transform_rotate_order);
-        transform.setTranslation(maya_translate_vector, MSpace::kWorld);
+        auto pose = scene.GetPoseOrDie(&view);
+        auto transform =
+            ::mmsolver::sfm::convert_pose_to_maya_transform_matrix(pose);
 
         auto transform_matrix = transform.asMatrix();
-
         transform_matrix = transform_matrix * m_camera_transform_matrix;
 
         outResult.append(transform_matrix(0, 0));

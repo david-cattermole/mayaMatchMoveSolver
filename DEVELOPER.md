@@ -14,7 +14,7 @@ codingstyle](https://www.python.org/dev/peps/pep-0008/), and uses the
 [Black](https://pypi.org/project/black/) formatting tool to enforce
 the format.
 
-Here is a specific list, some are listed in PEP 8, some are not: 
+Here is a specific list, some are listed in PEP 8, some are not:
 - Line limit of 80 characters, exceptions to this rule are allowed if
   required.
 - Use 4 spaces for indentation, do not use tabs.
@@ -23,7 +23,7 @@ Here is a specific list, some are listed in PEP 8, some are not:
 - All modules should should have a doc-string, with a brief
   description in a single at minimum.
 - Functions should have a doc-string.
-- Doc-strings should use triple double-quote characters: 
+- Doc-strings should use triple double-quote characters:
   `"""My doc-string"""`
 - Private variables are specified by `_`; `_variable`. These variables
   should not be called directly, getters and setters should be
@@ -53,14 +53,69 @@ is used to automatically format C++ files.
 - All defines are `UPPER_CASE_WITH_UNDERSCORES`.
 - Remove all redundant white space in source code.
 
+# Best Practices
+
+These guidelines should be followed whenever adding Python code to the
+project, however these are only guidelines, not rules. Use your
+judgement and if the guidelines don't fit, don't use them,
+
+## Python
+
+- General
+  - Don't repeat yourself (DRY)
+    - Identify repeated code and split the code into smaller re-usable
+      pieces.
+    - Reuse code, don’t duplicate it.
+  - Fail fast
+    - Return or raise an except as early as possible.
+    - Use `assert` calls to ensure expected types are given to functions.
+  - Use names to explain to other people.
+    - [CppCon 2019: Kate Gregory "Naming is Hard: Let's Do Better"](https://www.youtube.com/watch?v=MBRoCdtZOYg)
+  - Write the simpliest code possible - do not try to write overly
+    complex or "clever" code unless required.
+  - Use comments to explain *why* the code exists, not *what* the code
+    does.
+  - Add doc-strings for arguments and return types, and describe what
+    is not obvious.
+  - Avoid hard-coded values (numbers and strings), use named constants
+    with values.
+- Functions
+  - Functions should do *one* thing, and one thing *only*.
+  - Functions should be *shorter* rather than *longer*.
+  - Ideally all functions should be
+    [pure](https://en.wikipedia.org/wiki/Pure_function), or as pure as
+    practical. This means:
+    - If the same arguments are given, the exact same result should be
+      returned.
+    - The function should not use global variables or change any
+      shared state.
+- Classes
+  - Do not use classes unless nessarary.
+  - Avoid class inheritance, and instead use 'composition' of objects
+    and classes.
+  - When class inheritance is needed, use an Abstract Base Class (ABC)
+    interface and sub-class from it.
+- Tests
+  - Write tests for new features.
+  - Make sure tests pass before and after modifications.
+- Exceptions
+  - Exceptions should be for exceptional cases, not to avoid type or
+    value checking.
+- The [Zen Of Python](https://peps.python.org/pep-0020/) is wise and
+  you should follow it.
+
+## C++
+
+To be written.
+
 # Building Individual Components
 
-To speed up compilation you may turn off individual components of the 
-CMake build. For example, the BUILD_PLUGIN and BUILD_DOCS is slower to 
+To speed up compilation you may turn off individual components of the
+CMake build. For example, the BUILD_PLUGIN and BUILD_DOCS is slower to
 build than just BUILD_PYTHON.
 
-You may control this with the Build options below, which are defined 
-(all ON) in the provided ```./scripts/build_mmSolver_*``` scripts. 
+You may control this with the Build options below, which are defined
+(all ON) in the provided `./scripts/build_mmSolver_*` scripts.
 
 In the Bash Shell scripts:
 ```shell script
@@ -90,7 +145,7 @@ SET BUILD_CONFIG=1
 SET BUILD_TESTS=1
 ```
 
-# Setup Linux Environment With Docker
+# Setup Linux Build Environment With Docker
 
 If you are developing on Windows and need to test for Linux, or if you
 are using Linux but you don't want to modify your computer's system
@@ -151,6 +206,64 @@ $ ./scripts/build_mmSolver_linux_maya2022.bash
 $ mayapy tests/runTests.py
 ```
 
+# Python Tools
+
+## Python Virtual Environment
+
+Linux (using `bash`):
+```
+$ source ./scripts/python_venv_activate_maya2022.bash
+$ # Run commands here...
+$ deactivate
+```
+
+Windows (using `cmd.exe`):
+```
+> python_venv_activate_maya2022.bat
+> REM Run commands here...
+> python_venv_deactivate_maya2022.bat
+```
+
+## Python Code Formatting
+
+```
+$ ./scripts/python_formatter_run_black_check.bash
+$ ./scripts/python_formatter_run_black_edit.bash
+```
+
+```
+> scripts/python_formatter_run_black_check.bat
+> scripts/python_formatter_run_black_edit.bat
+```
+
+## Python and C++ Linting
+
+Linux (using `bash`):
+```
+$ ./scripts/python_linter_run_pylint.bash
+$ ./scripts/python_linter_run_flake8.bash
+$ ./scripts/python_linter_run_cpplint.bash
+```
+
+Windows (using `cmd.exe`):
+```
+> scripts/python_linter_run_cpplint.bat
+> scripts/python_linter_run_flake8.bat
+> scripts/python_linter_run_pylint.bat
+```
+
+## Upgrading Python 2 to 3
+
+Linux (using `bash`):
+```
+$ ./scripts/python_convert_run_2to3.bash
+```
+
+Windows (using `cmd.exe`):
+```
+> scripts/python_convert_run_2to3.bat
+```
+
 # C++ Tools
 
 For C++ code use
@@ -206,7 +319,7 @@ C++ code linting is not (yet) enforced.
 
 # Rust Tools
 
-To format all Rust code please use `rustfmt` that comes with Rust.
+To format all Rust code please use `cargo fmt` that comes with Rust.
 
 To check your Rust code for common issues use the `cargo clippy`
 command.

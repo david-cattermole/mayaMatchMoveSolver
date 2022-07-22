@@ -359,7 +359,8 @@ bool compute_camera_pose_from_known_points(
         marker_coords_matrix, bundle_coords_matrix, image_size,
         focal_length_pix, ppx_pix, ppy_pix, num_max_iter, projection_matrix);
     if (!ok) {
-        MMSOLVER_ERR("Robust camera pose from known points estimation failure.");
+        MMSOLVER_ERR(
+            "Robust camera pose from known points estimation failure.");
         return false;
     }
 

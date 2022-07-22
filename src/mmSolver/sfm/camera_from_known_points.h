@@ -17,8 +17,9 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Camera From Known Points will calculate a 3D camera pose from known 2D Markers and
- * known 3D bundle positions. This is also known as 'perspective-n-points'.
+ * Camera From Known Points will calculate a 3D camera pose from known 2D
+ * Markers and known 3D bundle positions. This is also known as
+ * 'perspective-n-points'.
  *
  * For example when you have calculated a camera pose and 3D bundle
  * positions on frame A and B from 2D Marker positions (see

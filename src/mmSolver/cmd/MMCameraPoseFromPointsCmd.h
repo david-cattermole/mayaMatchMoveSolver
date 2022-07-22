@@ -96,4 +96,4 @@ private:
 
 }  // namespace mmsolver
 
-#endif  //MM_SOLVER_MM_CAMERA_POSE_FROM_POINTS_CMD_H
+#endif  // MM_SOLVER_MM_CAMERA_POSE_FROM_POINTS_CMD_H

@@ -20,7 +20,7 @@
  * Command for calculating camera poses from known bundles positions.
  */
 
-#include "MMCameraPoseResectionCmd.h"
+#include "MMCameraPoseFromPointsCmd.h"
 
 // STL
 #include <algorithm>
@@ -65,7 +65,7 @@
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_utils.h"
-#include "mmSolver/sfm/camera_resection.h"
+#include "mmSolver/sfm/camera_from_known_points.h"
 #include "mmSolver/sfm/sfm_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
@@ -87,27 +87,27 @@
 
 namespace mmsolver {
 
-MMCameraPoseResectionCmd::~MMCameraPoseResectionCmd() {}
+MMCameraPoseFromPointsCmd::~MMCameraPoseFromPointsCmd() {}
 
-void *MMCameraPoseResectionCmd::creator() {
-    return new MMCameraPoseResectionCmd();
+void *MMCameraPoseFromPointsCmd::creator() {
+    return new MMCameraPoseFromPointsCmd();
 }
 
-MString MMCameraPoseResectionCmd::cmdName() {
-    return MString("mmCameraPoseResection");
+MString MMCameraPoseFromPointsCmd::cmdName() {
+    return MString("mmCameraPoseFromPoints");
 }
 
 /*
  * Tell Maya we have a syntax function.
  */
-bool MMCameraPoseResectionCmd::hasSyntax() const { return true; }
+bool MMCameraPoseFromPointsCmd::hasSyntax() const { return true; }
 
-bool MMCameraPoseResectionCmd::isUndoable() const { return true; }
+bool MMCameraPoseFromPointsCmd::isUndoable() const { return true; }
 
 /*
  * Add flags to the command syntax
  */
-MSyntax MMCameraPoseResectionCmd::newSyntax() {
+MSyntax MMCameraPoseFromPointsCmd::newSyntax() {
     MStatus status = MStatus::kSuccess;
 
     MSyntax syntax;
@@ -137,7 +137,7 @@ MSyntax MMCameraPoseResectionCmd::newSyntax() {
 /*
  * Parse command line arguments
  */
-MStatus MMCameraPoseResectionCmd::parseArgs(const MArgList &args) {
+MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     // Enable to print out 'MMSOLVER_VRB' results.
@@ -259,7 +259,7 @@ MStatus MMCameraPoseResectionCmd::parseArgs(const MArgList &args) {
     return status;
 }
 
-MStatus MMCameraPoseResectionCmd::doIt(const MArgList &args) {
+MStatus MMCameraPoseFromPointsCmd::doIt(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
     // Enable to print out 'MMSOLVER_VRB' results.
@@ -331,7 +331,7 @@ MStatus MMCameraPoseResectionCmd::doIt(const MArgList &args) {
         }
 
         MTransformationMatrix pose_transform;
-        auto pose_ok = ::mmsolver::sfm::compute_resection(
+        auto pose_ok = ::mmsolver::sfm::compute_camera_pose_from_known_points(
             image_width, image_height, focal_length_pix, ppx_pix, ppy_pix,
             marker_coords, bundle_coords, pose_transform);
         auto pose_matrix = pose_transform.asMatrix();
@@ -411,18 +411,18 @@ MStatus MMCameraPoseResectionCmd::doIt(const MArgList &args) {
 
     m_dgmod.doIt();
 
-    MMCameraPoseResectionCmd::setResult(outResult);
+    MMCameraPoseFromPointsCmd::setResult(outResult);
     return status;
 }
 
-MStatus MMCameraPoseResectionCmd::redoIt() {
+MStatus MMCameraPoseFromPointsCmd::redoIt() {
     MStatus status;
     m_dgmod.doIt();
     m_curveChange.redoIt();
     return status;
 }
 
-MStatus MMCameraPoseResectionCmd::undoIt() {
+MStatus MMCameraPoseFromPointsCmd::undoIt() {
     MStatus status;
     m_curveChange.undoIt();
     m_dgmod.undoIt();

@@ -17,8 +17,8 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Resection will calculate a 3D camera pose from known 2D Markers and
- * known 3D bundle positions.
+ * Camera From Known Points will calculate a 3D camera pose from known 2D Markers and
+ * known 3D bundle positions. This is also known as 'perspective-n-points'.
  *
  * For example when you have calculated a camera pose and 3D bundle
  * positions on frame A and B from 2D Marker positions (see
@@ -34,8 +34,8 @@
  * accurate camera pose.
  */
 
-#ifndef MM_SOLVER_SFM_RESECTION_H
-#define MM_SOLVER_SFM_RESECTION_H
+#ifndef MM_SOLVER_SFM_CAMERA_FROM_KNOWN_POINTS_H
+#define MM_SOLVER_SFM_CAMERA_FROM_KNOWN_POINTS_H
 
 // STL
 #include <cmath>
@@ -74,14 +74,13 @@
 namespace mmsolver {
 namespace sfm {
 
-bool robust_resection(const openMVG::Mat &points_2d,
-                      const openMVG::Mat &points_3d,
-                      const std::pair<size_t, size_t> &image_size,
-                      const double focal_length_pix, const double ppx_pix,
-                      const double ppy_pix, const size_t max_iteration_count,
-                      openMVG::Mat34 &out_projection_matrix);
+bool robust_camera_pose_from_known_points(
+    const openMVG::Mat &points_2d, const openMVG::Mat &points_3d,
+    const std::pair<size_t, size_t> &image_size, const double focal_length_pix,
+    const double ppx_pix, const double ppy_pix,
+    const size_t max_iteration_count, openMVG::Mat34 &out_projection_matrix);
 
-bool compute_resection(
+bool compute_camera_pose_from_known_points(
     const int32_t image_width, const int32_t image_height,
     const double focal_length_pix, const double ppx_pix, const double ppy_pix,
     const std::vector<std::pair<double, double>> &marker_coords,
@@ -91,4 +90,4 @@ bool compute_resection(
 }  // namespace sfm
 }  // namespace mmsolver
 
-#endif  // MM_SOLVER_SFM_RESECTION_H
+#endif  // MM_SOLVER_SFM_CAMERA_FROM_KNOWN_POINTS_H

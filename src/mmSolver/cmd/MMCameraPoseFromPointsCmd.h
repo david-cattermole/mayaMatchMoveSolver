@@ -17,11 +17,11 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Header for mmCameraPoseResection Maya command.
+ * Header for mmCameraPoseFromPoints Maya command.
  */
 
-#ifndef MM_SOLVER_MM_CAMERA_POSE_RESECTION_CMD_H
-#define MM_SOLVER_MM_CAMERA_POSE_RESECTION_CMD_H
+#ifndef MM_SOLVER_MM_CAMERA_POSE_FROM_POINTS_CMD_H
+#define MM_SOLVER_MM_CAMERA_POSE_FROM_POINTS_CMD_H
 
 // STL
 #include <cmath>
@@ -51,10 +51,10 @@
 
 namespace mmsolver {
 
-class MMCameraPoseResectionCmd : public MPxCommand {
+class MMCameraPoseFromPointsCmd : public MPxCommand {
 public:
-    MMCameraPoseResectionCmd(){};
-    virtual ~MMCameraPoseResectionCmd();
+    MMCameraPoseFromPointsCmd(){};
+    virtual ~MMCameraPoseFromPointsCmd();
 
     virtual bool hasSyntax() const;
     static MSyntax newSyntax();
@@ -96,4 +96,4 @@ private:
 
 }  // namespace mmsolver
 
-#endif  // MM_SOLVER_MM_CAMERA_POSE_RESECTION_CMD_H
+#endif  //MM_SOLVER_MM_CAMERA_POSE_FROM_POINTS_CMD_H

@@ -38,7 +38,7 @@ set(SOURCE_FILES
   mmSolver/calibrate/calibrate_common.cpp
   mmSolver/calibrate/vanishing_point.cpp
   mmSolver/cmd/common_arg_flags.cpp
-  mmSolver/cmd/MMCameraPoseResectionCmd.cpp
+  mmSolver/cmd/MMCameraPoseFromPointsCmd.cpp
   mmSolver/cmd/MMCameraRelativePoseCmd.cpp
   mmSolver/cmd/MMCameraSolveCmd.cpp
   mmSolver/cmd/MMConvertImageCmd.cpp
@@ -91,7 +91,7 @@ set(SOURCE_FILES
   mmSolver/render/RenderOverride.cpp
   mmSolver/render/SceneRender.cpp
   mmSolver/sfm/camera_relative_pose.cpp
-  mmSolver/sfm/camera_resection.cpp
+  mmSolver/sfm/camera_from_known_points.cpp
   mmSolver/sfm/homography.cpp
   mmSolver/sfm/sfm_utils.cpp
   mmSolver/shape/ShapeDrawUtils.cpp

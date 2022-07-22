@@ -36,7 +36,7 @@
 #include "mmSolver/nodeTypeIds.h"
 
 // Solver and nodes
-#include "mmSolver/cmd/MMCameraPoseResectionCmd.h"
+#include "mmSolver/cmd/MMCameraPoseFromPointsCmd.h"
 #include "mmSolver/cmd/MMCameraRelativePoseCmd.h"
 #include "mmSolver/cmd/MMCameraSolveCmd.h"
 #include "mmSolver/cmd/MMConvertImageCmd.h"
@@ -224,9 +224,9 @@ MStatus initializePlugin(MObject obj) {
                      mmsolver::MMTestCameraMatrixCmd::creator,
                      mmsolver::MMTestCameraMatrixCmd::newSyntax, status);
 
-    REGISTER_COMMAND(plugin, mmsolver::MMCameraPoseResectionCmd::cmdName(),
-                     mmsolver::MMCameraPoseResectionCmd::creator,
-                     mmsolver::MMCameraPoseResectionCmd::newSyntax, status);
+    REGISTER_COMMAND(plugin, mmsolver::MMCameraPoseFromPointsCmd::cmdName(),
+                     mmsolver::MMCameraPoseFromPointsCmd::creator,
+                     mmsolver::MMCameraPoseFromPointsCmd::newSyntax, status);
 
     REGISTER_COMMAND(plugin, mmsolver::MMCameraRelativePoseCmd::cmdName(),
                      mmsolver::MMCameraRelativePoseCmd::creator,
@@ -528,7 +528,7 @@ MStatus uninitializePlugin(MObject obj) {
                        status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMTestCameraMatrixCmd::cmdName(),
                        status);
-    DEREGISTER_COMMAND(plugin, mmsolver::MMCameraPoseResectionCmd::cmdName(),
+    DEREGISTER_COMMAND(plugin, mmsolver::MMCameraPoseFromPointsCmd::cmdName(),
                        status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMCameraRelativePoseCmd::cmdName(),
                        status);

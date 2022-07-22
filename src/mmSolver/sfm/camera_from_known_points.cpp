@@ -17,9 +17,13 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
+ * Guess a camera pose from a set of known points.
+ *
+ * This process is known as 'perspective-n-points', and in OpenMVG it's
+ * named as 'Resectioning'.
  */
 
-#include "camera_resection.h"
+#include "camera_from_known_points.h"
 
 // STL
 #include <algorithm>
@@ -173,12 +177,11 @@ private:
         *camera_;  // Intrinsic camera parameter
 };
 
-bool robust_resection(const openMVG::Mat &points_2d,
-                      const openMVG::Mat &points_3d,
-                      const std::pair<size_t, size_t> &image_size,
-                      const double focal_length_pix, const double ppx_pix,
-                      const double ppy_pix, const size_t max_iteration_count,
-                      openMVG::Mat34 &out_projection_matrix) {
+bool robust_camera_pose_from_known_points(
+    const openMVG::Mat &points_2d, const openMVG::Mat &points_3d,
+    const std::pair<size_t, size_t> &image_size, const double focal_length_pix,
+    const double ppx_pix, const double ppy_pix,
+    const size_t max_iteration_count, openMVG::Mat34 &out_projection_matrix) {
     // Enable to print out 'MMSOLVER_VRB' results.
     const bool verbose = false;
 
@@ -193,16 +196,19 @@ bool robust_resection(const openMVG::Mat &points_2d,
 
     const auto image_width = image_size.first;
     const auto image_height = image_size.second;
-    MMSOLVER_VRB("robust_resection: points 2D: " << points_2d);
-    MMSOLVER_VRB("robust_resection: points 3D: " << points_3d);
-    MMSOLVER_VRB("robust_resection: image size (pixel): " << image_width << "x"
-                                                          << image_height);
     MMSOLVER_VRB(
-        "robust_resection: focal length (pixel): " << focal_length_pix);
-    MMSOLVER_VRB("robust_resection: principal point (pixel): " << ppx_pix << "x"
-                                                               << ppy_pix);
+        "robust_camera_pose_from_known_points: points 2D: " << points_2d);
     MMSOLVER_VRB(
-        "robust_resection: max_iteration_count: " << max_iteration_count);
+        "robust_camera_pose_from_known_points: points 3D: " << points_3d);
+    MMSOLVER_VRB("robust_camera_pose_from_known_points: image size (pixel): "
+                 << image_width << "x" << image_height);
+    MMSOLVER_VRB("robust_camera_pose_from_known_points: focal length (pixel): "
+                 << focal_length_pix);
+    MMSOLVER_VRB(
+        "robust_camera_pose_from_known_points: principal point (pixel): "
+        << ppx_pix << "x" << ppy_pix);
+    MMSOLVER_VRB("robust_camera_pose_from_known_points: max_iteration_count: "
+                 << max_iteration_count);
 
     double error_upper_bound = std::numeric_limits<double>::infinity();
     if (error_max != std::numeric_limits<double>::infinity()) {
@@ -241,8 +247,10 @@ bool robust_resection(const openMVG::Mat &points_2d,
         // MMSOLVER_VRB("projection matrix: " << out_projection_matrix);
     }
 
-    MMSOLVER_VRB("robust_resection: valid samples: " << samples);
-    MMSOLVER_VRB("robust_resection: minimum samples: " << minimum_samples);
+    MMSOLVER_VRB(
+        "robust_camera_pose_from_known_points: valid samples: " << samples);
+    MMSOLVER_VRB("robust_camera_pose_from_known_points: minimum samples: "
+                 << minimum_samples);
     if (samples < minimum_samples) {
         // no sufficient coverage (not enough matching data points
         // given)
@@ -283,8 +291,10 @@ bool robust_resection(const openMVG::Mat &points_2d,
             MMSOLVER_VRB("projection matrix: " << out_projection_matrix);
         }
 
-        MMSOLVER_VRB("robust_resection: valid samples: " << samples);
-        MMSOLVER_VRB("robust_resection: minimum samples: " << minimum_samples);
+        MMSOLVER_VRB(
+            "robust_camera_pose_from_known_points: valid samples: " << samples);
+        MMSOLVER_VRB("robust_camera_pose_from_known_points: minimum samples: "
+                     << minimum_samples);
         if (samples < minimum_samples) {
             // no sufficient coverage (not enough matching data points
             // given)
@@ -302,7 +312,7 @@ bool robust_resection(const openMVG::Mat &points_2d,
         return false;
     }
 
-    MMSOLVER_VRB("Found a Camera matrix via Resectioning:");
+    MMSOLVER_VRB("Found a Camera matrix from known points:");
     MMSOLVER_VRB("- matrix: " << out_projection_matrix);
     MMSOLVER_VRB("- error: " << out_error_max << " pixels");
     MMSOLVER_VRB("- number of false alarms: " << out_min_nfa);
@@ -329,7 +339,7 @@ bool robust_resection(const openMVG::Mat &points_2d,
     return true;
 }
 
-bool compute_resection(
+bool compute_camera_pose_from_known_points(
     const int32_t image_width, const int32_t image_height,
     const double focal_length_pix, const double ppx_pix, const double ppy_pix,
     const std::vector<std::pair<double, double>> &marker_coords,
@@ -345,11 +355,11 @@ bool compute_resection(
 
     openMVG::Mat34 projection_matrix;
     auto num_max_iter = 1024;
-    bool ok = robust_resection(marker_coords_matrix, bundle_coords_matrix,
-                               image_size, focal_length_pix, ppx_pix, ppy_pix,
-                               num_max_iter, projection_matrix);
+    bool ok = robust_camera_pose_from_known_points(
+        marker_coords_matrix, bundle_coords_matrix, image_size,
+        focal_length_pix, ppx_pix, ppy_pix, num_max_iter, projection_matrix);
     if (!ok) {
-        MMSOLVER_ERR("Robust resection estimation failure.");
+        MMSOLVER_ERR("Robust camera pose from known points estimation failure.");
         return false;
     }
 

@@ -211,6 +211,7 @@ def _bundle_adjust(
     adjust_bundle_positions=None,
     adjust_focal_length=None,
     iteration_num=None,
+    per_frame_solve=None,
 ):
     if adjust_camera_translate is None:
         adjust_camera_translate = False
@@ -222,10 +223,16 @@ def _bundle_adjust(
         adjust_focal_length = False
     if iteration_num is None:
         iteration_num = 100
+    if per_frame_solve is None:
+        per_frame_solve = False
     assert isinstance(adjust_camera_translate, bool)
     assert isinstance(adjust_camera_rotate, bool)
     assert isinstance(adjust_bundle_positions, bool)
     assert isinstance(adjust_focal_length, bool)
+
+    frame_solve_mode = mmapi.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE
+    if per_frame_solve is True:
+        frame_solve_mode = mmapi.FRAME_SOLVE_MODE_PER_FRAME
 
     solver_index = mmapi.SOLVER_TYPE_CMINPACK_LMDER
     scene_graph_mode = mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
@@ -293,6 +300,7 @@ def _bundle_adjust(
         solverType=solver_index,
         sceneGraphMode=scene_graph_mode,
         iterations=iteration_num,
+        frameSolveMode=frame_solve_mode,
         **solver_kwargs,
     )
     # print('result:', result)
@@ -479,20 +487,21 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
             iteration_num=100,
         )
 
-    # # Solve per-frame
-    # start_frame = min(frames)
-    # end_frame = max(frames)
-    # frames = list(range(start_frame, end_frame + 1))
-    # _bundle_adjust(
-    #     cam_tfm,
-    #     cam_shp,
-    #     accumulated_mkr_nodes,
-    #     frames,
-    #     adjust_camera_translate=True,
-    #     adjust_camera_rotate=True,
-    #     adjust_bundle_positions=False,
-    #     adjust_focal_length=False,
-    # )
+    # Solve per-frame
+    start_frame = min(frames)
+    end_frame = max(frames)
+    frames = list(range(start_frame, end_frame + 1))
+    _bundle_adjust(
+        cam_tfm,
+        cam_shp,
+        accumulated_mkr_nodes,
+        frames,
+        adjust_camera_translate=True,
+        adjust_camera_rotate=True,
+        adjust_bundle_positions=False,
+        adjust_focal_length=False,
+        per_frame_solve=True,
+    )
 
     return
 

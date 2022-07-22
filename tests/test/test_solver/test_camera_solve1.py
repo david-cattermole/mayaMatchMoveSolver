@@ -45,6 +45,57 @@ import mmSolver.tools.loadmarker.lib.utils as lib_utils
 TRANSLATE_ATTRS = ['tx', 'ty', 'tz']
 
 
+def _calculate_marker_frame_score(cam_tfm, mkr_nodes, frame, position_marker_nodes):
+    """
+    Calculate the score of the frame.
+
+    Uses the paper "Structure-from-Motion Revisited", by Johannes
+    L. Schonberger, Jan-Michael Frahm, published in 2016, section
+    "4.2. Next Best View Selection".
+    """
+    score = 0
+
+    min_pos = -0.5
+    max_pos = 0.5
+    levels = 3
+    for level in range(levels):
+        total_num = pow(2, level)
+        weight = total_num
+
+        bins = set()
+        positions = []
+        for mkr_node in mkr_nodes:
+            pos = position_marker_nodes[frame][mkr_node]
+            positions.append(pos)
+
+        for pos_x, pos_y in positions:
+            if pos_x < min_pos or pos_x > max_pos or pos_y < min_pos or pos_y > max_pos:
+                continue
+
+            for y in range(-total_num, total_num):
+                for x in range(-total_num, total_num):
+                    min_x_f = -min_pos * (x / total_num)
+                    max_x_f = max_pos * ((x + 1) / total_num)
+                    min_y_f = -min_pos * (y / total_num)
+                    max_y_f = max_pos * ((y + 1) / total_num)
+                    if (
+                        pos_x > min_x_f
+                        and pos_x <= max_x_f
+                        and pos_y > min_y_f
+                        and pos_y <= max_y_f
+                    ):
+                        bins.add((x, y))
+        score += len(bins) * weight
+
+    # Unlike the paper (see above), the score is multipied with the
+    # number of enabled markers. This means that if two frames have
+    # exactly the same number of markers, but different "uniformity
+    # score" (calculated below), then a more uniformly distributed
+    # number of frames produces a higher overall score.
+    score *= len(mkr_nodes)
+    return score
+
+
 def _compute_enabled_marker_nodes(mkr_list, frame):
     """Given a frame, return the valid marker nodes on that frame."""
     mkr_nodes = set()
@@ -56,56 +107,98 @@ def _compute_enabled_marker_nodes(mkr_list, frame):
     return mkr_nodes
 
 
-def _marker_maximum_frame_count(cam, mkr_list, frames):
-    count_max = 0
+def _marker_maximum_frame_score(
+    cam, mkr_list, frames, enabled_marker_nodes, position_marker_nodes
+):
+    score_max = 0
     frame_max = None
     mkr_nodes_max = set()
     for frame in frames:
-        mkr_nodes = _compute_enabled_marker_nodes(mkr_list, frame)
-        count = len(mkr_nodes)
-        if count >= count_max:
-            count_max = count
+        score = _calculate_marker_frame_score(
+            cam, mkr_list, frame, position_marker_nodes
+        )
+        if score >= score_max:
+            score_max = score
             frame_max = frame
-            mkr_nodes_max = set(mkr_nodes)
+            mkr_nodes = enabled_marker_nodes[frame]
+            assert isinstance(mkr_nodes, set)
+            mkr_nodes_max = mkr_nodes
+    # print('frame_max:', frame_max, 'score_max:', score_max)
     return frame_max, mkr_nodes_max
 
 
-def _sort_root_frames(cam, mkr_list, frames):
-    """Sort the frames by using frames with common shared points."""
-    # TODO: This function is very slow and the performance should be
-    # improved as much as possible.
-    print('Sorting {} Root Frames'.format(len(frames)))
-    sorted_frames = []
+def _compute_connected_frame_scores(
+    cam,
+    mkr_list,
+    root_frame_a,
+    possible_frames,
+    enabled_marker_nodes,
+    position_marker_nodes,
+):
+    mkr_nodes_a = enabled_marker_nodes[root_frame_a]
+    assert isinstance(mkr_nodes_a, set)
 
-    prev_frame = None
-    prev_mkr_nodes = set()
-    frame_stack = list(frames)
-    while len(frame_stack) > 0:
-        frame, mkr_nodes = _marker_maximum_frame_count(cam, mkr_list, frame_stack)
-        if prev_frame is None:
-            count = len(mkr_nodes)
+    scores = []
+    for frame in possible_frames:
+        mkr_nodes_b = enabled_marker_nodes[frame]
+        assert isinstance(mkr_nodes_b, set)
+
+        score = 0
+        mkr_nodes = mkr_nodes_a & mkr_nodes_b
+        if len(mkr_nodes) < 6:
+            # Not enough points, we need at least 6 points to solve
+            # two frames of a camera pose and bundles.
+            pass
         else:
-            count = len(set(prev_mkr_nodes) & mkr_nodes)
+            score = _calculate_marker_frame_score(
+                cam, mkr_nodes, frame, position_marker_nodes
+            )
+        scores.append(score)
+    return scores
 
-        # Only solves with 6 points or more will work. In theory only
-        # 5 points are needed, but OpenMVG seems to be broken perhaps.
-        if count < 6:
-            frame_stack.remove(frame)
-            continue
 
-        if frame is None or len(mkr_nodes) == 0:
-            # Cannot find a good frame next, so the last choice is to
-            # exit.
-            break
+def _find_best_connected_frame(
+    cam,
+    mkr_list,
+    root_frame_a,
+    possible_frames,
+    enabled_marker_nodes,
+    position_marker_nodes,
+):
+    frame = 0
 
-        frame_stack.remove(frame)
-        sorted_frames.append(frame)
-        prev_frame = frame
-        prev_mkr_nodes |= mkr_nodes
-        msg = 'Sorted {} of {} Root Frames.'
-        print(msg.format(len(sorted_frames), len(frames)))
+    mkr_nodes_a = enabled_marker_nodes[root_frame_a]
+    assert isinstance(mkr_nodes_a, set)
 
-    return sorted_frames
+    scores = _compute_connected_frame_scores(
+        cam,
+        mkr_list,
+        root_frame_a,
+        possible_frames,
+        enabled_marker_nodes,
+        position_marker_nodes,
+    )
+    sorted_frame_scores = reversed(
+        sorted(zip(possible_frames, scores), key=lambda x: x[1])
+    )
+
+    sorted_frames = [x[0] for x in sorted_frame_scores if x[1] != 0]
+    # print('best_connected_frames for ', root_frame_a, ' :', sorted_frames)
+
+    best_frame = None
+    if len(sorted_frames) > 0:
+        best_frame = sorted_frames[0]
+    max_score = max(scores)
+    if best_frame is not None and max_score > 0:
+        print(
+            'Best connected frame pair found:',
+            root_frame_a,
+            'to',
+            best_frame,
+            'with score:',
+            max(scores),
+        )
+    return best_frame
 
 
 def _bundle_adjust(
@@ -117,6 +210,7 @@ def _bundle_adjust(
     adjust_camera_rotate=None,
     adjust_bundle_positions=None,
     adjust_focal_length=None,
+    iteration_num=None,
 ):
     if adjust_camera_translate is None:
         adjust_camera_translate = False
@@ -126,6 +220,8 @@ def _bundle_adjust(
         adjust_bundle_positions = False
     if adjust_focal_length is None:
         adjust_focal_length = False
+    if iteration_num is None:
+        iteration_num = 100
     assert isinstance(adjust_camera_translate, bool)
     assert isinstance(adjust_camera_rotate, bool)
     assert isinstance(adjust_bundle_positions, bool)
@@ -133,6 +229,9 @@ def _bundle_adjust(
 
     solver_index = mmapi.SOLVER_TYPE_CMINPACK_LMDER
     scene_graph_mode = mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+    # scene_graph_name = mmapi.SCENE_GRAPH_MODE_NAME_LIST[scene_graph_mode]
+    # scene_graph_label = mmapi.SCENE_GRAPH_MODE_LABEL_LIST[scene_graph_mode]
+    # print('Scene Graph:', scene_graph_label)
 
     solver_cameras = ((cam_tfm, cam_shp),)
 
@@ -180,9 +279,11 @@ def _bundle_adjust(
         'marker': solver_markers,
         'attr': solver_node_attrs,
     }
+    # print(pprint.pformat(solver_kwargs))
 
     affects_mode = 'addAttrsToMarkers'
     result = maya.cmds.mmSolverAffects(mode=affects_mode, **solver_kwargs)
+    # print('result:', result)
 
     # After each pose is added to the camera solve, we must do a
     # mmSolver refinement with 'MM Scene Graph', solving the
@@ -191,47 +292,28 @@ def _bundle_adjust(
         frame=frames,
         solverType=solver_index,
         sceneGraphMode=scene_graph_mode,
+        iterations=iteration_num,
         **solver_kwargs,
     )
+    # print('result:', result)
     assert result[0] == 'success=1'
     return
 
 
-def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
-    print('cam:', cam)
-    print('mkr_list:', pprint.pformat(mkr_list))
-    print('start_frame:', start_frame)
-    print('end_frame:', end_frame)
-    print('root_frame count:', len(root_frames))
-    print('root_frames:', root_frames)
-    cam_tfm = cam.get_transform_node()
-    cam_shp = cam.get_shape_node()
-
-    sorted_frames = _sort_root_frames(cam, mkr_list, root_frames)
-
+def _solve_relative_poses(
+    cam_tfm, mkr_nodes_a, root_frame_a, possible_frames, enabled_marker_nodes
+):
     accumulated_mkr_nodes = set()
     solved_frames = set()
-    frame_index = 0
-    frame_stack = list(sorted_frames)
-    next_frame = frame_stack[0]
-
-    root_frame_a = next_frame
-
-    possible_frames = list(frame_stack)
-    if root_frame_a in possible_frames:
-        possible_frames.remove(root_frame_a)
-
-    mkr_nodes_a = _compute_enabled_marker_nodes(mkr_list, root_frame_a)
+    failed_frames = set()
 
     new_possible_frames = []
-    root_frame_b = possible_frames[0]
     for possible_frame in possible_frames:
-
         if possible_frame in solved_frames:
             # Already solved, no need to solve it again.
             continue
 
-        mkr_nodes_b = _compute_enabled_marker_nodes(mkr_list, possible_frame)
+        mkr_nodes_b = enabled_marker_nodes[possible_frame]
         mkr_nodes = set(mkr_nodes_a) & set(mkr_nodes_b)
         common_mkr_list = [mmapi.Marker(node=n) for n in mkr_nodes]
 
@@ -241,6 +323,7 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
             if bnd is None:
                 bnd = mmapi.Bundle.create_node()
                 mkr.set_bundle(bnd)
+            # print('mkr:', mkr, 'bnd:', bnd)
             mkr_node = mkr.get_node()
             bnd_node = bnd.get_node()
             mkr_bnd = (mkr_node, mkr_node, bnd_node)
@@ -257,101 +340,159 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
         }
         result = maya.cmds.mmCameraRelativePose(**kwargs)
         if result is None:
-            # camera pose solve failed.
+            print('Failed Camera Pose:', root_frame_a, 'to', possible_frame)
+            failed_frames.add(possible_frame)
             continue
 
         print('Solved Camera Pose:', root_frame_a, 'to', possible_frame)
         solved_frames.add(root_frame_a)
         solved_frames.add(possible_frame)
-        accumulated_mkr_nodes |= mkr_nodes
+        accumulated_mkr_nodes = accumulated_mkr_nodes | mkr_nodes
 
-    resection_frames = set()
-    for possible_frame in possible_frames:
-        if possible_frame in solved_frames:
-            continue
-        resection_frames.add(possible_frame)
+    return accumulated_mkr_nodes, solved_frames, failed_frames
 
-    resection_result = []
-    resection_frames = list(sorted(resection_frames))
-    if len(resection_frames) > 0:
-        accumulated_bnd_nodes = [
-            mmapi.Marker(node=n).get_bundle() for n in accumulated_mkr_nodes
-        ]
-        accumulated_bnd_nodes = [
-            n.get_node() for n in accumulated_bnd_nodes if n is not None
-        ]
 
-        resection_kwargs = {
-            'frame': resection_frames,
-            'camera': cam_tfm,
-            'marker': accumulated_mkr_nodes,
-            'bundle': accumulated_bnd_nodes,
-            'setValues': True,
-        }
-        resection_result = maya.cmds.mmCameraPoseResection(**resection_kwargs) or []
+def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
+    print('cam:', cam)
+    print('mkr_list:', pprint.pformat(mkr_list))
+    print('start_frame:', start_frame)
+    print('end_frame:', end_frame)
+    print('root_frame count:', len(root_frames))
+    print('root_frames:', root_frames)
+    cam_tfm = cam.get_transform_node()
+    cam_shp = cam.get_shape_node()
 
-    # Remove keyframes on frames that could not be solved correctly.
-    resection_bad_frames = set()
-    if len(resection_result) > 0:
-        cam_nodes = [cam_tfm, cam_shp]
-        assert len(resection_result) == len(resection_frames)
-        for frame, worked in zip(resection_frames, resection_result):
-            if worked:
-                solved_frames.add(frame)
-            else:
-                maya.cmds.cutKey(cam_nodes, time=(frame,))
-                resection_bad_frames.add(frame)
-        # print('resection bad frames:', pprint.pformat(sorted(resection_bad_frames)))
+    # Create cache for re-use in _compute_enabled_marker_nodes().
+    enabled_marker_nodes = {}
+    for frame in root_frames:
+        mkr_nodes = _compute_enabled_marker_nodes(mkr_list, frame)
+        enabled_marker_nodes[frame] = mkr_nodes
 
-    for solved_frame in solved_frames:
-        if solved_frame in frame_stack:
-            frame_stack.remove(solved_frame)
+    # Create cache for re-use in _marker_maximum_frame_score().
+    position_marker_nodes = {}
+    for frame in root_frames:
+        position_marker_nodes[frame] = {}
+        mkr_positions = {}
+        mkr_nodes = enabled_marker_nodes[frame]
+        for mkr_node in mkr_nodes:
+            attr_tx = mkr_node + '.translateX'
+            attr_ty = mkr_node + '.translateY'
+            pos_x = maya.cmds.getAttr(attr_tx, time=frame)
+            pos_y = maya.cmds.getAttr(attr_ty, time=frame)
+            mkr_position = (pos_x, pos_y)
+            position_marker_nodes[frame][mkr_node] = mkr_position
 
-    if len(solved_frames) < 3:
-        # Skip bundle adjusting the first pose to ensure we have
+    # Pre-compute the connected frame statistics, to help guess the
+    # best frames for solving camera pairs.
+    frame_scores_map = {}
+    frame_scores_stats_map = {}
+    frame_best_frame_map = {}
+    for frame in root_frames:
+        scores = _compute_connected_frame_scores(
+            cam,
+            mkr_list,
+            frame,
+            root_frames,
+            enabled_marker_nodes,
+            position_marker_nodes,
+        )
+        frame_scores = zip(root_frames, scores)
+        frame_scores_map[frame] = list(frame_scores)
+
+        best_frame = None
+        best_score = -1
+        for frame_score in frame_scores:
+            if frame_score[1] >= best_score:
+                best_frame = frame_score[0]
+                best_score = frame_score[1]
+        frame_best_frame_map[frame] = (best_frame, best_score)
+
+        max_score = max(scores)
+        avg_score = sum(scores) / len(scores)
+        frame_scores_stats_map[frame] = (avg_score, max_score)
+
+    # Find the frame with the best connectivity to all other root
+    # frames. This is not the frame that gives the most solved frames,
+    # but rather the highest quality solve overall.
+    #
+    # For simple camera solves with plenty of 2D marker data the best
+    # frame should have connectivity to all other root frames.
+    best_frame = None
+    best_score = -1
+    for frame in reversed(root_frames):
+        frames_scores = frame_scores_map[frame]
+        frame_score_stats = frame_scores_stats_map[frame]
+        avg_score, max_score = frame_score_stats
+        if avg_score >= best_score:
+            best_score = avg_score
+            best_frame = frame
+
+    # print('best_frame:', best_frame)
+    # print('best_score:', best_score)
+
+    frame_stack = list(root_frames)
+    next_frame = best_frame
+    root_frame_a = best_frame
+    mkr_nodes_a = enabled_marker_nodes[root_frame_a]
+
+    possible_frames = list(frame_stack)
+    if root_frame_a in possible_frames:
+        possible_frames.remove(root_frame_a)
+
+    relative_pose_frames = []
+    pose_frame_scores = frame_scores_map[root_frame_a]
+    for frame, score in pose_frame_scores:
+        if score > 0:
+            relative_pose_frames.append(frame)
+
+    result = _solve_relative_poses(
+        cam_tfm, mkr_nodes_a, root_frame_a, relative_pose_frames, enabled_marker_nodes
+    )
+    accumulated_mkr_nodes, solved_frames, failed_frames = result
+
+    if len(solved_frames) > 2:
+        # Only bundle adjust after the first pose to ensure we have
         # enough data to solve the bundle adjustment.
-        return
 
-    # Refine the solve.
-    frames = list(sorted(solved_frames))
-    _bundle_adjust(
-        cam_tfm,
-        cam_shp,
-        accumulated_mkr_nodes,
-        frames,
-        adjust_camera_translate=False,
-        adjust_camera_rotate=False,
-        adjust_bundle_positions=True,
-        adjust_focal_length=False,
-    )
+        # Refine the solve.
+        frames = list(sorted(solved_frames))
+        _bundle_adjust(
+            cam_tfm,
+            cam_shp,
+            accumulated_mkr_nodes,
+            frames,
+            adjust_camera_translate=False,
+            adjust_camera_rotate=False,
+            adjust_bundle_positions=True,
+            adjust_focal_length=False,
+            iteration_num=10,
+        )
+        _bundle_adjust(
+            cam_tfm,
+            cam_shp,
+            accumulated_mkr_nodes,
+            frames,
+            adjust_camera_translate=True,
+            adjust_camera_rotate=True,
+            adjust_bundle_positions=True,
+            adjust_focal_length=True,
+            iteration_num=100,
+        )
 
-    _bundle_adjust(
-        cam_tfm,
-        cam_shp,
-        accumulated_mkr_nodes,
-        frames,
-        adjust_camera_translate=True,
-        adjust_camera_rotate=True,
-        adjust_bundle_positions=True,
-        adjust_focal_length=True,
-    )
-
-    # Solve per-frame
-    start_frame = min(frames)
-    end_frame = max(frames)
-    frames = list(range(start_frame, end_frame + 1))
-    _bundle_adjust(
-        cam_tfm,
-        cam_shp,
-        accumulated_mkr_nodes,
-        frames,
-        adjust_camera_translate=True,
-        adjust_camera_rotate=True,
-        adjust_bundle_positions=False,
-        adjust_focal_length=False,
-    )
-
-    #     frame_stack.remove(root_frame_a)
+    # # Solve per-frame
+    # start_frame = min(frames)
+    # end_frame = max(frames)
+    # frames = list(range(start_frame, end_frame + 1))
+    # _bundle_adjust(
+    #     cam_tfm,
+    #     cam_shp,
+    #     accumulated_mkr_nodes,
+    #     frames,
+    #     adjust_camera_translate=True,
+    #     adjust_camera_rotate=True,
+    #     adjust_bundle_positions=False,
+    #     adjust_focal_length=False,
+    # )
 
     return
 
@@ -585,8 +726,12 @@ class TestCameraSolve(solverUtils.SolverTestCase):
             mkr_bnd_list.append(mkr_bnd)
 
         # Root Frames
+        min_frames_per_marker = 3
         max_frame_span = 20
-        root_frames = [frame_a, frame_b]
+        root_frames = mmapi.get_root_frames_from_markers(
+            mkr_list, min_frames_per_marker, frame_a, frame_b
+        )
+        root_frames = mmapi.root_frames_list_combine(root_frames, [frame_a, frame_b])
         root_frames = mmapi.root_frames_subdivide(root_frames, max_frame_span)
 
         # save the output

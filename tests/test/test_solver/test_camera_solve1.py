@@ -472,8 +472,11 @@ def _set_camera_origin_frame(
     origin_matrix = tfm_utils.get_matrix_from_plug_apitwo(cam_matrix_plug, origin_ctx)
     origin_matrix_inverse = origin_matrix.inverse()
 
+    # Use the same rotation order that the camera already has.
+    rotate_order = maya.cmds.xform(cam_tfm, query=True, rotateOrder=True)
+    rotate_order = tfm_utils.ROTATE_ORDER_STR_TO_APITWO_CONSTANT[rotate_order]
+
     previous_rotation = None
-    rotate_order = OpenMaya2.MTransformationMatrix.kZXY
     cam_tfm_values = []
     frames = range(start_frame, end_frame + 1)
     for frame in frames:

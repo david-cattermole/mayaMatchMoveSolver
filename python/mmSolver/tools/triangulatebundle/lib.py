@@ -50,7 +50,7 @@ def get_marker_frame_list(mkr_node):
     return frm_list
 
 
-def triangulate_bundle(bnd, relock=None):
+def triangulate_bundle(bnd, relock=None, max_distance=None):
     """
     Triangulate a 3D bundle position.
 
@@ -59,15 +59,38 @@ def triangulate_bundle(bnd, relock=None):
 
     :param relock: If True any bundle translate attributes will be
                    unlocked, changed then relocked.
-    :type relock: bool
+    :type relock: bool or None
+
+    :param max_distance: Defines the maximum distance the bundle can
+        be positioned away from camera until the value is clamped.
+    :type max_distance: float or None
+
+    :returns: True if the bundle successfully triangulated, False if
+        the bundle could not accurately be triangulated. For example
+        if the bundle was computed to behind the camera this would be
+        considered a failure.
+    :rtype: bool
     """
     if relock is None:
         relock = False
+    if max_distance is None:
+        max_distance = 1e6
     assert isinstance(relock, bool) is True
+    assert isinstance(max_distance, float) is True
+
+    success = False
+    origin_pnt = OpenMaya.MPoint(0.0, 0.0, 0.0)
+
+    # Not sure what the units are for this tolerance.
+    direction_equal_tolerance = 1.0  # Same as OpenMaya.MVector.kTolerance
 
     prev_frame = maya.cmds.currentTime(query=True)
     try:
         mkr_list = bnd.get_marker_list()
+        # TODO: If a Bundle has two markers in two different cameras,
+        # but each Marker only has one frame each, this function
+        # should still function, currently such a situation would not
+        # work.
         for mkr in mkr_list:
             mkr_node = mkr.get_node()
             frm_list = get_marker_frame_list(mkr_node)
@@ -87,6 +110,17 @@ def triangulate_bundle(bnd, relock=None):
                 cam_tfm, mkr_node, last_frm
             )
 
+            # If the directions are parallel, we cannot triangulate
+            # anything.
+            is_parallel = first_dir.isParallel(last_dir)
+            if is_parallel is True:
+                msg = (
+                    'Bundle Marker is parallel and cannot be triangulated: '
+                    'bnd=%r mkr=%r'
+                )
+                LOG.warn(msg, bnd_node, mkr_node)
+                continue
+
             (
                 a_pnt,
                 b_pnt,
@@ -98,6 +132,50 @@ def triangulate_bundle(bnd, relock=None):
                 (a_pnt.y + b_pnt.y) * 0.5,
                 (a_pnt.z + b_pnt.z) * 0.5,
             )
+
+            # Check the computed point is not behind the camera.
+            calc_first_dir = tri_utils.camera_to_point_direction(cam_tfm, pnt, first_frm)
+            calc_last_dir = tri_utils.camera_to_point_direction(cam_tfm, pnt, last_frm)
+
+            first_dir_is_equal = first_dir.isEquivalent(
+                calc_first_dir, direction_equal_tolerance
+            )
+            if first_dir_is_equal is False:
+                msg = 'First Bundle direction does not match: ' 'bnd=%r a=%s b=%s'
+                a = (first_dir.x, first_dir.y, first_dir.z)
+                b = (calc_first_dir.x, calc_first_dir.y, calc_first_dir.z)
+                LOG.debug(msg, bnd_node, a, b)
+                continue
+
+            last_dir_is_equal = last_dir.isEquivalent(
+                calc_last_dir, direction_equal_tolerance
+            )
+            if last_dir_is_equal is False:
+                msg = 'Last Bundle direction does not match: ' 'bnd=%r a=%s b=%s'
+                a = (first_dir.x, first_dir.y, first_dir.z)
+                b = (calc_first_dir.x, calc_first_dir.y, calc_first_dir.z)
+                LOG.debug(msg, bnd_node, a, b)
+                continue
+
+            success = True
+
+            # Clamp the point to the max_distance units away from
+            # origin.
+            #
+            # Tries to avoids issues where the bundles triangulated
+            # are too far away from camera and it causes issues with
+            # the adjustment solver.
+            distance = pnt.distanceTo(origin_pnt)
+            if distance > max_distance:
+                magnitude = math.sqrt(pnt.x * pnt.x + pnt.y * pnt.y + pnt.z * pnt.z)
+                pnt.x = (pnt.x / magnitude) * max_distance
+                pnt.y = (pnt.y / magnitude) * max_distance
+                pnt.z = (pnt.z / magnitude) * max_distance
+                msg = (
+                    'Bundle position is farther than max distance and will be clamped: '
+                    'bnd=%r mkr=%r distance=%r max_distance=%r'
+                )
+                LOG.warn(msg, bnd_node, mkr_node, distance, max_distance)
 
             plugs = [
                 '%s.translateX' % bnd_node,
@@ -120,4 +198,4 @@ def triangulate_bundle(bnd, relock=None):
                     maya.cmds.setAttr(plug, lock=value)
     finally:
         maya.cmds.currentTime(prev_frame, update=False)
-    return
+    return success

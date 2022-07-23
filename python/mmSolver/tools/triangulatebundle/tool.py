@@ -39,7 +39,7 @@ def main():
 
     2) Run tool.
 
-    3) Bundle is triangulated in TX, TY and TZ.
+    3) Bundles are triangulated in TX, TY and TZ.
     """
     # Get Markers and Bundles
     sel = maya.cmds.ls(selection=True, long=True) or []
@@ -63,8 +63,11 @@ def main():
     # Triangulate
     adjusted_bnd_node_list = []
     for bnd in bnd_list:
-        lib.triangulate_bundle(bnd)
-        adjusted_bnd_node_list.append(bnd.get_node())
+        success = lib.triangulate_bundle(bnd)
+        if success is True:
+            adjusted_bnd_node_list.append(bnd.get_node())
+        else:
+            LOG.warn('Bundle could not be triangulated: node=%r', bnd.get_node())
 
     # Select all bundle nodes.
     if len(adjusted_bnd_node_list) > 0:

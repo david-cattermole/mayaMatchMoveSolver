@@ -58,17 +58,24 @@ ROTATE_ORDER_STR_TO_APITWO_CONSTANT = {
 LOG = mmSolver.logger.get_logger()
 
 
-def create_dg_context_apitwo(t):
+def create_dg_context_apitwo(frame):
     """
     Create a Maya DG Context for querying values at time.
+
+    :param frame: The frame value for the DG Context. This is the
+        time/frame value that will be queried with this DG context.
+    :type frame: None or float or int
+
+    :returns: Time DG Context to query at.
+    :rtype: maya.api.OpenMaya.MDGContext
     """
-    assert t is None or isinstance(t, (int, float))
+    assert frame is None or isinstance(frame, (int, float))
     ctx = None
-    if t is None:
+    if frame is None:
         ctx = OpenMaya2.MDGContext()
     else:
         unit = OpenMaya2.MTime.uiUnit()
-        mtime = OpenMaya2.MTime(float(t), unit)
+        mtime = OpenMaya2.MTime(float(frame), unit)
         ctx = OpenMaya2.MDGContext(mtime)
     return ctx
 

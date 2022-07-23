@@ -443,7 +443,7 @@ def _triangulate_bundles(
             continue
 
         if bnd_node not in bnd_nodes:
-            ok = lib_triangulate.triangulate_bundle(bnd, direction_tolerance=2.0)
+            ok = lib_triangulate.triangulate_bundle(bnd, direction_tolerance=1.0)
             if ok is True:
                 print('Triangulated Bundle:', bnd_node)
                 mkr_nodes.add(mkr_node)

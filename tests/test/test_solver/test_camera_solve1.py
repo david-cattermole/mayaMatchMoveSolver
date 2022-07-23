@@ -1017,6 +1017,10 @@ class TestCameraSolve(solverUtils.SolverTestCase):
                 cam, mkr_nodes, frame, position_marker_nodes
             )
             print('frame:', frame, 'score:', score)
+            if frame == 33:
+                # Frame 33 is the highest.
+                assert score == 1932
+
         e = time.time()
         print('total time:', e - s)
 

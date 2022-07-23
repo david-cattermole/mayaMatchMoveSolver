@@ -1046,15 +1046,34 @@ class TestCameraSolve(solverUtils.SolverTestCase):
                 mkr_position = (pos_x, pos_y)
                 position_marker_nodes[frame][mkr_node] = mkr_position
 
+        expected_values = {
+            0: 1092,
+            1: 1110,
+            2: 1110,
+            3: 1020,
+            7: 1088,
+            12: 1088,
+            13: 1184,
+            14: 930,
+            17: 990,
+            20: 952,
+            23: 1326,
+            28: 1558,
+            33: 1932,
+            37: 1722,
+            40: 1600,
+            41: 1360,
+        }
+
         for frame in root_frames:
             mkr_nodes = enabled_marker_nodes[frame]
             score = _calculate_marker_frame_score(
                 cam, mkr_nodes, frame, position_marker_nodes
             )
             print('frame:', frame, 'score:', score)
-            if frame == 33:
-                # Frame 33 is the highest.
-                assert score == 1932
+            expected_value = expected_values.get(frame)
+            assert expected_value is not None
+            assert expected_value == score
 
         e = time.time()
         print('total time:', e - s)

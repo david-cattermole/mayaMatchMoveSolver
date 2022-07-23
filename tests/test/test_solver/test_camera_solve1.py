@@ -489,12 +489,12 @@ def _set_camera_origin_frame(
         cam_tfm_values.append(tfm_values)
 
     # Calculate bounding box for camera positions.
-    min_x = 1e+9
-    min_y = 1e+9
-    min_z = 1e+9
-    max_x = -1e+9
-    max_y = -1e+9
-    max_z = -1e+9
+    min_x = 1e9
+    min_y = 1e9
+    min_z = 1e9
+    max_x = -1e9
+    max_y = -1e9
+    max_z = -1e9
     for tfm_values in cam_tfm_values:
         tx = tfm_values[0]
         ty = tfm_values[1]

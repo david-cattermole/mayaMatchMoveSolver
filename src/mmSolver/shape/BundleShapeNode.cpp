@@ -198,7 +198,7 @@ MStatus BundleShapeNode::initialize() {
 
     // Draw Name
     m_draw_name =
-        nAttr.create("drawName", "drwnm", MFnNumericData::kBoolean, 1);
+        nAttr.create("drawName", "drwnm", MFnNumericData::kBoolean, 0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
 

@@ -417,12 +417,23 @@ def _solve_relative_poses(
     return accumulated_mkr_nodes, accumulated_bnd_nodes, solved_frames, failed_frames
 
 
-def _triangulate_bundles(mkr_list, mkr_nodes, bnd_nodes):
+def _triangulate_bundles(mkr_list, mkr_nodes, bnd_nodes, solver_frames):
+    assert isinstance(solver_frames, set)
     triangulated_count = 0
     for mkr in mkr_list:
         bnd = mkr.get_bundle()
         if bnd is None:
             continue
+
+        start_solved_frame = min(solver_frames)
+        end_solved_frame = max(solver_frames)
+        enabled_frames = mkr.get_enabled_frames(
+            frame_range_start=start_solved_frame, frame_range_end=end_solved_frame
+        )
+        overlapping_frames = solver_frames & set(enabled_frames)
+        if len(overlapping_frames) < 2:
+            continue
+
         mkr_node = mkr.get_node()
         bnd_node = bnd.get_node()
         if bnd_node not in bnd_nodes:
@@ -583,11 +594,22 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
         # Refine the solve.
         frames = list(sorted(solved_frames))
         for mkr_node in accumulated_mkr_nodes:
+            mkr = mmapi.Marker(node=mkr_node)
+            start_solved_frame = min(frames)
+            end_solved_frame = max(frames)
+            enabled_frames = mkr.get_enabled_frames(
+                frame_range_start=start_solved_frame, frame_range_end=end_solved_frame
+            )
+            overlapping_frames = set(frames) & set(enabled_frames)
+            if len(overlapping_frames) < 2:
+                continue
+            overlapping_frames = list(sorted(overlapping_frames))
+
             _bundle_adjust(
                 cam_tfm,
                 cam_shp,
                 [mkr_node],
-                frames,
+                overlapping_frames,
                 adjust_camera_translate=False,
                 adjust_camera_rotate=False,
                 adjust_bundle_positions=True,
@@ -612,7 +634,9 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
         triangulated_count,
         accumulated_mkr_nodes,
         accumulated_bnd_nodes,
-    ) = _triangulate_bundles(mkr_list, accumulated_mkr_nodes, accumulated_bnd_nodes)
+    ) = _triangulate_bundles(
+        mkr_list, accumulated_mkr_nodes, accumulated_bnd_nodes, solved_frames
+    )
 
     if len(solved_frames) > 2 and triangulated_count > 0:
         # Only bundle adjust after the first pose to ensure we have
@@ -621,11 +645,22 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
         # Refine the solve.
         frames = list(sorted(solved_frames))
         for mkr_node in accumulated_mkr_nodes:
+            mkr = mmapi.Marker(node=mkr_node)
+            start_solved_frame = min(frames)
+            end_solved_frame = max(frames)
+            enabled_frames = mkr.get_enabled_frames(
+                frame_range_start=start_solved_frame, frame_range_end=end_solved_frame
+            )
+            overlapping_frames = set(frames) & set(enabled_frames)
+            if len(overlapping_frames) < 2:
+                continue
+            overlapping_frames = list(sorted(overlapping_frames))
+
             _bundle_adjust(
                 cam_tfm,
                 cam_shp,
                 [mkr_node],
-                frames,
+                overlapping_frames,
                 adjust_camera_translate=False,
                 adjust_camera_rotate=False,
                 adjust_bundle_positions=True,

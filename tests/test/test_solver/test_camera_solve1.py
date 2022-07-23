@@ -843,6 +843,104 @@ class TestCameraSolve(solverUtils.SolverTestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
         return
 
+    def test_camera_solve4_operahouse_marker_score(self):
+        # Tests the Marker score calculation.
+        frame_a = 0
+        frame_b = 41
+        root_frame_a = frame_a
+        root_frame_b = frame_b
+        maya.cmds.playbackOptions(edit=True, minTime=frame_a)
+        maya.cmds.playbackOptions(edit=True, maxTime=frame_b)
+
+        cam = lib_utils.create_new_camera()
+        mkr_grp = lib_utils.create_new_marker_group(cam)
+
+        cam_tfm = cam.get_transform_node()
+        cam_shp = cam.get_shape_node()
+        fb_width = 5.4187 / 25.4
+        fb_height = 4.0640 / 25.4
+        focal_length = 14.0
+        maya.cmds.setAttr(cam_tfm + '.rotateOrder', 2)  # 2 = ZXY
+        maya.cmds.setAttr(cam_shp + '.horizontalFilmAperture', fb_width)
+        maya.cmds.setAttr(cam_shp + '.verticalFilmAperture', fb_height)
+        maya.cmds.setAttr(cam_shp + '.focalLength', focal_length)
+        maya.cmds.setAttr(cam_shp + '.displayCameraFrustum', 1)
+        maya.cmds.setAttr(cam_shp + '.displayFilmGate', 1)
+        maya.cmds.setAttr(cam_shp + '.overscan', 1.5)
+
+        attrs = [
+            'translateX',
+            'translateY',
+            'translateZ',
+            'rotateX',
+            'rotateY',
+            'rotateZ',
+        ]
+        for attr in attrs:
+            maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=frame_a, value=0.0)
+        maya.cmds.setKeyframe(
+            cam_shp, attribute='focalLength', time=frame_a, value=focal_length
+        )
+
+        marker_file_path = self.get_data_path('match_mover', 'loadmarker.rz2')
+        _, mkr_data_list = marker_read.read(marker_file_path)
+        mkr_list = marker_read.create_nodes(mkr_data_list, cam=cam, mkr_grp=mkr_grp)
+
+        mkr_bnd_list = []
+        for mkr in mkr_list:
+
+            bnd = mkr.get_bundle()
+            if bnd is None:
+                print('mkr (%r) could not get bundle.')
+                assert False
+            mkr_node = mkr.get_node()
+            bnd_node = bnd.get_node()
+            assert mkr_node is not None
+            assert bnd_node is not None
+            mkr_bnd = (mkr_node, bnd_node)
+            mkr_bnd_list.append(mkr_bnd)
+
+        # Root Frames
+        min_frames_per_marker = 2
+        max_frame_span = 5
+        root_frames = mmapi.get_root_frames_from_markers(
+            mkr_list, min_frames_per_marker, frame_a, frame_b
+        )
+        root_frames = mmapi.root_frames_list_combine(root_frames, [frame_a, frame_b])
+        root_frames = mmapi.root_frames_subdivide(root_frames, max_frame_span)
+        # print('root_frames:', root_frames)
+
+        s = time.time()
+
+        # Create cache for re-use in _compute_enabled_marker_nodes().
+        enabled_marker_nodes = {}
+        for frame in root_frames:
+            mkr_nodes = _compute_enabled_marker_nodes(mkr_list, frame)
+            enabled_marker_nodes[frame] = mkr_nodes
+
+        # Create cache for re-use in _marker_maximum_frame_score().
+        position_marker_nodes = {}
+        for frame in root_frames:
+            position_marker_nodes[frame] = {}
+            mkr_positions = {}
+            mkr_nodes = enabled_marker_nodes[frame]
+            for mkr_node in mkr_nodes:
+                attr_tx = mkr_node + '.translateX'
+                attr_ty = mkr_node + '.translateY'
+                pos_x = maya.cmds.getAttr(attr_tx, time=frame)
+                pos_y = maya.cmds.getAttr(attr_ty, time=frame)
+                mkr_position = (pos_x, pos_y)
+                position_marker_nodes[frame][mkr_node] = mkr_position
+
+        for frame in root_frames:
+            mkr_nodes = enabled_marker_nodes[frame]
+            score = _calculate_marker_frame_score(
+                cam, mkr_nodes, frame, position_marker_nodes
+            )
+            print('frame:', frame, 'score:', score)
+        e = time.time()
+        print('total time:', e - s)
+
 
 if __name__ == '__main__':
     prog = unittest.main()

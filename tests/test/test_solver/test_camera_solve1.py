@@ -40,6 +40,7 @@ import test.test_solver.solverutils as solverUtils
 import mmSolver.api as mmapi
 import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
 import mmSolver.tools.loadmarker.lib.utils as lib_utils
+import mmSolver.tools.triangulatebundle.lib as lib_triangulate
 
 
 TRANSLATE_ATTRS = ['tx', 'ty', 'tz']
@@ -204,7 +205,7 @@ def _find_best_connected_frame(
 def _bundle_adjust(
     cam_tfm,
     cam_shp,
-    accumulated_mkr_nodes,
+    mkr_nodes,
     frames,
     adjust_camera_translate=None,
     adjust_camera_rotate=None,
@@ -240,35 +241,34 @@ def _bundle_adjust(
     # scene_graph_label = mmapi.SCENE_GRAPH_MODE_LABEL_LIST[scene_graph_mode]
     # print('Scene Graph:', scene_graph_label)
 
-    solver_cameras = ((cam_tfm, cam_shp),)
+    cameras = ((cam_tfm, cam_shp),)
 
-    solver_node_attrs = []
-
+    node_attrs = []
     if adjust_camera_translate is True:
-        solver_node_attrs.append((cam_tfm + '.tx', 'None', 'None', 'None', 'None'))
-        solver_node_attrs.append((cam_tfm + '.ty', 'None', 'None', 'None', 'None'))
-        solver_node_attrs.append((cam_tfm + '.tz', 'None', 'None', 'None', 'None'))
+        node_attrs.append((cam_tfm + '.tx', 'None', 'None', 'None', 'None'))
+        node_attrs.append((cam_tfm + '.ty', 'None', 'None', 'None', 'None'))
+        node_attrs.append((cam_tfm + '.tz', 'None', 'None', 'None', 'None'))
 
     if adjust_camera_rotate is True:
-        solver_node_attrs.append((cam_tfm + '.rx', 'None', 'None', 'None', 'None'))
-        solver_node_attrs.append((cam_tfm + '.ry', 'None', 'None', 'None', 'None'))
-        solver_node_attrs.append((cam_tfm + '.rz', 'None', 'None', 'None', 'None'))
+        node_attrs.append((cam_tfm + '.rx', 'None', 'None', 'None', 'None'))
+        node_attrs.append((cam_tfm + '.ry', 'None', 'None', 'None', 'None'))
+        node_attrs.append((cam_tfm + '.rz', 'None', 'None', 'None', 'None'))
 
     if adjust_focal_length is True:
         value = (cam_shp + '.focalLength', 'None', 'None', 'None', 'None')
-        solver_node_attrs.append(value)
+        node_attrs.append(value)
 
-    solver_markers = []
+    markers = []
     new_mkr_bnd_list = []
-    accumulated_mkr_list = [mmapi.Marker(node=n) for n in accumulated_mkr_nodes]
-    for mkr in accumulated_mkr_list:
+    mkr_list = [mmapi.Marker(node=n) for n in mkr_nodes]
+    for mkr in mkr_list:
         bnd = mkr.get_bundle()
         assert bnd is not None
         # print('mkr:', mkr, 'bnd:', bnd)
         mkr_node = mkr.get_node()
         bnd_node = bnd.get_node()
         mkr_bnd = (mkr_node, cam_shp, bnd_node)
-        solver_markers.append(mkr_bnd)
+        markers.append(mkr_bnd)
 
         if adjust_bundle_positions is True:
             for attr in TRANSLATE_ATTRS:
@@ -279,17 +279,28 @@ def _bundle_adjust(
                     'None',
                     'None',
                 )
-                solver_node_attrs.append(solve_node_attr)
+                node_attrs.append(solve_node_attr)
 
-    solver_kwargs = {
-        'camera': solver_cameras,
-        'marker': solver_markers,
-        'attr': solver_node_attrs,
+    # Per-frame solves must only solve with animated attributes.
+    if per_frame_solve is True:
+        tmp_node_attrs = list(node_attrs)
+        node_attrs = []
+        for node_attr in tmp_node_attrs:
+            attr = node_attr[0]
+            key_count = maya.cmds.keyframe(attr, query=True, keyframeCount=True)
+            is_animated = key_count > 0
+            if is_animated is True:
+                node_attrs.append(node_attr)
+
+    kwargs = {
+        'camera': cameras,
+        'marker': markers,
+        'attr': node_attrs,
     }
-    # print(pprint.pformat(solver_kwargs))
+    # print(pprint.pformat(kwargs))
 
     affects_mode = 'addAttrsToMarkers'
-    result = maya.cmds.mmSolverAffects(mode=affects_mode, **solver_kwargs)
+    result = maya.cmds.mmSolverAffects(mode=affects_mode, **kwargs)
     # print('result:', result)
 
     # After each pose is added to the camera solve, we must do a
@@ -301,7 +312,7 @@ def _bundle_adjust(
         sceneGraphMode=scene_graph_mode,
         iterations=iteration_num,
         frameSolveMode=frame_solve_mode,
-        **solver_kwargs,
+        **kwargs,
     )
     # print('result:', result)
     assert result[0] == 'success=1'
@@ -312,6 +323,7 @@ def _solve_relative_poses(
     cam_tfm, mkr_nodes_a, root_frame_a, possible_frames, enabled_marker_nodes
 ):
     accumulated_mkr_nodes = set()
+    accumulated_bnd_nodes = set()
     solved_frames = set()
     failed_frames = set()
 
@@ -320,11 +332,15 @@ def _solve_relative_poses(
         if possible_frame in solved_frames:
             # Already solved, no need to solve it again.
             continue
+        if possible_frame in failed_frames:
+            # Already failed to solve, no need to try again.
+            continue
 
         mkr_nodes_b = enabled_marker_nodes[possible_frame]
         mkr_nodes = set(mkr_nodes_a) & set(mkr_nodes_b)
         common_mkr_list = [mmapi.Marker(node=n) for n in mkr_nodes]
 
+        bnd_nodes = set()
         new_mkr_bnd_list = []
         for mkr in common_mkr_list:
             bnd = mkr.get_bundle()
@@ -336,6 +352,7 @@ def _solve_relative_poses(
             bnd_node = bnd.get_node()
             mkr_bnd = (mkr_node, mkr_node, bnd_node)
             new_mkr_bnd_list.append(mkr_bnd)
+            bnd_nodes.add(bnd_node)
 
         kwargs = {
             'frameA': root_frame_a,
@@ -356,11 +373,36 @@ def _solve_relative_poses(
         solved_frames.add(root_frame_a)
         solved_frames.add(possible_frame)
         accumulated_mkr_nodes = accumulated_mkr_nodes | mkr_nodes
+        accumulated_bnd_nodes = accumulated_bnd_nodes | bnd_nodes
 
-    return accumulated_mkr_nodes, solved_frames, failed_frames
+    return accumulated_mkr_nodes, accumulated_bnd_nodes, solved_frames, failed_frames
+
+
+def _triangulate_bundles(mkr_list, mkr_nodes, bnd_nodes):
+    triangulated_count = 0
+    for mkr in mkr_list:
+        bnd = mkr.get_bundle()
+        if bnd is None:
+            continue
+        mkr_node = mkr.get_node()
+        bnd_node = bnd.get_node()
+        if bnd_node not in bnd_nodes:
+            ok = lib_triangulate.triangulate_bundle(bnd)
+            if ok is True:
+                print('Triangulated Bundle:', bnd_node)
+                mkr_nodes.add(mkr_node)
+                bnd_nodes.add(bnd_node)
+                triangulated_count += 1
+            else:
+                print('Failed to triangulated Bundle:', bnd_node)
+    return triangulated_count, mkr_nodes, bnd_nodes
 
 
 def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
+    # TODO: Categorize the marker/bundle nodes that are given to this
+    # function and output the categories. This will allow the caller
+    # to organise the nodes for the user to see diagnostic
+    # information.
     print('cam:', cam)
     print('mkr_list:', pprint.pformat(mkr_list))
     print('start_frame:', start_frame)
@@ -456,9 +498,46 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
     result = _solve_relative_poses(
         cam_tfm, mkr_nodes_a, root_frame_a, relative_pose_frames, enabled_marker_nodes
     )
-    accumulated_mkr_nodes, solved_frames, failed_frames = result
+    accumulated_mkr_nodes, accumulated_bnd_nodes, solved_frames, failed_frames = result
 
     if len(solved_frames) > 2:
+        # Only bundle adjust after the first pose to ensure we have
+        # enough data to solve the bundle adjustment.
+
+        # Refine the solve.
+        frames = list(sorted(solved_frames))
+        _bundle_adjust(
+            cam_tfm,
+            cam_shp,
+            accumulated_mkr_nodes,
+            frames,
+            adjust_camera_translate=False,
+            adjust_camera_rotate=False,
+            adjust_bundle_positions=True,
+            adjust_focal_length=False,
+            iteration_num=25,
+        )
+        _bundle_adjust(
+            cam_tfm,
+            cam_shp,
+            accumulated_mkr_nodes,
+            frames,
+            adjust_camera_translate=True,
+            adjust_camera_rotate=True,
+            adjust_bundle_positions=True,
+            adjust_focal_length=True,
+            iteration_num=100,
+        )
+
+    # Triangulate Bundles that were not solved with camera relative
+    # poses.
+    (
+        triangulated_count,
+        accumulated_mkr_nodes,
+        accumulated_bnd_nodes,
+    ) = _triangulate_bundles(mkr_list, accumulated_mkr_nodes, accumulated_bnd_nodes)
+
+    if len(solved_frames) > 2 and triangulated_count > 0:
         # Only bundle adjust after the first pose to ensure we have
         # enough data to solve the bundle adjustment.
 
@@ -487,7 +566,8 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
             iteration_num=100,
         )
 
-    # Solve per-frame
+    # Solve per-frame. Only animated attributes are solved - bundles
+    # and (static) focal lengths are ignored.
     start_frame = min(frames)
     end_frame = max(frames)
     frames = list(range(start_frame, end_frame + 1))
@@ -499,7 +579,7 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
         adjust_camera_translate=True,
         adjust_camera_rotate=True,
         adjust_bundle_positions=False,
-        adjust_focal_length=False,
+        adjust_focal_length=True,
         per_frame_solve=True,
     )
 

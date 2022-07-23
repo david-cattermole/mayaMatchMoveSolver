@@ -584,17 +584,18 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
 
         # Refine the solve.
         frames = list(sorted(solved_frames))
-        _bundle_adjust(
-            cam_tfm,
-            cam_shp,
-            accumulated_mkr_nodes,
-            frames,
-            adjust_camera_translate=False,
-            adjust_camera_rotate=False,
-            adjust_bundle_positions=True,
-            adjust_focal_length=False,
-            iteration_num=25,
-        )
+        for mkr_node in accumulated_mkr_nodes:
+            _bundle_adjust(
+                cam_tfm,
+                cam_shp,
+                [mkr_node],
+                frames,
+                adjust_camera_translate=False,
+                adjust_camera_rotate=False,
+                adjust_bundle_positions=True,
+                adjust_focal_length=False,
+                iteration_num=5,
+            )
         _bundle_adjust(
             cam_tfm,
             cam_shp,
@@ -621,17 +622,19 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
 
         # Refine the solve.
         frames = list(sorted(solved_frames))
-        _bundle_adjust(
-            cam_tfm,
-            cam_shp,
-            accumulated_mkr_nodes,
-            frames,
-            adjust_camera_translate=False,
-            adjust_camera_rotate=False,
-            adjust_bundle_positions=True,
-            adjust_focal_length=False,
-            iteration_num=10,
-        )
+        for mkr_node in accumulated_mkr_nodes:
+            _bundle_adjust(
+                cam_tfm,
+                cam_shp,
+                [mkr_node],
+                frames,
+                adjust_camera_translate=False,
+                adjust_camera_rotate=False,
+                adjust_bundle_positions=True,
+                adjust_focal_length=False,
+                iteration_num=5,
+            )
+
         _bundle_adjust(
             cam_tfm,
             cam_shp,

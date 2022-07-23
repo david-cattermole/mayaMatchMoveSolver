@@ -145,8 +145,7 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         user_string = self.getUserFramesValue(col)
         root_string = self.getRootFramesValue(col)
         if user_string is None and root_string is None:
-            frame = lib_maya_utils.get_current_frame()
-            user_int_list = list(set([start_frame, frame, end_frame]))
+            user_int_list = list(set([start_frame, end_frame]))
             user_string = convert_types.intListToString(user_int_list)
             self.setUserFramesValue(col, user_string)
         if user_string is None and root_string is not None:

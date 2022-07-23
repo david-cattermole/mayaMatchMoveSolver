@@ -144,6 +144,10 @@ bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
     }
 
     // Change the translation to be in the range 0.0 to (-/+) 1.0.
+    //
+    // TODO: Confirm this works correctly. Ideally this matrix should
+    // be image independent, and so we want to remove the image
+    // resolution from the matrix.
     homography_matrix.row(0)[2] = homography_matrix.row(0)[2] / size_ima2.first;
     homography_matrix.row(1)[2] =
         homography_matrix.row(0)[2] / size_ima2.second;

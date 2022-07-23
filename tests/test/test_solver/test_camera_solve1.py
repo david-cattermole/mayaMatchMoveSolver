@@ -23,6 +23,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import math
 import time
 import unittest
 import pprint
@@ -464,19 +465,14 @@ def _set_camera_origin_frame(
     end_frame,
     scene_scale,
 ):
-    origin_point = OpenMaya2.MPoint(0.0, 0.0, 0.0)
-
-    # Get transform matrix of camera at 'origin_frame'.
+    # Camera matrix for use as 'origin frame' offset.
     origin_ctx = tfm_utils.create_dg_context_apitwo(origin_frame)
     node_attr = '{}.matrix'.format(cam_tfm)
     cam_matrix_plug = node_utils.get_as_plug_apitwo(node_attr)
     origin_matrix = tfm_utils.get_matrix_from_plug_apitwo(cam_matrix_plug, origin_ctx)
     origin_matrix_inverse = origin_matrix.inverse()
 
-    # Get positions of camera, for all frames ('start_frame' to
-    # 'end_frame').
     previous_rotation = None
-    max_distance = 0.0
     rotate_order = OpenMaya2.MTransformationMatrix.kZXY
     cam_tfm_values = []
     frames = range(start_frame, end_frame + 1)
@@ -489,18 +485,38 @@ def _set_camera_origin_frame(
         tfm_values = tfm_utils.decompose_matrix(tfm_matrix, previous_rotation)
         cam_tfm_values.append(tfm_values)
 
+    # Calculate bounding box for camera positions.
+    min_x = 1e+9
+    min_y = 1e+9
+    min_z = 1e+9
+    max_x = -1e+9
+    max_y = -1e+9
+    max_z = -1e+9
+    for tfm_values in cam_tfm_values:
         tx = tfm_values[0]
         ty = tfm_values[1]
         tz = tfm_values[2]
-        point = OpenMaya2.MPoint(tx, ty, tz)
-        distance = point.distanceTo(origin_point)
-        if distance > max_distance:
-            max_distance = distance
+        if tx < min_x:
+            min_x = tx
+        if tx > max_x:
+            max_x = tx
+        if ty < min_y:
+            min_y = ty
+        if ty > max_y:
+            max_y = ty
+        if tz < min_z:
+            min_z = tz
+        if tz > max_z:
+            max_z = tz
+    dx = min_x - max_x
+    dy = min_y - max_y
+    dz = min_z - max_z
+    path_size = math.sqrt(dx * dx + dy * dy + dz * dz)
 
     for frame, tfm_values in zip(frames, cam_tfm_values):
-        tx = (tfm_values[0] / max_distance) * scene_scale
-        ty = (tfm_values[1] / max_distance) * scene_scale
-        tz = (tfm_values[2] / max_distance) * scene_scale
+        tx = (tfm_values[0] / path_size) * scene_scale
+        ty = (tfm_values[1] / path_size) * scene_scale
+        tz = (tfm_values[2] / path_size) * scene_scale
         maya.cmds.setKeyframe(cam_tfm, attribute='translateX', time=frame, value=tx)
         maya.cmds.setKeyframe(cam_tfm, attribute='translateY', time=frame, value=ty)
         maya.cmds.setKeyframe(cam_tfm, attribute='translateZ', time=frame, value=tz)
@@ -511,10 +527,8 @@ def _set_camera_origin_frame(
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateX', time=frame, value=rx)
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateY', time=frame, value=ry)
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateZ', time=frame, value=rz)
-
         previous_rotation = (rx, ry, rz)
 
-    # Get positions of bundles.
     for bnd_node in bnd_nodes:
         tx_attr = '{}.translateX'.format(bnd_node)
         ty_attr = '{}.translateY'.format(bnd_node)
@@ -523,10 +537,9 @@ def _set_camera_origin_frame(
         ty = maya.cmds.getAttr(ty_attr)
         tz = maya.cmds.getAttr(tz_attr)
         point = OpenMaya2.MPoint(tx, ty, tz) * origin_matrix_inverse
-        maya.cmds.setAttr(tx_attr, (point.x / max_distance) * scene_scale)
-        maya.cmds.setAttr(ty_attr, (point.y / max_distance) * scene_scale)
-        maya.cmds.setAttr(tz_attr, (point.z / max_distance) * scene_scale)
-
+        maya.cmds.setAttr(tx_attr, (point.x / path_size) * scene_scale)
+        maya.cmds.setAttr(ty_attr, (point.y / path_size) * scene_scale)
+        maya.cmds.setAttr(tz_attr, (point.z / path_size) * scene_scale)
     return
 
 
@@ -575,6 +588,9 @@ def camera_solve(
     print('end_frame:', end_frame)
     print('root_frame count:', len(root_frames))
     print('root_frames:', root_frames)
+    print('origin_frame:', origin_frame)
+    print('scene_scale:', scene_scale)
+    print('-----------------------------')
     cam_tfm = cam.get_transform_node()
     cam_shp = cam.get_shape_node()
 

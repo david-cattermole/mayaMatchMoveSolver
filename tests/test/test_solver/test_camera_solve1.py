@@ -34,6 +34,7 @@ try:
 except RuntimeError:
     pass
 import maya.cmds
+import maya.api.OpenMaya as OpenMaya2
 
 import test.test_solver.solverutils as solverUtils
 
@@ -42,6 +43,8 @@ import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
 import mmSolver.tools.loadmarker.lib.utils as lib_utils
 import mmSolver.tools.triangulatebundle.lib as lib_triangulate
 import mmSolver.utils.animcurve as animcurve_utils
+import mmSolver.utils.transform as tfm_utils
+import mmSolver.utils.node as node_utils
 
 
 TRANSLATE_ATTRS = ['tx', 'ty', 'tz']
@@ -451,7 +454,117 @@ def _triangulate_bundles(
     return triangulated_count, mkr_nodes, bnd_nodes
 
 
-def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
+def _set_camera_origin_frame(
+    cam_tfm,
+    cam_shp,
+    mkr_nodes,
+    bnd_nodes,
+    origin_frame,
+    start_frame,
+    end_frame,
+    scene_scale,
+):
+    origin_point = OpenMaya2.MPoint(0.0, 0.0, 0.0)
+
+    # Get transform matrix of camera at 'origin_frame'.
+    origin_ctx = tfm_utils.create_dg_context_apitwo(origin_frame)
+    node_attr = '{}.matrix'.format(cam_tfm)
+    cam_matrix_plug = node_utils.get_as_plug_apitwo(node_attr)
+    origin_matrix = tfm_utils.get_matrix_from_plug_apitwo(cam_matrix_plug, origin_ctx)
+    origin_matrix_inverse = origin_matrix.inverse()
+
+    # Get positions of camera, for all frames ('start_frame' to
+    # 'end_frame').
+    previous_rotation = None
+    max_distance = 0.0
+    rotate_order = OpenMaya2.MTransformationMatrix.kZXY
+    cam_tfm_values = []
+    frames = range(start_frame, end_frame + 1)
+    for frame in frames:
+        ctx = tfm_utils.create_dg_context_apitwo(frame)
+        matrix = tfm_utils.get_matrix_from_plug_apitwo(cam_matrix_plug, ctx)
+        matrix = matrix * origin_matrix_inverse
+        tfm_matrix = OpenMaya2.MTransformationMatrix(matrix)
+        tfm_matrix.reorderRotation(rotate_order)
+        tfm_values = tfm_utils.decompose_matrix(tfm_matrix, previous_rotation)
+        cam_tfm_values.append(tfm_values)
+
+        tx = tfm_values[0]
+        ty = tfm_values[1]
+        tz = tfm_values[2]
+        point = OpenMaya2.MPoint(tx, ty, tz)
+        distance = point.distanceTo(origin_point)
+        if distance > max_distance:
+            max_distance = distance
+
+    for frame, tfm_values in zip(frames, cam_tfm_values):
+        tx = (tfm_values[0] / max_distance) * scene_scale
+        ty = (tfm_values[1] / max_distance) * scene_scale
+        tz = (tfm_values[2] / max_distance) * scene_scale
+        maya.cmds.setKeyframe(cam_tfm, attribute='translateX', time=frame, value=tx)
+        maya.cmds.setKeyframe(cam_tfm, attribute='translateY', time=frame, value=ty)
+        maya.cmds.setKeyframe(cam_tfm, attribute='translateZ', time=frame, value=tz)
+
+        rx = tfm_values[3]
+        ry = tfm_values[4]
+        rz = tfm_values[5]
+        maya.cmds.setKeyframe(cam_tfm, attribute='rotateX', time=frame, value=rx)
+        maya.cmds.setKeyframe(cam_tfm, attribute='rotateY', time=frame, value=ry)
+        maya.cmds.setKeyframe(cam_tfm, attribute='rotateZ', time=frame, value=rz)
+
+        previous_rotation = (rx, ry, rz)
+
+    # Get positions of bundles.
+    for bnd_node in bnd_nodes:
+        tx_attr = '{}.translateX'.format(bnd_node)
+        ty_attr = '{}.translateY'.format(bnd_node)
+        tz_attr = '{}.translateZ'.format(bnd_node)
+        tx = maya.cmds.getAttr(tx_attr)
+        ty = maya.cmds.getAttr(ty_attr)
+        tz = maya.cmds.getAttr(tz_attr)
+        point = OpenMaya2.MPoint(tx, ty, tz) * origin_matrix_inverse
+        maya.cmds.setAttr(tx_attr, (point.x / max_distance) * scene_scale)
+        maya.cmds.setAttr(ty_attr, (point.y / max_distance) * scene_scale)
+        maya.cmds.setAttr(tz_attr, (point.z / max_distance) * scene_scale)
+
+    return
+
+
+def _remove_keyframes_outside_range(cam_tfm, cam_shp, solved_frames):
+    assert isinstance(solved_frames, set)
+    key_times = []
+
+    attrs = [
+        'translateX',
+        'translateY',
+        'translateZ',
+        'rotateX',
+        'rotateY',
+        'rotateZ',
+        'scaleX',
+        'scaleY',
+        'scaleZ',
+    ]
+    for attr in attrs:
+        node_attr = '{}.{}'.format(cam_tfm, attr)
+        key_count = maya.cmds.keyframe(node_attr, query=True, keyframeCount=True)
+        if key_count > 0:
+            key_times += maya.cmds.keyframe(node_attr, query=True, timeChange=True)
+
+    node_attr = '{}.focalLength'.format(cam_shp)
+    key_count = maya.cmds.keyframe(node_attr, query=True, keyframeCount=True)
+    if key_count > 0:
+        key_times += maya.cmds.keyframe(node_attr, query=True, timeChange=True)
+
+    outer_frames = set(key_times) - solved_frames
+    for frame in outer_frames:
+        maya.cmds.cutKey([cam_tfm, cam_shp], time=(frame,))
+    return
+
+
+def camera_solve(
+    cam, mkr_list, start_frame, end_frame, root_frames, origin_frame, scene_scale
+):
     # TODO: Categorize the marker/bundle nodes that are given to this
     # function and output the categories. This will allow the caller
     # to organise the nodes for the user to see diagnostic
@@ -598,6 +711,8 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
         root_frame_a = min(solved_frames, key=lambda x: abs(x - possible_frame))
         before_count = after_count
 
+    _remove_keyframes_outside_range(cam_tfm, cam_shp, solved_frames)
+
     if len(solved_frames) > 2:
         # Only bundle adjust after the first pose to ensure we have
         # enough data to solve the bundle adjustment.
@@ -739,6 +854,16 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
         per_frame_solve=True,
     )
 
+    _set_camera_origin_frame(
+        cam_tfm,
+        cam_shp,
+        adjust_mkr_nodes,
+        accumulated_bnd_nodes,
+        origin_frame,
+        start_frame,
+        end_frame,
+        scene_scale,
+    )
     return
 
 
@@ -747,6 +872,8 @@ class TestCameraSolve(solverUtils.SolverTestCase):
     def test_camera_solve1_stA(self):
         frame_a = 0
         frame_b = 94
+        scene_scale = 10.0
+        origin_frame = frame_a
         root_frame_a = frame_a
         root_frame_b = frame_b
         maya.cmds.playbackOptions(edit=True, minTime=frame_a)
@@ -818,7 +945,9 @@ class TestCameraSolve(solverUtils.SolverTestCase):
         # Run solver!
         assert 'mmSolver' in dir(maya.cmds)
         s = time.time()
-        camera_solve(cam, mkr_list, frame_a, frame_b, root_frames)
+        camera_solve(
+            cam, mkr_list, frame_a, frame_b, root_frames, origin_frame, scene_scale
+        )
         e = time.time()
         print('total time:', e - s)
 
@@ -831,6 +960,8 @@ class TestCameraSolve(solverUtils.SolverTestCase):
     def test_camera_solve2_operahouse(self):
         frame_a = 0
         frame_b = 41
+        scene_scale = 10.0
+        origin_frame = frame_a
         root_frame_a = frame_a
         root_frame_b = frame_b
         maya.cmds.playbackOptions(edit=True, minTime=frame_a)
@@ -903,7 +1034,9 @@ class TestCameraSolve(solverUtils.SolverTestCase):
         # Run solver!
         assert 'mmSolver' in dir(maya.cmds)
         s = time.time()
-        camera_solve(cam, mkr_list, frame_a, frame_b, root_frames)
+        camera_solve(
+            cam, mkr_list, frame_a, frame_b, root_frames, origin_frame, scene_scale
+        )
         e = time.time()
         print('total time:', e - s)
 
@@ -918,6 +1051,8 @@ class TestCameraSolve(solverUtils.SolverTestCase):
         frame_a = 0
         # frame_b = 2706
         frame_b = 600
+        scene_scale = 10.0
+        origin_frame = frame_a
         root_frame_a = frame_a
         root_frame_b = frame_b
         maya.cmds.playbackOptions(edit=True, minTime=frame_a)
@@ -988,7 +1123,9 @@ class TestCameraSolve(solverUtils.SolverTestCase):
         # Run solver!
         assert 'mmSolver' in dir(maya.cmds)
         s = time.time()
-        camera_solve(cam, mkr_list, frame_a, frame_b, root_frames)
+        camera_solve(
+            cam, mkr_list, frame_a, frame_b, root_frames, origin_frame, scene_scale
+        )
         e = time.time()
         print('total time:', e - s)
 

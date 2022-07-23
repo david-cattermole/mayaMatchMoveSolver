@@ -41,6 +41,7 @@ import mmSolver.api as mmapi
 import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
 import mmSolver.tools.loadmarker.lib.utils as lib_utils
 import mmSolver.tools.triangulatebundle.lib as lib_triangulate
+import mmSolver.utils.animcurve as animcurve_utils
 
 
 TRANSLATE_ATTRS = ['tx', 'ty', 'tz']
@@ -299,9 +300,9 @@ def _bundle_adjust(
     }
     # print(pprint.pformat(kwargs))
 
-    affects_mode = 'addAttrsToMarkers'
-    result = maya.cmds.mmSolverAffects(mode=affects_mode, **kwargs)
-    # print('result:', result)
+    # affects_mode = 'addAttrsToMarkers'
+    # result = maya.cmds.mmSolverAffects(mode=affects_mode, **kwargs)
+    # # print('result:', result)
 
     # After each pose is added to the camera solve, we must do a
     # mmSolver refinement with 'MM Scene Graph', solving the
@@ -320,15 +321,32 @@ def _bundle_adjust(
 
 
 def _solve_relative_poses(
-    cam_tfm, mkr_nodes_a, root_frame_a, possible_frames, enabled_marker_nodes
+    cam_tfm,
+    cam_shp,
+    mkr_nodes_a,
+    root_frame_a,
+    possible_frames,
+    solved_frames,
+    accumulated_mkr_nodes,
+    accumulated_bnd_nodes,
+    enabled_marker_nodes,
 ):
-    accumulated_mkr_nodes = set()
-    accumulated_bnd_nodes = set()
-    solved_frames = set()
+    assert isinstance(solved_frames, set)
+    assert isinstance(accumulated_mkr_nodes, set)
+    assert isinstance(accumulated_bnd_nodes, set)
     failed_frames = set()
 
     new_possible_frames = []
-    for possible_frame in possible_frames:
+    tmp_possible_frames = list(possible_frames)
+    while len(tmp_possible_frames) > 0:
+        if root_frame_a in tmp_possible_frames:
+            tmp_possible_frames.remove(root_frame_a)
+
+        # The closest frame number ot the root frame, so we move
+        # incrementally outwards from the root frame.
+        possible_frame = min(tmp_possible_frames, key=lambda x: abs(x - root_frame_a))
+        tmp_possible_frames.remove(possible_frame)
+
         if possible_frame in solved_frames:
             # Already solved, no need to solve it again.
             continue
@@ -374,6 +392,29 @@ def _solve_relative_poses(
         solved_frames.add(possible_frame)
         accumulated_mkr_nodes = accumulated_mkr_nodes | mkr_nodes
         accumulated_bnd_nodes = accumulated_bnd_nodes | bnd_nodes
+
+        # Refine the solve.
+        solved_frames_count = len(solved_frames)
+        solve_every_n_poses = 10
+        if (solved_frames_count % solve_every_n_poses) == 0:
+            animcurve_utils.euler_filter_plug(cam_tfm, 'rotateX')
+            animcurve_utils.euler_filter_plug(cam_tfm, 'rotateY')
+            animcurve_utils.euler_filter_plug(cam_tfm, 'rotateZ')
+
+            frames = list(sorted(solved_frames))
+            _bundle_adjust(
+                cam_tfm,
+                cam_shp,
+                accumulated_mkr_nodes,
+                frames,
+                adjust_camera_translate=True,
+                adjust_camera_rotate=True,
+                adjust_bundle_positions=True,
+                # Do not solve focal length, because it will probably
+                # lead to a unstable solve.
+                adjust_focal_length=True,
+                iteration_num=25,
+            )
 
     return accumulated_mkr_nodes, accumulated_bnd_nodes, solved_frames, failed_frames
 
@@ -489,16 +530,53 @@ def camera_solve(cam, mkr_list, start_frame, end_frame, root_frames):
     if root_frame_a in possible_frames:
         possible_frames.remove(root_frame_a)
 
-    relative_pose_frames = []
-    pose_frame_scores = frame_scores_map[root_frame_a]
-    for frame, score in pose_frame_scores:
-        if score > 0:
-            relative_pose_frames.append(frame)
+    solved_frames = set()
+    accumulated_mkr_nodes = set()
+    accumulated_bnd_nodes = set()
+    before_count = 0
+    while len(possible_frames) > 0:
+        print('root_frame_a:', root_frame_a)
 
-    result = _solve_relative_poses(
-        cam_tfm, mkr_nodes_a, root_frame_a, relative_pose_frames, enabled_marker_nodes
-    )
-    accumulated_mkr_nodes, accumulated_bnd_nodes, solved_frames, failed_frames = result
+        # Only solves the frame that are possible to be solved from the root frame.
+        relative_pose_frames = []
+        pose_frame_scores = frame_scores_map[root_frame_a]
+        for frame, score in pose_frame_scores:
+            if score > 0 and frame not in solved_frames:
+                relative_pose_frames.append(frame)
+
+        (
+            accumulated_mkr_nodes,
+            accumulated_bnd_nodes,
+            solved_frames,
+            failed_frames,
+        ) = _solve_relative_poses(
+            cam_tfm,
+            cam_shp,
+            mkr_nodes_a,
+            root_frame_a,
+            relative_pose_frames,
+            solved_frames,
+            accumulated_mkr_nodes,
+            accumulated_bnd_nodes,
+            enabled_marker_nodes,
+        )
+
+        for frame in solved_frames:
+            if frame in possible_frames:
+                possible_frames.remove(frame)
+
+        after_count = len(solved_frames)
+        if before_count == after_count:
+            # No progress made.
+            break
+
+        if len(possible_frames) == 0:
+            break
+
+        possible_frame = min(possible_frames)
+        # Closest value to 'possible_frame' frame.
+        root_frame_a = min(solved_frames, key=lambda x: abs(x - possible_frame))
+        before_count = after_count
 
     if len(solved_frames) > 2:
         # Only bundle adjust after the first pose to ensure we have

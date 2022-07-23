@@ -50,7 +50,7 @@ def get_marker_frame_list(mkr_node):
     return frm_list
 
 
-def triangulate_bundle(bnd, relock=None, max_distance=None):
+def triangulate_bundle(bnd, relock=None, max_distance=None, direction_tolerance=None):
     """
     Triangulate a 3D bundle position.
 
@@ -65,6 +65,14 @@ def triangulate_bundle(bnd, relock=None, max_distance=None):
         be positioned away from camera until the value is clamped.
     :type max_distance: float or None
 
+    :param direction_tolerance: Determines the tolerance used to
+        consider if a triangulated point is valid or not.  It's not
+        clear what the units are for this tolerance value. This value
+        is used by OpenMaya.MVector.isEquivalent() and the Maya
+        documentation doesn't really explain the units. The default
+        value (if not given) is 1.0.
+    :type direction_tolerance: float or None
+
     :returns: True if the bundle successfully triangulated, False if
         the bundle could not accurately be triangulated. For example
         if the bundle was computed to behind the camera this would be
@@ -75,14 +83,14 @@ def triangulate_bundle(bnd, relock=None, max_distance=None):
         relock = False
     if max_distance is None:
         max_distance = 1e6
+    if direction_tolerance is None:
+        direction_tolerance = 1.0
     assert isinstance(relock, bool) is True
     assert isinstance(max_distance, float) is True
+    assert isinstance(direction_tolerance, float) is True
 
     success = False
     origin_pnt = OpenMaya.MPoint(0.0, 0.0, 0.0)
-
-    # Not sure what the units are for this tolerance.
-    direction_equal_tolerance = 1.0  # Same as OpenMaya.MVector.kTolerance
 
     prev_frame = maya.cmds.currentTime(query=True)
     try:
@@ -134,11 +142,13 @@ def triangulate_bundle(bnd, relock=None, max_distance=None):
             )
 
             # Check the computed point is not behind the camera.
-            calc_first_dir = tri_utils.camera_to_point_direction(cam_tfm, pnt, first_frm)
+            calc_first_dir = tri_utils.camera_to_point_direction(
+                cam_tfm, pnt, first_frm
+            )
             calc_last_dir = tri_utils.camera_to_point_direction(cam_tfm, pnt, last_frm)
 
             first_dir_is_equal = first_dir.isEquivalent(
-                calc_first_dir, direction_equal_tolerance
+                calc_first_dir, direction_tolerance
             )
             if first_dir_is_equal is False:
                 msg = 'First Bundle direction does not match: ' 'bnd=%r a=%s b=%s'
@@ -148,7 +158,7 @@ def triangulate_bundle(bnd, relock=None, max_distance=None):
                 continue
 
             last_dir_is_equal = last_dir.isEquivalent(
-                calc_last_dir, direction_equal_tolerance
+                calc_last_dir, direction_tolerance
             )
             if last_dir_is_equal is False:
                 msg = 'Last Bundle direction does not match: ' 'bnd=%r a=%s b=%s'

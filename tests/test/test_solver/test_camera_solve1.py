@@ -410,8 +410,6 @@ def _solve_relative_poses(
                 adjust_camera_translate=True,
                 adjust_camera_rotate=True,
                 adjust_bundle_positions=True,
-                # Do not solve focal length, because it will probably
-                # lead to a unstable solve.
                 adjust_focal_length=True,
                 iteration_num=25,
             )

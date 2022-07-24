@@ -390,6 +390,16 @@ MStatus getLensesFromCameraList(
         // can be ignored.
         status = getConnectedLensNode(camera_shape_node_object, outputAttrName,
                                       node_object);
+        if (node_object.isNull()) {
+            // If the node object is null, getConnectedLensNode
+            // probably failed as well. Lets pretend the status is
+            // fine and continue with the next camera.
+            status = MS::kSuccess;
+
+            std::vector<MString> lensNodeNames;
+            out_cameraLensNodeNames.push_back(lensNodeNames);
+            continue;
+        }
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         bool lens_toggle_enabled = false;

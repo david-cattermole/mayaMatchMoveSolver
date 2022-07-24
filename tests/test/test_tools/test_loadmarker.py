@@ -69,13 +69,14 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         for dir_name, file_name in values:
             path = self.get_data_path(dir_name, file_name)
 
-            valid = lib_fileutils.is_valid_file_path(path)
+            read_func = marker_read.read
+            valid = lib_fileutils.is_valid_file_path(path, read_func)
             assert valid is True
 
-            fmt = lib_fileutils.get_file_path_format(path)
+            fmt = lib_fileutils.get_file_path_format(path, read_func)
             assert fmt is not None
 
-            file_info = lib_fileutils.get_file_info(path)
+            file_info = lib_fileutils.get_file_info(path, read_func)
             assert isinstance(file_info, loader.FileInfo)
 
             file_info_data = lib_fileutils.get_file_info_strings(path)

@@ -94,22 +94,22 @@ class TestCameraPoseResection(solverUtils.SolverTestCase):
         }
 
         # save the input
-        file_name = 'solver_camera_pose_resection_six_point_pose1_before.ma'
+        file_name = 'solver_camera_pose_from_points_six_point_pose1_before.ma'
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Run solver!
-        assert 'mmCameraPoseResection' in dir(maya.cmds)
+        assert 'mmCameraPoseFromPoints' in dir(maya.cmds)
         s = time.time()
         # for frame in frames:
-        result = maya.cmds.mmCameraPoseResection(**kwargs)
+        result = maya.cmds.mmCameraPoseFromPoints(**kwargs)
         print('result:', pprint.pformat(result))
         e = time.time()
         print('total time:', e - s)
 
         # save the output
-        file_name = 'solver_camera_pose_resection_six_point_pose1_after.ma'
+        file_name = 'solver_camera_pose_from_points_six_point_pose1_after.ma'
         path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)

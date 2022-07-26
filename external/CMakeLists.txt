@@ -98,7 +98,7 @@ set(CMINPACK_PATCH_SRC_1 ${CMAKE_CURRENT_SOURCE_DIR}/patches/cminpack/CMakeLists
 set(CMINPACK_PATCH_DST_1 ${CMINPACK_SOURCE_DIR})
 ExternalProject_Add(cminpack
     PREFIX ${CMINPACK_PREFIX}
-    URL "https://github.com/devernay/cminpack/archive/v1.3.8.tar.gz"
+    URL "https://github.com/devernay/cminpack/archive/refs/tags/v1.3.8.tar.gz"
     URL_HASH MD5=8fa8ae3c7a3e6259f26c51c62045af99
     INSTALL_DIR ${CMINPACK_INSTALL_PATH}
     PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${CMINPACK_PATCH_SRC_1} ${CMINPACK_PATCH_DST_1}

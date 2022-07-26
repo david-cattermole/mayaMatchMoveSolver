@@ -59,6 +59,34 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
 endif()
 
+#########################################################
+# Google Log (glog)
+#########################################################
+set(GLOG_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/glog)
+set(GLOG_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/glog)
+# set(GLOG_SOURCE_DIR ${THIRDPARTY_BASE_WORKING_DIR}/glog/src/glog)
+ExternalProject_Add(glog
+    PREFIX ${GLOG_PREFIX}
+    GIT_REPOSITORY "https://github.com/google/glog.git"
+    GIT_TAG "v0.5.0"
+    INSTALL_DIR ${GLOG_INSTALL_PATH}
+    CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_INSTALL_PREFIX=${GLOG_INSTALL_PATH}
+        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+        -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
+        -DBUILD_SHARED_LIBS=0
+        -DBUILD_TESTING=0
+        -DWITH_GTEST=0
+        -DWITH_GFLAGS=0
+        -DWITH_PKGCONFIG=0
+        -DWITH_THREADS=0
+        -DWITH_SYMBOLIZE=0
+        -DWITH_TLS=0
+        -DWITH_UNWIND=0
+)
 
 #########################################################
 # CMinpack - Minimizer Package
@@ -164,7 +192,7 @@ set(CERES_BUILD_DOC 0)
 set(CERES_BUILD_EXAMPLES 0)
 
 ExternalProject_Add(ceres
-    DEPENDS cxsparse eigen
+    DEPENDS cxsparse eigen glog
     PREFIX ${CERES_PREFIX}
     GIT_REPOSITORY "https://github.com/ceres-solver/ceres-solver.git"
     GIT_TAG "1.14.0"
@@ -177,6 +205,7 @@ ExternalProject_Add(ceres
         -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
         -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
         -DEigen3_DIR=${EIGEN_DIR}
+        -Dglog_DIR=${GLOG_INSTALL_PATH}
         -DCXSPARSE_INCLUDE_DIR_HINTS=${CXSPARSE_INSTALL_PATH}
         -DCXSPARSE_LIBRARY_DIR_HINTS=${CXSPARSE_INSTALL_PATH}
         -DBUILD_TESTING=${CERES_BUILD_TESTS}
@@ -184,10 +213,14 @@ ExternalProject_Add(ceres
         -DBUILD_EXAMPLES=${CERES_BUILD_EXAMPLES}
         -DBUILD_BENCHMARKS=0
         -DBUILD_SHARED_LIBS=${CERES_BUILD_SHARED}
-        # Use the included 'miniglog', rather than full Google Log
-        # (glog). 'miniglog' is slower than 'glog', but reduces the
-        # build complexity.
-        -DMINIGLOG=ON
+        # Use the full 'glog' library, rather than the cut-down
+        # 'miniglog' embedded in Ceres. 'glog' is faster than
+        # 'miniglog', but increases the build complexity.
+        #
+        # 'miniglog' is disabled because of build errors on MSVC with
+        # a conflict of the 'ERROR' severity identifer clashing with
+        # something else in mmSolver.
+        -DMINIGLOG=OFF
         # WARNING: Enabling "EIGENSPARSE" results in an LGPL licensed
         # Ceres.
         -DEIGENSPARSE=ON

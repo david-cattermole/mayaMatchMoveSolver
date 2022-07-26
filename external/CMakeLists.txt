@@ -320,11 +320,9 @@ ExternalProject_Add(openMVG
 ##################
 #
 # dlfcn is required for the LDPK on Windows only.
-set(LDPK_DEPENDS "")
 set(DLFCN_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/dlfcn)
 set(DLFCN_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/dlfcn)
 if (WIN32 AND NOT UNIX)
-  set(LDPK_DEPENDS "dlfcn")
   ExternalProject_Add(dlfcn
     PREFIX ${DLFCN_PREFIX}
     GIT_REPOSITORY "https://github.com/dlfcn-win32/dlfcn-win32.git"
@@ -344,6 +342,10 @@ if (WIN32 AND NOT UNIX)
         -DBUILD_SHARED_LIBS=ON
         -DBUILD_TESTS=OFF
     )
+else()
+  # An empty target as a filler for dlfcn on Linux/MacOS where dl-fcn
+  # is not needed.
+  add_custom_target(dlfcn)
 endif()
 
 
@@ -367,7 +369,7 @@ set(LDPK_PATCH_DST_2 ${LDPK_SOURCE_DIR}/ldpk-config.cmake.in)
 
 ExternalProject_Add(ldpk
     PREFIX ${LDPK_PREFIX}
-    DEPENDS ${LDPK_DEPENDS}
+    DEPENDS dlfcn
     URL "https://www.3dequalizer.com/user_daten/sections/tech_docs/archives/ldpk-2.7.tgz"
     URL_HASH MD5=4b8eb9cd970c671f5ef37e5001979bf2
     DOWNLOAD_DIR ${LDPK_DOWNLOAD_DIR}

@@ -40,3 +40,9 @@ endif ()
 if (BUILD_CONFIG)
   add_subdirectory(config)
 endif ()
+
+# Set variables in parent scope (directory above).
+set(MODULE_OS_NAME "${MODULE_OS_NAME}" PARENT_SCOPE)
+set(MODULE_NAME "${MODULE_NAME}" PARENT_SCOPE)
+set(MODULE_FULL_NAME "${MODULE_FULL_NAME}" PARENT_SCOPE)
+set(MODULE_BUILD_DIR "${MODULE_BUILD_DIR}" PARENT_SCOPE)

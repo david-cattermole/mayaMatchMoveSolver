@@ -149,7 +149,7 @@ endif ()
 
 # Install misc files
 #
-# NOTE: ${MODULE_FULL_NAME} comes from module sub-directory.
+# NOTE: ${MODULE_FULL_NAME} comes from share/module sub-directory.
 install(FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
   ${CMAKE_CURRENT_SOURCE_DIR}/INSTALL.md

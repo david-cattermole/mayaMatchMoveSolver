@@ -34,7 +34,7 @@ set(PROJECT_COPYRIGHT "2020-2022, David Cattermole.")
 
 # Add custom modules to the module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../cmake/modules)
+        ${CMAKE_CURRENT_SOURCE_DIR}/../share/cmake/modules)
 
 add_subdirectory(cppbind)
 

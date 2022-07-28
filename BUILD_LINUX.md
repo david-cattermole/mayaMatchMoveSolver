@@ -15,7 +15,7 @@ automatically install Maya inside the Docker image.
 On a Linux (or Windows) host Bash or Power Shell terminal, run:
 ```commandline
 $ cd <project root>
-$ docker build --file Dockerfile_mayaXXXX -t mmsolver-linux-mayaXXXX-build .
+$ docker build --file share/docker/Dockerfile_mayaXXXX -t mmsolver-linux-mayaXXXX-build .
 $ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-mayaXXXX-build
 
 # Inside the docker container

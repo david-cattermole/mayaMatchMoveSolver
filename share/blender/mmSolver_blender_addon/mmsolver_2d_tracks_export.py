@@ -22,7 +22,7 @@ Export 2D Markers from Blender.
 import os
 
 import bpy
-from bpy.props import StringProperty, IntProperty, BoolProperty, EnumProperty
+from bpy.props import StringProperty, IntProperty
 from bpy_extras.io_utils import ExportHelper
 
 from . import utils

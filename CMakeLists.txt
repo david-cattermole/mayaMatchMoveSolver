@@ -49,7 +49,7 @@ enable_testing()
 
 # Add custom modules to the module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules)
+        ${CMAKE_CURRENT_SOURCE_DIR}/share/cmake/modules)
 
 
 # Build options; What will we build?  This is used mostly for
@@ -123,7 +123,7 @@ set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
 include(MMSolverUtils)
 
 # Build features
-add_subdirectory(modules)
+add_subdirectory(share)
 
 if (BUILD_PLUGIN)
   add_subdirectory(include)
@@ -140,27 +140,6 @@ endif ()
 
 if (BUILD_DOCS)
   add_subdirectory(docs)
-endif ()
-
-if (BUILD_3DEQUALIZER)
-  add_subdirectory(3dequalizer)
-endif ()
-
-if (BUILD_SYNTHEYES)
-  add_subdirectory(syntheyes)
-endif ()
-
-if (BUILD_BLENDER)
-  add_subdirectory(blender)
-endif ()
-
-if (BUILD_ICONS)
-  add_subdirectory(icons)
-  add_subdirectory(images)
-endif ()
-
-if (BUILD_CONFIG)
-  add_subdirectory(config)
 endif ()
 
 if (BUILD_TESTS)

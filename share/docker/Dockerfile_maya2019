@@ -1,7 +1,7 @@
 # To create and run the docker container in PowerShell or BASH:
 #
-# $ docker build --file Dockerfile_maya2020 -t mmsolver-linux-maya2020-build .
-# $ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-maya2020-build
+# $ docker build --file share/docker/Dockerfile_maya2019 -t mmsolver-linux-maya2019-build .
+# $ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-maya2019-build
 #
 #
 # Once the docker image is built and run, you can execute the
@@ -10,7 +10,7 @@
 #
 # Install Python and run tools:
 #
-# $ source ./scripts/python_venv_activate_maya2020.bash
+# $ source ./scripts/python_venv_activate_maya2019.bash
 # $ ./scripts/python_linter_run_pylint.bash
 # $ ./scripts/python_linter_run_flake8.bash
 # $ ./scripts/python_linter_run_cpplint.bash
@@ -20,8 +20,8 @@
 #
 # Build CMake project:
 #
-# $ ./scripts/build_thirdparty_linux_maya2020.bash
-# $ ./scripts/build_mmSolver_linux_maya2020.bash
+# $ ./scripts/build_thirdparty_linux_maya2019.bash
+# $ ./scripts/build_mmSolver_linux_maya2019.bash
 # $ mayapy tests/runTests.py
 #
 
@@ -58,7 +58,7 @@ RUN yum install --assumeyes \
        libXau \
        libxcb \
        libXcomposite \
-       libxkbcommon-x11 \
+       libXtst \
        xorg-x11-server-Xorg \
        xorg-x11-server-Xvfb \
 
@@ -70,19 +70,21 @@ RUN yum install --assumeyes \
 
 # Install miscellaneous Maya dependencies.
 #
-# https://knowledge.autodesk.com/support/maya/troubleshooting/caas/CloudHelp/cloudhelp/2020/ENU/Installation-Maya/files/GUID-D2B5433C-E0D2-421B-9BD8-24FED217FD7F-htm.html
+# https://knowledge.autodesk.com/support/maya/troubleshooting/caas/CloudHelp/cloudhelp/2019/ENU/Installation-Maya/files/GUID-D2B5433C-E0D2-421B-9BD8-24FED217FD7F-htm.html
 #
 RUN yum install --assumeyes \
        gamin \
        audiofile \
        audiofile-devel \
        e2fsprogs-libs \
+       gstreamer1 \
+       gstreamer1-plugins-base \
        tcsh
 
 # Install fonts needed by Maya.
 # This is probably only needed by the GUI (which we will not open),
 # but it's good to have everything needed, just in case.
-RUN yum install --assumeyes \
+RUN yum install  --assumeyes \
        xorg-x11-fonts-ISO8859-1-100dpi \
        xorg-x11-fonts-ISO8859-1-75dpi \
        liberation-mono-fonts \
@@ -99,7 +101,7 @@ RUN yum install --assumeyes \
 #
 RUN curl -sSL https://raw.githubusercontent.com/wwfxuk/centos-vault-scl/master/activate.sh | bash
 
-# Development tools for Maya 2020.
+# Development tools for Maya 2019.
 RUN yum install --assumeyes \
        rh-python36 \
        rh-git218 \
@@ -116,8 +118,8 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y \
     && source ${HOME}/.cargo/env
 
 # Install Maya from archive.
-ADD ./external/archives/Autodesk_Maya_2020_ML_Linux_64bit.tgz /temp
-RUN rpm -Uvh /temp/Packages/Maya*.rpm && rm -r /temp
+ADD ./external/archives/Autodesk_Maya_2019_Linux_64bit.tgz /temp
+RUN rpm -Uvh /temp/Maya*.rpm && rm -r /temp
 ENV MAYA_LOCATION=/usr/autodesk/maya/
 ENV PATH=$MAYA_LOCATION/bin:$PATH
 
@@ -127,7 +129,7 @@ ENV MAYA_DISABLE_CIP=1
 
 WORKDIR /mmSolver
 
-# Maya 2020 development environment.
+# Maya 2019 development environment.
 ENTRYPOINT [ \
     "scl", "enable", \
                "rh-python36", \

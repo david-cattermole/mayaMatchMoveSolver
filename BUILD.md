@@ -219,7 +219,7 @@ $ make test
 $ cd ..
 
 # Install 3DE scripts (or install via ScriptDB)
-$ cp ./3dequalizer/scriptdb/* ~/.3dequalizer/py_scripts
+$ cp ./share/3dequalizer/scriptdb/* ~/.3dequalizer/py_scripts
 ```
 
 On Windows:
@@ -240,7 +240,7 @@ On Windows:
 > CD ..
 
 :: Install 3DE scripts (or install via ScriptDB)
-> XCOPY 3dequalizer\scriptdb\* "%AppData%\.3dequalizer\py_scripts" /Y
+> XCOPY share\3dequalizer\scriptdb\* "%AppData%\.3dequalizer\py_scripts" /Y
 ```
 
 # Building Dependencies

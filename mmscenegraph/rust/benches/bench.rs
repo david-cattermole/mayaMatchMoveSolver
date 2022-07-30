@@ -25,6 +25,7 @@ use criterion::{
 
 use mmscenegraph_rust::constant::Matrix44;
 use mmscenegraph_rust::math::camera::get_projection_matrix;
+use mmscenegraph_rust::math::camera::FilmFit;
 use mmscenegraph_rust::math::reprojection::reproject_as_normalised_coord;
 use mmscenegraph_rust::math::rotate::euler::RotateOrder;
 use mmscenegraph_rust::math::transform::calculate_matrix;
@@ -88,7 +89,7 @@ fn bench_camera_get_projection_matrix(c: &mut Criterion) {
     let film_offset_y = 0.0;
     let image_width = 2048.0; // 3600.0; // 960.0;
     let image_height = 1556.0; // 2400.0; // 540.0;
-    let film_fit = 1; // 1 = horizontal
+    let film_fit = FilmFit::Horizontal;
     let near_clip_plane = 0.1;
     let far_clip_plane = 10000.0;
     let camera_scale = 1.0;
@@ -136,7 +137,7 @@ fn bench_reprojection_reproject_as_normalised_coord(c: &mut Criterion) {
     let film_offset_y = 0.0;
     let image_width = 2048.0; // 3600.0; // 960.0;
     let image_height = 1556.0; // 2400.0; // 540.0;
-    let film_fit = 1; // 1 = horizontal
+    let film_fit = FilmFit::Horizontal;
     let near_clip_plane = 0.1;
     let far_clip_plane = 10000.0;
     let camera_scale = 1.0;
@@ -229,7 +230,7 @@ fn bench_reprojection(c: &mut Criterion) {
     let film_offset_y = 0.0;
     let image_width = 2048.0; // 3600.0; // 960.0;
     let image_height = 1556.0; // 2400.0; // 540.0;
-    let film_fit = 1; // 1 = horizontal
+    let film_fit = FilmFit::Horizontal;
     let near_clip_plane = 0.1;
     let far_clip_plane = 10000.0;
     let camera_scale = 1.0;

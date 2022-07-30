@@ -27,6 +27,7 @@
 #include "_types.h"
 #include "attrdatablock.h"
 #include "flatscene.h"
+#include "line.h"
 #include "scenebake.h"
 #include "scenegraph.h"
 

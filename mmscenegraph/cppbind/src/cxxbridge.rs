@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020, 2021 David Cattermole.
+// Copyright (C) 2020, 2021, 2022 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -24,6 +24,7 @@ use crate::evaluationobjects::shim_create_evaluation_objects_box;
 use crate::evaluationobjects::ShimEvaluationObjects;
 use crate::flatscene::shim_create_flat_scene_box;
 use crate::flatscene::ShimFlatScene;
+use crate::line::shim_fit_line_to_points_type2;
 use crate::scenebake::shim_bake_scene_graph;
 use crate::scenegraph::shim_create_scene_graph_box;
 use crate::scenegraph::ShimSceneGraph;
@@ -369,6 +370,16 @@ pub mod ffi {
         fn add_marker(&mut self, mkr_node: &MarkerNode);
 
         fn shim_create_evaluation_objects_box() -> Box<ShimEvaluationObjects>;
+    }
+
+    extern "Rust" {
+        fn shim_fit_line_to_points_type2(
+            x: &[f64],
+            y: &[f64],
+            out_point_x: &mut f64,
+            out_point_y: &mut f64,
+            out_slope: &mut f64,
+        ) -> bool;
     }
 
     ////////////////////////////////////////////////////////////////////

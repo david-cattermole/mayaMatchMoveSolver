@@ -20,6 +20,7 @@
 
 pub mod camera;
 pub mod dag;
+pub mod line;
 pub mod reprojection;
 pub mod rotate;
 pub mod transform;

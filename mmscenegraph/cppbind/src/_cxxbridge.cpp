@@ -1333,6 +1333,8 @@ void mmscenegraph$cxxbridge1$ShimEvaluationObjects$add_camera(::mmscenegraph::Sh
 void mmscenegraph$cxxbridge1$ShimEvaluationObjects$add_marker(::mmscenegraph::ShimEvaluationObjects &self, const ::mmscenegraph::MarkerNode &mkr_node) noexcept;
 
 ::mmscenegraph::ShimEvaluationObjects *mmscenegraph$cxxbridge1$shim_create_evaluation_objects_box() noexcept;
+
+bool mmscenegraph$cxxbridge1$shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_slope) noexcept;
 bool mmscenegraph$cxxbridge1$Camera$operator$eq(const Camera &, const Camera &) noexcept;
 bool mmscenegraph$cxxbridge1$Camera$operator$ne(const Camera &, const Camera &) noexcept;
 bool mmscenegraph$cxxbridge1$Camera$operator$lt(const Camera &, const Camera &) noexcept;
@@ -1754,6 +1756,10 @@ MMSCENEGRAPH_API_EXPORT void ShimEvaluationObjects::add_marker(const ::mmscenegr
 
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimEvaluationObjects> shim_create_evaluation_objects_box() noexcept {
   return ::rust::Box<::mmscenegraph::ShimEvaluationObjects>::from_raw(mmscenegraph$cxxbridge1$shim_create_evaluation_objects_box());
+}
+
+MMSCENEGRAPH_API_EXPORT bool shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_slope) noexcept {
+  return mmscenegraph$cxxbridge1$shim_fit_line_to_points_type2(x, y, out_point_x, out_point_y, out_slope);
 }
 
 bool Camera::operator==(const Camera &rhs) const noexcept {

@@ -1198,6 +1198,8 @@ MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimFlatScene> shim_create_f
 
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimEvaluationObjects> shim_create_evaluation_objects_box() noexcept;
 
+MMSCENEGRAPH_API_EXPORT bool shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_slope) noexcept;
+
 MMSCENEGRAPH_API_EXPORT void foo(::std::uint32_t number) noexcept;
 
 MMSCENEGRAPH_API_EXPORT ::std::uint32_t foobar(::std::uint32_t number) noexcept;

@@ -55,6 +55,7 @@
 #include "mmSolver/node/MMLensEvaluateNode.h"
 #include "mmSolver/node/MMLensModel3deNode.h"
 #include "mmSolver/node/MMLensModelToggleNode.h"
+#include "mmSolver/node/MMLineBestFitNode.h"
 #include "mmSolver/node/MMLineIntersectNode.h"
 #include "mmSolver/node/MMMarkerGroupTransformNode.h"
 #include "mmSolver/node/MMMarkerScaleNode.h"
@@ -266,6 +267,11 @@ MStatus initializePlugin(MObject obj) {
                   mmsolver::MMCameraCalibrateNode::m_id,
                   mmsolver::MMCameraCalibrateNode::creator,
                   mmsolver::MMCameraCalibrateNode::initialize, status);
+
+    REGISTER_NODE(plugin, mmsolver::MMLineBestFitNode::nodeName(),
+                  mmsolver::MMLineBestFitNode::m_id,
+                  mmsolver::MMLineBestFitNode::creator,
+                  mmsolver::MMLineBestFitNode::initialize, status);
 
     REGISTER_NODE(plugin, mmsolver::MMLineIntersectNode::nodeName(),
                   mmsolver::MMLineIntersectNode::m_id,
@@ -578,6 +584,9 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, mmsolver::MMCameraCalibrateNode::nodeName(),
                     mmsolver::MMCameraCalibrateNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, mmsolver::MMLineBestFitNode::nodeName(),
+                    mmsolver::MMLineBestFitNode::m_id, status);
 
     DEREGISTER_NODE(plugin, mmsolver::MMLineIntersectNode::nodeName(),
                     mmsolver::MMLineIntersectNode::m_id, status);

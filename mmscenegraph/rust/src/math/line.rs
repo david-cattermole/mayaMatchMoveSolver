@@ -201,7 +201,7 @@ pub fn fit_line_to_points_type2(
 
         *out_slope = slope_a.signum() * (slope_a * slope_b).sqrt();
         *out_point_x = mean_x;
-        *out_point_y = mean_y - *out_slope * mean_x;
+        *out_point_y = mean_y;
 
         true
     } else if ok_a && !ok_b {
@@ -422,7 +422,7 @@ mod tests {
         println!("slope: {}", slope);
 
         assert_relative_eq!(point_x, -0.3693187143675929, epsilon = EPSILON);
-        assert_relative_eq!(point_y, -0.0012553512915573187, epsilon = EPSILON);
+        assert_relative_eq!(point_y, -0.0022178940177885243, epsilon = EPSILON);
         assert_relative_eq!(slope, 0.002606265777458439, epsilon = EPSILON);
     }
 

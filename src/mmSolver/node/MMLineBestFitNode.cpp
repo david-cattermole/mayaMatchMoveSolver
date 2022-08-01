@@ -64,6 +64,7 @@ MTypeId MMLineBestFitNode::m_id(MM_LINE_BEST_FIT_TYPE_ID);
 // Input Attributes
 MObject MMLineBestFitNode::m_transformMatrix;
 MObject MMLineBestFitNode::m_parentInverseMatrix;
+MObject MMLineBestFitNode::m_lineLength;
 
 // Output Attributes
 MObject MMLineBestFitNode::m_outPointA;
@@ -155,6 +156,10 @@ MStatus MMLineBestFitNode::compute(const MPlug &plug, MDataBlock &data) {
         auto line_slope = 0.0;
         auto line_angle = 0.0;
 
+        MDataHandle lineLengthHandle = data.inputValue(m_lineLength, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        auto line_length = lineLengthHandle.asDouble() * 0.5;
+
         if (m_data_x.size() > 2) {
             rust::Slice<const mmsg::Real> x_slice{m_data_x.data(),
                                                   m_data_x.size()};
@@ -170,14 +175,23 @@ MStatus MMLineBestFitNode::compute(const MPlug &plug, MDataBlock &data) {
                 return status;
             }
 
-            line_angle = std::atan(-line_slope) * RADIANS_TO_DEGREES;
+            auto line_angle_radian = std::atan(-line_slope);
+            line_angle = line_angle_radian * RADIANS_TO_DEGREES;
             MMSOLVER_VRB("MM Scene Graph: Center X: " << line_center_x);
             MMSOLVER_VRB("MM Scene Graph: Center Y: " << line_center_y);
             MMSOLVER_VRB("MM Scene Graph: Slope  : " << line_slope);
             MMSOLVER_VRB("MM Scene Graph: Angle  : " << line_angle);
 
-            // TODO: Convert line center point and slope to 2 points to
-            // make up a line we can draw between.
+            // Convert line center point and slope to 2 points to make
+            // up a line we can draw between.
+            point_a.x_ =
+                line_center_x + (std::sin(-line_angle_radian) * line_length);
+            point_a.y_ =
+                line_center_y + (std::cos(-line_angle_radian) * line_length);
+            point_b.x_ =
+                line_center_x - (std::sin(-line_angle_radian) * line_length);
+            point_b.y_ =
+                line_center_y - (std::cos(-line_angle_radian) * line_length);
         }
 
         // Output Points
@@ -249,6 +263,15 @@ MStatus MMLineBestFitNode::initialize() {
         CHECK_MSTATUS(matrixAttr.setStorable(true));
         CHECK_MSTATUS(matrixAttr.setConnectable(true));
         CHECK_MSTATUS(addAttribute(m_parentInverseMatrix));
+    }
+
+    // Line Length
+    {
+        m_lineLength = numericAttr.create("lineLength", "lnlgth",
+                                          MFnNumericData::kDouble, 1.0);
+        CHECK_MSTATUS(numericAttr.setStorable(true));
+        CHECK_MSTATUS(numericAttr.setConnectable(true));
+        CHECK_MSTATUS(addAttribute(m_lineLength));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -342,6 +365,7 @@ MStatus MMLineBestFitNode::initialize() {
     MObjectArray inputAttrs;
     inputAttrs.append(m_transformMatrix);
     inputAttrs.append(m_parentInverseMatrix);
+    inputAttrs.append(m_lineLength);
 
     MObjectArray outputAttrs;
     outputAttrs.append(m_outPointA);

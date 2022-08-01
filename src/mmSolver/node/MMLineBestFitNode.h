@@ -70,6 +70,7 @@ public:
     // Input Attributes
     static MObject m_transformMatrix;
     static MObject m_parentInverseMatrix;
+    static MObject m_lineLength;
 
     // Output Attributes
     static MObject m_outPointA;

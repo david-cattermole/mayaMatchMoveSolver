@@ -64,17 +64,23 @@ MString LineShapeNode::m_display_filter_label(
 
 // Attributes
 MObject LineShapeNode::m_draw_name;
+MObject LineShapeNode::m_draw_outer;
+MObject LineShapeNode::m_draw_middle;
 MObject LineShapeNode::m_text_color;
 MObject LineShapeNode::m_point_color;
 MObject LineShapeNode::m_inner_color;
 MObject LineShapeNode::m_outer_color;
+MObject LineShapeNode::m_middle_color;
 MObject LineShapeNode::m_text_alpha;
 MObject LineShapeNode::m_point_alpha;
 MObject LineShapeNode::m_inner_alpha;
 MObject LineShapeNode::m_outer_alpha;
+MObject LineShapeNode::m_middle_alpha;
 MObject LineShapeNode::m_inner_line_width;
 MObject LineShapeNode::m_outer_line_width;
+MObject LineShapeNode::m_middle_line_width;
 MObject LineShapeNode::m_outer_scale;
+MObject LineShapeNode::m_middle_scale;
 MObject LineShapeNode::m_point_size;
 MObject LineShapeNode::m_objects;
 
@@ -158,6 +164,16 @@ MStatus LineShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
 
+    m_draw_outer =
+        nAttr.create("drawOuter", "drwotr", MFnNumericData::kBoolean, 0);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+
+    m_draw_middle =
+        nAttr.create("drawMiddle", "drwmid", MFnNumericData::kBoolean, 1);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+
     // Color
     m_text_color = nAttr.createColor("textColor", "txtclr");
     CHECK_MSTATUS(nAttr.setStorable(true));
@@ -178,6 +194,11 @@ MStatus LineShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setDefault(1.0f, 0.5f, 1.0f));
+
+    m_middle_color = nAttr.createColor("middleColor", "midclr");
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setDefault(0.0f, 0.0f, 1.0f));
 
     // Alpha
     auto alpha_min = 0.0;
@@ -204,8 +225,15 @@ MStatus LineShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setMin(alpha_min));
     CHECK_MSTATUS(nAttr.setMax(alpha_max));
 
-    m_outer_alpha = nAttr.create("outerAlpha", "otralp",
-                                 MFnNumericData::kDouble, alpha_default);
+    m_outer_alpha =
+        nAttr.create("outerAlpha", "otralp", MFnNumericData::kDouble, 0.5);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(alpha_min));
+    CHECK_MSTATUS(nAttr.setMax(alpha_max));
+
+    m_middle_alpha = nAttr.create("middleAlpha", "midalp",
+                                  MFnNumericData::kDouble, alpha_default);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(alpha_min));
@@ -231,10 +259,24 @@ MStatus LineShapeNode::initialize() {
     CHECK_MSTATUS(nAttr.setSoftMin(line_width_soft_min));
     CHECK_MSTATUS(nAttr.setSoftMax(line_width_soft_max));
 
+    m_middle_line_width = nAttr.create("middleLineWidth", "midlnwd",
+                                       MFnNumericData::kDouble, 1.0);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(line_width_min));
+    CHECK_MSTATUS(nAttr.setSoftMin(line_width_soft_min));
+    CHECK_MSTATUS(nAttr.setSoftMax(line_width_soft_max));
+
     // Scale
     auto scale_min = 0.0;
     m_outer_scale =
         nAttr.create("outerScale", "otrscl", MFnNumericData::kDouble, 1.0);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(scale_min));
+
+    m_middle_scale =
+        nAttr.create("middleScale", "midscl", MFnNumericData::kDouble, 1.0);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(scale_min));
@@ -266,18 +308,24 @@ MStatus LineShapeNode::initialize() {
 
     // Add attributes
     CHECK_MSTATUS(addAttribute(m_draw_name));
+    CHECK_MSTATUS(addAttribute(m_draw_outer));
+    CHECK_MSTATUS(addAttribute(m_draw_middle));
     CHECK_MSTATUS(addAttribute(m_text_color));
     CHECK_MSTATUS(addAttribute(m_point_color));
     CHECK_MSTATUS(addAttribute(m_inner_color));
     CHECK_MSTATUS(addAttribute(m_outer_color));
+    CHECK_MSTATUS(addAttribute(m_middle_color));
     CHECK_MSTATUS(addAttribute(m_text_alpha));
     CHECK_MSTATUS(addAttribute(m_point_alpha));
     CHECK_MSTATUS(addAttribute(m_inner_alpha));
     CHECK_MSTATUS(addAttribute(m_outer_alpha));
+    CHECK_MSTATUS(addAttribute(m_middle_alpha));
     CHECK_MSTATUS(addAttribute(m_point_size));
     CHECK_MSTATUS(addAttribute(m_outer_scale));
+    CHECK_MSTATUS(addAttribute(m_middle_scale));
     CHECK_MSTATUS(addAttribute(m_inner_line_width));
     CHECK_MSTATUS(addAttribute(m_outer_line_width));
+    CHECK_MSTATUS(addAttribute(m_middle_line_width));
     CHECK_MSTATUS(addAttribute(m_objects));
 
     return MS::kSuccess;

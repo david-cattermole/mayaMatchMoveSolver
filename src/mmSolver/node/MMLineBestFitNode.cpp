@@ -169,8 +169,9 @@ MStatus MMLineBestFitNode::compute(const MPlug &plug, MDataBlock &data) {
                 x_slice, y_slice, line_center_x, line_center_y, line_slope);
 
             if (!ok) {
-                MMSOLVER_WRN("Failed to fit a line to data points; Node Name="
-                             << MPxNode::name().asChar());
+                MMSOLVER_WRN(
+                    "mmLineBestFit: Failed to fit a line to data points; "
+                    << "Node Name=" << MPxNode::name().asChar());
                 status = MS::kFailure;
                 return status;
             }

@@ -85,18 +85,24 @@ public:
 
     // Attributes
     static MObject m_draw_name;
+    static MObject m_draw_outer;
+    static MObject m_draw_middle;
     static MObject m_text_color;
     static MObject m_point_color;
     static MObject m_inner_color;
     static MObject m_outer_color;
+    static MObject m_middle_color;
     static MObject m_text_alpha;
     static MObject m_point_alpha;
     static MObject m_inner_alpha;
     static MObject m_outer_alpha;
+    static MObject m_middle_alpha;
     static MObject m_point_size;
     static MObject m_inner_line_width;
     static MObject m_outer_line_width;
+    static MObject m_middle_line_width;
     static MObject m_outer_scale;
+    static MObject m_middle_scale;
     static MObject m_objects;
 };
 

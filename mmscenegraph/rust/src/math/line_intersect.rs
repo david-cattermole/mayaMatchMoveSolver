@@ -24,8 +24,6 @@
 ///
 use crate::constant::Real;
 
-const EPSILON: Real = 1.0e-7;
-
 #[derive(Copy, Clone, Debug, PartialEq)]
 pub struct Point3 {
     pub x: Real,

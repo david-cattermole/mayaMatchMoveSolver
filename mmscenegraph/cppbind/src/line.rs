@@ -18,8 +18,11 @@
 // ====================================================================
 //
 
+use crate::cxxbridge::ffi::Point3 as ShimPoint3;
 use mmscenegraph_rust::constant::Real as CoreReal;
 use mmscenegraph_rust::math::line::fit_line_to_points_type2 as core_fit_line_to_points_type2;
+use mmscenegraph_rust::math::line_intersect::line_point_intersection as core_line_point_intersection;
+use mmscenegraph_rust::math::line_intersect::Point3 as CorePoint3;
 
 pub fn shim_fit_line_to_points_type2(
     x: &[CoreReal],
@@ -29,4 +32,37 @@ pub fn shim_fit_line_to_points_type2(
     out_slope: &mut CoreReal,
 ) -> bool {
     core_fit_line_to_points_type2(x, y, out_point_x, out_point_y, out_slope)
+}
+
+pub fn shim_line_point_intersection(
+    point: ShimPoint3,
+    line_a: ShimPoint3,
+    line_b: ShimPoint3,
+    out_point: &mut ShimPoint3,
+) -> bool {
+    let point = CorePoint3 {
+        x: point.x,
+        y: point.y,
+        z: point.z,
+    };
+    let line_a = CorePoint3 {
+        x: line_a.x,
+        y: line_a.y,
+        z: line_a.z,
+    };
+    let line_b = CorePoint3 {
+        x: line_b.x,
+        y: line_b.y,
+        z: line_b.z,
+    };
+    let out = core_line_point_intersection(point, line_a, line_b);
+    match out {
+        Some(value) => {
+            out_point.x = value.x;
+            out_point.y = value.y;
+            out_point.z = value.z;
+            true
+        }
+        None => false,
+    }
 }

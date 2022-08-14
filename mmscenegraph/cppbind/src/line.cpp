@@ -33,4 +33,10 @@ bool fit_line_to_points_type2(rust::Slice<const Real> &x,
                                          out_slope);
 }
 
+MMSCENEGRAPH_API_EXPORT
+bool line_point_intersection(const Point3 &point, const Point3 &line_a,
+                             const Point3 &line_b, Point3 &out_point) noexcept {
+    return shim_line_point_intersection(point, line_a, line_b, out_point);
+}
+
 }  // namespace mmscenegraph

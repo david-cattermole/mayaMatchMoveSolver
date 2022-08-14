@@ -834,6 +834,7 @@ public:
 
 namespace mmscenegraph {
   enum class NodeType : ::std::uint8_t;
+  struct Point3;
   struct NodeId;
   enum class AttrType : ::std::uint8_t;
   struct AttrId;
@@ -869,6 +870,19 @@ enum class NodeType : ::std::uint8_t {
   kUnknown = 255,
 };
 #endif // CXXBRIDGE1_ENUM_mmscenegraph$NodeType
+
+#ifndef CXXBRIDGE1_STRUCT_mmscenegraph$Point3
+#define CXXBRIDGE1_STRUCT_mmscenegraph$Point3
+struct Point3 final {
+  double x;
+  double y;
+  double z;
+
+  bool operator==(const Point3 &) const noexcept;
+  bool operator!=(const Point3 &) const noexcept;
+  using IsRelocatable = ::std::true_type;
+};
+#endif // CXXBRIDGE1_STRUCT_mmscenegraph$Point3
 
 #ifndef CXXBRIDGE1_STRUCT_mmscenegraph$NodeId
 #define CXXBRIDGE1_STRUCT_mmscenegraph$NodeId
@@ -1217,6 +1231,8 @@ struct Camera final {
 #endif // CXXBRIDGE1_STRUCT_mmscenegraph$Camera
 
 extern "C" {
+bool mmscenegraph$cxxbridge1$Point3$operator$eq(const Point3 &, const Point3 &) noexcept;
+bool mmscenegraph$cxxbridge1$Point3$operator$ne(const Point3 &, const Point3 &) noexcept;
 bool mmscenegraph$cxxbridge1$NodeId$operator$eq(const NodeId &, const NodeId &) noexcept;
 bool mmscenegraph$cxxbridge1$NodeId$operator$lt(const NodeId &, const NodeId &) noexcept;
 bool mmscenegraph$cxxbridge1$NodeId$operator$le(const NodeId &, const NodeId &) noexcept;
@@ -1335,6 +1351,8 @@ void mmscenegraph$cxxbridge1$ShimEvaluationObjects$add_marker(::mmscenegraph::Sh
 ::mmscenegraph::ShimEvaluationObjects *mmscenegraph$cxxbridge1$shim_create_evaluation_objects_box() noexcept;
 
 bool mmscenegraph$cxxbridge1$shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_slope) noexcept;
+
+bool mmscenegraph$cxxbridge1$shim_line_point_intersection(::mmscenegraph::Point3 point, ::mmscenegraph::Point3 line_a, ::mmscenegraph::Point3 line_b, ::mmscenegraph::Point3 &out_point) noexcept;
 bool mmscenegraph$cxxbridge1$Camera$operator$eq(const Camera &, const Camera &) noexcept;
 bool mmscenegraph$cxxbridge1$Camera$operator$ne(const Camera &, const Camera &) noexcept;
 bool mmscenegraph$cxxbridge1$Camera$operator$lt(const Camera &, const Camera &) noexcept;
@@ -1425,6 +1443,14 @@ template <> struct hash<::mmscenegraph::MarkerNode> {
 } // namespace std
 
 namespace mmscenegraph {
+bool Point3::operator==(const Point3 &rhs) const noexcept {
+  return mmscenegraph$cxxbridge1$Point3$operator$eq(*this, rhs);
+}
+
+bool Point3::operator!=(const Point3 &rhs) const noexcept {
+  return mmscenegraph$cxxbridge1$Point3$operator$ne(*this, rhs);
+}
+
 bool NodeId::operator==(const NodeId &rhs) const noexcept {
   return mmscenegraph$cxxbridge1$NodeId$operator$eq(*this, rhs);
 }
@@ -1760,6 +1786,10 @@ MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimEvaluationObjects> shim_
 
 MMSCENEGRAPH_API_EXPORT bool shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_slope) noexcept {
   return mmscenegraph$cxxbridge1$shim_fit_line_to_points_type2(x, y, out_point_x, out_point_y, out_slope);
+}
+
+MMSCENEGRAPH_API_EXPORT bool shim_line_point_intersection(::mmscenegraph::Point3 point, ::mmscenegraph::Point3 line_a, ::mmscenegraph::Point3 line_b, ::mmscenegraph::Point3 &out_point) noexcept {
+  return mmscenegraph$cxxbridge1$shim_line_point_intersection(point, line_a, line_b, out_point);
 }
 
 bool Camera::operator==(const Camera &rhs) const noexcept {

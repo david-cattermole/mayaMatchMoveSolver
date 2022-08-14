@@ -22,46 +22,42 @@ Functions for sub-dividing a line with more markers.
 import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver._api.line as line_api
 
-DEFAULT_MARKER_NAME = 'marker1'
+
 LOG = mmSolver.logger.get_logger()
 
 
-def _create_new_line_markers(mkr_grp):
-    mkr_name_a = mmapi.get_new_marker_name(DEFAULT_MARKER_NAME)
-    mkr_a = mmapi.Marker().create_node(mkr_grp=mkr_grp, name=mkr_name_a)
-    mkr_name_b = mmapi.get_new_marker_name(DEFAULT_MARKER_NAME)
-    mkr_b = mmapi.Marker().create_node(mkr_grp=mkr_grp, name=mkr_name_b)
-
-    mkr_node_a = mkr_a.get_node()
-    mkr_node_b = mkr_b.get_node()
-    maya.cmds.setAttr(mkr_node_a + '.tx', -0.25)
-    maya.cmds.setAttr(mkr_node_b + '.tx', 0.25)
-    maya.cmds.setAttr(mkr_node_a + '.ty', -0.15)
-    maya.cmds.setAttr(mkr_node_b + '.ty', 0.15)
-    return mkr_a, mkr_b
+def _create_new_line_markers(mkr_grp, line_tfm):
+    line_shp = maya.cmds.listRelatives(line_tfm, shapes=True)[0]
+    mkr_a, bnd_a, mkr_b, bnd_b = line_api.create_default_markers(line_shp, mkr_grp)
+    return mkr_a, bnd_a, mkr_b, bnd_b
 
 
 def _create_new_marker_pair(mkr_grp, line_tfm, mkr_start, mkr_end):
-    mkr_new_name = mmapi.get_new_marker_name(DEFAULT_MARKER_NAME)
-    mkr_new = mmapi.Marker().create_node(mkr_grp=mkr_grp, name=mkr_new_name)
+    line_shp = maya.cmds.listRelatives(line_tfm, shapes=True)[0]
+    mkr_new, bnd_new = line_api.create_new_line_marker(line_tfm, line_shp, mkr_grp)
 
-    mkr_node_a = mkr_start.get_node()
-    mkr_node_b = mkr_new.get_node()
-    mkr_node_c = mkr_end.get_node()
+    mkr_node_start = mkr_start.get_node()
+    mkr_node_new = mkr_new.get_node()
+    mkr_node_end = mkr_end.get_node()
 
-    tx_b = maya.cmds.getAttr(mkr_node_a + '.tx')
-    tx_b += maya.cmds.getAttr(mkr_node_c + '.tx')
-    tx_b = tx_b * 0.5
+    bnd_node_new = bnd_new.get_node()
 
-    ty_b = maya.cmds.getAttr(mkr_node_a + '.ty')
-    ty_b += maya.cmds.getAttr(mkr_node_c + '.ty')
-    ty_b = ty_b * 0.5
+    tx = maya.cmds.getAttr(mkr_node_start + '.tx')
+    tx += maya.cmds.getAttr(mkr_node_end + '.tx')
+    tx = tx * 0.5
 
-    maya.cmds.setAttr(mkr_node_b + '.tx', tx_b)
-    maya.cmds.setAttr(mkr_node_b + '.ty', ty_b)
-    maya.cmds.parent(mkr_node_b, line_tfm, relative=True)
-    return mkr_new
+    ty = maya.cmds.getAttr(mkr_node_start + '.ty')
+    ty += maya.cmds.getAttr(mkr_node_end + '.ty')
+    ty = ty * 0.5
+
+    maya.cmds.setAttr(mkr_node_new + '.tx', tx)
+    maya.cmds.setAttr(mkr_node_new + '.ty', ty)
+
+    maya.cmds.parent(mkr_node_new, line_tfm, relative=True)
+    maya.cmds.parent(bnd_node_new, line_tfm, relative=True)
+    return mkr_new, bnd_new
 
 
 def _create_n_new_markers(mkr_grp, line_tfm, mkr_list, current_all_mkr_list):
@@ -73,7 +69,9 @@ def _create_n_new_markers(mkr_grp, line_tfm, mkr_list, current_all_mkr_list):
     mkr_list_end = mkr_list[1:]
     mkr_pairs = list(zip(mkr_list_start, mkr_list_end))
     for mkr_start, mkr_end in mkr_pairs:
-        mkr_new = _create_new_marker_pair(mkr_grp, line_tfm, mkr_start, mkr_end)
+        mkr_new, bnd_new = _create_new_marker_pair(
+            mkr_grp, line_tfm, mkr_start, mkr_end
+        )
 
         mkr_index = new_all_mkr_node_list.index(mkr_start.get_node())
         mkr_next_index = mkr_index + 1
@@ -112,7 +110,7 @@ def subdivide_line(line, mkr_list):
     line_tfm = line.get_node()
     mkr_grp = line.get_marker_group()
     if num_mkrs == 0:
-        mkr_a, mkr_b = _create_new_line_markers(mkr_grp)
+        mkr_a, mkr_b = _create_new_line_markers(mkr_grp, line_tfm)
         all_mkr_list = [mkr_a, mkr_b]
         new_mkr_list = all_mkr_list
     else:

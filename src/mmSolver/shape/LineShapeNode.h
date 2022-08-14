@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 David Cattermole.
+ * Copyright (C) 2021-2022 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -40,6 +40,9 @@
 #include <assert.h>
 #include <maya/MEvaluationNode.h>
 #endif
+
+// MM SceneGraph
+#include <mmscenegraph/mmscenegraph.h>
 
 namespace mmsolver {
 
@@ -83,7 +86,7 @@ public:
     static MString m_display_filter_name;
     static MString m_display_filter_label;
 
-    // Attributes
+    // Display Attributes
     static MObject m_draw_name;
     static MObject m_draw_outer;
     static MObject m_draw_middle;
@@ -102,8 +105,32 @@ public:
     static MObject m_outer_line_width;
     static MObject m_middle_line_width;
     static MObject m_outer_scale;
-    static MObject m_middle_scale;
     static MObject m_objects;
+
+    // Input Attributes
+    static MObject m_transform_matrix;
+    static MObject m_parent_inverse_matrix;
+    static MObject m_middle_scale;  // Also controls display.
+
+    // Output Attributes
+    static MObject m_out_line;
+    static MObject m_out_line_center_x;
+    static MObject m_out_line_center_y;
+    static MObject m_out_line_slope;
+    static MObject m_out_line_angle;
+
+    static MObject m_out_line_point_a;
+    static MObject m_out_line_point_ax;
+    static MObject m_out_line_point_ay;
+
+    static MObject m_out_line_point_b;
+    static MObject m_out_line_point_bx;
+    static MObject m_out_line_point_by;
+
+private:
+    // Internal Data.
+    rust::Vec<mmscenegraph::Real> m_point_data_x;
+    rust::Vec<mmscenegraph::Real> m_point_data_y;
 };
 
 }  // namespace mmsolver

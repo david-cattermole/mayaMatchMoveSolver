@@ -57,6 +57,7 @@
 #include "mmSolver/node/MMLensModelToggleNode.h"
 #include "mmSolver/node/MMLineBestFitNode.h"
 #include "mmSolver/node/MMLineIntersectNode.h"
+#include "mmSolver/node/MMLinePointIntersectNode.h"
 #include "mmSolver/node/MMMarkerGroupTransformNode.h"
 #include "mmSolver/node/MMMarkerScaleNode.h"
 #include "mmSolver/node/MMMarkerTransformNode.h"
@@ -277,6 +278,11 @@ MStatus initializePlugin(MObject obj) {
                   mmsolver::MMLineIntersectNode::m_id,
                   mmsolver::MMLineIntersectNode::creator,
                   mmsolver::MMLineIntersectNode::initialize, status);
+
+    REGISTER_NODE(plugin, mmsolver::MMLinePointIntersectNode::nodeName(),
+                  mmsolver::MMLinePointIntersectNode::m_id,
+                  mmsolver::MMLinePointIntersectNode::creator,
+                  mmsolver::MMLinePointIntersectNode::initialize, status);
 
     REGISTER_DEFORMER_NODE(plugin, mmsolver::MMLensDeformerNode::nodeName(),
                            mmsolver::MMLensDeformerNode::m_id,
@@ -590,6 +596,9 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, mmsolver::MMLineIntersectNode::nodeName(),
                     mmsolver::MMLineIntersectNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, mmsolver::MMLinePointIntersectNode::nodeName(),
+                    mmsolver::MMLinePointIntersectNode::m_id, status);
 
     DEREGISTER_NODE(plugin, mmsolver::MMMarkerGroupTransformNode::nodeName(),
                     mmsolver::MMMarkerGroupTransformNode::m_id, status);

@@ -44,7 +44,9 @@
 #include <maya/MUserData.h>
 
 // MM Solver
+#include "mmSolver/core/mmdata.h"
 #include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/node/node_line_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
 // MM SceneGraph
@@ -53,32 +55,6 @@
 namespace mmsg = mmscenegraph;
 
 namespace mmsolver {
-
-MStatus get_position_from_connected_node(const MPlug &plug, double &x,
-                                         double &y, double &z) {
-    MStatus status = MS::kSuccess;
-    if (!plug.isNull() && plug.isConnected()) {
-        MPlugArray connected_plugs;
-        bool as_src = false;
-        bool as_dst = true;
-        plug.connectedTo(connected_plugs, as_dst, as_src, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-        if (connected_plugs.length() == 1) {
-            MPlug connected_plug = connected_plugs[0];
-            MObject connected_node = connected_plug.node();
-            MDagPath dag_path;
-            MDagPath::getAPathTo(connected_node, dag_path);
-
-            MMatrix matrix = dag_path.inclusiveMatrix(&status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-
-            x = matrix[3][0];
-            y = matrix[3][1];
-            z = matrix[3][2];
-        }
-    }
-    return status;
-}
 
 // By setting isAlwaysDirty to false in MPxDrawOverride constructor,
 // the draw override will be updated (via prepareForDraw()) only when
@@ -321,7 +297,7 @@ MUserData *LineDrawOverride::prepareForDraw(
     data->m_point_data_y.clear();
     data->m_point_list.clear();
     MObject node = objPath.node(&status);
-    if (status) {
+    if (status == MStatus::kSuccess) {
         double x = 0.0;
         double y = 0.0;
         double z = 0.0;
@@ -355,40 +331,29 @@ MUserData *LineDrawOverride::prepareForDraw(
     // Middle line point data.
     {
         auto line_length = data->m_middle_scale;
+        auto line_center = mmdata::Point2D();
         auto line_center_x = 0.0;
         auto line_center_y = 0.0;
         auto line_slope = 0.0;
+        auto line_angle = 0.0;
+        auto line_point_a = mmdata::Point2D();
+        auto line_point_b = mmdata::Point2D();
 
-        rust::Slice<const mmsg::Real> x_slice{data->m_point_data_x.data(),
-                                              data->m_point_data_x.size()};
-        rust::Slice<const mmsg::Real> y_slice{data->m_point_data_y.data(),
-                                              data->m_point_data_y.size()};
-        auto ok = mmsg::fit_line_to_points_type2(
-            x_slice, y_slice, line_center_x, line_center_y, line_slope);
-        if (!ok) {
-            MMSOLVER_WRN("mmLineShape: Failed to fit a line to data points.");
+        status =
+            fit_line_to_points(line_length, data->m_point_data_x,
+                               data->m_point_data_y, line_center, line_slope,
+                               line_angle, line_point_a, line_point_b, verbose);
+        if (status == MS::kSuccess) {
+            // Convert line center point and slope to 2 points to make
+            // up a line we can draw between.
+            data->m_middle_point_a.x = line_point_a.x_;
+            data->m_middle_point_a.y = line_point_a.y_;
+            data->m_middle_point_a.z = -1.0;
+
+            data->m_middle_point_b.x = line_point_b.x_;
+            data->m_middle_point_b.y = line_point_b.y_;
+            data->m_middle_point_b.z = -1.0;
         }
-
-        auto line_angle_radian = std::atan(-line_slope);
-        auto line_angle = line_angle_radian * RADIANS_TO_DEGREES;
-        MMSOLVER_VRB("mmLineShape: Center X: " << line_center_x);
-        MMSOLVER_VRB("mmLineShape: Center Y: " << line_center_y);
-        MMSOLVER_VRB("mmLineShape: Slope  : " << line_slope);
-        MMSOLVER_VRB("mmLineShape: Angle  : " << line_angle);
-
-        // Convert line center point and slope to 2 points to make
-        // up a line we can draw between.
-        data->m_middle_point_a.x =
-            line_center_x + (std::sin(-line_angle_radian) * line_length);
-        data->m_middle_point_a.y =
-            line_center_y + (std::cos(-line_angle_radian) * line_length);
-        data->m_middle_point_b.x =
-            line_center_x - (std::sin(-line_angle_radian) * line_length);
-        data->m_middle_point_b.y =
-            line_center_y - (std::cos(-line_angle_radian) * line_length);
-
-        data->m_middle_point_a.z = -1.0;
-        data->m_middle_point_b.z = -1.0;
     }
 
     return data;

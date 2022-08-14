@@ -60,32 +60,33 @@ public:
 
     static MTypeId m_id;
 
-    // Internal Data.
-    //
-    // By re-using some memory we should get better cache locality
-    // and/or less memory fragmentation.
-    rust::Vec<mmscenegraph::Real> m_data_x;
-    rust::Vec<mmscenegraph::Real> m_data_y;
-
     // Input Attributes
     static MObject m_transformMatrix;
     static MObject m_parentInverseMatrix;
     static MObject m_lineLength;
 
     // Output Attributes
-    static MObject m_outPointA;
-    static MObject m_outPointAX;
-    static MObject m_outPointAY;
-
-    static MObject m_outPointB;
-    static MObject m_outPointBX;
-    static MObject m_outPointBY;
-
     static MObject m_outLine;
     static MObject m_outLineCenterX;
     static MObject m_outLineCenterY;
     static MObject m_outLineSlope;
     static MObject m_outLineAngle;
+
+    static MObject m_outLinePointA;
+    static MObject m_outLinePointAX;
+    static MObject m_outLinePointAY;
+
+    static MObject m_outLinePointB;
+    static MObject m_outLinePointBX;
+    static MObject m_outLinePointBY;
+
+private:
+    // Internal Data.
+    //
+    // By re-using some memory we should get better cache locality
+    // and/or less memory fragmentation.
+    rust::Vec<mmscenegraph::Real> m_point_data_x;
+    rust::Vec<mmscenegraph::Real> m_point_data_y;
 };
 
 }  // namespace mmsolver

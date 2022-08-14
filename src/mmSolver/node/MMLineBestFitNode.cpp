@@ -43,11 +43,10 @@
 #include <maya/MStreamUtils.h>
 
 // MM Solver
-#include "mmSolver/calibrate/calibrate_common.h"
-#include "mmSolver/core/mmcamera.h"
 #include "mmSolver/core/mmdata.h"
 #include "mmSolver/core/mmmath.h"
 #include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/node/node_line_utils.h"
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
@@ -67,13 +66,13 @@ MObject MMLineBestFitNode::m_parentInverseMatrix;
 MObject MMLineBestFitNode::m_lineLength;
 
 // Output Attributes
-MObject MMLineBestFitNode::m_outPointA;
-MObject MMLineBestFitNode::m_outPointAX;
-MObject MMLineBestFitNode::m_outPointAY;
+MObject MMLineBestFitNode::m_outLinePointA;
+MObject MMLineBestFitNode::m_outLinePointAX;
+MObject MMLineBestFitNode::m_outLinePointAY;
 
-MObject MMLineBestFitNode::m_outPointB;
-MObject MMLineBestFitNode::m_outPointBX;
-MObject MMLineBestFitNode::m_outPointBY;
+MObject MMLineBestFitNode::m_outLinePointB;
+MObject MMLineBestFitNode::m_outLinePointBX;
+MObject MMLineBestFitNode::m_outLinePointBY;
 
 MObject MMLineBestFitNode::m_outLine;
 MObject MMLineBestFitNode::m_outLineCenterX;
@@ -96,14 +95,14 @@ MStatus MMLineBestFitNode::compute(const MPlug &plug, MDataBlock &data) {
     // debugging.
     bool verbose = false;
 
-    if ((plug == m_outPointA) || (plug == m_outPointAX) ||
-        (plug == m_outPointAY) || (plug == m_outPointB) ||
-        (plug == m_outPointBX) || (plug == m_outPointBY) ||
+    if ((plug == m_outLinePointA) || (plug == m_outLinePointAX) ||
+        (plug == m_outLinePointAY) || (plug == m_outLinePointB) ||
+        (plug == m_outLinePointBX) || (plug == m_outLinePointBY) ||
         (plug == m_outLine) || (plug == m_outLineCenterX) ||
         (plug == m_outLineCenterY) || (plug == m_outLineSlope) ||
         (plug == m_outLineAngle)) {
-        m_data_x.clear();
-        m_data_y.clear();
+        m_point_data_x.clear();
+        m_point_data_y.clear();
 
         // Get Parent Inverse Matrix
         MDataHandle parentInverseMatrixHandle =
@@ -115,108 +114,49 @@ MStatus MMLineBestFitNode::compute(const MPlug &plug, MDataBlock &data) {
             data.inputArrayValue(m_transformMatrix, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
-        status = transformArrayHandle.jumpToArrayElement(0);
-        if (status == MStatus::kSuccess) {
-            do {
-                MDataHandle transformArrayHandleElement =
-                    transformArrayHandle.inputValue(&status);
-                CHECK_MSTATUS(status);
-
-                MMatrix transformMatrix =
-                    transformArrayHandleElement.asMatrix();
-
-                mmsg::Real x = transformMatrix[3][0];
-                mmsg::Real y = transformMatrix[3][1];
-                mmsg::Real z = transformMatrix[3][2];
-
-                auto point = MPoint(x, y, z);
-                point = point * parentInverseMatrix;
-
-                if (verbose) {
-                    uint32_t element_index =
-                        transformArrayHandle.elementIndex(&status);
-                    CHECK_MSTATUS(status);
-                    MMSOLVER_VRB("Point X: " << element_index << " : "
-                                             << point.x);
-                    MMSOLVER_VRB("Point Y: " << element_index << " : "
-                                             << point.y);
-                }
-
-                m_data_x.push_back(point.x);
-                m_data_y.push_back(point.y);
-
-            } while (transformArrayHandle.next() == MStatus::kSuccess);
-        }
-
-        auto point_a = mmdata::Point2D();
-        auto point_b = mmdata::Point2D();
-
-        auto line_center_x = 0.0;
-        auto line_center_y = 0.0;
-        auto line_slope = 0.0;
-        auto line_angle = 0.0;
+        // Get Transform Positions
+        status =
+            query_line_point_data(parentInverseMatrix, transformArrayHandle,
+                                  m_point_data_x, m_point_data_y, verbose);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
 
         MDataHandle lineLengthHandle = data.inputValue(m_lineLength, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         auto line_length = lineLengthHandle.asDouble() * 0.5;
 
-        if (m_data_x.size() > 2) {
-            rust::Slice<const mmsg::Real> x_slice{m_data_x.data(),
-                                                  m_data_x.size()};
-            rust::Slice<const mmsg::Real> y_slice{m_data_y.data(),
-                                                  m_data_y.size()};
-            auto ok = mmsg::fit_line_to_points_type2(
-                x_slice, y_slice, line_center_x, line_center_y, line_slope);
+        auto line_center = mmdata::Point2D();
+        auto line_slope = 0.0;
+        auto line_angle = 0.0;
+        auto line_point_a = mmdata::Point2D();
+        auto line_point_b = mmdata::Point2D();
 
-            if (!ok) {
-                MMSOLVER_WRN(
-                    "mmLineBestFit: Failed to fit a line to data points; "
-                    << "Node Name=" << MPxNode::name().asChar());
-                status = MS::kFailure;
-                return status;
-            }
-
-            auto line_angle_radian = std::atan(-line_slope);
-            line_angle = line_angle_radian * RADIANS_TO_DEGREES;
-            MMSOLVER_VRB("MM Scene Graph: Center X: " << line_center_x);
-            MMSOLVER_VRB("MM Scene Graph: Center Y: " << line_center_y);
-            MMSOLVER_VRB("MM Scene Graph: Slope  : " << line_slope);
-            MMSOLVER_VRB("MM Scene Graph: Angle  : " << line_angle);
-
-            // Convert line center point and slope to 2 points to make
-            // up a line we can draw between.
-            point_a.x_ =
-                line_center_x + (std::sin(-line_angle_radian) * line_length);
-            point_a.y_ =
-                line_center_y + (std::cos(-line_angle_radian) * line_length);
-            point_b.x_ =
-                line_center_x - (std::sin(-line_angle_radian) * line_length);
-            point_b.y_ =
-                line_center_y - (std::cos(-line_angle_radian) * line_length);
-        }
+        status = fit_line_to_points(line_length, m_point_data_x, m_point_data_y,
+                                    line_center, line_slope, line_angle,
+                                    line_point_a, line_point_b, verbose);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Output Points
-        MDataHandle outPointAXHandle = data.outputValue(m_outPointAX);
-        MDataHandle outPointAYHandle = data.outputValue(m_outPointAY);
-        outPointAXHandle.setDouble(point_a.x_);
-        outPointAYHandle.setDouble(point_a.y_);
-        outPointAXHandle.setClean();
-        outPointAYHandle.setClean();
+        MDataHandle outLinePointAXHandle = data.outputValue(m_outLinePointAX);
+        MDataHandle outLinePointAYHandle = data.outputValue(m_outLinePointAY);
+        outLinePointAXHandle.setDouble(line_point_a.x_);
+        outLinePointAYHandle.setDouble(line_point_a.y_);
+        outLinePointAXHandle.setClean();
+        outLinePointAYHandle.setClean();
 
-        MDataHandle outPointBXHandle = data.outputValue(m_outPointBX);
-        MDataHandle outPointBYHandle = data.outputValue(m_outPointBY);
-        outPointBXHandle.setDouble(point_b.x_);
-        outPointBYHandle.setDouble(point_b.y_);
-        outPointBXHandle.setClean();
-        outPointBYHandle.setClean();
+        MDataHandle outLinePointBXHandle = data.outputValue(m_outLinePointBX);
+        MDataHandle outLinePointBYHandle = data.outputValue(m_outLinePointBY);
+        outLinePointBXHandle.setDouble(line_point_b.x_);
+        outLinePointBYHandle.setDouble(line_point_b.y_);
+        outLinePointBXHandle.setClean();
+        outLinePointBYHandle.setClean();
 
         // Output Line
         MDataHandle outLineCenterXHandle = data.outputValue(m_outLineCenterX);
         MDataHandle outLineCenterYHandle = data.outputValue(m_outLineCenterY);
         MDataHandle outLineSlopeHandle = data.outputValue(m_outLineSlope);
         MDataHandle outLineAngleHandle = data.outputValue(m_outLineAngle);
-        outLineCenterXHandle.setDouble(line_center_x);
-        outLineCenterYHandle.setDouble(line_center_y);
+        outLineCenterXHandle.setDouble(line_center.x_);
+        outLineCenterYHandle.setDouble(line_center.y_);
         outLineSlopeHandle.setDouble(line_slope);
         outLineAngleHandle.setDouble(line_angle);
         outLineCenterXHandle.setClean();
@@ -279,40 +219,40 @@ MStatus MMLineBestFitNode::initialize() {
 
     // Out Line Point A
     {
-        m_outPointAX = numericAttr.create("outPointAX", "opax",
-                                          MFnNumericData::kDouble, 0.0);
+        m_outLinePointAX = numericAttr.create("outLinePointAX", "opax",
+                                              MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
 
-        m_outPointAY = numericAttr.create("outPointAY", "opay",
-                                          MFnNumericData::kDouble, 0.0);
+        m_outLinePointAY = numericAttr.create("outLinePointAY", "opay",
+                                              MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
 
-        m_outPointA = compoundAttr.create("outPointA", "opa", &status);
+        m_outLinePointA = compoundAttr.create("outLinePointA", "opa", &status);
         CHECK_MSTATUS(status);
-        compoundAttr.addChild(m_outPointAX);
-        compoundAttr.addChild(m_outPointAY);
-        CHECK_MSTATUS(addAttribute(m_outPointA));
+        compoundAttr.addChild(m_outLinePointAX);
+        compoundAttr.addChild(m_outLinePointAY);
+        CHECK_MSTATUS(addAttribute(m_outLinePointA));
     }
 
     // Out Line Point B
     {
-        m_outPointBX = numericAttr.create("outPointBX", "opbx",
-                                          MFnNumericData::kDouble, 0.0);
+        m_outLinePointBX = numericAttr.create("outLinePointBX", "opbx",
+                                              MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
 
-        m_outPointBY = numericAttr.create("outPointBY", "opby",
-                                          MFnNumericData::kDouble, 0.0);
+        m_outLinePointBY = numericAttr.create("outLinePointBY", "opby",
+                                              MFnNumericData::kDouble, 0.0);
         CHECK_MSTATUS(numericAttr.setStorable(false));
         CHECK_MSTATUS(numericAttr.setKeyable(false));
 
-        m_outPointB = compoundAttr.create("outPointB", "opb", &status);
+        m_outLinePointB = compoundAttr.create("outLinePointB", "opb", &status);
         CHECK_MSTATUS(status);
-        compoundAttr.addChild(m_outPointBX);
-        compoundAttr.addChild(m_outPointBY);
-        CHECK_MSTATUS(addAttribute(m_outPointB));
+        compoundAttr.addChild(m_outLinePointBX);
+        compoundAttr.addChild(m_outLinePointBY);
+        CHECK_MSTATUS(addAttribute(m_outLinePointB));
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -369,15 +309,13 @@ MStatus MMLineBestFitNode::initialize() {
     inputAttrs.append(m_lineLength);
 
     MObjectArray outputAttrs;
-    outputAttrs.append(m_outPointA);
-    outputAttrs.append(m_outPointAX);
-    outputAttrs.append(m_outPointAY);
-
-    outputAttrs.append(m_outPointB);
-    outputAttrs.append(m_outPointBX);
-    outputAttrs.append(m_outPointBY);
-
     outputAttrs.append(m_outLine);
+    outputAttrs.append(m_outLinePointA);
+    outputAttrs.append(m_outLinePointAX);
+    outputAttrs.append(m_outLinePointAY);
+    outputAttrs.append(m_outLinePointB);
+    outputAttrs.append(m_outLinePointBX);
+    outputAttrs.append(m_outLinePointBY);
     outputAttrs.append(m_outLineCenterX);
     outputAttrs.append(m_outLineCenterY);
     outputAttrs.append(m_outLineSlope);

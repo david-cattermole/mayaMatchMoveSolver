@@ -27,6 +27,7 @@
 #include <maya/MObject.h>
 #include <maya/MObjectArray.h>
 #include <maya/MPlug.h>
+#include <maya/MPlugArray.h>
 #include <maya/MPoint.h>
 #include <maya/MPxNode.h>
 #include <maya/MSelectionList.h>

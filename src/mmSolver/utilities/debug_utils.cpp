@@ -28,7 +28,6 @@
 
 // Maya
 #include <maya/MStreamUtils.h>
-#include <maya/MTypes.h>
 
 namespace debug {
 

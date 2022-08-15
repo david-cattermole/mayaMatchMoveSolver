@@ -30,8 +30,12 @@
 #include <string>    // string
 
 // Maya
-#include <maya/MStreamUtils.h>
+//
+// Maya 2019 (on Linux) requires this include happens first, but Maya
+// 2020+ doesn't seem to mind.
 #include <maya/MTypes.h>
+//
+#include <maya/MStreamUtils.h>
 
 #ifdef _WIN32
 #include <Windows.h>  // GetSystemTime

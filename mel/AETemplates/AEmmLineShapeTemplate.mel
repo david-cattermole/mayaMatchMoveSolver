@@ -57,7 +57,15 @@ global proc AEmmLineShapeTemplate(string $nodeName)
     editorTemplate -endLayout;
 
     editorTemplate -beginLayout "Input Objects" -collapse 1;
+    editorTemplate -addControl "transformParentInverseMatrix";
     editorTemplate -addControl "objects";
+    editorTemplate -addControl "transformMatrix";
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "Output Line" -collapse 0;
+    editorTemplate -addControl "outLinePointA";
+    editorTemplate -addControl "outLinePointB";
+    editorTemplate -addControl "outLine";
     editorTemplate -endLayout;
 
     AEmmNodeShapeTemplateCommonEnd($nodeName);

@@ -55,11 +55,13 @@ is used to automatically format C++ files.
 
 # Best Practices
 
-These guidelines should be followed whenever adding Python code to the
-project, however these are only guidelines, not rules. Use your
-judgement and if the guidelines don't fit, don't use them,
+These guidelines should be followed whenever adding, changing or
+modifying code to the project, however these are only guidelines, not
+rules. Use your judgement and if the guidelines don't fit, don't use
+them.
 
-## Python
+## General
+
 
 - General
   - Don't repeat yourself (DRY)
@@ -67,7 +69,7 @@ judgement and if the guidelines don't fit, don't use them,
       pieces.
     - Reuse code, don’t duplicate it.
   - Fail fast
-    - Return or raise an except as early as possible.
+    - Return an error or raise an exception as early as possible.
     - Use `assert` calls to ensure expected types are given to functions.
   - Use names to explain to other people.
     - [CppCon 2019: Kate Gregory "Naming is Hard: Let's Do Better"](https://www.youtube.com/watch?v=MBRoCdtZOYg)
@@ -75,7 +77,7 @@ judgement and if the guidelines don't fit, don't use them,
     complex or "clever" code unless required.
   - Use comments to explain *why* the code exists, not *what* the code
     does.
-  - Add doc-strings for arguments and return types, and describe what
+  - Add documentation for arguments and return types, and describe what
     is not obvious.
   - Avoid hard-coded values (numbers and strings), use named constants
     with values.
@@ -101,6 +103,11 @@ judgement and if the guidelines don't fit, don't use them,
 - Exceptions
   - Exceptions should be for exceptional cases, not to avoid type or
     value checking.
+
+## Python
+
+Best practices specific to Python.
+
 - The [Zen Of Python](https://peps.python.org/pep-0020/) is wise and
   you should follow it.
 

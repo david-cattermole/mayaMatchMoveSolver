@@ -163,8 +163,7 @@ def execute(
 
     start_time = time.time()
 
-    # Ensure the plug-in is loaded, so we (do not) fail before trying
-    # to run.
+    # Ensure the plug-in is loaded, so we error before trying to run.
     api_utils.load_plugin()
     assert 'mmSolver' in dir(maya.cmds)
 

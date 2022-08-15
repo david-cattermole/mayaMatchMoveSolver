@@ -746,7 +746,7 @@ def collection_compile(
     col, sol_list, mkr_list, attr_list, withtest=False, prog_fn=None, status_fn=None
 ):
     """
-    Take the data in this class and compile it into actions to run.
+    Take the data in the Collection and compile it into actions to run.
 
     :return: list of SolverActions.
     :rtype: [SolverAction, ..]

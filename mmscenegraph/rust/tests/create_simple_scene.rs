@@ -19,6 +19,7 @@
 //
 
 use mmscenegraph_rust::attr::datablock::AttrDataBlock;
+use mmscenegraph_rust::math::camera::FilmFit;
 use mmscenegraph_rust::math::rotate::euler::RotateOrder;
 use mmscenegraph_rust::node::traits::NodeHasId;
 use mmscenegraph_rust::scene::bake::bake_scene_graph;
@@ -52,7 +53,14 @@ fn evaluate_scene() {
         (1.0, 1.0, 1.0),
         (36.0, 24.0),
         40.0,
+        (0.0, 0.0),
+        1.0,
+        10000.0,
+        1.0,
         RotateOrder::ZXY,
+        FilmFit::Horizontal,
+        2048,
+        2048,
     );
 
     let mkr = create_static_marker(&mut sg, &mut attrdb, (0.0, 0.0), 1.0);
@@ -80,18 +88,11 @@ fn evaluate_scene() {
 
     let out_point_list = flat_scene.points();
     let out_marker_list = flat_scene.markers();
-    let out_deviation_list = flat_scene.deviations();
     println!("2D Points (reprojected) count: {}", out_point_list.len());
     println!("2D Markers count: {}", out_marker_list.len());
-    println!("Deviation count: {}", out_deviation_list.len());
     let points_iter = out_point_list.chunks_exact(2);
     let marker_iter = out_marker_list.chunks_exact(2);
-    let dev_iter = out_deviation_list.chunks_exact(2);
-    let point_dev_iter = points_iter.zip(marker_iter.zip(dev_iter));
-    for (i, (point, (mkr, dev))) in (0..).zip(point_dev_iter) {
-        println!(
-            "2D Point {}: mkr: {:?} reprojected: {:?} dev: {:?}",
-            i, mkr, point, dev
-        );
+    for (i, (point, mkr)) in (0..).zip(points_iter.zip(marker_iter)) {
+        println!("2D Point {}: mkr: {:?} reprojected: {:?}", i, mkr, point);
     }
 }

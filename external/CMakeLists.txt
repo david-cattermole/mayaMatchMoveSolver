@@ -59,6 +59,34 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
 endif()
 
+#########################################################
+# Google Log (glog)
+#########################################################
+set(GLOG_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/glog)
+set(GLOG_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/glog)
+# set(GLOG_SOURCE_DIR ${THIRDPARTY_BASE_WORKING_DIR}/glog/src/glog)
+ExternalProject_Add(glog
+    PREFIX ${GLOG_PREFIX}
+    GIT_REPOSITORY "https://github.com/google/glog.git"
+    GIT_TAG "v0.5.0"
+    INSTALL_DIR ${GLOG_INSTALL_PATH}
+    CMAKE_ARGS
+        -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+        -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+        -DCMAKE_INSTALL_PREFIX=${GLOG_INSTALL_PATH}
+        -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+        -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
+        -DBUILD_SHARED_LIBS=0
+        -DBUILD_TESTING=0
+        -DWITH_GTEST=0
+        -DWITH_GFLAGS=0
+        -DWITH_PKGCONFIG=0
+        -DWITH_THREADS=0
+        -DWITH_SYMBOLIZE=0
+        -DWITH_TLS=0
+        -DWITH_UNWIND=0
+)
 
 #########################################################
 # CMinpack - Minimizer Package
@@ -70,7 +98,7 @@ set(CMINPACK_PATCH_SRC_1 ${CMAKE_CURRENT_SOURCE_DIR}/patches/cminpack/CMakeLists
 set(CMINPACK_PATCH_DST_1 ${CMINPACK_SOURCE_DIR})
 ExternalProject_Add(cminpack
     PREFIX ${CMINPACK_PREFIX}
-    URL "https://github.com/devernay/cminpack/archive/v1.3.8.tar.gz"
+    URL "https://github.com/devernay/cminpack/archive/refs/tags/v1.3.8.tar.gz"
     URL_HASH MD5=8fa8ae3c7a3e6259f26c51c62045af99
     INSTALL_DIR ${CMINPACK_INSTALL_PATH}
     PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${CMINPACK_PATCH_SRC_1} ${CMINPACK_PATCH_DST_1}
@@ -164,7 +192,7 @@ set(CERES_BUILD_DOC 0)
 set(CERES_BUILD_EXAMPLES 0)
 
 ExternalProject_Add(ceres
-    DEPENDS cxsparse eigen
+    DEPENDS cxsparse eigen glog
     PREFIX ${CERES_PREFIX}
     GIT_REPOSITORY "https://github.com/ceres-solver/ceres-solver.git"
     GIT_TAG "1.14.0"
@@ -177,6 +205,7 @@ ExternalProject_Add(ceres
         -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
         -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
         -DEigen3_DIR=${EIGEN_DIR}
+        -Dglog_DIR=${GLOG_INSTALL_PATH}
         -DCXSPARSE_INCLUDE_DIR_HINTS=${CXSPARSE_INSTALL_PATH}
         -DCXSPARSE_LIBRARY_DIR_HINTS=${CXSPARSE_INSTALL_PATH}
         -DBUILD_TESTING=${CERES_BUILD_TESTS}
@@ -184,10 +213,14 @@ ExternalProject_Add(ceres
         -DBUILD_EXAMPLES=${CERES_BUILD_EXAMPLES}
         -DBUILD_BENCHMARKS=0
         -DBUILD_SHARED_LIBS=${CERES_BUILD_SHARED}
-        # Use the included 'miniglog', rather than full Google Log
-        # (glog). 'miniglog' is slower than 'glog', but reduces the
-        # build complexity.
-        -DMINIGLOG=ON
+        # Use the full 'glog' library, rather than the cut-down
+        # 'miniglog' embedded in Ceres. 'glog' is faster than
+        # 'miniglog', but increases the build complexity.
+        #
+        # 'miniglog' is disabled because of build errors on MSVC with
+        # a conflict of the 'ERROR' severity identifer clashing with
+        # something else in mmSolver.
+        -DMINIGLOG=OFF
         # WARNING: Enabling "EIGENSPARSE" results in an LGPL licensed
         # Ceres.
         -DEIGENSPARSE=ON
@@ -287,11 +320,9 @@ ExternalProject_Add(openMVG
 ##################
 #
 # dlfcn is required for the LDPK on Windows only.
-set(LDPK_DEPENDS "")
 set(DLFCN_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/dlfcn)
 set(DLFCN_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/dlfcn)
 if (WIN32 AND NOT UNIX)
-  set(LDPK_DEPENDS "dlfcn")
   ExternalProject_Add(dlfcn
     PREFIX ${DLFCN_PREFIX}
     GIT_REPOSITORY "https://github.com/dlfcn-win32/dlfcn-win32.git"
@@ -311,6 +342,10 @@ if (WIN32 AND NOT UNIX)
         -DBUILD_SHARED_LIBS=ON
         -DBUILD_TESTS=OFF
     )
+else()
+  # An empty target as a filler for dlfcn on Linux/MacOS where dl-fcn
+  # is not needed.
+  add_custom_target(dlfcn)
 endif()
 
 
@@ -334,7 +369,7 @@ set(LDPK_PATCH_DST_2 ${LDPK_SOURCE_DIR}/ldpk-config.cmake.in)
 
 ExternalProject_Add(ldpk
     PREFIX ${LDPK_PREFIX}
-    DEPENDS ${LDPK_DEPENDS}
+    DEPENDS dlfcn
     URL "https://www.3dequalizer.com/user_daten/sections/tech_docs/archives/ldpk-2.7.tgz"
     URL_HASH MD5=4b8eb9cd970c671f5ef37e5001979bf2
     DOWNLOAD_DIR ${LDPK_DOWNLOAD_DIR}

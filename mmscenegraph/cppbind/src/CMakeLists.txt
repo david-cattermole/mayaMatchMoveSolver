@@ -30,6 +30,7 @@ set(lib_source_files
   ${CMAKE_CURRENT_SOURCE_DIR}/_cxxbridge.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/attrdatablock.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/flatscene.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/line.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/scenebake.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/scenegraph.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/evaluationobjects.cpp

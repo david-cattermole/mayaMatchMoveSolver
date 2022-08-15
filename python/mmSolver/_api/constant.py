@@ -200,6 +200,7 @@ LINE_SHAPE_NODE_TYPE = 'mmLineShape'
 LENS_NODE_TYPE_DEFAULT = 'mmLensModel3de'
 LENS_DATA_TYPE_ID = 0x0012F184
 LENS_TOGGLE_NODE_NAME = 'lensDistortionToggle1'
+LINE_POINT_INTERSECT_NODE_TYPE = 'mmLinePointIntersect'
 
 
 # Icon names

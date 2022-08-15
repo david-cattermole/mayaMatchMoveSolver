@@ -102,7 +102,7 @@ namespace sfm {
 
 /// Pose/Resection Kernel adapter for the A contrario model estimator
 /// with known camera intrinsics.
-template <typename SolverArg, typename ModelArg = Mat34>
+template <typename SolverArg, typename ModelArg = openMVG::Mat34>
 class ACKernelAdaptorResectionIntrinsics {
 public:
     using Solver = SolverArg;

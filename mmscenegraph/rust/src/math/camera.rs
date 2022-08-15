@@ -85,7 +85,8 @@ mod tests {
         let image_width = 2048.0;
         let image_height = 1556.0;
         let film_fit = FilmFit::Horizontal;
-        let near_clip_plane_cm = 0.01; // This value will be ignored and treated as 0.1
+        // This value *must* be exactly 0.1 for the maths to correct.
+        let near_clip_plane_cm = 0.1;
         let far_clip_plane_cm = 10000.0;
         let camera_scale = 1.0;
         let camera_projection_matrix = get_projection_matrix(
@@ -101,7 +102,7 @@ mod tests {
             far_clip_plane_cm,
             camera_scale,
         );
-        // println!("Camera Projection Matrix: {}", camera_projection_matrix);
+        println!("Camera Projection Matrix: {}", camera_projection_matrix);
 
         let expected_result = na::Matrix4::<Real>::new(
             1.94445, 0.0, 0.0, 0.0, //

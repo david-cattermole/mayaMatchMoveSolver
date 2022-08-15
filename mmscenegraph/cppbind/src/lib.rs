@@ -21,9 +21,10 @@
 pub mod attr;
 pub mod attrdatablock;
 pub mod cxxbridge;
+pub mod evaluationobjects;
 pub mod flatscene;
+pub mod line;
 pub mod math;
 pub mod node;
 pub mod scenebake;
 pub mod scenegraph;
-pub mod evaluationobjects;

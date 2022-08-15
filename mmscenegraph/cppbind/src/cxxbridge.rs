@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020, 2021 David Cattermole.
+// Copyright (C) 2020, 2021, 2022 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -24,6 +24,8 @@ use crate::evaluationobjects::shim_create_evaluation_objects_box;
 use crate::evaluationobjects::ShimEvaluationObjects;
 use crate::flatscene::shim_create_flat_scene_box;
 use crate::flatscene::ShimFlatScene;
+use crate::line::shim_fit_line_to_points_type2;
+use crate::line::shim_line_point_intersection;
 use crate::scenebake::shim_bake_scene_graph;
 use crate::scenegraph::shim_create_scene_graph_box;
 use crate::scenegraph::ShimSceneGraph;
@@ -59,6 +61,13 @@ pub mod ffi {
 
         #[cxx_name = "kUnknown"]
         Unknown = 255,
+    }
+
+    #[derive(Copy, Clone, Debug, PartialEq)]
+    pub(crate) struct Point3 {
+        pub x: f64,
+        pub y: f64,
+        pub z: f64,
     }
 
     #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
@@ -369,6 +378,24 @@ pub mod ffi {
         fn add_marker(&mut self, mkr_node: &MarkerNode);
 
         fn shim_create_evaluation_objects_box() -> Box<ShimEvaluationObjects>;
+    }
+
+    // Line
+    extern "Rust" {
+        fn shim_fit_line_to_points_type2(
+            x: &[f64],
+            y: &[f64],
+            out_point_x: &mut f64,
+            out_point_y: &mut f64,
+            out_slope: &mut f64,
+        ) -> bool;
+
+        pub fn shim_line_point_intersection(
+            point: Point3,
+            line_a: Point3,
+            line_b: Point3,
+            out_point: &mut Point3,
+        ) -> bool;
     }
 
     ////////////////////////////////////////////////////////////////////

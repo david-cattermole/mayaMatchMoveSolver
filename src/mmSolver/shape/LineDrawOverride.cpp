@@ -43,35 +43,18 @@
 #include <maya/MPxDrawOverride.h>
 #include <maya/MUserData.h>
 
+// MM Solver
+#include "mmSolver/core/mmdata.h"
 #include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/node/node_line_utils.h"
+#include "mmSolver/utilities/number_utils.h"
+
+// MM SceneGraph
+#include <mmscenegraph/mmscenegraph.h>
+
+namespace mmsg = mmscenegraph;
 
 namespace mmsolver {
-
-MStatus get_position_from_connected_node(const MPlug &plug, double &x,
-                                         double &y, double &z) {
-    MStatus status = MS::kSuccess;
-    if (!plug.isNull() && plug.isConnected()) {
-        MPlugArray connected_plugs;
-        bool as_src = false;
-        bool as_dst = true;
-        plug.connectedTo(connected_plugs, as_dst, as_src, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-        if (connected_plugs.length() == 1) {
-            MPlug connected_plug = connected_plugs[0];
-            MObject connected_node = connected_plug.node();
-            MDagPath dag_path;
-            MDagPath::getAPathTo(connected_node, dag_path);
-
-            MMatrix matrix = dag_path.inclusiveMatrix(&status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-
-            x = matrix[3][0];
-            y = matrix[3][1];
-            z = matrix[3][2];
-        }
-    }
-    return status;
-}
 
 // By setting isAlwaysDirty to false in MPxDrawOverride constructor,
 // the draw override will be updated (via prepareForDraw()) only when
@@ -170,6 +153,10 @@ MUserData *LineDrawOverride::prepareForDraw(
     }
     MStatus status;
 
+    // When 'true', verbose will print out additional details for
+    // debugging.
+    bool verbose = false;
+
     MDagPath transformPath(objPath);
     CHECK_MSTATUS(transformPath.pop(1));
     MObject transformObj = transformPath.node();
@@ -186,11 +173,16 @@ MUserData *LineDrawOverride::prepareForDraw(
         getNodeAttr(objPath, LineShapeNode::m_outer_scale, data->m_outer_scale);
     CHECK_MSTATUS(status);
 
+    status = getNodeAttr(objPath, LineShapeNode::m_middle_scale,
+                         data->m_middle_scale);
+    CHECK_MSTATUS(status);
+
     // Color
     MColor text_color(0.0f, 0.0f, 0.0f, 1.0f);
     MColor point_color(0.0f, 0.0f, 0.0f, 1.0f);
     MColor inner_color(0.0f, 0.0f, 0.0f, 1.0f);
     MColor outer_color(0.0f, 0.0f, 0.0f, 1.0f);
+    MColor middle_color(0.0f, 0.0f, 0.0f, 1.0f);
     status = getNodeAttr(objPath, LineShapeNode::m_text_color, text_color);
     CHECK_MSTATUS(status);
     status = getNodeAttr(objPath, LineShapeNode::m_point_color, point_color);
@@ -198,6 +190,8 @@ MUserData *LineDrawOverride::prepareForDraw(
     status = getNodeAttr(objPath, LineShapeNode::m_inner_color, inner_color);
     CHECK_MSTATUS(status);
     status = getNodeAttr(objPath, LineShapeNode::m_outer_color, outer_color);
+    CHECK_MSTATUS(status);
+    status = getNodeAttr(objPath, LineShapeNode::m_middle_color, middle_color);
     CHECK_MSTATUS(status);
 
     // Alpha
@@ -208,6 +202,9 @@ MUserData *LineDrawOverride::prepareForDraw(
     status = getNodeAttr(objPath, LineShapeNode::m_inner_alpha, inner_color[3]);
     CHECK_MSTATUS(status);
     status = getNodeAttr(objPath, LineShapeNode::m_outer_alpha, outer_color[3]);
+    CHECK_MSTATUS(status);
+    status =
+        getNodeAttr(objPath, LineShapeNode::m_middle_alpha, middle_color[3]);
     CHECK_MSTATUS(status);
 
     // Line Width
@@ -226,6 +223,16 @@ MUserData *LineDrawOverride::prepareForDraw(
     // Draw Name
     status =
         getNodeAttr(objPath, LineShapeNode::m_draw_name, data->m_draw_name);
+    CHECK_MSTATUS(status);
+
+    // Draw Outer
+    status =
+        getNodeAttr(objPath, LineShapeNode::m_draw_outer, data->m_draw_outer);
+    CHECK_MSTATUS(status);
+
+    // Draw Middle
+    status =
+        getNodeAttr(objPath, LineShapeNode::m_draw_middle, data->m_draw_middle);
     CHECK_MSTATUS(status);
 
     // Colors
@@ -267,6 +274,12 @@ MUserData *LineDrawOverride::prepareForDraw(
         sat *= 0.95f;
         val *= 1.05f;
         outer_color.set(MColor::kHSV, hue, sat, val, alpha);
+
+        // Middle
+        middle_color.get(MColor::kHSV, hue, sat, val, alpha);
+        sat *= 0.95f;
+        val *= 1.05f;
+        middle_color.set(MColor::kHSV, hue, sat, val, alpha);
     } else {
         // The line is not selected.
         data->m_active = false;
@@ -277,11 +290,14 @@ MUserData *LineDrawOverride::prepareForDraw(
     data->m_point_color = point_color;
     data->m_inner_color = inner_color;
     data->m_outer_color = outer_color;
+    data->m_middle_color = middle_color;
 
     // The positions of the lines.
+    data->m_point_data_x.clear();
+    data->m_point_data_y.clear();
     data->m_point_list.clear();
     MObject node = objPath.node(&status);
-    if (status) {
+    if (status == MStatus::kSuccess) {
         double x = 0.0;
         double y = 0.0;
         double z = 0.0;
@@ -299,7 +315,10 @@ MUserData *LineDrawOverride::prepareForDraw(
                     CHECK_MSTATUS(status);
 
                     point = MPoint(x, y, z);
-                    data->m_point_list.append(point * obj_matrix);
+                    point = point * obj_matrix;
+                    data->m_point_list.append(point);
+                    data->m_point_data_x.push_back(point.x);
+                    data->m_point_data_y.push_back(point.y);
                 }
             }
         }
@@ -309,9 +328,33 @@ MUserData *LineDrawOverride::prepareForDraw(
         return data;
     }
 
-    auto lastPointNum = numberOfPoints - 1;
-    MPoint start_point = data->m_point_list[0];
-    MPoint end_point = data->m_point_list[lastPointNum];
+    // Middle line point data.
+    {
+        auto line_length = data->m_middle_scale;
+        auto line_center = mmdata::Point2D();
+        auto line_center_x = 0.0;
+        auto line_center_y = 0.0;
+        auto line_slope = 0.0;
+        auto line_angle = 0.0;
+        auto line_point_a = mmdata::Point2D();
+        auto line_point_b = mmdata::Point2D();
+
+        status =
+            fit_line_to_points(line_length, data->m_point_data_x,
+                               data->m_point_data_y, line_center, line_slope,
+                               line_angle, line_point_a, line_point_b, verbose);
+        if (status == MS::kSuccess) {
+            // Convert line center point and slope to 2 points to make
+            // up a line we can draw between.
+            data->m_middle_point_a.x = line_point_a.x_;
+            data->m_middle_point_a.y = line_point_a.y_;
+            data->m_middle_point_a.z = -1.0;
+
+            data->m_middle_point_b.x = line_point_b.x_;
+            data->m_middle_point_b.y = line_point_b.y_;
+            data->m_middle_point_b.z = -1.0;
+        }
+    }
 
     return data;
 }
@@ -371,6 +414,36 @@ void LineDrawOverride::addUIDrawables(
     outer_line_list.set(vertex2, 2);
     outer_line_list.set(vertex3, 3);
 
+    MPointArray mid_line_list(2);
+    mid_line_list.set(data->m_middle_point_a, 0);
+    mid_line_list.set(data->m_middle_point_b, 1);
+
+    // Draw middle line.
+    //
+    // The "best-fit" straight line between points. This is drawn
+    // first, so that subsequent draw calls will render over the top
+    // of this middle line.
+    if (data->m_draw_middle) {
+        // X-Ray mode disregards depth testing and will always draw
+        // on-top.
+        drawManager.beginDrawable(MHWRender::MUIDrawManager::kSelectable);
+        drawManager.setColor(data->m_middle_color);
+        drawManager.setLineWidth(static_cast<float>(data->m_middle_line_width));
+        drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
+        drawManager.setDepthPriority(data->m_depth_priority);
+
+        drawManager.beginDrawInXray();
+        drawManager.setColor(data->m_middle_color);
+        drawManager.setLineWidth(static_cast<float>(data->m_middle_line_width));
+        drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
+        drawManager.setDepthPriority(data->m_depth_priority);
+
+        drawManager.mesh(MHWRender::MUIDrawManager::kLines, mid_line_list);
+
+        drawManager.endDrawInXray();
+        drawManager.endDrawable();
+    }
+
     // Draw inner line
     {
         // X-Ray mode disregards depth testing and will always draw
@@ -395,7 +468,7 @@ void LineDrawOverride::addUIDrawables(
     }
 
     // Draw outer line.
-    {
+    if (data->m_draw_outer) {
         // X-Ray mode disregards depth testing and will always draw
         // on-top.
         drawManager.beginDrawable(MHWRender::MUIDrawManager::kSelectable);

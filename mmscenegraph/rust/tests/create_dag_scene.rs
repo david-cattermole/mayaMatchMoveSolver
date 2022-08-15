@@ -19,6 +19,7 @@
 //
 
 use mmscenegraph_rust::attr::datablock::AttrDataBlock;
+use mmscenegraph_rust::math::camera::FilmFit;
 use mmscenegraph_rust::math::rotate::euler::RotateOrder;
 use mmscenegraph_rust::node::traits::NodeCanTransformAndView3D;
 use mmscenegraph_rust::node::traits::NodeHasId;
@@ -170,7 +171,14 @@ fn evaluate_scene() {
         (1.0, 1.0, 1.0),
         (36.0, 24.0),
         35.0,
+        (0.0, 0.0),
+        1.0,
+        10000.0,
+        1.0,
         RotateOrder::ZXY,
+        FilmFit::Horizontal,
+        2048,
+        2048,
     );
     sg.set_node_parent(cam_0.get_id(), cam_0_tfm.get_id());
     sg.set_node_parent(cam_0_tfm.get_id(), NodeId::Root);
@@ -183,7 +191,14 @@ fn evaluate_scene() {
         (1.0, 1.0, 1.0),
         (36.0, 24.0),
         40.0,
+        (0.0, 0.0),
+        1.0,
+        10000.0,
+        1.0,
         RotateOrder::ZXY,
+        FilmFit::Horizontal,
+        2048,
+        2048,
     );
     println!("Camera 1: {:?}", cam_0);
     println!("Camera 2: {:?}", cam_1);
@@ -256,13 +271,9 @@ fn evaluate_scene() {
     flat_scene.evaluate(&attrdb, &frame_list);
 
     let out_point_list = flat_scene.points();
-    let out_deviation_list = flat_scene.deviations();
     println!("2D Points (reprojected) count: {}", out_point_list.len());
-    println!("Deviation count: {}", out_deviation_list.len());
     let points_iter = out_point_list.chunks_exact(2);
-    let dev_iter = out_deviation_list.chunks_exact(2);
-    let point_dev_iter = points_iter.zip(dev_iter);
-    for (i, (point, dev)) in (0..).zip(point_dev_iter) {
-        println!("2D Point {}: pos: {:?} dev: {:?}", i, point, dev);
+    for (i, point) in (0..).zip(points_iter) {
+        println!("2D Point {}: pos: {:?}", i, point);
     }
 }

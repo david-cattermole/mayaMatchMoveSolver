@@ -27,6 +27,7 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.tools.createimageplane.lib as imgpln_lib
+import mmSolver.tools.createcamera.lib as cam_lib
 
 
 USE_MAYA_IMAGE_PLANE = False
@@ -52,10 +53,17 @@ def _create_vanishing_point(line1, line2, mkr_grp):
     vp_mkr = mmapi.Marker().create_node(mkr_grp=mkr_grp, name=vp_name)
     vp_mkr_node = vp_mkr.get_node()
 
-    mkr_a = line1[0].get_node()
-    mkr_b = line1[1].get_node()
-    mkr_c = line2[0].get_node()
-    mkr_d = line2[1].get_node()
+    mkr_a = line1[0]
+    mkr_b = line1[1]
+    line_a = line1[2]
+    mkr_c = line2[0]
+    mkr_d = line2[1]
+    line_b = line2[2]
+
+    point_intersect_a = line_a.get_marker_point_intersect(mkr_a)
+    point_intersect_b = line_a.get_marker_point_intersect(mkr_b)
+    point_intersect_c = line_b.get_marker_point_intersect(mkr_c)
+    point_intersect_d = line_b.get_marker_point_intersect(mkr_d)
 
     # Create "parallel factor" attribute, for the cosine angle.
     attr_name = 'parallelFactor'
@@ -65,14 +73,14 @@ def _create_vanishing_point(line1, line2, mkr_grp):
     # Create connections.
     src_dst_attr_list = [
         # Connect input line markers to line intersect node.
-        ['{}.translateX'.format(mkr_a), '{}.pointAX'.format(intersect_node)],
-        ['{}.translateY'.format(mkr_a), '{}.pointAY'.format(intersect_node)],
-        ['{}.translateX'.format(mkr_b), '{}.pointBX'.format(intersect_node)],
-        ['{}.translateY'.format(mkr_b), '{}.pointBY'.format(intersect_node)],
-        ['{}.translateX'.format(mkr_c), '{}.pointCX'.format(intersect_node)],
-        ['{}.translateY'.format(mkr_c), '{}.pointCY'.format(intersect_node)],
-        ['{}.translateX'.format(mkr_d), '{}.pointDX'.format(intersect_node)],
-        ['{}.translateY'.format(mkr_d), '{}.pointDY'.format(intersect_node)],
+        ['{}.outPointX'.format(point_intersect_a), '{}.pointAX'.format(intersect_node)],
+        ['{}.outPointY'.format(point_intersect_a), '{}.pointAY'.format(intersect_node)],
+        ['{}.outPointX'.format(point_intersect_b), '{}.pointBX'.format(intersect_node)],
+        ['{}.outPointY'.format(point_intersect_b), '{}.pointBY'.format(intersect_node)],
+        ['{}.outPointX'.format(point_intersect_c), '{}.pointCX'.format(intersect_node)],
+        ['{}.outPointY'.format(point_intersect_c), '{}.pointCY'.format(intersect_node)],
+        ['{}.outPointX'.format(point_intersect_d), '{}.pointDX'.format(intersect_node)],
+        ['{}.outPointY'.format(point_intersect_d), '{}.pointDY'.format(intersect_node)],
         # The computed vanishing point is visualized in the locator.
         [
             '{}.outVanishingPointX'.format(intersect_node),
@@ -169,13 +177,11 @@ def create_new_setup():
     maya.cmds.loadPlugin('matrixNodes', quiet=True)
     mmapi.load_plugin()
 
-    # Create a camera and image plane (or validate and use the given one)
-    cam_tfm = maya.cmds.createNode('transform', name='camera')
-    cam_shp = maya.cmds.createNode('camera', name='cameraShape', parent=cam_tfm)
-    cam = mmapi.Camera(shape=cam_shp)
+    cam = cam_lib.create_camera(name='calibrationCamera')
+    cam_tfm = cam.get_transform_node()
+    cam_shp = cam.get_shape_node()
 
     if USE_MAYA_IMAGE_PLANE is True:
-        # Create image plane.
         img_pl_tfm, img_pl_shp = maya.cmds.imagePlane(camera=cam_shp)
 
         # Using a "To Size" fit mode will forcibly change the image to

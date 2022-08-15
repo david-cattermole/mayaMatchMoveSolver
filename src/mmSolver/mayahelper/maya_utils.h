@@ -250,6 +250,11 @@ static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
     return status;
 }
 
+MStatus get_connected_node(const MPlug &plug, MObject &out_node);
+
+MStatus get_position_from_connected_node(const MPlug &plug, double &x,
+                                         double &y, double &z);
+
 }  // namespace mmsolver
 
 // Static attributes to help with Maya Node initialization.

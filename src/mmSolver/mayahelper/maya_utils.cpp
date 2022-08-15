@@ -27,6 +27,7 @@
 #include <maya/MObject.h>
 #include <maya/MObjectArray.h>
 #include <maya/MPlug.h>
+#include <maya/MPlugArray.h>
 #include <maya/MPoint.h>
 #include <maya/MPxNode.h>
 #include <maya/MSelectionList.h>
@@ -290,3 +291,44 @@ MStatus constructAttrAffectsName(const MString attrName,
     CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
+
+namespace mmsolver {
+
+MStatus get_connected_node(const MPlug &plug, MObject &out_node) {
+    MStatus status = MS::kSuccess;
+    if (!plug.isNull() && plug.isConnected()) {
+        MPlugArray connected_plugs;
+        bool as_src = false;
+        bool as_dst = true;
+        plug.connectedTo(connected_plugs, as_dst, as_src, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        if (connected_plugs.length() == 1) {
+            MPlug connected_plug = connected_plugs[0];
+            out_node = connected_plug.node();
+        }
+    }
+    return status;
+}
+
+MStatus get_position_from_connected_node(const MPlug &plug, double &x,
+                                         double &y, double &z) {
+    MStatus status = MS::kSuccess;
+    MObject connected_node;
+    status = get_connected_node(plug, connected_node);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    if (!connected_node.isNull()) {
+        MDagPath dag_path;
+        MDagPath::getAPathTo(connected_node, dag_path);
+
+        MMatrix matrix = dag_path.inclusiveMatrix(&status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        x = matrix[3][0];
+        y = matrix[3][1];
+        z = matrix[3][2];
+    }
+    return status;
+}
+
+}  // namespace mmsolver

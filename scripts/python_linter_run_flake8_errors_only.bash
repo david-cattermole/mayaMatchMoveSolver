@@ -27,8 +27,8 @@ set -e
 PROJECT_ROOT=`pwd`
 
 python -m flake8 \
-       "${PROJECT_ROOT}/3dequalizer/python" \
-       "${PROJECT_ROOT}/3dequalizer/scriptdb" \
+       "${PROJECT_ROOT}/share/3dequalizer/python" \
+       "${PROJECT_ROOT}/share/3dequalizer/scriptdb" \
        "${PROJECT_ROOT}/mel" \
        "${PROJECT_ROOT}/python" \
        "${PROJECT_ROOT}/tests" \

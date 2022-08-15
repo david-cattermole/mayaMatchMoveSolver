@@ -517,7 +517,14 @@ mod tests {
             (1.0, 1.0, 1.0),
             (36.0, 24.0),
             50.0,
+            (0.0, 0.0),
+            1.0,
+            10000.0,
+            1.0,
             RotateOrder::ZXY,
+            FilmFit::Horizontal,
+            2048,
+            2048,
         );
 
         // Link the Marker to the camera.

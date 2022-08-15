@@ -30,10 +30,10 @@ import maya.cmds
 
 import test.test_tools.toolsutils as test_tools_utils
 import mmSolver.utils.python_compat as pycompat
-import mmSolver.utils.loadfile.loader as loader
 import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
 import mmSolver.tools.loadmarker.lib.utils as lib_utils
 import mmSolver.utils.loadmarker.fileutils as lib_fileutils
+import mmSolver.utils.loadmarker.fileinfo as lib_fileinfo
 import mmSolver.tools.createmarker.tool as create_marker
 
 
@@ -77,9 +77,9 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
             assert fmt is not None
 
             file_info = lib_fileutils.get_file_info(path, read_func)
-            assert isinstance(file_info, loader.FileInfo)
+            assert isinstance(file_info, lib_fileinfo.FileInfo)
 
-            file_info_data = lib_fileutils.get_file_info_strings(path)
+            file_info_data = lib_fileutils.get_file_info_strings(path, read_func)
             assert isinstance(file_info_data, dict)
             assert len(file_info_data) == 11
             keys = file_info_data.keys()

@@ -41,16 +41,31 @@ global proc AEmmLineShapeTemplate(string $nodeName)
     editorTemplate -addControl "outerColor";
     editorTemplate -addControl "outerAlpha";
     editorTemplate -addSeparator;
+    editorTemplate -addControl "middleColor";
+    editorTemplate -addControl "middleAlpha";
+    editorTemplate -addSeparator;
     editorTemplate -addControl "innerLineWidth";
     editorTemplate -addControl "outerLineWidth";
+    editorTemplate -addControl "middleLineWidth";
     editorTemplate -addControl "outerScale";
+    editorTemplate -addControl "middleScale";
     editorTemplate -addControl "pointSize";
     editorTemplate -addSeparator;
     editorTemplate -addControl "drawName";
+    editorTemplate -addControl "drawOuter";
+    editorTemplate -addControl "drawMiddle";
     editorTemplate -endLayout;
 
     editorTemplate -beginLayout "Input Objects" -collapse 1;
+    editorTemplate -addControl "transformParentInverseMatrix";
     editorTemplate -addControl "objects";
+    editorTemplate -addControl "transformMatrix";
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "Output Line" -collapse 0;
+    editorTemplate -addControl "outLinePointA";
+    editorTemplate -addControl "outLinePointB";
+    editorTemplate -addControl "outLine";
     editorTemplate -endLayout;
 
     AEmmNodeShapeTemplateCommonEnd($nodeName);

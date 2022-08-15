@@ -24,8 +24,8 @@ PROJECT_ROOT=`pwd`
 
 python -m black \
        --skip-string-normalization \
-       "${PROJECT_ROOT}/3dequalizer/python" \
-       "${PROJECT_ROOT}/3dequalizer/scriptdb" \
+       "${PROJECT_ROOT}/share/3dequalizer/python" \
+       "${PROJECT_ROOT}/share/3dequalizer/scriptdb" \
        "${PROJECT_ROOT}/mel" \
        "${PROJECT_ROOT}/python" \
        "${PROJECT_ROOT}/tests"

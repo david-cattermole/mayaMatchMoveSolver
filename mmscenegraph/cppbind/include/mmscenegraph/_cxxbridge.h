@@ -806,6 +806,7 @@ std::size_t align_of() {
 
 namespace mmscenegraph {
   enum class NodeType : ::std::uint8_t;
+  struct Point3;
   struct NodeId;
   enum class AttrType : ::std::uint8_t;
   struct AttrId;
@@ -841,6 +842,19 @@ enum class NodeType : ::std::uint8_t {
   kUnknown = 255,
 };
 #endif // CXXBRIDGE1_ENUM_mmscenegraph$NodeType
+
+#ifndef CXXBRIDGE1_STRUCT_mmscenegraph$Point3
+#define CXXBRIDGE1_STRUCT_mmscenegraph$Point3
+struct Point3 final {
+  double x;
+  double y;
+  double z;
+
+  bool operator==(const Point3 &) const noexcept;
+  bool operator!=(const Point3 &) const noexcept;
+  using IsRelocatable = ::std::true_type;
+};
+#endif // CXXBRIDGE1_STRUCT_mmscenegraph$Point3
 
 #ifndef CXXBRIDGE1_STRUCT_mmscenegraph$NodeId
 #define CXXBRIDGE1_STRUCT_mmscenegraph$NodeId
@@ -1197,6 +1211,10 @@ MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimFlatScene> shim_bake_sce
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimFlatScene> shim_create_flat_scene_box() noexcept;
 
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimEvaluationObjects> shim_create_evaluation_objects_box() noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_slope) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_line_point_intersection(::mmscenegraph::Point3 point, ::mmscenegraph::Point3 line_a, ::mmscenegraph::Point3 line_b, ::mmscenegraph::Point3 &out_point) noexcept;
 
 MMSCENEGRAPH_API_EXPORT void foo(::std::uint32_t number) noexcept;
 

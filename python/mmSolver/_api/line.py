@@ -37,12 +37,15 @@ import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
 import mmSolver._api.marker as marker
+import mmSolver._api.bundle as bundle
 import mmSolver._api.camera as camera
 import mmSolver._api.naming as naming
 import mmSolver._api.markergroup as markergroup
 import mmSolver._api.solveresult as solveresult
 
 
+DEFAULT_MARKER_NAME = 'marker1'
+DEFAULT_BUNDLE_NAME = 'bundle1'
 LOG = mmSolver.logger.get_logger()
 
 
@@ -120,6 +123,100 @@ def _create_line_attributes(node):
             keyable=True,
         )
     return
+
+
+def _create_intersect_node(shp, mkr_node, bnd_node):
+    intersect_node = maya.cmds.createNode(const.LINE_POINT_INTERSECT_NODE_TYPE)
+
+    for axis in ['X', 'Y']:
+        src_a = shp + '.outLinePointA' + axis
+        src_b = shp + '.outLinePointB' + axis
+        dst_a = intersect_node + '.linePointA' + axis
+        dst_b = intersect_node + '.linePointB' + axis
+        maya.cmds.connectAttr(src_a, dst_a)
+        maya.cmds.connectAttr(src_b, dst_b)
+
+    src_a = intersect_node + '.linePointAZ'
+    src_b = intersect_node + '.linePointBZ'
+    maya.cmds.setAttr(src_a, -1.0)
+    maya.cmds.setAttr(src_b, -1.0)
+
+    for axis in ['X', 'Y', 'Z']:
+        src = mkr_node + '.translate' + axis
+        dst = intersect_node + '.inPoint' + axis
+        maya.cmds.connectAttr(src, dst)
+
+    for axis in ['X', 'Y', 'Z']:
+        src = intersect_node + '.outPoint' + axis
+        dst = bnd_node + '.translate' + axis
+        maya.cmds.connectAttr(src, dst)
+
+    return intersect_node
+
+
+def create_default_markers(line_shp, mkr_grp):
+    mkr_name_a = naming.get_new_marker_name(DEFAULT_MARKER_NAME)
+    bnd_name_a = naming.get_new_bundle_name(DEFAULT_BUNDLE_NAME)
+    bnd_a = bundle.Bundle().create_node(name=bnd_name_a)
+    mkr_a = marker.Marker().create_node(mkr_grp=mkr_grp, name=mkr_name_a, bnd=bnd_a)
+
+    mkr_name_b = naming.get_new_marker_name(DEFAULT_MARKER_NAME)
+    bnd_name_b = naming.get_new_bundle_name(DEFAULT_BUNDLE_NAME)
+    bnd_b = bundle.Bundle().create_node(name=bnd_name_b)
+    mkr_b = marker.Marker().create_node(mkr_grp=mkr_grp, name=mkr_name_b, bnd=bnd_b)
+
+    mkr_node_a = mkr_a.get_node()
+    mkr_node_b = mkr_b.get_node()
+    bnd_node_a = bnd_a.get_node()
+    bnd_node_b = bnd_b.get_node()
+
+    maya.cmds.setAttr(mkr_node_a + '.tx', -0.25)
+    maya.cmds.setAttr(mkr_node_b + '.tx', 0.25)
+    maya.cmds.setAttr(mkr_node_a + '.ty', -0.15)
+    maya.cmds.setAttr(mkr_node_b + '.ty', 0.15)
+
+    maya.cmds.setAttr(bnd_node_a + '.visibility', 0)
+    maya.cmds.setAttr(bnd_node_b + '.visibility', 0)
+
+    src_a = mkr_node_a + '.message'
+    src_b = mkr_node_b + '.message'
+    dst = line_shp + '.objects'
+    maya.cmds.connectAttr(src_a, dst, nextAvailable=True)
+    maya.cmds.connectAttr(src_b, dst, nextAvailable=True)
+
+    src_a = mkr_node_a + '.worldMatrix[0]'
+    src_b = mkr_node_b + '.worldMatrix[0]'
+    dst_a = line_shp + '.transformMatrix[0]'
+    dst_b = line_shp + '.transformMatrix[1]'
+    maya.cmds.connectAttr(src_a, dst_a)
+    maya.cmds.connectAttr(src_b, dst_b)
+
+    src = line_shp + '.parentInverseMatrix[0]'
+    dst = line_shp + '.transformParentInverseMatrix'
+    maya.cmds.connectAttr(src, dst)
+
+    intersect_a = _create_intersect_node(line_shp, mkr_node_a, bnd_node_a)
+    intersect_b = _create_intersect_node(line_shp, mkr_node_b, bnd_node_b)
+
+    return mkr_a, bnd_a, mkr_b, bnd_b
+
+
+def create_new_line_marker(line_tfm, line_shp, mkr_grp):
+    mkr_new_name = naming.get_new_marker_name(DEFAULT_MARKER_NAME)
+    bnd_new_name = naming.get_new_bundle_name(DEFAULT_BUNDLE_NAME)
+    bnd_new = bundle.Bundle().create_node(name=mkr_new_name)
+    mkr_new = marker.Marker().create_node(
+        mkr_grp=mkr_grp, name=mkr_new_name, bnd=bnd_new
+    )
+
+    mkr_node_b = mkr_new.get_node()
+    bnd_node_b = bnd_new.get_node()
+
+    maya.cmds.setAttr(bnd_node_b + '.visibility', 0)
+
+    _create_intersect_node(line_shp, mkr_node_b, bnd_node_b)
+
+    return mkr_new, bnd_new
 
 
 class Line(object):
@@ -299,25 +396,16 @@ class Line(object):
         maya.cmds.connectAttr(src, dst)
 
         # Create two Markers.
-        mkr_name_a = naming.get_new_marker_name('marker1')
-        mkr_a = marker.Marker().create_node(mkr_grp=mkr_grp, cam=cam, name=mkr_name_a)
-        mkr_name_b = naming.get_new_marker_name('marker1')
-        mkr_b = marker.Marker().create_node(mkr_grp=mkr_grp, cam=cam, name=mkr_name_b)
+        mkr_a, bnd_a, mkr_b, bnd_b = create_default_markers(shp, mkr_grp)
         mkr_node_a = mkr_a.get_node()
         mkr_node_b = mkr_b.get_node()
-        maya.cmds.setAttr(mkr_node_a + '.tx', -0.25)
-        maya.cmds.setAttr(mkr_node_b + '.tx', 0.25)
-        maya.cmds.setAttr(mkr_node_a + '.ty', -0.15)
-        maya.cmds.setAttr(mkr_node_b + '.ty', 0.15)
-
-        src_a = mkr_node_a + '.message'
-        src_b = mkr_node_b + '.message'
-        dst = shp + '.objects'
-        maya.cmds.connectAttr(src_a, dst, nextAvailable=True)
-        maya.cmds.connectAttr(src_b, dst, nextAvailable=True)
+        bnd_node_a = bnd_a.get_node()
+        bnd_node_b = bnd_b.get_node()
 
         maya.cmds.parent(mkr_node_a, tfm, relative=True)
+        maya.cmds.parent(bnd_node_a, tfm, relative=True)
         maya.cmds.parent(mkr_node_b, tfm, relative=True)
+        maya.cmds.parent(bnd_node_b, tfm, relative=True)
         self.set_node(tfm)
 
         # Set Colour (default is magenta)
@@ -804,30 +892,38 @@ class Line(object):
         return mkr_list
 
     def _clear_marker_list(self, shp):
-        node_attr = shp + '.objects'
-        prev_mkr_node_list = (
-            maya.cmds.listConnections(
-                node_attr,
-                source=True,
-                destination=False,
-                plugs=False,
-                type=const.MARKER_TRANSFORM_NODE_TYPE,
+        attr_names = ['objects', 'transformMatrix']
+        for attr_name in attr_names:
+            node_attr = shp + '.' + attr_name
+            prev_mkr_node_list = (
+                maya.cmds.listConnections(
+                    node_attr,
+                    source=True,
+                    destination=False,
+                    plugs=False,
+                    type=const.MARKER_TRANSFORM_NODE_TYPE,
+                )
+                or []
             )
-            or []
-        )
-        prev_mkr_node_list += (
-            maya.cmds.listConnections(
-                node_attr,
-                source=True,
-                destination=False,
-                plugs=False,
-                type=const.MARKER_TRANSFORM_OLD_NODE_TYPE,
+            prev_mkr_node_list += (
+                maya.cmds.listConnections(
+                    node_attr,
+                    source=True,
+                    destination=False,
+                    plugs=False,
+                    type=const.MARKER_TRANSFORM_OLD_NODE_TYPE,
+                )
+                or []
             )
-            or []
-        )
+
         for i, prev_mkr_node in enumerate(prev_mkr_node_list):
             src = prev_mkr_node + '.message'
             dst = shp + '.objects[{}]'.format(i)
+            if maya.cmds.isConnected(src, dst):
+                maya.cmds.disconnectAttr(src, dst)
+
+            src = prev_mkr_node + '.worldMatrix[0]'
+            dst = shp + '.transformMatrix[{}]'.format(i)
             if maya.cmds.isConnected(src, dst):
                 maya.cmds.disconnectAttr(src, dst)
 
@@ -855,8 +951,28 @@ class Line(object):
 
         for i, mkr in enumerate(mkr_list):
             mkr_node = mkr.get_node()
-            src = mkr_node + '.message'
-            dst = line_shp + '.objects[{}]'.format(i)
-            if not maya.cmds.isConnected(src, dst):
-                maya.cmds.connectAttr(src, dst)
+            src_a = mkr_node + '.message'
+            src_b = mkr_node + '.worldMatrix[0]'
+
+            dst_a = line_shp + '.objects[{}]'.format(i)
+            dst_b = line_shp + '.transformMatrix[{}]'.format(i)
+            if not maya.cmds.isConnected(src_a, dst_a):
+                maya.cmds.connectAttr(src_a, dst_a)
+                maya.cmds.connectAttr(src_b, dst_b)
         return
+
+    def get_marker_point_intersect(self, mkr):
+        """
+        Get the mmLinePointIntersect node connected to the given Marker,
+        or return None.
+
+        :rtype: str
+        """
+        mkr_node = mkr.get_node()
+        if mkr_node is None:
+            return None
+        plug = mkr_node + '.translateX'
+        nodes = maya.cmds.listConnections(plug, type='mmLinePointIntersect') or []
+        if len(nodes) == 0:
+            return None
+        return nodes[0]

@@ -282,16 +282,8 @@ def _compile_remove_inbetween_frames(
         List of Attributes.
     :type attr_list: [Attribute, ..]
 
-    :param non_root_frame_list:
-        pass
     :type non_root_frame_list: [[int, ..], ..]
-
-    :param start_frame:
-        pass
     :type start_frame: Frame
-
-    :param end_frame:
-        pass
     :type end_frame: Frame
 
     :param withtest:
@@ -309,10 +301,8 @@ def _compile_remove_inbetween_frames(
     assert isinstance(withtest, bool)
     assert isinstance(verbose, bool)
 
-    # Solve in-between frames
     attr_names = [x.get_name() for x in attr_list]
 
-    # Solver for all other frames.
     for frm in non_root_frame_list:
         frame_num = frm.get_number()
         func = 'maya.cmds.cutKey'

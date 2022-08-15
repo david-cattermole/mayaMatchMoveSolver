@@ -226,52 +226,55 @@ MStatus parseCameraSelectionList(
     // Enable to print out 'MMSOLVER_VRB' results.
     const bool verbose = false;
 
+    if (selection_list.length() == 0) {
+        MMSOLVER_ERR("No camera given.");
+        status = MS::kFailure;
+    }
+
     MDagPath nodeDagPath;
     MObject node_obj;
 
-    if (selection_list.length() > 0) {
-        status = selection_list.getDagPath(0, nodeDagPath);
+    status = selection_list.getDagPath(0, nodeDagPath);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    status = selection_list.getDependNode(0, node_obj);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    MString transform_node_name = nodeDagPath.fullPathName();
+    MMSOLVER_VRB("Camera name: " << transform_node_name.asChar());
+
+    auto object_type = computeObjectType(node_obj, nodeDagPath);
+    if (object_type == ObjectType::kCamera) {
+        status = nodeDagPath.extendToShapeDirectlyBelow(0);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        status = selection_list.getDependNode(0, node_obj);
+        MString shape_node_name = nodeDagPath.fullPathName();
+
+        camera = CameraPtr(new Camera());
+        camera->setTransformNodeName(transform_node_name);
+        camera->setShapeNodeName(shape_node_name);
+
+        camera_tx_attr.setNodeName(transform_node_name);
+        camera_ty_attr.setNodeName(transform_node_name);
+        camera_tz_attr.setNodeName(transform_node_name);
+        camera_rx_attr.setNodeName(transform_node_name);
+        camera_ry_attr.setNodeName(transform_node_name);
+        camera_rz_attr.setNodeName(transform_node_name);
+
+        camera_tx_attr.setAttrName(MString("translateX"));
+        camera_ty_attr.setAttrName(MString("translateY"));
+        camera_tz_attr.setAttrName(MString("translateZ"));
+        camera_rx_attr.setAttrName(MString("rotateX"));
+        camera_ry_attr.setAttrName(MString("rotateY"));
+        camera_rz_attr.setAttrName(MString("rotateZ"));
+
+        status = get_camera_values(time, camera, image_width, image_height,
+                                   focal_length_mm, sensor_width_mm,
+                                   sensor_height_mm);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-
-        MString transform_node_name = nodeDagPath.fullPathName();
-        MMSOLVER_VRB("Camera name: " << transform_node_name.asChar());
-
-        auto object_type = computeObjectType(node_obj, nodeDagPath);
-        if (object_type == ObjectType::kCamera) {
-            status = nodeDagPath.extendToShapeDirectlyBelow(0);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-            MString shape_node_name = nodeDagPath.fullPathName();
-
-            camera = CameraPtr(new Camera());
-            camera->setTransformNodeName(transform_node_name);
-            camera->setShapeNodeName(shape_node_name);
-
-            camera_tx_attr.setNodeName(transform_node_name);
-            camera_ty_attr.setNodeName(transform_node_name);
-            camera_tz_attr.setNodeName(transform_node_name);
-            camera_rx_attr.setNodeName(transform_node_name);
-            camera_ry_attr.setNodeName(transform_node_name);
-            camera_rz_attr.setNodeName(transform_node_name);
-
-            camera_tx_attr.setAttrName(MString("translateX"));
-            camera_ty_attr.setAttrName(MString("translateY"));
-            camera_tz_attr.setAttrName(MString("translateZ"));
-            camera_rx_attr.setAttrName(MString("rotateX"));
-            camera_ry_attr.setAttrName(MString("rotateY"));
-            camera_rz_attr.setAttrName(MString("rotateZ"));
-
-            status = get_camera_values(time, camera, image_width, image_height,
-                                       focal_length_mm, sensor_width_mm,
-                                       sensor_height_mm);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-        } else {
-            MMSOLVER_ERR("Given node is not a valid camera: "
-                         << transform_node_name.asChar());
-            status = MS::kFailure;
-            return status;
-        }
+    } else {
+        MMSOLVER_ERR("Given node is not a valid camera: "
+                     << transform_node_name.asChar());
+        status = MS::kFailure;
+        return status;
     }
 
     return status;
@@ -347,6 +350,8 @@ bool add_marker_at_frame(
         return success;
     }
 
+    // TODO: Allow undistorting the marker coordinates.
+
     x = (x + 0.5) * static_cast<double>(image_width);
     y = (y + 0.5) * static_cast<double>(image_height);
     auto xy = std::pair<double, double>{x, y};
@@ -379,6 +384,8 @@ bool add_marker_pair_at_frame(
     if (!success_a || !success_b) {
         return false;
     }
+
+    // TODO: Allow undistorting the marker coordinates.
 
     x_a = (x_a + 0.5) * static_cast<double>(image_width_a);
     x_b = (x_b + 0.5) * static_cast<double>(image_width_b);

@@ -120,7 +120,14 @@ class TestBase(unittest.TestCase):
             has_solver = index in solverTypes
         return has_solver
 
-    def checkSolveResults(self, solres_list):
+    def checkSolveResults(
+        self, solres_list, allow_max_avg_error=None, allow_max_error=None
+    ):
+        if allow_max_avg_error is None:
+            allow_max_avg_error = 1.0
+        if allow_max_error is None:
+            allow_max_error = max(allow_max_avg_error, 1.0)
+
         # Ensure the values are correct
         for res in solres_list:
             success = res.get_success()
@@ -137,8 +144,8 @@ class TestBase(unittest.TestCase):
 
         max_err_frm, max_err_val = mmapi.get_max_frame_error(frm_err_list)
         print('max error frame and value:', max_err_frm, max_err_val)
-        self.assertLess(avg_err, 1.0)
+        self.assertLess(avg_err, allow_max_avg_error)
         self.assertGreater(avg_err, 0.0)
-        self.assertLess(max_err_val, 1.0)
+        self.assertLess(max_err_val, allow_max_error)
         self.assertGreater(max_err_val, 0.0)
         return

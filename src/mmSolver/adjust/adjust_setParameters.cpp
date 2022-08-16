@@ -66,11 +66,11 @@
 // MM Solver
 #include "adjust_base.h"
 #include "adjust_data.h"
-#include "adjust_lensModel.h"
 #include "mmSolver/core/mmdata.h"
 #include "mmSolver/core/mmmath.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_lens_model_utils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
@@ -110,15 +110,15 @@ MStatus setParameters_mayaDag(const int numberOfParameters,
                 // Animated attribute.
                 auto lensModel =
                     ud->attrFrameToLensModelList[attrIndex + frameIndex];
-                status = setLensModelAttributeValue(lensModel, solverAttrType,
-                                                    real_value);
+                status = mmsolver::setLensModelAttributeValue(
+                    lensModel, solverAttrType, real_value);
                 CHECK_MSTATUS_AND_RETURN_IT(status);
             } else {
                 // Static attribute.
                 for (int j = 0; j < num_frames; ++j) {
                     auto lensModel =
                         ud->attrFrameToLensModelList[attrIndex + j];
-                    status = setLensModelAttributeValue(
+                    status = mmsolver::setLensModelAttributeValue(
                         lensModel, solverAttrType, real_value);
                     CHECK_MSTATUS_AND_RETURN_IT(status);
                 }
@@ -203,15 +203,15 @@ MStatus setParameters_mmSceneGraph(const int numberOfParameters,
                 // Animated attribute.
                 auto lensModel =
                     ud->attrFrameToLensModelList[attrIndex + frameIndex];
-                status = setLensModelAttributeValue(lensModel, solverAttrType,
-                                                    real_value);
+                status = mmsolver::setLensModelAttributeValue(
+                    lensModel, solverAttrType, real_value);
                 CHECK_MSTATUS_AND_RETURN_IT(status);
             } else {
                 // Static attribute.
                 for (int j = 0; j < num_frames; ++j) {
                     auto lensModel =
                         ud->attrFrameToLensModelList[attrIndex + j];
-                    status = setLensModelAttributeValue(
+                    status = mmsolver::setLensModelAttributeValue(
                         lensModel, solverAttrType, real_value);
                     CHECK_MSTATUS_AND_RETURN_IT(status);
                 }

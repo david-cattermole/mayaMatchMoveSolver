@@ -17,10 +17,9 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Lens adjustment.
  */
 
-#include "adjust_lensModel.h"
+#include "maya_lens_model_utils.h"
 
 // STL
 #include <stdio.h>
@@ -65,8 +64,8 @@
 #include <mmscenegraph/mmscenegraph.h>
 
 // MM Solver
-#include "adjust_base.h"
-#include "adjust_data.h"
+#include "mmSolver/adjust/adjust_base.h"
+#include "mmSolver/adjust/adjust_data.h"
 #include "mmSolver/core/mmdata.h"
 #include "mmSolver/core/mmmath.h"
 #include "mmSolver/lens/lens_model.h"
@@ -81,6 +80,8 @@
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/utilities/string_utils.h"
+
+namespace mmsolver {
 
 MStatus setLensModelAttributeValue(std::shared_ptr<LensModel> &lensModel,
                                    const AttrSolverType solverAttrType,
@@ -853,3 +854,5 @@ MStatus constructLensModelList(
 
     return status;
 }
+
+}  // namespace mmsolver

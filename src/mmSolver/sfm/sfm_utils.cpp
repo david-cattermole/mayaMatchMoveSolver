@@ -94,9 +94,11 @@
 
 // Internal
 #include "mmSolver/adjust/adjust_defines.h"
+#include "mmSolver/lens/lens_model.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_lens_model_utils.h"
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
@@ -338,7 +340,8 @@ MStatus parse_camera_argument(const MSelectionList &selection_list,
 
 bool add_marker_at_frame(
     const MTime &time, const int32_t image_width, const int32_t image_height,
-    MarkerPtr &marker, std::vector<std::pair<double, double>> &marker_coords) {
+    const std::shared_ptr<LensModel> &lensModel, MarkerPtr &marker,
+    std::vector<std::pair<double, double>> &marker_coords) {
     double x = 0.0;
     double y = 0.0;
     bool enable = true;
@@ -350,7 +353,20 @@ bool add_marker_at_frame(
         return success;
     }
 
-    // TODO: Allow undistorting the marker coordinates.
+    if (lensModel) {
+        double out_x = x;
+        double out_y = y;
+        lensModel->applyModelUndistort(x, y, out_x, out_y);
+
+        // Applying the lens distortion model to large input
+        // values, creates NaN undistorted points.
+        if (std::isfinite(out_x)) {
+            x = out_x;
+        }
+        if (std::isfinite(out_y)) {
+            y = out_y;
+        }
+    }
 
     x = (x + 0.5) * static_cast<double>(image_width);
     y = (y + 0.5) * static_cast<double>(image_height);
@@ -365,7 +381,9 @@ bool add_marker_at_frame(
 bool add_marker_pair_at_frame(
     const MTime &time_a, const MTime &time_b, const int32_t image_width_a,
     const int32_t image_width_b, const int32_t image_height_a,
-    const int32_t image_height_b, MarkerPtr &marker_a, MarkerPtr &marker_b,
+    const int32_t image_height_b, const std::shared_ptr<LensModel> &lensModel_a,
+    const std::shared_ptr<LensModel> &lensModel_b, MarkerPtr &marker_a,
+    MarkerPtr &marker_b,
     std::vector<std::pair<double, double>> &marker_coords_a,
     std::vector<std::pair<double, double>> &marker_coords_b) {
     double x_a = 0.0;
@@ -385,7 +403,35 @@ bool add_marker_pair_at_frame(
         return false;
     }
 
-    // TODO: Allow undistorting the marker coordinates.
+    // Undistort marker coordinates.
+    if (lensModel_a) {
+        double out_x_a = x_a;
+        double out_y_a = y_a;
+        lensModel_a->applyModelUndistort(x_a, y_a, out_x_a, out_y_a);
+
+        // Applying the lens distortion model to large input
+        // values, creates NaN undistorted points.
+        if (std::isfinite(out_x_a)) {
+            x_a = out_x_a;
+        }
+        if (std::isfinite(out_y_a)) {
+            y_a = out_y_a;
+        }
+    }
+    if (lensModel_b) {
+        double out_x_b = x_b;
+        double out_y_b = y_b;
+        lensModel_b->applyModelUndistort(x_b, y_b, out_x_b, out_y_b);
+
+        // Applying the lens distortion model to large input
+        // values, creates NaN undistorted points.
+        if (std::isfinite(out_x_b)) {
+            x_b = out_x_b;
+        }
+        if (std::isfinite(out_y_b)) {
+            y_b = out_y_b;
+        }
+    }
 
     x_a = (x_a + 0.5) * static_cast<double>(image_width_a);
     x_b = (x_b + 0.5) * static_cast<double>(image_width_b);

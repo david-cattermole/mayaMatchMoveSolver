@@ -25,6 +25,7 @@
 
 // STL
 #include <cmath>
+#include <memory>
 #include <tuple>
 #include <vector>
 
@@ -50,6 +51,7 @@
 #include <maya/MTimeArray.h>
 
 // Maya helpers
+#include "mmSolver/lens/lens_model.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -102,13 +104,17 @@ MStatus parse_camera_argument(const MSelectionList &selection_list,
                               Attr &camera_rz_attr);
 
 bool add_marker_at_frame(const MTime &time, const int32_t image_width,
-                         const int32_t image_height, MarkerPtr &marker,
+                         const int32_t image_height,
+                         const std::shared_ptr<LensModel> &lensModel,
+                         MarkerPtr &marker,
                          std::vector<std::pair<double, double>> &marker_coords);
 
 bool add_marker_pair_at_frame(
     const MTime &time_a, const MTime &time_b, const int32_t image_width_a,
     const int32_t image_width_b, const int32_t image_height_a,
-    const int32_t image_height_b, MarkerPtr &marker_a, MarkerPtr &marker_b,
+    const int32_t image_height_b, const std::shared_ptr<LensModel> &lensModel_a,
+    const std::shared_ptr<LensModel> &lensModel_b, MarkerPtr &marker_a,
+    MarkerPtr &marker_b,
     std::vector<std::pair<double, double>> &marker_coords_a,
     std::vector<std::pair<double, double>> &marker_coords_b);
 

@@ -114,6 +114,7 @@ maya.cmds.mmMarkerHomography(
 #include "mmSolver/adjust/adjust_defines.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_lens_model_utils.h"
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/sfm/homography.h"
@@ -309,10 +310,41 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
         marker_b->setNodeName(markerNameB);
         marker_b->setCamera(m_camera_b);
 
+        std::shared_ptr<LensModel> lensModel_a;
+        std::shared_ptr<LensModel> lensModel_b;
+        {
+            MarkerPtrList markerList;
+            markerList.push_back(marker_a);
+            markerList.push_back(marker_b);
+
+            CameraPtrList cameraList;
+            cameraList.push_back(m_camera_a);
+            cameraList.push_back(m_camera_b);
+
+            AttrPtrList attrList;
+
+            MTimeArray frameList;
+            frameList.append(m_time_a);
+            frameList.append(m_time_b);
+
+            std::vector<std::shared_ptr<LensModel>> markerFrameToLensModelList;
+            std::vector<std::shared_ptr<LensModel>> attrFrameToLensModelList;
+            std::vector<std::shared_ptr<LensModel>> lensModelList;
+
+            status = mmsolver::constructLensModelList(
+                cameraList, markerList, attrList, frameList,
+                markerFrameToLensModelList, attrFrameToLensModelList,
+                lensModelList);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+
+            lensModel_a = markerFrameToLensModelList[0];
+            lensModel_b = markerFrameToLensModelList[1];
+        }
+
         auto success = ::mmsolver::sfm::add_marker_pair_at_frame(
             m_time_a, m_time_b, m_image_width_a, m_image_width_b,
-            m_image_height_a, m_image_height_b, marker_a, marker_b,
-            m_marker_coords_a, m_marker_coords_b);
+            m_image_height_a, m_image_height_b, lensModel_a, lensModel_b,
+            marker_a, marker_b, m_marker_coords_a, m_marker_coords_b);
         if (success) {
             m_marker_list_a.push_back(marker_a);
             m_marker_list_b.push_back(marker_b);

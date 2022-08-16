@@ -62,12 +62,12 @@
 #include "adjust_cminpack_base.h"
 #include "adjust_cminpack_lmder.h"
 #include "adjust_cminpack_lmdif.h"
-#include "adjust_lensModel.h"
 #include "adjust_measureErrors.h"
 #include "adjust_relationships.h"
 #include "adjust_solveFunc.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_lens_model_utils.h"
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_scene_graph.h"
 #include "mmSolver/mayahelper/maya_utils.h"
@@ -1192,9 +1192,9 @@ MStatus solveFrames(
     std::vector<std::shared_ptr<LensModel>> attrFrameToLensModelList;
     std::vector<std::shared_ptr<LensModel>> lensModelList;
 
-    status = constructLensModelList(cameraList, usedMarkerList, usedAttrList,
-                                    frameList, markerFrameToLensModelList,
-                                    attrFrameToLensModelList, lensModelList);
+    status = mmsolver::constructLensModelList(
+        cameraList, usedMarkerList, usedAttrList, frameList,
+        markerFrameToLensModelList, attrFrameToLensModelList, lensModelList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 #endif
 

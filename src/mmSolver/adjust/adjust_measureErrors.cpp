@@ -65,11 +65,11 @@
 // MM Solver
 #include "adjust_base.h"
 #include "adjust_data.h"
-#include "adjust_lensModel.h"
 #include "mmSolver/core/mmdata.h"
 #include "mmSolver/core/mmmath.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_lens_model_utils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"

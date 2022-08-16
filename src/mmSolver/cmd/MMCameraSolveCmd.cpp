@@ -302,10 +302,15 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
             MarkerPtr marker = MarkerPtr(new Marker());
             marker->setNodeName(node_name);
 
+            // Lens Models are not initialized and therefore are not
+            // used when add a marker pair.
+            std::shared_ptr<LensModel> lensModel_a;
+            std::shared_ptr<LensModel> lensModel_b;
+
             auto success = ::mmsolver::sfm::add_marker_pair_at_frame(
                 m_startTime, m_endTime, m_image_width_a, m_image_width_b,
-                m_image_height_a, m_image_height_b, marker, marker,
-                m_marker_coords_a, m_marker_coords_b);
+                m_image_height_a, m_image_height_b, lensModel_a, lensModel_b,
+                marker, marker, m_marker_coords_a, m_marker_coords_b);
         }
     }
 

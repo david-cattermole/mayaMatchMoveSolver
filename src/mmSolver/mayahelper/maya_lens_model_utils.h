@@ -17,15 +17,26 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Lens model adjustment.
+ * Lens model utilities.
  */
 
-#ifndef MM_SOLVER_CORE_BUNDLE_ADJUST_LENS_MODEL_H
-#define MM_SOLVER_CORE_BUNDLE_ADJUST_LENS_MODEL_H
+#ifndef MM_SOLVER_MAYA_HELPER_MAYA_LENS_MODEL_H
+#define MM_SOLVER_MAYA_HELPER_MAYA_LENS_MODEL_H
 
-#include "adjust_data.h"
+// STL
+#include <memory>
+#include <vector>
+
+// Maya
+#include <maya/MTimeArray.h>
+
+// MM Solver
 #include "mmSolver/lens/lens_model.h"
 #include "mmSolver/mayahelper/maya_attr.h"
+#include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_marker.h"
+
+namespace mmsolver {
 
 MStatus setLensModelAttributeValue(std::shared_ptr<LensModel> &lensModel,
                                    const AttrSolverType attrType,
@@ -38,4 +49,6 @@ MStatus constructLensModelList(
     std::vector<std::shared_ptr<LensModel>> &out_attrFrameToLensModelList,
     std::vector<std::shared_ptr<LensModel>> &out_lensModelList);
 
-#endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_LENS_MODEL_H
+}  // namespace mmsolver
+
+#endif  // MM_SOLVER_MAYA_HELPER_MAYA_LENS_MODEL_H

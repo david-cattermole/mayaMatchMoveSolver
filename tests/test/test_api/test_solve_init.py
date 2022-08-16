@@ -191,34 +191,36 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Ensure the values are correct
-        self.checkSolveResults(results)
+        self.checkSolveResults(
+            results, allow_max_avg_error=0.001, allow_max_error=0.001
+        )
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
         # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
         return
 
-    def test_init_solverstandard_ceres_maya_dag(self):
-        self.do_solve_init_solverstandard(
-            'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG
-        )
+    # def test_init_solverstandard_ceres_maya_dag(self):
+    #     self.do_solve_init_solverstandard(
+    #         'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG
+    #     )
 
-    def test_init_solverstandard_ceres_mmscenegraph(self):
-        self.do_solve_init_solverstandard(
-            'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
-        )
+    # def test_init_solverstandard_ceres_mmscenegraph(self):
+    #     self.do_solve_init_solverstandard(
+    #         'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+    #     )
 
-    def test_init_solverstandard_cminpack_lmdif_maya_dag(self):
-        self.do_solve_init_solverstandard(
-            'cminpack_lmdif',
-            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
-            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
-        )
+    # def test_init_solverstandard_cminpack_lmdif_maya_dag(self):
+    #     self.do_solve_init_solverstandard(
+    #         'cminpack_lmdif',
+    #         mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+    #         mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+    #     )
 
-    def test_init_solverstandard_cminpack_lmdif_mmscenegraph(self):
-        self.do_solve_init_solverstandard(
-            'cminpack_lmdif',
-            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
-            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
-        )
+    # def test_init_solverstandard_cminpack_lmdif_mmscenegraph(self):
+    #     self.do_solve_init_solverstandard(
+    #         'cminpack_lmdif',
+    #         mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+    #         mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+    #     )
 
     def test_init_solverstandard_cminpack_lmder_maya_dag(self):
         self.do_solve_init_solverstandard(

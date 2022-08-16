@@ -50,7 +50,14 @@ LOG = mmSolver.logger.get_logger()
 
 # @unittest.skip
 class TestSolveRefineGoodSolveStA(test_api_utils.APITestCase):
-    def test_stA_refine_good_solve(self):
+    def do_solve(self, solver_name, solver_type_index, scene_graph_mode):
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            raise unittest.SkipTest(msg)
+        scene_graph_name = mmapi.SCENE_GRAPH_MODE_NAME_LIST[scene_graph_mode]
+        scene_graph_label = mmapi.SCENE_GRAPH_MODE_LABEL_LIST[scene_graph_mode]
+        print('Scene Graph:', scene_graph_label)
+
         start_frame = 0
         end_frame = 94
 
@@ -135,6 +142,8 @@ class TestSolveRefineGoodSolveStA(test_api_utils.APITestCase):
         sol.set_only_root_frames(False)
         sol.set_global_solve(False)
         sol.set_use_single_frame(False)
+        sol.set_solver_type(solver_type_index)
+        sol.set_scene_graph_mode(scene_graph_mode)
         sol_list.append(sol)
 
         # Collection
@@ -162,8 +171,44 @@ class TestSolveRefineGoodSolveStA(test_api_utils.APITestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
-        self.checkSolveResults(results)
+        self.checkSolveResults(results, allow_max_avg_error=1.0, allow_max_error=1.9)
         return
+
+    # def test_ceres_maya_dag(self):
+    #     self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+
+    # def test_ceres_mmscenegraph(self):
+    #     self.do_solve(
+    #         'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+    #     )
+
+    # def test_cminpack_lmdif_maya_dag(self):
+    #     self.do_solve(
+    #         'cminpack_lmdif',
+    #         mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+    #         mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+    #     )
+
+    # def test_cminpack_lmdif_mmscenegraph(self):
+    #     self.do_solve(
+    #         'cminpack_lmdif',
+    #         mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+    #         mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+    #     )
+
+    def test_cminpack_lmder_maya_dag(self):
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
+
+    def test_cminpack_lmder_mmscenegraph(self):
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+        )
 
 
 if __name__ == '__main__':

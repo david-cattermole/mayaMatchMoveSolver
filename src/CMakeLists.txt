@@ -31,7 +31,6 @@ set(SOURCE_FILES
   mmSolver/adjust/adjust_cminpack_lmder.cpp
   mmSolver/adjust/adjust_cminpack_lmdif.cpp
   mmSolver/adjust/adjust_relationships.cpp
-  mmSolver/adjust/adjust_lensModel.cpp
   mmSolver/adjust/adjust_setParameters.cpp
   mmSolver/adjust/adjust_measureErrors.cpp
   mmSolver/adjust/adjust_solveFunc.cpp
@@ -60,10 +59,11 @@ set(SOURCE_FILES
   mmSolver/lens/lens_model_3de_classic.cpp
   mmSolver/lens/lens_model_3de_radial_decentered_deg_4_cylindric.cpp
   mmSolver/lens/lens_model_passthrough.cpp
-  mmSolver/mayahelper/maya_camera.cpp
-  mmSolver/mayahelper/maya_marker.cpp
-  mmSolver/mayahelper/maya_bundle.cpp
   mmSolver/mayahelper/maya_attr.cpp
+  mmSolver/mayahelper/maya_bundle.cpp
+  mmSolver/mayahelper/maya_camera.cpp
+  mmSolver/mayahelper/maya_lens_model_utils.cpp
+  mmSolver/mayahelper/maya_marker.cpp
   mmSolver/mayahelper/maya_scene_graph.cpp
   mmSolver/mayahelper/maya_utils.cpp
   mmSolver/node/MMCameraCalibrateNode.cpp

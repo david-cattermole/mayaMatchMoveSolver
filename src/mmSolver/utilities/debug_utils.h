@@ -174,6 +174,8 @@ uint64_t rdtsc();
 // Get the current time - used for profiling and debug.
 Timestamp get_timestamp();
 
+double timestamp_as_seconds(Timestamp timestamp);
+
 // CPU Clock-cycle timing.
 //
 // Article1:

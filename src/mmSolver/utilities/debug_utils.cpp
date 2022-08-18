@@ -73,6 +73,10 @@ Timestamp get_timestamp() {
 #endif
 }
 
+double timestamp_as_seconds(Timestamp timestamp) {
+    return static_cast<double>(timestamp / 1000000.0L);
+}
+
 void CPUBenchmark::start() { ticktime = rdtsc(); }
 
 Ticks CPUBenchmark::stop() { return ticktimeTotal += rdtsc() - ticktime; }
@@ -103,7 +107,7 @@ Timestamp TimestampBenchmark::stop() {
 }
 
 double TimestampBenchmark::get_seconds(uint32_t loopNums) {
-    double secs = static_cast<double>(timestampTotal / 1000000.0L);
+    double secs = timestamp_as_seconds(timestampTotal);
     if (loopNums > 0) {
         secs /= loopNums;
     }

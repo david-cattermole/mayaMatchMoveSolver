@@ -65,7 +65,8 @@ endif()
 set(GLOG_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/glog)
 set(GLOG_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/glog)
 # set(GLOG_SOURCE_DIR ${THIRDPARTY_BASE_WORKING_DIR}/glog/src/glog)
-ExternalProject_Add(glog
+if (WIN32 AND NOT UNIX)
+  ExternalProject_Add(glog
     PREFIX ${GLOG_PREFIX}
     GIT_REPOSITORY "https://github.com/google/glog.git"
     GIT_TAG "v0.5.0"
@@ -86,7 +87,12 @@ ExternalProject_Add(glog
         -DWITH_SYMBOLIZE=0
         -DWITH_TLS=0
         -DWITH_UNWIND=0
-)
+        )
+else()
+  # Placeholder target that does nothing.
+  add_custom_target(glog)
+endif()
+
 
 #########################################################
 # CMinpack - Minimizer Package
@@ -191,6 +197,21 @@ set(CERES_BUILD_TESTS 0)
 set(CERES_BUILD_DOC 0)
 set(CERES_BUILD_EXAMPLES 0)
 
+# The full 'glog' library is faster than the cut-down 'miniglog'
+# embedded in Ceres.
+#
+# 'glog' is disabled on Linux because of linking errors on Linux (with
+# CMake).
+#
+# 'miniglog' is disabled on Windows because of build errors on MSVC
+# with a conflict of the 'ERROR' severity identifer clashing with
+# something else in mmSolver.
+if (WIN32 AND NOT UNIX)
+  set(CERES_USE_MINIGLOG 0)
+else()
+  set(CERES_USE_MINIGLOG 1)
+endif()
+
 ExternalProject_Add(ceres
     DEPENDS cxsparse eigen glog
     PREFIX ${CERES_PREFIX}
@@ -213,14 +234,7 @@ ExternalProject_Add(ceres
         -DBUILD_EXAMPLES=${CERES_BUILD_EXAMPLES}
         -DBUILD_BENCHMARKS=0
         -DBUILD_SHARED_LIBS=${CERES_BUILD_SHARED}
-        # Use the full 'glog' library, rather than the cut-down
-        # 'miniglog' embedded in Ceres. 'glog' is faster than
-        # 'miniglog', but increases the build complexity.
-        #
-        # 'miniglog' is disabled because of build errors on MSVC with
-        # a conflict of the 'ERROR' severity identifer clashing with
-        # something else in mmSolver.
-        -DMINIGLOG=OFF
+        -DMINIGLOG=${CERES_USE_MINIGLOG}
         # WARNING: Enabling "EIGENSPARSE" results in an LGPL licensed
         # Ceres.
         -DEIGENSPARSE=ON

@@ -428,7 +428,7 @@ void logResultsSolveDetails(SolverResult &solverResult, SolverData &userData,
         char formatBuffer[buffer_size];
         std::snprintf(formatBuffer, buffer_size,
                       "error avg %8.4f   min %8.4f   max %8.4f  iterations "
-                      "%03u (%s evals/sec)",
+                      "%03u  (%s evals/sec)",
                       solverResult.errorAvg, solverResult.errorMin,
                       solverResult.errorMax, solverResult.iterations,
                       evals_per_sec_string);

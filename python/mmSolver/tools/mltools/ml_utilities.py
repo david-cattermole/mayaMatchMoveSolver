@@ -356,7 +356,7 @@ def createShelfButton(
         width=32,
         height=32,
         align='center',
-        **kwargs,
+        **kwargs
     )
 
 
@@ -2270,7 +2270,7 @@ class MlUi(object):
             shelfLabel='',
             shelfIcon='render_useBackground',
             readUI_toArgs={},
-            **kwargs,
+            **kwargs
         ):
             '''
             The fancy part of this object is the readUI_toArgs argument.

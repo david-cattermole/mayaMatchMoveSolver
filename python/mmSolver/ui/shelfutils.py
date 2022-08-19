@@ -167,7 +167,7 @@ def create_shelf_button(
         imageOverlayLabel=imageOverlayLabel,
         noDefaultPopup=True,
         preventOverride=True,
-        **kwargs,
+        **kwargs
     )
     return button
 

@@ -121,7 +121,7 @@ class TestSolver5(solverUtils.SolverTestCase):
                 solverType=solver_index,
                 sceneGraphMode=scene_graph_mode,
                 verbose=True,
-                **kwargs,
+                **kwargs
             )
             results.append(result)
         e = time.time()

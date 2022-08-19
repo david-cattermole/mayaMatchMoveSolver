@@ -40,6 +40,12 @@ cmake_policy(SET CMP0074 NEW)
 # https://cmake.org/cmake/help/latest/policy/CMP0048.html
 cmake_policy(SET CMP0048 NEW)
 
+# # Changes how timestamps of downloaded files with
+# # ExternalProject_Add() are set.
+# #
+# # https://cmake.org/cmake/help/latest/policy/CMP0135.html
+# cmake_policy(SET CMP0135 NEW)
+
 # Options
 set(THIRDPARTY_BASE_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/install"
   CACHE PATH "Base directory to install the thirdparty projects into.")
@@ -59,13 +65,21 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
 endif()
 
+
 #########################################################
 # Google Log (glog)
 #########################################################
-set(GLOG_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/glog)
-set(GLOG_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/glog)
-# set(GLOG_SOURCE_DIR ${THIRDPARTY_BASE_WORKING_DIR}/glog/src/glog)
+#
+# The full 'glog' library is faster than the cut-down 'miniglog'
+# embedded in Ceres. Different platforms enable/disable this because
+# of build issues.
+#
+set(GLOG_INSTALL_PATH "")
+set(CERES_USE_MINIGLOG 0)
 if (WIN32 AND NOT UNIX)
+  set(GLOG_INSTALL_PATH ${THIRDPARTY_BASE_INSTALL_DIR}/glog)
+  set(GLOG_PREFIX ${THIRDPARTY_BASE_WORKING_DIR}/glog)
+  set(GLOG_SOURCE_DIR ${THIRDPARTY_BASE_WORKING_DIR}/glog/src/glog)
   ExternalProject_Add(glog
     PREFIX ${GLOG_PREFIX}
     GIT_REPOSITORY "https://github.com/google/glog.git"
@@ -88,9 +102,17 @@ if (WIN32 AND NOT UNIX)
         -DWITH_TLS=0
         -DWITH_UNWIND=0
         )
+
+  # 'miniglog' is disabled on Windows because of build errors on MSVC
+  # with a conflict of the 'ERROR' severity identifer clashing with
+  # something else in mmSolver.
+  set(CERES_USE_MINIGLOG OFF)
 else()
   # Placeholder target that does nothing.
   add_custom_target(glog)
+
+  # 'glog' is disabled on Linux because of linking/build errors.
+  set(CERES_USE_MINIGLOG ON)
 endif()
 
 
@@ -196,21 +218,6 @@ set(CERES_BUILD_SHARED 0)
 set(CERES_BUILD_TESTS 0)
 set(CERES_BUILD_DOC 0)
 set(CERES_BUILD_EXAMPLES 0)
-
-# The full 'glog' library is faster than the cut-down 'miniglog'
-# embedded in Ceres.
-#
-# 'glog' is disabled on Linux because of linking errors on Linux (with
-# CMake).
-#
-# 'miniglog' is disabled on Windows because of build errors on MSVC
-# with a conflict of the 'ERROR' severity identifer clashing with
-# something else in mmSolver.
-if (WIN32 AND NOT UNIX)
-  set(CERES_USE_MINIGLOG 0)
-else()
-  set(CERES_USE_MINIGLOG 1)
-endif()
 
 ExternalProject_Add(ceres
     DEPENDS cxsparse eigen glog

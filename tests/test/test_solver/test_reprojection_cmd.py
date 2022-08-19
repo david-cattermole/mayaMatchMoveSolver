@@ -46,7 +46,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
             worldPoint=(pnt_x, pnt_y, pnt_z),
             camera=(cam_tfm, cam_shp),
             time=times,
-            **kwargs,
+            **kwargs
         )
         print(str(name + '_b'), repr(values_b))
         return values, values_b

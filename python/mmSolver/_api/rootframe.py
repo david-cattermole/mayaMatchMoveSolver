@@ -220,12 +220,12 @@ def get_root_frames_from_markers(
 
     # Controls how close a frame is before it's considered too close
     # to use. If we choose key-frames that are too close, there will
-    # not be enough paralax in the solve and therefore a degenerate
-    # solve can be created.
+    # not be enough paralax in the solve and therefore a bad solve may
+    # occur.
     close_num = 2
 
     mkr_frames = collections.defaultdict(set)
-    for mkr_node in mkr_node_list:
+    for mkr_node in sorted(mkr_node_list):
         min_frames_count = mkr_min_frames_count[mkr_node]
 
         mkr_counts = common_nodes[mkr_node].keys()
@@ -235,7 +235,7 @@ def get_root_frames_from_markers(
                 break
 
             frame_map = common_nodes[mkr_node][mkr_count]
-            frame_keys = list(frame_map.keys())
+            frame_keys = list(sorted(frame_map.keys()))
             i = 0
             while len(frame_keys) > 0:
                 if len(mkr_frames[mkr_node]) >= min_frames_count:

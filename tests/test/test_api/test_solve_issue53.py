@@ -188,7 +188,7 @@ class TestSolveIssue53(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         self.checkSolveResults(
-            solres_list, allow_max_avg_error=0.4, allow_max_error=0.9
+            solres_list, allow_max_avg_error=0.7, allow_max_error=0.9
         )
         return
 

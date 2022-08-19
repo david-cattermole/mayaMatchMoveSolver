@@ -137,7 +137,7 @@ class TestSolver11(solverUtils.SolverTestCase):
             solverType=solver_index,
             sceneGraphMode=scene_graph_mode,
             verbose=True,
-            **kwargs,
+            **kwargs
         )
         e = time.time()
         print('total time:', e - s)

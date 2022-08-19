@@ -431,7 +431,7 @@ void logResultsSolveDetails(SolverResult &solverResult, SolverData &userData,
                       "%03u  (%s evals/sec)",
                       solverResult.errorAvg, solverResult.errorMin,
                       solverResult.errorMax, solverResult.iterations,
-                      evals_per_sec_string);
+                      &evals_per_sec_string[0]);
         // Note: We use std::endl to flush the stream, and ensure an
         //  update for the user.
         MMSOLVER_INFO(std::string(formatBuffer));

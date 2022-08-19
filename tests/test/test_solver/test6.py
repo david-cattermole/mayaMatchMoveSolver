@@ -134,7 +134,7 @@ class TestSolver6(solverUtils.SolverTestCase):
                 solverType=solver_index,
                 sceneGraphMode=scene_graph_mode,
                 verbose=True,
-                **kwargs,
+                **kwargs
             )
             results.append(result)
 

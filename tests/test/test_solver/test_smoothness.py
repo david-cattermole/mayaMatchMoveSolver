@@ -126,7 +126,7 @@ class TestSolverSmoothness(solverUtils.SolverTestCase):
             solverType=solver_index,
             iterations=10,
             verbose=True,
-            **kwargs,
+            **kwargs
         )
         e = time.time()
         print('total time:', e - s)

@@ -104,7 +104,7 @@ class TestSolverIssue176(solverUtils.SolverTestCase):
                 timeEvalMode=1,  # 1 = 'set time' eval mode.
                 iterations=10,
                 verbose=True,
-                **kwargs,
+                **kwargs
             )
             results.append(result)
         e = time.time()

@@ -104,7 +104,7 @@ class TestSolver3(solverUtils.SolverTestCase):
             sceneGraphMode=scene_graph_mode,
             delta=0.000001,
             verbose=True,
-            **kwargs,
+            **kwargs
         )
         e = time.time()
         print('total time:', e - s)

@@ -40,11 +40,11 @@ cmake_policy(SET CMP0074 NEW)
 # https://cmake.org/cmake/help/latest/policy/CMP0048.html
 cmake_policy(SET CMP0048 NEW)
 
-# Changes how timestamps of downloaded files with
-# ExternalProject_Add() are set.
-#
-# https://cmake.org/cmake/help/latest/policy/CMP0135.html
-cmake_policy(SET CMP0135 NEW)
+# # Changes how timestamps of downloaded files with
+# # ExternalProject_Add() are set.
+# #
+# # https://cmake.org/cmake/help/latest/policy/CMP0135.html
+# cmake_policy(SET CMP0135 NEW)
 
 # Options
 set(THIRDPARTY_BASE_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/install"

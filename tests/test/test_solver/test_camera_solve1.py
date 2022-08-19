@@ -317,7 +317,7 @@ def _bundle_adjust(
         sceneGraphMode=scene_graph_mode,
         iterations=iteration_num,
         frameSolveMode=frame_solve_mode,
-        **kwargs,
+        **kwargs
     )
     # print('result:', result)
     assert result[0] == 'success=1'

@@ -120,7 +120,7 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
             solverType=solver_index,
             printStatistics=('deviation', 'inputs'),
             removeUnusedMarkers=False,
-            **kwargs,
+            **kwargs
         )
         num_params = result[0]
         num_errors = result[1]

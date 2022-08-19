@@ -108,7 +108,7 @@ class TestSolverPrintStatistics(solverUtils.SolverTestCase):
             solverType=solver_index,
             verbose=True,
             printStatistics=('inputs', 'affects', 'usedSolveObjects', 'deviation'),
-            **kwargs,
+            **kwargs
         )
         num_params = result[0]
         num_errors = result[1]

@@ -24,7 +24,8 @@
 #define STRING_UTILS_H
 
 // STL
-#include <cmath>    // fabs
+#include <cmath>  // fabs
+#include <iostream>
 #include <sstream>  // stringstream
 #include <string>
 
@@ -32,9 +33,7 @@ namespace mmstring {
 
 /*! Convert a number to a string
  *
- * @tparam NUM_TYPE
- * @param num
- * @return
+ * Convert 42 to "42".
  */
 template <typename NUM_TYPE>
 std::string numberToString(NUM_TYPE num) {
@@ -43,11 +42,27 @@ std::string numberToString(NUM_TYPE num) {
     return ss.str();
 }
 
+/*! Convert a number to a string with commas as separators.
+ *
+ * Convert an integer 10000 to "10,000".
+ */
+template <typename NUM_TYPE>
+std::string numberToStringWithCommas(NUM_TYPE num) {
+    auto number_as_string = numberToString(num);
+
+    int n = number_as_string.length() - 3;
+    int end = (num >= 0) ? 0 : 1;  // Support for negative numbers
+    while (n > end) {
+        number_as_string.insert(n, ",");
+        n -= 3;
+    }
+
+    return number_as_string;
+}
+
 /*! Convert a string to a number.
  *
- * @tparam NUM_TYPE
- * @param text
- * @return
+ * Convert "3.14" to 3.14.
  */
 template <typename NUM_TYPE>
 NUM_TYPE stringToNumber(const std::string &text) {

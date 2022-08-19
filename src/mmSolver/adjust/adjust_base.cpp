@@ -416,13 +416,22 @@ void logResultsSolveDetails(SolverResult &solverResult, SolverData &userData,
             MStreamUtils::stdErrorStream() << "Solver returned FAILURE    | ";
         }
 
+        double seconds = debug::timestamp_as_seconds(debug::get_timestamp() -
+                                                     timer.startTimestamp);
+        seconds = std::max(1e-9, seconds);
+        size_t evals_per_sec = static_cast<size_t>(
+            static_cast<double>(solverResult.functionEvals) / seconds);
+        std::string evals_per_sec_string =
+            mmstring::numberToStringWithCommas(evals_per_sec);
+
         const size_t buffer_size = 128;
         char formatBuffer[buffer_size];
-        std::snprintf(
-            formatBuffer, buffer_size,
-            "error avg %8.4f   min %8.4f   max %8.4f  iterations %03u",
-            solverResult.errorAvg, solverResult.errorMin, solverResult.errorMax,
-            solverResult.iterations);
+        std::snprintf(formatBuffer, buffer_size,
+                      "error avg %8.4f   min %8.4f   max %8.4f  iterations "
+                      "%03u  (%s evals/sec)",
+                      solverResult.errorAvg, solverResult.errorMin,
+                      solverResult.errorMax, solverResult.iterations,
+                      evals_per_sec_string);
         // Note: We use std::endl to flush the stream, and ensure an
         //  update for the user.
         MMSOLVER_INFO(std::string(formatBuffer));
@@ -1143,6 +1152,7 @@ MStatus solveFrames(
 
     // Start Solving
     SolverTimer timer;
+    timer.startTimestamp = debug::get_timestamp();
     if (printStats.enable == false) {
         timer.solveBenchTimer.start();
         timer.solveBenchTicks.start();

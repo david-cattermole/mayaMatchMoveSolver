@@ -52,6 +52,8 @@
 
 // Group all the benchmark timers together.
 struct SolverTimer {
+    debug::Timestamp startTimestamp;
+
     debug::TimestampBenchmark solveBenchTimer;
     debug::TimestampBenchmark jacBenchTimer;
     debug::TimestampBenchmark funcBenchTimer;

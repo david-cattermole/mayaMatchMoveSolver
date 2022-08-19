@@ -372,7 +372,7 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
-        self.checkSolveResults(results, allow_max_avg_error=3.8, allow_max_error=5.8)
+        self.checkSolveResults(results, allow_max_avg_error=3.9, allow_max_error=9.0)
         return
 
     # def test_ceres_maya_dag(self):

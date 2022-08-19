@@ -40,6 +40,12 @@ cmake_policy(SET CMP0074 NEW)
 # https://cmake.org/cmake/help/latest/policy/CMP0048.html
 cmake_policy(SET CMP0048 NEW)
 
+# Changes how timestamps of downloaded files with
+# ExternalProject_Add() are set.
+#
+# https://cmake.org/cmake/help/latest/policy/CMP0135.html
+cmake_policy(SET CMP0135 NEW)
+
 # Options
 set(THIRDPARTY_BASE_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/install"
   CACHE PATH "Base directory to install the thirdparty projects into.")
@@ -122,7 +128,6 @@ ExternalProject_Add(cminpack
     PREFIX ${CMINPACK_PREFIX}
     URL "https://github.com/devernay/cminpack/archive/refs/tags/v1.3.8.tar.gz"
     URL_HASH MD5=8fa8ae3c7a3e6259f26c51c62045af99
-    DOWNLOAD_EXTRACT_TIMESTAMP ON
     INSTALL_DIR ${CMINPACK_INSTALL_PATH}
     PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${CMINPACK_PATCH_SRC_1} ${CMINPACK_PATCH_DST_1}
     CMAKE_ARGS
@@ -388,7 +393,6 @@ ExternalProject_Add(ldpk
     DEPENDS dlfcn
     URL "https://www.3dequalizer.com/user_daten/sections/tech_docs/archives/ldpk-2.7.tgz"
     URL_HASH MD5=4b8eb9cd970c671f5ef37e5001979bf2
-    DOWNLOAD_EXTRACT_TIMESTAMP ON
     DOWNLOAD_DIR ${LDPK_DOWNLOAD_DIR}
     SOURCE_DIR ${LDPK_SOURCE_DIR}
     INSTALL_DIR ${LDPK_INSTALL_PATH}

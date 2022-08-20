@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Solve the camera trajectory using 2D marker positions only.
+The camera solver - allows solving static and animated attributes.
 """
 
 from __future__ import absolute_import
@@ -24,34 +24,28 @@ from __future__ import division
 from __future__ import print_function
 
 import math
-import time
-import unittest
-import pprint
 
-try:
-    import maya.standalone
-
-    maya.standalone.initialize()
-except RuntimeError:
-    pass
 import maya.cmds
 import maya.api.OpenMaya as OpenMaya2
 
-import test.test_solver.solverutils as solverUtils
+import mmSolver.logger
 
-import mmSolver.api as mmapi
-import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
-import mmSolver.tools.loadmarker.lib.utils as lib_utils
-import mmSolver.tools.triangulatebundle.lib as lib_triangulate
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.utils.animcurve as animcurve_utils
 import mmSolver.utils.transform as tfm_utils
 import mmSolver.utils.node as node_utils
+import mmSolver._api.constant as const
+import mmSolver._api.marker as marker
+import mmSolver._api.bundle as bundle
+import mmSolver._api.camera as camera
+import mmSolver._api.triangulatebundle as triangulatebundle
 
 
+LOG = mmSolver.logger.get_logger()
 TRANSLATE_ATTRS = ['tx', 'ty', 'tz']
 
 
-def _calculate_marker_frame_score(cam_tfm, mkr_nodes, frame, position_marker_nodes):
+def _calculate_marker_frame_score(mkr_nodes, frame, position_marker_nodes):
     """
     Calculate the score of the frame.
 
@@ -96,7 +90,7 @@ def _calculate_marker_frame_score(cam_tfm, mkr_nodes, frame, position_marker_nod
     # Unlike the paper (see above), the score is multipied with the
     # number of enabled markers. This means that if two frames have
     # exactly the same number of markers, but different "uniformity
-    # score" (calculated below), then a more uniformly distributed
+    # score" (calculated above), then a more uniformly distributed
     # number of frames produces a higher overall score.
     score *= len(mkr_nodes)
     return score
@@ -114,28 +108,24 @@ def _compute_enabled_marker_nodes(mkr_list, frame):
 
 
 def _marker_maximum_frame_score(
-    cam, mkr_list, frames, enabled_marker_nodes, position_marker_nodes
+    mkr_list, frames, enabled_marker_nodes, position_marker_nodes
 ):
     score_max = 0
     frame_max = None
     mkr_nodes_max = set()
     for frame in frames:
-        score = _calculate_marker_frame_score(
-            cam, mkr_list, frame, position_marker_nodes
-        )
+        score = _calculate_marker_frame_score(mkr_list, frame, position_marker_nodes)
         if score >= score_max:
             score_max = score
             frame_max = frame
             mkr_nodes = enabled_marker_nodes[frame]
             assert isinstance(mkr_nodes, set)
             mkr_nodes_max = mkr_nodes
-    # print('frame_max:', frame_max, 'score_max:', score_max)
+    LOG.debug('frame_max: %s score_max: %s', frame_max, score_max)
     return frame_max, mkr_nodes_max
 
 
 def _compute_connected_frame_scores(
-    cam,
-    mkr_list,
     root_frame_a,
     possible_frames,
     enabled_marker_nodes,
@@ -157,94 +147,62 @@ def _compute_connected_frame_scores(
             pass
         else:
             score = _calculate_marker_frame_score(
-                cam, mkr_nodes, frame, position_marker_nodes
+                mkr_nodes, frame, position_marker_nodes
             )
         scores.append(score)
     return scores
-
-
-def _find_best_connected_frame(
-    cam,
-    mkr_list,
-    root_frame_a,
-    possible_frames,
-    enabled_marker_nodes,
-    position_marker_nodes,
-):
-    frame = 0
-
-    mkr_nodes_a = enabled_marker_nodes[root_frame_a]
-    assert isinstance(mkr_nodes_a, set)
-
-    scores = _compute_connected_frame_scores(
-        cam,
-        mkr_list,
-        root_frame_a,
-        possible_frames,
-        enabled_marker_nodes,
-        position_marker_nodes,
-    )
-    sorted_frame_scores = reversed(
-        sorted(zip(possible_frames, scores), key=lambda x: x[1])
-    )
-
-    sorted_frames = [x[0] for x in sorted_frame_scores if x[1] != 0]
-    # print('best_connected_frames for ', root_frame_a, ' :', sorted_frames)
-
-    best_frame = None
-    if len(sorted_frames) > 0:
-        best_frame = sorted_frames[0]
-    max_score = max(scores)
-    if best_frame is not None and max_score > 0:
-        print(
-            'Best connected frame pair found:',
-            root_frame_a,
-            'to',
-            best_frame,
-            'with score:',
-            max(scores),
-        )
-    return best_frame
 
 
 def _bundle_adjust(
     cam_tfm,
     cam_shp,
     mkr_nodes,
+    cam_shp_node_attrs,
+    lens_node_attrs,
     frames,
     adjust_camera_translate=None,
     adjust_camera_rotate=None,
     adjust_bundle_positions=None,
-    adjust_focal_length=None,
+    adjust_camera_intrinsics=None,
+    adjust_lens_distortion=None,
     iteration_num=None,
     per_frame_solve=None,
+    solver_type=None,
 ):
+    LOG.debug('_bundle_adjust')
+    LOG.debug('cam_tfm: %r', cam_tfm)
+    LOG.debug('cam_shp: %r', cam_shp)
+    LOG.debug('mkr_nodes: %r', mkr_nodes)
+    LOG.debug('cam_shp_node_attrs: %r', cam_shp_node_attrs)
+    LOG.debug('lens_node_attrs: %r', lens_node_attrs)
+    LOG.debug('frames: %r', frames)
     if adjust_camera_translate is None:
         adjust_camera_translate = False
     if adjust_camera_rotate is None:
         adjust_camera_rotate = False
     if adjust_bundle_positions is None:
         adjust_bundle_positions = False
-    if adjust_focal_length is None:
-        adjust_focal_length = False
+    if adjust_camera_intrinsics is None:
+        adjust_camera_intrinsics = False
+    if adjust_lens_distortion is None:
+        adjust_lens_distortion = False
     if iteration_num is None:
         iteration_num = 100
     if per_frame_solve is None:
         per_frame_solve = False
+    if solver_type is None:
+        solver_type = const.SOLVER_TYPE_CMINPACK_LMDER
     assert isinstance(adjust_camera_translate, bool)
     assert isinstance(adjust_camera_rotate, bool)
     assert isinstance(adjust_bundle_positions, bool)
-    assert isinstance(adjust_focal_length, bool)
+    assert isinstance(adjust_camera_intrinsics, bool)
+    assert isinstance(adjust_lens_distortion, bool)
 
-    frame_solve_mode = mmapi.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE
+    frame_solve_mode = const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE
     if per_frame_solve is True:
-        frame_solve_mode = mmapi.FRAME_SOLVE_MODE_PER_FRAME
+        frame_solve_mode = const.FRAME_SOLVE_MODE_PER_FRAME
 
-    solver_index = mmapi.SOLVER_TYPE_CMINPACK_LMDER
-    scene_graph_mode = mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
-    # scene_graph_name = mmapi.SCENE_GRAPH_MODE_NAME_LIST[scene_graph_mode]
-    # scene_graph_label = mmapi.SCENE_GRAPH_MODE_LABEL_LIST[scene_graph_mode]
-    # print('Scene Graph:', scene_graph_label)
+    scene_graph_mode = const.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
 
     cameras = ((cam_tfm, cam_shp),)
 
@@ -259,17 +217,22 @@ def _bundle_adjust(
         node_attrs.append((cam_tfm + '.ry', 'None', 'None', 'None', 'None'))
         node_attrs.append((cam_tfm + '.rz', 'None', 'None', 'None', 'None'))
 
-    if adjust_focal_length is True:
-        value = (cam_shp + '.focalLength', 'None', 'None', 'None', 'None')
-        node_attrs.append(value)
+    if adjust_camera_intrinsics is True:
+        for node_attr in cam_shp_node_attrs:
+            value = (node_attr, 'None', 'None', 'None', 'None')
+            node_attrs.append(value)
+
+    if adjust_lens_distortion is True:
+        for node_attr in lens_node_attrs:
+            value = (node_attr, 'None', 'None', 'None', 'None')
+            node_attrs.append(value)
 
     markers = []
     new_mkr_bnd_list = []
-    mkr_list = [mmapi.Marker(node=n) for n in mkr_nodes]
+    mkr_list = [marker.Marker(node=n) for n in mkr_nodes]
     for mkr in mkr_list:
         bnd = mkr.get_bundle()
         assert bnd is not None
-        # print('mkr:', mkr, 'bnd:', bnd)
         mkr_node = mkr.get_node()
         bnd_node = bnd.get_node()
         mkr_bnd = (mkr_node, cam_shp, bnd_node)
@@ -297,29 +260,27 @@ def _bundle_adjust(
             if is_animated is True:
                 node_attrs.append(node_attr)
 
+    if len(node_attrs) == 0:
+        return
+
     kwargs = {
         'camera': cameras,
         'marker': markers,
         'attr': node_attrs,
     }
-    # print(pprint.pformat(kwargs))
-
-    # affects_mode = 'addAttrsToMarkers'
-    # result = maya.cmds.mmSolverAffects(mode=affects_mode, **kwargs)
-    # # print('result:', result)
+    # LOG.debug('mmSolver kwargs: %s', pprint.pformat(kwargs))
 
     # After each pose is added to the camera solve, we must do a
     # mmSolver refinement with 'MM Scene Graph', solving the
     # camera position, rotation and bundle positions.
     result = maya.cmds.mmSolver(
         frame=frames,
-        solverType=solver_index,
+        solverType=solver_type,
         sceneGraphMode=scene_graph_mode,
         iterations=iteration_num,
         frameSolveMode=frame_solve_mode,
         **kwargs
     )
-    # print('result:', result)
     assert result[0] == 'success=1'
     return
 
@@ -328,12 +289,15 @@ def _solve_relative_poses(
     cam_tfm,
     cam_shp,
     mkr_nodes_a,
+    cam_shp_node_attrs,
+    lens_node_attrs,
     root_frame_a,
     possible_frames,
     solved_frames,
     accumulated_mkr_nodes,
     accumulated_bnd_nodes,
     enabled_marker_nodes,
+    adjust_every_n_poses,
 ):
     assert isinstance(solved_frames, set)
     assert isinstance(accumulated_mkr_nodes, set)
@@ -360,16 +324,15 @@ def _solve_relative_poses(
 
         mkr_nodes_b = enabled_marker_nodes[possible_frame]
         mkr_nodes = set(mkr_nodes_a) & set(mkr_nodes_b)
-        common_mkr_list = [mmapi.Marker(node=n) for n in mkr_nodes]
+        common_mkr_list = [marker.Marker(node=n) for n in mkr_nodes]
 
         bnd_nodes = set()
         new_mkr_bnd_list = []
         for mkr in common_mkr_list:
             bnd = mkr.get_bundle()
             if bnd is None:
-                bnd = mmapi.Bundle.create_node()
+                bnd = bundle.Bundle().create_node()
                 mkr.set_bundle(bnd)
-            # print('mkr:', mkr, 'bnd:', bnd)
             mkr_node = mkr.get_node()
             bnd_node = bnd.get_node()
             mkr_bnd = (mkr_node, mkr_node, bnd_node)
@@ -385,13 +348,14 @@ def _solve_relative_poses(
             'useCameraTransform': True,
             'setValues': True,
         }
+        # LOG.debug('mmCameraRelativePose kwargs: %s', pprint.pformat(kwargs))
         result = maya.cmds.mmCameraRelativePose(**kwargs)
         if result is None:
-            print('Failed Camera Pose:', root_frame_a, 'to', possible_frame)
+            LOG.warn('Failed Camera Pose: %s to %s', root_frame_a, possible_frame)
             failed_frames.add(possible_frame)
             continue
 
-        print('Solved Camera Pose:', root_frame_a, 'to', possible_frame)
+        LOG.info('Solved Camera Pose: %s to %s', root_frame_a, possible_frame)
         solved_frames.add(root_frame_a)
         solved_frames.add(possible_frame)
         accumulated_mkr_nodes = accumulated_mkr_nodes | mkr_nodes
@@ -399,8 +363,7 @@ def _solve_relative_poses(
 
         # Refine the solve.
         solved_frames_count = len(solved_frames)
-        solve_every_n_poses = 10
-        if (solved_frames_count % solve_every_n_poses) == 0:
+        if (solved_frames_count % adjust_every_n_poses) == 0:
             animcurve_utils.euler_filter_plug(cam_tfm, 'rotateX')
             animcurve_utils.euler_filter_plug(cam_tfm, 'rotateY')
             animcurve_utils.euler_filter_plug(cam_tfm, 'rotateZ')
@@ -410,11 +373,14 @@ def _solve_relative_poses(
                 cam_tfm,
                 cam_shp,
                 accumulated_mkr_nodes,
+                cam_shp_node_attrs,
+                lens_node_attrs,
                 frames,
                 adjust_camera_translate=True,
                 adjust_camera_rotate=True,
                 adjust_bundle_positions=True,
-                adjust_focal_length=True,
+                adjust_camera_intrinsics=True,
+                adjust_lens_distortion=False,
                 iteration_num=25,
             )
 
@@ -435,8 +401,6 @@ def _triangulate_bundles(
         mkr_node = mkr.get_node()
         bnd_node = bnd.get_node()
 
-        start_solved_frame = min(solver_frames)
-        end_solved_frame = max(solver_frames)
         enabled_frames = marker_nodes_enabled[mkr_node]
         assert isinstance(enabled_frames, set)
         overlapping_frames = solver_frames & enabled_frames
@@ -444,21 +408,19 @@ def _triangulate_bundles(
             continue
 
         if bnd_node not in bnd_nodes:
-            ok = lib_triangulate.triangulate_bundle(bnd, direction_tolerance=1.0)
+            ok = triangulatebundle.triangulate_bundle(bnd, direction_tolerance=1.0)
             if ok is True:
-                print('Triangulated Bundle:', bnd_node)
+                LOG.info('Triangulated Bundle: %s', bnd_node)
                 mkr_nodes.add(mkr_node)
                 bnd_nodes.add(bnd_node)
                 triangulated_count += 1
             else:
-                print('Failed to triangulated Bundle:', bnd_node)
+                LOG.warn('Failed to triangulated Bundle: %s', bnd_node)
     return triangulated_count, mkr_nodes, bnd_nodes
 
 
 def _set_camera_origin_frame(
     cam_tfm,
-    cam_shp,
-    mkr_nodes,
     bnd_nodes,
     origin_frame,
     start_frame,
@@ -487,6 +449,11 @@ def _set_camera_origin_frame(
         tfm_matrix.reorderRotation(rotate_order)
         tfm_values = tfm_utils.decompose_matrix(tfm_matrix, previous_rotation)
         cam_tfm_values.append(tfm_values)
+
+        rx = tfm_values[3]
+        ry = tfm_values[4]
+        rz = tfm_values[5]
+        previous_rotation = (rx, ry, rz)
 
     # Calculate bounding box for camera positions.
     min_x = 1e9
@@ -530,7 +497,6 @@ def _set_camera_origin_frame(
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateX', time=frame, value=rx)
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateY', time=frame, value=ry)
         maya.cmds.setKeyframe(cam_tfm, attribute='rotateZ', time=frame, value=rz)
-        previous_rotation = (rx, ry, rz)
 
     for bnd_node in bnd_nodes:
         tx_attr = '{}.translateX'.format(bnd_node)
@@ -578,39 +544,16 @@ def _remove_keyframes_outside_range(cam_tfm, cam_shp, solved_frames):
     return
 
 
-def camera_solve(
-    cam, mkr_list, start_frame, end_frame, root_frames, origin_frame, scene_scale
-):
-    # TODO: Categorize the marker/bundle nodes that are given to this
-    # function and output the categories. This will allow the caller
-    # to organise the nodes for the user to see diagnostic
-    # information.
-    print('cam:', cam)
-    print('mkr_list:', pprint.pformat(mkr_list))
-    print('start_frame:', start_frame)
-    print('end_frame:', end_frame)
-    print('root_frame count:', len(root_frames))
-    print('root_frames:', root_frames)
-    print('origin_frame:', origin_frame)
-    print('scene_scale:', scene_scale)
-    print('-----------------------------')
-    cam_tfm = cam.get_transform_node()
-    cam_shp = cam.get_shape_node()
-
+def _cache_enabled_marker_nodes(mkr_list, root_frames):
     # Create cache for re-use in _compute_enabled_marker_nodes().
     enabled_marker_nodes = {}
     for frame in root_frames:
         mkr_nodes = _compute_enabled_marker_nodes(mkr_list, frame)
         enabled_marker_nodes[frame] = mkr_nodes
+    return enabled_marker_nodes
 
-    marker_nodes_enabled = {}
-    for mkr in mkr_list:
-        mkr_node = mkr.get_node()
-        enabled_frames = mkr.get_enabled_frames(
-            frame_range_start=start_frame, frame_range_end=end_frame
-        )
-        marker_nodes_enabled[mkr_node] = set(enabled_frames)
 
+def _cache_position_marker_nodes(root_frames, enabled_marker_nodes):
     # Create cache for re-use in _marker_maximum_frame_score().
     position_marker_nodes = {}
     for frame in root_frames:
@@ -624,16 +567,32 @@ def camera_solve(
             pos_y = maya.cmds.getAttr(attr_ty, time=frame)
             mkr_position = (pos_x, pos_y)
             position_marker_nodes[frame][mkr_node] = mkr_position
+    return position_marker_nodes
 
-    # Pre-compute the connected frame statistics, to help guess the
-    # best frames for solving camera pairs.
+
+def _cache_marker_nodes_enabled(mkr_list, start_frame, end_frame):
+    marker_nodes_enabled = {}
+    for mkr in mkr_list:
+        mkr_node = mkr.get_node()
+        enabled_frames = mkr.get_enabled_frames(
+            frame_range_start=start_frame, frame_range_end=end_frame
+        )
+        marker_nodes_enabled[mkr_node] = set(enabled_frames)
+    return marker_nodes_enabled
+
+
+def _cache_connected_frame_statistics(
+    root_frames, enabled_marker_nodes, position_marker_nodes
+):
+    """
+    Pre-compute the connected frame statistics, to help guess the
+    best frames for solving camera pairs.
+    """
     frame_scores_map = {}
     frame_scores_stats_map = {}
     frame_best_frame_map = {}
     for frame in root_frames:
         scores = _compute_connected_frame_scores(
-            cam,
-            mkr_list,
             frame,
             root_frames,
             enabled_marker_nodes,
@@ -654,6 +613,102 @@ def camera_solve(
         avg_score = sum(scores) / len(scores)
         frame_scores_stats_map[frame] = (avg_score, max_score)
 
+    return frame_scores_map, frame_scores_stats_map, frame_best_frame_map
+
+
+def _precompute_values(mkr_list, root_frames, start_frame, end_frame):
+    # LOG.debug('_precompute_values.')
+    # LOG.debug('mkr_list: %s', mkr_list)
+
+    enabled_marker_nodes = _cache_enabled_marker_nodes(mkr_list, root_frames)
+
+    position_marker_nodes = _cache_position_marker_nodes(
+        root_frames, enabled_marker_nodes
+    )
+
+    marker_nodes_enabled = _cache_marker_nodes_enabled(mkr_list, start_frame, end_frame)
+
+    (
+        frame_scores_map,
+        frame_scores_stats_map,
+        frame_best_frame_map,
+    ) = _cache_connected_frame_statistics(
+        root_frames, enabled_marker_nodes, position_marker_nodes
+    )
+
+    return (
+        enabled_marker_nodes,
+        position_marker_nodes,
+        marker_nodes_enabled,
+        frame_scores_map,
+        frame_scores_stats_map,
+        frame_best_frame_map,
+    )
+
+
+def camera_solve(
+    cam_tfm,
+    cam_shp,
+    mkr_nodes,
+    cam_shp_node_attrs,
+    lens_node_attrs,
+    root_frames,
+    start_frame,
+    end_frame,
+    origin_frame,
+    scene_scale,
+    bundle_iter_num,
+    root_iter_num,
+    anim_iter_num,
+    adjust_every_n_poses,
+    solver_type,
+):
+    assert isinstance(cam_tfm, pycompat.TEXT_TYPE)
+    assert isinstance(cam_shp, pycompat.TEXT_TYPE)
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
+    assert isinstance(origin_frame, int)
+    assert isinstance(scene_scale, float)
+    assert isinstance(bundle_iter_num, int)
+    assert isinstance(root_iter_num, int)
+    assert isinstance(anim_iter_num, int)
+    assert isinstance(adjust_every_n_poses, int)
+    assert isinstance(cam_shp_node_attrs, list)
+    assert isinstance(lens_node_attrs, list)
+    assert len(mkr_nodes) > 0
+
+    # TODO: Categorize the marker/bundle nodes that are given to this
+    # function and output the categories. This will allow the caller
+    # to organise the nodes for the user to see diagnostic
+    # information.
+
+    cam = camera.Camera(shape=cam_shp)
+    mkr_list = [marker.Marker(node=x) for x in mkr_nodes]
+
+    LOG.debug('cam: %s', cam)
+    LOG.debug('mkr_list: %s', mkr_list)
+    LOG.debug('cam_shp_node_attrs: %s', cam_shp_node_attrs)
+    LOG.debug('lens_node_attrs: %s', lens_node_attrs)
+    LOG.debug('start_frame: %s', start_frame)
+    LOG.debug('end_frame: %s', end_frame)
+    LOG.debug('root_frame count: %s', len(root_frames))
+    LOG.debug('root_frames: %s', root_frames)
+    LOG.debug('origin_frame: %s', origin_frame)
+    LOG.debug('scene_scale: %s', scene_scale)
+    LOG.debug('root_iter_num: %s', root_iter_num)
+    LOG.debug('bundle_iter_num: %s', bundle_iter_num)
+    LOG.debug('anim_iter_num: %s', anim_iter_num)
+    LOG.debug('solver_type: %s', solver_type)
+
+    (
+        enabled_marker_nodes,
+        position_marker_nodes,
+        marker_nodes_enabled,
+        frame_scores_map,
+        frame_scores_stats_map,
+        frame_best_frame_map,
+    ) = _precompute_values(mkr_list, root_frames, start_frame, end_frame)
+
     # Find the frame with the best connectivity to all other root
     # frames. This is not the frame that gives the most solved frames,
     # but rather the highest quality solve overall.
@@ -663,18 +718,16 @@ def camera_solve(
     best_frame = None
     best_score = -1
     for frame in reversed(root_frames):
-        frames_scores = frame_scores_map[frame]
         frame_score_stats = frame_scores_stats_map[frame]
         avg_score, max_score = frame_score_stats
         if avg_score >= best_score:
             best_score = avg_score
             best_frame = frame
 
-    # print('best_frame:', best_frame)
-    # print('best_score:', best_score)
+    LOG.debug('best_frame: %s', best_frame)
+    LOG.debug('best_score: %s', best_score)
 
     frame_stack = list(root_frames)
-    next_frame = best_frame
     root_frame_a = best_frame
     mkr_nodes_a = enabled_marker_nodes[root_frame_a]
 
@@ -687,7 +740,7 @@ def camera_solve(
     accumulated_bnd_nodes = set()
     before_count = 0
     while len(possible_frames) > 0:
-        print('root_frame_a:', root_frame_a)
+        LOG.debug('root_frame_a: %s', root_frame_a)
 
         # Only solves the frame that are possible to be solved from the root frame.
         relative_pose_frames = []
@@ -705,12 +758,15 @@ def camera_solve(
             cam_tfm,
             cam_shp,
             mkr_nodes_a,
+            cam_shp_node_attrs,
+            lens_node_attrs,
             root_frame_a,
             relative_pose_frames,
             solved_frames,
             accumulated_mkr_nodes,
             accumulated_bnd_nodes,
             enabled_marker_nodes,
+            adjust_every_n_poses,
         )
 
         for frame in solved_frames:
@@ -739,8 +795,6 @@ def camera_solve(
         # Refine the solve.
         frames = list(sorted(solved_frames))
         for mkr_node in accumulated_mkr_nodes:
-            start_solved_frame = min(frames)
-            end_solved_frame = max(frames)
             enabled_frames = marker_nodes_enabled[mkr_node]
             assert isinstance(enabled_frames, set)
             overlapping_frames = set(frames) & enabled_frames
@@ -752,11 +806,14 @@ def camera_solve(
                 cam_tfm,
                 cam_shp,
                 [mkr_node],
+                cam_shp_node_attrs,
+                lens_node_attrs,
                 overlapping_frames,
                 adjust_camera_translate=False,
                 adjust_camera_rotate=False,
                 adjust_bundle_positions=True,
-                adjust_focal_length=False,
+                adjust_camera_intrinsics=False,
+                adjust_lens_distortion=False,
                 iteration_num=5,
             )
 
@@ -773,11 +830,14 @@ def camera_solve(
             cam_tfm,
             cam_shp,
             adjust_mkr_nodes,
+            cam_shp_node_attrs,
+            lens_node_attrs,
             frames,
             adjust_camera_translate=True,
             adjust_camera_rotate=True,
             adjust_bundle_positions=True,
-            adjust_focal_length=True,
+            adjust_camera_intrinsics=True,
+            adjust_lens_distortion=True,
             iteration_num=100,
         )
 
@@ -802,7 +862,7 @@ def camera_solve(
         # Refine the solve.
         frames = list(sorted(solved_frames))
         for mkr_node in accumulated_mkr_nodes:
-            mkr = mmapi.Marker(node=mkr_node)
+            mkr = marker.Marker(node=mkr_node)
             start_solved_frame = min(frames)
             end_solved_frame = max(frames)
             enabled_frames = mkr.get_enabled_frames(
@@ -817,11 +877,14 @@ def camera_solve(
                 cam_tfm,
                 cam_shp,
                 [mkr_node],
+                cam_shp_node_attrs,
+                lens_node_attrs,
                 overlapping_frames,
                 adjust_camera_translate=False,
                 adjust_camera_rotate=False,
                 adjust_bundle_positions=True,
-                adjust_focal_length=False,
+                adjust_camera_intrinsics=False,
+                adjust_lens_distortion=False,
                 iteration_num=5,
             )
 
@@ -838,11 +901,14 @@ def camera_solve(
             cam_tfm,
             cam_shp,
             adjust_mkr_nodes,
+            cam_shp_node_attrs,
+            lens_node_attrs,
             frames,
             adjust_camera_translate=True,
             adjust_camera_rotate=True,
             adjust_bundle_positions=True,
-            adjust_focal_length=True,
+            adjust_camera_intrinsics=True,
+            adjust_lens_distortion=True,
             iteration_num=100,
         )
 
@@ -865,18 +931,20 @@ def camera_solve(
         cam_tfm,
         cam_shp,
         adjust_mkr_nodes,
+        cam_shp_node_attrs,
+        lens_node_attrs,
         frames,
         adjust_camera_translate=True,
         adjust_camera_rotate=True,
         adjust_bundle_positions=False,
-        adjust_focal_length=True,
+        adjust_camera_intrinsics=True,
+        adjust_lens_distortion=True,
+        iteration_num=10,
         per_frame_solve=True,
     )
 
     _set_camera_origin_frame(
         cam_tfm,
-        cam_shp,
-        adjust_mkr_nodes,
         accumulated_bnd_nodes,
         origin_frame,
         start_frame,
@@ -884,398 +952,3 @@ def camera_solve(
         scene_scale,
     )
     return
-
-
-# @unittest.skip
-class TestCameraSolve(solverUtils.SolverTestCase):
-    def test_camera_solve1_stA(self):
-        frame_a = 0
-        frame_b = 94
-        scene_scale = 10.0
-        origin_frame = frame_a
-        root_frame_a = frame_a
-        root_frame_b = frame_b
-        maya.cmds.playbackOptions(edit=True, minTime=frame_a)
-        maya.cmds.playbackOptions(edit=True, maxTime=frame_b)
-
-        cam = lib_utils.create_new_camera()
-        mkr_grp = lib_utils.create_new_marker_group(cam)
-
-        cam_tfm = cam.get_transform_node()
-        cam_shp = cam.get_shape_node()
-        fb_width = 36.0 / 25.4
-        fb_height = 24.0 / 25.4
-        # Note: 35 mm is not the correct focal length for the shot,
-        # but despite this we leave it as the wrong value, as a task
-        # for the solver to refine.
-        focal_length = 35.0
-        maya.cmds.setAttr(cam_tfm + '.rotateOrder', 2)  # 2 = ZXY
-        maya.cmds.setAttr(cam_shp + '.horizontalFilmAperture', fb_width)
-        maya.cmds.setAttr(cam_shp + '.verticalFilmAperture', fb_height)
-        maya.cmds.setAttr(cam_shp + '.focalLength', focal_length)
-        maya.cmds.setAttr(cam_shp + '.displayCameraFrustum', 1)
-        maya.cmds.setAttr(cam_shp + '.displayFilmGate', 1)
-        maya.cmds.setAttr(cam_shp + '.overscan', 1.5)
-
-        attrs = [
-            'translateX',
-            'translateY',
-            'translateZ',
-            'rotateX',
-            'rotateY',
-            'rotateZ',
-        ]
-        for attr in attrs:
-            maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=frame_a, value=0.0)
-
-        marker_file_path = self.get_data_path('uvtrack', 'stA.uv')
-        _, mkr_data_list = marker_read.read(marker_file_path)
-        mkr_list = marker_read.create_nodes(mkr_data_list, cam=cam, mkr_grp=mkr_grp)
-
-        mkr_bnd_list = []
-        for mkr in mkr_list:
-            bnd = mkr.get_bundle()
-            if bnd is None:
-                print('mkr (%r) could not get bundle.')
-                assert False
-            mkr_node = mkr.get_node()
-            bnd_node = bnd.get_node()
-            assert mkr_node is not None
-            assert bnd_node is not None
-            mkr_bnd = (mkr_node, bnd_node)
-            mkr_bnd_list.append(mkr_bnd)
-
-        # Root Frames
-        min_frames_per_marker = 3
-        max_frame_span = 5
-        root_frames = mmapi.get_root_frames_from_markers(
-            mkr_list, min_frames_per_marker, frame_a, frame_b
-        )
-        root_frames = mmapi.root_frames_list_combine(root_frames, [frame_a, frame_b])
-        root_frames = mmapi.root_frames_subdivide(root_frames, max_frame_span)
-        # print('root_frames:', root_frames)
-
-        # save the output
-        file_name = 'solver_camera_solve1_stA_before.ma'
-        path = self.get_data_path(file_name)
-        maya.cmds.file(rename=path)
-        maya.cmds.file(save=True, type='mayaAscii', force=True)
-
-        # Run solver!
-        assert 'mmSolver' in dir(maya.cmds)
-        s = time.time()
-        camera_solve(
-            cam, mkr_list, frame_a, frame_b, root_frames, origin_frame, scene_scale
-        )
-        e = time.time()
-        print('total time:', e - s)
-
-        # save the output
-        file_name = 'solver_camera_solve1_stA_after.ma'
-        path = self.get_data_path(file_name)
-        maya.cmds.file(rename=path)
-        maya.cmds.file(save=True, type='mayaAscii', force=True)
-
-    def test_camera_solve2_operahouse(self):
-        frame_a = 0
-        frame_b = 41
-        scene_scale = 10.0
-        origin_frame = frame_a
-        root_frame_a = frame_a
-        root_frame_b = frame_b
-        maya.cmds.playbackOptions(edit=True, minTime=frame_a)
-        maya.cmds.playbackOptions(edit=True, maxTime=frame_b)
-
-        cam = lib_utils.create_new_camera()
-        mkr_grp = lib_utils.create_new_marker_group(cam)
-
-        cam_tfm = cam.get_transform_node()
-        cam_shp = cam.get_shape_node()
-        fb_width = 5.4187 / 25.4
-        fb_height = 4.0640 / 25.4
-        focal_length = 14.0
-        maya.cmds.setAttr(cam_tfm + '.rotateOrder', 2)  # 2 = ZXY
-        maya.cmds.setAttr(cam_shp + '.horizontalFilmAperture', fb_width)
-        maya.cmds.setAttr(cam_shp + '.verticalFilmAperture', fb_height)
-        maya.cmds.setAttr(cam_shp + '.focalLength', focal_length)
-        maya.cmds.setAttr(cam_shp + '.displayCameraFrustum', 1)
-        maya.cmds.setAttr(cam_shp + '.displayFilmGate', 1)
-        maya.cmds.setAttr(cam_shp + '.overscan', 1.5)
-
-        attrs = [
-            'translateX',
-            'translateY',
-            'translateZ',
-            'rotateX',
-            'rotateY',
-            'rotateZ',
-        ]
-        for attr in attrs:
-            maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=frame_a, value=0.0)
-        maya.cmds.setKeyframe(
-            cam_shp, attribute='focalLength', time=frame_a, value=focal_length
-        )
-
-        marker_file_path = self.get_data_path('match_mover', 'loadmarker.rz2')
-        _, mkr_data_list = marker_read.read(marker_file_path)
-        mkr_list = marker_read.create_nodes(mkr_data_list, cam=cam, mkr_grp=mkr_grp)
-
-        mkr_bnd_list = []
-        for mkr in mkr_list:
-
-            bnd = mkr.get_bundle()
-            if bnd is None:
-                print('mkr (%r) could not get bundle.')
-                assert False
-            mkr_node = mkr.get_node()
-            bnd_node = bnd.get_node()
-            assert mkr_node is not None
-            assert bnd_node is not None
-            mkr_bnd = (mkr_node, bnd_node)
-            mkr_bnd_list.append(mkr_bnd)
-
-        # Root Frames
-        min_frames_per_marker = 2
-        max_frame_span = 5
-        root_frames = mmapi.get_root_frames_from_markers(
-            mkr_list, min_frames_per_marker, frame_a, frame_b
-        )
-        root_frames = mmapi.root_frames_list_combine(root_frames, [frame_a, frame_b])
-        root_frames = mmapi.root_frames_subdivide(root_frames, max_frame_span)
-        # print('root_frames:', root_frames)
-
-        # save the output
-        file_name = 'solver_camera_solve2_operahouse_before.ma'
-        path = self.get_data_path(file_name)
-        maya.cmds.file(rename=path)
-        maya.cmds.file(save=True, type='mayaAscii', force=True)
-
-        # Run solver!
-        assert 'mmSolver' in dir(maya.cmds)
-        s = time.time()
-        camera_solve(
-            cam, mkr_list, frame_a, frame_b, root_frames, origin_frame, scene_scale
-        )
-        e = time.time()
-        print('total time:', e - s)
-
-        # save the output
-        file_name = 'solver_camera_solve2_operahouse_after.ma'
-        path = self.get_data_path(file_name)
-        maya.cmds.file(rename=path)
-        maya.cmds.file(save=True, type='mayaAscii', force=True)
-        return
-
-    def test_camera_solve3_garage(self):
-        frame_a = 0
-        # frame_b = 2706
-        frame_b = 600
-        scene_scale = 10.0
-        origin_frame = frame_a
-        root_frame_a = frame_a
-        root_frame_b = frame_b
-        maya.cmds.playbackOptions(edit=True, minTime=frame_a)
-        maya.cmds.playbackOptions(edit=True, maxTime=frame_b)
-
-        cam = lib_utils.create_new_camera()
-        mkr_grp = lib_utils.create_new_marker_group(cam)
-
-        cam_tfm = cam.get_transform_node()
-        cam_shp = cam.get_shape_node()
-        fb_width = 36.0 / 25.4
-        fb_height = 20.25 / 25.4
-        focal_length = 35.0
-        maya.cmds.setAttr(cam_tfm + '.rotateOrder', 2)  # 2 = ZXY
-        maya.cmds.setAttr(cam_shp + '.horizontalFilmAperture', fb_width)
-        maya.cmds.setAttr(cam_shp + '.verticalFilmAperture', fb_height)
-        maya.cmds.setAttr(cam_shp + '.focalLength', focal_length)
-        maya.cmds.setAttr(cam_shp + '.displayCameraFrustum', 1)
-        maya.cmds.setAttr(cam_shp + '.displayFilmGate', 1)
-        maya.cmds.setAttr(cam_shp + '.overscan', 1.5)
-
-        attrs = [
-            'translateX',
-            'translateY',
-            'translateZ',
-            'rotateX',
-            'rotateY',
-            'rotateZ',
-        ]
-        for attr in attrs:
-            maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=frame_a, value=0.0)
-
-        marker_file_path = self.get_data_path('pftrack', 'pftrack5_garage.2dt')
-        _, mkr_data_list = marker_read.read(
-            marker_file_path, image_width=960, image_height=540
-        )
-        mkr_list = marker_read.create_nodes(mkr_data_list, cam=cam, mkr_grp=mkr_grp)
-
-        mkr_bnd_list = []
-        for mkr in mkr_list:
-
-            bnd = mkr.get_bundle()
-            if bnd is None:
-                print('mkr (%r) could not get bundle.')
-                assert False
-            mkr_node = mkr.get_node()
-            bnd_node = bnd.get_node()
-            assert mkr_node is not None
-            assert bnd_node is not None
-            mkr_bnd = (mkr_node, bnd_node)
-            mkr_bnd_list.append(mkr_bnd)
-
-        # Root Frames
-        min_frames_per_marker = 3
-        max_frame_span = 20
-        root_frames = mmapi.get_root_frames_from_markers(
-            mkr_list, min_frames_per_marker, frame_a, frame_b
-        )
-        root_frames = mmapi.root_frames_list_combine(root_frames, [frame_a, frame_b])
-        root_frames = mmapi.root_frames_subdivide(root_frames, max_frame_span)
-
-        # save the output
-        file_name = 'solver_camera_solve3_garage_before.ma'
-        path = self.get_data_path(file_name)
-        maya.cmds.file(rename=path)
-        maya.cmds.file(save=True, type='mayaAscii', force=True)
-
-        # Run solver!
-        assert 'mmSolver' in dir(maya.cmds)
-        s = time.time()
-        camera_solve(
-            cam, mkr_list, frame_a, frame_b, root_frames, origin_frame, scene_scale
-        )
-        e = time.time()
-        print('total time:', e - s)
-
-        # save the output
-        file_name = 'solver_camera_solve3_garage_after.ma'
-        path = self.get_data_path(file_name)
-        maya.cmds.file(rename=path)
-        maya.cmds.file(save=True, type='mayaAscii', force=True)
-        return
-
-    def test_camera_solve4_operahouse_marker_score(self):
-        # Tests the Marker score calculation.
-        frame_a = 0
-        frame_b = 41
-        root_frame_a = frame_a
-        root_frame_b = frame_b
-        maya.cmds.playbackOptions(edit=True, minTime=frame_a)
-        maya.cmds.playbackOptions(edit=True, maxTime=frame_b)
-
-        cam = lib_utils.create_new_camera()
-        mkr_grp = lib_utils.create_new_marker_group(cam)
-
-        cam_tfm = cam.get_transform_node()
-        cam_shp = cam.get_shape_node()
-        fb_width = 5.4187 / 25.4
-        fb_height = 4.0640 / 25.4
-        focal_length = 14.0
-        maya.cmds.setAttr(cam_tfm + '.rotateOrder', 2)  # 2 = ZXY
-        maya.cmds.setAttr(cam_shp + '.horizontalFilmAperture', fb_width)
-        maya.cmds.setAttr(cam_shp + '.verticalFilmAperture', fb_height)
-        maya.cmds.setAttr(cam_shp + '.focalLength', focal_length)
-        maya.cmds.setAttr(cam_shp + '.displayCameraFrustum', 1)
-        maya.cmds.setAttr(cam_shp + '.displayFilmGate', 1)
-        maya.cmds.setAttr(cam_shp + '.overscan', 1.5)
-
-        attrs = [
-            'translateX',
-            'translateY',
-            'translateZ',
-            'rotateX',
-            'rotateY',
-            'rotateZ',
-        ]
-        for attr in attrs:
-            maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=frame_a, value=0.0)
-        maya.cmds.setKeyframe(
-            cam_shp, attribute='focalLength', time=frame_a, value=focal_length
-        )
-
-        marker_file_path = self.get_data_path('match_mover', 'loadmarker.rz2')
-        _, mkr_data_list = marker_read.read(marker_file_path)
-        mkr_list = marker_read.create_nodes(mkr_data_list, cam=cam, mkr_grp=mkr_grp)
-
-        mkr_bnd_list = []
-        for mkr in mkr_list:
-
-            bnd = mkr.get_bundle()
-            if bnd is None:
-                print('mkr (%r) could not get bundle.')
-                assert False
-            mkr_node = mkr.get_node()
-            bnd_node = bnd.get_node()
-            assert mkr_node is not None
-            assert bnd_node is not None
-            mkr_bnd = (mkr_node, bnd_node)
-            mkr_bnd_list.append(mkr_bnd)
-
-        # Root Frames
-        min_frames_per_marker = 2
-        max_frame_span = 5
-        root_frames = mmapi.get_root_frames_from_markers(
-            mkr_list, min_frames_per_marker, frame_a, frame_b
-        )
-        root_frames = mmapi.root_frames_list_combine(root_frames, [frame_a, frame_b])
-        root_frames = mmapi.root_frames_subdivide(root_frames, max_frame_span)
-        # print('root_frames:', root_frames)
-
-        s = time.time()
-
-        # Create cache for re-use in _compute_enabled_marker_nodes().
-        enabled_marker_nodes = {}
-        for frame in root_frames:
-            mkr_nodes = _compute_enabled_marker_nodes(mkr_list, frame)
-            enabled_marker_nodes[frame] = mkr_nodes
-
-        # Create cache for re-use in _marker_maximum_frame_score().
-        position_marker_nodes = {}
-        for frame in root_frames:
-            position_marker_nodes[frame] = {}
-            mkr_positions = {}
-            mkr_nodes = enabled_marker_nodes[frame]
-            for mkr_node in mkr_nodes:
-                attr_tx = mkr_node + '.translateX'
-                attr_ty = mkr_node + '.translateY'
-                pos_x = maya.cmds.getAttr(attr_tx, time=frame)
-                pos_y = maya.cmds.getAttr(attr_ty, time=frame)
-                mkr_position = (pos_x, pos_y)
-                position_marker_nodes[frame][mkr_node] = mkr_position
-
-        expected_values = {
-            0: 1092,
-            1: 1110,
-            2: 1110,
-            3: 1020,
-            7: 1088,
-            12: 1088,
-            13: 1184,
-            14: 930,
-            17: 990,
-            20: 952,
-            23: 1326,
-            28: 1558,
-            33: 1932,
-            37: 1722,
-            40: 1600,
-            41: 1360,
-        }
-
-        for frame in root_frames:
-            mkr_nodes = enabled_marker_nodes[frame]
-            score = _calculate_marker_frame_score(
-                cam, mkr_nodes, frame, position_marker_nodes
-            )
-            print('frame:', frame, 'score:', score)
-            expected_value = expected_values.get(frame)
-            assert expected_value is not None
-            assert expected_value == score
-
-        e = time.time()
-        print('total time:', e - s)
-
-
-if __name__ == '__main__':
-    prog = unittest.main()

@@ -30,7 +30,7 @@ import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
 
-import mmSolver.utils.lineintersect as tri_utils
+import mmSolver._api.triangulatebundle as tribnd_utils
 import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 import mmSolver._api.bundle as bundle
@@ -43,80 +43,6 @@ import mmSolver._api.action as api_action
 LOG = mmSolver.logger.get_logger()
 
 BUNDLE_ATTR_NAMES = ['translateX', 'translateY', 'translateZ']
-
-
-def _get_marker_first_last_frame_list(mkr_node, consider_frame_list):
-    """
-    Get the list of frames that this marker is enabled for.
-    """
-    frm_list = []
-    curves = maya.cmds.listConnections(mkr_node, type='animCurve') or []
-    first_time = -99999
-    last_time = 99999
-    for node in curves:
-        times = maya.cmds.keyframe(node, query=True, timeChange=True)
-        first_time = max(int(times[0]), first_time)
-        last_time = min(int(times[-1]), last_time)
-
-    for t in range(first_time, last_time + 1):
-        plug = mkr_node + '.enable'
-        value = maya.cmds.getAttr(plug, time=t)
-        if value > 0:
-            if consider_frame_list is None:
-                frm_list.append(t)
-            elif t in consider_frame_list:
-                frm_list.append(t)
-    first_last_frames = []
-    if len(frm_list) > 0:
-        first_frame = frm_list[0]
-        last_frame = frm_list[-1]
-        first_last_frames = [first_frame, last_frame]
-    return first_last_frames
-
-
-def _triangulate_bundle(bnd_node, mkr_cam_node_frm_list):
-    """
-    Triangulate a 3D bundle position.
-
-    :param bnd_node: Bundle node to be triangulated.
-    :type bnd_node: str
-
-    :param mkr_cam_node_frm_list: Marker and Camera transform to be considered for triangulation.
-    :type mkr_cam_node_frm_list: [(str, stc, (int, int)), ..]
-    """
-    LOG.debug('triangulate_bundle: %r %r', bnd_node, mkr_cam_node_frm_list)
-    prev_frame = maya.cmds.currentTime(query=True)
-    try:
-        for mkr_node, cam_tfm, frm_list in mkr_cam_node_frm_list:
-            if len(frm_list) == 0:
-                continue
-
-            first_frm = frm_list[0]
-            last_frm = frm_list[-1]
-            first_pnt, first_dir = tri_utils.get_point_and_direction(
-                cam_tfm, mkr_node, first_frm
-            )
-            last_pnt, last_dir = tri_utils.get_point_and_direction(
-                cam_tfm, mkr_node, last_frm
-            )
-            (
-                a_pnt,
-                b_pnt,
-            ) = tri_utils.calculate_approx_intersection_point_between_two_3d_lines(
-                first_pnt, first_dir, last_pnt, last_dir
-            )
-            pnt = OpenMaya.MPoint(
-                (a_pnt.x + b_pnt.x) * 0.5,
-                (a_pnt.y + b_pnt.y) * 0.5,
-                (a_pnt.z + b_pnt.z) * 0.5,
-            )
-
-            maya.cmds.xform(
-                bnd_node, translation=(pnt.x, pnt.y, pnt.z), worldSpace=True
-            )
-    finally:
-        maya.cmds.currentTime(prev_frame, update=False)
-    return
 
 
 class SolverTriangulate(solverbase.SolverBase):
@@ -135,7 +61,6 @@ class SolverTriangulate(solverbase.SolverBase):
         return [frame.Frame(1)]
 
     def compile(self, col, mkr_list, attr_list, withtest=False):
-        actions = []
         # TODO: Triangulate the (open) bundles here. We triangulate all
         #  valid bundles after the root frames have solved.
         #
@@ -184,14 +109,16 @@ class SolverTriangulate(solverbase.SolverBase):
                 bnd_mkr_node_list, bnd_cam_node_list, bnd_mkr_frm_list
             )
 
-            # TODO: We must detect if the newly calculated position is
-            #  behind the camera, if so, we reject the new values.
             args = [bnd_node, bnd_mkr_cam_frm_list]
             kwargs = {}
-            action = api_action.Action(_triangulate_bundle, args=args, kwargs=kwargs)
-            LOG.debug(
-                'adding _triangulate_bundle: func=%r', _triangulate_bundle, args, kwargs
+            action = api_action.Action(
+                tribnd_utils._triangulate_bundle_v2, args=args, kwargs=kwargs
             )
-            # actions.append(action)
+            LOG.debug(
+                'adding _triangulate_bundle: func=%r',
+                tribnd_utils._triangulate_bundle_v2,
+                args,
+                kwargs,
+            )
             yield action, None
         return

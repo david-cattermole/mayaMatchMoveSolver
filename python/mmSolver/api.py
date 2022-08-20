@@ -65,6 +65,9 @@ from mmSolver._api.solverstandard import (
 from mmSolver._api.solverbasic import (
     SolverBasic,
 )
+from mmSolver._api.solvercamera import (
+    SolverCamera,
+)
 from mmSolver._api.collectionutils import (
     run_progress_func,
     run_status_func,
@@ -119,6 +122,9 @@ from mmSolver._api.solveresult import (
     merge_marker_error_list,
     merge_marker_node_list,
     format_timestamp,
+)
+from mmSolver._api.triangulatebundle import (
+    triangulate_bundle,
 )
 from mmSolver._api.excep import (
     MMException,
@@ -258,6 +264,7 @@ __all__ = [
     'SolverBase',
     'SolverStandard',
     'SolverBasic',
+    'SolverCamera',
     'SolverStep',
     'SolveResult',
     # Constants
@@ -432,4 +439,6 @@ __all__ = [
     'merge_marker_error_list',
     'merge_marker_node_list',
     'format_timestamp',
+    # Triangulate Bundle
+    'triangulate_bundle',
 ]

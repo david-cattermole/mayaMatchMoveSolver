@@ -75,6 +75,7 @@
             "general_tools/gen_tools_popup/---Viewport",
             "general_tools/gen_tools_popup/center_twodee",
             "general_tools/gen_tools_popup/center_twodee_remove",
+            "general_tools/gen_tools_popup/toggle_object_motion_trail",
             "general_tools/gen_tools_popup/---General",
             "general_tools/gen_tools_popup/smooth_keyframes",
             "general_tools/gen_tools_popup/screen_z_manipulator",

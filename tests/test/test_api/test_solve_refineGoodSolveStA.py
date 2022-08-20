@@ -171,7 +171,7 @@ class TestSolveRefineGoodSolveStA(test_api_utils.APITestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
-        self.checkSolveResults(results, allow_max_avg_error=1.0, allow_max_error=2.0)
+        self.checkSolveResults(results, allow_max_avg_error=1.7, allow_max_error=3.0)
         return
 
     # def test_ceres_maya_dag(self):

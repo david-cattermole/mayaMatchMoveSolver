@@ -151,7 +151,7 @@ class TestSolver11(solverUtils.SolverTestCase):
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
         results = [mmapi.SolveResult(result)]
-        self.checkSolveResults(results, allow_max_avg_error=3.3, allow_max_error=3.3)
+        self.checkSolveResults(results, allow_max_avg_error=3.5, allow_max_error=3.5)
 
     # def test_ceres_maya_dag(self):
     #     self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)

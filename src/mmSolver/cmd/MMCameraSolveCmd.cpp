@@ -329,6 +329,10 @@ MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
     // Command Outputs
     MDoubleArray outResult;
 
+    // TODO: Port camera solver from
+    // './python/mmSolver/_api/solvercamerautils.py' 'camera_solve'
+    // function to C++, with the aim of improving performance.
+
     MMCameraSolveCmd::setResult(outResult);
     return status;
 }

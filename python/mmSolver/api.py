@@ -65,6 +65,9 @@ from mmSolver._api.solverstandard import (
 from mmSolver._api.solverbasic import (
     SolverBasic,
 )
+from mmSolver._api.solvercamera import (
+    SolverCamera,
+)
 from mmSolver._api.collectionutils import (
     run_progress_func,
     run_status_func,
@@ -258,6 +261,7 @@ __all__ = [
     'SolverBase',
     'SolverStandard',
     'SolverBasic',
+    'SolverCamera',
     'SolverStep',
     'SolveResult',
     # Constants

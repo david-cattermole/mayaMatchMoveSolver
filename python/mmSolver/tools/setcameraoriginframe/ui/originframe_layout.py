@@ -40,6 +40,9 @@ class OriginFrameLayout(QtWidgets.QWidget, ui_originframe_layout.Ui_Form):
         super(OriginFrameLayout, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
+        # Create Group
+        self.createGroup_checkBox.toggled.connect(self.createGroupCheckBoxToggled)
+
         # Scene Scale
         self.sceneScale_doubleSpinBox.valueChanged.connect(
             self.sceneScaleSpinBoxValueChanged
@@ -48,6 +51,12 @@ class OriginFrameLayout(QtWidgets.QWidget, ui_originframe_layout.Ui_Form):
         # Populate the UI with data
         self.populateUi()
 
+    def createGroupCheckBoxToggled(self, value):
+        name = const.CONFIG_CREATE_GROUP_KEY
+        value = bool(value)
+        configmaya.set_scene_option(name, value, add_attr=True)
+        LOG.debug('key=%r value=%r', name, value)
+
     def sceneScaleSpinBoxValueChanged(self, value):
         name = const.CONFIG_SCENE_SCALE_KEY
         value = float(value)
@@ -55,16 +64,27 @@ class OriginFrameLayout(QtWidgets.QWidget, ui_originframe_layout.Ui_Form):
         LOG.debug('key=%r value=%r', name, value)
 
     def reset_options(self):
+        name = const.CONFIG_CREATE_GROUP_KEY
+        value = const.DEFAULT_CREATE_GROUP
+        configmaya.set_scene_option(name, value)
+        LOG.debug('key=%r value=%r', name, value)
+
         name = const.CONFIG_SCENE_SCALE_KEY
         value = const.DEFAULT_SCENE_SCALE
         configmaya.set_scene_option(name, value)
         LOG.debug('key=%r value=%r', name, value)
+
         self.populateUi()
 
     def populateUi(self):
         """
         Update the UI for the first time the class is created.
         """
+        name = const.CONFIG_CREATE_GROUP_KEY
+        value = configmaya.get_scene_option(name, default=const.DEFAULT_CREATE_GROUP)
+        LOG.debug('key=%r value=%r', name, value)
+        self.createGroup_checkBox.setChecked(value)
+
         name = const.CONFIG_SCENE_SCALE_KEY
         value = configmaya.get_scene_option(name, default=const.DEFAULT_SCENE_SCALE)
         LOG.debug('key=%r value=%r', name, value)

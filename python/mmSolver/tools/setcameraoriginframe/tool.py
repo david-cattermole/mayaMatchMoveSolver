@@ -30,16 +30,40 @@ import uuid
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.configmaya as configmaya
+import mmSolver.utils.node as node_utils
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.tools as tools_utils
-import mmSolver.utils.camera as camera_utils
 import mmSolver.api as mmapi
 import mmSolver.tools.setcameraoriginframe.constant as const
 import mmSolver.tools.setcameraoriginframe.lib as lib
 
 LOG = mmSolver.logger.get_logger()
 BUNDLE_ATTRS = ['translateX', 'translateY', 'translateZ']
+
+
+def _get_camera_bundle_lists(cam_list):
+    cam_bnd_list_map = collections.defaultdict(list)
+    for cam in cam_list:
+        mkr_list = cam.get_marker_list()
+        for mkr in mkr_list:
+            assert isinstance(mkr, mmapi.Marker)
+            bnd = mkr.get_bundle()
+            if bnd is not None:
+                bnd_node = bnd.get_node()
+                is_locked = False
+                for attr in BUNDLE_ATTRS:
+                    node_attr = '{}.{}'.format(bnd_node, attr)
+                    locked = maya.cmds.getAttr(node_attr, lock=True)
+                    if locked is True:
+                        is_locked = True
+                        break
+                if is_locked is True:
+                    LOG.warn("Locked bundle, skipping: %s", bnd_node)
+                    continue
+                cam_bnd_list_map[cam].append(bnd)
+    return cam_bnd_list_map
 
 
 def main():
@@ -69,31 +93,16 @@ def main():
         LOG.warn('Please select cameras.')
         return
 
-    cam_bnd_list_map = collections.defaultdict(list)
-    for cam in cam_list:
-        mkr_list = cam.get_marker_list()
-        for mkr in mkr_list:
-            assert isinstance(mkr, mmapi.Marker)
-            bnd = mkr.get_bundle()
-            if bnd is not None:
-                bnd_node = bnd.get_node()
-                is_locked = False
-                for attr in BUNDLE_ATTRS:
-                    node_attr = '{}.{}'.format(bnd_node, attr)
-                    locked = maya.cmds.getAttr(node_attr, lock=True)
-                    if locked is True:
-                        is_locked = True
-                        break
-                if is_locked is True:
-                    LOG.warn("Locked bundle, skipping: %s", bnd_node)
-                    continue
-                cam_bnd_list_map[cam].append(bnd)
+    cam_bnd_list_map = _get_camera_bundle_lists(cam_list)
 
     current_frame = maya.cmds.currentTime(query=True)
     start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
 
     scene_scale = configmaya.get_scene_option(
         const.CONFIG_SCENE_SCALE_KEY, default=const.DEFAULT_SCENE_SCALE
+    )
+    create_group = configmaya.get_scene_option(
+        const.CONFIG_CREATE_GROUP_KEY, default=const.DEFAULT_CREATE_GROUP
     )
 
     undo_id = 'setcameraoriginframe: '
@@ -112,9 +121,16 @@ def main():
                 cam, bnd_list, scene_scale, current_frame, start_frame, end_frame
             )
 
-    maya.cmds.currentTime(current_frame, edit=True, update=True)
+            if create_group is True:
+                group_node = lib.get_origin_group(cam)
+                if group_node is None:
+                    group_node = lib.create_origin_group(cam)
+                lib.parent_under_origin_group(group_node, cam, bnd_list)
+
     if len(sel) > 0:
-        maya.cmds.select(sel, replace=True)
+        cam_tfm_nodes = [x.get_transform_node() for x in cam_list]
+        maya.cmds.select(cam_tfm_nodes, replace=True)
+    maya.cmds.currentTime(current_frame, edit=True, update=True)
     return
 
 

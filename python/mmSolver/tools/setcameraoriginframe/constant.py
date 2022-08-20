@@ -21,6 +21,8 @@ Set Camera Origin Frame constants.
 
 WINDOW_TITLE = 'Set Camera Origin Frame'
 
+DEFAULT_CREATE_GROUP = True
 DEFAULT_SCENE_SCALE = 10.0
 
+CONFIG_CREATE_GROUP_KEY = 'mmSolver_setcameraoriginframe_create_group'
 CONFIG_SCENE_SCALE_KEY = 'mmSolver_setcameraoriginframe_scene_scale'

@@ -25,9 +25,6 @@ from __future__ import print_function
 
 import collections
 
-import maya.cmds
-import maya.OpenMaya as OpenMaya
-
 import mmSolver.logger
 
 import mmSolver._api.triangulatebundle as tribnd_utils
@@ -102,7 +99,7 @@ class SolverTriangulate(solverbase.SolverBase):
                 x.get_camera().get_transform_node() for x in bnd_mkr_list
             ]
             bnd_mkr_frm_list = [
-                _get_marker_first_last_frame_list(x, self.root_frame_list)
+                tribnd_utils._get_marker_first_last_frame_list(x, self.root_frame_list)
                 for x in bnd_mkr_node_list
             ]
             bnd_mkr_cam_frm_list = zip(

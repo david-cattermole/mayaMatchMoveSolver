@@ -23,7 +23,6 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.tools.triangulatebundle.lib as lib
 
 
 LOG = mmSolver.logger.get_logger()
@@ -63,7 +62,7 @@ def main():
     # Triangulate
     adjusted_bnd_node_list = []
     for bnd in bnd_list:
-        success = lib.triangulate_bundle(bnd)
+        success = mmapi.triangulate_bundle(bnd)
         if success is True:
             adjusted_bnd_node_list.append(bnd.get_node())
         else:

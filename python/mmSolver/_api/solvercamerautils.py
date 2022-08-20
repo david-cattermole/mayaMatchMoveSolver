@@ -38,7 +38,7 @@ import mmSolver._api.constant as const
 import mmSolver._api.marker as marker
 import mmSolver._api.bundle as bundle
 import mmSolver._api.camera as camera
-import mmSolver.tools.triangulatebundle.lib as lib_triangulate
+import mmSolver._api.triangulatebundle as triangulatebundle
 
 
 LOG = mmSolver.logger.get_logger()
@@ -408,7 +408,7 @@ def _triangulate_bundles(
             continue
 
         if bnd_node not in bnd_nodes:
-            ok = lib_triangulate.triangulate_bundle(bnd, direction_tolerance=1.0)
+            ok = triangulatebundle.triangulate_bundle(bnd, direction_tolerance=1.0)
             if ok is True:
                 LOG.info('Triangulated Bundle: %s', bnd_node)
                 mkr_nodes.add(mkr_node)

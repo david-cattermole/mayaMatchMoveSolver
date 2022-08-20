@@ -123,6 +123,9 @@ from mmSolver._api.solveresult import (
     merge_marker_node_list,
     format_timestamp,
 )
+from mmSolver._api.triangulatebundle import (
+    triangulate_bundle,
+)
 from mmSolver._api.excep import (
     MMException,
     NotValid,
@@ -436,4 +439,6 @@ __all__ = [
     'merge_marker_error_list',
     'merge_marker_node_list',
     'format_timestamp',
+    # Triangulate Bundle
+    'triangulate_bundle',
 ]

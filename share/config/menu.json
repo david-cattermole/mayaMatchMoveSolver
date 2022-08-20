@@ -38,6 +38,8 @@
             "camera_tools/create_lens",
             "camera_tools/---Distortion",
             "camera_tools/camera_toggle_distortion",
+            "camera_tools/---Transform",
+            "camera_tools/set_camera_origin_frame",
             "camera_tools/---Input Output",
             "camera_tools/copy_camera_to_clipboard",
             "camera_tools/load_lens",

@@ -719,6 +719,15 @@
                 "mmSolver.tools.parenttransform.tool.unparent();"
             ]
         },
+        "toggle_object_motion_trail": {
+            "name": "Toggle Object Motion Trail",
+            "name_shelf": "TglMT",
+            "tooltip": "Toggle the motion trail on selected objects.",
+            "command": [
+                "import mmSolver.tools.toggleobjectmotiontrail.tool;",
+                "mmSolver.tools.toggleobjectmotiontrail.tool.main();"
+            ]
+        },
         "create_camera": {
             "name": "Create Camera",
             "name_shelf": "",
@@ -758,13 +767,18 @@
                 "mmSolver.tools.togglecameradistort.tool.main();"
             ]
         },
-        "toggle_object_motion_trail": {
-            "name": "Toggle Object Motion Trail",
-            "name_shelf": "TglPth",
-            "tooltip": "Toggle the motion trail on selected objects.",
+        "set_camera_origin_frame": {
+            "name": "Set Camera Origin Frame",
+            "name_shelf": "SCmOrFr",
+            "tooltip": "Move the camera to the origin on the current frame.",
             "command": [
-                "import mmSolver.tools.toggleobjectmotiontrail.tool;",
-                "mmSolver.tools.toggleobjectmotiontrail.tool.main();"
+                "import mmSolver.tools.setcameraoriginframe.tool;",
+                "mmSolver.tools.setcameraoriginframe.tool.main();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.setcameraoriginframe.tool;",
+                "mmSolver.tools.setcameraoriginframe.tool.open_window();"
             ]
         },
         "load_lens": {

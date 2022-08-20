@@ -78,6 +78,11 @@ if (BUILD_QT_UI)
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/smoothkeyframes/ui/ui_smoothkeys_layout.py
             )
 
+    compile_qt_ui_to_python_file("setcameraoriginframe"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/setcameraoriginframe/ui/originframe_layout.ui
+            ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/setcameraoriginframe/ui/ui_originframe_layout.py
+            )
+
     compile_qt_ui_to_python_file("loadmarker"
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/loadmarker/ui/loadmarker_layout.ui
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/loadmarker/ui/ui_loadmarker_layout.py

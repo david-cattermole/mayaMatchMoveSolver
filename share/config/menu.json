@@ -78,7 +78,7 @@
             "general_tools/---Viewport",
             "general_tools/center_twodee",
             "general_tools/center_twodee_remove",
-            "general_tools/toggle_object_motion_path",
+            "general_tools/toggle_object_motion_trail",
             "general_tools/---General",
             "general_tools/smooth_keyframes",
             "general_tools/screen_z_manipulator",

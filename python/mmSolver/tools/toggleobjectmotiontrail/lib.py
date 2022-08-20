@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Toggle the motion path on a objects.
+Toggle the motion trail on a objects.
 """
 
 import maya.cmds
@@ -28,7 +28,7 @@ import mmSolver.utils.node as node_utils
 LOG = mmSolver.logger.get_logger()
 
 
-def motion_path_get_path_shape(tfm_node):
+def motion_trail_get_trail_shape(tfm_node):
     conns = (
         maya.cmds.listConnections(
             tfm_node,
@@ -44,7 +44,7 @@ def motion_path_get_path_shape(tfm_node):
     return None
 
 
-def motion_path_get_path_node(tfm_node):
+def motion_trail_get_trail_node(tfm_node):
     conns = (
         maya.cmds.listConnections(
             tfm_node,
@@ -60,11 +60,11 @@ def motion_path_get_path_node(tfm_node):
     return None
 
 
-def motion_path_create_node(tfm_node):
+def motion_trail_create_node(tfm_node):
     start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
     every_n_frames = 1
 
-    path_shape, path_node = maya.cmds.snapshot(
+    trail_shape, trail_node = maya.cmds.snapshot(
         tfm_node,
         motionTrail=True,
         increment=every_n_frames,
@@ -72,63 +72,63 @@ def motion_path_create_node(tfm_node):
         endTime=end_frame,
     )
 
-    attr = '{}.keyframeSize'.format(path_shape)
+    attr = '{}.keyframeSize'.format(trail_shape)
     maya.cmds.setAttr(attr, 0.1)
 
-    path_shape_name = '{}_motionPathHandle'.format(tfm_node.rpartition('|')[-1])
-    path_node_name = '{}_motionPath'.format(tfm_node.rpartition('|')[-1])
-    path_shape = maya.cmds.rename(path_shape, path_shape_name, ignoreShape=False)
-    path_node = maya.cmds.rename(path_node, path_node_name)
-    path_shape = node_utils.get_long_name(path_shape)
-    return path_shape, path_node
+    trail_shape_name = '{}_motiontrailHandle'.format(tfm_node.rpartition('|')[-1])
+    trail_node_name = '{}_motiontrail'.format(tfm_node.rpartition('|')[-1])
+    trail_shape = maya.cmds.rename(trail_shape, trail_shape_name, ignoreShape=False)
+    trail_node = maya.cmds.rename(trail_node, trail_node_name)
+    trail_shape = node_utils.get_long_name(trail_shape)
+    return trail_shape, trail_node
 
 
-def motion_path_get_visibility(tfm_node, path_shape=None):
-    if path_shape is None:
-        path_shape = motion_path_get_path_shape(tfm_node)
-    if path_shape is None:
+def motion_trail_get_visibility(tfm_node, trail_shape=None):
+    if trail_shape is None:
+        trail_shape = motion_trail_get_trail_shape(tfm_node)
+    if trail_shape is None:
         return None
 
-    node_attr = '{}.visibility'.format(path_shape)
+    node_attr = '{}.visibility'.format(trail_shape)
     value = maya.cmds.getAttr(node_attr)
     return bool(value)
 
 
-def motion_path_set_visibility(tfm_node, value, path_shape=None, path_node=None):
+def motion_trail_set_visibility(tfm_node, value, trail_shape=None, trail_node=None):
     assert isinstance(value, bool)
 
-    if path_shape is None:
-        path_shape = motion_path_get_path_shape(tfm_node)
-    if path_node is None:
-        path_node = motion_path_get_path_node(tfm_node)
+    if trail_shape is None:
+        trail_shape = motion_trail_get_trail_shape(tfm_node)
+    if trail_node is None:
+        trail_node = motion_trail_get_trail_node(tfm_node)
 
-    if path_shape is None or path_node is None:
-        path_shape, path_node = motion_path_create_node(tfm_node)
+    if trail_shape is None or trail_node is None:
+        trail_shape, trail_node = motion_trail_create_node(tfm_node)
 
-    node_attr = '{}.visibility'.format(path_shape)
+    node_attr = '{}.visibility'.format(trail_shape)
     maya.cmds.setAttr(node_attr, value)
-    return path_shape, path_node
+    return trail_shape, trail_node
 
 
-def motion_paths_lock_toggle(tfm_nodes):
+def motion_trails_lock_toggle(tfm_nodes):
     is_visible = False
 
-    path_shapes = [motion_path_get_path_shape(x) for x in tfm_nodes]
-    for tfm_node, path_shape in zip(tfm_nodes, path_shapes):
-        vis = motion_path_get_visibility(tfm_node, path_shape=path_shape)
+    trail_shapes = [motion_trail_get_trail_shape(x) for x in tfm_nodes]
+    for tfm_node, trail_shape in zip(tfm_nodes, trail_shapes):
+        vis = motion_trail_get_visibility(tfm_node, trail_shape=trail_shape)
         if vis is True:
             is_visible = True
 
     start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
 
     visibility = not is_visible
-    for tfm_node, path_shape in zip(tfm_nodes, path_shapes):
-        path_shape, path_node = motion_path_set_visibility(
-            tfm_node, visibility, path_shape=path_shape
+    for tfm_node, trail_shape in zip(tfm_nodes, trail_shapes):
+        trail_shape, trail_node = motion_trail_set_visibility(
+            tfm_node, visibility, trail_shape=trail_shape
         )
 
-        node_attr_start = '{}.startTime'.format(path_node)
-        node_attr_end = '{}.endTime'.format(path_node)
+        node_attr_start = '{}.startTime'.format(trail_node)
+        node_attr_end = '{}.endTime'.format(trail_node)
         maya.cmds.setAttr(node_attr_start, start_frame)
         maya.cmds.setAttr(node_attr_end, end_frame)
     return

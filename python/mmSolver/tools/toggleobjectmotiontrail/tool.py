@@ -16,26 +16,26 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Toggle the visibility of motion paths on selected objects.
+Toggle the visibility of motion trails on selected objects.
 """
 
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.tools.toggleobjectmotionpath.lib as lib
+import mmSolver.tools.toggleobjectmotiontrail.lib as lib
 
 LOG = mmSolver.logger.get_logger()
 
 
 def main():
     """
-    Toggle motion paths on the selected transform nodes.
+    Toggle motion trails on the selected transform nodes.
     """
     tfm_nodes = maya.cmds.ls(sl=True, long=True, type='transform') or []
     if len(tfm_nodes) == 0:
         LOG.warn('Please select transform nodes.')
         return
 
-    lib.motion_paths_lock_toggle(tfm_nodes)
+    lib.motion_trails_lock_toggle(tfm_nodes)
     maya.cmds.select(tfm_nodes, replace=True)
     return

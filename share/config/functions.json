@@ -758,13 +758,13 @@
                 "mmSolver.tools.togglecameradistort.tool.main();"
             ]
         },
-        "toggle_object_motion_path": {
-            "name": "Toggle Object Motion Path",
+        "toggle_object_motion_trail": {
+            "name": "Toggle Object Motion Trail",
             "name_shelf": "TglPth",
-            "tooltip": "Toggle the motion path on selected objects.",
+            "tooltip": "Toggle the motion trail on selected objects.",
             "command": [
-                "import mmSolver.tools.toggleobjectmotionpath.tool;",
-                "mmSolver.tools.toggleobjectmotionpath.tool.main();"
+                "import mmSolver.tools.toggleobjectmotiontrail.tool;",
+                "mmSolver.tools.toggleobjectmotiontrail.tool.main();"
             ]
         },
         "load_lens": {

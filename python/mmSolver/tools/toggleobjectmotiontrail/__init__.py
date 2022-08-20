@@ -16,5 +16,5 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Toggle the visiblity of an motion path for objects.
+Toggle the visibility of an motion trail for objects.
 """

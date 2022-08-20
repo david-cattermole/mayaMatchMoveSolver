@@ -72,8 +72,10 @@ def motion_trail_create_node(tfm_node):
         endTime=end_frame,
     )
 
-    attr = '{}.keyframeSize'.format(trail_shape)
-    maya.cmds.setAttr(attr, 0.1)
+    maya.cmds.setAttr('{}.keyframeSize'.format(trail_shape), 0.1)
+
+    maya.cmds.setAttr('{}.overrideEnabled'.format(trail_shape), True)
+    maya.cmds.setAttr('{}.overrideDisplayType'.format(trail_shape), 2)
 
     trail_shape_name = '{}_motiontrailHandle'.format(tfm_node.rpartition('|')[-1])
     trail_node_name = '{}_motiontrail'.format(tfm_node.rpartition('|')[-1])

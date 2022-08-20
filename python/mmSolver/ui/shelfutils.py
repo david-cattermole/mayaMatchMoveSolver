@@ -190,7 +190,7 @@ def create_shelf_separator(parent=None):
 
 def create_popup_menu(*args, **kwargs):
     msg = 'Deprecated, please use mmSolver.ui.menuutils.create_popup_menu'
-    warnings.warn(msg)
+    warnings.warn(msg, DeprecationWarning)
     import mmSolver.ui.menuutils as menu_utils
 
     return menu_utils.create_popup_menu(*args, **kwargs)
@@ -198,7 +198,7 @@ def create_popup_menu(*args, **kwargs):
 
 def create_menu_item(*args, **kwargs):
     msg = 'Deprecated, please use mmSolver.ui.menuutils.create_menu_item'
-    warnings.warn(msg)
+    warnings.warn(msg, DeprecationWarning)
     import mmSolver.ui.menuutils as menu_utils
 
     return menu_utils.create_menu_item(*args, **kwargs)

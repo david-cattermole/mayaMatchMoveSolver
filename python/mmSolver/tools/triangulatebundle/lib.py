@@ -60,7 +60,7 @@ def triangulate_bundle(bnd, relock=None, max_distance=None, direction_tolerance=
     :rtype: bool
     """
     msg = 'Deprecated, please use mmSolver.api.triangulate_bundle() instead.'
-    warnings.warn(msg)
+    warnings.warn(msg, DeprecationWarning)
 
     success = mmapi.triangulate_bundle(
         bnd,

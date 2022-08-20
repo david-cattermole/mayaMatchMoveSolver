@@ -108,5 +108,5 @@ def main():
 
 
 def create_marker():
-    warnings.warn("Use 'main' function instead.")
+    warnings.warn("Use 'main' function instead.", DeprecationWarning)
     main()

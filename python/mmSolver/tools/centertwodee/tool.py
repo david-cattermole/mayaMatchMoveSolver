@@ -172,7 +172,7 @@ def remove():
 
 
 def center_two_dee():
-    warnings.warn("Use 'main' function instead.")
+    warnings.warn("Use 'main' function instead.", DeprecationWarning)
     main()
 
 

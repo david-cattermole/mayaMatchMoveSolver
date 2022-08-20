@@ -153,7 +153,7 @@ def main(
 
 
 def convert_to_marker():
-    warnings.warn("Use 'main' function instead.")
+    warnings.warn("Use 'main' function instead.", DeprecationWarning)
     main()
 
 

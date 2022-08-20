@@ -226,7 +226,7 @@ class Collection(object):
                 "mmSolver.api.Collection(name=value), "
                 "'name' is a deprecated flag, use 'node' "
             )
-            warnings.warn(msg)
+            warnings.warn(msg, DeprecationWarning)
             node = name
 
         self._set = sethelper.SetHelper()

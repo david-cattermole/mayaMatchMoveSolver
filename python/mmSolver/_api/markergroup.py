@@ -59,7 +59,7 @@ class MarkerGroup(object):
                 "mmSolver.api.MarkerGroup(name=value), "
                 "'name' is a deprecated flag, use 'node' "
             )
-            warnings.warn(msg)
+            warnings.warn(msg, DeprecationWarning)
             node = name
         self._mfn_tfm = None
         if node is not None:

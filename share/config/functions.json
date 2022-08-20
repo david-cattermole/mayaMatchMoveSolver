@@ -758,6 +758,15 @@
                 "mmSolver.tools.togglecameradistort.tool.main();"
             ]
         },
+        "toggle_object_motion_path": {
+            "name": "Toggle Object Motion Path",
+            "name_shelf": "TglPth",
+            "tooltip": "Toggle the motion path on selected objects.",
+            "command": [
+                "import mmSolver.tools.toggleobjectmotionpath.tool;",
+                "mmSolver.tools.toggleobjectmotionpath.tool.main();"
+            ]
+        },
         "load_lens": {
             "name": "Load Lens File on Selected Lens(es)...",
             "name_shelf": "LdLens",

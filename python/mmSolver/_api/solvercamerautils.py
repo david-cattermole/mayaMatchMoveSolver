@@ -153,7 +153,7 @@ def _compute_connected_frame_scores(
     return scores
 
 
-def _bundle_adjust(
+def _sub_bundle_adjustment(
     cam_tfm,
     cam_shp,
     mkr_nodes,
@@ -169,29 +169,7 @@ def _bundle_adjust(
     per_frame_solve=None,
     solver_type=None,
 ):
-    LOG.debug('_bundle_adjust')
-    LOG.debug('cam_tfm: %r', cam_tfm)
-    LOG.debug('cam_shp: %r', cam_shp)
-    LOG.debug('mkr_nodes: %r', mkr_nodes)
-    LOG.debug('cam_shp_node_attrs: %r', cam_shp_node_attrs)
-    LOG.debug('lens_node_attrs: %r', lens_node_attrs)
-    LOG.debug('frames: %r', frames)
-    if adjust_camera_translate is None:
-        adjust_camera_translate = False
-    if adjust_camera_rotate is None:
-        adjust_camera_rotate = False
-    if adjust_bundle_positions is None:
-        adjust_bundle_positions = False
-    if adjust_camera_intrinsics is None:
-        adjust_camera_intrinsics = False
-    if adjust_lens_distortion is None:
-        adjust_lens_distortion = False
-    if iteration_num is None:
-        iteration_num = 100
-    if per_frame_solve is None:
-        per_frame_solve = False
-    if solver_type is None:
-        solver_type = const.SOLVER_TYPE_CMINPACK_LMDER
+    # LOG.debug('_sub_bundle_adjustment')
     assert isinstance(adjust_camera_translate, bool)
     assert isinstance(adjust_camera_rotate, bool)
     assert isinstance(adjust_bundle_positions, bool)
@@ -219,11 +197,13 @@ def _bundle_adjust(
 
     if adjust_camera_intrinsics is True:
         for node_attr in cam_shp_node_attrs:
+            # TODO: Add min/max values for Focal Lengths.
             value = (node_attr, 'None', 'None', 'None', 'None')
             node_attrs.append(value)
 
     if adjust_lens_distortion is True:
         for node_attr in lens_node_attrs:
+            # TODO: Add min/max values for lens distortion.
             value = (node_attr, 'None', 'None', 'None', 'None')
             node_attrs.append(value)
 
@@ -282,6 +262,113 @@ def _bundle_adjust(
         **kwargs
     )
     assert result[0] == 'success=1'
+
+    return
+
+
+def _bundle_adjust(
+    cam_tfm,
+    cam_shp,
+    mkr_nodes,
+    cam_shp_node_attrs,
+    lens_node_attrs,
+    frames,
+    adjust_camera_translate=None,
+    adjust_camera_rotate=None,
+    adjust_bundle_positions=None,
+    adjust_camera_intrinsics=None,
+    adjust_lens_distortion=None,
+    iteration_num=None,
+    per_frame_solve=None,
+    solver_type=None,
+):
+    LOG.debug('_bundle_adjust')
+    LOG.debug('cam_tfm: %r', cam_tfm)
+    LOG.debug('cam_shp: %r', cam_shp)
+    LOG.debug('mkr_nodes: %r', mkr_nodes)
+    LOG.debug('cam_shp_node_attrs: %r', cam_shp_node_attrs)
+    LOG.debug('lens_node_attrs: %r', lens_node_attrs)
+    LOG.debug('frames: %r', frames)
+
+    if adjust_camera_translate is None:
+        adjust_camera_translate = False
+    if adjust_camera_rotate is None:
+        adjust_camera_rotate = False
+    if adjust_bundle_positions is None:
+        adjust_bundle_positions = False
+    if adjust_camera_intrinsics is None:
+        adjust_camera_intrinsics = False
+    if adjust_lens_distortion is None:
+        adjust_lens_distortion = False
+    if iteration_num is None:
+        iteration_num = 100
+    if per_frame_solve is None:
+        per_frame_solve = False
+    if solver_type is None:
+        solver_type = const.SOLVER_TYPE_CMINPACK_LMDER
+    assert isinstance(adjust_camera_translate, bool)
+    assert isinstance(adjust_camera_rotate, bool)
+    assert isinstance(adjust_bundle_positions, bool)
+    assert isinstance(adjust_camera_intrinsics, bool)
+    assert isinstance(adjust_lens_distortion, bool)
+
+    lens_iteration_num = iteration_num
+    if adjust_lens_distortion is False:
+        _sub_bundle_adjustment(
+            cam_tfm,
+            cam_shp,
+            mkr_nodes,
+            cam_shp_node_attrs,
+            lens_node_attrs,
+            frames,
+            adjust_camera_translate=adjust_camera_translate,
+            adjust_camera_rotate=adjust_camera_rotate,
+            adjust_bundle_positions=adjust_bundle_positions,
+            adjust_camera_intrinsics=adjust_camera_intrinsics,
+            adjust_lens_distortion=adjust_lens_distortion,
+            iteration_num=iteration_num,
+            per_frame_solve=per_frame_solve,
+            solver_type=solver_type,
+        )
+
+    else:
+        iteration_num = iteration_num / 2
+        lens_iteration_num = iteration_num * 2
+
+        _sub_bundle_adjustment(
+            cam_tfm,
+            cam_shp,
+            mkr_nodes,
+            cam_shp_node_attrs,
+            lens_node_attrs,
+            frames,
+            adjust_camera_translate=adjust_camera_translate,
+            adjust_camera_rotate=adjust_camera_rotate,
+            adjust_bundle_positions=adjust_bundle_positions,
+            adjust_camera_intrinsics=adjust_camera_intrinsics,
+            adjust_lens_distortion=False,
+            iteration_num=iteration_num,
+            per_frame_solve=per_frame_solve,
+            solver_type=solver_type,
+        )
+
+        _sub_bundle_adjustment(
+            cam_tfm,
+            cam_shp,
+            mkr_nodes,
+            cam_shp_node_attrs,
+            lens_node_attrs,
+            frames,
+            adjust_camera_translate=adjust_camera_translate,
+            adjust_camera_rotate=adjust_camera_rotate,
+            adjust_bundle_positions=adjust_bundle_positions,
+            adjust_camera_intrinsics=adjust_camera_intrinsics,
+            adjust_lens_distortion=True,
+            iteration_num=lens_iteration_num,
+            per_frame_solve=per_frame_solve,
+            solver_type=solver_type,
+        )
+
     return
 
 
@@ -936,7 +1023,7 @@ def camera_solve(
         frames,
         adjust_camera_translate=True,
         adjust_camera_rotate=True,
-        adjust_bundle_positions=False,
+        adjust_bundle_positions=True,
         adjust_camera_intrinsics=True,
         adjust_lens_distortion=True,
         iteration_num=10,

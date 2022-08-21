@@ -38,8 +38,6 @@ import mmSolver._api.compile as api_compile
 
 
 LOG = mmSolver.logger.get_logger()
-
-
 ATTR_CATEGORIES = [
     'regular',
     'bundle_transform',
@@ -109,7 +107,7 @@ def _filter_mkr_list_by_frame_list(mkr_list, frame_list):
     return used_mkr_list, unused_mkr_list
 
 
-def _split_mkr_attr_into_categories(mkr_list, attr_list):
+def _split_mkr_attr_into_categories(mkr_list, attr_list, categories):
     """
     Put Markers and Attributes into categories to be solved individually.
 
@@ -130,7 +128,7 @@ def _split_mkr_attr_into_categories(mkr_list, attr_list):
 
     mkr_attr_map = markerutils.find_marker_attr_mapping(mkr_list, attr_list)
     attrs_in_categories = api_compile.categorise_attributes(attr_list)
-    for category in ATTR_CATEGORIES:
+    for category in categories:
         category_node_attrs = attrs_in_categories[category]
         for node, attrs in category_node_attrs.items():
             if len(attrs) == 0:
@@ -658,8 +656,9 @@ def compile_multi_frame(
         LOG.warn("Not enough Markers given for root frames.")
         return
     if auto_attr_blocks is True:
+        categories = ATTR_CATEGORIES
         meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
-            root_mkr_list, attr_list
+            root_mkr_list, attr_list, categories
         )
         for new_mkr_list, new_attr_list in zip(meta_mkr_list, meta_attr_list):
             sol = solverstep.SolverStep()
@@ -892,8 +891,9 @@ def compile_single_frame(
     assert isinstance(verbose, bool)
 
     if auto_attr_blocks is True:
+        categories = ATTR_CATEGORIES
         meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
-            mkr_list, attr_list
+            mkr_list, attr_list, categories
         )
         for new_mkr_list, new_attr_list in zip(meta_mkr_list, meta_attr_list):
             sol = solverstep.SolverStep()

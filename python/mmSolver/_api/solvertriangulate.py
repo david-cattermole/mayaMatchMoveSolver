@@ -109,7 +109,7 @@ class SolverTriangulate(solverbase.SolverBase):
             args = [bnd_node, bnd_mkr_cam_frm_list]
             kwargs = {}
             action = api_action.Action(
-                tribnd_utils._triangulate_bundle_v2, args=args, kwargs=kwargs
+                tribnd_utils._triangulate_and_solve_bundle_v2, args=args, kwargs=kwargs
             )
             LOG.debug(
                 'adding _triangulate_bundle: func=%r',
@@ -118,4 +118,5 @@ class SolverTriangulate(solverbase.SolverBase):
                 kwargs,
             )
             yield action, None
+
         return

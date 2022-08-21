@@ -637,7 +637,6 @@ def compile_multi_frame(
     # is not nodal.
     if triangulate_bundles is True:
         sol = solvertriangulate.SolverTriangulate()
-        # sol.root_frame_list = root_frame_list_num
         cache = api_compile.create_compile_solver_cache()
         generator = api_compile.compile_solver_with_cache(
             sol, col, mkr_list, attr_list, withtest, cache

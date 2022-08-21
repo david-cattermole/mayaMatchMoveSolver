@@ -85,11 +85,6 @@ class SolverStandard(solverbase.SolverBase):
 
     def __init__(self, *args, **kwargs):
         super(SolverStandard, self).__init__(*args, **kwargs)
-        # These variables are not officially supported by the class.
-        self._auto_attr_blocks = False
-        self._triangulate_bundles = False
-        self._use_euler_filter = True
-
         # These variables are not used by the class.
         self._print_statistics_inputs = False
         self._print_statistics_affects = False
@@ -193,6 +188,42 @@ class SolverStandard(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_triangulate_bundles(self):
+        """
+        :rtype: bool
+        """
+        return self._data.get(
+            'triangulate_bundles', const.SOLVER_STD_TRIANGULATE_BUNDLES_DEFAULT_VALUE
+        )
+
+    def set_triangulate_bundles(self, value):
+        """
+        :param value: Value to be set.
+        :type value: bool or int
+        """
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
+        self._data['triangulate_bundles'] = bool(value)
+
+    ############################################################################
+
+    def get_auto_attr_blocks(self):
+        """
+        :rtype: bool
+        """
+        return self._data.get(
+            'auto_attr_blocks', const.SOLVER_STD_AUTO_ATTR_BLOCKS_DEFAULT_VALUE
+        )
+
+    def set_auto_attr_blocks(self, value):
+        """
+        :param value: Value to be set.
+        :type value: bool or int
+        """
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
+        self._data['auto_attr_blocks'] = bool(value)
+
+    ############################################################################
+
     def get_eval_object_relationships(self):
         """
         Get 'Pre-Solve Object Relationships' value.
@@ -245,17 +276,12 @@ class SolverStandard(solverbase.SolverBase):
 
     def get_solver_type(self):
         """
-        Get 'Scene Graph Mode' value.
-
         :rtype: int
         """
         return self._data.get('solver_type', const.SOLVER_STD_SOLVER_TYPE_DEFAULT_VALUE)
 
     def set_solver_type(self, value):
         """
-        Set 'Scene Graph Mode' value.
-
-        :param value: Value to be set.
         :type value: int
         """
         assert isinstance(value, int)
@@ -265,8 +291,6 @@ class SolverStandard(solverbase.SolverBase):
 
     def get_scene_graph_mode(self):
         """
-        Get 'Scene Graph Mode' value.
-
         :rtype: int
         """
         return self._data.get(
@@ -275,9 +299,6 @@ class SolverStandard(solverbase.SolverBase):
 
     def set_scene_graph_mode(self, value):
         """
-        Set 'Scene Graph Mode' value.
-
-        :param value: Value to be set.
         :type value: int
         """
         assert isinstance(value, int)
@@ -579,6 +600,8 @@ class SolverStandard(solverbase.SolverBase):
         single_frame = self.get_single_frame()
         only_root_frames = self.get_only_root_frames()
         global_solve = self.get_global_solve()
+        triangulate_bundles = self.get_triangulate_bundles()
+        auto_attr_blocks = self.get_auto_attr_blocks()
         eval_object_relationships = self.get_eval_object_relationships()
         remove_unused_objects = eval_object_relationships
         eval_complex_graphs = self.get_eval_complex_graphs()
@@ -592,9 +615,7 @@ class SolverStandard(solverbase.SolverBase):
         root_frame_list = self.get_root_frame_list()
         frame_list = self.get_frame_list()
 
-        auto_attr_blocks = self._auto_attr_blocks
-        triangulate_bundles = self._triangulate_bundles
-        use_euler_filter = self._use_euler_filter
+        use_euler_filter = True
         withtest = True
         verbose = True
         precomputed_data = self.get_precomputed_data()

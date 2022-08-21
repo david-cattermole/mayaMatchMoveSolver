@@ -32,6 +32,7 @@ import maya.OpenMaya as OpenMaya
 import mmSolver.logger
 
 import mmSolver.utils.lineintersect as tri_utils
+import mmSolver.utils.camera as cam_utils
 import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
 import mmSolver._api.bundle as bundle
@@ -298,6 +299,70 @@ def _triangulate_bundle_v2(
                     maya.cmds.setAttr(plug, lock=value)
     finally:
         maya.cmds.currentTime(prev_frame, update=False)
+    return success
+
+
+def _triangulate_and_solve_bundle_v2(
+    bnd_node,
+    mkr_cam_node_frm_list,
+    relock=None,
+    max_distance=None,
+    direction_tolerance=None,
+    solve=None,
+    scene_graph_mode=None,
+):
+    if solve is None:
+        solve = True
+    if scene_graph_mode is None:
+        scene_graph_mode = const.SCENE_GRAPH_MODE_MAYA_DAG
+    assert isinstance(solve, bool)
+    assert scene_graph_mode in const.SCENE_GRAPH_MODE_LIST
+
+    success = _triangulate_bundle_v2(
+        bnd_node,
+        mkr_cam_node_frm_list,
+        relock=relock,
+        max_distance=max_distance,
+        direction_tolerance=direction_tolerance,
+    )
+
+    if success is True:
+        solver_type = const.SOLVER_TYPE_DEFAULT
+        frame_solve_mode = const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE
+        iteration_num = 5
+
+        markers = []
+        cameras = []
+        all_frames = set()
+        all_mkr_nodes = set()
+        for mkr_node, cam_tfm, frm_list in mkr_cam_node_frm_list:
+            all_mkr_nodes.add(mkr_node)
+            all_frames |= set(frm_list)
+
+            cam_tfm, cam_shp = cam_utils.get_camera(cam_tfm)
+            cameras.append((cam_tfm, cam_shp))
+
+            mkr_bnd = (mkr_node, cam_shp, bnd_node)
+            markers.append(mkr_bnd)
+
+        node_attrs = [
+            (bnd_node + '.tx', 'None', 'None', 'None', 'None'),
+            (bnd_node + '.ty', 'None', 'None', 'None', 'None'),
+            (bnd_node + '.tz', 'None', 'None', 'None', 'None'),
+        ]
+
+        result = maya.cmds.mmSolver(
+            frame=list(sorted(all_frames)),
+            solverType=solver_type,
+            sceneGraphMode=scene_graph_mode,
+            iterations=iteration_num,
+            frameSolveMode=frame_solve_mode,
+            camera=cameras,
+            marker=markers,
+            attr=node_attrs,
+        )
+        success = result[0] == 'success=1'
+
     return success
 
 

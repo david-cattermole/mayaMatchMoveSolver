@@ -77,7 +77,7 @@
 #include "mmSolver/utilities/string_utils.h"
 
 // Per-attribute type delta values
-#define PER_ATTR_TYPE_DELTA_VALUE 1
+#define PER_ATTR_TYPE_DELTA_VALUE 0
 
 inline int getStringArrayIndexOfValue(MStringArray &array, MString &value) {
 #if MAYA_API_VERSION >= 201700
@@ -159,7 +159,7 @@ double calculateParameterDelta(const double value, const double delta,
         (solver_attr_type == AttrSolverType::kCameraFocal)) {
         new_delta *= 0.1;
     } else if (object_type == ObjectType::kLens) {
-        new_delta *= 0.01;
+        new_delta *= 10.0;
     }
     // TODO: Change delta for bundle depending on bundle's distance
     // from camera/origin.

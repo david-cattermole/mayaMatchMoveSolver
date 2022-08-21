@@ -38,13 +38,6 @@ import mmSolver._api.compile as api_compile
 
 
 LOG = mmSolver.logger.get_logger()
-ATTR_CATEGORIES = [
-    'regular',
-    'bundle_transform',
-    'camera_transform',
-    'camera_intrinsic',
-    'lens_distortion',
-]
 
 
 def _gen_two_frame_fwd(int_list):
@@ -656,7 +649,7 @@ def compile_multi_frame(
         LOG.warn("Not enough Markers given for root frames.")
         return
     if auto_attr_blocks is True:
-        categories = ATTR_CATEGORIES
+        categories = const.ATTR_SOLVER_TYPE_LIST
         meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
             root_mkr_list, attr_list, categories
         )
@@ -891,7 +884,7 @@ def compile_single_frame(
     assert isinstance(verbose, bool)
 
     if auto_attr_blocks is True:
-        categories = ATTR_CATEGORIES
+        categories = const.ATTR_SOLVER_TYPE_LIST
         meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
             mkr_list, attr_list, categories
         )

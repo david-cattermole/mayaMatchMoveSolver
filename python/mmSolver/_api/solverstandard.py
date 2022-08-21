@@ -418,6 +418,43 @@ class SolverStandard(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_solve_focal_length(self):
+        """
+        :rtype: bool
+        """
+        return self._data.get(
+            'solve_focal_length', const.SOLVER_STD_SOLVE_FOCAL_LENGTH_DEFAULT_VALUE
+        )
+
+    def set_solve_focal_length(self, value):
+        """
+        :param value: Value to be set.
+        :type value: bool or int
+        """
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
+        self._data['solve_focal_length'] = bool(value)
+
+    ############################################################################
+
+    def get_solve_lens_distortion(self):
+        """
+        :rtype: bool
+        """
+        return self._data.get(
+            'solve_lens_distortion',
+            const.SOLVER_STD_SOLVE_LENS_DISTORTION_DEFAULT_VALUE,
+        )
+
+    def set_solve_lens_distortion(self, value):
+        """
+        :param value: Value to be set.
+        :type value: bool or int
+        """
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
+        self._data['solve_lens_distortion'] = bool(value)
+
+    ############################################################################
+
     def get_frame_list(self):
         """
         Get frame objects attached to the solver.
@@ -611,6 +648,9 @@ class SolverStandard(solverbase.SolverBase):
         root_iter_num = self.get_root_iteration_num()
         anim_iter_num = self.get_anim_iteration_num()
         lineup_iter_num = self.get_lineup_iteration_num()
+        solve_focal_length = self.get_solve_focal_length()
+        solve_lens_distortion = self.get_solve_lens_distortion()
+
         root_frame_strategy = self.get_root_frame_strategy()
         root_frame_list = self.get_root_frame_list()
         frame_list = self.get_frame_list()
@@ -619,6 +659,12 @@ class SolverStandard(solverbase.SolverBase):
         withtest = True
         verbose = True
         precomputed_data = self.get_precomputed_data()
+
+        attr_list = solverutils.filter_attr_list(
+            attr_list,
+            use_camera_intrinsics=solve_focal_length,
+            use_lens_distortion=solve_lens_distortion,
+        )
 
         # Make sure scene graph is valid before running the actual
         # solve.

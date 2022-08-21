@@ -260,6 +260,43 @@ class SolverBasic(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_solve_focal_length(self):
+        """
+        :rtype: bool
+        """
+        return self._data.get(
+            'solve_focal_length', const.SOLVER_STD_SOLVE_FOCAL_LENGTH_DEFAULT_VALUE
+        )
+
+    def set_solve_focal_length(self, value):
+        """
+        :param value: Value to be set.
+        :type value: bool or int
+        """
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
+        self._data['solve_focal_length'] = bool(value)
+
+    ############################################################################
+
+    def get_solve_lens_distortion(self):
+        """
+        :rtype: bool
+        """
+        return self._data.get(
+            'solve_lens_distortion',
+            const.SOLVER_STD_SOLVE_LENS_DISTORTION_DEFAULT_VALUE,
+        )
+
+    def set_solve_lens_distortion(self, value):
+        """
+        :param value: Value to be set.
+        :type value: bool or int
+        """
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
+        self._data['solve_lens_distortion'] = bool(value)
+
+    ############################################################################
+
     def get_frame_list(self):
         """
         Get frame objects attached to the solver.
@@ -356,9 +393,17 @@ class SolverBasic(solverbase.SolverBase):
         eval_object_relationships = self.get_eval_object_relationships()
         remove_unused_objects = eval_object_relationships
         eval_complex_graphs = self.get_eval_complex_graphs()
+        solve_focal_length = self.get_solve_focal_length()
+        solve_lens_distortion = self.get_solve_lens_distortion()
         solver_type = self.get_solver_type()
         scene_graph_mode = self.get_scene_graph_mode()
         precomputed_data = self.get_precomputed_data()
+
+        attr_list = solverutils.filter_attr_list(
+            attr_list,
+            use_camera_intrinsics=solve_focal_length,
+            use_lens_distortion=solve_lens_distortion,
+        )
 
         # Make sure scene graph is valid before running the actual
         # solve.

@@ -27,6 +27,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.logger
+import mmSolver._api.constant as const
 import mmSolver._api.action as api_action
 import mmSolver._api.compile as api_compile
 import mmSolver._api.solveraffects as solveraffects
@@ -34,6 +35,27 @@ import mmSolver._api.solverscenegraph as solverscenegraph
 
 
 LOG = mmSolver.logger.get_logger()
+
+
+def filter_attr_list(attr_list, use_camera_intrinsics=None, use_lens_distortion=None):
+    if use_camera_intrinsics is None:
+        use_camera_intrinsics = True
+    if use_lens_distortion is None:
+        use_lens_distortion = True
+
+    tmp_attr_list = attr_list
+    attr_list = []
+    for attr in tmp_attr_list:
+        attr_solver_type = api_compile.get_attribute_solver_type(attr)
+        is_cam_intrinsic = attr_solver_type == const.ATTR_SOLVER_TYPE_CAMERA_INTRINSIC
+        is_lens_dist = attr_solver_type == const.ATTR_SOLVER_TYPE_LENS_DISTORTION
+
+        if is_cam_intrinsic and use_camera_intrinsics is False:
+            continue
+        if is_lens_dist and use_lens_distortion is False:
+            continue
+        attr_list.append(attr)
+    return attr_list
 
 
 def compile_solver_affects(col, mkr_list, attr_list, precomputed_data, withtest):

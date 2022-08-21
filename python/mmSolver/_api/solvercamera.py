@@ -36,6 +36,7 @@ import mmSolver._api.camera as camera
 import mmSolver._api.attribute as attribute
 import mmSolver._api.collection as collection
 import mmSolver._api.solverbase as solverbase
+import mmSolver._api.solverutils as solverutils
 import mmSolver._api.action as api_action
 
 
@@ -524,6 +525,43 @@ class SolverCamera(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_solve_focal_length(self):
+        """
+        :rtype: bool
+        """
+        return self._data.get(
+            'solve_focal_length', const.SOLVER_CAM_SOLVE_FOCAL_LENGTH_DEFAULT_VALUE
+        )
+
+    def set_solve_focal_length(self, value):
+        """
+        :param value: Value to be set.
+        :type value: bool or int
+        """
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
+        self._data['solve_focal_length'] = bool(value)
+
+    ############################################################################
+
+    def get_solve_lens_distortion(self):
+        """
+        :rtype: bool
+        """
+        return self._data.get(
+            'solve_lens_distortion',
+            const.SOLVER_CAM_SOLVE_LENS_DISTORTION_DEFAULT_VALUE,
+        )
+
+    def set_solve_lens_distortion(self, value):
+        """
+        :param value: Value to be set.
+        :type value: bool or int
+        """
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
+        self._data['solve_lens_distortion'] = bool(value)
+
+    ############################################################################
+
     def compile(self, col, mkr_list, attr_list, withtest=False):
         # Options to affect how the solve is constructed.
         solver_type = self.get_solver_type()
@@ -537,6 +575,14 @@ class SolverCamera(solverbase.SolverBase):
         scene_scale = self.get_scene_scale()
         adjust_every_n_poses = self.get_adjust_every_n_poses()
         triangulate_bundles = self.get_triangulate_bundles()
+        solve_focal_length = self.get_solve_focal_length()
+        solve_lens_distortion = self.get_solve_lens_distortion()
+
+        attr_list = solverutils.filter_attr_list(
+            attr_list,
+            use_camera_intrinsics=solve_focal_length,
+            use_lens_distortion=solve_lens_distortion,
+        )
 
         origin_frame = origin_frame.get_number()
         root_frames = [x.get_number() for x in root_frame_list]

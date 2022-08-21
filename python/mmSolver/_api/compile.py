@@ -198,12 +198,6 @@ def markersAndCameras_compile_flags(mkr_list, mkr_static_values=None):
     return markers, cameras
 
 
-ATTR_SOLVER_TYPE_REGULAR = 'regular'
-ATTR_SOLVER_TYPE_BUNDLE_TRANSFORM = 'bundle_transform'
-ATTR_SOLVER_TYPE_CAMERA_TRANSFORM = 'camera_transform'
-ATTR_SOLVER_TYPE_CAMERA_INTRINSIC = 'camera_intrinsic'
-ATTR_SOLVER_TYPE_LENS_DISTORTION = 'lens_distortion'
-
 BUNDLE_TRANSFORM_ATTR_NAME_LIST = [
     'translateX',
     'translateY',
@@ -227,7 +221,7 @@ CAMERA_TRANSFORM_ATTR_NAME_LIST = [
 ]
 
 
-def _get_attribute_solver_type(attr):
+def get_attribute_solver_type(attr):
     """
     Get the type of Attribute, one value of ATTR_SOLVER_TYPE_*.
 
@@ -238,7 +232,7 @@ def _get_attribute_solver_type(attr):
     :rtype: str
     """
     assert isinstance(attr, attribute.Attribute)
-    attr_solve_type = ATTR_SOLVER_TYPE_REGULAR
+    attr_solve_type = const.ATTR_SOLVER_TYPE_REGULAR
 
     node = attr.get_node(full_path=True)
     name = attr.get_attr(long_name=True)
@@ -246,16 +240,16 @@ def _get_attribute_solver_type(attr):
 
     if obj_type == const.OBJECT_TYPE_BUNDLE:
         if name in BUNDLE_TRANSFORM_ATTR_NAME_LIST:
-            attr_solve_type = ATTR_SOLVER_TYPE_BUNDLE_TRANSFORM
+            attr_solve_type = const.ATTR_SOLVER_TYPE_BUNDLE_TRANSFORM
 
     elif obj_type == const.OBJECT_TYPE_CAMERA:
         if name in CAMERA_INTRINSIC_ATTR_NAME_LIST:
-            attr_solve_type = ATTR_SOLVER_TYPE_CAMERA_INTRINSIC
+            attr_solve_type = const.ATTR_SOLVER_TYPE_CAMERA_INTRINSIC
         if name in CAMERA_TRANSFORM_ATTR_NAME_LIST:
-            attr_solve_type = ATTR_SOLVER_TYPE_CAMERA_TRANSFORM
+            attr_solve_type = const.ATTR_SOLVER_TYPE_CAMERA_TRANSFORM
 
     elif obj_type == const.OBJECT_TYPE_LENS:
-        attr_solve_type = ATTR_SOLVER_TYPE_LENS_DISTORTION
+        attr_solve_type = const.ATTR_SOLVER_TYPE_LENS_DISTORTION
 
     return attr_solve_type
 
@@ -293,17 +287,17 @@ def categorise_attributes(attr_list):
     for attr in attr_list:
         assert isinstance(attr, attribute.Attribute)
         node = attr.get_node(full_path=True)
-        attr_solver_type = _get_attribute_solver_type(attr)
-        if attr_solver_type == ATTR_SOLVER_TYPE_REGULAR:
-            key = ATTR_SOLVER_TYPE_REGULAR
-        elif attr_solver_type == ATTR_SOLVER_TYPE_BUNDLE_TRANSFORM:
-            key = ATTR_SOLVER_TYPE_BUNDLE_TRANSFORM
-        elif attr_solver_type == ATTR_SOLVER_TYPE_CAMERA_TRANSFORM:
-            key = ATTR_SOLVER_TYPE_CAMERA_TRANSFORM
-        elif attr_solver_type == ATTR_SOLVER_TYPE_CAMERA_INTRINSIC:
-            key = ATTR_SOLVER_TYPE_CAMERA_INTRINSIC
-        elif attr_solver_type == ATTR_SOLVER_TYPE_LENS_DISTORTION:
-            key = ATTR_SOLVER_TYPE_LENS_DISTORTION
+        attr_solver_type = get_attribute_solver_type(attr)
+        if attr_solver_type == const.ATTR_SOLVER_TYPE_REGULAR:
+            key = const.ATTR_SOLVER_TYPE_REGULAR
+        elif attr_solver_type == const.ATTR_SOLVER_TYPE_BUNDLE_TRANSFORM:
+            key = const.ATTR_SOLVER_TYPE_BUNDLE_TRANSFORM
+        elif attr_solver_type == const.ATTR_SOLVER_TYPE_CAMERA_TRANSFORM:
+            key = const.ATTR_SOLVER_TYPE_CAMERA_TRANSFORM
+        elif attr_solver_type == const.ATTR_SOLVER_TYPE_CAMERA_INTRINSIC:
+            key = const.ATTR_SOLVER_TYPE_CAMERA_INTRINSIC
+        elif attr_solver_type == const.ATTR_SOLVER_TYPE_LENS_DISTORTION:
+            key = const.ATTR_SOLVER_TYPE_LENS_DISTORTION
         else:
             raise excep.NotValid
         categories[key][node].append(attr)

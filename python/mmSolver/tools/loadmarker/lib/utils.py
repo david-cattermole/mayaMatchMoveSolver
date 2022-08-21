@@ -35,6 +35,7 @@ import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.python_compat as pycompat
 import mmSolver.api as mmapi
+import mmSolver.tools.createcamera.lib as createcamera_lib
 import mmSolver.tools.userpreferences.lib as userprefs_lib
 
 
@@ -192,13 +193,7 @@ def create_new_camera():
     :returns: Camera object.
     :rtype: Camera
     """
-    name = 'camera'
-    cam_tfm = maya.cmds.createNode('transform', name=name)
-    cam_tfm = node_utils.get_long_name(cam_tfm)
-    cam_shp = maya.cmds.createNode('camera', name=name + 'Shape', parent=cam_tfm)
-    cam_shp = node_utils.get_long_name(cam_shp)
-    cam = mmapi.Camera(transform=cam_tfm, shape=cam_shp)
-    return cam
+    return createcamera_lib.create_camera(name='camera')
 
 
 def create_new_marker_group(cam):

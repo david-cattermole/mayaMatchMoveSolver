@@ -174,82 +174,90 @@ class SolverWindow(BaseWindow):
         edit_menu = QtWidgets.QMenu('Edit', menubar)
         edit_menu.setTearOffEnabled(True)
 
-        if Qt.IsPySide2 or Qt.IsPyQt5:
-            edit_menu.addSection('Undo / Redo')
-
-        # Undo
-        label = 'Undo last command (with disabled viewport)'
-        tooltip = (
-            'Undo the Maya scene state, ' 'without updating the viewport or solver UI'
-        )
+        # Solver Preferences
+        label = 'Solver Preferences...'
+        tooltip = 'Adjust how the solver displays and executes.'
         action = QtWidgets.QAction(label, edit_menu)
         action.setStatusTip(tooltip)
-        action.triggered.connect(self.undoTriggeredCB)
+        action.triggered.connect(self.solverPrefWindowTriggeredCB)
         edit_menu.addAction(action)
 
-        # Redo
-        label = 'Redo last command (with disabled viewport)'
-        tooltip = (
-            'Redo the Maya scene state, ' 'without updating the viewport or solver UI'
-        )
-        action = QtWidgets.QAction(label, edit_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(self.redoTriggeredCB)
-        edit_menu.addAction(action)
+        # if Qt.IsPySide2 or Qt.IsPyQt5:
+        #     edit_menu.addSection('Undo / Redo')
 
-        if Qt.IsPySide2 or Qt.IsPyQt5:
-            edit_menu.addSection('Window Update')
+        # # Undo
+        # label = 'Undo last command (with disabled viewport)'
+        # tooltip = (
+        #     'Undo the Maya scene state, without updating the viewport or solver UI'
+        # )
+        # action = QtWidgets.QAction(label, edit_menu)
+        # action.setStatusTip(tooltip)
+        # action.triggered.connect(self.undoTriggeredCB)
+        # edit_menu.addAction(action)
 
-        # Auto Update Solver Validation
-        label = 'Auto-Update Solver Validation'
-        tooltip = 'Auto-update details of the solver parameter/error numbers.'
-        value = lib_state.get_auto_update_solver_validation_state()
-        action = QtWidgets.QAction(label, edit_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(value)
-        action.toggled.connect(
-            self.subForm.solver_settings.autoUpdateSolverValidationChanged
-        )
-        edit_menu.addAction(action)
+        # # Redo
+        # label = 'Redo last command (with disabled viewport)'
+        # tooltip = (
+        #     'Redo the Maya scene state, without updating the viewport or solver UI'
+        # )
+        # action = QtWidgets.QAction(label, edit_menu)
+        # action.setStatusTip(tooltip)
+        # action.triggered.connect(self.redoTriggeredCB)
+        # edit_menu.addAction(action)
 
-        if Qt.IsPySide2 or Qt.IsPyQt5:
-            edit_menu.addSection('Solver Execution')
+        # if Qt.IsPySide2 or Qt.IsPyQt5:
+        #     edit_menu.addSection('Window Update')
 
-        # Pre-Solve Force Evaluation
-        label = 'Pre-Solve Force Evaluation'
-        tooltip = 'Before starting a solve, ' 'update the scene to force an evaluation.'
-        pre_solve_force_eval = lib_state.get_pre_solve_force_eval_state()
-        action = QtWidgets.QAction(label, edit_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(pre_solve_force_eval)
-        action.toggled.connect(type(self).preSolveForceEvalActionToggledCB)
-        edit_menu.addAction(action)
+        # # Auto Update Solver Validation
+        # label = 'Auto-Update Solver Validation'
+        # tooltip = 'Auto-update details of the solver parameter/error numbers.'
+        # value = lib_state.get_auto_update_solver_validation_state()
+        # action = QtWidgets.QAction(label, edit_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # action.setChecked(value)
+        # action.toggled.connect(
+        #     self.subForm.solver_settings.autoUpdateSolverValidationChanged
+        # )
+        # edit_menu.addAction(action)
 
-        # Refresh Viewport During Solve
-        label = 'Refresh Viewport'
-        tooltip = 'Refresh the viewport while Solving.'
-        refresh_value = lib_state.get_refresh_viewport_state()
-        action = QtWidgets.QAction(label, edit_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(refresh_value)
-        action.toggled.connect(type(self).refreshActionToggledCB)
-        edit_menu.addAction(action)
+        # if Qt.IsPySide2 or Qt.IsPyQt5:
+        #     edit_menu.addSection('Solver Execution')
 
-        # Force DG evaluation.
-        label = 'Force DG Update'
-        tooltip = 'Force Maya DG Evaluation while solving.'
-        force_dg_update_value = lib_state.get_force_dg_update_state()
-        action = QtWidgets.QAction(label, edit_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(force_dg_update_value)
-        action.toggled.connect(type(self).forceDgUpdateActionToggledCB)
-        edit_menu.addAction(action)
+        # # Pre-Solve Force Evaluation
+        # label = 'Pre-Solve Force Evaluation'
+        # tooltip = 'Before starting a solve, update the scene to force an evaluation.'
+        # pre_solve_force_eval = lib_state.get_pre_solve_force_eval_state()
+        # action = QtWidgets.QAction(label, edit_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # action.setChecked(pre_solve_force_eval)
+        # action.toggled.connect(type(self).preSolveForceEvalActionToggledCB)
+        # edit_menu.addAction(action)
 
-        menubar.addMenu(edit_menu)
+        # # Refresh Viewport During Solve
+        # label = 'Refresh Viewport'
+        # tooltip = 'Refresh the viewport while Solving.'
+        # refresh_value = lib_state.get_refresh_viewport_state()
+        # action = QtWidgets.QAction(label, edit_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # action.setChecked(refresh_value)
+        # action.toggled.connect(type(self).refreshActionToggledCB)
+        # edit_menu.addAction(action)
+
+        # # Force DG evaluation.
+        # label = 'Force DG Update'
+        # tooltip = 'Force Maya DG Evaluation while solving.'
+        # force_dg_update_value = lib_state.get_force_dg_update_state()
+        # action = QtWidgets.QAction(label, edit_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # action.setChecked(force_dg_update_value)
+        # action.toggled.connect(type(self).forceDgUpdateActionToggledCB)
+        # edit_menu.addAction(action)
+
+        # menubar.addMenu(edit_menu)
 
         # View Menu
         view_menu = QtWidgets.QMenu('View', menubar)
@@ -364,118 +372,118 @@ class SolverWindow(BaseWindow):
         if Qt.IsPySide2 or Qt.IsPyQt5:
             view_menu.addSection('During Solve')
 
-        # Display the Image Planes while solving.
-        #
-        # TODO: Add other object types to show/hide while solving,
-        #  such as camera, nurbsCurves, nurbsSurfaces, and locators.
-        label = 'Display Image Planes'
-        tooltip = 'Display Image Planes while solving.'
-        value = lib_state.get_display_image_plane_while_solving_state()
-        action = QtWidgets.QAction(label, view_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(value)
-        action.toggled.connect(type(self).displayImagePlaneWhileSolvingActionToggledCB)
-        view_menu.addAction(action)
+        # # Display the Image Planes while solving.
+        # #
+        # # TODO: Add other object types to show/hide while solving,
+        # #  such as camera, nurbsCurves, nurbsSurfaces, and locators.
+        # label = 'Display Image Planes'
+        # tooltip = 'Display Image Planes while solving.'
+        # value = lib_state.get_display_image_plane_while_solving_state()
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # action.setChecked(value)
+        # action.toggled.connect(type(self).displayImagePlaneWhileSolvingActionToggledCB)
+        # view_menu.addAction(action)
 
-        # Display the Meshes while solving.
-        label = 'Display Meshes'
-        tooltip = 'Display Meshes while solving.'
-        value = lib_state.get_display_meshes_while_solving_state()
-        action = QtWidgets.QAction(label, view_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(value)
-        action.toggled.connect(type(self).displayMeshesWhileSolvingActionToggledCB)
-        view_menu.addAction(action)
+        # # Display the Meshes while solving.
+        # label = 'Display Meshes'
+        # tooltip = 'Display Meshes while solving.'
+        # value = lib_state.get_display_meshes_while_solving_state()
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # action.setChecked(value)
+        # action.toggled.connect(type(self).displayMeshesWhileSolvingActionToggledCB)
+        # view_menu.addAction(action)
 
-        # Isolate Objects while solving
-        label = 'Isolate Objects'
-        tooltip = 'Isolate visibility of all Markers and Bundles while solving.'
-        isolate_value = lib_state.get_isolate_object_while_solving_state()
-        action = QtWidgets.QAction(label, view_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(isolate_value)
-        action.toggled.connect(type(self).isolateObjectWhileSolvingActionToggledCB)
-        view_menu.addAction(action)
+        # # Isolate Objects while solving
+        # label = 'Isolate Objects'
+        # tooltip = 'Isolate visibility of all Markers and Bundles while solving.'
+        # isolate_value = lib_state.get_isolate_object_while_solving_state()
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # action.setChecked(isolate_value)
+        # action.toggled.connect(type(self).isolateObjectWhileSolvingActionToggledCB)
+        # view_menu.addAction(action)
 
         menubar.addMenu(view_menu)
 
-        # Log Menu
-        # This menu depicts a radio button allowing the user to choose
-        # how much information is returned to the console (the logging
-        # level).
-        log_menu = QtWidgets.QMenu('Log', menubar)
+        # # Log Menu
+        # # This menu depicts a radio button allowing the user to choose
+        # # how much information is returned to the console (the logging
+        # # level).
+        # log_menu = QtWidgets.QMenu('Log', menubar)
 
-        # Errors
-        label = 'Errors'
-        tooltip = 'Send Errors to the log.'
-        logErrorAction = QtWidgets.QAction(label, log_menu)
-        logErrorAction.setStatusTip(tooltip)
-        logErrorAction.setCheckable(True)
-        logErrorAction.triggered.connect(partial(self.logErrorCB))
-        log_menu.addAction(logErrorAction)
+        # # Errors
+        # label = 'Errors'
+        # tooltip = 'Send Errors to the log.'
+        # logErrorAction = QtWidgets.QAction(label, log_menu)
+        # logErrorAction.setStatusTip(tooltip)
+        # logErrorAction.setCheckable(True)
+        # logErrorAction.triggered.connect(partial(self.logErrorCB))
+        # log_menu.addAction(logErrorAction)
 
-        # Warnings
-        label = 'Warnings'
-        tooltip = 'Send Warnings to the log.'
-        logWarningAction = QtWidgets.QAction(label, log_menu)
-        logWarningAction.setStatusTip(tooltip)
-        logWarningAction.setCheckable(True)
-        logWarningAction.triggered.connect(partial(self.logWarningCB))
-        log_menu.addAction(logWarningAction)
+        # # Warnings
+        # label = 'Warnings'
+        # tooltip = 'Send Warnings to the log.'
+        # logWarningAction = QtWidgets.QAction(label, log_menu)
+        # logWarningAction.setStatusTip(tooltip)
+        # logWarningAction.setCheckable(True)
+        # logWarningAction.triggered.connect(partial(self.logWarningCB))
+        # log_menu.addAction(logWarningAction)
 
-        # Information
-        label = 'Info'
-        tooltip = 'Send Information to the log.'
-        logInfoAction = QtWidgets.QAction(label, log_menu)
-        logInfoAction.setStatusTip(tooltip)
-        logInfoAction.setCheckable(True)
-        logInfoAction.triggered.connect(partial(self.logInfoCB))
-        log_menu.addAction(logInfoAction)
+        # # Information
+        # label = 'Info'
+        # tooltip = 'Send Information to the log.'
+        # logInfoAction = QtWidgets.QAction(label, log_menu)
+        # logInfoAction.setStatusTip(tooltip)
+        # logInfoAction.setCheckable(True)
+        # logInfoAction.triggered.connect(partial(self.logInfoCB))
+        # log_menu.addAction(logInfoAction)
 
-        # Verbose
-        label = 'Verbose'
-        tooltip = 'Send Verboses to the log.'
-        logVerboseAction = QtWidgets.QAction(label, log_menu)
-        logVerboseAction.setStatusTip(tooltip)
-        logVerboseAction.setCheckable(True)
-        logVerboseAction.triggered.connect(partial(self.logVerboseCB))
-        log_menu.addAction(logVerboseAction)
+        # # Verbose
+        # label = 'Verbose'
+        # tooltip = 'Send Verboses to the log.'
+        # logVerboseAction = QtWidgets.QAction(label, log_menu)
+        # logVerboseAction.setStatusTip(tooltip)
+        # logVerboseAction.setCheckable(True)
+        # logVerboseAction.triggered.connect(partial(self.logVerboseCB))
+        # log_menu.addAction(logVerboseAction)
 
-        # Debug
-        label = 'Debug'
-        tooltip = 'Send Debug messages to the log.'
-        logDebugAction = QtWidgets.QAction(label, log_menu)
-        logDebugAction.setStatusTip(tooltip)
-        logDebugAction.setCheckable(True)
-        logDebugAction.triggered.connect(partial(self.logDebugCB))
-        log_menu.addAction(logDebugAction)
+        # # Debug
+        # label = 'Debug'
+        # tooltip = 'Send Debug messages to the log.'
+        # logDebugAction = QtWidgets.QAction(label, log_menu)
+        # logDebugAction.setStatusTip(tooltip)
+        # logDebugAction.setCheckable(True)
+        # logDebugAction.triggered.connect(partial(self.logDebugCB))
+        # log_menu.addAction(logDebugAction)
 
-        # 'Radio' button for logging levels
-        log_actionGroup = QtWidgets.QActionGroup(log_menu)
-        log_actionGroup.addAction(logErrorAction)
-        log_actionGroup.addAction(logWarningAction)
-        log_actionGroup.addAction(logInfoAction)
-        log_actionGroup.addAction(logVerboseAction)
-        log_actionGroup.addAction(logDebugAction)
+        # # 'Radio' button for logging levels
+        # log_actionGroup = QtWidgets.QActionGroup(log_menu)
+        # log_actionGroup.addAction(logErrorAction)
+        # log_actionGroup.addAction(logWarningAction)
+        # log_actionGroup.addAction(logInfoAction)
+        # log_actionGroup.addAction(logVerboseAction)
+        # log_actionGroup.addAction(logDebugAction)
 
-        log_level = lib_state.get_log_level()
-        if log_level == const.LOG_LEVEL_ERROR:
-            logErrorAction.setChecked(True)
-        elif log_level == const.LOG_LEVEL_WARNING:
-            logWarningAction.setChecked(True)
-        elif log_level == const.LOG_LEVEL_INFO:
-            logInfoAction.setChecked(True)
-        elif log_level == const.LOG_LEVEL_VERBOSE:
-            logVerboseAction.setChecked(True)
-        elif log_level == const.LOG_LEVEL_DEBUG:
-            logDebugAction.setChecked(True)
-        else:
-            LOG.warning('Invalid log level given: %r' % log_level)
+        # log_level = lib_state.get_log_level()
+        # if log_level == const.LOG_LEVEL_ERROR:
+        #     logErrorAction.setChecked(True)
+        # elif log_level == const.LOG_LEVEL_WARNING:
+        #     logWarningAction.setChecked(True)
+        # elif log_level == const.LOG_LEVEL_INFO:
+        #     logInfoAction.setChecked(True)
+        # elif log_level == const.LOG_LEVEL_VERBOSE:
+        #     logVerboseAction.setChecked(True)
+        # elif log_level == const.LOG_LEVEL_DEBUG:
+        #     logDebugAction.setChecked(True)
+        # else:
+        #     LOG.warning('Invalid log level given: %r' % log_level)
 
-        menubar.addMenu(log_menu)
+        # menubar.addMenu(log_menu)
 
         # Help Menu
         help_menu = QtWidgets.QMenu('Help', menubar)
@@ -528,36 +536,40 @@ class SolverWindow(BaseWindow):
         self.subForm.attribute_browser.dataChanged.emit()
         return
 
-    def undoTriggeredCB(self):
-        LOG.debug('undoTriggeredCB')
-        import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
+    # def undoTriggeredCB(self):
+    #     LOG.debug('undoTriggeredCB')
+    #     import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
 
-        validation = lib_state.get_auto_update_solver_validation_state()
-        with undo_utils.no_undo_context():
-            lib_state.set_auto_update_solver_validation_state(False)
-        block = self.blockSignals(True)
-        try:
-            undoredoscene_tool.main_undo()
-        finally:
-            with undo_utils.no_undo_context():
-                lib_state.set_auto_update_solver_validation_state(validation)
-            self.blockSignals(block)
-        return
+    #     validation = lib_state.get_auto_update_solver_validation_state()
+    #     with undo_utils.no_undo_context():
+    #         lib_state.set_auto_update_solver_validation_state(False)
+    #     block = self.blockSignals(True)
+    #     try:
+    #         undoredoscene_tool.main_undo()
+    #     finally:
+    #         with undo_utils.no_undo_context():
+    #             lib_state.set_auto_update_solver_validation_state(validation)
+    #         self.blockSignals(block)
+    #     return
 
-    def redoTriggeredCB(self):
-        LOG.debug('redoTriggeredCB')
-        import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
+    # def redoTriggeredCB(self):
+    #     LOG.debug('redoTriggeredCB')
+    #     import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
 
-        validation = lib_state.get_auto_update_solver_validation_state()
-        with undo_utils.no_undo_context():
-            lib_state.set_auto_update_solver_validation_state(False)
-        block = self.blockSignals(True)
-        try:
-            undoredoscene_tool.main_redo()
-        finally:
-            with undo_utils.no_undo_context():
-                lib_state.set_auto_update_solver_validation_state(validation)
-            self.blockSignals(block)
+    #     validation = lib_state.get_auto_update_solver_validation_state()
+    #     with undo_utils.no_undo_context():
+    #         lib_state.set_auto_update_solver_validation_state(False)
+    #     block = self.blockSignals(True)
+    #     try:
+    #         undoredoscene_tool.main_redo()
+    #     finally:
+    #         with undo_utils.no_undo_context():
+    #             lib_state.set_auto_update_solver_validation_state(validation)
+    #         self.blockSignals(block)
+    #     return
+
+    def solverPrefWindowTriggeredCB(self):
+        LOG.debug('solverPrefWindowTriggeredCB')
         return
 
     @staticmethod

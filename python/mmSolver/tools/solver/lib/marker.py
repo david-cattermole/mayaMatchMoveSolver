@@ -19,6 +19,8 @@
 Marker functions.
 """
 
+import time
+
 import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
@@ -29,19 +31,30 @@ LOG = mmSolver.logger.get_logger()
 
 
 def add_markers_to_collection(mkr_list, col):
+    s = time.time()
     if isinstance(col, mmapi.Collection) is False:
         msg = 'col argument must be a Collection: %r'
         raise TypeError(msg % col)
     col.add_marker_list(mkr_list)
+    e = time.time()
+    LOG.debug('add_markers_to_collection: %r seconds', e - s)
     return
 
 
 def remove_markers_from_collection(mkr_list, col):
-    return col.remove_marker_list(mkr_list)
+    s = time.time()
+    result = col.remove_marker_list(mkr_list)
+    e = time.time()
+    LOG.debug('remove_markers_from_collection: %r seconds', e - s)
+    return result
 
 
 def get_markers_from_collection(col):
-    return col.get_marker_list()
+    s = time.time()
+    mkr_list = col.get_marker_list()
+    e = time.time()
+    LOG.debug('get_markers_from_collection: %r seconds', e - s)
+    return mkr_list
 
 
 def _add_callback_to_any_node(
@@ -68,6 +81,7 @@ def _add_callback_to_any_node(
 
 
 def add_callbacks_to_markers(mkr_list, callback_manager):
+    s = time.time()
     callback_type = maya_callbacks.TYPE_MARKER
     for mkr_obj in mkr_list:
         # Marker
@@ -117,10 +131,13 @@ def add_callbacks_to_markers(mkr_list, callback_manager):
             cam_shp_node_path,
             maya_callbacks.add_callbacks_to_camera,
         )
+    e = time.time()
+    LOG.debug('add_callbacks_to_markers: %r seconds', e - s)
     return
 
 
 def remove_callbacks_from_markers(mkr_list, callback_manager):
+    s = time.time()
     msg = 'Node UUID has multiple paths: node=%r node_uuids=%r'
     callback_type = maya_callbacks.TYPE_MARKER
     for mkr_obj in mkr_list:
@@ -153,4 +170,6 @@ def remove_callbacks_from_markers(mkr_list, callback_manager):
                 callback_type,
                 node_uuid,
             )
+    e = time.time()
+    LOG.debug('remove_callbacks_from_markers: %r seconds', e - s)
     return

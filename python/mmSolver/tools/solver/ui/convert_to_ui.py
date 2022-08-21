@@ -23,6 +23,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import time
+
 import mmSolver.logger
 
 import mmSolver.api as mmapi
@@ -54,6 +56,7 @@ def markersToUINodes(mkr_list, show_cam, show_mkr, show_bnd):
     :return: A list of UI MarkerNode objects.
     :rtype: [MarkerNode, ..]
     """
+    s = time.time()
     assert isinstance(show_cam, bool)
     assert isinstance(show_mkr, bool)
     assert isinstance(show_bnd, bool)
@@ -113,6 +116,8 @@ def markersToUINodes(mkr_list, show_cam, show_mkr, show_bnd):
         }
         assert mkr_node is not None
         bnd_node = object_nodes.BundleNode(bnd_name, data=data, parent=mkr_node)
+    e = time.time()
+    LOG.debug('markersToUINodes: %r seconds', e - s)
     return root
 
 
@@ -139,6 +144,7 @@ def attributesToUINodes(col, attr_list, show_anm, show_stc, show_lck):
     :returns: A hierarchy of UI nodes to be viewed in a 'tree view'.
     :rtype: PlugNode
     """
+    s = time.time()
     root = attr_nodes.PlugNode('root')
     maya_nodes = dict()
     for attr in attr_list:
@@ -172,14 +178,19 @@ def attributesToUINodes(col, attr_list, show_anm, show_stc, show_lck):
         a = attr.get_attr()
         attr_node = attr_nodes.AttrNode(a, data=data, parent=maya_node)
         attr_node.setNeverHasChildren(True)
+    e = time.time()
+    LOG.debug('attributesToUINodes: %r seconds', e - s)
     return root
 
 
 def solverStepsToUINodes(step_list, col):
+    s = time.time()
     node_list = []
     for step in step_list:
         assert isinstance(step, solver_step.SolverStep) is True
         name = step.get_name()
         node = solver_nodes.SolverStepNode(name, col)
         node_list.append(node)
+    e = time.time()
+    LOG.debug('solverStepsToUINodes: %r seconds', e - s)
     return node_list

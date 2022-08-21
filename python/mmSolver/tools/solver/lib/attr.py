@@ -20,6 +20,7 @@ Attribute functions
 """
 
 import time
+
 import maya.cmds
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
@@ -50,15 +51,27 @@ def _apply_function_to_attrs(attr_list, apply_func):
 
 
 def get_attributes_from_collection(col):
-    return col.get_attribute_list()
+    s = time.time()
+    result = col.get_attribute_list()
+    e = time.time()
+    LOG.debug('get_attributes_from_collection: %r seconds', e - s)
+    return result
 
 
 def add_attributes_to_collection(attr_list, col):
-    return col.add_attribute_list(attr_list)
+    s = time.time()
+    result = col.add_attribute_list(attr_list)
+    e = time.time()
+    LOG.debug('get_attributes_from_collection: %r seconds', e - s)
+    return result
 
 
 def remove_attr_from_collection(attr_list, col):
-    return col.remove_attribute_list(attr_list)
+    s = time.time()
+    result = col.remove_attribute_list(attr_list)
+    e = time.time()
+    LOG.debug('get_attributes_from_collection: %r seconds', e - s)
+    return result
 
 
 def set_details_selected_attributes(attr_list, col):
@@ -277,6 +290,7 @@ def remove_callbacks_from_attributes(attr_list, callback_manager):
         callbacks.
     :type callback_manager: CallbackManager
     """
+    s = time.time()
     msg = 'Node UUID has multiple paths: node=%r node_uuids=%r'
     callback_type = maya_callbacks.TYPE_ATTRIBUTE
     for attr_obj in attr_list:
@@ -292,4 +306,6 @@ def remove_callbacks_from_attributes(attr_list, callback_manager):
             callback_type,
             node_uuid,
         )
+    e = time.time()
+    LOG.debug('remove_callbacks_from_attributes: %r seconds', e - s)
     return

@@ -125,19 +125,19 @@ class Dialog(QtWidgets.QDialog):
         self.ui.max_checkBox.toggled.connect(self.ui.max_doubleSpinBox.setEnabled)
         self.ui.min_checkBox.toggled.connect(self.ui.min_doubleSpinBox.setEnabled)
 
-        self.ui.stiffness_checkBox.toggled.connect(
-            self.ui.stiffnessVariance_doubleSpinBox.setEnabled
-        )
-        self.ui.stiffness_checkBox.toggled.connect(
-            self.ui.stiffnessWeight_doubleSpinBox.setEnabled
-        )
+        # self.ui.stiffness_checkBox.toggled.connect(
+        #     self.ui.stiffnessVariance_doubleSpinBox.setEnabled
+        # )
+        # self.ui.stiffness_checkBox.toggled.connect(
+        #     self.ui.stiffnessWeight_doubleSpinBox.setEnabled
+        # )
 
-        self.ui.smoothness_checkBox.toggled.connect(
-            self.ui.smoothnessVariance_doubleSpinBox.setEnabled
-        )
-        self.ui.smoothness_checkBox.toggled.connect(
-            self.ui.smoothnessWeight_doubleSpinBox.setEnabled
-        )
+        # self.ui.smoothness_checkBox.toggled.connect(
+        #     self.ui.smoothnessVariance_doubleSpinBox.setEnabled
+        # )
+        # self.ui.smoothness_checkBox.toggled.connect(
+        #     self.ui.smoothnessWeight_doubleSpinBox.setEnabled
+        # )
 
         self.ui.locked_radioButton.toggled.connect(self.set_internal_state_locked)
         self.ui.static_radioButton.toggled.connect(self.set_internal_state_static)
@@ -148,21 +148,21 @@ class Dialog(QtWidgets.QDialog):
         self.ui.min_doubleSpinBox.valueChanged.connect(self.set_internal_min_value)
         self.ui.max_doubleSpinBox.valueChanged.connect(self.set_internal_max_value)
 
-        self.ui.stiffness_checkBox.toggled.connect(self.set_internal_stiffness_enable)
-        self.ui.stiffnessVariance_doubleSpinBox.valueChanged.connect(
-            self.set_internal_stiffness_variance
-        )
-        self.ui.stiffnessWeight_doubleSpinBox.valueChanged.connect(
-            self.set_internal_stiffness_weight
-        )
+        # self.ui.stiffness_checkBox.toggled.connect(self.set_internal_stiffness_enable)
+        # self.ui.stiffnessVariance_doubleSpinBox.valueChanged.connect(
+        #     self.set_internal_stiffness_variance
+        # )
+        # self.ui.stiffnessWeight_doubleSpinBox.valueChanged.connect(
+        #     self.set_internal_stiffness_weight
+        # )
 
-        self.ui.smoothness_checkBox.toggled.connect(self.set_internal_smoothness_enable)
-        self.ui.smoothnessVariance_doubleSpinBox.valueChanged.connect(
-            self.set_internal_smoothness_variance
-        )
-        self.ui.smoothnessWeight_doubleSpinBox.valueChanged.connect(
-            self.set_internal_smoothness_weight
-        )
+        # self.ui.smoothness_checkBox.toggled.connect(self.set_internal_smoothness_enable)
+        # self.ui.smoothnessVariance_doubleSpinBox.valueChanged.connect(
+        #     self.set_internal_smoothness_variance
+        # )
+        # self.ui.smoothnessWeight_doubleSpinBox.valueChanged.connect(
+        #     self.set_internal_smoothness_weight
+        # )
 
         self.ui.buttonBox.accepted.connect(self.accept)
         self.ui.buttonBox.rejected.connect(self.reject)
@@ -211,66 +211,69 @@ class Dialog(QtWidgets.QDialog):
             self.attr_detail_dict.copy(), self.current_attr, 'max_value', value
         )
 
-    def set_internal_stiffness_enable(self, value):
-        self.attr_detail_dict = set_internal_value(
-            self.attr_detail_dict.copy(), self.current_attr, 'stiffness_enable', value
-        )
+    # def set_internal_stiffness_enable(self, value):
+    #     self.attr_detail_dict = set_internal_value(
+    #         self.attr_detail_dict.copy(), self.current_attr, 'stiffness_enable', value
+    #     )
 
-    def set_internal_stiffness_variance(self, value):
-        self.attr_detail_dict = set_internal_value(
-            self.attr_detail_dict.copy(), self.current_attr, 'stiffness_variance', value
-        )
+    # def set_internal_stiffness_variance(self, value):
+    #     self.attr_detail_dict = set_internal_value(
+    #         self.attr_detail_dict.copy(), self.current_attr, 'stiffness_variance', value
+    #     )
 
-    def set_internal_stiffness_weight(self, value):
-        self.attr_detail_dict = set_internal_value(
-            self.attr_detail_dict.copy(), self.current_attr, 'stiffness_weight', value
-        )
+    # def set_internal_stiffness_weight(self, value):
+    #     self.attr_detail_dict = set_internal_value(
+    #         self.attr_detail_dict.copy(), self.current_attr, 'stiffness_weight', value
+    #     )
 
-    def set_internal_smoothness_enable(self, value):
-        self.attr_detail_dict = set_internal_value(
-            self.attr_detail_dict.copy(), self.current_attr, 'smoothness_enable', value
-        )
+    # def set_internal_smoothness_enable(self, value):
+    #     self.attr_detail_dict = set_internal_value(
+    #         self.attr_detail_dict.copy(), self.current_attr, 'smoothness_enable', value
+    #     )
 
-    def set_internal_smoothness_variance(self, value):
-        self.attr_detail_dict = set_internal_value(
-            self.attr_detail_dict.copy(),
-            self.current_attr,
-            'smoothness_variance',
-            value,
-        )
+    # def set_internal_smoothness_variance(self, value):
+    #     self.attr_detail_dict = set_internal_value(
+    #         self.attr_detail_dict.copy(),
+    #         self.current_attr,
+    #         'smoothness_variance',
+    #         value,
+    #     )
 
-    def set_internal_smoothness_weight(self, value):
-        self.attr_detail_dict = set_internal_value(
-            self.attr_detail_dict.copy(), self.current_attr, 'smoothness_weight', value
-        )
+    # def set_internal_smoothness_weight(self, value):
+    #     self.attr_detail_dict = set_internal_value(
+    #         self.attr_detail_dict.copy(), self.current_attr, 'smoothness_weight', value
+    #     )
 
     def set_default_values(self):
+        # Disable the stiffness and smoothness feature.
+        self.ui.animCurve_groupBox.setVisible(False)
+
         self.ui.min_doubleSpinBox.setEnabled(False)
         self.ui.max_doubleSpinBox.setEnabled(False)
-        self.ui.stiffnessVariance_doubleSpinBox.setEnabled(False)
-        self.ui.smoothnessVariance_doubleSpinBox.setEnabled(False)
-        self.ui.stiffnessWeight_doubleSpinBox.setEnabled(False)
-        self.ui.smoothnessWeight_doubleSpinBox.setEnabled(False)
+        # self.ui.stiffnessVariance_doubleSpinBox.setEnabled(False)
+        # self.ui.smoothnessVariance_doubleSpinBox.setEnabled(False)
+        # self.ui.stiffnessWeight_doubleSpinBox.setEnabled(False)
+        # self.ui.smoothnessWeight_doubleSpinBox.setEnabled(False)
         self.ui.statistics_groupBox.setEnabled(False)
 
         self.ui.min_checkBox.setChecked(const.MIN_ENABLE_DEFAULT_VALUE)
         self.ui.max_checkBox.setChecked(const.MAX_ENABLE_DEFAULT_VALUE)
 
-        self.ui.stiffness_checkBox.setChecked(const.STIFFNESS_ENABLE_DEFAULT_VALUE)
-        self.ui.stiffnessVariance_doubleSpinBox.setValue(
-            const.STIFFNESS_VARIANCE_DEFAULT_VALUE
-        )
-        self.ui.stiffnessWeight_doubleSpinBox.setValue(
-            const.STIFFNESS_WEIGHT_DEFAULT_VALUE
-        )
+        # self.ui.stiffness_checkBox.setChecked(const.STIFFNESS_ENABLE_DEFAULT_VALUE)
+        # self.ui.stiffnessVariance_doubleSpinBox.setValue(
+        #     const.STIFFNESS_VARIANCE_DEFAULT_VALUE
+        # )
+        # self.ui.stiffnessWeight_doubleSpinBox.setValue(
+        #     const.STIFFNESS_WEIGHT_DEFAULT_VALUE
+        # )
 
-        self.ui.smoothness_checkBox.setChecked(const.SMOOTHNESS_ENABLE_DEFAULT_VALUE)
-        self.ui.smoothnessVariance_doubleSpinBox.setValue(
-            const.SMOOTHNESS_VARIANCE_DEFAULT_VALUE
-        )
-        self.ui.smoothnessWeight_doubleSpinBox.setValue(
-            const.SMOOTHNESS_WEIGHT_DEFAULT_VALUE
-        )
+        # self.ui.smoothness_checkBox.setChecked(const.SMOOTHNESS_ENABLE_DEFAULT_VALUE)
+        # self.ui.smoothnessVariance_doubleSpinBox.setValue(
+        #     const.SMOOTHNESS_VARIANCE_DEFAULT_VALUE
+        # )
+        # self.ui.smoothnessWeight_doubleSpinBox.setValue(
+        #     const.SMOOTHNESS_WEIGHT_DEFAULT_VALUE
+        # )
 
         self.window().setWindowTitle(const.WINDOW_TITLE_BAR)
         return
@@ -374,53 +377,53 @@ class Dialog(QtWidgets.QDialog):
         self.ui.max_doubleSpinBox.setValue(value)
         return
 
-    def get_stiffness_enable(self):
-        return self.ui.stiffness_checkBox.isChecked()
+    # def get_stiffness_enable(self):
+    #     return self.ui.stiffness_checkBox.isChecked()
 
-    def set_stiffness_enable(self, value):
-        assert isinstance(value, bool)
-        self.ui.stiffness_checkBox.setChecked(value)
-        return
+    # def set_stiffness_enable(self, value):
+    #     assert isinstance(value, bool)
+    #     self.ui.stiffness_checkBox.setChecked(value)
+    #     return
 
-    def get_stiffness_variance(self):
-        return self.ui.stiffnessVariance_doubleSpinBox.value()
+    # def get_stiffness_variance(self):
+    #     return self.ui.stiffnessVariance_doubleSpinBox.value()
 
-    def set_stiffness_variance(self, value):
-        assert isinstance(value, float)
-        self.ui.stiffnessVariance_doubleSpinBox.setValue(value)
-        return
+    # def set_stiffness_variance(self, value):
+    #     assert isinstance(value, float)
+    #     self.ui.stiffnessVariance_doubleSpinBox.setValue(value)
+    #     return
 
-    def get_stiffness_weight(self):
-        return self.ui.stiffnessWeight_doubleSpinBox.value()
+    # def get_stiffness_weight(self):
+    #     return self.ui.stiffnessWeight_doubleSpinBox.value()
 
-    def set_stiffness_weight(self, value):
-        assert isinstance(value, float)
-        self.ui.stiffnessWeight_doubleSpinBox.setValue(value)
-        return
+    # def set_stiffness_weight(self, value):
+    #     assert isinstance(value, float)
+    #     self.ui.stiffnessWeight_doubleSpinBox.setValue(value)
+    #     return
 
-    def get_smoothness_enable(self):
-        return self.ui.smoothness_checkBox.isChecked()
+    # def get_smoothness_enable(self):
+    #     return self.ui.smoothness_checkBox.isChecked()
 
-    def set_smoothness_enable(self, value):
-        assert isinstance(value, bool)
-        self.ui.smoothness_checkBox.setChecked(value)
-        return
+    # def set_smoothness_enable(self, value):
+    #     assert isinstance(value, bool)
+    #     self.ui.smoothness_checkBox.setChecked(value)
+    #     return
 
-    def get_smoothness_variance(self):
-        return self.ui.smoothnessVariance_doubleSpinBox.value()
+    # def get_smoothness_variance(self):
+    #     return self.ui.smoothnessVariance_doubleSpinBox.value()
 
-    def set_smoothness_variance(self, value):
-        assert isinstance(value, float)
-        self.ui.smoothnessVariance_doubleSpinBox.setValue(value)
-        return
+    # def set_smoothness_variance(self, value):
+    #     assert isinstance(value, float)
+    #     self.ui.smoothnessVariance_doubleSpinBox.setValue(value)
+    #     return
 
-    def get_smoothness_weight(self):
-        return self.ui.smoothnessWeight_doubleSpinBox.value()
+    # def get_smoothness_weight(self):
+    #     return self.ui.smoothnessWeight_doubleSpinBox.value()
 
-    def set_smoothness_weight(self, value):
-        assert isinstance(value, float)
-        self.ui.smoothnessWeight_doubleSpinBox.setValue(value)
-        return
+    # def set_smoothness_weight(self, value):
+    #     assert isinstance(value, float)
+    #     self.ui.smoothnessWeight_doubleSpinBox.setValue(value)
+    #     return
 
     def get_curve_min(self):
         return self.ui.minStats_doubleSpinBox.value()
@@ -480,13 +483,13 @@ class Dialog(QtWidgets.QDialog):
         self.set_max_enable(values.max_enable)
         self.set_max_value(values.max_value)
 
-        self.set_stiffness_enable(values.stiffness_enable)
-        self.set_stiffness_variance(values.stiffness_variance)
-        self.set_stiffness_weight(values.stiffness_weight)
+        # self.set_stiffness_enable(values.stiffness_enable)
+        # self.set_stiffness_variance(values.stiffness_variance)
+        # self.set_stiffness_weight(values.stiffness_weight)
 
-        self.set_smoothness_enable(values.smoothness_enable)
-        self.set_smoothness_variance(values.smoothness_variance)
-        self.set_smoothness_weight(values.smoothness_weight)
+        # self.set_smoothness_enable(values.smoothness_enable)
+        # self.set_smoothness_variance(values.smoothness_variance)
+        # self.set_smoothness_weight(values.smoothness_weight)
 
         curve_min = values.curve_min or const.CURVE_MIN_DEFAULT_VALUE
         curve_max = values.curve_max or const.CURVE_MAX_DEFAULT_VALUE

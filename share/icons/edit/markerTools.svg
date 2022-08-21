@@ -16,7 +16,7 @@
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="markerTools.svg"
    enable-background="new"
-   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\markerTools_32x32.png"
+   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver\share\icons\markerTools_32x32.png"
    inkscape:export-xdpi="48"
    inkscape:export-ydpi="48">
   <defs
@@ -76,6 +76,19 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter11816"
+       x="-0.035169762"
+       width="1.0703394"
+       y="-0.036870383"
+       height="1.0737408">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.40992657"
+         id="feGaussianBlur11818" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -84,10 +97,10 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.5"
-     inkscape:cx="17.334441"
-     inkscape:cy="28.040226"
-     inkscape:current-layer="layer4"
+     inkscape:zoom="9.90625"
+     inkscape:cx="32"
+     inkscape:cy="32"
+     inkscape:current-layer="layer5"
      showgrid="false"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
@@ -145,49 +158,19 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:groupmode="layer"
-     id="layer4"
-     inkscape:label="Layer 2">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:45.44862366px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.13621557"
-       x="3.9165351"
-       y="61.588951"
-       id="text1137-8"
-       inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\text1137-8.png"
-       inkscape:export-xdpi="48"
-       inkscape:export-ydpi="48"><tspan
-         sodipodi:role="line"
-         id="tspan1135-3"
-         x="3.9165351"
-         y="61.588951"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:18.93692589px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:1.13621557">Tools</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-weight:normal;font-size:45.44862366px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#dadada;fill-opacity:1;stroke:none;stroke-width:1.13621557"
-       x="3.4387903"
-       y="60.638714"
-       id="text1137"
-       inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\text1137-8.png"
-       inkscape:export-xdpi="48"
-       inkscape:export-ydpi="48"><tspan
-         sodipodi:role="line"
-         id="tspan1135"
-         x="3.4387903"
-         y="60.638714"
-         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:18.93692589px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#dadada;fill-opacity:1;stroke-width:1.13621557">Tools</tspan></text>
-  </g>
-  <g
      id="layer1"
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer">
+     inkscape:label="shape_object"
+     inkscape:groupmode="layer"
+     style="display:inline"
+     sodipodi:insensitive="true">
     <g
-       id="g3874">
+       id="g3874"
+       transform="translate(7.9404032,-0.50542653)">
       <g
          style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1"
          id="g4482-5"
@@ -265,6 +248,77 @@
            x="11.581995"
            y="23.253347" />
       </g>
+    </g>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="tools_text"
+     sodipodi:insensitive="true"
+     style="display:inline">
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:45.44862366px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.13621557"
+       x="3.9165351"
+       y="61.588951"
+       id="text1137-8"
+       inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\text1137-8.png"
+       inkscape:export-xdpi="48"
+       inkscape:export-ydpi="48"><tspan
+         sodipodi:role="line"
+         id="tspan1135-3"
+         x="3.9165351"
+         y="61.588951"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:18.93692589px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:1.13621557">Tools</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-weight:normal;font-size:45.44862366px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#dadada;fill-opacity:1;stroke:none;stroke-width:1.13621557"
+       x="3.4387903"
+       y="60.638714"
+       id="text1137"
+       inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\text1137-8.png"
+       inkscape:export-xdpi="48"
+       inkscape:export-ydpi="48"><tspan
+         sodipodi:role="line"
+         id="tspan1135"
+         x="3.4387903"
+         y="60.638714"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:18.93692589px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#dadada;fill-opacity:1;stroke-width:1.13621557">Tools</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="letter_text"
+     style="display:inline;opacity:1">
+    <g
+       style="display:inline"
+       id="g14709"
+       transform="matrix(0.70012149,0,0,0.70012149,0.79217224,0.96389353)">
+      <text
+         inkscape:transform-center-x="-1.1606825e-06"
+         inkscape:transform-center-y="0.49714793"
+         id="text17748-0"
+         y="29.799412"
+         x="-0.70019734"
+         style="font-style:normal;font-weight:normal;font-size:78.64445496px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.9661113;filter:url(#filter11816)"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:36.70074844px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:1.9661113"
+           y="29.799412"
+           x="-0.70019734"
+           id="tspan17746-24"
+           sodipodi:role="line">M</tspan></text>
+      <text
+         inkscape:transform-center-y="0.49714854"
+         id="text17748"
+         y="28.437908"
+         x="-1.9429837"
+         style="font-style:normal;font-weight:normal;font-size:78.64445496px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#ff1212;fill-opacity:1;stroke:none;stroke-width:1.9661113"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:36.70074844px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ff1212;fill-opacity:1;stroke-width:1.9661113"
+           y="28.437908"
+           x="-1.9429837"
+           id="tspan17746"
+           sodipodi:role="line">M</tspan></text>
     </g>
   </g>
 </svg>

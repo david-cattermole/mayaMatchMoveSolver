@@ -16,7 +16,7 @@
    inkscape:version="0.92.4 (5da689c313, 2019-01-14)"
    sodipodi:docname="bundleTools.svg"
    enable-background="new"
-   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver_windows\icons\bundleTools_32x32.png"
+   inkscape:export-filename="C:\Users\catte\dev\mayaMatchMoveSolver\share\icons\bundleTools_32x32.png"
    inkscape:export-xdpi="48"
    inkscape:export-ydpi="48">
   <defs
@@ -124,6 +124,19 @@
        inkscape:vp_y="0 : 1000 : 0"
        inkscape:vp_x="0 : 0.5 : 1"
        sodipodi:type="inkscape:persp3d" />
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter11808"
+       x="-0.039037678"
+       width="1.0780754"
+       y="-0.033400942"
+       height="1.0668019">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.37135315"
+         id="feGaussianBlur11810" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -132,10 +145,10 @@
      borderopacity="1.0"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.5"
-     inkscape:cx="16.70277"
-     inkscape:cy="32.414204"
-     inkscape:current-layer="layer2"
+     inkscape:zoom="9.90625"
+     inkscape:cx="32"
+     inkscape:cy="32"
+     inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:document-units="px"
      inkscape:grid-bbox="true"
@@ -200,7 +213,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -208,20 +221,20 @@
      id="layer1"
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     style="filter:url(#filter6313)">
+     style="display:inline;filter:url(#filter6313)">
     <g
-       id="g6443">
+       id="g6443"
+       transform="translate(7.6363637,1.2727273)">
       <g
          id="g7531"
-         transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,-13.734247,31.800934)"
-         style="">
+         transform="rotate(-45,31.52,32.47917)">
         <g
            id="g2867"
-           transform="matrix(0.70710678,-0.70710678,0.70710678,0.70710678,-13.54637,32.073869)">
+           transform="rotate(-45,31.9434,32.38885)">
           <g
              transform="matrix(0.58707095,0.58707095,-0.58707095,0.58707095,39.440931,-4.0384096)"
              id="g4482-5"
-             style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1;">
+             style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-opacity:1">
             <path
                transform="matrix(0.91666667,0,0,0.91666668,4.4999999,5.4166663)"
                style="fill:#000000;stroke:#000000;stroke-width:1.09090912;stroke-linejoin:miter;stroke-miterlimit:4;marker-start:none"
@@ -281,7 +294,8 @@
   <g
      inkscape:groupmode="layer"
      id="layer2"
-     inkscape:label="Layer 2">
+     inkscape:label="Layer 2"
+     style="display:inline">
     <text
        xml:space="preserve"
        style="font-style:normal;font-weight:normal;font-size:45.44862366px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.13621557"
@@ -304,5 +318,43 @@
          x="3.381968"
          y="60.738697"
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:18.93692589px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#dadada;fill-opacity:1;stroke-width:1.13621557">Tools</tspan></text>
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="Layer 3"
+     style="display:inline;opacity:1"
+     sodipodi:insensitive="true">
+    <g
+       style="display:inline"
+       id="g14703"
+       transform="matrix(0.68890728,0,0,0.69303717,-24.358256,-21.453479)">
+      <text
+         inkscape:transform-center-x="-1.8388803e-06"
+         inkscape:transform-center-y="0.49714926"
+         id="text17748-5-4"
+         y="61.75108"
+         x="36.309719"
+         style="font-style:normal;font-weight:normal;font-size:78.64445496px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.9661113;filter:url(#filter11808)"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:36.70074844px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#000000;fill-opacity:1;stroke-width:1.9661113"
+           y="61.75108"
+           x="36.309719"
+           id="tspan17746-2-4"
+           sodipodi:role="line">B</tspan></text>
+      <text
+         inkscape:transform-center-x="3.5630369e-06"
+         inkscape:transform-center-y="0.4971462"
+         id="text17748-5"
+         y="60.38958"
+         x="35.066929"
+         style="font-style:normal;font-weight:normal;font-size:78.64445496px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;display:inline;fill:#12ff34;fill-opacity:1;stroke:none;stroke-width:1.9661113"
+         xml:space="preserve"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:36.70074844px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#12ff34;fill-opacity:1;stroke-width:1.9661113"
+           y="60.38958"
+           x="35.066929"
+           id="tspan17746-2"
+           sodipodi:role="line">B</tspan></text>
+    </g>
   </g>
 </svg>

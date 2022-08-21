@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>318</width>
-    <height>195</height>
+    <height>184</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -47,7 +47,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
@@ -112,6 +112,35 @@
        </property>
        <item>
         <layout class="QVBoxLayout" name="standard_layout">
+         <property name="spacing">
+          <number>1</number>
+         </property>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="camera_tab">
+      <attribute name="title">
+       <string>Camera</string>
+      </attribute>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="spacing">
+        <number>1</number>
+       </property>
+       <property name="leftMargin">
+        <number>1</number>
+       </property>
+       <property name="topMargin">
+        <number>1</number>
+       </property>
+       <property name="rightMargin">
+        <number>1</number>
+       </property>
+       <property name="bottomMargin">
+        <number>1</number>
+       </property>
+       <item>
+        <layout class="QVBoxLayout" name="camera_layout">
          <property name="spacing">
           <number>1</number>
          </property>

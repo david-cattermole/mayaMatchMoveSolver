@@ -471,6 +471,114 @@ def __compile_frame_list(range_type, frame_string, by_frame):
     return frame_nums
 
 
+def __get_collection_frame_numbers(col, range_type):
+    by_frame = col_state.get_solver_increment_by_frame_from_collection(col)
+    frame_string = col_state.get_solver_frames_from_collection(col)
+    frame_nums = __compile_frame_list(range_type, frame_string, by_frame)
+    return frame_nums
+
+
+def __get_collection_root_frame_numbers(col):
+    root_frame_num_string = col_state.get_solver_root_frames_from_collection(col)
+    if root_frame_num_string is None:
+        start, end = utils_time.get_maya_timeline_range_inner()
+        root_frame_num_string = '{0},{1}'.format(start, end)
+    root_frame_nums = converttypes.stringToIntList(root_frame_num_string)
+    return root_frame_nums
+
+
+def __compile_solver_basic_tab(col, scene_graph_mode):
+    sol_list = []
+    sol = mmapi.SolverBasic()
+    range_type = col_state.get_solver_range_type_from_collection(col)
+    if range_type == const.RANGE_TYPE_CURRENT_FRAME_VALUE:
+        frame_num = lib_maya_utils.get_current_frame()
+        frame = mmapi.Frame(frame_num)
+        sol.set_use_single_frame(True)
+        sol.set_single_frame(frame)
+    else:
+        by_frame = col_state.get_solver_increment_by_frame_from_collection(col)
+        frame_string = col_state.get_solver_frames_from_collection(col)
+        frame_nums = __compile_frame_list(range_type, frame_string, by_frame)
+
+        frames = [mmapi.Frame(f) for f in frame_nums]
+        sol.set_frame_list(frames)
+
+    eval_obj_relations = col_state.get_solver_eval_object_relationships_from_collection(
+        col
+    )
+    eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
+    sol.set_scene_graph_mode(scene_graph_mode)
+    sol.set_eval_object_relationships(eval_obj_relations)
+    sol.set_eval_complex_graphs(eval_complex_graphs)
+    sol_list.append(sol)
+    return sol_list
+
+
+def __compile_solver_standard_tab(col, scene_graph_mode):
+    sol_list = []
+    sol = mmapi.SolverStandard()
+    range_type = col_state.get_solver_range_type_from_collection(col)
+    if range_type == const.RANGE_TYPE_CURRENT_FRAME_VALUE:
+        frame_num = lib_maya_utils.get_current_frame()
+        frame = mmapi.Frame(frame_num)
+        sol.set_use_single_frame(True)
+        sol.set_single_frame(frame)
+    else:
+        frame_nums = __get_collection_frame_numbers(col, range_type)
+        root_frame_nums = __get_collection_root_frame_numbers(col)
+
+        frames = [mmapi.Frame(f) for f in frame_nums if f not in root_frame_nums]
+        root_frames = [mmapi.Frame(f) for f in root_frame_nums]
+        sol.set_root_frame_list(root_frames)
+        sol.set_frame_list(frames)
+
+    global_solve = col_state.get_solver_global_solve_from_collection(col)
+    only_root = col_state.get_solver_only_root_frames_from_collection(col)
+    eval_obj_relations = col_state.get_solver_eval_object_relationships_from_collection(
+        col
+    )
+    eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
+    sol.set_global_solve(global_solve)
+    sol.set_only_root_frames(only_root)
+    sol.set_scene_graph_mode(scene_graph_mode)
+    sol.set_eval_object_relationships(eval_obj_relations)
+    sol.set_eval_complex_graphs(eval_complex_graphs)
+    sol_list.append(sol)
+    return sol_list
+
+
+def __compile_solver_camera_tab(col):
+    sol_list = []
+    sol = mmapi.SolverCamera()
+    range_type = col_state.get_solver_range_type_from_collection(col)
+    if range_type == const.RANGE_TYPE_CURRENT_FRAME_VALUE:
+        msg = 'Select a frame range; camera solver cannot solve single frame.'
+        raise ValueError(msg)
+
+    frame_nums = __get_collection_frame_numbers(col, range_type)
+    root_frame_nums = __get_collection_root_frame_numbers(col)
+
+    frames = [mmapi.Frame(f) for f in frame_nums]
+    root_frames = [mmapi.Frame(f) for f in root_frame_nums]
+    sol.set_root_frame_list(root_frames)
+    sol.set_frame_list(frames)
+
+    start_frame = min(frame_nums)
+    end_frame = max(frame_nums)
+    origin_frame_num = col_state.get_solver_origin_frame_from_collection(col)
+    origin_frame_num = max(start_frame, origin_frame_num)
+    origin_frame_num = min(end_frame, origin_frame_num)
+    origin_frame = mmapi.Frame(origin_frame_num)
+    sol.set_origin_frame(origin_frame)
+
+    scene_scale = col_state.get_solver_scene_scale_from_collection(col)
+    sol.set_scene_scale(scene_scale)
+
+    sol_list.append(sol)
+    return sol_list
+
+
 def compile_collection(col, prog_fn=None):
     """
     Compiles, checks and validates the collection, ready for a solve.
@@ -492,81 +600,18 @@ def compile_collection(col, prog_fn=None):
     solver_tab = col_state.get_solver_tab_from_collection(col)
     assert isinstance(solver_tab, pycompat.TEXT_TYPE)
     if solver_tab == const.SOLVER_TAB_BASIC_VALUE:
-        sol = mmapi.SolverBasic()
-        range_type = col_state.get_solver_range_type_from_collection(col)
-        if range_type == const.RANGE_TYPE_CURRENT_FRAME_VALUE:
-            frame_num = lib_maya_utils.get_current_frame()
-            frame = mmapi.Frame(frame_num)
-            sol.set_use_single_frame(True)
-            sol.set_single_frame(frame)
-        else:
-            by_frame = col_state.get_solver_increment_by_frame_from_collection(col)
-            frame_string = col_state.get_solver_frames_from_collection(col)
-            frame_nums = __compile_frame_list(range_type, frame_string, by_frame)
-            frames = [mmapi.Frame(f) for f in frame_nums]
-            sol.set_frame_list(frames)
-
-        eval_obj_relations = (
-            col_state.get_solver_eval_object_relationships_from_collection(col)
-        )
-        eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(
-            col
-        )
-        sol.set_scene_graph_mode(scene_graph_mode)
-        sol.set_eval_object_relationships(eval_obj_relations)
-        sol.set_eval_complex_graphs(eval_complex_graphs)
-        sol_list.append(sol)
-
+        sol_list = __compile_solver_basic_tab(col, scene_graph_mode)
     elif solver_tab == const.SOLVER_TAB_STANDARD_VALUE:
-        sol = mmapi.SolverStandard()
-        range_type = col_state.get_solver_range_type_from_collection(col)
-        if range_type == const.RANGE_TYPE_CURRENT_FRAME_VALUE:
-            frame_num = lib_maya_utils.get_current_frame()
-            frame = mmapi.Frame(frame_num)
-            sol.set_use_single_frame(True)
-            sol.set_single_frame(frame)
-        else:
-            # Frame numbers
-            by_frame = col_state.get_solver_increment_by_frame_from_collection(col)
-            frame_string = col_state.get_solver_frames_from_collection(col)
-            frame_nums = __compile_frame_list(range_type, frame_string, by_frame)
-
-            # Root frame numbers
-            root_frame_num_string = col_state.get_solver_root_frames_from_collection(
-                col
-            )
-            if root_frame_num_string is None:
-                start, end = utils_time.get_maya_timeline_range_inner()
-                root_frame_num_string = '{0},{1}'.format(start, end)
-            root_frame_nums = converttypes.stringToIntList(root_frame_num_string)
-
-            frames = [mmapi.Frame(f) for f in frame_nums if f not in root_frame_nums]
-            root_frames = [mmapi.Frame(f) for f in root_frame_nums]
-            sol.set_root_frame_list(root_frames)
-            sol.set_frame_list(frames)
-
-        global_solve = col_state.get_solver_global_solve_from_collection(col)
-        only_root = col_state.get_solver_only_root_frames_from_collection(col)
-        eval_obj_relations = (
-            col_state.get_solver_eval_object_relationships_from_collection(col)
-        )
-        eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(
-            col
-        )
-        sol.set_global_solve(global_solve)
-        sol.set_only_root_frames(only_root)
-        sol.set_scene_graph_mode(scene_graph_mode)
-        sol.set_eval_object_relationships(eval_obj_relations)
-        sol.set_eval_complex_graphs(eval_complex_graphs)
-        sol_list.append(sol)
-
+        sol_list = __compile_solver_standard_tab(col, scene_graph_mode)
     elif solver_tab.lower() == const.SOLVER_TAB_LEGACY_VALUE:
         step_list = get_solver_steps_from_collection(col)
         sol_list = compile_solvers_from_steps(col, step_list, prog_fn=prog_fn)
-
+    elif solver_tab == const.SOLVER_TAB_CAMERA_VALUE:
+        sol_list = __compile_solver_camera_tab(col)
     else:
         msg = 'Solver tab value is invalid: %r'
         raise TypeError(msg % solver_tab)
+
     col.set_solver_list(sol_list)
     e = time.time()
     LOG.debug('Compile time (GUI): %r seconds', e - s)

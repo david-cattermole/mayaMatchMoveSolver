@@ -538,17 +538,6 @@ class SolverCamera(solverbase.SolverBase):
         adjust_every_n_poses = self.get_adjust_every_n_poses()
         triangulate_bundles = self.get_triangulate_bundles()
 
-        # # These variables are not officially supported by the class.
-        # # self.triangulate_bundles = False
-        # self._use_euler_filter = True
-
-        # # These variables are not used by the class.
-        # self._print_statistics_inputs = False
-        # self._print_statistics_affects = False
-        # self._print_statistics_deviation = False
-        # self._robust_loss_type = 0
-        # self._robust_loss_scale = 1.0
-
         origin_frame = origin_frame.get_number()
         root_frames = [x.get_number() for x in root_frame_list]
         frames = [x.get_number() for x in frame_list]

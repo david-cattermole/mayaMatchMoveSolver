@@ -282,10 +282,12 @@ assert len(RANGE_TYPE_NAME_LIST) == len(RANGE_TYPE_VALUE_LIST)
 # Solver Tab values
 SOLVER_TAB_BASIC_VALUE = 'basic'
 SOLVER_TAB_STANDARD_VALUE = 'standard'
+SOLVER_TAB_CAMERA_VALUE = 'camera'
 SOLVER_TAB_LEGACY_VALUE = 'legacy'
 SOLVER_TAB_VALUE_LIST = [
     SOLVER_TAB_BASIC_VALUE,
     SOLVER_TAB_STANDARD_VALUE,
+    SOLVER_TAB_CAMERA_VALUE,
     SOLVER_TAB_LEGACY_VALUE,
 ]
 
@@ -384,12 +386,26 @@ SOLVER_SCENE_GRAPH_MODE_ATTR = 'solver_scene_graph'
 SOLVER_SCENE_GRAPH_MODE_ATTR_TYPE = 'long'
 SOLVER_SCENE_GRAPH_MODE_DEFAULT_VALUE = SCENE_GRAPH_MODE_MM_SCENE_GRAPH
 
+# Solver Origin Frame (stored on Collection node)
+SOLVER_ORIGIN_FRAME_ATTR = 'solver_origin_frame'
+SOLVER_ORIGIN_FRAME_ATTR_TYPE = 'long'
+SOLVER_ORIGIN_FRAME_DEFAULT_VALUE = 0
+
+# Solver Scene Scale (stored on Collection node)
+SOLVER_SCENE_SCALE_ATTR = 'solver_scene_scale'
+SOLVER_SCENE_SCALE_ATTR_TYPE = 'double'
+SOLVER_SCENE_SCALE_DEFAULT_VALUE = 10.0
+
 # Descriptions for solvers
 SOLVER_BASIC_DESC_DEFAULT = 'Solve only animated attributes on frames.'
 SOLVER_STD_DESC_DEFAULT = (
     'Solve animated and static attributes on root frames, '
     'then solve animated attributes on frames.'
 )
+SOLVER_CAM_DESC_DEFAULT = (
+    'Solve (free-move) Camera from scratch with only Markers as input.'
+)
+
 
 # Attribute Type
 ATTR_TYPE_TRANSLATE = 'attr_type_translate'

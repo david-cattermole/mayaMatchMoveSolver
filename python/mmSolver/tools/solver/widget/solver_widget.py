@@ -38,10 +38,12 @@ import mmSolver.api as mmapi
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
 import mmSolver.tools.solver.widget.ui_solver_widget as ui_solver_widget
-import mmSolver.tools.solver.widget.solver_standard_widget as solver_standard_widget
 import mmSolver.tools.solver.widget.solver_basic_widget as solver_basic_widget
+import mmSolver.tools.solver.widget.solver_standard_widget as solver_standard_widget
+import mmSolver.tools.solver.widget.solver_camera_widget as solver_camera_widget
 
-# import mmSolver.tools.solver.widget.solver_legacy_widget as solver_legacy_widget  # Deprecated.
+# # Deprecated.
+# import mmSolver.tools.solver.widget.solver_legacy_widget as solver_legacy_widget
 import mmSolver.tools.userpreferences.constant as userprefs_const
 import mmSolver.tools.userpreferences.lib as userprefs_lib
 
@@ -93,6 +95,10 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         self.standard_widget = solver_standard_widget.SolverStandardWidget(self)
         self.standard_layout.addWidget(self.standard_widget)
 
+        # Solver Settings Camera Widget
+        self.camera_widget = solver_camera_widget.SolverCameraWidget(self)
+        self.camera_layout.addWidget(self.camera_widget)
+
         # # Solver Settings Legacy Widget (deprecated)
         # #
         # # The 'legacy' solver settings are not supported, and are
@@ -105,16 +111,19 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         self._tab_name_to_index_map = {
             'basic': 0,
             'standard': 1,
-            # 'legacy': 2,  # Deprecated.
+            'camera': 2,
+            # 'legacy': 3,  # Deprecated.
         }
         self._tab_index_to_widget_map = {
             0: self.basic_widget,
             1: self.standard_widget,
-            # 2: self.legacy_widget,  # Deprecated.
+            2: self.camera_widget,
+            # 3: self.legacy_widget,  # Deprecated.
         }
         self.all_tab_widgets = [
             self.basic_widget,
             self.standard_widget,
+            self.camera_widget,
             # self.legacy_widget  # Deprecated.
         ]
 
@@ -130,6 +139,7 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         self.tabWidget.currentChanged.connect(self._tabChanged)
         self.basic_widget.dataChanged.connect(self._dataChanged)
         self.standard_widget.dataChanged.connect(self._dataChanged)
+        self.camera_widget.dataChanged.connect(self._dataChanged)
         # self.legacy_widget.dataChanged.connect(self._dataChanged)  # Deprecated.
         self.standard_widget.sendWarning.connect(self._sendWarningToUser)
         self.standard_widget.sendWarning.connect(self._sendWarningToUser)

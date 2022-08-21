@@ -1082,3 +1082,69 @@ def set_solver_scene_graph_mode_on_collection(col, value):
         default_value=const.SOLVER_SCENE_GRAPH_MODE_DEFAULT_VALUE,
     )
     return
+
+
+#######################################################################
+
+
+def get_solver_origin_frame_from_collection(col):
+    """
+    :type col: Collection
+    :rtype: int
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_ORIGIN_FRAME_ATTR,
+        attr_type=const.SOLVER_ORIGIN_FRAME_ATTR_TYPE,
+        default_value=const.SOLVER_ORIGIN_FRAME_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_origin_frame_on_collection(col, value):
+    """
+    :type col: Collection
+    :type value: int
+    """
+    assert isinstance(value, int)
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_ORIGIN_FRAME_ATTR,
+        value,
+        attr_type=const.SOLVER_ORIGIN_FRAME_ATTR_TYPE,
+        default_value=const.SOLVER_ORIGIN_FRAME_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_scene_scale_from_collection(col):
+    """
+    :type col: Collection
+    :rtype: float
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_SCENE_SCALE_ATTR,
+        attr_type=const.SOLVER_SCENE_SCALE_ATTR_TYPE,
+        default_value=const.SOLVER_SCENE_SCALE_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_scene_scale_on_collection(col, value):
+    """
+    :type col: Collection
+    :type value: float
+    """
+    assert isinstance(value, float)
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_SCENE_SCALE_ATTR,
+        value,
+        attr_type=const.SOLVER_SCENE_SCALE_ATTR_TYPE,
+        default_value=const.SOLVER_SCENE_SCALE_DEFAULT_VALUE,
+    )
+    return

@@ -34,9 +34,6 @@ import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
-import mmSolver.utils.python_compat as pycompat
-import mmSolver.ui.uimodels as uimodels
-import mmSolver.ui.uiutils as uiutils
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
 import mmSolver.tools.solver.lib.collection as lib_col
@@ -44,8 +41,6 @@ import mmSolver.tools.solver.widget.ui_solver_camera_widget as ui_solver_camera_
 import mmSolver.tools.solver.widget.framerange_widget as framerange_widget
 import mmSolver.tools.solver.widget.rootframe_widget as rootframe_widget
 import mmSolver.tools.solver.constant as const
-import mmSolver.tools.userpreferences.constant as userprefs_const
-import mmSolver.tools.userpreferences.lib as userprefs_lib
 
 
 LOG = mmSolver.logger.get_logger()

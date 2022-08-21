@@ -33,7 +33,7 @@ import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
-import mmSolver.tools.solver.widget.ui_nodebrowser_widget as ui_nodebrowser_widget
+
 
 LOG = mmSolver.logger.get_logger()
 

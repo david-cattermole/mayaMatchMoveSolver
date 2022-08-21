@@ -37,7 +37,6 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.tools.solver.ui.attr_nodes as attr_nodes
 import mmSolver.tools.solver.lib.attr as lib_attr
-import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.uiquery as lib_uiquery
 

@@ -32,9 +32,7 @@ import mmSolver.ui.Qt.QtCore as QtCore
 import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
-import mmSolver.tools.solver.ui.object_nodes as object_nodes
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
-import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.uiquery as lib_uiquery
 
 import mmSolver.logger

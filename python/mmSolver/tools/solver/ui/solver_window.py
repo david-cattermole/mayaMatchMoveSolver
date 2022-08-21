@@ -39,7 +39,6 @@ import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
-import mmSolver.utils.undo as undo_utils
 import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.python_compat as pycompat
 import mmSolver.ui.uiutils as uiutils

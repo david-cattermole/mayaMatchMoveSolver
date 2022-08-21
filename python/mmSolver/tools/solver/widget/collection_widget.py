@@ -37,7 +37,6 @@ import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.widget.ui_collection_widget as ui_collection_widget
-import mmSolver.tools.solver.constant as const
 
 
 LOG = mmSolver.logger.get_logger()

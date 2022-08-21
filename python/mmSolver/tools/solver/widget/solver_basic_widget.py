@@ -125,6 +125,13 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
             self.evalComplexGraphsValueToggled
         )
 
+        self.solveFocalLength_checkBox.toggled.connect(
+            self.solveFocalLengthValueToggled
+        )
+        self.solveLensDistortion_checkBox.toggled.connect(
+            self.solveLensDistortionValueToggled
+        )
+
         desc = const.SOLVER_BASIC_DESC_DEFAULT
         self.description_label.setText(desc)
         e = time.time()
@@ -156,6 +163,22 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
 
     def setEvalComplexGraphsValue(self, col, value):
         lib_col_state.set_solver_eval_complex_graphs_on_collection(col, value)
+        return
+
+    def getSolveFocalLengthValue(self, col):
+        value = lib_col_state.get_solver_solve_focal_length_from_collection(col)
+        return value
+
+    def setSolveFocalLengthValue(self, col, value):
+        lib_col_state.set_solver_solve_focal_length_on_collection(col, value)
+        return
+
+    def getSolveLensDistortionValue(self, col):
+        value = lib_col_state.get_solver_solve_lens_distortion_from_collection(col)
+        return value
+
+    def setSolveLensDistortionValue(self, col, value):
+        lib_col_state.set_solver_solve_lens_distortion_on_collection(col, value)
         return
 
     def event(self, ev):
@@ -212,16 +235,23 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
         if allow_obj_relations is False:
             eval_obj_conns = False
 
+        solve_focal_length = self.getSolveFocalLengthValue(col)
+        solve_lens_distortion = self.getSolveLensDistortionValue(col)
+
         block = self.blockSignals(True)
         self.sceneGraphMode_comboBox.setCurrentIndex(scene_graph_mode)
         self.evalObjectRelationships_checkBox.setEnabled(allow_obj_relations)
         self.evalObjectRelationships_checkBox.setChecked(eval_obj_conns)
         self.evalComplexGraphs_checkBox.setChecked(eval_complex_graphs)
+        self.solveFocalLength_checkBox.setChecked(solve_focal_length)
+        self.solveLensDistortion_checkBox.setChecked(solve_lens_distortion)
         self.blockSignals(block)
 
         self.setSceneGraphModeValue(col, scene_graph_mode)
         self.setEvalObjectRelationshipsValue(col, eval_obj_conns)
         self.setEvalComplexGraphsValue(col, eval_complex_graphs)
+        self.setSolveFocalLengthValue(col, solve_focal_length)
+        self.setSolveLensDistortionValue(col, solve_lens_distortion)
         return
 
     def queryInfo(self):
@@ -263,5 +293,23 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
             return
         self.setEvalComplexGraphsValue(col, value)
         self.evalComplexGraphsChanged.emit()
+        self.dataChanged.emit()
+        return
+
+    @QtCore.Slot(bool)
+    def solveFocalLengthValueToggled(self, value):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        self.setSolveFocalLengthValue(col, value)
+        self.dataChanged.emit()
+        return
+
+    @QtCore.Slot(bool)
+    def solveLensDistortionValueToggled(self, value):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        self.setSolveLensDistortionValue(col, value)
         self.dataChanged.emit()
         return

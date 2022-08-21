@@ -43,7 +43,7 @@ def filter_attr_list(attr_list, use_camera_intrinsics=None, use_lens_distortion=
     if use_lens_distortion is None:
         use_lens_distortion = True
 
-    tmp_attr_list = attr_list
+    tmp_attr_list = list(attr_list)
     attr_list = []
     for attr in tmp_attr_list:
         attr_solver_type = api_compile.get_attribute_solver_type(attr)

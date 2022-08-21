@@ -508,9 +508,16 @@ def __compile_solver_basic_tab(col, scene_graph_mode):
         col
     )
     eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
+    solve_focal_length = col_state.get_solver_solve_focal_length_from_collection(col)
+    solve_lens_distortion = col_state.get_solver_solve_lens_distortion_from_collection(
+        col
+    )
+
     sol.set_scene_graph_mode(scene_graph_mode)
     sol.set_eval_object_relationships(eval_obj_relations)
     sol.set_eval_complex_graphs(eval_complex_graphs)
+    sol.set_solve_focal_length(solve_focal_length)
+    sol.set_solve_lens_distortion(solve_lens_distortion)
     sol_list.append(sol)
     return sol_list
 
@@ -539,11 +546,18 @@ def __compile_solver_standard_tab(col, scene_graph_mode):
         col
     )
     eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
+    solve_focal_length = col_state.get_solver_solve_focal_length_from_collection(col)
+    solve_lens_distortion = col_state.get_solver_solve_lens_distortion_from_collection(
+        col
+    )
+
     sol.set_global_solve(global_solve)
     sol.set_only_root_frames(only_root)
     sol.set_scene_graph_mode(scene_graph_mode)
     sol.set_eval_object_relationships(eval_obj_relations)
     sol.set_eval_complex_graphs(eval_complex_graphs)
+    sol.set_solve_focal_length(solve_focal_length)
+    sol.set_solve_lens_distortion(solve_lens_distortion)
     sol_list.append(sol)
     return sol_list
 
@@ -574,6 +588,13 @@ def __compile_solver_camera_tab(col):
 
     scene_scale = col_state.get_solver_scene_scale_from_collection(col)
     sol.set_scene_scale(scene_scale)
+
+    solve_focal_length = col_state.get_solver_solve_focal_length_from_collection(col)
+    solve_lens_distortion = col_state.get_solver_solve_lens_distortion_from_collection(
+        col
+    )
+    sol.set_solve_focal_length(solve_focal_length)
+    sol.set_solve_lens_distortion(solve_lens_distortion)
 
     sol_list.append(sol)
     return sol_list

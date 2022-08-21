@@ -396,6 +396,16 @@ SOLVER_SCENE_SCALE_ATTR = 'solver_scene_scale'
 SOLVER_SCENE_SCALE_ATTR_TYPE = 'double'
 SOLVER_SCENE_SCALE_DEFAULT_VALUE = 10.0
 
+# Solver Solve Lens Distortion (stored on Collection node)
+SOLVER_SOLVE_FOCAL_LENGTH_ATTR = 'solver_solve_focal_length'
+SOLVER_SOLVE_FOCAL_LENGTH_ATTR_TYPE = 'bool'
+SOLVER_SOLVE_FOCAL_LENGTH_DEFAULT_VALUE = True
+
+# Solver Solve Lens Distortion (stored on Collection node)
+SOLVER_SOLVE_LENS_DISTORTION_ATTR = 'solver_solve_lens_distortion'
+SOLVER_SOLVE_LENS_DISTORTION_ATTR_TYPE = 'bool'
+SOLVER_SOLVE_LENS_DISTORTION_DEFAULT_VALUE = True
+
 # Descriptions for solvers
 SOLVER_BASIC_DESC_DEFAULT = 'Solve only animated attributes on frames.'
 SOLVER_STD_DESC_DEFAULT = (

@@ -146,6 +146,13 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
         self.originFrame_spinBox.valueChanged.connect(self.originFrameValueChanged)
         self.sceneScale_doubleSpinBox.valueChanged.connect(self.sceneScaleValueChanged)
 
+        self.solveFocalLength_checkBox.toggled.connect(
+            self.solveFocalLengthValueToggled
+        )
+        self.solveLensDistortion_checkBox.toggled.connect(
+            self.solveLensDistortionValueToggled
+        )
+
         desc = const.SOLVER_CAM_DESC_DEFAULT
         self.description_label.setText(desc)
 
@@ -172,6 +179,22 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
         lib_col_state.set_solver_scene_scale_on_collection(col, value)
         return
 
+    def getSolveFocalLengthValue(self, col):
+        value = lib_col_state.get_solver_solve_focal_length_from_collection(col)
+        return value
+
+    def setSolveFocalLengthValue(self, col, value):
+        lib_col_state.set_solver_solve_focal_length_on_collection(col, value)
+        return
+
+    def getSolveLensDistortionValue(self, col):
+        value = lib_col_state.get_solver_solve_lens_distortion_from_collection(col)
+        return value
+
+    def setSolveLensDistortionValue(self, col, value):
+        lib_col_state.set_solver_solve_lens_distortion_on_collection(col, value)
+        return
+
     def updateModel(self):
         self.frameRange_widget.updateModel()
         self.rootFrames_widget.updateModel()
@@ -183,6 +206,8 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
         range_type = self.frameRange_widget.getRangeTypeValue(col)
         origin_frame = self.getOriginFrameValue(col)
         scene_scale = self.getSceneScaleValue(col)
+        solve_focal_length = self.getSolveFocalLengthValue(col)
+        solve_lens_distortion = self.getSolveLensDistortionValue(col)
         origin_frame_enabled = True
         scene_scale_enabled = True
         frameRange_enabled = True
@@ -198,12 +223,16 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
         self.originFrame_spinBox.setEnabled(origin_frame_enabled)
         self.sceneScale_doubleSpinBox.setValue(scene_scale)
         self.sceneScale_doubleSpinBox.setEnabled(scene_scale_enabled)
+        self.solveFocalLength_checkBox.setChecked(solve_focal_length)
+        self.solveLensDistortion_checkBox.setChecked(solve_lens_distortion)
         self.frameRange_widget.setEnabled(frameRange_enabled)
         self.rootFrames_widget.setEnabled(rootFrames_enabled)
         self.blockSignals(block)
 
         self.setOriginFrameValue(col, origin_frame)
         self.setSceneScaleValue(col, scene_scale)
+        self.setSolveFocalLengthValue(col, solve_focal_length)
+        self.setSolveLensDistortionValue(col, solve_lens_distortion)
         return
 
     def queryInfo(self):
@@ -227,6 +256,24 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
         if col is None:
             return
         self.setSceneScaleValue(col, value)
+        self.dataChanged.emit()
+        return
+
+    @QtCore.Slot(bool)
+    def solveFocalLengthValueToggled(self, value):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        self.setSolveFocalLengthValue(col, value)
+        self.dataChanged.emit()
+        return
+
+    @QtCore.Slot(bool)
+    def solveLensDistortionValueToggled(self, value):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        self.setSolveLensDistortionValue(col, value)
         self.dataChanged.emit()
         return
 

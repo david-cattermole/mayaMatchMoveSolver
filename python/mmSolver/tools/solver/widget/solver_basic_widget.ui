@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>376</width>
-    <height>186</height>
+    <width>607</width>
+    <height>228</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -43,38 +43,93 @@
     <layout class="QHBoxLayout" name="frameRange_layout"/>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="options_layout">
+    <layout class="QHBoxLayout" name="options_layout">
      <item>
-      <layout class="QHBoxLayout" name="sceneGraphMode_layout">
+      <layout class="QVBoxLayout" name="options1_layout">
        <item>
-        <widget class="QLabel" name="sceneGraphMode_label">
+        <layout class="QHBoxLayout" name="sceneGraphMode_layout">
+         <item>
+          <widget class="QLabel" name="sceneGraphMode_label">
+           <property name="text">
+            <string>Scene Graph</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="sceneGraphMode_comboBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>1</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="evalObjectRelationships_checkBox">
          <property name="text">
-          <string>Scene Graph</string>
+          <string>Evaluate Object Relationships</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="sceneGraphMode_comboBox">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-           <horstretch>1</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+        <widget class="QCheckBox" name="evalComplexGraphs_checkBox">
+         <property name="text">
+          <string>Evaluate Complex Node Graphs (eg. Mesh Rivets)</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="options2_layout">
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QCheckBox" name="solveFocalLength_checkBox">
+         <property name="text">
+          <string>Solve Focal Length</string>
          </property>
         </widget>
        </item>
        <item>
-        <spacer name="horizontalSpacer">
+        <widget class="QCheckBox" name="solveLensDistortion_checkBox">
+         <property name="text">
+          <string>Solve Lens Distortion</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_5">
          <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+          <enum>Qt::Vertical</enum>
          </property>
          <property name="sizeType">
-          <enum>QSizePolicy::Expanding</enum>
+          <enum>QSizePolicy::MinimumExpanding</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>40</width>
-           <height>20</height>
+           <width>10</width>
+           <height>1</height>
           </size>
          </property>
         </spacer>
@@ -82,18 +137,20 @@
       </layout>
      </item>
      <item>
-      <widget class="QCheckBox" name="evalObjectRelationships_checkBox">
-       <property name="text">
-        <string>Evaluate Object Relationships</string>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QCheckBox" name="evalComplexGraphs_checkBox">
-       <property name="text">
-        <string>Evaluate Complex Node Graphs (eg. Mesh Rivets)</string>
+       <property name="sizeType">
+        <enum>QSizePolicy::Expanding</enum>
        </property>
-      </widget>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>128</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>

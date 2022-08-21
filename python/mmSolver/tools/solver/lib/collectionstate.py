@@ -1148,3 +1148,69 @@ def set_solver_scene_scale_on_collection(col, value):
         default_value=const.SOLVER_SCENE_SCALE_DEFAULT_VALUE,
     )
     return
+
+
+#######################################################################
+
+
+def get_solver_solve_focal_length_from_collection(col):
+    """
+    :type col: Collection
+    :rtype: bool
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_SOLVE_FOCAL_LENGTH_ATTR,
+        attr_type=const.SOLVER_SOLVE_FOCAL_LENGTH_ATTR_TYPE,
+        default_value=const.SOLVER_SOLVE_FOCAL_LENGTH_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_solve_focal_length_on_collection(col, value):
+    """
+    :type col: Collection
+    :type value: bool
+    """
+    assert isinstance(value, bool)
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_SOLVE_FOCAL_LENGTH_ATTR,
+        value,
+        attr_type=const.SOLVER_SOLVE_FOCAL_LENGTH_ATTR_TYPE,
+        default_value=const.SOLVER_SOLVE_FOCAL_LENGTH_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_solve_lens_distortion_from_collection(col):
+    """
+    :type col: Collection
+    :rtype: bool
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_SOLVE_LENS_DISTORTION_ATTR,
+        attr_type=const.SOLVER_SOLVE_LENS_DISTORTION_ATTR_TYPE,
+        default_value=const.SOLVER_SOLVE_LENS_DISTORTION_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_solve_lens_distortion_on_collection(col, value):
+    """
+    :type col: Collection
+    :type value: bool
+    """
+    assert isinstance(value, bool)
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_SOLVE_LENS_DISTORTION_ATTR,
+        value,
+        attr_type=const.SOLVER_SOLVE_LENS_DISTORTION_ATTR_TYPE,
+        default_value=const.SOLVER_SOLVE_LENS_DISTORTION_DEFAULT_VALUE,
+    )
+    return

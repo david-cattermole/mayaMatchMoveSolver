@@ -83,7 +83,8 @@ def main():
     cam_shps = set()
     for node in sel:
         cam_tfm, cam_shp = camera_utils.get_camera(node)
-        cam_shps.add(cam_shp)
+        if cam_shp is not None:
+            cam_shps.add(cam_shp)
 
     cam_list = []
     for cam_shp in sorted(cam_shps):

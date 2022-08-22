@@ -756,10 +756,10 @@ def compile_multi_frame(
             attr_list,
             batch_frame_list,
             root_iter_num,
-            precomputed_data,
             remove_unused_objects,
             solver_type,
             scene_graph_mode,
+            precomputed_data,
             withtest,
             verbose,
         )

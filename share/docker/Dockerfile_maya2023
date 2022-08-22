@@ -1,7 +1,7 @@
 # To create and run the docker container in PowerShell or BASH:
 #
-# $ docker build --file share/docker/Dockerfile_maya2022 -t mmsolver-linux-maya2022-build .
-# $ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-maya2022-build
+# $ docker build --file share/docker/Dockerfile_maya2023 -t mmsolver-linux-maya2023-build .
+# $ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-maya2023-build
 #
 #
 # Once the docker image is built and run, you can execute the
@@ -10,7 +10,7 @@
 #
 # Install Python and run tools:
 #
-# $ source ./scripts/python_venv_activate_maya2022.bash
+# $ source ./scripts/python_venv_activate_maya2023.bash
 # $ ./scripts/python_linter_run_pylint.bash
 # $ ./scripts/python_linter_run_flake8.bash
 # $ ./scripts/python_linter_run_cpplint.bash
@@ -20,8 +20,8 @@
 #
 # Build CMake project:
 #
-# $ ./scripts/build_thirdparty_linux_maya2022.bash
-# $ ./scripts/build_mmSolver_linux_maya2022.bash
+# $ ./scripts/build_thirdparty_linux_maya2023.bash
+# $ ./scripts/build_mmSolver_linux_maya2023.bash
 # $ mayapy tests/runTests.py
 #
 
@@ -122,7 +122,7 @@ RUN yum install  --assumeyes \
        liberation-sans-fonts \
        liberation-serif-fonts
 
-# Development tools for Maya 2022.
+# Development tools for Maya 2023.
 RUN yum install --assumeyes \
        rh-python36 \
        rh-git218 \
@@ -139,7 +139,7 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y \
     && source ${HOME}/.cargo/env
 
 # Install Maya from archive.
-ADD ./external/archives/Autodesk_Maya_2022_ML_Linux_64bit.tgz /temp
+ADD ./external/archives/Autodesk_Maya_2023_ML_Linux_64bit.tgz /temp
 RUN rpm -Uvh /temp/Packages/Maya*.rpm && rm -r /temp
 ENV MAYA_LOCATION=/usr/autodesk/maya/
 ENV PATH=$MAYA_LOCATION/bin:$PATH
@@ -150,7 +150,7 @@ ENV MAYA_DISABLE_CIP=1
 
 WORKDIR /mmSolver
 
-# Maya 2022 development environment.
+# Maya 2023 development environment.
 ENTRYPOINT [ \
     "scl", "enable", \
                "rh-python36", \

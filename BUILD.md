@@ -78,14 +78,14 @@ mmSolver v0.4.0 a C++ compiler with at least C++11 is required.
   - [GCC 6.3.1](https://gcc.gnu.org/) (Maya 2019 and 2020)
     - Red Hat [DST 6.1](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/6/html/6.1_release_notes/index)
     - `yum install devtoolset-6` on RHEL 7 / CentOS 7
-  - [GCC 9.3.1](https://gcc.gnu.org/) (Maya 2022)
+  - [GCC 9.3.1](https://gcc.gnu.org/) (Maya 2022 and 2023)
     - Red Hat [DST 9.1](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/9/html/9.1_release_notes/index)
     - `yum install devtoolset-9` on RHEL 7 / CentOS 7
 - Windows
   - [Visual Studio 2012 update 5 (MSVC 11.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2016 and 2017)
   - [Visual Studio 2015 update 3 (MSVC 14.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2018 and 2019)
   - [Visual Studio 2017 (MSVC 15.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2020)
-  - [Visual Studio 2019 (MSVC 16.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2022)
+  - [Visual Studio 2019 (MSVC 16.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2022 and 2023)
 - MacOS
   - [Xcode 7.3.1 with SDK 10.11, clang with libc++](https://developer.apple.com/download) (Maya 2018)
   - [Xcode version 7.3.1 and CMake are required](https://developer.apple.com/download) (Maya 2019)

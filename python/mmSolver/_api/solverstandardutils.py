@@ -100,65 +100,13 @@ def _filter_mkr_list_by_frame_list(mkr_list, frame_list):
     return used_mkr_list, unused_mkr_list
 
 
-def _split_mkr_attr_into_categories(mkr_list, attr_list, categories):
-    """
-    Put Markers and Attributes into categories to be solved individually.
-
-    :param mkr_list: List of Markers.
-    :type mkr_list: [Marker, ..]
-
-    :param attr_list: List of Attributes.
-    :type attr_list: [Attribute, ..]
-
-    :return:
-        List of Markers and List of Attributes. The length of both
-        Marker and Attributes will be the same and are designed to
-        be used together.
-    :rtype: ( [[Marker, ..], ..], [[Attribute, ..]])
-    """
-    meta_mkr_list = []
-    meta_attr_list = []
-
-    mkr_attr_map = markerutils.find_marker_attr_mapping(mkr_list, attr_list)
-    attrs_in_categories = api_compile.categorise_attributes(attr_list)
-    for category in categories:
-        category_node_attrs = attrs_in_categories[category]
-        for node, attrs in category_node_attrs.items():
-            if len(attrs) == 0:
-                continue
-            attr_names = [x.get_name() for x in attrs]
-            new_mkr_list = []
-            new_attr_list = []
-            for j, attr in enumerate(attr_list):
-                attr_name = attr.get_name()
-                if attr_name not in attr_names:
-                    continue
-                for i, mkr in enumerate(mkr_list):
-                    affects = mkr_attr_map[i][j]
-                    if affects is False:
-                        continue
-                    if mkr not in new_mkr_list:
-                        new_mkr_list.append(mkr)
-                        new_attr_list.append(attr)
-            if len(new_mkr_list) == 0 or len(new_attr_list) == 0:
-                msg = (
-                    'No markers found affecting attribute. '
-                    'node=%r attrs=%r category=%r'
-                )
-                LOG.warn(msg, node, attrs, category)
-                continue
-            meta_mkr_list.append(new_mkr_list)
-            meta_attr_list.append(new_attr_list)
-
-    return meta_mkr_list, meta_attr_list
-
-
 def _compile_multi_root_frames(
     col,
     mkr_list,
     attr_list,
     batch_frame_list,
     root_iter_num,
+    use_attr_blocks,
     remove_unused_objects,
     solver_type,
     scene_graph_mode,
@@ -235,6 +183,8 @@ def _compile_multi_root_frames(
                 if x is True and attr not in root_attr_list:
                     root_attr_list.append(attr)
 
+        attr_blocks = solverutils.create_attr_blocks(use_attr_blocks, root_attr_list)
+
         sol = solverstep.SolverStep()
         sol.set_max_iterations(root_iter_num)
         sol.set_frame_list(frm_list)
@@ -251,8 +201,8 @@ def _compile_multi_root_frames(
         sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
-        generator = api_compile.compile_solver_with_cache(
-            sol, col, root_mkr_list, root_attr_list, withtest, cache
+        generator = solverutils.compile_solver_step_blocks_with_cache(
+            sol, col, mkr_list, attr_blocks, withtest, cache
         )
         for action, vaction in generator:
             yield action, vaction
@@ -318,6 +268,7 @@ def _compile_multi_inbetween_frames(
     global_solve,
     eval_complex_graphs,
     anim_iter_num,
+    use_attr_blocks,
     remove_unused_objects,
     solver_type,
     scene_graph_mode,
@@ -392,6 +343,8 @@ def _compile_multi_inbetween_frames(
     assert isinstance(withtest, bool)
     assert isinstance(verbose, bool)
 
+    attr_blocks = solverutils.create_attr_blocks(use_attr_blocks, attr_list)
+
     if global_solve is True:
         # Do Global Solve with all frames.
         sol = solverstep.SolverStep()
@@ -410,15 +363,14 @@ def _compile_multi_inbetween_frames(
         sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
-        generator = api_compile.compile_solver_with_cache(
-            sol, col, mkr_list, attr_list, withtest, cache
+        generator = solverutils.compile_solver_step_blocks_with_cache(
+            sol, col, mkr_list, attr_blocks, withtest, cache
         )
         for action, vaction in generator:
             yield action, vaction
     else:
         cache = api_compile.create_compile_solver_cache()
 
-        frame_solve_mode = const.FRAME_SOLVE_MODE_PER_FRAME
         if scene_graph_mode == const.SCENE_GRAPH_MODE_MAYA_DAG:
             for i, frm in enumerate(all_frame_list):
                 is_first_frame = i == 0
@@ -443,11 +395,12 @@ def _compile_multi_inbetween_frames(
                 sol.set_time_eval_mode(time_eval_mode)
                 sol.set_precomputed_data(precomputed_data)
 
-                generator = api_compile.compile_solver_with_cache(
-                    sol, col, mkr_list, attr_list, withtest, cache
+                generator = solverutils.compile_solver_step_blocks_with_cache(
+                    sol, col, mkr_list, attr_blocks, withtest, cache
                 )
                 for action, vaction in generator:
                     yield action, vaction
+
         elif scene_graph_mode == const.SCENE_GRAPH_MODE_MM_SCENE_GRAPH:
             # MM Scene Graph does not support smooth and stiff
             # attributes yet.
@@ -463,13 +416,16 @@ def _compile_multi_inbetween_frames(
             sol.set_use_stiffness(use_smooth_stiff)
             sol.set_solver_type(solver_type)
             sol.set_scene_graph_mode(scene_graph_mode)
-            sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
+            frame_solve_mode = const.FRAME_SOLVE_MODE_PER_FRAME
+            frame_solve_mode = const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE
+            sol.set_frame_solve_mode(frame_solve_mode)
             sol.set_remove_unused_markers(remove_unused_objects)
             sol.set_remove_unused_attributes(remove_unused_objects)
             sol.set_precomputed_data(precomputed_data)
 
-            generator = api_compile.compile_solver_with_cache(
-                sol, col, mkr_list, attr_list, withtest, cache
+            cache = api_compile.create_compile_solver_cache()
+            generator = solverutils.compile_solver_step_blocks_with_cache(
+                sol, col, mkr_list, attr_blocks, withtest, cache
             )
             for action, vaction in generator:
                 yield action, vaction
@@ -482,7 +438,7 @@ def compile_multi_frame(
     attr_list,
     root_frame_list,
     frame_list,
-    auto_attr_blocks,
+    use_attr_blocks,
     block_iter_num,
     only_root_frames,
     root_iter_num,
@@ -518,10 +474,10 @@ def compile_multi_frame(
         Frames to solve animated attributes.
     :type frame_list: [Frame, ..]
 
-    :param auto_attr_blocks:
+    :param use_attr_blocks:
         Split attributes into stages (based on categories) to be
-        solved together.
-    :type auto_attr_blocks: bool
+        separately or together.
+    :type use_attr_blocks: bool
 
     :param block_iter_num:
         How many iterations to perform for attribute categories.
@@ -593,7 +549,7 @@ def compile_multi_frame(
         the second Action is for validation of inputs.
     :rtype: (Action, Action)
     """
-    assert isinstance(auto_attr_blocks, bool)
+    assert isinstance(use_attr_blocks, bool)
     assert isinstance(block_iter_num, int)
     assert isinstance(only_root_frames, bool)
     assert isinstance(root_iter_num, int)
@@ -648,33 +604,10 @@ def compile_multi_frame(
         # yield action, vaction
         LOG.warn("Not enough Markers given for root frames.")
         return
-    if auto_attr_blocks is True:
-        categories = const.ATTR_SOLVER_TYPE_LIST
-        meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
-            root_mkr_list, attr_list, categories
-        )
-        for new_mkr_list, new_attr_list in zip(meta_mkr_list, meta_attr_list):
-            sol = solverstep.SolverStep()
-            sol.set_max_iterations(block_iter_num)
-            sol.set_frame_list(root_frame_list)
-            sol.set_attributes_use_animated(True)
-            sol.set_attributes_use_static(True)
-            sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-            sol.set_use_smoothness(False)
-            sol.set_use_stiffness(False)
-            sol.set_solver_type(solver_type)
-            sol.set_scene_graph_mode(scene_graph_mode)
-            sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
-            sol.set_remove_unused_markers(remove_unused_objects)
-            sol.set_remove_unused_attributes(remove_unused_objects)
-            sol.set_precomputed_data(precomputed_data)
 
-            cache = api_compile.create_compile_solver_cache()
-            generator = api_compile.compile_solver_with_cache(
-                sol, col, new_mkr_list, new_attr_list, withtest, cache
-            )
-            for action, vaction in generator:
-                yield action, vaction
+    # if use_attr_blocks is True:
+
+    attr_blocks = solverutils.create_attr_blocks(use_attr_blocks, attr_list)
 
     # TODO: Create a list of markers specially for root frames.
     #  Loop over all given markers, determine which markers have 2
@@ -713,8 +646,8 @@ def compile_multi_frame(
         sol.set_precomputed_data(precomputed_data)
 
         cache = api_compile.create_compile_solver_cache()
-        generator = api_compile.compile_solver_with_cache(
-            sol, col, root_mkr_list, attr_list, withtest, cache
+        generator = solverutils.compile_solver_step_blocks_with_cache(
+            sol, col, root_mkr_list, attr_blocks, withtest, cache
         )
         for action, vaction in generator:
             yield action, vaction
@@ -756,6 +689,7 @@ def compile_multi_frame(
             attr_list,
             batch_frame_list,
             root_iter_num,
+            use_attr_blocks,
             remove_unused_objects,
             solver_type,
             scene_graph_mode,
@@ -791,6 +725,7 @@ def compile_multi_frame(
         global_solve,
         eval_complex_graphs,
         anim_iter_num,
+        use_attr_blocks,
         remove_unused_objects,
         solver_type,
         scene_graph_mode,
@@ -810,7 +745,7 @@ def compile_single_frame(
     single_frame,
     block_iter_num,
     lineup_iter_num,
-    auto_attr_blocks,
+    use_attr_blocks,
     remove_unused_objects,
     solver_type,
     scene_graph_mode,
@@ -833,10 +768,10 @@ def compile_single_frame(
         The Frame to solve on.
     :type single_frame: Frame
 
-    :param auto_attr_blocks:
+    :param use_attr_blocks:
         Split attributes into stages (based on categories) to be
         solved together.
-    :type auto_attr_blocks: bool
+    :type use_attr_blocks: bool
 
     :param block_iter_num:
         How many iterations to perform for attribute categories.
@@ -873,7 +808,7 @@ def compile_single_frame(
         the second Action is for validation of inputs.
     :rtype: (Action, Action)
     """
-    assert isinstance(auto_attr_blocks, bool)
+    assert isinstance(use_attr_blocks, bool)
     assert isinstance(block_iter_num, int)
     assert isinstance(lineup_iter_num, int)
     assert isinstance(remove_unused_objects, bool)
@@ -883,33 +818,7 @@ def compile_single_frame(
     assert isinstance(withtest, bool)
     assert isinstance(verbose, bool)
 
-    if auto_attr_blocks is True:
-        categories = const.ATTR_SOLVER_TYPE_LIST
-        meta_mkr_list, meta_attr_list = _split_mkr_attr_into_categories(
-            mkr_list, attr_list, categories
-        )
-        for new_mkr_list, new_attr_list in zip(meta_mkr_list, meta_attr_list):
-            sol = solverstep.SolverStep()
-            sol.set_max_iterations(block_iter_num)
-            sol.set_frame_list([single_frame])
-            sol.set_attributes_use_animated(True)
-            sol.set_attributes_use_static(True)
-            sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-            sol.set_use_smoothness(False)
-            sol.set_use_stiffness(False)
-            sol.set_solver_type(solver_type)
-            sol.set_scene_graph_mode(scene_graph_mode)
-            sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
-            sol.set_remove_unused_markers(remove_unused_objects)
-            sol.set_remove_unused_attributes(remove_unused_objects)
-            sol.set_precomputed_data(precomputed_data)
-
-            cache = api_compile.create_compile_solver_cache()
-            generator = api_compile.compile_solver_with_cache(
-                sol, col, new_mkr_list, new_attr_list, withtest, cache
-            )
-            for action, vaction in generator:
-                yield action, vaction
+    attr_blocks = solverutils.create_attr_blocks(use_attr_blocks, attr_list)
 
     # Single frame solve
     sol = solverstep.SolverStep()
@@ -928,8 +837,8 @@ def compile_single_frame(
     sol.set_precomputed_data(precomputed_data)
 
     cache = api_compile.create_compile_solver_cache()
-    generator = api_compile.compile_solver_with_cache(
-        sol, col, mkr_list, attr_list, withtest, cache
+    generator = solverutils.compile_solver_step_blocks_with_cache(
+        sol, col, mkr_list, attr_blocks, withtest, cache
     )
     for action, vaction in generator:
         yield action, vaction

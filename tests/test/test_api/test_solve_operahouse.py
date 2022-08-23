@@ -26,18 +26,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import time
-import pprint
-import math
 import unittest
 
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.utils.time as time_utils
-import mmSolver.utils.python_compat as pycompat
 import mmSolver.api as mmapi
-import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
 import mmSolver.tools.createlens.lib as createlens_lib
 import test.test_api.apiutils as test_api_utils
@@ -275,7 +269,7 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
         # Root Frames are automatically calculated from the markers.
         root_frm_list = []
         not_root_frm_list = []
-        min_frames_per_marker = 2
+        min_frames_per_marker = 3
         frame_nums = mmapi.get_root_frames_from_markers(
             mkr_list, min_frames_per_marker, start, end
         )
@@ -295,11 +289,13 @@ class TestSolveOperaHouse(test_api_utils.APITestCase):
         sol.set_root_frame_list(root_frm_list)
         sol.set_frame_list(not_root_frm_list)
         sol.set_only_root_frames(False)
-        sol.set_global_solve(False)
+        sol.set_global_solve(True)
         sol.set_solver_type(solver_type_index)
         sol.set_scene_graph_mode(scene_graph_mode)
-        sol._auto_attr_blocks = True
-        sol._triangulate_bundles = False
+        sol.set_use_attr_blocks(False)
+        sol.set_triangulate_bundles(False)
+        sol.set_solve_focal_length(True)
+        sol.set_solve_lens_distortion(True)
         sol_list.append(sol)
 
         # Collection

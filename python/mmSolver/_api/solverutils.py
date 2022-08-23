@@ -27,6 +27,8 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.logger
+import mmSolver._api.attribute as attribute
+import mmSolver._api.excep as excep
 import mmSolver._api.constant as const
 import mmSolver._api.action as api_action
 import mmSolver._api.compile as api_compile
@@ -35,6 +37,117 @@ import mmSolver._api.solverscenegraph as solverscenegraph
 
 
 LOG = mmSolver.logger.get_logger()
+MIN_NUM_ITERATIONS = 3
+
+
+def create_attr_blocks(use_attr_blocks, attr_list):
+    """
+    Splits attributes into blocks that should be solved together.
+
+    :type use_attr_blocks: bool
+    :type attr_list: [Attribute, ..]
+    :rtype: [([Attribute, ..], float)]
+    """
+    if use_attr_blocks is False:
+        attr_blocks = [(attr_list, 1.0)]
+        return attr_blocks
+
+    # The Block types (A to D) define groups of attributes to be solved
+    # together, or one after the other - in a specific ordering.
+    block_a = []
+    block_b = []
+    block_c = []
+    block_d = []
+
+    for attr in attr_list:
+        assert isinstance(attr, attribute.Attribute)
+
+        attr_solver_type = api_compile.get_attribute_solver_type(attr)
+        if attr_solver_type == const.ATTR_SOLVER_TYPE_REGULAR:
+            block_a.append(attr)
+        elif attr_solver_type == const.ATTR_SOLVER_TYPE_BUNDLE_TRANSFORM:
+            block_a.append(attr)
+        elif attr_solver_type == const.ATTR_SOLVER_TYPE_CAMERA_TRANSLATE:
+            block_b.append(attr)
+        elif attr_solver_type == const.ATTR_SOLVER_TYPE_CAMERA_ROTATE:
+            block_c.append(attr)
+        elif attr_solver_type == const.ATTR_SOLVER_TYPE_CAMERA_INTRINSIC:
+            block_b.append(attr)
+        elif attr_solver_type == const.ATTR_SOLVER_TYPE_LENS_DISTORTION:
+            block_d.append(attr)
+        else:
+            raise excep.NotValid
+
+    num_a = len(block_a)
+    num_bc = len(block_b) + len(block_c)
+    num_d = len(block_d)
+
+    # The importance ratio and ordering of each block in the set is a
+    # heuristic shown to work fairly well, but without rigerious mathematics
+    # to describe it.
+    #
+    # The intuition of splitting the blocks up is that when many attributes
+    # are input to the minimization engine, the engine doesn't know what to
+    # adjust to find the best global minimum and stops before trying the
+    # attributes. Here we ensure that individual groups of attributes are
+    # solved together, which helps the solver focus on select groups of
+    # attributes to minimize the error.
+    attr_blocks = []
+    if num_a > 0 and num_bc > 0 and num_d == 0:
+        attr_blocks = [
+            (block_a, 0.1),
+            (block_b + block_c, 0.1),
+            (block_a, 0.1),
+            (block_b + block_c, 0.1),
+            (attr_list, 0.6),
+        ]
+
+    elif num_a > 0 and num_bc == 0 and num_d > 0:
+        attr_blocks = [
+            (block_a, 0.1),
+            (block_d, 0.1),
+            (block_a, 0.1),
+            (block_d, 0.1),
+            (attr_list, 0.6),
+        ]
+
+    elif num_a > 0 and num_bc > 0 and num_d > 0:
+        attr_blocks = [
+            (block_a, 0.2),
+            (block_b + block_c, 0.1),
+            (block_d + block_c, 0.1),
+            (block_b + block_c, 0.1),
+            (block_d + block_c, 0.1),
+            (attr_list, 0.4),
+        ]
+
+    else:
+        attr_blocks = [(attr_list, 1.0)]
+
+    return attr_blocks
+
+
+def compile_solver_step_blocks_with_cache(
+    sol, col, mkr_list, attr_blocks, withtest, cache
+):
+    total_iter_num = sol.get_max_iterations()
+    for attr_list, solve_ratio in attr_blocks:
+        if len(attr_list) == 0:
+            continue
+        if solve_ratio == 0.0:
+            continue
+
+        iter_num = max(MIN_NUM_ITERATIONS, int(total_iter_num * solve_ratio))
+        sol.set_max_iterations(iter_num)
+
+        generator = api_compile.compile_solver_with_cache(
+            sol, col, mkr_list, attr_list, withtest, cache
+        )
+        for action, vaction in generator:
+            yield action, vaction
+
+    sol.set_max_iterations(total_iter_num)
+    return
 
 
 def filter_attr_list(attr_list, use_camera_intrinsics=None, use_lens_distortion=None):

@@ -208,16 +208,15 @@ CAMERA_INTRINSIC_ATTR_NAME_LIST = [
     'horizontalFilmAperture',
     'verticalFilmAperture',
 ]
-CAMERA_TRANSFORM_ATTR_NAME_LIST = [
+CAMERA_TRANSLATE_ATTR_NAME_LIST = [
     'translateX',
     'translateY',
     'translateZ',
+]
+CAMERA_ROTATE_ATTR_NAME_LIST = [
     'rotateX',
     'rotateY',
     'rotateZ',
-    'scaleX',
-    'scaleY',
-    'scaleZ',
 ]
 
 
@@ -245,63 +244,15 @@ def get_attribute_solver_type(attr):
     elif obj_type == const.OBJECT_TYPE_CAMERA:
         if name in CAMERA_INTRINSIC_ATTR_NAME_LIST:
             attr_solve_type = const.ATTR_SOLVER_TYPE_CAMERA_INTRINSIC
-        if name in CAMERA_TRANSFORM_ATTR_NAME_LIST:
-            attr_solve_type = const.ATTR_SOLVER_TYPE_CAMERA_TRANSFORM
+        if name in CAMERA_TRANSLATE_ATTR_NAME_LIST:
+            attr_solve_type = const.ATTR_SOLVER_TYPE_CAMERA_TRANSLATE
+        if name in CAMERA_ROTATE_ATTR_NAME_LIST:
+            attr_solve_type = const.ATTR_SOLVER_TYPE_CAMERA_ROTATE
 
     elif obj_type == const.OBJECT_TYPE_LENS:
         attr_solve_type = const.ATTR_SOLVER_TYPE_LENS_DISTORTION
 
     return attr_solve_type
-
-
-def categorise_attributes(attr_list):
-    """
-    Sort Attributes into specific categories.
-
-    Current categories are:
-
-    - Regular
-
-    - Bundle Transform
-
-    - Camera Transform
-
-    - Camera Intrinsic (shape node)
-
-    - Lens Distortion
-
-    :param attr_list: List of Attributes to be categorised.
-    :type attr_list: [Attribute, ..]
-
-    :returns: Create a mapping for Attributes based on different names.
-    :rtype: {str: {str: [Attribute, ..]}}
-    """
-    assert isinstance(attr_list, (list, tuple))
-    categories = {
-        'regular': collections.defaultdict(list),
-        'bundle_transform': collections.defaultdict(list),
-        'camera_transform': collections.defaultdict(list),
-        'camera_intrinsic': collections.defaultdict(list),
-        'lens_distortion': collections.defaultdict(list),
-    }
-    for attr in attr_list:
-        assert isinstance(attr, attribute.Attribute)
-        node = attr.get_node(full_path=True)
-        attr_solver_type = get_attribute_solver_type(attr)
-        if attr_solver_type == const.ATTR_SOLVER_TYPE_REGULAR:
-            key = const.ATTR_SOLVER_TYPE_REGULAR
-        elif attr_solver_type == const.ATTR_SOLVER_TYPE_BUNDLE_TRANSFORM:
-            key = const.ATTR_SOLVER_TYPE_BUNDLE_TRANSFORM
-        elif attr_solver_type == const.ATTR_SOLVER_TYPE_CAMERA_TRANSFORM:
-            key = const.ATTR_SOLVER_TYPE_CAMERA_TRANSFORM
-        elif attr_solver_type == const.ATTR_SOLVER_TYPE_CAMERA_INTRINSIC:
-            key = const.ATTR_SOLVER_TYPE_CAMERA_INTRINSIC
-        elif attr_solver_type == const.ATTR_SOLVER_TYPE_LENS_DISTORTION:
-            key = const.ATTR_SOLVER_TYPE_LENS_DISTORTION
-        else:
-            raise excep.NotValid
-        categories[key][node].append(attr)
-    return categories
 
 
 def get_attributes_static_values(col, attr_list):

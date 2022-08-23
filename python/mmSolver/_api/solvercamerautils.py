@@ -43,6 +43,7 @@ import mmSolver._api.triangulatebundle as triangulatebundle
 
 LOG = mmSolver.logger.get_logger()
 TRANSLATE_ATTRS = ['tx', 'ty', 'tz']
+MIN_NUM_ITERATIONS = 3
 
 
 def _calculate_marker_frame_score(mkr_nodes, frame, position_marker_nodes):
@@ -312,7 +313,6 @@ def _bundle_adjust(
     assert isinstance(adjust_camera_intrinsics, bool)
     assert isinstance(adjust_lens_distortion, bool)
 
-    lens_iteration_num = iteration_num
     if adjust_lens_distortion is False:
         _sub_bundle_adjustment(
             cam_tfm,
@@ -332,9 +332,14 @@ def _bundle_adjust(
         )
 
     else:
-        iteration_num = iteration_num / 2
-        lens_iteration_num = iteration_num * 2
+        iteration_num_a = max(MIN_NUM_ITERATIONS, iteration_num * 0.1)
+        iteration_num_b = max(MIN_NUM_ITERATIONS, iteration_num * 0.1)
+        iteration_num_c = max(MIN_NUM_ITERATIONS, iteration_num * 0.1)
+        iteration_num_d = max(MIN_NUM_ITERATIONS, iteration_num * 0.1)
+        iteration_num_e = max(MIN_NUM_ITERATIONS, iteration_num * 0.1)
+        iteration_num_f = max(MIN_NUM_ITERATIONS, iteration_num * 0.4)
 
+        # Solve camera transform and bundle positions
         _sub_bundle_adjustment(
             cam_tfm,
             cam_shp,
@@ -345,13 +350,86 @@ def _bundle_adjust(
             adjust_camera_translate=adjust_camera_translate,
             adjust_camera_rotate=adjust_camera_rotate,
             adjust_bundle_positions=adjust_bundle_positions,
-            adjust_camera_intrinsics=adjust_camera_intrinsics,
+            adjust_camera_intrinsics=False,
             adjust_lens_distortion=False,
-            iteration_num=iteration_num,
+            iteration_num=iteration_num_a,
             per_frame_solve=per_frame_solve,
             solver_type=solver_type,
         )
 
+        # Solve camera focal length
+        _sub_bundle_adjustment(
+            cam_tfm,
+            cam_shp,
+            mkr_nodes,
+            cam_shp_node_attrs,
+            lens_node_attrs,
+            frames,
+            adjust_camera_translate=adjust_camera_translate,
+            adjust_camera_rotate=adjust_camera_rotate,
+            adjust_bundle_positions=False,
+            adjust_camera_intrinsics=adjust_camera_intrinsics,
+            adjust_lens_distortion=False,
+            iteration_num=iteration_num_b,
+            per_frame_solve=per_frame_solve,
+            solver_type=solver_type,
+        )
+
+        # Solve lens distortion
+        _sub_bundle_adjustment(
+            cam_tfm,
+            cam_shp,
+            mkr_nodes,
+            cam_shp_node_attrs,
+            lens_node_attrs,
+            frames,
+            adjust_camera_translate=False,
+            adjust_camera_rotate=adjust_camera_rotate,
+            adjust_bundle_positions=False,
+            adjust_camera_intrinsics=False,
+            adjust_lens_distortion=adjust_lens_distortion,
+            iteration_num=iteration_num_c,
+            per_frame_solve=per_frame_solve,
+            solver_type=solver_type,
+        )
+
+        # Solve camera focal length
+        _sub_bundle_adjustment(
+            cam_tfm,
+            cam_shp,
+            mkr_nodes,
+            cam_shp_node_attrs,
+            lens_node_attrs,
+            frames,
+            adjust_camera_translate=adjust_camera_translate,
+            adjust_camera_rotate=adjust_camera_rotate,
+            adjust_bundle_positions=False,
+            adjust_camera_intrinsics=adjust_camera_intrinsics,
+            adjust_lens_distortion=False,
+            iteration_num=iteration_num_d,
+            per_frame_solve=per_frame_solve,
+            solver_type=solver_type,
+        )
+
+        # Solve lens distortion
+        _sub_bundle_adjustment(
+            cam_tfm,
+            cam_shp,
+            mkr_nodes,
+            cam_shp_node_attrs,
+            lens_node_attrs,
+            frames,
+            adjust_camera_translate=False,
+            adjust_camera_rotate=adjust_camera_rotate,
+            adjust_bundle_positions=False,
+            adjust_camera_intrinsics=False,
+            adjust_lens_distortion=adjust_lens_distortion,
+            iteration_num=iteration_num_e,
+            per_frame_solve=per_frame_solve,
+            solver_type=solver_type,
+        )
+
+        # Solve everything
         _sub_bundle_adjustment(
             cam_tfm,
             cam_shp,
@@ -363,8 +441,8 @@ def _bundle_adjust(
             adjust_camera_rotate=adjust_camera_rotate,
             adjust_bundle_positions=adjust_bundle_positions,
             adjust_camera_intrinsics=adjust_camera_intrinsics,
-            adjust_lens_distortion=True,
-            iteration_num=lens_iteration_num,
+            adjust_lens_distortion=adjust_lens_distortion,
+            iteration_num=iteration_num_f,
             per_frame_solve=per_frame_solve,
             solver_type=solver_type,
         )

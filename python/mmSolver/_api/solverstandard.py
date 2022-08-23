@@ -206,21 +206,20 @@ class SolverStandard(solverbase.SolverBase):
 
     ############################################################################
 
-    def get_auto_attr_blocks(self):
+    def get_use_attr_blocks(self):
         """
         :rtype: bool
         """
         return self._data.get(
-            'auto_attr_blocks', const.SOLVER_STD_AUTO_ATTR_BLOCKS_DEFAULT_VALUE
+            'use_attr_blocks', const.SOLVER_STD_USE_ATTR_BLOCKS_DEFAULT_VALUE
         )
 
-    def set_auto_attr_blocks(self, value):
+    def set_use_attr_blocks(self, value):
         """
-        :param value: Value to be set.
         :type value: bool or int
         """
         assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
-        self._data['auto_attr_blocks'] = bool(value)
+        self._data['use_attr_blocks'] = bool(value)
 
     ############################################################################
 
@@ -638,7 +637,7 @@ class SolverStandard(solverbase.SolverBase):
         only_root_frames = self.get_only_root_frames()
         global_solve = self.get_global_solve()
         triangulate_bundles = self.get_triangulate_bundles()
-        auto_attr_blocks = self.get_auto_attr_blocks()
+        use_attr_blocks = self.get_use_attr_blocks()
         eval_object_relationships = self.get_eval_object_relationships()
         remove_unused_objects = eval_object_relationships
         eval_complex_graphs = self.get_eval_complex_graphs()
@@ -705,7 +704,7 @@ class SolverStandard(solverbase.SolverBase):
                 single_frame,
                 block_iter_num,
                 lineup_iter_num,
-                auto_attr_blocks,
+                use_attr_blocks,
                 remove_unused_objects,
                 solver_type,
                 scene_graph_mode,
@@ -722,7 +721,7 @@ class SolverStandard(solverbase.SolverBase):
                 attr_list,
                 root_frame_list,
                 frame_list,
-                auto_attr_blocks,
+                use_attr_blocks,
                 block_iter_num,
                 only_root_frames,
                 root_iter_num,

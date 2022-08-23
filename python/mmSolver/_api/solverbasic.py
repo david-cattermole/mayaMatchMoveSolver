@@ -66,9 +66,6 @@ class SolverBasic(solverbase.SolverBase):
 
     def __init__(self, *args, **kwargs):
         super(SolverBasic, self).__init__(*args, **kwargs)
-        # These variables are not officially supported by the class.
-        self._use_euler_filter = True
-
         # These variables are not used by the class.
         self._print_statistics_inputs = False
         self._print_statistics_affects = False
@@ -76,6 +73,23 @@ class SolverBasic(solverbase.SolverBase):
         self._robust_loss_type = 0
         self._robust_loss_scale = 1.0
         return
+
+    ############################################################################
+
+    def get_use_attr_blocks(self):
+        """
+        :rtype: bool
+        """
+        return self._data.get(
+            'use_attr_blocks', const.SOLVER_STD_USE_ATTR_BLOCKS_DEFAULT_VALUE
+        )
+
+    def set_use_attr_blocks(self, value):
+        """
+        :type value: bool or int
+        """
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
+        self._data['use_attr_blocks'] = bool(value)
 
     ############################################################################
 
@@ -389,7 +403,8 @@ class SolverBasic(solverbase.SolverBase):
         frame_list = self.get_frame_list()
         anim_iter_num = self.get_anim_iteration_num()
         lineup_iter_num = self.get_lineup_iteration_num()
-        use_euler_filter = self._use_euler_filter
+        use_euler_filter = True
+        use_attr_blocks = self.get_use_attr_blocks()
         eval_object_relationships = self.get_eval_object_relationships()
         remove_unused_objects = eval_object_relationships
         eval_complex_graphs = self.get_eval_complex_graphs()
@@ -404,6 +419,8 @@ class SolverBasic(solverbase.SolverBase):
             use_camera_intrinsics=solve_focal_length,
             use_lens_distortion=solve_lens_distortion,
         )
+
+        attr_blocks = solverutils.create_attr_blocks(use_attr_blocks, attr_list)
 
         # Make sure scene graph is valid before running the actual
         # solve.
@@ -452,9 +469,12 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_remove_unused_markers(remove_unused_objects)
             sol.set_remove_unused_attributes(remove_unused_objects)
             sol.set_precomputed_data(precomputed_data)
-            for action, vaction in sol.compile(
-                col, mkr_list, attr_list, withtest=withtest
-            ):
+
+            cache = api_compile.create_compile_solver_cache()
+            generator = solverutils.compile_solver_step_blocks_with_cache(
+                sol, col, mkr_list, attr_blocks, withtest, cache
+            )
+            for action, vaction in generator:
                 yield action, vaction
         else:
             time_eval_mode = const.TIME_EVAL_MODE_DEFAULT
@@ -463,7 +483,7 @@ class SolverBasic(solverbase.SolverBase):
 
             if scene_graph_mode == const.SCENE_GRAPH_MODE_MAYA_DAG:
                 # Multiple frame solve, per-frame
-                vaction_cache = api_compile.create_compile_solver_cache()
+                cache = api_compile.create_compile_solver_cache()
                 for i, frm in enumerate(frame_list):
                     is_first_frame = i == 0
                     one_frame_list = [frm]
@@ -484,8 +504,8 @@ class SolverBasic(solverbase.SolverBase):
                     sol.set_remove_unused_attributes(remove_unused_objects)
                     sol.set_precomputed_data(precomputed_data)
 
-                    generator = api_compile.compile_solver_with_cache(
-                        sol, col, mkr_list, attr_list, withtest, vaction_cache
+                    generator = solverutils.compile_solver_step_blocks_with_cache(
+                        sol, col, mkr_list, attr_blocks, withtest, cache
                     )
                     for action, vaction in generator:
                         yield action, vaction
@@ -510,9 +530,12 @@ class SolverBasic(solverbase.SolverBase):
                 sol.set_remove_unused_markers(remove_unused_objects)
                 sol.set_remove_unused_attributes(remove_unused_objects)
                 sol.set_precomputed_data(precomputed_data)
-                for action, vaction in sol.compile(
-                    col, mkr_list, attr_list, withtest=withtest
-                ):
+
+                cache = api_compile.create_compile_solver_cache()
+                generator = solverutils.compile_solver_step_blocks_with_cache(
+                    sol, col, mkr_list, attr_blocks, withtest, cache
+                )
+                for action, vaction in generator:
                     yield action, vaction
 
             # Perform an euler filter on all unlocked rotation attributes.

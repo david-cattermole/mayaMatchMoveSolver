@@ -152,7 +152,7 @@ class TestSolveIssue53(test_api_utils.APITestCase):
         sol.set_global_solve(False)
         sol.set_single_frame(False)
         sol.set_triangulate_bundles(False)
-        sol.set_auto_attr_blocks(False)
+        sol.set_use_attr_blocks(False)
         sol.set_solver_type(solver_type_index)
         sol.set_scene_graph_mode(scene_graph_mode)
         sol_list.append(sol)

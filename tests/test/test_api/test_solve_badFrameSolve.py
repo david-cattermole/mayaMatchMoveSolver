@@ -30,18 +30,12 @@ from __future__ import division
 from __future__ import print_function
 
 import time
-import pprint
-import math
 import unittest
 
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.utils.time as time_utils
-import mmSolver.utils.python_compat as pycompat
 import mmSolver.api as mmapi
-import mmSolver.tools.solver.lib.collection as lib_col
-import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
 import test.test_api.apiutils as test_api_utils
 
 
@@ -50,38 +44,6 @@ LOG = mmSolver.logger.get_logger()
 
 # @unittest.skip
 class TestSolveBadPerFrameSolve(test_api_utils.APITestCase):
-    def test_badPerFrameSolve(self):
-        s = time.time()
-
-        # Open the Maya file
-        file_name = 'mmSolverBasicSolveA_badSolve01.ma'
-        path = self.get_data_path('scenes', file_name)
-        maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
-
-        col = mmapi.Collection(node='collection1')
-        lib_col.compile_collection(col)
-        e = time.time()
-        print('pre-solve time:', e - s)
-
-        # Run solver!
-        s = time.time()
-        solres_list = mmapi.execute(col)
-        e = time.time()
-        print('total time:', e - s)
-
-        # Set Deviation
-        mkr_list = col.get_marker_list()
-        mmapi.update_deviation_on_markers(mkr_list, solres_list)
-        mmapi.update_deviation_on_collection(col, solres_list)
-
-        # save the output
-        path = self.get_data_path('test_solve_badPerFrameSolve_after.ma')
-        maya.cmds.file(rename=path)
-        maya.cmds.file(save=True, type='mayaAscii', force=True)
-
-        self.checkSolveResults(solres_list)
-        return
-
     def do_solve(self, solver_name, solver_type_index, scene_graph_mode):
         """
         The same test as 'test_badPerFrameSolve', but using the SolverStandard class.

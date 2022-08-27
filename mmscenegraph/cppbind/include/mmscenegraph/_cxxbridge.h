@@ -826,7 +826,6 @@ namespace mmscenegraph {
   struct ShimSceneGraph;
   struct ShimFlatScene;
   struct ShimEvaluationObjects;
-  struct Camera;
 }
 
 namespace mmscenegraph {
@@ -1186,22 +1185,6 @@ private:
 };
 #endif // CXXBRIDGE1_STRUCT_mmscenegraph$ShimEvaluationObjects
 
-#ifndef CXXBRIDGE1_STRUCT_mmscenegraph$Camera
-#define CXXBRIDGE1_STRUCT_mmscenegraph$Camera
-struct Camera final {
-  double sensor_width_mm;
-  double focal_length_mm;
-
-  bool operator==(const Camera &) const noexcept;
-  bool operator!=(const Camera &) const noexcept;
-  bool operator<(const Camera &) const noexcept;
-  bool operator<=(const Camera &) const noexcept;
-  bool operator>(const Camera &) const noexcept;
-  bool operator>=(const Camera &) const noexcept;
-  using IsRelocatable = ::std::true_type;
-};
-#endif // CXXBRIDGE1_STRUCT_mmscenegraph$Camera
-
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimAttrDataBlock> shim_create_attr_data_block_box() noexcept;
 
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimSceneGraph> shim_create_scene_graph_box() noexcept;
@@ -1215,10 +1198,4 @@ MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimEvaluationObjects> shim_
 MMSCENEGRAPH_API_EXPORT bool shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_slope) noexcept;
 
 MMSCENEGRAPH_API_EXPORT bool shim_line_point_intersection(::mmscenegraph::Point3 point, ::mmscenegraph::Point3 line_a, ::mmscenegraph::Point3 line_b, ::mmscenegraph::Point3 &out_point) noexcept;
-
-MMSCENEGRAPH_API_EXPORT void foo(::std::uint32_t number) noexcept;
-
-MMSCENEGRAPH_API_EXPORT ::std::uint32_t foobar(::std::uint32_t number) noexcept;
-
-MMSCENEGRAPH_API_EXPORT ::mmscenegraph::Camera make_camera(double width, double focal) noexcept;
 } // namespace mmscenegraph

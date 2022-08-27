@@ -854,7 +854,6 @@ namespace mmscenegraph {
   struct ShimSceneGraph;
   struct ShimFlatScene;
   struct ShimEvaluationObjects;
-  struct Camera;
 }
 
 namespace mmscenegraph {
@@ -1214,22 +1213,6 @@ private:
 };
 #endif // CXXBRIDGE1_STRUCT_mmscenegraph$ShimEvaluationObjects
 
-#ifndef CXXBRIDGE1_STRUCT_mmscenegraph$Camera
-#define CXXBRIDGE1_STRUCT_mmscenegraph$Camera
-struct Camera final {
-  double sensor_width_mm;
-  double focal_length_mm;
-
-  bool operator==(const Camera &) const noexcept;
-  bool operator!=(const Camera &) const noexcept;
-  bool operator<(const Camera &) const noexcept;
-  bool operator<=(const Camera &) const noexcept;
-  bool operator>(const Camera &) const noexcept;
-  bool operator>=(const Camera &) const noexcept;
-  using IsRelocatable = ::std::true_type;
-};
-#endif // CXXBRIDGE1_STRUCT_mmscenegraph$Camera
-
 extern "C" {
 bool mmscenegraph$cxxbridge1$Point3$operator$eq(const Point3 &, const Point3 &) noexcept;
 bool mmscenegraph$cxxbridge1$Point3$operator$ne(const Point3 &, const Point3 &) noexcept;
@@ -1353,18 +1336,6 @@ void mmscenegraph$cxxbridge1$ShimEvaluationObjects$add_marker(::mmscenegraph::Sh
 bool mmscenegraph$cxxbridge1$shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_slope) noexcept;
 
 bool mmscenegraph$cxxbridge1$shim_line_point_intersection(::mmscenegraph::Point3 point, ::mmscenegraph::Point3 line_a, ::mmscenegraph::Point3 line_b, ::mmscenegraph::Point3 &out_point) noexcept;
-bool mmscenegraph$cxxbridge1$Camera$operator$eq(const Camera &, const Camera &) noexcept;
-bool mmscenegraph$cxxbridge1$Camera$operator$ne(const Camera &, const Camera &) noexcept;
-bool mmscenegraph$cxxbridge1$Camera$operator$lt(const Camera &, const Camera &) noexcept;
-bool mmscenegraph$cxxbridge1$Camera$operator$le(const Camera &, const Camera &) noexcept;
-bool mmscenegraph$cxxbridge1$Camera$operator$gt(const Camera &, const Camera &) noexcept;
-bool mmscenegraph$cxxbridge1$Camera$operator$ge(const Camera &, const Camera &) noexcept;
-
-void mmscenegraph$cxxbridge1$foo(::std::uint32_t number) noexcept;
-
-::std::uint32_t mmscenegraph$cxxbridge1$foobar(::std::uint32_t number) noexcept;
-
-::mmscenegraph::Camera mmscenegraph$cxxbridge1$make_camera(double width, double focal) noexcept;
 } // extern "C"
 } // namespace mmscenegraph
 
@@ -1790,42 +1761,6 @@ MMSCENEGRAPH_API_EXPORT bool shim_fit_line_to_points_type2(::rust::Slice<const d
 
 MMSCENEGRAPH_API_EXPORT bool shim_line_point_intersection(::mmscenegraph::Point3 point, ::mmscenegraph::Point3 line_a, ::mmscenegraph::Point3 line_b, ::mmscenegraph::Point3 &out_point) noexcept {
   return mmscenegraph$cxxbridge1$shim_line_point_intersection(point, line_a, line_b, out_point);
-}
-
-bool Camera::operator==(const Camera &rhs) const noexcept {
-  return mmscenegraph$cxxbridge1$Camera$operator$eq(*this, rhs);
-}
-
-bool Camera::operator!=(const Camera &rhs) const noexcept {
-  return mmscenegraph$cxxbridge1$Camera$operator$ne(*this, rhs);
-}
-
-bool Camera::operator<(const Camera &rhs) const noexcept {
-  return mmscenegraph$cxxbridge1$Camera$operator$lt(*this, rhs);
-}
-
-bool Camera::operator<=(const Camera &rhs) const noexcept {
-  return mmscenegraph$cxxbridge1$Camera$operator$le(*this, rhs);
-}
-
-bool Camera::operator>(const Camera &rhs) const noexcept {
-  return mmscenegraph$cxxbridge1$Camera$operator$gt(*this, rhs);
-}
-
-bool Camera::operator>=(const Camera &rhs) const noexcept {
-  return mmscenegraph$cxxbridge1$Camera$operator$ge(*this, rhs);
-}
-
-MMSCENEGRAPH_API_EXPORT void foo(::std::uint32_t number) noexcept {
-  mmscenegraph$cxxbridge1$foo(number);
-}
-
-MMSCENEGRAPH_API_EXPORT ::std::uint32_t foobar(::std::uint32_t number) noexcept {
-  return mmscenegraph$cxxbridge1$foobar(number);
-}
-
-MMSCENEGRAPH_API_EXPORT ::mmscenegraph::Camera make_camera(double width, double focal) noexcept {
-  return mmscenegraph$cxxbridge1$make_camera(width, focal);
 }
 } // namespace mmscenegraph
 

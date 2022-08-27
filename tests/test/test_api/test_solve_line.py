@@ -83,7 +83,6 @@ class TestSolve(test_api_utils.APITestCase):
         sol_list.append(sol)
 
         # Collection
-        col.add_solver(sol)
         col.set_marker_list(mkr_list)
         col.set_attribute_list(attr_list)
         col.set_solver_list(sol_list)

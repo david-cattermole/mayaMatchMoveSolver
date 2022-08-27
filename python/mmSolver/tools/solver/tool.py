@@ -177,8 +177,15 @@ def open_window():
     """
     col = lib_state.get_active_collection()
     if col is None:
-        msg = 'No active Collection found, creating new Collection...'
-        LOG.warn(msg)
-        lib_col.create_collection()
+        col_list = lib_col.get_collections()
+        if len(col_list) == 0:
+            msg = 'No active Collection found, creating new Collection...'
+            LOG.warn(msg)
+            lib_col.create_collection()
+        elif len(col_list) > 0:
+            col_list = sorted(col_list, key=lambda x: x.get_node())
+            col = col_list[0]
+            lib_state.set_active_collection(col)
+
     solver_window.main()
     return

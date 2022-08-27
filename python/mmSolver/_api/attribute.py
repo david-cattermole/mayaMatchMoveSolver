@@ -176,6 +176,14 @@ class Attribute(object):
             )
         return name
 
+    def get_attr_nice_name(self):
+        nice_name = None
+        node = self.get_node()
+        attr = self.get_attr()
+        if node is not None and attr is not None:
+            nice_name = maya.cmds.attributeQuery(attr, node=node, niceName=True)
+        return nice_name
+
     def get_name(self, full_path=True):
         name = None
         node = self.get_node(full_path=full_path)

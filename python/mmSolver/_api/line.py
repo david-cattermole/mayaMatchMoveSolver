@@ -197,16 +197,16 @@ def create_default_markers(line_shp, mkr_grp):
     if not maya.cmds.isConnected(src, dst):
         maya.cmds.connectAttr(src, dst)
 
-    intersect_a = _create_intersect_node(line_shp, mkr_node_a, bnd_node_a)
-    intersect_b = _create_intersect_node(line_shp, mkr_node_b, bnd_node_b)
+    _create_intersect_node(line_shp, mkr_node_a, bnd_node_a)
+    _create_intersect_node(line_shp, mkr_node_b, bnd_node_b)
 
     return mkr_a, bnd_a, mkr_b, bnd_b
 
 
-def create_new_line_marker(line_tfm, line_shp, mkr_grp):
+def create_new_line_marker(line_shp, mkr_grp):
     mkr_new_name = naming.get_new_marker_name(DEFAULT_MARKER_NAME)
     bnd_new_name = naming.get_new_bundle_name(DEFAULT_BUNDLE_NAME)
-    bnd_new = bundle.Bundle().create_node(name=mkr_new_name)
+    bnd_new = bundle.Bundle().create_node(name=bnd_new_name)
     mkr_new = marker.Marker().create_node(
         mkr_grp=mkr_grp, name=mkr_new_name, bnd=bnd_new
     )

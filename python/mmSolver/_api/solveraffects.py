@@ -56,9 +56,9 @@ def _runAndSetUsedSolveObjects(col_name, *args, **kwargs):
     :param kwargs:
     :return:
     """
-    # Generate mmSolver command.
     import maya.cmds
 
+    # Generate mmSolver command.
     solver_args = args
     solver_kwargs = kwargs.copy()
     del solver_kwargs['mode']

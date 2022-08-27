@@ -30,7 +30,6 @@ import maya.cmds
 import maya.utils
 
 import mmSolver.logger
-import mmSolver.utils.node as node_utils
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.python_compat as pycompat

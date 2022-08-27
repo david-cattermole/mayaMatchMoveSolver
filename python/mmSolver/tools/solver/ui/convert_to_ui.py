@@ -102,8 +102,15 @@ def _generateMarkerUINodes(cam, mkr, bnd, root_node, mkr_name, show_mkr, show_bn
 
 
 def _markersToUINodes(
-    mkr_list, root_node, cam_nodes_store, show_cam, show_mkr, show_bnd
+    mkr_list,
+    root_node,
+    mkr_nodes_store_set,
+    cam_nodes_store_dict,
+    show_cam,
+    show_mkr,
+    show_bnd,
 ):
+    assert isinstance(mkr_nodes_store_set, set)
     assert isinstance(show_cam, bool)
     assert isinstance(show_mkr, bool)
     assert isinstance(show_bnd, bool)
@@ -112,20 +119,36 @@ def _markersToUINodes(
         cam = mkr.get_camera()
         line = None
         cam_node = _generateCameraUINode(
-            cam, mkr, line, root_node, cam_nodes_store, show_cam
+            cam, mkr, line, root_node, cam_nodes_store_dict, show_cam
         )
 
-        mkr_name = mkr.get_node()
-        mkr_name = mkr_name.rpartition('|')[-1]
-        bnd = mkr.get_bundle()
-        _generateMarkerUINodes(cam, mkr, bnd, cam_node, mkr_name, show_mkr, show_bnd)
+        # Only Markers not seen will be displayed. This allows Markers to be
+        # shown under Lines, but not duplicated under cameras as well.
+        mkr_node = mkr.get_node()
+        if mkr_node not in mkr_nodes_store_set:
+            mkr_name = mkr_node.rpartition('|')[-1]
+            bnd = mkr.get_bundle()
+            _generateMarkerUINodes(
+                cam, mkr, bnd, cam_node, mkr_name, show_mkr, show_bnd
+            )
+            mkr_nodes_store_set.add(mkr_node)
 
     return root_node
 
 
 def _linesToUINodes(
-    line_list, root_node, cam_nodes_store, show_mkr, show_bnd, show_cam, show_line
+    line_list,
+    root_node,
+    mkr_nodes_store_set,
+    cam_nodes_store_dict,
+    show_mkr,
+    show_bnd,
+    show_cam,
+    show_line,
 ):
+    assert isinstance(mkr_nodes_store_set, set)
+    assert isinstance(cam_nodes_store_dict, dict)
+    assert isinstance(show_cam, bool)
     assert isinstance(show_line, bool)
 
     if show_line is False:
@@ -135,10 +158,8 @@ def _linesToUINodes(
         cam = line.get_camera()
         mkr = None
         cam_node = _generateCameraUINode(
-            cam, mkr, line, root_node, cam_nodes_store, show_cam
+            cam, mkr, line, root_node, cam_nodes_store_dict, show_cam
         )
-
-        cam_tfm_node = cam.get_transform_node()
         if cam_node is None:
             continue
 
@@ -154,12 +175,13 @@ def _linesToUINodes(
 
         mkr_list = line.get_marker_list()
         for mkr in mkr_list:
-            mkr_name = mkr.get_node()
-            mkr_name = mkr_name.rpartition('|')[-1]
+            mkr_node = mkr.get_node()
+            mkr_name = mkr_node.rpartition('|')[-1]
             bnd = mkr.get_bundle()
             _generateMarkerUINodes(
                 cam, mkr, bnd, line_node, mkr_name, show_mkr, show_bnd
             )
+            mkr_nodes_store_set.add(mkr_node)
 
     return
 
@@ -199,13 +221,27 @@ def solverObjectsToUINodes(
     root_node = object_nodes.ObjectNode('root')
 
     # This is a cache filled by functions below.
-    cam_nodes_store = {}
+    mkr_nodes_store_set = set()
+    cam_nodes_store_dict = {}
 
-    _markersToUINodes(
-        mkr_list, root_node, cam_nodes_store, show_cam, show_mkr, show_bnd
-    )
     _linesToUINodes(
-        line_list, root_node, cam_nodes_store, show_mkr, show_bnd, show_cam, show_line
+        line_list,
+        root_node,
+        mkr_nodes_store_set,
+        cam_nodes_store_dict,
+        show_mkr,
+        show_bnd,
+        show_cam,
+        show_line,
+    )
+    _markersToUINodes(
+        mkr_list,
+        root_node,
+        mkr_nodes_store_set,
+        cam_nodes_store_dict,
+        show_cam,
+        show_mkr,
+        show_bnd,
     )
 
     e = time.time()

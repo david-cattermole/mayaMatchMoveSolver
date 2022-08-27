@@ -43,6 +43,7 @@ import mmSolver._api.solveresult as solveresult
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.solverstep as solverstep
 import mmSolver._api.marker as marker
+import mmSolver._api.line as api_line
 import mmSolver._api.attribute as attribute
 import mmSolver._api.sethelper as sethelper
 import mmSolver._api.execute as execute
@@ -918,7 +919,91 @@ class Collection(object):
 
     ############################################################################
 
-    # TODO: Add 'logging level' flag to Collection.
+    def get_line_list(self):
+        result = []
+        members = self._set.get_all_members(flatten=False, full_path=True)
+        for member in members:
+            object_type = api_utils.get_object_type(member)
+            if object_type == const.OBJECT_TYPE_LINE:
+                mkr = api_line.Line(member)
+                result.append(mkr)
+        return result
+
+    def get_line_list_length(self):
+        return len(self.get_line_list())
+
+    def add_line(self, line):
+        assert isinstance(line, api_line.Line)
+        node = line.get_node()
+        assert isinstance(node, pycompat.TEXT_TYPE)
+        assert len(node) > 0
+        if self._set.member_in_set(node) is False:
+            self._set.add_member(node)
+            self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
+        return
+
+    def add_line_list(self, line_list):
+        assert isinstance(line_list, list)
+        node_list = []
+        for line in line_list:
+            if isinstance(line, api_line.Line):
+                node_list.append(line.get_node())
+        self._set.add_members(node_list)
+        self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
+        return
+
+    def remove_line(self, line):
+        assert isinstance(line, api_line.Line)
+        node = line.get_node()
+        if self._set.member_in_set(node):
+            self._set.remove_member(node)
+            self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
+        return
+
+    def remove_line_list(self, line_list):
+        assert isinstance(line_list, list)
+        node_list = []
+        for line in line_list:
+            if isinstance(line, api_line.Line):
+                node_list.append(line.get_node())
+        self._set.remove_members(node_list)
+        self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
+        return
+
+    def set_line_list(self, line_list):
+        assert isinstance(line_list, list)
+        before_num = self.get_line_list_length()
+
+        self.clear_line_list()
+        for line in line_list:
+            if isinstance(line, api_line.Line):
+                self.add_line(line)
+
+        after_num = self.get_line_list_length()
+        if before_num != after_num:
+            self._actions_list = []  # reset argument flag cache.
+
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
+        return
+
+    def clear_line_list(self):
+        members = self._set.get_all_members(flatten=False, full_path=True)
+        rm_list = []
+        for member in members:
+            object_type = api_utils.get_object_type(member)
+            if object_type == const.OBJECT_TYPE_LINE:
+                rm_list.append(member)
+        if len(rm_list) > 0:
+            self._set.remove_members(rm_list)
+            self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
+        return
+
+    ############################################################################
 
     def is_valid(self, prog_fn=None, status_fn=None):
         """

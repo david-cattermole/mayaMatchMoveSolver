@@ -24,13 +24,11 @@ from __future__ import division
 from __future__ import print_function
 
 import maya.OpenMaya as OpenMaya
-import maya.OpenMayaAnim as OpenMayaAnim
 import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.event as event_utils
 import mmSolver.utils.node as node_utils
-import mmSolver.utils.animcurve as anim_utils
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.constant as const
@@ -41,7 +39,6 @@ import mmSolver._api.bundle as bundle
 import mmSolver._api.camera as camera
 import mmSolver._api.naming as naming
 import mmSolver._api.markergroup as markergroup
-import mmSolver._api.solveresult as solveresult
 
 
 DEFAULT_MARKER_NAME = 'marker1'
@@ -181,19 +178,24 @@ def create_default_markers(line_shp, mkr_grp):
     src_a = mkr_node_a + '.message'
     src_b = mkr_node_b + '.message'
     dst = line_shp + '.objects'
-    maya.cmds.connectAttr(src_a, dst, nextAvailable=True)
-    maya.cmds.connectAttr(src_b, dst, nextAvailable=True)
+    if not maya.cmds.isConnected(src_a, dst):
+        maya.cmds.connectAttr(src_a, dst, nextAvailable=True)
+    if not maya.cmds.isConnected(src_b, dst):
+        maya.cmds.connectAttr(src_b, dst, nextAvailable=True)
 
     src_a = mkr_node_a + '.worldMatrix[0]'
     src_b = mkr_node_b + '.worldMatrix[0]'
     dst_a = line_shp + '.transformMatrix[0]'
     dst_b = line_shp + '.transformMatrix[1]'
-    maya.cmds.connectAttr(src_a, dst_a)
-    maya.cmds.connectAttr(src_b, dst_b)
+    if not maya.cmds.isConnected(src_a, dst_a):
+        maya.cmds.connectAttr(src_a, dst_a)
+    if not maya.cmds.isConnected(src_b, dst_b):
+        maya.cmds.connectAttr(src_b, dst_b)
 
     src = line_shp + '.parentInverseMatrix[0]'
     dst = line_shp + '.transformParentInverseMatrix'
-    maya.cmds.connectAttr(src, dst)
+    if not maya.cmds.isConnected(src, dst):
+        maya.cmds.connectAttr(src, dst)
 
     intersect_a = _create_intersect_node(line_shp, mkr_node_a, bnd_node_a)
     intersect_b = _create_intersect_node(line_shp, mkr_node_b, bnd_node_b)
@@ -423,7 +425,7 @@ class Line(object):
         if mkr_grp is not None:
             self.set_marker_group(mkr_grp)
 
-        event_utils.trigger_event(const.EVENT_NAME_LINE_CREATED, mkr=self)
+        event_utils.trigger_event(const.EVENT_NAME_LINE_CREATED, line=self)
         return self
 
     def delete_node(self):

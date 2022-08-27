@@ -250,6 +250,51 @@ class BundleNode(ObjectNode):
         return const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
 
 
+class LineNode(ObjectNode):
+    def __init__(self, name, data=None, parent=None):
+        icon = const.LINE_ICON_NAME
+        super(LineNode, self).__init__(
+            name, data=data, parent=parent, icon=icon, selectable=True, editable=False
+        )
+        self.typeInfo = 'line'
+
+    def status(self):
+        value = const.OBJECT_DEFAULT_STATUS_UI_VALUE
+        return value
+
+    def objectColor(self):
+        d = self.data()
+        line = d.get('line')
+        if line is None:
+            return None
+        color = None
+        enable = bool(line.get_enable())
+        if enable is False:
+            color = QtGui.QColor(QtCore.Qt.darkGray)
+        return color
+
+    def weight(self):
+        weight = const.OBJECT_DEFAULT_WEIGHT_UI_VALUE
+        d = self.data()
+        line = d.get('line')
+        if line is None:
+            return weight
+        weight = line.get_weight()
+        return str(weight)
+
+    def avgDeviation(self):
+        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
+        return dev
+
+    def deviation(self):
+        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
+        return dev
+
+    def maxDeviation(self):
+        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
+        return dev
+
+
 class ObjectModel(uimodels.ItemModel):
     def __init__(self, root, font=None):
         super(ObjectModel, self).__init__(root, font=font)

@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019 David Cattermole.
+# Copyright (C) 2018, 2019, 2022 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Marker functions.
+Line functions.
 """
 
 import time
@@ -31,59 +31,70 @@ import mmSolver.tools.solver.lib.callbacks as lib_callbacks
 LOG = mmSolver.logger.get_logger()
 
 
-def add_markers_to_collection(mkr_list, col):
+def add_lines_to_collection(line_list, col):
     s = time.time()
     if isinstance(col, mmapi.Collection) is False:
         msg = 'col argument must be a Collection: %r'
         raise TypeError(msg % col)
-    col.add_marker_list(mkr_list)
+    col.add_line_list(line_list)
     e = time.time()
-    LOG.debug('add_markers_to_collection: %r seconds', e - s)
+    LOG.debug('add_lines_to_collection: %r seconds', e - s)
     return
 
 
-def remove_markers_from_collection(mkr_list, col):
+def remove_lines_from_collection(line_list, col):
     s = time.time()
-    result = col.remove_marker_list(mkr_list)
+    result = col.remove_line_list(line_list)
     e = time.time()
-    LOG.debug('remove_markers_from_collection: %r seconds', e - s)
+    LOG.debug('remove_lines_from_collection: %r seconds', e - s)
     return result
 
 
-def get_markers_from_collection(col):
+def get_lines_from_collection(col):
     s = time.time()
-    mkr_list = col.get_marker_list()
+    line_list = col.get_line_list()
     e = time.time()
-    LOG.debug('get_markers_from_collection: %r seconds', e - s)
-    return mkr_list
+    LOG.debug('get_lines_from_collection: %r seconds', e - s)
+    return line_list
 
 
-def add_callbacks_to_markers(mkr_list, callback_manager):
+def add_callbacks_to_lines(line_list, callback_manager):
     s = time.time()
 
-    callback_type = maya_callbacks.TYPE_MARKER
-    for mkr_obj in mkr_list:
-        # Marker
-        mkr_node_path = mkr_obj.get_node()
+    callback_type = maya_callbacks.TYPE_LINE
+    for line_obj in line_list:
+        # Line
+        line_node_path = line_obj.get_node()
         lib_callbacks.add_callback_to_any_node(
             callback_manager,
             callback_type,
-            mkr_node_path,
-            maya_callbacks.add_callbacks_to_marker,
+            line_node_path,
+            maya_callbacks.add_callbacks_to_line,
         )
 
-        # Bundle
-        bnd_obj = mkr_obj.get_bundle()
-        bnd_node_path = bnd_obj.get_node()
-        lib_callbacks.add_callback_to_any_node(
-            callback_manager,
-            callback_type,
-            bnd_node_path,
-            maya_callbacks.add_callbacks_to_bundle,
-        )
+        mkr_list = line_obj.get_marker_list()
+        for mkr_obj in mkr_list:
+            # Marker
+            mkr_node_path = mkr_obj.get_node()
+            lib_callbacks.add_callback_to_any_node(
+                callback_manager,
+                callback_type,
+                mkr_node_path,
+                maya_callbacks.add_callbacks_to_marker,
+            )
+
+            # Bundle
+            bnd_obj = mkr_obj.get_bundle()
+            bnd_node_path = bnd_obj.get_node()
+            lib_callbacks.add_callback_to_any_node(
+                callback_manager,
+                callback_type,
+                bnd_node_path,
+                maya_callbacks.add_callbacks_to_bundle,
+            )
 
         # Marker Group
-        mkrgrp_obj = mkr_obj.get_marker_group()
+        mkrgrp_obj = line_obj.get_marker_group()
         mkrgrp_node_path = mkrgrp_obj.get_node()
         lib_callbacks.add_callback_to_any_node(
             callback_manager,
@@ -93,7 +104,7 @@ def add_callbacks_to_markers(mkr_list, callback_manager):
         )
 
         # Camera Transform
-        cam_obj = mkr_obj.get_camera()
+        cam_obj = line_obj.get_camera()
         cam_tfm_node_path = cam_obj.get_transform_node()
         lib_callbacks.add_callback_to_any_node(
             callback_manager,
@@ -112,27 +123,27 @@ def add_callbacks_to_markers(mkr_list, callback_manager):
         )
 
     e = time.time()
-    LOG.debug('add_callbacks_to_markers: %r seconds', e - s)
+    LOG.debug('add_callbacks_to_lines: %r seconds', e - s)
     return
 
 
-def remove_callbacks_from_markers(mkr_list, callback_manager):
+def remove_callbacks_from_lines(line_list, callback_manager):
     s = time.time()
+
     msg = 'Node UUID has multiple paths: node=%r node_uuids=%r'
+    callback_type = maya_callbacks.TYPE_LINE
+    for line_obj in line_list:
+        bnd_obj = line_obj.get_bundle()
+        cam_obj = line_obj.get_camera()
+        mkrgrp_obj = line_obj.get_marker_group()
 
-    callback_type = maya_callbacks.TYPE_MARKER
-    for mkr_obj in mkr_list:
-        bnd_obj = mkr_obj.get_bundle()
-        cam_obj = mkr_obj.get_camera()
-        mkrgrp_obj = mkr_obj.get_marker_group()
-
-        mkr_node_path = mkr_obj.get_node()
+        line_node_path = line_obj.get_node()
         bnd_node_path = bnd_obj.get_node()
         mkrgrp_node_path = mkrgrp_obj.get_node()
         cam_tfm_node_path = cam_obj.get_transform_node()
         cam_shp_node_path = cam_obj.get_shape_node()
         node_path_list = [
-            mkr_node_path,
+            line_node_path,
             bnd_node_path,
             mkrgrp_node_path,
             cam_tfm_node_path,
@@ -153,5 +164,5 @@ def remove_callbacks_from_markers(mkr_list, callback_manager):
             )
 
     e = time.time()
-    LOG.debug('remove_callbacks_from_markers: %r seconds', e - s)
+    LOG.debug('remove_callbacks_from_lines: %r seconds', e - s)
     return

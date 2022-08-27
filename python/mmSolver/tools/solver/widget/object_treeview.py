@@ -42,6 +42,7 @@ LOG = mmSolver.logger.get_logger()
 
 
 def _get_selected_maya_nodes(cls_obj):
+    assert isinstance(cls_obj, ObjectTreeView)
     tree_view = cls_obj
     filter_model = cls_obj.model()
     ui_nodes = lib_uiquery.get_selected_ui_nodes(

@@ -23,7 +23,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import time
 import collections
 
 import maya.cmds
@@ -40,11 +39,13 @@ TYPE_SELECTION_CHANGED = 'selection_changed'
 TYPE_ATTRIBUTE = 'attribute'
 TYPE_COLLECTION = 'collection'
 TYPE_MARKER = 'marker'
+TYPE_LINE = 'line'
 TYPE_LIST = [
     TYPE_NEW_SCENE,
     TYPE_SELECTION_CHANGED,
     TYPE_ATTRIBUTE,
     TYPE_MARKER,
+    TYPE_LINE,
     TYPE_COLLECTION,
 ]
 
@@ -224,6 +225,52 @@ def add_callbacks_to_marker(node_uuid, node_path):
     .. todo::
 
         - Add callback when parenting changes (marker may
+          not live under camera anymore), specific to marker
+          objects.
+
+    :return: List of callback ids created.
+    :rtype: list of maya.OpenMaya.MCallbackId
+    """
+    callback_ids = []
+    node_mobj = node_utils.get_as_object(node_path)
+
+    # Attribute Changed (if a marker/bundle relationship is changed.)
+    clientData = node_uuid
+    callback_id = OpenMaya.MNodeMessage.addAttributeChangedCallback(
+        node_mobj,
+        attribute_connection_changed_func,
+        clientData,
+    )
+    callback_ids.append(callback_id)
+
+    # Node Name Change
+    clientData = node_uuid
+    callback_id = OpenMaya.MNodeMessage.addNameChangedCallback(
+        node_mobj,
+        node_name_changed_func,
+        clientData,
+    )
+    callback_ids.append(callback_id)
+
+    # Node Has Been Deleted
+    # TODO: This callback does not seem to be doing anything.
+    clientData = node_uuid
+    callback_id = OpenMaya.MNodeMessage.addNodeDestroyedCallback(
+        node_mobj,
+        node_deleted_func,
+        clientData,
+    )
+    callback_ids.append(callback_id)
+    return callback_ids
+
+
+def add_callbacks_to_line(node_uuid, node_path):
+    """
+    Add all callbacks for a node from a 'Line' class.
+
+    .. todo::
+
+        - Add callback when parenting changes (line may
           not live under camera anymore), specific to marker
           objects.
 

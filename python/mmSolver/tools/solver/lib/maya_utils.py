@@ -191,9 +191,9 @@ def get_markers_from_selection():
     """
     nodes = maya.cmds.ls(long=True, selection=True) or []
     node_categories = mmapi.filter_nodes_into_categories(nodes)
-    marker_nodes = node_categories.get('marker', [])
+    marker_nodes = node_categories.get(mmapi.OBJECT_TYPE_MARKER, [])
 
-    camera_nodes = node_categories.get('camera', [])
+    camera_nodes = node_categories.get(mmapi.OBJECT_TYPE_CAMERA, [])
     for node in camera_nodes:
         node_type = maya.cmds.nodeType(node)
         cam = None
@@ -205,18 +205,32 @@ def get_markers_from_selection():
         below_nodes = maya.cmds.ls(tfm_node, dag=True, long=True)
         marker_nodes += mmapi.filter_marker_nodes(below_nodes)
 
-    marker_group_nodes = list(node_categories['markergroup'])
+    marker_group_nodes = list(node_categories[mmapi.OBJECT_TYPE_MARKER_GROUP])
     for node in marker_group_nodes:
         below_nodes = maya.cmds.ls(node, dag=True, long=True)
         marker_nodes += mmapi.filter_marker_nodes(below_nodes)
 
     # Convert nodes into Marker objects.
     marker_nodes = list(set(marker_nodes))
-    marker_list = []
-    for node in marker_nodes:
-        mkr = mmapi.Marker(node=node)
-        marker_list.append(mkr)
-    return marker_list
+    mkr_list = [mmapi.Marker(node=x) for x in marker_nodes]
+    return mkr_list
+
+
+def get_lines_from_selection():
+    """
+    Given a selection of nodes, find the associated markers.
+
+    :return: list of Marker objects.
+    :rtype: [Marker, ..]
+    """
+    nodes = maya.cmds.ls(long=True, selection=True) or []
+    node_categories = mmapi.filter_nodes_into_categories(nodes)
+    line_nodes = node_categories.get(mmapi.OBJECT_TYPE_LINE, [])
+
+    # Convert nodes into Marker objects.
+    line_nodes = list(set(line_nodes))
+    line_list = [mmapi.Line(node=x) for x in line_nodes]
+    return line_list
 
 
 def get_selected_maya_attributes():

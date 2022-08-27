@@ -42,11 +42,23 @@ LOG = mmSolver.logger.get_logger()
 
 def _register_created_marker_connect_to_collection():
     """
-    Connect the created marker to the currently active Collectione.
+    Connect the created marker to the currently active Collections.
     """
     event_utils.add_function_to_event(
         mmapi.EVENT_NAME_MARKER_CREATED,
         lib.run_connect_markers_to_active_collection,
+        deferred=True,
+    )
+    return
+
+
+def _register_created_line_connect_to_collection():
+    """
+    Connect the created marker to the currently active Collections.
+    """
+    event_utils.add_function_to_event(
+        mmapi.EVENT_NAME_LINE_CREATED,
+        lib.run_connect_lines_to_active_collection,
         deferred=True,
     )
     return
@@ -107,6 +119,7 @@ def register_events():
     """
     LOG.info('Registering mmSolver Events...')
     _register_created_marker_connect_to_collection()
+    _register_created_line_connect_to_collection()
     _register_changed_collection_update_solver_ui()
     _register_changed_attribute_update_solver_ui()
     _register_closing_maya_scene()

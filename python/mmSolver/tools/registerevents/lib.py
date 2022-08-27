@@ -63,6 +63,39 @@ def run_connect_markers_to_active_collection(**kwargs):
     return
 
 
+def run_connect_lines_to_active_collection(**kwargs):
+    import mmSolver.tools.userpreferences.constant as userprefs_const
+    import mmSolver.tools.userpreferences.lib as userprefs_lib
+
+    # Enable a toggle to turn on or off this affect.
+    config = userprefs_lib.get_config()
+    key = userprefs_const.REG_EVNT_ADD_NEW_LINE_TO_KEY
+    run_event = userprefs_lib.get_value(config, key)
+    if run_event == userprefs_const.REG_EVNT_ADD_NEW_LINE_TO_NONE_VALUE:
+        return
+
+    LOG.debug("run_connect_lines_to_active_collection: %s", kwargs)
+    s = time.time()
+    import mmSolver.api as mmapi
+    import mmSolver.tools.solver.lib.state as state_lib
+
+    mmapi.load_plugin()
+
+    col = state_lib.get_active_collection()
+    if col is None:
+        return
+
+    line = kwargs.get('line')
+    if isinstance(line, list):
+        col.add_line_list(line)
+    elif isinstance(line, mmapi.Line):
+        col.add_line(line)
+
+    e = time.time()
+    LOG.debug("run_connect_lines_to_active_collection: time=%s", e - s)
+    return
+
+
 def run_update_input_objects_in_solver_ui(**kwargs):
     LOG.debug("run_update_input_objects_in_solver_ui: %r", kwargs)
     s = time.time()

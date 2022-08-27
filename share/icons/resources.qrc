@@ -13,6 +13,7 @@
     <file alias="mmSolver_marker.png">ui/mmSolver_marker.png</file>
     <file alias="mmSolver_object.png">ui/mmSolver_object.png</file>
     <file alias="mmSolver_camera.png">ui/mmSolver_camera.png</file>
+    <file alias="mmSolver_line.png">ui/mmSolver_line.png</file>
     <file alias="mmSolver_solverStep.png">ui/mmSolver_solverStep.png</file>
   </qresource>
 </RCC>

@@ -88,6 +88,10 @@ get_object_toggle_bundle_from_collection = (
 set_object_toggle_bundle_on_collection = (
     col_state.set_object_toggle_bundle_on_collection
 )
+get_object_toggle_line_from_collection = (
+    col_state.get_object_toggle_line_from_collection
+)
+set_object_toggle_line_on_collection = col_state.set_object_toggle_line_on_collection
 
 
 def get_collections():

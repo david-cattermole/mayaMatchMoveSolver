@@ -194,14 +194,17 @@ ATTR_STATE_LOCKED = 'Locked'
 
 # Toggle Objects (stored on Collection node)
 OBJECT_TOGGLE_CAMERA_ATTR = 'object_toggle_camera'
+OBJECT_TOGGLE_LINE_ATTR = 'object_toggle_line'
 OBJECT_TOGGLE_MARKER_ATTR = 'object_toggle_marker'
 OBJECT_TOGGLE_BUNDLE_ATTR = 'object_toggle_bundle'
 
 OBJECT_TOGGLE_CAMERA_ATTR_TYPE = 'bool'
+OBJECT_TOGGLE_LINE_ATTR_TYPE = 'bool'
 OBJECT_TOGGLE_MARKER_ATTR_TYPE = 'bool'
 OBJECT_TOGGLE_BUNDLE_ATTR_TYPE = 'bool'
 
 OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE = True
+OBJECT_TOGGLE_LINE_DEFAULT_VALUE = True
 OBJECT_TOGGLE_MARKER_DEFAULT_VALUE = True
 OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE = False
 
@@ -430,6 +433,7 @@ OBJECT_ICON_NAME = ':/mmSolver_object.png'
 MARKER_ICON_NAME = ':/mmSolver_marker.png'
 BUNDLE_ICON_NAME = ':/mmSolver_bundle.png'
 CAMERA_ICON_NAME = ':/mmSolver_camera.png'
+LINE_ICON_NAME = ':/mmSolver_line.png'
 PLUG_ICON_NAME = ':/mmSolver_plug.png'
 NODE_ICON_NAME = ':/mmSolver_node.png'
 ATTR_ICON_NAME = ':/mmSolver_attr.png'

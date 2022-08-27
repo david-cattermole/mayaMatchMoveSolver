@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019, 2020 David Cattermole.
+# Copyright (C) 2018, 2019, 2020, 2022 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -37,12 +37,144 @@ import mmSolver.tools.solver.ui.solver_nodes as solver_nodes
 LOG = mmSolver.logger.get_logger()
 
 
-def markersToUINodes(mkr_list, show_cam, show_mkr, show_bnd):
+def _generateCameraUINode(cam, mkr, line, root_node, cam_nodes_store, show_cam):
+    assert isinstance(cam, mmapi.Camera)
+    assert mkr is None or isinstance(mkr, mmapi.Marker)
+    assert line is None or isinstance(line, mmapi.Line)
+    assert isinstance(root_node, object_nodes.ObjectNode)
+
+    if show_cam is False:
+        cam_node = root_node
+    else:
+        cam_tfm_node = cam.get_transform_node()
+        cam_name = cam.get_transform_node()
+        cam_name = cam_name.rpartition('|')[-1]
+        cam_node = None
+        if cam_tfm_node in cam_nodes_store:
+            cam_node = cam_nodes_store[cam_tfm_node]
+        else:
+            cam_uuid = cam.get_transform_uid()
+            data = {
+                'uuid': cam_uuid,
+                'marker': mkr,
+                'line': line,
+                'camera': cam,
+            }
+            cam_node = object_nodes.CameraNode(cam_name, data=data, parent=root_node)
+            cam_nodes_store[cam_tfm_node] = cam_node
+    assert cam_node is not None
+    return cam_node
+
+
+def _generateMarkerUINodes(cam, mkr, bnd, root_node, mkr_name, show_mkr, show_bnd):
+    assert isinstance(cam, mmapi.Camera)
+    assert mkr is None or isinstance(mkr, mmapi.Marker)
+    assert bnd is None or isinstance(bnd, mmapi.Bundle)
+    assert isinstance(root_node, object_nodes.ObjectNode)
+
+    mkr_node = root_node
+    if show_mkr is True:
+        mkr_uuid = mkr.get_node_uid()
+        data = {
+            'uuid': mkr_uuid,
+            'marker': mkr,
+            'camera': cam,
+        }
+        mkr_node = object_nodes.MarkerNode(mkr_name, data=data, parent=root_node)
+
+    # Get Bundle under marker.
+    if bnd is None:
+        return
+    if show_bnd is False:
+        return
+    bnd_name = bnd.get_node()
+    bnd_name = bnd_name.rpartition('|')[-1]
+    bnd_uuid = bnd.get_node_uid()
+    data = {
+        'marker': mkr,
+        'bundle': bnd,
+        'camera': cam,
+        'uuid': bnd_uuid,
+    }
+    assert mkr_node is not None
+    bnd_node = object_nodes.BundleNode(bnd_name, data=data, parent=mkr_node)
+    return
+
+
+def _markersToUINodes(
+    mkr_list, root_node, cam_nodes_store, show_cam, show_mkr, show_bnd
+):
+    assert isinstance(show_cam, bool)
+    assert isinstance(show_mkr, bool)
+    assert isinstance(show_bnd, bool)
+
+    for mkr in mkr_list:
+        cam = mkr.get_camera()
+        line = None
+        cam_node = _generateCameraUINode(
+            cam, mkr, line, root_node, cam_nodes_store, show_cam
+        )
+
+        mkr_name = mkr.get_node()
+        mkr_name = mkr_name.rpartition('|')[-1]
+        bnd = mkr.get_bundle()
+        _generateMarkerUINodes(cam, mkr, bnd, cam_node, mkr_name, show_mkr, show_bnd)
+
+    return root_node
+
+
+def _linesToUINodes(
+    line_list, root_node, cam_nodes_store, show_mkr, show_bnd, show_cam, show_line
+):
+    assert isinstance(show_line, bool)
+
+    if show_line is False:
+        return
+
+    for line in line_list:
+        cam = line.get_camera()
+        mkr = None
+        cam_node = _generateCameraUINode(
+            cam, mkr, line, root_node, cam_nodes_store, show_cam
+        )
+
+        cam_tfm_node = cam.get_transform_node()
+        if cam_node is None:
+            continue
+
+        line_uuid = line.get_node_uid()
+        data = {
+            'uuid': line_uuid,
+            'line': line,
+            'camera': cam,
+        }
+        line_name = line.get_node()
+        line_name = line_name.rpartition('|')[-1]
+        line_node = object_nodes.LineNode(line_name, data=data, parent=cam_node)
+
+        mkr_list = line.get_marker_list()
+        for mkr in mkr_list:
+            mkr_name = mkr.get_node()
+            mkr_name = mkr_name.rpartition('|')[-1]
+            bnd = mkr.get_bundle()
+            _generateMarkerUINodes(
+                cam, mkr, bnd, line_node, mkr_name, show_mkr, show_bnd
+            )
+
+    return
+
+
+def solverObjectsToUINodes(
+    mkr_list, line_list, show_cam, show_mkr, show_bnd, show_line
+):
     """
-    Convert a list of markers into a hierarchy to show the user.
+    Convert a list of markers and lines into a hierarchy to show the user.
 
     :param mkr_list: List of Marker objects to convert into UI nodes.
     :type mkr_list: [Marker, ..]
+
+    :param line_list: List of Marker objects to convert into UI nodes.
+    :type line_list: [Line, ..]
 
     :param show_cam: Should we show cameras?
     :type show_cam: bool
@@ -53,72 +185,32 @@ def markersToUINodes(mkr_list, show_cam, show_mkr, show_bnd):
     :param show_bnd: Should we show bundles?
     :type show_bnd: bool
 
-    :return: A list of UI MarkerNode objects.
-    :rtype: [MarkerNode, ..]
+    :param show_line: Should we show lines?
+    :type show_line: bool
+
+    :return: A root node for a tree of UI ObjectNode objects.
+    :rtype: ObjectNode
     """
     s = time.time()
     assert isinstance(show_cam, bool)
     assert isinstance(show_mkr, bool)
     assert isinstance(show_bnd, bool)
-    root = object_nodes.ObjectNode('root')
+    assert isinstance(show_line, bool)
+    root_node = object_nodes.ObjectNode('root')
+
+    # This is a cache filled by functions below.
     cam_nodes_store = {}
-    for mkr in mkr_list:
-        mkr_name = mkr.get_node()
-        mkr_name = mkr_name.rpartition('|')[-1]
-        cam = mkr.get_camera()
-        bnd = mkr.get_bundle()
 
-        # Get camera
-        if show_cam is False:
-            cam_node = root
-        else:
-            cam_tfm_node = cam.get_transform_node()
-            cam_name = cam.get_transform_node()
-            cam_name = cam_name.rpartition('|')[-1]
-            cam_node = None
-            if cam_tfm_node not in cam_nodes_store:
-                cam_uuid = cam.get_transform_uid()
-                data = {
-                    'uuid': cam_uuid,
-                    'marker': mkr,
-                    'camera': cam,
-                }
-                cam_node = object_nodes.CameraNode(cam_name, data=data, parent=root)
-                cam_nodes_store[cam_tfm_node] = cam_node
-            else:
-                cam_node = cam_nodes_store[cam_tfm_node]
-        assert cam_node is not None
+    _markersToUINodes(
+        mkr_list, root_node, cam_nodes_store, show_cam, show_mkr, show_bnd
+    )
+    _linesToUINodes(
+        line_list, root_node, cam_nodes_store, show_mkr, show_bnd, show_cam, show_line
+    )
 
-        # The marker.
-        mkr_node = cam_node
-        if show_mkr is True:
-            mkr_uuid = mkr.get_node_uid()
-            data = {
-                'uuid': mkr_uuid,
-                'marker': mkr,
-                'camera': cam,
-            }
-            mkr_node = object_nodes.MarkerNode(mkr_name, data=data, parent=cam_node)
-
-        # Get Bundle under marker.
-        if bnd is None:
-            continue
-        if show_bnd is False:
-            continue
-        bnd_name = bnd.get_node()
-        bnd_name = bnd_name.rpartition('|')[-1]
-        bnd_uuid = bnd.get_node_uid()
-        data = {
-            'marker': mkr,
-            'bundle': bnd,
-            'camera': cam,
-            'uuid': bnd_uuid,
-        }
-        assert mkr_node is not None
-        bnd_node = object_nodes.BundleNode(bnd_name, data=data, parent=mkr_node)
     e = time.time()
-    LOG.debug('markersToUINodes: %r seconds', e - s)
-    return root
+    LOG.debug('solverObjectsToUINodes: %r seconds', e - s)
+    return root_node
 
 
 def attributesToUINodes(col, attr_list, show_anm, show_stc, show_lck):

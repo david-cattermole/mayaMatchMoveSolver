@@ -502,6 +502,38 @@ def set_object_toggle_bundle_on_collection(col, value):
 #######################################################################
 
 
+def get_object_toggle_line_from_collection(col):
+    """
+    :type col: Collection
+    :rtype: bool
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.OBJECT_TOGGLE_LINE_ATTR,
+        attr_type=const.OBJECT_TOGGLE_LINE_ATTR_TYPE,
+        default_value=const.OBJECT_TOGGLE_LINE_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_object_toggle_line_on_collection(col, value):
+    """
+    :type col: Collection
+    :type value: bool
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.OBJECT_TOGGLE_LINE_ATTR,
+        value,
+        attr_type=const.OBJECT_TOGGLE_LINE_ATTR_TYPE,
+        default_value=const.OBJECT_TOGGLE_LINE_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
 def get_solver_tab_from_collection(col):
     """
     Get the value of solver 'tab', from a Collection.

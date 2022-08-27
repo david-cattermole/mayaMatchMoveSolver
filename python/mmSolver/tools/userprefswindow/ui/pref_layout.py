@@ -54,6 +54,7 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
 
     def populateUI(self, config):
         self.updateAddNewMarkersToWidget(config)
+        self.updateAddNewLinesToWidget(config)
         self.updateSolverUIValidateOnOpenWidget(config)
         self.updateSolverUIShowValidateButtonWidget(config)
         self.updateSolverUIAllowObjectRelationsWidget(config)
@@ -74,6 +75,23 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
     def getAddNewMarkersToConfigValue(self):
         key = pref_const.REG_EVNT_ADD_NEW_MKR_TO_KEY
         label = self.addNewMarkersToComboBox.currentText()
+        value = userprefs_lib.get_value_from_label(key, label)
+        return value
+
+    def updateAddNewLinesToWidget(self, config):
+        key = pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY
+        value = userprefs_lib.get_value(config, key)
+        label = userprefs_lib.get_label_from_value(key, value)
+        assert isinstance(label, pycompat.TEXT_TYPE)
+        labels = userprefs_lib.get_labels(key)
+        self.addNewLinesToComboBox.clear()
+        self.addNewLinesToComboBox.addItems(labels)
+        self.addNewLinesToComboBox.setCurrentText(label)
+        return
+
+    def getAddNewLinesToConfigValue(self):
+        key = pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY
+        label = self.addNewLinesToComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)
         return value
 

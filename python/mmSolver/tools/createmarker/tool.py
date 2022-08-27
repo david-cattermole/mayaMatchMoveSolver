@@ -41,14 +41,14 @@ def main():
 
     sel = maya.cmds.ls(sl=True, long=True)
     node_filtered = mmapi.filter_nodes_into_categories(sel)
-    cams = node_filtered['camera']
+    cams = node_filtered[mmapi.OBJECT_TYPE_CAMERA]
     cams = list(filter(utils_camera.is_not_startup_cam, cams))
-    mkr_grps = node_filtered['markergroup']
+    mkr_grps = node_filtered[mmapi.OBJECT_TYPE_MARKER_GROUP]
 
     cam = None
     mkr_grp = None
     if len(cams) > 0 and len(mkr_grps) > 0:
-        msg = 'Please select a camera or marker group; ' 'both node types are selected.'
+        msg = 'Please select a camera or marker group; both node types are selected.'
         LOG.error(msg)
         return
 

@@ -25,6 +25,7 @@ import maya.mel
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.python_compat as pycompat
+import mmSolver.utils.camera as cam_utils
 import mmSolver.tools.solver.constant as const
 
 
@@ -195,14 +196,8 @@ def get_markers_from_selection():
 
     camera_nodes = node_categories.get(mmapi.OBJECT_TYPE_CAMERA, [])
     for node in camera_nodes:
-        node_type = maya.cmds.nodeType(node)
-        cam = None
-        if node_type == 'transform':
-            cam = mmapi.Camera(transform=node)
-        if node_type == 'camera':
-            cam = mmapi.Camera(shape=node)
-        tfm_node = cam.get_transform_node()
-        below_nodes = maya.cmds.ls(tfm_node, dag=True, long=True)
+        cam_tfm, cam_shp = cam_utils.get_camera(node)
+        below_nodes = maya.cmds.ls(cam_tfm, dag=True, long=True)
         marker_nodes += mmapi.filter_marker_nodes(below_nodes)
 
     marker_group_nodes = list(node_categories[mmapi.OBJECT_TYPE_MARKER_GROUP])
@@ -226,6 +221,17 @@ def get_lines_from_selection():
     nodes = maya.cmds.ls(long=True, selection=True) or []
     node_categories = mmapi.filter_nodes_into_categories(nodes)
     line_nodes = node_categories.get(mmapi.OBJECT_TYPE_LINE, [])
+
+    camera_nodes = node_categories.get(mmapi.OBJECT_TYPE_CAMERA, [])
+    for node in camera_nodes:
+        cam_tfm, cam_shp = cam_utils.get_camera(node)
+        below_nodes = maya.cmds.ls(cam_tfm, dag=True, long=True)
+        line_nodes += mmapi.filter_line_nodes(below_nodes)
+
+    marker_group_nodes = list(node_categories[mmapi.OBJECT_TYPE_MARKER_GROUP])
+    for node in marker_group_nodes:
+        below_nodes = maya.cmds.ls(node, dag=True, long=True)
+        line_nodes += mmapi.filter_line_nodes(below_nodes)
 
     # Convert nodes into Marker objects.
     line_nodes = list(set(line_nodes))

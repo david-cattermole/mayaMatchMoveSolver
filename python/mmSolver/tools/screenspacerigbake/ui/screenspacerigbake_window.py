@@ -38,8 +38,8 @@ import mmSolver.ui.Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
-import mmSolver.tools.screenspacerigbake2.constant as const
-import mmSolver.tools.screenspacerigbake2.ui.screenspacerigbake_layout as ui_layout
+import mmSolver.tools.screenspacerigbake.constant as const
+import mmSolver.tools.screenspacerigbake.ui.screenspacerigbake_layout as ui_layout
 
 LOG = mmSolver.logger.get_logger()
 

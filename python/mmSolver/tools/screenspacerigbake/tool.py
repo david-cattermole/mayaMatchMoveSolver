@@ -26,5 +26,5 @@ LOG = mmSolver.logger.get_logger()
 
 
 def open_window():
-    import mmSolver.tools.screenspacerigbake2.ui.screenspacerigbake_window as window
+    import mmSolver.tools.screenspacerigbake.ui.screenspacerigbake_window as window
     window.main()

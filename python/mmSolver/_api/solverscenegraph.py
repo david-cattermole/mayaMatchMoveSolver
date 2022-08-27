@@ -117,6 +117,7 @@ class SolverSceneGraph(solverbase.SolverBase):
         :rtype: (Action, Action)
         """
         assert isinstance(self, solverbase.SolverBase)
+        assert isinstance(self, SolverSceneGraph)
         assert isinstance(mkr_list, list)
         assert isinstance(attr_list, list)
 

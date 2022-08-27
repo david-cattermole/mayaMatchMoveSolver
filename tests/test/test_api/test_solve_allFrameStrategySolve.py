@@ -99,7 +99,6 @@ class TestSolveAllFrameStrategySolve(test_api_utils.APITestCase):
 
         # Run solver!
         s = time.time()
-        lib_col.compile_collection(col)
         solres_list = mmapi.execute(col)
         e = time.time()
         print('total time:', e - s)
@@ -124,7 +123,7 @@ class TestSolveAllFrameStrategySolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         self.checkSolveResults(
-            solres_list, allow_max_avg_error=1.0, allow_max_error=1.0
+            solres_list, allow_max_avg_error=0.7, allow_max_error=1.1
         )
         return
 

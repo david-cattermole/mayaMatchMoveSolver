@@ -123,10 +123,6 @@ def create_collection(name=None):
     if name is None:
         name = const.COLLECTION_DEFAULT_NODE_NAME
     col = mmapi.Collection().create_node(name)
-    sol = solver_utils.create_solver()
-    solver_utils.add_solver_to_collection(sol, col)
-    step = create_solver_step()
-    add_solver_step_to_collection(col, step)
     return col
 
 

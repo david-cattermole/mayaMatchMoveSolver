@@ -36,8 +36,8 @@ import mmSolver.tools.subdivideline.lib as lib
 LOG = mmSolver.logger.get_logger()
 
 
-def _expand_markers_to_line_segments(line, mkr_node_list):
-    mkr_node_list = [mmapi.Marker(node=x).get_node() for x in mkr_node_list]
+def _expand_markers_to_line_segments(line, mkr_list):
+    mkr_node_list = [mkr.get_node() for mkr in mkr_list]
 
     all_mkr_list = line.get_marker_list()
     all_mkr_node_list = [x.get_node() for x in all_mkr_list]
@@ -59,7 +59,6 @@ def _expand_markers_to_line_segments(line, mkr_node_list):
         mkr_index_set.add(mkr_index_max)
 
     mkr_list = [all_mkr_list[mkr_index] for mkr_index in sorted(mkr_index_set)]
-
     return mkr_list
 
 
@@ -78,10 +77,15 @@ def main():
     line_nodes = []
     if len(selected_line_nodes) > 0:
         line_nodes = selected_line_nodes
+        for line_node in line_nodes:
+            line = mmapi.Line(node=line_node)
+            mkr_list = line.get_marker_list()
+            line_to_mkr_list_map[line_node] = mkr_list
     elif len(selected_marker_nodes) > 0:
         for node in selected_marker_nodes:
+            mkr = mmapi.Marker(node=node)
             line_node = mmapi.get_line_above_node(node)
-            line_to_mkr_list_map[line_node].append(node)
+            line_to_mkr_list_map[line_node].append(mkr)
             line_nodes.append(line_node)
     line_nodes = sorted(set(line_nodes))
     line_nodes = [x for x in line_nodes if x]
@@ -91,12 +95,12 @@ def main():
         line = mmapi.Line(node=line_node)
 
         mkr_list = line.get_marker_list()
-        mkr_node_list = line_to_mkr_list_map[line_node]
+        line_mkr_list = line_to_mkr_list_map[line_node]
 
-        no_markers = len(mkr_node_list) == 0
-        all_markers = len(mkr_node_list) == len(mkr_list)
+        no_markers = len(line_mkr_list) == 0
+        all_markers = len(line_mkr_list) == len(mkr_list)
         if not no_markers or not all_markers:
-            mkr_list = _expand_markers_to_line_segments(line, mkr_node_list)
+            mkr_list = _expand_markers_to_line_segments(line, line_mkr_list)
 
         all_mkrs, new_mkrs = lib.subdivide_line(line, mkr_list)
         new_mkr_list += new_mkrs

@@ -31,12 +31,12 @@ LOG = mmSolver.logger.get_logger()
 def _create_new_line_markers(mkr_grp, line_tfm):
     line_shp = maya.cmds.listRelatives(line_tfm, shapes=True)[0]
     mkr_a, bnd_a, mkr_b, bnd_b = line_api.create_default_markers(line_shp, mkr_grp)
-    return mkr_a, bnd_a, mkr_b, bnd_b
+    return mkr_a, mkr_b
 
 
 def _create_new_marker_pair(mkr_grp, line_tfm, mkr_start, mkr_end):
     line_shp = maya.cmds.listRelatives(line_tfm, shapes=True)[0]
-    mkr_new, bnd_new = line_api.create_new_line_marker(line_tfm, line_shp, mkr_grp)
+    mkr_new, bnd_new = line_api.create_new_line_marker(line_shp, mkr_grp)
 
     mkr_node_start = mkr_start.get_node()
     mkr_node_new = mkr_new.get_node()

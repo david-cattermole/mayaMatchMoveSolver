@@ -43,7 +43,7 @@ import mmSolver.tools.createcontroller2.ui.createcontroller_layout as createcont
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
-WINDOW_TITLE = "Create Controller"
+WINDOW_TITLE = 'Create Controller'
 
 
 def _open_help():

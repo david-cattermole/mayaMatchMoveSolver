@@ -20,7 +20,7 @@ Window for the Create Controller tool.
 
 Usage::
 
-   import mmSolver.tools.createcontroller3.ui.createcontroller_window as createcontroller_window
+   import mmSolver.tools.createcontroller3beta.ui.createcontroller_window as createcontroller_window
    createcontroller_window.main()
 
 """
@@ -40,9 +40,9 @@ import maya.cmds as cmds
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
-import mmSolver.tools.createcontroller3.constant as const
-import mmSolver.tools.createcontroller3.ui.constant as ui_const
-import mmSolver.tools.createcontroller3.ui.createcontroller_layout as ui_layout
+import mmSolver.tools.createcontroller3beta.constant as const
+import mmSolver.tools.createcontroller3beta.ui.constant as ui_const
+import mmSolver.tools.createcontroller3beta.ui.createcontroller_layout as ui_layout
 
 import mmSolver.tools.loadmarker.lib.utils as cam_lib
 

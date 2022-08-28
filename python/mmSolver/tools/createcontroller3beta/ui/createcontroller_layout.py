@@ -40,8 +40,8 @@ import mmSolver.ui.helputils as helputils
 import mmSolver.ui.commonmenus as commonmenus
 import mmSolver.tools.createcontroller2.constant as const
 import mmSolver.tools.createcontroller2.lib as lib
-import mmSolver.tools.createcontroller3.ui.constant as ui_const
-import mmSolver.tools.createcontroller3.ui.ui_createcontroller_layout as ui_layout
+import mmSolver.tools.createcontroller3beta.ui.constant as ui_const
+import mmSolver.tools.createcontroller3beta.ui.ui_createcontroller_layout as ui_layout
 
 LOG = mmSolver.logger.get_logger()
 

@@ -18,6 +18,6 @@
 
 
 def open_window():
-    import mmSolver.tools.createcontroller3.ui.createcontroller_window as window
+    import mmSolver.tools.createcontroller3beta.ui.createcontroller_window as window
     window.main()
 

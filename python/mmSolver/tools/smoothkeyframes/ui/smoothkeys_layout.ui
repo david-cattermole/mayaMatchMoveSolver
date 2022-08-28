@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="">
+    <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Options</string>
      </property>
@@ -69,14 +69,14 @@
         </item>
         <item>
          <widget class="QSpinBox" name="width_spinBox">
+          <property name="buttonSymbols">
+           <enum>QAbstractSpinBox::NoButtons</enum>
+          </property>
           <property name="minimum">
            <number>1</number>
           </property>
           <property name="maximum">
            <number>999</number>
-          </property>
-          <property name="singleStep">
-           <number>10</number>
           </property>
          </widget>
         </item>

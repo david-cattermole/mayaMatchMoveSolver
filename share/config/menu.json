@@ -85,7 +85,7 @@
             "display_tools/create_sky_dome",
             "display_tools/---Object",
             "display_tools/toggle_object_motion_trail",
-            "general_tools/create_screen_space_motion_trail",
+            "display_tools/create_screen_space_motion_trail",
             "zdepth_tools/---Z-Depth Screen-Space Tools",
             "zdepth_tools/screen_z_manipulator",
             "zdepth_tools/screen_z_transform_bake",

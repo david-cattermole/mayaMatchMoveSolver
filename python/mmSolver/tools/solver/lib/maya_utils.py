@@ -352,15 +352,16 @@ def get_node_default_attributes(nodes):
                 'float',
             ]
             attr_names += [
-                n
-                for n in attrs
-                if maya.cmds.attributeQuery(n, node=node, attributeType=True)
+                attr
+                for attr in attrs
+                if maya.cmds.attributeQuery(attr, node=node, attributeType=True)
                 in attr_types
             ]
 
         for attr_name in attr_names:
             attr_obj = mmapi.Attribute(node=node, attr=attr_name)
-            attr_list.append(attr_obj)
+            if attr_obj.get_name() is not None:
+                attr_list.append(attr_obj)
     return attr_list
 
 

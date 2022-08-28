@@ -45,6 +45,7 @@ class TestSolve(test_api_utils.APITestCase):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
+        scene_graph_name = mmapi.SCENE_GRAPH_MODE_NAME_LIST[scene_graph_mode]
         scene_graph_label = mmapi.SCENE_GRAPH_MODE_LABEL_LIST[scene_graph_mode]
         print('Scene Graph:', scene_graph_label)
 
@@ -90,7 +91,10 @@ class TestSolve(test_api_utils.APITestCase):
         print('pre-solve time:', e - s)
 
         # save the output
-        path = self.get_data_path('test_solve_line_before.ma')
+        file_name = 'test_solve_line_{}_{}_before.ma'.format(
+            solver_name, scene_graph_name
+        )
+        path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -102,13 +106,16 @@ class TestSolve(test_api_utils.APITestCase):
         mmapi.update_deviation_on_collection(col, results)
 
         # save the output
-        path = self.get_data_path('test_solve_line_after.ma')
+        file_name = 'test_solve_line_{}_{}_after.ma'.format(
+            solver_name, scene_graph_name
+        )
+        path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Ensure the values are correct
         self.checkSolveResults(
-            results, allow_max_avg_error=0.001, allow_max_error=0.001
+            results, allow_max_avg_error=4.0, allow_max_error=4.0
         )
         return
 

@@ -289,7 +289,7 @@ MStatus LineShapeNode::initialize() {
         CHECK_MSTATUS(nAttr.setKeyable(true));
 
         m_draw_middle =
-            nAttr.create("drawMiddle", "drwmid", MFnNumericData::kBoolean, 1);
+            nAttr.create("drawMiddle", "drwmid", MFnNumericData::kBoolean, 0);
         CHECK_MSTATUS(nAttr.setStorable(true));
         CHECK_MSTATUS(nAttr.setKeyable(true));
 

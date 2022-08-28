@@ -106,6 +106,7 @@
             "general_tools/gen_tools_popup/reparent_under_node2",
             "general_tools/gen_tools_popup/unparent_to_world2",
             "general_tools/gen_tools_popup/---Controllers",
+            "general_tools/gen_tools_popup/create_world_controllers2",
             "general_tools/gen_tools_popup/create_controller2",
             "general_tools/gen_tools_popup/remove_controller2",
             "general_tools/gen_tools_popup/---ML Tools",

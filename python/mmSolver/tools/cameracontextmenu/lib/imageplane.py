@@ -63,7 +63,11 @@ def get_camera_image_planes(camera_shape_node):
     mmapi.load_plugin()
     mm_image_plane_nodes = (
         maya.cmds.listRelatives(
-            cam_tfm, children=True, shapes=False, type='mmImagePlaneTransform'
+            cam_tfm,
+            fullPath=True,
+            children=True,
+            shapes=False,
+            type='mmImagePlaneTransform',
         )
         or []
     )

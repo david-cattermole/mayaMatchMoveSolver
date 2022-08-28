@@ -76,7 +76,7 @@ def _register_changed_collection_update_solver_ui():
         deferred=True,
     )
     event_utils.add_function_to_event(
-        mmapi.EVENT_NAME_COLLECTION_LINES_CREATED,
+        mmapi.EVENT_NAME_COLLECTION_LINES_CHANGED,
         lib.run_update_input_objects_in_solver_ui,
         deferred=True,
     )

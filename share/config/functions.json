@@ -690,6 +690,15 @@
                 "mmSolver.tools.createcontroller2.tool.open_window();"
             ]
         },
+        "create_world_controllers2": {
+            "name": "Create (World-Space) Controllers",
+            "name_shelf": "WldCtrl",
+            "tooltip": "Create (World-Space) Controller for selected nodes. (version 2)",
+            "command": [
+                "import mmSolver.tools.createcontroller2.tool;",
+                "mmSolver.tools.createcontroller2.tool.create_world_controllers();"
+            ]
+        },
         "remove_controller": {
             "name": "Remove Controller (v1)",
             "name_shelf": "RmCtrl",

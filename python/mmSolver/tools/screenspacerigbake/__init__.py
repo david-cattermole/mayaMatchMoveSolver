@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Patcha.
+# Copyright (C) 2020 Patcha Saheb Binginapalli.
 #
 # This file is part of mmSolver.
 #

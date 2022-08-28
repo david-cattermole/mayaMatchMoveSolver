@@ -168,6 +168,11 @@ if (BUILD_QT_UI)
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/createcontroller2/ui/ui_createcontroller_layout.py
             )
 
+    compile_qt_ui_to_python_file("screenspacerigbake"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/screenspacerigbake/ui/screenspacerigbake_layout.ui
+            ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/screenspacerigbake/ui/ui_screenspacerigbake_layout.py
+            )
+
     # Install generated Python UI files
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/"
             DESTINATION "${MODULE_FULL_NAME}/python"

@@ -63,6 +63,8 @@ def add_callbacks_to_lines(line_list, callback_manager):
 
     callback_type = maya_callbacks.TYPE_LINE
     for line_obj in line_list:
+        assert isinstance(line_obj, mmapi.Line)
+
         # Line
         line_node_path = line_obj.get_node()
         lib_callbacks.add_callback_to_any_node(
@@ -74,6 +76,7 @@ def add_callbacks_to_lines(line_list, callback_manager):
 
         mkr_list = line_obj.get_marker_list()
         for mkr_obj in mkr_list:
+            assert isinstance(mkr_obj, mmapi.Marker)
             # Marker
             mkr_node_path = mkr_obj.get_node()
             lib_callbacks.add_callback_to_any_node(
@@ -133,22 +136,37 @@ def remove_callbacks_from_lines(line_list, callback_manager):
     msg = 'Node UUID has multiple paths: node=%r node_uuids=%r'
     callback_type = maya_callbacks.TYPE_LINE
     for line_obj in line_list:
-        bnd_obj = line_obj.get_bundle()
+        assert isinstance(line_obj, mmapi.Line)
         cam_obj = line_obj.get_camera()
         mkrgrp_obj = line_obj.get_marker_group()
 
         line_node_path = line_obj.get_node()
-        bnd_node_path = bnd_obj.get_node()
         mkrgrp_node_path = mkrgrp_obj.get_node()
         cam_tfm_node_path = cam_obj.get_transform_node()
         cam_shp_node_path = cam_obj.get_shape_node()
         node_path_list = [
             line_node_path,
-            bnd_node_path,
             mkrgrp_node_path,
             cam_tfm_node_path,
             cam_shp_node_path,
         ]
+
+        mkr_node_paths = []
+        bnd_node_paths = []
+        mkr_list = line_obj.get_marker_list()
+        for mkr_obj in mkr_list:
+            assert isinstance(mkr_obj, mmapi.Marker)
+            mkr_node_path = mkr_obj.get_node()
+            mkr_node_paths.append(mkr_node_path)
+
+            bnd_obj = mkr_obj.get_bundle()
+            if bnd_obj is not None:
+                bnd_node_path = bnd_obj.get_node()
+                bnd_node_paths.append(bnd_node_path)
+
+        node_path_list += mkr_node_paths
+        node_path_list += bnd_node_paths
+
         for node_path in node_path_list:
             node_uuids = maya.cmds.ls(node_path, uuid=True) or []
             if len(node_uuids) != 1:

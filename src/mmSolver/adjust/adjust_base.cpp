@@ -1125,19 +1125,16 @@ MStatus solveFrames(
     }
 
     if ((verbose == false) && (printStats.enable == false)) {
+        MMSOLVER_INFO("Solving...");
+        MMSOLVER_INFO("Marker count: " << usedMarkerList.size())
+        MMSOLVER_INFO("Attribute count: " << usedAttrList.size());
         std::stringstream ss;
-        ss << "Solving... frames:";
+        ss << "Frames:";
         for (uint32_t i = 0; i < frameList.length(); i++) {
             MTime frame(frameList[i]);
             ss << " " << frame;
         }
-        std::string tmp_string = ss.str();
-
-        size_t num = 100 - tmp_string.size();
-        num = std::min<size_t>(0, num);
-        std::string pad_chars(num, '=');
-
-        MMSOLVER_INFO(tmp_string << " " << pad_chars);
+        MMSOLVER_INFO(ss.str());
     }
 
     // MComputation helper.

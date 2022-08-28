@@ -104,11 +104,13 @@
             "general_tools/ml_convert_rotation_order",
             "general_tools/---Settings & Preferences",
             "general_tools/user_preferences_window",
-            "file_io_tools/---Input Output",
+            "file_io_tools/---Marker",
             "file_io_tools/load_marker_ui",
             "file_io_tools/save_marker_file",
             "file_io_tools/copy_marker_to_clipboard",
+            "file_io_tools/---Camera",
             "file_io_tools/copy_camera_to_clipboard",
+            "file_io_tools/---Lens",
             "file_io_tools/load_lens"
         ],
         "functions": {

@@ -130,6 +130,10 @@ def _get_auxiliary_attr(col, attr, key, default_value):
     """
     value = None
     attr_node = attr.get_node()
+    if attr_node is None:
+        LOG.warn('Attribute Node is not valid: %r', attr)
+        return value
+
     aux_name = _get_auxiliary_attr_name(col, attr, key)
     plug_name = '{0}.{1}'.format(attr_node, aux_name)
     exists = node_utils.attribute_exists(aux_name, attr_node)
@@ -181,6 +185,10 @@ def _set_auxiliary_attr(col, attr, key, value):
     :rtype: None
     """
     attr_node = attr.get_node()
+    if attr_node is None:
+        LOG.warn('Attribute Node is not valid: %r', attr)
+        return value
+
     aux_name = _get_auxiliary_attr_name(col, attr, key)
     plug_name = '{0}.{1}'.format(attr_node, aux_name)
     exists = node_utils.attribute_exists(aux_name, attr_node)
@@ -683,6 +691,9 @@ class Collection(object):
     def get_attribute_min_enable_plug_name(self, attr):
         key = 'min_enable'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -701,6 +712,9 @@ class Collection(object):
     def get_attribute_min_value_plug_name(self, attr):
         key = 'min_value'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -719,6 +733,9 @@ class Collection(object):
     def get_attribute_max_enable_plug_name(self, attr):
         key = 'max_enable'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -737,6 +754,9 @@ class Collection(object):
     def get_attribute_max_value_plug_name(self, attr):
         key = 'max_value'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -755,6 +775,9 @@ class Collection(object):
     def get_attribute_stiffness_enable_plug_name(self, attr):
         key = 'stiffness_enable'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -773,6 +796,9 @@ class Collection(object):
     def get_attribute_stiffness_weight_plug_name(self, attr):
         key = 'stiffness_weight'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -791,6 +817,9 @@ class Collection(object):
     def get_attribute_stiffness_variance_plug_name(self, attr):
         key = 'stiffness_variance'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -809,6 +838,9 @@ class Collection(object):
     def get_attribute_smoothness_enable_plug_name(self, attr):
         key = 'smoothness_enable'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -827,6 +859,9 @@ class Collection(object):
     def get_attribute_smoothness_weight_plug_name(self, attr):
         key = 'smoothness_weight'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -845,6 +880,9 @@ class Collection(object):
     def get_attribute_smoothness_variance_plug_name(self, attr):
         key = 'smoothness_variance'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -863,6 +901,9 @@ class Collection(object):
     def get_attribute_previous_value_plug_name(self, attr):
         key = 'previous_value'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -881,6 +922,9 @@ class Collection(object):
     def get_attribute_mean_value_plug_name(self, attr):
         key = 'mean_value'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -899,6 +943,9 @@ class Collection(object):
     def get_attribute_variance_value_plug_name(self, attr):
         key = 'variance_value'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name

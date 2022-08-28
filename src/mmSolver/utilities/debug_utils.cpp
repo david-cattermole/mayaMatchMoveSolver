@@ -57,7 +57,7 @@ Timestamp get_timestamp() {
     li.LowPart = ft.dwLowDateTime;
     li.HighPart = ft.dwHighDateTime;
 
-    uint64_t ret = li.QuadPart;
+    Timestamp ret = li.QuadPart;
     // Convert from file time to UNIX epoch time.
     ret -= 116444736000000000LL;
     // From 100 nano seconds (10^-7) to 1 millisecond (10^-3)
@@ -69,12 +69,19 @@ Timestamp get_timestamp() {
     // For Linux
     struct timeval now;
     gettimeofday(&now, nullptr);
-    return now.tv_usec + (Timestamp)now.tv_sec * 1000000;
+    Timestamp ret = tv.tv_usec;
+
+    // Convert from micro seconds (10^-6) to milliseconds (10^-3)
+    ret /= 1000;
+
+    // Adds the seconds (10^0) after converting them to milliseconds (10^-3)
+    ret += (tv.tv_sec * 1000);
+    return ret;
 #endif
 }
 
 double timestamp_as_seconds(Timestamp timestamp) {
-    return static_cast<double>(timestamp / 1000000.0L);
+    return static_cast<double>(timestamp) / 1000.0;
 }
 
 void CPUBenchmark::start() { ticktime = rdtsc(); }

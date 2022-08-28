@@ -172,6 +172,8 @@ uint64_t rdtsc();
 #endif
 
 // Get the current time - used for profiling and debug.
+//
+// Returns the amount of milliseconds elapsed since the UNIX epoch.
 Timestamp get_timestamp();
 
 double timestamp_as_seconds(Timestamp timestamp);

@@ -173,6 +173,11 @@ if (BUILD_QT_UI)
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/createcontroller3beta/ui/ui_createcontroller_layout.py
             )
 
+    compile_qt_ui_to_python_file("cameraobjectscaleadjust"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/screenspacerigbake/ui/cameraobjectscaleadjust_layout.ui
+            ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/screenspacerigbake/ui/ui_cameraobjectscaleadjust_layout.py
+            )
+
     compile_qt_ui_to_python_file("screenspacerigbake"
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/screenspacerigbake/ui/screenspacerigbake_layout.ui
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/screenspacerigbake/ui/ui_screenspacerigbake_layout.py

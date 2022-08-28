@@ -92,9 +92,6 @@ def main():
 
     start, end, step = tde4.getCameraSequenceAttr(camera)
     start_frame = start
-    # Backwards compatibility with 3DE4 Release 2.
-    if uvtrack_format.SUPPORT_CAMERA_FRAME_OFFSET is True:
-        start_frame = tde4.getCameraFrameOffset(camera)
 
     rs_enabled = False
     rs_distance = None

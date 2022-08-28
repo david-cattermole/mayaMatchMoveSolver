@@ -114,9 +114,7 @@ class TestSolve(test_api_utils.APITestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Ensure the values are correct
-        self.checkSolveResults(
-            results, allow_max_avg_error=4.0, allow_max_error=4.0
-        )
+        self.checkSolveResults(results, allow_max_avg_error=4.0, allow_max_error=4.0)
         return
 
     # def test_line_ceres_maya_dag(self):

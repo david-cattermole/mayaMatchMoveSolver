@@ -67,6 +67,23 @@ def create_marker_connections(cam):
     mkr_list = cam.get_marker_list()
     mkr_nodes = [mkr.get_node() for mkr in mkr_list]
 
+    for mkr_node in mkr_nodes:
+        dst = mkr_node + '.inLens'
+        conns = (
+            maya.cmds.listConnections(
+                dst,
+                source=True,
+                destination=False,
+                connections=True,
+                plugs=True,
+            )
+            or []
+        )
+        src_list = conns[1::2]
+        dst_list = conns[0::2]
+        for src, dst in zip(src_list, dst_list):
+            maya.cmds.disconnectAttr(src, dst)
+
     # Ensure Marker have connections to the camera lens.
     cam_shp = cam.get_shape_node()
     for mkr_node in mkr_nodes:

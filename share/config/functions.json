@@ -545,6 +545,13 @@
                 "mmSolver.tools.smoothkeyframes.tool.main();"
             ]
         },
+        "zdepth_tools": {
+            "name": "Z-Depth Tools",
+            "name_shelf": "",
+            "icon_shelf": "zDepthTools_32x32.png",
+            "tooltip": "Screen-Space Z-Depth Tools",
+            "command": ["pass"]
+        },
         "create_screen_space_motion_trail": {
             "name": "Create Screen-Space Motion Trail",
             "name_shelf": "ScrnMT",

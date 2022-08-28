@@ -138,6 +138,10 @@
                 "name": "Display Tools",
                 "tearoff": true
             },
+            "zdepth_tools": {
+                "name": "Z-Depth Tools",
+                "tearoff": true
+            },
             "general_tools": {
                 "name": "General Tools",
                 "tearoff": true

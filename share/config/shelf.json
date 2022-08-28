@@ -152,6 +152,10 @@
                 "popup": true,
                 "popup_button": ["left", "right"]
             },
+            "zdepth_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
             "gen_tools_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]

@@ -151,7 +151,7 @@
                 "popup": true,
                 "popup_button": ["left", "right"]
             },
-            "camera_popup": {
+            "zdepth_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]
             },

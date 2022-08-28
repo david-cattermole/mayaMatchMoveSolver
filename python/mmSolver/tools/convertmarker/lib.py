@@ -30,7 +30,7 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.tools.loadmarker.lib.interface as loadmkr_interface
+import mmSolver.utils.loadmarker.markerdata as markerdata
 import mmSolver.tools.convertmarker.constant as const
 import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
 
@@ -57,7 +57,7 @@ def convert_nodes_to_marker_data_list(cam_tfm, cam_shp, nodes, start_frame, end_
         )
         assert (len(frames) * 3) == len(values)
 
-        mkr_data = loadmkr_interface.MarkerData()
+        mkr_data = markerdata.MarkerData()
         mkr_data.set_name(node)
         mkr_data.weight.set_value(start_frame, 1.0)
 

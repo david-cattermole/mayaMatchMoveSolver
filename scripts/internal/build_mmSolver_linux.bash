@@ -90,6 +90,7 @@ CERES_ROOT="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/ceres"
 CERES_DIR="${CERES_ROOT}/lib64/cmake/Ceres/"
 CERES_INCLUDE_DIR="${CERES_ROOT}/include"
 CERES_LIB_PATH="${CERES_ROOT}/lib64"
+Eigen3_DIR="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/eigen/share/eigen3/cmake"
 EIGEN3_INCLUDE_DIR="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/eigen/include/eigen3"
 OPENMVG_ROOT="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/openMVG"
 OPENMVG_DIR="${OPENMVG_ROOT}/share/openMVG/cmake"
@@ -127,6 +128,7 @@ ${CMAKE_EXE} \
     -DBUILD_TESTS=${BUILD_TESTS} \
     -DCMINPACK_ROOT=${CMINPACK_ROOT} \
     -DCeres_DIR=${CERES_DIR} \
+    -DEigen3_DIR=${Eigen3_DIR} \
     -DEIGEN3_INCLUDE_DIR=${EIGEN3_INCLUDE_DIR} \
     -DOpenMVG_DIR=${OPENMVG_DIR} \
     -DLDPK_ROOT=${LDPK_ROOT} \

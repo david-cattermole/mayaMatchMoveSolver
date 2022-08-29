@@ -88,6 +88,7 @@ SET CERES_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\cer
 SET CERES_DIR="%CERES_ROOT%\CMake"
 SET CERES_INCLUDE_DIR="%CERES_ROOT%\include"
 SET CERES_LIB_PATH="%CERES_ROOT%\lib"
+SET Eigen3_DIR="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\eigen\share\eigen3\cmake"
 SET EIGEN3_INCLUDE_DIR="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\eigen\include\eigen3"
 SET OPENMVG_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\openMVG"
 SET OPENMVG_DIR="%OPENMVG_ROOT%\share\openMVG\cmake"
@@ -138,6 +139,7 @@ CHDIR "%BUILD_DIR%"
     -DBUILD_TESTS=%BUILD_TESTS% ^
     -DCMINPACK_ROOT=%CMINPACK_ROOT% ^
     -DCeres_DIR=%CERES_DIR% ^
+    -DEigen3_DIR=%Eigen3_DIR% ^
     -DEIGEN3_INCLUDE_DIR=%EIGEN3_INCLUDE_DIR% ^
     -DOpenMVG_DIR=%OPENMVG_DIR% ^
     -DLDPK_ROOT=%LDPK_ROOT% ^

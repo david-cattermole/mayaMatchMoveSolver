@@ -69,13 +69,13 @@ Timestamp get_timestamp() {
     // For Linux
     struct timeval now;
     gettimeofday(&now, nullptr);
-    Timestamp ret = tv.tv_usec;
+    Timestamp ret = now.tv_usec;
 
     // Convert from micro seconds (10^-6) to milliseconds (10^-3)
     ret /= 1000;
 
     // Adds the seconds (10^0) after converting them to milliseconds (10^-3)
-    ret += (tv.tv_sec * 1000);
+    ret += (now.tv_sec * 1000);
     return ret;
 #endif
 }

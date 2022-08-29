@@ -1126,7 +1126,7 @@ MStatus solveFrames(
 
     if ((verbose == false) && (printStats.enable == false)) {
         MMSOLVER_INFO("Solving...");
-        MMSOLVER_INFO("Marker count: " << usedMarkerList.size())
+        MMSOLVER_INFO("Marker count: " << usedMarkerList.size());
         MMSOLVER_INFO("Attribute count: " << usedAttrList.size());
         std::stringstream ss;
         ss << "Frames:";

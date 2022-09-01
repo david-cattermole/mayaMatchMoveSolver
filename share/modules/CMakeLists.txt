@@ -37,7 +37,7 @@ configure_file(
 # Install the Module Description file.
 install(FILES
         "${CMAKE_BINARY_DIR}/${MODULE_FULL_NAME}.mod"
-        DESTINATION "${CMAKE_INSTALL_PREFIX}")
+        DESTINATION "./")
 
 # Set variables in parent scope (directory above).
 set(MODULE_OS_NAME "${MODULE_OS_NAME}" PARENT_SCOPE)

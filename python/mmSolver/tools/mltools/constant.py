@@ -1,0 +1,1 @@
+ROTATE_ORDERS = ['xyz', 'yzx','zxy','xzy','yxz','zyx']

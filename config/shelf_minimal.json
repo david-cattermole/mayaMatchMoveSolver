@@ -76,6 +76,7 @@
             "general_tools/gen_tools_popup/create_screen_space_motion_trail",
             "general_tools/gen_tools_popup/---ML Tools",
             "general_tools/gen_tools_popup/ml_convert_rotation_order",
+            "general_tools/gen_tools_popup/ml_check_rotation_orders",
             "general_tools/gen_tools_popup/---Settings & Preferences",
             "general_tools/gen_tools_popup/user_preferences_window",
             "file_io_tools/file_io_popup/---Input Output",

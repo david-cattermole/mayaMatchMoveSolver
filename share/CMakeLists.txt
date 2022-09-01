@@ -32,6 +32,10 @@ if (BUILD_BLENDER)
   add_subdirectory(blender)
 endif ()
 
+if (BUILD_MM_RENDERER)
+  add_subdirectory(shader)
+endif ()
+
 if (BUILD_ICONS)
   add_subdirectory(icons)
   add_subdirectory(images)

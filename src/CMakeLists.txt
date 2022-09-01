@@ -82,17 +82,6 @@ set(SOURCE_FILES
   mmSolver/node/MMMarkerTransformNode.cpp
   mmSolver/node/MMReprojectionNode.cpp
   mmSolver/node/node_line_utils.cpp
-  mmSolver/render/HudRender.cpp
-  mmSolver/render/MMRendererCmd.cpp
-  mmSolver/render/PresentTarget.cpp
-  mmSolver/render/QuadRenderBase.cpp
-  mmSolver/render/QuadRenderBlend.cpp
-  mmSolver/render/QuadRenderCopy.cpp
-  mmSolver/render/QuadRenderEdgeDetect.cpp
-  mmSolver/render/QuadRenderInvert.cpp
-  mmSolver/render/RenderGlobalsNode.cpp
-  mmSolver/render/RenderOverride.cpp
-  mmSolver/render/SceneRender.cpp
   mmSolver/sfm/camera_relative_pose.cpp
   mmSolver/sfm/camera_from_known_points.cpp
   mmSolver/sfm/homography.cpp
@@ -112,7 +101,28 @@ set(SOURCE_FILES
   mmSolver/utilities/number_utils.cpp
   mmSolver/utilities/string_utils.cpp
   mmSolver/pluginMain.cpp
+)
+
+if (BUILD_MM_RENDERER EQUAL 1)
+  set(SOURCE_FILES
+    ${SOURCE_FILES}
+    mmSolver/render/HudRender.cpp
+    mmSolver/render/MMRendererCmd.cpp
+    mmSolver/render/PresentTarget.cpp
+    mmSolver/render/QuadRenderBase.cpp
+    mmSolver/render/QuadRenderBlend.cpp
+    mmSolver/render/QuadRenderCopy.cpp
+    mmSolver/render/QuadRenderEdgeDetect.cpp
+    mmSolver/render/QuadRenderInvert.cpp
+    mmSolver/render/RenderGlobalsNode.cpp
+    mmSolver/render/RenderOverride.cpp
+    mmSolver/render/SceneRender.cpp
   )
+
+  # Allow C++ source code to query the defined 'WITH_MM_RENDERER'
+  # value to test if the MM Renderer will be compiled.
+  add_compile_definitions(BUILD_MM_RENDERER=1)
+endif ()
 
 include(MMSolverUtils)
 

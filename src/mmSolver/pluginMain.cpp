@@ -76,9 +76,11 @@
 #include "mmSolver/shape/SkyDomeShapeNode.h"
 
 // MM Renderer
+#if BUILD_MM_RENDERER == 1
 #include "mmSolver/render/MMRendererCmd.h"
 #include "mmSolver/render/RenderGlobalsNode.h"
 #include "mmSolver/render/RenderOverride.h"
+#endif
 
 #define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
     stat = plugin.registerCommand(name, creator, syntax);     \
@@ -250,10 +252,6 @@ MStatus initializePlugin(MObject obj) {
                      mmsolver::MMReadImageCmd::creator,
                      mmsolver::MMReadImageCmd::newSyntax, status);
 
-    REGISTER_COMMAND(plugin, mmsolver::render::MMRendererCmd::cmdName(),
-                     mmsolver::render::MMRendererCmd::creator,
-                     mmsolver::render::MMRendererCmd::newSyntax, status);
-
     REGISTER_NODE(plugin, mmsolver::MMMarkerScaleNode::nodeName(),
                   mmsolver::MMMarkerScaleNode::m_id,
                   mmsolver::MMMarkerScaleNode::creator,
@@ -304,11 +302,6 @@ MStatus initializePlugin(MObject obj) {
                   mmsolver::MMLensModelToggleNode::m_id,
                   mmsolver::MMLensModelToggleNode::creator,
                   mmsolver::MMLensModelToggleNode::initialize, status);
-
-    REGISTER_NODE(plugin, mmsolver::render::RenderGlobalsNode::nodeName(),
-                  mmsolver::render::RenderGlobalsNode::m_id,
-                  mmsolver::render::RenderGlobalsNode::creator,
-                  mmsolver::render::RenderGlobalsNode::initialize, status);
 
     const MString markerClassification = MM_MARKER_DRAW_CLASSIFY;
     const MString bundleClassification = MM_BUNDLE_DRAW_CLASSIFY;
@@ -391,6 +384,16 @@ MStatus initializePlugin(MObject obj) {
                        mmsolver::MMMarkerTransformMatrix::creator,
                        markerTfmClassification, status);
 
+#if BUILD_MM_RENDERER == 1
+    REGISTER_COMMAND(plugin, mmsolver::render::MMRendererCmd::cmdName(),
+                     mmsolver::render::MMRendererCmd::creator,
+                     mmsolver::render::MMRendererCmd::newSyntax, status);
+
+    REGISTER_NODE(plugin, mmsolver::render::RenderGlobalsNode::nodeName(),
+                  mmsolver::render::RenderGlobalsNode::m_id,
+                  mmsolver::render::RenderGlobalsNode::creator,
+                  mmsolver::render::RenderGlobalsNode::initialize, status);
+
     // Register MM Solver Viewport Renderer.
     //
     // Note: There is no need to initialize viewport 2.0 just to
@@ -428,6 +431,7 @@ MStatus initializePlugin(MObject obj) {
             renderer->registerOverride(ptr);
         }
     }
+#endif
 
     // TODO: Construct a single MEL command buffer and run all
     //  'selectType' MEL commands at once.
@@ -521,6 +525,7 @@ MStatus uninitializePlugin(MObject obj) {
     MStatus status;
     MFnPlugin plugin(obj);
 
+#if BUILD_MM_RENDERER == 1
     MHWRender::MRenderer* renderer = MHWRender::MRenderer::theRenderer();
     if (renderer) {
         // Find override with the given name and deregister
@@ -531,6 +536,12 @@ MStatus uninitializePlugin(MObject obj) {
             delete ptr;
         }
     }
+
+    DEREGISTER_COMMAND(plugin, mmsolver::render::MMRendererCmd::cmdName(),
+                       status);
+    DEREGISTER_NODE(plugin, mmsolver::render::RenderGlobalsNode::nodeName(),
+                    mmsolver::render::RenderGlobalsNode::m_id, status);
+#endif
 
     DEREGISTER_COMMAND(plugin, mmsolver::MMSolverCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMSolverTypeCmd::cmdName(), status);
@@ -549,8 +560,6 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, mmsolver::MMMarkerHomographyCmd::cmdName(),
                        status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMReadImageCmd::cmdName(), status);
-    DEREGISTER_COMMAND(plugin, mmsolver::render::MMRendererCmd::cmdName(),
-                       status);
 
     DEREGISTER_DRAW_OVERRIDE(
         mmsolver::MarkerShapeNode::m_draw_db_classification,
@@ -578,9 +587,6 @@ MStatus uninitializePlugin(MObject obj) {
                             mmsolver::SkyDomeShapeNode::m_id, status);
     DEREGISTER_LOCATOR_NODE(plugin, mmsolver::LineShapeNode::nodeName(),
                             mmsolver::LineShapeNode::m_id, status);
-
-    DEREGISTER_NODE(plugin, mmsolver::render::RenderGlobalsNode::nodeName(),
-                    mmsolver::render::RenderGlobalsNode::m_id, status);
 
     DEREGISTER_NODE(plugin, mmsolver::MMMarkerScaleNode::nodeName(),
                     mmsolver::MMMarkerScaleNode::m_id, status);

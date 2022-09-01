@@ -63,6 +63,7 @@ option(BUILD_3DEQUALIZER "Do you want to build and install 3DEqualizer scripts?"
 option(BUILD_SYNTHEYES "Do you want to build and install SynthEyes scripts?" ON)
 option(BUILD_BLENDER "Do you want to build and install Blender add-on?" ON)
 option(BUILD_QT_UI "Do you want to build the Qt UI files?" ON)
+option(BUILD_MM_RENDERER "Do you want to build and install the MM Renderer?" OFF)
 option(BUILD_DOCS "Do you want to build and install the documentation?" ON)
 option(BUILD_ICONS "Do you want to build and install the icons?" ON)
 option(BUILD_CONFIG "Do you want to build and install the config files?" ON)

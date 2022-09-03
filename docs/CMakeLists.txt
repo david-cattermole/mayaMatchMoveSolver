@@ -65,7 +65,7 @@ add_custom_target(
         COMMENT "Building Documentation (with Sphinx) (${input_file})..."
 )
 
-if (BUILD_PLUGIN)
+if (MMSOLVER_BUILD_PLUGIN)
     add_dependencies(mmSolver build_documentation)
 endif ()
 

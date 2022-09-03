@@ -76,7 +76,7 @@
 #include "mmSolver/shape/SkyDomeShapeNode.h"
 
 // MM Renderer
-#if BUILD_MM_RENDERER == 1
+#if MMSOLVER_BUILD_RENDERER == 1
 #include "mmSolver/render/MMRendererCmd.h"
 #include "mmSolver/render/RenderGlobalsNode.h"
 #include "mmSolver/render/RenderOverride.h"
@@ -384,7 +384,7 @@ MStatus initializePlugin(MObject obj) {
                        mmsolver::MMMarkerTransformMatrix::creator,
                        markerTfmClassification, status);
 
-#if BUILD_MM_RENDERER == 1
+#if MMSOLVER_BUILD_RENDERER == 1
     REGISTER_COMMAND(plugin, mmsolver::render::MMRendererCmd::cmdName(),
                      mmsolver::render::MMRendererCmd::creator,
                      mmsolver::render::MMRendererCmd::newSyntax, status);
@@ -525,7 +525,7 @@ MStatus uninitializePlugin(MObject obj) {
     MStatus status;
     MFnPlugin plugin(obj);
 
-#if BUILD_MM_RENDERER == 1
+#if MMSOLVER_BUILD_RENDERER == 1
     MHWRender::MRenderer* renderer = MHWRender::MRenderer::theRenderer();
     if (renderer) {
         // Find override with the given name and deregister

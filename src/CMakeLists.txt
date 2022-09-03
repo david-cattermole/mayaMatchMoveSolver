@@ -103,7 +103,7 @@ set(SOURCE_FILES
   mmSolver/pluginMain.cpp
 )
 
-if (BUILD_MM_RENDERER EQUAL 1)
+if (MMSOLVER_BUILD_RENDERER)
   set(SOURCE_FILES
     ${SOURCE_FILES}
     mmSolver/render/HudRender.cpp
@@ -121,7 +121,7 @@ if (BUILD_MM_RENDERER EQUAL 1)
 
   # Allow C++ source code to query the defined 'WITH_MM_RENDERER'
   # value to test if the MM Renderer will be compiled.
-  add_compile_definitions(BUILD_MM_RENDERER=1)
+  add_compile_definitions(MMSOLVER_BUILD_RENDERER=1)
 endif ()
 
 include(MMSolverUtils)

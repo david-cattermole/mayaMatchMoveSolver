@@ -118,8 +118,9 @@ To be written.
 # Building Individual Components
 
 To speed up compilation you may turn off individual components of the
-CMake build. For example, the BUILD_PLUGIN and BUILD_DOCS is slower to
-build than just BUILD_PYTHON.
+CMake build. For example, the MMSOLVER_BUILD_PLUGIN and
+MMSOLVER_BUILD_DOCS is slower to build than just
+MMSOLVER_BUILD_PYTHON.
 
 You may control this with the Build options below, which are defined
 (all ON) in the provided `./scripts/build_mmSolver_*` scripts.
@@ -128,28 +129,28 @@ In the Bash Shell scripts:
 ```shell script
 # Build options, to allow faster compilation times. (not to be used by
 # users wanting to build this project.)
-BUILD_PLUGIN=1
-BUILD_PYTHON=1
-BUILD_MEL=1
-BUILD_QT_UI=1
-BUILD_DOCS=1
-BUILD_ICONS=1
-BUILD_CONFIG=1
-BUILD_TESTS=1
+MMSOLVER_BUILD_PLUGIN=1
+MMSOLVER_BUILD_PYTHON=1
+MMSOLVER_BUILD_MEL=1
+MMSOLVER_BUILD_QT_UI=1
+MMSOLVER_BUILD_DOCS=1
+MMSOLVER_BUILD_ICONS=1
+MMSOLVER_BUILD_CONFIG=1
+MMSOLVER_BUILD_TESTS=1
 ```
 
 Or in Windows Batch files:
 ```cmd
 :: Build options, to allow faster compilation times. (not to be used by
 :: users wanting to build this project.)
-SET BUILD_PLUGIN=1
-SET BUILD_PYTHON=1
-SET BUILD_MEL=1
-SET BUILD_QT_UI=1
-SET BUILD_DOCS=1
-SET BUILD_ICONS=1
-SET BUILD_CONFIG=1
-SET BUILD_TESTS=1
+SET MMSOLVER_BUILD_PLUGIN=1
+SET MMSOLVER_BUILD_PYTHON=1
+SET MMSOLVER_BUILD_MEL=1
+SET MMSOLVER_BUILD_QT_UI=1
+SET MMSOLVER_BUILD_DOCS=1
+SET MMSOLVER_BUILD_ICONS=1
+SET MMSOLVER_BUILD_CONFIG=1
+SET MMSOLVER_BUILD_TESTS=1
 ```
 
 # Setup Linux Build Environment With Docker

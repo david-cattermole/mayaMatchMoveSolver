@@ -36,7 +36,7 @@ install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
         PATTERN "__pycache__" EXCLUDE)
 
 
-if (BUILD_QT_UI)
+if (MMSOLVER_BUILD_QT_UI)
     include(MMSolverUtils)
     compile_qt_ui_to_python_file("base"
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/ui/base.ui

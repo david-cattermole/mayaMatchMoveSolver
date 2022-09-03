@@ -20,28 +20,28 @@
 # Build features
 add_subdirectory(modules)
 
-if (BUILD_3DEQUALIZER)
+if (MMSOLVER_BUILD_3DEQUALIZER)
   add_subdirectory(3dequalizer)
 endif ()
 
-if (BUILD_SYNTHEYES)
+if (MMSOLVER_BUILD_SYNTHEYES)
   add_subdirectory(syntheyes)
 endif ()
 
-if (BUILD_BLENDER)
+if (MMSOLVER_BUILD_BLENDER)
   add_subdirectory(blender)
 endif ()
 
-if (BUILD_MM_RENDERER)
+if (MMSOLVER_BUILD_RENDERER)
   add_subdirectory(shader)
 endif ()
 
-if (BUILD_ICONS)
+if (MMSOLVER_BUILD_ICONS)
   add_subdirectory(icons)
   add_subdirectory(images)
 endif ()
 
-if (BUILD_CONFIG)
+if (MMSOLVER_BUILD_CONFIG)
   add_subdirectory(config)
 endif ()
 

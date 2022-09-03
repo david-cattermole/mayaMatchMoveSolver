@@ -56,18 +56,18 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 # developer debug. If the developer is working on some Python code
 # only, we don't need to wait for the Maya Plug-In to compute each
 # time, so turn off the plugin.
-option(BUILD_PLUGIN "Do you want to build the Maya plug-in?" ON)
-option(BUILD_PYTHON "Do you want to build and install the Python API and tools?" ON)
-option(BUILD_MEL "Do you want to build and install the MEL scripts and tools?" ON)
-option(BUILD_3DEQUALIZER "Do you want to build and install 3DEqualizer scripts?" ON)
-option(BUILD_SYNTHEYES "Do you want to build and install SynthEyes scripts?" ON)
-option(BUILD_BLENDER "Do you want to build and install Blender add-on?" ON)
-option(BUILD_QT_UI "Do you want to build the Qt UI files?" ON)
-option(BUILD_MM_RENDERER "Do you want to build and install the MM Renderer?" OFF)
-option(BUILD_DOCS "Do you want to build and install the documentation?" ON)
-option(BUILD_ICONS "Do you want to build and install the icons?" ON)
-option(BUILD_CONFIG "Do you want to build and install the config files?" ON)
-option(BUILD_TESTS "Do you want to build the test files?" OFF)
+option(MMSOLVER_BUILD_PLUGIN "Build the Maya plug-in?" ON)
+option(MMSOLVER_BUILD_PYTHON "Build and install the Python API and tools?" ON)
+option(MMSOLVER_BUILD_MEL "Build and install the MEL scripts and tools?" ON)
+option(MMSOLVER_BUILD_3DEQUALIZER "Build and install 3DEqualizer scripts?" ON)
+option(MMSOLVER_BUILD_SYNTHEYES "Build and install SynthEyes scripts?" ON)
+option(MMSOLVER_BUILD_BLENDER "Build and install Blender add-on?" ON)
+option(MMSOLVER_BUILD_QT_UI "Build the Qt UI files?" ON)
+option(MMSOLVER_BUILD_RENDERER "Build and install the MM Renderer?" OFF)
+option(MMSOLVER_BUILD_DOCS "Build and install the documentation?" ON)
+option(MMSOLVER_BUILD_ICONS "Build and install the icons?" ON)
+option(MMSOLVER_BUILD_CONFIG "Build and install the config files?" ON)
+option(MMSOLVER_BUILD_TESTS "Build the test files?" OFF)
 
 
 # Maya SDK
@@ -126,24 +126,24 @@ include(MMSolverUtils)
 # Build features
 add_subdirectory(share)
 
-if (BUILD_PLUGIN)
+if (MMSOLVER_BUILD_PLUGIN)
   add_subdirectory(include)
   add_subdirectory(src)
 endif ()
 
-if (BUILD_PYTHON)
+if (MMSOLVER_BUILD_PYTHON)
   add_subdirectory(python)
 endif ()
 
-if (BUILD_MEL)
+if (MMSOLVER_BUILD_MEL)
   add_subdirectory(mel)
 endif ()
 
-if (BUILD_DOCS)
+if (MMSOLVER_BUILD_DOCS)
   add_subdirectory(docs)
 endif ()
 
-if (BUILD_TESTS)
+if (MMSOLVER_BUILD_TESTS)
   add_subdirectory(tests)
 endif ()
 

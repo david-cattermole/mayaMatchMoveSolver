@@ -95,8 +95,7 @@ ${CMAKE_EXE} \
     -DBUILD_SHARED_LIBS=OFF \
     ${MMSCENEGRAPH_ROOT}
 
-NUMBER_OF_CPUS=`nproc --all`
-${CMAKE_EXE} --build . --parallel ${NUMBER_OF_CPUS}
+${CMAKE_EXE} --build . --parallel
 ${CMAKE_EXE} --install .
 
 # Return back project root directory.

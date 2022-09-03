@@ -141,8 +141,7 @@ ${CMAKE_EXE} \
     -Dmmscenegraph_DIR=${MMSCENEGRAPH_CMAKE_CONFIG_DIR} \
     ..
 
-NUMBER_OF_CPUS=`nproc --all`
-${CMAKE_EXE} --build . --parallel ${NUMBER_OF_CPUS}
+${CMAKE_EXE} --build . --parallel
 
 # Comment this line out to stop the automatic install into the home directory.
 ${CMAKE_EXE} --install .

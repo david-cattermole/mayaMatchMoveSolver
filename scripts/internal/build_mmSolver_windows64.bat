@@ -156,7 +156,7 @@ CHDIR "%BUILD_DIR%"
     ..
 if errorlevel 1 goto failed_to_generate
 
-%CMAKE_EXE% --build . --parallel 4
+%CMAKE_EXE% --build . --parallel
 if errorlevel 1 goto failed_to_build
 
 :: Comment this line out to stop the automatic install into the home directory.

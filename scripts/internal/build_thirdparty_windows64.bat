@@ -56,7 +56,7 @@ FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
     %SOURCE_DIR%
 if errorlevel 1 goto failed_to_generate
 
-%CMAKE_EXE% --build . --parallel 4
+%CMAKE_EXE% --build . --parallel
 if errorlevel 1 goto failed_to_build
 
 %CMAKE_EXE% --install .

@@ -46,9 +46,6 @@ mkdir -p "${BUILD_DIR_NAME}"
 cd "${BUILD_DIR_NAME}"
 rm --force -R *
 
-# Number of CPUs
-CPU_NUM=`nproc --all`
-
 ${CMAKE_EXE} \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
@@ -57,7 +54,7 @@ ${CMAKE_EXE} \
     -DTHIRDPARTY_BASE_WORKING_DIR=${WORKING_DIR} \
     ${SOURCE_DIR}
 
-${CMAKE_EXE} --build . --parallel ${CPU_NUM}
+${CMAKE_EXE} --build . --parallel
 ${CMAKE_EXE} --install .
 
 # Return back project root directory.

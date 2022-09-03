@@ -105,7 +105,7 @@ CHDIR "%BUILD_DIR%"
     %MMSCENEGRAPH_ROOT%
 if errorlevel 1 goto failed_to_generate_cpp
 
-%CMAKE_EXE% --build . --parallel 4
+%CMAKE_EXE% --build . --parallel
 if errorlevel 1 goto failed_to_build_cpp
 
 %CMAKE_EXE% --install .

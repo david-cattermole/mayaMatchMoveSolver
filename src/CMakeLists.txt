@@ -158,13 +158,13 @@ endif()
 
 
 find_package(Maya REQUIRED)
-message(STATUS "MAYA: ${MAYA_FOUND}")
-message(STATUS "MAYA: Root=${MAYA_LOCATION}")
-message(STATUS "MAYA: API=${MAYA_API_VERSION}")
-message(STATUS "MAYA: Maya Executable=${MAYA_EXECUTABLE}")
-message(STATUS "MAYA: Python Executable=${MAYA_PYTHON_EXECUTABLE}")
-message(STATUS "MAYA: Includes=${MAYA_INCLUDE_DIRS}")
-message(STATUS "MAYA: Libraries=${MAYA_LIBRARIES}")
+message(STATUS "Maya: Found=${MAYA_FOUND}")
+message(STATUS "Maya: Root=${MAYA_LOCATION}")
+message(STATUS "Maya: API=${MAYA_API_VERSION}")
+message(STATUS "Maya: Maya Executable=${MAYA_EXECUTABLE}")
+message(STATUS "Maya: Python Executable=${MAYA_PYTHON_EXECUTABLE}")
+message(STATUS "Maya: Includes=${MAYA_INCLUDE_DIRS}")
+message(STATUS "Maya: Libraries=${MAYA_LIBRARIES}")
 if(MAYA_FOUND)
   target_include_directories(mmSolver
     PRIVATE ${MAYA_INCLUDE_DIRS}
@@ -203,10 +203,10 @@ endif()
 
 
 find_package(Eigen3 REQUIRED)
-message(STATUS "EIGEN3: ${EIGEN3_FOUND}")
-message(STATUS "EIGEN3: Version=${EIGEN3_VERSION_STRING}")
-message(STATUS "EIGEN3: Root=${Eigen3_DIR}")
-message(STATUS "EIGEN3: Include=${EIGEN3_INCLUDE_DIRS}")
+message(STATUS "Eigen3: Found=${EIGEN3_FOUND}")
+message(STATUS "Eigen3: Version=${EIGEN3_VERSION_STRING}")
+message(STATUS "Eigen3: Root=${Eigen3_DIR}")
+message(STATUS "Eigen3: Include=${EIGEN3_INCLUDE_DIRS}")
 if(EIGEN3_FOUND)
   target_link_libraries(mmSolver
     PRIVATE
@@ -217,12 +217,12 @@ endif()
 
 
 find_package(Ceres REQUIRED)
-message(STATUS "CERES: ${CERES_FOUND}")
-message(STATUS "CERES: Version=${CERES_VERSION}")
-message(STATUS "CERES: Root=${CERES_ROOT}")
-message(STATUS "CERES: Include=${CERES_INCLUDE_DIRS}")
-message(STATUS "CERES: Library=${CERES_LIBRARIES}")
-if(CERES_FOUND)
+message(STATUS "Ceres: Found=${CERES_FOUND}")
+message(STATUS "Ceres: Version=${CERES_VERSION}")
+message(STATUS "Ceres: Root=${CERES_ROOT}")
+message(STATUS "Ceres: Include=${CERES_INCLUDE_DIRS}")
+message(STATUS "Ceres: Library=${CERES_LIBRARIES}")
+if(Ceres_FOUND)
   target_include_directories(mmSolver
     PRIVATE ${CERES_INCLUDE_DIRS}
     )
@@ -235,11 +235,11 @@ endif()
 
 
 find_package(OpenMVG REQUIRED)
-message(STATUS "OPENMVG: ${OPENMVG_FOUND}")
-message(STATUS "OPENMVG: Version=${OPENMVG_VERSION}")
-message(STATUS "OPENMVG: Root=${OPENMVG_ROOT}")
-message(STATUS "OPENMVG: Include=${OPENMVG_INCLUDE_DIRS}")
-message(STATUS "OPENMVG: Library=${OPENMVG_LIBRARIES}")
+message(STATUS "OpenMVG: Found=${OPENMVG_FOUND}")
+message(STATUS "OpenMVG: Version=${OPENMVG_VERSION}")
+message(STATUS "OpenMVG: Root=${OPENMVG_ROOT}")
+message(STATUS "OpenMVG: Include=${OPENMVG_INCLUDE_DIRS}")
+message(STATUS "OpenMVG: Library=${OPENMVG_LIBRARIES}")
 if(OPENMVG_FOUND)
   target_link_libraries(mmSolver
     PRIVATE
@@ -285,7 +285,7 @@ endif()
 
 
 find_package(LDPK REQUIRED)
-message(STATUS "LDPK ${LDPK_FOUND}")
+message(STATUS "LDPK Found=${LDPK_FOUND}")
 message(STATUS "LDPK Root=${LDPK_ROOT}")
 message(STATUS "LDPK Libraries=${LDPK_LIBRARIES}")
 message(STATUS "LDPK Include=${LDPK_INCLUDE_DIRS}")

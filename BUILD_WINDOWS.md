@@ -151,41 +151,35 @@ $ mkdir -p ~/dev/mayaMatchMoveSolver_maya2023Deploy_windows64 ; cd ~/dev/ ; git 
 $ cd ~/dev/mayaMatchMoveSolver_maya2023Deploy_windows64/; git fetch --all; git checkout -f develop; git reset --hard HEAD ; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
 ```
 
-Run in the Windows Command Prompt with the needed MSVC compiler environment paths set up:
-(For example run "VS2012 x64 Cross Tools Command Prompt" or "VS2015 x86 x64 Cross Tools Command Prompt")
-
-Visual Studio 2012:
+Run in the Windows Command Prompt:
 ```cmd
-REM Maya 2016
+REM Maya 2016 - Visual Studio 2012
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2016Deploy_windows64 && scripts\build_thirdparty_windows64_maya2016.bat && scripts\build_mmSolver_windows64_maya2016.bat
 
-REM Maya 2017
+REM Maya 2017 - Visual Studio 2012
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2017Deploy_windows64 && scripts\build_thirdparty_windows64_maya2017.bat && scripts\build_mmSolver_windows64_maya2017.bat
-```
 
-Visual Studio 2015:
-```cmd
-REM Maya 2018
+REM Maya 2018 - Visual Studio 2015:
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2018Deploy_windows64 && scripts\build_thirdparty_windows64_maya2018.bat && scripts\build_mmSolver_windows64_maya2018.bat
 
-REM Maya 2019
+REM Maya 2019 - Visual Studio 2015:
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2019Deploy_windows64 && scripts\build_thirdparty_windows64_maya2019.bat && scripts\build_mmSolver_windows64_maya2019.bat
-```
 
-Visual Studio 2017:
-```cmd
-REM Maya 2020
+REM Maya 2020 - Visual Studio 2017:
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2020Deploy_windows64 && scripts\build_thirdparty_windows64_maya2020.bat && scripts\build_mmSolver_windows64_maya2020.bat
-```
 
-Visual Studio 2019:
-```cmd
-REM Maya 2022
+REM Maya 2022 - Visual Studio 2019:
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2022Deploy_windows64 && scripts\build_thirdparty_windows64_maya2022.bat && scripts\build_mmSolver_windows64_maya2022.bat
 
-REM Maya 2023
+REM Maya 2023 - Visual Studio 2019:
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2023Deploy_windows64 && scripts\build_thirdparty_windows64_maya2023.bat && scripts\build_mmSolver_windows64_maya2023.bat
 ```
+
+NOTE: Starting in mmSolver v0.4.0, the Visual Studio compiler version
+required for each Maya version will be automatically invoked. The path
+for Visual Studio is assumed to be the default installation path, if
+you use a different install path for Visual Studio, you may need to
+edit the (.bat) build script.
 
 Package files can then be uploaded from the
 "%userprofile%\dev\mayaMatchMoveSolver_maya*Deploy_windows64\packages"

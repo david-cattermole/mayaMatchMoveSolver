@@ -1111,7 +1111,15 @@ MStatus solveFrames(
                              0);
     assert(out_errorToMarkerList.size() == errorDistanceList.size());
 
+    std::stringstream ss;
+    ss << "Frames:";
+    for (uint32_t i = 0; i < frameList.length(); i++) {
+      MTime frame(frameList[i]);
+      ss << " " << frame;
+    }
+
     if (verbose) {
+        MMSOLVER_VRB("-------------------------------------------------------------------------------");
         MMSOLVER_VRB("Solving...");
         MMSOLVER_VRB("Solver Type=" << solverOptions.solverType);
         MMSOLVER_VRB("Maximum Iterations=" << solverOptions.iterMax);
@@ -1122,18 +1130,14 @@ MStatus solveFrames(
         MMSOLVER_VRB("Delta=" << fabs(solverOptions.delta));
         MMSOLVER_VRB("Auto Differencing Type=" << solverOptions.autoDiffType);
         MMSOLVER_VRB("Time Evaluation Mode=" << solverOptions.timeEvalMode);
-    }
-
-    if ((verbose == false) && (printStats.enable == false)) {
+        MMSOLVER_VRB("Marker count: " << usedMarkerList.size());
+        MMSOLVER_VRB("Attribute count: " << usedAttrList.size());
+        MMSOLVER_VRB(ss.str());
+    } else if (printStats.enable == false) {
+        MMSOLVER_INFO("-------------------------------------------------------------------------------");
         MMSOLVER_INFO("Solving...");
         MMSOLVER_INFO("Marker count: " << usedMarkerList.size());
         MMSOLVER_INFO("Attribute count: " << usedAttrList.size());
-        std::stringstream ss;
-        ss << "Frames:";
-        for (uint32_t i = 0; i < frameList.length(); i++) {
-            MTime frame(frameList[i]);
-            ss << " " << frame;
-        }
         MMSOLVER_INFO(ss.str());
     }
 
@@ -1188,6 +1192,7 @@ MStatus solveFrames(
             return status;
         }
     } else if (solverOptions.sceneGraphMode == SceneGraphMode::kMayaDag) {
+      // Nothing to do.
     } else {
         MMSOLVER_ERR("Invalid Scene Graph mode!");
         status = MS::kFailure;

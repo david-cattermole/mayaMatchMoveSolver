@@ -109,13 +109,14 @@ set(MAYA_INCLUDE_PATH "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH "Ma
 set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH "Maya library directory")
 
 
-# Default Solver to use.
-set(PREFERRED_SOLVER "cminpack_lmder"
-  CACHE STRING
-  "Choices are cminpack_lm, cminpack_lmder or ceres. Which solver is used by default?")
+# Set a default minimizing solver.
+#
+# Choices are "cminpack_lm" or "cminpack_lmder".
+#
+# "cminpack_lmder" is the best performing (for now). "ceres" is
+# planned for a future release.
+set(DEFAULT_SOLVER "cminpack_lmder")
 
-# Set a default solver
-set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
 
 include(MMSolverUtils)
 

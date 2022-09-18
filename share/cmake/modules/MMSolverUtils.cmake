@@ -21,6 +21,13 @@
 
 
 function(set_global_maya_plugin_compile_options)
+
+  if(CMAKE_BUILD_TYPE EQUAL "Release")
+    add_compile_definitions(NDEBUG)
+  elseif (CMAKE_BUILD_TYPE EQUAL "Debug")
+    add_compile_definitions(_DEBUG)
+  endif ()
+
   # Compile Flags.
   #
   # TODO: Make this function take a target and set the compile
@@ -53,14 +60,12 @@ function(set_global_maya_plugin_compile_options)
     add_compile_definitions(NT_PLUGIN)
     add_compile_definitions(USERDLL)
 
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} /D \"_DEBUG\"")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} /MD")
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Gy /Gm- /O2 /Ob1 /GF")
+
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} /MDd")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Gm /Od /RTC1")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Ob0 /GR /GL /Oi /Gy /Zi /EHsc")
-
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} /D \"NDEBUG\"")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Gy /Gm- /O2 /Ob1 /GF")
 
     # Ensure Google Logging does not use "ERROR" macro, because Windows
     # doesn't support it.
@@ -114,6 +119,7 @@ function(set_global_maya_plugin_compile_options)
 
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
     set(CMAKE_CXX_FLAGS_RELEASE "-O3 -fPIC -fno-strict-aliasing -m64")
+
   else ()
     # For Linux with GCC
 
@@ -225,6 +231,7 @@ function(set_target_as_maya_plugin_library target)
   endif ()
   set_target_properties(${target} PROPERTIES SUFFIX ${maya_plugin_suffix})
 endfunction()
+
 
 # Output the target to the Module plug-ins directory.
 function(install_target_to_module target module_dir)

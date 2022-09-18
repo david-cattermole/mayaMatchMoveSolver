@@ -106,11 +106,6 @@
 namespace mmsolver {
 namespace sfm {
 
-using KernelType = openMVG::robust::ACKernelAdaptor<
-    openMVG::fundamental::kernel::NormalizedEightPointKernel,
-    openMVG::fundamental::kernel::SymmetricEpipolarDistanceError,
-    openMVG::UnnormalizerT, openMVG::Mat3>;
-
 bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
                           const openMVG::cameras::IntrinsicBase *intrinsics2,
                           const openMVG::Mat &x1, const openMVG::Mat &x2,

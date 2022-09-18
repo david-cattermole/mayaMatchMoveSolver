@@ -90,7 +90,11 @@ function(find_Eigen3_set_target Eigen3_include_dir)
 endfunction()
 
 
-if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES)
+option(Eigen3_ALLOW_DOWNLOAD
+  "Allow automatically downloading and building EIGEN3?" ON)
+
+
+if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT Eigen3_ALLOW_DOWNLOAD)
 
   if(NOT DEFINED Eigen3_ROOT)
     # Search for "Eigen3-config.cmake" given on the command line.
@@ -137,7 +141,7 @@ endif()
 
 
 # Download, Build and Install.
-if(NOT Eigen3_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
+if(NOT Eigen3_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND Eigen3_ALLOW_DOWNLOAD)
   include(ExternalProject)
   include(GNUInstallDirs)
 

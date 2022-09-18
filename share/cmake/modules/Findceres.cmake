@@ -101,7 +101,11 @@ function(find_ceres_set_target ceres_library ceres_include_dir)
 endfunction()
 
 
-if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES)
+option(ceres_ALLOW_DOWNLOAD
+  "Allow automatically downloading and building ceres solver?" ON)
+
+
+if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT ceres_ALLOW_DOWNLOAD)
 
   if(NOT DEFINED ceres_ROOT)
     # Search for "ceres-config.cmake" given on the command line.
@@ -152,7 +156,7 @@ endif()
 
 
 # Download, Build and Install.
-if(NOT ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
+if(NOT ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ceres_ALLOW_DOWNLOAD)
   include(ExternalProject)
   include(GNUInstallDirs)
 

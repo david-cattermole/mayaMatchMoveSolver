@@ -88,7 +88,11 @@ function(find_ldpk_set_target ldpk_library ldpk_include_dir)
 endfunction()
 
 
-if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES)
+option(ldpk_ALLOW_DOWNLOAD
+  "Allow automatically downloading and building LDPK?" ON)
+
+
+if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT ldpk_ALLOW_DOWNLOAD)
 
   if(NOT DEFINED ldpk_ROOT)
     # Search for "ldpk-config.cmake" given on the command line.
@@ -136,7 +140,7 @@ endif()
 
 
 # Download, Build and Install.
-if(NOT ldpk_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
+if(NOT ldpk_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ldpk_ALLOW_DOWNLOAD)
   include(ExternalProject)
   include(GNUInstallDirs)
 

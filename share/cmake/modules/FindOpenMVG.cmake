@@ -331,12 +331,16 @@ function(find_OpenMVG_set_target
 endfunction()
 
 
+option(OpenMVG_ALLOW_DOWNLOAD
+  "Allow automatically downloading and building OpenMVG?" ON)
+
+
 # OpenMVG requires the 'Threads' package.
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 
 
-if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES)
+if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT OpenMVG_ALLOW_DOWNLOAD)
 
   if(NOT DEFINED OpenMVG_ROOT)
     # Search for "OpenMVG-config.cmake" given on the command line.
@@ -386,7 +390,7 @@ endif()
 
 
 # Download, Build and Install.
-if(NOT OpenMVG_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
+if(NOT OpenMVG_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND OpenMVG_ALLOW_DOWNLOAD)
   include(ExternalProject)
   include(GNUInstallDirs)
 

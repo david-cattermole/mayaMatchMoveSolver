@@ -93,7 +93,11 @@ function(find_dlfcn_win32_set_target dlfcn-win32_library dlfcn-win32_library_dll
 endfunction()
 
 
-if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES)
+option(dlfcn-win32_ALLOW_DOWNLOAD
+  "Allow automatically downloading and building dlfcn-win32?" ON)
+
+
+if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT dlfcn-win32_ALLOW_DOWNLOAD)
 
   if(NOT DEFINED dlfcn-win32_ROOT)
     # Search for "dlfcn-win32-config.cmake" given on the command line.
@@ -145,7 +149,7 @@ endif()
 
 
 # Download, Build and Install.
-if(NOT dlfcn-win32_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
+if(NOT dlfcn-win32_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND dlfcn-win32_ALLOW_DOWNLOAD)
   include(ExternalProject)
   include(GNUInstallDirs)
 

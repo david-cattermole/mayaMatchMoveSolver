@@ -83,7 +83,11 @@ function(find_cxsparse_set_target cxsparse_library cxsparse_include_dir)
 endfunction()
 
 
-if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES)
+option(cxsparse_ALLOW_DOWNLOAD
+  "Allow automatically downloading and building CXSparse?" ON)
+
+
+if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT cxsparse_ALLOW_DOWNLOAD)
 
   # TODO: Make CXSparse configurable to find from variables given.
   message(FATAL_ERROR "cxsparse is an internal dependency and must be auto-downloaded and built.")
@@ -103,7 +107,7 @@ endif()
 
 
 # Download, Build and Install.
-if(NOT cxsparse_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
+if(NOT cxsparse_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND cxsparse_ALLOW_DOWNLOAD)
   include(ExternalProject)
   include(GNUInstallDirs)
 

@@ -97,7 +97,11 @@ function(find_cminpack_set_target cminpack_library cminpack_include_dir)
 endfunction()
 
 
-if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES)
+option(cminpack_ALLOW_DOWNLOAD
+  "Allow automatically downloading and building CMinpack?" ON)
+
+
+if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT cminpack_ALLOW_DOWNLOAD)
 
   if(NOT DEFINED cminpack_ROOT)
     # Search for "cminpack-config.cmake" given on the command line.
@@ -145,7 +149,7 @@ endif()
 
 
 # Download, Build and Install.
-if(NOT cminpack_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
+if(NOT cminpack_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND cminpack_ALLOW_DOWNLOAD)
   include(ExternalProject)
   include(GNUInstallDirs)
 

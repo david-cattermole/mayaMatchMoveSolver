@@ -96,7 +96,11 @@ function(find_glog_set_target glog_library glog_include_dir)
 endfunction()
 
 
-if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES)
+option(glog_ALLOW_DOWNLOAD
+  "Allow automatically downloading and building Google Log?" ON)
+
+
+if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT glog_ALLOW_DOWNLOAD)
 
   if(NOT DEFINED glog_ROOT)
     # Search for "glog-config.cmake" given on the command line.
@@ -127,7 +131,7 @@ endif()
 
 
 # Download, Build and Install.
-if(NOT glog_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
+if(NOT glog_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND glog_ALLOW_DOWNLOAD)
   include(ExternalProject)
   include(GNUInstallDirs)
 

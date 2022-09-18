@@ -27,6 +27,9 @@
 :: The root of this project.
 SET PROJECT_ROOT=%CD%
 
+:: What directory to build the environment in?
+SET BASE_DIR=%PROJECT_ROOT%\..
+
 :: Clear the currently generated Python virtual environment before
 :: running the build process (including Python commands).
 ::
@@ -34,23 +37,26 @@ SET PROJECT_ROOT=%CD%
 :: be reused if possible; therefore leave this off for normal usage.
 SET FRESH_PYTHON_VIRTUAL_ENV=0
 
+:: Full directory path to environment.
+SET PYTHON_VIRTUAL_ENV_DIR=%BASE_DIR%\%PYTHON_VIRTUAL_ENV_DIR_NAME%
+
 :: Activate script file name.
-SET PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT=%PYTHON_VIRTUAL_ENV_DIR_NAME%\Scripts\activate.bat
+SET PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT=%PYTHON_VIRTUAL_ENV_DIR%\Scripts\activate.bat
 
 :: Delete any existing Python virtual environment, if it exists.
 IF "%FRESH_PYTHON_VIRTUAL_ENV%"=="1" (
+    CHDIR %BASE_DIR%
     MKDIR %PYTHON_VIRTUAL_ENV_DIR_NAME%
-    CHDIR %PYTHON_VIRTUAL_ENV_DIR_NAME%
+    CHDIR %PYTHON_VIRTUAL_ENV_DIR%
     DEL /S /Q *
     FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
-    CHDIR "%PROJECT_ROOT%"
 )
 
 :: Ensure Python Virtual Environment is setup.
 SET REQUIRE_PACKAGE_INSTALL=0
 IF NOT EXIST %PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT% (
-    ECHO Setting up Python Virtual Environment
-    %PYTHON_EXE% -m venv %PYTHON_VIRTUAL_ENV_DIR_NAME%
+    ECHO Setting up Python Virtual Environment "%PYTHON_VIRTUAL_ENV_DIR_NAME%"
+    %PYTHON_EXE% -m venv %PYTHON_VIRTUAL_ENV_DIR%
     SET REQUIRE_PACKAGE_INSTALL=1
 )
 
@@ -61,8 +67,8 @@ CALL %PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT%
 :: Install requirements
 IF "%REQUIRE_PACKAGE_INSTALL%"=="1" (
     :: %PYTHON_EXE% -m pip install --upgrade pip
-    %PYTHON_EXE% -m pip install -r "%PROJECT_ROOT%\requirements-dev.txt"
-    %PYTHON_EXE% -m pip install -r "%PROJECT_ROOT%\requirements-doc.txt"
+    %PYTHON_EXE% -m pip install -r "%PROJECT_ROOT%\share\requirements-dev.txt"
+    %PYTHON_EXE% -m pip install -r "%PROJECT_ROOT%\share\requirements-doc.txt"
 )
 
 :: Return back project root directory.

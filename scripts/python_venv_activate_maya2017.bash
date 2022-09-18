@@ -18,7 +18,11 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# Activates the Python development environment for Maya 2018.
+# Activates the Python development environment for Maya 2017.
+#
+# This script should be sourced, NOT called, for example:
+# $ source scripts/python_venv_activate_maya2017.bash
+#
 
 # The -e flag causes the script to exit as soon as one command returns
 # a non-zero exit code.

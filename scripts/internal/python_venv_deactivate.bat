@@ -26,8 +26,14 @@
 
 SET PROJECT_ROOT=%CD%
 
+:: What directory to build the environment in?
+SET BASE_DIR=%PROJECT_ROOT%\..
+
+:: Full directory path to environment.
+SET PYTHON_VIRTUAL_ENV_DIR=%BASE_DIR%\%PYTHON_VIRTUAL_ENV_DIR_NAME%
+
 :: Deactivate script.
-SET PYTHON_VIRTUAL_ENV_DEACTIVATE_SCRIPT=%PYTHON_VIRTUAL_ENV_DIR_NAME%\Scripts\deactivate.bat
+SET PYTHON_VIRTUAL_ENV_DEACTIVATE_SCRIPT=%PYTHON_VIRTUAL_ENV_DIR%\Scripts\deactivate.bat
 
 :: Deactivate Python virtual environment.
 CALL %PYTHON_VIRTUAL_ENV_DEACTIVATE_SCRIPT%

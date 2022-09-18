@@ -19,6 +19,10 @@
 # ---------------------------------------------------------------------
 #
 # Activates the Python development environment for Maya 2018.
+#
+# This script should be sourced, NOT called, for example:
+# $ source scripts/python_venv_activate_maya2018.bash
+#
 
 # The -e flag causes the script to exit as soon as one command returns
 # a non-zero exit code.

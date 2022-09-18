@@ -31,41 +31,47 @@ set -ev
 
 PROJECT_ROOT=`pwd`
 
+# What directory to build the environment in?
+BASE_DIR="${PROJECT_ROOT}/.."
+
 # Clear the currently generated Python virtual environment before
 # running the build process (including Python commands).
 #
 # The generation of a Python Virtual Environment slow to run and should
 # be reused if possible; therefore leave this off for normal usage.
-FRESH_PYTHON_VIRTUAL_ENV=0
+FRESH_PYTHON_VIRTUAL_ENV=1
+
+# Full directory path to environment.
+PYTHON_VIRTUAL_ENV_DIR="${BASE_DIR}/build_mmsolver/${PYTHON_VIRTUAL_ENV_DIR_NAME}"
 
 # Activate script file name.
-PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT=${PYTHON_VIRTUAL_ENV_DIR_NAME}/bin/activate
+PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT="${PYTHON_VIRTUAL_ENV_DIR}/bin/activate"
 
 # Delete any existing Python virtual environment, if it exists.
 if [ ${FRESH_PYTHON_VIRTUAL_ENV} -eq 1 ]; then
-    mkdir -p "${PYTHON_VIRTUAL_ENV_DIR_NAME}"
-    cd "${PYTHON_VIRTUAL_ENV_DIR_NAME}"
+    mkdir -p "${PYTHON_VIRTUAL_ENV_DIR}"
+    cd "${PYTHON_VIRTUAL_ENV_DIR}"
     rm -f -R *
-    cd "${PROJECT_ROOT}"
 fi
 
 # Ensure Python Virtual Environment is setup.
 REQUIRE_PACKAGE_INSTALL=0
 if [ ! -f "${PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT}" ]; then
-    echo "Setting up Python Virtual Environment"
-    ${PYTHON_EXE} -m venv ${PYTHON_VIRTUAL_ENV_DIR_NAME}
+    echo "Setting up Python Virtual Environment ${PYTHON_VIRTUAL_ENV_DIR_NAME}"
+    ${PYTHON_EXE} -m venv ${PYTHON_VIRTUAL_ENV_DIR}
     REQUIRE_PACKAGE_INSTALL=1
 fi
 
 # Activate!
 echo "Activating Python Virtual Environment ${PYTHON_VIRTUAL_ENV_DIR_NAME}"
+cd "${PYTHON_VIRTUAL_ENV_DIR}"
 source "${PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT}"
 
 # Install requirements
 if [ ${REQUIRE_PACKAGE_INSTALL} -eq 1 ]; then
-    # ${PYTHON_EXE} -m pip install --upgrade pip
-    ${PYTHON_EXE} -m pip install -r "${PROJECT_ROOT}/requirements-dev.txt"
-    ${PYTHON_EXE} -m pip install -r "${PROJECT_ROOT}/requirements-doc.txt"
+    ${PYTHON_EXE} -m pip install --upgrade pip
+    ${PYTHON_EXE} -m pip install -r "${PROJECT_ROOT}/share/requirements-dev.txt"
+    ${PYTHON_EXE} -m pip install -r "${PROJECT_ROOT}/share/requirements-doc.txt"
 fi
 
 cd ${PROJECT_ROOT}

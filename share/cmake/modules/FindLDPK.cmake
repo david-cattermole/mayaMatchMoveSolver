@@ -154,7 +154,10 @@ if(NOT ldpk_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
   set(ldpk_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}ldpk${CMAKE_STATIC_LIBRARY_SUFFIX}")
   set(ldpk_LIBRARY "${ldpk_LIBRARY_DIR}/${ldpk_LIBRARY_NAME}")
 
-  set(ldpk_URL "https://www.3dequalizer.com/user_daten/sections/tech_docs/archives/ldpk-${ldpk_VERSION}.tgz")
+  set(ldpk_URL
+    "https://www.3dequalizer.com/user_daten/sections/tech_docs/archives/ldpk-${ldpk_VERSION}.tgz"
+    CACHE STRING
+    "The URL for the ldpk tar-ball.")
 
   set(ldpk_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/ldpk)
   set(ldpk_PREFIX ${_EXTERNAL_BUILD_DIR}/ldpk)
@@ -192,7 +195,7 @@ if(NOT ldpk_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
   ExternalProject_Add(ldpk
     DEPENDS dlfcn-win32
     PREFIX ${ldpk_PREFIX}
-    URL ${ldpk_URL}
+    URL "${ldpk_URL}"
     INSTALL_DIR ${ldpk_INSTALL_PATH}
     PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${ldpk_PATCH_SRC_1} ${ldpk_PATCH_DST_1}
     COMMAND       ${CMAKE_COMMAND} -E copy ${ldpk_PATCH_SRC_2} ${ldpk_PATCH_DST_2}

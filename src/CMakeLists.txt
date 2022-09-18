@@ -130,8 +130,11 @@ include(MMSolverUtils)
 add_library_maya_plugin(mmSolver "${SOURCE_FILES}")
 set_target_maya_plugin_compile_options(mmSolver)
 target_include_directories(mmSolver
-  PRIVATE ../include
-  PRIVATE .
+  PRIVATE ${CMAKE_SOURCE_DIR}/include
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+
+  # For generated 'buildConstant.h' file.
+  PRIVATE ${CMAKE_BINARY_DIR}/include/mmSolver
   )
 # On Linux the 'm' library is required.
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)

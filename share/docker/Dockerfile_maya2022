@@ -20,7 +20,6 @@
 #
 # Build CMake project:
 #
-# $ ./scripts/build_thirdparty_linux_maya2022.bash
 # $ ./scripts/build_mmSolver_linux_maya2022.bash
 # $ mayapy tests/runTests.py
 #

@@ -453,10 +453,12 @@ if(NOT OpenMVG_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
   set(OpenMVG_PATCH_SRC_1 ${CMAKE_SOURCE_DIR}/external/patches/OpenMVG/cmakeFindModules_FindJPEG.cmake)
   set(OpenMVG_PATCH_SRC_2 ${CMAKE_SOURCE_DIR}/external/patches/OpenMVG/cmakeFindModules_FindPNG.cmake)
   set(OpenMVG_PATCH_SRC_3 ${CMAKE_SOURCE_DIR}/external/patches/OpenMVG/cmakeFindModules_FindTIFF.cmake)
+  set(OpenMVG_PATCH_SRC_4 ${CMAKE_SOURCE_DIR}/external/patches/OpenMVG/robust_estimator_ACRansac.hpp)
 
   set(OpenMVG_PATCH_DST_1 ${OpenMVG_SOURCE_DIR}/src/cmakeFindModules/FindJPEG.cmake)
   set(OpenMVG_PATCH_DST_2 ${OpenMVG_SOURCE_DIR}/src/cmakeFindModules/FindPNG.cmake)
   set(OpenMVG_PATCH_DST_3 ${OpenMVG_SOURCE_DIR}/src/cmakeFindModules/FindTIFF.cmake)
+  set(OpenMVG_PATCH_DST_4 ${OpenMVG_SOURCE_DIR}/src/openMVG/robust_estimation/robust_estimator_ACRansac.hpp)
 
   set(OpenMVG_BUILD_SHARED 0)
   set(OpenMVG_BUILD_TESTS 0)
@@ -555,6 +557,7 @@ if(NOT OpenMVG_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
     PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${OpenMVG_PATCH_SRC_1} ${OpenMVG_PATCH_DST_1}
     COMMAND       ${CMAKE_COMMAND} -E copy ${OpenMVG_PATCH_SRC_2} ${OpenMVG_PATCH_DST_2}
     COMMAND       ${CMAKE_COMMAND} -E copy ${OpenMVG_PATCH_SRC_3} ${OpenMVG_PATCH_DST_3}
+    COMMAND       ${CMAKE_COMMAND} -E copy ${OpenMVG_PATCH_SRC_4} ${OpenMVG_PATCH_DST_4}
     CMAKE_ARGS ${OpenMVG_CMAKE_ARGS}
     EXCLUDE_FROM_ALL TRUE
     BUILD_COMMAND ""

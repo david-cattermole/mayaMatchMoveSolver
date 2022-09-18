@@ -389,6 +389,7 @@ MStatus convert_image(const MString &src_file_path,
             CHECK_MSTATUS_AND_RETURN_IT(status);
         }
     }
+    return status;
 }
 
 MMConvertImageCmd::~MMConvertImageCmd() {}

@@ -20,6 +20,7 @@
 #
 cmake_minimum_required(VERSION 3.15)
 
+
 # find_package() will use <PackageName>_ROOT variables.
 #
 # https://cmake.org/cmake/help/latest/policy/CMP0074.html
@@ -31,6 +32,36 @@ cmake_policy(SET CMP0074 NEW)
 #
 # https://cmake.org/cmake/help/latest/policy/CMP0048.html
 cmake_policy(SET CMP0048 NEW)
+
+# # Changes how timestamps of downloaded files with
+# # ExternalProject_Add() are set.
+# #
+# # https://cmake.org/cmake/help/latest/policy/CMP0135.html
+# cmake_policy(SET CMP0135 NEW)
+
+# Honor visibility properties for all target types.
+#
+# https://cmake.org/cmake/help/latest/policy/CMP0063.html
+cmake_policy(SET CMP0063 NEW)
+
+# Do not allow using GNU extensions (such as '-std=g++11'), because
+# it's not compatible with Maya.
+set(CXX_EXTENSIONS OFF)
+
+# Use the older C++11 ABI for std::string and std::list, to be
+# compatible with RHEL/CentOS 7, Maya and the VFX Platform.
+#
+# https://vfxplatform.com/#footnote-gcc6
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
+endif()
+
+# For Windows, allow paths of more than 250 to avoid build issues
+# arrising on Windows with very long file paths.
+if(NOT DEFINED CMAKE_OBJECT_PATH_MAX)
+    set(CMAKE_OBJECT_PATH_MAX 300)
+endif()
 
 # Project configuration.
 project(mayaMatchMoveSolver)
@@ -51,7 +82,6 @@ enable_testing()
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
         ${CMAKE_CURRENT_SOURCE_DIR}/share/cmake/modules)
 
-
 # Build options; What will we build?  This is used mostly for
 # developer debug. If the developer is working on some Python code
 # only, we don't need to wait for the Maya Plug-In to compute each
@@ -68,6 +98,7 @@ option(MMSOLVER_BUILD_DOCS "Build and install the documentation?" ON)
 option(MMSOLVER_BUILD_ICONS "Build and install the icons?" ON)
 option(MMSOLVER_BUILD_CONFIG "Build and install the config files?" ON)
 option(MMSOLVER_BUILD_TESTS "Build the test files?" OFF)
+option(MMSOLVER_DOWNLOAD_DEPENDENCIES "Automatically download and build missing dependencies?" ON)
 
 
 # Maya SDK
@@ -78,40 +109,6 @@ set(MAYA_INCLUDE_PATH "/usr/autodesk/maya${MAYA_VERSION}/include" CACHE PATH "Ma
 set(MAYA_LIB_PATH "/usr/autodesk/maya${MAYA_VERSION}/lib" CACHE PATH "Maya library directory")
 
 
-# # Google Log
-# set(GLOG_ROOT "/usr/local" CACHE PATH "Glog directory")
-# set(GLOG_INCLUDE_PATH "/usr/local/include" CACHE PATH "Glog include directory")
-# set(GLOG_LIB_PATH "/usr/local/lib" CACHE PATH "Glog library directory")
-
-
-# CMinpack
-set(CMINPACK_ROOT "/usr/local" CACHE PATH "CMinpack directory")
-set(CMINPACK_INCLUDE_PATH "/usr/local/include" CACHE PATH "CMinpack include directory")
-set(CMINPACK_LIB_PATH "/usr/local/lib" CACHE PATH "CMinpack library directory")
-
-
-# Ceres
-set(CERES_ROOT "/usr/local" CACHE PATH "Ceres directory")
-set(CERES_INCLUDE_PATH "/usr/local/include" CACHE PATH "Ceres include directory")
-set(CERES_LIB_PATH "/usr/local/lib" CACHE PATH "Ceres library directory")
-
-
-# OpenMVG
-set(OPENMVG_ROOT "/usr/local" CACHE PATH "OpenMVG directory")
-
-
-# DL-FCN
-set(DLFCN_ROOT "/usr/local" CACHE PATH "dl-fcn directory")
-set(DLFCN_INCLUDE_PATH "/usr/local/include" CACHE PATH "dl-fcn include directory")
-set(DLFCN_LIB_PATH "/usr/local/lib" CACHE PATH "dl-fcn library directory")
-
-
-# LDPK
-set(LDPK_ROOT "/usr/local" CACHE PATH "LDPK directory")
-set(LDPK_INCLUDE_PATH "/usr/local/include" CACHE PATH "LDPK include directory")
-set(LDPK_LIB_PATH "/usr/local/lib" CACHE PATH "LDPK library directory")
-
-
 # Default Solver to use.
 set(PREFERRED_SOLVER "cminpack_lmder"
   CACHE STRING
@@ -120,13 +117,15 @@ set(PREFERRED_SOLVER "cminpack_lmder"
 # Set a default solver
 set(DEFAULT_SOLVER ${PREFERRED_SOLVER})
 
-
 include(MMSolverUtils)
 
 # Build features
 add_subdirectory(share)
 
 if (MMSOLVER_BUILD_PLUGIN)
+  # Finds and builds external (third-party) dependencies.
+  include(FindAndBuildExternalPackages)
+
   add_subdirectory(include)
   add_subdirectory(src)
 endif ()

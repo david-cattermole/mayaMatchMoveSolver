@@ -180,125 +180,71 @@ if(MAYA_FOUND)
 endif()
 
 
-find_package(CMinpack REQUIRED)
-message(STATUS "CMINPACK: ${CMINPACK_FOUND}")
-message(STATUS "CMINPACK: Root=${CMINPACK_ROOT}")
-message(STATUS "CMINPACK: Include=${CMINPACK_INCLUDE_DIRS}")
-message(STATUS "CMINPACK: Library=${CMINPACK_LIBRARIES}")
-message(STATUS "CMINPACK: Library DLL=${CMINPACK_LIBRARY_DLL}")
-if(CMINPACK_FOUND)
-  target_include_directories(mmSolver
-    PRIVATE ${CMINPACK_INCLUDE_DIRS}
-    )
-  target_link_libraries(mmSolver
-    PRIVATE
-    ${CMINPACK_LIBRARIES}
-    )
-  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CMINPACK)
-  install_shared_library(
-    ${CMINPACK_LIBRARY}
-    ${CMINPACK_LIBRARY_DLL}
-    "${MODULE_FULL_NAME}/lib/")
-endif()
+# Link all libraries.
+target_link_libraries(mmSolver
+  PRIVATE
+  cminpack::cminpack
+  glog::glog
+  Eigen3::Eigen
+  cxsparse::cxsparse
+  ceres
+  OpenMVG::cereal
+  OpenMVG::lib_CoinUtils
+  OpenMVG::lib_Osi
+  OpenMVG::lib_OsiClpSolver
+  OpenMVG::lib_clp
+  OpenMVG::openMVG_camera
+  OpenMVG::openMVG_easyexif
+  OpenMVG::openMVG_exif
+  OpenMVG::openMVG_fast
+  OpenMVG::openMVG_features
+  OpenMVG::openMVG_geodesy
+  OpenMVG::openMVG_geometry
+  OpenMVG::openMVG_graph
+  OpenMVG::openMVG_image
+  OpenMVG::openMVG_jpeg
+  OpenMVG::openMVG_kvld
+  OpenMVG::openMVG_lInftyComputerVision
+  OpenMVG::openMVG_lemon
+  OpenMVG::openMVG_linearProgramming
+  OpenMVG::openMVG_matching
+  OpenMVG::openMVG_matching_image_collection
+  OpenMVG::openMVG_multiview
+  OpenMVG::openMVG_numeric
+  OpenMVG::openMVG_png
+  OpenMVG::openMVG_robust_estimation
+  OpenMVG::openMVG_sfm
+  OpenMVG::openMVG_stlplus
+  OpenMVG::openMVG_system
+  OpenMVG::openMVG_tiff
+  OpenMVG::openMVG_zlib
+  OpenMVG::vlsift
+  ldpk::ldpk
+)
 
-
-find_package(Eigen3 REQUIRED)
-message(STATUS "Eigen3: Found=${EIGEN3_FOUND}")
-message(STATUS "Eigen3: Version=${EIGEN3_VERSION_STRING}")
-message(STATUS "Eigen3: Root=${Eigen3_DIR}")
-message(STATUS "Eigen3: Include=${EIGEN3_INCLUDE_DIRS}")
-if(EIGEN3_FOUND)
-  target_link_libraries(mmSolver
-    PRIVATE
-    Eigen3::Eigen
-    )
-  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_EIGEN)
-endif()
-
-
-find_package(Ceres REQUIRED)
-message(STATUS "Ceres: Found=${CERES_FOUND}")
-message(STATUS "Ceres: Version=${CERES_VERSION}")
-message(STATUS "Ceres: Root=${CERES_ROOT}")
-message(STATUS "Ceres: Include=${CERES_INCLUDE_DIRS}")
-message(STATUS "Ceres: Library=${CERES_LIBRARIES}")
-if(Ceres_FOUND)
-  target_include_directories(mmSolver
-    PRIVATE ${CERES_INCLUDE_DIRS}
-    )
-  target_link_libraries(mmSolver
-    PRIVATE
-    ceres
-    )
-  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CERES)
-endif()
-
-
-find_package(OpenMVG REQUIRED)
-message(STATUS "OpenMVG: Found=${OPENMVG_FOUND}")
-message(STATUS "OpenMVG: Version=${OPENMVG_VERSION}")
-message(STATUS "OpenMVG: Root=${OPENMVG_ROOT}")
-message(STATUS "OpenMVG: Include=${OPENMVG_INCLUDE_DIRS}")
-message(STATUS "OpenMVG: Library=${OPENMVG_LIBRARIES}")
-if(OPENMVG_FOUND)
-  target_link_libraries(mmSolver
-    PRIVATE
-    OpenMVG::openMVG_camera
-    OpenMVG::openMVG_exif
-    OpenMVG::openMVG_features
-    OpenMVG::openMVG_geodesy
-    OpenMVG::openMVG_geometry
-    OpenMVG::openMVG_graph
-    OpenMVG::openMVG_image
-    OpenMVG::openMVG_linearProgramming
-    OpenMVG::openMVG_matching
-    OpenMVG::openMVG_matching_image_collection
-    OpenMVG::openMVG_multiview
-    OpenMVG::openMVG_numeric
-    OpenMVG::openMVG_robust_estimation
-    OpenMVG::openMVG_sfm
-    OpenMVG::openMVG_system
-    )
-  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_OPENMVG)
-endif()
-
-
+# Link to dlfcn on Windows only. Linux has a dynamic loading library
+# by default.
 if(WIN32)
-  find_package(Dlfcn REQUIRED)
-  message(STATUS "DLFCN ${DLFCN_FOUND}")
-  message(STATUS "DLFCN Root=${DLFCN_ROOT}")
-  message(STATUS "DLFCN Libraries=${DLFCN_LIBRARIES}")
-  message(STATUS "DLFCN Library DLL=${DLFCN_LIBRARY_DLL}")
-  message(STATUS "DLFCN Include=${DLFCN_INCLUDE_DIRS}")
-  target_include_directories(mmSolver
-    PRIVATE ${DLFCN_INCLUDE_DIRS}
-    )
   target_link_libraries(mmSolver
     PRIVATE
-    ${DLFCN_LIBRARIES}
+    dlfcn-win32::dl
     )
-  install_shared_libraries(
-    ${DLFCN_LIBRARY}
-    ${DLFCN_LIBRARY_DLL}
-    "${MODULE_FULL_NAME}/lib/")
 endif()
 
+target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CMINPACK)
+target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_EIGEN)
+target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CERES)
+target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_OPENMVG)
+target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_LDPK)
 
-find_package(LDPK REQUIRED)
-message(STATUS "LDPK Found=${LDPK_FOUND}")
-message(STATUS "LDPK Root=${LDPK_ROOT}")
-message(STATUS "LDPK Libraries=${LDPK_LIBRARIES}")
-message(STATUS "LDPK Include=${LDPK_INCLUDE_DIRS}")
-if(LDPK_FOUND)
-  target_include_directories(mmSolver
-    PRIVATE ${LDPK_INCLUDE_DIRS}
-    )
-  target_link_libraries(mmSolver
-    PRIVATE
-    ${LDPK_LIBRARIES}
-    )
-  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_LDPK)
+# Install dlfcn-win32 shared library into Maya module.
+if(WIN32)
+  if(NOT TARGET dlfcn-win32::dl)
+    message(FATAL_ERROR "Target dlfcn-win32::dl could not be found, but is required on Windows.")
+  endif()
+  get_target_property(dlfcn_win32_LIBRARY_DLL dlfcn-win32::dl IMPORTED_LOCATION)
+  install(FILES ${dlfcn_win32_LIBRARY_DLL}
+    DESTINATION "${MODULE_FULL_NAME}/lib/")
 endif()
-
 
 install_target_plugin_to_module(mmSolver "${MODULE_FULL_NAME}")

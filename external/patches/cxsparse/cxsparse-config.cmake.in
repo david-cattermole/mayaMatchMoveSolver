@@ -1,0 +1,10 @@
+@PACKAGE_INIT@
+
+set_and_check(cxsparse_INCLUDE_DIR "@PACKAGE_INCLUDE_INSTALL_DIR@")
+
+if(NOT TARGET cxsparse::cxsparse)
+  include(${CMAKE_CURRENT_LIST_DIR}/cxsparse-targets.cmake)
+endif()
+
+set(cxsparse_LIBRARIES cxsparse::cxsparse)
+set(cxsparse_INCLUDE_DIRS ${cxsparse_INCLUDE_DIR})

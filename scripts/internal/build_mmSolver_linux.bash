@@ -54,6 +54,9 @@ INSTALL_MODULE_DIR="${HOME}/maya/${MAYA_VERSION}/modules"
 # For developer use. Make ZIP packages ready to distribute to others.
 BUILD_PACKAGE=1
 
+# What directory to build the project in?
+BUILD_DIR_BASE="${PROJECT_ROOT}/../"
+
 # What type of build? "Release" or "Debug"?
 BUILD_TYPE=Release
 
@@ -83,37 +86,24 @@ PYTHON_VIRTUAL_ENV_DIR_NAME="python_venv_linux_maya${MAYA_VERSION}"
 source "${PROJECT_ROOT}/scripts/internal/python_venv_activate.bash"
 
 # Paths for dependencies.
-#
-# By default these paths will work if the "build_thirdparty.bat"
-# scripts have been run before this script.
-CMINPACK_ROOT="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/cminpack"
-CERES_ROOT="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/ceres"
-CERES_DIR="${CERES_ROOT}/lib64/cmake/Ceres/"
-CERES_INCLUDE_DIR="${CERES_ROOT}/include"
-CERES_LIB_PATH="${CERES_ROOT}/lib64"
-Eigen3_DIR="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/eigen/share/eigen3/cmake"
-EIGEN3_INCLUDE_DIR="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/eigen/include/eigen3"
-OPENMVG_ROOT="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/openMVG"
-OPENMVG_DIR="${OPENMVG_ROOT}/share/openMVG/cmake"
-OPENMVG_INCLUDE_DIR="${OPENMVG_ROOT}/include"
-OPENMVG_LIB_PATH="${OPENMVG_ROOT}/lib"
-LDPK_ROOT="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/ldpk"
-LDPK_INCLUDE_DIR="${LDPK_ROOT}/include"
-LDPK_LIB_PATH="${LDPK_ROOT}/lib"
-MMSCENEGRAPH_INSTALL_DIR="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_linux/mmscenegraph"
+MMSCENEGRAPH_INSTALL_DIR="${BUILD_DIR_BASE}/build_mmscenegraph/install/maya${MAYA_VERSION}_linux/"
 MMSCENEGRAPH_CMAKE_CONFIG_DIR="${MMSCENEGRAPH_INSTALL_DIR}/lib/cmake/mmscenegraph"
 
+# We don't want to find system packages.
+CMAKE_IGNORE_PATH="/lib;/lib64;/usr;/usr/lib;/usr/lib64;/usr/local;/usr/local/lib;/usr/local/lib64;"
+
 # Build mmSolver project
-cd ${PROJECT_ROOT}
-BUILD_DIR_NAME="build_mmSolver_linux_maya${MAYA_VERSION}_${BUILD_TYPE}"
-BUILD_DIR="${PROJECT_ROOT}/${BUILD_DIR_NAME}"
-mkdir -p ${BUILD_DIR_NAME}
+cd ${BUILD_DIR_BASE}
+BUILD_DIR_NAME="cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}"
+BUILD_DIR="${BUILD_DIR_BASE}/build_mmsolver/${BUILD_DIR_NAME}"
+mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
 export MAYA_VERSION=${MAYA_VERSION}
 ${CMAKE_EXE} \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DCMAKE_INSTALL_PREFIX=${INSTALL_MODULE_DIR} \
+    -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH} \
     -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
     -DCMAKE_CXX_STANDARD=${CXX_STANDARD} \
     -DMMSOLVER_BUILD_PLUGIN=${MMSOLVER_BUILD_PLUGIN} \
@@ -128,18 +118,10 @@ ${CMAKE_EXE} \
     -DMMSOLVER_BUILD_ICONS=${MMSOLVER_BUILD_ICONS} \
     -DMMSOLVER_BUILD_CONFIG=${MMSOLVER_BUILD_CONFIG} \
     -DMMSOLVER_BUILD_TESTS=${MMSOLVER_BUILD_TESTS} \
-    -DCMINPACK_ROOT=${CMINPACK_ROOT} \
-    -DCeres_DIR=${CERES_DIR} \
-    -DEigen3_DIR=${Eigen3_DIR} \
-    -DEIGEN3_INCLUDE_DIR=${EIGEN3_INCLUDE_DIR} \
-    -DOpenMVG_DIR=${OPENMVG_DIR} \
-    -DLDPK_ROOT=${LDPK_ROOT} \
-    -DLDPK_INCLUDE_DIR=${LDPK_INCLUDE_DIR} \
-    -DLDPK_LIB_PATH=${LDPK_LIB_PATH} \
     -DMAYA_LOCATION=${MAYA_LOCATION} \
     -DMAYA_VERSION=${MAYA_VERSION} \
     -Dmmscenegraph_DIR=${MMSCENEGRAPH_CMAKE_CONFIG_DIR} \
-    ..
+    ${PROJECT_ROOT}
 
 ${CMAKE_EXE} --build . --parallel
 

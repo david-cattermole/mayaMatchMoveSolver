@@ -1,34 +1,52 @@
-# - CMinpack finder module
+# Copyright (C) 2022 David Cattermole.
+#
+# This file is part of mmSolver.
+#
+# mmSolver is free software: you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# mmSolver is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+# ---------------------------------------------------------------------
+#
+# - cminpack finder module
 # This module will look for cminpack, using the predefined variable
-# CMINPACK_ROOT. On MS Windows, the DLL is expected to be named
-# 'cminpack.dll'.
+# cminpack_ROOT.
 #
 # Uses Variables:
-# - CMINPACK_ROOT_PATH - Directory for the cminpack install root.
-# - CMINPACK_INCLUDE_PATH - Directory for the header files.
-# - CMINPACK_LIB_PATH - Directory for shared libraries (.so and .dll).
+# - cminpack_ROOT_PATH - Directory for the cminpack install root.
+# - cminpack_INCLUDE_PATH - Directory for the header files.
+# - cminpack_LIB_PATH - Directory for shared libraries (.so and .dll).
 #
 # Defines Variables:
-# - CMINPACK_FOUND
-# - CMINPACK_LIBRARIES
-# - CMINPACK_LIBRARY_DLL
-# - CMINPACK_INCLUDE_DIRS
+# - cminpack_FOUND
+# - cminpack_LIBRARIES
+# - cminpack_INCLUDE_DIRS
 #
 
-find_path(CMINPACK_INCLUDE_DIR cminpack.h
-    HINTS
-        ${CMINPACK_INCLUDE_PATH}
-        ${CMINPACK_ROOT}
+function(find_cminpack_find_with_paths cminpack_root cminpack_include_path cminpack_lib_path)
+
+    find_path(cminpack_include_dir cminpack.h
+      HINTS
+        ${cminpack_include_path}
+        ${cminpack_root}
         /usr/local/include
         /usr/include
-    PATH_SUFFIXES
+      PATH_SUFFIXES
         include/
         cminpack-1/
         include/cminpack-1/
-)
+    )
 
-find_library(CMINPACK_LIBRARY
-  NAMES
+    find_library(cminpack_library
+      NAMES
         libcminpack.1
         libcminpack.so.1
         libcminpack.1.dylib
@@ -36,42 +54,172 @@ find_library(CMINPACK_LIBRARY
         cminpack
         libcminpack_s
         cminpack_s
-    HINTS
-        ${CMINPACK_LIB_PATH}
-        ${CMINPACK_ROOT}
+      HINTS
+        ${cminpack_lib_path}
+        ${cminpack_root}
         /usr/lib
         /usr/local/lib
-    PATH_SUFFIXES
+      PATH_SUFFIXES
         bin/
         lib/
         lib64/
-)
+    )
 
-find_path(CMINPACK_LIBRARY_DLL cminpack.dll
-    HINTS
-        ${CMINPACK_LIB_PATH}
-        ${CMINPACK_ROOT}
-        /usr/lib
-        /usr/local/lib
-    PATH_SUFFIXES
-        bin/
-        )
-if(EXISTS ${CMINPACK_LIBRARY_DLL})
-    set(CMINPACK_LIBRARY_DLL ${CMINPACK_LIBRARY_DLL}/cminpack.dll)
-endif()
+    if(cminpack_include_dir AND cminpack_library)
+      set(${out_cminpack_include_dirs} ${cminpack_include_dir} PARENT_SCOPE)
+      set(${out_cminpack_libraries} ${cminpack_library} PARENT_SCOPE)
+    endif()
 
-if(CMINPACK_INCLUDE_DIR AND CMINPACK_LIBRARY)
-    set(CMINPACK_INCLUDE_DIRS ${CMINPACK_INCLUDE_DIR} )
-    set(CMINPACK_LIBRARIES ${CMINPACK_LIBRARY} )
-endif()
+endfunction()
 
-mark_as_advanced(
-    CMINPACK_INCLUDE_DIR
-)
 
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(CMinpack
+function(find_cminpack_create_target)
+  add_library(cminpack::cminpack UNKNOWN IMPORTED GLOBAL)
+endfunction()
+
+
+function(find_cminpack_set_target cminpack_library cminpack_include_dir)
+
+  set_target_properties(cminpack::cminpack PROPERTIES
+    IMPORTED_LOCATION ${cminpack_library}
+    IMPORTED_LINK_INTERFACE_LANGUAGES "C"
+    INTERFACE_INCLUDE_DIRECTORIES ${cminpack_include_dir}
+    )
+
+  if (WIN32)
+    set_target_properties(cminpack::cminpack PROPERTIES
+      INTERFACE_COMPILE_DEFINITIONS "CMINPACK_NO_DLL"
+      )
+  endif ()
+
+endfunction()
+
+
+if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES)
+
+  if(NOT DEFINED cminpack_ROOT)
+    # Search for "cminpack-config.cmake" given on the command line.
+    find_package(cminpack ${cminpack_FIND_VERSION} CONFIG QUIET)
+  endif()
+
+  if(cminpack_FOUND)
+    message(FATAL_ERROR "Not Implemented. cminpack has been found from the cminpack-config.cmake file")
+  else()
+    # Fallback and try to find the package.
+    find_cminpack_find_with_paths(
+      ${cminpack_ROOT}
+      ${cminpack_INCLUDE_PATH}
+      ${cminpack_LIB_PATH}
+      cminpack_INCLUDE_DIRS
+      cminpack_LIBRARIES
+      )
+  endif()
+
+  include(FindPackageHandleStandardArgs)
+  find_package_handle_standard_args(cminpack
     REQUIRED_VARS
-        CMINPACK_LIBRARIES
-        CMINPACK_INCLUDE_DIRS
-)
+      cminpack_LIBRARIES
+      cminpack_INCLUDE_DIRS
+  )
+
+  if(cminpack_FOUND)
+    message(STATUS "cminpack: Found=${cminpack_FOUND}")
+    message(STATUS "cminpack: Include=${cminpack_INCLUDE_DIRS}")
+    message(STATUS "cminpack: Library=${cminpack_LIBRARIES}")
+  endif()
+
+endif()
+
+
+# Ensure a target for cminpack is created.
+if(NOT TARGET cminpack::cminpack)
+  find_cminpack_create_target()
+  if(cminpack_FOUND)
+    find_cminpack_set_target(${cminpack_LIBRARY} ${cminpack_INCLUDE_DIR})
+  else()
+    set(_cminpack_TARGET_CREATE TRUE)
+  endif()
+endif()
+
+
+# Download, Build and Install.
+if(NOT cminpack_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
+  include(ExternalProject)
+  include(GNUInstallDirs)
+
+  set(_EXTERNAL_INSTALL_DIR "${CMAKE_BINARY_DIR}/ext/install")
+  set(_EXTERNAL_BUILD_DIR "${CMAKE_BINARY_DIR}/ext/build")
+
+  # Fill in the expected values/paths that will exist when the build
+  # and install of cminpack actually happens.
+  set(cminpack_FOUND TRUE)
+  set(cminpack_VERSION ${cminpack_FIND_VERSION})
+
+  set(cminpack_INCLUDE_DIR "${_EXTERNAL_INSTALL_DIR}/cminpack/${CMAKE_INSTALL_INCLUDEDIR}/cminpack-1")
+  set(cminpack_LIBRARY_DIR "${_EXTERNAL_INSTALL_DIR}/cminpack/${CMAKE_INSTALL_LIBDIR}")
+
+  set(cminpack_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}cminpack_s${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  set(cminpack_LIBRARY "${cminpack_LIBRARY_DIR}/${cminpack_LIBRARY_NAME}")
+
+  set(cminpack_URL "https://github.com/devernay/cminpack/archive/refs/tags/v${cminpack_VERSION}.tar.gz")
+
+  set(cminpack_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/cminpack)
+  set(cminpack_PREFIX ${_EXTERNAL_BUILD_DIR}/cminpack)
+  set(cminpack_SOURCE_DIR ${_EXTERNAL_BUILD_DIR}/cminpack/src/cminpack)
+
+  set(cminpack_CMAKE_ARGS
+    -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+    -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+    -DCMAKE_INSTALL_PREFIX=${cminpack_INSTALL_PATH}
+    -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+    -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
+    -DCMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
+    -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+    -DCMAKE_CXX_STANDARD=${CMAKE_CXX_STANDARD}
+    -DCMAKE_CXX_EXTENSIONS=${CXX_EXTENSIONS}
+    -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+    -DCMAKE_FIND_PACKAGE_NO_PACKAGE_REGISTRY=1
+    -DCMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY=1
+    -DCMAKE_FIND_USE_PACKAGE_REGISTRY=0
+
+    -DCMINPACK_PRECISION=d  # d=double precision, s=single precision
+    -DBUILD_SHARED_LIBS=0
+    -DBUILD_EXAMPLES=0
+    -DUSE_BLAS=0
+  )
+
+  # Hack to let imported target be built from ExternalProject_Add
+  file(MAKE_DIRECTORY ${cminpack_INCLUDE_DIR})
+
+  ExternalProject_Add(cminpack
+    PREFIX ${cminpack_PREFIX}
+    URL ${cminpack_URL}
+    INSTALL_DIR ${cminpack_INSTALL_PATH}
+    BUILD_BYPRODUCTS ${cminpack_LIBRARY}
+    CMAKE_ARGS ${cminpack_CMAKE_ARGS}
+    EXCLUDE_FROM_ALL TRUE
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE} --target install --parallel
+  )
+
+  add_dependencies(cminpack::cminpack cminpack)
+  message(STATUS "Installing cminpack (version \"${cminpack_VERSION}\")")
+  message(STATUS "cminpack: Include=${cminpack_INCLUDE_DIR}")
+  message(STATUS "cminpack: Library=${cminpack_LIBRARY}")
+
+else()
+
+  # Placeholder target that does nothing.
+  add_custom_target(cminpack)
+
+endif()
+
+
+if(_cminpack_TARGET_CREATE)
+  find_cminpack_set_target(${cminpack_LIBRARY} ${cminpack_INCLUDE_DIR})
+  mark_as_advanced(
+    cminpack_INCLUDE_DIR
+    cminpack_LIBRARY
+    cminpack_VERSION
+  )
+endif()

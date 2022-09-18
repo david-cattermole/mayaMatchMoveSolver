@@ -39,6 +39,9 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 PROJECT_ROOT=`readlink -f ${DIR}/../..`
 echo "Project Root: ${PROJECT_ROOT}"
 
+# What directory to build the project in?
+BUILD_DIR_BASE="${PROJECT_ROOT}/../"
+
 # What type of build? "Release" or "Debug"?
 BUILD_TYPE="Release"
 
@@ -50,12 +53,12 @@ if [ ${BUILD_TYPE}=="Release" ]; then
 fi
 
 # Where to find the mmSceneGraph Rust libraries and headers.
-MMSCENEGRAPH_INSTALL_PATH="${PROJECT_ROOT}/external/install/maya${MAYA_VERSION}_windows64/mmscenegraph/"
+MMSCENEGRAPH_INSTALL_PATH="${BUILD_DIR_BASE}/build_mmscenegraph/install/maya${MAYA_VERSION}_windows64/"
 MMSCENEGRAPH_ROOT="${PROJECT_ROOT}/mmscenegraph"
 MMSCENEGRAPH_RUST_DIR="${MMSCENEGRAPH_ROOT}/rust"
 MMSCENEGRAPH_CPP_DIR="${MMSCENEGRAPH_ROOT}/cppbind"
-MMSCENEGRAPH_RUST_TARGET_DIR="${PROJECT_ROOT}/build_mmscenegraph_rust_linux_maya${MAYA_VERSION}"
-MMSCENEGRAPH_CPP_TARGET_DIR="${PROJECT_ROOT}/build_mmscenegraph_rust_linux_maya${MAYA_VERSION}"
+MMSCENEGRAPH_RUST_TARGET_DIR="${BUILD_DIR_BASE}/build_mmscenegraph/rust_linux_maya${MAYA_VERSION}"
+MMSCENEGRAPH_CPP_TARGET_DIR="${BUILD_DIR_BASE}/build_mmscenegraph/rust_linux_maya${MAYA_VERSION}"
 MMSCENEGRAPH_LIB_DIR="${MMSCENEGRAPH_CPP_TARGET_DIR}/${BUILD_TYPE_DIR}"
 MMSCENEGRAPH_INCLUDE_DIR="${MMSCENEGRAPH_CPP_DIR}/include"
 
@@ -78,9 +81,11 @@ cxxbridge --header --output "${MMSCENEGRAPH_CPP_DIR}/include/mmscenegraph/_cxx.h
 ${RUST_CARGO_EXE} build ${RELEASE_FLAG} --target-dir "${MMSCENEGRAPH_CPP_TARGET_DIR}"
 
 # Build project
-cd "${PROJECT_ROOT}"
-mkdir -p build_mmscenegraph_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
-cd build_mmscenegraph_linux_maya${MAYA_VERSION}_${BUILD_TYPE}
+cd ${BUILD_DIR_BASE}
+BUILD_DIR_NAME="cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}"
+BUILD_DIR="${BUILD_DIR_BASE}/build_mmscenegraph/${BUILD_DIR_NAME}"
+mkdir -p ${BUILD_DIR}
+cd ${BUILD_DIR}
 
 export MAYA_VERSION=${MAYA_VERSION}
 ${CMAKE_EXE} \

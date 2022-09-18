@@ -27,6 +27,13 @@ SETLOCAL
 :: This file assumes the MAYA_VERSION and MAYA_LOCATION variables
 :: have been set.
 
+:: The root of this project.
+SET PROJECT_ROOT=%CD%
+ECHO Project Root: %PROJECT_ROOT%
+
+:: What directory to build the project in?
+SET BUILD_DIR_BASE=%PROJECT_ROOT%\..
+
 :: Run the Python API and Solver tests inside Maya, after a
 :: successfully build an install process.
 SET RUN_TESTS=0
@@ -46,7 +53,6 @@ SET INSTALL_MODULE_DIR="%USERPROFILE%\My Documents\maya\%MAYA_VERSION%\modules"
 :: Build ZIP Package.
 :: For developer use. Make ZIP packages ready to distribute to others.
 SET BUILD_PACKAGE=1
-
 
 :: Do not edit below, unless you know what you're doing.
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -69,10 +75,6 @@ SET MMSOLVER_BUILD_ICONS=1
 SET MMSOLVER_BUILD_CONFIG=1
 SET MMSOLVER_BUILD_TESTS=0
 
-:: The root of this project.
-SET PROJECT_ROOT=%CD%
-ECHO Project Root: %PROJECT_ROOT%
-
 SET PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_windows64_maya%MAYA_VERSION%
 
 :: Note: There is no need to deactivate the virtual environment because
@@ -81,27 +83,7 @@ SET PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_windows64_maya%MAYA_VERSION%
 CALL %PROJECT_ROOT%\scripts\internal\python_venv_activate.bat
 
 :: Paths for dependencies.
-::
-:: By default these paths will work if the "build_thirdparty.bat"
-:: scripts have been run before this script.
-SET CMINPACK_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\cminpack"
-SET CERES_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\ceres"
-SET CERES_DIR="%CERES_ROOT%\CMake"
-SET CERES_INCLUDE_DIR="%CERES_ROOT%\include"
-SET CERES_LIB_PATH="%CERES_ROOT%\lib"
-SET Eigen3_DIR="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\eigen\share\eigen3\cmake"
-SET EIGEN3_INCLUDE_DIR="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\eigen\include\eigen3"
-SET OPENMVG_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\openMVG"
-SET OPENMVG_DIR="%OPENMVG_ROOT%\share\openMVG\cmake"
-SET OPENMVG_INCLUDE_DIR="%OPENMVG_ROOT%\include"
-SET OPENMVG_LIB_PATH="%OPENMVG_ROOT%\lib"
-SET DLFCN_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\dlfcn"
-SET DLFCN_INCLUDE_DIR="%DLFCN_ROOT%\include"
-SET DLFCN_LIB_PATH="%DLFCN_ROOT%\lib"
-SET LDPK_ROOT="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\ldpk"
-SET LDPK_INCLUDE_DIR="%LDPK_ROOT%\include"
-SET LDPK_LIB_PATH="%LDPK_ROOT%\lib"
-SET MMSCENEGRAPH_INSTALL_DIR="%PROJECT_ROOT%\external\install\maya%MAYA_VERSION%_windows64\mmscenegraph"
+SET MMSCENEGRAPH_INSTALL_DIR="%BUILD_DIR_BASE%\build_mmscenegraph\install\maya%MAYA_VERSION%_windows64"
 SET MMSCENEGRAPH_CMAKE_CONFIG_DIR="%MMSCENEGRAPH_INSTALL_DIR%\lib\cmake\mmscenegraph"
 
 :: MinGW is a common install for developers on Windows and
@@ -116,10 +98,14 @@ IF EXIST "C:\MinGW" (
 SET CMAKE_GENERATOR=Ninja
 
 :: Build project
-SET BUILD_DIR_NAME=build_mmSolver_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
-SET BUILD_DIR=%PROJECT_ROOT%\%BUILD_DIR_NAME%
+SET BUILD_DIR_NAME=cmake_win64_maya%MAYA_VERSION%_%BUILD_TYPE%
+SET BUILD_DIR=%BUILD_DIR_BASE%\build_mmsolver\%BUILD_DIR_NAME%
+ECHO BUILD_DIR_BASE: %BUILD_DIR_BASE%
 ECHO BUILD_DIR_NAME: %BUILD_DIR_NAME%
 ECHO BUILD_DIR: %BUILD_DIR%
+CHDIR "%BUILD_DIR_BASE%"
+MKDIR "build_mmsolver"
+CHDIR "%BUILD_DIR_BASE%\build_mmsolver"
 MKDIR "%BUILD_DIR_NAME%"
 CHDIR "%BUILD_DIR%"
 
@@ -127,7 +113,6 @@ CHDIR "%BUILD_DIR%"
     -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
     -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
     -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
-    -DCMINPACK_ROOT=%CMINPACK_ROOT% ^
     -DCMAKE_CXX_STANDARD=%CXX_STANDARD% ^
     -DMMSOLVER_BUILD_PLUGIN=%MMSOLVER_BUILD_PLUGIN% ^
     -DMMSOLVER_BUILD_PYTHON=%MMSOLVER_BUILD_PYTHON% ^
@@ -141,20 +126,10 @@ CHDIR "%BUILD_DIR%"
     -DMMSOLVER_BUILD_ICONS=%MMSOLVER_BUILD_ICONS% ^
     -DMMSOLVER_BUILD_CONFIG=%MMSOLVER_BUILD_CONFIG% ^
     -DMMSOLVER_BUILD_TESTS=%MMSOLVER_BUILD_TESTS% ^
-    -DCeres_DIR=%CERES_DIR% ^
-    -DEigen3_DIR=%Eigen3_DIR% ^
-    -DEIGEN3_INCLUDE_DIR=%EIGEN3_INCLUDE_DIR% ^
-    -DOpenMVG_DIR=%OPENMVG_DIR% ^
-    -DLDPK_ROOT=%LDPK_ROOT% ^
-    -DLDPK_INCLUDE_DIR=%LDPK_INCLUDE_DIR% ^
-    -DLDPK_LIB_PATH=%LDPK_LIB_PATH% ^
-    -DDLFCN_ROOT=%DLFCN_ROOT% ^
-    -DDLFCN_INCLUDE_DIR=%DLFCN_INCLUDE_DIR% ^
-    -DDLFCN_LIB_PATH=%DLFCN_LIB_PATH% ^
     -DMAYA_LOCATION=%MAYA_LOCATION% ^
     -DMAYA_VERSION=%MAYA_VERSION% ^
     -Dmmscenegraph_DIR=%MMSCENEGRAPH_CMAKE_CONFIG_DIR% ^
-    ..
+    %PROJECT_ROOT%
 if errorlevel 1 goto failed_to_generate
 
 %CMAKE_EXE% --build . --parallel

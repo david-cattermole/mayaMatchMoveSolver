@@ -1114,12 +1114,14 @@ MStatus solveFrames(
     std::stringstream ss;
     ss << "Frames:";
     for (uint32_t i = 0; i < frameList.length(); i++) {
-      MTime frame(frameList[i]);
-      ss << " " << frame;
+        MTime frame(frameList[i]);
+        ss << " " << frame;
     }
 
     if (verbose) {
-        MMSOLVER_VRB("-------------------------------------------------------------------------------");
+        MMSOLVER_VRB(
+            "------------------------------------------------------------------"
+            "-------------");
         MMSOLVER_VRB("Solving...");
         MMSOLVER_VRB("Solver Type=" << solverOptions.solverType);
         MMSOLVER_VRB("Maximum Iterations=" << solverOptions.iterMax);
@@ -1134,7 +1136,9 @@ MStatus solveFrames(
         MMSOLVER_VRB("Attribute count: " << usedAttrList.size());
         MMSOLVER_VRB(ss.str());
     } else if (printStats.enable == false) {
-        MMSOLVER_INFO("-------------------------------------------------------------------------------");
+        MMSOLVER_INFO(
+            "------------------------------------------------------------------"
+            "-------------");
         MMSOLVER_INFO("Solving...");
         MMSOLVER_INFO("Marker count: " << usedMarkerList.size());
         MMSOLVER_INFO("Attribute count: " << usedAttrList.size());
@@ -1192,7 +1196,7 @@ MStatus solveFrames(
             return status;
         }
     } else if (solverOptions.sceneGraphMode == SceneGraphMode::kMayaDag) {
-      // Nothing to do.
+        // Nothing to do.
     } else {
         MMSOLVER_ERR("Invalid Scene Graph mode!");
         status = MS::kFailure;

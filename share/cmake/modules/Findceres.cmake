@@ -176,7 +176,13 @@ if(NOT ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
     set(ceres_DIR "${ceres_LIBRARY_DIR}/cmake/Ceres/")
   endif()
 
-  set(ceres_URL "https://github.com/ceres-solver/ceres-solver.git")
+  set(ceres_URL
+    "https://github.com/ceres-solver/ceres-solver.git"
+    CACHE STRING
+    "The URL for the ceres-solver git repository.")
+
+  set(ceres_GIT_TAG "${ceres_VERSION}" CACHE STRING
+    "The Git tag for the ceres-solver git repository.")
 
   set(ceres_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/ceres)
   set(ceres_PREFIX ${_EXTERNAL_BUILD_DIR}/ceres)
@@ -261,7 +267,7 @@ if(NOT ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
     DEPENDS cxsparse Eigen3 glog
     PREFIX ${ceres_PREFIX}
     GIT_REPOSITORY ${ceres_URL}
-    GIT_TAG ${ceres_VERSION}
+    GIT_TAG "${ceres_GIT_TAG}"
     INSTALL_DIR ${ceres_INSTALL_PATH}
     BUILD_BYPRODUCTS ${ceres_LIBRARY}
     CMAKE_ARGS ${ceres_CMAKE_ARGS}

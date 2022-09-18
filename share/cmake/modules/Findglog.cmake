@@ -137,8 +137,6 @@ if(NOT glog_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
   # Fill in the expected values/paths that will exist when the build
   # and install of glog actually happens.
   set(glog_FOUND TRUE)
-  # set(glog_VERSION
-  #   "${glog_FIND_VERSION_MAJOR}.${glog_FIND_VERSION_MINOR}.${glog_FIND_VERSION_PATCH}")
   set(glog_VERSION ${glog_FIND_VERSION})
 
   set(glog_INCLUDE_DIR "${_EXTERNAL_INSTALL_DIR}/glog/${CMAKE_INSTALL_INCLUDEDIR}")
@@ -146,6 +144,15 @@ if(NOT glog_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
 
   set(glog_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}glog${CMAKE_STATIC_LIBRARY_SUFFIX}")
   set(glog_LIBRARY "${glog_LIBRARY_DIR}/${glog_LIBRARY_NAME}")
+
+  set(glog_URL
+    "https://github.com/google/glog.git"
+    CACHE STRING
+    "The URL for the glog git repository.")
+
+  set(glog_GIT_TAG "v${glog_VERSION}"
+    CACHE STRING
+    "The Git Tag for the glog git repository.")
 
   set(glog_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/glog)
   set(glog_PREFIX ${_EXTERNAL_BUILD_DIR}/glog)
@@ -182,9 +189,8 @@ if(NOT glog_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
 
   ExternalProject_Add(glog
     PREFIX ${glog_PREFIX}
-    URL ${glog_URL}
-    GIT_REPOSITORY "https://github.com/google/glog.git"
-    GIT_TAG "v${glog_VERSION}"
+    GIT_REPOSITORY ${glog_URL}
+    GIT_TAG "${glog_GIT_TAG}"
     INSTALL_DIR ${glog_INSTALL_PATH}
     BUILD_BYPRODUCTS ${glog_LIBRARY}
     CMAKE_ARGS ${glog_CMAKE_ARGS}

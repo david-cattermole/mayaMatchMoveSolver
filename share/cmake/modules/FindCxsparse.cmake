@@ -121,8 +121,15 @@ if(NOT cxsparse_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
   set(cxsparse_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}cxsparse${CMAKE_STATIC_LIBRARY_SUFFIX}")
   set(cxsparse_LIBRARY "${cxsparse_LIBRARY_DIR}/${cxsparse_LIBRARY_NAME}")
 
-  set(cxsparse_URL "https://github.com/TheFrenchLeaf/CXSparse.git")
-  set(cxsparse_GIT_TAG "26040d5425fc5300b8e0a40b212ff1846b073629")
+  set(cxsparse_URL
+    "https://github.com/TheFrenchLeaf/CXSparse.git"
+    CACHE STRING
+    "The URL for the CXSparse git repository.")
+
+  # Unfortunately the Git repo doesn't have version tags at all :(
+  set(cxsparse_GIT_TAG "26040d5425fc5300b8e0a40b212ff1846b073629"
+    CACHE STRING
+    "The Git Tag for the CXSparse git repository.")
 
   set(cxsparse_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/cxsparse)
   set(cxsparse_PREFIX ${_EXTERNAL_BUILD_DIR}/cxsparse)

@@ -170,7 +170,13 @@ if(NOT dlfcn-win32_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
   set(dlfcn-win32_LIBRARY "${dlfcn-win32_IMPL_LIBRARY_DIR}/${dlfcn-win32_LIBRARY_NAME}")
   set(dlfcn-win32_LIBRARIES "${dlfcn-win32_LIBRARY}")
 
-  set(dlfcn-win32_URL "https://github.com/dlfcn-win32/dlfcn-win32.git")
+  set(dlfcn-win32_URL
+    "https://github.com/dlfcn-win32/dlfcn-win32.git"
+    CACHE STRING
+    "The URL for the dlfcn-win32 git repository.")
+
+  set(dlfcn-win32_GIT_TAG "v${dlfcn-win32_VERSION}" CACHE STRING
+    "The Git tag for the dlfcn-win32-solver git repository.")
 
   set(dlfcn-win32_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/dlfcn-win32)
   set(dlfcn-win32_PREFIX ${_EXTERNAL_BUILD_DIR}/dlfcn-win32)
@@ -202,7 +208,7 @@ if(NOT dlfcn-win32_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
   ExternalProject_Add(dlfcn-win32
     PREFIX ${dlfcn-win32_PREFIX}
     GIT_REPOSITORY ${dlfcn-win32_URL}
-    GIT_TAG "v${dlfcn-win32_VERSION}"
+    GIT_TAG "${dlfcn-win32_GIT_TAG}"
     INSTALL_DIR ${dlfcn-win32_INSTALL_PATH}
     BUILD_BYPRODUCTS ${dlfcn-win32_LIBRARIES} ${dlfcn-win32_LIBRARIES_DLL}
     CMAKE_ARGS ${dlfcn-win32_CMAKE_ARGS}

@@ -166,7 +166,13 @@ if(NOT cminpack_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
   endif()
   set(cminpack_LIBRARY "${cminpack_LIBRARY_DIR}/${cminpack_LIBRARY_NAME}")
 
-  set(cminpack_URL "https://github.com/devernay/cminpack/archive/refs/tags/v${cminpack_VERSION}.tar.gz")
+  set(cminpack_URL
+    "https://github.com/devernay/cminpack.git"
+    CACHE STRING
+    "The URL for the CMinpack git repository.")
+
+  set(cminpack_GIT_TAG "v${cminpack_VERSION}" CACHE STRING
+    "The Git tag for the CMinpack git repository.")
 
   set(cminpack_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/cminpack)
   set(cminpack_PREFIX ${_EXTERNAL_BUILD_DIR}/cminpack)
@@ -198,7 +204,8 @@ if(NOT cminpack_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
 
   ExternalProject_Add(cminpack
     PREFIX ${cminpack_PREFIX}
-    URL ${cminpack_URL}
+    GIT_REPOSITORY ${cminpack_URL}
+    GIT_TAG "${cminpack_GIT_TAG}"
     INSTALL_DIR ${cminpack_INSTALL_PATH}
     BUILD_BYPRODUCTS ${cminpack_LIBRARY}
     CMAKE_ARGS ${cminpack_CMAKE_ARGS}

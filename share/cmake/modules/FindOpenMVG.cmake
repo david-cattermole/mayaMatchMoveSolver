@@ -444,7 +444,14 @@ if(NOT OpenMVG_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
 
   endforeach()
 
-  set(OpenMVG_URL "https://github.com/openMVG/openMVG.git")
+  set(OpenMVG_URL
+    "https://github.com/openMVG/openMVG.git"
+    CACHE STRING
+    "The URL for the OpenMVG git repository.")
+
+  set(OpenMVG_GIT_TAG "v${OpenMVG_VERSION}"
+    CACHE STRING
+    "The Git Tag for the OpenMVG git repository.")
 
   set(OpenMVG_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/OpenMVG)
   set(OpenMVG_PREFIX ${_EXTERNAL_BUILD_DIR}/OpenMVG)
@@ -519,7 +526,7 @@ if(NOT OpenMVG_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
     DEPENDS Eigen3 ceres_install
     PREFIX ${OpenMVG_PREFIX}
     GIT_REPOSITORY ${OpenMVG_URL}
-    GIT_TAG "v${OpenMVG_VERSION}"
+    GIT_TAG "${OpenMVG_GIT_TAG}"
     SOURCE_SUBDIR src/  # The CMakeLists.txt is inside the ./src/ directory.
     INSTALL_DIR ${OpenMVG_INSTALL_PATH}
     BUILD_BYPRODUCTS

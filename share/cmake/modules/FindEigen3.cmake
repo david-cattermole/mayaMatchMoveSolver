@@ -152,7 +152,14 @@ if(NOT Eigen3_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
   set(Eigen3_DIR "${_EXTERNAL_INSTALL_DIR}/Eigen3/share/eigen3/cmake")
   set(Eigen3_INCLUDE_DIR "${_EXTERNAL_INSTALL_DIR}/Eigen3/${CMAKE_INSTALL_INCLUDEDIR}/eigen3")
 
-  set(Eigen3_URL "https://gitlab.com/libeigen/eigen.git")
+  set(Eigen3_URL
+    "https://gitlab.com/libeigen/eigen.git"
+    CACHE STRING
+    "The URL for the Eigen3 git repository.")
+
+  set(Eigen3_GIT_TAG "${Eigen3_VERSION}"
+    CACHE STRING
+    "The Git Tag for the Eigen3 git repository.")
 
   set(Eigen3_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/Eigen3)
   set(Eigen3_PREFIX ${_EXTERNAL_BUILD_DIR}/Eigen3)
@@ -179,7 +186,7 @@ if(NOT Eigen3_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
   ExternalProject_Add(Eigen3
     PREFIX ${Eigen3_PREFIX}
     GIT_REPOSITORY ${Eigen3_URL}
-    GIT_TAG ${Eigen3_VERSION}
+    GIT_TAG ${Eigen3_GIT_TAG}
     INSTALL_DIR ${Eigen3_INSTALL_PATH}
     BUILD_BYPRODUCTS ${Eigen3_INCLUDE_DIR}
     CMAKE_ARGS ${Eigen3_CMAKE_ARGS}

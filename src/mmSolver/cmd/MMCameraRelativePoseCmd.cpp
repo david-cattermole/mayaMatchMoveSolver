@@ -521,11 +521,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         return status;
     }
 
-    // TODO: Using the 'bundle_adjustment' function causes a segfault
-    // on Windows only. It appears that the use of Ceres on Windows
-    // seems to cause a crash, but it works fine on Linux. The build
-    // script for building OpenMVG and/or Ceres is likely wrong.
-#ifndef _WIN32
+    // Refine the scene.
     auto adjust_ok = ::mmsolver::sfm::bundle_adjustment(scene);
     if (!adjust_ok) {
         MMSOLVER_ERR("Bundle Adjustment failed.");
@@ -533,7 +529,6 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         MMCameraRelativePoseCmd::setResult(emptyResult);
         return status;
     }
-#endif
 
     // Convert the sfm_data back to Maya data and set Camera and
     // Bundles.

@@ -39,7 +39,7 @@ BASE_DIR="${PROJECT_ROOT}/.."
 #
 # The generation of a Python Virtual Environment slow to run and should
 # be reused if possible; therefore leave this off for normal usage.
-FRESH_PYTHON_VIRTUAL_ENV=1
+FRESH_PYTHON_VIRTUAL_ENV=0
 
 # Full directory path to environment.
 PYTHON_VIRTUAL_ENV_DIR="${BASE_DIR}/build_mmsolver/${PYTHON_VIRTUAL_ENV_DIR_NAME}"

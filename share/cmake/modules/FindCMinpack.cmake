@@ -53,7 +53,9 @@ function(find_cminpack_find_with_paths cminpack_root cminpack_include_path cminp
         libcminpack
         cminpack
         libcminpack_s
+        libcminpack_s_d
         cminpack_s
+        cminpack_s_d
       HINTS
         ${cminpack_lib_path}
         ${cminpack_root}
@@ -159,6 +161,9 @@ if(NOT cminpack_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES)
   set(cminpack_LIBRARY_DIR "${_EXTERNAL_INSTALL_DIR}/cminpack/${CMAKE_INSTALL_LIBDIR}")
 
   set(cminpack_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}cminpack_s${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  if(CMAKE_BUILD_TYPE EQUAL "Debug")
+    set(cminpack_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}cminpack_s_d${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  endif()
   set(cminpack_LIBRARY "${cminpack_LIBRARY_DIR}/${cminpack_LIBRARY_NAME}")
 
   set(cminpack_URL "https://github.com/devernay/cminpack/archive/refs/tags/v${cminpack_VERSION}.tar.gz")

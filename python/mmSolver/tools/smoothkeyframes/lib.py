@@ -78,10 +78,14 @@ def create_first_last_keyframe_animCurve(selected_keyframes, all_times, all_valu
         curve_values.append(first_value)
         curve_values.append(last_value)
 
-    tangent = OpenMayaAnim1.MFnAnimCurve.kTangentLinear
+    tangent = OpenMayaAnim1.MFnAnimCurve.kTangentSmooth
     anim_chunk_fn = animcurve_utils.create_anim_curve_node_apione(
         curve_times, curve_values, tangent_in_type=tangent, tangent_out_type=tangent
     )
+
+    infinity_type = OpenMayaAnim1.MFnAnimCurve.kLinear
+    anim_chunk_fn.setPreInfinityType(infinity_type)
+    anim_chunk_fn.setPostInfinityType(infinity_type)
     return anim_chunk_fn
 
 
@@ -195,6 +199,15 @@ def smooth_animcurve(
     animCurve_type = animCurve_fn.animCurveType()
     ui_unit = OpenMaya1.MTime.uiUnit()
 
+    pre_infinity = animCurve_fn.preInfinityType()
+    post_infinity = animCurve_fn.postInfinityType()
+
+    # Linear pre/post infinity is used to ensure bumps are not created
+    # at the edges of the smoothed anim curve.
+    infinity_type = OpenMayaAnim1.MFnAnimCurve.kLinear
+    animCurve_fn.setPreInfinityType(infinity_type)
+    animCurve_fn.setPostInfinityType(infinity_type)
+
     initial_weight = 0.0
     if all_keys_selected:
         initial_weight = 1.0
@@ -245,4 +258,7 @@ def smooth_animcurve(
         v = (new_value * weight) + (old_value * inverse_weight)
         time_range = (frame, frame)
         maya.cmds.keyframe(animcurve, valueChange=v, time=time_range)
+
+    animCurve_fn.setPreInfinityType(pre_infinity)
+    animCurve_fn.setPostInfinityType(post_infinity)
     return

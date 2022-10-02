@@ -198,14 +198,20 @@ def _sub_bundle_adjustment(
 
     if adjust_camera_intrinsics is True:
         for node_attr in cam_shp_node_attrs:
-            # TODO: Add min/max values for Focal Lengths.
-            value = (node_attr, 'None', 'None', 'None', 'None')
+            min_value = 2.5
+            max_value = 1000.0
+            offset_value = None
+            scale_value = None
+            value = (node_attr, str(min_value), str(max_value), str(offset_value), str(scale_value))
             node_attrs.append(value)
 
     if adjust_lens_distortion is True:
         for node_attr in lens_node_attrs:
-            # TODO: Add min/max values for lens distortion.
-            value = (node_attr, 'None', 'None', 'None', 'None')
+            min_value = -1.0
+            max_value = 1.0
+            offset_value = None
+            scale_value = None
+            value = (node_attr, str(min_value), str(max_value), str(offset_value), str(scale_value))
             node_attrs.append(value)
 
     markers = []
@@ -221,12 +227,19 @@ def _sub_bundle_adjustment(
 
         if adjust_bundle_positions is True:
             for attr in TRANSLATE_ATTRS:
+                # TODO: Try to limit the values (eg. -1e4 to 1e4) allowed by bundles, so
+                # that we do not have near infinite distances which
+                # cause instability in the solver.
+                min_value = None
+                max_value = None
+                offset_value = None
+                scale_value = None
                 solve_node_attr = (
                     '{}.{}'.format(bnd_node, attr),
-                    'None',
-                    'None',
-                    'None',
-                    'None',
+                    str(min_value),
+                    str(max_value),
+                    str(offset_value),
+                    str(scale_value)
                 )
                 node_attrs.append(solve_node_attr)
 

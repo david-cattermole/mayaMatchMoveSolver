@@ -45,6 +45,8 @@ import mmSolver._api.triangulatebundle as triangulatebundle
 LOG = mmSolver.logger.get_logger()
 TRANSLATE_ATTRS = ['tx', 'ty', 'tz']
 MIN_NUM_ITERATIONS = 3
+BUNDLE_VALUE_MIN = -1e5
+BUNDLE_VALUE_MAX = 1e5
 
 
 def _calculate_marker_frame_score(mkr_nodes, frame, position_marker_nodes):
@@ -153,6 +155,71 @@ def _compute_connected_frame_scores(
             )
         scores.append(score)
     return scores
+
+
+def _bundle_node_is_solved_well(bnd_node, value_min, value_max):
+    assert isinstance(value_min, float)
+    assert isinstance(value_max, float)
+    tx = maya.cmds.getAttr(bnd_node + '.translateX')
+    ty = maya.cmds.getAttr(bnd_node + '.translateY')
+    tz = maya.cmds.getAttr(bnd_node + '.translateZ')
+    bnd_is_good = all(
+        [
+            tx > BUNDLE_VALUE_MIN,
+            ty > BUNDLE_VALUE_MIN,
+            tz > BUNDLE_VALUE_MIN,
+            tx < BUNDLE_VALUE_MAX,
+            ty < BUNDLE_VALUE_MAX,
+            tz < BUNDLE_VALUE_MAX,
+        ]
+    )
+    return bnd_is_good
+
+
+def _filter_badly_solved_markers(mkr_nodes, value_min, value_max):
+    assert isinstance(mkr_nodes, set)
+    assert isinstance(value_min, float)
+    assert isinstance(value_max, float)
+
+    good_mkr_nodes = set()
+    good_bnd_nodes = set()
+    mkr_nodes = list(sorted(mkr_nodes))
+    mkr_list = [marker.Marker(node=n) for n in mkr_nodes]
+    for mkr, mkr_node in zip(mkr_list, mkr_nodes):
+        bnd = mkr.get_bundle()
+        assert bnd is not None
+        bnd_node = bnd.get_node()
+
+        bnd_is_good = _bundle_node_is_solved_well(bnd_node, value_min, value_max)
+        if bnd_is_good:
+            good_mkr_nodes.add(mkr_node)
+            good_bnd_nodes.add(bnd_node)
+        else:
+            maya.cmds.setAttr(bnd_node + '.translateX', 0.0)
+            maya.cmds.setAttr(bnd_node + '.translateY', 0.0)
+            maya.cmds.setAttr(bnd_node + '.translateZ', 0.0)
+
+    return good_mkr_nodes, good_bnd_nodes
+
+
+def _filter_badly_solved_bundles(mkr_bnd_nodes, value_min, value_max):
+    assert isinstance(mkr_bnd_nodes, set)
+    assert isinstance(value_min, float)
+    assert isinstance(value_max, float)
+
+    good_mkr_nodes = set()
+    good_bnd_nodes = set()
+    for mkr_node, bnd_node in mkr_bnd_nodes:
+        bnd_is_good = _bundle_node_is_solved_well(bnd_node, value_min, value_max)
+        if bnd_is_good:
+            good_mkr_nodes.add(mkr_node)
+            good_bnd_nodes.add(bnd_node)
+        else:
+            maya.cmds.setAttr(bnd_node + '.translateX', 0.0)
+            maya.cmds.setAttr(bnd_node + '.translateY', 0.0)
+            maya.cmds.setAttr(bnd_node + '.translateZ', 0.0)
+
+    return good_mkr_nodes, good_bnd_nodes
 
 
 def _sub_bundle_adjustment(
@@ -338,6 +405,7 @@ def _bundle_adjust(
     assert isinstance(adjust_bundle_positions, bool)
     assert isinstance(adjust_camera_intrinsics, bool)
     assert isinstance(adjust_lens_distortion, bool)
+    assert len(mkr_nodes) > 0
 
     if adjust_lens_distortion is False:
         _sub_bundle_adjustment(
@@ -517,7 +585,7 @@ def _solve_relative_poses(
         mkr_nodes = set(mkr_nodes_a) & set(mkr_nodes_b)
         common_mkr_list = [marker.Marker(node=n) for n in mkr_nodes]
 
-        bnd_nodes = set()
+        mkr_bnd_nodes = set()
         new_mkr_bnd_list = []
         for mkr in common_mkr_list:
             bnd = mkr.get_bundle()
@@ -526,9 +594,12 @@ def _solve_relative_poses(
                 mkr.set_bundle(bnd)
             mkr_node = mkr.get_node()
             bnd_node = bnd.get_node()
+
             mkr_bnd = (mkr_node, mkr_node, bnd_node)
             new_mkr_bnd_list.append(mkr_bnd)
-            bnd_nodes.add(bnd_node)
+
+            mkr_bnd = (mkr_node, bnd_node)
+            mkr_bnd_nodes.add(mkr_bnd)
 
         kwargs = {
             'frameA': root_frame_a,
@@ -545,6 +616,10 @@ def _solve_relative_poses(
             LOG.warn('Failed Camera Pose: %s to %s', root_frame_a, possible_frame)
             failed_frames.add(possible_frame)
             continue
+
+        mkr_nodes, bnd_nodes = _filter_badly_solved_bundles(
+            mkr_bnd_nodes, BUNDLE_VALUE_MIN, BUNDLE_VALUE_MAX
+        )
 
         LOG.info('Solved Camera Pose: %s to %s', root_frame_a, possible_frame)
         solved_frames.add(root_frame_a)
@@ -574,7 +649,13 @@ def _solve_relative_poses(
                 adjust_lens_distortion=False,
                 iteration_num=25,
             )
+            accumulated_mkr_nodes, accumulated_bnd_nodes = _filter_badly_solved_markers(
+                accumulated_mkr_nodes, BUNDLE_VALUE_MIN, BUNDLE_VALUE_MAX
+            )
 
+    accumulated_mkr_nodes, accumulated_bnd_nodes = _filter_badly_solved_markers(
+        accumulated_mkr_nodes, BUNDLE_VALUE_MIN, BUNDLE_VALUE_MAX
+    )
     return accumulated_mkr_nodes, accumulated_bnd_nodes, solved_frames, failed_frames
 
 
@@ -599,14 +680,22 @@ def _triangulate_bundles(
             continue
 
         if bnd_node not in bnd_nodes:
-            ok = triangulatebundle.triangulate_bundle(bnd, direction_tolerance=1.0)
-            if ok is True:
+            ok = triangulatebundle.triangulate_bundle(
+                bnd, max_distance=1e6, direction_tolerance=1.0
+            )
+            is_bnd_good = _bundle_node_is_solved_well(
+                bnd_node, BUNDLE_VALUE_MIN, BUNDLE_VALUE_MAX
+            )
+            if ok is True and is_bnd_good is True:
                 LOG.info('Triangulated Bundle: %s', bnd_node)
                 mkr_nodes.add(mkr_node)
                 bnd_nodes.add(bnd_node)
                 triangulated_count += 1
             else:
                 LOG.warn('Failed to triangulated Bundle: %s', bnd_node)
+                maya.cmds.setAttr(bnd_node + '.translateX', 0.0)
+                maya.cmds.setAttr(bnd_node + '.translateY', 0.0)
+                maya.cmds.setAttr(bnd_node + '.translateZ', 0.0)
     return triangulated_count, mkr_nodes, bnd_nodes
 
 
@@ -976,6 +1065,10 @@ def camera_solve(
         # Closest value to 'possible_frame' frame.
         root_frame_a = min(solved_frames, key=lambda x: abs(x - possible_frame))
         before_count = after_count
+
+    accumulated_mkr_nodes, accumulated_bnd_nodes = _filter_badly_solved_markers(
+        accumulated_mkr_nodes, BUNDLE_VALUE_MIN, BUNDLE_VALUE_MAX
+    )
 
     _remove_keyframes_outside_range(cam_tfm, cam_shp, solved_frames)
 

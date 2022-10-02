@@ -156,7 +156,6 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         if user_string is None and root_string is None:
             user_int_list = list(set([start_frame, end_frame]))
             user_string = convert_types.intListToString(user_int_list)
-            self.setUserFramesValue(col, user_string)
         if user_string is None and root_string is not None:
             user_int_list = convert_types.stringToIntList(root_string)
             user_string = convert_types.intListToString(user_int_list)

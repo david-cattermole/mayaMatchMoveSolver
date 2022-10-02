@@ -344,6 +344,8 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
         try:
             mmapi.set_solver_running(True)  # disable selection callback.
 
+            sel = lib_maya_utils.get_scene_selection()
+
             s = time.time()
             col = lib_state.get_active_collection()
             if col is None:
@@ -352,18 +354,30 @@ class AttributeBrowserWidget(nodebrowser_widget.NodeBrowserWidget):
             LOG.debug("attribute removeClicked1: t=%s", e - s)
 
             s = time.time()
-            sel = lib_maya_utils.get_scene_selection()
             ui_nodes = lib_uiquery.get_selected_ui_nodes(
                 self.treeView, self.filterModel
             )
-            node_list = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'data')
+            mm_object_list = []
+            if len(ui_nodes) > 0:
+                mm_object_list = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'data')
+            else:
+                attr_list = lib_maya_utils.get_selected_maya_attributes()
+                attr_list = lib_maya_utils.input_attributes_filter(attr_list)
+                if len(attr_list) == 0:
+                    attr_list = lib_maya_utils.get_node_default_attributes(sel)
+                    attr_list = lib_maya_utils.input_attributes_filter(attr_list)
+                mm_object_list = attr_list
             e = time.time()
             LOG.debug("attribute removeClicked2: t=%s", e - s)
 
-            s = time.time()
-            attr_list = _convertNodeListToAttrList(node_list)
-            lib_attr.remove_attr_from_collection(attr_list, col)
+            if len(mm_object_list) == 0:
+                msg = 'Please select nodes or attributes in the channel box.'
+                LOG.warning(msg)
+                return
 
+            s = time.time()
+            attr_list = _convertNodeListToAttrList(mm_object_list)
+            lib_attr.remove_attr_from_collection(attr_list, col)
             e = time.time()
             LOG.debug("attribute removeClicked3: t=%s", e - s)
 

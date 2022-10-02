@@ -190,6 +190,7 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
 
         desc = const.SOLVER_STD_DESC_DEFAULT
         self.description_label.setText(desc)
+        self.description_label.setVisible(False)
 
         self.dataChanged.connect(self.updateModel)
         self.frameRange_widget.rangeTypeChanged.connect(self.updateModel)
@@ -197,6 +198,9 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
         e = time.time()
         LOG.debug('SolverStandardWidget init: %r seconds', e - s)
         return
+
+    def getDescriptionText(self):
+        return const.SOLVER_STD_DESC_DEFAULT
 
     def getSceneGraphModeValue(self, col):
         value = lib_col_state.get_solver_scene_graph_mode_from_collection(col)

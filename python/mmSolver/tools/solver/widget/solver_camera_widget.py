@@ -155,6 +155,7 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
 
         desc = const.SOLVER_CAM_DESC_DEFAULT
         self.description_label.setText(desc)
+        self.description_label.setVisible(False)
 
         self.dataChanged.connect(self.updateModel)
         self.frameRange_widget.rangeTypeChanged.connect(self.updateModel)
@@ -162,6 +163,9 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
         e = time.time()
         LOG.debug('SolverCameraWidget init: %r seconds', e - s)
         return
+
+    def getDescriptionText(self):
+        return const.SOLVER_CAM_DESC_DEFAULT
 
     def getOriginFrameValue(self, col):
         value = lib_col_state.get_solver_origin_frame_from_collection(col)

@@ -134,9 +134,14 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
 
         desc = const.SOLVER_BASIC_DESC_DEFAULT
         self.description_label.setText(desc)
+        self.description_label.setVisible(False)
+
         e = time.time()
         LOG.debug('SolverBasicWidget init: %r seconds', e - s)
         return
+
+    def getDescriptionText(self):
+        return const.SOLVER_BASIC_DESC_DEFAULT
 
     def getSceneGraphModeValue(self, col):
         value = lib_col_state.get_solver_scene_graph_mode_from_collection(col)

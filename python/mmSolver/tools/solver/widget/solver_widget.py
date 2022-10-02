@@ -127,6 +127,10 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
             # self.legacy_widget  # Deprecated.
         ]
 
+        for idx, widget in self._tab_index_to_widget_map.items():
+            desc_text = widget.getDescriptionText()
+            self.tabWidget.setTabToolTip(idx, desc_text)
+
         self.validate_pushButton.setEnabled(False)
 
         self.createConnections()

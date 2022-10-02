@@ -65,6 +65,9 @@
       <attribute name="title">
        <string>Basic</string>
       </attribute>
+      <attribute name="toolTip">
+       <string>Basic Solver Tooltip</string>
+      </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <property name="spacing">
         <number>1</number>
@@ -94,6 +97,9 @@
       <attribute name="title">
        <string>Standard</string>
       </attribute>
+      <attribute name="toolTip">
+       <string>Standard Solver Tooltip</string>
+      </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <property name="spacing">
         <number>1</number>
@@ -122,6 +128,9 @@
      <widget class="QWidget" name="camera_tab">
       <attribute name="title">
        <string>Camera</string>
+      </attribute>
+      <attribute name="toolTip">
+       <string>Camera Solver Tooltip</string>
       </attribute>
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <property name="spacing">

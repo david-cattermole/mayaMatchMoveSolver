@@ -87,6 +87,9 @@ class SolverLegacyWidget(QtWidgets.QWidget, ui_solver_legacy_widget.Ui_Form):
         LOG.debug('SolverLegacyWidget init: %r seconds', e - s)
         return
 
+    def getDescriptionText(self):
+        return "Deprecated - do not use."
+
     def createTableView(self):
         self.model = solver_nodes.SolverModel(font=self.font)
         self.filterModel = QtCore.QSortFilterProxyModel()

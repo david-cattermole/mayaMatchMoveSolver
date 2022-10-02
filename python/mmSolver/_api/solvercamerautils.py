@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import math
+import collections
 
 import maya.cmds
 import maya.api.OpenMaya as OpenMaya2
@@ -1090,36 +1091,48 @@ def camera_solve(
             iteration_num=100,
         )
 
-    # Solve per-frame. Only animated attributes are solved - bundles
-    # and (static) focal lengths are ignored.
-    start_frame = min(frames)
-    end_frame = max(frames)
-    frames = list(range(start_frame, end_frame + 1))
-
+    # Get all valid frames and markers to be solved per-frame.
+    original_frames = list(range(start_frame, end_frame + 1))
+    frame_counts = collections.defaultdict(int)
+    all_frames = set()
     adjust_mkr_nodes = set()
     for mkr_node in accumulated_mkr_nodes:
         enabled_frames = marker_nodes_enabled[mkr_node]
         assert isinstance(enabled_frames, set)
-        overlapping_frames = set(frames) & enabled_frames
-        if len(overlapping_frames) > 2:
+        overlapping_frames = set(original_frames) & enabled_frames
+        if len(overlapping_frames) >= 2:
+            for frame in overlapping_frames:
+                frame_counts[frame] += 1
+            all_frames |= enabled_frames
             adjust_mkr_nodes.add(mkr_node)
     adjust_mkr_nodes = list(sorted(adjust_mkr_nodes))
 
-    _bundle_adjust(
-        cam_tfm,
-        cam_shp,
-        adjust_mkr_nodes,
-        cam_shp_node_attrs,
-        lens_node_attrs,
-        frames,
-        adjust_camera_translate=True,
-        adjust_camera_rotate=True,
-        adjust_bundle_positions=True,
-        adjust_camera_intrinsics=True,
-        adjust_lens_distortion=True,
-        iteration_num=10,
-        per_frame_solve=True,
-    )
+    if len(all_frames) > 0 and len(adjust_mkr_nodes) > 0:
+        min_markers_num = 4
+        all_frames = set([frame for frame in all_frames
+                          if frame_counts[frame] >= min_markers_num])
+
+        start_frame = min(all_frames)
+        end_frame = max(all_frames)
+        frames = list(range(start_frame, end_frame + 1))
+
+        # Solve per-frame. Only animated attributes are solved - bundles
+        # and (static) focal lengths are ignored.
+        _bundle_adjust(
+            cam_tfm,
+            cam_shp,
+            adjust_mkr_nodes,
+            cam_shp_node_attrs,
+            lens_node_attrs,
+            frames,
+            adjust_camera_translate=True,
+            adjust_camera_rotate=True,
+            adjust_bundle_positions=True,
+            adjust_camera_intrinsics=True,
+            adjust_lens_distortion=True,
+            iteration_num=10,
+            per_frame_solve=True,
+        )
 
     _set_camera_origin_frame(
         cam_tfm,

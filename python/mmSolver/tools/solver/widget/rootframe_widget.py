@@ -23,6 +23,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import time
+
 import mmSolver.ui.qtpyutils as qtpyutils
 
 qtpyutils.override_binding_order()
@@ -56,6 +58,8 @@ def calculate_root_frames(
     use_span_frames,
     span_frames,
 ):
+    s = time.time()
+
     frames = extra_frames
     if use_per_marker_frames and len(mkr_list) > 0:
         frames = mmapi.get_root_frames_from_markers(
@@ -66,6 +70,8 @@ def calculate_root_frames(
     if use_span_frames:
         frames = mmapi.root_frames_subdivide(frames, span_frames)
 
+    e = time.time()
+    LOG.debug('RootFrameWidget calculate_root_frames: %r seconds', e - s)
     return frames
 
 
@@ -135,12 +141,15 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         """
         Refresh the widgets with the current Maya scene state.
         """
+        s_func = time.time()
+
         col = lib_state.get_active_collection()
         if col is None:
             return
 
         start_frame, end_frame = utils_time.get_maya_timeline_range_inner()
 
+        s = time.time()
         user_int_list = []
         user_string = self.getUserFramesValue(col)
         root_string = self.getRootFramesValue(col)
@@ -160,6 +169,8 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         use_span_frames = self.getUseSpanFramesValue(col)
         per_marker_frames = self.getPerMarkerFramesValue(col)
         span_frames = self.getSpanFramesValue(col)
+        e = time.time()
+        LOG.debug('RootFrameWidget updateModel convert types: %r seconds', e - s)
 
         mkr_list = col.get_marker_list()
         root_frames = calculate_root_frames(
@@ -187,6 +198,9 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         self.spanFrames_checkBox.setChecked(use_span_frames)
         self.spanFrames_spinBox.setValue(span_frames)
         self.blockSignals(block)
+
+        e_func = time.time()
+        LOG.debug('RootFrameWidget updateModel: %r seconds', e_func - s_func)
         return
 
     @QtCore.Slot()
@@ -195,6 +209,8 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         Run when the userFrames_lineEdit text is has been entered (for example
         the user presses the <Enter> key to confirm the field value).
         """
+        s = time.time()
+
         text = self.userFrames_lineEdit.text()
 
         col = lib_state.get_active_collection()
@@ -219,41 +235,56 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         self.setUserFramesValue(col, frames_string)
         self.userFramesChanged.emit()
         self.updateModel()
+        e = time.time()
+        LOG.debug('RootFrameWidget userFramesTextEntered: %r seconds', e - s)
         return
 
     @QtCore.Slot()
     def usePerMarkerFramesToggled(self, value):
+        s = time.time()
         col = lib_state.get_active_collection()
         if col is None:
             return
         self.setUsePerMarkerFramesValue(col, value)
         self.updateModel()
+        e = time.time()
+        LOG.debug('RootFrameWidget usePerMarkerFramesToggled: %r seconds', e - s)
 
     @QtCore.Slot()
     def perMarkerFramesValueChanged(self, value):
+        s = time.time()
         col = lib_state.get_active_collection()
         if col is None:
             return
         self.setPerMarkerFramesValue(col, value)
         self.updateModel()
+        e = time.time()
+        LOG.debug('RootFrameWidget perMarkerFramesValueChanged: %r seconds', e - s)
 
     @QtCore.Slot()
     def useSpanFramesToggled(self, value):
+        s = time.time()
         col = lib_state.get_active_collection()
         if col is None:
             return
         self.setUseSpanFramesValue(col, value)
         self.updateModel()
+        e = time.time()
+        LOG.debug('RootFrameWidget useSpanFramesToggled: %r seconds', e - s)
 
     @QtCore.Slot()
     def spanFramesValueChanged(self, value):
+        s = time.time()
         col = lib_state.get_active_collection()
         if col is None:
             return
         self.setSpanFramesValue(col, value)
         self.updateModel()
+        e = time.time()
+        LOG.debug('RootFrameWidget spanFramesValueChanged: %r seconds', e - s)
 
     def addClicked(self):
+        s = time.time()
         col = lib_state.get_active_collection()
         if col is None:
             return
@@ -273,9 +304,12 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
             self.userFrames_lineEdit.setText(user_string)
         self.userFramesChanged.emit()
         self.updateModel()
+        e = time.time()
+        LOG.debug('RootFrameWidget addClicked: %r seconds', e - s)
         return
 
     def removeClicked(self):
+        s = time.time()
         col = lib_state.get_active_collection()
         if col is None:
             return
@@ -295,9 +329,12 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
             self.userFrames_lineEdit.setText(frames_string)
         self.userFramesChanged.emit()
         self.updateModel()
+        e = time.time()
+        LOG.debug('RootFrameWidget removeClicked: %r seconds', e - s)
         return
 
     def nextClicked(self):
+        s = time.time()
         col = lib_state.get_active_collection()
         if col is None:
             return
@@ -311,9 +348,12 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         if next_frame is None:
             next_frame = cur_frame
         lib_maya_utils.set_current_frame(next_frame)
+        e = time.time()
+        LOG.debug('RootFrameWidget nextClicked: %r seconds', e - s)
         return
 
     def previousClicked(self):
+        s = time.time()
         col = lib_state.get_active_collection()
         if col is None:
             return
@@ -330,4 +370,6 @@ class RootFrameWidget(QtWidgets.QWidget, ui_rootframe_widget.Ui_Form):
         if previous_frame is None:
             previous_frame = cur_frame
         lib_maya_utils.set_current_frame(previous_frame)
+        e = time.time()
+        LOG.debug('RootFrameWidget previousClicked: %r seconds', e - s)
         return

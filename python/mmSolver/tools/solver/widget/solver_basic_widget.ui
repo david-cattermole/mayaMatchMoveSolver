@@ -43,6 +43,13 @@
     <layout class="QHBoxLayout" name="frameRange_layout"/>
    </item>
    <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
     <layout class="QHBoxLayout" name="options_layout">
      <item>
       <layout class="QVBoxLayout" name="options1_layout">

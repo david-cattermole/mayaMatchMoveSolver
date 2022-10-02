@@ -435,7 +435,7 @@ bool bundle_adjustment(openMVG::sfm::SfM_Data &scene) {
     auto ceres_options =
         openMVG::sfm::Bundle_Adjustment_Ceres::BA_Ceres_options(
             bundle_adjust_verbose, bundle_adjust_multithreaded);
-    ceres_options.bCeres_summary_ = true;
+    ceres_options.bCeres_summary_ = verbose;
     ceres_options.bUse_loss_function_ = false;
 
     ceres_options.linear_solver_type_ =

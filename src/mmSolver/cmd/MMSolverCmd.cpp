@@ -138,13 +138,13 @@ MStatus parseSolveLogArguments(const MArgDatabase &argData,
     // Get 'Print Statistics'
     unsigned int printStatsNum = argData.numberOfFlagUses(PRINT_STATS_FLAG);
     out_printStatsList.clear();
-    for (unsigned int i = 0; i < printStatsNum; ++i) {
+    for (auto i = 0; i < printStatsNum; ++i) {
         MArgList printStatsArgs;
         status =
             argData.getFlagArgumentList(PRINT_STATS_FLAG, i, printStatsArgs);
         if (status == MStatus::kSuccess) {
             MString printStatsArg = "";
-            for (unsigned j = 0; j < printStatsArgs.length(); ++j) {
+            for (auto j = 0; j < printStatsArgs.length(); ++j) {
                 printStatsArg = printStatsArgs.asString(j, &status);
                 CHECK_MSTATUS_AND_RETURN_IT(status);
                 out_printStatsList.append(printStatsArg);

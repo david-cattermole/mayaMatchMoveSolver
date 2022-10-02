@@ -1643,8 +1643,7 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
 
     SolverResult solveResult;
     auto frameSolveMode = solverOptions.frameSolveMode;
-    // MMSOLVER_INFO("frameSolveMode: " <<
-    // static_cast<uint32_t>(frameSolveMode));
+    MMSOLVER_VRB("frameSolveMode: " << static_cast<uint32_t>(frameSolveMode));
     if (frameSolveMode == FrameSolveMode::kAllFrameAtOnce) {
         status = solveFrames(
             cameraList, bundleList, frameList, usedMarkerList, unusedMarkerList,

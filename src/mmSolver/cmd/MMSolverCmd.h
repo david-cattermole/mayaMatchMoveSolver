@@ -172,7 +172,8 @@
 #define ROBUST_LOSS_SCALE_FLAG "-rls"
 #define ROBUST_LOSS_SCALE_FLAG_LONG "-robustLossScale"
 
-// Should the solver print out verbose information while solving?
+// Only set the solve values if the quality is better that it was when
+// we started the solve.
 #define ACCEPT_ONLY_BETTER_FLAG "-aob"
 #define ACCEPT_ONLY_BETTER_FLAG_LONG "-acceptOnlyBetter"
 #define ACCEPT_ONLY_BETTER_DEFAULT_VALUE true

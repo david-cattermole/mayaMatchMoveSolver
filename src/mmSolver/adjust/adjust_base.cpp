@@ -936,8 +936,7 @@ static inline bool addNumberRangeToStringStream(const int &startNum,
     if (startNum == endNum) {
         ss << " " << startNum;
     } else if ((endNum - startNum) == 1) {
-        ss << " " << startNum
-           << " " << endNum;
+        ss << " " << startNum << " " << endNum;
     } else {
         ss << " " << startNum << "-" << endNum;
     }
@@ -1219,7 +1218,8 @@ MStatus solveFrames(
     }
 
     // MComputation helper.
-    if (printStats.enable == false && logLevel >= LogLevel::kInfo && frameCount > 1) {
+    if (printStats.enable == false && logLevel >= LogLevel::kInfo &&
+        frameCount > 1) {
         const bool showProgressBar = true;
         const bool isInterruptable = true;
         const bool useWaitCursor = true;
@@ -1455,7 +1455,8 @@ MStatus solveFrames(
         timer.solveBenchTicks.stop();
         timer.solveBenchTimer.stop();
     }
-    if (printStats.enable == false && logLevel >= LogLevel::kInfo && frameCount > 1) {
+    if (printStats.enable == false && logLevel >= LogLevel::kInfo &&
+        frameCount > 1) {
         out_computation.endComputation();
     }
 

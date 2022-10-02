@@ -480,7 +480,8 @@ MTransformationMatrix convert_openmvg_transform_to_maya_transform_matrix(
     // - Invert Camera TX, RX and RY values.
     //
     // - Invert Bundle TZ value (see bundle section).
-    MPoint maya_translate(openmvg_position[0], openmvg_position[1], -openmvg_position[2]);
+    MPoint maya_translate(openmvg_position[0], openmvg_position[1],
+                          -openmvg_position[2]);
     MVector maya_translate_vector(openmvg_position[0], openmvg_position[1],
                                   -openmvg_position[2]);
     const double c_rotate_matrix[4][4] = {
@@ -531,7 +532,6 @@ MTransformationMatrix convert_openmvg_transform_to_maya_transform_matrix(
     return transform;
 }
 
-
 MTransformationMatrix convert_pose_to_maya_transform_matrix(
     openMVG::geometry::Pose3 &pose) {
     // Enable to print out 'MMSOLVER_VRB' results.
@@ -544,7 +544,8 @@ MTransformationMatrix convert_pose_to_maya_transform_matrix(
     MMSOLVER_VRB("pose translation: " << pose_translation);
     MMSOLVER_VRB("pose rotation: " << pose_rotation);
 
-    return convert_openmvg_transform_to_maya_transform_matrix(pose_center, pose_rotation);
+    return convert_openmvg_transform_to_maya_transform_matrix(pose_center,
+                                                              pose_rotation);
 }
 
 }  // namespace sfm

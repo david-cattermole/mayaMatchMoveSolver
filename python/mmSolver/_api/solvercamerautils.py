@@ -621,7 +621,7 @@ def _solve_relative_poses(
             mkr_bnd_nodes, BUNDLE_VALUE_MIN, BUNDLE_VALUE_MAX
         )
 
-        LOG.info('Solved Camera Pose: %s to %s', root_frame_a, possible_frame)
+        LOG.debug('Solved Camera Pose: %s to %s', root_frame_a, possible_frame)
         solved_frames.add(root_frame_a)
         solved_frames.add(possible_frame)
         accumulated_mkr_nodes = accumulated_mkr_nodes | mkr_nodes
@@ -687,7 +687,7 @@ def _triangulate_bundles(
                 bnd_node, BUNDLE_VALUE_MIN, BUNDLE_VALUE_MAX
             )
             if ok is True and is_bnd_good is True:
-                LOG.info('Triangulated Bundle: %s', bnd_node)
+                LOG.debug('Triangulated Bundle: %s', bnd_node)
                 mkr_nodes.add(mkr_node)
                 bnd_nodes.add(bnd_node)
                 triangulated_count += 1

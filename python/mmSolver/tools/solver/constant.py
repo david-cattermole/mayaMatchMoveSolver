@@ -327,7 +327,7 @@ SOLVER_USE_PER_MARKER_FRAMES_DEFAULT_VALUE = True
 # Solver Per-Marker Frames (stored on Collection node)
 SOLVER_PER_MARKER_FRAMES_ATTR = 'solver_per_marker_frames'
 SOLVER_PER_MARKER_FRAMES_ATTR_TYPE = 'long'
-SOLVER_PER_MARKER_FRAMES_DEFAULT_VALUE = 2
+SOLVER_PER_MARKER_FRAMES_DEFAULT_VALUE = 3
 
 # Solver Use Span Frames (stored on Collection node)
 SOLVER_USE_SPAN_FRAMES_ATTR = 'solver_use_span_frames'

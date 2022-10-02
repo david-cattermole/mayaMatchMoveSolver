@@ -53,7 +53,6 @@ import mmSolver.utils.node as node_utils
 
 # @unittest.skip
 class TestCameraSolveOperahouse(test_api_utils.APITestCase):
-
     def create_scene_operahouse(self, frame_a, frame_b):
         maya.cmds.playbackOptions(edit=True, minTime=frame_a)
         maya.cmds.playbackOptions(edit=True, maxTime=frame_b)
@@ -120,13 +119,22 @@ class TestCameraSolveOperahouse(test_api_utils.APITestCase):
         }
         return scene_data
 
-    def solve_operahouse(self, name,
-                         cam, lens, mkr_list, mkr_bnd_list,
-                         frame_a, frame_b, scene_scale, origin_frame,
-                         root_frame_a=None,
-                         root_frame_b=None,
-                         min_frames_per_marker=None,
-                         max_frame_span=None):
+    def solve_operahouse(
+        self,
+        name,
+        cam,
+        lens,
+        mkr_list,
+        mkr_bnd_list,
+        frame_a,
+        frame_b,
+        scene_scale,
+        origin_frame,
+        root_frame_a=None,
+        root_frame_b=None,
+        min_frames_per_marker=None,
+        max_frame_span=None,
+    ):
         assert isinstance(cam, mmapi.Camera)
         assert lens is None or isinstance(lens, mmapi.Lens)
         assert isinstance(mkr_list, list)
@@ -139,13 +147,13 @@ class TestCameraSolveOperahouse(test_api_utils.APITestCase):
         assert root_frame_b is None or isinstance(root_frame_b, int)
         assert min_frames_per_marker is None or isinstance(min_frames_per_marker, int)
         assert max_frame_span is None or isinstance(max_frame_span, int)
-        
+
         cam_tfm = cam.get_transform_node()
         cam_shp = cam.get_shape_node()
         lens_node = None
         if lens is not None:
             lens_node = lens.get_node()
-        
+
         # Frames start to end to solve.
         frame_list = []
         for f in range(frame_a, frame_b + 1):
@@ -159,11 +167,13 @@ class TestCameraSolveOperahouse(test_api_utils.APITestCase):
                 mkr_list, min_frames_per_marker, frame_a, frame_b
             )
         if root_frame_a is not None and root_frame_b is not None:
-            root_frames = mmapi.root_frames_list_combine(root_frames, [root_frame_a, root_frame_b])
+            root_frames = mmapi.root_frames_list_combine(
+                root_frames, [root_frame_a, root_frame_b]
+            )
         if max_frame_span is not None:
             root_frames = mmapi.root_frames_subdivide(root_frames, max_frame_span)
         root_frame_list = [mmapi.Frame(f) for f in root_frames]
-        
+
         sol_list = []
         sol = mmapi.SolverCamera()
         sol.set_root_frame_list(root_frame_list)
@@ -229,7 +239,7 @@ class TestCameraSolveOperahouse(test_api_utils.APITestCase):
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
         return
-    
+
     def test_camera_solve2_operahouse(self):
         frame_a = 0
         frame_b = 41
@@ -249,18 +259,21 @@ class TestCameraSolveOperahouse(test_api_utils.APITestCase):
             scene_data['lens'],
             scene_data['mkr_list'],
             scene_data['mkr_bnd_list'],
-            frame_a, frame_b, scene_scale, origin_frame,
+            frame_a,
+            frame_b,
+            scene_scale,
+            origin_frame,
             root_frame_a=root_frame_a,
             root_frame_b=root_frame_b,
             min_frames_per_marker=min_frames_per_marker,
             max_frame_span=max_frame_span,
         )
-    
+
     def test_camera_solve4_operahouse_marker_score(self):
         # Tests the Marker score calculation.
         frame_a = 0
         frame_b = 41
-        
+
         scene_data = self.create_scene_operahouse(frame_a, frame_b)
         mkr_list = scene_data['mkr_list']
 
@@ -272,7 +285,9 @@ class TestCameraSolveOperahouse(test_api_utils.APITestCase):
         root_frames = mmapi.get_root_frames_from_markers(
             mkr_list, min_frames_per_marker, frame_a, frame_b
         )
-        root_frames = mmapi.root_frames_list_combine(root_frames, [root_frame_a, root_frame_b])
+        root_frames = mmapi.root_frames_list_combine(
+            root_frames, [root_frame_a, root_frame_b]
+        )
         root_frames = mmapi.root_frames_subdivide(root_frames, max_frame_span)
 
         s = time.time()
@@ -315,6 +330,6 @@ class TestCameraSolveOperahouse(test_api_utils.APITestCase):
         e = time.time()
         print('total time:', e - s)
 
-    
+
 if __name__ == '__main__':
     prog = unittest.main()

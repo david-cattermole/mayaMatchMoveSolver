@@ -463,17 +463,10 @@ bool add_bundle_at_frame(
     return success;
 }
 
-MTransformationMatrix convert_pose_to_maya_transform_matrix(
-    openMVG::geometry::Pose3 &pose) {
+MTransformationMatrix convert_openmvg_transform_to_maya_transform_matrix(
+    openMVG::Vec3 openmvg_position, openMVG::Mat3 openmvg_rotation) {
     // Enable to print out 'MMSOLVER_VRB' results.
     const bool verbose = false;
-
-    auto pose_center = pose.center();
-    auto pose_translation = pose.translation();
-    auto pose_rotation = pose.rotation();
-    MMSOLVER_VRB("pose center: " << pose_center);
-    MMSOLVER_VRB("pose translation: " << pose_translation);
-    MMSOLVER_VRB("pose rotation: " << pose_rotation);
 
     // OpenMVG and Maya have different conventions for the camera Z axis:
     //
@@ -487,27 +480,27 @@ MTransformationMatrix convert_pose_to_maya_transform_matrix(
     // - Invert Camera TX, RX and RY values.
     //
     // - Invert Bundle TZ value (see bundle section).
-    MPoint maya_translate(pose_center[0], pose_center[1], -pose_center[2]);
-    MVector maya_translate_vector(pose_center[0], pose_center[1],
-                                  -pose_center[2]);
+    MPoint maya_translate(openmvg_position[0], openmvg_position[1], -openmvg_position[2]);
+    MVector maya_translate_vector(openmvg_position[0], openmvg_position[1],
+                                  -openmvg_position[2]);
     const double c_rotate_matrix[4][4] = {
         // clang-format off
-        {pose_rotation(0, 0),
-         pose_rotation(0, 1),
-         pose_rotation(0, 2),
-         pose_rotation(0, 3)},
-        {pose_rotation(1, 0),
-         pose_rotation(1, 1),
-         pose_rotation(1, 2),
-         pose_rotation(1, 3)},
-        {pose_rotation(2, 0),
-         pose_rotation(2, 1),
-         pose_rotation(2, 2),
-         pose_rotation(2, 3)},
-        {pose_rotation(3, 0),
-         pose_rotation(3, 1),
-         pose_rotation(3, 2),
-         pose_rotation(3, 3)},
+        {openmvg_rotation(0, 0),
+         openmvg_rotation(0, 1),
+         openmvg_rotation(0, 2),
+         openmvg_rotation(0, 3)},
+        {openmvg_rotation(1, 0),
+         openmvg_rotation(1, 1),
+         openmvg_rotation(1, 2),
+         openmvg_rotation(1, 3)},
+        {openmvg_rotation(2, 0),
+         openmvg_rotation(2, 1),
+         openmvg_rotation(2, 2),
+         openmvg_rotation(2, 3)},
+        {openmvg_rotation(3, 0),
+         openmvg_rotation(3, 1),
+         openmvg_rotation(3, 2),
+         openmvg_rotation(3, 3)},
         // clang-format on
     };
     MMatrix maya_rotate_matrix(c_rotate_matrix);
@@ -536,6 +529,22 @@ MTransformationMatrix convert_pose_to_maya_transform_matrix(
     transform.setTranslation(maya_translate_vector, MSpace::kWorld);
 
     return transform;
+}
+
+
+MTransformationMatrix convert_pose_to_maya_transform_matrix(
+    openMVG::geometry::Pose3 &pose) {
+    // Enable to print out 'MMSOLVER_VRB' results.
+    const bool verbose = false;
+
+    auto pose_center = pose.center();
+    auto pose_translation = pose.translation();
+    auto pose_rotation = pose.rotation();
+    MMSOLVER_VRB("pose center: " << pose_center);
+    MMSOLVER_VRB("pose translation: " << pose_translation);
+    MMSOLVER_VRB("pose rotation: " << pose_rotation);
+
+    return convert_openmvg_transform_to_maya_transform_matrix(pose_center, pose_rotation);
 }
 
 }  // namespace sfm

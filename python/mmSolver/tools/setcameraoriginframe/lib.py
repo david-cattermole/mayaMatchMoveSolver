@@ -123,6 +123,10 @@ def set_camera_origin_frame(
     cam, bnd_list, scene_scale, origin_frame, start_frame, end_frame
 ):
     assert isinstance(cam, mmapi.Camera)
+    assert isinstance(scene_scale, float)
+    assert isinstance(origin_frame, int)
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
 
     bnd_nodes = [x.get_node() for x in bnd_list]
     bnd_nodes = [x for x in bnd_nodes if x]

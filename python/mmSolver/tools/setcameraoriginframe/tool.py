@@ -66,6 +66,41 @@ def _get_camera_bundle_lists(cam_list):
     return cam_bnd_list_map
 
 
+def _get_camera_keyframe_times(cam_tfm, cam_shp):
+    """
+    Get all the frame numbers that the camera has a keyframe.
+
+    :type cam_tfm: str
+    :type cam_shp: str
+    :rtype: [int, ..]
+    """
+    key_times = []
+
+    attrs = [
+        'translateX',
+        'translateY',
+        'translateZ',
+        'rotateX',
+        'rotateY',
+        'rotateZ',
+        'scaleX',
+        'scaleY',
+        'scaleZ',
+    ]
+    for attr in attrs:
+        node_attr = '{}.{}'.format(cam_tfm, attr)
+        key_count = maya.cmds.keyframe(node_attr, query=True, keyframeCount=True)
+        if key_count > 0:
+            key_times += maya.cmds.keyframe(node_attr, query=True, timeChange=True)
+
+    node_attr = '{}.focalLength'.format(cam_shp)
+    key_count = maya.cmds.keyframe(node_attr, query=True, keyframeCount=True)
+    if key_count > 0:
+        key_times += maya.cmds.keyframe(node_attr, query=True, timeChange=True)
+
+    return map(int, key_times)
+
+
 def main():
     """
     Offset the camera's animation so the current frame is at origin.
@@ -95,10 +130,7 @@ def main():
         return
 
     cam_bnd_list_map = _get_camera_bundle_lists(cam_list)
-
-    current_frame = maya.cmds.currentTime(query=True)
-    start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
-
+    current_frame = int(maya.cmds.currentTime(query=True))
     scene_scale = configmaya.get_scene_option(
         const.CONFIG_SCENE_SCALE_KEY, default=const.DEFAULT_SCENE_SCALE
     )
@@ -118,6 +150,12 @@ def main():
         disable_viewport=False,
     ):
         for cam, bnd_list in cam_bnd_list_map.items():
+            cam_tfm = cam.get_transform_node()
+            cam_shp = cam.get_shape_node()
+            camera_keyframes = _get_camera_keyframe_times(cam_tfm, cam_shp)
+            start_frame = min(camera_keyframes)
+            end_frame = max(camera_keyframes)
+
             lib.set_camera_origin_frame(
                 cam, bnd_list, scene_scale, current_frame, start_frame, end_frame
             )

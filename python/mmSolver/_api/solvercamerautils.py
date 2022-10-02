@@ -203,7 +203,13 @@ def _sub_bundle_adjustment(
             max_value = 1000.0
             offset_value = None
             scale_value = None
-            value = (node_attr, str(min_value), str(max_value), str(offset_value), str(scale_value))
+            value = (
+                node_attr,
+                str(min_value),
+                str(max_value),
+                str(offset_value),
+                str(scale_value),
+            )
             node_attrs.append(value)
 
     if adjust_lens_distortion is True:
@@ -212,7 +218,13 @@ def _sub_bundle_adjustment(
             max_value = 1.0
             offset_value = None
             scale_value = None
-            value = (node_attr, str(min_value), str(max_value), str(offset_value), str(scale_value))
+            value = (
+                node_attr,
+                str(min_value),
+                str(max_value),
+                str(offset_value),
+                str(scale_value),
+            )
             node_attrs.append(value)
 
     markers = []
@@ -240,7 +252,7 @@ def _sub_bundle_adjustment(
                     str(min_value),
                     str(max_value),
                     str(offset_value),
-                    str(scale_value)
+                    str(scale_value),
                 )
                 node_attrs.append(solve_node_attr)
 
@@ -1109,8 +1121,9 @@ def camera_solve(
 
     if len(all_frames) > 0 and len(adjust_mkr_nodes) > 0:
         min_markers_num = 4
-        all_frames = set([frame for frame in all_frames
-                          if frame_counts[frame] >= min_markers_num])
+        all_frames = set(
+            [frame for frame in all_frames if frame_counts[frame] >= min_markers_num]
+        )
 
         start_frame = min(all_frames)
         end_frame = max(all_frames)

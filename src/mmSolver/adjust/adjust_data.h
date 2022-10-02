@@ -79,6 +79,22 @@ enum class SceneGraphMode {
     kNumSceneGraphModes,
 };
 
+// Logging level for mmSolver command.
+//
+// Each entry is treated as a number with higher numbers being more verbose.
+//
+// NOTE: These values must match the values in the Python
+// LOG_LEVEL_NAME_TO_VALUE_MAP dictionary, see
+// ./python/mmSolver/_api/constant.py
+enum class LogLevel {
+    kError = 0,
+    kWarning,
+    kInfo,
+    kVerbose,
+    kDebug,
+    kNumLogLevels,
+};
+
 struct PrintStatOptions {
     bool enable;
     bool input;
@@ -188,8 +204,7 @@ struct SolverData {
     // Maya is running as an interactive or batch?
     MGlobal::MMayaState mayaSessionState;
 
-    // Verbosity.
-    bool verbose;
+    LogLevel logLevel;
 };
 
 struct SolverResult {

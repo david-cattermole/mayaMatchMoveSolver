@@ -409,80 +409,80 @@ class SolverWindow(BaseWindow):
 
         menubar.addMenu(view_menu)
 
-        # # Log Menu
-        # # This menu depicts a radio button allowing the user to choose
-        # # how much information is returned to the console (the logging
-        # # level).
-        # log_menu = QtWidgets.QMenu('Log', menubar)
+        # Log Menu
+        # This menu depicts a radio button allowing the user to choose
+        # how much information is returned to the console (the logging
+        # level).
+        log_menu = QtWidgets.QMenu('Log', menubar)
 
-        # # Errors
-        # label = 'Errors'
-        # tooltip = 'Send Errors to the log.'
-        # logErrorAction = QtWidgets.QAction(label, log_menu)
-        # logErrorAction.setStatusTip(tooltip)
-        # logErrorAction.setCheckable(True)
-        # logErrorAction.triggered.connect(partial(self.logErrorCB))
-        # log_menu.addAction(logErrorAction)
+        # Errors
+        label = 'Errors'
+        tooltip = 'Send Errors to the log.'
+        logErrorAction = QtWidgets.QAction(label, log_menu)
+        logErrorAction.setStatusTip(tooltip)
+        logErrorAction.setCheckable(True)
+        logErrorAction.triggered.connect(partial(self.logErrorCB))
+        log_menu.addAction(logErrorAction)
 
-        # # Warnings
-        # label = 'Warnings'
-        # tooltip = 'Send Warnings to the log.'
-        # logWarningAction = QtWidgets.QAction(label, log_menu)
-        # logWarningAction.setStatusTip(tooltip)
-        # logWarningAction.setCheckable(True)
-        # logWarningAction.triggered.connect(partial(self.logWarningCB))
-        # log_menu.addAction(logWarningAction)
+        # Warnings
+        label = 'Warnings'
+        tooltip = 'Send Warnings to the log.'
+        logWarningAction = QtWidgets.QAction(label, log_menu)
+        logWarningAction.setStatusTip(tooltip)
+        logWarningAction.setCheckable(True)
+        logWarningAction.triggered.connect(partial(self.logWarningCB))
+        log_menu.addAction(logWarningAction)
 
-        # # Information
-        # label = 'Info'
-        # tooltip = 'Send Information to the log.'
-        # logInfoAction = QtWidgets.QAction(label, log_menu)
-        # logInfoAction.setStatusTip(tooltip)
-        # logInfoAction.setCheckable(True)
-        # logInfoAction.triggered.connect(partial(self.logInfoCB))
-        # log_menu.addAction(logInfoAction)
+        # Information
+        label = 'Info'
+        tooltip = 'Send Information to the log.'
+        logInfoAction = QtWidgets.QAction(label, log_menu)
+        logInfoAction.setStatusTip(tooltip)
+        logInfoAction.setCheckable(True)
+        logInfoAction.triggered.connect(partial(self.logInfoCB))
+        log_menu.addAction(logInfoAction)
 
-        # # Verbose
-        # label = 'Verbose'
-        # tooltip = 'Send Verboses to the log.'
-        # logVerboseAction = QtWidgets.QAction(label, log_menu)
-        # logVerboseAction.setStatusTip(tooltip)
-        # logVerboseAction.setCheckable(True)
-        # logVerboseAction.triggered.connect(partial(self.logVerboseCB))
-        # log_menu.addAction(logVerboseAction)
+        # Verbose
+        label = 'Verbose'
+        tooltip = 'Send Verboses to the log.'
+        logVerboseAction = QtWidgets.QAction(label, log_menu)
+        logVerboseAction.setStatusTip(tooltip)
+        logVerboseAction.setCheckable(True)
+        logVerboseAction.triggered.connect(partial(self.logVerboseCB))
+        log_menu.addAction(logVerboseAction)
 
-        # # Debug
-        # label = 'Debug'
-        # tooltip = 'Send Debug messages to the log.'
-        # logDebugAction = QtWidgets.QAction(label, log_menu)
-        # logDebugAction.setStatusTip(tooltip)
-        # logDebugAction.setCheckable(True)
-        # logDebugAction.triggered.connect(partial(self.logDebugCB))
-        # log_menu.addAction(logDebugAction)
+        # Debug
+        label = 'Debug'
+        tooltip = 'Send Debug messages to the log.'
+        logDebugAction = QtWidgets.QAction(label, log_menu)
+        logDebugAction.setStatusTip(tooltip)
+        logDebugAction.setCheckable(True)
+        logDebugAction.triggered.connect(partial(self.logDebugCB))
+        log_menu.addAction(logDebugAction)
 
-        # # 'Radio' button for logging levels
-        # log_actionGroup = QtWidgets.QActionGroup(log_menu)
-        # log_actionGroup.addAction(logErrorAction)
-        # log_actionGroup.addAction(logWarningAction)
-        # log_actionGroup.addAction(logInfoAction)
-        # log_actionGroup.addAction(logVerboseAction)
-        # log_actionGroup.addAction(logDebugAction)
+        # 'Radio' button for logging levels
+        log_actionGroup = QtWidgets.QActionGroup(log_menu)
+        log_actionGroup.addAction(logErrorAction)
+        log_actionGroup.addAction(logWarningAction)
+        log_actionGroup.addAction(logInfoAction)
+        log_actionGroup.addAction(logVerboseAction)
+        log_actionGroup.addAction(logDebugAction)
 
-        # log_level = lib_state.get_log_level()
-        # if log_level == const.LOG_LEVEL_ERROR:
-        #     logErrorAction.setChecked(True)
-        # elif log_level == const.LOG_LEVEL_WARNING:
-        #     logWarningAction.setChecked(True)
-        # elif log_level == const.LOG_LEVEL_INFO:
-        #     logInfoAction.setChecked(True)
-        # elif log_level == const.LOG_LEVEL_VERBOSE:
-        #     logVerboseAction.setChecked(True)
-        # elif log_level == const.LOG_LEVEL_DEBUG:
-        #     logDebugAction.setChecked(True)
-        # else:
-        #     LOG.warning('Invalid log level given: %r' % log_level)
+        log_level = lib_state.get_log_level()
+        if log_level == const.LOG_LEVEL_ERROR:
+            logErrorAction.setChecked(True)
+        elif log_level == const.LOG_LEVEL_WARNING:
+            logWarningAction.setChecked(True)
+        elif log_level == const.LOG_LEVEL_INFO:
+            logInfoAction.setChecked(True)
+        elif log_level == const.LOG_LEVEL_VERBOSE:
+            logVerboseAction.setChecked(True)
+        elif log_level == const.LOG_LEVEL_DEBUG:
+            logDebugAction.setChecked(True)
+        else:
+            LOG.warning('Invalid log level given: %r' % log_level)
 
-        # menubar.addMenu(log_menu)
+        menubar.addMenu(log_menu)
 
         # Help Menu
         help_menu = QtWidgets.QMenu('Help', menubar)

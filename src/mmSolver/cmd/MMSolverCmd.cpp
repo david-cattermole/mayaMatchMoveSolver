@@ -67,8 +67,7 @@ bool MMSolverCmd::hasSyntax() const { return true; }
 bool MMSolverCmd::isUndoable() const { return true; }
 
 void createSolveLogSyntax(MSyntax &syntax) {
-    // TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
-    syntax.addFlag(VERBOSE_FLAG, VERBOSE_FLAG_LONG, MSyntax::kBoolean);
+    syntax.addFlag(LOG_LEVEL_FLAG, LOG_LEVEL_FLAG_LONG, MSyntax::kUnsigned);
     syntax.addFlag(PRINT_STATS_FLAG, PRINT_STATS_FLAG_LONG, MSyntax::kString);
     syntax.makeFlagMultiUse(PRINT_STATS_FLAG);
 }
@@ -124,15 +123,16 @@ MSyntax MMSolverCmd::newSyntax() {
 
 MStatus parseSolveLogArguments(const MArgDatabase &argData,
                                MStringArray &out_printStatsList,
-                               bool &out_verbose) {
+                               LogLevel &out_logLevel) {
     MStatus status = MStatus::kSuccess;
 
-    // Get 'Verbose'
-    // TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
-    out_verbose = VERBOSE_DEFAULT_VALUE;
-    if (argData.isFlagSet(VERBOSE_FLAG)) {
-        status = argData.getFlagArgument(VERBOSE_FLAG, 0, out_verbose);
+    // Get 'Log Level'
+    out_logLevel = LOG_LEVEL_DEFAULT_VALUE;
+    if (argData.isFlagSet(LOG_LEVEL_FLAG)) {
+        int logLevelNum = static_cast<int>(LOG_LEVEL_DEFAULT_VALUE);
+        status = argData.getFlagArgument(LOG_LEVEL_FLAG, 0, logLevelNum);
         CHECK_MSTATUS_AND_RETURN_IT(status);
+        out_logLevel = static_cast<LogLevel>(logLevelNum);
     }
 
     // Get 'Print Statistics'
@@ -381,7 +381,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_removeUnusedMarkers, m_removeUnusedAttributes);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = parseSolveLogArguments(argData, m_printStatsList, m_verbose);
+    status = parseSolveLogArguments(argData, m_printStatsList, m_logLevel);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
@@ -442,7 +442,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     bool ret = solve(solverOptions, m_cameraList, m_markerList, m_bundleList,
                      m_attrList, m_frameList, m_stiffAttrsList,
                      m_smoothAttrsList, m_dgmod, m_curveChange, m_computation,
-                     m_printStatsList, m_verbose, outResult);
+                     m_printStatsList, m_logLevel, outResult);
 
     MMSolverCmd::setResult(outResult);
     if (ret == false) {

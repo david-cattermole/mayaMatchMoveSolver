@@ -188,10 +188,15 @@
 #define REMOVE_UNUSED_ATTRIBUTES_DEFAULT_VALUE true
 
 // Should the solver print out verbose information while solving?
-// TODO: Deprecate 'verbose' flag, replace with 'log level' flag.
+// Deprecated. Use the 'log level' flag instead.
 #define VERBOSE_FLAG "-v"
 #define VERBOSE_FLAG_LONG "-verbose"
 #define VERBOSE_DEFAULT_VALUE false
+
+// How much detail does the mmSolver command print?
+#define LOG_LEVEL_FLAG "-lgl"
+#define LOG_LEVEL_FLAG_LONG "-logLevel"
+#define LOG_LEVEL_DEFAULT_VALUE LogLevel::kInfo
 
 // Print Statistics from the solver inputs.
 #define PRINT_STATS_FLAG "-pst"
@@ -255,7 +260,7 @@ private:
 
     // Solver printing.
     MStringArray m_printStatsList;
-    bool m_verbose;
+    LogLevel m_logLevel;
 
     // Solver Objects
     CameraPtrList m_cameraList;

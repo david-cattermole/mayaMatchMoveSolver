@@ -158,6 +158,7 @@ def execute(
     if log_level is None:
         log_level = const.LOG_LEVEL_DEFAULT
     assert isinstance(log_level, pycompat.TEXT_TYPE)
+    assert log_level in const.LOG_LEVEL_LIST
     validate_runtime = validate_mode == const.VALIDATE_MODE_AT_RUNTIME_VALUE
     validate_before = validate_mode == const.VALIDATE_MODE_PRE_VALIDATE_VALUE
 
@@ -272,11 +273,9 @@ def execute(
                     with open(options_file_path, 'w') as file_:
                         file_.write(text)
 
-                # Overriding the verbosity, irrespective of what the
-                # solver verbosity value is set to.
-                kwargs['verbose'] = False
-                if log_level is not None and log_level.lower() == 'verbose':
-                    kwargs['verbose'] = True
+                # Overriding the log level.
+                if log_level is not None:
+                    kwargs['logLevel'] = const.LOG_LEVEL_NAME_TO_VALUE_MAP[log_level]
 
                 # HACK for single frame solves.
                 is_single_frame = collectionutils.is_single_frame(kwargs)

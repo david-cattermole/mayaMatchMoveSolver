@@ -28,7 +28,34 @@ import maya.OpenMaya as OpenMaya
 # Plug-in names
 PLUGIN_NAMES = ['mmSolver']
 
-LOG_LEVEL_DEFAULT = 'info'
+# Available log levels.
+#
+# NOTE: These values are also part of the Solver UI. If you change
+# these values, make sure to also update the Solver UI, see
+# ./python/mmSolver/tools/solver/constant.py
+LOG_LEVEL_ERROR = 'error'
+LOG_LEVEL_WARNING = 'warning'
+LOG_LEVEL_INFO = 'info'
+LOG_LEVEL_VERBOSE = 'verbose'
+LOG_LEVEL_DEBUG = 'debug'
+LOG_LEVEL_LIST = [
+    LOG_LEVEL_ERROR,
+    LOG_LEVEL_WARNING,
+    LOG_LEVEL_INFO,
+    LOG_LEVEL_VERBOSE,
+    LOG_LEVEL_DEBUG,
+]
+# NOTE: These values must match the values in the C++ 'LogLevel' enum,
+# see ./src/mmSolver/adjust/adjust_data.h
+LOG_LEVEL_NAME_TO_VALUE_MAP = {
+    LOG_LEVEL_ERROR: 0,
+    LOG_LEVEL_WARNING: 1,
+    LOG_LEVEL_INFO: 2,
+    LOG_LEVEL_VERBOSE: 3,
+    LOG_LEVEL_DEBUG: 4,
+}
+LOG_LEVEL_DEFAULT = LOG_LEVEL_INFO
+
 
 # Maya node prefixes and suffixes
 MARKER_NAME_PREFIX = 'marker'

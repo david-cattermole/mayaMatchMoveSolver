@@ -228,12 +228,14 @@ void determineMarkersToBeEvaluated(
 void incrementNormalIteration(SolverData *ud) {
     ++ud->funcEvalNum;
     ++ud->iterNum;
-    MStreamUtils::stdErrorStream() << "Iteration ";
-    MStreamUtils::stdErrorStream()
-        << std::right << std::setfill('0') << std::setw(4) << ud->iterNum;
-    MStreamUtils::stdErrorStream() << " | Eval ";
-    MStreamUtils::stdErrorStream()
-        << std::right << std::setfill('0') << std::setw(4) << ud->funcEvalNum;
+    if (ud->logLevel >= LogLevel::kVerbose) {
+        MStreamUtils::stdErrorStream() << "Iteration ";
+        MStreamUtils::stdErrorStream()
+            << std::right << std::setfill('0') << std::setw(4) << ud->iterNum;
+        MStreamUtils::stdErrorStream() << " | Eval ";
+        MStreamUtils::stdErrorStream() << std::right << std::setfill('0')
+                                       << std::setw(4) << ud->funcEvalNum;
+    }
     return;
 }
 
@@ -241,7 +243,7 @@ void incrementNormalIteration(SolverData *ud) {
 void incrementJacobianIteration(SolverData *ud) {
     ++ud->funcEvalNum;
     ++ud->jacIterNum;
-    if (ud->verbose) {
+    if (ud->logLevel >= LogLevel::kDebug) {
         MStreamUtils::stdErrorStream() << "Jacobian  ";
         MStreamUtils::stdErrorStream() << std::right << std::setfill('0')
                                        << std::setw(4) << ud->jacIterNum;
@@ -263,7 +265,9 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
     SolverData *ud = static_cast<SolverData *>(userData);
     ud->timer.funcBenchTimer.start();
     ud->timer.funcBenchTicks.start();
-    if (!ud->doCalcJacobian) {
+
+    auto frameCount = ud->frameList.length();
+    if (!ud->doCalcJacobian && frameCount > 1) {
         ud->computation->setProgress(ud->iterNum);
     }
 
@@ -545,12 +549,14 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
     ud->timer.funcBenchTicks.stop();
 
     if (ud->isNormalCall) {
-        char formatBuffer[128];
-        sprintf(formatBuffer, " | error avg %8.4f   min %8.4f   max %8.4f",
-                error_avg, error_min, error_max);
-        MStreamUtils::stdErrorStream() << std::string(formatBuffer) << "\n";
+        if (ud->logLevel >= LogLevel::kVerbose) {
+            char formatBuffer[128];
+            sprintf(formatBuffer, " | error avg %8.4f   min %8.4f   max %8.4f",
+                    error_avg, error_min, error_max);
+            MStreamUtils::stdErrorStream() << std::string(formatBuffer) << "\n";
+        }
     } else {
-        if (ud->verbose) {
+        if (ud->logLevel >= LogLevel::kDebug) {
             if (!ud->doCalcJacobian) {
                 std::cerr << "\n";
             }

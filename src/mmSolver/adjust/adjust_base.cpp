@@ -381,8 +381,11 @@ void logResultsSolveDetails(SolverResult &solverResult, SolverData &userData,
                             const int numberOfMarkerErrors,
                             const int numberOfAttrStiffnessErrors,
                             const int numberOfAttrSmoothnessErrors,
-                            const bool verbose, std::vector<double> &paramList,
+                            const LogLevel &logLevel,
+                            std::vector<double> &paramList,
                             MStringArray &outResult) {
+    const bool verbose = logLevel >= LogLevel::kDebug;
+
     int numberOfErrors = numberOfMarkerErrors;
     numberOfErrors += numberOfAttrStiffnessErrors;
     numberOfErrors += numberOfAttrSmoothnessErrors;
@@ -409,7 +412,7 @@ void logResultsSolveDetails(SolverResult &solverResult, SolverData &userData,
     MMSOLVER_VRB("Function Evaluations: " << solverResult.functionEvals);
     MMSOLVER_VRB("Jacobian Evaluations: " << solverResult.jacobianEvals);
 
-    if (verbose == false) {
+    if (logLevel >= LogLevel::kInfo) {
         if (solverResult.success) {
             MStreamUtils::stdErrorStream() << "Solver returned SUCCESS    | ";
         } else {
@@ -502,7 +505,7 @@ void logResultsSolveDetails(SolverResult &solverResult, SolverData &userData,
     resultStr = "user_interrupted=" + value;
     outResult.append(MString(resultStr.c_str()));
 
-    if (verbose) {
+    if (logLevel >= LogLevel::kDebug) {
         unsigned int total_num = userData.iterNum + userData.jacIterNum;
         assert(total_num > 0);
         timer.solveBenchTimer.print("Solve Time", 1);
@@ -927,6 +930,72 @@ PrintStatOptions constructPrintStats(const MStringArray &printStatsList) {
     return printStats;
 }
 
+static inline bool addNumberRangeToStringStream(const int &startNum,
+                                                const int &endNum,
+                                                std::stringstream &ss) {
+    if (startNum == endNum) {
+        ss << " " << startNum;
+    } else if ((endNum - startNum) == 1) {
+        ss << " " << startNum
+           << " " << endNum;
+    } else {
+        ss << " " << startNum << "-" << endNum;
+    }
+    return true;
+}
+
+bool addFrameListToStringStream(const MTimeArray &frameList,
+                                std::stringstream &ss) {
+    // Display contiguous frame numbers in the format '10-13', rather
+    // than '10 11 12 13'.
+    //
+    // This function is ported from Python, see the function
+    // 'intListToString', in ./python/mmSolver/utils/converttypes.py
+
+    int startNum = -1;
+    int endNum = -1;
+    int prevNum = -1;
+
+    auto frameCount = frameList.length();
+    for (auto i = 0; i < frameCount; i++) {
+        MTime frame(frameList[i]);
+        int frameNum = static_cast<int>(frame.value());
+
+        bool first = i == 0;
+        bool last = (i + 1) == frameCount;
+
+        if (first) {
+            // Start a new group.
+            startNum = frameNum;
+            endNum = frameNum;
+        }
+
+        if ((prevNum + 1) != frameNum) {
+            // End old group.
+            endNum = prevNum;
+            if (endNum != -1) {
+                addNumberRangeToStringStream(startNum, endNum, ss);
+            }
+
+            // New group.
+            startNum = frameNum;
+            endNum = frameNum;
+        }
+
+        if (last) {
+            // Close off final group.
+            endNum = frameNum;
+            if (endNum != -1) {
+                addNumberRangeToStringStream(startNum, endNum, ss);
+            }
+        }
+
+        prevNum = frameNum;
+    }
+
+    return frameCount > 0;
+}
+
 MStatus solveFrames(
     CameraPtrList &cameraList, BundlePtrList &bundleList,
     const MTimeArray &frameList, MarkerPtrList &usedMarkerList,
@@ -940,7 +1009,7 @@ MStatus solveFrames(
     //
     MDGModifier &out_dgmod, MAnimCurveChange &out_curveChange,
     //
-    MComputation &out_computation, const bool verbose,
+    MComputation &out_computation, const LogLevel &logLevel,
     //
     IndexPairList &out_paramToAttrList, IndexPairList &out_errorToMarkerList,
     std::vector<MPoint> &out_markerPosList,
@@ -952,6 +1021,8 @@ MStatus solveFrames(
     MStringArray &outResult, SolverResult &out_solveResult) {
     MStatus status = MS::kSuccess;
     std::string resultStr;
+
+    const bool verbose = logLevel >= LogLevel::kDebug;
 
     out_paramToAttrList.clear();
     out_errorToMarkerList.clear();
@@ -1040,21 +1111,21 @@ MStatus solveFrames(
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    if (verbose) {
-        MMSOLVER_VRB("Number of Markers; used=" << usedMarkerList.size()
-                                                << " | unused="
-                                                << unusedMarkerList.size());
-        MMSOLVER_VRB("Number of Attributes; used=" << usedAttrList.size()
-                                                   << " | unused="
-                                                   << unusedAttrList.size());
-        MMSOLVER_VRB("Number of Parameters; " << numberOfParameters);
-        MMSOLVER_VRB("Number of Frames; " << frameList.length());
-        MMSOLVER_VRB("Number of Marker Errors; " << numberOfMarkerErrors);
-        MMSOLVER_VRB("Number of Attribute Stiffness Errors; "
-                     << numberOfAttrStiffnessErrors);
-        MMSOLVER_VRB("Number of Attribute Smoothness Errors; "
-                     << numberOfAttrSmoothnessErrors);
-        MMSOLVER_VRB("Number of Total Errors; " << numberOfErrors);
+    if (logLevel >= LogLevel::kDebug) {
+        MMSOLVER_INFO("Number of Markers; used=" << usedMarkerList.size()
+                                                 << " | unused="
+                                                 << unusedMarkerList.size());
+        MMSOLVER_INFO("Number of Attributes; used=" << usedAttrList.size()
+                                                    << " | unused="
+                                                    << unusedAttrList.size());
+        MMSOLVER_INFO("Number of Parameters; " << numberOfParameters);
+        MMSOLVER_INFO("Number of Frames; " << frameList.length());
+        MMSOLVER_INFO("Number of Marker Errors; " << numberOfMarkerErrors);
+        MMSOLVER_INFO("Number of Attribute Stiffness Errors; "
+                      << numberOfAttrStiffnessErrors);
+        MMSOLVER_INFO("Number of Attribute Smoothness Errors; "
+                      << numberOfAttrSmoothnessErrors);
+        MMSOLVER_INFO("Number of Total Errors; " << numberOfErrors);
     }
 
     // Bail out of solve if we don't have enough used markers or
@@ -1111,45 +1182,47 @@ MStatus solveFrames(
                              0);
     assert(out_errorToMarkerList.size() == errorDistanceList.size());
 
-    std::stringstream ss;
-    ss << "Frames:";
-    for (uint32_t i = 0; i < frameList.length(); i++) {
-        MTime frame(frameList[i]);
-        ss << " " << frame;
-    }
-
-    if (verbose) {
-        MMSOLVER_VRB(
+    auto frameCount = frameList.length();
+    if (logLevel >= LogLevel::kDebug) {
+        MMSOLVER_INFO(
             "------------------------------------------------------------------"
             "-------------");
-        MMSOLVER_VRB("Solving...");
-        MMSOLVER_VRB("Solver Type=" << solverOptions.solverType);
-        MMSOLVER_VRB("Maximum Iterations=" << solverOptions.iterMax);
-        MMSOLVER_VRB("Tau=" << solverOptions.tau);
-        MMSOLVER_VRB("Epsilon1=" << solverOptions.eps1);
-        MMSOLVER_VRB("Epsilon2=" << solverOptions.eps2);
-        MMSOLVER_VRB("Epsilon3=" << solverOptions.eps3);
-        MMSOLVER_VRB("Delta=" << fabs(solverOptions.delta));
-        MMSOLVER_VRB("Auto Differencing Type=" << solverOptions.autoDiffType);
-        MMSOLVER_VRB("Time Evaluation Mode=" << solverOptions.timeEvalMode);
-        MMSOLVER_VRB("Marker count: " << usedMarkerList.size());
-        MMSOLVER_VRB("Attribute count: " << usedAttrList.size());
-        MMSOLVER_VRB(ss.str());
-    } else if (printStats.enable == false) {
+        MMSOLVER_INFO("Solving...");
+        MMSOLVER_INFO("Solver Type=" << solverOptions.solverType);
+        MMSOLVER_INFO("Maximum Iterations=" << solverOptions.iterMax);
+        MMSOLVER_INFO("Tau=" << solverOptions.tau);
+        MMSOLVER_INFO("Epsilon1=" << solverOptions.eps1);
+        MMSOLVER_INFO("Epsilon2=" << solverOptions.eps2);
+        MMSOLVER_INFO("Epsilon3=" << solverOptions.eps3);
+        MMSOLVER_INFO("Delta=" << fabs(solverOptions.delta));
+        MMSOLVER_INFO("Auto Differencing Type=" << solverOptions.autoDiffType);
+        MMSOLVER_INFO("Time Evaluation Mode=" << solverOptions.timeEvalMode);
+        MMSOLVER_INFO("Marker count: " << usedMarkerList.size());
+        MMSOLVER_INFO("Attribute count: " << usedAttrList.size());
+        MMSOLVER_INFO("Frame count: " << frameCount);
+
+        std::stringstream ss;
+        addFrameListToStringStream(frameList, ss);
+        MMSOLVER_INFO("Frames:" << ss.str());
+    } else if (printStats.enable == false && logLevel >= LogLevel::kVerbose) {
         MMSOLVER_INFO(
             "------------------------------------------------------------------"
             "-------------");
         MMSOLVER_INFO("Solving...");
         MMSOLVER_INFO("Marker count: " << usedMarkerList.size());
         MMSOLVER_INFO("Attribute count: " << usedAttrList.size());
-        MMSOLVER_INFO(ss.str());
+        MMSOLVER_INFO("Frame count: " << frameCount);
+
+        std::stringstream ss;
+        addFrameListToStringStream(frameList, ss);
+        MMSOLVER_INFO("Frames:" << ss.str());
     }
 
     // MComputation helper.
-    bool showProgressBar = true;
-    bool isInterruptable = true;
-    bool useWaitCursor = true;
-    if (printStats.enable == false) {
+    if (printStats.enable == false && logLevel >= LogLevel::kInfo && frameCount > 1) {
+        const bool showProgressBar = true;
+        const bool isInterruptable = true;
+        const bool useWaitCursor = true;
         out_computation.setProgressRange(0, solverOptions.iterMax);
         out_computation.beginComputation(showProgressBar, isInterruptable,
                                          useWaitCursor);
@@ -1281,8 +1354,7 @@ MStatus solveFrames(
     // Maya is running as an interactive or batch?
     userData.mayaSessionState = mayaSessionState;
 
-    // Verbosity
-    userData.verbose = verbose;
+    userData.logLevel = logLevel;
 
     // Calculate initial errors.
     double initialErrorAvg = 0;
@@ -1320,7 +1392,7 @@ MStatus solveFrames(
         logResultsSolveDetails(
             out_solveResult, userData, timer, numberOfParameters,
             numberOfMarkerErrors, numberOfAttrStiffnessErrors,
-            numberOfAttrSmoothnessErrors, verbose, out_paramList, outResult);
+            numberOfAttrSmoothnessErrors, logLevel, out_paramList, outResult);
     }
     if (printStats.enable == true) {
         // There is no more printing to do, we must solve now if we
@@ -1340,7 +1412,7 @@ MStatus solveFrames(
         // Copy parameter values into the 'previous' parameter list.
         out_previousParamList[i] = out_paramList[i];
     }
-    if (verbose) {
+    if (logLevel >= LogLevel::kDebug) {
         for (int i = 0; i < numberOfParameters; ++i) {
             IndexPair attrPair = out_paramToAttrList[i];
             AttrPtr attr = usedAttrList[attrPair.first];
@@ -1379,9 +1451,13 @@ MStatus solveFrames(
         return status;
     }
 
-    timer.solveBenchTicks.stop();
-    timer.solveBenchTimer.stop();
-    out_computation.endComputation();
+    if (printStats.enable == false) {
+        timer.solveBenchTicks.stop();
+        timer.solveBenchTimer.stop();
+    }
+    if (printStats.enable == false && logLevel >= LogLevel::kInfo && frameCount > 1) {
+        out_computation.endComputation();
+    }
 
     // Solve Finished, re-calculate error, and only set parameters if
     // the average error is lower.
@@ -1411,7 +1487,7 @@ MStatus solveFrames(
                                   usedAttrList, out_previousParamList,
                                   frameList, out_dgmod, out_curveChange);
     }
-    if (verbose) {
+    if (logLevel >= LogLevel::kDebug) {
         MMSOLVER_VRB("Solved Parameters:");
         for (int i = 0; i < numberOfParameters; ++i) {
             IndexPair attrPair = out_paramToAttrList[i];
@@ -1435,8 +1511,8 @@ MStatus solveFrames(
 
     logResultsSolveDetails(out_solveResult, userData, timer, numberOfParameters,
                            numberOfMarkerErrors, numberOfAttrStiffnessErrors,
-                           numberOfAttrSmoothnessErrors, verbose, out_paramList,
-                           outResult);
+                           numberOfAttrSmoothnessErrors, logLevel,
+                           out_paramList, outResult);
 
     return status;
 }
@@ -1455,11 +1531,11 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
            StiffAttrsPtrList &stiffAttrsList,
            SmoothAttrsPtrList &smoothAttrsList, MDGModifier &dgmod,
            MAnimCurveChange &curveChange, MComputation &computation,
-           MStringArray &printStatsList, bool with_verbosity,
+           MStringArray &printStatsList, const LogLevel &logLevel,
            MStringArray &outResult) {
     MStatus status = MS::kSuccess;
 
-    bool verbose = with_verbosity;
+    bool verbose = logLevel >= LogLevel::kDebug;
     auto printStats = constructPrintStats(printStatsList);
     if (printStats.enable == true) {
         // When printing statistics, turn off verbosity.
@@ -1579,14 +1655,36 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
             //
             dgmod, curveChange,
             //
-            computation, verbose,
+            computation, logLevel,
             //
             paramToAttrList, errorToMarkerList, markerPosList, markerWeightList,
             errorList, paramList, previousParamList, jacobianList,
             //
             outResult, solveResult);
     } else if (frameSolveMode == FrameSolveMode::kPerFrame) {
-        for (uint32_t f = 0; f < frameList.length(); ++f) {
+        auto frameCount = frameList.length();
+
+        if (printStats.enable == false) {
+            const bool showProgressBar = true;
+            const bool isInterruptable = true;
+            const bool useWaitCursor = true;
+            computation.setProgressRange(0, frameCount);
+            computation.beginComputation(showProgressBar, isInterruptable,
+                                         useWaitCursor);
+        }
+
+        // We assume that the per-frame solve will be (relatively)
+        // fast, and so we don't need as much logging per-frame
+        // otherwise the solve will slow down due to so much text
+        // being printed out.
+        auto perFrameLogLevel = logLevel;
+        if (logLevel == LogLevel::kVerbose) {
+            perFrameLogLevel = LogLevel::kInfo;
+        }
+
+        for (auto f = 0; f < frameCount; ++f) {
+            computation.setProgress(f);
+
             auto frames = MTimeArray(1, frameList[f]);
             status = solveFrames(cameraList, bundleList, frames, usedMarkerList,
                                  unusedMarkerList, usedAttrList, unusedAttrList,
@@ -1597,7 +1695,7 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
                                  //
                                  dgmod, curveChange,
                                  //
-                                 computation, verbose,
+                                 computation, perFrameLogLevel,
                                  //
                                  paramToAttrList, errorToMarkerList,
                                  markerPosList, markerWeightList, errorList,
@@ -1609,6 +1707,8 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
                 break;
             }
         }
+
+        computation.endComputation();
     }
 
     return solveResult.success;

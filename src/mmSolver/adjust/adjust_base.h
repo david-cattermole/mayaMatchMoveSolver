@@ -104,9 +104,10 @@ bool compute_error_stats(const int numberOfMarkerErrors,
 
 void logResultsSolveDetails(SolverResult &solverResult, SolverData &userData,
                             SolverTimer &timer, int numberOfParameters,
-                            int numberOfMarkerErrors,
-                            int numberOfAttrStiffnessErrors,
-                            int numberOfAttrSmoothnessErrors, bool verbose,
+                            const int numberOfMarkerErrors,
+                            const int numberOfAttrStiffnessErrors,
+                            const int numberOfAttrSmoothnessErrors,
+                            const LogLevel &logLevel,
                             std::vector<double> &paramList,
                             MStringArray &outResult);
 
@@ -128,7 +129,7 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
            StiffAttrsPtrList &stiffAttrsList,
            SmoothAttrsPtrList &smoothAttrsList, MDGModifier &dgmod,
            MAnimCurveChange &curveChange, MComputation &computation,
-           MStringArray &printStatsList, bool with_verbosity,
+           MStringArray &printStatsList, const LogLevel &logLevel,
            MStringArray &outResult);
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H

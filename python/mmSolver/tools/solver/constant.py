@@ -42,6 +42,10 @@ COLOR_ERROR = COLOR_HTML_HEX_RED
 
 
 # Available log levels for the Solver UI.
+#
+# NOTE: These values are also part of the mmSolver API. If you change
+# these values, make sure to also update the mmSolver API, see
+# ./python/mmSolver/_api/constant.py
 LOG_LEVEL_ERROR = 'error'
 LOG_LEVEL_WARNING = 'warning'
 LOG_LEVEL_INFO = 'info'

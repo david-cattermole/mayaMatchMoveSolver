@@ -68,6 +68,7 @@ bool MMSolverCmd::isUndoable() const { return true; }
 
 void createSolveLogSyntax(MSyntax &syntax) {
     syntax.addFlag(LOG_LEVEL_FLAG, LOG_LEVEL_FLAG_LONG, MSyntax::kUnsigned);
+    syntax.addFlag(VERBOSE_FLAG, VERBOSE_FLAG_LONG, MSyntax::kBoolean);
     syntax.addFlag(PRINT_STATS_FLAG, PRINT_STATS_FLAG_LONG, MSyntax::kString);
     syntax.makeFlagMultiUse(PRINT_STATS_FLAG);
 }

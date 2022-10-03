@@ -1682,10 +1682,17 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
             perFrameLogLevel = LogLevel::kInfo;
         }
 
-        for (auto f = 0; f < frameCount; ++f) {
-            computation.setProgress(f);
+        SolverResult perFrameSolveResult;
+        solveResult.errorAvg = 0.0;
+        solveResult.errorMin = std::numeric_limits<double>::max();
+        solveResult.errorMax = -0.0;
+        solveResult.errorFinal = 0.0;
 
-            auto frames = MTimeArray(1, frameList[f]);
+        auto solvedCount = 0;
+        for (solvedCount = 0; solvedCount < frameCount; ++solvedCount) {
+            computation.setProgress(solvedCount);
+
+            auto frames = MTimeArray(1, frameList[solvedCount]);
             status = solveFrames(cameraList, bundleList, frames, usedMarkerList,
                                  unusedMarkerList, usedAttrList, unusedAttrList,
                                  stiffAttrsList, smoothAttrsList,
@@ -1701,12 +1708,35 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
                                  markerPosList, markerWeightList, errorList,
                                  paramList, previousParamList, jacobianList,
                                  //
-                                 outResult, solveResult);
-            // TODO: Combine solveResult from each iteration.
+                                 outResult, perFrameSolveResult);
+
+            // Combine solveResult from each iteration.
+            solveResult.errorAvg += perFrameSolveResult.errorAvg;
+            solveResult.errorMin =
+                std::min(solveResult.errorMin, perFrameSolveResult.errorMin);
+            solveResult.errorMax =
+                std::max(solveResult.errorMax, perFrameSolveResult.errorMax);
+
+            solveResult.iterations += perFrameSolveResult.iterations;
+            solveResult.functionEvals += perFrameSolveResult.functionEvals;
+            solveResult.jacobianEvals += perFrameSolveResult.jacobianEvals;
+            solveResult.errorFinal += perFrameSolveResult.errorFinal;
+
             if (status != MS::kSuccess) {
                 break;
             }
         }
+
+        solveResult.success = perFrameSolveResult.success;
+        solveResult.reason_number = perFrameSolveResult.reason_number;
+        solveResult.reason = perFrameSolveResult.reason;
+
+        double solvedCountInverse = 0.0;
+        if (solvedCount > 0) {
+            solvedCountInverse = 1.0 / static_cast<double>(solvedCount);
+        }
+        solveResult.errorAvg = solveResult.errorAvg * solvedCountInverse;
+        solveResult.errorFinal = solveResult.errorFinal * solvedCountInverse;
 
         computation.endComputation();
     }

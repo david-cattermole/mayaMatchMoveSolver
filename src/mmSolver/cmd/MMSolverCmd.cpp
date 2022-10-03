@@ -92,7 +92,6 @@ void createSolveInfoSyntax(MSyntax &syntax) {
                    MSyntax::kBoolean);
     syntax.addFlag(FRAME_SOLVE_MODE_FLAG, FRAME_SOLVE_MODE_FLAG_LONG,
                    MSyntax::kUnsigned);
-    syntax.addFlag(PRINT_STATS_FLAG, PRINT_STATS_FLAG_LONG, MSyntax::kString);
 
     syntax.addFlag(REMOVE_UNUSED_MARKERS_FLAG, REMOVE_UNUSED_MARKERS_FLAG_LONG,
                    MSyntax::kBoolean);

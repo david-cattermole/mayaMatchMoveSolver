@@ -98,6 +98,8 @@ void createSolveInfoSyntax(MSyntax &syntax) {
     syntax.addFlag(REMOVE_UNUSED_ATTRIBUTES_FLAG,
                    REMOVE_UNUSED_ATTRIBUTES_FLAG_LONG, MSyntax::kBoolean);
 
+    syntax.addFlag(IMAGE_WIDTH_FLAG, IMAGE_WIDTH_FLAG_LONG, MSyntax::kDouble);
+
     createSolveSceneGraphSyntax(syntax);
     syntax.addFlag(TIME_EVAL_MODE_FLAG, TIME_EVAL_MODE_FLAG_LONG,
                    MSyntax::kUnsigned);
@@ -178,7 +180,8 @@ MStatus parseSolveInfoArguments(
     bool &out_acceptOnlyBetter, FrameSolveMode &out_frameSolveMode,
     bool &out_supportAutoDiffForward, bool &out_supportAutoDiffCentral,
     bool &out_supportParameterBounds, bool &out_supportRobustLoss,
-    bool &out_removeUnusedMarkers, bool &out_removeUnusedAttributes) {
+    bool &out_removeUnusedMarkers, bool &out_removeUnusedAttributes,
+    double &out_imageWidth) {
     MStatus status = MStatus::kSuccess;
 
     // Get 'Accept Only Better'
@@ -363,6 +366,13 @@ MStatus parseSolveInfoArguments(
         CHECK_MSTATUS(status);
     }
 
+    // Get 'Image Width'
+    out_imageWidth = IMAGE_WIDTH_DEFAULT_VALUE;
+    if (argData.isFlagSet(IMAGE_WIDTH_FLAG)) {
+        status = argData.getFlagArgument(IMAGE_WIDTH_FLAG, 0, out_imageWidth);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
     return status;
 }
 
@@ -392,7 +402,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_robustLossScale, m_solverType, m_sceneGraphMode, m_timeEvalMode,
         m_acceptOnlyBetter, m_frameSolveMode, m_supportAutoDiffForward,
         m_supportAutoDiffCentral, m_supportParameterBounds, m_supportRobustLoss,
-        m_removeUnusedMarkers, m_removeUnusedAttributes);
+        m_removeUnusedMarkers, m_removeUnusedAttributes, m_imageWidth);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveLogArguments(argData, m_printStatsList, m_logLevel);
@@ -456,7 +466,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     bool ret = solve(solverOptions, m_cameraList, m_markerList, m_bundleList,
                      m_attrList, m_frameList, m_stiffAttrsList,
                      m_smoothAttrsList, m_dgmod, m_curveChange, m_computation,
-                     m_printStatsList, m_logLevel, outResult);
+                     m_imageWidth, m_printStatsList, m_logLevel, outResult);
 
     MMSolverCmd::setResult(outResult);
     if (ret == false) {

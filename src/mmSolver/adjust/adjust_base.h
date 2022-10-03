@@ -129,7 +129,7 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
            StiffAttrsPtrList &stiffAttrsList,
            SmoothAttrsPtrList &smoothAttrsList, MDGModifier &dgmod,
            MAnimCurveChange &curveChange, MComputation &computation,
-           MStringArray &printStatsList, const LogLevel &logLevel,
-           MStringArray &outResult);
+           const double &imageWidth, MStringArray &printStatsList,
+           const LogLevel &logLevel, MStringArray &outResult);
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H

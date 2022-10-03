@@ -1003,8 +1003,8 @@ MStatus solveFrames(
     SmoothAttrsPtrList &smoothAttrsList, const BoolList2D &markerToAttrList,
     SolverOptions &solverOptions,
     //
-    const PrintStatOptions printStats,
-    const MGlobal::MMayaState mayaSessionState,
+    const PrintStatOptions &printStats,
+    const MGlobal::MMayaState &mayaSessionState, const double &imageWidth,
     //
     MDGModifier &out_dgmod, MAnimCurveChange &out_curveChange,
     //
@@ -1330,7 +1330,7 @@ MStatus solveFrames(
     userData.funcEvalNum = 0;  // number of function evaluations.
     userData.iterNum = 0;
     userData.jacIterNum = 0;
-    userData.imageWidth = 2048.0;  // TODO: Get actual image plane resolution.
+    userData.imageWidth = imageWidth;
     userData.numberOfMarkerErrors = numberOfMarkerErrors;
     userData.numberOfAttrStiffnessErrors = numberOfAttrStiffnessErrors;
     userData.numberOfAttrSmoothnessErrors = numberOfAttrSmoothnessErrors;
@@ -1532,8 +1532,8 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
            StiffAttrsPtrList &stiffAttrsList,
            SmoothAttrsPtrList &smoothAttrsList, MDGModifier &dgmod,
            MAnimCurveChange &curveChange, MComputation &computation,
-           MStringArray &printStatsList, const LogLevel &logLevel,
-           MStringArray &outResult) {
+           const double &imageWidth, MStringArray &printStatsList,
+           const LogLevel &logLevel, MStringArray &outResult) {
     MStatus status = MS::kSuccess;
 
     bool verbose = logLevel >= LogLevel::kDebug;
@@ -1651,7 +1651,7 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
             usedAttrList, unusedAttrList, stiffAttrsList, smoothAttrsList,
             markerToAttrList, solverOptions,
             //
-            printStats, mayaSessionState,
+            printStats, mayaSessionState, imageWidth,
             //
             dgmod, curveChange,
             //
@@ -1691,7 +1691,7 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
                                  stiffAttrsList, smoothAttrsList,
                                  markerToAttrList, solverOptions,
                                  //
-                                 printStats, mayaSessionState,
+                                 printStats, mayaSessionState, imageWidth,
                                  //
                                  dgmod, curveChange,
                                  //

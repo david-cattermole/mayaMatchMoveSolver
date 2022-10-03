@@ -203,6 +203,15 @@
 #define PRINT_STATS_FLAG "-pst"
 #define PRINT_STATS_FLAG_LONG "-printStatistics"
 
+// What is the width of the image we are matchmoving? This value is
+// used to while calculating per-pixel deviation/error levels.
+//
+// The value will not change the solve, but will only change the
+// per-pixel numbers displayed to the user.
+#define IMAGE_WIDTH_FLAG "-imw"
+#define IMAGE_WIDTH_FLAG_LONG "-imageWidth"
+#define IMAGE_WIDTH_DEFAULT_VALUE 2048.0
+
 namespace mmsolver {
 
 class MMSolverCmd : public MPxCommand {
@@ -251,6 +260,7 @@ private:
                               // the average devation is higher than at start.
     bool m_removeUnusedMarkers;     // Remove unused Markers from solve?
     bool m_removeUnusedAttributes;  // Remove unused Attributes from solve?
+    double m_imageWidth;            // Defines pixel size in camera space.
     FrameSolveMode m_frameSolveMode;
 
     // What type of features does the given solver type support?

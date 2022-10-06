@@ -217,6 +217,22 @@ openMVG::Mat convert_bundle_coords_to_matrix(
     return result;
 }
 
+// Prepare the corresponding 3D bundle data.
+//
+// OpenMVG uses the opposite Z axis for the "down the camera"
+// axis.
+openMVG::Mat convert_bundle_coords_to_matrix_flip_z(
+    const std::vector<std::tuple<double, double, double>> &bundle_coords) {
+    auto num = bundle_coords.size();
+    openMVG::Mat result(3, num);
+    for (size_t k = 0; k < num; ++k) {
+        auto coord = bundle_coords[k];
+        result.col(k) = openMVG::Vec3(std::get<0>(coord), std::get<1>(coord),
+                                      std::get<2>(coord) * -1.0);
+    }
+    return result;
+}
+
 MStatus parseCameraSelectionList(
     const MSelectionList &selection_list, const MTime &time, CameraPtr &camera,
     Attr &camera_tx_attr, Attr &camera_ty_attr, Attr &camera_tz_attr,

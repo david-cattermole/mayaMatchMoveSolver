@@ -123,8 +123,8 @@ MSyntax MMCameraPoseFromPointsCmd::newSyntax() {
         syntax.addFlag(FRAME_SHORT_FLAG, FRAME_LONG_FLAG, MSyntax::kUnsigned));
     CHECK_MSTATUS(syntax.makeFlagMultiUse(FRAME_SHORT_FLAG));
 
-    CHECK_MSTATUS(
-        syntax.addFlag(MARKER_SHORT_FLAG, MARKER_LONG_FLAG, MSyntax::kString));
+    CHECK_MSTATUS(syntax.addFlag(MARKER_SHORT_FLAG, MARKER_LONG_FLAG,
+                                 MSyntax::kString, MSyntax::kString));
     CHECK_MSTATUS(syntax.makeFlagMultiUse(MARKER_SHORT_FLAG));
 
     CHECK_MSTATUS(
@@ -148,7 +148,6 @@ MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
 
     // Reset saved data structures.
     m_marker_list.clear();
-    m_bundle_list.clear();
     m_frames.clear();
     m_times.clear();
     m_camera_rotate_order = MEulerRotation::kZXY;
@@ -193,6 +192,9 @@ MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
 
     // Parse objects as 2D Markers.
     uint32_t numberOfMarkerFlags = argData.numberOfFlagUses(MARKER_SHORT_FLAG);
+    if (numberOfMarkerFlags > 6) {
+        numberOfMarkerFlags = 6;
+    }
     for (uint32_t i = 0; i < numberOfMarkerFlags; ++i) {
         MArgList markerArgs;
         ObjectType objectType = ObjectType::kUnknown;
@@ -216,26 +218,9 @@ MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
         }
         MMSOLVER_VRB("Got markerName: " << markerName.asChar());
 
-        MarkerPtr marker = MarkerPtr(new Marker());
-        marker->setNodeName(markerName);
-        marker->setCamera(m_camera);
-
-        m_marker_list.push_back(marker);
-    }
-    MMSOLVER_VRB("parse m_marker_list size: " << m_marker_list.size());
-
-    // Parse objects as 3D Bundles.
-    uint32_t numberOfBundleFlags = argData.numberOfFlagUses(BUNDLE_SHORT_FLAG);
-    for (uint32_t i = 0; i < numberOfBundleFlags; ++i) {
-        MArgList bundleArgs;
-        ObjectType objectType = ObjectType::kUnknown;
-        MDagPath dagPath;
         MString bundleName = "";
         MObject bundleObject;
-        status = argData.getFlagArgumentList(BUNDLE_SHORT_FLAG, i, bundleArgs);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-
-        bundleName = bundleArgs.asString(0, &status);
+        bundleName = markerArgs.asString(1, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsObject(bundleName, bundleObject);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -249,12 +234,17 @@ MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
         }
         MMSOLVER_VRB("Got bundleName: " << bundleName.asChar());
 
+        MarkerPtr marker = MarkerPtr(new Marker());
+        marker->setNodeName(markerName);
+        marker->setCamera(m_camera);
+
         BundlePtr bundle = BundlePtr(new Bundle());
         bundle->setNodeName(bundleName);
+        marker->setBundle(bundle);
 
-        m_bundle_list.push_back(bundle);
+        m_marker_list.push_back(marker);
     }
-    MMSOLVER_VRB("parse m_bundle_list size: " << m_bundle_list.size());
+    MMSOLVER_VRB("parse m_marker_list size: " << m_marker_list.size());
 
     return status;
 }
@@ -279,6 +269,7 @@ MStatus MMCameraPoseFromPointsCmd::doIt(const MArgList &args) {
 
     const auto uiUnit = MTime::uiUnit();
     for (auto i = 0; i < m_times.size(); ++i) {
+        MMSOLVER_VRB("-------------------------------");
         auto frame = m_frames[i];
         auto time = m_times[i];
         MMSOLVER_VRB("frame: " << frame);
@@ -303,8 +294,8 @@ MStatus MMCameraPoseFromPointsCmd::doIt(const MArgList &args) {
         MMSOLVER_VRB("image (pixel): " << image_width << "x" << image_height);
         MMSOLVER_VRB("sensor (mm): " << sensor_width_mm << "x"
                                      << sensor_height_mm);
-        MMSOLVER_VRB("focal (mm) A: " << focal_length_mm);
-        MMSOLVER_VRB("focal (pixel) A: " << focal_length_pix);
+        MMSOLVER_VRB("focal (mm): " << focal_length_mm);
+        MMSOLVER_VRB("focal (pixel): " << focal_length_pix);
         MMSOLVER_VRB("principal point (pixel): " << ppx_pix << "x" << ppy_pix);
 
         MarkerPtrList marker_list;
@@ -315,19 +306,18 @@ MStatus MMCameraPoseFromPointsCmd::doIt(const MArgList &args) {
 
         for (auto j = 0; j < m_marker_list.size(); ++j) {
             auto marker = m_marker_list[j];
-            auto success = ::mmsolver::sfm::add_marker_at_frame(
+            auto marker_success = ::mmsolver::sfm::add_marker_at_frame(
                 time, image_width, image_height, lensModel, marker,
                 marker_coords);
-            if (success) {
-                marker_list.push_back(marker);
+            if (!marker_success) {
+                continue;
             }
-        }
 
-        for (auto j = 0; j < m_bundle_list.size(); ++j) {
-            auto bundle = m_bundle_list[j];
-            auto success = ::mmsolver::sfm::add_bundle_at_frame(time, bundle,
-                                                                bundle_coords);
-            if (success) {
+            auto bundle = marker->getBundle();
+            auto bundle_success = ::mmsolver::sfm::add_bundle_at_frame(
+                time, bundle, bundle_coords);
+            if (bundle_success) {
+                marker_list.push_back(marker);
                 bundle_list.push_back(bundle);
             }
         }
@@ -336,10 +326,10 @@ MStatus MMCameraPoseFromPointsCmd::doIt(const MArgList &args) {
         auto pose_ok = ::mmsolver::sfm::compute_camera_pose_from_known_points(
             image_width, image_height, focal_length_pix, ppx_pix, ppy_pix,
             marker_coords, bundle_coords, pose_transform);
-        auto pose_matrix = pose_transform.asMatrix();
         if (!pose_ok) {
             MMSOLVER_WRN("Compute Relative pose failed on frame " << frame);
         }
+        auto pose_matrix = pose_transform.asMatrix();
 
         if (m_set_values) {
             outResult.append(static_cast<double>(pose_ok));

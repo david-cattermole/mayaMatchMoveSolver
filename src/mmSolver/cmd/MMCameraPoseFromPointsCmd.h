@@ -83,7 +83,6 @@ private:
     MEulerRotation::RotationOrder m_camera_rotate_order;
 
     MarkerPtrList m_marker_list;
-    BundlePtrList m_bundle_list;
 
     // Frames
     std::vector<uint32_t> m_frames;

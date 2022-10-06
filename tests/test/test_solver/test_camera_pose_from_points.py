@@ -63,8 +63,7 @@ class TestCameraPoseResection(solverUtils.SolverTestCase):
         mkr_grp_node = mkr_grp.get_node()
 
         # Markers
-        mkr_list = []
-        bnd_list = []
+        mkr_bnd_list = []
         mkr_nodes = (
             maya.cmds.listRelatives(mkr_grp_node, children=True, shapes=False) or []
         )
@@ -74,23 +73,48 @@ class TestCameraPoseResection(solverUtils.SolverTestCase):
             assert mmapi.get_object_type(node) == 'marker'
             mkr = mmapi.Marker(node=node)
             bnd = mkr.get_bundle()
-            mkr_list.append(mkr)
-            bnd_list.append(bnd)
-        assert len(mkr_list) > 0
-        assert len(bnd_list) > 0
-
-        mkr_node_list = [x.get_node() for x in mkr_list]
-        bnd_node_list = [x.get_node() for x in bnd_list]
-        mkr_node_list = list(sorted(mkr_node_list))
-        bnd_node_list = list(sorted(bnd_node_list))
+            if bnd is None:
+                continue
+            mkr_node = mkr.get_node()
+            bnd_node = bnd.get_node()
+            if bnd_node is None:
+                continue
+            if mkr_node is None:
+                continue
+            mkr_bnd = (mkr_node, bnd_node)
+            mkr_bnd_list.append(mkr_bnd)
+        assert len(mkr_bnd_list) > 0
 
         frames = list(range(start_frame, end_frame + 1))
 
+        # Remove animation.
+        attrs = [
+            'translateX',
+            'translateY',
+            'translateZ',
+            'rotateX',
+            'rotateY',
+            'rotateZ',
+            'focalLength',
+        ]
+        maya.cmds.cutKey(
+            [cam_tfm_node, cam_shp_node],
+            attribute=attrs,
+            time=(
+                frames[1],
+                frames[-1],
+            ),
+        )
+        maya.cmds.setKeyframe(cam_tfm_node, attribute=attrs, time=frames[0], value=0.0)
+        maya.cmds.setKeyframe(
+            cam_shp_node, attribute='focalLength', time=frames[0], value=27.0
+        )
+
         kwargs = {
+            'setValues': True,
             'frame': frames,
             'camera': cam_tfm_node,
-            'marker': mkr_node_list,
-            'bundle': bnd_node_list,
+            'marker': mkr_bnd_list,
         }
 
         # save the input

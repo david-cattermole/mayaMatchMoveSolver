@@ -177,6 +177,10 @@ private:
         *camera_;  // Intrinsic camera parameter
 };
 
+// Use AC-RANSAC to try and find the camera pose from matching 2D and 3D points.
+//
+// - The points_3d matrix is expected to have the Z-coordinate flipped
+//   to match OpenMVG (rather than Maya).
 bool robust_camera_pose_from_known_points(
     const openMVG::Mat &points_2d, const openMVG::Mat &points_3d,
     const std::pair<size_t, size_t> &image_size, const double focal_length_pix,
@@ -186,126 +190,50 @@ bool robust_camera_pose_from_known_points(
     const bool verbose = false;
 
     // Upper bound pixel tolerance for residual errors.
-    const double error_max = std::numeric_limits<double>::infinity();
-
-    // The amount of pixel error that is computed.
-    double out_error_max = std::numeric_limits<double>::infinity();
-
-    // NFA = Number of False Alarms.
-    double out_min_nfa = std::numeric_limits<double>::infinity();
-
-    const auto image_width = image_size.first;
-    const auto image_height = image_size.second;
-    MMSOLVER_VRB(
-        "robust_camera_pose_from_known_points: points 2D: " << points_2d);
-    MMSOLVER_VRB(
-        "robust_camera_pose_from_known_points: points 3D: " << points_3d);
-    MMSOLVER_VRB("robust_camera_pose_from_known_points: image size (pixel): "
-                 << image_width << "x" << image_height);
-    MMSOLVER_VRB("robust_camera_pose_from_known_points: focal length (pixel): "
-                 << focal_length_pix);
-    MMSOLVER_VRB(
-        "robust_camera_pose_from_known_points: principal point (pixel): "
-        << ppx_pix << "x" << ppy_pix);
-    MMSOLVER_VRB("robust_camera_pose_from_known_points: max_iteration_count: "
-                 << max_iteration_count);
-
     double error_upper_bound = std::numeric_limits<double>::infinity();
-    if (error_max != std::numeric_limits<double>::infinity()) {
-        error_upper_bound = (error_max * error_max);
-    }
-
-    auto solution_found = false;
-    size_t minimum_samples = 0;
-    size_t samples = 0;
 
     std::vector<uint32_t> vec_inliers = {};
     vec_inliers.clear();
-    vec_inliers.reserve(points_2d.size());
+    vec_inliers.reserve(points_2d.cols());
 
-    {
-        // Classic resection using 6 points, computed with a Direct
-        // Linear Transform (DLT).
-        using SolverType = openMVG::resection::kernel::SixPointResectionSolver;
-        using KernelType = openMVG::robust::ACKernelAdaptorResection<
-            SolverType, openMVG::resection::SquaredPixelReprojectionError,
-            openMVG::robust::UnnormalizerResection, openMVG::Mat34>;
+    // P3P Nordberg (ECCV18) - an algorithm needing only 3 points.
+    //
+    // https://openaccess.thecvf.com/content_ECCV_2018/html/Mikael_Persson_Lambda_Twist_An_ECCV_2018_paper.html
+    using SolverType = openMVG::euclidean_resection::P3PSolver_Nordberg;
+    using KernelType =
+        ACKernelAdaptorResectionIntrinsics<SolverType, openMVG::Mat34>;
 
-        minimum_samples = SolverType::MINIMUM_SAMPLES;
+    const auto image_width = image_size.first;
+    const auto image_height = image_size.second;
+    const openMVG::cameras::Pinhole_Intrinsic camera_intrinsics(
+        image_width, image_height, focal_length_pix, ppx_pix, ppy_pix);
 
-        KernelType kernel(points_2d, image_width, image_height, points_3d);
+    KernelType kernel(points_2d, points_3d, &camera_intrinsics);
 
-        // Robustly estimate the Resection matrix with A Contrario (AC)
-        // RANSAC.
-        const auto ac_ransac_output = openMVG::robust::ACRANSAC(
-            kernel, vec_inliers, max_iteration_count, &out_projection_matrix,
-            error_upper_bound, verbose);
-        out_error_max = ac_ransac_output.first;
-        out_min_nfa = ac_ransac_output.second;
-        samples = vec_inliers.size();
+    // Robustly estimate the Resection matrix with A Contrario (AC)
+    // RANSAC.
+    const auto ac_ransac_output = openMVG::robust::ACRANSAC(
+        kernel, vec_inliers, max_iteration_count, &out_projection_matrix,
+        error_upper_bound, verbose);
+    // The amount of pixel error that is computed.
+    double out_error_max = ac_ransac_output.first;
 
-        // MMSOLVER_VRB("projection matrix: " << out_projection_matrix);
-    }
+    // NFA = Number of False Alarms.
+    double out_min_nfa = ac_ransac_output.second;
 
-    MMSOLVER_VRB(
-        "robust_camera_pose_from_known_points: valid samples: " << samples);
-    MMSOLVER_VRB("robust_camera_pose_from_known_points: minimum samples: "
-                 << minimum_samples);
+    auto solution_found = false;
+    const size_t samples = vec_inliers.size();
+    const int minimum_samples = SolverType::MINIMUM_SAMPLES;
     if (samples < minimum_samples) {
         // no sufficient coverage (not enough matching data points
         // given)
-        MMSOLVER_VRB("Camera Pose could not be found with 6 points."
+        MMSOLVER_WRN("Camera Pose could not be found with at least 3 points."
                      << " error=" << out_error_max << " pixels"
                      << ", number of false alarms=" << out_min_nfa
                      << ", minimum samples required=" << minimum_samples
                      << ", valid samples=" << samples);
     } else {
         solution_found = true;
-    }
-
-    // Try again, with an algorithm needing only 3 points.
-    if (!solution_found) {
-        {
-            // P3P Nordberg (ECCV18)
-            //
-            // https://openaccess.thecvf.com/content_ECCV_2018/html/Mikael_Persson_Lambda_Twist_An_ECCV_2018_paper.html
-            const openMVG::cameras::Pinhole_Intrinsic camera_intrinsics(
-                image_width, image_height, focal_length_pix, ppx_pix, ppy_pix);
-
-            using SolverType = openMVG::euclidean_resection::P3PSolver_Nordberg;
-            using KernelType =
-                ACKernelAdaptorResectionIntrinsics<SolverType, openMVG::Mat34>;
-
-            minimum_samples = SolverType::MINIMUM_SAMPLES;
-
-            KernelType kernel(points_2d, points_3d, &camera_intrinsics);
-
-            // Robustly estimate the Resection matrix with A Contrario (AC)
-            // RANSAC.
-            const auto ac_ransac_output = openMVG::robust::ACRANSAC(
-                kernel, vec_inliers, max_iteration_count,
-                &out_projection_matrix, error_upper_bound, verbose);
-            out_error_max = ac_ransac_output.first;
-            out_min_nfa = ac_ransac_output.second;
-            samples = vec_inliers.size();
-            MMSOLVER_VRB("projection matrix: " << out_projection_matrix);
-        }
-
-        MMSOLVER_VRB(
-            "robust_camera_pose_from_known_points: valid samples: " << samples);
-        MMSOLVER_VRB("robust_camera_pose_from_known_points: minimum samples: "
-                     << minimum_samples);
-        if (samples < minimum_samples) {
-            // no sufficient coverage (not enough matching data points
-            // given)
-            MMSOLVER_WRN("Camera Pose could not be found with 6 or 3 points."
-                         << " error=" << out_error_max << " pixels"
-                         << ", number of false alarms=" << out_min_nfa
-                         << ", minimum samples required=" << minimum_samples
-                         << ", valid samples=" << samples);
-        } else {
-            solution_found = true;
-        }
     }
 
     if (!solution_found) {
@@ -317,8 +245,8 @@ bool robust_camera_pose_from_known_points(
     MMSOLVER_VRB("- error: " << out_error_max << " pixels");
     MMSOLVER_VRB("- number of false alarms: " << out_min_nfa);
 
-    MMSOLVER_VRB("- #points 3D: " << points_3d.size());
-    for (auto i = 0; i < points_3d.size(); i++) {
+    MMSOLVER_VRB("- #points 3D: " << points_3d.cols());
+    for (auto i = 0; i < points_3d.cols(); i++) {
         auto point_3d_x = points_3d.col(i)[0];
         auto point_3d_y = points_3d.col(i)[1];
         auto point_3d_z = points_3d.col(i)[2];
@@ -326,8 +254,8 @@ bool robust_camera_pose_from_known_points(
                                        << point_3d_y << "," << point_3d_z);
     }
 
-    MMSOLVER_VRB("- #points 2D: " << points_2d.size());
-    for (auto i = 0; i < points_2d.size(); i++) {
+    MMSOLVER_VRB("- #points 2D: " << points_2d.cols());
+    for (auto i = 0; i < points_2d.cols(); i++) {
         auto point_2d_x = points_2d.col(i)[0];
         auto point_2d_y = points_2d.col(i)[1];
         MMSOLVER_VRB("  - #point 2D: " << i << " = " << point_2d_x << ","
@@ -347,8 +275,9 @@ bool compute_camera_pose_from_known_points(
     MTransformationMatrix &out_pose_transform) {
     openMVG::Mat marker_coords_matrix =
         convert_marker_coords_to_matrix(marker_coords);
+
     openMVG::Mat bundle_coords_matrix =
-        convert_bundle_coords_to_matrix(bundle_coords);
+        convert_bundle_coords_to_matrix_flip_z(bundle_coords);
 
     const std::pair<size_t, size_t> image_size(
         static_cast<size_t>(image_width), static_cast<size_t>(image_height));

@@ -90,6 +90,9 @@ openMVG::Mat convert_marker_coords_to_matrix(
 openMVG::Mat convert_bundle_coords_to_matrix(
     const std::vector<std::tuple<double, double, double>> &bundle_coords);
 
+openMVG::Mat convert_bundle_coords_to_matrix_flip_z(
+    const std::vector<std::tuple<double, double, double>> &bundle_coords);
+
 MStatus parseCameraSelectionList(
     const MSelectionList &selection_list, const MTime &time, CameraPtr &camera,
     Attr &camera_tx_attr, Attr &camera_ty_attr, Attr &camera_tz_attr,

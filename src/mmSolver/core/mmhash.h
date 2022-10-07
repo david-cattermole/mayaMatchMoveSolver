@@ -33,6 +33,9 @@ using HashValue = int64_t;
 template <class T>
 inline void combine(HashValue& seed, const T& v) {
     std::hash<T> hasher;
+    // See link for an explaination for why the function (the same as
+    // the Boost implementation) is used:
+    // https://stackoverflow.com/questions/35985960/c-why-is-boosthash-combine-the-best-way-to-combine-hash-values
     seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 

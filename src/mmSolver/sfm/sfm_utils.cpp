@@ -17,10 +17,10 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Calculate camera relative poses.
+ * Various utilities for SfM operations in mmSolver.
  */
 
-#include "camera_relative_pose.h"
+#include "sfm_utils.h"
 
 // STL
 #include <algorithm>

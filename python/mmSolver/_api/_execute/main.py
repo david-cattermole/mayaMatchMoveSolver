@@ -265,9 +265,13 @@ def execute(
 
                 if isinstance(frame, list):
                     frame_str = convert_types_utils.intListToString(frame)
-                    collectionutils.run_status_func(info_fn, 'Evaluating frames %s' % frame_str)
+                    collectionutils.run_status_func(
+                        info_fn, 'Evaluating frames %s' % frame_str
+                    )
                 else:
-                    collectionutils.run_status_func(info_fn, 'Evaluating frames %r' % frame)
+                    collectionutils.run_status_func(
+                        info_fn, 'Evaluating frames %r' % frame
+                    )
 
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid

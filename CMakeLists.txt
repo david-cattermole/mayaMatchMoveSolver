@@ -52,6 +52,11 @@ set(CXX_EXTENSIONS OFF)
 # compatible with RHEL/CentOS 7, Maya and the VFX Platform.
 #
 # https://vfxplatform.com/#footnote-gcc6
+#
+# TODO: In VFX Platform CY2023, and the move to RHEL 8 or RHEL 9,
+# the new default is to use "_GLIBCXX_USE_CXX11_ABI=1".
+#
+# https://vfxplatform.com/#footnote-gcc9
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")

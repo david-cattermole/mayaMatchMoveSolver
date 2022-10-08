@@ -46,7 +46,9 @@ function(find_ceres_find_with_paths ceres_root ceres_include_path ceres_lib_path
     find_library(ceres_library
       NAMES
         libceres
+        libceres-debug
         ceres
+        ceres-debug
       HINTS
         ${ceres_lib_path}
         ${ceres_root}
@@ -172,6 +174,9 @@ if(NOT ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ceres_ALLOW_DOWNLOAD)
   set(ceres_LIBRARY_DIR "${_EXTERNAL_INSTALL_DIR}/ceres/${CMAKE_INSTALL_LIBDIR}")
 
   set(ceres_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}ceres${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(ceres_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}ceres-debug${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  endif()
   set(ceres_LIBRARY "${ceres_LIBRARY_DIR}/${ceres_LIBRARY_NAME}")
 
   if(WIN32)

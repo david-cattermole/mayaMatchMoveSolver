@@ -51,7 +51,9 @@ function(find_glog_find_with_paths glog_root glog_include_path glog_lib_path)
         libglog.so.1
         libglog.1.dylib
         libglog
+        libglogd
         glog
+        glogd
         libglog_s
         glog_s
       HINTS
@@ -147,6 +149,9 @@ if(NOT glog_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND glog_ALLOW_DOWNLOAD)
   set(glog_LIBRARY_DIR "${_EXTERNAL_INSTALL_DIR}/glog/${CMAKE_INSTALL_LIBDIR}")
 
   set(glog_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}glog${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(glog_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}glogd${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  endif()
   set(glog_LIBRARY "${glog_LIBRARY_DIR}/${glog_LIBRARY_NAME}")
 
   set(glog_URL

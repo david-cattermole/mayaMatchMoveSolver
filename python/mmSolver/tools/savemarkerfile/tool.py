@@ -58,8 +58,11 @@ def main():
         returnFilter=False,
         dialogStyle=2,
     )
-    file_path = file_path[0]
+    if not file_path:
+        LOG.info('User cancelled.')
+        return
 
+    file_path = file_path[0]
     result = lib.write_file(file_path, data)
     if result:
         LOG.info('Successfully written file: %r', file_path)

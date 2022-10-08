@@ -63,8 +63,8 @@ class TestSolve(test_api_utils.APITestCase):
         # Lens
         lens = mmapi.Lens(node='lens1')
         lens_node = lens.get_node()
-        lens_attr_a = lens_node + '.tdeRadialDeg4_degree2_distortion'
-        lens_attr_b = lens_node + '.tdeRadialDeg4_degree4_distortion'
+        lens_attr_a = lens_node + '.tdeRadialStdDeg4_degree2_distortion'
+        lens_attr_b = lens_node + '.tdeRadialStdDeg4_degree4_distortion'
         attr_a = mmapi.Attribute(lens_attr_a)
         attr_b = mmapi.Attribute(lens_attr_b)
         attr_list = [attr_a, attr_b]

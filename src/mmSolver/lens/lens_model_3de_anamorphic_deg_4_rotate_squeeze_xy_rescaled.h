@@ -18,11 +18,12 @@
  * ====================================================================
  *
  * Class for the 3DE Anamorphic Degree 4 Lens Distortion with Rotation
- * and Squeeze X/Y.
+ * and Squeeze X/Y - and 'rescaled' parameter to support images that
+ * have reformated pixel aspect to 1.0.
  */
 
-#ifndef MM_SOLVER_CORE_LENS_MODEL_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_H
-#define MM_SOLVER_CORE_LENS_MODEL_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_H
+#ifndef MM_SOLVER_CORE_LENS_MODEL_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_RESCALED_H
+#define MM_SOLVER_CORE_LENS_MODEL_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_RESCALED_H
 
 // Do not define 'min' and 'max' macros on MS Windows (with MSVC),
 // added to fix errors with LDPK.
@@ -45,7 +46,7 @@
 
 #include <ldpk/ldpk.h>
 #include <ldpk/tde4_ld_plugin.h>
-#include <ldpk/tde4_ldp_anamorphic_deg_4_rotate_squeeze_xy.h>
+#include <ldpk/tde4_ldp_anamorphic_deg_4_rotate_squeeze_xy_rescaled.h>
 
 #pragma warning(pop)
 
@@ -54,12 +55,13 @@
 #include "mmSolver/core/mmhash.h"
 
 using LensPluginBase = tde4_ld_plugin;
-using LensPluginAnamorphicDeg4RotateSqueezeXY =
-    tde4_ldp_anamorphic_deg_4_rotate_squeeze_xy<ldpk::vec2d, ldpk::mat2d>;
+using LensPluginAnamorphicDeg4RotateSqueezeXYRescaled =
+    tde4_ldp_anamorphic_deg_4_rotate_squeeze_xy_rescaled<ldpk::vec2d,
+                                                         ldpk::mat2d>;
 
-class LensModel3deAnamorphicDeg4RotateSqueezeXY : public LensModel {
+class LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled : public LensModel {
 public:
-    LensModel3deAnamorphicDeg4RotateSqueezeXY()
+    LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled()
         : LensModel{LensModelType::k3deAnamorphicStdDeg4}
         , m_degree2_cx02(0.0)
         , m_degree2_cy02(0.0)
@@ -74,17 +76,18 @@ public:
         , m_lensRotation(0.0)
         , m_squeeze_x(1.0)
         , m_squeeze_y(1.0)
+        , m_rescale(1.0)
         , m_lensPlugin(std::unique_ptr<LensPluginBase>(
-              new LensPluginAnamorphicDeg4RotateSqueezeXY())) {}
+              new LensPluginAnamorphicDeg4RotateSqueezeXYRescaled())) {}
 
-    LensModel3deAnamorphicDeg4RotateSqueezeXY(
+    LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled(
         const double degree2_cx02, const double degree2_cy02,
         const double degree2_cx22, const double degree2_cy22,
         const double degree4_cx04, const double degree4_cy04,
         const double degree4_cx24, const double degree4_cy24,
         const double degree4_cx44, const double degree4_cy44,
         const double lensRotation, const double squeeze_x,
-        const double squeeze_y)
+        const double squeeze_y, const double rescale)
         : LensModel{LensModelType::k3deAnamorphicStdDeg4}
         , m_degree2_cx02(degree2_cx02)
         , m_degree2_cy02(degree2_cy02)
@@ -99,11 +102,12 @@ public:
         , m_lensRotation(lensRotation)
         , m_squeeze_x(squeeze_x)
         , m_squeeze_y(squeeze_y)
+        , m_rescale(rescale)
         , m_lensPlugin(std::unique_ptr<LensPluginBase>(
-              new LensPluginAnamorphicDeg4RotateSqueezeXY())) {}
+              new LensPluginAnamorphicDeg4RotateSqueezeXYRescaled())) {}
 
-    LensModel3deAnamorphicDeg4RotateSqueezeXY(
-        const LensModel3deAnamorphicDeg4RotateSqueezeXY &rhs)
+    LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled(
+        const LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled &rhs)
         : LensModel{rhs}
         , m_degree2_cx02(rhs.getDegree2Cx02())
         , m_degree2_cy02(rhs.getDegree2Cy02())
@@ -118,17 +122,18 @@ public:
         , m_lensRotation(rhs.getLensRotation())
         , m_squeeze_x(rhs.getSqueezeX())
         , m_squeeze_y(rhs.getSqueezeY())
+        , m_rescale(rhs.getRescale())
         , m_lensPlugin{std::unique_ptr<LensPluginBase>(
-              new LensPluginAnamorphicDeg4RotateSqueezeXY())} {}
+              new LensPluginAnamorphicDeg4RotateSqueezeXYRescaled())} {}
 
     std::unique_ptr<LensModel> cloneAsUniquePtr() const override {
         return std::unique_ptr<LensModel>(
-            new LensModel3deAnamorphicDeg4RotateSqueezeXY(*this));
+            new LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled(*this));
     }
 
     std::shared_ptr<LensModel> cloneAsSharedPtr() const override {
         return std::shared_ptr<LensModel>(
-            new LensModel3deAnamorphicDeg4RotateSqueezeXY(*this));
+            new LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled(*this));
     }
 
     double getDegree2Cx02() const { return m_degree2_cx02; }
@@ -149,6 +154,7 @@ public:
     double getLensRotation() const { return m_lensRotation; }
     double getSqueezeX() const { return m_squeeze_x; }
     double getSqueezeY() const { return m_squeeze_y; }
+    double getRescale() const { return m_rescale; }
 
     void setDegree2Cx02(const double value) {
         bool same_value = m_degree2_cx02 == value;
@@ -254,6 +260,14 @@ public:
         }
     }
 
+    void setRescale(const double value) {
+        bool same_value = m_rescale == value;
+        if (!same_value) {
+            m_state = LensModelState::kDirty;
+            m_rescale = value;
+        }
+    }
+
     virtual void applyModelUndistort(const double x, const double y,
                                      double &out_x, double &out_y);
 
@@ -283,6 +297,7 @@ private:
     double m_lensRotation;  // "Lens Rotation"
     double m_squeeze_x;     // "Squeeze-X"
     double m_squeeze_y;     // "Squeeze-Y"
+    double m_rescale;       // "Rescale"
 };
 
-#endif  // MM_SOLVER_CORE_LENS_MODEL_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_H
+#endif  // MM_SOLVER_CORE_LENS_MODEL_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_RESCALED_H

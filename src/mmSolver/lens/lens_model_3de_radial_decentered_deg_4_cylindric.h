@@ -60,7 +60,7 @@ using LensPluginRadialDecenteredDeg4Cylindric =
 class LensModel3deRadialDecenteredDeg4Cylindric : public LensModel {
 public:
     LensModel3deRadialDecenteredDeg4Cylindric()
-        : LensModel{LensModelType::k3deRadialDeg4}
+        : LensModel{LensModelType::k3deRadialStdDeg4}
         , m_degree2_distortion(0.0)
         , m_degree2_u(0.0)
         , m_degree2_v(0.0)
@@ -77,7 +77,7 @@ public:
         const double degree2_v, const double degree4_distortion,
         const double degree4_u, const double degree4_v,
         const double cylindricDirection, const double cylindricBending)
-        : LensModel{LensModelType::k3deRadialDeg4}
+        : LensModel{LensModelType::k3deRadialStdDeg4}
         , m_degree2_distortion(degree2_distortion)
         , m_degree2_u(degree2_u)
         , m_degree2_v(degree2_v)

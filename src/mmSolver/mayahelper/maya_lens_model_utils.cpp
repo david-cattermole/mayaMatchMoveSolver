@@ -522,29 +522,44 @@ MStatus getAttrsFromLensNode(const MObject &node, const MString &nodeName,
             attrNames.append("tdeClassic_curvatureX");
             attrNames.append("tdeClassic_curvatureY");
             attrNames.append("tdeClassic_quarticDistortion");
-        } else if (lensModel == LensModelType::k3deRadialDeg4) {
-            attrNames.append("tdeRadialDeg4_degree2_distortion");
-            attrNames.append("tdeRadialDeg4_degree2_u");
-            attrNames.append("tdeRadialDeg4_degree2_v");
-            attrNames.append("tdeRadialDeg4_degree4_distortion");
-            attrNames.append("tdeRadialDeg4_degree4_u");
-            attrNames.append("tdeRadialDeg4_degree4_v");
-            attrNames.append("tdeRadialDeg4_cylindricDirection");
-            attrNames.append("tdeRadialDeg4_cylindricBending");
-        } else if (lensModel == LensModelType::k3deAnamorphicDeg4) {
-            attrNames.append("tdeAnamorphicDeg4_degree2_cx02");
-            attrNames.append("tdeAnamorphicDeg4_degree2_cy02");
-            attrNames.append("tdeAnamorphicDeg4_degree2_cx22");
-            attrNames.append("tdeAnamorphicDeg4_degree2_cy22");
-            attrNames.append("tdeAnamorphicDeg4_degree4_cx04");
-            attrNames.append("tdeAnamorphicDeg4_degree4_cy04");
-            attrNames.append("tdeAnamorphicDeg4_degree4_cx24");
-            attrNames.append("tdeAnamorphicDeg4_degree4_cy24");
-            attrNames.append("tdeAnamorphicDeg4_degree4_cx44");
-            attrNames.append("tdeAnamorphicDeg4_degree4_cy44");
-            attrNames.append("tdeAnamorphicDeg4_lensRotation");
-            attrNames.append("tdeAnamorphicDeg4_squeeze_x");
-            attrNames.append("tdeAnamorphicDeg4_squeeze_y");
+        } else if (lensModel == LensModelType::k3deRadialStdDeg4) {
+            attrNames.append("tdeRadialStdDeg4_degree2_distortion");
+            attrNames.append("tdeRadialStdDeg4_degree2_u");
+            attrNames.append("tdeRadialStdDeg4_degree2_v");
+            attrNames.append("tdeRadialStdDeg4_degree4_distortion");
+            attrNames.append("tdeRadialStdDeg4_degree4_u");
+            attrNames.append("tdeRadialStdDeg4_degree4_v");
+            attrNames.append("tdeRadialStdDeg4_cylindricDirection");
+            attrNames.append("tdeRadialStdDeg4_cylindricBending");
+        } else if (lensModel == LensModelType::k3deAnamorphicStdDeg4) {
+            attrNames.append("tdeAnamorphicStdDeg4_degree2_cx02");
+            attrNames.append("tdeAnamorphicStdDeg4_degree2_cy02");
+            attrNames.append("tdeAnamorphicStdDeg4_degree2_cx22");
+            attrNames.append("tdeAnamorphicStdDeg4_degree2_cy22");
+            attrNames.append("tdeAnamorphicStdDeg4_degree4_cx04");
+            attrNames.append("tdeAnamorphicStdDeg4_degree4_cy04");
+            attrNames.append("tdeAnamorphicStdDeg4_degree4_cx24");
+            attrNames.append("tdeAnamorphicStdDeg4_degree4_cy24");
+            attrNames.append("tdeAnamorphicStdDeg4_degree4_cx44");
+            attrNames.append("tdeAnamorphicStdDeg4_degree4_cy44");
+            attrNames.append("tdeAnamorphicStdDeg4_lensRotation");
+            attrNames.append("tdeAnamorphicStdDeg4_squeeze_x");
+            attrNames.append("tdeAnamorphicStdDeg4_squeeze_y");
+        } else if (lensModel == LensModelType::k3deAnamorphicStdDeg4Rescaled) {
+            attrNames.append("tdeAnamorphicStdDeg4_degree2_cx02");
+            attrNames.append("tdeAnamorphicStdDeg4_degree2_cy02");
+            attrNames.append("tdeAnamorphicStdDeg4_degree2_cx22");
+            attrNames.append("tdeAnamorphicStdDeg4_degree2_cy22");
+            attrNames.append("tdeAnamorphicStdDeg4_degree4_cx04");
+            attrNames.append("tdeAnamorphicStdDeg4_degree4_cy04");
+            attrNames.append("tdeAnamorphicStdDeg4_degree4_cx24");
+            attrNames.append("tdeAnamorphicStdDeg4_degree4_cy24");
+            attrNames.append("tdeAnamorphicStdDeg4_degree4_cx44");
+            attrNames.append("tdeAnamorphicStdDeg4_degree4_cy44");
+            attrNames.append("tdeAnamorphicStdDeg4_lensRotation");
+            attrNames.append("tdeAnamorphicStdDeg4_squeeze_x");
+            attrNames.append("tdeAnamorphicStdDeg4_squeeze_y");
+            attrNames.append("tdeAnamorphicStdDeg4_rescale");
         } else {
             MMSOLVER_ERR(
                 "Invalid lens model type value from 'lensModel' attribute: "

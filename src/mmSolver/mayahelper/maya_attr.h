@@ -233,47 +233,47 @@ inline AttrSolverType computeSolverAttrType(ObjectType objectType,
             attr_type = AttrSolverType::kLens3deClassicCurvatureY;
         } else if (attrName == "tdeClassic_quarticDistortion") {
             attr_type = AttrSolverType::kLens3deClassicQuarticDistortion;
-        } else if (attrName == "tdeRadialDeg4_degree2_distortion") {
+        } else if (attrName == "tdeRadialStdDeg4_degree2_distortion") {
             attr_type = AttrSolverType::kLens3deRadialDeg4Degree2Distortion;
-        } else if (attrName == "tdeRadialDeg4_degree2_u") {
+        } else if (attrName == "tdeRadialStdDeg4_degree2_u") {
             attr_type = AttrSolverType::kLens3deRadialDeg4Degree2U;
-        } else if (attrName == "tdeRadialDeg4_degree2_v") {
+        } else if (attrName == "tdeRadialStdDeg4_degree2_v") {
             attr_type = AttrSolverType::kLens3deRadialDeg4Degree2V;
-        } else if (attrName == "tdeRadialDeg4_degree4_distortion") {
+        } else if (attrName == "tdeRadialStdDeg4_degree4_distortion") {
             attr_type = AttrSolverType::kLens3deRadialDeg4Degree4Distortion;
-        } else if (attrName == "tdeRadialDeg4_degree4_u") {
+        } else if (attrName == "tdeRadialStdDeg4_degree4_u") {
             attr_type = AttrSolverType::kLens3deRadialDeg4Degree4U;
-        } else if (attrName == "tdeRadialDeg4_degree4_v") {
+        } else if (attrName == "tdeRadialStdDeg4_degree4_v") {
             attr_type = AttrSolverType::kLens3deRadialDeg4Degree4V;
-        } else if (attrName == "tdeRadialDeg4_cylindricDirection") {
+        } else if (attrName == "tdeRadialStdDeg4_cylindricDirection") {
             attr_type = AttrSolverType::kLens3deRadialDeg4Direction;
-        } else if (attrName == "tdeRadialDeg4_cylindricBending") {
+        } else if (attrName == "tdeRadialStdDeg4_cylindricBending") {
             attr_type = AttrSolverType::kLens3deRadialDeg4Bending;
-        } else if (attrName == "tdeAnamorphicDeg4_degree2_cx02") {
+        } else if (attrName == "tdeAnamorphicStdDeg4_degree2_cx02") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4Degree2Cx02;
-        } else if (attrName == "tdeAnamorphicDeg4_degree2_cy02") {
+        } else if (attrName == "tdeAnamorphicStdDeg4_degree2_cy02") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4Degree2Cy02;
-        } else if (attrName == "tdeAnamorphicDeg4_degree2_cx22") {
+        } else if (attrName == "tdeAnamorphicStdDeg4_degree2_cx22") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4Degree2Cx22;
-        } else if (attrName == "tdeAnamorphicDeg4_degree2_cy22") {
+        } else if (attrName == "tdeAnamorphicStdDeg4_degree2_cy22") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4Degree2Cy22;
-        } else if (attrName == "tdeAnamorphicDeg4_degree4_cx04") {
+        } else if (attrName == "tdeAnamorphicStdDeg4_degree4_cx04") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx04;
-        } else if (attrName == "tdeAnamorphicDeg4_degree4_cy04") {
+        } else if (attrName == "tdeAnamorphicStdDeg4_degree4_cy04") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy04;
-        } else if (attrName == "tdeAnamorphicDeg4_degree4_cx24") {
+        } else if (attrName == "tdeAnamorphicStdDeg4_degree4_cx24") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx24;
-        } else if (attrName == "tdeAnamorphicDeg4_degree4_cy24") {
+        } else if (attrName == "tdeAnamorphicStdDeg4_degree4_cy24") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy24;
-        } else if (attrName == "tdeAnamorphicDeg4_degree4_cx44") {
+        } else if (attrName == "tdeAnamorphicStdDeg4_degree4_cx44") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4Degree4Cx44;
-        } else if (attrName == "tdeAnamorphicDeg4_degree4_cy44") {
+        } else if (attrName == "tdeAnamorphicStdDeg4_degree4_cy44") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4Degree4Cy44;
-        } else if (attrName == "tdeAnamorphicDeg4_lensRotation") {
+        } else if (attrName == "tdeAnamorphicStdDeg4_lensRotation") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4LensRotation;
-        } else if (attrName == "tdeAnamorphicDeg4_squeeze_x") {
+        } else if (attrName == "tdeAnamorphicStdDeg4_squeeze_x") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4SqueezeX;
-        } else if (attrName == "tdeAnamorphicDeg4_squeeze_y") {
+        } else if (attrName == "tdeAnamorphicStdDeg4_squeeze_y") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4SqueezeY;
         }
     } else {

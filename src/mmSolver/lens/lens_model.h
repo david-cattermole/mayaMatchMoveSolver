@@ -49,16 +49,22 @@ enum class LensModelType {
     k3deClassic = 2,
 
     // "3DE4 Radial - Standard, Degree 4"
-    k3deRadialDeg4 = 3,
+    k3deRadialStdDeg4 = 3,
 
     // "3DE4 Anamorphic - Standard, Degree 4"
-    k3deAnamorphicDeg4 = 4,
+    k3deAnamorphicStdDeg4 = 4,
 
-    // // "3DE4 Anamorphic - Rescaled, Degree 4"
-    // k3deAnamorphicDeg4Rescaled = 5,
+    // "3DE4 Anamorphic - Rescaled, Degree 4"
+    k3deAnamorphicStdDeg4Rescaled = 5,
+
+    // // "3DE4 Anamorphic - Standard, Degree 6"
+    // k3deAnamorphicStdDeg4 = 6,
+
+    // // "3DE4 Anamorphic - Rescaled, Degree 6"
+    // k3deAnamorphicStdDeg4Rescaled = 7,
 
     // // "3DE4 Anamorphic, Degree 6"
-    // k3deAnamorphicDeg6 = 6,
+    // k3deAnamorphicDeg6 = 8,
 
     kNumLensModelType,
 };

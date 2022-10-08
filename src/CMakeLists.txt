@@ -56,6 +56,7 @@ set(SOURCE_FILES
   mmSolver/core/mmmath.cpp
   mmSolver/core/reprojection.cpp
   mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.cpp
+  mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy_rescaled.cpp
   mmSolver/lens/lens_model_3de_classic.cpp
   mmSolver/lens/lens_model_3de_radial_decentered_deg_4_cylindric.cpp
   mmSolver/lens/lens_model_passthrough.cpp

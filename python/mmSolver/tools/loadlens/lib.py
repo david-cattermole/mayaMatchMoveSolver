@@ -199,8 +199,9 @@ def _set_lens_model(node, value):
         LOG.info('Skipping connected attribute: %r', node_attr)
         return False
 
-    node_type_to_value = const.NUKE_NODE_TYPE_TO_NODE_TYPE_TO_VALUE.get(value, {})
-    value = node_type_to_value.get(maya_node_type)
+    lookup = const.NUKE_NODE_TYPE_TO_NODE_TYPE_TO_LENS_MODEL_VALUE
+    node_type_to_lens_model_value = lookup.get(value, {})
+    value = node_type_to_lens_model_value.get(maya_node_type)
     if value is None:
         return False
 
@@ -209,6 +210,7 @@ def _set_lens_model(node, value):
 
 
 def apply_to_lens(lens_object, lens):
+    assert isinstance(lens_object, LensObject)
     LOG.info('Apply lens object to lens: %r', lens)
 
     object_node_type = lens_object.node_type

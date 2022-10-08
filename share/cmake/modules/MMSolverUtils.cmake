@@ -140,6 +140,11 @@ function(set_global_maya_plugin_compile_options)
     # compatible with RHEL/CentOS 7, Maya and the VFX Platform.
     #
     # https://vfxplatform.com/#footnote-gcc6
+    #
+    # TODO: In VFX Platform CY2023, and the move to RHEL 8 or RHEL 9,
+    # the new default is to use "_GLIBCXX_USE_CXX11_ABI=1".
+    #
+    # https://vfxplatform.com/#footnote-gcc9
     add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
 
     # Enable warnings.

@@ -27,6 +27,7 @@ import maya.cmds
 import maya.mel
 
 import mmSolver.logger
+import mmSolver.utils.converttypes as convert_types_utils
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.state as api_state
@@ -261,7 +262,13 @@ def execute(
 
             if func_is_mmsolver is True:
                 frame = kwargs.get('frame')
-                collectionutils.run_status_func(info_fn, 'Evaluating frames %r' % frame)
+
+                if isinstance(frame, list):
+                    frame_str = convert_types_utils.intListToString(frame)
+                    collectionutils.run_status_func(info_fn, 'Evaluating frames %s' % frame_str)
+                else:
+                    collectionutils.run_status_func(info_fn, 'Evaluating frames %r' % frame)
+
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid
 

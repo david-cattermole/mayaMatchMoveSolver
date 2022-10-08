@@ -824,6 +824,16 @@
                 "mmSolver.tools.loadlens.tool.main();"
             ]
         },
+        "save_lens_file": {
+            "name": "Save Lens File...",
+            "name_shelf": "SvLns",
+            "tooltip": "Save a Lens file.",
+            "icon_shelf": "menuIconFile.png",
+            "command": [
+                "import mmSolver.tools.savelensfile.tool;",
+                "mmSolver.tools.savelensfile.tool.main();"
+            ]
+        },
         "camera_context_menu": {
             "name": "Camera Context",
             "name_shelf": "",

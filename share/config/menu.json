@@ -115,7 +115,8 @@
             "file_io_tools/---Camera",
             "file_io_tools/copy_camera_to_clipboard",
             "file_io_tools/---Lens",
-            "file_io_tools/load_lens"
+            "file_io_tools/load_lens",
+            "file_io_tools/save_lens_file"
         ],
         "functions": {
             "attr_tools": {

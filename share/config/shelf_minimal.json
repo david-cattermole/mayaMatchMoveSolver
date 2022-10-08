@@ -124,6 +124,7 @@
             "file_io_tools/file_io_popup/copy_camera_to_clipboard",
             "file_io_tools/file_io_popup/---Lens",
             "file_io_tools/file_io_popup/load_lens",
+            "file_io_tools/file_io_popup/save_lens_file",
             "hotkey_switcher/hotkey_switcher_popup/dummy"
         ],
         "functions": {

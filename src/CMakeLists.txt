@@ -135,7 +135,7 @@ target_include_directories(mmSolver
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
 
   # For generated 'buildConstant.h' file.
-  PRIVATE ${CMAKE_BINARY_DIR}/include/mmSolver
+  PRIVATE ${CMAKE_BINARY_DIR}/include
   )
 # On Linux the 'm' library is required.
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)

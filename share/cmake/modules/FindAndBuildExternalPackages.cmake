@@ -52,19 +52,6 @@ find_package(glog 0.5.0 REQUIRED)
 # https://github.com/devernay/cminpack
 find_package(cminpack 1.3.8 REQUIRED)
 
-# CXSparse - Sparse Matrix algorithms
-#
-# CXSparse is required by Ceres Solver to compute sparse matrices. In
-# theory this is optional, but it's much easier for the build to make
-# it required.
-#
-# Note: mmSolver has custom written CMake scripts for this project.
-#
-# https://github.com/TheFrenchLeaf/CXSparse
-#
-# Version: 3.1.1
-find_package(cxsparse REQUIRED)
-
 # Eigen - Linear Alegbra library
 #
 # https://gitlab.com/libeigen/eigen

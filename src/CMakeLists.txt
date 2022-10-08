@@ -189,7 +189,6 @@ target_link_libraries(mmSolver
   cminpack::cminpack
   glog::glog
   Eigen3::Eigen
-  cxsparse::cxsparse
   ceres
   OpenMVG::cereal
   OpenMVG::lib_CoinUtils

@@ -93,11 +93,9 @@ function(find_ceres_set_target ceres_library ceres_include_dir)
     INTERFACE_INCLUDE_DIRECTORIES ${ceres_include_dir}
   )
 
-  if(WIN32)
-    set_target_properties(ceres PROPERTIES IMPORTED_LINK_INTERFACE_LIBRARIES "cxsparse::cxsparse")
-  else()
+  if(NOT WIN32)
     # 'gomp' is GNU OpenMP for GCC.
-    set_target_properties(ceres PROPERTIES IMPORTED_LINK_INTERFACE_LIBRARIES "cxsparse::cxsparse;gomp")
+    set_target_properties(ceres PROPERTIES IMPORTED_LINK_INTERFACE_LIBRARIES "gomp")
   endif()
 
 endfunction()
@@ -233,10 +231,6 @@ if(NOT ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ceres_ALLOW_DOWNLOAD)
     -DGLOG_INCLUDE_DIR_HINTS=${glog_INCLUDE_DIR}
     -DGLOG_LIBRARY_DIR_HINTS=${glog_LIBRARY}
 
-    -DCXSPARSE_LIBRARY=${cxsparse_LIBRARY}
-    -DCXSPARSE_INCLUDE_DIR_HINTS=${cxsparse_INCLUDE_DIR}
-    -DCXSPARSE_LIBRARY_DIR_HINTS=${cxsparse_LIBRARY}
-
     -DBUILD_TESTING=0
     -DBUILD_DOCUMENTATION=0
     -DBUILD_EXAMPLES=0
@@ -248,7 +242,6 @@ if(NOT ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ceres_ALLOW_DOWNLOAD)
     # WARNING: Enabling "EIGENSPARSE" results in an LGPL licensed
     # Ceres.
     -DEIGENSPARSE=ON
-    -DCXSPARSE=ON
     -DLAPACK=OFF
     -DSUITESPARSE=OFF
     -DGFLAGS=OFF
@@ -273,7 +266,7 @@ if(NOT ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ceres_ALLOW_DOWNLOAD)
   file(MAKE_DIRECTORY ${ceres_INCLUDE_DIR})
 
   ExternalProject_Add(ceres_install
-    DEPENDS cxsparse Eigen3 glog
+    DEPENDS Eigen3 glog
     PREFIX ${ceres_PREFIX}
     GIT_REPOSITORY ${ceres_URL}
     GIT_TAG "${ceres_GIT_TAG}"

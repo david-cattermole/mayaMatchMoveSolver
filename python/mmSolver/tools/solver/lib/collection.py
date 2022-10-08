@@ -891,9 +891,9 @@ def run_solve_ui(col, options, log_level, window):
             return
 
         compile_collection(col)
-        prog_fn = LOG.warning
-        status_fn = LOG.warning
-        info_fn = LOG.warning
+        prog_fn = LOG.info
+        status_fn = LOG.info
+        info_fn = LOG.info
         if window is not None and uiutils.isValidQtObject(window) is True:
             prog_fn = window.setProgressValue
             status_fn = window.setStatusLine

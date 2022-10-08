@@ -43,68 +43,6 @@ set(LDPK_BASE_SOURCE_FILES
   ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/ldpk_table_generator.C
   )
 
-# Lens Distortion Plug-ins.
-set(TDE4_LDP_ALL_PAR_TYPES_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_all_par_types.C
-)
-
-set(TDE4_LDP_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_anamorphic_deg_4_rotate_squeeze_xy.C
-)
-
-set(TDE4_LDP_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_RESCALED_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_anamorphic_deg_4_rotate_squeeze_xy_rescaled.C
-)
-
-set(TDE4_LDP_ANAMORPHIC_DEG_6_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_anamorphic_deg_6.C
-)
-
-set(TDE4_LDP_CLASSIC_3DE_MIXED_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_classic_3de_mixed.C
-)
-
-set(TDE4_LDP_EXAMPLE_RADIAL_DEG_8_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_example_radial_deg_8.C
-)
-
-set(TDE4_LDP_NOOP_DEBUGGING_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_noop_debugging.C
-)
-
-set(TDE4_LDP_RADIAL_DECENTERED_DEG_4_CYLINDRIC_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_radial_decentered_deg_4_cylindric.C
-)
-
-set(TDE4_LDP_RADIAL_DEG_8_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_radial_deg_8.C
-)
-
-set(TDE4_LDP_RADIAL_DEG_8_RELEASE_1_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_radial_deg_8_release_1.C
-)
-
-# Lens Distortion Plug-ins (EXPERIMENTAL).
-set(TDE4_LDP_RADIAL_FISHEYE_EQUIDISTANT_DEG_8_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_radial_fisheye_equidistant_deg_8.experimental.C
-)
-
-set(TDE4_LDP_RADIAL_FISHEYE_EQUISOLID_DEG_8_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_radial_fisheye_equisolid_deg_8.experimental.C
-)
-
-set(TDE4_LDP_RADIAL_FISHEYE_ORTHOGRAPHIC_DEG_8_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_radial_fisheye_orthographic_deg_8.experimental.C
-)
-
-set(TDE4_LDP_RADIAL_FISHEYE_STEREOGRAPHIC_DEG_8_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_radial_fisheye_stereographic_deg_8.experimental.C
-)
-
-set(TDE4_LDP_RADIAL_HOMOMORPHIC_DECENTERED_DEG_2_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/tde4_ldp_radial_homomorphic_decentered_deg_2.experimental.C
-  )
-
 if (MSVC)
     # Ensure the compilier knows we are on MS Windows, so that LDPK
     # does not use pthreads and use native Windows threads instead.

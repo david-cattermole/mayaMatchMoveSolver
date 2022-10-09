@@ -522,6 +522,9 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     }
 
     // Refine the scene.
+#if 0
+    // The Ceres bundle adjustment sometimes produced bundle positions
+    // very far from camera, which caused the solve to fail miserably.
     auto adjust_ok = ::mmsolver::sfm::bundle_adjustment(scene);
     if (!adjust_ok) {
         MMSOLVER_ERR("Bundle Adjustment failed.");
@@ -529,6 +532,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         MMCameraRelativePoseCmd::setResult(emptyResult);
         return status;
     }
+#endif
 
     // Convert the sfm_data back to Maya data and set Camera and
     // Bundles.

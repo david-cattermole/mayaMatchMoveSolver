@@ -36,6 +36,10 @@ def action_func_is_mmSolver(action):
     return _action_func_is_name(action, 'mmSolver')
 
 
+def action_func_is_camera_solve(action):
+    return _action_func_is_name(action, 'camera_solve')
+
+
 def action_func_is_mmSolverAffects(action):
     return _action_func_is_name(action, 'mmSolverAffects')
 

@@ -357,7 +357,7 @@ def _sub_bundle_adjustment(
     )
     assert result[0] == 'success=1'
 
-    return
+    return result
 
 
 def _bundle_adjust(
@@ -407,8 +407,9 @@ def _bundle_adjust(
     assert isinstance(adjust_lens_distortion, bool)
     assert len(mkr_nodes) > 0
 
+    result = None
     if adjust_lens_distortion is False:
-        _sub_bundle_adjustment(
+        result = _sub_bundle_adjustment(
             cam_tfm,
             cam_shp,
             mkr_nodes,
@@ -524,7 +525,7 @@ def _bundle_adjust(
         )
 
         # Solve everything
-        _sub_bundle_adjustment(
+        result = _sub_bundle_adjustment(
             cam_tfm,
             cam_shp,
             mkr_nodes,
@@ -541,7 +542,7 @@ def _bundle_adjust(
             solver_type=solver_type,
         )
 
-    return
+    return result
 
 
 def _solve_relative_poses(
@@ -926,6 +927,8 @@ def _precompute_values(mkr_list, root_frames, start_frame, end_frame):
     )
 
 
+# TODO: Make arguments keywords arguments. This will make things
+# easier to understand for calling code.
 def camera_solve(
     cam_tfm,
     cam_shp,
@@ -1212,6 +1215,7 @@ def camera_solve(
             adjust_mkr_nodes.add(mkr_node)
     adjust_mkr_nodes = list(sorted(adjust_mkr_nodes))
 
+    result = None
     if len(all_frames) > 0 and len(adjust_mkr_nodes) > 0:
         min_markers_num = 4
         all_frames = set(
@@ -1224,7 +1228,7 @@ def camera_solve(
 
         # Solve per-frame. Only animated attributes are solved - bundles
         # and (static) focal lengths are ignored.
-        _bundle_adjust(
+        result = _bundle_adjust(
             cam_tfm,
             cam_shp,
             adjust_mkr_nodes,
@@ -1248,4 +1252,4 @@ def camera_solve(
         end_frame,
         scene_scale,
     )
-    return
+    return result

@@ -187,6 +187,7 @@ def execute(
     kwargs = {}
     save_node_attrs = []
     func_is_mmsolver = False
+    func_is_camera_solve = False
     is_single_frame = False
 
     try:
@@ -259,6 +260,7 @@ def execute(
             func, args, kwargs = api_action.action_to_components(action)
             func_is_mmsolver = api_action.action_func_is_mmSolver(action)
             func_is_scene_graph = api_action.action_func_is_mmSolverSceneGraph(action)
+            func_is_camera_solve = api_action.action_func_is_camera_solve(action)
 
             if func_is_mmsolver is True:
                 frame = kwargs.get('frame')
@@ -298,6 +300,19 @@ def execute(
                     # to be reset.
                     save_node_attrs = []
 
+            elif func_is_camera_solve is True:
+                root_frames = args[5]
+                start_frame = args[6]
+                end_frame = args[7]
+                assert isinstance(root_frames, list)
+                assert isinstance(start_frame, int)
+                assert isinstance(end_frame, int)
+                root_frames_str = convert_types_utils.intListToString(root_frames)
+                msg = 'Solving Camera frames {frames} ({start}-{end})'.format(
+                    frames=root_frames_str, start=start_frame, end=end_frame
+                )
+                collectionutils.run_status_func(info_fn, msg)
+
             # Run Solver Maya plug-in command
             solve_data = func(*args, **kwargs)
 
@@ -313,7 +328,7 @@ def execute(
             # Create SolveResult.
             solres = None
             if solve_data is not None:
-                if func_is_mmsolver is True:
+                if func_is_mmsolver is True or func_is_camera_solve is True:
                     solres = solveresult.SolveResult(solve_data)
                     solres_list.append(solres)
                 elif func_is_scene_graph is True:

@@ -252,7 +252,6 @@ def execute(
     kwargs = {}
     save_node_attrs = []
     func_is_mmsolver = False
-    func_is_camera_solve = False
     is_single_frame = False
 
     try:
@@ -264,7 +263,6 @@ def execute(
         executepresolve.preSolve_updateProgress(prog_fn, status_fn)
 
         # Check for validity and compile actions.
-        solres_list = []
         withtest = validate_mode in [
             const.VALIDATE_MODE_PRE_VALIDATE_VALUE,
             const.VALIDATE_MODE_AT_RUNTIME_VALUE,
@@ -284,7 +282,7 @@ def execute(
             )
         except excep.NotValid as e:
             LOG.warn(e)
-            return solres_list
+            return []
         collectionutils.run_progress_func(prog_fn, 1)
 
         force_maya_dag_scene_graph = (
@@ -308,6 +306,7 @@ def execute(
             assert len(vaction_list) == len(vaction_state_list)
 
         # Run Solver Actions...
+        solres_list = []
         message_hashes = set()
         start = 0
         total = len(action_list)

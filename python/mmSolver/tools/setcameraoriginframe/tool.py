@@ -91,12 +91,14 @@ def _get_camera_keyframe_times(cam_tfm, cam_shp):
         node_attr = '{}.{}'.format(cam_tfm, attr)
         key_count = maya.cmds.keyframe(node_attr, query=True, keyframeCount=True)
         if key_count > 0:
-            key_times += maya.cmds.keyframe(node_attr, query=True, timeChange=True)
+            key_times += (
+                maya.cmds.keyframe(node_attr, query=True, timeChange=True) or []
+            )
 
     node_attr = '{}.focalLength'.format(cam_shp)
     key_count = maya.cmds.keyframe(node_attr, query=True, keyframeCount=True)
     if key_count > 0:
-        key_times += maya.cmds.keyframe(node_attr, query=True, timeChange=True)
+        key_times += maya.cmds.keyframe(node_attr, query=True, timeChange=True) or []
 
     return map(int, key_times)
 
@@ -153,6 +155,9 @@ def main():
             cam_tfm = cam.get_transform_node()
             cam_shp = cam.get_shape_node()
             camera_keyframes = _get_camera_keyframe_times(cam_tfm, cam_shp)
+            if len(camera_keyframes) == 0:
+                LOG.warn('Skipping invalid camera with no keyframes: %r ', cam_shp)
+                continue
             start_frame = min(camera_keyframes)
             end_frame = max(camera_keyframes)
 

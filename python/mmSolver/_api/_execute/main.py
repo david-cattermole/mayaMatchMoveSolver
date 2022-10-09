@@ -342,15 +342,19 @@ def execute(
             if func_is_mmsolver is True:
                 frame = kwargs.get('frame')
 
+                frame_count = None
+                frame_str = None
                 if isinstance(frame, list):
+                    frame_count = len(frame)
                     frame_str = convert_types_utils.intListToString(frame)
-                    collectionutils.run_status_func(
-                        info_fn, 'Evaluating frames %s' % frame_str
-                    )
                 else:
-                    collectionutils.run_status_func(
-                        info_fn, 'Evaluating frames %r' % frame
-                    )
+                    frame_str = repr(frame)
+                if len(frame_str) > 99:
+                    frame_str = frame_str[:48] + '...' + frame_str[-48:]
+
+                collectionutils.run_status_func(
+                    info_fn, 'Evaluating {} frames: {}'.format(frame_count, frame_str)
+                )
 
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid

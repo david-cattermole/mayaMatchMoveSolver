@@ -361,20 +361,20 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         return
 
     def updateImageResEnabledState(self):
-        value = False
+        enabled = False
         file_path = self.getFilePath()
         fmt = fileutils.get_file_path_format(file_path, mayareadfile.read)
         if fmt is None:
-            value = False
+            enabled = False
         else:
-            for func_name, _ in fmt.args:
-                value = func_name == 'image_width'
+            for arg in fmt.args:
+                enabled = arg == 'image_width'
                 break
-        self.imageRes_label.setEnabled(value)
-        self.imageResWidth_label.setEnabled(value)
-        self.imageResWidth_spinBox.setEnabled(value)
-        self.imageResHeight_label.setEnabled(value)
-        self.imageResHeight_spinBox.setEnabled(value)
+        self.imageRes_label.setEnabled(enabled)
+        self.imageResWidth_label.setEnabled(enabled)
+        self.imageResWidth_spinBox.setEnabled(enabled)
+        self.imageResHeight_label.setEnabled(enabled)
+        self.imageResHeight_spinBox.setEnabled(enabled)
         return
 
     def updateCameraList(

@@ -393,6 +393,10 @@ SCENE_GRAPH_MODE_LABEL_VALUE_LIST = [
     (SCENE_GRAPH_MODE_MM_SCENE_GRAPH_LABEL, SCENE_GRAPH_MODE_MM_SCENE_GRAPH),
 ]
 
+# Hide the Scene Graph mode, the value defaults to 'auto', which
+# should do work out the fastest scene graph by default.
+SCENE_GRAPH_MODE_WIDGET_VISIBLE = False
+
 # Solver Scene Graph (stored on Collection node)
 SOLVER_SCENE_GRAPH_MODE_ATTR = 'solver_scene_graph'
 SOLVER_SCENE_GRAPH_MODE_ATTR_TYPE = 'long'

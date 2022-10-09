@@ -295,7 +295,7 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
         self.do_solve(
             'cminpack_lmder',
             mmapi.SOLVER_TYPE_CMINPACK_LMDER,
-            mmapi.SCENE_GRAPH_MODE_AUTO,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
         )
 
 

@@ -153,6 +153,7 @@ class TestSolvePerFrame(test_api_utils.APITestCase):
             sol.set_frame_list([frm])
             sol.set_solver_type(solver_type_index)
             sol.set_scene_graph_mode(scene_graph_mode)
+            sol.set_robust_loss_type(mmapi.ROBUST_LOSS_TYPE_TRIVIAL_VALUE)
             sol_list.append(sol)
 
         # Collection
@@ -222,7 +223,7 @@ class TestSolvePerFrame(test_api_utils.APITestCase):
         self.do_solve(
             'cminpack_lmder',
             mmapi.SOLVER_TYPE_CMINPACK_LMDER,
-            mmapi.SCENE_GRAPH_MODE_AUTO,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
         )
 
 

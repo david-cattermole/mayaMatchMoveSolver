@@ -296,16 +296,12 @@ class SolverStep(solverbase.SolverBase):
 
     def get_robust_loss_scale(self):
         """
-        Get the error factor for steepness changes.
-
         :rtype: float or None
         """
         return self._data.get('robust_loss_scale')
 
     def set_robust_loss_scale(self, value):
         """
-        Set the error factor for steepness changes.
-
         :param value:
         :type value:
         """

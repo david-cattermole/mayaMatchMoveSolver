@@ -115,7 +115,7 @@
         <number>2</number>
        </property>
        <item>
-        <layout class="QHBoxLayout" name="sceneGraphMode_layout" stretch="0,0,1">
+        <layout class="QHBoxLayout" name="sceneGraphMode_layout" stretch="0,0">
          <property name="spacing">
           <number>2</number>
          </property>
@@ -135,22 +135,6 @@
             </sizepolicy>
            </property>
           </widget>
-         </item>
-         <item>
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Expanding</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>10</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
          </item>
         </layout>
        </item>

@@ -172,6 +172,11 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
             self.sceneGraphModeIndexChanged
         )
 
+        # Hide the Scene Graph mode, the value defaults to 'auto',
+        # which should do the right thing by default.
+        self.sceneGraphMode_comboBox.setVisible(False)
+        self.sceneGraphMode_label.setVisible(False)
+
         self.globalSolve_checkBox.toggled.connect(self.globalSolveValueToggled)
         self.onlyRootFrames_checkBox.toggled.connect(self.onlyRootFramesValueToggled)
         self.evalObjectRelationships_checkBox.toggled.connect(

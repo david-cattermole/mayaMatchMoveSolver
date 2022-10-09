@@ -513,6 +513,12 @@ def __compile_solver_basic_tab(col, scene_graph_mode):
         col
     )
 
+    assert isinstance(eval_complex_graphs, bool)
+    if eval_complex_graphs is True:
+        # Eval Complex Graphs is only supported with the Maya DAG
+        # scene graph.
+        scene_graph_mode = const.SCENE_GRAPH_MODE_MAYA_DAG
+
     sol.set_scene_graph_mode(scene_graph_mode)
     sol.set_eval_object_relationships(eval_obj_relations)
     sol.set_eval_complex_graphs(eval_complex_graphs)
@@ -550,6 +556,12 @@ def __compile_solver_standard_tab(col, scene_graph_mode):
     solve_lens_distortion = col_state.get_solver_solve_lens_distortion_from_collection(
         col
     )
+
+    assert isinstance(eval_complex_graphs, bool)
+    if eval_complex_graphs is True:
+        # Eval Complex Graphs is only supported with the Maya DAG
+        # scene graph.
+        scene_graph_mode = const.SCENE_GRAPH_MODE_MAYA_DAG
 
     sol.set_global_solve(global_solve)
     sol.set_only_root_frames(only_root)

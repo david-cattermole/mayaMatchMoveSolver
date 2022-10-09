@@ -496,7 +496,12 @@ def parse_v3(file_path, **kwargs):
     :return: List of MarkerData objects.
     """
     # Should we choose the undistorted or distorted marker data?
-    undistorted = kwargs.get('undistorted', None)  # bool or None
+    undistorted = kwargs.get('undistorted', None)
+    assert undistorted is None or isinstance(undistorted, bool)
+
+    with_3d_pos = kwargs.get('with_3d_pos', True)
+    assert isinstance(with_3d_pos, bool)
+
     file_info = fileinfo.create_file_info(
         marker_distorted=True,
         marker_undistorted=True,
@@ -505,7 +510,7 @@ def parse_v3(file_path, **kwargs):
     mkr_data_list = _parse_v2_and_v3(
         file_path,
         undistorted=undistorted,
-        with_3d_pos=True,
+        with_3d_pos=with_3d_pos,
     )
     return file_info, mkr_data_list
 
@@ -522,7 +527,12 @@ def parse_v4(file_path, **kwargs):
     :return: List of MarkerData objects.
     """
     # Should we choose the undistorted or distorted marker data?
-    undistorted = kwargs.get('undistorted', None)  # bool or None
+    undistorted = kwargs.get('undistorted', None)
+    assert undistorted is None or isinstance(undistorted, bool)
+
+    with_3d_pos = kwargs.get('with_3d_pos', True)
+    assert isinstance(with_3d_pos, bool)
+
     cam_fov_list = _parse_camera_fov_v4(
         file_path,
     )
@@ -535,7 +545,7 @@ def parse_v4(file_path, **kwargs):
     mkr_data_list = _parse_v2_and_v3(
         file_path,
         undistorted=undistorted,
-        with_3d_pos=True,
+        with_3d_pos=with_3d_pos,
     )
     return file_info, mkr_data_list
 
@@ -544,7 +554,7 @@ class LoaderUVTrack(loader.LoaderBase):
 
     name = 'UV Track Points (*.uv)'
     file_exts = ['.uv']
-    args = []
+    args = ['undistorted', 'with_3d_pos']
 
     def parse(self, file_path, **kwargs):
         """
@@ -554,7 +564,8 @@ class LoaderUVTrack(loader.LoaderBase):
         :type file_path: str
 
         :param kwargs: The keyword 'undistorted' is used by
-                       UV_TRACK_FORMAT_VERSION_3 formats.
+            UV_TRACK_FORMAT_VERSION_3 formats. 'with_3d_pos' can be
+            used to use the (3D) bundle positions or not.
 
         :return: List of MarkerData
         """

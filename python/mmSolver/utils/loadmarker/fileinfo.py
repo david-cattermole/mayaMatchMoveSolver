@@ -43,6 +43,9 @@ def create_file_info(
     bundle_positions=None,
     camera_field_of_view=None,
 ):
+    """
+    Create the type of contents available in the file format.
+    """
     if marker_distorted is None:
         marker_distorted = False
     if marker_undistorted is None:

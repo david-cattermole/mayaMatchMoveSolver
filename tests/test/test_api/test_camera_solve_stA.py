@@ -94,7 +94,9 @@ class TestCameraSolveStA(test_api_utils.APITestCase):
             maya.cmds.setKeyframe(cam_tfm, attribute=attr, time=frame_a, value=0.0)
 
         marker_file_path = self.get_data_path('uvtrack', 'stA.uv')
-        _, mkr_data_list = marker_read.read(marker_file_path)
+        _, mkr_data_list = marker_read.read(
+            marker_file_path, undistorted=False, with_3d_pos=False
+        )
         mkr_list = marker_read.create_nodes(mkr_data_list, cam=cam, mkr_grp=mkr_grp)
 
         mkr_bnd_list = []

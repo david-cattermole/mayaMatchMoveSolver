@@ -294,6 +294,46 @@ class SolverStep(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_robust_loss_scale(self):
+        """
+        Get the error factor for steepness changes.
+
+        :rtype: float or None
+        """
+        return self._data.get('robust_loss_scale')
+
+    def set_robust_loss_scale(self, value):
+        """
+        Set the error factor for steepness changes.
+
+        :param value:
+        :type value:
+        """
+        self._data['robust_loss_scale'] = value
+        return
+
+    def get_robust_loss_type(self):
+        """
+        :rtype: int or None
+        """
+        return self._data.get('robust_loss_type')
+
+    def set_robust_loss_type(self, value):
+        """
+        :param value:
+            The method to be used. Must be a value in
+            ROBUST_LOSS_TYPE_LIST.
+        :type value: int or None
+        """
+        if value not in const.ROBUST_LOSS_TYPE_LIST:
+            msg = 'robust_loss_type must be one of %r; value=%r'
+            msg = msg % (const.ROBUST_LOSS_TYPE_LIST, value)
+            raise ValueError(msg)
+        self._data['robust_loss_type'] = value
+        return
+
+    ############################################################################
+
     def get_time_eval_mode(self):
         return self._data.get('time_eval_mode', const.TIME_EVAL_MODE_DEFAULT)
 
@@ -612,8 +652,14 @@ class SolverStep(solverbase.SolverBase):
         if error_factor is not None:
             kwargs['epsilon3'] = error_factor
 
-        kwargs['robustLossType'] = const.ROBUST_LOSS_TYPE_TRIVIAL_VALUE
-        kwargs['robustLossScale'] = 1.0
+        robust_loss_type = self.get_robust_loss_type()
+        if robust_loss_type is not None:
+            kwargs['robustLossType'] = robust_loss_type
+
+        robust_loss_scale = self.get_robust_loss_scale()
+        if robust_loss_scale is not None:
+            kwargs['robustLossScale'] = robust_loss_scale
+
         kwargs['timeEvalMode'] = self.get_time_eval_mode()
 
         value = self.get_remove_unused_markers()
@@ -623,9 +669,6 @@ class SolverStep(solverbase.SolverBase):
         value = self.get_remove_unused_attributes()
         if value is not None:
             kwargs['removeUnusedAttributes'] = value
-
-        # TODO: Add 'robustLossType' flag.
-        # TODO: Add 'robustLossScale' flag.
 
         action = api_action.Action(func=func, args=args, kwargs=kwargs)
 

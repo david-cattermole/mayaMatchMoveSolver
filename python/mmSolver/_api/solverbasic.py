@@ -430,7 +430,7 @@ class SolverBasic(solverbase.SolverBase):
             # DAG scene graph if mmSceneGraph fails.
             scene_graph_mode = const.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
             use_animated_attrs = True
-            use_static_attrs = True
+            use_static_attrs = False
             generator = solverutils.compile_solver_scene_graph(
                 col,
                 mkr_list,

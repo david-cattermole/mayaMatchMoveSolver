@@ -267,7 +267,7 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
 
     # def test_ceres_mmscenegraph(self):
     #     self.do_solve(
-    #         'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+    #         'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_AUTO
     #     )
 
     # def test_cminpack_lmdif_maya_dag(self):
@@ -281,7 +281,7 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
     #     self.do_solve(
     #         'cminpack_lmdif',
     #         mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
-    #         mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+    #         mmapi.SCENE_GRAPH_MODE_AUTO,
     #     )
 
     def test_cminpack_lmder_maya_dag(self):
@@ -295,7 +295,7 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
         self.do_solve(
             'cminpack_lmder',
             mmapi.SOLVER_TYPE_CMINPACK_LMDER,
-            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            mmapi.SCENE_GRAPH_MODE_AUTO,
         )
 
 

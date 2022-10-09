@@ -70,8 +70,8 @@
 // What Scene Graph should we use for evaluation?
 //
 // These are the possible values:
-#define SCENE_GRAPH_MODE_MAYA_DAG (0)
-#define SCENE_GRAPH_MODE_MM_SCENE_GRAPH (1)
+#define SCENE_GRAPH_MODE_MAYA_DAG (1)
+#define SCENE_GRAPH_MODE_MM_SCENE_GRAPH (2)
 // The default value
 #define SCENE_GRAPH_MODE_DEFAULT_VALUE SCENE_GRAPH_MODE_MAYA_DAG
 

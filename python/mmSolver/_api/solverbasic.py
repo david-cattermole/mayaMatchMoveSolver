@@ -422,12 +422,15 @@ class SolverBasic(solverbase.SolverBase):
 
         attr_blocks = solverutils.create_attr_blocks(use_attr_blocks, attr_list)
 
-        # Make sure scene graph is valid before running the actual
-        # solve.
-        non_standard_scene_graph = scene_graph_mode != const.SCENE_GRAPH_MODE_MAYA_DAG
-        if non_standard_scene_graph is True:
+        auto_scene_graph = scene_graph_mode == const.SCENE_GRAPH_MODE_AUTO
+        if auto_scene_graph is True:
+            # When 'auto' scene graph is used we are telling the
+            # solver to use the best supported scene graph. This will
+            # test the scene graph being solved and fall back to Maya
+            # DAG scene graph if mmSceneGraph fails.
+            scene_graph_mode = const.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
             use_animated_attrs = True
-            use_static_attrs = False
+            use_static_attrs = True
             generator = solverutils.compile_solver_scene_graph(
                 col,
                 mkr_list,

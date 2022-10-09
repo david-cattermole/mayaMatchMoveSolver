@@ -107,6 +107,71 @@ def validate(col, as_state=None):
     return state_list
 
 
+def _validate_scene_graph_in_actions(action_list, vaction_list):
+    """
+    Run any mmSolverSceneGraph functions and detect failure.
+    """
+    is_valid = True
+    for i, (action, vaction) in enumerate(zip(action_list, vaction_list)):
+        func_is_scene_graph = api_action.action_func_is_mmSolverSceneGraph(action)
+        if func_is_scene_graph is not True:
+            continue
+
+        func, args, kwargs = api_action.action_to_components(action)
+        result = func(*args, **kwargs)
+        if result is False:
+            LOG.warn("Solver inputs are not compatible with Scene Graph.")
+            is_valid = False
+            break
+    return is_valid
+
+
+def _override_actions_scene_graph_use_maya_dag(action_list, vaction_list):
+    new_action_list = []
+    new_vaction_list = []
+    for action, vaction in zip(action_list, vaction_list):
+        if api_action.action_func_is_mmSolver(action) is not True:
+            continue
+
+        func, args, kwargs = api_action.action_to_components(action)
+        kwargs['sceneGraphMode'] = const.SCENE_GRAPH_MODE_MAYA_DAG
+
+        vfunc = None
+        vargs = None
+        vkwargs = None
+        if vaction is not None:
+            vfunc, vargs, vkwargs = api_action.action_to_components(vaction)
+            vkwargs['sceneGraphMode'] = const.SCENE_GRAPH_MODE_MAYA_DAG
+
+        frame_solve_mode = kwargs.get(
+            'frameSolveMode', const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE
+        )
+        if frame_solve_mode == const.FRAME_SOLVE_MODE_PER_FRAME:
+            frames = list(kwargs['frame'])
+            for frame in frames:
+                kwargs['frame'] = [frame]
+                new_action = api_action.Action(
+                    func=func, args=args, kwargs=kwargs.copy()
+                )
+                new_action_list.append(new_action)
+
+                if vaction is not None:
+                    vkwargs['frame'] = [frame]
+                    new_vaction = api_action.Action(
+                        func=vfunc, args=vargs, kwargs=vkwargs.copy()
+                    )
+                    new_vaction_list.append(new_vaction)
+        else:
+            new_action = api_action.Action(func=func, args=args, kwargs=kwargs)
+            new_vaction = api_action.Action(func=vfunc, args=vargs, kwargs=vkwargs)
+            new_action_list.append(new_action)
+            new_vaction_list.append(new_vaction)
+
+    action_list = new_action_list
+    vaction_list = new_vaction_list
+    return action_list, vaction_list
+
+
 def execute(
     col,
     options=None,
@@ -222,10 +287,13 @@ def execute(
             return solres_list
         collectionutils.run_progress_func(prog_fn, 1)
 
-        vaction_state_list = []
-        if validate_before is True:
-            vaction_state_list = actionstate.run_validate_action_list(vaction_list)
-            assert len(vaction_list) == len(vaction_state_list)
+        force_maya_dag_scene_graph = (
+            _validate_scene_graph_in_actions(action_list, vaction_list) is False
+        )
+        if force_maya_dag_scene_graph is True:
+            action_list, vaction_list = _override_actions_scene_graph_use_maya_dag(
+                action_list, vaction_list
+            )
 
         # Prepare frame solve
         executepresolve.preSolve_setIsolatedNodes(action_list, options, panels)
@@ -233,6 +301,11 @@ def execute(
 
         # Ensure prediction attributes are created and initialised.
         collectionutils.set_initial_prediction_attributes(col, attr_list, cur_frame)
+
+        vaction_state_list = []
+        if validate_before is True:
+            vaction_state_list = actionstate.run_validate_action_list(vaction_list)
+            assert len(vaction_list) == len(vaction_state_list)
 
         # Run Solver Actions...
         message_hashes = set()
@@ -262,6 +335,11 @@ def execute(
             func_is_scene_graph = api_action.action_func_is_mmSolverSceneGraph(action)
             func_is_camera_solve = api_action.action_func_is_camera_solve(action)
 
+            if func_is_scene_graph is True:
+                # The scene graph tests have already been tested in a
+                # pre-process, so we can skip them now we're properly
+                # solving.
+                continue
             if func_is_mmsolver is True:
                 frame = kwargs.get('frame')
 
@@ -299,6 +377,9 @@ def execute(
                     # block we can detect animcurves are not needing
                     # to be reset.
                     save_node_attrs = []
+
+                if force_maya_dag_scene_graph is True:
+                    kwargs['sceneGraphMode'] = const.SCENE_GRAPH_MODE_MAYA_DAG
 
             elif func_is_camera_solve is True:
                 root_frames = args[5]

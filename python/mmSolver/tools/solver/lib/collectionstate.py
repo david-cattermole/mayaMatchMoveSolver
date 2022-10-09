@@ -1078,14 +1078,8 @@ def set_solver_eval_complex_graphs_on_collection(col, value):
 
 def get_solver_scene_graph_mode_from_collection(col):
     """
-    Get the value of solver 'Evaluate Complex Node Graphs', from a Collection.
-
-    :param col: The Collection to query.
     :type col: Collection
-
-    :returns:
-        A boolean, should the solver try extra hard to evaluate complex node graphs?
-    :rtype: bool
+    :rtype: int
     """
     value = get_value_from_node(
         col.get_node(),
@@ -1098,13 +1092,8 @@ def get_solver_scene_graph_mode_from_collection(col):
 
 def set_solver_scene_graph_mode_on_collection(col, value):
     """
-    Set the value of solver 'Evaluate Complex Node Graphs' on a Collection.
-
-    :param col: The Collection to change.
     :type col: Collection
-
-    :param value: Value to set to.
-    :type value: bool
+    :type value: int
     """
     set_value_on_node(
         col.get_node(),

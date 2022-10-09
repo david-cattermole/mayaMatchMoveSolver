@@ -610,6 +610,7 @@ class SolverStep(solverbase.SolverBase):
 
         scene_graph_mode = self.get_scene_graph_mode()
         if scene_graph_mode is not None:
+            scene_graph_mode = min(const.SCENE_GRAPH_MODE_MAYA_DAG, scene_graph_mode)
             kwargs['sceneGraphMode'] = scene_graph_mode
 
         frame_solve_mode = self.get_frame_solve_mode()

@@ -172,6 +172,15 @@ def _override_actions_scene_graph_use_maya_dag(action_list, vaction_list):
     return action_list, vaction_list
 
 
+def _pretty_int_list(frames):
+    frame_str = ''
+    if isinstance(frames, list):
+        frame_str = convert_types_utils.intListToString(frames)
+    if len(frame_str) > 99:
+        frame_str = frame_str[:48] + '...' + frame_str[-48:]
+    return frame_str
+
+
 def execute(
     col,
     options=None,
@@ -341,23 +350,13 @@ def execute(
                 continue
             if func_is_mmsolver is True:
                 frame = kwargs.get('frame')
-
-                frame_count = None
-                frame_str = None
-                if isinstance(frame, list):
-                    frame_count = len(frame)
-                    frame_str = convert_types_utils.intListToString(frame)
-                else:
-                    frame_str = repr(frame)
-                if len(frame_str) > 99:
-                    frame_str = frame_str[:48] + '...' + frame_str[-48:]
-
-                collectionutils.run_status_func(
-                    info_fn, 'Evaluating {} frames: {}'.format(frame_count, frame_str)
-                )
-
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid
+
+                frame_str = _pretty_int_list(frame)
+                collectionutils.run_status_func(
+                    info_fn, 'Evaluating {} frames: {}'.format(len(frame), frame_str)
+                )
 
                 # Write solver flags to a debug file.
                 debug_file_path = kwargs.get('debugFile', None)
@@ -391,8 +390,8 @@ def execute(
                 assert isinstance(root_frames, list)
                 assert isinstance(start_frame, int)
                 assert isinstance(end_frame, int)
-                root_frames_str = convert_types_utils.intListToString(root_frames)
-                msg = 'Solving Camera frames {frames} ({start}-{end})'.format(
+                root_frames_str = _pretty_int_list(root_frames)
+                msg = 'Solving Camera frames: {frames} ({start}-{end})'.format(
                     frames=root_frames_str, start=start_frame, end=end_frame
                 )
                 collectionutils.run_status_func(info_fn, msg)

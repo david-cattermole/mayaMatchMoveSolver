@@ -659,7 +659,9 @@ class SolverWindow(BaseWindow):
             else:
                 self._saved_ui_size = self.size()
 
-                # QtWidgets.QApplication.processEvents()
+                # TODO: Can we find out how many pending events ther
+                # eare so we can call 'processEvents' that many times?
+
                 QtWidgets.QApplication.processEvents()
                 _set_widget_visibility(self, False)
 

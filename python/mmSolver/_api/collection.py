@@ -984,18 +984,25 @@ class Collection(object):
         node = line.get_node()
         assert isinstance(node, pycompat.TEXT_TYPE)
         assert len(node) > 0
-        if self._set.member_in_set(node) is False:
-            self._set.add_member(node)
-            self._actions_list = []  # reset argument flag cache.
+        node_list = [node]
+        mkr_list = line.get_marker_list()
+        mkr_nodes = [mkr.get_node() for mkr in mkr_list]
+        node_list += [n for n in mkr_nodes if n is not None]
+        self._set.add_members(node_list)
+        self._actions_list = []  # reset argument flag cache.
         event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
         return
 
     def add_line_list(self, line_list):
         assert isinstance(line_list, list)
+        line_list = [line for line in line_list if isinstance(line, api_line.Line)]
         node_list = []
         for line in line_list:
-            if isinstance(line, api_line.Line):
-                node_list.append(line.get_node())
+            node = line.get_node()
+            mkr_list = line.get_marker_list()
+            mkr_nodes = [mkr.get_node() for mkr in mkr_list]
+            node_list += [node]
+            node_list += [n for n in mkr_nodes if n is not None]
         self._set.add_members(node_list)
         self._actions_list = []  # reset argument flag cache.
         event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
@@ -1004,18 +1011,25 @@ class Collection(object):
     def remove_line(self, line):
         assert isinstance(line, api_line.Line)
         node = line.get_node()
-        if self._set.member_in_set(node):
-            self._set.remove_member(node)
-            self._actions_list = []  # reset argument flag cache.
+        node_list = [node]
+        mkr_list = line.get_marker_list()
+        mkr_nodes = [mkr.get_node() for mkr in mkr_list]
+        node_list += [n for n in mkr_nodes if n is not None]
+        self._set.remove_members(node_list)
+        self._actions_list = []  # reset argument flag cache.
         event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
         return
 
     def remove_line_list(self, line_list):
         assert isinstance(line_list, list)
+        line_list = [line for line in line_list if isinstance(line, api_line.Line)]
         node_list = []
         for line in line_list:
-            if isinstance(line, api_line.Line):
-                node_list.append(line.get_node())
+            node = line.get_node()
+            mkr_list = line.get_marker_list()
+            mkr_nodes = [mkr.get_node() for mkr in mkr_list]
+            node_list += [node]
+            node_list += [n for n in mkr_nodes if n is not None]
         self._set.remove_members(node_list)
         self._actions_list = []  # reset argument flag cache.
         event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
@@ -1026,9 +1040,8 @@ class Collection(object):
         before_num = self.get_line_list_length()
 
         self.clear_line_list()
-        for line in line_list:
-            if isinstance(line, api_line.Line):
-                self.add_line(line)
+        line_list = [line for line in line_list if isinstance(line, api_line.Line)]
+        self.add_line_list(line_list)
 
         after_num = self.get_line_list_length()
         if before_num != after_num:

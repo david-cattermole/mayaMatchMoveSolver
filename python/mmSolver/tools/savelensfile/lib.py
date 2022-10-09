@@ -20,12 +20,6 @@ The Save Lens File library functions.
 
 Write out a mmSolver Lens node as a .nk file, readable in The Foundry
 Nuke.
-
-    # # Currently the file only supports one lens, but in the future
-    # # multiple lenses will be supported, so that each lens is a "lens
-    # # layer".
-    # assert len(lens_list) == 0
-
 """
 
 import os

@@ -16,10 +16,4 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Tool to convert a Maya Camera (and Image Plane) into a file format
-readable by third-party software (for example, 3DEqualizer).
-
-The aim is to make the tool similar to the Load Markers tool, allowing
-minimal set-up time for getting data between Maya and
-3DEqualizer.
 """

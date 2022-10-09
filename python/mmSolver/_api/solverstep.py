@@ -321,9 +321,9 @@ class SolverStep(solverbase.SolverBase):
             ROBUST_LOSS_TYPE_LIST.
         :type value: int or None
         """
-        if value not in const.ROBUST_LOSS_TYPE_LIST:
+        if value not in const.ROBUST_LOSS_TYPE_VALUE_LIST:
             msg = 'robust_loss_type must be one of %r; value=%r'
-            msg = msg % (const.ROBUST_LOSS_TYPE_LIST, value)
+            msg = msg % (const.ROBUST_LOSS_TYPE_VALUE_LIST, value)
             raise ValueError(msg)
         self._data['robust_loss_type'] = value
         return

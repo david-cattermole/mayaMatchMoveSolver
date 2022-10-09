@@ -203,6 +203,20 @@ class SolverStep(solverbase.SolverBase):
         self._data['parameter_error'] = value
         return
 
+    def get_auto_parameter_scaling(self):
+        """
+        :rtype: bool or None
+        """
+        return self._data.get('auto_parameter_scaling')
+
+    def set_auto_parameter_scaling(self, value):
+        """
+        :type value: bool
+        """
+        if isinstance(value, bool) is False:
+            raise TypeError('Expected bool value type.')
+        self._data['auto_parameter_scaling'] = value
+
     def get_error_factor(self):
         """
         Get error level for deviation changes.
@@ -578,6 +592,10 @@ class SolverStep(solverbase.SolverBase):
         if auto_diff_type is not None:
             kwargs['autoDiffType'] = auto_diff_type
 
+        auto_param_scaling = self.get_auto_parameter_scaling()
+        if auto_param_scaling is not None:
+            kwargs['autoParamScaling'] = int(auto_param_scaling)
+
         tau_factor = self.get_tau_factor()
         if tau_factor is not None:
             kwargs['tauFactor'] = tau_factor
@@ -608,7 +626,6 @@ class SolverStep(solverbase.SolverBase):
 
         # TODO: Add 'robustLossType' flag.
         # TODO: Add 'robustLossScale' flag.
-        # TODO: Add 'autoParamScaling' flag.
 
         action = api_action.Action(func=func, args=args, kwargs=kwargs)
 

@@ -386,13 +386,9 @@ bool triangulate_relative_pose(
             pose_b.translation(), (*scene.intrinsics[1])(feature_coord_b),
             bundle_pos, triangulation_method);
         if (triangulate_ok) {
-            // TODO: Ensure the land-markers/control points are
-            // centered around the 3D origin - we do not want our
-            // camera to be far away from the origin.
-
             // Add a new landmark (3D point with it's 2d observations)
-            auto id_view_a = scene.views[0]->id_view;
-            auto id_view_b = scene.views[1]->id_view;
+            const auto id_view_a = scene.views[0]->id_view;
+            const auto id_view_b = scene.views[1]->id_view;
             openMVG::sfm::Landmark landmark;
             landmark.obs[id_view_a] =
                 openMVG::sfm::Observation(feature_coord_a, inlier_idx);
@@ -400,16 +396,17 @@ bool triangulate_relative_pose(
                 openMVG::sfm::Observation(feature_coord_b, inlier_idx);
             landmark.X = bundle_pos;
             landmarks.insert({inlier_idx, landmark});
-
-            auto mkr_a = marker_list_a[inlier_idx];
-            auto mkr_b = marker_list_b[inlier_idx];
-            auto bnd = bundle_list[inlier_idx];
-            auto mkr_name_a = mkr_a->getNodeName();
-            auto mkr_name_b = mkr_b->getNodeName();
-            auto bnd_name = bnd->getNodeName();
-            MMSOLVER_VRB("triangulated Marker A: " << mkr_name_a.asChar());
-            MMSOLVER_VRB("triangulated Marker B: " << mkr_name_b.asChar());
-            MMSOLVER_VRB("triangulated bundle: " << bnd_name.asChar());
+            if (verbose) {
+                auto mkr_a = marker_list_a[inlier_idx];
+                auto mkr_b = marker_list_b[inlier_idx];
+                auto bnd = bundle_list[inlier_idx];
+                auto mkr_name_a = mkr_a->getNodeName();
+                auto mkr_name_b = mkr_b->getNodeName();
+                auto bnd_name = bnd->getNodeName();
+                MMSOLVER_VRB("triangulated Marker A: " << mkr_name_a.asChar());
+                MMSOLVER_VRB("triangulated Marker B: " << mkr_name_b.asChar());
+                MMSOLVER_VRB("triangulated bundle: " << bnd_name.asChar());
+            }
             num++;
         }
     }

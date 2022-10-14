@@ -387,9 +387,14 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
             # Root Frames'
             self.setGlobalSolveValue(col, False)
             self.globalSolveChanged.emit()
+
+        block = self.blockSignals(True)
+        self.frameRange_widget.setEnabled(not value)
+        self.globalSolve_checkBox.setEnabled(not value)
+        self.blockSignals(block)
+
         self.setOnlyRootFramesValue(col, value)
         self.onlyRootFramesChanged.emit()
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(bool)
@@ -401,9 +406,17 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
             # 'Only Root Frames' is only valid if 'Global Solve' is off.
             self.setOnlyRootFramesValue(col, False)
             self.onlyRootFramesChanged.emit()
+
+        # "Evaluate Complex Graphs" causes the solver to evalulate
+        # time per-frame, so it's not possible to use with "Global
+        # Solve" - therefore it's disabled.
+        block = self.blockSignals(True)
+        self.evalComplexGraphs_checkBox.setEnabled(not value)
+        self.onlyRootFrames_checkBox.setEnabled(not value)
+        self.blockSignals(block)
+
         self.setGlobalSolveValue(col, value)
         self.globalSolveChanged.emit()
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(int)
@@ -429,7 +442,6 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
             return
         self.setEvalObjectRelationshipsValue(col, value)
         self.evalObjectRelationshipsChanged.emit()
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(bool)
@@ -439,7 +451,6 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
             return
         self.setEvalComplexGraphsValue(col, value)
         self.evalComplexGraphsChanged.emit()
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(bool)
@@ -448,7 +459,6 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
         if col is None:
             return
         self.setSolveFocalLengthValue(col, value)
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(bool)
@@ -457,7 +467,6 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
         if col is None:
             return
         self.setSolveLensDistortionValue(col, value)
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(str)

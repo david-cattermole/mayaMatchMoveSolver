@@ -291,7 +291,6 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
             return
         self.setEvalObjectRelationshipsValue(col, value)
         self.evalObjectRelationshipsChanged.emit()
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(bool)
@@ -301,7 +300,6 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
             return
         self.setEvalComplexGraphsValue(col, value)
         self.evalComplexGraphsChanged.emit()
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(bool)
@@ -310,7 +308,6 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
         if col is None:
             return
         self.setSolveFocalLengthValue(col, value)
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(bool)
@@ -319,5 +316,4 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
         if col is None:
             return
         self.setSolveLensDistortionValue(col, value)
-        self.dataChanged.emit()
         return

@@ -251,7 +251,6 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
         if col is None:
             return
         self.setOriginFrameValue(col, value)
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(float)
@@ -260,7 +259,6 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
         if col is None:
             return
         self.setSceneScaleValue(col, value)
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(bool)
@@ -269,7 +267,6 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
         if col is None:
             return
         self.setSolveFocalLengthValue(col, value)
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(bool)
@@ -278,7 +275,6 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
         if col is None:
             return
         self.setSolveLensDistortionValue(col, value)
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(str)

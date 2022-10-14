@@ -145,7 +145,7 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
         self.standard_widget.dataChanged.connect(self._dataChanged)
         self.camera_widget.dataChanged.connect(self._dataChanged)
         # self.legacy_widget.dataChanged.connect(self._dataChanged)  # Deprecated.
-        self.standard_widget.sendWarning.connect(self._sendWarningToUser)
+
         self.standard_widget.sendWarning.connect(self._sendWarningToUser)
 
         self.basic_widget.frameRange_widget.rangeTypeChanged.connect(self.updateInfo)

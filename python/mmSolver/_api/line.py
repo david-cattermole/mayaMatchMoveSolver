@@ -807,7 +807,7 @@ class Line(object):
         line_node = self.get_node()
         if line_node is None:
             LOG.warn('Could not get Line node. self=%r', self)
-            return None
+            return []
 
         shp = self._get_shape_node()
         if shp is None:
@@ -897,9 +897,14 @@ class Line(object):
         """
         Connect this Line to the given markers.
 
-        :type mkr_list: [Marker, ..]
+        If mkr_list is None, this removes all Markers from the Line.
+
+        :type mkr_list: [Marker, ..] or None
         :returns: None
         """
+        if mkr_list is None:
+            mkr_list = []
+
         line_tfm = self.get_node()
         line_shp = self._get_shape_node()
         if line_shp is None:

@@ -294,6 +294,7 @@ def attributesToUINodes(col, attr_list, show_anm, show_stc, show_lck):
             # Add only the first attribute to the MayaNode
             # object. Other attributes will be added as they come up.
             node_data['data'] = [attr]
+            node_data['uuid'] = attr.get_node_uid()
             short_name = full_name.rpartition('|')[-1]
             maya_node = attr_nodes.MayaNode(short_name, data=node_data, parent=root)
             maya_node.setNeverHasChildren(False)

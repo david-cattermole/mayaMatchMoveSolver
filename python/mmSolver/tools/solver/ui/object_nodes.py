@@ -66,7 +66,7 @@ class ObjectNode(uinodes.Node):
             checkable=checkable,
             neverHasChildren=neverHasChildren,
         )
-        self.typeInfo = 'object'
+        self.typeInfo = const.OBJECT_NODE_TYPE_INFO_OBJECT_VALUE
 
     def objectColor(self):
         return None
@@ -97,7 +97,7 @@ class MarkerNode(ObjectNode):
         super(MarkerNode, self).__init__(
             name, data=data, parent=parent, icon=icon, selectable=True, editable=False
         )
-        self.typeInfo = 'marker'
+        self.typeInfo = const.OBJECT_NODE_TYPE_INFO_MARKER_VALUE
 
     def status(self):
         value = const.OBJECT_DEFAULT_STATUS_UI_VALUE
@@ -199,7 +199,7 @@ class CameraNode(ObjectNode):
         super(CameraNode, self).__init__(
             name, data=data, parent=parent, icon=icon, selectable=True, editable=False
         )
-        self.typeInfo = 'camera'
+        self.typeInfo = const.OBJECT_NODE_TYPE_INFO_CAMERA_VALUE
 
     def objectColor(self):
         return None
@@ -232,7 +232,7 @@ class BundleNode(ObjectNode):
         super(BundleNode, self).__init__(
             name, data=data, parent=parent, icon=icon, selectable=True, editable=False
         )
-        self.typeInfo = 'bundle'
+        self.typeInfo = const.OBJECT_NODE_TYPE_INFO_BUNDLE_VALUE
 
     def objectColor(self):
         return None
@@ -256,7 +256,7 @@ class LineNode(ObjectNode):
         super(LineNode, self).__init__(
             name, data=data, parent=parent, icon=icon, selectable=True, editable=False
         )
-        self.typeInfo = 'line'
+        self.typeInfo = const.OBJECT_NODE_TYPE_INFO_LINE_VALUE
 
     def status(self):
         value = const.OBJECT_DEFAULT_STATUS_UI_VALUE

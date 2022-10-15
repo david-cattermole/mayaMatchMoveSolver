@@ -65,11 +65,11 @@ def _lookupUINodesFromIndexes(indexes, model):
         if ui_node is None:
             continue
 
-        # Type info will be 'marker', 'bundle' or 'camera' based on
-        # the selected node type.
         typeInfo = ui_node.typeInfo
+        assert typeInfo in const.OBJECT_NODE_TYPE_INFO_LIST
+
         nodes = lib_uiquery.convert_ui_nodes_to_nodes([ui_node], typeInfo)
-        if typeInfo == 'camera':
+        if typeInfo == const.OBJECT_NODE_TYPE_INFO_CAMERA_VALUE:
             maya_nodes += [x.get_transform_node() for x in nodes]
         else:
             # For bundles and markers

@@ -60,7 +60,8 @@ def set_active_collection(col):
     """
     Set the Maya scene's active collection.
 
-    There may only be 1 active collection in a Maya scene.
+    There may only be 1 active collection, or no active collection in
+    a Maya scene.
 
     :param col: The Collection to make active, or None to set no
                 active collection.
@@ -69,8 +70,10 @@ def set_active_collection(col):
     :rtype: None
     """
     uid = None
-    if col is not None:
-        uid = col.get_node_uid()
+    if col is None:
+        scene_data.set_scene_data(const.SCENE_DATA_ACTIVE_COLLECTION_UID, uid)
+        return
+    uid = col.get_node_uid()
     if uid is None:
         return
     scene_data.set_scene_data(const.SCENE_DATA_ACTIVE_COLLECTION_UID, uid)

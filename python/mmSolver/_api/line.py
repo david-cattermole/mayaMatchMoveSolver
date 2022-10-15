@@ -152,15 +152,8 @@ def _create_intersect_node(shp, mkr_node, bnd_node):
 
 
 def create_default_markers(line_shp, mkr_grp):
-    mkr_name_a = naming.get_new_marker_name(DEFAULT_MARKER_NAME)
-    bnd_name_a = naming.get_new_bundle_name(DEFAULT_BUNDLE_NAME)
-    bnd_a = bundle.Bundle().create_node(name=bnd_name_a)
-    mkr_a = marker.Marker().create_node(mkr_grp=mkr_grp, name=mkr_name_a, bnd=bnd_a)
-
-    mkr_name_b = naming.get_new_marker_name(DEFAULT_MARKER_NAME)
-    bnd_name_b = naming.get_new_bundle_name(DEFAULT_BUNDLE_NAME)
-    bnd_b = bundle.Bundle().create_node(name=bnd_name_b)
-    mkr_b = marker.Marker().create_node(mkr_grp=mkr_grp, name=mkr_name_b, bnd=bnd_b)
+    mkr_a, bnd_a = create_new_line_marker(line_shp, mkr_grp)
+    mkr_b, bnd_b = create_new_line_marker(line_shp, mkr_grp)
 
     mkr_node_a = mkr_a.get_node()
     mkr_node_b = mkr_b.get_node()
@@ -172,38 +165,12 @@ def create_default_markers(line_shp, mkr_grp):
     maya.cmds.setAttr(mkr_node_a + '.ty', -0.15)
     maya.cmds.setAttr(mkr_node_b + '.ty', 0.15)
 
-    maya.cmds.setAttr(bnd_node_a + '.visibility', 0)
-    maya.cmds.setAttr(bnd_node_b + '.visibility', 0)
-
-    src_a = mkr_node_a + '.message'
-    src_b = mkr_node_b + '.message'
-    dst = line_shp + '.objects'
-    if not maya.cmds.isConnected(src_a, dst):
-        maya.cmds.connectAttr(src_a, dst, nextAvailable=True)
-    if not maya.cmds.isConnected(src_b, dst):
-        maya.cmds.connectAttr(src_b, dst, nextAvailable=True)
-
-    src_a = mkr_node_a + '.worldMatrix[0]'
-    src_b = mkr_node_b + '.worldMatrix[0]'
-    dst_a = line_shp + '.transformMatrix[0]'
-    dst_b = line_shp + '.transformMatrix[1]'
-    if not maya.cmds.isConnected(src_a, dst_a):
-        maya.cmds.connectAttr(src_a, dst_a)
-    if not maya.cmds.isConnected(src_b, dst_b):
-        maya.cmds.connectAttr(src_b, dst_b)
-
-    src = line_shp + '.parentInverseMatrix[0]'
-    dst = line_shp + '.transformParentInverseMatrix'
-    if not maya.cmds.isConnected(src, dst):
-        maya.cmds.connectAttr(src, dst)
-
-    _create_intersect_node(line_shp, mkr_node_a, bnd_node_a)
-    _create_intersect_node(line_shp, mkr_node_b, bnd_node_b)
-
     return mkr_a, bnd_a, mkr_b, bnd_b
 
 
 def create_new_line_marker(line_shp, mkr_grp):
+    line_tfm = maya.cmds.listRelatives(line_shp, parent=True, type='transform')[0]
+
     mkr_new_name = naming.get_new_marker_name(DEFAULT_MARKER_NAME)
     bnd_new_name = naming.get_new_bundle_name(DEFAULT_BUNDLE_NAME)
     bnd_new = bundle.Bundle().create_node(name=bnd_new_name)
@@ -211,12 +178,15 @@ def create_new_line_marker(line_shp, mkr_grp):
         mkr_grp=mkr_grp, name=mkr_new_name, bnd=bnd_new
     )
 
-    mkr_node_b = mkr_new.get_node()
-    bnd_node_b = bnd_new.get_node()
+    mkr_node = mkr_new.get_node()
+    bnd_node = bnd_new.get_node()
+    maya.cmds.setAttr(bnd_node + '.visibility', 0)
 
-    maya.cmds.setAttr(bnd_node_b + '.visibility', 0)
-
-    _create_intersect_node(line_shp, mkr_node_b, bnd_node_b)
+    # We must get the full node path again, because the parent has
+    # changed.
+    mkr_node = mkr_new.get_node()
+    bnd_node = bnd_new.get_node()
+    _create_intersect_node(line_shp, mkr_node, bnd_node)
 
     return mkr_new, bnd_new
 
@@ -397,17 +367,6 @@ class Line(object):
         dst = '{0}.{1}'.format(tfm, 'lodVisibility')
         maya.cmds.connectAttr(src, dst)
 
-        # Create two Markers.
-        mkr_a, bnd_a, mkr_b, bnd_b = create_default_markers(shp, mkr_grp)
-        mkr_node_a = mkr_a.get_node()
-        mkr_node_b = mkr_b.get_node()
-        bnd_node_a = bnd_a.get_node()
-        bnd_node_b = bnd_b.get_node()
-
-        maya.cmds.parent(mkr_node_a, tfm, relative=True)
-        maya.cmds.parent(bnd_node_a, tfm, relative=True)
-        maya.cmds.parent(mkr_node_b, tfm, relative=True)
-        maya.cmds.parent(bnd_node_b, tfm, relative=True)
         self.set_node(tfm)
 
         # Set Colour (default is magenta)
@@ -424,6 +383,11 @@ class Line(object):
         # Link to MarkerGroup
         if mkr_grp is not None:
             self.set_marker_group(mkr_grp)
+
+        # Create two Markers.
+        mkr_grp = self.get_marker_group()
+        mkr_a, bnd_a, mkr_b, bnd_b = create_default_markers(shp, mkr_grp)
+        self.set_marker_list([mkr_a, mkr_b])
 
         event_utils.trigger_event(const.EVENT_NAME_LINE_CREATED, line=self)
         return self
@@ -931,17 +895,9 @@ class Line(object):
 
     def set_marker_list(self, mkr_list):
         """
-        Connect this Line to the given marker.
+        Connect this Line to the given markers.
 
-        Connecting Lines to markers happens by parenting a Line
-        under a Marker's Line Group.
-
-        .. note:: If the `cam` argument is None, the Line is
-            disconnected from any marker.
-
-        :param cam: The marker to connect this Line to.
-        :type cam: None or Marker
-
+        :type mkr_list: [Marker, ..]
         :returns: None
         """
         line_tfm = self.get_node()
@@ -951,8 +907,10 @@ class Line(object):
 
         self._clear_marker_list(line_shp)
 
+        nodes_to_parent = list()
         for i, mkr in enumerate(mkr_list):
             mkr_node = mkr.get_node()
+
             src_a = mkr_node + '.message'
             src_b = mkr_node + '.worldMatrix[0]'
 
@@ -961,6 +919,18 @@ class Line(object):
             if not maya.cmds.isConnected(src_a, dst_a):
                 maya.cmds.connectAttr(src_a, dst_a)
                 maya.cmds.connectAttr(src_b, dst_b)
+
+            nodes_to_parent.append(mkr_node)
+
+            bnd = mkr.get_bundle()
+            if bnd is not None:
+                bnd_node = bnd.get_node()
+                nodes_to_parent.append(bnd_node)
+
+        for node in nodes_to_parent:
+            parents = maya.cmds.listRelatives(node, parent=True, fullPath=True) or []
+            if line_tfm not in parents:
+                maya.cmds.parent(node, line_tfm, relative=True)
         return
 
     def get_marker_point_intersect(self, mkr):
@@ -968,7 +938,7 @@ class Line(object):
         Get the mmLinePointIntersect node connected to the given Marker,
         or return None.
 
-        :rtype: str
+        :rtype: None or str
         """
         mkr_node = mkr.get_node()
         if mkr_node is None:

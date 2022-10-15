@@ -47,6 +47,41 @@ import mmSolver._api.solveresult as solveresult
 
 LOG = mmSolver.logger.get_logger()
 
+def _disconnect_camera_lens_from_marker(mkr_tfm):
+    exists = node_utils.attribute_exists('inLens', mkr_tfm)
+    if exists is False:
+        return
+
+    attr = mkr_tfm + '.inLens'
+    conns = maya.cmds.listConnections(
+        attr, connections=True, plugs=True,
+        source=True, destination=False) or []
+    for conn_src, conn_dst in zip(conns[0::2], conns[1::2]):
+        print(conn_src, '->', conn_dst)
+        if maya.cmds.isConnected(conn_src, conn_dst):
+            print(conn_src, 'xxx', conn_dst)
+            maya.cmds.disconnectAttr(conn_src, conn_dst)
+    return
+
+
+def _connect_camera_lens_to_marker(cam_shp, mkr_tfm):
+    src_exists = node_utils.attribute_exists('inLens', mkr_tfm)
+    if src_exists is False:
+        return
+    dst_exists = node_utils.attribute_exists('outLens', cam_shp)
+    if dst_exists is False:
+        return
+
+    src = cam_shp + '.outLens'
+    dst = mkr_tfm + '.inLens'
+
+    if maya.cmds.isConnected(src, dst) is True:
+        return
+
+    _disconnect_camera_lens_from_marker(mkr_tfm)
+    maya.cmds.connectAttr(src, dst)
+    return
+
 
 def _create_marker_transform(name):
     tfm = maya.cmds.createNode(const.MARKER_TRANSFORM_NODE_TYPE, name=name)
@@ -496,10 +531,7 @@ class Marker(object):
         if cam is not None:
             cam_shp = cam.get_shape_node()
             tfm = self.get_node()
-            src = cam_shp + '.outLens'
-            dst = tfm + '.inLens'
-            if not maya.cmds.isConnected(src, dst):
-                maya.cmds.connectAttr(src, dst)
+            _connect_camera_lens_to_marker(cam_shp, tfm)
 
         event_utils.trigger_event(const.EVENT_NAME_MARKER_CREATED, mkr=self)
         return self
@@ -1142,12 +1174,9 @@ class Marker(object):
                 raise excep.AlreadyLinked(msg)
 
         # Connect the marker to the camera.
-        if cam.get_lens() is not None:
-            cam_shp = cam.get_shape_node()
-            src = cam_shp + '.outLens'
-            dst = mkr_node + '.inLens'
-            if not maya.cmds.isConnected(src, dst):
-                maya.cmds.connectAttr(src, dst)
+        cam_shp = cam.get_shape_node()
+        if cam_shp is not None:
+            _connect_camera_lens_to_marker(cam_shp, mkr_node)
 
         # Create Marker Group
         mkr_grp = None
@@ -1188,6 +1217,8 @@ class Marker(object):
             msg += ' marker={0} camera={1}'
             msg = msg.format(repr(mkr_node), repr(cam_shp))
             raise excep.AlreadyUnlinked(msg)
+
+        _disconnect_camera_lens_from_marker(mkr_node)
 
         # Move the marker under the world root, don't modify the marker in
         # any way otherwise (so we use 'relative' flag).
@@ -1263,6 +1294,13 @@ class Marker(object):
         # Move the marker under the marker group, make sure the relative
         # marker attribute values are maintained.
         maya.cmds.parent(mkr_node, mkr_grp_node, relative=True)
+
+        # Connect the marker to the camera.
+        cam = self.get_camera()
+        if cam is not None:
+            cam_shp = cam.get_shape_node()
+            _connect_camera_lens_to_marker(cam_shp, mkr_node)
+
         return
 
     def _unlink_from_marker_group(self):
@@ -1286,6 +1324,8 @@ class Marker(object):
             msg += ' marker={0} camera={1}'
             msg = msg.format(repr(mkr_node), repr(cam_shp))
             raise excep.AlreadyUnlinked(msg)
+
+        _disconnect_camera_lens_from_marker(mkr_node)
 
         # Move the marker under the world root, don't modify the marker in
         # any way otherwise.

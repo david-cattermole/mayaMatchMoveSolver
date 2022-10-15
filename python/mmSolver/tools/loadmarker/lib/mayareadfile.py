@@ -33,6 +33,7 @@ import mmSolver.logger
 
 import mmSolver.api as mmapi
 import mmSolver.utils.animcurve as anim_utils
+import mmSolver.utils.event as event_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.python_compat as pycompat
 import mmSolver.utils.loadfile.excep as excep
@@ -396,21 +397,25 @@ def create_nodes(
 
     mkr_nodes = []
     mkr_list = []
-    for mkr_data in mkr_data_list:
-        # Create the nodes
-        mkr, bnd = __create_node(
-            mkr_data,
-            cam,
-            mkr_grp,
-            with_bundles,
-        )
-        mkr_nodes.append(mkr.get_node())
-        if mkr is not None:
-            # Set attributes and add into list
-            __set_node_data(
-                mkr, bnd, mkr_data, load_bundle_position, overscan_x, overscan_y
+    # When a Marker is created it is automatically added to the active
+    # collection, but we don't want that, so we block the events.
+    event_names_to_block = [mmapi.EVENT_NAME_MARKER_CREATED]
+    with event_utils.BlockedEvents(event_names_to_block):
+        for mkr_data in mkr_data_list:
+            # Create the nodes
+            mkr, bnd = __create_node(
+                mkr_data,
+                cam,
+                mkr_grp,
+                with_bundles,
             )
-            mkr_list.append(mkr)
+            mkr_nodes.append(mkr.get_node())
+            if mkr is not None:
+                # Set attributes and add into list
+                __set_node_data(
+                    mkr, bnd, mkr_data, load_bundle_position, overscan_x, overscan_y
+                )
+                mkr_list.append(mkr)
 
     if len(mkr_list) > 0 and col is not None:
         assert isinstance(col, mmapi.Collection)

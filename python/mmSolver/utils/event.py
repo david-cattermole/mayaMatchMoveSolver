@@ -59,17 +59,58 @@ import mmSolver.utils.python_compat as pycompat
 
 
 LOG = mmSolver.logger.get_logger()
+_EVENT_NAMES_BLOCKED = set()
 __EVENT_ARGUMENTS = collections.defaultdict(list)
 __EVENT_FUNCTIONS = collections.defaultdict(list)
 __EVENT_UNIQUE_FUNCTION_HASHES = collections.defaultdict(set)
 
 
+class BlockedEvents(object):
+    """
+    A context manager used to stop events from being triggered.
+
+    Example usage::
+
+       >>> event_name = 'my_event'
+       >>> with event_utils.BlockedEvents([event_name]):
+       ...    # do stuff, and don't trigger events named 'my_event'.
+       ...    pass
+
+    """
+
+    def __init__(self, event_names_to_block):
+        assert isinstance(event_names_to_block, (set, list, tuple))
+        self.__event_names_to_block = set(event_names_to_block)
+        self.__old_blocked_event_names = set()
+
+    def __enter__(self):
+        global _EVENT_NAMES_BLOCKED
+        self.__old_blocked_event_names = set(_EVENT_NAMES_BLOCKED)
+        _EVENT_NAMES_BLOCKED |= self.__event_names_to_block
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        global _EVENT_NAMES_BLOCKED
+        _EVENT_NAMES_BLOCKED = self.__old_blocked_event_names
+
+
 def trigger_event(event_name, **kwargs):
     """
     Inform the event-driven system that 'event_name' has occurred.
+
+    .. note:: It is possible the event will not be triggered if the
+        user has called for it to be blocked. Do not assume the event
+        will always be triggered.
     """
-    LOG.debug('trigger_event: event_name=%r kwargs=%r', event_name, kwargs)
+    global _EVENT_NAMES_BLOCKED
+    global __EVENT_ARGUMENTS
+
     assert isinstance(event_name, pycompat.TEXT_TYPE)
+    if event_name in _EVENT_NAMES_BLOCKED:
+        LOG.debug('blocked trigger_event: event_name=%r kwargs=%r', event_name, kwargs)
+        return
+
+    LOG.debug('trigger_event: event_name=%r kwargs=%r', event_name, kwargs)
     __EVENT_ARGUMENTS[event_name].append(kwargs)
 
     deferred_func = lambda: __call_functions(event_name)

@@ -148,7 +148,7 @@
        <item>
         <widget class="QCheckBox" name="evalComplexGraphs_checkBox">
          <property name="text">
-          <string>Evaluate Complex Node Graphs (eg. Mesh Rivets)</string>
+          <string>Evaluate Mesh Rivets</string>
          </property>
         </widget>
        </item>

@@ -47,15 +47,19 @@ import mmSolver._api.solveresult as solveresult
 
 LOG = mmSolver.logger.get_logger()
 
+
 def _disconnect_camera_lens_from_marker(mkr_tfm):
     exists = node_utils.attribute_exists('inLens', mkr_tfm)
     if exists is False:
         return
 
     attr = mkr_tfm + '.inLens'
-    conns = maya.cmds.listConnections(
-        attr, connections=True, plugs=True,
-        source=True, destination=False) or []
+    conns = (
+        maya.cmds.listConnections(
+            attr, connections=True, plugs=True, source=True, destination=False
+        )
+        or []
+    )
     for conn_src, conn_dst in zip(conns[0::2], conns[1::2]):
         print(conn_src, '->', conn_dst)
         if maya.cmds.isConnected(conn_src, conn_dst):

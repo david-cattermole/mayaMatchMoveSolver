@@ -753,6 +753,29 @@
                 "mmSolver.tools.parenttransform.tool.unparent();"
             ]
         },
+        "set_object_colour_ui": {
+            "name": "Set Object Colour...",
+            "name_shelf": "ObjClr",
+            "tooltip": "Prompt for a colour to set on selected objects.",
+            "command": [
+                "import mmSolver.tools.setobjectcolour.tool;",
+                "mmSolver.tools.setobjectcolour.tool.open_mini_window();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.setobjectcolour.tool;",
+                "mmSolver.tools.setobjectcolour.tool.open_window();"
+            ]
+        },
+        "reset_object_colour": {
+            "name": "Reset Object Colour",
+            "name_shelf": "RstClr",
+            "tooltip": "Reset the node colour on selected objects.",
+            "command": [
+                "import mmSolver.tools.setobjectcolour.tool;",
+                "mmSolver.tools.setobjectcolour.tool.reset_colour();"
+            ]
+        },
         "toggle_object_motion_trail": {
             "name": "Toggle Object Motion Trail",
             "name_shelf": "TglMT",

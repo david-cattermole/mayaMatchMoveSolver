@@ -84,6 +84,8 @@
             "display_tools/create_axis_dome",
             "display_tools/create_sky_dome",
             "display_tools/---Object",
+            "display_tools/set_object_colour_ui",
+            "display_tools/reset_object_colour",
             "display_tools/toggle_object_motion_trail",
             "display_tools/create_screen_space_motion_trail",
             "zdepth_tools/---Z-Depth Screen-Space Tools",

@@ -365,7 +365,7 @@ def get_all_parent_nodes(node):
 
 def get_node_wire_colour_rgb(node):
     """
-    Get the current wireframe colour of the node.
+    Get the current wireframe colour (0.0 to 1.0) of the node.
 
     The 'node' is assumed to a DAG node (capable of having a wireframe
     colour).
@@ -384,7 +384,7 @@ def get_node_wire_colour_rgb(node):
 
 def set_node_wire_colour_rgb(node, rgb):
     """
-    Change the wireframe colour of the node.
+    Change the wireframe colour (0.0 to 1.0) of the node.
 
     The 'node' is assumed to a DAG node (capable of having a wireframe
     colour set).
@@ -404,6 +404,102 @@ def set_node_wire_colour_rgb(node, rgb):
     else:
         # Reset to default wireframe colour.
         maya.cmds.color(node)
+    return
+
+
+def get_node_draw_override_enabled(node):
+    """
+    Get the current draw override enabled value of the node.
+
+    The 'node' is assumed to a DAG node (capable of having an draw override).
+
+    :param node: Maya node path to get value from.
+    :type node: str
+
+    :rtype: bool
+    """
+    assert maya.cmds.objExists(node) is True
+    node_attr = '{0}.{1}'.format(node, 'overrideEnabled')
+    value = maya.cmds.getAttr(node_attr)
+    return value
+
+
+def set_node_draw_override_enabled(node, value):
+    """
+    Set the draw override enabled value of a node.
+
+    The 'node' is assumed to a DAG node (capable of having an draw override).
+
+    :param node: Maya DAG node path.
+    :type node: str
+
+    :type value: bool
+
+    :rtype: None
+    """
+    assert isinstance(value, bool)
+    node_attr = '{0}.{1}'.format(node, 'overrideEnabled')
+    maya.cmds.setAttr(node_attr, value)
+    return
+
+
+def get_node_draw_override_colour_rgba(node):
+    """
+    Get the draw current override colour (0.0 to 1.0) of the node.
+
+    The 'node' is assumed to a DAG node (capable of having a override
+    colour).
+
+    :param node: Maya node path to get override colour from.
+    :type node: str
+
+    :returns: Tuple of red, green, blue and alpha.
+    :rtype: (float, float, float, float)
+    """
+    assert maya.cmds.objExists(node) is True
+
+    node_attr_rgb = '{0}.{1}'.format(node, 'overrideColorRGB')
+    rgb = maya.cmds.getAttr(node_attr_rgb)[0]
+
+    alpha = 1.0
+    if maya.cmds.about(apiVersion=True) >= 20230000:
+        node_attr_alpha = '{0}.{1}'.format(node, 'overrideColorA')
+        alpha = maya.cmds.getAttr(node_attr_alpha)
+    return (rgb[0], rgb[1], rgb[2], alpha)
+
+
+def set_node_draw_override_colour_rgba(node, rgba):
+    """
+    Change the draw override colour (0.0 to 1.0) of the node.
+
+    The 'node' is assumed to a DAG node (capable of having a colour set).
+
+    :param node: Maya DAG node path.
+    :type node: str
+
+    :param rgba: Colour as R, G, B, A; Or None to reset to default colour.
+    :type rgba: tuple
+
+    :rtype: None
+    """
+    assert rgba is None or isinstance(rgba, (tuple, list))
+    if not isinstance(rgba, (tuple, list)):
+        # Reset to default override colour.
+        rgba = (0.0, 0.0, 0.0, 1.0)
+    assert len(rgba) == 4
+
+    node_attr_enable = '{0}.{1}'.format(node, 'overrideRGBColors')
+    node_attr_r = '{0}.{1}'.format(node, 'overrideColorR')
+    node_attr_g = '{0}.{1}'.format(node, 'overrideColorG')
+    node_attr_b = '{0}.{1}'.format(node, 'overrideColorB')
+    maya.cmds.setAttr(node_attr_enable, True)
+    maya.cmds.setAttr(node_attr_r, rgba[0])
+    maya.cmds.setAttr(node_attr_g, rgba[1])
+    maya.cmds.setAttr(node_attr_b, rgba[2])
+
+    if maya.cmds.about(apiVersion=True) >= 20230000:
+        node_attr_a = '{0}.{1}'.format(node, 'overrideColorA')
+        maya.cmds.setAttr(node_attr_a, rgba[3])
     return
 
 

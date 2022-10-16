@@ -44,6 +44,8 @@
 #include <maya/MUserData.h>
 
 // MM Solver
+#include "LineConstants.h"
+#include "ShapeConstants.h"
 #include "mmSolver/core/mmdata.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/node/node_line_utils.h"
@@ -168,51 +170,22 @@ MUserData *LineDrawOverride::prepareForDraw(
     CHECK_MSTATUS(status);
     MMatrix obj_matrix = matrix_inverse;
 
-    // CHECK_MSTATUS(status);
-    status =
-        getNodeAttr(objPath, LineShapeNode::m_outer_scale, data->m_outer_scale);
-    CHECK_MSTATUS(status);
-
     status = getNodeAttr(objPath, LineShapeNode::m_middle_scale,
                          data->m_middle_scale);
     CHECK_MSTATUS(status);
 
     // Color
-    MColor text_color(0.0f, 0.0f, 0.0f, 1.0f);
-    MColor point_color(0.0f, 0.0f, 0.0f, 1.0f);
-    MColor inner_color(0.0f, 0.0f, 0.0f, 1.0f);
-    MColor outer_color(0.0f, 0.0f, 0.0f, 1.0f);
-    MColor middle_color(0.0f, 0.0f, 0.0f, 1.0f);
-    status = getNodeAttr(objPath, LineShapeNode::m_text_color, text_color);
-    CHECK_MSTATUS(status);
-    status = getNodeAttr(objPath, LineShapeNode::m_point_color, point_color);
-    CHECK_MSTATUS(status);
-    status = getNodeAttr(objPath, LineShapeNode::m_inner_color, inner_color);
-    CHECK_MSTATUS(status);
-    status = getNodeAttr(objPath, LineShapeNode::m_outer_color, outer_color);
-    CHECK_MSTATUS(status);
-    status = getNodeAttr(objPath, LineShapeNode::m_middle_color, middle_color);
+    MColor color1(0.0f, 0.0f, 0.0f, 1.0f);
+    status = getNodeAttr(objPath, LineShapeNode::m_color, color1);
     CHECK_MSTATUS(status);
 
     // Alpha
-    status = getNodeAttr(objPath, LineShapeNode::m_text_alpha, text_color[3]);
-    CHECK_MSTATUS(status);
-    status = getNodeAttr(objPath, LineShapeNode::m_point_alpha, point_color[3]);
-    CHECK_MSTATUS(status);
-    status = getNodeAttr(objPath, LineShapeNode::m_inner_alpha, inner_color[3]);
-    CHECK_MSTATUS(status);
-    status = getNodeAttr(objPath, LineShapeNode::m_outer_alpha, outer_color[3]);
-    CHECK_MSTATUS(status);
-    status =
-        getNodeAttr(objPath, LineShapeNode::m_middle_alpha, middle_color[3]);
+    status = getNodeAttr(objPath, LineShapeNode::m_alpha, color1[3]);
     CHECK_MSTATUS(status);
 
     // Line Width
     status = getNodeAttr(objPath, LineShapeNode::m_inner_line_width,
                          data->m_inner_line_width);
-    CHECK_MSTATUS(status);
-    status = getNodeAttr(objPath, LineShapeNode::m_outer_line_width,
-                         data->m_outer_line_width);
     CHECK_MSTATUS(status);
 
     // Point Size
@@ -225,21 +198,23 @@ MUserData *LineDrawOverride::prepareForDraw(
         getNodeAttr(objPath, LineShapeNode::m_draw_name, data->m_draw_name);
     CHECK_MSTATUS(status);
 
-    // Draw Outer
-    status =
-        getNodeAttr(objPath, LineShapeNode::m_draw_outer, data->m_draw_outer);
-    CHECK_MSTATUS(status);
-
     // Draw Middle
     status =
         getNodeAttr(objPath, LineShapeNode::m_draw_middle, data->m_draw_middle);
     CHECK_MSTATUS(status);
 
-    // Colors
+    // Create secondary color.
+    MColor color2(0.0f, 0.0f, 0.0f, 1.0f);
     float hue = 0.0;
     float sat = 0.0;
     float val = 0.0;
     float alpha = 0.0;
+    color1.get(MColor::kHSV, hue, sat, val, alpha);
+    sat *= color_secondary_saturation_factor;
+    alpha *= color_secondary_alpha_factor;
+    color2.set(MColor::kHSV, hue, sat, val, alpha);
+
+    // Adjust colors due to state.
     auto display_status = MHWRender::MGeometryUtilities::displayStatus(objPath);
     if ((display_status == MHWRender::kLead) ||
         (display_status == MHWRender::kLead) ||
@@ -251,46 +226,25 @@ MUserData *LineDrawOverride::prepareForDraw(
         data->m_depth_priority =
             MHWRender::MRenderItem::sActiveWireDepthPriority;
 
-        // Text
-        text_color.get(MColor::kHSV, hue, sat, val, alpha);
+        // Primary Color
+        color1.get(MColor::kHSV, hue, sat, val, alpha);
         sat *= 0.95f;
         val *= 1.05f;
-        text_color.set(MColor::kHSV, hue, sat, val, alpha);
+        color1.set(MColor::kHSV, hue, sat, val, alpha);
 
-        // Point
-        point_color.get(MColor::kHSV, hue, sat, val, alpha);
+        // Secondary Color
+        color2.get(MColor::kHSV, hue, sat, val, alpha);
         sat *= 0.95f;
         val *= 1.05f;
-        point_color.set(MColor::kHSV, hue, sat, val, alpha);
-
-        // Inner
-        inner_color.get(MColor::kHSV, hue, sat, val, alpha);
-        sat *= 0.95f;
-        val *= 1.05f;
-        inner_color.set(MColor::kHSV, hue, sat, val, alpha);
-
-        // Outer
-        outer_color.get(MColor::kHSV, hue, sat, val, alpha);
-        sat *= 0.95f;
-        val *= 1.05f;
-        outer_color.set(MColor::kHSV, hue, sat, val, alpha);
-
-        // Middle
-        middle_color.get(MColor::kHSV, hue, sat, val, alpha);
-        sat *= 0.95f;
-        val *= 1.05f;
-        middle_color.set(MColor::kHSV, hue, sat, val, alpha);
+        color2.set(MColor::kHSV, hue, sat, val, alpha);
     } else {
         // The line is not selected.
         data->m_active = false;
         data->m_depth_priority =
             MHWRender::MRenderItem::sDormantFilledDepthPriority;
     }
-    data->m_text_color = text_color;
-    data->m_point_color = point_color;
-    data->m_inner_color = inner_color;
-    data->m_outer_color = outer_color;
-    data->m_middle_color = middle_color;
+    data->m_color1 = color1;
+    data->m_color2 = color2;
 
     // The positions of the lines.
     data->m_point_data_x.clear();
@@ -380,10 +334,7 @@ void LineDrawOverride::addUIDrawables(
         middle_point += pnt * inverse_num_of_points;
     }
 
-    const auto num_inner_points = num_of_points;
-    const auto num_outer_points = 4;  // 2 lines with 2 points each.
-
-    MPointArray inner_line_list(num_inner_points);
+    MPointArray inner_line_list(num_of_points);
     for (uint32_t i = 0; i < (num_of_points - 1); i++) {
         auto index_a = i + 0;
         auto index_b = i + 1;
@@ -392,27 +343,6 @@ void LineDrawOverride::addUIDrawables(
         inner_line_list.set(pnt_a, index_a);
         inner_line_list.set(pnt_b, index_b);
     }
-
-    MPointArray outer_line_list(num_outer_points);
-    auto first_point_index = 0;
-    auto last_point_index = num_inner_points - 1;
-    auto dir = MVector(data->m_point_list[first_point_index] -
-                       data->m_point_list[last_point_index]);
-    dir.normalize();
-    dir *= data->m_outer_scale;
-
-    auto temp0 = data->m_point_list[first_point_index];
-    auto temp1 = data->m_point_list[last_point_index];
-    MPoint vertex0 = MPoint(temp0.x + dir.x, temp0.y + dir.y, temp0.z + dir.z);
-    MPoint vertex1 = data->m_point_list[first_point_index];
-    MPoint vertex2 = data->m_point_list[last_point_index];
-    MPoint vertex3 = MPoint(temp1.x + (dir.x * -1.0), temp1.y + (dir.y * -1.0),
-                            temp1.z + (dir.z * -1.0));
-
-    outer_line_list.set(vertex0, 0);
-    outer_line_list.set(vertex1, 1);
-    outer_line_list.set(vertex2, 2);
-    outer_line_list.set(vertex3, 3);
 
     MPointArray mid_line_list(2);
     mid_line_list.set(data->m_middle_point_a, 0);
@@ -427,13 +357,13 @@ void LineDrawOverride::addUIDrawables(
         // X-Ray mode disregards depth testing and will always draw
         // on-top.
         drawManager.beginDrawable(MHWRender::MUIDrawManager::kSelectable);
-        drawManager.setColor(data->m_middle_color);
+        drawManager.setColor(data->m_color2);
         drawManager.setLineWidth(static_cast<float>(data->m_middle_line_width));
         drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
         drawManager.setDepthPriority(data->m_depth_priority);
 
         drawManager.beginDrawInXray();
-        drawManager.setColor(data->m_middle_color);
+        drawManager.setColor(data->m_color2);
         drawManager.setLineWidth(static_cast<float>(data->m_middle_line_width));
         drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
         drawManager.setDepthPriority(data->m_depth_priority);
@@ -449,13 +379,13 @@ void LineDrawOverride::addUIDrawables(
         // X-Ray mode disregards depth testing and will always draw
         // on-top.
         drawManager.beginDrawable(MHWRender::MUIDrawManager::kSelectable);
-        drawManager.setColor(data->m_inner_color);
+        drawManager.setColor(data->m_color1);
         drawManager.setLineWidth(static_cast<float>(data->m_inner_line_width));
         drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
         drawManager.setDepthPriority(data->m_depth_priority);
 
         drawManager.beginDrawInXray();
-        drawManager.setColor(data->m_inner_color);
+        drawManager.setColor(data->m_color1);
         drawManager.setLineWidth(static_cast<float>(data->m_inner_line_width));
         drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
         drawManager.setDepthPriority(data->m_depth_priority);
@@ -467,40 +397,18 @@ void LineDrawOverride::addUIDrawables(
         drawManager.endDrawable();
     }
 
-    // Draw outer line.
-    if (data->m_draw_outer) {
-        // X-Ray mode disregards depth testing and will always draw
-        // on-top.
-        drawManager.beginDrawable(MHWRender::MUIDrawManager::kSelectable);
-        drawManager.setColor(data->m_outer_color);
-        drawManager.setLineWidth(static_cast<float>(data->m_outer_line_width));
-        drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
-        drawManager.setDepthPriority(data->m_depth_priority);
-
-        drawManager.beginDrawInXray();
-        drawManager.setColor(data->m_outer_color);
-        drawManager.setLineWidth(static_cast<float>(data->m_outer_line_width));
-        drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
-        drawManager.setDepthPriority(data->m_depth_priority);
-
-        drawManager.mesh(MHWRender::MUIDrawManager::kLines, outer_line_list);
-
-        drawManager.endDrawInXray();
-        drawManager.endDrawable();
-    }
-
     // Draw point directly in the center of the object transform.
     {
         // X-Ray mode disregards depth testing and will always draw
         // on-top.
         drawManager.beginDrawable(MHWRender::MUIDrawManager::kSelectable);
-        drawManager.setColor(data->m_point_color);
+        drawManager.setColor(data->m_color1);
         drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
         drawManager.setPointSize(static_cast<float>(data->m_point_size));
         drawManager.setDepthPriority(data->m_depth_priority);
 
         drawManager.beginDrawInXray();
-        drawManager.setColor(data->m_point_color);
+        drawManager.setColor(data->m_color1);
         drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
         drawManager.setPointSize(static_cast<float>(data->m_point_size));
         drawManager.setDepthPriority(data->m_depth_priority);
@@ -517,12 +425,12 @@ void LineDrawOverride::addUIDrawables(
         // X-Ray mode disregards depth testing and will always draw
         // on-top.
         drawManager.beginDrawable(MHWRender::MUIDrawManager::kSelectable);
-        drawManager.setColor(data->m_text_color);
+        drawManager.setColor(data->m_color1);
         drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
         drawManager.setDepthPriority(data->m_depth_priority);
 
         drawManager.beginDrawInXray();
-        drawManager.setColor(data->m_text_color);
+        drawManager.setColor(data->m_color1);
         drawManager.setLineStyle(MHWRender::MUIDrawManager::kSolid);
         drawManager.setDepthPriority(data->m_depth_priority);
 

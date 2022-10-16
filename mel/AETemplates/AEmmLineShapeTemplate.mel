@@ -29,30 +29,15 @@ global proc AEmmLineShapeTemplate(string $nodeName)
     AEmmNodeShapeTemplateCommonBegin($nodeName);
 
     editorTemplate -beginLayout "Common" -collapse 0;
-    editorTemplate -addControl "textColor";
-    editorTemplate -addControl "textAlpha";
-    editorTemplate -addSeparator;
-    editorTemplate -addControl "pointColor";
-    editorTemplate -addControl "pointAlpha";
-    editorTemplate -addSeparator;
-    editorTemplate -addControl "innerColor";
-    editorTemplate -addControl "innerAlpha";
-    editorTemplate -addSeparator;
-    editorTemplate -addControl "outerColor";
-    editorTemplate -addControl "outerAlpha";
-    editorTemplate -addSeparator;
-    editorTemplate -addControl "middleColor";
-    editorTemplate -addControl "middleAlpha";
+    editorTemplate -addControl "color";
+    editorTemplate -addControl "alpha";
     editorTemplate -addSeparator;
     editorTemplate -addControl "innerLineWidth";
-    editorTemplate -addControl "outerLineWidth";
     editorTemplate -addControl "middleLineWidth";
-    editorTemplate -addControl "outerScale";
     editorTemplate -addControl "middleScale";
     editorTemplate -addControl "pointSize";
     editorTemplate -addSeparator;
     editorTemplate -addControl "drawName";
-    editorTemplate -addControl "drawOuter";
     editorTemplate -addControl "drawMiddle";
     editorTemplate -endLayout;
 

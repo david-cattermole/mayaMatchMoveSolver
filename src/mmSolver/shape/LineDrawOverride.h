@@ -52,15 +52,12 @@ public:
         : MUserData(/*deleteAfterUse=*/true)  // let Maya clean up
         , m_depth_priority(0)
         , m_inner_line_width(1.0)
-        , m_outer_line_width(1.0)
         , m_middle_line_width(1.0)
-        , m_outer_scale(1.0)
         , m_middle_scale(1.0)
         , m_point_size(1.0)
         , m_point_list()
         , m_active(false)
         , m_draw_name(false)
-        , m_draw_outer(false)
         , m_draw_middle(false) {}
 
     ~LineDrawData() override {}
@@ -68,24 +65,18 @@ public:
     MString m_name;
     bool m_active;
     bool m_draw_name;
-    bool m_draw_outer;
     bool m_draw_middle;
 
     unsigned int m_depth_priority;
     double m_point_size;
 
     double m_inner_line_width;
-    double m_outer_line_width;
     double m_middle_line_width;
 
-    double m_outer_scale;
     double m_middle_scale;
 
-    MColor m_text_color{1.0f, 1.0f, 1.0f, 1.0f};
-    MColor m_point_color{1.0f, 0.0f, 0.0f, 1.0f};
-    MColor m_inner_color{0.0f, 1.0f, 0.0f, 1.0f};
-    MColor m_outer_color{0.0f, 0.0f, 1.0f, 1.0f};
-    MColor m_middle_color{0.0f, 0.0f, 1.0f, 1.0f};
+    MColor m_color1{1.0f, 1.0f, 1.0f, 1.0f};
+    MColor m_color2{0.0f, 0.0f, 1.0f, 1.0f};
 
     MPointArray m_point_list;
     rust::Vec<mmscenegraph::Real> m_point_data_x;

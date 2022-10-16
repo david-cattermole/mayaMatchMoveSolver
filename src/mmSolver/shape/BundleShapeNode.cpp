@@ -84,7 +84,6 @@ MString BundleShapeNode::nodeName() {
 MStatus BundleShapeNode::compute(const MPlug & /*plug*/,
                                  MDataBlock & /*dataBlock*/) {
     return MS::kUnknownParameter;
-    ;
 }
 
 bool BundleShapeNode::isBounded() const { return true; }
@@ -92,14 +91,6 @@ bool BundleShapeNode::isBounded() const { return true; }
 MBoundingBox BundleShapeNode::boundingBox() const {
     MPoint corner1(-1.0, -1.0, -1.0);
     MPoint corner2(1.0, 1.0, 1.0);
-
-    double icon_size = 0.0;
-    MObject thisNode = thisMObject();
-    MPlug plug(thisNode, m_icon_size);
-    plug.getValue(icon_size);
-
-    corner1 = corner1 * icon_size;
-    corner2 = corner2 * icon_size;
     return MBoundingBox(corner1, corner2);
 }
 

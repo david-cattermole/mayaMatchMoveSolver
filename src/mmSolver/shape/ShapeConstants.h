@@ -23,10 +23,7 @@ namespace mmsolver {
 
 // How much to multiply the saturation and value (HSV) of the object
 // color, when it is selected.
-//
-// Selected objects will look slightly less lighter color and
-// brighter.
-const float selection_saturation_factor = 0.9;
+const float selection_saturation_factor = 0.8;
 const float selection_value_factor = 1.2;
 
 }  // namespace mmsolver

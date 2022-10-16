@@ -228,14 +228,14 @@ MUserData *LineDrawOverride::prepareForDraw(
 
         // Primary Color
         color1.get(MColor::kHSV, hue, sat, val, alpha);
-        sat *= 0.95f;
-        val *= 1.05f;
+        sat *= selection_saturation_factor;
+        val *= selection_value_factor;
         color1.set(MColor::kHSV, hue, sat, val, alpha);
 
         // Secondary Color
         color2.get(MColor::kHSV, hue, sat, val, alpha);
-        sat *= 0.95f;
-        val *= 1.05f;
+        sat *= selection_saturation_factor;
+        val *= selection_value_factor;
         color2.set(MColor::kHSV, hue, sat, val, alpha);
     } else {
         // The line is not selected.

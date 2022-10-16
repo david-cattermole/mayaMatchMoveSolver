@@ -39,6 +39,7 @@
 
 // MM Solver
 #include "BundleConstants.h"
+#include "ShapeConstants.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
@@ -177,9 +178,10 @@ MUserData *BundleDrawOverride::prepareForDraw(
         data->m_active = true;
         data->m_depth_priority =
             MHWRender::MRenderItem::sActiveWireDepthPriority;
+
         user_color.get(MColor::kHSV, hue, sat, val, alpha);
-        sat *= 0.95f;
-        val *= 1.05f;
+        sat *= selection_saturation_factor;
+        val *= selection_value_factor;
         user_color.set(MColor::kHSV, hue, sat, val, alpha);
     } else {
         // The bundle is not selected.

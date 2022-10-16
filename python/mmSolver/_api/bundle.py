@@ -102,6 +102,22 @@ def _create_bundle_shape(tfm_node):
     maya.cmds.setAttr(shp + '.localScaleX', channelBox=False)
     maya.cmds.setAttr(shp + '.localScaleY', channelBox=False)
     maya.cmds.setAttr(shp + '.localScaleZ', channelBox=False)
+
+    # HACK: Allows the bundle to be point-snapped to. For some reason
+    # the mmBundleShape does not allow users to snap objects to
+    # them. By creating a locator, with no size under the same
+    # transform we can work around this.
+    shp_name = tfm_node.rpartition('|')[-1] + 'LocatorShape'
+    locator_shp = maya.cmds.createNode('locator', name=shp_name, parent=tfm_node)
+    maya.cmds.setAttr(locator_shp + '.localPositionX', channelBox=False)
+    maya.cmds.setAttr(locator_shp + '.localPositionY', channelBox=False)
+    maya.cmds.setAttr(locator_shp + '.localPositionZ', channelBox=False)
+    maya.cmds.setAttr(locator_shp + '.localScaleX', channelBox=False)
+    maya.cmds.setAttr(locator_shp + '.localScaleY', channelBox=False)
+    maya.cmds.setAttr(locator_shp + '.localScaleZ', channelBox=False)
+    maya.cmds.setAttr(locator_shp + '.localScaleX', 0.0)
+    maya.cmds.setAttr(locator_shp + '.localScaleY', 0.0)
+    maya.cmds.setAttr(locator_shp + '.localScaleZ', 0.0)
     return shp
 
 
@@ -123,12 +139,20 @@ def _replace_bundle_shape(dag_path):
     dag_shps = node_utils.get_dag_path_shapes_below_apione(dag_path)
     if len(dag_shps) > 0:
         shape_nodes = []
+        bundle_shape_nodes = []
         for dag_shp in dag_shps:
             mfn_shp = OpenMaya.MFnDagNode(dag_shp)
             type_name = mfn_shp.typeName()
             if type_name != const.BUNDLE_SHAPE_NODE_TYPE:
                 shape_nodes.append(dag_shp.fullPathName())
-        if len(shape_nodes) > 0:
+            else:
+                bundle_shape_nodes.append(dag_shp.fullPathName())
+        if len(bundle_shape_nodes) == 1 and len(shape_nodes) == 0:
+            # For backwards compatibility with mmSolver
+            # "v0.4.0-alpha*" releases.
+            maya.cmds.delete(bundle_shape_nodes)
+            _create_bundle_shape(dag_path.fullPathName())
+        elif len(bundle_shape_nodes) == 0 and len(shape_nodes) > 0:
             maya.cmds.delete(shape_nodes)
             _create_bundle_shape(dag_path.fullPathName())
     else:

@@ -39,6 +39,8 @@ def main():
     sel = maya.cmds.ls(sl=True, long=True)
     mkr_nodes = mmapi.filter_marker_nodes(sel)
 
+    mmapi.load_plugin()
+
     bnd_name = mmapi.get_new_bundle_name('bundle1')
     bnd = mmapi.Bundle().create_node(name=bnd_name)
 

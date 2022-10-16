@@ -134,7 +134,7 @@ class TestLine(test_api_utils.APITestCase):
 
     def test_set_colour_rgb(self):
         """
-        Set wireframe colour of the line.
+        Set colour of the line.
         """
         magenta = (1.0, 0.0, 1.0)
         red = (1.0, 0.0, 0.0)
@@ -153,6 +153,27 @@ class TestLine(test_api_utils.APITestCase):
         y.set_colour_rgb(blue)
         y_rgb = y.get_colour_rgb()
         self.assertEqual(y_rgb, blue)
+        return
+
+    def test_set_colour_rgba(self):
+        """
+        Set colour of the line.
+        """
+        magenta = (1.0, 0.0, 1.0, 1.0)
+        blue = (0.0, 0.0, 1.0, 0.5)
+
+        x = line.Line()
+        x_rgba = x.get_colour_rgba()
+        self.assertEqual(x_rgba, None)
+
+        # Create nodes
+        y = line.Line().create_node(name='myLine1')
+        y_rgba = y.get_colour_rgba()
+        self.assertEqual(y_rgba, magenta)
+
+        y.set_colour_rgba(blue)
+        y_rgba = y.get_colour_rgba()
+        self.assertEqual(y_rgba, blue)
         return
 
     def test_get_marker_list(self):

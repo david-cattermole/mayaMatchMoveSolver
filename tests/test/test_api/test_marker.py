@@ -153,7 +153,7 @@ class TestMarker(test_api_utils.APITestCase):
 
     def test_set_colour_rgb(self):
         """
-        Set wireframe colour of the marker.
+        Set colour of the marker.
         """
         red = (1.0, 0.0, 0.0)
         green = (0.0, 1.0, 0.0)
@@ -171,6 +171,27 @@ class TestMarker(test_api_utils.APITestCase):
         y.set_colour_rgb(blue)
         y_rgb = y.get_colour_rgb()
         self.assertEqual(y_rgb, blue)
+        return
+
+    def test_set_colour_rgba(self):
+        """
+        Set colour of the marker.
+        """
+        red = (1.0, 0.0, 0.0, 1.0)
+        blue = (0.0, 0.0, 1.0, 0.5)
+
+        x = marker.Marker()
+        x_rgba = x.get_colour_rgba()
+        self.assertEqual(x_rgba, None)
+
+        # Create nodes
+        y = marker.Marker().create_node(name='myMarker1')
+        y_rgba = y.get_colour_rgba()
+        self.assertEqual(y_rgba, red)
+
+        y.set_colour_rgba(blue)
+        y_rgba = y.get_colour_rgba()
+        self.assertEqual(y_rgba, blue)
         return
 
     def test_get_bundle(self):

@@ -529,44 +529,140 @@ class Line(object):
         frames = list(enable_frames_set.intersection(dev_frames_set))
         return frames
 
+    ############################################################################
+
     def get_colour_rgb(self):
         """
-        Get the current wire-frame colour of the Line.
+        Get the current RGBA colour (0.0 to 1.0) of the Line.
 
-        :returns: Tuple of red, green and blue, or None if colour
-                  cannot be found.
+        :returns:
+           Tuple of red, green and blue, or None if colour cannot be
+           found. Each channel is floating point; 0.0 to 1.0.
         :rtype: (float, float, float) or None
         """
         node = self.get_node()
         if node is None:
-            LOG.warn('Could not get Line node. self=%r', self)
+            msg = 'Could not get node. self=%r'
+            LOG.warn(msg, self)
             return None
-        shps = maya.cmds.listRelatives(node, shapes=True, fullPath=True) or []
+        shps = (
+            maya.cmds.listRelatives(
+                node, shapes=True, fullPath=True, type=const.LINE_SHAPE_NODE_TYPE
+            )
+            or []
+        )
         if len(shps) == 0:
-            LOG.warn('Could not find shape to get colour. node=%r shps=%r', node, shps)
-            return
+            msg = 'Could not find shape to get colour. node=%r shps=%r'
+            LOG.warn(msg, node, shps)
+            return None
         shp = shps[0]
-        v = node_utils.get_node_wire_colour_rgb(shp)
-        return v
+
+        v = maya.cmds.getAttr(shp + '.color')[0]
+        return tuple(v)
 
     def set_colour_rgb(self, rgb):
         """
-        Change the Wireframe colour of the Line.
+        Change the RGBA colour (0.0 to 1.0) of the Line.
 
-        :param rgb: Colour as R, G, B; Or None to reset to default colour.
+        :param rgb:
+           Colour as R, G, B; Or None to reset to default colour.
+           Each channel is floating point; 0.0 to 1.0.
         :type rgb: tuple
+
+        :rtype: None
         """
-        assert rgb is None or isinstance(rgb, (tuple, list))
+        if rgb is None:
+            rgb = (0.0, 1.0, 0.0)
+        assert isinstance(rgb, (tuple, list))
+        assert len(rgb) >= 3
+
         node = self.get_node()
         if node is None:
-            LOG.warn('Could not get Line node. self=%r', self)
+            msg = 'Could not get node. self=%r'
+            LOG.warn(msg, self)
             return
-        shps = maya.cmds.listRelatives(node, shapes=True, fullPath=True) or []
+        shps = (
+            maya.cmds.listRelatives(
+                node, shapes=True, fullPath=True, type=const.LINE_SHAPE_NODE_TYPE
+            )
+            or []
+        )
         if len(shps) == 0:
-            LOG.warn('Could not find shape to set colour. node=%r shps=%r', node, shps)
+            msg = 'Could not find shape to set colour. node=%r shps=%r'
+            LOG.warn(msg, node, shps)
             return
         shp = shps[0]
-        node_utils.set_node_wire_colour_rgb(shp, rgb)
+
+        maya.cmds.setAttr(shp + '.colorR', rgb[0])
+        maya.cmds.setAttr(shp + '.colorG', rgb[1])
+        maya.cmds.setAttr(shp + '.colorB', rgb[2])
+        return
+
+    def get_colour_rgba(self):
+        """
+        Get the current RGBA colour (0.0 to 1.0) of the Line.
+
+        :returns:
+           Tuple of red, green, blue, and alpha, or None if colour
+           cannot be found. Each channel is floating point; 0.0 to 1.0.
+        :rtype: (float, float, float, float) or None
+        """
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warn(msg, self)
+            return None
+        shps = (
+            maya.cmds.listRelatives(
+                node, shapes=True, fullPath=True, type=const.LINE_SHAPE_NODE_TYPE
+            )
+            or []
+        )
+        if len(shps) == 0:
+            msg = 'Could not find shape to get colour. node=%r shps=%r'
+            LOG.warn(msg, node, shps)
+            return None
+        shp = shps[0]
+
+        rgb = maya.cmds.getAttr(shp + '.color')[0]
+        alpha = maya.cmds.getAttr(shp + '.alpha')
+        return (rgb[0], rgb[1], rgb[2], alpha)
+
+    def set_colour_rgba(self, rgba):
+        """
+        Change the RGB colour (0.0 to 1.0) of the Line.
+
+        :param rgba:
+            Colour as R, G, B, A; Or None to reset to default colour.
+            Each channel is floating point; 0.0 to 1.0.
+        :type rgba: tuple
+
+        :rtype: None
+        """
+        if rgba is None:
+            rgba = (0.0, 1.0, 0.0, 1.0)
+        assert rgba is None or isinstance(rgba, (tuple, list))
+        assert len(rgba) >= 4
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warn(msg, self)
+            return
+        shps = (
+            maya.cmds.listRelatives(
+                node, shapes=True, fullPath=True, type=const.LINE_SHAPE_NODE_TYPE
+            )
+            or []
+        )
+        if len(shps) == 0:
+            msg = 'Could not find shape to set colour. node=%r shps=%r'
+            LOG.warn(msg, node, shps)
+            return
+        shp = shps[0]
+        maya.cmds.setAttr(shp + '.colorR', rgba[0])
+        maya.cmds.setAttr(shp + '.colorG', rgba[1])
+        maya.cmds.setAttr(shp + '.colorB', rgba[2])
+        maya.cmds.setAttr(shp + '.alpha', rgba[3])
         return
 
     ############################################################################

@@ -76,7 +76,7 @@ class TestBundle(test_api_utils.APITestCase):
 
     def test_set_colour_rgb(self):
         """
-        Set wireframe colour of the bundle.
+        Set colour of the bundle.
         """
         green = (0.0, 1.0, 0.0)
         blue = (0.0, 0.0, 1.0)
@@ -93,6 +93,27 @@ class TestBundle(test_api_utils.APITestCase):
         y.set_colour_rgb(blue)
         y_rgb = y.get_colour_rgb()
         self.assertEqual(y_rgb, blue)
+        return
+
+    def test_set_colour_rgba(self):
+        """
+        Set colour of the bundle.
+        """
+        green = (0.0, 1.0, 0.0, 1.0)
+        blue = (0.0, 0.0, 1.0, 0.5)
+
+        x = bundle.Bundle()
+        x_rgba = x.get_colour_rgba()
+        self.assertEqual(x_rgba, None)
+
+        # Create nodes
+        y = bundle.Bundle().create_node(name='myBundle1')
+        y_rgba = y.get_colour_rgba()
+        self.assertEqual(y_rgba, green)
+
+        y.set_colour_rgba(blue)
+        y_rgba = y.get_colour_rgba()
+        self.assertEqual(y_rgba, blue)
         return
 
     def test_get_marker_list(self):

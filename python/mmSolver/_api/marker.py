@@ -988,12 +988,12 @@ class Marker(object):
         :param rgb:
            Colour as R, G, B; Or None to reset to default colour.
            Each channel is floating point; 0.0 to 1.0.
-        :type rgb: tuple
+        :type rgb: tuple or None
 
         :rtype: None
         """
         if rgb is None:
-            rgb = (0.0, 1.0, 0.0)
+            rgb = (1.0, 0.0, 0.0)
         assert isinstance(rgb, (tuple, list))
         assert len(rgb) >= 3
 
@@ -1061,7 +1061,7 @@ class Marker(object):
         :rtype: None
         """
         if rgba is None:
-            rgba = (0.0, 1.0, 0.0, 1.0)
+            rgba = (1.0, 0.0, 0.0, 1.0)
         assert rgba is None or isinstance(rgba, (tuple, list))
         assert len(rgba) >= 4
         node = self.get_node()

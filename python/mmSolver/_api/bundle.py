@@ -370,7 +370,7 @@ class Bundle(object):
         :param rgb:
            Colour as R, G, B; Or None to reset to default colour.
            Each channel is floating point; 0.0 to 1.0.
-        :type rgb: tuple
+        :type rgb: tuple or None
 
         :rtype: None
         """
@@ -438,7 +438,7 @@ class Bundle(object):
         :param rgba:
             Colour as R, G, B, A; Or None to reset to default colour.
             Each channel is floating point; 0.0 to 1.0.
-        :type rgba: tuple
+        :type rgba: tuple or None
 
         :rtype: None
         """

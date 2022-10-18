@@ -93,7 +93,7 @@ mod tests {
         println!("Intersection Point: {:?}", intersection_point);
 
         match intersection_point {
-            Some(closest_point) => {
+            Some(_closest_point) => {
                 println!("Hit");
             }
             None => println!("Miss"),

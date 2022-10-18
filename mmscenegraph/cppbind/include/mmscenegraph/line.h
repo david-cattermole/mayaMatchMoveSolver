@@ -31,8 +31,8 @@ namespace mmscenegraph {
 
 MMSCENEGRAPH_API_EXPORT
 bool fit_line_to_points_type2(rust::Slice<const Real> &x,
-                              rust::Slice<const Real> &y, double &out_point_x,
-                              double &out_point_y, double &out_slope) noexcept;
+                              rust::Slice<const Real> &y, Real &out_point_x,
+                              Real &out_point_y, Real &out_slope) noexcept;
 
 MMSCENEGRAPH_API_EXPORT
 bool line_point_intersection(const Point3 &point, const Point3 &line_a,

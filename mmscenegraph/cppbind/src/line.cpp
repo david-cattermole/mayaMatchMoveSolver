@@ -27,8 +27,8 @@ namespace mmscenegraph {
 
 MMSCENEGRAPH_API_EXPORT
 bool fit_line_to_points_type2(rust::Slice<const Real> &x,
-                              rust::Slice<const Real> &y, double &out_point_x,
-                              double &out_point_y, double &out_slope) noexcept {
+                              rust::Slice<const Real> &y, Real &out_point_x,
+                              Real &out_point_y, Real &out_slope) noexcept {
     return shim_fit_line_to_points_type2(x, y, out_point_x, out_point_y,
                                          out_slope);
 }

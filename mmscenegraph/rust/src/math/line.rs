@@ -20,7 +20,7 @@
 /// Line Regression.
 use crate::constant::Real;
 
-const EPSILON: Real = 1.0e-7;
+const EPSILON: Real = 1.0e-9;
 
 fn impl_precompute_line_fit_data(
     x: &[Real],
@@ -33,7 +33,7 @@ fn impl_precompute_line_fit_data(
     out_mean_x: &mut Real,
     out_mean_y: &mut Real,
 ) -> bool {
-    let num = x.len();
+    let num = x.len().min(y.len());
     if num < 2 {
         // One point does not define a line, we need at least 2.
         return false;
@@ -196,7 +196,7 @@ pub fn fit_line_to_points_type2(
 
         // Transpose the values, because of the swapped values given
         // to the fit_line_to_points_type1() function.
-        slope_b = 1.0 / slope_b;
+        slope_b = slope_b.recip().min(std::f64::MAX).copysign(slope_a);
         assert_eq!(slope_a.signum(), slope_b.signum());
 
         *out_slope = slope_a.signum() * (slope_a * slope_b).sqrt();
@@ -206,7 +206,6 @@ pub fn fit_line_to_points_type2(
         true
     } else if ok_a && !ok_b {
         // The special case that the line is entirely vertical.
-
         *out_slope = slope_a;
         *out_point_x = intercept_a;
         *out_point_y = mean_y;
@@ -217,7 +216,7 @@ pub fn fit_line_to_points_type2(
 
         // Transpose the values, because of the swapped values given
         // to the fit_line_to_points_type1() function.
-        slope_b = 1.0 / slope_b;
+        slope_b = slope_b.recip().min(std::f64::MAX);
 
         *out_slope = slope_b;
         *out_point_x = mean_x;
@@ -480,5 +479,31 @@ mod tests {
         assert_relative_eq!(point_x, 0.0, epsilon = EPSILON);
         assert_relative_eq!(point_y, -0.3, epsilon = EPSILON);
         assert_relative_eq!(slope, -24019198012642652.0, epsilon = EPSILON);
+    }
+
+    #[test]
+    fn test_fit_line_to_points_type2_4() {
+        let x = vec![-0.2, 0.0, 0.2];
+        let y = vec![-0.2, 0.2, -0.2];
+
+        let mut point_x: Real = 0.0;
+        let mut point_y: Real = 0.0;
+        let mut slope: Real = 0.0;
+        let ok = fit_line_to_points_type2(
+            &x,
+            &y,
+            &mut point_x,
+            &mut point_y,
+            &mut slope,
+        );
+        assert_eq!(ok, true);
+
+        println!("point_x: {}", point_x);
+        println!("point_y: {}", point_y);
+        println!("slope: {}", slope);
+
+        assert_relative_eq!(point_x, 0.0, epsilon = EPSILON);
+        assert_relative_eq!(point_y, -0.06666666666666667, epsilon = EPSILON);
+        assert_relative_eq!(slope, 0.0, epsilon = EPSILON);
     }
 }

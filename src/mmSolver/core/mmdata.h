@@ -53,6 +53,15 @@ public:
         : x_(x), y_(y), z_(z), w_(w) {}
 };
 
+struct Vector2D {
+public:
+    double x_, y_;
+
+    Vector2D(double f = 0.0) : x_(f), y_(f) {}
+
+    Vector2D(double x, double y) : x_(x), y_(y) {}
+};
+
 struct Vector3D {
 public:
     double x_, y_, z_;

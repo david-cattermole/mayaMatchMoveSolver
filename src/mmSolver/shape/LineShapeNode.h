@@ -105,6 +105,8 @@ public:
     static MObject m_out_line;
     static MObject m_out_line_center_x;
     static MObject m_out_line_center_y;
+    static MObject m_out_line_dir_x;
+    static MObject m_out_line_dir_y;
     static MObject m_out_line_slope;
     static MObject m_out_line_angle;
 

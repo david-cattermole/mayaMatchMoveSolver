@@ -87,7 +87,7 @@ MStatus query_line_point_data(const MMatrix parentInverseMatrix,
     }
 
     MMSOLVER_VRB("out_point_data_x.size(): " << out_point_data_x.size());
-    MMSOLVER_VRB("out_point_data_y.size(): " << out_point_data_x.size());
+    MMSOLVER_VRB("out_point_data_y.size(): " << out_point_data_y.size());
     assert((out_point_data_x.size() == out_point_data_y.size()));
 
     return status;
@@ -99,6 +99,7 @@ MStatus fit_line_to_points(const mmsg::Real line_length,
                            mmdata::Point2D &out_line_center,
                            mmsg::Real &out_line_slope,
                            mmsg::Real &out_line_angle,
+                           mmdata::Vector2D &out_line_dir,
                            mmdata::Point2D &out_line_point_a,
                            mmdata::Point2D &out_line_point_b,
                            const bool verbose) {
@@ -106,6 +107,8 @@ MStatus fit_line_to_points(const mmsg::Real line_length,
 
     auto line_center_x = 0.0;
     auto line_center_y = 0.0;
+    auto line_dir_x = 1.0;
+    auto line_dir_y = 0.0;
     auto line_slope = 0.0;
     auto line_angle = 0.0;
 
@@ -114,8 +117,9 @@ MStatus fit_line_to_points(const mmsg::Real line_length,
                                               point_data_x.size()};
         rust::Slice<const mmsg::Real> y_slice{point_data_y.data(),
                                               point_data_y.size()};
-        auto ok = mmsg::fit_line_to_points_type2(
-            x_slice, y_slice, line_center_x, line_center_y, line_slope);
+        auto ok = mmsg::fit_straight_line_to_ordered_points(
+            x_slice, y_slice, line_center_x, line_center_y, line_dir_x,
+            line_dir_y);
 
         if (!ok) {
             MMSOLVER_WRN(
@@ -126,13 +130,16 @@ MStatus fit_line_to_points(const mmsg::Real line_length,
 
         out_line_center.x_ = line_center_x;
         out_line_center.y_ = line_center_y;
-        out_line_slope = line_slope;
-        out_line_angle = line_angle;
+        out_line_slope = line_dir_x / line_dir_y;
+        out_line_angle = std::atan2(line_dir_y, line_dir_x);
+        out_line_dir.x_ = line_dir_x;
+        out_line_dir.y_ = line_dir_y;
     } else if (point_data_x.size() == 2) {
         out_line_center.x_ = (point_data_x[0] + point_data_x[1]) / 2.0;
         out_line_center.y_ = (point_data_y[0] + point_data_y[1]) / 2.0;
-        out_line_slope = (point_data_x[1] - point_data_x[0]) /
-                         (point_data_y[1] - point_data_y[0]);
+        out_line_dir.x_ = point_data_x[1] - point_data_x[0];
+        out_line_dir.y_ = point_data_y[1] - point_data_y[0];
+        out_line_slope = out_line_dir.x_ / out_line_dir.y_;
     }
 
     auto line_angle_radian = std::atan(-out_line_slope);
@@ -151,6 +158,8 @@ MStatus fit_line_to_points(const mmsg::Real line_length,
 
     MMSOLVER_VRB("Line Node Utils: Center X: " << out_line_center.x_);
     MMSOLVER_VRB("Line Node Utils: Center Y: " << out_line_center.y_);
+    MMSOLVER_VRB("Line Node Utils: Dir X   : " << line_dir_x);
+    MMSOLVER_VRB("Line Node Utils: Dir Y   : " << line_dir_y);
     MMSOLVER_VRB("Line Node Utils: Slope   : " << out_line_slope);
     MMSOLVER_VRB("Line Node Utils: Angle   : " << out_line_angle);
 

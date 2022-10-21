@@ -28,9 +28,20 @@ namespace mmscenegraph {
 MMSCENEGRAPH_API_EXPORT
 bool fit_line_to_points_type2(rust::Slice<const Real> &x,
                               rust::Slice<const Real> &y, Real &out_point_x,
-                              Real &out_point_y, Real &out_slope) noexcept {
+                              Real &out_point_y, Real &out_dir_x,
+                              Real &out_dir_y) noexcept {
     return shim_fit_line_to_points_type2(x, y, out_point_x, out_point_y,
-                                         out_slope);
+                                         out_dir_x, out_dir_y);
+}
+
+MMSCENEGRAPH_API_EXPORT
+bool fit_straight_line_to_ordered_points(
+    rust::Slice<const Real> &points_coord_x,
+    rust::Slice<const Real> &points_coord_y, Real &out_point_x,
+    Real &out_point_y, Real &out_dir_x, Real &out_dir_y) noexcept {
+    return shim_fit_straight_line_to_ordered_points(
+        points_coord_x, points_coord_y, out_point_x, out_point_y, out_dir_x,
+        out_dir_y);
 }
 
 MMSCENEGRAPH_API_EXPORT

@@ -104,6 +104,8 @@ MObject LineShapeNode::m_out_line_point_by;
 MObject LineShapeNode::m_out_line;
 MObject LineShapeNode::m_out_line_center_x;
 MObject LineShapeNode::m_out_line_center_y;
+MObject LineShapeNode::m_out_line_dir_x;
+MObject LineShapeNode::m_out_line_dir_y;
 MObject LineShapeNode::m_out_line_slope;
 MObject LineShapeNode::m_out_line_angle;
 
@@ -152,12 +154,14 @@ MStatus LineShapeNode::compute(const MPlug &plug, MDataBlock &data) {
         auto line_center = mmdata::Point2D();
         auto line_slope = 0.0;
         auto line_angle = 0.0;
+        auto line_dir = mmdata::Vector2D(0.0, 1.0);
         auto line_point_a = mmdata::Point2D(-1.0, -1.0);
         auto line_point_b = mmdata::Point2D(1.0, 1.0);
 
-        status = fit_line_to_points(line_length, m_point_data_x, m_point_data_y,
-                                    line_center, line_slope, line_angle,
-                                    line_point_a, line_point_b, verbose);
+        status =
+            fit_line_to_points(line_length, m_point_data_x, m_point_data_y,
+                               line_center, line_slope, line_angle, line_dir,
+                               line_point_a, line_point_b, verbose);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         // Output Points
@@ -184,14 +188,20 @@ MStatus LineShapeNode::compute(const MPlug &plug, MDataBlock &data) {
             data.outputValue(m_out_line_center_x);
         MDataHandle outLineCenterYHandle =
             data.outputValue(m_out_line_center_y);
+        MDataHandle outLineDirXHandle = data.outputValue(m_out_line_dir_x);
+        MDataHandle outLineDirYHandle = data.outputValue(m_out_line_dir_y);
         MDataHandle outLineSlopeHandle = data.outputValue(m_out_line_slope);
         MDataHandle outLineAngleHandle = data.outputValue(m_out_line_angle);
         outLineCenterXHandle.setDouble(line_center.x_);
         outLineCenterYHandle.setDouble(line_center.y_);
+        outLineDirXHandle.setDouble(line_dir.x_);
+        outLineDirYHandle.setDouble(line_dir.y_);
         outLineSlopeHandle.setDouble(line_slope);
         outLineAngleHandle.setDouble(line_angle);
         outLineCenterXHandle.setClean();
         outLineCenterYHandle.setClean();
+        outLineDirXHandle.setClean();
+        outLineDirYHandle.setClean();
         outLineSlopeHandle.setClean();
         outLineAngleHandle.setClean();
     }
@@ -456,6 +466,22 @@ MStatus LineShapeNode::initialize() {
         CHECK_MSTATUS(nAttr.setReadable(true));
         CHECK_MSTATUS(nAttr.setWritable(false));
 
+        // Out Line Direction X
+        m_out_line_dir_x =
+            nAttr.create("outLineDirX", "olndrx", MFnNumericData::kDouble, 0.0);
+        CHECK_MSTATUS(nAttr.setStorable(false));
+        CHECK_MSTATUS(nAttr.setKeyable(false));
+        CHECK_MSTATUS(nAttr.setReadable(true));
+        CHECK_MSTATUS(nAttr.setWritable(false));
+
+        // Out Line Direction Y
+        m_out_line_dir_y =
+            nAttr.create("outLineDirY", "olndry", MFnNumericData::kDouble, 0.0);
+        CHECK_MSTATUS(nAttr.setStorable(false));
+        CHECK_MSTATUS(nAttr.setKeyable(false));
+        CHECK_MSTATUS(nAttr.setReadable(true));
+        CHECK_MSTATUS(nAttr.setWritable(false));
+
         // Out Line Slope
         m_out_line_slope = nAttr.create("outLineSlope", "olnslp",
                                         MFnNumericData::kDouble, 0.0);
@@ -477,6 +503,8 @@ MStatus LineShapeNode::initialize() {
         CHECK_MSTATUS(status);
         compoundAttr.addChild(m_out_line_center_x);
         compoundAttr.addChild(m_out_line_center_y);
+        compoundAttr.addChild(m_out_line_dir_x);
+        compoundAttr.addChild(m_out_line_dir_y);
         compoundAttr.addChild(m_out_line_slope);
         compoundAttr.addChild(m_out_line_angle);
         CHECK_MSTATUS(addAttribute(m_out_line));
@@ -501,6 +529,8 @@ MStatus LineShapeNode::initialize() {
     outputAttrs.append(m_out_line);
     outputAttrs.append(m_out_line_center_x);
     outputAttrs.append(m_out_line_center_y);
+    outputAttrs.append(m_out_line_dir_x);
+    outputAttrs.append(m_out_line_dir_y);
     outputAttrs.append(m_out_line_slope);
     outputAttrs.append(m_out_line_angle);
 

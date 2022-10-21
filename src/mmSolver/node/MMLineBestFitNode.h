@@ -69,6 +69,8 @@ public:
     static MObject m_outLine;
     static MObject m_outLineCenterX;
     static MObject m_outLineCenterY;
+    static MObject m_outLineDirX;
+    static MObject m_outLineDirY;
     static MObject m_outLineSlope;
     static MObject m_outLineAngle;
 

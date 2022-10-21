@@ -1195,7 +1195,9 @@ MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimFlatScene> shim_create_f
 
 MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimEvaluationObjects> shim_create_evaluation_objects_box() noexcept;
 
-MMSCENEGRAPH_API_EXPORT bool shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_slope) noexcept;
+MMSCENEGRAPH_API_EXPORT bool shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_dir_x, double &out_dir_y) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_fit_straight_line_to_ordered_points(::rust::Slice<const double> points_coord_x, ::rust::Slice<const double> points_coord_y, double &out_point_x, double &out_point_y, double &out_dir_x, double &out_dir_y) noexcept;
 
 MMSCENEGRAPH_API_EXPORT bool shim_line_point_intersection(::mmscenegraph::Point3 point, ::mmscenegraph::Point3 line_a, ::mmscenegraph::Point3 line_b, ::mmscenegraph::Point3 &out_point) noexcept;
 } // namespace mmscenegraph

@@ -21,6 +21,7 @@
 use crate::cxxbridge::ffi::Point3 as ShimPoint3;
 use mmscenegraph_rust::constant::Real as CoreReal;
 use mmscenegraph_rust::math::line::fit_line_to_points_type2 as core_fit_line_to_points_type2;
+use mmscenegraph_rust::math::line::fit_straight_line_to_ordered_points as core_fit_straight_line_to_ordered_points;
 use mmscenegraph_rust::math::line_intersect::line_point_intersection as core_line_point_intersection;
 use mmscenegraph_rust::math::line_intersect::Point3 as CorePoint3;
 
@@ -29,9 +30,35 @@ pub fn shim_fit_line_to_points_type2(
     y: &[CoreReal],
     out_point_x: &mut CoreReal,
     out_point_y: &mut CoreReal,
-    out_slope: &mut CoreReal,
+    out_dir_x: &mut CoreReal,
+    out_dir_y: &mut CoreReal,
 ) -> bool {
-    core_fit_line_to_points_type2(x, y, out_point_x, out_point_y, out_slope)
+    core_fit_line_to_points_type2(
+        x,
+        y,
+        out_point_x,
+        out_point_y,
+        out_dir_x,
+        out_dir_y,
+    )
+}
+
+pub fn shim_fit_straight_line_to_ordered_points(
+    points_coord_x: &[CoreReal],
+    points_coord_y: &[CoreReal],
+    out_point_x: &mut CoreReal,
+    out_point_y: &mut CoreReal,
+    out_dir_x: &mut CoreReal,
+    out_dir_y: &mut CoreReal,
+) -> bool {
+    core_fit_straight_line_to_ordered_points(
+        points_coord_x,
+        points_coord_y,
+        out_point_x,
+        out_point_y,
+        out_dir_x,
+        out_dir_y,
+    )
 }
 
 pub fn shim_line_point_intersection(

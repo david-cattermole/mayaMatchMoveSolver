@@ -25,6 +25,7 @@ use crate::evaluationobjects::ShimEvaluationObjects;
 use crate::flatscene::shim_create_flat_scene_box;
 use crate::flatscene::ShimFlatScene;
 use crate::line::shim_fit_line_to_points_type2;
+use crate::line::shim_fit_straight_line_to_ordered_points;
 use crate::line::shim_line_point_intersection;
 use crate::scenebake::shim_bake_scene_graph;
 use crate::scenegraph::shim_create_scene_graph_box;
@@ -387,7 +388,17 @@ pub mod ffi {
             y: &[f64],
             out_point_x: &mut f64,
             out_point_y: &mut f64,
-            out_slope: &mut f64,
+            out_dir_x: &mut f64,
+            out_dir_y: &mut f64,
+        ) -> bool;
+
+        fn shim_fit_straight_line_to_ordered_points(
+            points_coord_x: &[f64],
+            points_coord_y: &[f64],
+            out_point_x: &mut f64,
+            out_point_y: &mut f64,
+            out_dir_x: &mut f64,
+            out_dir_y: &mut f64,
         ) -> bool;
 
         pub fn shim_line_point_intersection(

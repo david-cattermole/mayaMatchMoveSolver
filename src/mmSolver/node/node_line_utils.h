@@ -52,6 +52,7 @@ MStatus fit_line_to_points(const mmscenegraph::Real line_length,
                            mmdata::Point2D &out_line_center,
                            mmscenegraph::Real &out_line_slope,
                            mmscenegraph::Real &out_line_angle,
+                           mmdata::Vector2D &out_line_dir,
                            mmdata::Point2D &out_line_point_a,
                            mmdata::Point2D &out_line_point_b,
                            const bool verbose = false);

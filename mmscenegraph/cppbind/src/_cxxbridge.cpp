@@ -1333,7 +1333,9 @@ void mmscenegraph$cxxbridge1$ShimEvaluationObjects$add_marker(::mmscenegraph::Sh
 
 ::mmscenegraph::ShimEvaluationObjects *mmscenegraph$cxxbridge1$shim_create_evaluation_objects_box() noexcept;
 
-bool mmscenegraph$cxxbridge1$shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_slope) noexcept;
+bool mmscenegraph$cxxbridge1$shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_dir_x, double &out_dir_y) noexcept;
+
+bool mmscenegraph$cxxbridge1$shim_fit_straight_line_to_ordered_points(::rust::Slice<const double> points_coord_x, ::rust::Slice<const double> points_coord_y, double &out_point_x, double &out_point_y, double &out_dir_x, double &out_dir_y) noexcept;
 
 bool mmscenegraph$cxxbridge1$shim_line_point_intersection(::mmscenegraph::Point3 point, ::mmscenegraph::Point3 line_a, ::mmscenegraph::Point3 line_b, ::mmscenegraph::Point3 &out_point) noexcept;
 } // extern "C"
@@ -1755,8 +1757,12 @@ MMSCENEGRAPH_API_EXPORT ::rust::Box<::mmscenegraph::ShimEvaluationObjects> shim_
   return ::rust::Box<::mmscenegraph::ShimEvaluationObjects>::from_raw(mmscenegraph$cxxbridge1$shim_create_evaluation_objects_box());
 }
 
-MMSCENEGRAPH_API_EXPORT bool shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_slope) noexcept {
-  return mmscenegraph$cxxbridge1$shim_fit_line_to_points_type2(x, y, out_point_x, out_point_y, out_slope);
+MMSCENEGRAPH_API_EXPORT bool shim_fit_line_to_points_type2(::rust::Slice<const double> x, ::rust::Slice<const double> y, double &out_point_x, double &out_point_y, double &out_dir_x, double &out_dir_y) noexcept {
+  return mmscenegraph$cxxbridge1$shim_fit_line_to_points_type2(x, y, out_point_x, out_point_y, out_dir_x, out_dir_y);
+}
+
+MMSCENEGRAPH_API_EXPORT bool shim_fit_straight_line_to_ordered_points(::rust::Slice<const double> points_coord_x, ::rust::Slice<const double> points_coord_y, double &out_point_x, double &out_point_y, double &out_dir_x, double &out_dir_y) noexcept {
+  return mmscenegraph$cxxbridge1$shim_fit_straight_line_to_ordered_points(points_coord_x, points_coord_y, out_point_x, out_point_y, out_dir_x, out_dir_y);
 }
 
 MMSCENEGRAPH_API_EXPORT bool shim_line_point_intersection(::mmscenegraph::Point3 point, ::mmscenegraph::Point3 line_a, ::mmscenegraph::Point3 line_b, ::mmscenegraph::Point3 &out_point) noexcept {

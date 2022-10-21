@@ -273,10 +273,20 @@ MUserData *LineDrawOverride::prepareForDraw(
                     data->m_point_list.append(point);
                     data->m_point_data_x.push_back(point.x);
                     data->m_point_data_y.push_back(point.y);
+
+                    MMSOLVER_VRB("Point X: " << data->m_point_data_x.size()
+                                             << " : " << point.x);
+                    MMSOLVER_VRB("Point Y: " << data->m_point_data_y.size()
+                                             << " : " << point.y);
                 }
             }
         }
     }
+    MMSOLVER_VRB(
+        "data->m_point_data_x.size(): " << data->m_point_data_x.size());
+    MMSOLVER_VRB(
+        "data->m_point_data_y.size(): " << data->m_point_data_y.size());
+
     auto numberOfPoints = data->m_point_list.length();
     if (numberOfPoints == 0) {
         return data;
@@ -290,13 +300,14 @@ MUserData *LineDrawOverride::prepareForDraw(
         auto line_center_y = 0.0;
         auto line_slope = 0.0;
         auto line_angle = 0.0;
+        auto line_dir = mmdata::Vector2D();
         auto line_point_a = mmdata::Point2D();
         auto line_point_b = mmdata::Point2D();
 
-        status =
-            fit_line_to_points(line_length, data->m_point_data_x,
-                               data->m_point_data_y, line_center, line_slope,
-                               line_angle, line_point_a, line_point_b, verbose);
+        status = fit_line_to_points(line_length, data->m_point_data_x,
+                                    data->m_point_data_y, line_center,
+                                    line_slope, line_angle, line_dir,
+                                    line_point_a, line_point_b, verbose);
         if (status == MS::kSuccess) {
             // Convert line center point and slope to 2 points to make
             // up a line we can draw between.

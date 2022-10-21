@@ -22,6 +22,14 @@ use crate::constant::Real;
 
 const EPSILON: Real = 1.0e-9;
 
+fn impl_vector2d_normalize(dir_x: &mut Real, dir_y: &mut Real) {
+    let dir_magnitude = ((*dir_x) * (*dir_x) + (*dir_y) * (*dir_y)).sqrt();
+    if dir_magnitude.abs() > EPSILON {
+        *dir_x = *dir_x / dir_magnitude;
+        *dir_y = *dir_y / dir_magnitude;
+    }
+}
+
 fn impl_precompute_line_fit_data(
     x: &[Real],
     y: &[Real],
@@ -83,7 +91,8 @@ pub fn fit_line_to_points_type1(
     x: &[Real],
     y: &[Real],
     out_intercept: &mut Real,
-    out_slope: &mut Real,
+    out_dir_x: &mut Real,
+    out_dir_y: &mut Real,
     out_mean_x: &mut Real,
     out_mean_y: &mut Real,
 ) -> bool {
@@ -94,6 +103,7 @@ pub fn fit_line_to_points_type1(
     let mut sum_y2: Real = 0.0;
     let mut mean_x: Real = 0.0;
     let mut mean_y: Real = 0.0;
+    let mut slope: Real = 0.0;
 
     let ok = impl_precompute_line_fit_data(
         &x,
@@ -117,11 +127,15 @@ pub fn fit_line_to_points_type1(
         mean_x,
         mean_y,
         out_intercept,
-        out_slope,
+        &mut slope,
     );
     if ok {
         *out_mean_x = mean_x;
         *out_mean_y = mean_y;
+
+        let angle = slope.atan();
+        *out_dir_x = angle.sin();
+        *out_dir_y = angle.cos();
     }
     ok
 }
@@ -139,7 +153,8 @@ pub fn fit_line_to_points_type2(
     y: &[Real],
     out_point_x: &mut Real,
     out_point_y: &mut Real,
-    out_slope: &mut Real,
+    out_dir_x: &mut Real,
+    out_dir_y: &mut Real,
 ) -> bool {
     assert_eq!(x.len(), y.len());
 
@@ -199,16 +214,23 @@ pub fn fit_line_to_points_type2(
         slope_b = slope_b.recip().min(std::f64::MAX).copysign(slope_a);
         assert_eq!(slope_a.signum(), slope_b.signum());
 
-        *out_slope = slope_a.signum() * (slope_a * slope_b).sqrt();
         *out_point_x = mean_x;
         *out_point_y = mean_y;
+
+        let slope = slope_a.signum() * (slope_a * slope_b).sqrt();
+        let angle = slope.atan();
+        *out_dir_x = angle.sin();
+        *out_dir_y = angle.cos();
 
         true
     } else if ok_a && !ok_b {
         // The special case that the line is entirely vertical.
-        *out_slope = slope_a;
         *out_point_x = intercept_a;
         *out_point_y = mean_y;
+
+        let angle = slope_a.atan();
+        *out_dir_x = angle.sin();
+        *out_dir_y = angle.cos();
 
         true
     } else if !ok_a && ok_b {
@@ -218,14 +240,76 @@ pub fn fit_line_to_points_type2(
         // to the fit_line_to_points_type1() function.
         slope_b = slope_b.recip().min(std::f64::MAX);
 
-        *out_slope = slope_b;
         *out_point_x = mean_x;
         *out_point_y = mean_y;
+
+        let angle = (-slope_b).atan();
+        *out_dir_x = angle.sin();
+        *out_dir_y = angle.cos();
 
         true
     } else {
         false
     }
+}
+
+/// Approximates a perfectly straight line from a set of (ordered) line
+/// points from a (mostly) straight line.
+///
+/// Assumes the data points are ordered. That is, the data is a
+/// sequence of points that define line segments and connect together
+/// to create a line.
+///
+/// points_coord_x: X position coordiates for points. Must have same length as 'points_coord_y'.
+/// points_coord_y: Y position coordiates for points. Must have same length as 'points_coord_x'.
+/// out_point_x: Center X coordinate of the computed line.
+/// out_point_y: Center Y coordinate of the computed line.
+/// out_dir_x: Direction X of the computed line.
+/// out_dir_y: Direction Y of the computed line.
+///
+/// out_dir_x and out_dir_y are normalized if they were a 2D direction
+/// vector.
+pub fn fit_straight_line_to_ordered_points<'a>(
+    points_coord_x: &'a [Real],
+    points_coord_y: &'a [Real],
+    out_point_x: &mut Real,
+    out_point_y: &mut Real,
+    out_dir_x: &mut Real,
+    out_dir_y: &mut Real,
+) -> bool {
+    assert_eq!(points_coord_x.len(), points_coord_y.len());
+
+    let points_count = points_coord_x.len();
+
+    let mut mean_x = 0.0 as Real;
+    let mut mean_y = 0.0 as Real;
+    for v in points_coord_x.iter() {
+        mean_x += v;
+    }
+    for v in points_coord_y.iter() {
+        mean_y += v;
+    }
+    mean_x = mean_x / (points_count as Real);
+    mean_y = mean_y / (points_count as Real);
+    *out_point_x = mean_x;
+    *out_point_y = mean_y;
+
+    let mut dir_x = 0.0;
+    let mut dir_y = 0.0;
+    let mut previous_x = points_coord_x[0];
+    let mut previous_y = points_coord_y[0];
+    for (x, y) in points_coord_x[1..].iter().zip(points_coord_y[1..].iter()) {
+        dir_x += x - previous_x;
+        dir_y += y - previous_y;
+        previous_x = *x;
+        previous_y = *y;
+    }
+
+    impl_vector2d_normalize(&mut dir_x, &mut dir_y);
+    *out_dir_x = dir_x;
+    *out_dir_y = dir_y;
+
+    true
 }
 
 #[cfg(test)]
@@ -241,21 +325,26 @@ mod tests {
         let y = vec![3.0, 4.0, 5.0, 6.0, 8.0];
 
         let mut intercept: Real = 0.0;
-        let mut slope: Real = 0.0;
+        let mut dir_x: Real = 0.0;
+        let mut dir_y: Real = 0.0;
         let mut mean_x: Real = 0.0;
         let mut mean_y: Real = 0.0;
         let ok = fit_line_to_points_type1(
             &x,
             &y,
             &mut intercept,
-            &mut slope,
+            &mut dir_x,
+            &mut dir_y,
             &mut mean_x,
             &mut mean_y,
         );
         assert_eq!(ok, true);
 
+        let slope: Real = dir_x / dir_y;
         println!("intercept: {}", intercept);
         println!("slope: {}", slope);
+        println!("dir_x: {}", dir_x);
+        println!("dir_y: {}", dir_y);
         println!("mean_x: {}", mean_x);
         println!("mean_y: {}", mean_y);
 
@@ -263,6 +352,8 @@ mod tests {
         assert_relative_eq!(slope, 1.2, epsilon = EPSILON);
         assert_relative_eq!(mean_x, 3.0, epsilon = EPSILON);
         assert_relative_eq!(mean_y, 5.2, epsilon = EPSILON);
+        assert_relative_eq!(dir_x, 0.7682212795973759, epsilon = EPSILON);
+        assert_relative_eq!(dir_y, 0.6401843996644798, epsilon = EPSILON);
     }
 
     #[test]
@@ -292,24 +383,27 @@ mod tests {
         ];
 
         let mut intercept: Real = 0.0;
-        let mut slope: Real = 0.0;
+        let mut dir_x: Real = 0.0;
+        let mut dir_y: Real = 0.0;
         let mut mean_x: Real = 0.0;
         let mut mean_y: Real = 0.0;
         let ok = fit_line_to_points_type1(
             &x,
             &y,
             &mut intercept,
-            &mut slope,
+            &mut dir_x,
+            &mut dir_y,
             &mut mean_x,
             &mut mean_y,
         );
 
-        // let ok = fit_line_to_points_type2(&x, &y, &mut point, &mut slope);
-
         assert_eq!(ok, true);
 
+        let slope: Real = dir_x / dir_y;
         println!("intercept: {}", intercept);
         println!("slope: {}", slope);
+        println!("dir_x: {}", dir_x);
+        println!("dir_y: {}", dir_y);
         println!("mean_x: {}", mean_x);
         println!("mean_y: {}", mean_y);
 
@@ -317,6 +411,8 @@ mod tests {
         assert_relative_eq!(slope, 0.00165565, epsilon = EPSILON);
         assert_relative_eq!(mean_x, 1845.2738, epsilon = EPSILON);
         assert_relative_eq!(mean_y, 3.330238, epsilon = EPSILON);
+        assert_relative_eq!(dir_x, 0.001655685780726433, epsilon = EPSILON);
+        assert_relative_eq!(dir_y, 0.9999986293513584, epsilon = EPSILON);
     }
 
     #[test]
@@ -332,22 +428,27 @@ mod tests {
         ];
 
         let mut intercept: Real = 0.0;
-        let mut slope: Real = 0.0;
+        let mut dir_x: Real = 0.0;
+        let mut dir_y: Real = 0.0;
         let mut mean_x: Real = 0.0;
         let mut mean_y: Real = 0.0;
         let ok = fit_line_to_points_type1(
             &x,
             &y,
             &mut intercept,
-            &mut slope,
+            &mut dir_x,
+            &mut dir_y,
             &mut mean_x,
             &mut mean_y,
         );
 
         assert_eq!(ok, true);
 
+        let slope: Real = dir_x / dir_y;
         println!("intercept: {}", intercept);
         println!("slope: {}", slope);
+        println!("dir_x: {}", dir_x);
+        println!("dir_y: {}", dir_y);
         println!("mean_x: {}", mean_x);
         println!("mean_y: {}", mean_y);
 
@@ -355,6 +456,8 @@ mod tests {
         assert_relative_eq!(slope, 0.62329927, epsilon = EPSILON);
         assert_relative_eq!(mean_x, 68.64285714, epsilon = EPSILON);
         assert_relative_eq!(mean_y, 172.3571429, epsilon = EPSILON);
+        assert_relative_eq!(dir_x, 0.5289606532087621, epsilon = EPSILON);
+        assert_relative_eq!(dir_y, 0.8486463499933053, epsilon = EPSILON);
     }
 
     #[test]
@@ -363,21 +466,26 @@ mod tests {
         let y = vec![3.5, 5.3, 7.7, 6.2, 11.0, 9.5, 10.27];
 
         let mut intercept: Real = 0.0;
-        let mut slope: Real = 0.0;
+        let mut dir_x: Real = 0.0;
+        let mut dir_y: Real = 0.0;
         let mut mean_x: Real = 0.0;
         let mut mean_y: Real = 0.0;
         let ok = fit_line_to_points_type1(
             &x,
             &y,
             &mut intercept,
-            &mut slope,
+            &mut dir_x,
+            &mut dir_y,
             &mut mean_x,
             &mut mean_y,
         );
         assert_eq!(ok, true);
 
+        let slope: Real = dir_x / dir_y;
         println!("intercept: {}", intercept);
         println!("slope: {}", slope);
+        println!("dir_x: {}", dir_x);
+        println!("dir_y: {}", dir_y);
         println!("mean_x: {}", mean_x);
         println!("mean_y: {}", mean_y);
 
@@ -385,6 +493,8 @@ mod tests {
         assert_relative_eq!(slope, 0.904273, epsilon = EPSILON);
         assert_relative_eq!(mean_x, 4.61857, epsilon = EPSILON);
         assert_relative_eq!(mean_y, 7.63857, epsilon = EPSILON);
+        assert_relative_eq!(dir_x, 0.6707138074200799, epsilon = EPSILON);
+        assert_relative_eq!(dir_y, 0.7417162452960431, epsilon = EPSILON);
     }
 
     #[test]
@@ -406,79 +516,104 @@ mod tests {
 
         let mut point_x: Real = 0.0;
         let mut point_y: Real = 0.0;
-        let mut slope: Real = 0.0;
+        let mut dir_x: Real = 0.0;
+        let mut dir_y: Real = 0.0;
         let ok = fit_line_to_points_type2(
             &x,
             &y,
             &mut point_x,
             &mut point_y,
-            &mut slope,
+            &mut dir_x,
+            &mut dir_y,
         );
         assert_eq!(ok, true);
 
+        let slope: Real = dir_x / dir_y;
         println!("point_x: {}", point_x);
         println!("point_y: {}", point_y);
+        println!("dir_x: {}", dir_x);
+        println!("dir_y: {}", dir_y);
         println!("slope: {}", slope);
 
         assert_relative_eq!(point_x, -0.3693187143675929, epsilon = EPSILON);
         assert_relative_eq!(point_y, -0.0022178940177885243, epsilon = EPSILON);
         assert_relative_eq!(slope, 0.002606265777458439, epsilon = EPSILON);
+        assert_relative_eq!(dir_x, 0.0026062569258153137, epsilon = EPSILON);
+        assert_relative_eq!(dir_y, 0.999996603706651, epsilon = EPSILON);
     }
 
     #[test]
     fn test_fit_line_to_points_type2_2() {
         // All X values are perfectly flat, this will cause the linear
         // regression to fail in this axis.
+        //
+        // The line should aim directly up-wards (vertical).
         let x = vec![-0.3, -0.3, -0.3, -0.3, -0.3];
         let y = vec![-0.4, -0.2, 0.00, 0.2, 0.4];
 
         let mut point_x: Real = 0.0;
         let mut point_y: Real = 0.0;
-        let mut slope: Real = 0.0;
+        let mut dir_x: Real = 0.0;
+        let mut dir_y: Real = 0.0;
         let ok = fit_line_to_points_type2(
             &x,
             &y,
             &mut point_x,
             &mut point_y,
-            &mut slope,
+            &mut dir_x,
+            &mut dir_y,
         );
         assert_eq!(ok, true);
 
+        let slope: Real = dir_y / dir_x;
         println!("point_x: {}", point_x);
         println!("point_y: {}", point_y);
+        println!("dir_x: {}", dir_x);
+        println!("dir_y: {}", dir_y);
         println!("slope: {}", slope);
 
         assert_relative_eq!(point_x, -0.3, epsilon = EPSILON);
         assert_relative_eq!(point_y, 0.0, epsilon = EPSILON);
-        assert_relative_eq!(slope, 0.0, epsilon = EPSILON);
+        assert_relative_eq!(slope, -2.4019198012642652e16, epsilon = EPSILON);
+        assert_relative_eq!(dir_x, 0.0, epsilon = EPSILON);
+        assert_relative_eq!(dir_y, 1.0, epsilon = EPSILON);
     }
 
     #[test]
     fn test_fit_line_to_points_type2_3() {
         // All Y values are perfectly flat, this will cause the linear
         // regression to fail in this axis.
+        //
+        // The line should aim directly sideways (horizontal).
         let x = vec![-0.4, -0.2, 0.00, 0.2, 0.4];
         let y = vec![-0.3, -0.3, -0.3, -0.3, -0.3];
 
         let mut point_x: Real = 0.0;
         let mut point_y: Real = 0.0;
-        let mut slope: Real = 0.0;
+        let mut dir_x: Real = 0.0;
+        let mut dir_y: Real = 0.0;
         let ok = fit_line_to_points_type2(
             &x,
             &y,
             &mut point_x,
             &mut point_y,
-            &mut slope,
+            &mut dir_x,
+            &mut dir_y,
         );
         assert_eq!(ok, true);
 
+        let slope: Real = dir_y / dir_x;
         println!("point_x: {}", point_x);
         println!("point_y: {}", point_y);
+        println!("dir_x: {}", dir_x);
+        println!("dir_y: {}", dir_y);
         println!("slope: {}", slope);
 
         assert_relative_eq!(point_x, 0.0, epsilon = EPSILON);
         assert_relative_eq!(point_y, -0.3, epsilon = EPSILON);
-        assert_relative_eq!(slope, -24019198012642652.0, epsilon = EPSILON);
+        assert_relative_eq!(slope, 0.0, epsilon = EPSILON);
+        assert_relative_eq!(dir_x, 1.0, epsilon = EPSILON);
+        assert_relative_eq!(dir_y, 0.0, epsilon = EPSILON);
     }
 
     #[test]
@@ -488,22 +623,99 @@ mod tests {
 
         let mut point_x: Real = 0.0;
         let mut point_y: Real = 0.0;
-        let mut slope: Real = 0.0;
+        let mut dir_x: Real = 0.0;
+        let mut dir_y: Real = 0.0;
         let ok = fit_line_to_points_type2(
             &x,
             &y,
             &mut point_x,
             &mut point_y,
-            &mut slope,
+            &mut dir_x,
+            &mut dir_y,
         );
         assert_eq!(ok, true);
 
+        let slope: Real = dir_y / dir_x;
         println!("point_x: {}", point_x);
         println!("point_y: {}", point_y);
+        println!("dir_x: {}", dir_x);
+        println!("dir_y: {}", dir_y);
         println!("slope: {}", slope);
 
         assert_relative_eq!(point_x, 0.0, epsilon = EPSILON);
         assert_relative_eq!(point_y, -0.06666666666666667, epsilon = EPSILON);
+        assert_relative_eq!(slope, Real::INFINITY, epsilon = EPSILON);
+        assert_relative_eq!(dir_x, 0.0, epsilon = EPSILON);
+        assert_relative_eq!(dir_y, 1.0, epsilon = EPSILON);
+    }
+
+    #[test]
+    fn test_fit_straight_line_to_ordered_points_1() {
+        let x = vec![-0.3, 0.0, 0.3];
+        let y = vec![3.60239e-16, 0.3, -1.41612e-15];
+
+        let mut point_x: Real = 0.0;
+        let mut point_y: Real = 0.0;
+        let mut dir_x: Real = 0.0;
+        let mut dir_y: Real = 0.0;
+        let ok = fit_straight_line_to_ordered_points(
+            &x,
+            &y,
+            &mut point_x,
+            &mut point_y,
+            &mut dir_x,
+            &mut dir_y,
+        );
+        assert_eq!(ok, true);
+
+        let slope: Real = dir_y / dir_x;
+        println!("point_x: {}", point_x);
+        println!("point_y: {}", point_y);
+        println!("dir_x: {}", dir_x);
+        println!("dir_y: {}", dir_y);
+        println!("slope: {}", slope);
+
+        assert_relative_eq!(point_x, 0.0, epsilon = EPSILON);
+        assert_relative_eq!(point_y, 0.1, epsilon = EPSILON);
+        assert_relative_eq!(dir_x, 1.0, epsilon = EPSILON);
+        assert_relative_eq!(dir_y, 0.0, epsilon = EPSILON);
         assert_relative_eq!(slope, 0.0, epsilon = EPSILON);
+        assert_relative_eq!(dir_x, 1.0, epsilon = EPSILON);
+        assert_relative_eq!(dir_y, 0.0, epsilon = EPSILON);
+    }
+
+    #[test]
+    fn test_fit_straight_line_to_ordered_points_2() {
+        let x = vec![-0.3, -0.15, 0.0, 0.15, 0.3];
+        let y = vec![3.60239e-16, 0.15, 0.3, 0.15, -1.41612e-15];
+
+        let mut point_x: Real = 0.0;
+        let mut point_y: Real = 0.0;
+        let mut dir_x: Real = 0.0;
+        let mut dir_y: Real = 0.0;
+        let ok = fit_straight_line_to_ordered_points(
+            &x,
+            &y,
+            &mut point_x,
+            &mut point_y,
+            &mut dir_x,
+            &mut dir_y,
+        );
+        assert_eq!(ok, true);
+
+        let slope: Real = dir_y / dir_x;
+        println!("point_x: {}", point_x);
+        println!("point_y: {}", point_y);
+        println!("dir_x: {}", dir_x);
+        println!("dir_y: {}", dir_y);
+        println!("slope: {}", slope);
+
+        assert_relative_eq!(point_x, 0.0, epsilon = EPSILON);
+        assert_relative_eq!(point_y, 0.12, epsilon = EPSILON);
+        assert_relative_eq!(dir_x, 1.0, epsilon = EPSILON);
+        assert_relative_eq!(dir_y, 0.0, epsilon = EPSILON);
+        assert_relative_eq!(slope, 0.0, epsilon = EPSILON);
+        assert_relative_eq!(dir_x, 1.0, epsilon = EPSILON);
+        assert_relative_eq!(dir_y, 0.0, epsilon = EPSILON);
     }
 }

@@ -315,12 +315,11 @@ Primary Frames / Root Frames.
 Solver Scene Graph
 ------------------
 
-Starting with v0.4.0, mmSolver supports the choice of the 'scene
-graph' used for scene construction and evaluation. Before the v0.4.0,
-mmSolver only used the Maya DAG to construct and evaluate Markers,
-Cameras and Bundles.
+Starting with v0.4.0, mmSolver supports a 'scene graph' used for scene
+construction and evaluation. Before the v0.4.0, mmSolver only used the
+Maya DAG to construct and evaluate Markers, Cameras and Bundles.
 
-`Maya DAG` uses the regular Maya DAG hierachies and DG nodes and
+`Maya DAG` uses the regular Maya DAG hierarchies and DG nodes and
 triggers Maya to evaluate these for each iteration of mmSolver. The
 `Maya DAG` is fantastic because it supports all Maya nodes, by
 definition, however because it is very general and supports so much,
@@ -350,9 +349,9 @@ some cases).
   - Connections to attributes are *not supported*, only static and
     animated attributes with values or animation curves are supported.
 
-If `MM SCene Graph` detects any of these features are being used in
-the scene graph you are solving, then it will immediately fail with an
-error, and request you switch to `Maya DAG`.
+If `MM Solver` detects any of these features are being used in the
+scene graph you are solving, then it will immediately fail with an
+error, and automatically switch to `Maya DAG`.
 
 .. _solver-design-solver-options:
 

@@ -114,4 +114,4 @@ endif()
 # LDPK is not used by any other libraries (eg. OpenMVG or Ceres).
 #
 # https://www.3dequalizer.com
-find_package(ldpk 2.7 REQUIRED)
+find_package(ldpk 2.8 REQUIRED)

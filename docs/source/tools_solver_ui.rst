@@ -46,15 +46,6 @@ To display the column visibility, use the Edit menu.
    * - Node
      - The input Object's Node.
 
-   * - Status
-     - The status of the input object; tick (✓), cross (❌) or dash
-       (—).
-
-       If the Solver detects an object is not used by the solver, it
-       will be disabled and marked with a cross mark.  Otherwise, a
-       tick mark is displayed. If the object's status has not been
-       detected the status is a dash mark.
-
    * - Weight
      - The weight the Marker will have in the solver. Higher values
        give an importance to this Marker, at the expense of other
@@ -90,14 +81,6 @@ This section of the UI shows the Attributes solved.
    * - Attr
      - The ``Attribute`` column displays nodes and attributes added
        into the active Collection.
-
-   * - Status
-     - The status of the attribute; tick (✓), cross (❌) or dash (—).
-
-       If an attribute cannot be modified by any Marker, then the
-       attribute status is set to a cross. Otherwise, attributes that
-       are valid have a tick mark. If the attributes's status has not
-       been detected the status is a dash mark.
 
    * - State
      - The State column displays if the attribute is Static or

@@ -45,6 +45,10 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         super(PrefLayout, self).__init__(*args, **kwargs)
         self.setupUi(self)
         self._config = None
+
+        deprecated_features_visible = False
+        self.allowObjectRelationsLabel.setVisible(deprecated_features_visible)
+        self.allowObjectRelationsComboBox.setVisible(deprecated_features_visible)
         return
 
     def set_config(self, config):
@@ -130,6 +134,8 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         return value
 
     def updateSolverUIAllowObjectRelationsWidget(self, config):
+        # This feature is deprecated and is no longer allowed.
+        return
         key = pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY
         value = userprefs_lib.get_value(config, key)
         label = userprefs_lib.get_label_from_value(key, value)
@@ -141,6 +147,8 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         return
 
     def getSolverUIAllowObjectRelationsConfigValue(self):
+        # This feature is deprecated and is no longer allowed.
+        return False
         key = pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY
         label = self.allowObjectRelationsComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)

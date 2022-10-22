@@ -60,6 +60,8 @@ def _populateWidgetsEnabled(widgets):
 
 
 def _getAllowObjectRelations():
+    # This feature is deprecated and is no longer allowed.
+    return False
     config = userprefs_lib.get_config()
     key = userprefs_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY
     allow_obj_relations = userprefs_lib.get_value(config, key)
@@ -177,13 +179,18 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
 
         self.globalSolve_checkBox.toggled.connect(self.globalSolveValueToggled)
         self.onlyRootFrames_checkBox.toggled.connect(self.onlyRootFramesValueToggled)
+
+        # Deprecated, do not use.
+        self.evalObjectRelationships_checkBox.setVisible(
+            const.EVAL_OBJECT_RELATIONSHIPS_WIDGET_VISIBLE
+        )
         self.evalObjectRelationships_checkBox.toggled.connect(
             self.evalObjectRelationshipsValueToggled
         )
+
         self.evalComplexGraphs_checkBox.toggled.connect(
             self.evalComplexGraphsValueToggled
         )
-
         self.solveFocalLength_checkBox.toggled.connect(
             self.solveFocalLengthValueToggled
         )

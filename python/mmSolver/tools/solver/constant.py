@@ -372,7 +372,9 @@ SOLVER_GLOBAL_SOLVE_ATTR = 'solver_global_solve'
 SOLVER_GLOBAL_SOLVE_ATTR_TYPE = 'bool'
 SOLVER_GLOBAL_SOLVE_DEFAULT_VALUE = False
 
-# Solver Evaluate Complex Node Graphs (stored on Collection node)
+# Solver Evaluate Object Relationships (stored on Collection node)
+#
+# Deprecated, do not use.
 SOLVER_EVAL_OBJECT_RELATIONSHIPS_ATTR = 'solver_eval_object_relationships'
 SOLVER_EVAL_OBJECT_RELATIONSHIPS_ATTR_TYPE = 'bool'
 SOLVER_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE = False
@@ -381,6 +383,10 @@ SOLVER_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE = False
 SOLVER_EVAL_COMPLEX_GRAPHS_ATTR = 'solver_eval_complex_node_graphs'
 SOLVER_EVAL_COMPLEX_GRAPHS_ATTR_TYPE = 'bool'
 SOLVER_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE = False
+
+# Hide "Eval Object Relationships", it's not used anymore and is
+# deprecated.
+EVAL_OBJECT_RELATIONSHIPS_WIDGET_VISIBLE = False
 
 # Solver Scene Graph Mode
 SCENE_GRAPH_MODE_AUTO = 0

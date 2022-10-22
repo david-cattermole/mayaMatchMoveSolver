@@ -118,6 +118,10 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
 
     MMSOLVER_VRB("robust_relative_pose: intrinsics1: " << intrinsics1);
     MMSOLVER_VRB("robust_relative_pose: intrinsics2: " << intrinsics2);
+    MMSOLVER_VRB("robust_relative_pose: x1.cols(): " << x1.cols());
+    MMSOLVER_VRB("robust_relative_pose: x2.cols(): " << x2.cols());
+    MMSOLVER_VRB("robust_relative_pose: x1.rows(): " << x1.rows());
+    MMSOLVER_VRB("robust_relative_pose: x2.rows(): " << x2.rows());
     MMSOLVER_VRB("robust_relative_pose: x1: " << x1);
     MMSOLVER_VRB("robust_relative_pose: x2: " << x2);
     MMSOLVER_VRB("robust_relative_pose: size_ima1: " << size_ima1.first << ", "
@@ -126,6 +130,7 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
                                                      << size_ima2.second);
     MMSOLVER_VRB(
         "robust_relative_pose: max_iteration_count: " << max_iteration_count);
+
     if (!intrinsics1 || !intrinsics2) {
         return false;
     }
@@ -138,6 +143,8 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
         isPinhole(intrinsics1->getType()) && isPinhole(intrinsics2->getType());
     auto more_than_five = x1.cols() > 5;
     auto more_than_eight = x1.cols() > 8;
+    assert(x1.rows() == x2.rows());
+    assert(x1.cols() == x2.cols());
 
     relativePose_info.initial_residual_tolerance =
         std::numeric_limits<double>::infinity();
@@ -152,11 +159,9 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
 
         KernelType kernel(bearing1, bearing2);
 
-        // relativePose_info.initial_residual_tolerance =
-        //     openMVG::D2R(relativePose_info.initial_residual_tolerance);
-
         // Robustly estimate the Essential matrix with A Contrario
         // (AC) RANSAC
+        MMSOLVER_VRB("robust_relative_pose: openMVG::robust::ACRANSAC()");
         const auto ac_ransac_output = openMVG::robust::ACRANSAC(
             kernel, relativePose_info.vec_inliers, max_iteration_count,
             &relativePose_info.essential_matrix,
@@ -195,7 +200,7 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
                 intrinsics2)
                 ->K());
 
-        // Robustly estimation of the Model and its precision
+        // Robust estimation of the Model and it's precision.
         const auto ac_ransac_output = openMVG::robust::ACRANSAC(
             kernel, relativePose_info.vec_inliers, max_iteration_count,
             &relativePose_info.essential_matrix,

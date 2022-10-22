@@ -82,13 +82,12 @@ Solver Options
 The solver options below are extra options used to change how the
 solver works internally.
 
+Evaluate Mesh Rivets
+~~~~~~~~~~~~~~~~~~~~
 
-Evaluate Complex Node Graphs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-When enabled, *Evaluate Complex Node Graphs* will change the internal
-evaluation method to help solve "complex" node networks (such as
-Mesh Rivets which have cyclical node connection networks).
+When enabled, *Evaluate Mesh Rivets* will change the internal
+evaluation method to help solve "complex" node networks (such as Mesh
+Rivets which have cyclical node connection networks).
 
 Evaluation of "complex" node graphs can significantly impact performance.
 It is recommended to turn this feature **off** unless the Maya scene
@@ -96,6 +95,9 @@ is not evaluating correctly without this feature.
 
 Mesh Rivets, using the classic `rivet.mel`_ script can be evaluated using
 this feature enabled.
+
+.. note:: In mmSolver v0.3.x, this feature was known as *Evaluate
+   Complex Node Graphs*.
 
 .. _rivet.mel:
    https://www.highend3d.com/maya/script/rivet-button-for-maya

@@ -46,13 +46,9 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         self.setupUi(self)
         self._config = None
 
-        deprecated_features_visible = False
-        self.validateSolverOnUIOpenLabel.setVisible(deprecated_features_visible)
-        self.validateSolverOnUIOpenComboBox.setVisible(deprecated_features_visible)
-        self.showValidateButtonLabel.setVisible(deprecated_features_visible)
-        self.showValidateButtonComboBox.setVisible(deprecated_features_visible)
-        self.allowObjectRelationsLabel.setVisible(deprecated_features_visible)
-        self.allowObjectRelationsComboBox.setVisible(deprecated_features_visible)
+        # Don't show the deprecated features. They are not used
+        # anyway.
+        self.deprecated_groupBox.setVisible(False)
         return
 
     def set_config(self, config):

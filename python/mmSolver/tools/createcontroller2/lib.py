@@ -56,6 +56,7 @@ TRANSFORM_ATTRS = [
 
 def _is_rig_node(node):
     """Check if the node is a rig node."""
+    assert isinstance(node, pycompat.TEXT_TYPE)
     if node_utils.attribute_exists(IDENTIFIER_ATTR_NAME, node):
         return True
     return False
@@ -63,6 +64,7 @@ def _is_rig_node(node):
 
 def _get_rig_node_identifier(node):
     """Get custom attribute value to identify rig node."""
+    assert isinstance(node, pycompat.TEXT_TYPE)
     if _is_rig_node(node):
         plug = node + '.' + IDENTIFIER_ATTR_NAME
         attr_value = maya.cmds.getAttr(plug)
@@ -79,6 +81,7 @@ def _get_selected_channel_box_attrs():
 
 
 def _skip_translate_attributes(node):
+    assert isinstance(node, pycompat.TEXT_TYPE)
     attr_list = ['x', 'y', 'z']
 
     plug = node + '.translateX'
@@ -96,6 +99,7 @@ def _skip_translate_attributes(node):
 
 
 def _skip_rotate_attributes(node):
+    assert isinstance(node, pycompat.TEXT_TYPE)
     attr_list = ['x', 'y', 'z']
 
     plug = node + '.rotateX'
@@ -118,6 +122,10 @@ def _set_keyframes_at_source_node_key_times(src_node, dst_node, start_frame, end
 
     Start frame and end frame are always copied.
     """
+    assert isinstance(src_node, pycompat.TEXT_TYPE)
+    assert isinstance(dst_node, pycompat.TEXT_TYPE)
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
     all_keys = (
         maya.cmds.keyframe(src_node, query=True, time=(start_frame, end_frame)) or []
     )

@@ -96,7 +96,7 @@ class CameraObjectScaleAdjustLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.populate_ui()
 
     def scale_rig_options_changed(self):
-        if self.bodyTrackScaleRadioButton.isChecked() == True:
+        if self.bodyTrackScaleRadioButton.isChecked() is True:
             enable_flag = False
             self.sceneLineEdit.clear()
         else:
@@ -168,6 +168,8 @@ class CameraObjectScaleAdjustLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         rig_controls = self.rigsLineEdit.text() or None
         if rig_controls:
             rig_controls = rig_controls.split(',')
+        body_scale_checked = self.bodyTrackScaleRadioButton.isChecked()
+        camera_scale_checked = self.cameraTrackScaleRadioButton.isChecked()
 
         ctx = tools_utils.tool_context(
             use_undo_chunk=True,
@@ -177,14 +179,14 @@ class CameraObjectScaleAdjustLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE,
         )
         with ctx:
-            if self.bodyTrackScaleRadioButton.isChecked() == True:
+            if body_scale_checked is True:
                 if None in [name, camera, rig_controls]:
                     LOG.warn('Please select scale rig name, camera and rigs.')
                     return
                 lib.create_scale_rig(
                     name, camera, scene, rig_controls, const.SCALE_RIG_TYPE_OBJECT_TRACK
                 )
-            if self.cameraTrackScaleRadioButton.isChecked() == True:
+            if camera_scale_checked is True:
                 if None in [name, camera, scene, rig_controls]:
                     LOG.warn('Please select scale rig name, camera, scene and rigs.')
                     return

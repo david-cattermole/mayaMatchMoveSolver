@@ -260,9 +260,8 @@ Attribute Details
 Attribute Details are properties of an Attribute. Attribute Details
 are used to add constraints such as value limits.
 
-In mmSolver, there are 4 individual details per-attribute; minimum,
-maximum, smoothness and stiffness. See below for more details on how
-each property works.
+In mmSolver, there are 2 details per-attribute; minimum and maximum.
+See below for more details on how each property works.
 
 Minimum and Maximum Limits
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -284,44 +283,6 @@ the solver will try to use values outside the limits.
 
 Minimum and maximum limits are also known as "Upper and Lower Value
 Bounds".
-
-Smoothness and Stiffness
-^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. figure:: images/smoothnessConstraintGraph.gif
-    :alt: Smoothness Constraint
-    :align: center
-    :width: 80%
-
-Smoothness and stiffness ensures a Animated Attribute curve follows a
-constraint by increasing the error level of the current solve when the
-curve does not behave as expected. By increasing the solver error for
-"bad behaviour" the solver will automatically try to re-distribute the
-error level by changing other Attribute values.
-
-Both *smoothness* and *stiffness* use a similar constraint. The solver
-will increase the error if the solved value varies by more than the
-*variance* compared to a reference value. This encourages the
-solver to reduce "jumps" of more than the *variance* value.
-
-For *smoothness* constraints, the reference value is a smoothed value
-along the curve, based on the previous value. The value at the next
-frame is a predicted value, but is allowed to vary.
-
-For *stiffness* constraints, the reference value is the previous
-solved value. This ensures the solver continues to use the same
-value. *Stiffness* is a useful constraint for curves which should stay
-flat, but will still vary a little. The focal length of a camera might
-be a good example for this type of constraint.
-
-Both *smoothness* and *stiffness* constrains have a *variance* and
-*weight* value for each attribute. The *variance* value controls how
-much the solver can change from the reference value, if the solver
-chooses a value that varies by more than the *variance* a large error
-is given to the solver. The *weight* value controls how strong the
-constraint is used inside the solver; lower values means the
-*stiffness* or *smoothness* has smaller effect, and higher values
-increases the effect.
 
 .. _solver-design-solver-strategies:
 
@@ -388,11 +349,6 @@ some cases).
 
   - Connections to attributes are *not supported*, only static and
     animated attributes with values or animation curves are supported.
-
-- Solver
-
-  - Smoothness and Stiffness Attribute Details are not currently
-    supported.
 
 If `MM SCene Graph` detects any of these features are being used in
 the scene graph you are solving, then it will immediately fail with an

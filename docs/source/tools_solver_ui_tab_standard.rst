@@ -82,20 +82,6 @@ Solver Options
 The solver options below are extra options used to change how the
 solver works internally.
 
-Evaluate Object Relationships
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Check this option **on** to enable evaluation of the Marker and
-Attribute relationships - how the objects are connected.
-
-With this feature enabled, *mmSolver* is able to use the relationship
-between Markers and Attributes to improve performance. For example, if
-Marker *A* does not affect node *B*, *mmSolver* can skip this
-calculation.
-
-It is recommended to enable this check-box if you have many (eg, 10+)
-Markers and Attributes in the solve, and / or when you are solving
-static Attributes with the Standard solver tab.
 
 Evaluate Complex Node Graphs
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

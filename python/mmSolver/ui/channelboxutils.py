@@ -45,4 +45,3 @@ def get_ui_name():
     """
     cmd = 'global string $gChannelBoxName;' 'string $temp = $gChannelBoxName;'
     return maya.mel.eval(cmd)
-

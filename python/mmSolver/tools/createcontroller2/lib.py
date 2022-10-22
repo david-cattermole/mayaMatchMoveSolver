@@ -132,13 +132,13 @@ def _set_keyframes_at_source_node_key_times(src_node, dst_node, start_frame, end
 
 def _set_lod_visibility(node, visibility=False):
     """Sets shape node LOD visibility on/off."""
-    shape = maya.cmds.listRelatives(node, shapes=True)
-    if shape:
-        # TODO: Remove the need for a try/except.
-        try:
-            maya.cmds.setAttr(shape[0] + '.lodVisibility', visibility)
-        except:
-            pass
+    assert isinstance(visibility, bool)
+    shape = maya.cmds.listRelatives(node, shapes=True) or []
+    if len(shape) > 0:
+        node_attr = shape[0] + '.lodVisibility'
+        settable = maya.cmds.getAttr(node_attr, settable=True)
+        if settable is True:
+            maya.cmds.setAttr(node_attr, visibility)
     return
 
 

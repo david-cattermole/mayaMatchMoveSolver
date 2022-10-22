@@ -274,12 +274,11 @@ class AttrModel(uimodels.ItemModel):
     def columnNames(self):
         column_names = {
             0: const.ATTR_COLUMN_NAME_ATTRIBUTE,
-            1: const.ATTR_COLUMN_NAME_STATUS,
-            2: const.ATTR_COLUMN_NAME_STATE,
-            3: const.ATTR_COLUMN_NAME_VALUE_SMOOTHNESS,
-            4: const.ATTR_COLUMN_NAME_VALUE_STIFFNESS,
-            5: const.ATTR_COLUMN_NAME_VALUE_MIN_MAX,
-            6: const.ATTR_COLUMN_NAME_UUID,
+            1: const.ATTR_COLUMN_NAME_STATE,
+            2: const.ATTR_COLUMN_NAME_VALUE_SMOOTHNESS,
+            3: const.ATTR_COLUMN_NAME_VALUE_STIFFNESS,
+            4: const.ATTR_COLUMN_NAME_VALUE_MIN_MAX,
+            5: const.ATTR_COLUMN_NAME_UUID,
         }
         return column_names
 

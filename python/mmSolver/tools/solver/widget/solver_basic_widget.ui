@@ -52,6 +52,43 @@
    <item>
     <layout class="QHBoxLayout" name="options_layout">
      <item>
+      <layout class="QVBoxLayout" name="options2_layout">
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QCheckBox" name="solveFocalLength_checkBox">
+         <property name="text">
+          <string>Solve Focal Length</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="solveLensDistortion_checkBox">
+         <property name="text">
+          <string>Solve Lens Distortion</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_5">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::MinimumExpanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>10</width>
+           <height>1</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
       <layout class="QVBoxLayout" name="options1_layout">
        <item>
         <layout class="QHBoxLayout" name="sceneGraphMode_layout">
@@ -90,43 +127,6 @@
        </item>
        <item>
         <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeType">
-          <enum>QSizePolicy::MinimumExpanding</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>10</width>
-           <height>1</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="options2_layout">
-       <property name="spacing">
-        <number>2</number>
-       </property>
-       <item>
-        <widget class="QCheckBox" name="solveFocalLength_checkBox">
-         <property name="text">
-          <string>Solve Focal Length</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="solveLensDistortion_checkBox">
-         <property name="text">
-          <string>Solve Lens Distortion</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_5">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
          </property>

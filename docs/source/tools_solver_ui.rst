@@ -148,40 +148,6 @@ overall use of the Solver UI, such as Collections.
    * - Close Window
      - Closes the Solver UI window.
 
-Edit Menu
-+++++++++
-
-.. figure:: images/tools_solver_ui_menu_edit.png
-    :alt: Edit Menu
-    :align: right
-    :scale: 100%
-
-The ``Edit`` menu displays options and features for how to change the
-solve or the usage of the Solver UI.
-
-.. list-table:: Edit Menu
-   :widths: auto
-   :header-rows: 1
-
-   * - Name
-     - Description
-   * - Undo (without UI update)
-     - Performs an undo operation, while stopping the viewport from
-       evaluating.
-   * - Redo (without UI update)
-     - Performs a redo operation, while stopping the viewport from
-       evaluating.
-   * - Auto-Update Solver Validation
-     - When an option in the UI changes, the Solver Validation will be
-       re-evaluated.
-   * - Pre-Solve Force Evaluation
-     - Before a Solve is performed mmSolver will update the DG Node
-       Graph.
-   * - Refresh Viewport
-     - The viewport will be updated during a solve.
-   * - Force DG Update
-     - mmSolver will ensure Maya updates the DG Node Graph.
-
 View Menu
 +++++++++
 

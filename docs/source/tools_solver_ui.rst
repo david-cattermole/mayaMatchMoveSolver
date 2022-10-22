@@ -31,7 +31,7 @@ Input Objects
 The Objects are the inputs to the current Solve. This will display
 of Markers used for detecting deviation.
 To display the Markers, and the related objects, you may turn on/off
-the ``CAM``, ``MKR`` and ``BND`` buttons.
+the ``CAM``, ``MKR``, ``LN``` and ``BND`` buttons.
 
 There are various columns showing attributes of the input Objects.
 To display the column visibility, use the Edit menu.
@@ -166,24 +166,6 @@ the Maya Viewport during solves.
 
    * - Display Attribute Min/Max
      - The minimum and maximum value attribute columns are displayed.
-
-   * - Display Attribute Smoothness
-     - The smoothness variance attribute column is displayed.
-
-   * - Display Attribute Stiffness
-     - The stiffness variance attribute column is displayed.
-
-   * - Display Image Planes
-     - Image Planes will be visible while a solve is calculating,
-       otherwise all Image Planes are hidden.
-
-   * - Display Meshes
-     - Polygon meshes will be visible while a solve is calculating,
-       otherwise all meshes are hidden.
-
-   * - Isolate Objects
-     - mmSolver will hide all objects not used in a solve, while a
-       solve is calculated.
 
 Log Menu
 ++++++++

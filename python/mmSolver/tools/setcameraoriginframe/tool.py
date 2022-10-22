@@ -100,7 +100,7 @@ def _get_camera_keyframe_times(cam_tfm, cam_shp):
     if key_count > 0:
         key_times += maya.cmds.keyframe(node_attr, query=True, timeChange=True) or []
 
-    return map(int, key_times)
+    return [int(key) for key in key_times]
 
 
 def main():

@@ -1,9 +1,8 @@
 Input/Output Tools
 ==================
 
-The tools on this page are not specific to Markers, Cameras or
-Bundles, but are general tools useful in Maya for many different
-tasks.
+The tools on this page are used to import and export data from Maya
+using mmSolver.
 
 .. _copy-camera-to-clipboard-tool-ref:
 

@@ -240,3 +240,20 @@ provide the excellent features to MatchMove artists by default. ::
     COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
     IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+OpenMVG (open Multiple View Geometry)
+-------
+
+`OpenMVG homepage <https://openmvg.readthedocs.io/>`_
+`openMVG GitHub page <https://github.com/openMVG/openMVG>`_
+
+`OpenMVG` is a library for computing geometry from multiple views and contains
+Structure from Motion (SfM) algorithms that are used inside mmSolver::
+
+    Copyright (c) 2012, 2013 Lionel MOISAN.
+    Copyright (c) 2012, 2013 Pascal MONASSE.
+    Copyright (c) 2012, 2016 Pierre MOULON.
+
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.

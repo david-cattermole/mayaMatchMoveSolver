@@ -29,6 +29,7 @@ import maya.OpenMayaAnim as OpenMayaAnim1
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.ui.channelboxutils as channelbox_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.animcurve as animcurve_utils
 
@@ -239,21 +240,6 @@ def get_active_collection():
     return col
 
 
-def _get_channel_box_ui_name():
-    """
-    Get the internal channel box Maya UI path.
-
-    .. note::
-        When the Maya GUI has not launched yet, this function
-        returns None.
-
-    :return: UI path str.
-    :rtype: str or None
-    """
-    cmd = 'global string $gChannelBoxName;' 'string $temp = $gChannelBoxName;'
-    return maya.mel.eval(cmd)
-
-
 def get_selected_maya_attributes():
     """
     Get the currently selected attributes from the Channel Box.
@@ -264,7 +250,7 @@ def get_selected_maya_attributes():
     :return: List of Attribute objects for all nodes in the Channel Box.
     :rtype: list of Attribute
     """
-    name = _get_channel_box_ui_name()
+    name = channelbox_utils.get_ui_name()
 
     # Main Nodes and Attribute
     main_nodes = maya.cmds.channelBox(name, query=True, mainObjectList=True) or []

@@ -29,6 +29,7 @@ import mmSolver.logger
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.python_compat as pycompat
+import mmSolver.ui.channelboxutils as channelbox_utils
 import mmSolver.tools.attributebake.lib as fastbake_lib
 import mmSolver.tools.createcontroller2.constant as const
 
@@ -70,10 +71,7 @@ def _get_rig_node_identifier(node):
 
 
 def _get_selected_channel_box_attrs():
-    # TODO: Don't we already have a function for this? If so, we
-    # should re-use it, if not, a function should be created.
-    cmd = 'global string $gChannelBoxName; $temp=$gChannelBoxName;'
-    channel_box = maya.mel.eval(cmd)
+    channel_box = channelbox_utils.get_ui_name()
     attrs = (
         maya.cmds.channelBox(channel_box, query=True, selectedMainAttributes=True) or []
     )

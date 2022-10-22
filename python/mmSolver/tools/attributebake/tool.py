@@ -29,19 +29,15 @@ import mmSolver.logger
 import mmSolver.utils.configmaya as configmaya
 import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.constant as const_utils
+import mmSolver.ui.channelboxutils as channelbox_utils
 import mmSolver.tools.attributebake.constant as const
 import mmSolver.tools.attributebake.lib as lib
 
 LOG = mmSolver.logger.get_logger()
 
 
-def _get_channel_box_name():
-    cmd = 'global string $gChannelBoxName; $temp=$gChannelBoxName;'
-    return maya.mel.eval(cmd)
-
-
 def _get_attributes(from_channelbox_state):
-    channel_box = _get_channel_box_name()
+    channel_box = channelbox_utils.get_ui_name()
     attrs = []
     if from_channelbox_state is True:
         attrs = maya.cmds.channelBox(

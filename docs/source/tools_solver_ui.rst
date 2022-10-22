@@ -117,6 +117,7 @@ The documentation for each Solver tab is below.
 
     tools_solver_ui_tab_basic
     tools_solver_ui_tab_standard
+    tools_solver_ui_tab_camera
 
 Menus
 ~~~~~

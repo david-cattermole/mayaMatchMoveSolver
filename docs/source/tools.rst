@@ -18,13 +18,16 @@ Pages dedicated to specific tools:
     tools_solver_ui
     tools_createnode
     tools_selection
-    tools_attributetools
     tools_frametools
-    tools_cameratools
     tools_cameracontextmenu
+    tools_attributetools
+    tools_cameratools
     tools_markerbundletools
     tools_bundletools
     tools_markertools
     tools_linetools
+    tools_displaytools
+    tools_zdepthtools
     tools_generaltools
+    tools_inputoutput
     tools_hotkeys

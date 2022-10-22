@@ -37,13 +37,11 @@ LOG = mmSolver.logger.get_logger()
 
 
 def _get_attributes(from_channelbox_state):
-    channel_box = channelbox_utils.get_ui_name()
     attrs = []
     if from_channelbox_state is True:
-        attrs = maya.cmds.channelBox(
-            channel_box, query=True, selectedMainAttributes=True
-        ) or []
-    return attrs
+        name = channelbox_utils.get_ui_name()
+        attrs = maya.cmds.channelBox(name, query=True, selectedMainAttributes=True)
+    return attrs or []
 
 
 def main():

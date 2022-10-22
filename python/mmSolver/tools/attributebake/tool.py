@@ -42,7 +42,7 @@ def _get_attributes(from_channelbox_state):
     if from_channelbox_state is True:
         attrs = maya.cmds.channelBox(
             channel_box, query=True, selectedMainAttributes=True
-        )
+        ) or []
     return attrs
 
 
@@ -72,7 +72,11 @@ def main():
     frame_range = lib.get_bake_frame_range(
         frame_range_mode, custom_start_frame, custom_end_frame
     )
+
     attrs = _get_attributes(from_channelbox_state)
+    if from_channelbox_state is True and len(attrs) == 0:
+        LOG.warn("Please select at least 1 attribute in the Channel Box.")
+        return
 
     # Bake attributes
     s = time.time()
@@ -89,7 +93,7 @@ def main():
                 nodes, attrs, frame_range.start, frame_range.end, smart_bake_state
             )
         except Exception as e:
-            LOG.error(e)
+            LOG.exception('Bake attributes failed.')
         finally:
             e = time.time()
             LOG.warn('Bake attribute success. Time elapsed: %r secs', e - s)

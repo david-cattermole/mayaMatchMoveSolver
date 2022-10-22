@@ -60,6 +60,8 @@ def _populateWidgetsEnabled(widgets):
 
 
 def _getShowValidateButton():
+    # This feature is deprecated and is no longer allowed.
+    return False
     config = userprefs_lib.get_config()
     key = userprefs_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY
     show_validate_btn = userprefs_lib.get_value(config, key)
@@ -69,6 +71,8 @@ def _getShowValidateButton():
 
 
 def _getValidateOnOpen():
+    # This feature is deprecated and is no longer allowed.
+    return False
     config = userprefs_lib.get_config()
     key = userprefs_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY
     validate_on_open = userprefs_lib.get_value(config, key)

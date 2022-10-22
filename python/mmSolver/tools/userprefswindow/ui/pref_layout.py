@@ -47,6 +47,10 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         self._config = None
 
         deprecated_features_visible = False
+        self.validateSolverOnUIOpenLabel.setVisible(deprecated_features_visible)
+        self.validateSolverOnUIOpenComboBox.setVisible(deprecated_features_visible)
+        self.showValidateButtonLabel.setVisible(deprecated_features_visible)
+        self.showValidateButtonComboBox.setVisible(deprecated_features_visible)
         self.allowObjectRelationsLabel.setVisible(deprecated_features_visible)
         self.allowObjectRelationsComboBox.setVisible(deprecated_features_visible)
         return
@@ -100,6 +104,8 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         return value
 
     def updateSolverUIValidateOnOpenWidget(self, config):
+        # This feature is deprecated and is no longer allowed.
+        return
         key = pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY
         value = userprefs_lib.get_value(config, key)
         label = userprefs_lib.get_label_from_value(key, value)
@@ -111,12 +117,16 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         return
 
     def getSolverUIValidateOnOpenConfigValue(self):
+        # This feature is deprecated and is no longer allowed.
+        return False
         key = pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY
         label = self.validateSolverOnUIOpenComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)
         return value
 
     def updateSolverUIShowValidateButtonWidget(self, config):
+        # This feature is deprecated and is no longer allowed.
+        return
         key = pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY
         value = userprefs_lib.get_value(config, key)
         label = userprefs_lib.get_label_from_value(key, value)
@@ -128,6 +138,8 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         return
 
     def getSolverUIShowValidateButtonConfigValue(self):
+        # This feature is deprecated and is no longer allowed.
+        return False
         key = pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY
         label = self.showValidateButtonComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)

@@ -113,8 +113,7 @@ def trigger_event(event_name, **kwargs):
     LOG.debug('trigger_event: event_name=%r kwargs=%r', event_name, kwargs)
     __EVENT_ARGUMENTS[event_name].append(kwargs)
 
-    deferred_func = lambda: __call_functions(event_name)
-    maya.utils.executeDeferred(deferred_func)
+    maya.utils.executeDeferred(lambda: __call_functions(event_name))
     return
 
 
@@ -165,8 +164,7 @@ def add_function_to_event(event_name, func, deferred=True):
     assert isinstance(deferred, bool)
 
     def deferred_func(**kwargs):
-        wrapper_func = lambda: func(**kwargs)
-        maya.utils.executeDeferred(wrapper_func)
+        maya.utils.executeDeferred(lambda: func(**kwargs))
 
     run_func = func
     if deferred is True:

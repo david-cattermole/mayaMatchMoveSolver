@@ -10,7 +10,7 @@ Set Attribute Details
 .. figure:: images/tools_set_attribute_details_ui.png
     :alt: Set Attribute Details UI
     :align: center
-    :scale: 50%
+    :scale: 100%
 
 The Attribute Details tool is used to add details (properties) to an
 individual Attribute. Details are stored per-collection, therefore a
@@ -196,7 +196,7 @@ useful for manually adjusting or matching parameters interactively.
 .. figure:: images/tools_channel_box_sensitivity_ui.png
     :alt: Adjust the Maya Channel Box Sensitivity with a UI
     :align: center
-    :width: 40%
+    :width: 80%
 
 Usage:
 
@@ -223,7 +223,7 @@ Bake Attributes
 .. figure:: images/tools_bake_attributes_ui.png
     :alt: Bake Attributes UI
     :align: center
-    :scale: 50%
+    :scale: 100%
 
 Bake Attributes will bake the values of an attribute on each frame and
 replace the connection with an animation curve.

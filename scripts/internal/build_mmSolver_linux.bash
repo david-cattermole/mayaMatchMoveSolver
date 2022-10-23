@@ -92,6 +92,10 @@ MMSCENEGRAPH_CMAKE_CONFIG_DIR="${MMSCENEGRAPH_INSTALL_DIR}/lib/cmake/mmscenegrap
 # We don't want to find system packages.
 CMAKE_IGNORE_PATH="/lib;/lib64;/usr;/usr/lib;/usr/lib64;/usr/local;/usr/local/lib;/usr/local/lib64;"
 
+# A local copy of LDPK to reduce the amount of downloads to the
+# 3DEqualizer website (LDPK doesn't have a git repo to clone from).
+LDPK_URL="${PROJECT_ROOT}/external/archives/ldpk-2.8.tar"
+
 # Build mmSolver project
 cd ${BUILD_DIR_BASE}
 BUILD_DIR_NAME="cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}"
@@ -120,6 +124,7 @@ ${CMAKE_EXE} \
     -DMMSOLVER_BUILD_TESTS=${MMSOLVER_BUILD_TESTS} \
     -DMAYA_LOCATION=${MAYA_LOCATION} \
     -DMAYA_VERSION=${MAYA_VERSION} \
+    -Dldpk_URL=${LDPK_URL} \
     -Dmmscenegraph_DIR=${MMSCENEGRAPH_CMAKE_CONFIG_DIR} \
     ${PROJECT_ROOT}
 

@@ -94,6 +94,13 @@ IF EXIST "C:\MinGW" (
     SET IGNORE_INCLUDE_DIRECTORIES="C:\MinGW\bin;C:\MinGW\include"
 )
 
+:: A local copy of LDPK to reduce the amount of downloads to the
+:: 3DEqualizer website (LDPK doesn't have a git repo to clone from).
+SET LDPK_URL="%PROJECT_ROOT%\external\archives\ldpk-2.8.tar"
+:: Convert back-slashes to forward-slashes.
+:: https://stackoverflow.com/questions/23542453/change-backslash-to-forward-slash-in-windows-batch-file
+SET "LDPK_URL=%LDPK_URL:\=/%"
+
 :: Optionally use "NMake Makefiles" as the build system generator.
 SET CMAKE_GENERATOR=Ninja
 
@@ -128,6 +135,7 @@ CHDIR "%BUILD_DIR%"
     -DMMSOLVER_BUILD_TESTS=%MMSOLVER_BUILD_TESTS% ^
     -DMAYA_LOCATION=%MAYA_LOCATION% ^
     -DMAYA_VERSION=%MAYA_VERSION% ^
+    -Dldpk_URL=%LDPK_URL% ^
     -Dmmscenegraph_DIR=%MMSCENEGRAPH_CMAKE_CONFIG_DIR% ^
     %PROJECT_ROOT%
 if errorlevel 1 goto failed_to_generate

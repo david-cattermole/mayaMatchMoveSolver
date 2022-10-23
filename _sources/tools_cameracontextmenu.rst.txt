@@ -8,7 +8,7 @@ distortion.
 .. figure:: images/tools_camera_context_menu.png
     :alt: Set Attribute Details UI
     :align: center
-    :scale: 50%
+    :scale: 100%
 
 - Cameras can be selected or created.
 

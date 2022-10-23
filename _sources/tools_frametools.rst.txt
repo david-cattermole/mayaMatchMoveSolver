@@ -6,7 +6,7 @@ Frame Tools
 .. figure:: images/tools_shelf_icons_frames.png
     :alt: Node Frame Shelf Icons
     :align: center
-    :width: 30%
+    :width: 60%
 
 .. _next-user-frame-tool-ref:
 

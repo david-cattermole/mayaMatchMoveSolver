@@ -89,56 +89,6 @@
 #include <utility>
 #include <vector>
 
-// Ceres Solver
-#ifdef MMSOLVER_USE_CERES
-
-#pragma warning(push)
-// Compiler Warning (level 1) C4251: needs to have dll-interface to be
-// used by clients of class.
-#pragma warning(disable : 4251)
-#include <ceres/ceres.h>
-#pragma warning(pop)
-
-#endif  // MMSOLVER_USE_CERES
-
-// OpenMVG
-#ifdef MMSOLVER_USE_OPENMVG
-
-#include <openMVG/numeric/numeric.h>
-
-#include <openMVG/features/feature.hpp>
-#include <openMVG/features/feature_container.hpp>
-#include <openMVG/matching/indMatch.hpp>
-#include <openMVG/matching/regions_matcher.hpp>
-#include <openMVG/multiview/conditioning.hpp>
-#include <openMVG/multiview/solver_fundamental_kernel.hpp>
-#include <openMVG/numeric/eigen_alias_definition.hpp>
-#include <openMVG/robust_estimation/robust_estimator_ACRansac.hpp>
-#include <openMVG/robust_estimation/robust_estimator_ACRansacKernelAdaptator.hpp>
-#include <openMVG/types.hpp>
-
-#include "openMVG/cameras/Camera_Common.hpp"
-#include "openMVG/cameras/Cameras_Common_command_line_helper.hpp"
-#include "openMVG/sfm/pipelines/sfm_features_provider.hpp"
-#include "openMVG/sfm/pipelines/sfm_matches_provider.hpp"
-#include "openMVG/sfm/sfm_data.hpp"
-#include "openMVG/sfm/sfm_data_io.hpp"
-#include "openMVG/sfm/sfm_report.hpp"
-#include "openMVG/sfm/sfm_view.hpp"
-#include "openMVG/system/timer.hpp"
-#include "openMVG/types.hpp"
-
-// SfM Engines
-#include "openMVG/sfm/pipelines/global/GlobalSfM_rotation_averaging.hpp"
-#include "openMVG/sfm/pipelines/global/GlobalSfM_translation_averaging.hpp"
-#include "openMVG/sfm/pipelines/global/sfm_global_engine_relative_motions.hpp"
-#include "openMVG/sfm/pipelines/sequential/SfmSceneInitializerMaxPair.hpp"
-#include "openMVG/sfm/pipelines/sequential/SfmSceneInitializerStellar.hpp"
-#include "openMVG/sfm/pipelines/sequential/sequential_SfM.hpp"
-#include "openMVG/sfm/pipelines/sequential/sequential_SfM2.hpp"
-
-#endif  // MMSOLVER_USE_OPENMVG
-
 // Maya
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
@@ -168,11 +118,6 @@ namespace mmsolver {
 
 using MMMarker = Marker;
 using MMCamera = Camera;
-
-using KernelType = openMVG::robust::ACKernelAdaptor<
-    openMVG::fundamental::kernel::NormalizedEightPointKernel,
-    openMVG::fundamental::kernel::SymmetricEpipolarDistanceError,
-    openMVG::UnnormalizerT, openMVG::Mat3>;
 
 MMCameraSolveCmd::~MMCameraSolveCmd() {}
 

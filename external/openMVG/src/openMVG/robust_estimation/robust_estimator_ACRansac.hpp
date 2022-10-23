@@ -339,7 +339,7 @@ std::pair<double, double> ACRANSAC
   const unsigned int nData = kernel.NumSamples();
   if (nData <= sizeSample)
     return {0.0, 0.0};
-  
+
   //--
   // Sampling:
   // Possible sampling indices [0,..,nData] (will change in the optimization phase)
@@ -347,16 +347,16 @@ std::pair<double, double> ACRANSAC
   std::iota(vec_index.begin(), vec_index.end(), 0);
   // Sample indices (used for model evaluation)
   std::vector<uint32_t> vec_sample(sizeSample);
-  
+
   const double maxThreshold = (precision == std::numeric_limits<double>::infinity()) ?
     std::numeric_limits<double>::infinity() :
     precision * kernel.normalizer2()(0,0) * kernel.normalizer2()(0,0);
-  
+
   // Initialize the NFA computation interface
   // (quantified NFA computation is used if a valid upper bound is provided)
   acransac_nfa_internal::NFA_Interface<Kernel> nfa_interface
     (kernel, maxThreshold, (precision != std::numeric_limits<double>::infinity()));
-  
+
   // Output parameters
   double minNFA = std::numeric_limits<double>::infinity();
   double errorMax = std::numeric_limits<double>::infinity();
@@ -377,12 +377,7 @@ std::pair<double, double> ACRANSAC
   //--
   // Random number generation
   std::mt19937 random_generator(std::mt19937::default_seed);
-  
-  // Models to be filled by Kernel.Fit()
-  // - Bug fixed for mayaMatchMoveSolver.
-  std::vector<typename Kernel::Model> vec_models;
-  vec_models.reserve(Kernel::MAX_MODELS);
-  
+
   //--
   // Main estimation loop.
   for (unsigned int iter = 0; iter < nIter && iter < num_max_iteration; ++iter)
@@ -394,9 +389,9 @@ std::pair<double, double> ACRANSAC
       UniformSample(sizeSample, nData, random_generator, &vec_sample);
 
     // Fit model(s). Can find up to Kernel::MAX_MODELS solution(s)
-    vec_models.clear();
+    std::vector<typename Kernel::Model> vec_models;
     kernel.Fit(vec_sample, &vec_models);
-    
+
     // Evaluate model(s)
     bool better = false;
     for (const auto& model_it : vec_models)
@@ -478,10 +473,10 @@ std::pair<double, double> ACRANSAC
       }
     }
   }
-  
+
   if (minNFA >= 0) // no meaningful model found so far
     vec_inliers.clear();
-  
+
   if (!vec_inliers.empty())
   {
     // Un-normalize the model and the associated NFA threshold
@@ -489,7 +484,7 @@ std::pair<double, double> ACRANSAC
       kernel.Unnormalize(model);
     errorMax = kernel.unormalizeError(errorMax);
   }
-  
+
   return {errorMax, minNFA};
 }
 

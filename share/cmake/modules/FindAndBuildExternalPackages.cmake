@@ -73,20 +73,7 @@ find_package(Eigen3 3.4.0 REQUIRED)
 # Ceres Solver inside mmSolver more.
 #
 # https://github.com/ceres-solver/ceres-solver
-find_package(ceres 1.14.0 REQUIRED)
-
-# OpenMVG - Multiple View library
-#
-# OpenMVG provides multi-view camera reconstruction and camera solving
-# features and is required for building mmSolver. OpenMVG uses Ceres
-# and Eigen internally, and Eigen is needed by downstream libraries
-# because it is used across the OpenMVG ABI.
-#
-# Note: mmSolver has patches for this project to fix bugs internal to
-# OpenMVG.
-#
-# https://github.com/openMVG/openMVG
-find_package(OpenMVG 2.0 REQUIRED)
+find_package(Ceres 1.14.0 REQUIRED)
 
 # dlfcn-win32
 #

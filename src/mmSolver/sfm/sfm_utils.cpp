@@ -45,30 +45,6 @@
 
 #include <openMVG/numeric/numeric.h>
 
-#include <openMVG/cameras/Camera_Intrinsics.hpp>
-#include <openMVG/cameras/Camera_Pinhole.hpp>
-#include <openMVG/features/feature.hpp>
-#include <openMVG/features/feature_container.hpp>
-#include <openMVG/geometry/pose3.hpp>
-#include <openMVG/matching/indMatch.hpp>
-#include <openMVG/matching/indMatchDecoratorXY.hpp>
-#include <openMVG/matching/regions_matcher.hpp>
-#include <openMVG/multiview/conditioning.hpp>
-#include <openMVG/multiview/motion_from_essential.hpp>
-#include <openMVG/multiview/solver_essential_eight_point.hpp>
-#include <openMVG/multiview/solver_essential_kernel.hpp>
-#include <openMVG/multiview/solver_fundamental_kernel.hpp>
-#include <openMVG/multiview/triangulation.hpp>
-#include <openMVG/numeric/eigen_alias_definition.hpp>
-#include <openMVG/robust_estimation/robust_estimator_ACRansac.hpp>
-#include <openMVG/robust_estimation/robust_estimator_ACRansacKernelAdaptator.hpp>
-#include <openMVG/sfm/pipelines/sfm_robust_model_estimation.hpp>
-#include <openMVG/sfm/sfm_data.hpp>
-#include <openMVG/sfm/sfm_data_BA.hpp>
-#include <openMVG/sfm/sfm_data_BA_ceres.hpp>
-#include <openMVG/sfm/sfm_data_io.hpp>
-#include <openMVG/types.hpp>
-
 #endif  // MMSOLVER_USE_OPENMVG
 
 // Maya

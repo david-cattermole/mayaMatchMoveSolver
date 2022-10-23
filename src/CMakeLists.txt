@@ -131,8 +131,9 @@ include(MMSolverUtils)
 add_library_maya_plugin(mmSolver "${SOURCE_FILES}")
 set_target_maya_plugin_compile_options(mmSolver)
 target_include_directories(mmSolver
-  PRIVATE ${CMAKE_SOURCE_DIR}/include
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include
+  PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../external/openMVG/src/
 
   # For generated 'buildConstant.h' file.
   PRIVATE ${CMAKE_BINARY_DIR}/include
@@ -191,37 +192,7 @@ target_link_libraries(mmSolver
   glog::glog
   Eigen3::Eigen
   ceres
-  OpenMVG::cereal
-  OpenMVG::lib_CoinUtils
-  OpenMVG::lib_Osi
-  OpenMVG::lib_OsiClpSolver
-  OpenMVG::lib_clp
-  OpenMVG::openMVG_camera
-  OpenMVG::openMVG_easyexif
-  OpenMVG::openMVG_exif
-  OpenMVG::openMVG_fast
-  OpenMVG::openMVG_features
-  OpenMVG::openMVG_geodesy
-  OpenMVG::openMVG_geometry
-  OpenMVG::openMVG_graph
-  OpenMVG::openMVG_image
-  OpenMVG::openMVG_jpeg
-  OpenMVG::openMVG_kvld
-  OpenMVG::openMVG_lInftyComputerVision
-  OpenMVG::openMVG_lemon
-  OpenMVG::openMVG_linearProgramming
-  OpenMVG::openMVG_matching
-  OpenMVG::openMVG_matching_image_collection
-  OpenMVG::openMVG_multiview
-  OpenMVG::openMVG_numeric
-  OpenMVG::openMVG_png
-  OpenMVG::openMVG_robust_estimation
-  OpenMVG::openMVG_sfm
-  OpenMVG::openMVG_stlplus
-  OpenMVG::openMVG_system
-  OpenMVG::openMVG_tiff
-  OpenMVG::openMVG_zlib
-  OpenMVG::vlsift
+  openMVG
   ldpk::ldpk
 )
 

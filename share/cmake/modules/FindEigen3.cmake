@@ -207,7 +207,9 @@ if(NOT Eigen3_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND Eigen3_ALLOW_DOWNLOAD
 else()
 
   # Placeholder target that does nothing.
-  add_custom_target(Eigen3)
+  if(NOT TARGET Eigen3)
+    add_custom_target(Eigen3)
+  endif()
 
 endif()
 

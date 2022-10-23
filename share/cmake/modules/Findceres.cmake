@@ -18,17 +18,17 @@
 #
 # - ceres finder module
 # This module will look for ceres, using the predefined variable
-# ceres_ROOT.
+# Ceres_ROOT.
 #
 # Uses Variables:
-# - ceres_ROOT_PATH - Directory for the ceres install root.
-# - ceres_INCLUDE_PATH - Directory for the header files.
-# - ceres_LIB_PATH - Directory for shared libraries (.so and .dll).
+# - Ceres_ROOT_PATH - Directory for the ceres install root.
+# - Ceres_INCLUDE_PATH - Directory for the header files.
+# - Ceres_LIB_PATH - Directory for shared libraries (.so and .dll).
 #
 # Defines Variables:
-# - ceres_FOUND
-# - ceres_LIBRARIES
-# - ceres_INCLUDE_DIRS
+# - Ceres_FOUND
+# - Ceres_LIBRARIES
+# - Ceres_INCLUDE_DIRS
 #
 
 function(find_ceres_find_with_paths ceres_root ceres_include_path ceres_lib_path)
@@ -101,54 +101,54 @@ function(find_ceres_set_target ceres_library ceres_include_dir)
 endfunction()
 
 
-option(ceres_ALLOW_DOWNLOAD
-  "Allow automatically downloading and building ceres solver?" ON)
+option(Ceres_ALLOW_DOWNLOAD
+  "Allow automatically downloading and building Ceres solver?" ON)
 
 
-if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT ceres_ALLOW_DOWNLOAD)
+if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT Ceres_ALLOW_DOWNLOAD)
 
-  if(NOT DEFINED ceres_ROOT)
+  if(NOT DEFINED Ceres_ROOT)
     # Search for "ceres-config.cmake" given on the command line.
-    find_package(ceres ${ceres_FIND_VERSION} CONFIG QUIET)
+    find_package(Ceres ${Ceres_FIND_VERSION} CONFIG QUIET)
   endif()
 
-  if(ceres_FOUND)
-    message(FATAL_ERROR "Not Implemented. ceres has been found from the ceres-config.cmake file")
+  if(Ceres_FOUND)
+    message(FATAL_ERROR "Not Implemented. Ceres has been found from the ceres-config.cmake file")
   else()
     # Fallback and try to find the package.
     find_ceres_find_with_paths(
-      ${ceres_ROOT}
-      ${ceres_INCLUDE_PATH}
-      ${ceres_LIB_PATH}
-      ceres_DIR
-      ceres_INCLUDE_DIRS
-      ceres_LIBRARIES
+      ${Ceres_ROOT}
+      ${Ceres_INCLUDE_PATH}
+      ${Ceres_LIB_PATH}
+      Ceres_DIR
+      Ceres_INCLUDE_DIRS
+      Ceres_LIBRARIES
       )
   endif()
 
   include(FindPackageHandleStandardArgs)
   find_package_handle_standard_args(ceres
     REQUIRED_VARS
-      ceres_DIR
-      ceres_LIBRARIES
-      ceres_INCLUDE_DIRS
+      Ceres_DIR
+      Ceres_LIBRARIES
+      Ceres_INCLUDE_DIRS
   )
 
-  if(ceres_FOUND)
-    message(STATUS "ceres: Found=${ceres_FOUND}")
-    message(STATUS "ceres: Config=${ceres_DIR}")
-    message(STATUS "ceres: Include=${ceres_INCLUDE_DIRS}")
-    message(STATUS "ceres: Library=${ceres_LIBRARIES}")
+  if(Ceres_FOUND)
+    message(STATUS "Ceres: Found=${Ceres_FOUND}")
+    message(STATUS "Ceres: Config=${Ceres_DIR}")
+    message(STATUS "Ceres: Include=${Ceres_INCLUDE_DIRS}")
+    message(STATUS "Ceres: Library=${Ceres_LIBRARIES}")
   endif()
 
 endif()
 
 
-# Ensure a target for ceres is created.
+# Ensure a target for Ceres is created.
 if(NOT TARGET ceres)
   find_ceres_create_target()
-  if(ceres_FOUND)
-    find_ceres_set_target(${ceres_LIBRARY} ${ceres_INCLUDE_DIR})
+  if(Ceres_FOUND)
+    find_ceres_set_target(${Ceres_LIBRARY} ${Ceres_INCLUDE_DIR})
   else()
     set(_ceres_TARGET_CREATE TRUE)
   endif()
@@ -156,7 +156,7 @@ endif()
 
 
 # Download, Build and Install.
-if(NOT ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ceres_ALLOW_DOWNLOAD)
+if(NOT Ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND Ceres_ALLOW_DOWNLOAD)
   include(ExternalProject)
   include(GNUInstallDirs)
 
@@ -164,55 +164,55 @@ if(NOT ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ceres_ALLOW_DOWNLOAD)
   set(_EXTERNAL_BUILD_DIR "${CMAKE_BINARY_DIR}/ext/build")
 
   # Fill in the expected values/paths that will exist when the build
-  # and install of ceres actually happens.
-  set(ceres_FOUND TRUE)
-  set(ceres_VERSION ${ceres_FIND_VERSION})
+  # and install of Ceres actually happens.
+  set(Ceres_FOUND TRUE)
+  set(Ceres_VERSION ${Ceres_FIND_VERSION})
 
-  set(ceres_INCLUDE_DIR "${_EXTERNAL_INSTALL_DIR}/ceres/${CMAKE_INSTALL_INCLUDEDIR}")
-  set(ceres_LIBRARY_DIR "${_EXTERNAL_INSTALL_DIR}/ceres/${CMAKE_INSTALL_LIBDIR}")
+  set(Ceres_INCLUDE_DIR "${_EXTERNAL_INSTALL_DIR}/ceres/${CMAKE_INSTALL_INCLUDEDIR}")
+  set(Ceres_LIBRARY_DIR "${_EXTERNAL_INSTALL_DIR}/ceres/${CMAKE_INSTALL_LIBDIR}")
 
-  set(ceres_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}ceres${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  set(Ceres_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}ceres${CMAKE_STATIC_LIBRARY_SUFFIX}")
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(ceres_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}ceres-debug${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(Ceres_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}ceres-debug${CMAKE_STATIC_LIBRARY_SUFFIX}")
   endif()
-  set(ceres_LIBRARY "${ceres_LIBRARY_DIR}/${ceres_LIBRARY_NAME}")
+  set(Ceres_LIBRARY "${Ceres_LIBRARY_DIR}/${Ceres_LIBRARY_NAME}")
 
   if(WIN32)
-    set(ceres_DIR "${_EXTERNAL_INSTALL_DIR}/ceres/CMake")
+    set(Ceres_DIR "${_EXTERNAL_INSTALL_DIR}/ceres/CMake")
   else()
-    set(ceres_DIR "${ceres_LIBRARY_DIR}/cmake/Ceres/")
+    set(Ceres_DIR "${Ceres_LIBRARY_DIR}/cmake/Ceres/")
   endif()
 
-  set(ceres_URL
+  set(Ceres_URL
     "https://github.com/ceres-solver/ceres-solver.git"
     CACHE STRING
     "The URL for the ceres-solver git repository.")
 
-  set(ceres_GIT_TAG "${ceres_VERSION}" CACHE STRING
+  set(Ceres_GIT_TAG "${Ceres_VERSION}" CACHE STRING
     "The Git tag for the ceres-solver git repository.")
 
-  set(ceres_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/ceres)
-  set(ceres_PREFIX ${_EXTERNAL_BUILD_DIR}/ceres)
+  set(Ceres_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/ceres)
+  set(Ceres_PREFIX ${_EXTERNAL_BUILD_DIR}/ceres)
 
   # The full 'glog' library is faster than the cut-down 'miniglog'
   # embedded in Ceres. Different platforms enable/disable this because
   # of build issues.
   #
-  set(ceres_USE_MINIGLOG 0)
+  set(Ceres_USE_MINIGLOG 0)
   if (WIN32 AND NOT UNIX)
     # 'miniglog' is disabled on Windows because of build errors on MSVC
     # with a conflict of the 'ERROR' severity identifer clashing with
     # something else in mmSolver.
-    set(ceres_USE_MINIGLOG 0)
+    set(Ceres_USE_MINIGLOG 0)
   else()
     # 'glog' is disabled on Linux because of linking/build errors.
-    set(ceres_USE_MINIGLOG 1)
+    set(Ceres_USE_MINIGLOG 1)
   endif()
 
-  set(ceres_CMAKE_ARGS
+  set(Ceres_CMAKE_ARGS
     -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
     -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-    -DCMAKE_INSTALL_PREFIX=${ceres_INSTALL_PATH}
+    -DCMAKE_INSTALL_PREFIX=${Ceres_INSTALL_PATH}
     -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
     -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH}
     -DCMAKE_POSITION_INDEPENDENT_CODE=${CMAKE_POSITION_INDEPENDENT_CODE}
@@ -238,7 +238,7 @@ if(NOT ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ceres_ALLOW_DOWNLOAD)
     -DBUILD_SHARED_LIBS=0
     -DCXX11=ON
 
-    -DMINIGLOG=${ceres_USE_MINIGLOG}
+    -DMINIGLOG=${Ceres_USE_MINIGLOG}
     # WARNING: Enabling "EIGENSPARSE" results in an LGPL licensed
     # Ceres.
     -DEIGENSPARSE=ON
@@ -263,41 +263,43 @@ if(NOT ceres_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ceres_ALLOW_DOWNLOAD)
   )
 
   # Hack to let imported target be built from ExternalProject_Add
-  file(MAKE_DIRECTORY ${ceres_INCLUDE_DIR})
+  file(MAKE_DIRECTORY ${Ceres_INCLUDE_DIR})
 
   ExternalProject_Add(ceres_install
     DEPENDS Eigen3 glog
-    PREFIX ${ceres_PREFIX}
-    GIT_REPOSITORY ${ceres_URL}
-    GIT_TAG "${ceres_GIT_TAG}"
-    INSTALL_DIR ${ceres_INSTALL_PATH}
-    BUILD_BYPRODUCTS ${ceres_LIBRARY}
-    CMAKE_ARGS ${ceres_CMAKE_ARGS}
+    PREFIX ${Ceres_PREFIX}
+    GIT_REPOSITORY ${Ceres_URL}
+    GIT_TAG "${Ceres_GIT_TAG}"
+    INSTALL_DIR ${Ceres_INSTALL_PATH}
+    BUILD_BYPRODUCTS ${Ceres_LIBRARY}
+    CMAKE_ARGS ${Ceres_CMAKE_ARGS}
     EXCLUDE_FROM_ALL TRUE
     BUILD_COMMAND ""
     INSTALL_COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE} --target install --parallel
   )
 
   add_dependencies(ceres ceres_install)
-  message(STATUS "Installing ceres (version \"${ceres_VERSION}\")")
-  message(STATUS "ceres: Config=${ceres_DIR}")
-  message(STATUS "ceres: Include=${ceres_INCLUDE_DIR}")
-  message(STATUS "ceres: Library=${ceres_LIBRARY}")
+  message(STATUS "Installing Ceres (version \"${Ceres_VERSION}\")")
+  message(STATUS "Ceres: Config=${Ceres_DIR}")
+  message(STATUS "Ceres: Include=${Ceres_INCLUDE_DIR}")
+  message(STATUS "Ceres: Library=${Ceres_LIBRARY}")
 
 else()
 
   # Placeholder target that does nothing.
-  add_custom_target(ceres_install)
+  if(NOT TARGET ceres_install)
+    add_custom_target(ceres_install)
+  endif()
 
 endif()
 
 
 if(_ceres_TARGET_CREATE)
-  find_ceres_set_target(${ceres_LIBRARY} ${ceres_INCLUDE_DIR})
+  find_ceres_set_target(${Ceres_LIBRARY} ${Ceres_INCLUDE_DIR})
   mark_as_advanced(
-    ceres_DIR
-    ceres_INCLUDE_DIR
-    ceres_LIBRARY
-    ceres_VERSION
+    Ceres_DIR
+    Ceres_INCLUDE_DIR
+    Ceres_LIBRARY
+    Ceres_VERSION
   )
 endif()

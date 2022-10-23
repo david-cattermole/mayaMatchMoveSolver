@@ -24,8 +24,8 @@ dependency.
   - [cxx-bridge](https://cxx.rs/)
 - [CMinpack](https://github.com/devernay/cminpack)
 - [Eigen](https://eigen.tuxfamily.org/)
-- [OpenMVG](https://github.com/openMVG/openMVG)
 - [Ceres Solver](http://ceres-solver.org/)
+  - [Google Log](https://github.com/google/glog)
 - [Lens Distortion Plug-in Kit (LDPK)](https://www.3dequalizer.com)
   - [dlfcn-win32](https://github.com/dlfcn-win32/dlfcn-win32) (Windows only)
 - [Python](https://www.python.org/)
@@ -115,8 +115,7 @@ Scene Graph`` features.
 
 ## Eigen
 
-[Eigen](https://eigen.tuxfamily.org/) is a requirement of OpenMVG and
-also mmSolver (because mmSolver uses OpenMVG headers).
+[Eigen](https://eigen.tuxfamily.org/) is a requirement of mmSolver.
 
 ## CMinpack
 
@@ -126,10 +125,10 @@ is required for non-linear least-squares minimization.
 This solver is not as sophisticated as Ceres and may be deprecated in a
 future release (in favor of [Ceres Solver](http://ceres-solver.org/))
 
-## Ceres
+## Ceres Solver
 
 [Ceres Solver](http://ceres-solver.org/) is a state-of-the-art
-non-linear least-squares minimization library required for OpenMVG.
+non-linear least-squares minimization library.
 
 Ceres Solver allows solving large minimization problems efficiently
 using sparse matrices. Ceres Solver itself has many dependencies, and
@@ -139,14 +138,17 @@ underlying dependencies provides the best performance for you -
 however make sure that sparse matrix solving is available.
 
 In a future version of mmSolver Ceres may replace CMinpack as the
-default and recommended global
+default and recommended solving engine.
 
 ## OpenMVG
 
 [OpenMVG 2.0](https://github.com/openMVG/openMVG/releases/tag/v2.0) is
-required for traditional Multiple-View Geometry calculations inside
+used for traditional Multiple-View Geometry calculations inside
 mmSolver, such as Structure from Motion, triangulation and other
-features.
+features. Only a sub-set of OpenMVG is included with mmSolver.
+
+OpenMVG is not a third-party dependency, because it's included inside
+mmSolver. OpenMVG requires Eigen and Ceres Solver internally.
 
 ## Lens Distortion Plug-in Kit
 

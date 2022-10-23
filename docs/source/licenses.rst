@@ -247,13 +247,24 @@ OpenMVG (open Multiple View Geometry)
 `OpenMVG homepage <https://openmvg.readthedocs.io/>`_
 `openMVG GitHub page <https://github.com/openMVG/openMVG>`_
 
-`OpenMVG` is a library for computing geometry from multiple views and contains
-Structure from Motion (SfM) algorithms that are used inside mmSolver::
+`OpenMVG` is a library for computing geometry from multiple views and
+contains Structure from Motion (SfM) algorithms that are used inside
+mmSolver::
 
-    Copyright (c) 2012, 2013 Lionel MOISAN.
-    Copyright (c) 2012, 2013 Pascal MONASSE.
-    Copyright (c) 2012, 2016 Pierre MOULON.
+    Copyright OpenMVG authors
+    Licensed under the [MPL2 license](http://opensource.org/licenses/MPL-2.0).
 
-    This Source Code Form is subject to the terms of the Mozilla Public
-    License, v. 2.0. If a copy of the MPL was not distributed with this
-    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+This program includes works distributed under the terms of another
+license(s) and other copyright notice(s)::
+
+    histogram
+    Copyright (c) Jansson Consulting & Pierre Moulon.
+    Licensed under the [MPL2 license](http://opensource.org/licenses/MPL-2.0).
+
+    progress
+    Copyright (c) Pierre MOULON
+    Licensed under the [MPL2 license](http://opensource.org/licenses/MPL-2.0).
+
+Please see the files "mayaMatchMoveSolver/external/openMVG/LICENSE"
+and "mayaMatchMoveSolver/external/openMVG/AUTHORS" distributed with
+the mmSolver source code for details.

@@ -4,7 +4,7 @@ Create Node Tools
 .. figure:: images/tools_shelf_icons_creation.png
     :alt: Node Creation Shelf Icons
     :align: center
-    :width: 30%
+    :width: 60%
 
 Creating various nodes and objects with mmSolver uses the tools below.
 
@@ -40,7 +40,7 @@ Load Markers
 .. figure:: images/tools_loadmarker_overview.png
     :alt: Load Markers UI
     :align: right
-    :scale: 50%
+    :scale: 100%
 
     Load Markers UI
 

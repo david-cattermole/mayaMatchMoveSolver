@@ -1,4 +1,4 @@
-General Tools
+Display Tools
 =============
 
 The tools on this page are not specific to Markers, Cameras or

@@ -42,40 +42,40 @@
             ]
         },
         "navigate_root_frame_next": {
-            "name": "Next Root Frame",
+            "name": "Next User Frame",
             "name_shelf": "",
             "icon_shelf": "keyFrameNext_32x32.png",
-            "tooltip": "Jump to the next root frame.",
+            "tooltip": "Jump to the next user frame.",
             "command": [
                 "import mmSolver.tools.navigaterootframes.tool as tool;",
                 "tool.main_next_frame();"
             ]
         },
         "navigate_root_frame_prev": {
-            "name": "Previous Root Frame",
+            "name": "Previous User Frame",
             "name_shelf": "",
             "icon_shelf": "keyFramePrevious_32x32.png",
-            "tooltip": "Jump to the previous root frame.",
+            "tooltip": "Jump to the previous user frame.",
             "command": [
                 "import mmSolver.tools.navigaterootframes.tool as tool;",
                 "tool.main_prev_frame();"
             ]
         },
         "edit_root_frame_add": {
-            "name": "Add Root Frame",
+            "name": "Add User Frame",
             "name_shelf": "",
             "icon_shelf": "keyFrameAdd_32x32.png",
-            "tooltip": "Add the current frame to the root frame list.",
+            "tooltip": "Add the current frame to the user frame list.",
             "command": [
                 "import mmSolver.tools.editrootframes.tool as tool;",
                 "tool.main_add_frame();"
             ]
         },
         "edit_root_frame_remove": {
-            "name": "Remove Root Frame",
+            "name": "Remove User Frame",
             "name_shelf": "",
             "icon_shelf": "keyFrameRemove_32x32.png",
-            "tooltip": "Remove the current frame from the root frame list.",
+            "tooltip": "Remove the current frame from the user frame list.",
             "command": [
                 "import mmSolver.tools.editrootframes.tool as tool;",
                 "tool.main_remove_frame();"

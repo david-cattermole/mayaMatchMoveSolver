@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mmSolver.ui.shelfutils &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.ui.uimodels" href="mmSolver.ui.uimodels.html" />
+    <link rel="prev" title="mmSolver.ui.nodes" href="mmSolver.ui.nodes.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.uimodels.html" title="mmSolver.ui.uimodels"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.nodes.html" title="mmSolver.ui.nodes"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.ui.html" accesskey="U">mmSolver.ui</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.ui.shelfutils</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-mmSolver.ui.shelfutils">
+<span id="mmsolver-ui-shelfutils"></span><h1>mmSolver.ui.shelfutils<a class="headerlink" href="#module-mmSolver.ui.shelfutils" title="Permalink to this headline">¶</a></h1>
+<p>Functions to create Maya shelves and buttons.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.shelfutils.get_shelves_parent">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.shelfutils.</span></span><span class="sig-name descname"><span class="pre">get_shelves_parent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.get_shelves_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Maya UI path to the parent of all shelves in Maya.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Maya UI path of shelf parent layout.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.shelfutils.create_shelf">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.shelfutils.</span></span><span class="sig-name descname"><span class="pre">create_shelf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.create_shelf" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Re-)Create a shelf.</p>
+<p>If a shelf with ‘name’ is already exists, the exising shelf will
+be deleted, and re-created under the ‘parent’ argument given.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> (<em>str</em>) – What layout will this shelf be placed under?</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name (label) of the shelf displayed to the user.
+The value should only contain characters A-Z
+(or a-z) and underscores ‘_’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Shelf UI path, or None if cannot be found.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.shelfutils.create_shelf_button">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.shelfutils.</span></span><span class="sig-name descname"><span class="pre">create_shelf_button</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tooltip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmdLanguage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.create_shelf_button" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a shelf button.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> (<em>str</em>) – What should this control be placed under?</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name (label) of the shelf button. Should be under
+seven characters long.</p></li>
+<li><p><strong>tooltip</strong> (<em>str</em>) – The text shown to the user when hovering the mouse
+over the shelf button.</p></li>
+<li><p><strong>icon</strong> (<em>str</em>) – Choose the image to display on the shelf button.
+Should be 32x32 pixels.</p></li>
+<li><p><strong>cmd</strong> (<em>str</em>) – The command text to run when the shelf button is
+pressed.</p></li>
+<li><p><strong>cmdLanguage</strong> (<em>str</em>) – What language is ‘cmd’ argument in? ‘python’
+or ‘mel’?</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Maya button UI control path.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.shelfutils.create_shelf_separator">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.shelfutils.</span></span><span class="sig-name descname"><span class="pre">create_shelf_separator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.create_shelf_separator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a shelf button separator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>parent</strong> (<em>str</em>) – What should this control be placed under?</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Maya separator UI control path.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.shelfutils.create_popup_menu">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.shelfutils.</span></span><span class="sig-name descname"><span class="pre">create_popup_menu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.create_popup_menu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.shelfutils.create_menu_item">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.shelfutils.</span></span><span class="sig-name descname"><span class="pre">create_menu_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.create_menu_item" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.ui.nodes.html"
+                        title="previous chapter">mmSolver.ui.nodes</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.ui.uimodels.html"
+                        title="next chapter">mmSolver.ui.uimodels</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.ui.shelfutils.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.uimodels.html" title="mmSolver.ui.uimodels"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.nodes.html" title="mmSolver.ui.nodes"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.ui.html" >mmSolver.ui</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.ui.shelfutils</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

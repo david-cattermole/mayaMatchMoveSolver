@@ -1,0 +1,311 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mmSolver.ui.nodes &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.ui.shelfutils" href="mmSolver.ui.shelfutils.html" />
+    <link rel="prev" title="mmSolver.ui.commonmenus" href="mmSolver.ui.commonmenus.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.shelfutils.html" title="mmSolver.ui.shelfutils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.commonmenus.html" title="mmSolver.ui.commonmenus"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.ui.html" accesskey="U">mmSolver.ui</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.ui.nodes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-mmSolver.ui.nodes">
+<span id="mmsolver-ui-nodes"></span><h1>mmSolver.ui.nodes<a class="headerlink" href="#module-mmSolver.ui.nodes" title="Permalink to this headline">¶</a></h1>
+<p>Defines a basic node class able to be used for tree data models.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.get_nodes_recursively">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.nodes.</span></span><span class="sig-name descname"><span class="pre">get_nodes_recursively</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.get_nodes_recursively" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.ui.nodes.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toolTip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">statusTip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">editable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selectable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neverHasChildren</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.name">
+<span class="sig-name descname"><span class="pre">name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.setName">
+<span class="sig-name descname"><span class="pre">setName</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.setName" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.toolTip">
+<span class="sig-name descname"><span class="pre">toolTip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.toolTip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.setToolTip">
+<span class="sig-name descname"><span class="pre">setToolTip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">toolTip</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.setToolTip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.statusTip">
+<span class="sig-name descname"><span class="pre">statusTip</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.statusTip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.setStatusTip">
+<span class="sig-name descname"><span class="pre">setStatusTip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">statusTip</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.setStatusTip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.color">
+<span class="sig-name descname"><span class="pre">color</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.color" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.setColor">
+<span class="sig-name descname"><span class="pre">setColor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">color</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.setColor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.data">
+<span class="sig-name descname"><span class="pre">data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.setData">
+<span class="sig-name descname"><span class="pre">setData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.setData" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.enabled">
+<span class="sig-name descname"><span class="pre">enabled</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.enabled" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can the data be enabled?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.setEnabled">
+<span class="sig-name descname"><span class="pre">setEnabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.setEnabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.checkable">
+<span class="sig-name descname"><span class="pre">checkable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.checkable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can the data be checked?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.setCheckable">
+<span class="sig-name descname"><span class="pre">setCheckable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.setCheckable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.editable">
+<span class="sig-name descname"><span class="pre">editable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.editable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can the data be edited?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.setEditable">
+<span class="sig-name descname"><span class="pre">setEditable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.setEditable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.selectable">
+<span class="sig-name descname"><span class="pre">selectable</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.selectable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Can the data be selected?</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.setSelectable">
+<span class="sig-name descname"><span class="pre">setSelectable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.setSelectable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.neverHasChildren">
+<span class="sig-name descname"><span class="pre">neverHasChildren</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.neverHasChildren" title="Permalink to this definition">¶</a></dt>
+<dd><p>Optimisation, only set True if this is surely the last child node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.setNeverHasChildren">
+<span class="sig-name descname"><span class="pre">setNeverHasChildren</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.setNeverHasChildren" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.icon">
+<span class="sig-name descname"><span class="pre">icon</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.icon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.addChild">
+<span class="sig-name descname"><span class="pre">addChild</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">child</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.addChild" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.insertChild">
+<span class="sig-name descname"><span class="pre">insertChild</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">child</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.insertChild" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.removeChild">
+<span class="sig-name descname"><span class="pre">removeChild</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.removeChild" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.child">
+<span class="sig-name descname"><span class="pre">child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.child" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.childCount">
+<span class="sig-name descname"><span class="pre">childCount</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.childCount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.children">
+<span class="sig-name descname"><span class="pre">children</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.children" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.parent">
+<span class="sig-name descname"><span class="pre">parent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.parent" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.row">
+<span class="sig-name descname"><span class="pre">row</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.row" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.parentTags">
+<span class="sig-name descname"><span class="pre">parentTags</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.parentTags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get list of names for all nodes above the current node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of strs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.childrenTags">
+<span class="sig-name descname"><span class="pre">childrenTags</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.childrenTags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get list of names for nodes below the current node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of strs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.allTags">
+<span class="sig-name descname"><span class="pre">allTags</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.allTags" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get list of names for nodes above and below the current node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of strs</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.nodes.Node.allTagsStr">
+<span class="sig-name descname"><span class="pre">allTagsStr</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.allTagsStr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.ui.commonmenus.html"
+                        title="previous chapter">mmSolver.ui.commonmenus</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.ui.shelfutils.html"
+                        title="next chapter">mmSolver.ui.shelfutils</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.ui.nodes.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.shelfutils.html" title="mmSolver.ui.shelfutils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.commonmenus.html" title="mmSolver.ui.commonmenus"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.ui.html" >mmSolver.ui</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.ui.nodes</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,234 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>General Tools &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="General Tools" href="tools_generaltools.html" />
+    <link rel="prev" title="General Tools" href="tools_displaytools.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_generaltools.html" title="General Tools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tools_displaytools.html" title="General Tools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" accesskey="U">Tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">General Tools</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="general-tools">
+<h1>General Tools<a class="headerlink" href="#general-tools" title="Permalink to this headline">¶</a></h1>
+<p>The tools on this page are not specific to Markers, Cameras or
+Bundles, but are general tools useful in Maya for many different
+tasks.</p>
+<section id="screen-z-manipulator">
+<span id="screen-z-manipulator-tool-ref"></span><h2>Screen-Z Manipulator<a class="headerlink" href="#screen-z-manipulator" title="Permalink to this headline">¶</a></h2>
+<p>Aims the Maya <em>Move manipulator</em> tool at the active viewport camera.</p>
+<p>After aiming the move tool at the camera, the screen-space Z axis is
+highlighted, ready to be middle-click dragged. When the user
+de-selects the object, the previous manipulator mode is reverted.</p>
+<p>This tool can be used for interactive node depth editing on a single
+frame. For example this tool can be used for a character’s hand, or or
+body control, it does not need to be used with mmSolver nodes.  For
+real-time interactive Screen-Space modifications of transform nodes,
+please use the <span class="xref std std-ref">screen-space-transform-ref</span> tool.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select a transform node.</p></li>
+<li><p>Run <em>Screen-Z Manipulator</em> tool.</p>
+<ul class="simple">
+<li><p>The current tool is changed to <em>Move</em>.</p></li>
+</ul>
+</li>
+<li><p>Middle-click in the active viewport to move the object in
+screen-space depth.</p></li>
+<li><p>De-select the node.</p>
+<ul class="simple">
+<li><p>The <em>Move</em> manipulator will be reverted to the previous settings
+from step 1.</p></li>
+</ul>
+</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenzmanipulator.tool</span>
+<span class="n">mmSolver</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">screenzmanipulator</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="screen-space-transform">
+<span id="screen-space-transform-tool-ref"></span><h2>Screen-Space Transform<a class="headerlink" href="#screen-space-transform" title="Permalink to this headline">¶</a></h2>
+<p>Convert a Maya transform node into a screen-space transform. This tool
+will not modify the originally selected node, but will only create a
+new node with new values.</p>
+<p>When converting to Screen-Space the Screen Depth is calculated and the
+transform node will still match the original transform in World-Space.</p>
+<p>This tool may be used to convert an animated object into a
+screen-space, then clean up or solve specific attributes, such as
+screen X/Y or screen depth.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select transform nodes.</p></li>
+<li><p>Activate viewport.</p></li>
+<li><p>Run <em>Screen-Space Transform Bake</em> tool.</p>
+<ul class="simple">
+<li><p>A new locator is created under the active Camera.</p></li>
+</ul>
+</li>
+<li><p>Delete the keyframes/connects on the selected transform node, using
+<code class="docutils literal notranslate"><span class="pre">Channel</span> <span class="pre">Box</span> <span class="pre">&gt;</span> <span class="pre">(Right</span> <span class="pre">Click)</span> <span class="pre">&gt;</span> <span class="pre">Break</span> <span class="pre">Connections</span></code>.</p></li>
+<li><p>Use a Maya <em>Point Constraint</em> to drive the transform(s) from step
+1, with the screen-space transform as the driver.</p>
+<ul class="simple">
+<li><p>Select screen-space transform node first, then select (step 1)
+transform nodes second and create a <em>Point Constraint</em>.</p></li>
+</ul>
+</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenspacetransform.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="screen-space-rig-bake">
+<span id="screen-space-rig-bake-tool-ref"></span><h2>Screen-Space Rig Bake<a class="headerlink" href="#screen-space-rig-bake" title="Permalink to this headline">¶</a></h2>
+<p>The <cite>Screen-Space Rig Bake</cite> tool allows users to bake and manipulate
+transforms with a <cite>screen-space</cite> rig, separating the X, Y and Z-Depth
+components.</p>
+<p>The tool can be use to:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Smooth a bumpy Z-depth curve.</p></li>
+<li><p>Freeze a transform to a static Z-depth.</p></li>
+</ul>
+</div></blockquote>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select a transform node.</p></li>
+<li><p>Open the <cite>Screen-Space Rig Bake</cite> UI.</p></li>
+<li><p>Type a name in the <cite>Name</cite> field (at the bottom of the window).</p></li>
+<li><p>Right-click the <cite>Rigs</cite> pane and select <cite>Create Screen-Space Rig</cite>.</p>
+<ul class="simple">
+<li><p>Make sure to activate the viewport with a camera to bake the
+object into.</p></li>
+<li><p>A set of nodes named <cite>NAME_screenSpaceRig</cite> will be created.</p></li>
+</ul>
+</li>
+<li><p>Edit the created <cite>NAME_screenSpaceRig</cite> node.</p></li>
+<li><p>Once finished editing, open the UI again, select the screen-space
+rig control, right-click the <cite>Rigs</cite> pane and select <cite>Bake Rig</cite>.</p>
+<ul class="simple">
+<li><p>This will bake the original transform node, and delete the nodes.</p></li>
+<li><p>Set the option <cite>Full bake</cite> or <cite>Smart bake</cite> to choose how many
+keyframes will be baked.</p></li>
+</ul>
+</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenspacerigbake.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">General Tools</a><ul>
+<li><a class="reference internal" href="#screen-z-manipulator">Screen-Z Manipulator</a></li>
+<li><a class="reference internal" href="#screen-space-transform">Screen-Space Transform</a></li>
+<li><a class="reference internal" href="#screen-space-rig-bake">Screen-Space Rig Bake</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tools_displaytools.html"
+                        title="previous chapter">General Tools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tools_generaltools.html"
+                        title="next chapter">General Tools</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tools_zdepthtools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_generaltools.html" title="General Tools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tools_displaytools.html" title="General Tools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" >Tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">General Tools</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

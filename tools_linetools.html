@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Line Tools &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="General Tools" href="tools_displaytools.html" />
+    <link rel="prev" title="Marker Tools" href="tools_markertools.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_displaytools.html" title="General Tools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tools_markertools.html" title="Marker Tools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" accesskey="U">Tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Line Tools</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="line-tools">
+<h1>Line Tools<a class="headerlink" href="#line-tools" title="Permalink to this headline">¶</a></h1>
+<p>Line tools offer the ability to create and edit 2D lines on an
+image. These 2D lines can be used visualise straight lines and solve
+lens distortion, and are used as part of the Camera Calibration
+tool-set.</p>
+<section id="toggle-line-lock-state">
+<span id="toggle-line-lock-state-tool-ref"></span><h2>Toggle Line Lock State<a class="headerlink" href="#toggle-line-lock-state" title="Permalink to this headline">¶</a></h2>
+<p>Toggle line lock state will toggle lock state of the selected line’s
+attributes, if any of the lines attributes are locked, running this
+tool will unlock all attributes on the selected lines, and running the
+tool again will lock all attributes.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select line nodes, or the markers/bundles below a line node.</p></li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>The selected line node attributes will be toggled between locked and unlocked.</p></li>
+</ul>
+</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.togglelinelock.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="camera-calibration">
+<span id="camera-calibration-tool-ref"></span><h2>Camera Calibration<a class="headerlink" href="#camera-calibration" title="Permalink to this headline">¶</a></h2>
+<p>The Camera calibration toolset can be used to estimate the position
+and rotation of a camera using parallel lines in an image - as is
+common in city-scape or architectural photographs.</p>
+<p>No 3D (survey or LIDAR) information of the 3D scene is required, this
+tool works from a single image only.</p>
+<p>Other terms for this “calibration” process is camera “line up”.</p>
+<section id="calibration-use-cases">
+<span id="camera-calibration-use-cases-tool-ref"></span><h3>Calibration Use Cases<a class="headerlink" href="#calibration-use-cases" title="Permalink to this headline">¶</a></h3>
+<p>The tool is very helpful for as an aid for modeling buildings or any
+other environment that contains a flat rectangular surface.</p>
+<section id="calibration-use-cases-one-point-perspective">
+<span id="camera-calibration-use-cases-one-point-tool-ref"></span><h4>Calibration Use Cases - One Point Perspective<a class="headerlink" href="#calibration-use-cases-one-point-perspective" title="Permalink to this headline">¶</a></h4>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><figure class="align-center">
+<a class="reference internal image-reference" href="https://upload.wikimedia.org/wikipedia/commons/7/75/SketchVP.jpg"><img alt="Diagram of one point perspective" src="https://upload.wikimedia.org/wikipedia/commons/7/75/SketchVP.jpg" /></a>
+</figure>
+<p>Diagram of one point perspective.</p>
+</td>
+<td><figure class="align-center">
+<a class="reference internal image-reference" href="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Railroad_in_Northumberland_County%2C_Pennsylvania.JPG/512px-Railroad_in_Northumberland_County%2C_Pennsylvania.JPG"><img alt="Photograph of one point perspective." src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Railroad_in_Northumberland_County%2C_Pennsylvania.JPG/512px-Railroad_in_Northumberland_County%2C_Pennsylvania.JPG" /></a>
+</figure>
+<p>Photograph of one point perspective.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>With 2 parallel lines the image contains one point perspective: also
+known as one vanishing point.</p>
+<p>In this case the tool can estimate the translation and rotation (tilt
+and pan) of the camera, but a known lens focal length and camera film
+back must be given - field of view cannot be estimated.</p>
+<p>Additional to the one vanishing point, the tool can use a horizon line
+to estimate the camera roll.</p>
+</section>
+<section id="calibration-use-cases-two-point-perspective">
+<span id="camera-calibration-use-cases-two-point-tool-ref"></span><h4>Calibration Use Cases - Two Point Perspective<a class="headerlink" href="#calibration-use-cases-two-point-perspective" title="Permalink to this headline">¶</a></h4>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><figure class="align-center">
+<a class="reference internal image-reference" href="https://upload.wikimedia.org/wikipedia/commons/4/4e/Perspective1.jpg"><img alt="Diagram of two point perspective." src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Perspective1.jpg" /></a>
+</figure>
+<p>Diagram of two point perspective.</p>
+</td>
+<td><figure class="align-center">
+<a class="reference internal image-reference" href="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/2016_Parker_Building_-_Davenport%2C_Iowa.jpg/1024px-2016_Parker_Building_-_Davenport%2C_Iowa.jpg"><img alt="Photograph of two point perspective." src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/2016_Parker_Building_-_Davenport%2C_Iowa.jpg/1024px-2016_Parker_Building_-_Davenport%2C_Iowa.jpg" /></a>
+</figure>
+<p>Photograph of two point perspective.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>With 2 sets of perpendicular parallel lines (4 lines all together),
+will create two point perspective; two vanishing points.</p>
+<p>With these
+extra lines the tool can estimate the camera translation, rotation
+(tilt, pan, and roll), and lens focal length. The horizon line is not
+used when two vanishing points are used.</p>
+<p>A common type of image with perpendicular lines is a bathroom tiles,
+or the ground or wall of a room. The tiles, walls or ground do not
+need to square.</p>
+</section>
+</section>
+<section id="tool-usage">
+<span id="camera-calibration-tool-usage-tool-ref"></span><h3>Tool Usage<a class="headerlink" href="#tool-usage" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic simple">
+<li><p>Create default setup.</p></li>
+<li><p>Add image plane file path.</p></li>
+<li><p>Set markers for lines.</p></li>
+<li><p>Press “update”.</p></li>
+</ol>
+</section>
+<section id="calibration-tool-limitations">
+<span id="camera-calibration-limitations-tool-ref"></span><h3>Calibration Tool Limitations<a class="headerlink" href="#calibration-tool-limitations" title="Permalink to this headline">¶</a></h3>
+<p>This tool has a number of limitations and known issues, and a future
+version of mmSolver may fix or reduce these issues.</p>
+<ul>
+<li><p>The camera does not yet update automatically while dragging the 2D points.</p></li>
+<li><p>Only 2 vanishing points can be used.</p>
+<p>Some images may require 3 vanishing points, if the center of the
+lens (“principal point” or “camera film offsets”) is not in the
+center of the image.</p>
+<p>This is fine for most use-cases with (typical) un-cropped images,
+however issues may arise when a Tilt-Shift lens was used for the
+image, or the image has been cropped non-uniformly.</p>
+<p>If you have this problem it is recommended to use <a class="reference external" href="https://fspy.io/">fSpy</a> to
+calibrate the camera, and <a class="reference external" href="https://github.com/JustinPedersen/maya_fspy">maya_fspy</a> to import the camera into
+Maya.</p>
+</li>
+</ul>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Line Tools</a><ul>
+<li><a class="reference internal" href="#toggle-line-lock-state">Toggle Line Lock State</a></li>
+<li><a class="reference internal" href="#camera-calibration">Camera Calibration</a><ul>
+<li><a class="reference internal" href="#calibration-use-cases">Calibration Use Cases</a><ul>
+<li><a class="reference internal" href="#calibration-use-cases-one-point-perspective">Calibration Use Cases - One Point Perspective</a></li>
+<li><a class="reference internal" href="#calibration-use-cases-two-point-perspective">Calibration Use Cases - Two Point Perspective</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tool-usage">Tool Usage</a></li>
+<li><a class="reference internal" href="#calibration-tool-limitations">Calibration Tool Limitations</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tools_markertools.html"
+                        title="previous chapter">Marker Tools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tools_displaytools.html"
+                        title="next chapter">General Tools</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tools_linetools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_displaytools.html" title="General Tools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tools_markertools.html" title="Marker Tools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" >Tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Line Tools</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

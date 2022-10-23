@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mmSolver.tools.triangulatebundle &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.tools.undoredoscene" href="mmSolver.tools.undoredoscene.html" />
+    <link rel="prev" title="mmSolver.tools.togglemarkerlock" href="mmSolver.tools.togglemarkerlock.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.undoredoscene.html" title="mmSolver.tools.undoredoscene"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.togglemarkerlock.html" title="mmSolver.tools.togglemarkerlock"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" accesskey="U">mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.triangulatebundle</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-mmSolver.tools.triangulatebundle">
+<span id="mmsolver-tools-triangulatebundle"></span><h1>mmSolver.tools.triangulatebundle<a class="headerlink" href="#module-mmSolver.tools.triangulatebundle" title="Permalink to this headline">¶</a></h1>
+<p>Calculate a 3D position of a bundle, based on the camera and 2D marker.</p>
+<section id="module-mmSolver.tools.triangulatebundle.tool">
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.triangulatebundle.tool" title="Permalink to this headline">¶</a></h2>
+<p>Triangulate a 3D Bundle from a 2D Marker.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.triangulatebundle.tool.main">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.triangulatebundle.tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.triangulatebundle.tool.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triangulate Bundle using camera and Marker.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select markers or bundles (or both).</p></li>
+<li><p>Run tool.</p></li>
+<li><p>Bundles are triangulated in TX, TY and TZ.</p></li>
+</ol>
+</dd></dl>
+
+</section>
+<section id="module-mmSolver.tools.triangulatebundle.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.triangulatebundle.lib" title="Permalink to this headline">¶</a></h2>
+<p>Position Bundle under the Marker, using multiple frames.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.triangulatebundle.lib.triangulate_bundle">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.triangulatebundle.lib.</span></span><span class="sig-name descname"><span class="pre">triangulate_bundle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bnd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relock</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_distance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction_tolerance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.triangulatebundle.lib.triangulate_bundle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Triangulate a 3D bundle position.</p>
+<p>Deprecated: Please use ‘mmSolver.api.triangulate_bundle()’
+instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bnd</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Bundle" title="mmSolver.api.Bundle"><em>Bundle</em></a>) – Bundle to be triangulated.</p></li>
+<li><p><strong>relock</strong> (<em>bool</em><em> or </em><em>None</em>) – If True any bundle translate attributes will be
+unlocked, changed then relocked.</p></li>
+<li><p><strong>max_distance</strong> (<em>float</em><em> or </em><em>None</em>) – Defines the maximum distance the bundle can
+be positioned away from camera until the value is clamped.</p></li>
+<li><p><strong>direction_tolerance</strong> (<em>float</em><em> or </em><em>None</em>) – Determines the tolerance used to
+consider if a triangulated point is valid or not.  It’s not
+clear what the units are for this tolerance value. This value
+is used by OpenMaya.MVector.isEquivalent() and the Maya
+documentation doesn’t really explain the units. The default
+value (if not given) is 1.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the bundle successfully triangulated, False if
+the bundle could not accurately be triangulated. For example
+if the bundle was computed to behind the camera this would be
+considered a failure.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.triangulatebundle</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.tools.triangulatebundle.tool">Tools</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.triangulatebundle.lib">Library</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.tools.togglemarkerlock.html"
+                        title="previous chapter">mmSolver.tools.togglemarkerlock</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.tools.undoredoscene.html"
+                        title="next chapter">mmSolver.tools.undoredoscene</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.tools.triangulatebundle.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.undoredoscene.html" title="mmSolver.tools.undoredoscene"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.togglemarkerlock.html" title="mmSolver.tools.togglemarkerlock"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" >mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.triangulatebundle</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

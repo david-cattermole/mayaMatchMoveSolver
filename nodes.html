@@ -1,0 +1,153 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Nodes &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Transform Nodes" href="nodes_transforms.html" />
+    <link rel="prev" title="Solver Design" href="solver_design.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nodes_transforms.html" title="Transform Nodes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="solver_design.html" title="Solver Design"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Nodes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="nodes">
+<h1>Nodes<a class="headerlink" href="#nodes" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> project defines a number of custom nodes used to help
+the solve and workflow. Without the <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> plug-in loaded these
+nodes will be invalid and unknown. The custom nodes are documented
+below.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="nodes_transforms.html">Transform Nodes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodes_transforms.html#mmmarkergrouptransform-node"><code class="docutils literal notranslate"><span class="pre">mmMarkerGroupTransform</span></code> Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_transforms.html#mmmarkertransform-node"><code class="docutils literal notranslate"><span class="pre">mmMarkerTransform</span></code> Node</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="nodes_shapes.html">Shape Nodes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodes_shapes.html#mmmarkershape-node"><code class="docutils literal notranslate"><span class="pre">mmMarkerShape</span></code> Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_shapes.html#mmbundleshape-node"><code class="docutils literal notranslate"><span class="pre">mmBundleShape</span></code> Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_shapes.html#mmskydomeshape-node"><code class="docutils literal notranslate"><span class="pre">mmSkyDomeShape</span></code> Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_shapes.html#mmlineshape-node"><code class="docutils literal notranslate"><span class="pre">mmLineShape</span></code> Node</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="nodes_imageplane.html">Image Plane Nodes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodes_imageplane.html#mmimageplanetransform-node"><code class="docutils literal notranslate"><span class="pre">mmImagePlaneTransform</span></code> Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_imageplane.html#mmimageplaneshape-node"><code class="docutils literal notranslate"><span class="pre">mmImagePlaneShape</span></code> Node</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="nodes_lens.html">Lens Nodes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodes_lens.html#mmlensdeformer-node"><code class="docutils literal notranslate"><span class="pre">mmLensDeformer</span></code> Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_lens.html#mmlensevaluate-node"><code class="docutils literal notranslate"><span class="pre">mmLensEvaluate</span></code> Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_lens.html#mmlensmodel3de-node"><code class="docutils literal notranslate"><span class="pre">mmLensModel3de</span></code> Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_lens.html#mmlensmodeltoggle-node"><code class="docutils literal notranslate"><span class="pre">mmLensModelToggle</span></code> Node</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="nodes_display.html">Display Nodes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodes_display.html#mmrenderglobals-nodes"><code class="docutils literal notranslate"><span class="pre">mmRenderGlobals</span></code> Nodes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="nodes_other.html">Other Nodes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodes_other.html#mmmarkerscale-node"><code class="docutils literal notranslate"><span class="pre">mmMarkerScale</span></code> Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_other.html#mmreprojection-node"><code class="docutils literal notranslate"><span class="pre">mmReprojection</span></code> Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_other.html#mmcameracalibrate-nodes"><code class="docutils literal notranslate"><span class="pre">mmCameraCalibrate</span></code> Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_other.html#mmlineintersect-nodes"><code class="docutils literal notranslate"><span class="pre">mmLineIntersect</span></code> Nodes</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="solver_design.html"
+                        title="previous chapter">Solver Design</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="nodes_transforms.html"
+                        title="next chapter">Transform Nodes</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/nodes.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nodes_transforms.html" title="Transform Nodes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="solver_design.html" title="Solver Design"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Nodes</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

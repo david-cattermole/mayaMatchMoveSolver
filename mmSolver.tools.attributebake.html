@@ -1,0 +1,154 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mmSolver.tools.attributebake &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.attributebake</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-mmSolver.tools.attributebake">
+<span id="mmsolver-tools-attributebake"></span><h1>mmSolver.tools.attributebake<a class="headerlink" href="#module-mmSolver.tools.attributebake" title="Permalink to this headline">¶</a></h1>
+<section id="module-mmSolver.tools.attributebake.tool">
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.attributebake.tool" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.attributebake.tool.main">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.attributebake.tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.attributebake.tool.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.attributebake.tool.open_window">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.attributebake.tool.</span></span><span class="sig-name descname"><span class="pre">open_window</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.attributebake.tool.open_window" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-mmSolver.tools.attributebake.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.attributebake.lib" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.attributebake.lib.get_bake_frame_range">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.attributebake.lib.</span></span><span class="sig-name descname"><span class="pre">get_bake_frame_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_range_mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_start_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_end_frame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.attributebake.lib.get_bake_frame_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.attributebake.lib.bake_attributes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.attributebake.lib.</span></span><span class="sig-name descname"><span class="pre">bake_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smart_bake</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.attributebake.lib.bake_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bake the attributes on nodes.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If ‘attrs’ is empty, all keyable attributes are baked on the nodes.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> – Nodes to bake.</p></li>
+<li><p><strong>attrs</strong> – Attributes to bake. If empty, bake all keyable attributes.</p></li>
+<li><p><strong>start_frame</strong> – Start frame to bake.</p></li>
+<li><p><strong>end_frame</strong> – End frame to bake.</p></li>
+<li><p><strong>smart_bake</strong> – Perform a “smart” bake - do not bake per-frame.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="ui-layout">
+<h2>UI - Layout<a class="headerlink" href="#ui-layout" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="ui-window">
+<h2>UI - Window<a class="headerlink" href="#ui-window" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-mmSolver.tools.attributebake.constant">
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.attributebake.constant" title="Permalink to this headline">¶</a></h2>
+<p>Attribute (fast) Bake constants.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.attributebake</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.tools.attributebake.tool">Tools</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.attributebake.lib">Library</a></li>
+<li><a class="reference internal" href="#ui-layout">UI - Layout</a></li>
+<li><a class="reference internal" href="#ui-window">UI - Window</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.attributebake.constant">Constants</a></li>
+</ul>
+</li>
+</ul>
+
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.tools.attributebake.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.attributebake</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

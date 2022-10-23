@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mmSolver.tools.smoothkeyframes &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.tools.solver" href="mmSolver.tools.solver.html" />
+    <link rel="prev" title="mmSolver.tools.showdeviationcurves" href="mmSolver.tools.showdeviationcurves.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.solver.html" title="mmSolver.tools.solver"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.showdeviationcurves.html" title="mmSolver.tools.showdeviationcurves"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" accesskey="U">mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.smoothkeyframes</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-mmSolver.tools.smoothkeyframes">
+<span id="mmsolver-tools-smoothkeyframes"></span><h1>mmSolver.tools.smoothkeyframes<a class="headerlink" href="#module-mmSolver.tools.smoothkeyframes" title="Permalink to this headline">¶</a></h1>
+<p>Smooth keyframes tool - Smooth the keyframe values of Animation Curves.</p>
+<section id="module-mmSolver.tools.smoothkeyframes.tool">
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.smoothkeyframes.tool" title="Permalink to this headline">¶</a></h2>
+<p>Smooths the selected keyframes.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.smoothkeyframes.tool.smooth_selected_keyframes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.smoothkeyframes.tool.</span></span><span class="sig-name descname"><span class="pre">smooth_selected_keyframes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.smoothkeyframes.tool.smooth_selected_keyframes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Smooth the selected keyframes in the Graph Editor.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select keyframes in Graph Editor.</p></li>
+<li><p>Run tool</p></li>
+<li><p>Keyframe values will be smoothed.</p></li>
+</ol>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.smoothkeyframes.tool.main">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.smoothkeyframes.tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.smoothkeyframes.tool.main" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-mmSolver.tools.smoothkeyframes.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.smoothkeyframes.lib" title="Permalink to this headline">¶</a></h2>
+<p>Functions to support smoothing animation curve keyframes.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.smoothkeyframes.lib.calculate_chunks">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.smoothkeyframes.lib.</span></span><span class="sig-name descname"><span class="pre">calculate_chunks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_keyframes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.smoothkeyframes.lib.calculate_chunks" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a list of chunks; each chunk is a list of time values.</p>
+<p><cite>all_times</cite> is assumed to already be sorted.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.smoothkeyframes.lib.create_first_last_keyframe_animCurve">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.smoothkeyframes.lib.</span></span><span class="sig-name descname"><span class="pre">create_first_last_keyframe_animCurve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_keyframes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.smoothkeyframes.lib.create_first_last_keyframe_animCurve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.smoothkeyframes.lib.blend_curves_with_difference">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.smoothkeyframes.lib.</span></span><span class="sig-name descname"><span class="pre">blend_curves_with_difference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selected_keyframes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">all_times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_value_array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.smoothkeyframes.lib.blend_curves_with_difference" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new array of values based on the difference between
+value_array at the start/end of of each chunk of selected
+keyframes.</p>
+<p>The algorithm works like this:</p>
+<ol class="arabic simple">
+<li><p>Calculate chunks.</p></li>
+<li><p>Create a linear curve between start/end keyframe values of the
+smoothed curve.</p></li>
+<li><p>Subtract the linear curve from the smoothed curve.</p></li>
+<li><p>Create another linear curve between start/end keyframe values
+of the value curve.</p></li>
+<li><p>Subtract the linear curve from the value curve.</p></li>
+<li><p>Add the difference between the linear value curve and the
+linear smooth curve, to the smoothed curve.</p></li>
+<li><p>Blend between the smooth and original value.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[float, .]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.smoothkeyframes.lib.smooth_animcurve">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.smoothkeyframes.lib.</span></span><span class="sig-name descname"><span class="pre">smooth_animcurve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">animcurve</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_keyframes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blend_smooth_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blend_width</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.smoothkeyframes.lib.smooth_animcurve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Smooth the given keyframes for an animCurve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>animcurve</strong> (<em>str</em>) – Animation curve node name.</p></li>
+<li><p><strong>selected_keyframes</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>] or </em><em>[</em><em>]</em>) – The frame numbers that are ‘selected’ to be smoothed.</p></li>
+<li><p><strong>smooth_type</strong> – What algorithm to use for smoothing.</p></li>
+<li><p><strong>width</strong> (<em>float</em>) – The width of the smoothing kernel; higher values produce more
+smoothing, and is slower to compute.</p></li>
+<li><p><strong>blend_smooth_type</strong> – What algorithm to use for smoothing the blend?</p></li>
+<li><p><strong>blend_width</strong> (<em>float</em>) – The width of the smoothing kernel; higher values produce more
+smoothing, and is slower to compute.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="ui-layout">
+<h2>UI - Layout<a class="headerlink" href="#ui-layout" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="ui-window">
+<h2>UI - Window<a class="headerlink" href="#ui-window" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-mmSolver.tools.smoothkeyframes.constant">
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.smoothkeyframes.constant" title="Permalink to this headline">¶</a></h2>
+<p>Smooth keyframes constants.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.smoothkeyframes</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.tools.smoothkeyframes.tool">Tools</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.smoothkeyframes.lib">Library</a></li>
+<li><a class="reference internal" href="#ui-layout">UI - Layout</a></li>
+<li><a class="reference internal" href="#ui-window">UI - Window</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.smoothkeyframes.constant">Constants</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.tools.showdeviationcurves.html"
+                        title="previous chapter">mmSolver.tools.showdeviationcurves</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.tools.solver.html"
+                        title="next chapter">mmSolver.tools.solver</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.tools.smoothkeyframes.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.solver.html" title="mmSolver.tools.solver"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.showdeviationcurves.html" title="mmSolver.tools.showdeviationcurves"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" >mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.smoothkeyframes</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,359 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Solver UI &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Basic Solver Tab" href="tools_solver_ui_tab_basic.html" />
+    <link rel="prev" title="Tools" href="tools.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_solver_ui_tab_basic.html" title="Basic Solver Tab"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tools.html" title="Tools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" accesskey="U">Tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Solver UI</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="solver-ui">
+<span id="solver-ui-ref"></span><h1>Solver UI<a class="headerlink" href="#solver-ui" title="Permalink to this headline">¶</a></h1>
+<p>The Solver UI is the primary interface to using the internal solver
+command (<cite>mmSolver</cite>).</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/tools_solver_ui_overview.png"><img alt="Solver User Interface" src="_images/tools_solver_ui_overview.png" style="width: 525.6px; height: 482.40000000000003px;" /></a>
+<figcaption>
+<p><span class="caption-text">Solver User Interface</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<p>The shelf tools will open or run the solver.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/tools_shelf_icons_solver.png"><img alt="Node Solver Shelf Icons" src="_images/tools_shelf_icons_solver.png" style="width: 30%;" /></a>
+</figure>
+<section id="input-objects">
+<h2>Input Objects<a class="headerlink" href="#input-objects" title="Permalink to this headline">¶</a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/tools_solver_ui_widget_objects.png"><img alt="Solver Input Objects" src="_images/tools_solver_ui_widget_objects.png" style="width: 235.2px; height: 202.79999999999998px;" /></a>
+</figure>
+<p>The Objects are the inputs to the current Solve. This will display
+of Markers used for detecting deviation.
+To display the Markers, and the related objects, you may turn on/off
+the <code class="docutils literal notranslate"><span class="pre">CAM</span></code>, <code class="docutils literal notranslate"><span class="pre">MKR</span></code>, <code class="docutils literal notranslate"><span class="pre">LN`</span></code> and <code class="docutils literal notranslate"><span class="pre">BND</span></code> buttons.</p>
+<p>There are various columns showing attributes of the input Objects.
+To display the column visibility, use the Edit menu.</p>
+<table class="colwidths-auto docutils align-default" id="id2">
+<caption><span class="caption-text">Input Object Fields</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Node</p></td>
+<td><p>The input Object’s Node.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Weight</p></td>
+<td><p>The weight the Marker will have in the solver. Higher values
+give an importance to this Marker, at the expense of other
+Markers.</p></td>
+</tr>
+<tr class="row-even"><td><p>Frame Deviation</p></td>
+<td><p>The deviation, in pixels, of the Marker on the current frame.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Average Deviation</p></td>
+<td><p>The average deviation, in pixels, of the Marker across all
+valid frames.</p></td>
+</tr>
+<tr class="row-even"><td><p>Maximum Deviation</p></td>
+<td><p>The maximum deviation and frame number on the Marker.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="output-attributes">
+<h2>Output Attributes<a class="headerlink" href="#output-attributes" title="Permalink to this headline">¶</a></h2>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/tools_solver_ui_widget_attributes.png"><img alt="Solver Output Attributes" src="_images/tools_solver_ui_widget_attributes.png" style="width: 211.79999999999998px; height: 202.2px;" /></a>
+</figure>
+<p>This section of the UI shows the Attributes solved.</p>
+<table class="colwidths-auto docutils align-default" id="id3">
+<caption><span class="caption-text">Output Object Fields</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Attr</p></td>
+<td><p>The <code class="docutils literal notranslate"><span class="pre">Attribute</span></code> column displays nodes and attributes added
+into the active Collection.</p></td>
+</tr>
+<tr class="row-odd"><td><p>State</p></td>
+<td><p>The State column displays if the attribute is Static or
+Animated.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="solver-tabs">
+<h2>Solver Tabs<a class="headerlink" href="#solver-tabs" title="Permalink to this headline">¶</a></h2>
+<p>The Solver tabs define the different solvers and the options for each
+solver. The different solvers tabs share options, such as frame range,
+but each Solver tab is independent.</p>
+<p>The documentation for each Solver tab is below.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tools_solver_ui_tab_basic.html">Basic Solver Tab</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_basic.html#frames">Frames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_basic.html#solver-options">Solver Options</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_solver_ui_tab_standard.html">Standard Solver Tab</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_standard.html#frames">Frames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_standard.html#root-frames">Root Frames</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_standard.html#solver-options">Solver Options</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="menus">
+<h2>Menus<a class="headerlink" href="#menus" title="Permalink to this headline">¶</a></h2>
+<section id="file-menu">
+<h3>File Menu<a class="headerlink" href="#file-menu" title="Permalink to this headline">¶</a></h3>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/tools_solver_ui_menu_file.png"><img alt="File Menu" src="_images/tools_solver_ui_menu_file.png" style="width: 202.0px; height: 126.0px;" /></a>
+</figure>
+<p>The <code class="docutils literal notranslate"><span class="pre">File</span></code> menu contains features to create and manipulate the
+overall use of the Solver UI, such as Collections.</p>
+<table class="colwidths-auto docutils align-default" id="id4">
+<caption><span class="caption-text">File Menu</span><a class="headerlink" href="#id4" title="Permalink to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>New Collection</p></td>
+<td><p>Create a new Collection node.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Rename Collection</p></td>
+<td><p>Renames the active Collection with a pop-up dialog.</p></td>
+</tr>
+<tr class="row-even"><td><p>Remove Collection</p></td>
+<td><p>Deletes the active Collection.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Close Window</p></td>
+<td><p>Closes the Solver UI window.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="view-menu">
+<h3>View Menu<a class="headerlink" href="#view-menu" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">View</span></code> menu controls the visibility of the Solver UI, and parts of
+the Maya Viewport during solves.</p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/tools_solver_ui_menu_view.png"><img alt="View Menu" src="_images/tools_solver_ui_menu_view.png" style="width: 213.0px; height: 155.0px;" /></a>
+</figure>
+<table class="colwidths-auto docutils align-default" id="id5">
+<caption><span class="caption-text">View Menu</span><a class="headerlink" href="#id5" title="Permalink to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Weight Column</p></td>
+<td><p>The Marker weight column is displayed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Frame Deviation</p></td>
+<td><p>The Marker per-frame deviation column is displayed.</p></td>
+</tr>
+<tr class="row-even"><td><p>Average Deviation</p></td>
+<td><p>The Marker average deviation column is displayed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Maximum Deviation</p></td>
+<td><p>The Marker maximum deviation column is displayed.</p></td>
+</tr>
+<tr class="row-even"><td><p>Display Attribute State</p></td>
+<td><p>The attribute state column is displayed.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Display Attribute Min/Max</p></td>
+<td><p>The minimum and maximum value attribute columns are displayed.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="log-menu">
+<h3>Log Menu<a class="headerlink" href="#log-menu" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">Log</span></code> menu allows configuration of the logged messages in the Script
+Editor.</p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/tools_solver_ui_menu_log.png"><img alt="Log Menu" src="_images/tools_solver_ui_menu_log.png" style="width: 139.0px; height: 133.0px;" /></a>
+</figure>
+<table class="colwidths-auto docutils align-default" id="id6">
+<caption><span class="caption-text">Log Menu</span><a class="headerlink" href="#id6" title="Permalink to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Errors</p></td>
+<td><p>Only errors will be displayed in the Script Editor.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Warnings</p></td>
+<td><p>Only warnings and errors will be displayed in the Script
+Editor.</p></td>
+</tr>
+<tr class="row-even"><td><p>Info</p></td>
+<td><p>Only info-level, warnings and errors will be displayed in the
+Script Editor.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Verbose</p></td>
+<td><p>Only extra information messages as well as warnings and errors
+will be displayed in the Script Editor.</p></td>
+</tr>
+<tr class="row-even"><td><p>Debug</p></td>
+<td><p>Only low-level debug information is displayed in the Script
+Editor, to help developers debug.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="python-function">
+<h2>Python Function<a class="headerlink" href="#python-function" title="Permalink to this headline">¶</a></h2>
+<p>The commands below are available for this tool, and allow hotkeys or
+custom buttons to be created.</p>
+<p>Open the Solver UI window:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Run the solve, just as if the user presses the “Solve” button in the UI:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">run_solve</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Run the solve, with the “Override Current Frame” checkbox turned <em>on</em>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">run_solve_on_current_frame</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Run the solve, with the “Override Current Frame” checkbox turned <em>off</em>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.solver.tool</span> <span class="k">as</span> <span class="nn">solver</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">run_solve_on_all_frames</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Solver UI</a><ul>
+<li><a class="reference internal" href="#input-objects">Input Objects</a></li>
+<li><a class="reference internal" href="#output-attributes">Output Attributes</a></li>
+<li><a class="reference internal" href="#solver-tabs">Solver Tabs</a></li>
+<li><a class="reference internal" href="#menus">Menus</a><ul>
+<li><a class="reference internal" href="#file-menu">File Menu</a></li>
+<li><a class="reference internal" href="#view-menu">View Menu</a></li>
+<li><a class="reference internal" href="#log-menu">Log Menu</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#python-function">Python Function</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tools.html"
+                        title="previous chapter">Tools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tools_solver_ui_tab_basic.html"
+                        title="next chapter">Basic Solver Tab</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tools_solver_ui.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_solver_ui_tab_basic.html" title="Basic Solver Tab"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tools.html" title="Tools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" >Tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Solver UI</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

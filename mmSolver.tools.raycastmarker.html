@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mmSolver.tools.raycastmarker &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.tools.removecontroller2" href="mmSolver.tools.removecontroller2.html" />
+    <link rel="prev" title="mmSolver.tools.placemarkermanip" href="mmSolver.tools.placemarkermanip.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.removecontroller2.html" title="mmSolver.tools.removecontroller2"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.placemarkermanip.html" title="mmSolver.tools.placemarkermanip"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" accesskey="U">mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.raycastmarker</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-mmSolver.tools.raycastmarker">
+<span id="mmsolver-tools-raycastmarker"></span><h1>mmSolver.tools.raycastmarker<a class="headerlink" href="#module-mmSolver.tools.raycastmarker" title="Permalink to this headline">¶</a></h1>
+<section id="module-mmSolver.tools.raycastmarker.tool">
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.raycastmarker.tool" title="Permalink to this headline">¶</a></h2>
+<p>This is a Ray cast Markers tool.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.raycastmarker.tool.main">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.raycastmarker.tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.raycastmarker.tool.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ray-casts each bundle connected to the selected markers on to the
+mesh from the associated camera.</p>
+<p>Select markers and mesh objects to ray-cast on to, if no mesh
+objects are selected the tool will ray-cast on to all visible mesh
+objects.</p>
+<p>If a bundle translate attribute is locked, it will be
+unlocked, then projected, and then the lock state will
+be reverted to the original value.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Marker node is the origin point of the ray-cast, <em>not</em> the
+camera’s pivot position. This is intentional. If the user has a single
+dense (LIDAR) model node it can be helpful to project from a distance
+away from the camera origin. With a single dense mesh it is difficult
+to split the model up to use different mesh selections.</p>
+</div>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">mmSolver.tools.raycastmarker.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.raycastmarker.tool.open_window">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.raycastmarker.tool.</span></span><span class="sig-name descname"><span class="pre">open_window</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.raycastmarker.tool.open_window" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.raycastmarker</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.tools.raycastmarker.tool">Tools</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.tools.placemarkermanip.html"
+                        title="previous chapter">mmSolver.tools.placemarkermanip</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.tools.removecontroller2.html"
+                        title="next chapter">mmSolver.tools.removecontroller2</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.tools.raycastmarker.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.removecontroller2.html" title="mmSolver.tools.removecontroller2"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.placemarkermanip.html" title="mmSolver.tools.placemarkermanip"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" >mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.raycastmarker</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

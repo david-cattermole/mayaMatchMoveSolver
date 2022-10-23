@@ -1,0 +1,387 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mmSolver.tools.loadmarker &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.tools.markerbundlerename" href="mmSolver.tools.markerbundlerename.html" />
+    <link rel="prev" title="mmSolver.tools.linkmarkerbundle" href="mmSolver.tools.linkmarkerbundle.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.markerbundlerename.html" title="mmSolver.tools.markerbundlerename"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.linkmarkerbundle.html" title="mmSolver.tools.linkmarkerbundle"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" accesskey="U">mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.loadmarker</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-mmSolver.tools.loadmarker">
+<span id="mmsolver-tools-loadmarker"></span><h1>mmSolver.tools.loadmarker<a class="headerlink" href="#module-mmSolver.tools.loadmarker" title="Permalink to this headline">¶</a></h1>
+<p>Tool to load markers into Maya from various thirdparty file formats.</p>
+<section id="module-mmSolver.tools.loadmarker.tool">
+<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.loadmarker.tool" title="Permalink to this headline">¶</a></h2>
+<p>The Load Marker tool - user facing.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.tool.open_window">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.tool.</span></span><span class="sig-name descname"><span class="pre">open_window</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.tool.open_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the Load Marker GUI.</p>
+</dd></dl>
+
+</section>
+<section id="module-mmSolver.tools.loadmarker.lib.mayareadfile">
+<span id="library-basics"></span><h2>Library - Basics<a class="headerlink" href="#module-mmSolver.tools.loadmarker.lib.mayareadfile" title="Permalink to this headline">¶</a></h2>
+<p>Module for reading marker files.</p>
+<p>This should be used by end-users, not the internal modules.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.mayareadfile.read">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.mayareadfile.</span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.mayareadfile.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a file path, find the format parser based on the file extension.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.mayareadfile.create_nodes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.mayareadfile.</span></span><span class="sig-name descname"><span class="pre">create_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_data_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_grp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_bundles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_bundle_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_field_of_view</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.mayareadfile.create_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create Markers for all given MarkerData objects</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mkr_data_list</strong> (<em>[</em><em>MarkerData</em><em>, </em><em>.</em><em>]</em>) – List of MarkerData with data for creating
+markers.</p></li>
+<li><p><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – Camera to create Markers under.</p></li>
+<li><p><strong>mkr_grp</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a>) – Marker Group, under cam, that the markers will
+be created under.</p></li>
+<li><p><strong>col</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a><em> or </em><em>None</em>) – Collection to add Markers to.</p></li>
+<li><p><strong>with_bundles</strong> (<em>bool</em>) – Create a bundle for each Marker.</p></li>
+<li><p><strong>load_bundle_position</strong> (<em>bool</em>) – Apply the 3D positions to bundle.</p></li>
+<li><p><strong>camera_field_of_view</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>]</em>) – The camera field of view of the
+original camera with this 2D data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of Markers.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker">Marker</a>, .]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.mayareadfile.update_nodes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.mayareadfile.</span></span><span class="sig-name descname"><span class="pre">update_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_data_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_bundle_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_field_of_view</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.mayareadfile.update_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the given mkr_list with data from mkr_data_list.
+The length of both lists must match.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) – Markers to update.</p></li>
+<li><p><strong>mkr_data_list</strong> (<em>[</em><em>MarkerData</em><em>, </em><em>.</em><em>]</em>) – The MarkerData list to search for a match.</p></li>
+<li><p><strong>load_bundle_position</strong> (<em>bool</em>) – Apply the 3D positions to bundle.</p></li>
+<li><p><strong>camera_field_of_view</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>]</em>) – The camera field of view of the
+original camera with this 2D data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of Marker objects that were changed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker">Marker</a>, .]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mmSolver.tools.loadmarker.lib.utils">
+<span id="library-advanced"></span><h2>Library - Advanced<a class="headerlink" href="#module-mmSolver.tools.loadmarker.lib.utils" title="Permalink to this headline">¶</a></h2>
+<p>The Load Marker tool - user facing.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.get_selected_cameras">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">get_selected_cameras</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_selected_cameras" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the (associated) Camera objects from the selection.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Camera objects.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera">mmSolver.api.Camera</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.get_cameras">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">get_cameras</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_cameras" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all cameras in the scene file.</p>
+<p>Start-up cameras are ignored (‘persp’, ‘top’, ‘side’, ‘front’, etc)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of mmSolver.api.Camera</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.get_marker_groups">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">get_marker_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_marker_groups" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all MarkerGroups for the given camera.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of mmSolver.api.MarkerGroup</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.get_selected_markers">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">get_selected_markers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_selected_markers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get selected Marker object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list of mmSolver.api.Marker</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.get_active_viewport_camera">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">get_active_viewport_camera</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_active_viewport_camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Camera that is attached to the active viewport.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The Camera object, or None.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera">Camera</a> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.get_start_directory">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">get_start_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_start_directory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a start directory for a file browser window.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_path</strong> – An input</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.create_new_camera">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">create_new_camera</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.create_new_camera" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new camera nodes and object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Camera object.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera">Camera</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.create_new_marker_group">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">create_new_marker_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.create_new_marker_group" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new marker group node and object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – The camera to create the Marker Group under.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>MarkerGroup object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="mmSolver.api.html#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup">MarkerGroup</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.get_default_image_resolution">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">get_default_image_resolution</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_default_image_resolution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get image resolution from Maya Render Settings (Render ‘Globals’).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>tuple of two ints.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(int, int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.trigger_maya_to_refresh">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">trigger_maya_to_refresh</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.trigger_maya_to_refresh" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trigger Maya to refresh.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.deferred_revert_of_config_value">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">deferred_revert_of_config_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.deferred_revert_of_config_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the user preferences to a value, as a deferred fashion.</p>
+</dd></dl>
+
+<span class="target" id="module-mmSolver.tools.loadmarker.lib.fieldofview"></span><p>Camera field of view maths related functions.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.fieldofview.get_camera_field_of_view">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.fieldofview.</span></span><span class="sig-name descname"><span class="pre">get_camera_field_of_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam_shp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.fieldofview.get_camera_field_of_view" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the Camera’s field of view with a camera shape node at frames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cam_shp</strong> (<em>str</em>) – Maya camera shape node.</p></li>
+<li><p><strong>frames</strong> (<em>[</em><em>int</em><em>, </em><em>.</em><em>]</em>) – List of frames to sample the camera/marker group</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[(int, float, float), .]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.fieldofview.calculate_overscan_ratio">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.fieldofview.</span></span><span class="sig-name descname"><span class="pre">calculate_overscan_ratio</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_grp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_fov</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.fieldofview.calculate_overscan_ratio" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate overscan with camera and FOV.</p>
+<p>Query the overscan of cam by comparing to the camera_fov
+field of view.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – The mmSolver.api.Camera object to query field of view from.</p></li>
+<li><p><strong>camera_fov</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>, </em><em>.</em><em>]</em>) – Tuple of camera field of view per-frame values X and Y.</p></li>
+<li><p><strong>mkr_grp</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a><em> or </em><em>None</em>) – The mmapi MarkerGroup object, to be used additionally to the
+provided camera to calculate the overscan.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Overscan X and Y values.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(float, float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="library-formats">
+<h2>Library - Formats<a class="headerlink" href="#library-formats" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="module-mmSolver.tools.loadmarker.constant">
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.loadmarker.constant" title="Permalink to this headline">¶</a></h2>
+<p>Contains constant values for the Load Marker tool.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.loadmarker</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.tool">Tool</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.lib.mayareadfile">Library - Basics</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.lib.utils">Library - Advanced</a></li>
+<li><a class="reference internal" href="#library-formats">Library - Formats</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.constant">Constants</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.tools.linkmarkerbundle.html"
+                        title="previous chapter">mmSolver.tools.linkmarkerbundle</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.tools.markerbundlerename.html"
+                        title="next chapter">mmSolver.tools.markerbundlerename</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.tools.loadmarker.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.markerbundlerename.html" title="mmSolver.tools.markerbundlerename"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.linkmarkerbundle.html" title="mmSolver.tools.linkmarkerbundle"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" >mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.loadmarker</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

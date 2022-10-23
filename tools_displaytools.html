@@ -1,0 +1,229 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>General Tools &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="General Tools" href="tools_zdepthtools.html" />
+    <link rel="prev" title="Line Tools" href="tools_linetools.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_zdepthtools.html" title="General Tools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tools_linetools.html" title="Line Tools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" accesskey="U">Tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">General Tools</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="general-tools">
+<h1>General Tools<a class="headerlink" href="#general-tools" title="Permalink to this headline">¶</a></h1>
+<p>The tools on this page are not specific to Markers, Cameras or
+Bundles, but are general tools useful in Maya for many different
+tasks.</p>
+<section id="center-2d-on-selection">
+<span id="center-2d-on-selection-tool-ref"></span><h2>Center 2D On Selection<a class="headerlink" href="#center-2d-on-selection" title="Permalink to this headline">¶</a></h2>
+<p>Forces the active viewport camera to lock it’s center to the currently
+selected transform node.</p>
+<p>A viewport camera can only center on one node at a time.</p>
+<p>While centering is turned on, it overrides Maya’s normal 2D Pan/Zoom
+settings.</p>
+<p>Usage to <em>apply</em> the centering effect:</p>
+<ol class="arabic simple">
+<li><p>Select transform node.</p></li>
+<li><p>Activate a 3D viewport.</p></li>
+<li><p>Run ‘Apply 2D Center’ tool.</p>
+<ul class="simple">
+<li><p>The active viewport camera will be centered on the selected
+transform node.</p></li>
+</ul>
+</li>
+<li><p>Use the Pan/Zoom tool (default hotkey is backslash (’ \ ‘) key),
+to zoom in and out. Play the Maya timeline and use the centered view as
+needed.</p></li>
+</ol>
+<p>Usage to <em>remove</em> centering effect:</p>
+<ol class="arabic simple">
+<li><p>Run ‘Remove 2D Center’ tool.</p>
+<ul class="simple">
+<li><p>The active viewport will no longer center on an object, but will
+not reset the view.</p></li>
+<li><p>The pan/zoom will still be active. To reset the viewport camera,
+turn off Pan/Zoom on the viewport camera (default hotkey is
+backslash (’ \ ‘) key).</p></li>
+</ul>
+</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.centertwodee.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+
+<span class="c1"># Apply Centering onto active camera</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+
+<span class="c1"># Remove Centering from active camera</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="create-screen-space-motion-trail">
+<span id="create-screen-space-motion-trail-tool-ref"></span><h2>Create Screen-Space Motion Trail<a class="headerlink" href="#create-screen-space-motion-trail" title="Permalink to this headline">¶</a></h2>
+<p>The Screen-Space Motion Trail tool creates a non-editable curve that
+shows the screen-space position of a transform across multiple frames.</p>
+<p>With default options the tool can be used to visualise the shutter
+time of a Marker (or any other transform), assuming a shutter angle of
+180 degrees (half a frame).</p>
+<p>The user may change the default options after the motion trail is
+created by selecting the Motion Trail node under the camera and
+editing the attributes in the Channel Box.</p>
+<p>Beware of small <em>increment</em> values, and large frame ranges. These will
+cause slow-downs in the playback of the Maya scene.</p>
+<table class="colwidths-auto docutils align-default" id="id1">
+<caption><span class="caption-text">Motion Trail Attributes</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Use Frame Range</p></td>
+<td><p>On/Off</p></td>
+<td><p>Use the frame range, or the pre/post-frame values.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Pre-Frame</p></td>
+<td><p>Number</p></td>
+<td><p>The number of frames to display before the current frame.</p></td>
+</tr>
+<tr class="row-even"><td><p>Post-Frame</p></td>
+<td><p>Number</p></td>
+<td><p>The number of frames to display after the current frame.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Frame Range Start</p></td>
+<td><p>Number</p></td>
+<td><p>The starting frame number, if Use Frame Range is on.</p></td>
+</tr>
+<tr class="row-even"><td><p>Frame Range Start</p></td>
+<td><p>Number</p></td>
+<td><p>The ending frame number, if Use Frame Range is on.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Increment</p></td>
+<td><p>Number</p></td>
+<td><p>The increment for each sample of the motion trail.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select transform nodes.</p></li>
+<li><p>Activate viewport.</p></li>
+<li><p>Run tool.</p></li>
+<li><p>A temporary null is created (required for the tool to work), and a
+motion trail parented under the camera is created.</p></li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.screenspacemotiontrail.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">General Tools</a><ul>
+<li><a class="reference internal" href="#center-2d-on-selection">Center 2D On Selection</a></li>
+<li><a class="reference internal" href="#create-screen-space-motion-trail">Create Screen-Space Motion Trail</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tools_linetools.html"
+                        title="previous chapter">Line Tools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tools_zdepthtools.html"
+                        title="next chapter">General Tools</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tools_displaytools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_zdepthtools.html" title="General Tools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tools_linetools.html" title="Line Tools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" >Tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">General Tools</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

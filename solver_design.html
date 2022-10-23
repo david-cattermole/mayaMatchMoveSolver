@@ -1,0 +1,637 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Solver Design &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Nodes" href="nodes.html" />
+    <link rel="prev" title="Solving Rigid Object Techniques" href="techniques_solving_rigid_objects.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nodes.html" title="Nodes"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="techniques_solving_rigid_objects.html" title="Solving Rigid Object Techniques"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Solver Design</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="solver-design">
+<span id="solver-design-heading"></span><h1>Solver Design<a class="headerlink" href="#solver-design" title="Permalink to this headline">¶</a></h1>
+<p>Many users of MatchMove software find that by understanding how the
+underlying processes of the software work they are able to obtain better
+results by utilising the software as it’s intended to work.</p>
+<p>This document tries to answer that question;</p>
+<blockquote>
+<div><p><em>How does the MM Solver work?</em></p>
+</div></blockquote>
+<section id="how-does-the-solver-work">
+<span id="solver-design-how-does-it-work"></span><h2>How does the solver work?<a class="headerlink" href="#how-does-the-solver-work" title="Permalink to this headline">¶</a></h2>
+<p>The solver inside MM Solver is an <em>optimisation</em> solver. The solver
+attempts to optimise the <em>measured error</em> with various <em>unknown
+parameter</em> values. The solver’s purpose is to find the parameter values
+which minimise the <em>measured error</em>.</p>
+<p>The process of applying an <em>optimisation</em> solver to 3D perspective
+cameras, 2D points and 3D points is called Bundle Adjustment (BA). BA is
+traditionally the last step of MatchMove and Photogrammetry solvers
+where the parameters of 3D points (Bundles) and cameras are solved to
+produce a 3D Scene with the least possible error.</p>
+</section>
+<section id="attributes">
+<span id="solver-design-attributes"></span><h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h2>
+<p>In the MM Solver, we refer to <em>unknown parameters</em> as Attributes.
+Attributes are the Maya attributes that are allowed to be modified
+inside the solver. Maya attributes that are not added into the solver
+will still be used, but cannot be modified.</p>
+<p>The Attributes modified in the MM Solver may be <strong>any</strong> attribute in
+Maya. Likewise the attributes may be in any space required, for example;
+object-space, world-space or normal/vertex space. The only requirement
+is that the Attribute modifies the <em>Bundle</em> position (see below for
+detail on <em>Bundles</em>). <em>Bundle</em> positions may be modified indirectly
+using hierarchies or rigs of Maya transform nodes. The true power of the
+solver comes from the evaluation environment, Maya, and the node
+networks/hierarchies created by the MatchMove artist.</p>
+<p>Like Maya attributes, MM Solver Attributes can also change over-time
+using an <em>animated</em> curve, or just have a single <em>static</em> value, or they
+can be be <em>locked</em>. <em>Locked</em> attributes cannot be modified by Maya and
+therefore cannot be modified in the solver either. Due to underlying
+solving algorithm only floating-point attribute values can be solved.
+Commonly solved Attributes are 3D translate and rotate axes.</p>
+</section>
+<section id="markers-and-bundles">
+<span id="solver-design-markers-and-bundles"></span><h2>Markers and Bundles<a class="headerlink" href="#markers-and-bundles" title="Permalink to this headline">¶</a></h2>
+<p><em>Markers</em> and <em>Bundles</em> are used to compute the <em>measured error</em> inside
+the solver. The word <em>Marker</em> is used to describe a 2D point on an image
+plane, and <em>Bundle</em> to describe the 3D Point.</p>
+<p><em>Markers</em> have had different names in various MatchMove software
+applications; Track, feature, 2D point, etc. For the purposes of MM
+Solver name <em>Marker</em> is used for the tracking markers placed on the set
+of a film production. <em>Bundles</em> are named as such because they represent
+a bundle of light forming on the imaging sensor.</p>
+<p><em>Markers</em> and <em>Bundles</em> are linked together. The <em>Marker</em> is the
+representation of the <em>Bundle</em> from a camera’s point of view. There may
+be multiple 2D <em>Marker</em> representations of the same 3D <em>Bundle</em>.</p>
+<p>Having known 2D Markers of a 3D Bundle looking through a known
+perspective <em>Camera</em> we can calculate a 3D <em>Bundle</em> position by moving
+the <em>Bundle</em> until the difference between all Markers and Bundles is
+zero when looking through each perspective <em>Camera</em>. Another way to say
+this is that the <em>measured error</em> is the distance between the
+screen-space re-projected 3D Bundles with the linked 2D Markers.</p>
+</section>
+<section id="solving">
+<span id="solver-design-solving"></span><h2>Solving<a class="headerlink" href="#solving" title="Permalink to this headline">¶</a></h2>
+<p>Once the solver has <em>Attributes</em>, <em>Cameras</em> and <em>Markers</em> and linked
+<em>Bundles</em>, the solver can start a solve.</p>
+<p>The solver may only start if some conditions are met. One important
+condition is the number of Attributes verses the number of Markers or
+specifically:</p>
+<blockquote>
+<div><p>The number of <em>measured errors</em> must be equal to or greater than the
+number of <em>Attribute</em> values you’re solving.</p>
+</div></blockquote>
+<p>All 3D MatchMove software has this limitation, MM Solver is no
+different. There is a minimum number of Markers required to solve for a
+3D Camera that can move in 6 degrees of freedom (6 DOF: translate X, Y
+and Z, rotate X, Y and Z). For MM Solver this number is a <strong>minimum</strong> of
+3 Markers. 3 Markers are required to solve for 6 attributes.</p>
+<p>Since each <em>Marker</em> measures 2 errors (X and Y distance to <em>Bundle</em>),
+the marker can solve for 2 attributes. For example, 1 <em>Marker</em> can be
+used to solve a <em>Camera</em> transform rotate X and Y (tilt and pan)
+attributes.</p>
+<p>When the user gives a <em>Marker</em> as input for MM Solver, the position is
+assumed to be correct. Some 3D MatchMove software applications use many
+2D Markers and filter out the badly tracked points (the <em>outliers</em>), MM
+Solver does not work like this. Badly tracked <em>Markers</em> will affect the
+solve badly.</p>
+<p>This solver is an optimiser and it needs to be provided with an
+approximation of input attribute values, or in other words; we need to
+animate the camera(s), and place the bundles in the roughly correct
+positions. You don’t need to do the job of the solver, which is to make
+the <em>Cameras</em> and <em>Bundles</em> match perfectly, but you are required to at
+least have <em>Bundles</em> positioned inside the FOV of the camera, and an
+approximate animation of the camera if you’re solving the camera
+parameters.</p>
+<p>The approximate <em>Camera</em> and <em>Bundle</em> positions is why the MM Solver is
+so different from traditional MatchMove solutions, especially
+Auto-Tracking 3D MatchMove software; there is no one-click solution. But
+this can be a good thing!</p>
+<p>Remember the solver is an optimiser and it re-uses the input parameters
+and refines them rather than re-starting the solve from scratch. This
+type of solver enables customised, layered solving. For example, you may
+solve for a small number of individual Attributes with specific sets of
+<em>Markers</em> and <em>Bundles</em>, or you could use it in a similar way to other
+3D MatchMove software where all parameters are added into the solver.</p>
+<p>Due to the inherent refinement nature of the solver, a general process
+for solving will be:</p>
+<ol class="arabic simple">
+<li><p>Add Cameras, Bundles and Markers.</p></li>
+<li><p>Track 2D <em>Markers</em>.</p></li>
+<li><p>Place <em>Cameras</em> and <em>Bundles</em> into approximate positions.</p></li>
+<li><p>Set up movement constraints or node hierarchies for <em>Cameras</em> and /
+or <em>Bundles</em>.</p></li>
+<li><p>Solve for Attribute values.</p></li>
+<li><p>Repeat steps 2-5 until desired result is achieved.</p></li>
+</ol>
+</section>
+<section id="solving-process">
+<span id="solver-design-solving-process"></span><h2>Solving Process<a class="headerlink" href="#solving-process" title="Permalink to this headline">¶</a></h2>
+<p>Each time you execute a solve, the solver goes though a number of steps
+to perform the optimisation and reduce the error.</p>
+<p>This is an overview of the solver’s process:</p>
+<ol class="arabic simple">
+<li><p>Initialises input data.</p></li>
+<li><p>Solve.</p>
+<ol class="arabic simple">
+<li><p>Measure Initial Error.</p>
+<ol class="arabic simple">
+<li><p>Set all the initial Attribute values.</p></li>
+<li><p>Measure the initial re-projection error.</p></li>
+</ol>
+</li>
+<li><p>Discover how each Attribute changes the <em>measured error</em>.</p></li>
+<li><p>Iterate.</p>
+<ol class="arabic simple">
+<li><p>Based on the discovered value/error changes predict better
+Attribute values.</p></li>
+<li><p>Set all Attribute values with the predicted Attribute values.</p></li>
+<li><p>Measure the re-projection error.</p></li>
+<li><p>Check if the error is low enough, if so stop solving, otherwise
+repeat the iteration.</p></li>
+</ol>
+</li>
+</ol>
+</li>
+<li><p>Get solver information.</p>
+<ol class="arabic simple">
+<li><p>Set attributes values as calculated.</p></li>
+<li><p>Measure Final Error.</p></li>
+<li><p>Get number of iterations.</p></li>
+</ol>
+</li>
+<li><p>Return Solver information to the user.</p></li>
+</ol>
+<p>The slowest step of the solving process is step 2 as it may be executed
+hundreds or thousands of times, depending on the number of <em>Attributes</em>
+and <em>Markers</em> that are in the solve.</p>
+</section>
+<section id="time-static-and-animated-attributes">
+<span id="solver-design-static-and-animated-attributes"></span><h2>Time - Static and Animated Attributes<a class="headerlink" href="#time-static-and-animated-attributes" title="Permalink to this headline">¶</a></h2>
+<p>Up until now we’ve been concerned with solving a single frame in time.
+Now we need to extend that into multiple frames. In the MM Solver there
+are <em>animated Attributes</em> that change per-frame and <em>static Attributes</em>
+that only have one value. Using <em>static Attributes</em> complicates the
+solving process.</p>
+<p>If we are to solve only per-frame that would mean Attribute values from
+one frame would never affect another frame and therefore we can safely
+loop over each frame and solve each frame individually. When including
+<em>static Attributes</em>, the <em>static Attributes</em> affect all frames in the
+solve.</p>
+<p>Consider a simple example; 1 <em>animated Attribute</em> and 1 <em>static
+Attribute</em>, solving on three frames, frame 1, 2 and 3. The animated
+attribute contains 3 values, an individual value for each frame, and so
+each value affects the <em>measured error</em> on each frame. But the <em>static
+Attribute</em> contains only one value, not one for each frame, and
+therefore the single value affects the <em>measured error</em> on all frames.
+To solve for the minimum possible <em>measured error</em> for all values it is
+necessary to consider all 4 values together (3 animated values, 1 static
+value), and all combinations of the values. Solving for 4 values rather
+than 3 values doesn’t sound like it would take much longer to compute,
+but in fact it takes 3 times longer (3 * 3); this problem is squared
+each time a static value is added. The more static values added to the
+solve increases the number of possible combinations and increases the
+number of solver evaluations required for a low <em>measured error</em>.
+Solving Animated and Static values as described is a <strong>Brute Force</strong>
+approach, but other strategies may be used.</p>
+</section>
+<section id="attribute-value-evaluation-at-different-times">
+<span id="solver-design-time-evaluation"></span><h2>Attribute Value Evaluation at Different Times<a class="headerlink" href="#attribute-value-evaluation-at-different-times" title="Permalink to this headline">¶</a></h2>
+<p>This topic is unrelated to the actual solver engine in mmSolver, but
+documents an interesting implementation detail when correctly
+evaluating values at different times in Autodesk Maya. From mmSolver
+v0.3.10 the new mmSolver command flag ‘timeEvalMode’ was introduced to
+tell Maya how to evaluate values at different times.</p>
+<p>There are two different methods to query a value at a specific time,
+<strong>1</strong>) tell the Maya DG network to evaluate a value at a time (using a
+“DG Context”), or <strong>2</strong>) change the Maya scene’s current time, then
+query the current value.</p>
+<p>Tests have shown that the two different methods do not always evaluate
+the same way and can lead to an incorrect solve if set
+incorrectly. For simple scenes, method <strong>1</strong> works most of the time,
+however when using character rigs or complex node networks and
+evaluating on a single frame, then method <strong>2</strong> is needed to solve
+correctly.</p>
+<dl class="simple">
+<dt>Use method <strong>1</strong> when you are solving multiple frames at once, and you</dt><dd><p>are using the Maya GUI (not Maya Batch or ‘mayapy’).</p>
+</dd>
+</dl>
+<p>Use method <strong>2</strong> when you are evaluting a single frame, or
+when you are not using the Maya GUI such as with Maya Batch or
+‘mayapy’.</p>
+<p>These different methods do not need to be set manually if you are
+using the mmSolver Solver UI or the mmSolver API. If you are calling
+the ‘mmSolver’ command directly, then ‘timeEvalMode’ is important to
+set.</p>
+</section>
+<section id="attribute-details">
+<span id="solver-design-attribute-details"></span><h2>Attribute Details<a class="headerlink" href="#attribute-details" title="Permalink to this headline">¶</a></h2>
+<p>Attribute Details are properties of an Attribute. Attribute Details
+are used to add constraints such as value limits.</p>
+<p>In mmSolver, there are 2 details per-attribute; minimum and maximum.
+See below for more details on how each property works.</p>
+<section id="minimum-and-maximum-limits">
+<h3>Minimum and Maximum Limits<a class="headerlink" href="#minimum-and-maximum-limits" title="Permalink to this headline">¶</a></h3>
+<p>Minimum and maximum limits will force <em>mmSolver</em> to solve an attribute
+with-in specific values. Attribute min/max limits apply to both static
+and animated attributes. If a mnimium or maximum value is not set, the
+limit is removed and any value may be used.</p>
+<p><em>mmSolver</em> allows a combination of minimum and maximum limits. The
+combinations are; minimum only, maximum only, both minimum and
+maximum, no to limits at all.</p>
+<p>Although min and max limits may appear to be an appealling feature,
+often the need to use limits is a sign of problems in your solve.
+Minimum and maximum limits are often not helpful because the solver
+will simply limit the values used rather than reduce the likely-hood
+the solver will try to use values outside the limits.</p>
+<p>Minimum and maximum limits are also known as “Upper and Lower Value
+Bounds”.</p>
+</section>
+</section>
+<section id="solver-strategies">
+<span id="solver-design-solver-strategies"></span><h2>Solver Strategies<a class="headerlink" href="#solver-strategies" title="Permalink to this headline">¶</a></h2>
+<p>Solver strategies are patterns of evaluation that attempt to solve the
+input attributes across time while reducing the number of evaluations
+and increasing solve quality.</p>
+<p>To reduce <em>measured error</em>, the ideal strategy for solves with only
+animated attributes is the <strong>Per-Frame</strong> strategy, while the ideal
+strategy for animated and static attributes is <strong>All Frames</strong></p>
+<ul class="simple">
+<li><p>Per-Frame</p></li>
+<li><p>Two Frames (Forward / Backward)</p></li>
+<li><p>Three Frames (Forward / Backward)</p></li>
+<li><p>All Frames (Brute-force)</p></li>
+</ul>
+<p>In practice, a mixture of multiple strategies may be the best approach.</p>
+<p>Primary Frames / Root Frames.</p>
+<ol class="arabic simple">
+<li><p>Extending the baseline</p></li>
+<li><p>Hierarchical merging of sub-sequences</p></li>
+<li><p>Incremental bundle adjustment</p></li>
+</ol>
+</section>
+<section id="solver-scene-graph">
+<span id="solver-design-solver-scene-graph"></span><h2>Solver Scene Graph<a class="headerlink" href="#solver-scene-graph" title="Permalink to this headline">¶</a></h2>
+<p>Starting with v0.4.0, mmSolver supports a ‘scene graph’ used for scene
+construction and evaluation. Before the v0.4.0, mmSolver only used the
+Maya DAG to construct and evaluate Markers, Cameras and Bundles.</p>
+<p><cite>Maya DAG</cite> uses the regular Maya DAG hierarchies and DG nodes and
+triggers Maya to evaluate these for each iteration of mmSolver. The
+<cite>Maya DAG</cite> is fantastic because it supports all Maya nodes, by
+definition, however because it is very general and supports so much,
+this comes at the cost of performance.</p>
+<p><cite>MM Scene Graph</cite> is an alternative scene graph to <cite>Maya DAG</cite> and
+supports only a limited number of node and scene graph structures,
+however because of the reduced support the performance is tuned for
+MatchMove solving tasks and is much faster (around 10+ times faster in
+some cases).</p>
+<p><cite>MM Scene Graph</cite> cannot be used with the following features:</p>
+<ul class="simple">
+<li><p>Maya Nodes</p>
+<ul>
+<li><p>Instanced nodes are <em>not supported</em>.</p></li>
+<li><p>Input connections to the transform values are <em>not supported</em>.</p>
+<ul>
+<li><p>For example point, orient and parent constraints are <em>not supported</em>.</p></li>
+</ul>
+</li>
+<li><p>Non-zero pivot-point (or pivot point translation) transform
+values are <em>not supported</em></p></li>
+</ul>
+</li>
+<li><p>Attributes</p>
+<ul>
+<li><p>Connections to attributes are <em>not supported</em>, only static and
+animated attributes with values or animation curves are supported.</p></li>
+</ul>
+</li>
+</ul>
+<p>If <cite>MM Solver</cite> detects any of these features are being used in the
+scene graph you are solving, then it will immediately fail with an
+error, and automatically switch to <cite>Maya DAG</cite>.</p>
+</section>
+<section id="solver-options">
+<span id="solver-design-solver-options"></span><h2>Solver Options<a class="headerlink" href="#solver-options" title="Permalink to this headline">¶</a></h2>
+<p>Like many solvers, the MM Solver has options, however the options are
+hidden from the Solver UI and are set automatically by the Python API.</p>
+<p>To explain the Solver Options below an analogy of climbing a mountain,
+to reach the peak (top of the mountain) is used. Our goal is to find
+the exact parameters that will bring us to the peak of the
+mountain. Our position on the mountain tells us how high we are (the
+deviation level), and the direction upwards to the top of the mountain
+peak (the gradient or mountain slope).</p>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/algorithm_steepest_decent.png"><img alt="Mountain Climbing" src="_images/algorithm_steepest_decent.png" style="width: 80%;" /></a>
+<figcaption>
+<p><span class="caption-text">Mountain Climbing with Steepest Decent</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+<section id="maximum-number-of-iterations">
+<span id="solver-design-solver-max-iterations"></span><h3>Maximum Number of Iterations<a class="headerlink" href="#maximum-number-of-iterations" title="Permalink to this headline">¶</a></h3>
+<p>Value type: <code class="docutils literal notranslate"><span class="pre">integer</span></code></p>
+<p>This option does not directly control the number of evaluations
+the solver may run, but instead controls how many attempts the
+solver will try before giving up.</p>
+<p>If the solver attempts to solve more than the maximum iterations the
+solve will stop.</p>
+</section>
+<section id="tau-initial-damping-factor">
+<span id="solver-design-solver-tau"></span><h3>Tau - Initial Damping Factor<a class="headerlink" href="#tau-initial-damping-factor" title="Permalink to this headline">¶</a></h3>
+<p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
+<p>The <em>tau</em> factor determines whether the solver will try to refine the
+current parameters a lot (large tau number), or only a small amount
+(small tau number). Values usually range between +0.0 and +1.0.</p>
+<p>Larger values should be used when the initial unknown parameters
+have high error. This forces the Levenberg-Marquet algorithm to use
+steepest-decent, rather than gauss-newton.</p>
+<p>“The algorithm is not very sensitive to the choice of ‘tau’, but
+as a rule of thumb, one should use a small value, eg ‘tau = 10-6’,
+if ‘the initial parameters’ are believed to be a good
+approximation to the ‘final parameter values’. Otherwise, use ‘tau
+= 10-3’ or even ‘tau = 1.0’.”</p>
+</section>
+<section id="delta-amount-to-change-parameters">
+<span id="solver-design-solver-delta"></span><h3>Delta - Amount to Change Parameters<a class="headerlink" href="#delta-amount-to-change-parameters" title="Permalink to this headline">¶</a></h3>
+<p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
+<p>Delta is the amount of change to the guessed parameters at each
+iteration.</p>
+<p>Each time the solver guesses an unknown parameter value, it adds
+or subtracts the ‘delta’ value from the unknown parameter
+value. This changes the magnitude of the parameter values in each
+guess. If this value is too small, the change in error level may
+not be detected, if this value is too large the solver will
+over-estimate and will likely lead to poor convergence (the solver
+won’t find a good solution).</p>
+</section>
+<section id="epsilon-1-acceptable-gradient-change">
+<span id="solver-design-solver-epsilon-one"></span><h3>Epsilon #1 - Acceptable Gradient Change<a class="headerlink" href="#epsilon-1-acceptable-gradient-change" title="Permalink to this headline">¶</a></h3>
+<p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
+<p>The gradient error (sometimes named epsilon #1) is used to find when
+the solver has reached the “top of the mountain peak”. The gradient
+represents the slope of climbing the mountain. When the solver reaches
+a (horizontally) flat area of the mountain, then the gradient is low,
+and will stop the solve. When the solver can find a slope (gradient),
+then the solver can follow the slope of the mountain and reach the top
+of the mountain peak.</p>
+<p>At the beginning of a solver iteration, if the solver has not
+decreased the gradient by at least this value, the solver gives up
+trying to reduce the error any more, and stops solving.</p>
+</section>
+<section id="epsilon-2-acceptable-parameter-change">
+<span id="solver-design-solver-epsilon-two"></span><h3>Epsilon #2 - Acceptable Parameter Change<a class="headerlink" href="#epsilon-2-acceptable-parameter-change" title="Permalink to this headline">¶</a></h3>
+<p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
+<p>The parameter error (sometimes named epsilon #2) is used to determine
+the when the solver can stop changing parameter values because the
+new parameter values have not changed enough. Changes to parameters are
+able to move the solved solution to different places on the mountain,
+if the parameter changes are too small then the solver will stop.</p>
+<p>At the beginning of a solver iteration, if the guessed parameters do
+not change by at least this value, the solver gives up trying to
+reduce the error any more.</p>
+</section>
+<section id="epsilon-3-acceptable-deviation-error">
+<span id="solver-design-solver-epsilon-three"></span><h3>Epsilon #3 - Acceptable Deviation Error<a class="headerlink" href="#epsilon-3-acceptable-deviation-error" title="Permalink to this headline">¶</a></h3>
+<p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
+<p>The deviation error (sometimes named epsilon #3 or deviation) is the
+error level that is considered a good solve. To use a mountain
+climbing analogy, the <em>deviation error</em> is the highest mountain peak
+that is good enough for the solver.</p>
+<p>At the beginning of a solver iteration, if the error level is below
+this value, the solver considers the error to be low enough for the
+user’s needs and stops trying to reduce the error.</p>
+</section>
+<section id="auto-differencing-type">
+<span id="solver-design-solver-auto-diff-type"></span><h3>Auto-Differencing Type<a class="headerlink" href="#auto-differencing-type" title="Permalink to this headline">¶</a></h3>
+<p>Value type: <code class="docutils literal notranslate"><span class="pre">integer</span></code></p>
+<p>The strategy used to compute the direction (gradient slope) the solver
+should move toward.</p>
+<table class="colwidths-auto docutils align-default" id="id2">
+<caption><span class="caption-text">Auto-Differencing Types</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Index</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">forward</span></code></p></td>
+<td><p>Fast but not accurate.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">central</span></code></p></td>
+<td><p>More accurate but 1/3rd slower to compute initially.</p></td>
+</tr>
+</tbody>
+</table>
+<p>In practice, the authors of mmSolver have found <code class="docutils literal notranslate"><span class="pre">central</span></code>
+dramatically slows down the solver and does not increase accuracy very
+much. It is therefore recommended to use <code class="docutils literal notranslate"><span class="pre">forward</span></code>.</p>
+</section>
+</section>
+<section id="general-solving-concepts">
+<h2>General Solving Concepts<a class="headerlink" href="#general-solving-concepts" title="Permalink to this headline">¶</a></h2>
+<p><strong>To be written</strong></p>
+<section id="over-parameterization">
+<h3>Over-Parameterization<a class="headerlink" href="#over-parameterization" title="Permalink to this headline">¶</a></h3>
+<p>Parameters-errors ratio is too high.</p>
+<p><strong>To be written</strong></p>
+</section>
+<section id="plane-line-and-curve-constraints">
+<h3>Plane, Line and Curve Constraints<a class="headerlink" href="#plane-line-and-curve-constraints" title="Permalink to this headline">¶</a></h3>
+<p><strong>To be written</strong></p>
+</section>
+</section>
+<section id="frequently-asked-questions-faq">
+<span id="solver-faq-heading"></span><h2>Frequently Asked Questions (FAQ)<a class="headerlink" href="#frequently-asked-questions-faq" title="Permalink to this headline">¶</a></h2>
+<p>Below are the some common questions and answers.</p>
+<section id="how-do-i-get-the-list-of-supported-solver-types">
+<span id="solver-faq-how-to-get-supported-solver-types"></span><h3>How do I get the list of supported Solver Types?<a class="headerlink" href="#how-do-i-get-the-list-of-supported-solver-types" title="Permalink to this headline">¶</a></h3>
+<p>To dynamically get the supported list of solver types, run this Python
+command in Maya:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">loadPlugin</span><span class="p">(</span><span class="s1">&#39;mmSolver&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolverType</span><span class="p">(</span><span class="n">query</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="nb">list</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">[u&#39;1=cminpack_lmdif&#39;, u&#39;2=cminpack_lmder&#39;]   # Example output.</span>
+</pre></div>
+</div>
+<p>The full list of solver types supported are listed below. Please note
+that depending on compilation, some solver types will not be available.</p>
+<table class="colwidths-auto docutils align-default" id="id3">
+<caption><span class="caption-text">Solver Types</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Index</p></th>
+<th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">levmar</span></code></p></td>
+<td><p>This mode is legacy and removed from mmSolver.</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cminpack_lmdif</span></code></p></td>
+<td><p>Use <a class="reference external" href="http://devernay.free.fr/hacks/cminpack/index.html">CMinpack</a> library with the <a class="reference external" href="http://devernay.free.fr/hacks/cminpack/lmdif_.html">lmdif</a> function.</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">cminpack_lmder</span></code></p></td>
+<td><p>Use <a class="reference external" href="http://devernay.free.fr/hacks/cminpack/index.html">CMinpack</a> library with the <a class="reference external" href="http://devernay.free.fr/hacks/cminpack/lmder_.html">lmder</a> function.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="what-transform-space-is-used-for-solving">
+<span id="solver-faq-what-transform-space-is-used-for-solving"></span><h3>What transform space is used for solving?<a class="headerlink" href="#what-transform-space-is-used-for-solving" title="Permalink to this headline">¶</a></h3>
+<p><em>MM Solver</em> evaluates all <em>Marker</em> and <em>Bundle</em> screen-space errors in
+<strong>world-space</strong>, but solving is not performed in a transform space.
+Solving is performed directly on <em>Attribute</em> values.</p>
+</section>
+<section id="how-can-i-use-a-dag-hierarchy-to-reduce-the-number-of-attributes">
+<span id="solver-faq-how-to-reduce-attribute-count-with-dag"></span><h3>How can I use a DAG hierarchy to reduce the number of <em>Attributes</em>?<a class="headerlink" href="#how-can-i-use-a-dag-hierarchy-to-reduce-the-number-of-attributes" title="Permalink to this headline">¶</a></h3>
+<p><strong>To be written</strong></p>
+</section>
+<section id="how-can-i-make-my-solves-faster">
+<span id="solver-faq-how-to-increase-solve-speed"></span><h3>How can I make my solves faster?<a class="headerlink" href="#how-can-i-make-my-solves-faster" title="Permalink to this headline">¶</a></h3>
+<p><strong>To be written</strong></p>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Solver Design</a><ul>
+<li><a class="reference internal" href="#how-does-the-solver-work">How does the solver work?</a></li>
+<li><a class="reference internal" href="#attributes">Attributes</a></li>
+<li><a class="reference internal" href="#markers-and-bundles">Markers and Bundles</a></li>
+<li><a class="reference internal" href="#solving">Solving</a></li>
+<li><a class="reference internal" href="#solving-process">Solving Process</a></li>
+<li><a class="reference internal" href="#time-static-and-animated-attributes">Time - Static and Animated Attributes</a></li>
+<li><a class="reference internal" href="#attribute-value-evaluation-at-different-times">Attribute Value Evaluation at Different Times</a></li>
+<li><a class="reference internal" href="#attribute-details">Attribute Details</a><ul>
+<li><a class="reference internal" href="#minimum-and-maximum-limits">Minimum and Maximum Limits</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#solver-strategies">Solver Strategies</a></li>
+<li><a class="reference internal" href="#solver-scene-graph">Solver Scene Graph</a></li>
+<li><a class="reference internal" href="#solver-options">Solver Options</a><ul>
+<li><a class="reference internal" href="#maximum-number-of-iterations">Maximum Number of Iterations</a></li>
+<li><a class="reference internal" href="#tau-initial-damping-factor">Tau - Initial Damping Factor</a></li>
+<li><a class="reference internal" href="#delta-amount-to-change-parameters">Delta - Amount to Change Parameters</a></li>
+<li><a class="reference internal" href="#epsilon-1-acceptable-gradient-change">Epsilon #1 - Acceptable Gradient Change</a></li>
+<li><a class="reference internal" href="#epsilon-2-acceptable-parameter-change">Epsilon #2 - Acceptable Parameter Change</a></li>
+<li><a class="reference internal" href="#epsilon-3-acceptable-deviation-error">Epsilon #3 - Acceptable Deviation Error</a></li>
+<li><a class="reference internal" href="#auto-differencing-type">Auto-Differencing Type</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#general-solving-concepts">General Solving Concepts</a><ul>
+<li><a class="reference internal" href="#over-parameterization">Over-Parameterization</a></li>
+<li><a class="reference internal" href="#plane-line-and-curve-constraints">Plane, Line and Curve Constraints</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#frequently-asked-questions-faq">Frequently Asked Questions (FAQ)</a><ul>
+<li><a class="reference internal" href="#how-do-i-get-the-list-of-supported-solver-types">How do I get the list of supported Solver Types?</a></li>
+<li><a class="reference internal" href="#what-transform-space-is-used-for-solving">What transform space is used for solving?</a></li>
+<li><a class="reference internal" href="#how-can-i-use-a-dag-hierarchy-to-reduce-the-number-of-attributes">How can I use a DAG hierarchy to reduce the number of <em>Attributes</em>?</a></li>
+<li><a class="reference internal" href="#how-can-i-make-my-solves-faster">How can I make my solves faster?</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="techniques_solving_rigid_objects.html"
+                        title="previous chapter">Solving Rigid Object Techniques</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="nodes.html"
+                        title="next chapter">Nodes</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/solver_design.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="nodes.html" title="Nodes"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="techniques_solving_rigid_objects.html" title="Solving Rigid Object Techniques"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Solver Design</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

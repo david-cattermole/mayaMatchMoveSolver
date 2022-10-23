@@ -1,0 +1,194 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Configuration &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Related Books and Papers" href="references.html" />
+    <link rel="prev" title="Display Commands" href="commands_display.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="references.html" title="Related Books and Papers"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="commands_display.html" title="Display Commands"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Configuration</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p><em>mmSolver</em> can be customised using configuration files.  The default
+configuration of <em>mmSolver</em> is stored in the installation directory
+‘config’ sub-directory, but each file may be overridden by adding a
+file into the home directory.</p>
+<p>When a new configuration file with the exact file name as a default
+config file is found, it replaces the original. Configuration files
+do not accumulate values.</p>
+<p>For documentation of the config utility module, see <cite>mmSolver.utils.config</cite>.</p>
+<section id="user-preferences">
+<h2>User Preferences<a class="headerlink" href="#user-preferences" title="Permalink to this headline">¶</a></h2>
+<p>General user preferences affecting tools can be adjusted using the
+<em>User Preferences…</em> window. Please see the <a class="reference internal" href="tools_generaltools.html#user-preferences-tool-ref"><span class="std std-ref">User Preferences</span></a>
+page for details.</p>
+</section>
+<section id="overriding-the-mmsolver-shelf-and-menus">
+<h2>Overriding the mmSolver Shelf and Menus<a class="headerlink" href="#overriding-the-mmsolver-shelf-and-menus" title="Permalink to this headline">¶</a></h2>
+<p>To change the <em>mmSolver</em> shelf or menus, you may add or edit the
+configuration files in the home directory. See the <cite>Home Directory
+Configuration</cite> section for the specific directory.</p>
+<p>To override the Maya ‘mmSolver’ shelf and/or menus, follow these steps:</p>
+<ol class="arabic simple">
+<li><p>Get the default config file.</p>
+<ol class="arabic simple">
+<li><p>Go to the installed directory of mmSolver.</p></li>
+<li><p>Go to “config” directory.</p></li>
+<li><p>Copy the “shelf.json” and/or “menu.json” files.</p></li>
+</ol>
+</li>
+<li><p>Paste the config files into your home directory.</p>
+<ol class="arabic simple">
+<li><p>Go to the Home Directory configuration for your operating system
+(~/.mmSolver on Linux), see <cite>Home Directory Configuration</cite>
+section below for details.</p></li>
+<li><p>Paste the files to be overwritten into this directory.</p></li>
+</ol>
+</li>
+<li><p>Edit the custom files</p>
+<ol class="arabic simple">
+<li><p>Open the files in a Text Editor.</p></li>
+<li><p>Edit the files, but make sure to use JSON syntax.</p></li>
+<li><p>Save the files.</p></li>
+</ol>
+</li>
+<li><p>Restart Maya to see your changes.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the default files are overridden, any changes made to the
+default config files will be overridden by your custom
+shelf. For example, when a new mmSolver version is released,
+new shelves and menus may be added - these new menus will
+not be visible in the overridden configurations.</p>
+</div>
+</section>
+<section id="home-directory-configuration">
+<h2>Home Directory Configuration<a class="headerlink" href="#home-directory-configuration" title="Permalink to this headline">¶</a></h2>
+<p>To store settings and preferences that persist after Maya is closed,
+files are saved into the home directory.</p>
+<p>The path for these changes are dependent on the Operating System:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">${HOME}/.mmSolver</span></code> (on Linux)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">%APPDATA%\mmSolver</span></code> (on Windows)</p></li>
+</ul>
+<p>You can type these paths into your file manager (for example <cite>Windows
+Explorer</cite>) to go to the directory.</p>
+<p>All of your personal user-settings are stored inside the home
+directory. Copying, or deleting these files will delete or transfer
+the personal preferences too.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Not all settings in mmSolver are stored in the home
+directory, some are stored in the Maya scene file directly.</p>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Configuration</a><ul>
+<li><a class="reference internal" href="#user-preferences">User Preferences</a></li>
+<li><a class="reference internal" href="#overriding-the-mmsolver-shelf-and-menus">Overriding the mmSolver Shelf and Menus</a></li>
+<li><a class="reference internal" href="#home-directory-configuration">Home Directory Configuration</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="commands_display.html"
+                        title="previous chapter">Display Commands</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="references.html"
+                        title="next chapter">Related Books and Papers</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/configuration.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="references.html" title="Related Books and Papers"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="commands_display.html" title="Display Commands"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Configuration</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

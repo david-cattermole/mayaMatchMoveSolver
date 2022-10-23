@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mmSolver.tools.reprojectbundle &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.tools.screenspacemotiontrail" href="mmSolver.tools.screenspacemotiontrail.html" />
+    <link rel="prev" title="mmSolver.tools.reparent2" href="mmSolver.tools.reparent2.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.screenspacemotiontrail.html" title="mmSolver.tools.screenspacemotiontrail"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.reparent2.html" title="mmSolver.tools.reparent2"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" accesskey="U">mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.reprojectbundle</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-mmSolver.tools.reprojectbundle">
+<span id="mmsolver-tools-reprojectbundle"></span><h1>mmSolver.tools.reprojectbundle<a class="headerlink" href="#module-mmSolver.tools.reprojectbundle" title="Permalink to this headline">¶</a></h1>
+<p>Move a bundle in front of the camera.</p>
+<section id="module-mmSolver.tools.reprojectbundle.tool">
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.reprojectbundle.tool" title="Permalink to this headline">¶</a></h2>
+<p>Position Bundle under the Marker, in screen-space.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.reprojectbundle.tool.main">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.reprojectbundle.tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reprojectbundle.tool.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move the Bundle to the Marker, on the current-frame.</p>
+<p>Perform a reprojection of the selected bundle (or bundle connected
+to the selected marker), at the current frame.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select markers or connected bundles (or both).</p></li>
+<li><p>Run tool.</p></li>
+<li><p>Bundle is triangulated in TX, TY and TZ.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If a Bundle has locked attributes, they will be unlocked and
+then relocked.</p>
+</div>
+</dd></dl>
+
+</section>
+<section id="module-mmSolver.tools.reprojectbundle.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.reprojectbundle.lib" title="Permalink to this headline">¶</a></h2>
+<p>Position Bundle under the Marker, in screen-space.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.reprojectbundle.lib.reproject_bundle">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.reprojectbundle.lib.</span></span><span class="sig-name descname"><span class="pre">reproject_bundle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relock</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reprojectbundle.lib.reproject_bundle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Re-project Marker’s Bundle underneath the Marker in screen-space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) – Markers to have Bundles triangulated.</p></li>
+<li><p><strong>frame_list</strong> (<em>[</em><em>float</em><em>, </em><em>.</em><em>]</em>) – Frame numbers to re-project Bundle on, if there
+is only one frame, no keyframes are set,
+otherwise keyframes are set for each frame
+number given.</p></li>
+<li><p><strong>relock</strong> (<em>bool</em>) – If True any bundle translate attributes will be
+unlocked, changed then relocked.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of Bundle</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Bundle" title="mmSolver.api.Bundle">Bundle</a>, .]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.reprojectbundle.lib.reproject_bundle_current_frame">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.reprojectbundle.lib.</span></span><span class="sig-name descname"><span class="pre">reproject_bundle_current_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relock</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reprojectbundle.lib.reproject_bundle_current_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Re-project Marker’s Bundle underneath the Marker in screen-space,
+on the current-frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>.</em><em>]</em>) – Markers to have Bundles triangulated.</p></li>
+<li><p><strong>relock</strong> (<em>bool</em>) – If True any bundle translate attributes will be
+unlocked, changed then relocked.  then relocked.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of Bundle</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Bundle" title="mmSolver.api.Bundle">Bundle</a>, .]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.reprojectbundle</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.tools.reprojectbundle.tool">Tools</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.reprojectbundle.lib">Library</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.tools.reparent2.html"
+                        title="previous chapter">mmSolver.tools.reparent2</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.tools.screenspacemotiontrail.html"
+                        title="next chapter">mmSolver.tools.screenspacemotiontrail</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.tools.reprojectbundle.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.screenspacemotiontrail.html" title="mmSolver.tools.screenspacemotiontrail"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.reparent2.html" title="mmSolver.tools.reparent2"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" >mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.reprojectbundle</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

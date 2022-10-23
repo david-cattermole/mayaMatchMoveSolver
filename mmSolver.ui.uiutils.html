@@ -1,0 +1,299 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mmSolver.ui.uiutils &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.utils" href="mmSolver.utils.html" />
+    <link rel="prev" title="mmSolver.ui.uimodels" href="mmSolver.ui.uimodels.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.utils.html" title="mmSolver.utils"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.uimodels.html" title="mmSolver.ui.uimodels"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.ui.html" accesskey="U">mmSolver.ui</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.ui.uiutils</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-mmSolver.ui.uiutils">
+<span id="mmsolver-ui-uiutils"></span><h1>mmSolver.ui.uiutils<a class="headerlink" href="#module-mmSolver.ui.uiutils" title="Permalink to this headline">¶</a></h1>
+<p>User interface utilities for Qt and Qt based applications.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.getHostApplication">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.uiutils.</span></span><span class="sig-name descname"><span class="pre">getHostApplication</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.getHostApplication" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the name of the application we are currently running inside of.</p>
+<p>Supported hosts to check for are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="s1">&#39;standalone&#39;</span> <span class="p">(</span><span class="n">outside</span> <span class="nb">any</span> <span class="n">host</span> <span class="n">application</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="s1">&#39;maya&#39;</span> <span class="p">(</span><span class="n">Autodesk</span> <span class="n">Maya</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="s1">&#39;nuke&#39;</span> <span class="p">(</span><span class="n">The</span> <span class="n">Foundry</span> <span class="n">Nuke</span><span class="p">)</span>
+
+<span class="o">-</span> <span class="s1">&#39;houdini&#39;</span> <span class="p">(</span><span class="n">SideFX</span> <span class="n">Houdini</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The application name, or None if the application could not
+be recognised.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.getMayaMainWindow">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.uiutils.</span></span><span class="sig-name descname"><span class="pre">getMayaMainWindow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.getMayaMainWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the Maya application QWidget window.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For Maya only.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The Maya main window, as a Qt Widget object.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>QWidget</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.findControlMayaWidget">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.uiutils.</span></span><span class="sig-name descname"><span class="pre">findControlMayaWidget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clsTyp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.findControlMayaWidget" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.isValidQtObject">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.uiutils.</span></span><span class="sig-name descname"><span class="pre">isValidQtObject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.isValidQtObject" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does the Python object given contain a valid Qt reference pointer?</p>
+<p>Only supports host ‘maya’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>obj</strong> – Qt class object.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Is the given object valid in C++?</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.getParent">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.uiutils.</span></span><span class="sig-name descname"><span class="pre">getParent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.getParent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the parent Qt QApplication object.</p>
+<p>Only supports hosts ‘standalone’ and ‘maya’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Qt object for the top level parent object.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.getBaseWindow">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.uiutils.</span></span><span class="sig-name descname"><span class="pre">getBaseWindow</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.getBaseWindow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get pre-defined preset “Base Window” for the currently running host.</p>
+<p>This function allows dynamic look-up of the intended window for all
+custom UIs to be built around.</p>
+<p>Only supports hosts ‘standalone’ and ‘maya’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The module and class to be used.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(module, class)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.getFont">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.uiutils.</span></span><span class="sig-name descname"><span class="pre">getFont</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.getFont" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Qt font, using a name containing hints/keywords.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Font name to create. Can contain multiple sub-strings.
+Supported sub-strings are ‘normal’, ‘small’,
+‘mediumlarge’, ‘large’, ‘monospace’, ‘bold’, ‘italic’.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Qt QFont object, with names used to set the font.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>QFont</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.getIcon">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.uiutils.</span></span><span class="sig-name descname"><span class="pre">getIcon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.getIcon" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates an Qt Icon from a resource path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Resource file path.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Qt Icon object.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>QIcon</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.setWindowWidthHeight">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.ui.uiutils.</span></span><span class="sig-name descname"><span class="pre">setWindowWidthHeight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ui</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width_height</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.setWindowWidthHeight" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a window’s width and height.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ui</strong> (<em>QWidget</em>) – Qt Window UI to set.</p></li>
+<li><p><strong>width_height</strong> (<em>(</em><em>int</em><em>, </em><em>int</em><em>)</em>) – Width and height to set.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.QtInfoMixin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.ui.uiutils.</span></span><span class="sig-name descname"><span class="pre">QtInfoMixin</span></span><a class="headerlink" href="#mmSolver.ui.uiutils.QtInfoMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mix-in class to provide simple functions for checking Qt versions.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.QtInfoMixin.qtInitVersion">
+<span class="sig-name descname"><span class="pre">qtInitVersion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.QtInfoMixin.qtInitVersion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.QtInfoMixin.qtAboveVersion">
+<span class="sig-name descname"><span class="pre">qtAboveVersion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">major</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">patch</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.QtInfoMixin.qtAboveVersion" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.QtInfoMixin.qtEqualOrAbove_4_6_X">
+<span class="sig-name descname"><span class="pre">qtEqualOrAbove_4_6_X</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.QtInfoMixin.qtEqualOrAbove_4_6_X" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.QtInfoMixin.qtEqualOrAbove_4_7_X">
+<span class="sig-name descname"><span class="pre">qtEqualOrAbove_4_7_X</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.QtInfoMixin.qtEqualOrAbove_4_7_X" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.QtInfoMixin.qtEqualOrAbove_4_8_X">
+<span class="sig-name descname"><span class="pre">qtEqualOrAbove_4_8_X</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.QtInfoMixin.qtEqualOrAbove_4_8_X" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.QtInfoMixin.qtEqual_4_X_X">
+<span class="sig-name descname"><span class="pre">qtEqual_4_X_X</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.QtInfoMixin.qtEqual_4_X_X" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.ui.uiutils.QtInfoMixin.qtEqual_5_X_X">
+<span class="sig-name descname"><span class="pre">qtEqual_5_X_X</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.QtInfoMixin.qtEqual_5_X_X" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.ui.uimodels.html"
+                        title="previous chapter">mmSolver.ui.uimodels</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.utils.html"
+                        title="next chapter">mmSolver.utils</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.ui.uiutils.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.utils.html" title="mmSolver.utils"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.ui.uimodels.html" title="mmSolver.ui.uimodels"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.ui.html" >mmSolver.ui</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.ui.uiutils</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

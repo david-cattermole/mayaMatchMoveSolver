@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Tools &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Solver UI" href="tools_solver_ui.html" />
+    <link rel="prev" title="Tutorials" href="tutorial.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_solver_ui.html" title="Solver UI"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorials"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tools</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="tools">
+<h1>Tools<a class="headerlink" href="#tools" title="Permalink to this headline">¶</a></h1>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/tools_shelf_icons_all.png"><img alt="Maya Shelf Icons" src="_images/tools_shelf_icons_all.png" style="width: 100%;" /></a>
+</figure>
+<p>Most users will use the tools listed below to control and manipulate
+the MM Solver. There are also utilities to help the MM Solver
+workflow.</p>
+<p>Pages dedicated to specific tools:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tools_solver_ui.html">Solver UI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui.html#input-objects">Input Objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui.html#output-attributes">Output Attributes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui.html#solver-tabs">Solver Tabs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui.html#menus">Menus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui.html#python-function">Python Function</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_createnode.html">Create Node Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_createnode.html#create-marker">Create Marker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_createnode.html#load-markers">Load Markers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_createnode.html#convert-to-marker">Convert to Marker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_createnode.html#create-bundle">Create Bundle</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_selection.html">Selection Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_selection.html#toggle-marker-bundle-selection">Toggle Marker / Bundle Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_selection.html#select-marker-bundle">Select Marker + Bundle</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_frametools.html">Frame Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_frametools.html#next-root-frame">Next Root Frame</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_frametools.html#previous-root-frame">Previous Root Frame</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_frametools.html#add-root-frame">Add Root Frame</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_frametools.html#remove-root-frame">Remove Root Frame</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_cameracontextmenu.html">Camera Context Menu</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools_attributetools.html">Attribute Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_attributetools.html#set-attribute-details">Set Attribute Details</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_attributetools.html#smooth-keyframes">Smooth Keyframes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_attributetools.html#channel-sensitivity">Channel Sensitivity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_attributetools.html#bake-attributes">Bake Attributes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_cameratools.html">Camera Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools_markerbundletools.html">Marker Bundle Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_markerbundletools.html#link-marker-bundle">Link Marker + Bundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markerbundletools.html#unlink-marker-from-all-bundles">Unlink Marker from all Bundles</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_bundletools.html">Bundle Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_bundletools.html#toggle-bundle-lock-state">Toggle Bundle Lock State</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_bundletools.html#move-bundle-to-marker-current-frame">Move Bundle to Marker (current frame)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_bundletools.html#triangulate-bundle">Triangulate Bundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_bundletools.html#attach-bundle-to-curve">Attach Bundle to Curve</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_markertools.html">Marker Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_markertools.html#toggle-marker-lock-state">Toggle Marker Lock State</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markertools.html#place-marker-manipulator">Place Marker Manipulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markertools.html#duplicate-marker">Duplicate Marker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markertools.html#average-marker">Average Marker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markertools.html#project-marker-on-mesh-ray-cast">Project Marker on Mesh (Ray-Cast)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markertools.html#deform-marker">Deform Marker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markertools.html#show-hide-deviation-curves">Show / Hide Deviation Curves</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_linetools.html">Line Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_linetools.html#toggle-line-lock-state">Toggle Line Lock State</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_linetools.html#camera-calibration">Camera Calibration</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_displaytools.html">General Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_displaytools.html#center-2d-on-selection">Center 2D On Selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_displaytools.html#create-screen-space-motion-trail">Create Screen-Space Motion Trail</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_zdepthtools.html">General Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_zdepthtools.html#screen-z-manipulator">Screen-Z Manipulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_zdepthtools.html#screen-space-transform">Screen-Space Transform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_zdepthtools.html#screen-space-rig-bake">Screen-Space Rig Bake</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_generaltools.html">General Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_generaltools.html#reparent-under-node">Reparent Under Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_generaltools.html#unparent-to-world">Unparent to World</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_generaltools.html#reparent-ui">Reparent UI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_generaltools.html#create-remove-controller">Create / Remove Controller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_generaltools.html#marker-bundle-rename">Marker Bundle Rename</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_generaltools.html#marker-bundle-rename-with-metadata">Marker Bundle Rename (with Metadata)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_generaltools.html#sort-selected-nodes-in-outliner">Sort Selected Nodes In Outliner</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_generaltools.html#remove-solver-nodes">Remove Solver Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_generaltools.html#user-preferences">User Preferences</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_inputoutput.html">Input/Output Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_inputoutput.html#copy-camera-to-clipboard">Copy Camera to Clipboard</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_hotkeys.html">Hotkeys</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tools_hotkeys.html#change-hotkey-set">Change Hotkey Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_hotkeys.html#default-hotkeys">Default Hotkeys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_hotkeys.html#marking-menu">Marking Menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_hotkeys.html#customising-default-hotkeys">Customising Default Hotkeys</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tutorial.html"
+                        title="previous chapter">Tutorials</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tools_solver_ui.html"
+                        title="next chapter">Solver UI</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_solver_ui.html" title="Solver UI"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tutorial.html" title="Tutorials"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Tools</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

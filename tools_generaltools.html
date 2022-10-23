@@ -1,0 +1,444 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>General Tools &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Input/Output Tools" href="tools_inputoutput.html" />
+    <link rel="prev" title="General Tools" href="tools_zdepthtools.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_inputoutput.html" title="Input/Output Tools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tools_zdepthtools.html" title="General Tools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" accesskey="U">Tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">General Tools</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="general-tools">
+<h1>General Tools<a class="headerlink" href="#general-tools" title="Permalink to this headline">¶</a></h1>
+<p>The tools on this page are not specific to Markers, Cameras or
+Bundles, but are general tools useful in Maya for many different
+tasks.</p>
+<section id="reparent-under-node">
+<span id="reparent-under-node-tool-ref"></span><h2>Reparent Under Node<a class="headerlink" href="#reparent-under-node" title="Permalink to this headline">¶</a></h2>
+<p>This is equivalent to Maya’s <em>Parent</em> tool (<cite>p</cite> hotkey), except the
+tool will maintain the world-space position of the transform node for
+each keyframe applied to the node.</p>
+<p>See the <a class="reference internal" href="#reparent-window-tool-ref"><span class="std std-ref">Reparent UI</span></a> for options.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select nodes to change parent, then select the new parent node.</p>
+<ul class="simple">
+<li><p>The first nodes will become the children of the last selected node.</p></li>
+<li><p>The last node is the new parent.</p></li>
+</ul>
+</li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>The first nodes are now parented under the last selected node,
+and will stay in the same position in world-space for all
+keyframes.</p></li>
+</ul>
+</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reparent2.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">reparent_under_node</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="unparent-to-world">
+<span id="unparent-to-world-tool-ref"></span><h2>Unparent to World<a class="headerlink" href="#unparent-to-world" title="Permalink to this headline">¶</a></h2>
+<p>This is equalivent to Maya’s <em>Unparent</em> tool (<cite>Shift + p</cite> hotkey), except the tool will
+maintain the world-space position of the transform node for each
+keyframe applied to the node.</p>
+<p>See the <a class="reference internal" href="#reparent-window-tool-ref"><span class="std std-ref">Reparent UI</span></a> for options.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select Maya transform node(s).</p>
+<ul class="simple">
+<li><p>The nodes may be in a deep hierarchy, or not.</p></li>
+</ul>
+</li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>The nodes will maintain the same world-space position, but will
+be unparented into root Maya Outliner (the nodes will not be
+parented under any node).</p></li>
+</ul>
+</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reparent2.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">unparent_to_world</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="reparent-ui">
+<span id="reparent-window-tool-ref"></span><h2>Reparent UI<a class="headerlink" href="#reparent-ui" title="Permalink to this headline">¶</a></h2>
+<p>This window displays options for how to re-parent nodes.</p>
+<p><em>Reparent</em> is the underlying tool window used by both
+<a class="reference internal" href="#reparent-under-node-tool-ref"><span class="std std-ref">Reparent Under Node</span></a>
+and <a class="reference internal" href="#unparent-to-world-tool-ref"><span class="std std-ref">Unparent to World</span></a>.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/tools_reparent_ui.png"><img alt="Reparent UI" src="_images/tools_reparent_ui.png" style="width: 40%;" /></a>
+</figure>
+<table class="colwidths-auto docutils align-default" id="id1">
+<caption><span class="caption-text">Reparent UI Options</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Values</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Children</p></td>
+<td><p><em>Node Names</em></p></td>
+<td><p>Description</p></td>
+</tr>
+<tr class="row-odd"><td><p>Parent</p></td>
+<td><p><em>Node Name</em> or empty</p></td>
+<td><p>The node to place children underneath.</p></td>
+</tr>
+<tr class="row-even"><td><p>Frame Range</p></td>
+<td><p><em>Timeline (Inner)</em>, <em>Timeline (Outer)</em> or <em>Custom</em></p></td>
+<td><p>The frame range to bake.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Bake Mode</p></td>
+<td><p><em>Full Bake</em> or <em>Smart Bake</em></p></td>
+<td><p>Method for how keyframes are baked.</p></td>
+</tr>
+<tr class="row-even"><td><p>Rotate Order</p></td>
+<td><p><em>Use Existing</em> or <em>XYZ</em>, <em>ZXY</em>, etc</p></td>
+<td><p>Change the rotation order of children nodes when re-parenting.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Delete Static AnimCurves</p></td>
+<td><p><em>Yes</em> or <em>No</em></p></td>
+<td><p>Baked attributes that do not animate have all keys replaced
+with a static value.</p></td>
+</tr>
+</tbody>
+</table>
+<p>This video tutorial explains how the re-parenting tool works.</p>
+<iframe width="720" height="405" src="https://www.youtube.com/embed/UmVu3oag_-k" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.reparent2.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="create-remove-controller">
+<span id="create-remove-controller-tool-ref"></span><h2>Create / Remove Controller<a class="headerlink" href="#create-remove-controller" title="Permalink to this headline">¶</a></h2>
+<p>Create a new transform node to control another node. The <cite>Controller</cite>
+transform node can have a separate hierarchy than the source node.</p>
+<p>The UI for this tool can be used control the baking method, and the
+‘space’ of the created controller. These features create a very
+powerful workflow for editing, and solving characters and objects.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select a Maya transform node.</p></li>
+<li><p>Open ‘Create Controller’ tool UI.</p></li>
+<li><p>Type a name for the controller</p></li>
+<li><p>Select your ‘pivot object’ and press ‘Pick Selection’.</p></li>
+<li><p>Select your ‘main object’ and press ‘Pick Selection’.</p></li>
+<li><p>Select your options for ‘Type’, ‘Bake’ mode, and ‘Space’.</p>
+<ul class="simple">
+<li><p>‘Type’ changes the node types created for the controller. Choose
+“Group” if you do not like to see locators in your viewport.</p></li>
+<li><p>‘Bake’ changes the method used to bake keyframe times. Choose
+‘Full Bake’ to bake every frame, and choose ‘Smart Bake’ to bake
+some frames.</p></li>
+<li><p>‘Space’ changes the heirachy and orientation of the Controller
+nodes. Using ‘Screen Space’ allows you to move an object in
+screen-space, with X and Y the position on the screen, and Z the
+depth into the screen. This can be very helpful for smoothing
+Z-bumps and depth problems.</p></li>
+</ul>
+</li>
+<li><p>Press ‘Create Controller’ button.</p>
+<ul class="simple">
+<li><p>A new ‘Controller’ node is created at the same position as the
+‘pick object’.</p></li>
+</ul>
+</li>
+<li><p>Select and move the created Controller as you wish.</p></li>
+<li><p>Select the Controller, run ‘Remove Controller’ tool.</p>
+<ul class="simple">
+<li><p>The source node is baked and the Controller node is deleted.</p></li>
+</ul>
+</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createcontroller2.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To remove a controller, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.removecontroller2.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The tool described above is “version 2”, for the older (less featured)
+version 1, use this python code to run it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createcontroller.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+
+<span class="c1"># Create a Controller</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+
+<span class="c1"># Remove selected Controller</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="marker-bundle-rename">
+<span id="marker-bundle-rename-tool-ref"></span><h2>Marker Bundle Rename<a class="headerlink" href="#marker-bundle-rename" title="Permalink to this headline">¶</a></h2>
+<p>Renames selected markers and bundles connected, takes the input name
+given in prompt window.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select Marker (or Bundle) nodes.</p></li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>A prompt is displayed to enter the new name for the Marker and Bundles.</p></li>
+<li><p>If the prompt is left at the default value <code class="docutils literal notranslate"><span class="pre">marker</span></code>, then the
+Markers will named <code class="docutils literal notranslate"><span class="pre">marker</span></code> and Bundles will be named
+<code class="docutils literal notranslate"><span class="pre">bundle</span></code>.</p></li>
+</ul>
+</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.markerbundlerename.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="marker-bundle-rename-with-metadata">
+<span id="marker-bundle-rename-with-metadata-tool-ref"></span><h2>Marker Bundle Rename (with Metadata)<a class="headerlink" href="#marker-bundle-rename-with-metadata" title="Permalink to this headline">¶</a></h2>
+<p>Renames the selected Markers and Bundles using only the metadata saved
+onto the Marker nodes.</p>
+<p>For example, metadata from 3DEqualizer is saved onto the Marker node.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select Marker (or Bundle) nodes.</p></li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>Markers and Bundles are renamed based on metadata, if metadata is
+not found, the Marker/Bundle is not renamed.</p></li>
+</ul>
+</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.markerbundlerenamewithmetadata.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="sort-selected-nodes-in-outliner">
+<span id="sort-selected-nodes-in-outliner-tool-ref"></span><h2>Sort Selected Nodes In Outliner<a class="headerlink" href="#sort-selected-nodes-in-outliner" title="Permalink to this headline">¶</a></h2>
+<p>Alphabetically sorts (re-orders) the selected nodes in the Maya Outliner window.</p>
+<p>This tool avoids the Maya Outliner window’s (interactive) “Sort Order” feature
+and encourages an organised workflow when working with many nodes.</p>
+<p>This tool works on <em>any</em> Transform node, not only mmSolver nodes.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/sort_nodes_in_outliner_compare.png"><img alt="Before/After of all nodes sorted in the Maya Outliner." src="_images/sort_nodes_in_outliner_compare.png" style="width: 80%;" /></a>
+</figure>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select transform nodes.</p></li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>The nodes will be sorted.</p></li>
+</ul>
+</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.sortoutlinernodes.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="remove-solver-nodes">
+<span id="remove-solver-nodes-tool-ref"></span><h2>Remove Solver Nodes<a class="headerlink" href="#remove-solver-nodes" title="Permalink to this headline">¶</a></h2>
+<p>Remove Solver Nodes tool allows for the removal of
+some or all nodes related to the matchmoveSolver
+plugin, allowing for a clean scene to be prepped
+to passed to other departments/vendors.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/tools_remove_solver_nodes_ui.png"><img alt="Remove Solver Nodes UI" src="_images/tools_remove_solver_nodes_ui.png" style="width: 40%;" /></a>
+</figure>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>A UI will open.</p></li>
+</ul>
+</li>
+<li><p>Select what type of nodes you wish to remove.</p></li>
+<li><p>Click ‘Clean’.</p></li>
+</ol>
+<p>Note that if there are other nodes constrained or
+connected in some way to the marker or bundle
+nodes they should be cleaned or baked before
+removal.</p>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.removesolvernodes.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="user-preferences">
+<span id="user-preferences-tool-ref"></span><h2>User Preferences<a class="headerlink" href="#user-preferences" title="Permalink to this headline">¶</a></h2>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/tools_user_preferences_ui.png"><img alt="User Preferences window" src="_images/tools_user_preferences_ui.png" style="width: 60%;" /></a>
+</figure>
+<p>The <em>User Preferences</em> window is used to change how mmSolver tools and
+general functions behave, by default.</p>
+<table class="colwidths-auto docutils align-default" id="id2">
+<caption><span class="caption-text">Options</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Values</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Add New Markers to</p></td>
+<td><p><em>None</em> or <em>Active Collection</em></p></td>
+<td><p>When a new Marker is created by any tool, what Collection should
+this Marker be automatically added to?</p></td>
+</tr>
+<tr class="row-odd"><td><p>Add New Lines to</p></td>
+<td><p><em>None</em> or <em>Active Collection</em></p></td>
+<td><p>When a new Line is created by any tool, what Collection should
+this Line be automatically added to?</p></td>
+</tr>
+<tr class="row-even"><td><p>Minimal UI While Solving</p></td>
+<td><p><em>Yes</em> or <em>No</em></p></td>
+<td><p>If <em>Yes</em>, the <a class="reference internal" href="tools_solver_ui.html#solver-ui-ref"><span class="std std-ref">Solver UI</span></a> will only display
+the progress bar while solving, and then switch back to the full
+UI solving has finished. If <em>No</em>, the <a class="reference internal" href="tools_solver_ui.html#solver-ui-ref"><span class="std std-ref">Solver UI</span></a>
+will not be adjusted.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Open ‘User Preferences’ window.</p></li>
+<li><p>Change options.</p></li>
+<li><p>Press “Save” button.</p></li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.userprefswindow.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">General Tools</a><ul>
+<li><a class="reference internal" href="#reparent-under-node">Reparent Under Node</a></li>
+<li><a class="reference internal" href="#unparent-to-world">Unparent to World</a></li>
+<li><a class="reference internal" href="#reparent-ui">Reparent UI</a></li>
+<li><a class="reference internal" href="#create-remove-controller">Create / Remove Controller</a></li>
+<li><a class="reference internal" href="#marker-bundle-rename">Marker Bundle Rename</a></li>
+<li><a class="reference internal" href="#marker-bundle-rename-with-metadata">Marker Bundle Rename (with Metadata)</a></li>
+<li><a class="reference internal" href="#sort-selected-nodes-in-outliner">Sort Selected Nodes In Outliner</a></li>
+<li><a class="reference internal" href="#remove-solver-nodes">Remove Solver Nodes</a></li>
+<li><a class="reference internal" href="#user-preferences">User Preferences</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tools_zdepthtools.html"
+                        title="previous chapter">General Tools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tools_inputoutput.html"
+                        title="next chapter">Input/Output Tools</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tools_generaltools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_inputoutput.html" title="Input/Output Tools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tools_zdepthtools.html" title="General Tools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" >Tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">General Tools</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

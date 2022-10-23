@@ -1,0 +1,227 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mmSolver.tools.attachbundletocurve &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.tools.averagemarker" href="mmSolver.tools.averagemarker.html" />
+    <link rel="prev" title="mmSolver.tools.aboutwindow" href="mmSolver.tools.aboutwindow.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.averagemarker.html" title="mmSolver.tools.averagemarker"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.aboutwindow.html" title="mmSolver.tools.aboutwindow"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" accesskey="U">mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.attachbundletocurve</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-mmSolver.tools.attachbundletocurve">
+<span id="mmsolver-tools-attachbundletocurve"></span><h1>mmSolver.tools.attachbundletocurve<a class="headerlink" href="#module-mmSolver.tools.attachbundletocurve" title="Permalink to this headline">¶</a></h1>
+<p>Attach a Bundle node to a NURBS curve, ready to be solved.</p>
+<section id="module-mmSolver.tools.attachbundletocurve.tool">
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.attachbundletocurve.tool" title="Permalink to this headline">¶</a></h2>
+<p>Attach Bundle to Curve tool. Attaches a bundle node to a NURBs curve.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.attachbundletocurve.tool.main">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.attachbundletocurve.tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.attachbundletocurve.tool.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renames selected markers and bundles (and the connected nodes).</p>
+</dd></dl>
+
+</section>
+<section id="module-mmSolver.tools.attachbundletocurve.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.attachbundletocurve.lib" title="Permalink to this headline">¶</a></h2>
+<p>Attach Bundle to Curve tool. Attaches a bundle node to a NURBs curve.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.attachbundletocurve.lib.get_nurbs_curve_nodes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.attachbundletocurve.lib.</span></span><span class="sig-name descname"><span class="pre">get_nurbs_curve_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.attachbundletocurve.lib.get_nurbs_curve_nodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the NURBS curve shape nodes from the given nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – Nodes to query.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of NURBS curve shape nodes.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[str, .]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.attachbundletocurve.lib.get_closest_point_on_nurbs_curve">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.attachbundletocurve.lib.</span></span><span class="sig-name descname"><span class="pre">get_closest_point_on_nurbs_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crv_shp_node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.attachbundletocurve.lib.get_closest_point_on_nurbs_curve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the position along a NURBS curve that is closest to the input position.</p>
+<p>Position is expected to be in world space.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pos</strong> (<em>[</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>]</em>) – Position of the input to find closest point.</p></li>
+<li><p><strong>crv_shp_node</strong> (<em>str</em>) – NURBS curve shape node.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tuple of world space position and percentage along the NURBS curve.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>([float, float, float], float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.attachbundletocurve.lib.connect_transform_to_nurbs_curve">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.attachbundletocurve.lib.</span></span><span class="sig-name descname"><span class="pre">connect_transform_to_nurbs_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tfm_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crv_shp_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.attachbundletocurve.lib.connect_transform_to_nurbs_curve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect a transform node to a NURBS curve.</p>
+<p>The attribute created will range from 0.0 to 1.0, with a default
+value of 0.5.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tfm_node</strong> (<em>str</em>) – Transform node to connect to the NURBS curve.</p></li>
+<li><p><strong>crv_shp_node</strong> (<em>str</em>) – NURBS curve shape node to connect to.</p></li>
+<li><p><strong>attr_name</strong> (<em>str</em>) – Attribute name to create on the transform.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A ‘pointOnCurveInfo’ node name connected between the
+transform and curve.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.attachbundletocurve.lib.attach_bundle_to_curve">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.attachbundletocurve.lib.</span></span><span class="sig-name descname"><span class="pre">attach_bundle_to_curve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bnd_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crv_shp_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.attachbundletocurve.lib.attach_bundle_to_curve" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connect a Bundle node to a NURBS curve, and create an attribute to
+control the position along the curve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bnd_node</strong> (<em>str</em>) – Bundle (transform) node to connect to the NURBS
+curve.</p></li>
+<li><p><strong>crv_shp_node</strong> (<em>str</em>) – NURBS curve shape node to connect to.</p></li>
+<li><p><strong>attr_name</strong> (<em>str</em>) – Attribute name to create on the bundle node.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The ‘node.attr’ to be controlled for bundle movement
+along the curve.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mmSolver.tools.attachbundletocurve.constant">
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.attachbundletocurve.constant" title="Permalink to this headline">¶</a></h2>
+<p>Attach Bundle to Curve tool.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.attachbundletocurve</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.tools.attachbundletocurve.tool">Tools</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.attachbundletocurve.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.attachbundletocurve.constant">Constants</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.tools.aboutwindow.html"
+                        title="previous chapter">mmSolver.tools.aboutwindow</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.tools.averagemarker.html"
+                        title="next chapter">mmSolver.tools.averagemarker</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.tools.attachbundletocurve.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.averagemarker.html" title="mmSolver.tools.averagemarker"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.aboutwindow.html" title="mmSolver.tools.aboutwindow"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" >mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.attachbundletocurve</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

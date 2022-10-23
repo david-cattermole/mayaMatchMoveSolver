@@ -1,0 +1,214 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mmSolver.tools.reparent2 &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.tools.reprojectbundle" href="mmSolver.tools.reprojectbundle.html" />
+    <link rel="prev" title="mmSolver.tools.reparent" href="mmSolver.tools.reparent.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.reprojectbundle.html" title="mmSolver.tools.reprojectbundle"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.reparent.html" title="mmSolver.tools.reparent"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" accesskey="U">mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.reparent2</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-mmSolver.tools.reparent2">
+<span id="mmsolver-tools-reparent2"></span><h1>mmSolver.tools.reparent2<a class="headerlink" href="#module-mmSolver.tools.reparent2" title="Permalink to this headline">¶</a></h1>
+<p>Re-parent transform node to a new parent, across time.</p>
+<section id="module-mmSolver.tools.reparent2.tool">
+<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.reparent2.tool" title="Permalink to this headline">¶</a></h2>
+<p>Re-parent transform node to a new parent, across time.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.reparent2.tool.reparent_under_node">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.reparent2.tool.</span></span><span class="sig-name descname"><span class="pre">reparent_under_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent2.tool.reparent_under_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>Re-parent the selection under the last selected node.</p>
+<p>All settings are taken from the UI’s defaults. To change these,
+please use the UI (or ‘configmaya’ module)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.reparent2.tool.unparent_to_world">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.reparent2.tool.</span></span><span class="sig-name descname"><span class="pre">unparent_to_world</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent2.tool.unparent_to_world" title="Permalink to this definition">¶</a></dt>
+<dd><p>Un-parent the selected nodes into world space.</p>
+<p>All settings are taken from the UI’s defaults. To change these,
+please use the UI (or ‘configmaya’ module)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.reparent2.tool.reparent">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.reparent2.tool.</span></span><span class="sig-name descname"><span class="pre">reparent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">children</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent2.tool.reparent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reparent ‘children’ nodes under ‘parent’ node.</p>
+<p>If ‘parent’ is None, the children are unparented to world.</p>
+<p>All settings are taken from the UI’s defaults. To change these,
+please use the UI (or ‘configmaya’ module)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.reparent2.tool.reparent_under_node_open_window">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.reparent2.tool.</span></span><span class="sig-name descname"><span class="pre">reparent_under_node_open_window</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent2.tool.reparent_under_node_open_window" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.reparent2.tool.unparent_to_world_open_window">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.reparent2.tool.</span></span><span class="sig-name descname"><span class="pre">unparent_to_world_open_window</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent2.tool.unparent_to_world_open_window" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.reparent2.tool.open_window">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.reparent2.tool.</span></span><span class="sig-name descname"><span class="pre">open_window</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent2.tool.open_window" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-mmSolver.tools.reparent2.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.reparent2.lib" title="Permalink to this headline">¶</a></h2>
+<p>Re-parent transform node to a new parent, across time.</p>
+<p>This script will re-parent objects, keeping the world space position
+the same except moving the objects in to a different hierarchy. This
+will work with animation data, not just a single frame, like the
+native Maya command “parent”.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.reparent2.lib.nodes_attrs_settable">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.reparent2.lib.</span></span><span class="sig-name descname"><span class="pre">nodes_attrs_settable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent2.lib.nodes_attrs_settable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dict of the settable status for each attribute on each node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>({str: str, .}, int, int)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.reparent2.lib.reparent">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.reparent2.lib.</span></span><span class="sig-name descname"><span class="pre">reparent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">children_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_range_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bake_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotate_order_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_static_anim_curves</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent2.lib.reparent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reparent the children under the given parent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>children_nodes</strong> (<em>[</em><a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em>, </em><em>.</em><em>]</em>) – List of child nodes to be modified.</p></li>
+<li><p><strong>parent_node</strong> (<a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>None</em>) – The new parent node for children, or None means
+un-parent.</p></li>
+<li><p><strong>frame_range_mode</strong> (<em>FRAME_RANGE_MODE_VALUES</em>) – What frame range to use for baking.</p></li>
+<li><p><strong>start_frame</strong> (<em>int</em><em> or </em><em>None</em>) – First frame of custom frame range.</p></li>
+<li><p><strong>end_frame</strong> (<em>int</em><em> or </em><em>None</em>) – Last frame of custom frame range.</p></li>
+<li><p><strong>bake_mode</strong> (<em>BAKE_MODE_VALUES</em>) – How to bake the object? Where to place keyframes.</p></li>
+<li><p><strong>rotate_order_mode</strong> (<em>ROTATE_ORDER_MODE_VALUES</em>) – </p></li>
+<li><p><strong>delete_static_anim_curves</strong> (<em>bool</em>) – Delete any animCurves that all have the same values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of ‘children’ TransformNodes modified, will not
+contain child nodes if the child is already parented
+under ‘parent’.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[<a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode">TransformNode</a>, .]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.reparent2</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.tools.reparent2.tool">Tool</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.reparent2.lib">Library</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.tools.reparent.html"
+                        title="previous chapter">mmSolver.tools.reparent</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.tools.reprojectbundle.html"
+                        title="next chapter">mmSolver.tools.reprojectbundle</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.tools.reparent2.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.reprojectbundle.html" title="mmSolver.tools.reprojectbundle"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.reparent.html" title="mmSolver.tools.reparent"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" >mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.reparent2</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

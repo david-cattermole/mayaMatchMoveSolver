@@ -1,0 +1,188 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>mmSolver.tools.markerbundlerename &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="mmSolver.tools.markerbundlerenamewithmetadata" href="mmSolver.tools.markerbundlerenamewithmetadata.html" />
+    <link rel="prev" title="mmSolver.tools.loadmarker" href="mmSolver.tools.loadmarker.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.markerbundlerenamewithmetadata.html" title="mmSolver.tools.markerbundlerenamewithmetadata"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.loadmarker.html" title="mmSolver.tools.loadmarker"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" accesskey="U">mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.markerbundlerename</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-mmSolver.tools.markerbundlerename">
+<span id="mmsolver-tools-markerbundlerename"></span><h1>mmSolver.tools.markerbundlerename<a class="headerlink" href="#module-mmSolver.tools.markerbundlerename" title="Permalink to this headline">¶</a></h1>
+<section id="module-mmSolver.tools.markerbundlerename.tool">
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.markerbundlerename.tool" title="Permalink to this headline">¶</a></h2>
+<p>This tool renames selected markers and bundles (and the connected nodes).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.markerbundlerename.tool.main">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.markerbundlerename.tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.markerbundlerename.tool.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>Renames selected markers and bundles (and the connected nodes).</p>
+</dd></dl>
+
+</section>
+<section id="module-mmSolver.tools.markerbundlerename.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.markerbundlerename.lib" title="Permalink to this headline">¶</a></h2>
+<p>This file holds all the helpful functions for markerbundlerename</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.markerbundlerename.lib.prompt_for_new_node_name">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.markerbundlerename.lib.</span></span><span class="sig-name descname"><span class="pre">prompt_for_new_node_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.markerbundlerename.lib.prompt_for_new_node_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ask the user for a new node name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<em>str</em>) – Dialog box window title.</p></li>
+<li><p><strong>message</strong> (<em>str</em>) – Read-only text to show the user, for making a
+decision.</p></li>
+<li><p><strong>text</strong> (<em>str</em>) – The initial text to prompt the user as a starting
+point.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>New node name, or None if user cancelled.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.markerbundlerename.lib.rename_markers_and_bundles">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.markerbundlerename.lib.</span></span><span class="sig-name descname"><span class="pre">rename_markers_and_bundles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bnd_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bnd_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_suffix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bnd_suffix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.markerbundlerename.lib.rename_markers_and_bundles" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename the given marker and bundle nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mkr_nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – Marker nodes to rename.</p></li>
+<li><p><strong>bnd_nodes</strong> (<em>[</em><em>str</em><em>, </em><em>.</em><em>]</em>) – Bundle nodes to rename.</p></li>
+<li><p><strong>mkr_name</strong> (<em>str</em>) – Rename the markers to this name.</p></li>
+<li><p><strong>bnd_name</strong> (<em>str</em>) – Rename the bundle to this name.</p></li>
+<li><p><strong>number_format</strong> (<em>str</em>) – The name format string for numbering.</p></li>
+<li><p><strong>mkr_suffix</strong> (<em>str</em>) – Set the marker suffix name.</p></li>
+<li><p><strong>bnd_suffix</strong> (<em>str</em>) – Set the bundle suffix name.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Nodes that have been renamed.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[str, .]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mmSolver.tools.markerbundlerename.constant">
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.markerbundlerename.constant" title="Permalink to this headline">¶</a></h2>
+<p>This file holds all the constants for markerbundlerename tool.</p>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.markerbundlerename</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.tools.markerbundlerename.tool">Tools</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.markerbundlerename.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.markerbundlerename.constant">Constants</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="mmSolver.tools.loadmarker.html"
+                        title="previous chapter">mmSolver.tools.loadmarker</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="mmSolver.tools.markerbundlerenamewithmetadata.html"
+                        title="next chapter">mmSolver.tools.markerbundlerenamewithmetadata</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/mmSolver.tools.markerbundlerename.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.markerbundlerenamewithmetadata.html" title="mmSolver.tools.markerbundlerenamewithmetadata"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="mmSolver.tools.loadmarker.html" title="mmSolver.tools.loadmarker"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="mmSolver.tools.html" >mmSolver.tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">mmSolver.tools.markerbundlerename</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

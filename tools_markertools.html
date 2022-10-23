@@ -1,0 +1,332 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Marker Tools &#8212; mayaMatchMoveSolver master documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Line Tools" href="tools_linetools.html" />
+    <link rel="prev" title="Bundle Tools" href="tools_bundletools.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_linetools.html" title="Line Tools"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="tools_bundletools.html" title="Bundle Tools"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" accesskey="U">Tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Marker Tools</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="marker-tools">
+<h1>Marker Tools<a class="headerlink" href="#marker-tools" title="Permalink to this headline">¶</a></h1>
+<p>The tools used to manipulate 2D Marker nodes.</p>
+<section id="toggle-marker-lock-state">
+<span id="toggle-marker-lock-state-tool-ref"></span><h2>Toggle Marker Lock State<a class="headerlink" href="#toggle-marker-lock-state" title="Permalink to this headline">¶</a></h2>
+<p>Toggle marker lock state will toggle lock state of the selected
+marker’s attributes, if any of the marker translate attributes are
+locked, running this tool will unlock translateX, translateX and
+enable attributes on the selected markers, and running the tool again
+will lock same attributes.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select marker nodes.</p></li>
+<li><p>Run tool.
+- The selected marker node attributes will be toggled between locked and unlocked.</p></li>
+</ol>
+<p>Run this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.togglemarkerlock.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="place-marker-manipulator">
+<span id="place-marker-manipulator-tool-ref"></span><h2>Place Marker Manipulator<a class="headerlink" href="#place-marker-manipulator" title="Permalink to this headline">¶</a></h2>
+<p>Place a Marker at a position of a mouse click.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Click to active a 3D Maya Viewport containing Marker nodes.</p></li>
+<li><p>Select one or more Marker nodes in the viewport.</p></li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>The current tool will change to <cite>Place Marker</cite>.</p></li>
+</ul>
+</li>
+<li><p>Left-click in the viewport to place the Marker node under the
+mouse.</p>
+<ul class="simple">
+<li><p>The user may also hold the left-click button down to move the
+Marker to a new screen position in real-time.</p></li>
+</ul>
+</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.placemarkermanip.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="duplicate-marker">
+<span id="duplicate-marker-tool-ref"></span><h2>Duplicate Marker<a class="headerlink" href="#duplicate-marker" title="Permalink to this headline">¶</a></h2>
+<p>Duplicate marker tool will create a new markers having same position
+from the selected markers, this tool will duplicate on all selected
+markers.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select Marker nodes</p></li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>New Marker nodes are created as exact copies of the selected Marker nodes.</p></li>
+</ul>
+</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.duplicatemarker.tool</span>
+<span class="n">mmSolver</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">duplicatemarker</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="average-marker">
+<span id="average-marker-tool-ref"></span><h2>Average Marker<a class="headerlink" href="#average-marker" title="Permalink to this headline">¶</a></h2>
+<p>Average Marker tool will create a new Marker with an averaged position
+between all the selected Markers.</p>
+<p>This tool must have at least two Markers selected.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select 1 or more Marker nodes.</p></li>
+<li><p>Run tool.
+- A third Marker node will be created between all others.</p></li>
+</ol>
+<p>Run this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.averagemarker.tool</span>
+<span class="n">mmSolver</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">averagemarker</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="project-marker-on-mesh-ray-cast">
+<span id="project-marker-on-mesh-tool-ref"></span><h2>Project Marker on Mesh (Ray-Cast)<a class="headerlink" href="#project-marker-on-mesh-ray-cast" title="Permalink to this headline">¶</a></h2>
+<p>Ray-casts each bundle connected to the selected markers on to the mesh
+from the associated camera.</p>
+<p>Select markers and mesh objects to ray-cast on to, if no mesh objects
+are selected the tool will ray-cast on to all visible mesh objects.</p>
+<p>If a bundle translate or rotation attribute is locked, it will be
+unlocked, then projected, and then the lock state will be reverted to
+the original value.</p>
+<p>The viewport camera does not need to be active for this tool to
+project. The tool will work on the current frame only.</p>
+<p>You may choose to change the bundle’s rotation attributes with these options:</p>
+<table class="colwidths-auto docutils align-default" id="id1">
+<caption><span class="caption-text">Bundle Rotation Options</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>No Change</p></td>
+<td><p>Do not change the bundle rotation attributes at all.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Aim At Camera</p></td>
+<td><p>Aim the bundle rotations towards the camera position.</p></td>
+</tr>
+<tr class="row-even"><td><p>Mesh Normal</p></td>
+<td><p>Set the bundle rotations to the hit mesh face normal.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select Markers.</p></li>
+<li><p>(Optional) Select Mesh nodes.</p>
+<ul class="simple">
+<li><p>Selecting Mesh nodes will limit the nodes used for ray-casting
+computation.</p></li>
+</ul>
+</li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>The Bundles connected to the selected Markers will be projected
+from the currently active viewport camera onto the mesh in the
+scene</p></li>
+</ul>
+</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.raycastmarker.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="deform-marker">
+<span id="deform-marker-tool-ref"></span><h2>Deform Marker<a class="headerlink" href="#deform-marker" title="Permalink to this headline">¶</a></h2>
+<p>Marker Deformation is a process of offsetting a Marker’s 2D position
+at specific times, and allowing higher-frequency positional data to
+flow in-between the specific times.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select Marker nodes.</p></li>
+<li><p>Run ‘Deform Create’ tool.</p>
+<ul class="simple">
+<li><p>The selected Marker nodes are added into the Deform mode.</p></li>
+<li><p>A new Maya Animation Layer is created if it does not exist.</p></li>
+</ul>
+</li>
+<li><p>Modify the Marker node’s 2D position.</p></li>
+<li><p>Select Marker node(s).</p></li>
+</ol>
+<ol class="arabic simple" start="4">
+<li><p>Run ‘Deform Bake’ tool.</p>
+<ul class="simple">
+<li><p>Sets keys for the Marker’s 2D position deformation.</p></li>
+</ul>
+</li>
+<li><p>Run ‘Deform Remove’ tool</p>
+<ul class="simple">
+<li><p>Removes the Deformation Maya Animation Layer.</p></li>
+</ul>
+</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.deformmarker.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+
+<span class="c1"># Deform Create</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">create_offset_layer</span><span class="p">()</span>
+
+<span class="c1"># Deform Bake</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">bake_offset</span><span class="p">()</span>
+
+<span class="c1"># Deform Remove</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">remove_layer_override</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="show-hide-deviation-curves">
+<span id="show-hide-deviation-curves-tool-ref"></span><h2>Show / Hide Deviation Curves<a class="headerlink" href="#show-hide-deviation-curves" title="Permalink to this headline">¶</a></h2>
+<p>Show and Hide the Deviation (error level) curves that is saved on the Marker nodes.</p>
+<ol class="arabic simple">
+<li><p>Select Marker nodes.</p></li>
+<li><p>Run ‘Show Deviation Curves’ tool.</p>
+<ul class="simple">
+<li><p>The Maya Graph Editor will be displayed, with only deviation
+curves visible.</p></li>
+</ul>
+</li>
+<li><p>Once you are finished reviewing the Marker Deviation curves, run
+‘Hide Deviation Curves’ tool to revert the Maya Graph Editor to
+normal visibility.</p></li>
+</ol>
+<p>Run this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.showdeviationcurves.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+
+<span class="c1"># Show Deviation Curves</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">show_deviation</span><span class="p">()</span>
+
+<span class="c1"># Hide Deviation Curves</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">hide_deviation</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Marker Tools</a><ul>
+<li><a class="reference internal" href="#toggle-marker-lock-state">Toggle Marker Lock State</a></li>
+<li><a class="reference internal" href="#place-marker-manipulator">Place Marker Manipulator</a></li>
+<li><a class="reference internal" href="#duplicate-marker">Duplicate Marker</a></li>
+<li><a class="reference internal" href="#average-marker">Average Marker</a></li>
+<li><a class="reference internal" href="#project-marker-on-mesh-ray-cast">Project Marker on Mesh (Ray-Cast)</a></li>
+<li><a class="reference internal" href="#deform-marker">Deform Marker</a></li>
+<li><a class="reference internal" href="#show-hide-deviation-curves">Show / Hide Deviation Curves</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="tools_bundletools.html"
+                        title="previous chapter">Bundle Tools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="tools_linetools.html"
+                        title="next chapter">Line Tools</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/tools_markertools.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="tools_linetools.html" title="Line Tools"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="tools_bundletools.html" title="Bundle Tools"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="tools.html" >Tools</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Marker Tools</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
+    </div>
+  </body>
+</html>

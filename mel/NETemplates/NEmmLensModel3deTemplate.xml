@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<templates>
+    <using package='maya'/>
+    <template name='NEmmLensModel3de'>
+        <attribute name='inLens' type='maya.TdataCompound'>
+            <label>In Lens</label>
+        </attribute>
+        <attribute name='outLens' type='maya.TdataCompound'>
+            <label>Out Lens</label>
+        </attribute>
+    </template>
+    <view name='NEDefault' template='NEmmLensModel3de'>
+        <property name='outLens'/>
+        <property name='inLens'/>
+        <property name='enable'/>
+    </view>
+    <view name='NEDefaultSoloOutput' template='NEmmLensModel3de'>
+        <property name='outLens'/>
+    </view>
+</templates>

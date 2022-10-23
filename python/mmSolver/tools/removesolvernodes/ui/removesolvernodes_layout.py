@@ -27,6 +27,7 @@ from __future__ import print_function
 import os
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
@@ -70,29 +71,53 @@ class RemoveSolverNodesLayout(QtWidgets.QWidget, ui_removesolvernodes_layout.Ui_
         # Read these values from the config file.
         config = get_config()
         save_scene = get_config_value(
-            config, 'data/save_scene',
-            const.SAVE_SCENE_DEFAULT_VALUE)
+            config, 'data/save_scene', const.SAVE_SCENE_DEFAULT_VALUE
+        )
         markers = get_config_value(
-            config, 'data/delete_markers',
-            const.DELETE_MARKERS_DEFAULT_VALUE)
+            config, 'data/delete_markers', const.DELETE_MARKERS_DEFAULT_VALUE
+        )
         bundles = get_config_value(
-            config, 'data/delete_bundles',
-            const.DELETE_BUNDLES_DEFAULT_VALUE)
+            config, 'data/delete_bundles', const.DELETE_BUNDLES_DEFAULT_VALUE
+        )
         marker_groups = get_config_value(
-            config, 'data/delete_marker_groups',
-            const.DELETE_MARKER_GROUPS_DEFAULT_VALUE)
+            config,
+            'data/delete_marker_groups',
+            const.DELETE_MARKER_GROUPS_DEFAULT_VALUE,
+        )
+        lenses = get_config_value(
+            config, 'data/delete_lenses', const.DELETE_LENSES_DEFAULT_VALUE
+        )
+        lines = get_config_value(
+            config, 'data/delete_lines', const.DELETE_LINES_DEFAULT_VALUE
+        )
+        imageplanes = get_config_value(
+            config, 'data/delete_imageplanes', const.DELETE_IMAGE_PLANES_DEFAULT_VALUE
+        )
         collections = get_config_value(
-            config, 'data/delete_collections',
-            const.DELETE_COLLECTIONS_DEFAULT_VALUE)
+            config, 'data/delete_collections', const.DELETE_COLLECTIONS_DEFAULT_VALUE
+        )
+        display_nodes = get_config_value(
+            config,
+            'data/delete_display_nodes',
+            const.DELETE_DISPLAY_NODES_DEFAULT_VALUE,
+        )
+        configuration = get_config_value(
+            config, 'data/delete_configuration', const.DELETE_CONFIG_DEFAULT_VALUE
+        )
         others = get_config_value(
-            config, 'data/delete_others',
-            const.DELETE_OTHERS_DEFAULT_VALUE)
+            config, 'data/delete_others', const.DELETE_OTHERS_DEFAULT_VALUE
+        )
 
         self.saveSceneBefore_checkBox.setChecked(save_scene)
         self.markers_checkBox.setChecked(markers)
         self.bundles_checkBox.setChecked(bundles)
         self.markerGroup_checkBox.setChecked(marker_groups)
+        self.lenses_checkBox.setChecked(lenses)
+        self.lines_checkBox.setChecked(lines)
+        self.imagePlanes_checkBox.setChecked(imageplanes)
         self.collections_checkBox.setChecked(collections)
+        self.displayNodes_checkBox.setChecked(display_nodes)
+        self.configuration_checkBox.setChecked(configuration)
         self.otherNodes_checkBox.setChecked(others)
 
     def save_options(self):
@@ -101,7 +126,12 @@ class RemoveSolverNodesLayout(QtWidgets.QWidget, ui_removesolvernodes_layout.Ui_
         markers = self.markers_checkBox.isChecked()
         bundles = self.bundles_checkBox.isChecked()
         marker_groups = self.markerGroup_checkBox.isChecked()
+        lenses = self.lenses_checkBox.isChecked()
+        lines = self.lines_checkBox.isChecked()
+        imageplanes = self.imagePlanes_checkBox.isChecked()
         collections = self.collections_checkBox.isChecked()
+        display_nodes = self.displayNodes_checkBox.isChecked()
+        configuration = self.configuration_checkBox.isChecked()
         others = self.otherNodes_checkBox.isChecked()
 
         config = get_config()
@@ -110,7 +140,12 @@ class RemoveSolverNodesLayout(QtWidgets.QWidget, ui_removesolvernodes_layout.Ui_
             config.set_value("data/delete_markers", markers)
             config.set_value("data/delete_bundles", bundles)
             config.set_value("data/delete_marker_groups", marker_groups)
+            config.set_value("data/delete_lenses", lenses)
+            config.set_value("data/delete_lines", lines)
+            config.set_value("data/delete_imageplanes", imageplanes)
             config.set_value("data/delete_collections", collections)
+            config.set_value("data/delete_display_nodes", display_nodes)
+            config.set_value("data/delete_configuration", configuration)
             config.set_value("data/delete_others", others)
             config.write()
         return

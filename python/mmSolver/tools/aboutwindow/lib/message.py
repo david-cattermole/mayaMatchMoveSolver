@@ -40,6 +40,6 @@ def get_about_text():
         description=desc,
         page=page,
         copyrights=copyrights,
-        version=version
+        version=version,
     )
     return text

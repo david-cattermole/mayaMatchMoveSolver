@@ -31,9 +31,7 @@ import mmSolver.tools.attributebake.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def get_bake_frame_range(frame_range_mode,
-                         custom_start_frame,
-                         custom_end_frame):
+def get_bake_frame_range(frame_range_mode, custom_start_frame, custom_end_frame):
     assert isinstance(frame_range_mode, pycompat.TEXT_TYPE)
     assert frame_range_mode in const.FRAME_RANGE_MODE_VALUES
     assert isinstance(custom_start_frame, pycompat.INT_TYPES)
@@ -44,9 +42,7 @@ def get_bake_frame_range(frame_range_mode,
     elif frame_range_mode == const.FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE:
         frame_range = time_utils.get_maya_timeline_range_outer()
     elif frame_range_mode == const.FRAME_RANGE_MODE_CUSTOM_VALUE:
-        frame_range = time_utils.FrameRange(
-            custom_start_frame,
-            custom_end_frame)
+        frame_range = time_utils.FrameRange(custom_start_frame, custom_end_frame)
     else:
         LOG.error("Invalid frame range mode: %r", frame_range_mode)
     return frame_range
@@ -78,7 +74,8 @@ def bake_attributes(nodes, attrs, start_frame, end_frame, smart_bake=False):
             smart=int(smart_bake),
             simulation=True,
             sparseAnimCurveBake=False,
-            minimizeRotation=True)
+            minimizeRotation=True,
+        )
     else:
         maya.cmds.bakeResults(
             nodes,
@@ -86,5 +83,6 @@ def bake_attributes(nodes, attrs, start_frame, end_frame, smart_bake=False):
             attribute=attrs,
             simulation=True,
             sparseAnimCurveBake=False,
-            minimizeRotation=True)
+            minimizeRotation=True,
+        )
     return

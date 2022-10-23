@@ -1,0 +1,16 @@
+[tool.black]
+line-length = 88  # The black default is a good compromise.
+target-version = ['py34']
+include = '\.py$'
+extend-exclude = '''
+/(
+  \.toml
+  |\.sh
+  |\.git
+  |\.md
+  |\.txt
+  |\.yml
+  |\.ui
+  |\.mel
+)/
+'''

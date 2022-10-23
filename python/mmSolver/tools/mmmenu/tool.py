@@ -55,9 +55,8 @@ def build_menu():
     # Create main menu.
     main_parent = menu_utils.get_maya_window_parent()
     mm_menu = menu_utils.create_menu(
-        parent=main_parent,
-        name=const.MENU_NAME,
-        tearOff=const.MENU_TEAR_OFF)
+        parent=main_parent, name=const.MENU_NAME, tearOff=const.MENU_TEAR_OFF
+    )
 
     # Create the menu items
     items = menu_config.get_value('data/items', default_value=[])

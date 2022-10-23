@@ -59,27 +59,12 @@ Solver Options
 The solver options below are extra options used to change how the
 solver works internally.
 
-Evaluate Object Relationships
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Evaluate Mesh Rivets
+~~~~~~~~~~~~~~~~~~~~
 
-Check this option **on** to enable evaluation of the Marker and
-Attribute relationships - how the objects are connected.
-
-With this feature enabled, *mmSolver* is able to use the relationship
-between Markers and Attributes to improve performance. For example, if
-Marker *A* does not affect node *B*, *mmSolver* can skip this
-calculation.
-
-It is recommended to enable this check-box if you have many (eg, 10+)
-Markers and Attributes in the solve, and / or when you are solving
-static Attributes with the Standard solver tab.
-
-Evaluate Complex Node Graphs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-When enabled, *Evaluate Complex Node Graphs* will change the internal
-evaluation method to help solve "complex" node networks (such as
-Mesh Rivets which have cyclical node connection networks).
+When enabled, *Evaluate Mesh Rivets* will change the internal
+evaluation method to help solve "complex" node networks (such as Mesh
+Rivets which have cyclical node connection networks).
 
 Evaluation of "complex" node graphs can significantly impact performance.
 It is recommended to turn this feature **off** unless the Maya scene
@@ -87,6 +72,9 @@ is not evaluating correctly without this feature.
 
 Mesh Rivets, using the classic `rivet.mel`_ script can be evaluated using
 this feature enabled.
+
+.. note:: In mmSolver v0.3.x, this feature was known as *Evaluate
+   Complex Node Graphs*.
 
 .. _rivet.mel:
    https://www.highend3d.com/maya/script/rivet-button-for-maya

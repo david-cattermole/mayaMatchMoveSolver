@@ -18,4 +18,3 @@
 """
 System Information window, detailing the current system in one text field.
 """
-

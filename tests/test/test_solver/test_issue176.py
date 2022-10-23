@@ -30,38 +30,41 @@
 GitHub Issue #176
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
 import maya.cmds
 
-
+import mmSolver.api as mmapi
 import test.test_solver.solverutils as solverUtils
 
 
 # @unittest.skip
 class TestSolverIssue176(solverUtils.SolverTestCase):
-
     def do_solve(self, solver_name, solver_index):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
 
         # Open File Path
-        scenePath = self.get_data_path(
-            'scenes', 'mmSolver_nodeaffects_rig_rivet.ma')
+        scenePath = self.get_data_path('scenes', 'mmSolver_nodeaffects_rig_rivet.ma')
         maya.cmds.file(
             scenePath,
             open=True,
             force=True,
             typ='mayaAscii',
             ignoreVersion=True,
-            options='v=0'
+            options='v=0',
         )
 
         cam_tfm = '|mainCamera'
@@ -71,12 +74,8 @@ class TestSolverIssue176(solverUtils.SolverTestCase):
         plug_x = 'woman_rig2:IKSpine1_M.translateX'
         plug_y = 'woman_rig2:IKSpine1_M.translateY'
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
-        markers = (
-            (marker_tfm, cam_shp, bundle_tfm),
-        )
+        cameras = ((cam_tfm, cam_shp),)
+        markers = ((marker_tfm, cam_shp, bundle_tfm),)
         node_attrs = [
             (plug_x, 'None', 'None', 'None', 'None'),
             (plug_y, 'None', 'None', 'None', 'None'),
@@ -105,10 +104,11 @@ class TestSolverIssue176(solverUtils.SolverTestCase):
                 timeEvalMode=1,  # 1 = 'set time' eval mode.
                 iterations=10,
                 verbose=True,
-                **kwargs)
+                **kwargs
+            )
             results.append(result)
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = self.get_data_path('solver_test_issue176_%s_after.ma' % solver_name)
@@ -119,14 +119,14 @@ class TestSolverIssue176(solverUtils.SolverTestCase):
         successes = [result[0] != 'success=1' for result in results]
         self.assertEqual(any(successes), False)
 
-    def test_init_levmar(self):
-        self.do_solve('levmar', 0)
+    def test_init_ceres(self):
+        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES)
 
     def test_init_cminpack_lmdif(self):
-        self.do_solve('cminpack_lmdif', 1)
+        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF)
 
     def test_init_cminpack_lmder(self):
-        self.do_solve('cminpack_lmder', 2)
+        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER)
 
 
 if __name__ == '__main__':

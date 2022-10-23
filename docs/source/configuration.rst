@@ -66,7 +66,7 @@ Home Directory Configuration
 To store settings and preferences that persist after Maya is closed,
 files are saved into the home directory.
 
-The path for these changes are dependant on the Operating System:
+The path for these changes are dependent on the Operating System:
 
 - ``${HOME}/.mmSolver`` (on Linux)
 

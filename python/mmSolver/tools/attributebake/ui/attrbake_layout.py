@@ -25,6 +25,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -50,7 +51,8 @@ class AttributeBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         frame_range_modes = const.FRAME_RANGE_MODE_LABELS
         self.frame_range_combo.addItems(frame_range_modes)
         self.frame_range_combo.currentIndexChanged.connect(
-            self.frameRangeModeIndexChanged)
+            self.frameRangeModeIndexChanged
+        )
 
         # Create connections
         self.start_frame_spinbox.valueChanged.connect(self.startFrameValueChanged)
@@ -67,11 +69,14 @@ class AttributeBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
         # Get frame range
         custom_start_frame = configmaya.get_scene_option(
-            start_name, const.DEFAULT_FRAME_START)
+            start_name, const.DEFAULT_FRAME_START
+        )
         custom_end_frame = configmaya.get_scene_option(
-            end_name, const.DEFAULT_FRAME_END)
+            end_name, const.DEFAULT_FRAME_END
+        )
         frame_range = lib.get_bake_frame_range(
-            frame_range_mode, custom_start_frame, custom_end_frame)
+            frame_range_mode, custom_start_frame, custom_end_frame
+        )
 
         # Set frame range widgets
         self.start_frame_spinbox.setValue(frame_range.start)
@@ -150,26 +155,26 @@ class AttributeBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
     def populateUi(self):
         frame_range_mode = configmaya.get_scene_option(
-            const.CONFIG_FRAME_RANGE_MODE_KEY,
-            default=const.DEFAULT_FRAME_RANGE_MODE)
+            const.CONFIG_FRAME_RANGE_MODE_KEY, default=const.DEFAULT_FRAME_RANGE_MODE
+        )
         start_frame = configmaya.get_scene_option(
-            const.CONFIG_FRAME_START_KEY,
-            default=const.DEFAULT_FRAME_START)
+            const.CONFIG_FRAME_START_KEY, default=const.DEFAULT_FRAME_START
+        )
         end_frame = configmaya.get_scene_option(
-            const.CONFIG_FRAME_END_KEY,
-            default=const.DEFAULT_FRAME_END)
+            const.CONFIG_FRAME_END_KEY, default=const.DEFAULT_FRAME_END
+        )
         smart_bake_state = configmaya.get_scene_option(
-            const.CONFIG_SMART_BAKE_KEY,
-            default=const.DEFAULT_SMART_BAKE_STATE)
+            const.CONFIG_SMART_BAKE_KEY, default=const.DEFAULT_SMART_BAKE_STATE
+        )
         from_channelbox_state = configmaya.get_scene_option(
             const.CONFIG_FROM_CHANNELBOX_KEY,
-            default=const.DEFAULT_FROM_CHANNELBOX_STATE)
+            default=const.DEFAULT_FROM_CHANNELBOX_STATE,
+        )
 
         label = const.FRAME_RANGE_MODE_VALUE_LABEL_MAP[frame_range_mode]
         self.frame_range_combo.setCurrentText(label)
 
-        frame_range = lib.get_bake_frame_range(
-            frame_range_mode, start_frame, end_frame)
+        frame_range = lib.get_bake_frame_range(frame_range_mode, start_frame, end_frame)
         self.start_frame_spinbox.setValue(frame_range.start)
         self.end_frame_spinbox.setValue(frame_range.end)
 

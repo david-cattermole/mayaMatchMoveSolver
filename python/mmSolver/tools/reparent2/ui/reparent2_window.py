@@ -26,6 +26,7 @@ Usage::
 """
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -79,14 +80,12 @@ class Reparent2Window(BaseWindow):
     def add_menus(self, menubar):
         edit_menu = QtWidgets.QMenu('Edit', menubar)
         commonmenus.create_edit_menu_items(
-            edit_menu,
-            reset_settings_func=self.reset_options)
+            edit_menu, reset_settings_func=self.reset_options
+        )
         menubar.addMenu(edit_menu)
 
         help_menu = QtWidgets.QMenu('Help', menubar)
-        commonmenus.create_help_menu_items(
-            help_menu,
-            tool_help_func=_open_help)
+        commonmenus.create_help_menu_items(help_menu, tool_help_func=_open_help)
         menubar.addMenu(help_menu)
 
     def apply(self):
@@ -97,8 +96,7 @@ class Reparent2Window(BaseWindow):
         LOG.debug('parent_node: %r', parent_node)
 
         # Store transform nodes (to be restored after tool is run).
-        children_tfm_nodes = [tfm_utils.TransformNode(node=n)
-                              for n in children_nodes]
+        children_tfm_nodes = [tfm_utils.TransformNode(node=n) for n in children_nodes]
         if parent_node is not None:
             parent_tfm_node = tfm_utils.TransformNode(node=parent_node)
 
@@ -107,8 +105,7 @@ class Reparent2Window(BaseWindow):
         if parent_node is None:
             msg = 'Not enough nodes, choose at least 1 node.'
         else:
-            msg = ('Not enough children nodes, '
-                   'choose at least 1 child node.')
+            msg = 'Not enough children nodes, ' 'choose at least 1 child node.'
         if len(children_nodes) == 0:
             LOG.error(msg)
             return
@@ -148,9 +145,5 @@ def main(show=True, auto_raise=True, delete=False):
               opened.
     :rtype: SolverWindow or None.
     """
-    win = Reparent2Window.open_window(
-        show=show,
-        auto_raise=auto_raise,
-        delete=delete
-    )
+    win = Reparent2Window.open_window(show=show, auto_raise=auto_raise, delete=delete)
     return win

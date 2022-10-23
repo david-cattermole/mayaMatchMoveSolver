@@ -30,11 +30,11 @@ import maya.cmds
 import maya.utils
 
 import mmSolver.logger
-import mmSolver.utils.node as node_utils
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.python_compat as pycompat
 import mmSolver.api as mmapi
+import mmSolver.tools.createcamera.lib as createcamera_lib
 import mmSolver.tools.userpreferences.lib as userprefs_lib
 
 
@@ -53,7 +53,7 @@ def get_selected_cameras():
 
     added_cameras = []
     objects = mmapi.filter_nodes_into_categories(nodes)
-    for node in objects['camera']:
+    for node in objects[mmapi.OBJECT_TYPE_CAMERA]:
         cam = None
         if maya.cmds.nodeType(node) == 'camera':
             cam = mmapi.Camera(shape=node)
@@ -66,7 +66,7 @@ def get_selected_cameras():
             cams.append(cam)
             added_cameras.append(shp_node)
 
-    for node in objects['marker']:
+    for node in objects[mmapi.OBJECT_TYPE_MARKER]:
         mkr = mmapi.Marker(node=node)
         cam = mkr.get_camera()
         if cam is None:
@@ -76,7 +76,7 @@ def get_selected_cameras():
             cams.append(cam)
             added_cameras.append(shp_node)
 
-    for node in objects['markergroup']:
+    for node in objects[mmapi.OBJECT_TYPE_MARKER_GROUP]:
         mkr_grp = mmapi.MarkerGroup(node=node)
         cam = mkr_grp.get_camera()
         if cam is None:
@@ -122,11 +122,14 @@ def get_marker_groups(cam):
     if cam.is_valid() is False:
         return mkr_grp_list
     cam_tfm = cam.get_transform_node()
-    below_nodes = maya.cmds.ls(
-        cam_tfm, dag=True, long=True,
-        type='mmMarkerGroupTransform') or []
-    mkr_grp_list = [mmapi.MarkerGroup(node=n) for n in below_nodes
-                    if mmapi.get_object_type(n) == mmapi.OBJECT_TYPE_MARKER_GROUP]
+    below_nodes = (
+        maya.cmds.ls(cam_tfm, dag=True, long=True, type='mmMarkerGroupTransform') or []
+    )
+    mkr_grp_list = [
+        mmapi.MarkerGroup(node=n)
+        for n in below_nodes
+        if mmapi.get_object_type(n) == mmapi.OBJECT_TYPE_MARKER_GROUP
+    ]
     return mkr_grp_list
 
 
@@ -136,10 +139,7 @@ def get_selected_markers():
 
     :rtype: list of mmSolver.api.Marker
     """
-    nodes = maya.cmds.ls(
-        selection=True,
-        type='transform',
-        long=True) or []
+    nodes = maya.cmds.ls(selection=True, type='transform', long=True) or []
     mkr_nodes = mmapi.filter_marker_nodes(nodes)
     mkr_list = [mmapi.Marker(node=n) for n in mkr_nodes]
     return mkr_list
@@ -192,18 +192,7 @@ def create_new_camera():
     :returns: Camera object.
     :rtype: Camera
     """
-    name = 'camera'
-    cam_tfm = maya.cmds.createNode(
-        'transform',
-        name=name)
-    cam_tfm = node_utils.get_long_name(cam_tfm)
-    cam_shp = maya.cmds.createNode(
-        'camera',
-        name=name + 'Shape',
-        parent=cam_tfm)
-    cam_shp = node_utils.get_long_name(cam_shp)
-    cam = mmapi.Camera(transform=cam_tfm, shape=cam_shp)
-    return cam
+    return createcamera_lib.create_camera(name='camera')
 
 
 def create_new_marker_group(cam):
@@ -244,6 +233,5 @@ def trigger_maya_to_refresh():
 
 def deferred_revert_of_config_value(config, key, old_value):
     """Set the user preferences to a value, as a deferred fashion."""
-    maya.utils.executeDeferred(
-        lambda: userprefs_lib.set_value(config, key, old_value))
+    maya.utils.executeDeferred(lambda: userprefs_lib.set_value(config, key, old_value))
     return

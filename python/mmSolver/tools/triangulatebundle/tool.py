@@ -23,7 +23,6 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.tools.triangulatebundle.lib as lib
 
 
 LOG = mmSolver.logger.get_logger()
@@ -39,13 +38,13 @@ def main():
 
     2) Run tool.
 
-    3) Bundle is triangulated in TX, TY and TZ.
+    3) Bundles are triangulated in TX, TY and TZ.
     """
     # Get Markers and Bundles
     sel = maya.cmds.ls(selection=True, long=True) or []
     filter_nodes = mmapi.filter_nodes_into_categories(sel)
-    mkr_nodes = filter_nodes.get('marker', [])
-    bnd_nodes = filter_nodes.get('bundle', [])
+    mkr_nodes = filter_nodes.get(mmapi.OBJECT_TYPE_MARKER, [])
+    bnd_nodes = filter_nodes.get(mmapi.OBJECT_TYPE_BUNDLE, [])
     if len(mkr_nodes) == 0 and len(bnd_nodes) == 0:
         msg = 'Please select at least one marker / bundle!'
         LOG.warning(msg)
@@ -63,8 +62,11 @@ def main():
     # Triangulate
     adjusted_bnd_node_list = []
     for bnd in bnd_list:
-        lib.triangulate_bundle(bnd)
-        adjusted_bnd_node_list.append(bnd.get_node())
+        success = mmapi.triangulate_bundle(bnd)
+        if success is True:
+            adjusted_bnd_node_list.append(bnd.get_node())
+        else:
+            LOG.warn('Bundle could not be triangulated: node=%r', bnd.get_node())
 
     # Select all bundle nodes.
     if len(adjusted_bnd_node_list) > 0:

@@ -62,4 +62,3 @@ def link_marker_bundle(mkr_node, bnd_node):
         )
         LOG.warning(msg)
     return valid
-

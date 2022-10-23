@@ -19,6 +19,10 @@
 Test functions for Camera utilities module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import unittest
 
 import maya.cmds
@@ -26,6 +30,7 @@ import maya.cmds
 import test.test_utils.utilsutils as test_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.camera as camera_utils
+import mmSolver.utils.python_compat as pycompat
 
 
 # @unittest.skip
@@ -36,14 +41,13 @@ class TestCamera(test_utils.UtilsTestCase):
 
     @staticmethod
     def create_camera(name, tfm_node_type=None):
-        assert isinstance(name, basestring)
+        assert isinstance(name, pycompat.TEXT_TYPE)
         if tfm_node_type is None:
             tfm_node_type = 'transform'
         cam_tfm = maya.cmds.createNode(tfm_node_type, name=name)
         cam_tfm = node_utils.get_long_name(cam_tfm)
         shp_name = name + 'Shape'
-        cam_shp = maya.cmds.createNode(
-            'camera', name=shp_name, parent=cam_tfm)
+        cam_shp = maya.cmds.createNode('camera', name=shp_name, parent=cam_tfm)
         cam_shp = node_utils.get_long_name(cam_shp)
         return cam_tfm, cam_shp
 
@@ -76,7 +80,8 @@ class TestCamera(test_utils.UtilsTestCase):
         # Custom transform node type. GitHub issue #123.
         custom_node_type = 'mmMarkerGroupTransform'
         cam_tfm, cam_shp = self.create_camera(
-            'myCamera', tfm_node_type=custom_node_type)
+            'myCamera', tfm_node_type=custom_node_type
+        )
 
         # Must be a transform type.
         inherited_types = maya.cmds.nodeType(cam_tfm, inherited=True) or []
@@ -108,8 +113,8 @@ class TestCamera(test_utils.UtilsTestCase):
         # Custom transform node type. GitHub issue #123.
         custom_node_type = 'mmMarkerGroupTransform'
         cam_tfm, cam_shp = self.create_camera(
-            'myCameraWithCustomNodeType',
-            tfm_node_type=custom_node_type)
+            'myCameraWithCustomNodeType', tfm_node_type=custom_node_type
+        )
 
         cam_tfm_value = camera_utils.is_startup_cam(cam_tfm)
         cam_shp_value = camera_utils.is_startup_cam(cam_shp)

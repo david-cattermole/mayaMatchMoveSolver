@@ -30,6 +30,7 @@ import maya.cmds
 import mmSolver.logger
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtGui as QtGui
@@ -83,8 +84,7 @@ def main():
         image_file_path = plate_data.get('file_path')
         if image_file_path is not None:
             frame_range = lib.get_frame_range_from_file_pattern(
-                image_file_path,
-                fallback_range=frame_range
+                image_file_path, fallback_range=frame_range
             )
     assert isinstance(frame_range, (time_utils.FrameRange, tuple))
     frames = list(range(frame_range.start, frame_range.end + 1))
@@ -93,15 +93,11 @@ def main():
     # Node must be transform and have a camera shape node to be valid.
     rotate_order = const.ROTATE_ORDER
 
-    with tools_utils.tool_context(use_undo_chunk=False,
-                                  use_dg_evaluation_mode=True,
-                                  disable_viewport=True):
+    with tools_utils.tool_context(
+        use_undo_chunk=False, use_dg_evaluation_mode=True, disable_viewport=True
+    ):
         cam_data = lib.query_camera_data(
-            cam_tfm,
-            cam_shp,
-            frames,
-            rotate_order,
-            test_disk
+            cam_tfm, cam_shp, frames, rotate_order, test_disk
         )
 
     # Generate file contents.

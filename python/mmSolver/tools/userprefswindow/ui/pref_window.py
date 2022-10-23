@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -77,14 +78,12 @@ class PrefWindow(BaseWindow):
     def add_menus(self, menubar):
         edit_menu = QtWidgets.QMenu('Edit', menubar)
         commonmenus.create_edit_menu_items(
-            edit_menu,
-            reset_settings_func=self.reset_prefs)
+            edit_menu, reset_settings_func=self.reset_prefs
+        )
         menubar.addMenu(edit_menu)
 
         help_menu = QtWidgets.QMenu('Help', menubar)
-        commonmenus.create_help_menu_items(
-            help_menu,
-            tool_help_func=_open_help)
+        commonmenus.create_help_menu_items(help_menu, tool_help_func=_open_help)
         menubar.addMenu(help_menu)
 
     def reset_prefs(self):
@@ -107,16 +106,26 @@ class PrefWindow(BaseWindow):
     def save_prefs(self):
         config = self._config
         options = [
-            (pref_const.REG_EVNT_ADD_NEW_MKR_TO_KEY,
-             self.subForm.getAddNewMarkersToConfigValue),
-            (pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY,
-             self.subForm.getSolverUIValidateOnOpenConfigValue),
-            (pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY,
-             self.subForm.getSolverUIShowValidateButtonConfigValue),
-            (pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY,
-             self.subForm.getSolverUIAllowObjectRelationsConfigValue),
-            (pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
-             self.subForm.getSolverUIMinimalUIWhileSolvingConfigValue),
+            (
+                pref_const.REG_EVNT_ADD_NEW_MKR_TO_KEY,
+                self.subForm.getAddNewMarkersToConfigValue,
+            ),
+            (
+                pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY,
+                self.subForm.getSolverUIValidateOnOpenConfigValue,
+            ),
+            (
+                pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY,
+                self.subForm.getSolverUIShowValidateButtonConfigValue,
+            ),
+            (
+                pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY,
+                self.subForm.getSolverUIAllowObjectRelationsConfigValue,
+            ),
+            (
+                pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
+                self.subForm.getSolverUIMinimalUIWhileSolvingConfigValue,
+            ),
         ]
         for key, func in options:
             value = func()
@@ -149,9 +158,5 @@ def main(show=True, auto_raise=True, delete=False):
               opened.
     :rtype: PrefWindow or None.
     """
-    win = PrefWindow.open_window(
-        show=show,
-        auto_raise=auto_raise,
-        delete=delete
-    )
+    win = PrefWindow.open_window(show=show, auto_raise=auto_raise, delete=delete)
     return win

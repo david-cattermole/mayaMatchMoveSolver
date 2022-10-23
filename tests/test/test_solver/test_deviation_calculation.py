@@ -20,22 +20,26 @@ Tests printing statistics from the 'mmSolver' command using the
 'printStatistics' flag.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
 import maya.cmds
 
-
+import mmSolver.api as mmapi
 import test.test_solver.solverutils as solverUtils
 
 
 # @unittest.skip
 class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
-
     def do_solve(self, solver_name, solver_index):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
@@ -88,9 +92,7 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
             asPixelCoordinate=True,
         )
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
+        cameras = ((cam_tfm, cam_shp),)
         markers = (
             (mkr_topRight, cam_shp, bnd_topRight),
             (mkr_middleLeft, cam_shp, bnd_middleLeft),
@@ -131,23 +133,27 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
         print('mkr_middleLeft_values:', mkr_middleLeft_values)
         eps = 0.00001
         self.assertTrue(self.approx_equal(mkr_topRight_values[0], 2048.0, eps=eps))
-        self.assertTrue(self.approx_equal(mkr_topRight_values[1], 1258.6666666, eps=eps))
+        self.assertTrue(
+            self.approx_equal(mkr_topRight_values[1], 1258.6666666, eps=eps)
+        )
         self.assertTrue(self.approx_equal(mkr_topLeft_values[0], 0.0, eps=eps))
         self.assertTrue(self.approx_equal(mkr_topLeft_values[1], 1258.6666666, eps=eps))
         self.assertTrue(self.approx_equal(mkr_middleTop_values[0], 1024.0, eps=eps))
-        self.assertTrue(self.approx_equal(mkr_middleTop_values[1], 1258.6666666, eps=eps))
+        self.assertTrue(
+            self.approx_equal(mkr_middleTop_values[1], 1258.6666666, eps=eps)
+        )
         self.assertTrue(self.approx_equal(mkr_middleLeft_values[0], 0.0, eps=eps))
         self.assertTrue(self.approx_equal(mkr_middleLeft_values[1], 576.0, eps=eps))
         return
 
-    def test_init_levmar(self):
-        self.do_solve('levmar', 0)
+    def test_init_ceres(self):
+        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES)
 
     def test_init_cminpack_lmdif(self):
-        self.do_solve('cminpack_lmdif', 1)
+        self.do_solve('cminpack_lmdif', mmapi.SOLVER_TYPE_CMINPACK_LMDIF)
 
     def test_init_cminpack_lmder(self):
-        self.do_solve('cminpack_lmder', 2)
+        self.do_solve('cminpack_lmder', mmapi.SOLVER_TYPE_CMINPACK_LMDER)
 
 
 if __name__ == '__main__':

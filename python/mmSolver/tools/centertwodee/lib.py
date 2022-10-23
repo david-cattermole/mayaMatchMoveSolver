@@ -96,12 +96,7 @@ def set_offset_range(source='slider'):
         output_range_start = const.SLIDER_MIN
         output_range_end = const.SLIDER_MAX
 
-    return (
-        input_range_start,
-        input_range_end,
-        output_range_start,
-        output_range_end
-    )
+    return (input_range_start, input_range_end, output_range_start, output_range_end)
 
 
 def set_zoom_range(input_value=None, source=None):
@@ -122,12 +117,7 @@ def set_zoom_range(input_value=None, source=None):
         output_range_start = const.SLIDER_MIN
         output_range_end = const.SLIDER_MAX
 
-    return (
-        input_range_start,
-        input_range_end,
-        output_range_start,
-        output_range_end
-    )
+    return (input_range_start, input_range_end, output_range_start, output_range_end)
 
 
 def get_offset_nodes():
@@ -176,15 +166,15 @@ def process_value(input_value=None, source=None, zoom=None):
     elif zoom is True:
         new_range = set_zoom_range(input_value=input_value, source=source)
         zoom = True
-    input_range_start, input_range_end, \
-        output_range_start, output_range_end = new_range
+    input_range_start, input_range_end, output_range_start, output_range_end = new_range
 
     output = _remap(
         input_range_start,
         input_range_end,
         float(output_range_start),
         float(output_range_end),
-        input_value)
+        input_value,
+    )
     return output
 
 

@@ -50,6 +50,7 @@ class SolverBase(object):
     The SolverBase class should be sub-classed and then (at least) the
     'compile' function should be overridden.
     """
+
     def __init__(self, name=None, data=None, *args, **kwargs):
         """
         Initialise a SolverBase.

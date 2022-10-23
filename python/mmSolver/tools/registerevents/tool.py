@@ -42,12 +42,25 @@ LOG = mmSolver.logger.get_logger()
 
 def _register_created_marker_connect_to_collection():
     """
-    Connect the created marker to the currently active Collectione.
+    Connect the created marker to the currently active Collections.
     """
     event_utils.add_function_to_event(
         mmapi.EVENT_NAME_MARKER_CREATED,
         lib.run_connect_markers_to_active_collection,
-        deferred=True)
+        deferred=True,
+    )
+    return
+
+
+def _register_created_line_connect_to_collection():
+    """
+    Connect the created marker to the currently active Collections.
+    """
+    event_utils.add_function_to_event(
+        mmapi.EVENT_NAME_LINE_CREATED,
+        lib.run_connect_lines_to_active_collection,
+        deferred=True,
+    )
     return
 
 
@@ -56,14 +69,22 @@ def _register_changed_collection_update_solver_ui():
     When A Collection has been changed we must update the Solver UI.
     """
     import mmSolver.api as mmapi
+
     event_utils.add_function_to_event(
         mmapi.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
         lib.run_update_input_objects_in_solver_ui,
-        deferred=True)
+        deferred=True,
+    )
+    event_utils.add_function_to_event(
+        mmapi.EVENT_NAME_COLLECTION_LINES_CHANGED,
+        lib.run_update_input_objects_in_solver_ui,
+        deferred=True,
+    )
     event_utils.add_function_to_event(
         mmapi.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
         lib.run_update_output_attributes_in_solver_ui,
-        deferred=True)
+        deferred=True,
+    )
     return
 
 
@@ -72,10 +93,12 @@ def _register_changed_attribute_update_solver_ui():
     Called when attributes are changed and the solver UI needs to be updated.
     """
     import mmSolver.api as mmapi
+
     event_utils.add_function_to_event(
         mmapi.EVENT_NAME_ATTRIBUTE_STATE_CHANGED,
         lib.run_update_output_attributes_in_solver_ui,
-        deferred=True)
+        deferred=True,
+    )
     return
 
 
@@ -85,10 +108,10 @@ def _register_closing_maya_scene():
     file and we cannot allow the pointers to dangle.
     """
     import mmSolver.api as mmapi
+
     event_utils.add_function_to_event(
-        mmapi.EVENT_NAME_MAYA_SCENE_CLOSING,
-        lib.run_close_all_windows,
-        deferred=False)
+        mmapi.EVENT_NAME_MAYA_SCENE_CLOSING, lib.run_close_all_windows, deferred=False
+    )
     return
 
 
@@ -101,6 +124,7 @@ def register_events():
     """
     LOG.info('Registering mmSolver Events...')
     _register_created_marker_connect_to_collection()
+    _register_created_line_connect_to_collection()
     _register_changed_collection_update_solver_ui()
     _register_changed_attribute_update_solver_ui()
     _register_closing_maya_scene()
@@ -113,6 +137,6 @@ def register_events():
         event_utils.trigger_event(event_name)
 
     import maya.cmds
-    maya.cmds.scriptJob(
-        conditionTrue=('flushingScene', flushing_scene_func))
+
+    maya.cmds.scriptJob(conditionTrue=('flushingScene', flushing_scene_func))
     return

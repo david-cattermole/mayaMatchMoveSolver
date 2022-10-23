@@ -26,6 +26,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -51,12 +52,8 @@ class NodeBrowserWidget(QtWidgets.QWidget):
         self.ui.setupUi(self)
 
         # Add and Remove buttons
-        self.ui.add_toolButton.clicked.connect(
-            self.addClicked
-        )
-        self.ui.remove_toolButton.clicked.connect(
-            self.removeClicked
-        )
+        self.ui.add_toolButton.clicked.connect(self.addClicked)
+        self.ui.remove_toolButton.clicked.connect(self.removeClicked)
         return
 
     def addClicked(self):

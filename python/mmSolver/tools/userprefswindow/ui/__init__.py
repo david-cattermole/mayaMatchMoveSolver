@@ -18,4 +18,3 @@
 """
 User Preferences window, allowing users to change how mmSolver works.
 """
-

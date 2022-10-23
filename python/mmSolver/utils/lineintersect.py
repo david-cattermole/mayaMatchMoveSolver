@@ -65,6 +65,8 @@ def get_point_and_direction(camera_node, point_node, frame):
     """
     Get the direction of the camera toward a given point.
 
+    The values returned are in world-space.
+
     .. note:: This function changes the current maya scene time to the
         frame argument. It is the user's responsibility to ensure the
         frame is maintained before/after the tool using this function
@@ -83,16 +85,8 @@ def get_point_and_direction(camera_node, point_node, frame):
     :rtype: (OpenMaya.MPoint, OpenMaya.MVector)
     """
     maya.cmds.currentTime(frame, update=True)
-    obj = maya.cmds.xform(
-        point_node,
-        query=True,
-        worldSpace=True,
-        translation=True)
-    cam = maya.cmds.xform(
-        camera_node,
-        query=True,
-        worldSpace=True,
-        translation=True)
+    obj = maya.cmds.xform(point_node, query=True, worldSpace=True, translation=True)
+    cam = maya.cmds.xform(camera_node, query=True, worldSpace=True, translation=True)
     cam_vec = OpenMaya.MVector(*cam)
     obj_vec = OpenMaya.MVector(*obj)
     direction = obj_vec - cam_vec
@@ -102,9 +96,40 @@ def get_point_and_direction(camera_node, point_node, frame):
     return pnt, direction
 
 
-def calculate_approx_intersection_point_between_two_3d_lines(a_pnt, a_dir,
-                                                             b_pnt, b_dir,
-                                                             eps=None):
+def camera_to_point_direction(camera_node, point, frame):
+    """
+    Get the direction of the camera toward a given point.
+
+    .. note:: This function changes the current maya scene time to the
+        frame argument. It is the user's responsibility to ensure the
+        frame is maintained before/after the tool using this function
+        is finished.
+
+    :param camera_node: Camera transform node.
+    :type camera_node: str
+
+    :param point: A point to get the direction of. Assumed to be in
+        world space.
+    :type point: OpenMaya.MPoint
+
+    :param frame: The frame to query at.
+    :type frame: int
+
+    :return: The direction from the camera to the point.
+    :rtype: OpenMaya.MVector
+    """
+    maya.cmds.currentTime(frame, update=True)
+    cam = maya.cmds.xform(camera_node, query=True, worldSpace=True, translation=True)
+    cam_vec = OpenMaya.MVector(*cam)
+    obj_vec = OpenMaya.MVector(point.x, point.y, point.z)
+    direction = obj_vec - cam_vec
+    direction.normalize()
+    return direction
+
+
+def calculate_approx_intersection_point_between_two_3d_lines(
+    a_pnt, a_dir, b_pnt, b_dir, eps=None
+):
     """
     Calculate approximate intersection between two lines in 3D.
 
@@ -162,10 +187,6 @@ def calculate_approx_intersection_point_between_two_3d_lines(a_pnt, a_dir,
     mua = numer / denom
     mub = (d1343 + d4321 * mua) / d4343
 
-    pa = OpenMaya.MPoint(p1.x + mua * p21.x,
-                         p1.y + mua * p21.y,
-                         p1.z + mua * p21.z)
-    pb = OpenMaya.MPoint(p3.x + mub * p43.x,
-                         p3.y + mub * p43.y,
-                         p3.z + mub * p43.z)
+    pa = OpenMaya.MPoint(p1.x + mua * p21.x, p1.y + mua * p21.y, p1.z + mua * p21.z)
+    pb = OpenMaya.MPoint(p3.x + mub * p43.x, p3.y + mub * p43.y, p3.z + mub * p43.z)
     return pa, pb

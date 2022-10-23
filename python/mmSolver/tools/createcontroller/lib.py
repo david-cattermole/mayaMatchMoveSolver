@@ -75,13 +75,13 @@ def _get_constraints_from_ctrls(input_node):
     """
     Get Constraints 'input_node' is connected to.
     """
-    constraints = maya.cmds.listConnections(
-        input_node,
-        type='constraint',
-        source=False,
-        destination=True) or []
-    constraints = [n for n in constraints
-                   if node_utils.node_is_referenced(n) is False]
+    constraints = (
+        maya.cmds.listConnections(
+            input_node, type='constraint', source=False, destination=True
+        )
+        or []
+    )
+    constraints = [n for n in constraints if node_utils.node_is_referenced(n) is False]
     constraints = set(constraints)
     if len(constraints) == 0:
         LOG.warn('Node is not controlling anything: %r', input_node)
@@ -98,12 +98,15 @@ def _get_destination_nodes_from_ctrls(constraints):
     attr = 'constraintParentInverseMatrix'
     for constraint in constraints:
         plug = constraint + '.' + attr
-        temp = maya.cmds.listConnections(
-            plug,
-            type='transform',
-            source=True,
-            destination=False,
-        ) or []
+        temp = (
+            maya.cmds.listConnections(
+                plug,
+                type='transform',
+                source=True,
+                destination=False,
+            )
+            or []
+        )
         dest_nodes |= set(temp)
     if len(dest_nodes) != 1:
         return []
@@ -125,25 +128,13 @@ def _create_constraint(src_node, dst_node):
     constraints = []
     skip = _get_skip_attrs(src_node, const.TRANSLATE_ATTRS)
     if len(skip) != 3:
-        constraints += maya.cmds.pointConstraint(
-            dst_node,
-            src_node,
-            skip=tuple(skip)
-        )
+        constraints += maya.cmds.pointConstraint(dst_node, src_node, skip=tuple(skip))
     skip = _get_skip_attrs(src_node, const.ROTATE_ATTRS)
     if len(skip) != 3:
-        constraints += maya.cmds.orientConstraint(
-            dst_node,
-            src_node,
-            skip=tuple(skip)
-        )
+        constraints += maya.cmds.orientConstraint(dst_node, src_node, skip=tuple(skip))
     skip = _get_skip_attrs(src_node, const.SCALE_ATTRS)
     if len(skip) != 3:
-        constraints += maya.cmds.scaleConstraint(
-            dst_node,
-            src_node,
-            skip=tuple(skip)
-        )
+        constraints += maya.cmds.scaleConstraint(dst_node, src_node, skip=tuple(skip))
     return
 
 
@@ -206,9 +197,7 @@ def _get_node_parent_map(nodes):
     return nodes_parent
 
 
-def create(nodes,
-           current_frame=None,
-           eval_mode=None):
+def create(nodes, current_frame=None, eval_mode=None):
     """
     Create a Controller for the given nodes.
 
@@ -247,12 +236,8 @@ def create(nodes,
     for node in nodes:
         keytime_obj.add_node_attrs(node, const.TFM_ATTRS, start_frame, end_frame)
     fallback_frame_range = keytime_obj.sum_frame_range_for_nodes(nodes)
-    fallback_times = list(range(fallback_frame_range[0],
-                                fallback_frame_range[1]+1))
-    key_times_map = time_utils.get_keyframe_times_for_node_attrs(
-        nodes,
-        const.TFM_ATTRS
-    )
+    fallback_times = list(range(fallback_frame_range[0], fallback_frame_range[1] + 1))
+    key_times_map = time_utils.get_keyframe_times_for_node_attrs(nodes, const.TFM_ATTRS)
 
     # Query the transform matrix for the nodes
     cache = tfm_utils.TransformMatrixCache()
@@ -284,10 +269,7 @@ def create(nodes,
             name = name.replace(':', '_')
             name = name + '_CTRL'
             name = mmapi.find_valid_maya_node_name(name)
-            tfm = maya.cmds.createNode(
-                'transform',
-                name=name,
-                parent=node_parent)
+            tfm = maya.cmds.createNode('transform', name=name, parent=node_parent)
             tfm = node_utils.get_long_name(tfm)
             shape_name = name + 'Shape'
             maya.cmds.createNode('locator', name=shape_name, parent=tfm)
@@ -308,9 +290,10 @@ def create(nodes,
         tfm_utils.set_transform_values(
             cache,
             src_times,
-            src, dst,
+            src,
+            dst,
             delete_static_anim_curves=False,
-            eval_mode=eval_mode
+            eval_mode=eval_mode,
         )
         src_had_keys = key_times_map.get(src_node) is not None
         if src_had_keys is True:
@@ -322,8 +305,7 @@ def create(nodes,
         anim_curves += anim_utils.get_anim_curves_from_nodes(
             list(keyable_attrs),
         )
-    anim_curves = [n for n in anim_curves
-                   if node_utils.node_is_referenced(n) is False]
+    anim_curves = [n for n in anim_curves if node_utils.node_is_referenced(n) is False]
     if len(anim_curves) > 0:
         maya.cmds.delete(anim_curves)
 
@@ -335,8 +317,7 @@ def create(nodes,
     anim_curves = anim_utils.get_anim_curves_from_nodes(
         list(keyable_attrs),
     )
-    anim_curves = [n for n in anim_curves
-                   if node_utils.node_is_referenced(n) is False]
+    anim_curves = [n for n in anim_curves if node_utils.node_is_referenced(n) is False]
     if len(anim_curves) > 0:
         maya.cmds.delete(anim_curves)
 
@@ -349,9 +330,7 @@ def create(nodes,
     return ctrl_list
 
 
-def remove(nodes,
-           current_frame=None,
-           eval_mode=None):
+def remove(nodes, current_frame=None, eval_mode=None):
     """
     Remove a controller and push the animation back to the controlled
     object.
@@ -382,8 +361,7 @@ def remove(nodes,
     sparse = False
 
     nodes = _sort_by_hierarchy(nodes, children_first=True)
-    tfm_nodes = [tfm_utils.TransformNode(node=n)
-                 for n in nodes]
+    tfm_nodes = [tfm_utils.TransformNode(node=n) for n in nodes]
 
     # Find controlled nodes from controller nodes
     ctrl_to_ctrlled_map = {}
@@ -402,14 +380,10 @@ def remove(nodes,
     for node in nodes:
         keytime_obj.add_node_attrs(node, const.TFM_ATTRS, start_frame, end_frame)
     fallback_frame_range = keytime_obj.sum_frame_range_for_nodes(nodes)
-    fallback_times = list(range(fallback_frame_range[0],
-                                fallback_frame_range[1]+1))
+    fallback_times = list(range(fallback_frame_range[0], fallback_frame_range[1] + 1))
 
     # Query keyframe times on each node attribute
-    key_times_map = time_utils.get_keyframe_times_for_node_attrs(
-        nodes,
-        const.TFM_ATTRS
-    )
+    key_times_map = time_utils.get_keyframe_times_for_node_attrs(nodes, const.TFM_ATTRS)
 
     # Query transform matrix on controlled nodes.
     cache = tfm_utils.TransformMatrixCache()
@@ -443,8 +417,9 @@ def remove(nodes,
         ctrl = tfm_utils.TransformNode(node=ctrl_node)
         for ctrlled_node in ctrlled_nodes:
             ctrlled = tfm_utils.TransformNode(node=ctrlled_node)
-            tfm_utils.set_transform_values(cache, times, ctrl, ctrlled,
-                                           delete_static_anim_curves=False)
+            tfm_utils.set_transform_values(
+                cache, times, ctrl, ctrlled, delete_static_anim_curves=False
+            )
 
     parent_nodes = []
     anim_curves = []
@@ -455,18 +430,20 @@ def remove(nodes,
         for dst_node in dst_nodes:
             dst = tfm_utils.TransformNode(node=dst_node)
             tfm_utils.set_transform_values(
-                cache, src_times, ctrl, dst,
-                delete_static_anim_curves=False
+                cache, src_times, ctrl, dst, delete_static_anim_curves=False
             )
 
             # Re-parent controller child nodes under controlled node.
-            ctrl_children = maya.cmds.listRelatives(
-                src_node,
-                children=True,
-                shapes=False,
-                fullPath=True,
-                type='transform',
-            ) or []
+            ctrl_children = (
+                maya.cmds.listRelatives(
+                    src_node,
+                    children=True,
+                    shapes=False,
+                    fullPath=True,
+                    type='transform',
+                )
+                or []
+            )
             for child_node in ctrl_children:
                 if child_node in nodes:
                     continue
@@ -491,8 +468,7 @@ def remove(nodes,
         maya.cmds.parent(src_node, dst_node, absolute=True)
 
     # Remove animation curves.
-    anim_curves = [n for n in anim_curves
-                   if node_utils.node_is_referenced(n) is False]
+    anim_curves = [n for n in anim_curves if node_utils.node_is_referenced(n) is False]
     if len(anim_curves) > 0:
         maya.cmds.delete(anim_curves)
 

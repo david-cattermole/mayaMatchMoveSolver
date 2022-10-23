@@ -1,0 +1,102 @@
+//
+// Copyright (C) 2021 David Cattermole.
+//
+// This file is part of mmSolver.
+//
+// mmSolver is free software: you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// mmSolver is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+// ---------------------------------------------------------------------
+//
+// SkyDome Shape node Template file.
+//
+
+
+source "AEmmNodeTemplateCommon";
+
+
+global proc AEmmSkyDomeShapeTemplate(string $nodeName)
+{
+    AEmmNodeShapeTemplateCommonBegin($nodeName);
+
+    editorTemplate -beginLayout "General Display" -collapse 0;
+    editorTemplate -addControl "enable";
+    editorTemplate -addControl "resolution";
+    editorTemplate -addControl "transformMode";
+    editorTemplate -addControl "radius";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "alpha";
+    editorTemplate -addControl "lineWidth";
+    editorTemplate -addControl "drawMode";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "axisEnableX";
+    editorTemplate -addControl "axisEnableY";
+    editorTemplate -addControl "axisEnableZ";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "gridLatitudeEnable";
+    editorTemplate -addControl "gridLongitudeEnable";
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "XYZ Axis" -collapse 1;
+    editorTemplate -addControl "axisEnableX";
+    editorTemplate -addControl "axisEnableY";
+    editorTemplate -addControl "axisEnableZ";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "axisEnableTopX";
+    editorTemplate -addControl "axisEnableTopZ";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "axisEnableBottomX";
+    editorTemplate -addControl "axisEnableBottomZ";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "axisColorX";
+    editorTemplate -addControl "axisAlphaX";
+    editorTemplate -addControl "axisLineWidthX";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "axisColorY";
+    editorTemplate -addControl "axisAlphaY";
+    editorTemplate -addControl "axisLineWidthY";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "axisColorZ";
+    editorTemplate -addControl "axisAlphaZ";
+    editorTemplate -addControl "axisLineWidthZ";
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "Latitude Grid" -collapse 1;
+    editorTemplate -addControl "gridLatitudeEnable";
+    editorTemplate -addControl "gridLatitudeEnableTop";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "gridLatitudeEnableBottom";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "gridLatitudeDivisions";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "gridLatitudeColor";
+    editorTemplate -addControl "gridLatitudeAlpha";
+    editorTemplate -addControl "gridLatitudeLineWidth";
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "Longitude Grid" -collapse 1;
+    editorTemplate -addControl "gridLongitudeEnable";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "gridLongitudeEnableTop";
+    editorTemplate -addControl "gridLongitudeEnableBottom";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "gridLongitudeDivisions";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "gridLongitudeAlpha";
+    editorTemplate -addControl "gridLongitudeColor";
+    editorTemplate -addControl "gridLongitudeLineWidth";
+    editorTemplate -endLayout;
+
+    editorTemplate -endLayout;
+
+    AEmmNodeShapeTemplateCommonEnd($nodeName);
+}

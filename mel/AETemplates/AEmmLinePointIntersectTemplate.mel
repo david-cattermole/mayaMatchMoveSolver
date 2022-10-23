@@ -1,0 +1,46 @@
+//
+// Copyright (C) 2021 David Cattermole.
+//
+// This file is part of mmSolver.
+//
+// mmSolver is free software: you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// mmSolver is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+// ---------------------------------------------------------------------
+//
+// Line-Point Intersection node Template file.
+//
+
+
+source "AEmmNodeTemplateCommon";
+
+
+global proc AEmmLinePointIntersectTemplate(string $nodeName)
+{
+    AEmmNodeTemplateCommonBegin($nodeName);
+
+    editorTemplate -beginLayout "In Point" -collapse 0;
+    editorTemplate -addControl "inPoint";
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "2D Line" -collapse 0;
+    editorTemplate -addControl "linePointA";
+    editorTemplate -addControl "linePointB";
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "Out Closest Point" -collapse 0;
+    editorTemplate -addControl "outPoint";
+    editorTemplate -addControl "outDistance";
+    editorTemplate -endLayout;
+
+    AEmmNodeTemplateCommonEnd($nodeName);
+}

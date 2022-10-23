@@ -53,7 +53,7 @@ def main():
     # If a bundle has locked attributes, they will be unlocked and
     # then relocked.
     relock = True
-    
+
     # Get Markers and Bundles
     sel = maya.cmds.ls(sl=True) or []
     filter_nodes = mmapi.filter_nodes_into_categories(sel)
@@ -119,18 +119,12 @@ def main():
             locked_num += int(locked)
         if relock is False:
             if locked_num > 0:
-                msg = (
-                    'Bundle must have unlocked translate attributes: '
-                    'bnd=%r'
-                )
+                msg = 'Bundle must have unlocked translate attributes: ' 'bnd=%r'
                 LOG.warning(msg, bnd_node_full)
                 continue
         elif relock is True:
             # Check the bundle isn't referenced and has locked attrs.
-            referenced = maya.cmds.referenceQuery(
-                bnd_node_full,
-                isNodeReferenced=True
-            )
+            referenced = maya.cmds.referenceQuery(bnd_node_full, isNodeReferenced=True)
             if referenced is True and locked_num > 0:
                 msg = (
                     'Bundle has locked translate attributes and is referenced '

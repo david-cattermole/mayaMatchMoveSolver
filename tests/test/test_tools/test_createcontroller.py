@@ -19,6 +19,10 @@
 Test functions for createcontroller tool.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import unittest
 
 import maya.cmds
@@ -30,7 +34,6 @@ import mmSolver.tools.createcontroller.lib as lib
 
 # @unittest.skip
 class TestCreateController(test_tools_utils.ToolsTestCase):
-
     def create_no_keyframe_scene(self):
         tfm = maya.cmds.createNode('transform')
         maya.cmds.setAttr(tfm + '.translateX', 10.0)
@@ -302,7 +305,9 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         self.assertEqual(maya.cmds.getAttr(ctrl + '.translateX', time=mid), 20.0)
         self.assertEqual(maya.cmds.getAttr(ctrl + '.translateY', time=mid), 30.0)
         self.assertEqual(maya.cmds.getAttr(ctrl + '.translateZ', time=mid), 10.0)
-        self.approx_equal(maya.cmds.getAttr(ctrl + '.rotateY', time=mid), 19.545454545454547)
+        self.approx_equal(
+            maya.cmds.getAttr(ctrl + '.rotateY', time=mid), 19.545454545454547
+        )
         return
 
     def create_hierarchy_scene(self, start, end):
@@ -409,11 +414,11 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         matrix_b2 = maya.cmds.xform(ctrl_b, query=True, matrix=True, worldSpace=True)
         self.assertGreater(
             closeness.compare_floats(matrix_a1, matrix_a2),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
         self.assertGreater(
             closeness.compare_floats(matrix_b1, matrix_b2),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
         lib.remove(ctrls)
@@ -435,14 +440,26 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         # Test shoulder control matrix.
         real_matrix = maya.cmds.xform(tfm_a, query=True, matrix=True, worldSpace=True)
         test_matrix = [
-            -0.16512703574001636, 0.9851022889880628, 0.04802647497156621, 0.0,
-            0.15842071164425758, 0.07455484524495984, -0.9845529204530482, 0.0,
-            -0.9734659419773467, -0.1549679169408274, -0.1683716262592317, 0.0,
-            14.328976267123226, 128.14777525332602, -4.969046642854377, 1.0
+            -0.16512703574001636,
+            0.9851022889880628,
+            0.04802647497156621,
+            0.0,
+            0.15842071164425758,
+            0.07455484524495984,
+            -0.9845529204530482,
+            0.0,
+            -0.9734659419773467,
+            -0.1549679169408274,
+            -0.1683716262592317,
+            0.0,
+            14.328976267123226,
+            128.14777525332602,
+            -4.969046642854377,
+            1.0,
         ]
         self.assertGreater(
             closeness.compare_floats(real_matrix, test_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
         # NOTE: This comparison fails in batch mode, but succeeds when
@@ -480,20 +497,34 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         maya.cmds.setAttr(plug, 0.0)
 
         # save the output
-        path = self.get_data_path('controller_remove_riggedCharacterArmModify_before.ma')
+        path = self.get_data_path(
+            'controller_remove_riggedCharacterArmModify_before.ma'
+        )
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         real_matrix = maya.cmds.xform(tfm_a, query=True, matrix=True, worldSpace=True)
         test_matrix = [
-            -0.7216083162924442, 0.5093866470512706, -0.46883545265204635, 0.0,
-            0.6923015512459766, 0.53095019079326, -0.48868236825060146, 0.0,
-            4.163336342344337e-16, -0.677212772105242, -0.7357872391510578, 0.0,
-            14.328976267123226, 128.14777525332602, -4.9690466428543845, 1.0
+            -0.7216083162924442,
+            0.5093866470512706,
+            -0.46883545265204635,
+            0.0,
+            0.6923015512459766,
+            0.53095019079326,
+            -0.48868236825060146,
+            0.0,
+            4.163336342344337e-16,
+            -0.677212772105242,
+            -0.7357872391510578,
+            0.0,
+            14.328976267123226,
+            128.14777525332602,
+            -4.9690466428543845,
+            1.0,
         ]
         self.assertGreater(
             closeness.compare_floats(real_matrix, test_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
         lib.remove(ctrls)
@@ -507,20 +538,32 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         real_matrix = maya.cmds.xform(tfm_a, query=True, matrix=True, worldSpace=True)
         self.assertGreater(
             closeness.compare_floats(real_matrix, test_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
         # Test elbow control matrix.
         real_matrix = maya.cmds.xform(tfm_b, query=True, matrix=True, worldSpace=True)
         test_matrix = [
-            -0.37141467173729487, 0.6831542385392256, -0.6287697734339405, 0.0,
-            0.928467092372303, 0.27328217589778103, -0.25152675944777053, 0.0,
-            1.5091078635869547e-15, -0.6772127721052421, -0.7357872391510579, 0.0,
-            34.97402889955959, 113.57433714126877, 8.444230861601302, 1.0
+            -0.37141467173729487,
+            0.6831542385392256,
+            -0.6287697734339405,
+            0.0,
+            0.928467092372303,
+            0.27328217589778103,
+            -0.25152675944777053,
+            0.0,
+            1.5091078635869547e-15,
+            -0.6772127721052421,
+            -0.7357872391510579,
+            0.0,
+            34.97402889955959,
+            113.57433714126877,
+            8.444230861601302,
+            1.0,
         ]
         self.assertGreater(
             closeness.compare_floats(real_matrix, test_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
         return
 
@@ -544,16 +587,18 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Ensure the hierarchy is correct.
-        ctrl_a_children = maya.cmds.listRelatives(
-            ctrl_a,
-            children=True,
-            fullPath=True,
-            type='transform') or []
-        ctrl_b_children = maya.cmds.listRelatives(
-            ctrl_b,
-            children=True,
-            fullPath=True,
-            type='transform') or []
+        ctrl_a_children = (
+            maya.cmds.listRelatives(
+                ctrl_a, children=True, fullPath=True, type='transform'
+            )
+            or []
+        )
+        ctrl_b_children = (
+            maya.cmds.listRelatives(
+                ctrl_b, children=True, fullPath=True, type='transform'
+            )
+            or []
+        )
         self.assertIn(ctrl_b, ctrl_a_children)
         self.assertIn(ctrl_c, ctrl_b_children)
 
@@ -596,48 +641,100 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
 
         # Expected Matrices
         expected_book_matrix = [
-            0.0, 1.0, 0.0, 0.0,
-            -1.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.0, 10.0, 0.0, 1.0]
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            10.0,
+            0.0,
+            1.0,
+        ]
         expected_spine_matrix = [
-            -1.0, 0.0, 0.0, 0.0,
-            0.0, -1.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.3518918752670288, 8.476484298706055, 0.0029969215393066406, 1.0]
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.3518918752670288,
+            8.476484298706055,
+            0.0029969215393066406,
+            1.0,
+        ]
         expected_cover_matrix = [
-            0.0, -1.0, 0.0, 0.0,
-            1.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.3488234877586365, 7.9185943603515625, 0.0029969215393066406, 1.0]
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.3488234877586365,
+            7.9185943603515625,
+            0.0029969215393066406,
+            1.0,
+        ]
         expected_latch_matrix = [
-            0.0, 1.0, 0.0, 0.0,
-            -1.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.3430972993373871, 11.661497116088867, 0.0001980811357498169, 1.0]
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.3430972993373871,
+            11.661497116088867,
+            0.0001980811357498169,
+            1.0,
+        ]
 
         book_matrix = maya.cmds.xform(ctrl_a, query=True, matrix=True, worldSpace=True)
         self.assertGreater(
             closeness.compare_floats(book_matrix, expected_book_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
         spine_matrix = maya.cmds.xform(ctrl_b, query=True, matrix=True, worldSpace=True)
         self.assertGreater(
             closeness.compare_floats(spine_matrix, expected_spine_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
         cover_matrix = maya.cmds.xform(ctrl_c, query=True, matrix=True, worldSpace=True)
         self.assertGreater(
             closeness.compare_floats(cover_matrix, expected_cover_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
         latch_matrix = maya.cmds.xform(ctrl_d, query=True, matrix=True, worldSpace=True)
         self.assertGreater(
             closeness.compare_floats(latch_matrix, expected_latch_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
         return
 

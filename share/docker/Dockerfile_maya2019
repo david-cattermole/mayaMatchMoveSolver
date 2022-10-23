@@ -1,0 +1,138 @@
+# To create and run the docker container in PowerShell or BASH:
+#
+# $ docker build --file share/docker/Dockerfile_maya2019 -t mmsolver-linux-maya2019-build .
+# $ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-maya2019-build
+#
+#
+# Once the docker image is built and run, you can execute the
+# following...
+#
+#
+# Install Python and run tools:
+#
+# $ source ./scripts/python_venv_activate_maya2019.bash
+# $ ./scripts/python_linter_run_pylint.bash
+# $ ./scripts/python_linter_run_flake8.bash
+# $ ./scripts/python_linter_run_cpplint.bash
+# $ ./scripts/python_formatter_run_black_check.bash
+# $ deactivate
+#
+#
+# Build CMake project:
+#
+# $ ./scripts/build_mmSolver_linux_maya2019.bash
+# $ mayapy tests/runTests.py
+#
+
+FROM centos:7
+
+RUN yum install --assumeyes \
+       centos-release-scl \
+       epel-release \
+       deltarpm \
+       yum-utils
+
+# OpenSource "mesa" OpenGL Driver.
+RUN yum install --assumeyes \
+       mesa-libGLw \
+       mesa-libGLU \
+       mesa-utils \
+       mesa-libGL-devel \
+       mesa-libEGL-devel \
+       mesa-libGLES-devel \
+       mesa-libGLU-devel \
+       mesa-libGLw-devel \
+       libglvnd*64
+
+# X11 utilities
+RUN yum install --assumeyes \
+       libXp \
+       libXpm \
+       libXmu \
+       libXt \
+       libXi \
+       libXext \
+       libX11 \
+       libXinerama \
+       libXau \
+       libxcb \
+       libXcomposite \
+       libXtst \
+       xorg-x11-server-Xorg \
+       xorg-x11-server-Xvfb \
+
+# Install image libraries and setup fix for Maya to find libtiff.
+RUN yum install --assumeyes \
+       libpng12 \
+       libtiff \
+    && ln -s /usr/lib64/libtiff.so.5 /usr/lib64/libtiff.so.3
+
+# Install miscellaneous Maya dependencies.
+#
+# https://knowledge.autodesk.com/support/maya/troubleshooting/caas/CloudHelp/cloudhelp/2019/ENU/Installation-Maya/files/GUID-D2B5433C-E0D2-421B-9BD8-24FED217FD7F-htm.html
+#
+RUN yum install --assumeyes \
+       gamin \
+       audiofile \
+       audiofile-devel \
+       e2fsprogs-libs \
+       gstreamer1 \
+       gstreamer1-plugins-base \
+       tcsh
+
+# Install fonts needed by Maya.
+# This is probably only needed by the GUI (which we will not open),
+# but it's good to have everything needed, just in case.
+RUN yum install  --assumeyes \
+       xorg-x11-fonts-ISO8859-1-100dpi \
+       xorg-x11-fonts-ISO8859-1-75dpi \
+       liberation-mono-fonts \
+       liberation-fonts-common \
+       liberation-sans-fonts \
+       liberation-serif-fonts
+
+# Fix as devtoolset-6 not in the offical CentOS 7 mirrors any more,
+# but we can hack the repo URLs. See the links below for details and
+# discussions.
+#
+# https://groups.google.com/g/vfx-platform-discuss/c/_-_CPw1fD3c
+# https://github.com/wwfxuk/centos-vault-scl
+#
+RUN curl -sSL https://raw.githubusercontent.com/wwfxuk/centos-vault-scl/master/activate.sh | bash
+
+# Development tools for Maya 2019.
+RUN yum install --assumeyes \
+       rh-python36 \
+       rh-git218 \
+       llvm-toolset-7-clang-tools-extra \
+       cmake3 \
+       devtoolset-6-gcc \
+       devtoolset-6-gcc-c++ \
+       devtoolset-6-make
+
+# Install latest stable Rust with 'rustup'.
+#
+# TODO: Define a minimum Rust version to install.
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y \
+    && source ${HOME}/.cargo/env
+
+# Install Maya from archive.
+ADD ./external/archives/Autodesk_Maya_2019_Linux_64bit.tgz /temp
+RUN rpm -Uvh /temp/Maya*.rpm && rm -r /temp
+ENV MAYA_LOCATION=/usr/autodesk/maya/
+ENV PATH=$MAYA_LOCATION/bin:$PATH
+
+# Workaround for Maya "Segmentation fault (core dumped)" issue.
+# See https://forums.autodesk.com/t5/maya-general/render-crash-on-linux/m-p/5608552/highlight/true
+ENV MAYA_DISABLE_CIP=1
+
+WORKDIR /mmSolver
+
+# Maya 2019 development environment.
+ENTRYPOINT [ \
+    "scl", "enable", \
+               "rh-python36", \
+               "devtoolset-6", \
+               "llvm-toolset-7", \
+               "rh-git218", \
+                   "bash"]

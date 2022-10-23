@@ -23,132 +23,37 @@ SETLOCAL
 
 :: Maya directories
 ::
-:: If you're not using Maya 2016 or have a non-standard install location,
-:: set these variables here.
-::
 :: Note: Do not enclose the MAYA_VERSION in quotes, it will
 ::       lead to tears.
 SET MAYA_VERSION=2016
 SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2016"
 
-:: Clear all build information before re-compiling.
-:: Turn this off when wanting to make small changes and recompile.
-SET FRESH_BUILD=1
+:: Executable names/paths used for build process.
+SET PYTHON_EXE=python
+SET CMAKE_EXE=cmake
+SET RUST_CARGO_EXE=cargo
 
-:: Run the Python API and Solver tests inside Maya, after a
-:: successfully build an install process.
-SET RUN_TESTS=0
+:: C++ Standard to use.
+SET CXX_STANDARD=11
 
-:: Use CMinpack?
-:: CMinpack is the recommended solving library.
-SET WITH_CMINPACK=1
+:: TODO: Setup Compiler environment. Change for your install path as needed.
 
-:: WARNING: Would you like to use GPL-licensed code? If so you will
-:: not be able to distribute
-SET WITH_GPL_CODE=0
-
-:: Where to install the module?
+:: This script defines the batch script variables 'MMSCENEGRAPH_LIB_DIR'
+:: and 'MMSCENEGRAPH_INCLUDE_DIR'.
 ::
-:: Note: In Windows 8 and 10, "My Documents" is no longer visible,
-::       however files copying to "My Documents" automatically go
-::       to the "Documents" directory.
-::
-:: The "$HOME/maya/2016/modules" directory is automatically searched
-:: for Maya module (.mod) files. Therefore we can install directly.
-::
-:: SET INSTALL_MODULE_DIR="%PROJECT_ROOT%\modules"
-SET INSTALL_MODULE_DIR="%USERPROFILE%\My Documents\maya\%MAYA_VERSION%\modules"
+:: The script assumes 'RUST_CARGO_EXE' has been set to the Rust
+:: 'cargo' executable.
+CALL scripts\internal\build_mmscenegraph_windows64.bat
+if errorlevel 1 goto failed_to_build_mmscenegraph
 
-:: Build ZIP Package.
-:: For developer use. Make ZIP packages ready to distribute to others.
-SET BUILD_PACKAGE=1
+CALL scripts\internal\build_mmSolver_windows64.bat
+if errorlevel 1 goto failed_to_build_mmsolver
+exit /b 0
 
+:failed_to_build_mmscenegraph
+echo Failed to build MM Scene Graph.
+exit /b 1
 
-:: Do not edit below, unless you know what you're doing.
-::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-
-:: What type of build? "Release" or "Debug"?
-SET BUILD_TYPE=Release
-
-:: Build options, to allow faster compilation times. (not to be used by
-:: users wanting to build this project.)
-SET BUILD_PLUGIN=1
-SET BUILD_PYTHON=1
-SET BUILD_MEL=1
-SET BUILD_QT_UI=1
-SET BUILD_DOCS=1
-SET BUILD_ICONS=1
-SET BUILD_CONFIG=1
-SET BUILD_TESTS=1
-
-:: To Generate a Visual Studio 'Solution' file, change the '0' to a '1'.
-SET GENERATE_SOLUTION=0
-
-:: The root of this project.
-SET PROJECT_ROOT=%CD%
-ECHO Project Root: %PROJECT_ROOT%
-
-:: Build plugin
-MKDIR build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
-CHDIR build_windows64_maya%MAYA_VERSION%_%BUILD_TYPE%
-IF "%FRESH_BUILD%"=="1" (
-    DEL /S /Q *
-    FOR /D %%G in ("*") DO RMDIR /S /Q "%%~nxG"
-)
-
-IF "%GENERATE_SOLUTION%"=="1" (
-
-REM For Maya 2018 (which uses Visual Studio 2015)
-REM cmake -G "Visual Studio 14 2015 Win64" -T "v140"
-
-REM To Generate a Visual Studio 'Solution' file
-    cmake -G "Visual Studio 11 2012 Win64" -T "v110" ^
-        -DMAYA_VERSION=%MAYA_VERSION% ^
-        -DUSE_GPL_LEVMAR=%WITH_GPL_CODE% ^
-        -DUSE_CMINPACK=%WITH_CMINPACK% ^
-        -DCMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack" ^
-        -DLEVMAR_ROOT="%PROJECT_ROOT%\external\install\levmar" ^
-        -DMAYA_LOCATION=%MAYA_LOCATION% ^
-        -DMAYA_VERSION=%MAYA_VERSION% ^
-        ..
-
-) ELSE (
-
-    cmake -G "NMake Makefiles" ^
-        -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
-        -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
-        -DBUILD_PLUGIN=%BUILD_PLUGIN% ^
-        -DBUILD_PYTHON=%BUILD_PYTHON% ^
-        -DBUILD_MEL=%BUILD_MEL% ^
-        -DBUILD_QT_UI=%BUILD_QT_UI% ^
-        -DBUILD_DOCS=%BUILD_DOCS% ^
-        -DBUILD_ICONS=%BUILD_ICONS% ^
-        -DBUILD_CONFIG=%BUILD_CONFIG% ^
-        -DBUILD_TESTS=%BUILD_TESTS% ^
-        -DUSE_GPL_LEVMAR=%WITH_GPL_CODE% ^
-        -DUSE_CMINPACK=%WITH_CMINPACK% ^
-        -DCMINPACK_ROOT="%PROJECT_ROOT%\external\install\cminpack" ^
-        -DLEVMAR_ROOT="%PROJECT_ROOT%\external\install\levmar" ^
-        -DMAYA_LOCATION=%MAYA_LOCATION% ^
-        -DMAYA_VERSION=%MAYA_VERSION% ^
-        ..
-
-    cmake --build . --parallel 4
-
-REM Comment this line out to stop the automatic install into the home directory.
-    cmake --install .
-
-REM Run tests
-    IF "%RUN_TESTS%"=="1" (
-        cmake --build . --target test
-    )
-
-REM Create a .zip package.
-IF "%BUILD_PACKAGE%"=="1" (
-       cmake --build . --target package
-   )
-
-)
-
-:: Return back project root directory.
-CHDIR "%PROJECT_ROOT%"
+:failed_to_build_mmsolver
+echo Failed to build MM Solver.
+exit /b 1

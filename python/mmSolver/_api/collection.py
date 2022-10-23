@@ -43,6 +43,7 @@ import mmSolver._api.solveresult as solveresult
 import mmSolver._api.solverbase as solverbase
 import mmSolver._api.solverstep as solverstep
 import mmSolver._api.marker as marker
+import mmSolver._api.line as api_line
 import mmSolver._api.attribute as attribute
 import mmSolver._api.sethelper as sethelper
 import mmSolver._api.execute as execute
@@ -60,21 +61,13 @@ def _create_collection_attributes(node):
     """
     attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_LIST
     if not node_utils.attribute_exists(attr, node):
-        maya.cmds.addAttr(
-            node,
-            longName=attr,
-            dataType='string'
-        )
+        maya.cmds.addAttr(node, longName=attr, dataType='string')
         plug = node + '.' + attr
         maya.cmds.setAttr(plug, lock=True)
 
     attr = const.COLLECTION_ATTR_LONG_NAME_SOLVER_RESULTS
     if not node_utils.attribute_exists(attr, node):
-        maya.cmds.addAttr(
-            node,
-            longName=attr,
-            dataType='string'
-        )
+        maya.cmds.addAttr(node, longName=attr, dataType='string')
         plug = node + '.' + attr
         maya.cmds.setAttr(plug, lock=True)
 
@@ -86,7 +79,7 @@ def _create_collection_attributes(node):
             attributeType='double',
             minValue=-1.0,
             defaultValue=-1.0,
-            keyable=True
+            keyable=True,
         )
         plug = node + '.' + attr
         maya.cmds.setAttr(plug, lock=True)
@@ -97,9 +90,9 @@ def _get_auxiliary_attr_name(col, attr, key):
     """Auxiliary attribute names combine four individual parts, the
     Collection, the node and attribute names, and the key.
 
-    Auxiliary attribute values are dependant on all four bits of data.
+    Auxiliary attribute values are dependent on all four bits of data.
     The Auxiliary attribute data is not just "attached" to the
-    attribute itself, it is also dependant on the Collection.
+    attribute itself, it is also dependent on the Collection.
 
     When a user changes the "active" collection, the auxiliary
     attribute values may be different - this is a useful feature, but
@@ -137,6 +130,10 @@ def _get_auxiliary_attr(col, attr, key, default_value):
     """
     value = None
     attr_node = attr.get_node()
+    if attr_node is None:
+        LOG.warn('Attribute Node is not valid: %r', attr)
+        return value
+
     aux_name = _get_auxiliary_attr_name(col, attr, key)
     plug_name = '{0}.{1}'.format(attr_node, aux_name)
     exists = node_utils.attribute_exists(aux_name, attr_node)
@@ -147,20 +144,18 @@ def _get_auxiliary_attr(col, attr, key, default_value):
                 longName=aux_name,
                 keyable=False,
                 hidden=True,
-                attributeType='bool')
+                attributeType='bool',
+            )
         elif isinstance(default_value, pycompat.INT_TYPES):
             maya.cmds.addAttr(
                 attr_node,
                 longName=aux_name,
                 keyable=False,
                 hidden=True,
-                attributeType='long')
+                attributeType='long',
+            )
         else:
-            maya.cmds.addAttr(
-                attr_node,
-                longName=aux_name,
-                keyable=False,
-                hidden=True)
+            maya.cmds.addAttr(attr_node, longName=aux_name, keyable=False, hidden=True)
         maya.cmds.setAttr(plug_name, default_value)
         value = default_value
     else:
@@ -190,6 +185,10 @@ def _set_auxiliary_attr(col, attr, key, value):
     :rtype: None
     """
     attr_node = attr.get_node()
+    if attr_node is None:
+        LOG.warn('Attribute Node is not valid: %r', attr)
+        return value
+
     aux_name = _get_auxiliary_attr_name(col, attr, key)
     plug_name = '{0}.{1}'.format(attr_node, aux_name)
     exists = node_utils.attribute_exists(aux_name, attr_node)
@@ -200,20 +199,18 @@ def _set_auxiliary_attr(col, attr, key, value):
                 longName=aux_name,
                 keyable=False,
                 hidden=True,
-                attributeType='bool')
+                attributeType='bool',
+            )
         elif isinstance(value, pycompat.INT_TYPES):
             maya.cmds.addAttr(
                 attr_node,
                 longName=aux_name,
                 keyable=False,
                 hidden=True,
-                attributeType='long')
+                attributeType='long',
+            )
         else:
-            maya.cmds.addAttr(
-                attr_node,
-                longName=aux_name,
-                keyable=False,
-                hidden=True)
+            maya.cmds.addAttr(attr_node, longName=aux_name, keyable=False, hidden=True)
     maya.cmds.setAttr(plug_name, value)
     return
 
@@ -238,7 +235,7 @@ class Collection(object):
                 "mmSolver.api.Collection(name=value), "
                 "'name' is a deprecated flag, use 'node' "
             )
-            warnings.warn(msg)
+            warnings.warn(msg, DeprecationWarning)
             node = name
 
         self._set = sethelper.SetHelper()
@@ -270,9 +267,7 @@ class Collection(object):
         set_node = self._set.get_node()
         _create_collection_attributes(set_node)
 
-        event_utils.trigger_event(
-            const.EVENT_NAME_COLLECTION_CREATED,
-            col=self)
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_CREATED, col=self)
         return self
 
     def add_attributes(self):
@@ -321,9 +316,7 @@ class Collection(object):
         :type data: list or dict
         """
         set_node = self._set.get_node()
-        configmaya.set_node_option_structure(
-            set_node, attr_name, data,
-            add_attr=True)
+        configmaya.set_node_option_structure(set_node, attr_name, data, add_attr=True)
         return
 
     ############################################################################
@@ -535,9 +528,7 @@ class Collection(object):
         if self._set.member_in_set(node) is False:
             self._set.add_member(node)
             self._actions_list = []  # reset argument flag cache.
-        event_utils.trigger_event(
-            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
-            col=self)
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_MARKERS_CHANGED, col=self)
         return
 
     def add_marker_list(self, mkr_list):
@@ -548,9 +539,7 @@ class Collection(object):
                 node_list.append(mkr.get_node())
         self._set.add_members(node_list)
         self._actions_list = []  # reset argument flag cache.
-        event_utils.trigger_event(
-            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
-            col=self)
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_MARKERS_CHANGED, col=self)
         return
 
     def remove_marker(self, mkr):
@@ -559,9 +548,7 @@ class Collection(object):
         if self._set.member_in_set(node):
             self._set.remove_member(node)
             self._actions_list = []  # reset argument flag cache.
-        event_utils.trigger_event(
-            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
-            col=self)
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_MARKERS_CHANGED, col=self)
         return
 
     def remove_marker_list(self, mkr_list):
@@ -572,9 +559,7 @@ class Collection(object):
                 node_list.append(mkr.get_node())
         self._set.remove_members(node_list)
         self._actions_list = []  # reset argument flag cache.
-        event_utils.trigger_event(
-            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
-            col=self)
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_MARKERS_CHANGED, col=self)
         return
 
     def set_marker_list(self, mkr_list):
@@ -590,9 +575,7 @@ class Collection(object):
         if before_num != after_num:
             self._actions_list = []  # reset argument flag cache.
 
-        event_utils.trigger_event(
-            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
-            col=self)
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_MARKERS_CHANGED, col=self)
         return
 
     def clear_marker_list(self):
@@ -605,9 +588,7 @@ class Collection(object):
         if len(rm_list) > 0:
             self._set.remove_members(rm_list)
             self._actions_list = []  # reset argument flag cache.
-        event_utils.trigger_event(
-            const.EVENT_NAME_COLLECTION_MARKERS_CHANGED,
-            col=self)
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_MARKERS_CHANGED, col=self)
         return
 
     ############################################################################
@@ -632,9 +613,7 @@ class Collection(object):
         if not self._set.member_in_set(name):
             self._set.add_member(name)
             self._actions_list = []  # reset argument flag cache.
-        event_utils.trigger_event(
-            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
-            col=self)
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_ATTRS_CHANGED, col=self)
         return
 
     def add_attribute_list(self, attr_list):
@@ -645,9 +624,7 @@ class Collection(object):
                 name_list.append(attr.get_name())
         self._set.add_members(name_list)
         self._actions_list = []  # reset argument flag cache.
-        event_utils.trigger_event(
-            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
-            col=self)
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_ATTRS_CHANGED, col=self)
         return
 
     def remove_attribute(self, attr):
@@ -656,9 +633,7 @@ class Collection(object):
         if self._set.member_in_set(name):
             self._set.remove_member(name)
             self._actions_list = []  # reset argument flag cache.
-        event_utils.trigger_event(
-            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
-            col=self)
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_ATTRS_CHANGED, col=self)
         return
 
     def remove_attribute_list(self, attr_list):
@@ -669,9 +644,7 @@ class Collection(object):
                 name_list.append(attr.get_name())
         self._set.remove_members(name_list)
         self._actions_list = []  # reset argument flag cache.
-        event_utils.trigger_event(
-            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
-            col=self)
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_ATTRS_CHANGED, col=self)
         return
 
     def set_attribute_list(self, attr_list):
@@ -686,9 +659,7 @@ class Collection(object):
         after_num = self.get_attribute_list_length()
         if before_num != after_num:
             self._actions_list = []  # reset argument flag cache.
-        event_utils.trigger_event(
-            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
-            col=self)
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_ATTRS_CHANGED, col=self)
         return
 
     def clear_attribute_list(self):
@@ -701,9 +672,7 @@ class Collection(object):
         if len(rm_list) > 0:
             self._set.remove_members(rm_list)
             self._actions_list = []  # reset argument flag cache.
-        event_utils.trigger_event(
-            const.EVENT_NAME_COLLECTION_ATTRS_CHANGED,
-            col=self)
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_ATTRS_CHANGED, col=self)
         return
 
     ############################################################################
@@ -722,6 +691,9 @@ class Collection(object):
     def get_attribute_min_enable_plug_name(self, attr):
         key = 'min_enable'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -740,6 +712,9 @@ class Collection(object):
     def get_attribute_min_value_plug_name(self, attr):
         key = 'min_value'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -758,6 +733,9 @@ class Collection(object):
     def get_attribute_max_enable_plug_name(self, attr):
         key = 'max_enable'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -776,6 +754,9 @@ class Collection(object):
     def get_attribute_max_value_plug_name(self, attr):
         key = 'max_value'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -794,6 +775,9 @@ class Collection(object):
     def get_attribute_stiffness_enable_plug_name(self, attr):
         key = 'stiffness_enable'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -812,6 +796,9 @@ class Collection(object):
     def get_attribute_stiffness_weight_plug_name(self, attr):
         key = 'stiffness_weight'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -830,6 +817,9 @@ class Collection(object):
     def get_attribute_stiffness_variance_plug_name(self, attr):
         key = 'stiffness_variance'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -848,6 +838,9 @@ class Collection(object):
     def get_attribute_smoothness_enable_plug_name(self, attr):
         key = 'smoothness_enable'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -866,6 +859,9 @@ class Collection(object):
     def get_attribute_smoothness_weight_plug_name(self, attr):
         key = 'smoothness_weight'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -884,6 +880,9 @@ class Collection(object):
     def get_attribute_smoothness_variance_plug_name(self, attr):
         key = 'smoothness_variance'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -902,6 +901,9 @@ class Collection(object):
     def get_attribute_previous_value_plug_name(self, attr):
         key = 'previous_value'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -920,6 +922,9 @@ class Collection(object):
     def get_attribute_mean_value_plug_name(self, attr):
         key = 'mean_value'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -938,6 +943,9 @@ class Collection(object):
     def get_attribute_variance_value_plug_name(self, attr):
         key = 'variance_value'
         attr_node = attr.get_node()
+        if attr_node is None:
+            LOG.warn('Attribute Node is not valid: %r', attr)
+            return None
         aux_name = _get_auxiliary_attr_name(self, attr, key)
         plug_name = '{0}.{1}'.format(attr_node, aux_name)
         return plug_name
@@ -958,7 +966,104 @@ class Collection(object):
 
     ############################################################################
 
-    # TODO: Add 'logging level' flag to Collection.
+    def get_line_list(self):
+        result = []
+        members = self._set.get_all_members(flatten=False, full_path=True)
+        for member in members:
+            object_type = api_utils.get_object_type(member)
+            if object_type == const.OBJECT_TYPE_LINE:
+                mkr = api_line.Line(member)
+                result.append(mkr)
+        return result
+
+    def get_line_list_length(self):
+        return len(self.get_line_list())
+
+    def add_line(self, line):
+        assert isinstance(line, api_line.Line)
+        node = line.get_node()
+        assert isinstance(node, pycompat.TEXT_TYPE)
+        assert len(node) > 0
+        node_list = [node]
+        mkr_list = line.get_marker_list()
+        mkr_nodes = [mkr.get_node() for mkr in mkr_list]
+        node_list += [n for n in mkr_nodes if n is not None]
+        self._set.add_members(node_list)
+        self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
+        return
+
+    def add_line_list(self, line_list):
+        assert isinstance(line_list, list)
+        line_list = [line for line in line_list if isinstance(line, api_line.Line)]
+        node_list = []
+        for line in line_list:
+            node = line.get_node()
+            mkr_list = line.get_marker_list()
+            mkr_nodes = [mkr.get_node() for mkr in mkr_list]
+            node_list += [node]
+            node_list += [n for n in mkr_nodes if n is not None]
+        self._set.add_members(node_list)
+        self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
+        return
+
+    def remove_line(self, line):
+        assert isinstance(line, api_line.Line)
+        node = line.get_node()
+        node_list = [node]
+        mkr_list = line.get_marker_list()
+        mkr_nodes = [mkr.get_node() for mkr in mkr_list]
+        node_list += [n for n in mkr_nodes if n is not None]
+        self._set.remove_members(node_list)
+        self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
+        return
+
+    def remove_line_list(self, line_list):
+        assert isinstance(line_list, list)
+        line_list = [line for line in line_list if isinstance(line, api_line.Line)]
+        node_list = []
+        for line in line_list:
+            node = line.get_node()
+            mkr_list = line.get_marker_list()
+            mkr_nodes = [mkr.get_node() for mkr in mkr_list]
+            node_list += [node]
+            node_list += [n for n in mkr_nodes if n is not None]
+        self._set.remove_members(node_list)
+        self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
+        return
+
+    def set_line_list(self, line_list):
+        assert isinstance(line_list, list)
+        before_num = self.get_line_list_length()
+
+        self.clear_line_list()
+        line_list = [line for line in line_list if isinstance(line, api_line.Line)]
+        self.add_line_list(line_list)
+
+        after_num = self.get_line_list_length()
+        if before_num != after_num:
+            self._actions_list = []  # reset argument flag cache.
+
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
+        return
+
+    def clear_line_list(self):
+        members = self._set.get_all_members(flatten=False, full_path=True)
+        rm_list = []
+        for member in members:
+            object_type = api_utils.get_object_type(member)
+            if object_type == const.OBJECT_TYPE_LINE:
+                rm_list.append(member)
+        if len(rm_list) > 0:
+            self._set.remove_members(rm_list)
+            self._actions_list = []  # reset argument flag cache.
+        event_utils.trigger_event(const.EVENT_NAME_COLLECTION_LINES_CHANGED, col=self)
+        return
+
+    ############################################################################
 
     def is_valid(self, prog_fn=None, status_fn=None):
         """
@@ -984,21 +1089,22 @@ class Collection(object):
             attr_list = self.get_attribute_list()
             api_compile.collection_compile(
                 self,
-                sol_list, mkr_list, attr_list,
+                sol_list,
+                mkr_list,
+                attr_list,
                 withtest=True,
-                prog_fn=None, status_fn=None)
+                prog_fn=None,
+                status_fn=None,
+            )
             ret = True
         except excep.NotValid as e:
             ret = False
             LOG.warn(e)
         return ret
 
-    def execute(self,
-                options=None,
-                log_level=None,
-                prog_fn=None,
-                status_fn=None,
-                info_fn=None):
+    def execute(
+        self, options=None, log_level=None, prog_fn=None, status_fn=None, info_fn=None
+    ):
         msg = 'Collection.execute is deprecated, use "execute" function.'
         warnings.warn(msg, DeprecationWarning)
         result = execute.execute(
@@ -1007,7 +1113,8 @@ class Collection(object):
             log_level=log_level,
             prog_fn=prog_fn,
             status_fn=status_fn,
-            info_fn=info_fn)
+            info_fn=info_fn,
+        )
         return result
 
 
@@ -1029,9 +1136,11 @@ def update_deviation_on_collection(col, solres_list):
     try:
         maya.cmds.setAttr(plug, lock=False)
         anim_utils.create_anim_curve_node_apione(
-            frame_list, err_list,
+            frame_list,
+            err_list,
             node_attr=plug,
-            anim_type=OpenMayaAnim.MFnAnimCurve.kAnimCurveTU)
+            anim_type=OpenMayaAnim.MFnAnimCurve.kAnimCurveTU,
+        )
     finally:
         maya.cmds.setAttr(plug, lock=True)
     return

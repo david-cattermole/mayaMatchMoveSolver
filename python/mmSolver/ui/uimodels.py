@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt as Qt
@@ -76,7 +77,6 @@ def getNameFromDict(index, names_dict, lookup_dict):
 
 
 class ItemModel(QtCore.QAbstractItemModel, uiutils.QtInfoMixin):
-
     def __init__(self, rootNode, font=None):
         super(ItemModel, self).__init__()
         self._rootNode = None
@@ -631,10 +631,7 @@ class TableModel(QtCore.QAbstractTableModel, uiutils.QtInfoMixin):
 
 
 class StringDataListModel(QtCore.QAbstractListModel, uiutils.QtInfoMixin):
-    def __init__(self,
-                 stringDataList=None,
-                 font=None,
-                 parent=None):
+    def __init__(self, stringDataList=None, font=None, parent=None):
         super(StringDataListModel, self).__init__(parent)
         self._stringDataList = []
         self._font = font
@@ -696,7 +693,7 @@ class StringDataListModel(QtCore.QAbstractListModel, uiutils.QtInfoMixin):
 
     def removeRows(self, row, count, parent=QtCore.QModelIndex()):
         self.beginRemoveRows(QtCore.QModelIndex(), row, row + count - 1)
-        del self._stringDataList[row:row + count]
+        del self._stringDataList[row : row + count]
         self.endRemoveRows()
         return True
 
@@ -721,9 +718,7 @@ class StringDataListModel(QtCore.QAbstractListModel, uiutils.QtInfoMixin):
         if Qt.__binding__ in ['PySide', 'PyQt4']:
             self.dataChanged.emit(index, index)
         elif Qt.__binding__ in ['PySide2', 'PyQt5']:
-            if role in [QtCore.Qt.DisplayRole,
-                        QtCore.Qt.EditRole,
-                        QtCore.Qt.UserRole]:
+            if role in [QtCore.Qt.DisplayRole, QtCore.Qt.EditRole, QtCore.Qt.UserRole]:
                 self.dataChanged.emit(index, index, [role])
         else:
             msg = 'Qt binding not supported: %s' % Qt.__binding__
@@ -732,7 +727,6 @@ class StringDataListModel(QtCore.QAbstractListModel, uiutils.QtInfoMixin):
 
 
 class ComboBoxDelegate(QtWidgets.QStyledItemDelegate):
-
     def __init__(self, parent=None):
         super(ComboBoxDelegate, self).__init__(parent)
 

@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt as Qt
@@ -39,6 +40,7 @@ LOG = mmSolver.logger.get_logger()
 
 def _launch_default_help_page():
     import mmSolver.ui.helputils as helputils
+
     src = helputils.get_help_source()
     helputils.open_help_in_browser(help_source=src)
     return
@@ -46,18 +48,19 @@ def _launch_default_help_page():
 
 def _launch_about_window():
     import mmSolver.tools.aboutwindow.tool as aboutwin_tool
+
     aboutwin_tool.open_window()
     return
 
 
 def _launch_sysinfo_window():
     import mmSolver.tools.sysinfowindow.tool as sysinfowin_tool
+
     sysinfowin_tool.open_window()
     return
 
 
-def create_edit_menu_items(menu,
-                           reset_settings_func=None):
+def create_edit_menu_items(menu, reset_settings_func=None):
     with_reset_settings = callable(reset_settings_func) is True
 
     label = 'Reset Settings'

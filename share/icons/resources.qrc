@@ -1,0 +1,19 @@
+<RCC>
+  <qresource>
+    <file alias="mmSolver_attr.png">ui/mmSolver_attr.png</file>
+    <file alias="mmSolver_attr_type_translate.png">ui/mmSolver_attr_type_translate.png</file>
+    <file alias="mmSolver_attr_type_rotate.png">ui/mmSolver_attr_type_rotate.png</file>
+    <file alias="mmSolver_attr_type_scale.png">ui/mmSolver_attr_type_scale.png</file>
+    <file alias="mmSolver_attr_type_camera.png">ui/mmSolver_attr_type_camera.png</file>
+    <file alias="mmSolver_attr_type_lens.png">ui/mmSolver_attr_type_lens.png</file>
+    <file alias="mmSolver_attr_type_other.png">ui/mmSolver_attr_type_other.png</file>
+    <file alias="mmSolver_node.png">ui/mmSolver_node.png</file>
+    <file alias="mmSolver_plug.png">ui/mmSolver_plug.png</file>
+    <file alias="mmSolver_bundle.png">ui/mmSolver_bundle.png</file>
+    <file alias="mmSolver_marker.png">ui/mmSolver_marker.png</file>
+    <file alias="mmSolver_object.png">ui/mmSolver_object.png</file>
+    <file alias="mmSolver_camera.png">ui/mmSolver_camera.png</file>
+    <file alias="mmSolver_line.png">ui/mmSolver_line.png</file>
+    <file alias="mmSolver_solverStep.png">ui/mmSolver_solverStep.png</file>
+  </qresource>
+</RCC>

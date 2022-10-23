@@ -2,6 +2,10 @@
 Test functions for API utils module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import shutil
 import unittest
@@ -94,8 +98,7 @@ class TestConfig(test_utils.UtilsTestCase):
         new_data6 = utils_config.set_value(new_data5, key, value)
         assert new_data6.get('myNewVar') == {'myNewSubVar': value}
         assert new_data6.get('myNewVar').get('myNewSubVar') == value
-        assert new_data6.get('myVar') == {'mySubVar': value,
-                                          'myNewSubVar': value}
+        assert new_data6.get('myVar') == {'mySubVar': value, 'myNewSubVar': value}
         assert new_data6.get('myVar').get('mySubVar') == value
         assert new_data6.get('myVar').get('myNewSubVar') == value
         return
@@ -114,11 +117,11 @@ class TestConfig(test_utils.UtilsTestCase):
         src = os.path.join(path, original_name)
         dst = os.path.join(path, name)
         shutil.copy2(src, dst)
-        
+
         config = utils_config.get_config(name, search=dir_list)
         assert config is not None
         value = config.get_value('myVar')
-        assert value == None
+        assert value is None
 
         new_value = 42
         config.set_value('myVar', new_value)
@@ -141,13 +144,13 @@ class TestConfig(test_utils.UtilsTestCase):
         src = os.path.join(path, original_name)
         dst = os.path.join(path, name)
         shutil.copy2(src, dst)
-        
+
         config = utils_config.get_config(name, search=dir_list)
         assert config is not None
         config.set_autoread(True)
         config.set_autowrite(True)
         value = config.get_value('myVar')
-        assert value == None
+        assert value is None
 
         new_value = 42
         config.set_value('myVar', new_value)
@@ -170,14 +173,14 @@ class TestConfig(test_utils.UtilsTestCase):
         src = os.path.join(path, original_name)
         dst = os.path.join(path, name)
         shutil.copy2(src, dst)
-        
+
         config = utils_config.get_config(name, search=dir_list)
         assert config is not None
         config.set_autoread(False)
         config.set_autowrite(False)
         config.read()
         value = config.get_value('myVar')
-        assert value == None
+        assert value is None
 
         new_value = 42
         config.set_value('myVar', new_value)
@@ -208,7 +211,7 @@ class TestConfig(test_utils.UtilsTestCase):
         assert config is not None
         key = 'key/subkey/subsubkey'
         value = config.get_value(key)
-        assert value == None
+        assert value is None
 
         new_value = 42
         config.set_value(key, new_value)

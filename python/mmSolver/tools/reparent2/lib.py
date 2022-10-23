@@ -52,7 +52,9 @@ SKIP_NONE = 'none'
 
 
 def _bake_nodes(nodes, frame_range, smart_bake=False):
-    if smart_bake:
+    assert isinstance(smart_bake, bool)
+    assert len(frame_range) == 2
+    if smart_bake is True:
         maya.cmds.bakeResults(
             nodes,
             time=frame_range,
@@ -62,7 +64,8 @@ def _bake_nodes(nodes, frame_range, smart_bake=False):
             disableImplicitControl=True,
             preserveOutsideKeys=True,
             controlPoints=False,
-            shape=False)
+            shape=False,
+        )
     else:
         maya.cmds.bakeResults(
             nodes,
@@ -73,7 +76,8 @@ def _bake_nodes(nodes, frame_range, smart_bake=False):
             disableImplicitControl=True,
             preserveOutsideKeys=True,
             controlPoints=False,
-            shape=False)
+            shape=False,
+        )
     return
 
 
@@ -122,13 +126,16 @@ def nodes_attrs_settable(node_list, attr_list):
     return settable_map, settable_count, non_settable_count
 
 
-def reparent(children_nodes, parent_node,
-             frame_range_mode=None,
-             start_frame=None,
-             end_frame=None,
-             bake_mode=None,
-             rotate_order_mode=None,
-             delete_static_anim_curves=None):
+def reparent(
+    children_nodes,
+    parent_node,
+    frame_range_mode=None,
+    start_frame=None,
+    end_frame=None,
+    bake_mode=None,
+    rotate_order_mode=None,
+    delete_static_anim_curves=None,
+):
     """
     Reparent the children under the given parent.
 
@@ -174,13 +181,17 @@ def reparent(children_nodes, parent_node,
         bake_mode = const.BAKE_MODE_FULL_BAKE_VALUE
     if rotate_order_mode is None:
         rotate_order_mode = const.ROTATE_ORDER_MODE_USE_EXISTING_VALUE
+    assert start_frame is None or isinstance(start_frame, int)
+    assert end_frame is None or isinstance(end_frame, int)
     assert frame_range_mode in const.FRAME_RANGE_MODE_VALUES
     assert bake_mode in const.BAKE_MODE_VALUES
     assert rotate_order_mode in const.ROTATE_ORDER_MODE_VALUES
     assert isinstance(delete_static_anim_curves, bool)
 
     # Get frame range
-    frame_range = time_utils.get_frame_range(frame_range_mode)
+    frame_range = time_utils.get_frame_range(
+        frame_range_mode, start_frame=start_frame, end_frame=end_frame
+    )
 
     # Get bake mode.
     sparse = None
@@ -240,7 +251,7 @@ def reparent(children_nodes, parent_node,
         loc_tfms.append(loc_tfm)
 
     # Bake the locator results
-    _bake_nodes(loc_tfms, frame_range, smart_bake=True)
+    _bake_nodes(loc_tfms, frame_range, smart_bake=smart_bake)
     maya.cmds.delete(loc_tfms, constraints=True)
 
     for child, child_node, loc_tfm in zip(children, children_nodes, loc_tfms):
@@ -251,9 +262,11 @@ def reparent(children_nodes, parent_node,
         scale_skip = _get_node_attr_skip(child, 'scale')
 
         # Warn if the child transform is completely locked.
-        if (translate_skip == SKIP_ALL
-                and rotate_skip == SKIP_ALL
-                and scale_skip == SKIP_ALL):
+        if (
+            translate_skip == SKIP_ALL
+            and rotate_skip == SKIP_ALL
+            and scale_skip == SKIP_ALL
+        ):
             msg = 'Skipping Re-Parent! Cannot modify any attributes: node=%r'
             LOG.warn(msg, child)
             continue

@@ -71,21 +71,25 @@ def main():
         save_sel = maya.cmds.ls(selection=True, long=True) or []
 
         # Get selection
-        nodes = maya.cmds.ls(
-            selection=True,
-            long=True,
-            type='transform',
-        ) or []
+        nodes = (
+            maya.cmds.ls(
+                selection=True,
+                long=True,
+                type='transform',
+            )
+            or []
+        )
 
         # Filter out selected imagePlanes.
         nodes_tmp = list(nodes)
         nodes = []
         for node in nodes_tmp:
-            shps = maya.cmds.listRelatives(
-                node,
-                shapes=True,
-                fullPath=True,
-                type='imagePlane') or []
+            shps = (
+                maya.cmds.listRelatives(
+                    node, shapes=True, fullPath=True, type='imagePlane'
+                )
+                or []
+            )
             if len(shps) == 0:
                 nodes.append(node)
 
@@ -105,30 +109,30 @@ def main():
                 maya.cmds.delete(reproj_nodes)
 
             reproj_node = reproject_utils.create_reprojection_on_camera(
-                cam_tfm, cam_shp)
-            reproject_utils.connect_transform_to_reprojection(
-                nodes[0], reproj_node)
+                cam_tfm, cam_shp
+            )
+            reproject_utils.connect_transform_to_reprojection(nodes[0], reproj_node)
 
             # create 2d offset setup
             offset_plus_minus_node = maya.cmds.createNode(
-                'plusMinusAverage',
-                name='offset_plusMinusAverage1')
+                'plusMinusAverage', name='offset_plusMinusAverage1'
+            )
             maya.cmds.connectAttr(
-                reproj_node + '.outPan',
-                offset_plus_minus_node + '.input2D[0]')
+                reproj_node + '.outPan', offset_plus_minus_node + '.input2D[0]'
+            )
             maya.cmds.setAttr(
-                offset_plus_minus_node + '.input2D[1]',
-                0.0,
-                0.0,
-                type='float2')
+                offset_plus_minus_node + '.input2D[1]', 0.0, 0.0, type='float2'
+            )
             maya.cmds.connectAttr(
                 offset_plus_minus_node + '.output2D.output2Dx',
                 cam_shp + '.pan.horizontalPan',
-                force=True)
+                force=True,
+            )
             maya.cmds.connectAttr(
                 offset_plus_minus_node + '.output2D.output2Dy',
                 cam_shp + '.pan.verticalPan',
-                force=True)
+                force=True,
+            )
 
         elif len(nodes) > 1:
             msg = 'Please select only 1 node to center on.'
@@ -168,7 +172,7 @@ def remove():
 
 
 def center_two_dee():
-    warnings.warn("Use 'main' function instead.")
+    warnings.warn("Use 'main' function instead.", DeprecationWarning)
     main()
 
 
@@ -179,4 +183,5 @@ def center_two_dee_ui():
         LOG.warning(msg)
         return
     import mmSolver.tools.centertwodee.ui.centertwodee_window as window
+
     window.main()

@@ -67,6 +67,7 @@ class SolverStep(solverbase.SolverBase):
 
     See the individual methods for more information.
     """
+
     def __init__(self, *args, **kwargs):
         """
         Create a SolverStep class with default values.
@@ -202,6 +203,20 @@ class SolverStep(solverbase.SolverBase):
         self._data['parameter_error'] = value
         return
 
+    def get_auto_parameter_scaling(self):
+        """
+        :rtype: bool or None
+        """
+        return self._data.get('auto_parameter_scaling')
+
+    def set_auto_parameter_scaling(self, value):
+        """
+        :type value: bool
+        """
+        if isinstance(value, bool) is False:
+            raise TypeError('Expected bool value type.')
+        self._data['auto_parameter_scaling'] = value
+
     def get_error_factor(self):
         """
         Get error level for deviation changes.
@@ -245,6 +260,19 @@ class SolverStep(solverbase.SolverBase):
         """
         self._data['solver_type'] = value
 
+    def get_scene_graph_mode(self):
+        """
+        :rtype: int or None
+        """
+        return self._data.get('scene_graph_mode')
+
+    def set_scene_graph_mode(self, value):
+        """
+        :type value: int
+        """
+        assert value in const.SCENE_GRAPH_MODE_LIST
+        self._data['scene_graph_mode'] = value
+
     def get_verbose(self):
         """
         Should we print lots of information to the terminal?
@@ -266,12 +294,57 @@ class SolverStep(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_robust_loss_scale(self):
+        """
+        :rtype: float or None
+        """
+        return self._data.get('robust_loss_scale')
+
+    def set_robust_loss_scale(self, value):
+        """
+        :param value:
+        :type value:
+        """
+        self._data['robust_loss_scale'] = value
+        return
+
+    def get_robust_loss_type(self):
+        """
+        :rtype: int or None
+        """
+        return self._data.get('robust_loss_type')
+
+    def set_robust_loss_type(self, value):
+        """
+        :param value:
+            The method to be used. Must be a value in
+            ROBUST_LOSS_TYPE_LIST.
+        :type value: int or None
+        """
+        if value not in const.ROBUST_LOSS_TYPE_VALUE_LIST:
+            msg = 'robust_loss_type must be one of %r; value=%r'
+            msg = msg % (const.ROBUST_LOSS_TYPE_VALUE_LIST, value)
+            raise ValueError(msg)
+        self._data['robust_loss_type'] = value
+        return
+
+    ############################################################################
+
     def get_time_eval_mode(self):
         return self._data.get('time_eval_mode', const.TIME_EVAL_MODE_DEFAULT)
 
     def set_time_eval_mode(self, value):
         assert value in const.TIME_EVAL_MODE_LIST
         self._data['time_eval_mode'] = value
+
+    ############################################################################
+
+    def get_frame_solve_mode(self):
+        return self._data.get('frame_solve_mode', const.FRAME_SOLVE_MODE_DEFAULT)
+
+    def set_frame_solve_mode(self, value):
+        assert value in const.FRAME_SOLVE_MODE_LIST
+        self._data['frame_solve_mode'] = value
 
     ############################################################################
 
@@ -450,19 +523,19 @@ class SolverStep(solverbase.SolverBase):
 
         # Get precomputed data to reduce re-querying Maya for data.
         precomputed_data = self.get_precomputed_data()
-        mkr_state_values = precomputed_data.get(
-            solverbase.MARKER_STATIC_VALUES_KEY)
-        attr_state_values = precomputed_data.get(
-            solverbase.ATTR_STATIC_VALUES_KEY)
+        mkr_state_values = precomputed_data.get(solverbase.MARKER_STATIC_VALUES_KEY)
+        attr_state_values = precomputed_data.get(solverbase.ATTR_STATIC_VALUES_KEY)
         attr_stiff_state_values = precomputed_data.get(
-            solverbase.ATTR_STIFFNESS_STATIC_VALUES_KEY)
+            solverbase.ATTR_STIFFNESS_STATIC_VALUES_KEY
+        )
         attr_smooth_state_values = precomputed_data.get(
-            solverbase.ATTR_SMOOTHNESS_STATIC_VALUES_KEY)
+            solverbase.ATTR_SMOOTHNESS_STATIC_VALUES_KEY
+        )
 
         # Get Markers and Cameras
         markers, cameras = api_compile.markersAndCameras_compile_flags(
-            mkr_list,
-            mkr_static_values=mkr_state_values)
+            mkr_list, mkr_static_values=mkr_state_values
+        )
         if len(markers) == 0 and len(cameras) == 0:
             LOG.warning('No Markers or Cameras found!')
             return
@@ -481,7 +554,8 @@ class SolverStep(solverbase.SolverBase):
             attr_list,
             use_animated,
             use_static,
-            attr_static_values=attr_state_values)
+            attr_static_values=attr_state_values,
+        )
         if len(attrs) == 0:
             LOG.warning('No Attributes found!')
             return
@@ -530,6 +604,15 @@ class SolverStep(solverbase.SolverBase):
         if solver_type is not None:
             kwargs['solverType'] = solver_type
 
+        scene_graph_mode = self.get_scene_graph_mode()
+        if scene_graph_mode is not None:
+            scene_graph_mode = min(const.SCENE_GRAPH_MODE_MAYA_DAG, scene_graph_mode)
+            kwargs['sceneGraphMode'] = scene_graph_mode
+
+        frame_solve_mode = self.get_frame_solve_mode()
+        if frame_solve_mode is not None:
+            kwargs['frameSolveMode'] = frame_solve_mode
+
         iterations = self.get_max_iterations()
         if iterations is not None:
             kwargs['iterations'] = iterations
@@ -545,6 +628,10 @@ class SolverStep(solverbase.SolverBase):
         auto_diff_type = self.get_auto_diff_type()
         if auto_diff_type is not None:
             kwargs['autoDiffType'] = auto_diff_type
+
+        auto_param_scaling = self.get_auto_parameter_scaling()
+        if auto_param_scaling is not None:
+            kwargs['autoParamScaling'] = int(auto_param_scaling)
 
         tau_factor = self.get_tau_factor()
         if tau_factor is not None:
@@ -562,8 +649,14 @@ class SolverStep(solverbase.SolverBase):
         if error_factor is not None:
             kwargs['epsilon3'] = error_factor
 
-        kwargs['robustLossType'] = const.ROBUST_LOSS_TYPE_TRIVIAL_VALUE
-        kwargs['robustLossScale'] = 1.0
+        robust_loss_type = self.get_robust_loss_type()
+        if robust_loss_type is not None:
+            kwargs['robustLossType'] = robust_loss_type
+
+        robust_loss_scale = self.get_robust_loss_scale()
+        if robust_loss_scale is not None:
+            kwargs['robustLossScale'] = robust_loss_scale
+
         kwargs['timeEvalMode'] = self.get_time_eval_mode()
 
         value = self.get_remove_unused_markers()
@@ -574,30 +667,7 @@ class SolverStep(solverbase.SolverBase):
         if value is not None:
             kwargs['removeUnusedAttributes'] = value
 
-        # TODO: Add 'robustLossType' flag.
-        # TODO: Add 'robustLossScale' flag.
-        # TODO: Add 'autoParamScaling' flag.
-        # TODO: Add 'debugFile' flag.
-
-        # # Add a debug file flag to the mmSolver command, only
-        # # triggered during debug mode.
-        # # TODO: Wrap this in another function.
-        # if logging.DEBUG >= LOG.getEffectiveLevel():
-        #     debug_file = maya.cmds.file(query=True, sceneName=True)
-        #     debug_file = os.path.basename(debug_file)
-        #     debug_file, ext = os.path.splitext(debug_file)
-        #     debug_file_path = os.path.join(
-        #         os.path.expandvars('${TEMP}'),
-        #         debug_file + '_' + str(i).zfill(6) + '.log'
-        #     )
-        #     if len(debug_file) > 0 and debug_file_path is not None:
-        #         kwargs['debugFile'] = debug_file_path
-
-        action = api_action.Action(
-            func=func,
-            args=args,
-            kwargs=kwargs
-        )
+        action = api_action.Action(func=func, args=args, kwargs=kwargs)
 
         # Check the inputs and outputs are valid.
         vaction = None
@@ -611,11 +681,7 @@ class SolverStep(solverbase.SolverBase):
                 if key in vkwargs:
                     del vkwargs[key]
             vkwargs['printStatistics'] = ['inputs']
-            vaction = api_action.Action(
-                func=vfunc,
-                args=vargs,
-                kwargs=vkwargs
-            )
+            vaction = api_action.Action(func=vfunc, args=vargs, kwargs=vkwargs)
 
         yield action, vaction
 

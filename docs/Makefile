@@ -5,7 +5,7 @@
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
-BUILDDIR      = build
+BUILDDIR      = build_linux_maya$(MAYA_VERSION)
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4

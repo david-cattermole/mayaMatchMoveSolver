@@ -36,14 +36,17 @@ import mmSolver.utils.nodeaffects as affects_utils
 LOG = mmSolver.logger.get_logger()
 
 
-def calculate_marker_deviation(mkr_node,
-                               bnd_node,
-                               cam_tfm, cam_shp,
-                               times,
-                               weights_list,
-                               enabled_list,
-                               image_width,
-                               image_height):
+def calculate_marker_deviation(
+    mkr_node,
+    bnd_node,
+    cam_tfm,
+    cam_shp,
+    times,
+    weights_list,
+    enabled_list,
+    image_width,
+    image_height,
+):
     """
     Calculate the 2D-to-3D pixel distance for the given marker.
 
@@ -94,13 +97,11 @@ def calculate_marker_deviation(mkr_node,
     assert len(mkr_pos) == len(bnd_pos)
 
     # 2D Distance
-    mkr_x = mkr_pos[0:len(mkr_pos):3]
-    mkr_y = mkr_pos[1:len(mkr_pos):3]
-    bnd_x = bnd_pos[0:len(mkr_pos):3]
-    bnd_y = bnd_pos[1:len(mkr_pos):3]
-    iterator = enumerate(zip(
-        mkr_x, mkr_y, bnd_x, bnd_y,
-        enabled_list, weights_list))
+    mkr_x = mkr_pos[0 : len(mkr_pos) : 3]
+    mkr_y = mkr_pos[1 : len(mkr_pos) : 3]
+    bnd_x = bnd_pos[0 : len(mkr_pos) : 3]
+    bnd_y = bnd_pos[1 : len(mkr_pos) : 3]
+    iterator = enumerate(zip(mkr_x, mkr_y, bnd_x, bnd_y, enabled_list, weights_list))
     for i, (mx, my, bx, by, enabled, weight) in iterator:
         if enabled <= 0 or weight <= 0.0:
             continue
@@ -129,19 +130,17 @@ def get_markers_start_end_frames(selected_markers):
             '%s.translateY' % marker,
         ]
         for plug_name in plugs:
-            anim_curves = maya.cmds.listConnections(plug_name,
-                                                    type='animCurve'
-                                                    ) or []
+            anim_curves = maya.cmds.listConnections(plug_name, type='animCurve') or []
             if len(anim_curves) == 0:
                 continue
 
-            first_keyframe_num = maya.cmds.keyframe(anim_curves,
-                                                    query=True,
-                                                    timeChange=True)
+            first_keyframe_num = maya.cmds.keyframe(
+                anim_curves, query=True, timeChange=True
+            )
             first_frames.append(first_keyframe_num[0])
-            last_keyframe_num = maya.cmds.keyframe(anim_curves,
-                                                   query=True,
-                                                   timeChange=True)
+            last_keyframe_num = maya.cmds.keyframe(
+                anim_curves, query=True, timeChange=True
+            )
             last_frames.append(last_keyframe_num[-1])
 
     current_frame = maya.cmds.currentTime(query=True)
@@ -182,13 +181,10 @@ def find_marker_attr_mapping(mkr_list, attr_list):
         mkr_node = mkr.get_node()
         bnd_node = bnd.get_node()
         cam_node = cam.get_transform_node()
-        mkr_plugs = set(affects_utils.find_plugs_affecting_transform(
-            mkr_node,
-            cam_node))
-        bnd_plugs = set(affects_utils.find_plugs_affecting_transform(
-            bnd_node,
-            None
-        ))
+        mkr_plugs = set(
+            affects_utils.find_plugs_affecting_transform(mkr_node, cam_node)
+        )
+        bnd_plugs = set(affects_utils.find_plugs_affecting_transform(bnd_node, None))
         assert isinstance(mkr_plugs, set)
         assert isinstance(bnd_plugs, set)
         plugs = set(mkr_plugs.union(bnd_plugs))
@@ -200,9 +196,7 @@ def find_marker_attr_mapping(mkr_list, attr_list):
     num_iters = len(mkr_list)
     assert num_iters != 0
     LOG.debug(
-        'find_marker_attr_mapping: time=%r time_per_mkr=%r',
-        e-s,
-        (e-s) / num_iters
+        'find_marker_attr_mapping: time=%r time_per_mkr=%r', e - s, (e - s) / num_iters
     )
     return mapping
 

@@ -35,14 +35,16 @@ LOG = mmSolver.logger.get_logger()
 
 
 @contextmanager
-def tool_context(use_undo_chunk=None,
-                 undo_chunk_name=None,
-                 restore_current_frame=None,
-                 pre_update_frame=None,
-                 post_update_frame=None,
-                 use_dg_evaluation_mode=None,
-                 disable_viewport=None,
-                 disable_viewport_mode=None):
+def tool_context(
+    use_undo_chunk=None,
+    undo_chunk_name=None,
+    restore_current_frame=None,
+    pre_update_frame=None,
+    post_update_frame=None,
+    use_dg_evaluation_mode=None,
+    disable_viewport=None,
+    disable_viewport_mode=None,
+):
     """
     Create a temporary tool context.
 
@@ -151,8 +153,7 @@ def tool_context(use_undo_chunk=None,
         if use_undo_chunk is True and undo_state is True:
             maya.cmds.undoInfo(closeChunk=True, chunkName=undo_chunk_name)
         if restore_current_frame is True:
-            maya.cmds.currentTime(current_frame, edit=True,
-                                  update=post_update_frame)
+            maya.cmds.currentTime(current_frame, edit=True, update=post_update_frame)
         if use_dg_evaluation_mode is True:
             maya.cmds.evaluationManager(mode=current_eval_mode[0])
         if disable_viewport is True:

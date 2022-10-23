@@ -19,6 +19,10 @@
 Test functions for copypastecamera tool.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import unittest
 
@@ -37,7 +41,6 @@ def get_path_start():
 
 # @unittest.skip
 class TestCopyPasteCamera(test_tools_utils.ToolsTestCase):
-
     def test_get_image_path_tokens(self):
         path_start = get_path_start()
 
@@ -67,7 +70,8 @@ class TestCopyPasteCamera(test_tools_utils.ToolsTestCase):
         # No frame extension, but with use_frame_ext=True.
         use_frame_ext = True
         image_file_path, multi_frame = lib.get_image_path_pattern(
-            path, use_frame_ext, test_disk=False)
+            path, use_frame_ext, test_disk=False
+        )
         self.assertEqual(image_file_path, path)
         self.assertEqual(multi_frame, False)
 
@@ -75,7 +79,8 @@ class TestCopyPasteCamera(test_tools_utils.ToolsTestCase):
         # result as above.
         use_frame_ext = False
         image_file_path, multi_frame = lib.get_image_path_pattern(
-            path, use_frame_ext, test_disk=False)
+            path, use_frame_ext, test_disk=False
+        )
         self.assertEqual(image_file_path, path)
         self.assertEqual(multi_frame, False)
 
@@ -94,14 +99,16 @@ class TestCopyPasteCamera(test_tools_utils.ToolsTestCase):
 
                 # Construct expected file name.
                 pad_string = '#' * pad_length
-                expected_file_name = 'file{0}{1}.jpg'.format(
-                    frame_sep_char, pad_string)
+                expected_file_name = 'file{0}{1}.jpg'.format(frame_sep_char, pad_string)
 
                 # Test the function
                 path = os.path.join(path_start, 'path', 'to', file_name)
                 image_file_path, multi_frame = lib.get_image_path_pattern(
-                    path, use_frame_ext, test_disk=False)
-                expected_path = os.path.join(path_start, 'path', 'to', expected_file_name)
+                    path, use_frame_ext, test_disk=False
+                )
+                expected_path = os.path.join(
+                    path_start, 'path', 'to', expected_file_name
+                )
                 self.assertEqual(image_file_path, expected_path)
                 self.assertEqual(multi_frame, True)
         return
@@ -115,25 +122,32 @@ class TestCopyPasteCamera(test_tools_utils.ToolsTestCase):
         path_start = get_path_start()
 
         paths = [
-            (os.path.join(path_start, 'path', 'to', 'file.1001.jpg'),
-             os.path.join(path_start, 'path', 'to', 'file.####.jpg')),
-
-            (os.path.join(path_start, 'path', 'to', 'file.####.jpg'),
-             os.path.join(path_start, 'path', 'to', 'file.####.jpg')),
-
-            (os.path.join(path_start, 'path', 't#o', 'file.####.jpg'),
-             os.path.join(path_start, 'path', 't#o', 'file.####.jpg')),
-
-            (os.path.join(path_start, 'path', 'to', 'file?.####.jpg'),
-             os.path.join(path_start, 'path', 'to', 'file?.####.jpg')),
-
-            (os.path.join(path_start, 'path', 'to', 'file*.####.jpg'),
-             os.path.join(path_start, 'path', 'to', 'file*.####.jpg')),
+            (
+                os.path.join(path_start, 'path', 'to', 'file.1001.jpg'),
+                os.path.join(path_start, 'path', 'to', 'file.####.jpg'),
+            ),
+            (
+                os.path.join(path_start, 'path', 'to', 'file.####.jpg'),
+                os.path.join(path_start, 'path', 'to', 'file.####.jpg'),
+            ),
+            (
+                os.path.join(path_start, 'path', 't#o', 'file.####.jpg'),
+                os.path.join(path_start, 'path', 't#o', 'file.####.jpg'),
+            ),
+            (
+                os.path.join(path_start, 'path', 'to', 'file?.####.jpg'),
+                os.path.join(path_start, 'path', 'to', 'file?.####.jpg'),
+            ),
+            (
+                os.path.join(path_start, 'path', 'to', 'file*.####.jpg'),
+                os.path.join(path_start, 'path', 'to', 'file*.####.jpg'),
+            ),
         ]
         use_frame_ext = True
         for path, expected_path in paths:
             image_file_path, multi_frame = lib.get_image_path_pattern(
-                path, use_frame_ext, test_disk=False)
+                path, use_frame_ext, test_disk=False
+            )
             self.assertEqual(image_file_path, expected_path)
             self.assertEqual(multi_frame, True)
         return

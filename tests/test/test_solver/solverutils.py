@@ -19,20 +19,27 @@
 Testing Utilities - base class for the test cases.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
 import maya.cmds
 
+import mmSolver.utils.node as node_utils
+import mmSolver.utils.camera as camera_utils
+
 import test.baseutils as baseUtils
 
 
 class SolverTestCase(baseUtils.TestBase):
-
     def setUp(self):
         maya.cmds.file(new=True, force=True)
         self.reload_solver()
@@ -56,30 +63,88 @@ class SolverTestCase(baseUtils.TestBase):
         super(SolverTestCase, self).tearDown()
 
     @staticmethod
-    def haveSolverType(name=None, index=None):
-        has_solver = False
-        kwargs = {
-            'name': False,
-            'index': False,
-        }
-        if name is not None:
-            kwargs['name'] = True
-        elif index is not None:
-            kwargs['index'] = True
-        solverTypes = maya.cmds.mmSolverType(query=True, list=True, **kwargs)
-        if name is not None:
-            has_solver = name in solverTypes
-        if index is not None:
-            has_solver = index in solverTypes
-        return has_solver
-
-    @staticmethod
     def runSolverAffects(affects_mode, **kwargs):
         assert 'mmSolverAffects' in dir(maya.cmds)
         s = time.time()
-        result = maya.cmds.mmSolverAffects(
-            mode=affects_mode,
-            **kwargs)
+        result = maya.cmds.mmSolverAffects(mode=affects_mode, **kwargs)
         e = time.time()
-        print 'mmSolverAffects time:', e - s
+        print('mmSolverAffects time:', e - s)
         return result
+
+    @staticmethod
+    def create_camera(name):
+        tfm_name = name + '_tfm'
+        shp_name = name + '_shp'
+
+        tfm = maya.cmds.createNode('transform', name=tfm_name)
+        shp = maya.cmds.createNode('camera', name=shp_name, parent=tfm)
+
+        tfm = node_utils.get_long_name(tfm)
+        shp = node_utils.get_long_name(shp)
+        return tfm, shp
+
+    @staticmethod
+    def create_bundle(name, parent=None):
+        tfm_name = name + '_tfm'
+        shp_name = name + '_shp'
+
+        tfm = maya.cmds.createNode('transform', name=tfm_name, parent=parent)
+        shp = maya.cmds.createNode('locator', name=shp_name, parent=tfm)
+
+        tfm = node_utils.get_long_name(tfm)
+        shp = node_utils.get_long_name(shp)
+        return tfm, shp
+
+    @staticmethod
+    def create_marker_group(name, cam_tfm):
+        cam_tfm, cam_shp = camera_utils.get_camera(cam_tfm)
+
+        mkr_grp = maya.cmds.createNode(
+            'mmMarkerGroupTransform', name=name, parent=cam_tfm
+        )
+        mkr_grp = node_utils.get_long_name(mkr_grp)
+        mkr_scl = maya.cmds.createNode('mmMarkerScale')
+
+        # Connect camera attributes
+        maya.cmds.connectAttr(cam_shp + '.focalLength', mkr_scl + '.focalLength')
+        maya.cmds.connectAttr(cam_shp + '.cameraAperture', mkr_scl + '.cameraAperture')
+        maya.cmds.connectAttr(cam_shp + '.filmOffset', mkr_scl + '.filmOffset')
+
+        # Connect marker scale to marker group
+        maya.cmds.connectAttr(mkr_scl + '.outScale', mkr_grp + '.scale')
+        maya.cmds.connectAttr(mkr_scl + '.outTranslate', mkr_grp + '.translate')
+        return mkr_grp
+
+    @staticmethod
+    def create_marker(name, mkr_grp, bnd_tfm=None):
+        tfm_name = name + '_tfm'
+        shp_name = name + '_shp'
+
+        tfm = maya.cmds.createNode('transform', name=tfm_name, parent=mkr_grp)
+        tfm = node_utils.get_long_name(tfm)
+
+        shp = maya.cmds.createNode('locator', name=shp_name, parent=tfm)
+        shp = node_utils.get_long_name(shp)
+
+        maya.cmds.addAttr(
+            tfm,
+            longName='enable',
+            at='short',
+            minValue=0,
+            maxValue=1,
+            defaultValue=True,
+        )
+        maya.cmds.addAttr(
+            tfm, longName='weight', at='double', minValue=0.0, defaultValue=1.0
+        )
+        maya.cmds.setAttr(tfm + '.enable', keyable=True, channelBox=True)
+        maya.cmds.setAttr(tfm + '.weight', keyable=True, channelBox=True)
+
+        maya.cmds.addAttr(tfm, longName='bundle', at='message')
+
+        if bnd_tfm is not None:
+            src = bnd_tfm + '.message'
+            dst = tfm + '.bundle'
+            if not maya.cmds.isConnected(src, dst):
+                maya.cmds.connectAttr(src, dst)
+        return tfm, shp

@@ -265,8 +265,8 @@ latex_elements = {
 latex_documents = [
   ('index',
    'mmSolver.tex',
-   u'mmSolver Documentation',
-   u'David Cattermole',
+   'mmSolver Documentation',
+   'David Cattermole',
    'manual'),
 ]
 
@@ -298,8 +298,8 @@ latex_documents = [
 man_pages = [
     ('index',
      'mmsolver',
-     u'mmSolver Documentation',
-     [u'David Cattermole'], 1)
+     'mmSolver Documentation',
+     ['David Cattermole'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -314,8 +314,8 @@ man_pages = [
 texinfo_documents = [
   ('index',
    'mmSolver',
-   u'mmSolver Documentation',
-   u'David Cattermole',
+   'mmSolver Documentation',
+   'David Cattermole',
    'mmSolver',
    'Bundle Adjustment solver for Autodesk Maya.',
    'Miscellaneous'),

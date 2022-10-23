@@ -18,4 +18,3 @@
 """
 A tool to set meta-data on individual attributes, per-Collection.
 """
-

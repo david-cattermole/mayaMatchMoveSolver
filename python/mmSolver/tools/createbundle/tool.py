@@ -39,22 +39,19 @@ def main():
     sel = maya.cmds.ls(sl=True, long=True)
     mkr_nodes = mmapi.filter_marker_nodes(sel)
 
+    mmapi.load_plugin()
+
     bnd_name = mmapi.get_new_bundle_name('bundle1')
-    bnd = mmapi.Bundle().create_node(
-        name=bnd_name
-    )
+    bnd = mmapi.Bundle().create_node(name=bnd_name)
 
     bnd_node = bnd.get_node()
     for mkr_node in mkr_nodes:
-        linkmarkerbundle_lib.link_marker_bundle(
-            mkr_node,
-            bnd_node
-        )
+        linkmarkerbundle_lib.link_marker_bundle(mkr_node, bnd_node)
 
     maya.cmds.select(bnd.get_node(), replace=True)
     return
 
 
 def create_bundle():
-    warnings.warn("Use 'main' function instead.")
+    warnings.warn("Use 'main' function instead.", DeprecationWarning)
     main()

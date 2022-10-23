@@ -46,14 +46,10 @@ def swap_between_selected_markers_and_bundles():
     new_sel = []
 
     if num_marker >= num_bundle:
-        bnd_nodes = mmapi.get_bundle_nodes_from_marker_nodes(
-            node_filtered['marker']
-        )
+        bnd_nodes = mmapi.get_bundle_nodes_from_marker_nodes(node_filtered['marker'])
         new_sel = bnd_nodes
     else:
-        mkr_nodes = mmapi.get_marker_nodes_from_bundle_nodes(
-            node_filtered['bundle']
-        )
+        mkr_nodes = mmapi.get_marker_nodes_from_bundle_nodes(node_filtered['bundle'])
         new_sel = mkr_nodes
 
     maya.cmds.select(new_sel, replace=True)

@@ -19,17 +19,11 @@
 Constant values for the create controller tool.
 """
 
-TRANSLATE_ATTRS = [
-    'translateX', 'translateY', 'translateZ'
-]
+TRANSLATE_ATTRS = ['translateX', 'translateY', 'translateZ']
 
-ROTATE_ATTRS = [
-    'rotateX', 'rotateY', 'rotateZ'
-]
+ROTATE_ATTRS = ['rotateX', 'rotateY', 'rotateZ']
 
-SCALE_ATTRS = [
-    'scaleX', 'scaleY', 'scaleZ'
-]
+SCALE_ATTRS = ['scaleX', 'scaleY', 'scaleZ']
 
 TFM_ATTRS = []
 TFM_ATTRS += TRANSLATE_ATTRS

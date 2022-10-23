@@ -1,0 +1,180 @@
+{
+    "version": 1,
+    "data": {
+        "items": [
+            "open_solver_ui",
+            "solver_run",
+            "solver_run_current_frame",
+            "---Create",
+            "create_marker",
+            "load_marker_ui",
+            "---Selection",
+            "swap_marker_bundles",
+            "select_marker_bundles",
+            "---Time",
+            "navigate_root_frame_prev",
+            "navigate_root_frame_next",
+            "edit_root_frame_add",
+            "edit_root_frame_remove",
+            "---Tools",
+            "camera_context_menu/camera_context_menu_popup/dummy",
+            "mb_tools/mb_popup/---Marker-Bundle Link",
+            "mb_tools/mb_popup/link_marker_bundle",
+            "mb_tools/mb_popup/unlink_marker_bundle",
+            "attr_tools/attr_popup/---Attribute Details",
+            "attr_tools/attr_popup/open_graph_editor",
+            "attr_tools/attr_popup/set_attr_details_ui",
+            "attr_tools/attr_popup/---General",
+            "attr_tools/attr_popup/smooth_keyframes",
+            "attr_tools/attr_popup/channel_sensitivity_ui",
+            "attr_tools/attr_popup/---Bake Attributes",
+            "attr_tools/attr_popup/attribute_bake",
+            "camera_tools/camera_popup/---Camera & Lens",
+            "camera_tools/camera_popup/create_camera",
+            "camera_tools/camera_popup/create_image_plane",
+            "camera_tools/camera_popup/create_lens",
+            "camera_tools/camera_popup/---Distortion",
+            "camera_tools/camera_popup/camera_toggle_distortion",
+            "camera_tools/camera_popup/---Transform",
+            "camera_tools/camera_popup/set_camera_origin_frame",
+            "camera_tools/camera_popup/---Input Output",
+            "camera_tools/camera_popup/copy_camera_to_clipboard",
+            "camera_tools/camera_popup/load_lens",
+            "marker_tools/marker_popup/---Edit Marker",
+            "marker_tools/marker_popup/toggle_marker_lock",
+            "marker_tools/marker_popup/place_marker_manipulator",
+            "marker_tools/marker_popup/raycast_marker",
+            "marker_tools/marker_popup/---Create Marker",
+            "marker_tools/marker_popup/create_marker",
+            "marker_tools/marker_popup/convert_to_marker_ui",
+            "marker_tools/marker_popup/duplicate_marker",
+            "marker_tools/marker_popup/average_markers",
+            "marker_tools/marker_popup/---Deform Marker",
+            "marker_tools/marker_popup/deform_marker_create_offset",
+            "marker_tools/marker_popup/deform_marker_bake_offset",
+            "marker_tools/marker_popup/deform_marker_remove_offset",
+            "marker_tools/marker_popup/---Marker Deviation",
+            "marker_tools/marker_popup/show_deviation_curves",
+            "marker_tools/marker_popup/hide_deviation_curves",
+            "bundle_tools/bundle_popup/---Edit Bundle",
+            "bundle_tools/bundle_popup/toggle_bundle_lock",
+            "bundle_tools/bundle_popup/reproject_bundle",
+            "bundle_tools/bundle_popup/triangulate_bundle",
+            "bundle_tools/bundle_popup/aim_at_camera_manipulator",
+            "bundle_tools/bundle_popup/attach_bundle_to_curve",
+            "bundle_tools/bundle_popup/raycast_marker",
+            "bundle_tools/bundle_popup/---Create Bundle",
+            "bundle_tools/bundle_popup/create_bundle",
+            "line_tools/line_popup/---Edit Line",
+            "line_tools/line_popup/toggle_line_lock",
+            "line_tools/line_popup/subdivide_line",
+            "line_tools/line_popup/---Create Line",
+            "line_tools/line_popup/create_line",
+            "line_tools/line_popup/---Calibrate",
+            "line_tools/line_popup/camera_calibration_create_setup",
+            "line_tools/line_popup/camera_calibration_update_values",
+            "display_tools/display_popup/---Viewport",
+            "display_tools/display_popup/center_twodee",
+            "display_tools/display_popup/center_twodee_remove",
+            "display_tools/display_popup/---Create",
+            "display_tools/display_popup/create_horizon_line",
+            "display_tools/display_popup/create_axis_dome",
+            "display_tools/display_popup/create_sky_dome",
+            "display_tools/display_popup/---Object",
+            "display_tools/display_popup/set_object_colour_ui",
+            "display_tools/display_popup/reset_object_colour",
+            "display_tools/display_popup/toggle_object_motion_trail",
+            "display_tools/display_popup/create_screen_space_motion_trail",
+            "zdepth_tools/zdepth_popup/---Z-Depth Screen-Space Tools",
+            "zdepth_tools/zdepth_popup/screen_z_manipulator",
+            "zdepth_tools/zdepth_popup/screen_z_transform_bake",
+            "zdepth_tools/zdepth_popup/screen_space_rig_bake",
+            "zdepth_tools/zdepth_popup/camera_object_scale_adjust",
+            "zdepth_tools/zdepth_popup/camera_object_scale_remove",
+            "general_tools/gen_tools_popup/---Parenting",
+            "general_tools/gen_tools_popup/reparent_under_node2",
+            "general_tools/gen_tools_popup/unparent_to_world2",
+            "general_tools/gen_tools_popup/---Controllers",
+            "general_tools/gen_tools_popup/create_world_controllers2",
+            "general_tools/gen_tools_popup/create_controller2",
+            "general_tools/gen_tools_popup/remove_controller2",
+            "general_tools/gen_tools_popup/---ML Tools",
+            "general_tools/gen_tools_popup/ml_convert_rotation_order",
+            "general_tools/gen_tools_popup/---Naming & Organisation",
+            "general_tools/gen_tools_popup/marker_bundle_rename",
+            "general_tools/gen_tools_popup/marker_bundle_rename_with_metadata",
+            "general_tools/gen_tools_popup/sort_nodes_in_outliner",
+            "general_tools/gen_tools_popup/remove_all_solver_nodes",
+            "general_tools/gen_tools_popup/---Settings & Preferences",
+            "general_tools/gen_tools_popup/user_preferences_window",
+            "file_io_tools/file_io_popup/---Marker",
+            "file_io_tools/file_io_popup/load_marker_ui",
+            "file_io_tools/file_io_popup/save_marker_file",
+            "file_io_tools/file_io_popup/copy_marker_to_clipboard",
+            "file_io_tools/file_io_popup/---Camera",
+            "file_io_tools/file_io_popup/copy_camera_to_clipboard",
+            "file_io_tools/file_io_popup/---Lens",
+            "file_io_tools/file_io_popup/load_lens",
+            "file_io_tools/file_io_popup/save_lens_file",
+            "hotkey_switcher/hotkey_switcher_popup/dummy"
+        ],
+        "functions": {
+            "solver_popup": {
+                "popup": true,
+                "popup_button": ["right"]
+            },
+            "attr_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "mb_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "marker_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "bundle_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "sel_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "camera_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "line_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "file_io_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "display_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "zdepth_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "gen_tools_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "deform_menu": {
+                "name": "Deform Marker",
+                "tearoff": false
+            },
+            "deform_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            }
+        }
+    }
+}

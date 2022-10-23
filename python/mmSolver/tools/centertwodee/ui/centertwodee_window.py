@@ -32,6 +32,7 @@ from __future__ import print_function
 from functools import partial
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -61,8 +62,7 @@ class CenterTwoDeeWindow(BaseWindow):
     name = 'Center2dOffsetWindow'
 
     def __init__(self, parent=None, name=None):
-        super(CenterTwoDeeWindow, self).__init__(parent,
-                                                 name=name)
+        super(CenterTwoDeeWindow, self).__init__(parent, name=name)
         self.setupUi(self)
         self.addSubForm(centertwodee_layout.CenterTwoDeeLayout)
         self.offset_node, self.camera_shape = lib.get_offset_nodes()
@@ -78,9 +78,7 @@ class CenterTwoDeeWindow(BaseWindow):
         self.form.vertical_horizontalSlider.valueChanged.connect(
             partial(self.form.sliderValueChanged, type='vertical')
         )
-        self.form.zoom_horizontalSlider.valueChanged.connect(
-            self.form.zoomValueChanged
-        )
+        self.form.zoom_horizontalSlider.valueChanged.connect(self.form.zoomValueChanged)
         self.form.horizontal_signal.connect(self.horizontal_offset_node_update)
         self.form.vertical_signal.connect(self.vertical_offset_node_update)
         self.form.zoom_signal.connect(self.camera_shape_update)
@@ -111,55 +109,43 @@ class CenterTwoDeeWindow(BaseWindow):
     def add_menus(self, menubar):
         edit_menu = QtWidgets.QMenu('Edit', menubar)
         commonmenus.create_edit_menu_items(
-            edit_menu,
-            reset_settings_func=self.reset_options)
+            edit_menu, reset_settings_func=self.reset_options
+        )
         menubar.addMenu(edit_menu)
 
         help_menu = QtWidgets.QMenu('Help', menubar)
-        commonmenus.create_help_menu_items(
-            help_menu,
-            tool_help_func=_open_help)
+        commonmenus.create_help_menu_items(help_menu, tool_help_func=_open_help)
         menubar.addMenu(help_menu)
 
     @QtCore.Slot(float)
     def horizontal_offset_node_update(self, value):
-        output = lib.process_value(
-            input_value=value,
-            source='slider',
-            zoom=False
-        )
+        output = lib.process_value(input_value=value, source='slider', zoom=False)
         if self.offset_node:
             lib.set_horizontal_offset(self.camera_shape, self.offset_node, output)
         return
 
     @QtCore.Slot(float)
     def vertical_offset_node_update(self, value):
-        output = lib.process_value(
-            input_value=value,
-            source='slider',
-            zoom=False
-        )
+        output = lib.process_value(input_value=value, source='slider', zoom=False)
         if self.offset_node:
             lib.set_vertical_offset(self.camera_shape, self.offset_node, output)
         return
 
     @QtCore.Slot(float)
     def camera_shape_update(self, value):
-        output = lib.process_value(
-            input_value=value,
-            source='slider',
-            zoom=True
-        )
+        output = lib.process_value(input_value=value, source='slider', zoom=True)
         if self.camera_shape:
             lib.set_zoom(self.camera_shape, output)
         return
 
     def apply_center(self):
         import mmSolver.tools.centertwodee.tool as tool
+
         tool.main()
 
     def remove_center(self):
         import mmSolver.tools.centertwodee.tool as tool
+
         tool.remove()
 
     def reset_options(self):
@@ -175,19 +161,13 @@ class CenterTwoDeeWindow(BaseWindow):
             offset_x_value, offset_y_value = offset_values
             zoom_value = lib.get_camera_zoom(self.camera_shape)
             horizontal_slider_value = lib.process_value(
-                input_value=offset_x_value,
-                source='node',
-                zoom=False
+                input_value=offset_x_value, source='node', zoom=False
             )
             vertical_slider_value = lib.process_value(
-                input_value=offset_y_value,
-                source='node',
-                zoom=False
+                input_value=offset_y_value, source='node', zoom=False
             )
             zoom_slider_value = lib.process_value(
-                input_value=zoom_value,
-                source='node',
-                zoom=True
+                input_value=zoom_value, source='node', zoom=True
             )
         self.form.horizontal_horizontalSlider.setValue(int(horizontal_slider_value))
         self.form.vertical_horizontalSlider.setValue(int(vertical_slider_value))
@@ -213,8 +193,6 @@ def main(show=True, auto_raise=True, delete=False):
     :rtype: SolverWindow or None.
     """
     win = CenterTwoDeeWindow.open_window(
-        show=show,
-        auto_raise=auto_raise,
-        delete=delete
+        show=show, auto_raise=auto_raise, delete=delete
     )
     return win

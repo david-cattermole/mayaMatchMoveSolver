@@ -26,6 +26,7 @@ Usage::
 """
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -64,8 +65,7 @@ def get_config():
 def _open_help():
     src = helputils.get_help_source()
     helputils.open_help_in_browser(
-        page='tools_createnode.html#load-markers',
-        help_source=src
+        page='tools_createnode.html#load-markers', help_source=src
     )
     return
 
@@ -97,9 +97,7 @@ class LoadMarkerWindow(BaseWindow):
 
     def add_menus(self, menubar):
         help_menu = QtWidgets.QMenu('Help', menubar)
-        commonmenus.create_help_menu_items(
-            help_menu,
-            tool_help_func=_open_help)
+        commonmenus.create_help_menu_items(help_menu, tool_help_func=_open_help)
         menubar.addMenu(help_menu)
 
     def apply(self):
@@ -186,9 +184,10 @@ class LoadMarkerWindow(BaseWindow):
                     # camera, because (we assume) only one MarkerData
                     # file can be loaded at once.
                     mayareadfile.update_nodes(
-                        mkr_list, mkr_data_list,
+                        mkr_list,
+                        mkr_data_list,
                         load_bundle_position=load_bnd_pos,
-                        camera_field_of_view=camera_field_of_view
+                        camera_field_of_view=camera_field_of_view,
                     )
                 else:
                     raise ValueError('Load mode is not valid: %r' % load_mode)
@@ -212,7 +211,7 @@ class LoadMarkerWindow(BaseWindow):
                 self.subForm.camera_model,
                 all_camera_nodes,
                 selected_cameras,
-                active_camera
+                active_camera,
             )
             active_camera = cam
             active_mkr_grp = mkr_grp
@@ -221,7 +220,7 @@ class LoadMarkerWindow(BaseWindow):
                 self.subForm.markerGroup_comboBox,
                 self.subForm.markerGroup_model,
                 active_mkr_grp,
-                mkr_grp_nodes
+                mkr_grp_nodes,
             )
 
             # Update the list of Collections, and pick the last used
@@ -232,7 +231,7 @@ class LoadMarkerWindow(BaseWindow):
                 self.subForm.collection_comboBox,
                 self.subForm.collection_model,
                 active_col,
-                col_list
+                col_list,
             )
 
             # Update config file with latest values.
@@ -265,9 +264,5 @@ def main(show=True, auto_raise=True, delete=False):
               opened.
     :rtype: SolverWindow or None.
     """
-    win = LoadMarkerWindow.open_window(
-        show=show,
-        auto_raise=auto_raise,
-        delete=delete
-    )
+    win = LoadMarkerWindow.open_window(show=show, auto_raise=auto_raise, delete=delete)
     return win

@@ -38,5 +38,5 @@ if IS_PYTHON_2 is True:
     LONG_TYPE = long  # noqa: F821
 else:
     TEXT_TYPE = str
-    INT_TYPES = (int, )
+    INT_TYPES = (int,)
     LONG_TYPE = int

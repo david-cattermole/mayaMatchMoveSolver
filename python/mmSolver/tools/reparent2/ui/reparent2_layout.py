@@ -43,6 +43,7 @@ Create a (option-box-like) UI with widgets to control the tool:
 """
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
@@ -75,19 +76,13 @@ class Reparent2Layout(QtWidgets.QWidget, ui_layout.Ui_Form):
         )
 
         # Start and End Frame
-        self.frameRangeStartSpinBox.valueChanged.connect(
-            self.startFrameValueChanged
-        )
-        self.frameRangeEndSpinBox.valueChanged.connect(
-            self.endFrameValueChanged
-        )
+        self.frameRangeStartSpinBox.valueChanged.connect(self.startFrameValueChanged)
+        self.frameRangeEndSpinBox.valueChanged.connect(self.endFrameValueChanged)
 
         # Bake Mode
         bake_modes = const.BAKE_MODE_LABELS
         self.bakeModeComboBox.addItems(bake_modes)
-        self.bakeModeComboBox.currentIndexChanged.connect(
-            self.bakeModeIndexChanged
-        )
+        self.bakeModeComboBox.currentIndexChanged.connect(self.bakeModeIndexChanged)
 
         # Rotate Order Mode
         rotate_order_modes = const.ROTATE_ORDER_MODE_LABELS
@@ -115,11 +110,11 @@ class Reparent2Layout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.frameRangeEndSpinBox.setEnabled(enable_custom)
 
         frame_start = configmaya.get_scene_option(
-            const.CONFIG_FRAME_START_KEY,
-            default=const.DEFAULT_FRAME_START)
+            const.CONFIG_FRAME_START_KEY, default=const.DEFAULT_FRAME_START
+        )
         frame_end = configmaya.get_scene_option(
-            const.CONFIG_FRAME_END_KEY,
-            default=const.DEFAULT_FRAME_END)
+            const.CONFIG_FRAME_END_KEY, default=const.DEFAULT_FRAME_END
+        )
         if value == const.FRAME_RANGE_MODE_TIMELINE_INNER_VALUE:
             frame_start, frame_end = time_utils.get_maya_timeline_range_inner()
         elif value == const.FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE:
@@ -157,11 +152,13 @@ class Reparent2Layout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
     def childrenGetClicked(self):
         import maya.cmds
+
         nodes = maya.cmds.ls(selection=True, long=True) or []
         self.setChildrenNodes(nodes)
 
     def parentGetClicked(self):
         import maya.cmds
+
         nodes = maya.cmds.ls(selection=True, long=True) or []
         self.setParentNode(nodes)
 
@@ -183,6 +180,7 @@ class Reparent2Layout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
     def getChildrenNodes(self):
         import maya.cmds
+
         texts = str(self.childrenLineEdit.text()).split(',')
         nodes = []
         for text in texts:
@@ -193,6 +191,7 @@ class Reparent2Layout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
     def getParentNode(self):
         import maya.cmds
+
         text = self.parentLineEdit.text()
         tmp_nodes = maya.cmds.ls(text, long=True) or []
         node = None
@@ -244,8 +243,8 @@ class Reparent2Layout(QtWidgets.QWidget, ui_layout.Ui_Form):
         """
         name = const.CONFIG_FRAME_RANGE_MODE_KEY
         value = configmaya.get_scene_option(
-            name,
-            default=const.DEFAULT_FRAME_RANGE_MODE)
+            name, default=const.DEFAULT_FRAME_RANGE_MODE
+        )
         index = const.FRAME_RANGE_MODE_VALUES.index(value)
         label = const.FRAME_RANGE_MODE_LABELS[index]
         LOG.debug('key=%r value=%r', name, value)
@@ -256,11 +255,11 @@ class Reparent2Layout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.frameRangeEndSpinBox.setEnabled(enable_custom)
 
         frame_start = configmaya.get_scene_option(
-            const.CONFIG_FRAME_START_KEY,
-            default=const.DEFAULT_FRAME_START)
+            const.CONFIG_FRAME_START_KEY, default=const.DEFAULT_FRAME_START
+        )
         frame_end = configmaya.get_scene_option(
-            const.CONFIG_FRAME_END_KEY,
-            default=const.DEFAULT_FRAME_END)
+            const.CONFIG_FRAME_END_KEY, default=const.DEFAULT_FRAME_END
+        )
         if value == const.FRAME_RANGE_MODE_TIMELINE_INNER_VALUE:
             frame_start, frame_end = time_utils.get_maya_timeline_range_inner()
         elif value == const.FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE:
@@ -271,9 +270,7 @@ class Reparent2Layout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.frameRangeEndSpinBox.setValue(frame_end)
 
         name = const.CONFIG_BAKE_MODE_KEY
-        value = configmaya.get_scene_option(
-            name,
-            default=const.DEFAULT_BAKE_MODE)
+        value = configmaya.get_scene_option(name, default=const.DEFAULT_BAKE_MODE)
         index = const.BAKE_MODE_VALUES.index(value)
         label = const.BAKE_MODE_LABELS[index]
         LOG.debug('key=%r value=%r', name, value)
@@ -281,8 +278,8 @@ class Reparent2Layout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
         name = const.CONFIG_ROTATE_ORDER_MODE_KEY
         value = configmaya.get_scene_option(
-            name,
-            default=const.DEFAULT_ROTATE_ORDER_MODE)
+            name, default=const.DEFAULT_ROTATE_ORDER_MODE
+        )
         index = const.ROTATE_ORDER_MODE_VALUES.index(value)
         label = const.ROTATE_ORDER_MODE_LABELS[index]
         LOG.debug('key=%r value=%r', name, value)
@@ -290,8 +287,8 @@ class Reparent2Layout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
         name = const.CONFIG_DELETE_STATIC_ANIM_CURVES_KEY
         value = configmaya.get_scene_option(
-            name,
-            default=const.DEFAULT_DELETE_STATIC_ANIM_CURVES)
+            name, default=const.DEFAULT_DELETE_STATIC_ANIM_CURVES
+        )
         LOG.debug('key=%r value=%r', name, value)
         self.deleteStaticAnimCurvesCheckBox.setChecked(value)
         return

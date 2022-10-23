@@ -32,16 +32,20 @@ WINDOW_BUTTON_CLOSE_AND_STOP_LABEL = 'Stop Solve and Close'
 #
 # https://htmlcolorcodes.com/color-names/
 #
-COLOR_HTML_HEX_WHITE = '#FFFFFF'   # 'white'
+COLOR_HTML_HEX_WHITE = '#FFFFFF'  # 'white'
 COLOR_HTML_HEX_ORANGE = '#FFA500'  # 'orange'
 COLOR_HTML_HEX_YELLOW = '#FFFF00'  # 'yellow'
-COLOR_HTML_HEX_RED = '#FF0000'     # 'red'
+COLOR_HTML_HEX_RED = '#FF0000'  # 'red'
 COLOR_TEXT_DEFAULT = COLOR_HTML_HEX_WHITE
 COLOR_WARNING = COLOR_HTML_HEX_ORANGE
 COLOR_ERROR = COLOR_HTML_HEX_RED
 
 
 # Available log levels for the Solver UI.
+#
+# NOTE: These values are also part of the mmSolver API. If you change
+# these values, make sure to also update the mmSolver API, see
+# ./python/mmSolver/_api/constant.py
 LOG_LEVEL_ERROR = 'error'
 LOG_LEVEL_WARNING = 'warning'
 LOG_LEVEL_INFO = 'info'
@@ -92,13 +96,13 @@ SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING_DEFAULT = False
 SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING_DEFAULT = False
 SCENE_DATA_DISPLAY_MESHES_WHILE_SOLVING_DEFAULT = False
 SCENE_DATA_DISPLAY_OBJECT_WEIGHT_DEFAULT = True
-SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION_DEFAULT = True
+SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION_DEFAULT = False
 SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION_DEFAULT = True
 SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION_DEFAULT = False
 SCENE_DATA_DISPLAY_ATTRIBUTE_STATE_DEFAULT = True
 SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX_DEFAULT = True
-SCENE_DATA_DISPLAY_ATTRIBUTE_STIFFNESS_DEFAULT = True
-SCENE_DATA_DISPLAY_ATTRIBUTE_SMOOTHNESS_DEFAULT = True
+SCENE_DATA_DISPLAY_ATTRIBUTE_STIFFNESS_DEFAULT = False
+SCENE_DATA_DISPLAY_ATTRIBUTE_SMOOTHNESS_DEFAULT = False
 SCENE_DATA_LOG_LEVEL_DEFAULT = LOG_LEVEL_INFO
 
 
@@ -192,16 +196,33 @@ ATTR_STATE_STATIC = 'Static'
 ATTR_STATE_ANIMATED = 'Animated'
 ATTR_STATE_LOCKED = 'Locked'
 
+# Object Nodes UI - Type info.
+OBJECT_NODE_TYPE_INFO_OBJECT_VALUE = 'object'
+OBJECT_NODE_TYPE_INFO_MARKER_VALUE = 'marker'
+OBJECT_NODE_TYPE_INFO_CAMERA_VALUE = 'camera'
+OBJECT_NODE_TYPE_INFO_BUNDLE_VALUE = 'bundle'
+OBJECT_NODE_TYPE_INFO_LINE_VALUE = 'line'
+OBJECT_NODE_TYPE_INFO_LIST = [
+    OBJECT_NODE_TYPE_INFO_OBJECT_VALUE,
+    OBJECT_NODE_TYPE_INFO_MARKER_VALUE,
+    OBJECT_NODE_TYPE_INFO_CAMERA_VALUE,
+    OBJECT_NODE_TYPE_INFO_BUNDLE_VALUE,
+    OBJECT_NODE_TYPE_INFO_LINE_VALUE,
+]
+
 # Toggle Objects (stored on Collection node)
 OBJECT_TOGGLE_CAMERA_ATTR = 'object_toggle_camera'
+OBJECT_TOGGLE_LINE_ATTR = 'object_toggle_line'
 OBJECT_TOGGLE_MARKER_ATTR = 'object_toggle_marker'
 OBJECT_TOGGLE_BUNDLE_ATTR = 'object_toggle_bundle'
 
 OBJECT_TOGGLE_CAMERA_ATTR_TYPE = 'bool'
+OBJECT_TOGGLE_LINE_ATTR_TYPE = 'bool'
 OBJECT_TOGGLE_MARKER_ATTR_TYPE = 'bool'
 OBJECT_TOGGLE_BUNDLE_ATTR_TYPE = 'bool'
 
 OBJECT_TOGGLE_CAMERA_DEFAULT_VALUE = True
+OBJECT_TOGGLE_LINE_DEFAULT_VALUE = True
 OBJECT_TOGGLE_MARKER_DEFAULT_VALUE = True
 OBJECT_TOGGLE_BUNDLE_DEFAULT_VALUE = False
 
@@ -282,10 +303,12 @@ assert len(RANGE_TYPE_NAME_LIST) == len(RANGE_TYPE_VALUE_LIST)
 # Solver Tab values
 SOLVER_TAB_BASIC_VALUE = 'basic'
 SOLVER_TAB_STANDARD_VALUE = 'standard'
+SOLVER_TAB_CAMERA_VALUE = 'camera'
 SOLVER_TAB_LEGACY_VALUE = 'legacy'
 SOLVER_TAB_VALUE_LIST = [
     SOLVER_TAB_BASIC_VALUE,
     SOLVER_TAB_STANDARD_VALUE,
+    SOLVER_TAB_CAMERA_VALUE,
     SOLVER_TAB_LEGACY_VALUE,
 ]
 
@@ -309,6 +332,31 @@ SOLVER_INCREMENT_BY_FRAME_ATTR = 'solver_increment_by_frame'
 SOLVER_INCREMENT_BY_FRAME_ATTR_TYPE = 'long'
 SOLVER_INCREMENT_BY_FRAME_DEFAULT_VALUE = 1
 
+# Solver User Frames (stored on Collection node)
+SOLVER_USER_FRAMES_ATTR = 'solver_user_frames'
+SOLVER_USER_FRAMES_ATTR_TYPE = 'string'
+SOLVER_USER_FRAMES_DEFAULT_VALUE = None  # No default value.
+
+# Solver Use Per-Marker Frames (stored on Collection node)
+SOLVER_USE_PER_MARKER_FRAMES_ATTR = 'solver_use_per_marker_frames'
+SOLVER_USE_PER_MARKER_FRAMES_ATTR_TYPE = 'bool'
+SOLVER_USE_PER_MARKER_FRAMES_DEFAULT_VALUE = True
+
+# Solver Per-Marker Frames (stored on Collection node)
+SOLVER_PER_MARKER_FRAMES_ATTR = 'solver_per_marker_frames'
+SOLVER_PER_MARKER_FRAMES_ATTR_TYPE = 'long'
+SOLVER_PER_MARKER_FRAMES_DEFAULT_VALUE = 3
+
+# Solver Use Span Frames (stored on Collection node)
+SOLVER_USE_SPAN_FRAMES_ATTR = 'solver_use_span_frames'
+SOLVER_USE_SPAN_FRAMES_ATTR_TYPE = 'bool'
+SOLVER_USE_SPAN_FRAMES_DEFAULT_VALUE = True
+
+# Solver Span Frames (stored on Collection node)
+SOLVER_SPAN_FRAMES_ATTR = 'solver_span_frames'
+SOLVER_SPAN_FRAMES_ATTR_TYPE = 'long'
+SOLVER_SPAN_FRAMES_DEFAULT_VALUE = 10
+
 # Solver Root Frames (stored on Collection node)
 SOLVER_ROOT_FRAMES_ATTR = 'solver_root_frames'
 SOLVER_ROOT_FRAMES_ATTR_TYPE = 'string'
@@ -324,7 +372,9 @@ SOLVER_GLOBAL_SOLVE_ATTR = 'solver_global_solve'
 SOLVER_GLOBAL_SOLVE_ATTR_TYPE = 'bool'
 SOLVER_GLOBAL_SOLVE_DEFAULT_VALUE = False
 
-# Solver Evaluate Complex Node Graphs (stored on Collection node)
+# Solver Evaluate Object Relationships (stored on Collection node)
+#
+# Deprecated, do not use.
 SOLVER_EVAL_OBJECT_RELATIONSHIPS_ATTR = 'solver_eval_object_relationships'
 SOLVER_EVAL_OBJECT_RELATIONSHIPS_ATTR_TYPE = 'bool'
 SOLVER_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE = False
@@ -334,14 +384,74 @@ SOLVER_EVAL_COMPLEX_GRAPHS_ATTR = 'solver_eval_complex_node_graphs'
 SOLVER_EVAL_COMPLEX_GRAPHS_ATTR_TYPE = 'bool'
 SOLVER_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE = False
 
+# Hide "Eval Object Relationships", it's not used anymore and is
+# deprecated.
+EVAL_OBJECT_RELATIONSHIPS_WIDGET_VISIBLE = False
+
+# Solver Scene Graph Mode
+SCENE_GRAPH_MODE_AUTO = 0
+SCENE_GRAPH_MODE_MAYA_DAG = 1
+SCENE_GRAPH_MODE_MM_SCENE_GRAPH = 2
+SCENE_GRAPH_MODE_LIST = [
+    SCENE_GRAPH_MODE_AUTO,
+    SCENE_GRAPH_MODE_MAYA_DAG,
+    SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+]
+
+SCENE_GRAPH_MODE_AUTO_LABEL = 'Auto'
+SCENE_GRAPH_MODE_MAYA_DAG_LABEL = 'Maya DAG'
+SCENE_GRAPH_MODE_MM_SCENE_GRAPH_LABEL = 'MM Scene Graph'
+SCENE_GRAPH_MODE_LABEL_LIST = [
+    SCENE_GRAPH_MODE_AUTO_LABEL,
+    SCENE_GRAPH_MODE_MAYA_DAG_LABEL,
+    SCENE_GRAPH_MODE_MM_SCENE_GRAPH_LABEL,
+]
+
+SCENE_GRAPH_MODE_LABEL_VALUE_LIST = [
+    (SCENE_GRAPH_MODE_AUTO_LABEL, SCENE_GRAPH_MODE_AUTO),
+    (SCENE_GRAPH_MODE_MAYA_DAG_LABEL, SCENE_GRAPH_MODE_MAYA_DAG),
+    (SCENE_GRAPH_MODE_MM_SCENE_GRAPH_LABEL, SCENE_GRAPH_MODE_MM_SCENE_GRAPH),
+]
+
+# Hide the Scene Graph mode, the value defaults to 'auto', which
+# should do work out the fastest scene graph by default.
+SCENE_GRAPH_MODE_WIDGET_VISIBLE = False
+
+# Solver Scene Graph (stored on Collection node)
+SOLVER_SCENE_GRAPH_MODE_ATTR = 'solver_scene_graph'
+SOLVER_SCENE_GRAPH_MODE_ATTR_TYPE = 'long'
+SOLVER_SCENE_GRAPH_MODE_DEFAULT_VALUE = SCENE_GRAPH_MODE_AUTO
+
+# Solver Origin Frame (stored on Collection node)
+SOLVER_ORIGIN_FRAME_ATTR = 'solver_origin_frame'
+SOLVER_ORIGIN_FRAME_ATTR_TYPE = 'long'
+SOLVER_ORIGIN_FRAME_DEFAULT_VALUE = 0
+
+# Solver Scene Scale (stored on Collection node)
+SOLVER_SCENE_SCALE_ATTR = 'solver_scene_scale'
+SOLVER_SCENE_SCALE_ATTR_TYPE = 'double'
+SOLVER_SCENE_SCALE_DEFAULT_VALUE = 10.0
+
+# Solver Solve Lens Distortion (stored on Collection node)
+SOLVER_SOLVE_FOCAL_LENGTH_ATTR = 'solver_solve_focal_length'
+SOLVER_SOLVE_FOCAL_LENGTH_ATTR_TYPE = 'bool'
+SOLVER_SOLVE_FOCAL_LENGTH_DEFAULT_VALUE = True
+
+# Solver Solve Lens Distortion (stored on Collection node)
+SOLVER_SOLVE_LENS_DISTORTION_ATTR = 'solver_solve_lens_distortion'
+SOLVER_SOLVE_LENS_DISTORTION_ATTR_TYPE = 'bool'
+SOLVER_SOLVE_LENS_DISTORTION_DEFAULT_VALUE = True
+
 # Descriptions for solvers
-SOLVER_BASIC_DESC_DEFAULT = (
-    'Solve only animated attributes on frames.'
-)
+SOLVER_BASIC_DESC_DEFAULT = 'Solve only animated attributes on frames.'
 SOLVER_STD_DESC_DEFAULT = (
     'Solve animated and static attributes on root frames, '
     'then solve animated attributes on frames.'
 )
+SOLVER_CAM_DESC_DEFAULT = (
+    'Solve (free-move) Camera from scratch with only Markers as input.'
+)
+
 
 # Attribute Type
 ATTR_TYPE_TRANSLATE = 'attr_type_translate'
@@ -356,6 +466,7 @@ OBJECT_ICON_NAME = ':/mmSolver_object.png'
 MARKER_ICON_NAME = ':/mmSolver_marker.png'
 BUNDLE_ICON_NAME = ':/mmSolver_bundle.png'
 CAMERA_ICON_NAME = ':/mmSolver_camera.png'
+LINE_ICON_NAME = ':/mmSolver_line.png'
 PLUG_ICON_NAME = ':/mmSolver_plug.png'
 NODE_ICON_NAME = ':/mmSolver_node.png'
 ATTR_ICON_NAME = ':/mmSolver_attr.png'

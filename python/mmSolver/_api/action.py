@@ -29,18 +29,23 @@ import importlib
 import mmSolver.utils.python_compat as pycompat
 
 
-Action = collections.namedtuple(
-    'Action',
-    ('func', 'args', 'kwargs')
-)
+Action = collections.namedtuple('Action', ('func', 'args', 'kwargs'))
 
 
 def action_func_is_mmSolver(action):
     return _action_func_is_name(action, 'mmSolver')
 
 
+def action_func_is_camera_solve(action):
+    return _action_func_is_name(action, 'camera_solve')
+
+
 def action_func_is_mmSolverAffects(action):
     return _action_func_is_name(action, 'mmSolverAffects')
+
+
+def action_func_is_mmSolverSceneGraph(action):
+    return _action_func_is_name(action, 'mmSolverSceneGraph')
 
 
 def _action_func_is_name(action, name):

@@ -30,17 +30,11 @@ import mmSolver.tools.reparent.keytimeutils as keytime_utils
 
 LOG = mmSolver.logger.get_logger()
 
-TRANSLATE_ATTRS = [
-    'translateX', 'translateY', 'translateZ'
-]
+TRANSLATE_ATTRS = ['translateX', 'translateY', 'translateZ']
 
-ROTATE_ATTRS = [
-    'rotateX', 'rotateY', 'rotateZ'
-]
+ROTATE_ATTRS = ['rotateX', 'rotateY', 'rotateZ']
 
-SCALE_ATTRS = [
-    'scaleX', 'scaleY', 'scaleZ'
-]
+SCALE_ATTRS = ['scaleX', 'scaleY', 'scaleZ']
 
 TFM_ATTRS = []
 TFM_ATTRS += TRANSLATE_ATTRS
@@ -48,9 +42,7 @@ TFM_ATTRS += ROTATE_ATTRS
 TFM_ATTRS += SCALE_ATTRS
 
 
-def reparent(children, parent,
-             sparse=True,
-             delete_static_anim_curves=False):
+def reparent(children, parent, sparse=True, delete_static_anim_curves=False):
     """
     Reparent the children under the given parent.
 
@@ -94,13 +86,10 @@ def reparent(children, parent,
         child_parent_nodes = list(parent_parent_nodes)
         child_parent_nodes += node_utils.get_node_parents(child_node) or []
         keytime_obj.add_node_attrs(
-            child_node, TFM_ATTRS,
-            start_frame, end_frame,
-            parents=child_parent_nodes
+            child_node, TFM_ATTRS, start_frame, end_frame, parents=child_parent_nodes
         )
     fallback_frame_range = keytime_obj.sum_frame_range_for_nodes(children_nodes)
-    fallback_times = list(range(fallback_frame_range[0],
-                                fallback_frame_range[1]+1))
+    fallback_times = list(range(fallback_frame_range[0], fallback_frame_range[1] + 1))
 
     # Query current transforms
     tfm_cache = tfm_utils.TransformMatrixCache()
@@ -131,15 +120,16 @@ def reparent(children, parent,
     assert len(changed_list) == len(children)
 
     # Set transforms again.
-    changed_tfm_nodes = [tn for tn, c in zip(children, changed_list)
-                         if c is True]
+    changed_tfm_nodes = [tn for tn, c in zip(children, changed_list) if c is True]
     for tfm_node in changed_tfm_nodes:
         node = tfm_node.get_node()
         times = keytime_obj.get_times(node, sparse) or []
         if len(times) > 0:
             tfm_utils.set_transform_values(
-                tfm_cache, times,
-                tfm_node, tfm_node,
+                tfm_cache,
+                times,
+                tfm_node,
+                tfm_node,
                 delete_static_anim_curves=delete_static_anim_curves,
             )
     return changed_tfm_nodes

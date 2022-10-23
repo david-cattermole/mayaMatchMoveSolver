@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -32,7 +33,7 @@ import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
-import mmSolver.tools.solver.widget.ui_nodebrowser_widget as ui_nodebrowser_widget
+
 
 LOG = mmSolver.logger.get_logger()
 
@@ -85,12 +86,9 @@ def _lookupIndexesFromMayaNodeUUIDs(node_uuids, root_index, column, model):
     return indexes
 
 
-def setNodeSelectionWithUUID(tree_view,
-                             model,
-                             filter_model,
-                             sel_model,
-                             column_name,
-                             values):
+def setNodeSelectionWithUUID(
+    tree_view, model, filter_model, sel_model, column_name, values
+):
     """
     Override the tree view selection based on Maya Node UUIDs.
     """

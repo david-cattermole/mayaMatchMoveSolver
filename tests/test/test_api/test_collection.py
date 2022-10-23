@@ -22,6 +22,10 @@ Note, Collection.execute() is tested separately in 'test.test_api.test_solve'
 module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import os
 import unittest
@@ -29,6 +33,7 @@ import unittest
 import maya.cmds
 
 import test.test_api.apiutils as test_api_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.utils as api_utils
 import mmSolver._api.solverstep as solver
 import mmSolver._api.frame as frame
@@ -64,7 +69,7 @@ class TestCollection(test_api_utils.APITestCase):
         x = collection.Collection()
         x.create_node('mySolve')
         node = x.get_node()
-        self.assertIsInstance(node, (str, unicode))
+        self.assertIsInstance(node, pycompat.TEXT_TYPE)
         self.assertGreater(len(node), 0)
         self.assertTrue(maya.cmds.objExists(node))
 
@@ -141,11 +146,7 @@ class TestCollection(test_api_utils.APITestCase):
         self.assertEqual(len(sol_list1), 10)
         self.assertIsInstance(sol_list1, list)
 
-        x.add_solver_list([
-            solver.Solver(),
-            solver.Solver(),
-            solver.Solver()
-        ])
+        x.add_solver_list([solver.Solver(), solver.Solver(), solver.Solver()])
         sol_list2 = x.get_solver_list()
         self.assertEqual(len(sol_list2), 13)
         self.assertIsInstance(sol_list2, list)

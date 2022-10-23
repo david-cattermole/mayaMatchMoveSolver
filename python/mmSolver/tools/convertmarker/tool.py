@@ -38,10 +38,13 @@ import mmSolver.tools.convertmarker.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def main(frame_range_mode=None,
-         start_frame=None, end_frame=None,
-         bundle_position_mode=None,
-         delete_static_anim_curves=None):
+def main(
+    frame_range_mode=None,
+    start_frame=None,
+    end_frame=None,
+    bundle_position_mode=None,
+    delete_static_anim_curves=None,
+):
     """
     Convert all selected transforms into 2D markers under a camera.
 
@@ -69,36 +72,37 @@ def main(frame_range_mode=None,
     """
     if frame_range_mode is None:
         value = configmaya.get_scene_option(
-            const.CONFIG_FRAME_RANGE_MODE_KEY,
-            default=const.DEFAULT_FRAME_RANGE_MODE)
+            const.CONFIG_FRAME_RANGE_MODE_KEY, default=const.DEFAULT_FRAME_RANGE_MODE
+        )
         assert value in const.FRAME_RANGE_MODE_VALUES
         frame_range_mode = value
 
     if start_frame is None or end_frame is None:
         start_frame = configmaya.get_scene_option(
-            const.CONFIG_FRAME_START_KEY,
-            default=const.DEFAULT_FRAME_START)
+            const.CONFIG_FRAME_START_KEY, default=const.DEFAULT_FRAME_START
+        )
         end_frame = configmaya.get_scene_option(
-            const.CONFIG_FRAME_END_KEY,
-            default=const.DEFAULT_FRAME_END)
+            const.CONFIG_FRAME_END_KEY, default=const.DEFAULT_FRAME_END
+        )
 
     if bundle_position_mode is None:
         value = configmaya.get_scene_option(
             const.CONFIG_BUNDLE_POSITION_MODE_KEY,
-            default=const.DEFAULT_BUNDLE_POSITION_MODE)
+            default=const.DEFAULT_BUNDLE_POSITION_MODE,
+        )
         bundle_position_mode = value
 
     if delete_static_anim_curves is None:
         value = configmaya.get_scene_option(
             const.CONFIG_DELETE_STATIC_ANIM_CURVES_KEY,
-            default=const.DEFAULT_DELETE_STATIC_ANIM_CURVES)
+            default=const.DEFAULT_DELETE_STATIC_ANIM_CURVES,
+        )
         delete_static_anim_curves = value
 
     # Frame range
     time_utils.get_frame_range(
-        frame_range_mode,
-        start_frame=start_frame,
-        end_frame=end_frame)
+        frame_range_mode, start_frame=start_frame, end_frame=end_frame
+    )
 
     # Get camera
     model_editor = utils_viewport.get_active_model_editor()
@@ -116,11 +120,14 @@ def main(frame_range_mode=None,
         return
 
     # Get transforms
-    tfm_nodes = maya.cmds.ls(
-        selection=True,
-        long=True,
-        type='transform',
-    ) or []
+    tfm_nodes = (
+        maya.cmds.ls(
+            selection=True,
+            long=True,
+            type='transform',
+        )
+        or []
+    )
     if len(tfm_nodes) == 0:
         LOG.warning('Please select one or more transform nodes.')
         return
@@ -131,10 +138,13 @@ def main(frame_range_mode=None,
 
     with tools_utils.tool_context(pre_update_frame=True):
         mkr_nodes, bnd_nodes = lib.create_markers_from_transforms(
-            cam_tfm, cam_shp, tfm_nodes,
-            start_frame, end_frame,
+            cam_tfm,
+            cam_shp,
+            tfm_nodes,
+            start_frame,
+            end_frame,
             bundle_position_mode,
-            delete_static_anim_curves
+            delete_static_anim_curves,
         )
 
     if len(mkr_nodes) > 0:
@@ -143,10 +153,11 @@ def main(frame_range_mode=None,
 
 
 def convert_to_marker():
-    warnings.warn("Use 'main' function instead.")
+    warnings.warn("Use 'main' function instead.", DeprecationWarning)
     main()
 
 
 def open_window():
     import mmSolver.tools.convertmarker.ui.convertmarker_window as window
+
     window.main()

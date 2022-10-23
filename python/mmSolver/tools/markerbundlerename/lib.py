@@ -61,10 +61,9 @@ def prompt_for_new_node_name(title, message, text):
     return name
 
 
-def rename_markers_and_bundles(mkr_nodes, bnd_nodes,
-                               mkr_name, bnd_name,
-                               number_format,
-                               mkr_suffix, bnd_suffix):
+def rename_markers_and_bundles(
+    mkr_nodes, bnd_nodes, mkr_name, bnd_name, number_format, mkr_suffix, bnd_suffix
+):
     """
     Rename the given marker and bundle nodes.
 
@@ -113,9 +112,7 @@ def rename_markers_and_bundles(mkr_nodes, bnd_nodes,
         bnd = mmapi.Bundle(node=bnd_node)
 
         new_bnd_name = mmapi.get_new_bundle_name(
-            num_str,
-            prefix=bnd_name,
-            suffix=bnd_suffix
+            num_str, prefix=bnd_name, suffix=bnd_suffix
         )
         bnd_node = bnd.get_node()
         maya.cmds.rename(bnd_node, new_bnd_name)

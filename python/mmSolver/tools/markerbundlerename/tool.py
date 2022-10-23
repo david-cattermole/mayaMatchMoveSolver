@@ -56,10 +56,13 @@ def main():
     else:
         bnd_name = mkr_name
     nodes = lib.rename_markers_and_bundles(
-        sel_mkr_nodes, sel_bnd_nodes,
-        mkr_name, bnd_name,
+        sel_mkr_nodes,
+        sel_bnd_nodes,
+        mkr_name,
+        bnd_name,
         number_format,
-        mkr_suffix, bnd_suffix
+        mkr_suffix,
+        bnd_suffix,
     )
     maya.cmds.select(nodes, replace=True)
     return

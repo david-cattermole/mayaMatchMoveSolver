@@ -22,11 +22,20 @@ Remove Solver Nodes constants.
 WINDOW_TITLE = 'Remove Solver Nodes'
 CONFIG_FILE_NAME = "tools_removesolvernodes.json"
 
-# The default values for deleting different types of nodes
+# The default values for deleting different types of nodes.
+#
+# All are False by default, because the intention is that users must
+# consciously make a decision to delete nodes. This is a feature, not
+# a bug in my (David Cattermole's) opinion (22/05/2022).
 DELETE_MARKERS_DEFAULT_VALUE = False
 DELETE_BUNDLES_DEFAULT_VALUE = False
 DELETE_MARKER_GROUPS_DEFAULT_VALUE = False
+DELETE_LENSES_DEFAULT_VALUE = False
+DELETE_LINES_DEFAULT_VALUE = False
+DELETE_IMAGE_PLANES_DEFAULT_VALUE = False
 DELETE_COLLECTIONS_DEFAULT_VALUE = False
+DELETE_DISPLAY_NODES_DEFAULT_VALUE = False
+DELETE_CONFIG_DEFAULT_VALUE = False
 DELETE_OTHERS_DEFAULT_VALUE = False
 
 # Save scene files by default?

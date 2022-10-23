@@ -27,6 +27,7 @@ import mmSolver.tools.hotkeyswitcher.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
+
 def get_ordered_hotkey_sets():
     names = maya.cmds.hotkeySet(query=True, hotkeySetArray=True)
     names = list(sorted(names))
@@ -47,4 +48,3 @@ def switch_to_hotkey_set(name):
         LOG.warn(msg, name)
     maya.cmds.hotkeySet(name, edit=True, current=True)
     return
-

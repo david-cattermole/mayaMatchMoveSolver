@@ -35,8 +35,8 @@ import warnings
 
 import maya.cmds
 import maya.utils
-
 import mmSolver.startup
+
 
 # Backwards compatibility for users needing call individual start up
 # scripts.

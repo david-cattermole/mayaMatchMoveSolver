@@ -19,6 +19,10 @@
 Test functions for attribute module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import os
 import unittest
@@ -97,26 +101,25 @@ class TestAttribute(test_api_utils.APITestCase):
 
         See GitHub issue #153.
         """
-        top_node = maya.cmds.createNode(
-            'transform', name='top_node')
+        top_node = maya.cmds.createNode('transform', name='top_node')
         top_node = node_utils.get_long_name(top_node)
 
-        left_node = maya.cmds.createNode(
-            'transform', name='left', parent=top_node)
+        left_node = maya.cmds.createNode('transform', name='left', parent=top_node)
         left_node = node_utils.get_long_name(left_node)
 
-        right_node = maya.cmds.createNode(
-            'transform', name='right', parent=top_node)
+        right_node = maya.cmds.createNode('transform', name='right', parent=top_node)
         right_node = node_utils.get_long_name(right_node)
 
         # Same name as right_same_node
         left_same_node = maya.cmds.createNode(
-            'transform', name='same', parent=left_node)
+            'transform', name='same', parent=left_node
+        )
         left_same_node = node_utils.get_long_name(left_same_node)
 
         # Same name as left_same_node
         right_same_node = maya.cmds.createNode(
-            'transform', name='same', parent=right_node)
+            'transform', name='same', parent=right_node
+        )
         right_same_node = node_utils.get_long_name(right_same_node)
 
         left_attr = attribute.Attribute(node=left_same_node, attr='translateX')

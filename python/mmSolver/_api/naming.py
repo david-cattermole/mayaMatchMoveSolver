@@ -35,12 +35,14 @@ import mmSolver.logger
 LOG = mmSolver.logger.get_logger()
 
 
-def find_valid_maya_node_name(name,
-                              prefix=None,
-                              auto_add_num=True,
-                              auto_add_num_padding=3,
-                              auto_inc=True,
-                              auto_inc_try_limit=999):
+def find_valid_maya_node_name(
+    name,
+    prefix=None,
+    auto_add_num=True,
+    auto_add_num_padding=3,
+    auto_inc=True,
+    auto_inc_try_limit=999,
+):
     """
     Get a new valid Maya name - canonical function to get valid Maya node names.
 
@@ -197,6 +199,38 @@ def get_new_bundle_name(name, prefix=None, suffix=None):
         prefix = const.BUNDLE_NAME_PREFIX
     if suffix is None:
         suffix = const.BUNDLE_NAME_SUFFIX
+    if suffix.lower() not in name.lower():
+        name += suffix
+    name = find_valid_maya_node_name(name, prefix=prefix, auto_add_num=False)
+    return name
+
+
+def get_new_line_name(name, prefix=None, suffix=None):
+    """
+    Create a name for a line object, using 'name' as the base
+    identifier.
+
+    :param name: Name of object.
+    :type name: str
+
+    :param prefix: Prefix of the line, if a number is the first
+                   character. If None, a default name is added.
+    :type prefix: str or None
+
+    :param suffix: Suffix of the line, added to the name. If None, a
+                   default name is added.
+    :type suffix: str or None
+
+    :return: Name for the line.
+    :rtype: str
+    """
+    assert isinstance(name, pycompat.TEXT_TYPE)
+    assert prefix is None or isinstance(prefix, pycompat.TEXT_TYPE)
+    assert suffix is None or isinstance(suffix, pycompat.TEXT_TYPE)
+    if prefix is None:
+        prefix = const.LINE_NAME_PREFIX
+    if suffix is None:
+        suffix = const.LINE_NAME_SUFFIX
     if suffix.lower() not in name.lower():
         name += suffix
     name = find_valid_maya_node_name(name, prefix=prefix, auto_add_num=False)

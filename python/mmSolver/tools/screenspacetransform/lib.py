@@ -43,9 +43,7 @@ def create_screen_space_locator(cam, name=None):
     maya.cmds.setAttr(mkr_grp_node + '.overscanX', lock=True)
     maya.cmds.setAttr(mkr_grp_node + '.overscanY', lock=True)
 
-    depth_tfm = maya.cmds.createNode('transform',
-                                     name='depth',
-                                     parent=mkr_grp_node)
+    depth_tfm = maya.cmds.createNode('transform', name='depth', parent=mkr_grp_node)
     depth_tfm = node_utils.get_long_name(depth_tfm)
     maya.cmds.setAttr(depth_tfm + '.translateX', lock=True)
     maya.cmds.setAttr(depth_tfm + '.translateY', lock=True)
@@ -62,9 +60,7 @@ def create_screen_space_locator(cam, name=None):
     maya.cmds.setAttr(depth_tfm + '.scaleZ', lock=True)
 
     loc_name = 'point'
-    loc_tfm = maya.cmds.createNode('transform',
-                                   name=name,
-                                   parent=depth_tfm)
+    loc_tfm = maya.cmds.createNode('transform', name=name, parent=depth_tfm)
     loc_tfm = node_utils.get_long_name(loc_tfm)
     loc_shp = maya.cmds.createNode('locator', parent=loc_tfm)
     loc_shp = node_utils.get_long_name(loc_shp)

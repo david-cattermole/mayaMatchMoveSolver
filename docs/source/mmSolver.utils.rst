@@ -45,6 +45,13 @@ Event
     :members:
     :undoc-members:
 
+Image Sequence
+++++++++++++++
+
+.. automodule:: mmSolver.utils.imageseq
+    :members:
+    :undoc-members:
+
 Kalman Filter
 +++++++++++++
 
@@ -70,6 +77,13 @@ Node Affects
 ++++++++++++
 
 .. automodule:: mmSolver.utils.nodeaffects
+    :members:
+    :undoc-members:
+
+Python Compatibility
+++++++++++++++++++++
+
+.. automodule:: mmSolver.utils.python_compat
     :members:
     :undoc-members:
 

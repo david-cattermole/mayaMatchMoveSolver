@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt as Qt
@@ -31,10 +32,7 @@ import mmSolver.ui.Qt.QtCore as QtCore
 import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
-import mmSolver.tools.solver.ui.object_nodes as object_nodes
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
-import mmSolver.tools.solver.lib.attr as lib_attr
-import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.uiquery as lib_uiquery
 
 import mmSolver.logger
@@ -44,6 +42,7 @@ LOG = mmSolver.logger.get_logger()
 
 
 def _get_selected_maya_nodes(cls_obj):
+    assert isinstance(cls_obj, ObjectTreeView)
     tree_view = cls_obj
     filter_model = cls_obj.model()
     ui_nodes = lib_uiquery.get_selected_ui_nodes(
@@ -56,7 +55,6 @@ def _get_selected_maya_nodes(cls_obj):
 
 
 class ObjectTreeView(QtWidgets.QTreeView):
-
     def __init__(self, parent=None, *args, **kwargs):
         super(ObjectTreeView, self).__init__(parent, *args, **kwargs)
         return
@@ -65,6 +63,7 @@ class ObjectTreeView(QtWidgets.QTreeView):
         node_list = _get_selected_maya_nodes(self)
         LOG.debug("Swap Marker/Bundle Selection: %r", node_list)
         import mmSolver.tools.selection.tools as tools
+
         lib_maya_utils.set_scene_selection(node_list)
         tools.swap_between_selected_markers_and_bundles()
         return
@@ -73,6 +72,7 @@ class ObjectTreeView(QtWidgets.QTreeView):
         node_list = _get_selected_maya_nodes(self)
         LOG.debug("Select Both Markers and Bundles: %r", node_list)
         import mmSolver.tools.selection.tools as tools
+
         lib_maya_utils.set_scene_selection(node_list)
         tools.select_both_markers_and_bundles()
         return
@@ -81,6 +81,7 @@ class ObjectTreeView(QtWidgets.QTreeView):
         node_list = _get_selected_maya_nodes(self)
         LOG.debug("Rename Markers and Bundles: %r", node_list)
         import mmSolver.tools.markerbundlerename.tool as tool
+
         lib_maya_utils.set_scene_selection(node_list)
         tool.main()
         return
@@ -91,18 +92,15 @@ class ObjectTreeView(QtWidgets.QTreeView):
 
         label = 'Select Marker / Bundle'
         swap_sel_act = QtWidgets.QAction(label, self)
-        swap_sel_act.triggered.connect(
-            self.selection_swap)
+        swap_sel_act.triggered.connect(self.selection_swap)
 
         label = 'Select Marker + Bundle'
         both_sel_act = QtWidgets.QAction(label, self)
-        both_sel_act.triggered.connect(
-            self.selection_both_markers_bundles)
+        both_sel_act.triggered.connect(self.selection_both_markers_bundles)
 
         label = 'Marker Bundle Rename...'
         rename_act = QtWidgets.QAction(label, self)
-        rename_act.triggered.connect(
-            self.rename_marker_bundles)
+        rename_act.triggered.connect(self.rename_marker_bundles)
 
         menu.addAction(swap_sel_act)
         menu.addAction(both_sel_act)

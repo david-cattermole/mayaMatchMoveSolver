@@ -19,6 +19,10 @@
 Test functions for markergroup module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import os
 import unittest
@@ -33,13 +37,11 @@ import mmSolver._api.markergroup as markergroup
 
 # @unittest.skip
 class TestMarkerGroup(test_api_utils.APITestCase):
-
     @staticmethod
     def create_camera(name):
         cam_tfm = maya.cmds.createNode('transform', name=name)
         cam_tfm = node_utils.get_long_name(cam_tfm)
-        cam_shp = maya.cmds.createNode('camera', name=name+'Shape',
-                                       parent=cam_tfm)
+        cam_shp = maya.cmds.createNode('camera', name=name + 'Shape', parent=cam_tfm)
         cam_shp = node_utils.get_long_name(cam_shp)
         cam = camera.Camera(transform=cam_tfm, shape=cam_shp)
         return cam
@@ -52,9 +54,9 @@ class TestMarkerGroup(test_api_utils.APITestCase):
 
         cam = self.create_camera('camera')
         cam_tfm = cam.get_transform_node()
-        node = maya.cmds.createNode('mmMarkerGroupTransform',
-                                    name='markerGroup1',
-                                    parent=cam_tfm)
+        node = maya.cmds.createNode(
+            'mmMarkerGroupTransform', name='markerGroup1', parent=cam_tfm
+        )
         y = markergroup.MarkerGroup(node=node)
         self.assertEqual(y.get_node(), cam_tfm + '|markerGroup1')
         self.assertTrue(y.is_valid())
@@ -66,9 +68,9 @@ class TestMarkerGroup(test_api_utils.APITestCase):
 
         cam = self.create_camera('camera')
         cam_tfm = cam.get_transform_node()
-        node = maya.cmds.createNode('mmMarkerGroupTransform',
-                                    name='markerGroup1',
-                                    parent=cam_tfm)
+        node = maya.cmds.createNode(
+            'mmMarkerGroupTransform', name='markerGroup1', parent=cam_tfm
+        )
         x.set_node(node)
         self.assertEqual(x.get_node(), cam_tfm + '|markerGroup1')
         self.assertTrue(x.is_valid())
@@ -87,6 +89,7 @@ class TestMarkerGroup(test_api_utils.APITestCase):
         self.assertIsInstance(x, markergroup.MarkerGroup)
         self.assertEqual(x.get_node(), cam_tfm + '|markerGroup1')
         self.assertTrue(x.is_valid())
+
 
 if __name__ == '__main__':
     prog = unittest.main()

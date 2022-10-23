@@ -43,6 +43,7 @@ CONFIG_HOME_DIR_PATH = {
 
 # Maya configuration
 SCENE_DATA_NODE = 'MM_SOLVER_SCENE_DATA'
+SCENE_DATA_NODE_TYPE = 'script'
 SCENE_DATA_ATTR = 'data'
 
 
@@ -50,26 +51,9 @@ SCENE_DATA_ATTR = 'data'
 EVAL_MODE_API_DG_CONTEXT = 'api_dg_context'
 EVAL_MODE_TIME_SWITCH_GET_ATTR = 'time_switch_get_attr'
 EVAL_MODE_DEFAULT = EVAL_MODE_API_DG_CONTEXT
-EVAL_MODE_LIST = [
-    EVAL_MODE_API_DG_CONTEXT,
-    EVAL_MODE_TIME_SWITCH_GET_ATTR
-]
-ROTATE_ORDER_STR_LIST = [
-    'xyz',
-    'yzx',
-    'zxy',
-    'xzy',
-    'yxz',
-    'zyx'
-]
-ROTATE_ORDER_INDEX_TO_STR = {
-    0: 'xyz',
-    1: 'yzx',
-    2: 'zxy',
-    3: 'xzy',
-    4: 'yxz',
-    5: 'zyx'
-}
+EVAL_MODE_LIST = [EVAL_MODE_API_DG_CONTEXT, EVAL_MODE_TIME_SWITCH_GET_ATTR]
+ROTATE_ORDER_STR_LIST = ['xyz', 'yzx', 'zxy', 'xzy', 'yxz', 'zyx']
+ROTATE_ORDER_INDEX_TO_STR = {0: 'xyz', 1: 'yzx', 2: 'zxy', 3: 'xzy', 4: 'yxz', 5: 'zyx'}
 ROTATE_ORDER_STR_TO_INDEX = {
     'xyz': 0,
     'yzx': 1,
@@ -98,3 +82,16 @@ FRAME_RANGE_MODE_VALUES = [
     FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE,
     FRAME_RANGE_MODE_CUSTOM_VALUE,
 ]
+
+
+# Types of image sequence format:
+#
+# - Maya Style: "file.<f>.png"
+# - First frame style "file.1001.png"
+# - Hash Padded style: "file.####.png"
+# - "old school" Nuke style: file.%04d.png
+#
+IMAGE_SEQ_FORMAT_STYLE_MAYA = 'maya'
+IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED = 'hash_padded'
+IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME = 'first_frame'
+IMAGE_SEQ_FORMAT_STYLE_PRINTF = 'printf'

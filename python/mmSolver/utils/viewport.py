@@ -233,10 +233,7 @@ def get_active_model_editor():
     if the_panel is None:
         return None
 
-    model_editor = maya.cmds.modelPanel(
-        the_panel,
-        query=True,
-        modelEditor=True)
+    model_editor = maya.cmds.modelPanel(the_panel, query=True, modelEditor=True)
     return model_editor
 
 
@@ -253,11 +250,7 @@ def get_viewport_camera(model_editor):
     if model_editor is None:
         msg = 'Cannot get camera, Model Editor is invalid! model_editor=%r'
         LOG.warning(msg, model_editor)
-    cam = maya.cmds.modelEditor(
-        model_editor,
-        query=True,
-        camera=True
-    )
+    cam = maya.cmds.modelEditor(model_editor, query=True, camera=True)
     cam_tfm, cam_shp = camera_utils.get_camera(cam)
     return cam_tfm, cam_shp
 
@@ -292,7 +285,8 @@ def get_model_editor_renderer_device_name(model_editor):
     :rtype: str
     """
     renderer_name = maya.cmds.modelEditor(
-        model_editor, query=True, rendererDeviceName=True)
+        model_editor, query=True, rendererDeviceName=True
+    )
     return renderer_name
 
 
@@ -309,10 +303,7 @@ def get_model_panel_renderer_device_name(model_panel):
 
     :rtype: str
     """
-    model_editor = maya.cmds.modelPanel(
-        model_panel,
-        query=True,
-        modelEditor=True)
+    model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
     renderer_name = get_model_editor_renderer_device_name(model_editor)
     return renderer_name
 
@@ -325,8 +316,7 @@ def get_currently_using_viewport2():
     :rtype: bool
     """
     model_panels = get_all_model_panels()
-    render_devices = [get_model_panel_renderer_device_name(p)
-                      for p in model_panels]
+    render_devices = [get_model_panel_renderer_device_name(p) for p in model_panels]
     using_viewport2 = any([x != '' for x in render_devices])
     return using_viewport2
 
@@ -336,17 +326,11 @@ def get_isolated_nodes(model_panel):
     Return nodes that are being isolated for 'model_panel'.
     """
     nodes = []
-    state = maya.cmds.isolateSelect(
-        model_panel,
-        query=True,
-        state=True)
+    state = maya.cmds.isolateSelect(model_panel, query=True, state=True)
     if state is False:
         return nodes
 
-    set_node = maya.cmds.isolateSelect(
-        model_panel,
-        query=True,
-        viewObjects=True)
+    set_node = maya.cmds.isolateSelect(model_panel, query=True, viewObjects=True)
 
     obj = node_utils.get_as_object(set_node)
     set_mfn = OpenMaya.MFnSet(obj)
@@ -372,10 +356,7 @@ def set_isolated_nodes(model_panel, nodes, enable):
     With an empty list, this function clears the 'model_panel's
     isolate object list.
     """
-    model_editor = maya.cmds.modelPanel(
-        model_panel,
-        query=True,
-        modelEditor=True)
+    model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
 
     sel = maya.cmds.ls(selection=True, long=True) or []
     maya.cmds.select(nodes, replace=True)
@@ -405,10 +386,7 @@ def _get_node_type_visibility(model_panel, node_type):
     :return: The visibility of image planes.
     :rtype: bool
     """
-    model_editor = maya.cmds.modelPanel(
-        model_panel,
-        query=True,
-        modelEditor=True)
+    model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
     kwargs = {
         'query': True,
         str(node_type): True,
@@ -427,10 +405,7 @@ def _set_node_type_visibility(model_panel, node_type, value):
     :param value: Visibility of image planes.
     :type value: bool
     """
-    model_editor = maya.cmds.modelPanel(
-        model_panel,
-        query=True,
-        modelEditor=True)
+    model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
     kwargs = {
         'edit': True,
         str(node_type): value,

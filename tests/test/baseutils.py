@@ -19,6 +19,10 @@
 Testing Utilities - base class for the test cases.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import math
 import time
@@ -27,20 +31,22 @@ import cProfile as profile
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
 import maya.cmds
 
+import mmSolver.api as mmapi
+
 
 class TestBase(unittest.TestCase):
-
     def setUp(self):
-        print ''
-        print '-' * 80
-        print 'Name:', self.id()
+        print('')
+        print('-' * 80)
+        print('Name:', self.id())
         if self.shortDescription():
-            print 'Description:', self.shortDescription()
+            print('Description:', self.shortDescription())
 
         # Start the timer
         self._start_test_time = time.time()
@@ -52,7 +58,6 @@ class TestBase(unittest.TestCase):
         self._pyProfiler = profile.Profile()
         self._pyProfiler.enable()
 
-
     def tearDown(self):
         # Stop the timer
         self._end_test_time = time.time()
@@ -61,11 +66,11 @@ class TestBase(unittest.TestCase):
         # Stop the Profiler
         self._pyProfiler.disable()
         self._pyProfiler.dump_stats(self._pyProfilerPath)
-        print 'Time: ', '{0: f}'.format(self._test_time)
-        print 'Python Profiler:', self._pyProfilerPath
+        print('Time: ', '{0: f}'.format(self._test_time))
+        print('Python Profiler:', self._pyProfilerPath)
 
     def reload_solver(self):
-        maya.cmds.unloadPlugin('mmSolver')
+        maya.cmds.unloadPlugin('mmSolver', force=True)
         maya.cmds.loadPlugin('mmSolver')
 
     def quit_maya(self):
@@ -96,3 +101,51 @@ class TestBase(unittest.TestCase):
         path = os.path.join(root, *args)
         path = os.path.abspath(path)
         return path
+
+    @staticmethod
+    def haveSolverType(name=None, index=None):
+        has_solver = False
+        kwargs = {
+            'name': False,
+            'index': False,
+        }
+        if name is not None:
+            kwargs['name'] = True
+        elif index is not None:
+            kwargs['index'] = True
+        solverTypes = maya.cmds.mmSolverType(query=True, list=True, **kwargs)
+        if name is not None:
+            has_solver = name in solverTypes
+        if index is not None:
+            has_solver = index in solverTypes
+        return has_solver
+
+    def checkSolveResults(
+        self, solres_list, allow_max_avg_error=None, allow_max_error=None
+    ):
+        if allow_max_avg_error is None:
+            allow_max_avg_error = 1.0
+        if allow_max_error is None:
+            allow_max_error = max(allow_max_avg_error, 1.0)
+
+        # Ensure the values are correct
+        for res in solres_list:
+            success = res.get_success()
+            err = res.get_final_error()
+            print('final error', success, err)
+            self.assertTrue(success)
+            self.assertTrue(isinstance(err, float))
+
+        # Check the final error values
+        frm_err_list = mmapi.merge_frame_error_list(solres_list)
+
+        avg_err = mmapi.get_average_frame_error_list(frm_err_list)
+        print('avg error', avg_err)
+
+        max_err_frm, max_err_val = mmapi.get_max_frame_error(frm_err_list)
+        print('max error frame and value:', max_err_frm, max_err_val)
+        self.assertLess(avg_err, allow_max_avg_error)
+        self.assertGreater(avg_err, 0.0)
+        self.assertLess(max_err_val, allow_max_error)
+        self.assertGreater(max_err_val, 0.0)
+        return

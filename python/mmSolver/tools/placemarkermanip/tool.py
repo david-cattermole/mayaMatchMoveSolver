@@ -41,11 +41,7 @@ def place_marker():
     """
     Called each time the user left-clicks in the viewport.
     """
-    nodes = maya.cmds.ls(
-        selection=True,
-        long=True,
-        type='transform'
-    ) or []
+    nodes = maya.cmds.ls(selection=True, long=True, type='transform') or []
     if len(nodes) == 0:
         msg = 'No nodes selected! Please select Marker nodes to place.'
         LOG.warning(msg)
@@ -63,10 +59,7 @@ def place_marker():
 
     # Get viewport coordinate. Viewport coordinate is relative to the
     # viewport resolution in pixels.
-    vpX, vpY, vpZ = maya.cmds.draggerContext(
-        const.CTX,
-        query=True,
-        dragPoint=True)
+    vpX, vpY, vpZ = maya.cmds.draggerContext(const.CTX, query=True, dragPoint=True)
 
     view = OpenMayaUI.M3dView().active3dView()
 
@@ -84,11 +77,7 @@ def place_marker():
     # Get the world-space location for the clicked point.
     position = OpenMaya.MPoint()
     direction = OpenMaya.MVector()
-    view.viewToWorld(
-        int(vpX),
-        int(vpY),
-        position,
-        direction)
+    view.viewToWorld(int(vpX), int(vpY), position, direction)
 
     # Compute the Marker coordinates for the given camera.
     frame = maya.cmds.currentTime(query=True)
@@ -97,13 +86,16 @@ def place_marker():
         camera=(camTfm, camShp),
         asMarkerCoordinate=True,
         imageResolution=(imageWidth, imageHeight),
-        time=frame
+        time=frame,
     )
     if coord is None:
         msg = 'Could not get Marker coordinate.'
         LOG.warning(msg)
         return
     assert len(coord) == 3
+
+    # TODO: Calculate the lens distortion (if any) for the current 2D
+    # coordinate.
 
     # Set the marker position
     for mkr in mkr_list:
@@ -191,5 +183,6 @@ def main():
         dragCommand=on_drag,
         finalize=tool_clean_up,
         name=const.CTX,
-        cursor='crossHair')
+        cursor='crossHair',
+    )
     maya.cmds.setToolTo(const.CTX)

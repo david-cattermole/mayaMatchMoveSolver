@@ -26,10 +26,9 @@ from __future__ import print_function
 import maya.cmds
 
 
-def __set_average_marker_position(selected_markers,
-                                  start_frame,
-                                  end_frame,
-                                  new_mkr_node):
+def __set_average_marker_position(
+    selected_markers, start_frame, end_frame, new_mkr_node
+):
     """
     This function sets average value from selected marker to a new
     marker node given.

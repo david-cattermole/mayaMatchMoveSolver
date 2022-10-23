@@ -6,14 +6,29 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>476</width>
-    <height>210</height>
+    <width>974</width>
+    <height>211</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>3</number>
+   </property>
+   <property name="leftMargin">
+    <number>3</number>
+   </property>
+   <property name="topMargin">
+    <number>3</number>
+   </property>
+   <property name="rightMargin">
+    <number>3</number>
+   </property>
+   <property name="bottomMargin">
+    <number>3</number>
+   </property>
    <item>
     <widget class="QLabel" name="description_label">
      <property name="text">
@@ -25,15 +40,43 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="frameRange_layout"/>
+    <layout class="QHBoxLayout" name="frameRange_layout">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+    </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="rootFrames_layout"/>
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="rootFrames_layout">
+     <property name="spacing">
+      <number>2</number>
+     </property>
+    </layout>
+   </item>
+   <item>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
    </item>
    <item>
     <layout class="QHBoxLayout" name="options_layout">
+     <property name="spacing">
+      <number>2</number>
+     </property>
      <item>
       <layout class="QVBoxLayout" name="options1_layout">
+       <property name="spacing">
+        <number>2</number>
+       </property>
        <item>
         <widget class="QCheckBox" name="globalSolve_checkBox">
          <property name="text">
@@ -67,7 +110,71 @@
       </layout>
      </item>
      <item>
+      <layout class="QVBoxLayout" name="options3_layout">
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <item>
+        <widget class="QCheckBox" name="solveFocalLength_checkBox">
+         <property name="text">
+          <string>Solve Focal Length</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="solveLensDistortion_checkBox">
+         <property name="text">
+          <string>Solve Lens Distortion</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::MinimumExpanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>10</width>
+           <height>1</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </item>
+     <item>
       <layout class="QVBoxLayout" name="options2_layout">
+       <property name="spacing">
+        <number>2</number>
+       </property>
+       <item>
+        <layout class="QHBoxLayout" name="sceneGraphMode_layout" stretch="0,0">
+         <property name="spacing">
+          <number>2</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="sceneGraphMode_label">
+           <property name="text">
+            <string>Scene Graph</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="sceneGraphMode_comboBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+             <horstretch>1</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
        <item>
         <widget class="QCheckBox" name="evalObjectRelationships_checkBox">
          <property name="text">
@@ -78,7 +185,7 @@
        <item>
         <widget class="QCheckBox" name="evalComplexGraphs_checkBox">
          <property name="text">
-          <string>Evaluate Complex Node Graphs (eg. Mesh Rivets)</string>
+          <string>Evaluate Mesh Rivets</string>
          </property>
         </widget>
        </item>
@@ -110,7 +217,7 @@
        </property>
        <property name="sizeHint" stdset="0">
         <size>
-         <width>40</width>
+         <width>10</width>
          <height>20</height>
         </size>
        </property>

@@ -46,9 +46,7 @@ def get_active_collection():
               is active.
     :rtype: Collection or None
     """
-    uid = scene_data.get_scene_data(
-        const.SCENE_DATA_ACTIVE_COLLECTION_UID
-    )
+    uid = scene_data.get_scene_data(const.SCENE_DATA_ACTIVE_COLLECTION_UID)
     if uid is None:
         return None
     nodes = maya.cmds.ls(uid, long=True) or []
@@ -62,7 +60,8 @@ def set_active_collection(col):
     """
     Set the Maya scene's active collection.
 
-    There may only be 1 active collection in a Maya scene.
+    There may only be 1 active collection, or no active collection in
+    a Maya scene.
 
     :param col: The Collection to make active, or None to set no
                 active collection.
@@ -71,14 +70,13 @@ def set_active_collection(col):
     :rtype: None
     """
     uid = None
-    if col is not None:
-        uid = col.get_node_uid()
+    if col is None:
+        scene_data.set_scene_data(const.SCENE_DATA_ACTIVE_COLLECTION_UID, uid)
+        return
+    uid = col.get_node_uid()
     if uid is None:
         return
-    scene_data.set_scene_data(
-        const.SCENE_DATA_ACTIVE_COLLECTION_UID,
-        uid
-    )
+    scene_data.set_scene_data(const.SCENE_DATA_ACTIVE_COLLECTION_UID, uid)
     return
 
 
@@ -155,8 +153,10 @@ def set_state_str(name, value):
 
 
 def get_auto_update_solver_validation_state():
-    return get_state_bool(const.SCENE_DATA_AUTO_UPDATE_SOLVER_VALIDATION,
-                          const.SCENE_DATA_AUTO_UPDATE_SOLVER_VALIDATION_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_AUTO_UPDATE_SOLVER_VALIDATION,
+        const.SCENE_DATA_AUTO_UPDATE_SOLVER_VALIDATION_DEFAULT,
+    )
 
 
 def set_auto_update_solver_validation_state(value):
@@ -164,8 +164,10 @@ def set_auto_update_solver_validation_state(value):
 
 
 def get_pre_solve_force_eval_state():
-    return get_state_bool(const.SCENE_DATA_PRE_SOLVE_FORCE_EVAL,
-                          const.SCENE_DATA_PRE_SOLVE_FORCE_EVAL_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_PRE_SOLVE_FORCE_EVAL,
+        const.SCENE_DATA_PRE_SOLVE_FORCE_EVAL_DEFAULT,
+    )
 
 
 def set_pre_solve_force_eval_state(value):
@@ -173,8 +175,9 @@ def set_pre_solve_force_eval_state(value):
 
 
 def get_refresh_viewport_state():
-    return get_state_bool(const.SCENE_DATA_REFRESH_VIEWPORT,
-                          const.SCENE_DATA_REFRESH_VIEWPORT_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_REFRESH_VIEWPORT, const.SCENE_DATA_REFRESH_VIEWPORT_DEFAULT
+    )
 
 
 def set_refresh_viewport_state(value):
@@ -182,8 +185,9 @@ def set_refresh_viewport_state(value):
 
 
 def get_force_dg_update_state():
-    return get_state_bool(const.SCENE_DATA_FORCE_DG_UPDATE,
-                          const.SCENE_DATA_FORCE_DG_UPDATE_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_FORCE_DG_UPDATE, const.SCENE_DATA_FORCE_DG_UPDATE_DEFAULT
+    )
 
 
 def set_force_dg_update_state(value):
@@ -191,8 +195,10 @@ def set_force_dg_update_state(value):
 
 
 def get_isolate_object_while_solving_state():
-    return get_state_bool(const.SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING,
-                          const.SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING,
+        const.SCENE_DATA_ISOLATE_OBJECT_WHILE_SOLVING_DEFAULT,
+    )
 
 
 def set_isolate_object_while_solving_state(value):
@@ -200,8 +206,10 @@ def set_isolate_object_while_solving_state(value):
 
 
 def get_display_image_plane_while_solving_state():
-    return get_state_bool(const.SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING,
-                          const.SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING,
+        const.SCENE_DATA_DISPLAY_IMAGE_PLANE_WHILE_SOLVING_DEFAULT,
+    )
 
 
 def set_display_image_plane_while_solving_state(value):
@@ -209,8 +217,10 @@ def set_display_image_plane_while_solving_state(value):
 
 
 def get_display_meshes_while_solving_state():
-    return get_state_bool(const.SCENE_DATA_DISPLAY_MESHES_WHILE_SOLVING,
-                          const.SCENE_DATA_DISPLAY_MESHES_WHILE_SOLVING_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_DISPLAY_MESHES_WHILE_SOLVING,
+        const.SCENE_DATA_DISPLAY_MESHES_WHILE_SOLVING_DEFAULT,
+    )
 
 
 def set_display_meshes_while_solving_state(value):
@@ -218,8 +228,10 @@ def set_display_meshes_while_solving_state(value):
 
 
 def get_display_object_frame_deviation_state():
-    return get_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION,
-                          const.SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION,
+        const.SCENE_DATA_DISPLAY_OBJECT_FRAME_DEVIATION_DEFAULT,
+    )
 
 
 def set_display_object_frame_deviation_state(value):
@@ -227,8 +239,10 @@ def set_display_object_frame_deviation_state(value):
 
 
 def get_display_object_average_deviation_state():
-    return get_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION,
-                          const.SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION,
+        const.SCENE_DATA_DISPLAY_OBJECT_AVERAGE_DEVIATION_DEFAULT,
+    )
 
 
 def set_display_object_average_deviation_state(value):
@@ -236,8 +250,10 @@ def set_display_object_average_deviation_state(value):
 
 
 def get_display_object_maximum_deviation_state():
-    return get_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION,
-                          const.SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION,
+        const.SCENE_DATA_DISPLAY_OBJECT_MAXIMUM_DEVIATION_DEFAULT,
+    )
 
 
 def set_display_object_maximum_deviation_state(value):
@@ -245,8 +261,10 @@ def set_display_object_maximum_deviation_state(value):
 
 
 def get_display_object_weight_state():
-    return get_state_bool(const.SCENE_DATA_DISPLAY_OBJECT_WEIGHT,
-                          const.SCENE_DATA_DISPLAY_OBJECT_WEIGHT_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_DISPLAY_OBJECT_WEIGHT,
+        const.SCENE_DATA_DISPLAY_OBJECT_WEIGHT_DEFAULT,
+    )
 
 
 def set_display_object_weight_state(value):
@@ -254,8 +272,10 @@ def set_display_object_weight_state(value):
 
 
 def get_display_attribute_state_state():
-    return get_state_bool(const.SCENE_DATA_DISPLAY_ATTRIBUTE_STATE,
-                          const.SCENE_DATA_DISPLAY_ATTRIBUTE_STATE_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_DISPLAY_ATTRIBUTE_STATE,
+        const.SCENE_DATA_DISPLAY_ATTRIBUTE_STATE_DEFAULT,
+    )
 
 
 def set_display_attribute_state_state(value):
@@ -263,8 +283,10 @@ def set_display_attribute_state_state(value):
 
 
 def get_display_attribute_min_max_state():
-    return get_state_bool(const.SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX,
-                          const.SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX,
+        const.SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX_DEFAULT,
+    )
 
 
 def set_display_attribute_min_max_state(value):
@@ -272,8 +294,10 @@ def set_display_attribute_min_max_state(value):
 
 
 def get_display_attribute_stiffness_state():
-    return get_state_bool(const.SCENE_DATA_DISPLAY_ATTRIBUTE_STIFFNESS,
-                          const.SCENE_DATA_DISPLAY_ATTRIBUTE_STIFFNESS_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_DISPLAY_ATTRIBUTE_STIFFNESS,
+        const.SCENE_DATA_DISPLAY_ATTRIBUTE_STIFFNESS_DEFAULT,
+    )
 
 
 def set_display_attribute_stiffness_state(value):
@@ -281,8 +305,10 @@ def set_display_attribute_stiffness_state(value):
 
 
 def get_display_attribute_smoothness_state():
-    return get_state_bool(const.SCENE_DATA_DISPLAY_ATTRIBUTE_SMOOTHNESS,
-                          const.SCENE_DATA_DISPLAY_ATTRIBUTE_SMOOTHNESS_DEFAULT)
+    return get_state_bool(
+        const.SCENE_DATA_DISPLAY_ATTRIBUTE_SMOOTHNESS,
+        const.SCENE_DATA_DISPLAY_ATTRIBUTE_SMOOTHNESS_DEFAULT,
+    )
 
 
 def set_display_attribute_smoothness_state(value):
@@ -290,8 +316,7 @@ def set_display_attribute_smoothness_state(value):
 
 
 def get_log_level():
-    return get_state_str(const.SCENE_DATA_LOG_LEVEL,
-                         const.SCENE_DATA_LOG_LEVEL_DEFAULT)
+    return get_state_str(const.SCENE_DATA_LOG_LEVEL, const.SCENE_DATA_LOG_LEVEL_DEFAULT)
 
 
 def set_log_level(value):

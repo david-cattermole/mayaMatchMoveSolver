@@ -1,0 +1,38 @@
+name: Lint Code
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.7"]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r share/requirements-dev.txt
+
+      - name: Analysing the Python code with flake8 (Hard Error)
+        run: |
+          ./scripts/python_linter_run_flake8_errors_only.bash
+
+      - name: Check Python Formatting
+        run: |
+          ./scripts/python_formatter_run_black_check.bash
+
+      - name: Install Clang-Format
+        run: |
+          sudo apt-get install -y clang-format
+
+      - name: Check C++ Code with Clang-Format
+        run: |
+          ./scripts/cpp_formatter_run_clang_format_check.bash

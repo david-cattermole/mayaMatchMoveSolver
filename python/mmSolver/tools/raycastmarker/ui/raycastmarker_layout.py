@@ -21,6 +21,7 @@ window.
 """
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
@@ -50,12 +51,8 @@ class RayCastMarkerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         )
 
         # Start and End Frame
-        self.frameRangeStartSpinBox.valueChanged.connect(
-            self.startFrameValueChanged
-        )
-        self.frameRangeEndSpinBox.valueChanged.connect(
-            self.endFrameValueChanged
-        )
+        self.frameRangeStartSpinBox.valueChanged.connect(self.startFrameValueChanged)
+        self.frameRangeEndSpinBox.valueChanged.connect(self.endFrameValueChanged)
 
         # Bundle Rotate Mode
         bundle_rotate_modes = const.BUNDLE_ROTATE_MODE_LABELS
@@ -82,11 +79,11 @@ class RayCastMarkerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.frameRangeEndSpinBox.setEnabled(enable_custom)
 
         frame_start = configmaya.get_scene_option(
-            const.CONFIG_FRAME_START_KEY,
-            default=const.DEFAULT_FRAME_START)
+            const.CONFIG_FRAME_START_KEY, default=const.DEFAULT_FRAME_START
+        )
         frame_end = configmaya.get_scene_option(
-            const.CONFIG_FRAME_END_KEY,
-            default=const.DEFAULT_FRAME_END)
+            const.CONFIG_FRAME_END_KEY, default=const.DEFAULT_FRAME_END
+        )
         if value == const.FRAME_RANGE_MODE_CURRENT_FRAME_VALUE:
             frame_start = maya.cmds.currentTime(query=True)
             frame_end = frame_start
@@ -154,8 +151,8 @@ class RayCastMarkerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         """
         name = const.CONFIG_FRAME_RANGE_MODE_KEY
         value = configmaya.get_scene_option(
-            name,
-            default=const.DEFAULT_FRAME_RANGE_MODE)
+            name, default=const.DEFAULT_FRAME_RANGE_MODE
+        )
         index = const.FRAME_RANGE_MODE_VALUES.index(value)
         label = const.FRAME_RANGE_MODE_LABELS[index]
         LOG.debug('key=%r value=%r', name, value)
@@ -166,11 +163,11 @@ class RayCastMarkerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.frameRangeEndSpinBox.setEnabled(enable_custom)
 
         frame_start = configmaya.get_scene_option(
-            const.CONFIG_FRAME_START_KEY,
-            default=const.DEFAULT_FRAME_START)
+            const.CONFIG_FRAME_START_KEY, default=const.DEFAULT_FRAME_START
+        )
         frame_end = configmaya.get_scene_option(
-            const.CONFIG_FRAME_END_KEY,
-            default=const.DEFAULT_FRAME_END)
+            const.CONFIG_FRAME_END_KEY, default=const.DEFAULT_FRAME_END
+        )
         if value == const.FRAME_RANGE_MODE_CURRENT_FRAME_VALUE:
             frame_start = maya.cmds.currentTime(query=True)
             frame_end = frame_start
@@ -185,8 +182,8 @@ class RayCastMarkerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
         name = const.CONFIG_BUNDLE_ROTATE_MODE_KEY
         value = configmaya.get_scene_option(
-            name,
-            default=const.DEFAULT_BUNDLE_ROTATE_MODE)
+            name, default=const.DEFAULT_BUNDLE_ROTATE_MODE
+        )
         index = const.BUNDLE_ROTATE_MODE_VALUES.index(value)
         label = const.BUNDLE_ROTATE_MODE_LABELS[index]
         LOG.debug('key=%r value=%r', name, value)
@@ -194,8 +191,8 @@ class RayCastMarkerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
         name = const.CONFIG_BUNDLE_UNLOCK_RELOCK_KEY
         value = configmaya.get_scene_option(
-            name,
-            default=const.DEFAULT_BUNDLE_UNLOCK_RELOCK)
+            name, default=const.DEFAULT_BUNDLE_UNLOCK_RELOCK
+        )
         LOG.debug('key=%r value=%r', name, value)
         self.bundleUnlockRelockCheckBox.setChecked(value)
         return

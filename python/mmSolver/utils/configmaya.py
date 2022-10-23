@@ -58,29 +58,13 @@ def __add_node_option_attr(node_name, attr_name, value):
     :rtype: None
     """
     if isinstance(value, bool):
-        maya.cmds.addAttr(
-            node_name,
-            longName=attr_name,
-            attributeType='bool'
-        )
+        maya.cmds.addAttr(node_name, longName=attr_name, attributeType='bool')
     elif isinstance(value, int):
-        maya.cmds.addAttr(
-            node_name,
-            longName=attr_name,
-            attributeType='long'
-        )
+        maya.cmds.addAttr(node_name, longName=attr_name, attributeType='long')
     elif isinstance(value, float):
-        maya.cmds.addAttr(
-            node_name,
-            longName=attr_name,
-            attributeType='float'
-        )
+        maya.cmds.addAttr(node_name, longName=attr_name, attributeType='float')
     elif isinstance(value, pycompat.TEXT_TYPE):
-        maya.cmds.addAttr(
-            node_name,
-            longName=attr_name,
-            dataType='string'
-        )
+        maya.cmds.addAttr(node_name, longName=attr_name, dataType='string')
     else:
         msg = "Type of 'value' is not supported."
         raise TypeError(msg)
@@ -114,8 +98,7 @@ def get_node_option(node_name, attr_name, default=None):
     return ret
 
 
-def set_node_option(node_name, attr_name, value,
-                    add_attr=None):
+def set_node_option(node_name, attr_name, value, add_attr=None):
     """
     Set value onto a node.attr path.
 
@@ -217,8 +200,7 @@ def set_node_option_structure(node_name, attr_name, data_struct, add_attr=None):
         # No change is needed.
         return
 
-    set_node_option(node_name, attr_name, new_attr_data,
-                    add_attr=add_attr)
+    set_node_option(node_name, attr_name, new_attr_data, add_attr=add_attr)
     return
 
 
@@ -238,13 +220,9 @@ def get_scene_option(name, default=None):
     """
     if not maya.cmds.objExists(const.SCENE_DATA_NODE):
         maya.cmds.createNode(
-            'script',
-            name=const.SCENE_DATA_NODE,
-            skipSelect=True)
-    data = get_node_option_structure(
-        const.SCENE_DATA_NODE,
-        const.SCENE_DATA_ATTR
-    )
+            const.SCENE_DATA_NODE_TYPE, name=const.SCENE_DATA_NODE, skipSelect=True
+        )
+    data = get_node_option_structure(const.SCENE_DATA_NODE, const.SCENE_DATA_ATTR)
     value = default
     if isinstance(data, dict):
         value = data.get(name, default)
@@ -269,13 +247,9 @@ def set_scene_option(name, value, add_attr=None):
     """
     if not maya.cmds.objExists(const.SCENE_DATA_NODE):
         maya.cmds.createNode(
-            'script',
-            name=const.SCENE_DATA_NODE,
-            skipSelect=True)
-    data = get_node_option_structure(
-        const.SCENE_DATA_NODE,
-        const.SCENE_DATA_ATTR
-    )
+            const.SCENE_DATA_NODE_TYPE, name=const.SCENE_DATA_NODE, skipSelect=True
+        )
+    data = get_node_option_structure(const.SCENE_DATA_NODE, const.SCENE_DATA_ATTR)
     if data is None:
         data = dict()
     data[name] = value

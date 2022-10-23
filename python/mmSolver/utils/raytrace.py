@@ -35,27 +35,29 @@ def _create_smooth_mesh(mesh):
     smooth_mesh = None
     is_smooth = maya.cmds.getAttr(mesh + '.displaySmoothMesh') != 0
     if is_smooth is True:
-        parents = maya.cmds.listRelatives(
-            mesh, parent=True, fullPath=True) or []
+        parents = maya.cmds.listRelatives(mesh, parent=True, fullPath=True) or []
         if len(parents) == 0:
             return smooth_mesh
         tfm_node = parents[0]
         smooth_mesh = maya.cmds.createNode(
-            'mesh', name='tempSmoothMeshShape', parent=tfm_node)
+            'mesh', name='tempSmoothMeshShape', parent=tfm_node
+        )
         src = mesh + '.outSmoothMesh'
         dst = smooth_mesh + '.inMesh'
         maya.cmds.connectAttr(src, dst)
     return smooth_mesh
 
 
-def _closest_intersect(source,
-                      direction,
-                      mesh_nodes,
-                      test_both_directions=False,
-                      max_dist=None,
-                      tolerance=None,
-                      use_smooth_mesh=None,
-                      get_mesh_normal=None):
+def _closest_intersect(
+    source,
+    direction,
+    mesh_nodes,
+    test_both_directions=False,
+    max_dist=None,
+    tolerance=None,
+    use_smooth_mesh=None,
+    get_mesh_normal=None,
+):
     """
     Get the closest intersection point on meshes given a source point
     and direction
@@ -132,27 +134,24 @@ def _closest_intersect(source,
             hit = mesh_fn.closestIntersection(
                 source_pt,
                 direction_vec,
-                None,   # faceIds
-                None,   # triIds
+                None,  # faceIds
+                None,  # triIds
                 False,  # idsSorted
                 space,
                 max_dist,
                 test_both_directions,
-                None,   # accelParams
+                None,  # accelParams
                 hit_pt,
-                None,   # hitRayParam (ray distance)
-                None,   # hitFace
-                None,   # hitTriangle
-                None,   # hitBary1
-                None,   # hitBary2
-                tolerance)
+                None,  # hitRayParam (ray distance)
+                None,  # hitFace
+                None,  # hitTriangle
+                None,  # hitBary1
+                None,  # hitBary2
+                tolerance,
+            )
             if hit is True:
                 if get_mesh_normal is True:
-                    mesh_fn.getClosestNormal(
-                        OpenMaya.MPoint(hit_pt),
-                        hit_normal,
-                        space
-                    )
+                    mesh_fn.getClosestNormal(OpenMaya.MPoint(hit_pt), hit_normal, space)
 
                 hit_points.append(hit_pt)
                 hit_normals.append(hit_normal)
@@ -171,23 +170,23 @@ def _closest_intersect(source,
             min_dist = dist
             closest_point = point
             closest_normal = normal
-    assert (closest_point is None
-            or isinstance(closest_point, OpenMaya.MFloatPoint))
-    assert (closest_normal is None
-            or isinstance(closest_normal, OpenMaya.MVector))
+    assert closest_point is None or isinstance(closest_point, OpenMaya.MFloatPoint)
+    assert closest_normal is None or isinstance(closest_normal, OpenMaya.MVector)
 
     if get_mesh_normal is False:
         return closest_point
     return (closest_point, closest_normal)
 
 
-def closest_intersect(source,
-                      direction,
-                      mesh_nodes,
-                      test_both_directions=False,
-                      max_dist=None,
-                      tolerance=None,
-                      use_smooth_mesh=None):
+def closest_intersect(
+    source,
+    direction,
+    mesh_nodes,
+    test_both_directions=False,
+    max_dist=None,
+    tolerance=None,
+    use_smooth_mesh=None,
+):
     """
     Get the closest intersection point on meshes given a source point
     and direction
@@ -229,16 +228,19 @@ def closest_intersect(source,
         max_dist=max_dist,
         tolerance=tolerance,
         use_smooth_mesh=use_smooth_mesh,
-        get_mesh_normal=False)
+        get_mesh_normal=False,
+    )
 
 
-def closest_intersect_with_normal(source,
-                                  direction,
-                                  mesh_nodes,
-                                  test_both_directions=False,
-                                  max_dist=None,
-                                  tolerance=None,
-                                  use_smooth_mesh=None):
+def closest_intersect_with_normal(
+    source,
+    direction,
+    mesh_nodes,
+    test_both_directions=False,
+    max_dist=None,
+    tolerance=None,
+    use_smooth_mesh=None,
+):
     """
     Get the closest intersection point and normal on meshes given a
     source point and direction
@@ -281,4 +283,5 @@ def closest_intersect_with_normal(source,
         max_dist=max_dist,
         tolerance=tolerance,
         use_smooth_mesh=use_smooth_mesh,
-        get_mesh_normal=True)
+        get_mesh_normal=True,
+    )

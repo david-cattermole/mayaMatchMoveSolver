@@ -55,7 +55,7 @@ class SetHelper(object):
                 "mmSolver.api.SetHelper(name=value), "
                 "'name' is a deprecated flag, use 'node' "
             )
-            warnings.warn(msg)
+            warnings.warn(msg, DeprecationWarning)
             node = name
         if node is not None:
             if isinstance(node, pycompat.TEXT_TYPE):

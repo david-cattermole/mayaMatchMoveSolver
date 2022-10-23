@@ -29,6 +29,7 @@ including:
 """
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
@@ -56,12 +57,8 @@ class ConvertMarkerLayout(QtWidgets.QWidget, ui_convertmarker_layout.Ui_Form):
         )
 
         # Start and End Frame
-        self.frameRangeStartSpinBox.valueChanged.connect(
-            self.startFrameValueChanged
-        )
-        self.frameRangeEndSpinBox.valueChanged.connect(
-            self.endFrameValueChanged
-        )
+        self.frameRangeStartSpinBox.valueChanged.connect(self.startFrameValueChanged)
+        self.frameRangeEndSpinBox.valueChanged.connect(self.endFrameValueChanged)
 
         # Bundle Position Mode
         bundle_position_modes = const.BUNDLE_POSITION_MODE_LABELS
@@ -89,15 +86,12 @@ class ConvertMarkerLayout(QtWidgets.QWidget, ui_convertmarker_layout.Ui_Form):
         self.frameRangeEndSpinBox.setEnabled(enable_custom)
 
         frame_start = configmaya.get_scene_option(
-            const.CONFIG_FRAME_START_KEY,
-            default=const.DEFAULT_FRAME_START)
+            const.CONFIG_FRAME_START_KEY, default=const.DEFAULT_FRAME_START
+        )
         frame_end = configmaya.get_scene_option(
-            const.CONFIG_FRAME_END_KEY,
-            default=const.DEFAULT_FRAME_END)
-        time_utils.get_frame_range(
-            value,
-            start_frame=frame_start,
-            end_frame=frame_end)
+            const.CONFIG_FRAME_END_KEY, default=const.DEFAULT_FRAME_END
+        )
+        time_utils.get_frame_range(value, start_frame=frame_start, end_frame=frame_end)
         self.frameRangeStartSpinBox.setValue(frame_start)
         self.frameRangeEndSpinBox.setValue(frame_end)
 
@@ -158,8 +152,8 @@ class ConvertMarkerLayout(QtWidgets.QWidget, ui_convertmarker_layout.Ui_Form):
         """
         name = const.CONFIG_FRAME_RANGE_MODE_KEY
         value = configmaya.get_scene_option(
-            name,
-            default=const.DEFAULT_FRAME_RANGE_MODE)
+            name, default=const.DEFAULT_FRAME_RANGE_MODE
+        )
         index = const.FRAME_RANGE_MODE_VALUES.index(value)
         label = const.FRAME_RANGE_MODE_LABELS[index]
         LOG.debug('key=%r value=%r', name, value)
@@ -172,15 +166,14 @@ class ConvertMarkerLayout(QtWidgets.QWidget, ui_convertmarker_layout.Ui_Form):
         name_start = const.CONFIG_FRAME_START_KEY
         name_end = const.CONFIG_FRAME_END_KEY
         frame_start = configmaya.get_scene_option(
-            name_start,
-            default=const.DEFAULT_FRAME_START)
+            name_start, default=const.DEFAULT_FRAME_START
+        )
         frame_end = configmaya.get_scene_option(
-            name_end,
-            default=const.DEFAULT_FRAME_END)
+            name_end, default=const.DEFAULT_FRAME_END
+        )
         frame_start, frame_end = time_utils.get_frame_range(
-            value,
-            start_frame=frame_start,
-            end_frame=frame_end)
+            value, start_frame=frame_start, end_frame=frame_end
+        )
         LOG.debug('key=%r value=%r', name_start, frame_start)
         LOG.debug('key=%r value=%r', name_end, frame_end)
         self.frameRangeStartSpinBox.setValue(frame_start)
@@ -188,8 +181,8 @@ class ConvertMarkerLayout(QtWidgets.QWidget, ui_convertmarker_layout.Ui_Form):
 
         name = const.CONFIG_BUNDLE_POSITION_MODE_KEY
         value = configmaya.get_scene_option(
-            name,
-            default=const.DEFAULT_BUNDLE_POSITION_MODE)
+            name, default=const.DEFAULT_BUNDLE_POSITION_MODE
+        )
         index = const.BUNDLE_POSITION_MODE_VALUES.index(value)
         label = const.BUNDLE_POSITION_MODE_LABELS[index]
         LOG.debug('key=%r value=%r', name, value)
@@ -197,8 +190,8 @@ class ConvertMarkerLayout(QtWidgets.QWidget, ui_convertmarker_layout.Ui_Form):
 
         name = const.CONFIG_DELETE_STATIC_ANIM_CURVES_KEY
         value = configmaya.get_scene_option(
-            name,
-            default=const.DEFAULT_DELETE_STATIC_ANIM_CURVES)
+            name, default=const.DEFAULT_DELETE_STATIC_ANIM_CURVES
+        )
         LOG.debug('key=%r value=%r', name, value)
         self.deleteStaticAnimCurvesCheckBox.setChecked(value)
         return

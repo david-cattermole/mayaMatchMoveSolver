@@ -19,22 +19,26 @@
 Test functions for loadmarker tool module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import unittest
 
 import maya.cmds
 
 import test.test_tools.toolsutils as test_tools_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
-import mmSolver.tools.loadmarker.lib.interface as interface
 import mmSolver.tools.loadmarker.lib.utils as lib_utils
-import mmSolver.tools.loadmarker.lib.fileutils as lib_fileutils
+import mmSolver.utils.loadmarker.fileutils as lib_fileutils
+import mmSolver.utils.loadmarker.fileinfo as lib_fileinfo
 import mmSolver.tools.createmarker.tool as create_marker
 
 
 # @unittest.skip
 class TestLoadMarker(test_tools_utils.ToolsTestCase):
-
     def test_get_cameras(self):
         """
         Get all cameras.
@@ -65,16 +69,17 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         for dir_name, file_name in values:
             path = self.get_data_path(dir_name, file_name)
 
-            valid = lib_fileutils.is_valid_file_path(path)
+            read_func = marker_read.read
+            valid = lib_fileutils.is_valid_file_path(path, read_func)
             assert valid is True
 
-            fmt = lib_fileutils.get_file_path_format(path)
+            fmt = lib_fileutils.get_file_path_format(path, read_func)
             assert fmt is not None
 
-            file_info = lib_fileutils.get_file_info(path)
-            assert isinstance(file_info, interface.FileInfo)
+            file_info = lib_fileutils.get_file_info(path, read_func)
+            assert isinstance(file_info, lib_fileinfo.FileInfo)
 
-            file_info_data = lib_fileutils.get_file_info_strings(path)
+            file_info_data = lib_fileutils.get_file_info_strings(path, read_func)
             assert isinstance(file_info_data, dict)
             assert len(file_info_data) == 11
             keys = file_info_data.keys()
@@ -107,8 +112,8 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
 
     def test_get_default_image_resolution(self):
         w, h = lib_utils.get_default_image_resolution()
-        assert isinstance(w, (int, long))
-        assert isinstance(h, (int, long))
+        assert isinstance(w, pycompat.INT_TYPES)
+        assert isinstance(h, pycompat.INT_TYPES)
         return
 
     def test_update_nodes(self):
@@ -125,7 +130,9 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
             # mkr_list = [mkr]
             _, mkr_data_list = marker_read.read(path)
             mkr_list = lib_utils.get_selected_markers()
-            marker_read.update_nodes(mkr_list, mkr_data_list, load_bundle_position=False)
+            marker_read.update_nodes(
+                mkr_list, mkr_data_list, load_bundle_position=False
+            )
             marker_read.update_nodes(mkr_list, mkr_data_list, load_bundle_position=True)
         return
 
@@ -232,9 +239,7 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         for path, res in paths:
             print('Reading... %r (%s x %s)' % (path, res[0], res[1]))
             _, tmp_list = marker_read.read(
-                path,
-                image_width=res[0],
-                image_height=res[1]
+                path, image_width=res[0], image_height=res[1]
             )
             self.assertNotEqual(tmp_list, None)
             mkr_data_list += tmp_list
@@ -271,17 +276,25 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         mkr_data_list = []
         paths = [
             (self.get_data_path('pftrack', 'pftrack_corners_v001.txt'), (716.0, 572.0)),
-            (self.get_data_path('pftrack', 'pftrack_corners_v002.txt'), (1920.0, 1080.0)),
-            (self.get_data_path('pftrack', 'pftrack_hollywoodcameraworks_headtracking.txt'), (1920.0, 1080.0)),
-
-            (self.get_data_path('pftrack', 'pftrack_user_track_docs.txt'), (1920.0, 1080.0)),
+            (
+                self.get_data_path('pftrack', 'pftrack_corners_v002.txt'),
+                (1920.0, 1080.0),
+            ),
+            (
+                self.get_data_path(
+                    'pftrack', 'pftrack_hollywoodcameraworks_headtracking.txt'
+                ),
+                (1920.0, 1080.0),
+            ),
+            (
+                self.get_data_path('pftrack', 'pftrack_user_track_docs.txt'),
+                (1920.0, 1080.0),
+            ),
         ]
         for path, res in paths:
             print('Reading... %r (%s x %s)' % (path, res[0], res[1]))
             _, tmp_list = marker_read.read(
-                path,
-                image_width=res[0],
-                image_height=res[1]
+                path, image_width=res[0], image_height=res[1]
             )
             self.assertNotEqual(tmp_list, None)
             mkr_data_list += tmp_list

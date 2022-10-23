@@ -1,23 +1,20 @@
 language: python
 python:
-    - "3.6"
+    - "3.7"
 
-sudo: false
 cache: pip
 
-install: "pip install sphinx~=1.8.5"
+install: "pip install -r requirements-dev.txt"
 script:
-    - cd docs
-    - cp source/conf.py.in source/conf.py
-    - sed -i 's/@PROJECT_NAME@/mayaMatchMoveSolver/g' source/conf.py
-    - sed -i 's/@PROJECT_COPYRIGHT@/2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli./g' source/conf.py
-    - sed -i 's/@PROJECT_VERSION@/master/g' source/conf.py
-    - make html
-    - touch build/html/.nojekyll
+    - ./scripts/internal/travisci_build_docs.sh
+    - ./scripts/python_linter_run_pylint.bash
+    - ./scripts/python_linter_run_flake8.bash
+    - ./scripts/python_linter_run_cpplint.bash
 
 deploy:
     provider: pages
     skip-cleanup: true
+    cleanup: true
     github-token: $GH_REPO_TOKEN
     keep-history: true
     on:

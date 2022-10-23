@@ -29,24 +29,19 @@ import mmSolver.logger
 import mmSolver.utils.configmaya as configmaya
 import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.constant as const_utils
+import mmSolver.ui.channelboxutils as channelbox_utils
 import mmSolver.tools.attributebake.constant as const
 import mmSolver.tools.attributebake.lib as lib
 
 LOG = mmSolver.logger.get_logger()
 
 
-def _get_channel_box_name():
-    cmd = 'global string $gChannelBoxName; $temp=$gChannelBoxName;'
-    return maya.mel.eval(cmd)
-
-
 def _get_attributes(from_channelbox_state):
-    channel_box = _get_channel_box_name()
     attrs = []
     if from_channelbox_state is True:
-        attrs = maya.cmds.channelBox(
-            channel_box, query=True, selectedMainAttributes=True)
-    return attrs
+        name = channelbox_utils.get_ui_name()
+        attrs = maya.cmds.channelBox(name, query=True, selectedMainAttributes=True)
+    return attrs or []
 
 
 def main():
@@ -57,24 +52,29 @@ def main():
 
     # Get configuration values
     frame_range_mode = configmaya.get_scene_option(
-        const.CONFIG_FRAME_RANGE_MODE_KEY,
-        const.DEFAULT_FRAME_RANGE_MODE)
+        const.CONFIG_FRAME_RANGE_MODE_KEY, const.DEFAULT_FRAME_RANGE_MODE
+    )
     custom_start_frame = configmaya.get_scene_option(
-        const.CONFIG_FRAME_START_KEY,
-        const.DEFAULT_FRAME_START)
+        const.CONFIG_FRAME_START_KEY, const.DEFAULT_FRAME_START
+    )
     custom_end_frame = configmaya.get_scene_option(
-        const.CONFIG_FRAME_END_KEY,
-        const.DEFAULT_FRAME_END)
+        const.CONFIG_FRAME_END_KEY, const.DEFAULT_FRAME_END
+    )
     smart_bake_state = configmaya.get_scene_option(
-        const.CONFIG_SMART_BAKE_KEY,
-        const.DEFAULT_SMART_BAKE_STATE)
+        const.CONFIG_SMART_BAKE_KEY, const.DEFAULT_SMART_BAKE_STATE
+    )
     from_channelbox_state = configmaya.get_scene_option(
-        const.CONFIG_FROM_CHANNELBOX_KEY,
-        const.DEFAULT_FROM_CHANNELBOX_STATE)
+        const.CONFIG_FROM_CHANNELBOX_KEY, const.DEFAULT_FROM_CHANNELBOX_STATE
+    )
 
     frame_range = lib.get_bake_frame_range(
-        frame_range_mode, custom_start_frame, custom_end_frame)
+        frame_range_mode, custom_start_frame, custom_end_frame
+    )
+
     attrs = _get_attributes(from_channelbox_state)
+    if from_channelbox_state is True and len(attrs) == 0:
+        LOG.warn("Please select at least 1 attribute in the Channel Box.")
+        return
 
     # Bake attributes
     s = time.time()
@@ -83,22 +83,22 @@ def main():
         restore_current_frame=True,
         use_dg_evaluation_mode=True,
         disable_viewport=True,
-        disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE)
+        disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE,
+    )
     with ctx:
         try:
             lib.bake_attributes(
-                nodes, attrs,
-                frame_range.start,
-                frame_range.end,
-                smart_bake_state)
+                nodes, attrs, frame_range.start, frame_range.end, smart_bake_state
+            )
         except Exception as e:
-            LOG.error(e)
+            LOG.exception('Bake attributes failed.')
         finally:
             e = time.time()
-            LOG.warn('Bake attribute success. Time elapsed: %r secs', e-s)
+            LOG.warn('Bake attribute success. Time elapsed: %r secs', e - s)
     return
 
 
 def open_window():
     import mmSolver.tools.attributebake.ui.attrbake_window as window
+
     window.main()

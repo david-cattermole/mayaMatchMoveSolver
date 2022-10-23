@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -44,6 +45,10 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         super(PrefLayout, self).__init__(*args, **kwargs)
         self.setupUi(self)
         self._config = None
+
+        # Don't show the deprecated features. They are not used
+        # anyway.
+        self.deprecated_groupBox.setVisible(False)
         return
 
     def set_config(self, config):
@@ -53,6 +58,7 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
 
     def populateUI(self, config):
         self.updateAddNewMarkersToWidget(config)
+        self.updateAddNewLinesToWidget(config)
         self.updateSolverUIValidateOnOpenWidget(config)
         self.updateSolverUIShowValidateButtonWidget(config)
         self.updateSolverUIAllowObjectRelationsWidget(config)
@@ -76,7 +82,26 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         value = userprefs_lib.get_value_from_label(key, label)
         return value
 
+    def updateAddNewLinesToWidget(self, config):
+        key = pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY
+        value = userprefs_lib.get_value(config, key)
+        label = userprefs_lib.get_label_from_value(key, value)
+        assert isinstance(label, pycompat.TEXT_TYPE)
+        labels = userprefs_lib.get_labels(key)
+        self.addNewLinesToComboBox.clear()
+        self.addNewLinesToComboBox.addItems(labels)
+        self.addNewLinesToComboBox.setCurrentText(label)
+        return
+
+    def getAddNewLinesToConfigValue(self):
+        key = pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY
+        label = self.addNewLinesToComboBox.currentText()
+        value = userprefs_lib.get_value_from_label(key, label)
+        return value
+
     def updateSolverUIValidateOnOpenWidget(self, config):
+        # This feature is deprecated and is no longer allowed.
+        return
         key = pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY
         value = userprefs_lib.get_value(config, key)
         label = userprefs_lib.get_label_from_value(key, value)
@@ -88,12 +113,16 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         return
 
     def getSolverUIValidateOnOpenConfigValue(self):
+        # This feature is deprecated and is no longer allowed.
+        return False
         key = pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY
         label = self.validateSolverOnUIOpenComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)
         return value
 
     def updateSolverUIShowValidateButtonWidget(self, config):
+        # This feature is deprecated and is no longer allowed.
+        return
         key = pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY
         value = userprefs_lib.get_value(config, key)
         label = userprefs_lib.get_label_from_value(key, value)
@@ -105,12 +134,16 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         return
 
     def getSolverUIShowValidateButtonConfigValue(self):
+        # This feature is deprecated and is no longer allowed.
+        return False
         key = pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY
         label = self.showValidateButtonComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)
         return value
 
     def updateSolverUIAllowObjectRelationsWidget(self, config):
+        # This feature is deprecated and is no longer allowed.
+        return
         key = pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY
         value = userprefs_lib.get_value(config, key)
         label = userprefs_lib.get_label_from_value(key, value)
@@ -122,6 +155,8 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         return
 
     def getSolverUIAllowObjectRelationsConfigValue(self):
+        # This feature is deprecated and is no longer allowed.
+        return False
         key = pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY
         label = self.allowObjectRelationsComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)

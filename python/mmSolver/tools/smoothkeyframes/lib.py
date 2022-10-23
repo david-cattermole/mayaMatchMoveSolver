@@ -19,6 +19,10 @@
 Functions to support smoothing animation curve keyframes.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import math
 
 import maya.cmds
@@ -55,15 +59,12 @@ def calculate_chunks(selected_keyframes, all_times, all_values):
     return chunks_time_list, chunks_value_list
 
 
-def create_first_last_keyframe_animCurve(selected_keyframes,
-                                         all_times,
-                                         all_values):
+def create_first_last_keyframe_animCurve(selected_keyframes, all_times, all_values):
     curve_times = []
     curve_values = []
     chunks_time_list, chunks_value_list = calculate_chunks(
-        selected_keyframes,
-        all_times,
-        all_values)
+        selected_keyframes, all_times, all_values
+    )
 
     for chunk_time, chunk_value in zip(chunks_time_list, chunks_value_list):
         first_time = chunk_time[0]
@@ -77,19 +78,20 @@ def create_first_last_keyframe_animCurve(selected_keyframes,
         curve_values.append(first_value)
         curve_values.append(last_value)
 
-    tangent = OpenMayaAnim1.MFnAnimCurve.kTangentLinear
+    tangent = OpenMayaAnim1.MFnAnimCurve.kTangentSmooth
     anim_chunk_fn = animcurve_utils.create_anim_curve_node_apione(
-        curve_times,
-        curve_values,
-        tangent_in_type=tangent,
-        tangent_out_type=tangent)
+        curve_times, curve_values, tangent_in_type=tangent, tangent_out_type=tangent
+    )
+
+    infinity_type = OpenMayaAnim1.MFnAnimCurve.kLinear
+    anim_chunk_fn.setPreInfinityType(infinity_type)
+    anim_chunk_fn.setPostInfinityType(infinity_type)
     return anim_chunk_fn
 
 
-def blend_curves_with_difference(selected_keyframes,
-                                 all_times,
-                                 value_array,
-                                 new_value_array):
+def blend_curves_with_difference(
+    selected_keyframes, all_times, value_array, new_value_array
+):
     """Create a new array of values based on the difference between
     value_array at the start/end of of each chunk of selected
     keyframes.
@@ -143,9 +145,9 @@ def blend_curves_with_difference(selected_keyframes,
     return new_value_array
 
 
-def smooth_animcurve(animcurve, selected_keyframes,
-                     smooth_type, width,
-                     blend_smooth_type, blend_width):
+def smooth_animcurve(
+    animcurve, selected_keyframes, smooth_type, width, blend_smooth_type, blend_width
+):
     """
     Smooth the given keyframes for an animCurve.
 
@@ -197,6 +199,15 @@ def smooth_animcurve(animcurve, selected_keyframes,
     animCurve_type = animCurve_fn.animCurveType()
     ui_unit = OpenMaya1.MTime.uiUnit()
 
+    pre_infinity = animCurve_fn.preInfinityType()
+    post_infinity = animCurve_fn.postInfinityType()
+
+    # Linear pre/post infinity is used to ensure bumps are not created
+    # at the edges of the smoothed anim curve.
+    infinity_type = OpenMayaAnim1.MFnAnimCurve.kLinear
+    animCurve_fn.setPreInfinityType(infinity_type)
+    animCurve_fn.setPostInfinityType(infinity_type)
+
     initial_weight = 0.0
     if all_keys_selected:
         initial_weight = 1.0
@@ -224,16 +235,8 @@ def smooth_animcurve(animcurve, selected_keyframes,
         if t in selected_keyframes:
             weight_array[i] = 1.0
 
-    new_weight_array = utils_smooth.smooth(
-        blend_smooth_type,
-        weight_array,
-        width
-    )
-    new_value_array = utils_smooth.smooth(
-        smooth_type,
-        value_array,
-        blend_width
-    )
+    new_weight_array = utils_smooth.smooth(blend_smooth_type, weight_array, width)
+    new_value_array = utils_smooth.smooth(smooth_type, value_array, blend_width)
     assert len(value_array) == len(new_value_array)
     assert len(weight_array) == len(new_weight_array)
 
@@ -246,17 +249,16 @@ def smooth_animcurve(animcurve, selected_keyframes,
         )
 
     # Blend betwen original and smoothed curves using the weight.
-    for frame, old_value, new_value, weight in zip(all_times,
-                                                   value_array,
-                                                   new_value_array,
-                                                   new_weight_array):
+    for frame, old_value, new_value, weight in zip(
+        all_times, value_array, new_value_array, new_weight_array
+    ):
         if frame not in times:
             continue
         inverse_weight = 1.0 - weight
         v = (new_value * weight) + (old_value * inverse_weight)
         time_range = (frame, frame)
-        maya.cmds.keyframe(
-            animcurve,
-            valueChange=v,
-            time=time_range)
+        maya.cmds.keyframe(animcurve, valueChange=v, time=time_range)
+
+    animCurve_fn.setPreInfinityType(pre_infinity)
+    animCurve_fn.setPostInfinityType(post_infinity)
     return

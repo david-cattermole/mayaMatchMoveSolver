@@ -19,6 +19,10 @@
 The 'Convert to Marker' library functions.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import itertools
 
 import maya.cmds
@@ -26,16 +30,14 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.tools.loadmarker.lib.interface as loadmkr_interface
+import mmSolver.utils.loadmarker.markerdata as markerdata
 import mmSolver.tools.convertmarker.constant as const
 import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
 
 LOG = mmSolver.logger.get_logger()
 
 
-def convert_nodes_to_marker_data_list(cam_tfm, cam_shp,
-                                      nodes,
-                                      start_frame, end_frame):
+def convert_nodes_to_marker_data_list(cam_tfm, cam_shp, nodes, start_frame, end_frame):
     cur_time = maya.cmds.currentTime(query=True)
     mkr_data_list = []
     frames = range(start_frame, end_frame + 1)
@@ -51,10 +53,11 @@ def convert_nodes_to_marker_data_list(cam_tfm, cam_shp,
             time=frames,
             imageResolution=(image_width, image_height),
             camera=(cam_tfm, cam_shp),
-            asNormalizedCoordinate=True)
+            asNormalizedCoordinate=True,
+        )
         assert (len(frames) * 3) == len(values)
 
-        mkr_data = loadmkr_interface.MarkerData()
+        mkr_data = markerdata.MarkerData()
         mkr_data.set_name(node)
         mkr_data.weight.set_value(start_frame, 1.0)
 
@@ -72,7 +75,9 @@ def convert_nodes_to_marker_data_list(cam_tfm, cam_shp,
     return mkr_data_list
 
 
-def _match_node_position(nodes, target_nodes, start_frame, end_frame, delete_static_anim_curves):
+def _match_node_position(
+    nodes, target_nodes, start_frame, end_frame, delete_static_anim_curves
+):
     """
     Move the 'nodes' to the position of the 'target_nodes'.
 
@@ -82,12 +87,15 @@ def _match_node_position(nodes, target_nodes, start_frame, end_frame, delete_sta
     constraint_nodes = []
     for target_node, node in zip(target_nodes, nodes):
         constraint_nodes += maya.cmds.pointConstraint(
-            target_node, node,
-            maintainOffset=False)
+            target_node, node, maintainOffset=False
+        )
 
     # Bake and delete the constraints.
     if len(constraint_nodes) > 0:
-        frame_range = (float(start_frame), float(end_frame),)
+        frame_range = (
+            float(start_frame),
+            float(end_frame),
+        )
         maya.cmds.bakeResults(
             nodes,
             time=frame_range,
@@ -97,7 +105,8 @@ def _match_node_position(nodes, target_nodes, start_frame, end_frame, delete_sta
             disableImplicitControl=True,
             preserveOutsideKeys=True,
             controlPoints=False,
-            shape=False)
+            shape=False,
+        )
         maya.cmds.delete(nodes, constraints=True)
         maya.cmds.filterCurve(nodes)
 
@@ -106,10 +115,15 @@ def _match_node_position(nodes, target_nodes, start_frame, end_frame, delete_sta
     return
 
 
-def create_markers_from_transforms(cam_tfm, cam_shp, tfm_nodes,
-                                   start_frame, end_frame,
-                                   bundle_position_mode,
-                                   delete_static_anim_curves):
+def create_markers_from_transforms(
+    cam_tfm,
+    cam_shp,
+    tfm_nodes,
+    start_frame,
+    end_frame,
+    bundle_position_mode,
+    delete_static_anim_curves,
+):
     """
     Create Markers from Maya transform nodes.
 
@@ -157,8 +171,9 @@ def create_markers_from_transforms(cam_tfm, cam_shp, tfm_nodes,
 
     # Get or create Marker Group.
     mkr_grp = None
-    mkr_grp_nodes = maya.cmds.ls(cam_tfm, dag=True, long=True,
-                                 type='mmMarkerGroupTransform') or []
+    mkr_grp_nodes = (
+        maya.cmds.ls(cam_tfm, dag=True, long=True, type='mmMarkerGroupTransform') or []
+    )
     mkr_grp_nodes = sorted(mkr_grp_nodes)
     if len(mkr_grp_nodes) == 0:
         mkr_grp = mmapi.MarkerGroup().create_node(cam=cam)
@@ -185,7 +200,6 @@ def create_markers_from_transforms(cam_tfm, cam_shp, tfm_nodes,
         # Move the newly created bundle to the original transform's
         # location.
         _match_node_position(
-            bnd_nodes, tfm_nodes,
-            start_frame, end_frame,
-            delete_static_anim_curves)
+            bnd_nodes, tfm_nodes, start_frame, end_frame, delete_static_anim_curves
+        )
     return mkr_nodes, bnd_nodes

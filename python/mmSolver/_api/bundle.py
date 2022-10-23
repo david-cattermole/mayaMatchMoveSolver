@@ -37,15 +37,17 @@ import mmSolver._api.marker
 LOG = mmSolver.logger.get_logger()
 
 
-def _lock_and_display_bundle_attributes(tfm,
-                            lock_translate=None,
-                            lock_rotate=None,
-                            lock_scale=None,
-                            lock_shear=None,
-                            display_translate=None,
-                            display_rotate=None,
-                            display_scale=None,
-                            display_shear=None):
+def _lock_and_display_bundle_attributes(
+    tfm,
+    lock_translate=None,
+    lock_rotate=None,
+    lock_scale=None,
+    lock_shear=None,
+    display_translate=None,
+    display_rotate=None,
+    display_scale=None,
+    display_shear=None,
+):
     """
     Create the attributes expected to be on a Marker.
 
@@ -89,6 +91,36 @@ def _lock_and_display_bundle_attributes(tfm,
     return
 
 
+def _create_bundle_shape(tfm_node):
+    shp_name = tfm_node.rpartition('|')[-1] + 'Shape'
+    shp = maya.cmds.createNode(
+        const.BUNDLE_SHAPE_NODE_TYPE, name=shp_name, parent=tfm_node
+    )
+    maya.cmds.setAttr(shp + '.localPositionX', channelBox=False)
+    maya.cmds.setAttr(shp + '.localPositionY', channelBox=False)
+    maya.cmds.setAttr(shp + '.localPositionZ', channelBox=False)
+    maya.cmds.setAttr(shp + '.localScaleX', channelBox=False)
+    maya.cmds.setAttr(shp + '.localScaleY', channelBox=False)
+    maya.cmds.setAttr(shp + '.localScaleZ', channelBox=False)
+
+    # HACK: Allows the bundle to be point-snapped to. For some reason
+    # the mmBundleShape does not allow users to snap objects to
+    # them. By creating a locator, with no size under the same
+    # transform we can work around this.
+    shp_name = tfm_node.rpartition('|')[-1] + 'LocatorShape'
+    locator_shp = maya.cmds.createNode('locator', name=shp_name, parent=tfm_node)
+    maya.cmds.setAttr(locator_shp + '.localPositionX', channelBox=False)
+    maya.cmds.setAttr(locator_shp + '.localPositionY', channelBox=False)
+    maya.cmds.setAttr(locator_shp + '.localPositionZ', channelBox=False)
+    maya.cmds.setAttr(locator_shp + '.localScaleX', channelBox=False)
+    maya.cmds.setAttr(locator_shp + '.localScaleY', channelBox=False)
+    maya.cmds.setAttr(locator_shp + '.localScaleZ', channelBox=False)
+    maya.cmds.setAttr(locator_shp + '.localScaleX', 0.0)
+    maya.cmds.setAttr(locator_shp + '.localScaleY', 0.0)
+    maya.cmds.setAttr(locator_shp + '.localScaleZ', 0.0)
+    return shp
+
+
 def _set_bundle_icon(dag_path):
     icon_name = const.BUNDLE_SHAPE_ICON_NAME
     dag_shps = node_utils.get_dag_path_shapes_below_apione(dag_path)
@@ -100,6 +132,31 @@ def _set_bundle_icon(dag_path):
         # Set icon on transform, because there are no shapes.
         mfn_tfm = OpenMaya.MFnDagNode(dag_path)
         mfn_tfm.setIcon(icon_name)
+    return
+
+
+def _replace_bundle_shape(dag_path):
+    dag_shps = node_utils.get_dag_path_shapes_below_apione(dag_path)
+    if len(dag_shps) > 0:
+        shape_nodes = []
+        bundle_shape_nodes = []
+        for dag_shp in dag_shps:
+            mfn_shp = OpenMaya.MFnDagNode(dag_shp)
+            type_name = mfn_shp.typeName()
+            if type_name != const.BUNDLE_SHAPE_NODE_TYPE:
+                shape_nodes.append(dag_shp.fullPathName())
+            else:
+                bundle_shape_nodes.append(dag_shp.fullPathName())
+        if len(bundle_shape_nodes) == 1 and len(shape_nodes) == 0:
+            # For backwards compatibility with mmSolver
+            # "v0.4.0-alpha*" releases.
+            maya.cmds.delete(bundle_shape_nodes)
+            _create_bundle_shape(dag_path.fullPathName())
+        elif len(bundle_shape_nodes) == 0 and len(shape_nodes) > 0:
+            maya.cmds.delete(shape_nodes)
+            _create_bundle_shape(dag_path.fullPathName())
+    else:
+        _create_bundle_shape(dag_path.fullPathName())
     return
 
 
@@ -135,8 +192,8 @@ class Bundle(object):
             if dag is not None:
                 self._mfn = OpenMaya.MFnDagNode(dag)
 
-            # Set icon
-            _set_bundle_icon(dag)
+            # Replace locator shape with mmBundleShape node.
+            _replace_bundle_shape(dag)
         else:
             self._mfn = OpenMaya.MFnDagNode()
         return
@@ -186,8 +243,8 @@ class Bundle(object):
         if dag is not None:
             self._mfn = OpenMaya.MFnDagNode(dag)
 
-            # Set icon
-            _set_bundle_icon(dag)
+            # Replace locator shape with mmBundleShape node.
+            _replace_bundle_shape(dag)
         else:
             self._mfn = OpenMaya.MFnDagNode()
         return
@@ -207,9 +264,7 @@ class Bundle(object):
 
     ############################################################################
 
-    def create_node(self,
-                    name='bundle1',
-                    colour=None):
+    def create_node(self, name='bundle1', colour=None):
         """
         Create a Bundle.
 
@@ -229,8 +284,7 @@ class Bundle(object):
             assert len(colour) == 3
 
         # Transform
-        tfm = maya.cmds.createNode(const.BUNDLE_TRANSFORM_NODE_TYPE,
-                                   name=name)
+        tfm = maya.cmds.createNode(const.BUNDLE_TRANSFORM_NODE_TYPE, name=name)
         tfm = node_utils.get_long_name(tfm)
 
         # Show the bundle transform attributes in the channel box, but
@@ -253,12 +307,7 @@ class Bundle(object):
         )
 
         # Shape Node
-        shp_name = tfm.rpartition('|')[-1] + 'Shape'
-        shp = maya.cmds.createNode(const.BUNDLE_SHAPE_NODE_TYPE,
-                                   name=shp_name, parent=tfm)
-        maya.cmds.setAttr(shp + '.localScaleX', 0.1)
-        maya.cmds.setAttr(shp + '.localScaleY', 0.1)
-        maya.cmds.setAttr(shp + '.localScaleZ', 0.1)
+        _create_bundle_shape(tfm)
 
         self.set_node(tfm)
 
@@ -269,9 +318,7 @@ class Bundle(object):
             green = (0.0, 1.0, 0.0)
             self.set_colour_rgb(green)
 
-        event_utils.trigger_event(
-            const.EVENT_NAME_BUNDLE_CREATED,
-            bnd=self)
+        event_utils.trigger_event(const.EVENT_NAME_BUNDLE_CREATED, bnd=self)
         return self
 
     def delete_node(self):
@@ -289,49 +336,136 @@ class Bundle(object):
 
     def get_colour_rgb(self):
         """
-        Get the current wire-frame colour of the Bundle.
+        Get the current RGBA colour (0.0 to 1.0) of the Bundle.
 
-        :returns: Tuple of red, green and blue, or None if colour
-                  cannot be found.
+        :returns:
+           Tuple of red, green and blue, or None if colour cannot be
+           found. Each channel is floating point; 0.0 to 1.0.
         :rtype: (float, float, float) or None
         """
         node = self.get_node()
         if node is None:
             msg = 'Could not get node. self=%r'
-            LOG.warning(msg, self)
+            LOG.warn(msg, self)
             return None
-        shps = maya.cmds.listRelatives(node, shapes=True, fullPath=True) or []
+        shps = (
+            maya.cmds.listRelatives(
+                node, shapes=True, fullPath=True, type=const.BUNDLE_SHAPE_NODE_TYPE
+            )
+            or []
+        )
         if len(shps) == 0:
             msg = 'Could not find shape to get colour. node=%r shps=%r'
-            LOG.warning(msg, node, shps)
+            LOG.warn(msg, node, shps)
             return None
         shp = shps[0]
-        v = node_utils.get_node_wire_colour_rgb(shp)
-        return v
+
+        v = maya.cmds.getAttr(shp + '.color')[0]
+        return tuple(v)
 
     def set_colour_rgb(self, rgb):
         """
-        Change the Wireframe colour of the Bundle.
+        Change the RGBA colour (0.0 to 1.0) of the Bundle.
 
-        :param rgb: Colour as R, G, B; Or None to reset to default colour.
-        :type rgb: tuple
+        :param rgb:
+           Colour as R, G, B; Or None to reset to default colour.
+           Each channel is floating point; 0.0 to 1.0.
+        :type rgb: tuple or None
 
-        :return: Nothing.
         :rtype: None
         """
-        assert rgb is None or isinstance(rgb, (tuple, list))
+        if rgb is None:
+            rgb = (0.0, 1.0, 0.0)
+        assert isinstance(rgb, (tuple, list))
+        assert len(rgb) >= 3
+
         node = self.get_node()
         if node is None:
             msg = 'Could not get node. self=%r'
-            LOG.warning(msg, self)
+            LOG.warn(msg, self)
             return
-        shps = maya.cmds.listRelatives(node, shapes=True, fullPath=True) or []
+        shps = (
+            maya.cmds.listRelatives(
+                node, shapes=True, fullPath=True, type=const.BUNDLE_SHAPE_NODE_TYPE
+            )
+            or []
+        )
         if len(shps) == 0:
             msg = 'Could not find shape to set colour. node=%r shps=%r'
-            LOG.warning(msg, node, shps)
+            LOG.warn(msg, node, shps)
             return
         shp = shps[0]
-        node_utils.set_node_wire_colour_rgb(shp, rgb)
+
+        maya.cmds.setAttr(shp + '.colorR', rgb[0])
+        maya.cmds.setAttr(shp + '.colorG', rgb[1])
+        maya.cmds.setAttr(shp + '.colorB', rgb[2])
+        return
+
+    def get_colour_rgba(self):
+        """
+        Get the current RGBA colour (0.0 to 1.0) of the Bundle.
+
+        :returns:
+           Tuple of red, green, blue, and alpha, or None if colour
+           cannot be found. Each channel is floating point; 0.0 to 1.0.
+        :rtype: (float, float, float, float) or None
+        """
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warn(msg, self)
+            return None
+        shps = (
+            maya.cmds.listRelatives(
+                node, shapes=True, fullPath=True, type=const.BUNDLE_SHAPE_NODE_TYPE
+            )
+            or []
+        )
+        if len(shps) == 0:
+            msg = 'Could not find shape to get colour. node=%r shps=%r'
+            LOG.warn(msg, node, shps)
+            return None
+        shp = shps[0]
+
+        rgb = maya.cmds.getAttr(shp + '.color')[0]
+        alpha = maya.cmds.getAttr(shp + '.alpha')
+        return (rgb[0], rgb[1], rgb[2], alpha)
+
+    def set_colour_rgba(self, rgba):
+        """
+        Change the RGB colour (0.0 to 1.0) of the Bundle.
+
+        :param rgba:
+            Colour as R, G, B, A; Or None to reset to default colour.
+            Each channel is floating point; 0.0 to 1.0.
+        :type rgba: tuple or None
+
+        :rtype: None
+        """
+        if rgba is None:
+            rgba = (0.0, 1.0, 0.0, 1.0)
+        assert rgba is None or isinstance(rgba, (tuple, list))
+        assert len(rgba) >= 4
+        node = self.get_node()
+        if node is None:
+            msg = 'Could not get node. self=%r'
+            LOG.warn(msg, self)
+            return
+        shps = (
+            maya.cmds.listRelatives(
+                node, shapes=True, fullPath=True, type=const.BUNDLE_SHAPE_NODE_TYPE
+            )
+            or []
+        )
+        if len(shps) == 0:
+            msg = 'Could not find shape to set colour. node=%r shps=%r'
+            LOG.warn(msg, node, shps)
+            return
+        shp = shps[0]
+        maya.cmds.setAttr(shp + '.colorR', rgba[0])
+        maya.cmds.setAttr(shp + '.colorG', rgba[1])
+        maya.cmds.setAttr(shp + '.colorB', rgba[2])
+        maya.cmds.setAttr(shp + '.alpha', rgba[3])
         return
 
     ############################################################################
@@ -345,12 +479,24 @@ class Bundle(object):
         """
         node = self.get_node()
         node_attr = node + '.message'
-        conns = maya.cmds.listConnections(
-            node_attr,
-            type=const.MARKER_TRANSFORM_NODE_TYPE,
-            skipConversionNodes=True) or []
+        conns = (
+            maya.cmds.listConnections(
+                node_attr,
+                type=const.MARKER_TRANSFORM_NODE_TYPE,
+                skipConversionNodes=True,
+            )
+            or []
+        )
+        conns += (
+            maya.cmds.listConnections(
+                node_attr,
+                type=const.MARKER_TRANSFORM_OLD_NODE_TYPE,
+                skipConversionNodes=True,
+            )
+            or []
+        )
         mkr_list = []
-        for conn in conns:
+        for conn in sorted(set(conns)):
             mkr = mmSolver._api.marker.Marker(node=conn)
             mkr_list.append(mkr)
         return mkr_list

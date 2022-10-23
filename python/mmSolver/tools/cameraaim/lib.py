@@ -24,7 +24,7 @@ import mmSolver.logger
 
 
 LOG = mmSolver.logger.get_logger()
- 
+
 
 def aim_at_target(nodes, target, remove_after=None):
     """
@@ -51,15 +51,13 @@ def aim_at_target(nodes, target, remove_after=None):
             aimVector=(1, 0, 0),
             upVector=(0, 1, 0),
             worldUpType='vector',
-            worldUpVector=(0, 1, 0)
+            worldUpVector=(0, 1, 0),
         )
         constraint_list.append(aim[0])
 
     # Delete all constraints
     if remove_after is True:
-        cons_list = [n
-                     for n in constraint_list
-                     if maya.cmds.objExists(n) is True]
+        cons_list = [n for n in constraint_list if maya.cmds.objExists(n) is True]
         if len(cons_list) > 0:
             maya.cmds.delete(cons_list)
     return

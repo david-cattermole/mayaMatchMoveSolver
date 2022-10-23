@@ -46,9 +46,9 @@ def _get_marker_internal_name(mkr):
     return value
 
 
-def rename_markers_and_bundles_with_metadata(mkr_nodes, bnd_nodes,
-                                             mkr_prefix, bnd_prefix,
-                                             mkr_suffix, bnd_suffix):
+def rename_markers_and_bundles_with_metadata(
+    mkr_nodes, bnd_nodes, mkr_prefix, bnd_prefix, mkr_suffix, bnd_suffix
+):
     """
     Rename the given marker and bundle nodes.
 
@@ -100,14 +100,17 @@ def rename_markers_and_bundles_with_metadata(mkr_nodes, bnd_nodes,
                 continue
             base_name = mkr_name
         if base_name is None:
-            LOG.warn('Cannot rename Marker/Bundle with metadata: '
-                     'bnd=%r mkr_list=%r', bnd, mkr_list)
+            LOG.warn(
+                'Cannot rename Marker/Bundle with metadata: ' 'bnd=%r mkr_list=%r',
+                bnd,
+                mkr_list,
+            )
             continue
 
         new_bnd_name = '{prefix}_{base}{suffix}'
-        new_bnd_name = new_bnd_name.format(prefix=bnd_prefix,
-                                           base=base_name,
-                                           suffix=bnd_suffix)
+        new_bnd_name = new_bnd_name.format(
+            prefix=bnd_prefix, base=base_name, suffix=bnd_suffix
+        )
         bnd_node = bnd.get_node()
         maya.cmds.rename(bnd_node, new_bnd_name)
         renamed_nodes.append(bnd.get_node())

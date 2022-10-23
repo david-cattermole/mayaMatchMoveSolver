@@ -52,6 +52,7 @@ import os.path
 from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt as Qt
@@ -68,9 +69,9 @@ LOG = mmSolver.logger.get_logger()
 ALL_CLASS_INSTANCES = set()
 
 
-class BaseMayaWindow(MayaQWidgetDockableMixin,
-                     QtWidgets.QMainWindow,
-                     ui_base.Ui_Window):
+class BaseMayaWindow(
+    MayaQWidgetDockableMixin, QtWidgets.QMainWindow, ui_base.Ui_Window
+):
 
     name = 'BaseMayaWindow'
     instance = None
@@ -148,8 +149,7 @@ class BaseMayaWindow(MayaQWidgetDockableMixin,
     @classmethod
     def get_instance(cls):
         instance = None
-        if (cls.instance is not None
-                and uiutils.isValidQtObject(cls.instance) is True):
+        if cls.instance is not None and uiutils.isValidQtObject(cls.instance) is True:
             instance = cls.instance
         return instance
 
@@ -171,14 +171,12 @@ class BaseMayaWindow(MayaQWidgetDockableMixin,
     @classmethod
     def open_window(cls, show=True, auto_raise=True, delete=False, dock=False):
         s = time.time()
-        if (cls is not None
-                and uiutils.isValidQtObject(cls.instance) is True):
+        if cls is not None and uiutils.isValidQtObject(cls.instance) is True:
             if delete is True:
                 cls.instance.close()
                 cls.instance.deleteLater()
 
-        if (cls.instance is None
-                or uiutils.isValidQtObject(cls.instance) is False):
+        if cls.instance is None or uiutils.isValidQtObject(cls.instance) is False:
             name = cls.name
             app, parent = uiutils.getParent()
             cls.instance = cls(parent=parent, name=name)

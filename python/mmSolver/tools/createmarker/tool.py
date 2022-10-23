@@ -41,17 +41,14 @@ def main():
 
     sel = maya.cmds.ls(sl=True, long=True)
     node_filtered = mmapi.filter_nodes_into_categories(sel)
-    cams = node_filtered['camera']
+    cams = node_filtered[mmapi.OBJECT_TYPE_CAMERA]
     cams = list(filter(utils_camera.is_not_startup_cam, cams))
-    mkr_grps = node_filtered['markergroup']
+    mkr_grps = node_filtered[mmapi.OBJECT_TYPE_MARKER_GROUP]
 
     cam = None
     mkr_grp = None
     if len(cams) > 0 and len(mkr_grps) > 0:
-        msg = (
-            'Please select a camera or marker group; '
-            'both node types are selected.'
-        )
+        msg = 'Please select a camera or marker group; both node types are selected.'
         LOG.error(msg)
         return
 
@@ -101,22 +98,15 @@ def main():
         return
 
     bnd_name = mmapi.get_new_bundle_name('bundle1')
-    bnd = mmapi.Bundle().create_node(
-        name=bnd_name
-    )
+    bnd = mmapi.Bundle().create_node(name=bnd_name)
 
     mkr_name = mmapi.get_new_marker_name('marker1')
-    mkr = mmapi.Marker().create_node(
-        name=mkr_name,
-        cam=cam,
-        mkr_grp=mkr_grp,
-        bnd=bnd
-    )
+    mkr = mmapi.Marker().create_node(name=mkr_name, cam=cam, mkr_grp=mkr_grp, bnd=bnd)
 
     maya.cmds.select(mkr.get_node(), replace=True)
     return
 
 
 def create_marker():
-    warnings.warn("Use 'main' function instead.")
+    warnings.warn("Use 'main' function instead.", DeprecationWarning)
     main()

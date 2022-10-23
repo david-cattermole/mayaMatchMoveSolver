@@ -19,6 +19,10 @@
 Test functions for marker module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import os
 import unittest
@@ -27,6 +31,7 @@ import maya.cmds
 
 
 import test.test_api.apiutils as test_api_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.utils.node as node_utils
 import mmSolver._api.bundle as bundle
 import mmSolver._api.camera as camera
@@ -36,13 +41,11 @@ import mmSolver._api.marker as marker
 
 # @unittest.skip
 class TestMarker(test_api_utils.APITestCase):
-
     @staticmethod
     def create_camera(name):
         cam_tfm = maya.cmds.createNode('transform', name=name)
         cam_tfm = node_utils.get_long_name(cam_tfm)
-        cam_shp = maya.cmds.createNode('camera', name=name+'Shape',
-                                       parent=cam_tfm)
+        cam_shp = maya.cmds.createNode('camera', name=name + 'Shape', parent=cam_tfm)
         cam_shp = node_utils.get_long_name(cam_shp)
         cam = camera.Camera(transform=cam_tfm, shape=cam_shp)
         return cam
@@ -65,7 +68,7 @@ class TestMarker(test_api_utils.APITestCase):
         name = 'myMarker1'
         x = marker.Marker().create_node(name=name)
         node = x.get_node()
-        self.assertIsInstance(node, (str, unicode))
+        self.assertIsInstance(node, pycompat.TEXT_TYPE)
         self.assertIn(name, node)
         self.assertEqual(node, '|myMarker1')
 
@@ -84,12 +87,12 @@ class TestMarker(test_api_utils.APITestCase):
         x = marker.Marker()
         x.create_node()
         node = x.get_node()
-        self.assertIsInstance(node, (str, unicode))
+        self.assertIsInstance(node, pycompat.TEXT_TYPE)
         self.assertTrue(maya.cmds.objExists(node))
 
         x = marker.Marker().create_node()
         node = x.get_node()
-        self.assertIsInstance(node, (str, unicode))
+        self.assertIsInstance(node, pycompat.TEXT_TYPE)
         self.assertTrue(maya.cmds.objExists(node))
 
         name = 'myMarker1'
@@ -132,7 +135,7 @@ class TestMarker(test_api_utils.APITestCase):
     def test_delete_node(self):
         x = marker.Marker().create_node()
         node1 = x.get_node()
-        self.assertIsInstance(node1, (str, unicode))
+        self.assertIsInstance(node1, pycompat.TEXT_TYPE)
         self.assertTrue(maya.cmds.objExists(node1))
 
         x.delete_node()
@@ -143,14 +146,14 @@ class TestMarker(test_api_utils.APITestCase):
 
         maya.cmds.undo()  # undo delete_node
         node3 = x.get_node()
-        self.assertIsInstance(node3, (str, unicode))
+        self.assertIsInstance(node3, pycompat.TEXT_TYPE)
         self.assertTrue(maya.cmds.objExists(node1))
         self.assertTrue(maya.cmds.objExists(node3))
         self.assertEqual(node1, node3)
 
     def test_set_colour_rgb(self):
         """
-        Set wireframe colour of the marker.
+        Set colour of the marker.
         """
         red = (1.0, 0.0, 0.0)
         green = (0.0, 1.0, 0.0)
@@ -168,6 +171,27 @@ class TestMarker(test_api_utils.APITestCase):
         y.set_colour_rgb(blue)
         y_rgb = y.get_colour_rgb()
         self.assertEqual(y_rgb, blue)
+        return
+
+    def test_set_colour_rgba(self):
+        """
+        Set colour of the marker.
+        """
+        red = (1.0, 0.0, 0.0, 1.0)
+        blue = (0.0, 0.0, 1.0, 0.5)
+
+        x = marker.Marker()
+        x_rgba = x.get_colour_rgba()
+        self.assertEqual(x_rgba, None)
+
+        # Create nodes
+        y = marker.Marker().create_node(name='myMarker1')
+        y_rgba = y.get_colour_rgba()
+        self.assertEqual(y_rgba, red)
+
+        y.set_colour_rgba(blue)
+        y_rgba = y.get_colour_rgba()
+        self.assertEqual(y_rgba, blue)
         return
 
     def test_get_bundle(self):

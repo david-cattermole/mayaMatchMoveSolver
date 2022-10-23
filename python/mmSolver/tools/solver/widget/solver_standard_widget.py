@@ -26,6 +26,7 @@ from __future__ import print_function
 import time
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -33,6 +34,9 @@ import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
+import mmSolver.ui.uimodels as uimodels
+import mmSolver.ui.uiutils as uiutils
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
 import mmSolver.tools.solver.lib.collection as lib_col
@@ -56,6 +60,8 @@ def _populateWidgetsEnabled(widgets):
 
 
 def _getAllowObjectRelations():
+    # This feature is deprecated and is no longer allowed.
+    return False
     config = userprefs_lib.get_config()
     key = userprefs_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY
     allow_obj_relations = userprefs_lib.get_value(config, key)
@@ -65,6 +71,41 @@ def _getAllowObjectRelations():
 
 
 class StandardRootFrameWidget(rootframe_widget.RootFrameWidget):
+    def getUserFramesValue(self, col):
+        value = lib_col_state.get_solver_user_frames_from_collection(col)
+        return value
+
+    def setUserFramesValue(self, col, value):
+        lib_col_state.set_solver_user_frames_on_collection(col, value)
+        return
+
+    def getUsePerMarkerFramesValue(self, col):
+        value = lib_col_state.get_solver_use_per_marker_frames_from_collection(col)
+        return value
+
+    def setUsePerMarkerFramesValue(self, col, value):
+        lib_col_state.set_solver_use_per_marker_frames_on_collection(col, value)
+
+    def getPerMarkerFramesValue(self, col):
+        value = lib_col_state.get_solver_per_marker_frames_from_collection(col)
+        return value
+
+    def setPerMarkerFramesValue(self, col, value):
+        lib_col_state.set_solver_per_marker_frames_on_collection(col, value)
+
+    def getUseSpanFramesValue(self, col):
+        value = lib_col_state.get_solver_use_span_frames_from_collection(col)
+        return value
+
+    def setUseSpanFramesValue(self, col, value):
+        lib_col_state.set_solver_use_span_frames_on_collection(col, value)
+
+    def getSpanFramesValue(self, col):
+        value = lib_col_state.get_solver_span_frames_from_collection(col)
+        return value
+
+    def setSpanFramesValue(self, col, value):
+        lib_col_state.set_solver_span_frames_on_collection(col, value)
 
     def getRootFramesValue(self, col):
         value = lib_col_state.get_solver_root_frames_from_collection(col)
@@ -76,7 +117,6 @@ class StandardRootFrameWidget(rootframe_widget.RootFrameWidget):
 
 
 class StandardFrameRangeWidget(framerange_widget.FrameRangeWidget):
-
     def getRangeTypeValue(self, col):
         value = lib_col_state.get_solver_range_type_from_collection(col)
         return value
@@ -102,13 +142,13 @@ class StandardFrameRangeWidget(framerange_widget.FrameRangeWidget):
         return
 
 
-class SolverStandardWidget(QtWidgets.QWidget,
-                           ui_solver_standard_widget.Ui_Form):
+class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form):
 
     viewUpdated = QtCore.Signal()
     dataChanged = QtCore.Signal()
     globalSolveChanged = QtCore.Signal()
     onlyRootFramesChanged = QtCore.Signal()
+    sceneGraphModeChanged = QtCore.Signal()
     evalObjectRelationshipsChanged = QtCore.Signal()
     evalComplexGraphsChanged = QtCore.Signal()
     sendWarning = QtCore.Signal(str)
@@ -124,21 +164,60 @@ class SolverStandardWidget(QtWidgets.QWidget,
         self.rootFrames_widget = StandardRootFrameWidget(self)
         self.rootFrames_layout.addWidget(self.rootFrames_widget)
 
+        # Scene Graph Mode Combo Box.
+        self.sceneGraphMode_model = uimodels.StringDataListModel()
+        self.sceneGraphMode_model.setStringDataList(
+            const.SCENE_GRAPH_MODE_LABEL_VALUE_LIST
+        )
+        self.sceneGraphMode_comboBox.setModel(self.sceneGraphMode_model)
+        self.sceneGraphMode_comboBox.currentIndexChanged.connect(
+            self.sceneGraphModeIndexChanged
+        )
+
+        self.sceneGraphMode_comboBox.setVisible(const.SCENE_GRAPH_MODE_WIDGET_VISIBLE)
+        self.sceneGraphMode_label.setVisible(const.SCENE_GRAPH_MODE_WIDGET_VISIBLE)
+
         self.globalSolve_checkBox.toggled.connect(self.globalSolveValueToggled)
         self.onlyRootFrames_checkBox.toggled.connect(self.onlyRootFramesValueToggled)
+
+        # Deprecated, do not use.
+        self.evalObjectRelationships_checkBox.setVisible(
+            const.EVAL_OBJECT_RELATIONSHIPS_WIDGET_VISIBLE
+        )
         self.evalObjectRelationships_checkBox.toggled.connect(
-            self.evalObjectRelationshipsValueToggled)
+            self.evalObjectRelationshipsValueToggled
+        )
+
         self.evalComplexGraphs_checkBox.toggled.connect(
-            self.evalComplexGraphsValueToggled)
+            self.evalComplexGraphsValueToggled
+        )
+        self.solveFocalLength_checkBox.toggled.connect(
+            self.solveFocalLengthValueToggled
+        )
+        self.solveLensDistortion_checkBox.toggled.connect(
+            self.solveLensDistortionValueToggled
+        )
 
         desc = const.SOLVER_STD_DESC_DEFAULT
         self.description_label.setText(desc)
+        self.description_label.setVisible(False)
 
         self.dataChanged.connect(self.updateModel)
         self.frameRange_widget.rangeTypeChanged.connect(self.updateModel)
         self.rootFrames_widget.sendWarning.connect(self._sendWarningToUser)
         e = time.time()
         LOG.debug('SolverStandardWidget init: %r seconds', e - s)
+        return
+
+    def getDescriptionText(self):
+        return const.SOLVER_STD_DESC_DEFAULT
+
+    def getSceneGraphModeValue(self, col):
+        value = lib_col_state.get_solver_scene_graph_mode_from_collection(col)
+        return value
+
+    def setSceneGraphModeValue(self, col, value):
+        lib_col_state.set_solver_scene_graph_mode_on_collection(col, value)
         return
 
     def getOnlyRootFramesValue(self, col):
@@ -176,6 +255,22 @@ class SolverStandardWidget(QtWidgets.QWidget,
         lib_col_state.set_solver_eval_complex_graphs_on_collection(col, value)
         return
 
+    def getSolveFocalLengthValue(self, col):
+        value = lib_col_state.get_solver_solve_focal_length_from_collection(col)
+        return value
+
+    def setSolveFocalLengthValue(self, col, value):
+        lib_col_state.set_solver_solve_focal_length_on_collection(col, value)
+        return
+
+    def getSolveLensDistortionValue(self, col):
+        value = lib_col_state.get_solver_solve_lens_distortion_from_collection(col)
+        return value
+
+    def setSolveLensDistortionValue(self, col, value):
+        lib_col_state.set_solver_solve_lens_distortion_on_collection(col, value)
+        return
+
     def event(self, ev):
         if ev.type() == QtCore.QEvent.WindowActivate:
             LOG.debug('window activated')
@@ -194,6 +289,23 @@ class SolverStandardWidget(QtWidgets.QWidget,
         self.evalObjectRelationships_checkBox.setChecked(value)
         return
 
+    def getSceneGraphActiveIndex(self, model, col):
+        valid = uiutils.isValidQtObject(model)
+        if valid is False:
+            return
+        if col is None:
+            return None
+        active_node = col.get_node()
+        if active_node is None:
+            return None
+        value = self.getSceneGraphModeValue(col)
+        string_data_list = model.stringDataList()
+        data_list = [data for string, data in string_data_list]
+        index = None
+        if value in data_list:
+            index = data_list.index(value)
+        return index
+
     def updateModel(self):
         self.frameRange_widget.updateModel()
         self.rootFrames_widget.updateModel()
@@ -202,12 +314,19 @@ class SolverStandardWidget(QtWidgets.QWidget,
         if col is None:
             return
 
+        scene_graph_mode = self.getSceneGraphActiveIndex(self.sceneGraphMode_model, col)
+        if scene_graph_mode is None:
+            LOG.error('Could not get the active scene graph mode index.')
+            return
+
         allow_obj_relations = _getAllowObjectRelations()
         range_type = self.frameRange_widget.getRangeTypeValue(col)
         global_solve = self.getGlobalSolveValue(col)
         only_root_frames = self.getOnlyRootFramesValue(col)
         eval_obj_conns = self.getEvalObjectRelationshipsValue(col)
         eval_complex_graphs = self.getEvalComplexGraphsValue(col)
+        solve_focal_length = self.getSolveFocalLengthValue(col)
+        solve_lens_distortion = self.getSolveLensDistortionValue(col)
         global_solve_enabled = True
         only_root_frames_enabled = True
         eval_obj_conns_enabled = allow_obj_relations
@@ -239,18 +358,24 @@ class SolverStandardWidget(QtWidgets.QWidget,
         self.globalSolve_checkBox.setEnabled(global_solve_enabled)
         self.onlyRootFrames_checkBox.setChecked(only_root_frames)
         self.onlyRootFrames_checkBox.setEnabled(only_root_frames_enabled)
+        self.sceneGraphMode_comboBox.setCurrentIndex(scene_graph_mode)
         self.evalObjectRelationships_checkBox.setChecked(eval_obj_conns)
         self.evalObjectRelationships_checkBox.setEnabled(eval_obj_conns_enabled)
         self.evalComplexGraphs_checkBox.setChecked(eval_complex_graphs)
         self.evalComplexGraphs_checkBox.setEnabled(eval_complex_graphs_enabled)
+        self.solveFocalLength_checkBox.setChecked(solve_focal_length)
+        self.solveLensDistortion_checkBox.setChecked(solve_lens_distortion)
         self.frameRange_widget.setEnabled(frameRange_enabled)
         self.rootFrames_widget.setEnabled(rootFrames_enabled)
         self.blockSignals(block)
 
         self.setGlobalSolveValue(col, global_solve)
         self.setOnlyRootFramesValue(col, only_root_frames)
+        self.setSceneGraphModeValue(col, scene_graph_mode)
         self.setEvalObjectRelationshipsValue(col, eval_obj_conns)
         self.setEvalComplexGraphsValue(col, eval_complex_graphs)
+        self.setSolveFocalLengthValue(col, solve_focal_length)
+        self.setSolveLensDistortionValue(col, solve_lens_distortion)
         return
 
     def queryInfo(self):
@@ -269,9 +394,14 @@ class SolverStandardWidget(QtWidgets.QWidget,
             # Root Frames'
             self.setGlobalSolveValue(col, False)
             self.globalSolveChanged.emit()
+
+        block = self.blockSignals(True)
+        self.frameRange_widget.setEnabled(not value)
+        self.globalSolve_checkBox.setEnabled(not value)
+        self.blockSignals(block)
+
         self.setOnlyRootFramesValue(col, value)
         self.onlyRootFramesChanged.emit()
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(bool)
@@ -283,9 +413,33 @@ class SolverStandardWidget(QtWidgets.QWidget,
             # 'Only Root Frames' is only valid if 'Global Solve' is off.
             self.setOnlyRootFramesValue(col, False)
             self.onlyRootFramesChanged.emit()
+
+        # "Evaluate Complex Graphs" causes the solver to evalulate
+        # time per-frame, so it's not possible to use with "Global
+        # Solve" - therefore it's disabled.
+        block = self.blockSignals(True)
+        self.evalComplexGraphs_checkBox.setEnabled(not value)
+        self.onlyRootFrames_checkBox.setEnabled(not value)
+        self.blockSignals(block)
+
         self.setGlobalSolveValue(col, value)
         self.globalSolveChanged.emit()
-        self.dataChanged.emit()
+        return
+
+    @QtCore.Slot(int)
+    def sceneGraphModeIndexChanged(self, index):
+        if index < 0:
+            return
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        model_index = self.sceneGraphMode_model.index(index, 0)
+        data = self.sceneGraphMode_model.data(model_index, role=QtCore.Qt.UserRole)
+        if data is None:
+            return
+        assert isinstance(data, pycompat.INT_TYPES)
+        self.setSceneGraphModeValue(col, data)
+        self.sceneGraphModeChanged.emit()
         return
 
     @QtCore.Slot(bool)
@@ -295,7 +449,6 @@ class SolverStandardWidget(QtWidgets.QWidget,
             return
         self.setEvalObjectRelationshipsValue(col, value)
         self.evalObjectRelationshipsChanged.emit()
-        self.dataChanged.emit()
         return
 
     @QtCore.Slot(bool)
@@ -305,7 +458,22 @@ class SolverStandardWidget(QtWidgets.QWidget,
             return
         self.setEvalComplexGraphsValue(col, value)
         self.evalComplexGraphsChanged.emit()
-        self.dataChanged.emit()
+        return
+
+    @QtCore.Slot(bool)
+    def solveFocalLengthValueToggled(self, value):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        self.setSolveFocalLengthValue(col, value)
+        return
+
+    @QtCore.Slot(bool)
+    def solveLensDistortionValueToggled(self, value):
+        col = lib_state.get_active_collection()
+        if col is None:
+            return
+        self.setSolveLensDistortionValue(col, value)
         return
 
     @QtCore.Slot(str)

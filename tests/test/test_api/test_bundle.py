@@ -19,6 +19,10 @@
 Test functions for bundle module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import sys
 import os
 import unittest
@@ -72,7 +76,7 @@ class TestBundle(test_api_utils.APITestCase):
 
     def test_set_colour_rgb(self):
         """
-        Set wireframe colour of the bundle.
+        Set colour of the bundle.
         """
         green = (0.0, 1.0, 0.0)
         blue = (0.0, 0.0, 1.0)
@@ -91,12 +95,33 @@ class TestBundle(test_api_utils.APITestCase):
         self.assertEqual(y_rgb, blue)
         return
 
+    def test_set_colour_rgba(self):
+        """
+        Set colour of the bundle.
+        """
+        green = (0.0, 1.0, 0.0, 1.0)
+        blue = (0.0, 0.0, 1.0, 0.5)
+
+        x = bundle.Bundle()
+        x_rgba = x.get_colour_rgba()
+        self.assertEqual(x_rgba, None)
+
+        # Create nodes
+        y = bundle.Bundle().create_node(name='myBundle1')
+        y_rgba = y.get_colour_rgba()
+        self.assertEqual(y_rgba, green)
+
+        y.set_colour_rgba(blue)
+        y_rgba = y.get_colour_rgba()
+        self.assertEqual(y_rgba, blue)
+        return
+
     def test_get_marker_list(self):
         x = bundle.Bundle().create_node(name='myBundle1')
         mkr_list1 = x.get_marker_list()
         self.assertEqual(len(mkr_list1), 0)
 
-        for i in xrange(10):
+        for i in range(10):
             mkr = marker.Marker().create_node()
             mkr.set_bundle(x)
         mkr_list2 = x.get_marker_list()

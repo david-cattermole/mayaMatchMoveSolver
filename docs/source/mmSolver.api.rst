@@ -419,8 +419,6 @@ referenced inside the documentation.
 
 .. autoattribute:: mmSolver.api.ATTR_STATE_LOCKED
 
-.. autoattribute:: mmSolver.api.SOLVER_TYPE_LEVMAR
-
 .. autoattribute:: mmSolver.api.SOLVER_TYPE_CMINPACK_LM
 
 .. autoattribute:: mmSolver.api.AUTO_DIFF_TYPE_FORWARD

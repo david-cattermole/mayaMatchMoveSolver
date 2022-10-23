@@ -1,0 +1,3 @@
+histogram
+Copyright (c) Jansson Consulting & Pierre Moulon.
+Licensed under the [MPL2 license](http://opensource.org/licenses/MPL-2.0).

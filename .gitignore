@@ -1,13 +1,18 @@
 .idea
 .vs
+.dumbjump
+.DS_Store
 #*
 *~
+*.bak
 *.pyc
+*cppcheck-build-*
 cmake-build-*
 *build/*
 *build_*/*
+*python_venv_*/*
 python/mmSolver/constant.py
-include/buildConstant.h
+include/mmSolver/buildConstant.h
 docs/source/conf.py
 
 test*.pstat
@@ -20,7 +25,8 @@ ui_*.py
 
 old/*
 precompiled/*
-*venv*/*
+*venv/*
+*/.mayaSwatches/*
 
 *.so
 *.so.*
@@ -42,11 +48,14 @@ tests/**/*.tiff
 tests/**/*.iff
 tests/**/*.png
 
-external/build*/*
+external/build/*
+external/build_*maya*/*
 external/install/*
 external/working/*
 external/include/*.h*
 external/include/*atlas*
 
-docs/build*/html/*
-docs/build*/doctrees/*
+docs/build/html/*
+docs/build_*_maya*/html/*
+docs/build/doctrees/*
+docs/build_*_maya*/doctrees/*

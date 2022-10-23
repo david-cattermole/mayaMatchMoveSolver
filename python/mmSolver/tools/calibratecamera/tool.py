@@ -56,9 +56,9 @@ def main():
 def _find_camera_from_selection(sel):
     cam = None
     filtered_nodes = mmapi.filter_nodes_into_categories(sel)
-    cam_nodes = filtered_nodes['camera']
-    mkr_grp_nodes = filtered_nodes['markergroup']
-    mkr_nodes = filtered_nodes['marker']
+    cam_nodes = filtered_nodes[mmapi.OBJECT_TYPE_CAMERA]
+    mkr_grp_nodes = filtered_nodes[mmapi.OBJECT_TYPE_MARKER_GROUP]
+    mkr_nodes = filtered_nodes[mmapi.OBJECT_TYPE_MARKER]
 
     # Check selected camera.
     if len(cam_nodes) > 0:
@@ -112,8 +112,7 @@ def update():
 
     cam = _get_camera_for_update(sel)
     if cam is None:
-        msg = ('No valid nodes selected; '
-               'Select a Camera, Marker Group or Markers.')
+        msg = 'No valid nodes selected; ' 'Select a Camera, Marker Group or Markers.'
         LOG.warn(msg)
         return
 
@@ -124,8 +123,7 @@ def update():
         LOG.warn('Could not find camera with calibration node connected.')
 
     if calib_node is not None:
-        with tools_utils.tool_context(use_undo_chunk=True,
-                                      disable_viewport=False):
+        with tools_utils.tool_context(use_undo_chunk=True, disable_viewport=False):
             lib.update_calibrate_values(calib_node)
     else:
         LOG.warn('Could not find calibration node.')

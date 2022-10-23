@@ -4,61 +4,6 @@ Attribute Tools
 Attribute tools are used to create and modify attributes, and
 attribute values.
 
-Bake Attributes
----------------
-
-.. figure:: images/tools_bake_attributes_ui.png
-    :alt: Bake Attributes UI
-    :align: center
-    :scale: 50%
-
-Bake Attributes will bake the values of an attribute on each frame and
-replace the connection with an animation curve.
-
-This tool is almost identical to the default Maya `Edit > Keys > Bake
-Simulation` tool, but has additional features.
-
-- The viewport is always disabled while baking.
-
-- The tool is optimised for speed of baking.
-
-- The tool UI is reduced to only the nessarary features for matchmove
-  tasks.
-
-Usage:
-
-#. Select 1 or more nodes.
-
-#. Select attributes in channel box (if required).
-
-#. Open `Bake Attributes` UI.
-
-   - Enable the `Smart Bake` to set keyframes only on some keyframes.
-
-   - Disable `From Channel Box` to bake all keyable attributes, not
-     just the selected attributes.
-
-#. Press `Bake` button.
-
-.. note:: In Maya scenes that rely on legacy viewport update for
-          correct evaluation, this tool may produce incorrect results
-          (because the viewport is disabled). If this happens, please
-          use Maya's default `Edit > Keys > Bake Simulation` tool. In
-          the experience of the tool authors, this has never happened
-          and this tool is a faster baking tool.
-
-Run this Python command:
-
-.. code:: python
-
-    import mmSolver.tools.fastbake.tool as tool    
-    tool.open_window()
-
-    # To run the "fast bake" tool directly (with currently set
-    # options).
-    tool.main()
-
-
 Set Attribute Details
 ---------------------
 
@@ -120,3 +65,208 @@ Run this Python command:
 
     import mmSolver.tools.setattributedetails.tool as tool
     tool.open_window()
+
+.. _smooth-keyframes-tool-ref:
+
+Smooth Keyframes
+----------------
+
+Smooth the selected keyframes in the Graph Editor, along with a UI to
+change the affect of the Smoothing function. The UI values are saved
+into the home directory and will be re-used when a new Maya session is
+opened.
+
+The Smooth Keyframes tool allows smoothing of only specific keyframes,
+even if the curve is not baked per-frame. The tool will also attempt
+to control the smoothed values as they blend into unsmoothed
+values. This allows smoothing a specific area of an animation curve,
+while preserving other parts and avoiding bumps at the boundry.
+
+Usage:
+
+1) Use the menu ``mmSolver > General Tools > Smooth Keyframes UI``.
+
+2) Edit the options in the UI.
+
+   - *Function* controls the type of smoothing that is calculated.
+
+   - *Smooth Width* controls how much the smoothing function will be
+     applied. The width is number of frames to be used for smoothing,
+     for example a value of 1 means "no smoothing", a value of 2 means
+     "use previous and next frame", and 5 means "use previous 4 and
+     next 4 frames".
+
+3) Select keyframes in Graph Editor.
+
+4) Run 'Smooth Selected Keyframes' tool.
+
+5) Keyframe values will be smoothed.
+
+6) Repeat steps 3 to 5 as required.
+
+You can use the below Python code on a hotkey of your choosing. To
+run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.smoothkeyframes.tool as tool
+
+    # Smooth the selected Keyframes
+    tool.smooth_selected_keyframes()
+
+    # Open the Smooth Keyframes UI.
+    tool.main()
+
+Blend Width
++++++++++++
+
+When the *Smooth Keyframes* tool is run the selected keyframes are
+smoothed as well as frames surrounding the selected keyframes. The
+surrounding keyframes are blended together with the smoothed
+keyframes. The *Blend Width* value controls the number of frames to
+blend.
+
+The image below shows the effect of the *Blend Width* value.
+
+.. figure:: images/tools_smooth_keyframes_blend.gif
+    :alt: Selected Keyframes Blending Value
+    :align: center
+    :width: 90%
+
+Function Average
+++++++++++++++++
+
+The *Average* smoothing function will average the surrounding keyframe
+values equally.
+
+The image below shows the effect of the *Smooth Width* with the
+*Average* function.
+
+.. figure:: images/tools_smooth_keyframes_average.gif
+    :alt: Smooth Keyframes with Average
+    :align: center
+    :width: 90%
+
+Function Gaussian
++++++++++++++++++
+
+The *Gaussian* smoothing function performs a strong smooth on the
+keyframes. The *Gaussian* function can be used to make a curve very
+flat, without any changes. Unlike the *Fourier* function, the
+*Gaussian* function will change already smooth keyframes.
+
+This function is similar to 2D image Gaussian blurring.
+
+The image below shows the effect of the *Smooth Width* with the
+*Gaussian* function.
+
+.. figure:: images/tools_smooth_keyframes_gaussian.gif
+    :alt: Smooth Keyframes with Gaussian
+    :align: center
+    :width: 90%
+
+Function Fourier
+++++++++++++++++
+
+The *Fourier* smoothing function performs a high-pass-filter to the
+selected keyframes. Keyframes with rapid changes are smoothed more
+than already smoothed values.
+
+This function is similar to 2D image high-pass filtering techniques,
+to remove *high-contrast* edge detail.
+
+The image below shows the effect of the *Smooth Width* with the
+*Fourier* function.
+
+.. figure:: images/tools_smooth_keyframes_fourier.gif
+    :alt: Smooth Keyframes with Fourier
+    :align: center
+    :width: 90%
+
+.. _channel-sensitivity-tool-ref:
+
+Channel Sensitivity
+-------------------
+
+Channel sensitivity tool helps you to change the value of sensitivity
+of channel slider setting. Using this tool the user to adjust
+attributes in the Channel Box by very small increments, which is
+useful for manually adjusting or matching parameters interactively.
+
+.. figure:: images/tools_channel_box_sensitivity_ui.png
+    :alt: Adjust the Maya Channel Box Sensitivity with a UI
+    :align: center
+    :width: 40%
+
+Usage:
+
+1) Run tool.
+
+   - A UI will open, click the `Up` or `Down` buttons to
+     change the sensitivity.
+
+2) Select an Attribute in the Channel Box.
+
+3) Middle-mouse drag in the viewport to change the attribute value.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.channelsen.tool as tool
+    tool.main()
+
+
+Bake Attributes
+---------------
+
+.. figure:: images/tools_bake_attributes_ui.png
+    :alt: Bake Attributes UI
+    :align: center
+    :scale: 50%
+
+Bake Attributes will bake the values of an attribute on each frame and
+replace the connection with an animation curve.
+
+This tool is almost identical to the default Maya `Edit > Keys > Bake
+Simulation` tool, but has additional features.
+
+- The viewport is always disabled while baking.
+
+- The tool is optimised for speed of baking.
+
+- The tool UI is reduced to only the nessarary features for matchmove
+  tasks.
+
+Usage:
+
+#. Select 1 or more nodes.
+
+#. Select attributes in channel box (if required).
+
+#. Open `Bake Attributes` UI.
+
+   - Enable the `Smart Bake` to set keyframes only on some keyframes.
+
+   - Disable `From Channel Box` to bake all keyable attributes, not
+     just the selected attributes.
+
+#. Press `Bake` button.
+
+.. note:: In Maya scenes that rely on legacy viewport update for
+          correct evaluation, this tool may produce incorrect results
+          (because the viewport is disabled). If this happens, please
+          use Maya's default `Edit > Keys > Bake Simulation` tool. In
+          the experience of the tool authors, this has never happened
+          and this tool is a faster baking tool.
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.fastbake.tool as tool
+    tool.open_window()
+
+    # To run the "fast bake" tool directly (with currently set
+    # options).
+    tool.main()

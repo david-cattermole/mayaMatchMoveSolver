@@ -26,7 +26,7 @@ Run this Python command:
 .. code:: python
 
     import mmSolver.tools.togglemarkerlock.tool as tool
-    tool.toggle_marker_lock()
+    tool.main()
 
 .. _place-marker-manipulator-tool-ref:
 
@@ -95,7 +95,7 @@ This tool must have at least two Markers selected.
 Usage:
 
 1) Select 1 or more Marker nodes.
-   
+
 2) Run tool.
    - A third Marker node will be created between all others.
 
@@ -203,7 +203,7 @@ Run this Python command:
 
     # Deform Create
     tool.create_offset_layer()
-    
+
     # Deform Bake
     tool.bake_offset()
 

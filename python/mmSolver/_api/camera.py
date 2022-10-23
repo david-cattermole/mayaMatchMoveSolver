@@ -29,9 +29,102 @@ import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.python_compat as pycompat
 import mmSolver._api.constant as const
 import mmSolver._api.utils as api_utils
+import mmSolver._api.lens as lensmodule
 
 
 LOG = mmSolver.logger.get_logger()
+
+
+def _create_camera_attributes(cam_shp):
+    """
+    Create the attributes expected to be on a camera.
+
+    :param cam_shp: Shape node for the Camera.
+    :type cam_shp: str
+    """
+    assert isinstance(cam_shp, pycompat.TEXT_TYPE)
+    assert maya.cmds.nodeType(cam_shp) == 'camera'
+    node_obj = node_utils.get_as_object_apione(cam_shp)
+    dg_node_fn = OpenMaya.MFnDependencyNode(node_obj)
+
+    api_utils.load_plugin()
+    typedAttr = OpenMaya.MFnTypedAttribute()
+    data_type_id = OpenMaya.MTypeId(const.LENS_DATA_TYPE_ID)
+
+    already_exists = node_utils.attribute_exists('inLens', cam_shp)
+    if already_exists is False:
+        attr_obj = typedAttr.create("inLens", "ilns", data_type_id)
+        typedAttr.setStorable(False)
+        typedAttr.setKeyable(False)
+        typedAttr.setReadable(True)
+        typedAttr.setWritable(True)
+        dg_node_fn.addAttribute(attr_obj)
+
+    already_exists = node_utils.attribute_exists('outLens', cam_shp)
+    if already_exists is False:
+        attr_obj = typedAttr.create("outLens", "olns", data_type_id)
+        typedAttr.setStorable(False)
+        typedAttr.setKeyable(False)
+        typedAttr.setReadable(True)
+        typedAttr.setWritable(True)
+        dg_node_fn.addAttribute(attr_obj)
+    return
+
+
+def _create_lens_toggle_setup(cam_tfm, cam_shp):
+    # When linking to a camera, if an attribute 'lens'
+    # does not already exist, create it.
+    _create_camera_attributes(cam_shp)
+    toggle_nodes = (
+        maya.cmds.listConnections(cam_shp + ".inLens", shapes=False, destination=True)
+        or []
+    )
+    if len(toggle_nodes) == 0:
+        api_utils.load_plugin()
+        toggle_node = maya.cmds.createNode(
+            'mmLensModelToggle', name=const.LENS_TOGGLE_NODE_NAME
+        )
+        maya.cmds.connectAttr(cam_shp + '.inLens', toggle_node + '.inLens')
+        maya.cmds.connectAttr(toggle_node + '.outLens', cam_shp + '.outLens')
+    else:
+        toggle_node = toggle_nodes[0]
+    return toggle_node
+
+
+def _link_lens_to_camera(cam_tfm, cam_shp, lens):
+    """Connect the Lens to the Camera.
+
+    Assumes that no lens is already connected to the camera."""
+    assert isinstance(lens, lensmodule.Lens)
+    lens_node = lens.get_node()
+    src = lens_node + '.outLens'
+    dst = cam_shp + '.inLens'
+    if not maya.cmds.isConnected(src, dst):
+        maya.cmds.connectAttr(src, dst)
+    return
+
+
+def _unlink_lens_from_camera(cam_tfm, cam_shp):
+    """Disconnect Lens(es) from the Camera attribute."""
+    lens_node_connections = (
+        maya.cmds.listConnections(
+            cam_shp + ".inLens",
+            shapes=False,
+            source=True,
+            destination=False,
+            connections=True,
+            plugs=True,
+        )
+        or []
+    )
+    if len(lens_node_connections) > 0:
+        num = len(lens_node_connections)
+        src_list = lens_node_connections[1:num:2]
+        dst_list = lens_node_connections[0:num:2]
+        for src, dst in zip(src_list, dst_list):
+            if maya.cmds.isConnected(src, dst):
+                maya.cmds.disconnectAttr(src, dst)
+    return
 
 
 class Camera(object):
@@ -41,6 +134,7 @@ class Camera(object):
 
     Example usage::
 
+        >>> import mmSolver.api as mmapi
         >>> cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         >>> cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         >>> cam = mmapi.Camera(shape=cam_shp)
@@ -144,8 +238,10 @@ class Camera(object):
         tfm_dag = node_utils.get_as_dag_path(name)
         if tfm_dag is not None:
             assert tfm_dag.apiType() in const.CAMERA_TRANSFORM_NODE_API_TYPES
+            cam_tfm = tfm_dag.fullPathName()
 
             # Get camera shape from transform.
+            cam_shp = None
             dag = node_utils.get_as_dag_path(name)
             num_children = dag.childCount()
             if num_children > 0:
@@ -154,9 +250,11 @@ class Camera(object):
                     if child_obj.apiType() in const.CAMERA_SHAPE_NODE_API_TYPES:
                         dag.push(child_obj)
                         self._mfn_shp = OpenMaya.MFnDagNode(dag)
+                        cam_shp = dag.fullPathName()
                         break
 
             self._mfn_tfm = OpenMaya.MFnDagNode(tfm_dag)
+            _create_lens_toggle_setup(cam_tfm, cam_shp)
 
         if self._mfn_tfm is None or self._mfn_shp is None:
             self._mfn_tfm = OpenMaya.MFnDagNode()
@@ -217,14 +315,17 @@ class Camera(object):
         shp_dag = node_utils.get_as_dag_path(name)
         if shp_dag is not None:
             assert shp_dag.apiType() in const.CAMERA_SHAPE_NODE_API_TYPES
+            cam_shp = shp_dag.fullPathName()
 
             # Get transform from shape.
             tfm_dag = node_utils.get_as_dag_path(name)
             tfm_dag.pop(1)
             assert tfm_dag.apiType() in const.CAMERA_TRANSFORM_NODE_API_TYPES
+            cam_tfm = tfm_dag.fullPathName()
 
             self._mfn_shp = OpenMaya.MFnDagNode(shp_dag)
             self._mfn_tfm = OpenMaya.MFnDagNode(tfm_dag)
+            _create_lens_toggle_setup(cam_tfm, cam_shp)
 
         if self._mfn_tfm is None or self._mfn_shp is None:
             self._mfn_tfm = OpenMaya.MFnDagNode()
@@ -242,8 +343,7 @@ class Camera(object):
         :return: Tuple of X and Y resolution.
         :rtype: (int, int)
         """
-        resolution = (const.DEFAULT_PLATE_WIDTH,
-                      const.DEFAULT_PLATE_HEIGHT)
+        resolution = (const.DEFAULT_PLATE_WIDTH, const.DEFAULT_PLATE_HEIGHT)
         shp = self.get_shape_node()
         if shp is None:
             LOG.warning('Could not get Camera shape node.')
@@ -362,19 +462,18 @@ class Camera(object):
         :rtype: Marker
         """
         import mmSolver._api.marker
+
         node = self.get_transform_node()
-        below_nodes = maya.cmds.ls(
-            node,
-            dag=True,
-            long=True,
-            type='transform') or []
+        below_nodes = maya.cmds.ls(node, dag=True, long=True, type='transform') or []
 
         mkr_list = []
         ver = maya.cmds.about(apiVersion=True)
         if ver < 201600:
-            mkr_list = [mmSolver._api.marker.Marker(node=n)
-                        for n in below_nodes
-                        if api_utils.get_object_type(n) == const.OBJECT_TYPE_MARKER]
+            mkr_list = [
+                mmSolver._api.marker.Marker(node=n)
+                for n in below_nodes
+                if api_utils.get_object_type(n) == const.OBJECT_TYPE_MARKER
+            ]
         else:
             # Note: Use UUIDs to cache nodes, this is only supported
             # on Maya 2016 and above.
@@ -399,9 +498,95 @@ class Camera(object):
         """
         cam_tfm = self.get_transform_node()
         cam_shp = self.get_shape_node()
-        if ((cam_tfm is None) or
-                (cam_shp is None) or
-                (maya.cmds.objExists(cam_tfm) is False) or
-                (maya.cmds.objExists(cam_shp) is False)):
+        if (
+            (cam_tfm is None)
+            or (cam_shp is None)
+            or (maya.cmds.objExists(cam_tfm) is False)
+            or (maya.cmds.objExists(cam_shp) is False)
+        ):
             return False
         return True
+
+    ############################################################################
+
+    def get_lens_enable(self):
+        """
+        Get the lens distortion mode of the camera.
+        """
+        cam_tfm = self.get_transform_node()
+        cam_shp = self.get_shape_node()
+        if cam_tfm is None or cam_shp is None:
+            msg = "Camera object has no transform/shape node: object=%r"
+            LOG.warn(msg, self)
+            return
+        toggle_node = _create_lens_toggle_setup(cam_tfm, cam_shp)
+        return maya.cmds.getAttr(toggle_node + '.enable')
+
+    def set_lens_enable(self, value):
+        """
+        Set the lens distortion mode of the camera.
+        """
+        assert isinstance(value, bool)
+        cam_tfm = self.get_transform_node()
+        cam_shp = self.get_shape_node()
+        if cam_tfm is None or cam_shp is None:
+            msg = "Camera object has no transform/shape node: object=%r"
+            LOG.warn(msg, self)
+            return
+        toggle_node = _create_lens_toggle_setup(cam_tfm, cam_shp)
+        maya.cmds.setAttr(toggle_node + '.enable', value)
+        return
+
+    def get_lens(self):
+        """
+        Get the lens connected to the camera.
+
+        :returns: Lens object, or None if Camera does not have a
+                  Lens.
+        :rtype: None or Lens
+        """
+        lens = None
+        cam_tfm = self.get_transform_node()
+        cam_shp = self.get_shape_node()
+        if cam_tfm is None or cam_shp is None:
+            msg = "Camera object has no transform/shape node: object=%r"
+            LOG.warn(msg, self)
+            return lens
+        _create_lens_toggle_setup(cam_tfm, cam_shp)
+        nodes = (
+            maya.cmds.listConnections(
+                cam_shp + '.inLens', source=True, destination=False, shapes=False
+            )
+            or []
+        )
+        if len(nodes) > 0:
+            assert len(nodes) == 1
+            lens = lensmodule.Lens(node=nodes[0])
+        return lens
+
+    def set_lens(self, lens):
+        """
+        Connect this Camera to the given Lens.
+
+        .. note:: If the `lens` argument is None, the Camera is
+            disconnected from any lens.
+
+        :param lens: The Lens to connect this Camera to.
+        :type lens: None or Lens
+
+        :returns: None
+        """
+        assert isinstance(lens, lensmodule.Lens)
+        cam_tfm = self.get_transform_node()
+        cam_shp = self.get_shape_node()
+        if cam_tfm is None or cam_shp is None:
+            msg = "Camera object has no transform or shape node: object=%r"
+            LOG.warn(msg, self)
+            return
+        if lens is None:
+            _unlink_lens_from_camera(cam_tfm, cam_shp)
+        elif isinstance(lens, lensmodule.Lens):
+            _create_lens_toggle_setup(cam_tfm, cam_shp)
+            _unlink_lens_from_camera(cam_tfm, cam_shp)
+            _link_lens_to_camera(cam_tfm, cam_shp, lens)
+        return

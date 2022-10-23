@@ -54,5 +54,5 @@ def main():
 
 
 def aim_at_camera():
-    warnings.warn("Use 'main' function instead.")
+    warnings.warn("Use 'main' function instead.", DeprecationWarning)
     main()

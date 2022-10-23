@@ -21,6 +21,10 @@ Test a rotation solve where the correct solve value is 0.0.
 Relates to GitHub issue #54.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import math
 import time
@@ -28,62 +32,46 @@ import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
 import maya.cmds
 
-
+import mmSolver.api as mmapi
 import test.test_solver.solverutils as solverUtils
 
 
 # @unittest.skip
 class TestSolverIssue54(solverUtils.SolverTestCase):
-
-    def setup_scene(self,
-                    cam_translate,
-                    cam_rotate,
-                    cam_rotate_offset,
-                    bnd_translate):
+    def setup_scene(self, cam_translate, cam_rotate, cam_rotate_offset, bnd_translate):
         """
         Create a scene file ready for solving.
         """
-        cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
-        cam_shp = maya.cmds.createNode('camera', name='cam_shp',
-                                       parent=cam_tfm)
+        cam_tfm, cam_shp = self.create_camera('cam')
         maya.cmds.setAttr(cam_tfm + '.tx', cam_translate[0])
         maya.cmds.setAttr(cam_tfm + '.ty', cam_translate[1])
         maya.cmds.setAttr(cam_tfm + '.tz', cam_translate[2])
 
-        bundle_tfm = maya.cmds.createNode('transform',
-                                          name='bundle_tfm')
-        bundle_shp = maya.cmds.createNode('locator',
-                                          name='bundle_shp',
-                                          parent=bundle_tfm)
+        bundle_tfm, bundle_shp = self.create_bundle('bundle')
         maya.cmds.setAttr(bundle_tfm + '.tx', bnd_translate[0])
         maya.cmds.setAttr(bundle_tfm + '.ty', bnd_translate[1])
         maya.cmds.setAttr(bundle_tfm + '.tz', bnd_translate[2])
 
-        marker_tfm = maya.cmds.createNode('transform',
-                                          name='marker_tfm',
-                                          parent=cam_tfm)
-        marker_shp = maya.cmds.createNode('locator',
-                                          name='marker_shp',
-                                          parent=marker_tfm)
+        mkr_grp = self.create_marker_group('marker_group', cam_tfm)
+        marker_tfm, marker_shp = self.create_marker(
+            'marker', mkr_grp, bnd_tfm=bundle_tfm
+        )
         maya.cmds.setAttr(marker_tfm + '.tx', 0.0)
         maya.cmds.setAttr(marker_tfm + '.ty', 0.0)
-        maya.cmds.setAttr(marker_tfm + '.tz', -10)
+        maya.cmds.setAttr(marker_tfm + '.tz', -1.0)
 
         maya.cmds.setAttr(cam_tfm + '.rx', cam_rotate[0])
         maya.cmds.setAttr(cam_tfm + '.ry', cam_rotate[1])
         maya.cmds.setAttr(cam_tfm + '.rz', cam_rotate[2])
 
-        cameras = (
-            (cam_tfm, cam_shp),
-        )
-        markers = (
-            (marker_tfm, cam_shp, bundle_tfm),
-        )
+        cameras = ((cam_tfm, cam_shp),)
+        markers = ((marker_tfm, cam_shp, bundle_tfm),)
         node_attrs = [
             (cam_tfm + '.rx', 'None', 'None', cam_rotate_offset[0], 'None'),
             (cam_tfm + '.ry', 'None', 'None', cam_rotate_offset[1], 'None'),
@@ -103,10 +91,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         cam_rotate_offset = ['360', '360', 'None']
         bnd_translate = [-1.0, 1.0, -25.0]
         cameras, markers, node_attrs, frames = self.setup_scene(
-            cam_translate,
-            cam_rotate,
-            cam_rotate_offset,
-            bnd_translate)
+            cam_translate, cam_rotate, cam_rotate_offset, bnd_translate
+        )
         cam_tfm, cam_shp = cameras[0]
 
         kwargs = {
@@ -127,14 +113,10 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            frame=frames,
-            iterations=10,
-            solverType=solver_index,
-            verbose=True,
-            **kwargs
+            frame=frames, iterations=10, solverType=solver_index, verbose=True, **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = 'solver_test_issue54_initial_value_zero_%s_after.ma'
@@ -146,8 +128,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         rx = maya.cmds.getAttr(cam_tfm + '.rx')
         ry = maya.cmds.getAttr(cam_tfm + '.ry')
-        print 'rx', rx
-        print 'ry', ry
+        print('rx', rx)
+        print('ry', ry)
         assert self.approx_equal(rx, -2.85, eps=0.1)
         assert self.approx_equal(ry, -2.86, eps=0.1)
 
@@ -161,10 +143,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         cam_rotate_offset = ['360', '360', 'None']
         bnd_translate = [-1.0, 1.0, -25.0]
         cameras, markers, node_attrs, frames = self.setup_scene(
-            cam_translate,
-            cam_rotate,
-            cam_rotate_offset,
-            bnd_translate)
+            cam_translate, cam_rotate, cam_rotate_offset, bnd_translate
+        )
         cam_tfm, cam_shp = cameras[0]
 
         kwargs = {
@@ -185,14 +165,10 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            frame=frames,
-            iterations=10,
-            solverType=solver_index,
-            verbose=True,
-            **kwargs
+            frame=frames, iterations=10, solverType=solver_index, verbose=True, **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = 'solver_test_issue54_initial_value_twenty_%s_after.ma'
@@ -204,8 +180,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         rx = maya.cmds.getAttr(cam_tfm + '.rx')
         ry = maya.cmds.getAttr(cam_tfm + '.ry')
-        print 'rx', rx
-        print 'ry', ry
+        print('rx', rx)
+        print('ry', ry)
         assert self.approx_equal(rx, 0.0, eps=0.01)
         assert self.approx_equal(ry, 0.0, eps=0.01)
 
@@ -219,10 +195,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         cam_rotate_offset = ['360', '360', 'None']
         bnd_translate = [-1.0, 1.0, -25.0]
         cameras, markers, node_attrs, frames = self.setup_scene(
-            cam_translate,
-            cam_rotate,
-            cam_rotate_offset,
-            bnd_translate)
+            cam_translate, cam_rotate, cam_rotate_offset, bnd_translate
+        )
         cam_tfm, cam_shp = cameras[0]
 
         kwargs = {
@@ -243,14 +217,10 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         # Run solver!
         s = time.time()
         result = maya.cmds.mmSolver(
-            frame=frames,
-            iterations=10,
-            solverType=solver_index,
-            verbose=True,
-            **kwargs
+            frame=frames, iterations=10, solverType=solver_index, verbose=True, **kwargs
         )
         e = time.time()
-        print 'total time:', e - s
+        print('total time:', e - s)
 
         # save the output
         path = 'solver_test_issue54_initial_value_threeSixty_%s_after.ma'
@@ -262,18 +232,18 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         rx = maya.cmds.getAttr(cam_tfm + '.rx')
         ry = maya.cmds.getAttr(cam_tfm + '.ry')
-        print 'rx', rx
-        print 'ry', ry
+        print('rx', rx)
+        print('ry', ry)
         assert self.approx_equal(rx, 360.0, eps=0.01)
         assert self.approx_equal(ry, 360.0, eps=0.01)
 
-    def test_init_levmar(self):
+    def test_init_ceres(self):
         """
-        Solve nodal camera on a single frame, using levmar.
+        Solve nodal camera on a single frame, using ceres.
         """
-        self.do_solve_with_initial_value_zero('levmar', 0)
-        self.do_solve_with_initial_value_twenty('levmar', 0)
-        self.do_solve_with_initial_value_threeSixty('levmar', 0)
+        self.do_solve_with_initial_value_zero('ceres', 3)
+        self.do_solve_with_initial_value_twenty('ceres', 3)
+        self.do_solve_with_initial_value_threeSixty('ceres', 3)
 
     def test_init_cminpack_lmdif(self):
         """
@@ -290,7 +260,6 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         self.do_solve_with_initial_value_zero('cminpack_lmder', 2)
         self.do_solve_with_initial_value_twenty('cminpack_lmder', 2)
         self.do_solve_with_initial_value_threeSixty('cminpack_lmder', 2)
-
 
 
 if __name__ == '__main__':

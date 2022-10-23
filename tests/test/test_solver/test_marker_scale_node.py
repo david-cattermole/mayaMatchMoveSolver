@@ -19,12 +19,15 @@
 Test the mmMarkerScale node for correctness.
 """
 
-import unittest
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-import mmSolver.utils.node as node_utils
+import unittest
 
 try:
     import maya.standalone
+
     maya.standalone.initialize()
 except RuntimeError:
     pass
@@ -37,16 +40,6 @@ import mmSolver._api.utils as api_utils
 
 # @unittest.skip
 class TestMarkerScaleNode(solverUtils.SolverTestCase):
-
-    @staticmethod
-    def create_camera(name):
-        cam_tfm = maya.cmds.createNode('transform', name=name)
-        cam_tfm = node_utils.get_long_name(cam_tfm)
-        cam_shp = maya.cmds.createNode('camera', name=name+'Shape',
-                                       parent=cam_tfm)
-        cam_shp = node_utils.get_long_name(cam_shp)
-        return cam_tfm, cam_shp
-
     def test_marker_scale_node(self):
         """
         Test marker scale node values.
@@ -55,7 +48,7 @@ class TestMarkerScaleNode(solverUtils.SolverTestCase):
         aperture.
         """
         node = maya.cmds.createNode('mmMarkerScale')
- 
+
         maya.cmds.setAttr(node + '.focalLength', 35)
         maya.cmds.setAttr(node + '.horizontalFilmAperture', 36.0 / 25.4)
         maya.cmds.setAttr(node + '.verticalFilmAperture', 24.0 / 25.4)
@@ -92,7 +85,7 @@ class TestMarkerScaleNode(solverUtils.SolverTestCase):
         Test marker scale node, with translate (film offsets).
         """
         node = maya.cmds.createNode('mmMarkerScale')
- 
+
         maya.cmds.setAttr(node + '.focalLength', 35)
         maya.cmds.setAttr(node + '.horizontalFilmAperture', 36.0 / 25.4)
         maya.cmds.setAttr(node + '.verticalFilmAperture', 24.0 / 25.4)

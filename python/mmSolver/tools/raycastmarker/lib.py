@@ -149,10 +149,9 @@ def _create_look_at_matrix(dir_x, dir_y, dir_z):
     return mat
 
 
-def _do_raycast(node_list, mesh_nodes, frame_range,
-                max_dist,
-                use_smooth_mesh,
-                bundle_rotate_mode):
+def _do_raycast(
+    node_list, mesh_nodes, frame_range, max_dist, use_smooth_mesh, bundle_rotate_mode
+):
     bnd_nodes = set()
     cur_frame = maya.cmds.currentTime(query=True)
     if frame_range is None:
@@ -166,13 +165,10 @@ def _do_raycast(node_list, mesh_nodes, frame_range,
             assert bnd_node is not None
             assert cam_tfm is not None
 
-            direction = reproject_utils.get_camera_direction_to_point(
-                cam_tfm, mkr_node
-            )
+            direction = reproject_utils.get_camera_direction_to_point(cam_tfm, mkr_node)
             origin_point = maya.cmds.xform(
-                mkr_node, query=True,
-                translation=True,
-                worldSpace=True)
+                mkr_node, query=True, translation=True, worldSpace=True
+            )
             hit_point, hit_normal = raytrace_utils.closest_intersect_with_normal(
                 origin_point,
                 direction,
@@ -197,25 +193,24 @@ def _do_raycast(node_list, mesh_nodes, frame_range,
             # Set rotations.
             if bundle_rotate_mode == const.BUNDLE_ROTATE_MODE_NO_CHANGE_VALUE:
                 pass
-            elif bundle_rotate_mode in [const.BUNDLE_ROTATE_MODE_AIM_AT_CAMERA_VALUE,
-                                        const.BUNDLE_ROTATE_MODE_MESH_NORMAL_VALUE]:
+            elif bundle_rotate_mode in [
+                const.BUNDLE_ROTATE_MODE_AIM_AT_CAMERA_VALUE,
+                const.BUNDLE_ROTATE_MODE_MESH_NORMAL_VALUE,
+            ]:
                 mat = None
                 if bundle_rotate_mode == const.BUNDLE_ROTATE_MODE_AIM_AT_CAMERA_VALUE:
                     mat = _create_look_at_matrix(
-                        -direction[0],
-                        -direction[1],
-                        -direction[2])
+                        -direction[0], -direction[1], -direction[2]
+                    )
                 elif bundle_rotate_mode == const.BUNDLE_ROTATE_MODE_MESH_NORMAL_VALUE:
                     mat = _create_look_at_matrix(
-                        hit_normal[0],
-                        hit_normal[1],
-                        hit_normal[2])
+                        hit_normal[0], hit_normal[1], hit_normal[2]
+                    )
 
-                rotate_order = maya.cmds.xform(
-                    bnd_node,
-                    query=True,
-                    rotateOrder=True)
-                rotate_order_api = tfm_utils.ROTATE_ORDER_STR_TO_APITWO_CONSTANT[rotate_order]
+                rotate_order = maya.cmds.xform(bnd_node, query=True, rotateOrder=True)
+                rotate_order_api = tfm_utils.ROTATE_ORDER_STR_TO_APITWO_CONSTANT[
+                    rotate_order
+                ]
 
                 tfm_mat = OpenMaya2.MTransformationMatrix(mat)
                 tfm_mat.reorderRotation(rotate_order_api)
@@ -239,12 +234,16 @@ def _do_raycast(node_list, mesh_nodes, frame_range,
     return bnd_nodes
 
 
-def raycast_markers_onto_meshes(mkr_list, mesh_nodes, frame_range=None,
-                                unlock_bnd_attrs=None,
-                                relock_bnd_attrs=None,
-                                max_distance=None,
-                                use_smooth_mesh=None,
-                                bundle_rotate_mode=None):
+def raycast_markers_onto_meshes(
+    mkr_list,
+    mesh_nodes,
+    frame_range=None,
+    unlock_bnd_attrs=None,
+    relock_bnd_attrs=None,
+    max_distance=None,
+    use_smooth_mesh=None,
+    bundle_rotate_mode=None,
+):
     if max_distance is None:
         max_distance = utils_const.RAYTRACE_MAX_DIST
     if bundle_rotate_mode is None:
@@ -271,8 +270,10 @@ def raycast_markers_onto_meshes(mkr_list, mesh_nodes, frame_range=None,
     )
 
     # Avoid euler flips in the rotation.
-    if (len(bnd_nodes) > 0
-           and bundle_rotate_mode != const.BUNDLE_ROTATE_MODE_NO_CHANGE_VALUE):
+    if (
+        len(bnd_nodes) > 0
+        and bundle_rotate_mode != const.BUNDLE_ROTATE_MODE_NO_CHANGE_VALUE
+    ):
         maya.cmds.filterCurve(list(bnd_nodes))
 
     # Re-lock bundle attributes

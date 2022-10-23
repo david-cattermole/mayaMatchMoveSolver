@@ -31,9 +31,7 @@ import mmSolver.tools.solver.constant as const
 LOG = mmSolver.logger.get_logger()
 
 
-def ensure_attr_exists(node, attr_name,
-                       attr_type=None,
-                       default_value=None):
+def ensure_attr_exists(node, attr_name, attr_type=None, default_value=None):
     """
     Ensure an attribute exists on the given node, or we create it.
     """
@@ -43,9 +41,14 @@ def ensure_attr_exists(node, attr_name,
     node_attr = node + '.' + attr_name
     numeric_attr_types = [
         'bool',
-        'long', 'short', 'byte', 'char',
-        'float', 'double',
-        'doubleAngle', 'doubleLinear',
+        'long',
+        'short',
+        'byte',
+        'char',
+        'float',
+        'double',
+        'doubleAngle',
+        'doubleLinear',
     ]
     if attr_type in numeric_attr_types:
         maya.cmds.addAttr(
@@ -55,25 +58,16 @@ def ensure_attr_exists(node, attr_name,
             attributeType=attr_type,
         )
     elif attr_type in ['string']:
-        maya.cmds.addAttr(
-            node,
-            longName=attr_name,
-            dataType='string'
-        )
+        maya.cmds.addAttr(node, longName=attr_name, dataType='string')
         if isinstance(default_value, pycompat.TEXT_TYPE):
-            maya.cmds.setAttr(
-                node_attr,
-                default_value,
-                type='string')
+            maya.cmds.setAttr(node_attr, default_value, type='string')
     else:
         raise TypeError('attr_type is not supported: %r' % attr_type)
     maya.cmds.setAttr(node_attr, lock=True)
     return
 
 
-def __get_value_from_node(node, attr_name,
-                          get_value_func,
-                          attr_type, default_value):
+def __get_value_from_node(node, attr_name, get_value_func, attr_type, default_value):
     """
     Get a value from a node.
 
@@ -83,19 +77,11 @@ def __get_value_from_node(node, attr_name,
     assert isinstance(node, pycompat.TEXT_TYPE)
     assert isinstance(attr_name, pycompat.TEXT_TYPE)
     ensure_attr_exists(
-        node, attr_name,
-        attr_type=attr_type,
-        default_value=default_value
+        node, attr_name, attr_type=attr_type, default_value=default_value
     )
     value = get_value_func(node, attr_name)
-    integer_attr_types = [
-        'long', 'short', 'byte', 'char'
-    ]
-    float_attr_types = [
-        'float', 'double',
-        'doubleAngle',
-        'doubleLinear'
-    ]
+    integer_attr_types = ['long', 'short', 'byte', 'char']
+    float_attr_types = ['float', 'double', 'doubleAngle', 'doubleLinear']
     if attr_type == 'bool':
         if not isinstance(value, bool):
             msg = 'Value queried is not bool: %r'
@@ -129,9 +115,9 @@ def __get_value_from_node(node, attr_name,
     return value
 
 
-def __set_value_on_node(node, attr_name, value,
-                        set_value_func,
-                        attr_type, default_value):
+def __set_value_on_node(
+    node, attr_name, value, set_value_func, attr_type, default_value
+):
     """
     Set a value on a node.
 
@@ -140,14 +126,8 @@ def __set_value_on_node(node, attr_name, value,
     """
     assert isinstance(node, pycompat.TEXT_TYPE)
     assert isinstance(attr_name, pycompat.TEXT_TYPE)
-    integer_attr_types = [
-        'long', 'short', 'byte', 'char'
-    ]
-    float_attr_types = [
-        'float', 'double',
-        'doubleAngle',
-        'doubleLinear'
-    ]
+    integer_attr_types = ['long', 'short', 'byte', 'char']
+    float_attr_types = ['float', 'double', 'doubleAngle', 'doubleLinear']
     if attr_type in ['bool']:
         if not isinstance(value, bool):
             msg = 'Value queried is not bool: %r' % type(value)
@@ -175,9 +155,7 @@ def __set_value_on_node(node, attr_name, value,
     return
 
 
-def get_value_from_node(node, attr_name,
-                        attr_type=None,
-                        default_value=None):
+def get_value_from_node(node, attr_name, attr_type=None, default_value=None):
     """
     Get a value from a node.
 
@@ -185,16 +163,11 @@ def get_value_from_node(node, attr_name,
 
     """
     func = configmaya.get_node_option
-    value = __get_value_from_node(
-        node, attr_name,
-        func,
-        attr_type, default_value)
+    value = __get_value_from_node(node, attr_name, func, attr_type, default_value)
     return value
 
 
-def set_value_on_node(node, attr_name, value,
-                      attr_type=None,
-                      default_value=None):
+def set_value_on_node(node, attr_name, value, attr_type=None, default_value=None):
     """
     Set a value on a node.
 
@@ -202,16 +175,11 @@ def set_value_on_node(node, attr_name, value,
 
     """
     func = configmaya.set_node_option
-    __set_value_on_node(
-        node, attr_name, value,
-        func,
-        attr_type, default_value)
+    __set_value_on_node(node, attr_name, value, func, attr_type, default_value)
     return
 
 
-def get_value_structure_from_node(node, attr_name,
-                        attr_type=None,
-                        default_value=None):
+def get_value_structure_from_node(node, attr_name, attr_type=None, default_value=None):
     """
     Get a value from a node.
 
@@ -219,16 +187,13 @@ def get_value_structure_from_node(node, attr_name,
 
     """
     func = configmaya.get_node_option_structure
-    value = __get_value_from_node(
-        node, attr_name,
-        func,
-        attr_type, default_value)
+    value = __get_value_from_node(node, attr_name, func, attr_type, default_value)
     return value
 
 
-def set_value_structure_on_node(node, attr_name, value,
-                      attr_type=None,
-                      default_value=None):
+def set_value_structure_on_node(
+    node, attr_name, value, attr_type=None, default_value=None
+):
     """
     Set a value on a node.
 
@@ -236,10 +201,7 @@ def set_value_structure_on_node(node, attr_name, value,
 
     """
     func = configmaya.set_node_option_structure
-    __set_value_on_node(
-        node, attr_name, value,
-        func,
-        attr_type, default_value)
+    __set_value_on_node(node, attr_name, value, func, attr_type, default_value)
     return
 
 
@@ -302,7 +264,7 @@ def get_attribute_toggle_animated_from_collection(col):
         col.get_node(),
         const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR,
         attr_type=const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR_TYPE,
-        default_value=const.ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE
+        default_value=const.ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE,
     )
     return value
 
@@ -322,7 +284,7 @@ def set_attribute_toggle_animated_on_collection(col, value):
         const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR,
         value,
         attr_type=const.ATTRIBUTE_TOGGLE_ANIMATED_ATTR_TYPE,
-        default_value=const.ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE
+        default_value=const.ATTRIBUTE_TOGGLE_ANIMATED_DEFAULT_VALUE,
     )
     return
 
@@ -344,7 +306,7 @@ def get_attribute_toggle_static_from_collection(col):
         col.get_node(),
         const.ATTRIBUTE_TOGGLE_STATIC_ATTR,
         attr_type=const.ATTRIBUTE_TOGGLE_STATIC_ATTR_TYPE,
-        default_value=const.ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE
+        default_value=const.ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE,
     )
     return value
 
@@ -364,7 +326,7 @@ def set_attribute_toggle_static_on_collection(col, value):
         const.ATTRIBUTE_TOGGLE_STATIC_ATTR,
         value,
         attr_type=const.ATTRIBUTE_TOGGLE_STATIC_ATTR_TYPE,
-        default_value=const.ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE
+        default_value=const.ATTRIBUTE_TOGGLE_STATIC_DEFAULT_VALUE,
     )
     return
 
@@ -386,7 +348,7 @@ def get_attribute_toggle_locked_from_collection(col):
         col.get_node(),
         const.ATTRIBUTE_TOGGLE_LOCKED_ATTR,
         attr_type=const.ATTRIBUTE_TOGGLE_LOCKED_ATTR_TYPE,
-        default_value=const.ATTRIBUTE_TOGGLE_LOCKED_DEFAULT_VALUE
+        default_value=const.ATTRIBUTE_TOGGLE_LOCKED_DEFAULT_VALUE,
     )
     return value
 
@@ -406,7 +368,7 @@ def set_attribute_toggle_locked_on_collection(col, value):
         const.ATTRIBUTE_TOGGLE_LOCKED_ATTR,
         value,
         attr_type=const.ATTRIBUTE_TOGGLE_LOCKED_ATTR_TYPE,
-        default_value=const.ATTRIBUTE_TOGGLE_LOCKED_DEFAULT_VALUE
+        default_value=const.ATTRIBUTE_TOGGLE_LOCKED_DEFAULT_VALUE,
     )
     return
 
@@ -540,6 +502,38 @@ def set_object_toggle_bundle_on_collection(col, value):
 #######################################################################
 
 
+def get_object_toggle_line_from_collection(col):
+    """
+    :type col: Collection
+    :rtype: bool
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.OBJECT_TOGGLE_LINE_ATTR,
+        attr_type=const.OBJECT_TOGGLE_LINE_ATTR_TYPE,
+        default_value=const.OBJECT_TOGGLE_LINE_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_object_toggle_line_on_collection(col, value):
+    """
+    :type col: Collection
+    :type value: bool
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.OBJECT_TOGGLE_LINE_ATTR,
+        value,
+        attr_type=const.OBJECT_TOGGLE_LINE_ATTR_TYPE,
+        default_value=const.OBJECT_TOGGLE_LINE_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
 def get_solver_tab_from_collection(col):
     """
     Get the value of solver 'tab', from a Collection.
@@ -590,7 +584,7 @@ def get_solver_range_type_from_collection(col):
     :type col: Collection
 
     :returns: An integer value in const.RANGE_TYPE_VALUE_LIST.
-    :rtype: bool
+    :rtype: int
     """
     value = get_value_from_node(
         col.get_node(),
@@ -701,6 +695,168 @@ def set_solver_increment_by_frame_on_collection(col, value):
         value,
         attr_type=const.SOLVER_INCREMENT_BY_FRAME_ATTR_TYPE,
         default_value=const.SOLVER_INCREMENT_BY_FRAME_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_user_frames_from_collection(col):
+    """
+    Get the value of solver 'User Frames', from a Collection.
+
+    :param col: The Collection to query.
+    :type col: Collection
+
+    :returns: The string representation of the frames.
+    :rtype: str
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_USER_FRAMES_ATTR,
+        attr_type=const.SOLVER_USER_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_USER_FRAMES_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_user_frames_on_collection(col, value):
+    """
+    Set the value of solver 'User Frames' on a Collection.
+
+    :param col: The Collection to change.
+    :type col: Collection
+
+    :param value: Value to set to.
+    :type value: str
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_USER_FRAMES_ATTR,
+        value,
+        attr_type=const.SOLVER_USER_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_USER_FRAMES_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_use_per_marker_frames_from_collection(col):
+    """
+    :rtype: bool
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_USE_PER_MARKER_FRAMES_ATTR,
+        attr_type=const.SOLVER_USE_PER_MARKER_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_USE_PER_MARKER_FRAMES_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_use_per_marker_frames_on_collection(col, value):
+    """
+    :type value: bool
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_USE_PER_MARKER_FRAMES_ATTR,
+        value,
+        attr_type=const.SOLVER_USE_PER_MARKER_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_USE_PER_MARKER_FRAMES_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_per_marker_frames_from_collection(col):
+    """
+    :rtype: int
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_PER_MARKER_FRAMES_ATTR,
+        attr_type=const.SOLVER_PER_MARKER_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_PER_MARKER_FRAMES_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_per_marker_frames_on_collection(col, value):
+    """
+    :type value: int
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_PER_MARKER_FRAMES_ATTR,
+        value,
+        attr_type=const.SOLVER_PER_MARKER_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_PER_MARKER_FRAMES_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_use_span_frames_from_collection(col):
+    """
+    :rtype: bool
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_USE_SPAN_FRAMES_ATTR,
+        attr_type=const.SOLVER_USE_SPAN_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_USE_SPAN_FRAMES_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_use_span_frames_on_collection(col, value):
+    """
+    :type value: bool
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_USE_SPAN_FRAMES_ATTR,
+        value,
+        attr_type=const.SOLVER_USE_SPAN_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_USE_SPAN_FRAMES_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_span_frames_from_collection(col):
+    """
+    :rtype: int
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_SPAN_FRAMES_ATTR,
+        attr_type=const.SOLVER_SPAN_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_SPAN_FRAMES_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_span_frames_on_collection(col, value):
+    """
+    :type value: int
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_SPAN_FRAMES_ATTR,
+        value,
+        attr_type=const.SOLVER_SPAN_FRAMES_ATTR_TYPE,
+        default_value=const.SOLVER_SPAN_FRAMES_DEFAULT_VALUE,
     )
     return
 
@@ -913,5 +1069,169 @@ def set_solver_eval_complex_graphs_on_collection(col, value):
         value,
         attr_type=const.SOLVER_EVAL_COMPLEX_GRAPHS_ATTR_TYPE,
         default_value=const.SOLVER_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_scene_graph_mode_from_collection(col):
+    """
+    :type col: Collection
+    :rtype: int
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_SCENE_GRAPH_MODE_ATTR,
+        attr_type=const.SOLVER_SCENE_GRAPH_MODE_ATTR_TYPE,
+        default_value=const.SOLVER_SCENE_GRAPH_MODE_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_scene_graph_mode_on_collection(col, value):
+    """
+    :type col: Collection
+    :type value: int
+    """
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_SCENE_GRAPH_MODE_ATTR,
+        value,
+        attr_type=const.SOLVER_SCENE_GRAPH_MODE_ATTR_TYPE,
+        default_value=const.SOLVER_SCENE_GRAPH_MODE_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_origin_frame_from_collection(col):
+    """
+    :type col: Collection
+    :rtype: int
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_ORIGIN_FRAME_ATTR,
+        attr_type=const.SOLVER_ORIGIN_FRAME_ATTR_TYPE,
+        default_value=const.SOLVER_ORIGIN_FRAME_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_origin_frame_on_collection(col, value):
+    """
+    :type col: Collection
+    :type value: int
+    """
+    assert isinstance(value, int)
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_ORIGIN_FRAME_ATTR,
+        value,
+        attr_type=const.SOLVER_ORIGIN_FRAME_ATTR_TYPE,
+        default_value=const.SOLVER_ORIGIN_FRAME_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_scene_scale_from_collection(col):
+    """
+    :type col: Collection
+    :rtype: float
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_SCENE_SCALE_ATTR,
+        attr_type=const.SOLVER_SCENE_SCALE_ATTR_TYPE,
+        default_value=const.SOLVER_SCENE_SCALE_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_scene_scale_on_collection(col, value):
+    """
+    :type col: Collection
+    :type value: float
+    """
+    assert isinstance(value, float)
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_SCENE_SCALE_ATTR,
+        value,
+        attr_type=const.SOLVER_SCENE_SCALE_ATTR_TYPE,
+        default_value=const.SOLVER_SCENE_SCALE_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_solve_focal_length_from_collection(col):
+    """
+    :type col: Collection
+    :rtype: bool
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_SOLVE_FOCAL_LENGTH_ATTR,
+        attr_type=const.SOLVER_SOLVE_FOCAL_LENGTH_ATTR_TYPE,
+        default_value=const.SOLVER_SOLVE_FOCAL_LENGTH_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_solve_focal_length_on_collection(col, value):
+    """
+    :type col: Collection
+    :type value: bool
+    """
+    assert isinstance(value, bool)
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_SOLVE_FOCAL_LENGTH_ATTR,
+        value,
+        attr_type=const.SOLVER_SOLVE_FOCAL_LENGTH_ATTR_TYPE,
+        default_value=const.SOLVER_SOLVE_FOCAL_LENGTH_DEFAULT_VALUE,
+    )
+    return
+
+
+#######################################################################
+
+
+def get_solver_solve_lens_distortion_from_collection(col):
+    """
+    :type col: Collection
+    :rtype: bool
+    """
+    value = get_value_from_node(
+        col.get_node(),
+        const.SOLVER_SOLVE_LENS_DISTORTION_ATTR,
+        attr_type=const.SOLVER_SOLVE_LENS_DISTORTION_ATTR_TYPE,
+        default_value=const.SOLVER_SOLVE_LENS_DISTORTION_DEFAULT_VALUE,
+    )
+    return value
+
+
+def set_solver_solve_lens_distortion_on_collection(col, value):
+    """
+    :type col: Collection
+    :type value: bool
+    """
+    assert isinstance(value, bool)
+    set_value_on_node(
+        col.get_node(),
+        const.SOLVER_SOLVE_LENS_DISTORTION_ATTR,
+        value,
+        attr_type=const.SOLVER_SOLVE_LENS_DISTORTION_ATTR_TYPE,
+        default_value=const.SOLVER_SOLVE_LENS_DISTORTION_DEFAULT_VALUE,
     )
     return

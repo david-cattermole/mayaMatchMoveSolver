@@ -25,6 +25,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
@@ -47,15 +48,15 @@ class CenterTwoDeeLayout(QtWidgets.QWidget, ui_centertwodee_layout.Ui_Form):
         super(CenterTwoDeeLayout, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
+        # TODO: Add a combo-box to allow choosing a a camera
+        # explicitly, or a label to print out what camera the UI is
+        # connected to.
+
         self.horzontal_reset_pushButton.clicked.connect(
             self.reset_horizontal_pan_slider
         )
-        self.vertical_reset_pushButton.clicked.connect(
-            self.reset_vertical_pan_slider
-        )
-        self.zoom_reset_pushButton.clicked.connect(
-            self.reset_zoom_slider
-        )
+        self.vertical_reset_pushButton.clicked.connect(self.reset_vertical_pan_slider)
+        self.zoom_reset_pushButton.clicked.connect(self.reset_zoom_slider)
 
     def sliderValueChanged(self, value, type=None):
         if type == 'horizontal':

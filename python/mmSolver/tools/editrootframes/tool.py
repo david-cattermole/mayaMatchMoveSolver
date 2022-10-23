@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-User facing root frame editing functions.
+User facing user frame editing functions.
 
 This function may be called in a UI context.
 """
@@ -33,16 +33,16 @@ LOG = mmSolver.logger.get_logger()
 
 def main_add_frame():
     """
-    Add the current time to the list of root frames.
+    Add the current time to the list of user frames.
     """
     col = lib_state.get_active_collection()
-    root_frames = lib.get_root_frames_list(col)
-    if root_frames is not None:
-        assert isinstance(root_frames, list)
+    user_frames = lib.get_user_frames_list(col)
+    if user_frames is not None:
+        assert isinstance(user_frames, list)
 
         current_frame = maya.cmds.currentTime(query=True)
-        root_frames.append(int(current_frame))
-        lib.set_root_frames_list(col, root_frames)
+        user_frames.append(int(current_frame))
+        lib.set_user_frames_list(col, user_frames)
 
         # Update UI
         window_instance = solver_window.SolverWindow.get_instance()
@@ -53,21 +53,20 @@ def main_add_frame():
 
 def main_remove_frame():
     """
-    Remove the current time from the list of root frames.
+    Remove the current time from the list of user frames.
     """
     col = lib_state.get_active_collection()
-    root_frames = lib.get_root_frames_list(col)
-    if root_frames is not None:
-        assert isinstance(root_frames, list)
+    user_frames = lib.get_user_frames_list(col)
+    if user_frames is not None:
+        assert isinstance(user_frames, list)
         current_frame = maya.cmds.currentTime(query=True)
         frame = int(current_frame)
-        if frame in root_frames:
-            root_frames.remove(frame)
-            lib.set_root_frames_list(col, root_frames)
+        if frame in user_frames:
+            user_frames.remove(frame)
+            lib.set_user_frames_list(col, user_frames)
 
             # Update UI
             window_instance = solver_window.SolverWindow.get_instance()
             if window_instance is not None:
                 window_instance.triggerCollectionUpdate()
     return
-

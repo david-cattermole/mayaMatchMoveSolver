@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -40,15 +41,18 @@ LOG = mmSolver.logger.get_logger()
 
 
 class ObjectNode(uinodes.Node):
-    def __init__(self, name,
-                 parent=None,
-                 data=None,
-                 icon=None,
-                 enabled=True,
-                 editable=False,
-                 selectable=True,
-                 checkable=False,
-                 neverHasChildren=False):
+    def __init__(
+        self,
+        name,
+        parent=None,
+        data=None,
+        icon=None,
+        enabled=True,
+        editable=False,
+        selectable=True,
+        checkable=False,
+        neverHasChildren=False,
+    ):
         if icon is None:
             icon = const.OBJECT_ICON_NAME
         super(ObjectNode, self).__init__(
@@ -60,8 +64,9 @@ class ObjectNode(uinodes.Node):
             selectable=selectable,
             editable=editable,
             checkable=checkable,
-            neverHasChildren=neverHasChildren)
-        self.typeInfo = 'object'
+            neverHasChildren=neverHasChildren,
+        )
+        self.typeInfo = const.OBJECT_NODE_TYPE_INFO_OBJECT_VALUE
 
     def objectColor(self):
         return None
@@ -87,18 +92,12 @@ class ObjectNode(uinodes.Node):
 
 
 class MarkerNode(ObjectNode):
-    def __init__(self, name,
-                 data=None,
-                 parent=None):
+    def __init__(self, name, data=None, parent=None):
         icon = const.MARKER_ICON_NAME
         super(MarkerNode, self).__init__(
-            name,
-            data=data,
-            parent=parent,
-            icon=icon,
-            selectable=True,
-            editable=False)
-        self.typeInfo = 'marker'
+            name, data=data, parent=parent, icon=icon, selectable=True, editable=False
+        )
+        self.typeInfo = const.OBJECT_NODE_TYPE_INFO_MARKER_VALUE
 
     def status(self):
         value = const.OBJECT_DEFAULT_STATUS_UI_VALUE
@@ -195,18 +194,12 @@ class MarkerNode(ObjectNode):
 
 
 class CameraNode(ObjectNode):
-    def __init__(self, name,
-                 data=None,
-                 parent=None):
+    def __init__(self, name, data=None, parent=None):
         icon = const.CAMERA_ICON_NAME
         super(CameraNode, self).__init__(
-            name,
-            data=data,
-            parent=parent,
-            icon=icon,
-            selectable=True,
-            editable=False)
-        self.typeInfo = 'camera'
+            name, data=data, parent=parent, icon=icon, selectable=True, editable=False
+        )
+        self.typeInfo = const.OBJECT_NODE_TYPE_INFO_CAMERA_VALUE
 
     def objectColor(self):
         return None
@@ -234,18 +227,12 @@ class CameraNode(ObjectNode):
 
 
 class BundleNode(ObjectNode):
-    def __init__(self, name,
-                 data=None,
-                 parent=None):
+    def __init__(self, name, data=None, parent=None):
         icon = const.BUNDLE_ICON_NAME
         super(BundleNode, self).__init__(
-            name,
-            data=data,
-            parent=parent,
-            icon=icon,
-            selectable=True,
-            editable=False)
-        self.typeInfo = 'bundle'
+            name, data=data, parent=parent, icon=icon, selectable=True, editable=False
+        )
+        self.typeInfo = const.OBJECT_NODE_TYPE_INFO_BUNDLE_VALUE
 
     def objectColor(self):
         return None
@@ -263,8 +250,52 @@ class BundleNode(ObjectNode):
         return const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
 
 
-class ObjectModel(uimodels.ItemModel):
+class LineNode(ObjectNode):
+    def __init__(self, name, data=None, parent=None):
+        icon = const.LINE_ICON_NAME
+        super(LineNode, self).__init__(
+            name, data=data, parent=parent, icon=icon, selectable=True, editable=False
+        )
+        self.typeInfo = const.OBJECT_NODE_TYPE_INFO_LINE_VALUE
 
+    def status(self):
+        value = const.OBJECT_DEFAULT_STATUS_UI_VALUE
+        return value
+
+    def objectColor(self):
+        d = self.data()
+        line = d.get('line')
+        if line is None:
+            return None
+        color = None
+        enable = bool(line.get_enable())
+        if enable is False:
+            color = QtGui.QColor(QtCore.Qt.darkGray)
+        return color
+
+    def weight(self):
+        weight = const.OBJECT_DEFAULT_WEIGHT_UI_VALUE
+        d = self.data()
+        line = d.get('line')
+        if line is None:
+            return weight
+        weight = line.get_weight()
+        return str(weight)
+
+    def avgDeviation(self):
+        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
+        return dev
+
+    def deviation(self):
+        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
+        return dev
+
+    def maxDeviation(self):
+        dev = const.OBJECT_DEFAULT_DEVIATION_UI_VALUE
+        return dev
+
+
+class ObjectModel(uimodels.ItemModel):
     def __init__(self, root, font=None):
         super(ObjectModel, self).__init__(root, font=font)
         return

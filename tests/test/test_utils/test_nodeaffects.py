@@ -22,6 +22,10 @@ The 'nodeaffects' module is responsible for the internals of the
 'maya.cmds.mmSolverAffects' plug-in command.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import time
 import unittest
 import pprint
@@ -31,6 +35,7 @@ import maya.cmds
 import test.test_utils.utilsutils as test_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.nodeaffects as nodeaffects
+import mmSolver.utils.python_compat as pycompat
 
 
 # @unittest.skip
@@ -67,19 +72,18 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         'shearYZ',
         'translateX',
         'translateY',
-        'translateZ'
+        'translateZ',
     ]
 
     @staticmethod
     def create_camera(name, tfm_node_type=None):
-        assert isinstance(name, basestring)
+        assert isinstance(name, pycompat.TEXT_TYPE)
         if tfm_node_type is None:
             tfm_node_type = 'transform'
         cam_tfm = maya.cmds.createNode(tfm_node_type, name=name)
         cam_tfm = node_utils.get_long_name(cam_tfm)
         shp_name = name + 'Shape'
-        cam_shp = maya.cmds.createNode(
-            'camera', name=shp_name, parent=cam_tfm)
+        cam_shp = maya.cmds.createNode('camera', name=shp_name, parent=cam_tfm)
         cam_shp = node_utils.get_long_name(cam_shp)
         return cam_tfm, cam_shp
 
@@ -95,12 +99,12 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         """
         cam_tfm, cam_shp = self.create_camera('myCamera')
 
-        top_node = maya.cmds.createNode(
-            'transform', name='top_node')
+        top_node = maya.cmds.createNode('transform', name='top_node')
         top_node = node_utils.get_long_name(top_node)
 
         bot_node = maya.cmds.createNode(
-            'transform', name='bottom_node', parent=top_node)
+            'transform', name='bottom_node', parent=top_node
+        )
         bot_node = node_utils.get_long_name(bot_node)
 
         # Plugs should only be the 'top' node.
@@ -135,14 +139,15 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         """
         # Open File Path
         scenePath = self.get_data_path(
-            'scenes', 'mmSolver_nodeaffects_constrained_transforms.ma')
+            'scenes', 'mmSolver_nodeaffects_constrained_transforms.ma'
+        )
         maya.cmds.file(
             scenePath,
             open=True,
             force=True,
             typ='mayaAscii',
             ignoreVersion=True,
-            options='v=0'
+            options='v=0',
         )
         tfm_node = 'null1'
         plugs = nodeaffects.find_plugs_affecting_transform(tfm_node, None)
@@ -153,15 +158,14 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         A transform node parented under a rivet.mel rivet.
         """
         # Open File Path
-        scenePath = self.get_data_path(
-            'scenes', 'mmSolver_nodeaffects_simple_rivet.ma')
+        scenePath = self.get_data_path('scenes', 'mmSolver_nodeaffects_simple_rivet.ma')
         maya.cmds.file(
             scenePath,
             open=True,
             force=True,
             typ='mayaAscii',
             ignoreVersion=True,
-            options='v=0'
+            options='v=0',
         )
 
         tfm_node = 'rivet1'
@@ -175,15 +179,14 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         GitHub Issue 176.
         """
         # Open File Path
-        scenePath = self.get_data_path(
-            'scenes', 'mmSolver_nodeaffects_rig_rivet.ma')
+        scenePath = self.get_data_path('scenes', 'mmSolver_nodeaffects_rig_rivet.ma')
         maya.cmds.file(
             scenePath,
             open=True,
             force=True,
             typ='mayaAscii',
             ignoreVersion=True,
-            options='v=0'
+            options='v=0',
         )
 
         tfm_node = 'Avg_Point_03_BND'
@@ -196,7 +199,7 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         s = time.time()
         plugs = nodeaffects.find_plugs_affecting_transform(tfm_node, None)
         e = time.time()
-        print 'Compute time:', e - s
+        print('Compute time:', e - s)
 
         self.assertGreater(len(plugs), 0)
         for plug in must_have_plugs:

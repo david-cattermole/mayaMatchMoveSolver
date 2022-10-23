@@ -66,9 +66,6 @@ class SolverBasic(solverbase.SolverBase):
 
     def __init__(self, *args, **kwargs):
         super(SolverBasic, self).__init__(*args, **kwargs)
-        # These variables are not officially supported by the class.
-        self._use_euler_filter = True
-
         # These variables are not used by the class.
         self._print_statistics_inputs = False
         self._print_statistics_affects = False
@@ -76,6 +73,23 @@ class SolverBasic(solverbase.SolverBase):
         self._robust_loss_type = 0
         self._robust_loss_scale = 1.0
         return
+
+    ############################################################################
+
+    def get_use_attr_blocks(self):
+        """
+        :rtype: bool
+        """
+        return self._data.get(
+            'use_attr_blocks', const.SOLVER_STD_USE_ATTR_BLOCKS_DEFAULT_VALUE
+        )
+
+    def set_use_attr_blocks(self, value):
+        """
+        :type value: bool or int
+        """
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
+        self._data['use_attr_blocks'] = bool(value)
 
     ############################################################################
 
@@ -87,7 +101,8 @@ class SolverBasic(solverbase.SolverBase):
         """
         return self._data.get(
             'eval_object_relationships',
-            const.SOLVER_STD_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE)
+            const.SOLVER_STD_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE,
+        )
 
     def set_eval_object_relationships(self, value):
         """
@@ -109,7 +124,8 @@ class SolverBasic(solverbase.SolverBase):
         """
         return self._data.get(
             'eval_complex_node_graphs',
-            const.SOLVER_STD_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE)
+            const.SOLVER_STD_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE,
+        )
 
     def set_eval_complex_graphs(self, value):
         """
@@ -123,6 +139,48 @@ class SolverBasic(solverbase.SolverBase):
 
     ############################################################################
 
+    def get_solver_type(self):
+        """
+        Get 'Scene Graph Mode' value.
+
+        :rtype: int
+        """
+        return self._data.get('solver_type', const.SOLVER_STD_SOLVER_TYPE_DEFAULT_VALUE)
+
+    def set_solver_type(self, value):
+        """
+        Set 'Scene Graph Mode' value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
+        assert isinstance(value, int)
+        self._data['solver_type'] = value
+
+    ############################################################################
+
+    def get_scene_graph_mode(self):
+        """
+        Get 'Scene Graph Mode' value.
+
+        :rtype: int
+        """
+        return self._data.get(
+            'scene_graph_mode', const.SOLVER_STD_SCENE_GRAPH_MODE_DEFAULT_VALUE
+        )
+
+    def set_scene_graph_mode(self, value):
+        """
+        Set 'Scene Graph Mode' value.
+
+        :param value: Value to be set.
+        :type value: int
+        """
+        assert isinstance(value, int)
+        self._data['scene_graph_mode'] = value
+
+    ############################################################################
+
     def get_use_single_frame(self):
         """
         Get Use Single Frame value.
@@ -130,8 +188,8 @@ class SolverBasic(solverbase.SolverBase):
         :rtype: bool
         """
         return self._data.get(
-            'use_single_frame',
-            const.SOLVER_STD_USE_SINGLE_FRAME_DEFAULT_VALUE)
+            'use_single_frame', const.SOLVER_STD_USE_SINGLE_FRAME_DEFAULT_VALUE
+        )
 
     def set_use_single_frame(self, value):
         """
@@ -150,8 +208,8 @@ class SolverBasic(solverbase.SolverBase):
         :rtype: Frame or None
         """
         value = self._data.get(
-            'single_frame',
-            const.SOLVER_STD_SINGLE_FRAME_DEFAULT_VALUE)
+            'single_frame', const.SOLVER_STD_SINGLE_FRAME_DEFAULT_VALUE
+        )
         frm = None
         if value is not None:
             frm = frame.Frame(value)
@@ -179,8 +237,8 @@ class SolverBasic(solverbase.SolverBase):
         :rtype: int
         """
         return self._data.get(
-            'anim_iteration_num',
-            const.SOLVER_STD_ANIM_ITERATION_NUM_DEFAULT_VALUE)
+            'anim_iteration_num', const.SOLVER_STD_ANIM_ITERATION_NUM_DEFAULT_VALUE
+        )
 
     def set_anim_iteration_num(self, value):
         """
@@ -200,8 +258,8 @@ class SolverBasic(solverbase.SolverBase):
         :rtype: int
         """
         return self._data.get(
-            'lineup_iteration_num',
-            const.SOLVER_STD_LINEUP_ITERATION_NUM_DEFAULT_VALUE)
+            'lineup_iteration_num', const.SOLVER_STD_LINEUP_ITERATION_NUM_DEFAULT_VALUE
+        )
 
     def set_lineup_iteration_num(self, value):
         """
@@ -213,6 +271,43 @@ class SolverBasic(solverbase.SolverBase):
         assert isinstance(value, pycompat.INT_TYPES)
         assert value > 0
         self._data['lineup_iteration_num'] = value
+
+    ############################################################################
+
+    def get_solve_focal_length(self):
+        """
+        :rtype: bool
+        """
+        return self._data.get(
+            'solve_focal_length', const.SOLVER_STD_SOLVE_FOCAL_LENGTH_DEFAULT_VALUE
+        )
+
+    def set_solve_focal_length(self, value):
+        """
+        :param value: Value to be set.
+        :type value: bool or int
+        """
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
+        self._data['solve_focal_length'] = bool(value)
+
+    ############################################################################
+
+    def get_solve_lens_distortion(self):
+        """
+        :rtype: bool
+        """
+        return self._data.get(
+            'solve_lens_distortion',
+            const.SOLVER_STD_SOLVE_LENS_DISTORTION_DEFAULT_VALUE,
+        )
+
+    def set_solve_lens_distortion(self, value):
+        """
+        :param value: Value to be set.
+        :type value: bool or int
+        """
+        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
+        self._data['solve_lens_distortion'] = bool(value)
 
     ############################################################################
 
@@ -308,27 +403,56 @@ class SolverBasic(solverbase.SolverBase):
         frame_list = self.get_frame_list()
         anim_iter_num = self.get_anim_iteration_num()
         lineup_iter_num = self.get_lineup_iteration_num()
-        use_euler_filter = self._use_euler_filter
+        use_euler_filter = True
+        use_attr_blocks = self.get_use_attr_blocks()
         eval_object_relationships = self.get_eval_object_relationships()
         remove_unused_objects = eval_object_relationships
         eval_complex_graphs = self.get_eval_complex_graphs()
+        solve_focal_length = self.get_solve_focal_length()
+        solve_lens_distortion = self.get_solve_lens_distortion()
+        solver_type = self.get_solver_type()
+        scene_graph_mode = self.get_scene_graph_mode()
         precomputed_data = self.get_precomputed_data()
+
+        attr_list = solverutils.filter_attr_list(
+            attr_list,
+            use_camera_intrinsics=solve_focal_length,
+            use_lens_distortion=solve_lens_distortion,
+        )
+
+        attr_blocks = solverutils.create_attr_blocks(use_attr_blocks, attr_list)
+
+        auto_scene_graph = scene_graph_mode == const.SCENE_GRAPH_MODE_AUTO
+        if auto_scene_graph is True:
+            # When 'auto' scene graph is used we are telling the
+            # solver to use the best supported scene graph. This will
+            # test the scene graph being solved and fall back to Maya
+            # DAG scene graph if mmSceneGraph fails.
+            scene_graph_mode = const.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+            use_animated_attrs = True
+            use_static_attrs = False
+            generator = solverutils.compile_solver_scene_graph(
+                col,
+                mkr_list,
+                attr_list,
+                use_animated_attrs,
+                use_static_attrs,
+                scene_graph_mode,
+                precomputed_data,
+                withtest,
+            )
+            for action, vaction in generator:
+                yield action, vaction
 
         # Pre-calculate the 'affects' relationship.
         if eval_object_relationships is True:
             generator = solverutils.compile_solver_affects(
-                col,
-                mkr_list,
-                attr_list,
-                precomputed_data,
-                withtest)
+                col, mkr_list, attr_list, precomputed_data, withtest
+            )
             for action, vaction in generator:
                 yield action, vaction
         else:
-            generator = solverutils.compile_reset_used_hints(
-                col,
-                mkr_list,
-                attr_list)
+            generator = solverutils.compile_reset_used_hints(col, mkr_list, attr_list)
             for action, vaction in generator:
                 yield action, vaction
 
@@ -342,46 +466,84 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
             sol.set_use_smoothness(False)
             sol.set_use_stiffness(False)
+            sol.set_solver_type(solver_type)
+            sol.set_scene_graph_mode(scene_graph_mode)
+            sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
             sol.set_remove_unused_markers(remove_unused_objects)
             sol.set_remove_unused_attributes(remove_unused_objects)
             sol.set_precomputed_data(precomputed_data)
-            for action, vaction in sol.compile(col, mkr_list, attr_list,
-                                               withtest=withtest):
+
+            cache = api_compile.create_compile_solver_cache()
+            generator = solverutils.compile_solver_step_blocks_with_cache(
+                sol, col, mkr_list, attr_blocks, withtest, cache
+            )
+            for action, vaction in generator:
                 yield action, vaction
         else:
-            # Multiple frame solve, per-frame
-            vaction_cache = api_compile.create_compile_solver_cache()
-            for i, frm in enumerate(frame_list):
-                is_first_frame = i == 0
-                one_frame_list = [frm]
-                time_eval_mode = const.TIME_EVAL_MODE_DEFAULT
-                if eval_complex_graphs is True:
-                    time_eval_mode = const.TIME_EVAL_MODE_SET_TIME
+            time_eval_mode = const.TIME_EVAL_MODE_DEFAULT
+            if eval_complex_graphs is True:
+                time_eval_mode = const.TIME_EVAL_MODE_SET_TIME
+
+            if scene_graph_mode == const.SCENE_GRAPH_MODE_MAYA_DAG:
+                # Multiple frame solve, per-frame
+                cache = api_compile.create_compile_solver_cache()
+                for i, frm in enumerate(frame_list):
+                    is_first_frame = i == 0
+                    one_frame_list = [frm]
+
+                    sol = solverstep.SolverStep()
+                    sol.set_max_iterations(anim_iter_num)
+                    sol.set_frame_list(one_frame_list)
+                    sol.set_attributes_use_animated(True)
+                    sol.set_attributes_use_static(False)
+                    sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
+                    sol.set_use_smoothness(not is_first_frame)
+                    sol.set_use_stiffness(not is_first_frame)
+                    sol.set_solver_type(solver_type)
+                    sol.set_scene_graph_mode(scene_graph_mode)
+                    sol.set_time_eval_mode(time_eval_mode)
+                    sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
+                    sol.set_remove_unused_markers(remove_unused_objects)
+                    sol.set_remove_unused_attributes(remove_unused_objects)
+                    sol.set_precomputed_data(precomputed_data)
+
+                    generator = solverutils.compile_solver_step_blocks_with_cache(
+                        sol, col, mkr_list, attr_blocks, withtest, cache
+                    )
+                    for action, vaction in generator:
+                        yield action, vaction
+
+            elif scene_graph_mode == const.SCENE_GRAPH_MODE_MM_SCENE_GRAPH:
+                # MM Scene Graph does not support smooth and stiff
+                # attributes yet.
+                use_smooth_stiff = False
 
                 sol = solverstep.SolverStep()
                 sol.set_max_iterations(anim_iter_num)
-                sol.set_frame_list(one_frame_list)
+                sol.set_frame_list(frame_list)
                 sol.set_attributes_use_animated(True)
                 sol.set_attributes_use_static(False)
                 sol.set_auto_diff_type(const.AUTO_DIFF_TYPE_FORWARD)
-                sol.set_use_smoothness(not is_first_frame)
-                sol.set_use_stiffness(not is_first_frame)
+                sol.set_use_smoothness(use_smooth_stiff)
+                sol.set_use_stiffness(use_smooth_stiff)
+                sol.set_solver_type(solver_type)
+                sol.set_scene_graph_mode(scene_graph_mode)
                 sol.set_time_eval_mode(time_eval_mode)
+                sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_PER_FRAME)
                 sol.set_remove_unused_markers(remove_unused_objects)
                 sol.set_remove_unused_attributes(remove_unused_objects)
                 sol.set_precomputed_data(precomputed_data)
 
-                generator = api_compile.compile_solver_with_cache(
-                    sol, col, mkr_list, attr_list, withtest, vaction_cache)
+                cache = api_compile.create_compile_solver_cache()
+                generator = solverutils.compile_solver_step_blocks_with_cache(
+                    sol, col, mkr_list, attr_blocks, withtest, cache
+                )
                 for action, vaction in generator:
                     yield action, vaction
 
             # Perform an euler filter on all unlocked rotation attributes.
             if use_euler_filter is True:
-                generator = solverutils.compile_euler_filter(
-                    attr_list,
-                    withtest
-                )
+                generator = solverutils.compile_euler_filter(attr_list, withtest)
                 for action, vaction in generator:
                     yield action, vaction
 

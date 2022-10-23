@@ -1,0 +1,80 @@
+//
+// Copyright (C) 2021 David Cattermole.
+//
+// This file is part of mmSolver.
+//
+// mmSolver is free software: you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// mmSolver is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+// ---------------------------------------------------------------------
+//
+// Reprojection node Template file.
+//
+
+
+source "AEmmNodeTemplateCommon";
+
+
+global proc AEmmReprojectionTemplate(string $nodeName)
+{
+    AEmmNodeTemplateCommonBegin($nodeName);
+
+    editorTemplate -beginLayout "Reprojection Inputs" -collapse 0;
+    editorTemplate -addControl "transformWorldMatrix";
+    editorTemplate -addControl "cameraWorldMatrix";
+    editorTemplate -addControl "applyMatrix";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "overrideScreenX";
+    editorTemplate -addControl "overrideScreenY";
+    editorTemplate -addControl "overrideScreenZ";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "screenX";
+    editorTemplate -addControl "screenY";
+    editorTemplate -addControl "screenZ";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "depthScale";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "focalLength";
+    editorTemplate -addControl "cameraAperture";
+    editorTemplate -addControl "filmOffset";
+    editorTemplate -addControl "filmFit";
+    editorTemplate -addControl "cameraScale";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "nearClipPlane";
+    editorTemplate -addControl "farClipPlane";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "imageWidth";
+    editorTemplate -addControl "imageHeight";
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "Reprojection Outputs" -collapse 0;
+    editorTemplate -addControl "outCoord";
+    editorTemplate -addControl "outNormCoord";
+    editorTemplate -addControl "outMarkerCoord";
+    editorTemplate -addControl "outPixel";
+    editorTemplate -addControl "outPan";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "outPoint";
+    editorTemplate -addControl "outWorldPoint";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "outWorldMatrix";
+    editorTemplate -addControl "outMatrix";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "outCameraProjectionMatrix";
+    editorTemplate -addControl "outInverseCameraProjectionMatrix";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "outCameraDirectionRatio";
+    editorTemplate -addControl "outInsideFrustum";
+    editorTemplate -endLayout;
+
+    AEmmNodeTemplateCommonEnd($nodeName);
+}

@@ -42,6 +42,7 @@ class Frame(object):
 
     Example usage::
 
+        >>> import mmSolver.api as mmapi
         >>> frmA = mmapi.Frame(1)
         >>> frmA.get_number()
         1
@@ -59,11 +60,8 @@ class Frame(object):
         ['custom', 'primary']
 
     """
-    def __init__(self,
-                 value,
-                 tags=None,
-                 primary=False,
-                 secondary=False):
+
+    def __init__(self, value, tags=None, primary=False, secondary=False):
         """
         Initialise a Frame object to hold a frame value and tags.
 

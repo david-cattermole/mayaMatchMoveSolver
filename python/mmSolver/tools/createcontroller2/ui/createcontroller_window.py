@@ -26,6 +26,7 @@ Usage::
 """
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -42,7 +43,7 @@ import mmSolver.tools.createcontroller2.ui.createcontroller_layout as createcont
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
-WINDOW_TITLE = "Create Controller"
+WINDOW_TITLE = 'Create Controller'
 
 
 def _open_help():
@@ -69,11 +70,15 @@ class CreateControllerWindow(BaseWindow):
         self.closeBtn.show()
         self.applyBtn.setText('Create Controller')
 
-        self.applyBtn.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.applyBtn.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         self.applyBtn.setMinimumWidth(160)
         self.applyBtn.clicked.connect(self.create_controller)
 
-        self.closeBtn.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.closeBtn.setSizePolicy(
+            QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed
+        )
         self.closeBtn.setMinimumWidth(120)
 
         # Hide irrelevant stuff
@@ -85,14 +90,12 @@ class CreateControllerWindow(BaseWindow):
     def add_menus(self, menubar):
         edit_menu = QtWidgets.QMenu('Edit', menubar)
         commonmenus.create_edit_menu_items(
-            edit_menu,
-            reset_settings_func=self.reset_options)
+            edit_menu, reset_settings_func=self.reset_options
+        )
         menubar.addMenu(edit_menu)
 
         help_menu = QtWidgets.QMenu('Help', menubar)
-        commonmenus.create_help_menu_items(
-            help_menu,
-            tool_help_func=_open_help)
+        commonmenus.create_help_menu_items(help_menu, tool_help_func=_open_help)
         menubar.addMenu(help_menu)
 
     def create_controller(self):
@@ -102,7 +105,8 @@ class CreateControllerWindow(BaseWindow):
             restore_current_frame=True,
             use_dg_evaluation_mode=True,
             disable_viewport=True,
-            disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE)
+            disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE,
+        )
         with ctx:
             form.create_controller_button_clicked()
         return
@@ -114,8 +118,6 @@ class CreateControllerWindow(BaseWindow):
 
 def main(show=True, auto_raise=True, delete=False):
     win = CreateControllerWindow.open_window(
-        show=show,
-        auto_raise=auto_raise,
-        delete=delete
+        show=show, auto_raise=auto_raise, delete=delete
     )
     return win

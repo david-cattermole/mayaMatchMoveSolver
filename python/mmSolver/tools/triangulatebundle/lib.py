@@ -16,112 +16,56 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Position Bundle under the Marker.
+Position Bundle under the Marker, using multiple frames.
 """
 
-import maya.cmds
-import maya.OpenMaya as OpenMaya
+import warnings
 
 import mmSolver.logger
-import mmSolver.utils.lineintersect as tri_utils
-
+import mmSolver.api as mmapi
 
 LOG = mmSolver.logger.get_logger()
 
 
-def get_marker_frame_list(mkr_node):
-    """
-    Get the list of frames that this marker is enabled for.
-    """
-    frm_list = []
-    curves = maya.cmds.listConnections(mkr_node, type='animCurve') or []
-    first_time = -99999
-    last_time = 99999
-    for node in curves:
-        times = maya.cmds.keyframe(node, query=True, timeChange=True)
-        first_time = max(int(times[0]), first_time)
-        last_time = min(int(times[-1]), last_time)
-
-    for t in range(first_time, last_time + 1):
-        plug = mkr_node + '.enable'
-        value = maya.cmds.getAttr(plug, time=t)
-        if value > 0:
-            frm_list.append(t)
-    return frm_list
-
-
-def triangulate_bundle(bnd, relock=None):
+def triangulate_bundle(bnd, relock=None, max_distance=None, direction_tolerance=None):
     """
     Triangulate a 3D bundle position.
+
+    Deprecated: Please use 'mmSolver.api.triangulate_bundle()'
+    instead.
 
     :param bnd: Bundle to be triangulated.
     :type bnd: Bundle
 
     :param relock: If True any bundle translate attributes will be
                    unlocked, changed then relocked.
-    :type relock: bool
+    :type relock: bool or None
+
+    :param max_distance: Defines the maximum distance the bundle can
+        be positioned away from camera until the value is clamped.
+    :type max_distance: float or None
+
+    :param direction_tolerance: Determines the tolerance used to
+        consider if a triangulated point is valid or not.  It's not
+        clear what the units are for this tolerance value. This value
+        is used by OpenMaya.MVector.isEquivalent() and the Maya
+        documentation doesn't really explain the units. The default
+        value (if not given) is 1.0.
+    :type direction_tolerance: float or None
+
+    :returns: True if the bundle successfully triangulated, False if
+        the bundle could not accurately be triangulated. For example
+        if the bundle was computed to behind the camera this would be
+        considered a failure.
+    :rtype: bool
     """
-    if relock is None:
-        relock = False
-    assert isinstance(relock, bool) is True
+    msg = 'Deprecated, please use mmSolver.api.triangulate_bundle() instead.'
+    warnings.warn(msg, DeprecationWarning)
 
-    prev_frame = maya.cmds.currentTime(query=True)
-    try:
-        mkr_list = bnd.get_marker_list()
-        for mkr in mkr_list:
-            mkr_node = mkr.get_node()
-            frm_list = get_marker_frame_list(mkr_node)
-            if len(frm_list) == 0:
-                continue
-
-            bnd_node = bnd.get_node()
-            cam = mkr.get_camera()
-            cam_tfm = cam.get_transform_node()
-
-            first_frm = frm_list[0]
-            last_frm = frm_list[-1]
-            first_pnt, first_dir = tri_utils.get_point_and_direction(
-                cam_tfm,
-                mkr_node,
-                first_frm
-            )
-            last_pnt, last_dir = tri_utils.get_point_and_direction(
-                cam_tfm,
-                mkr_node,
-                last_frm
-            )
-
-            a_pnt, b_pnt = tri_utils.calculate_approx_intersection_point_between_two_3d_lines(
-                first_pnt, first_dir,
-                last_pnt, last_dir
-            )
-            pnt = OpenMaya.MPoint(
-                (a_pnt.x + b_pnt.x) * 0.5,
-                (a_pnt.y + b_pnt.y) * 0.5,
-                (a_pnt.z + b_pnt.z) * 0.5
-            )
-
-            plugs = [
-                '%s.translateX' % bnd_node,
-                '%s.translateY' % bnd_node,
-                '%s.translateZ' % bnd_node
-            ]
-            lock_state = {}
-            for plug in plugs:
-                value = maya.cmds.getAttr(plug, lock=True)
-                lock_state[plug] = value
-                maya.cmds.setAttr(plug, lock=False)
-
-            maya.cmds.xform(
-                bnd_node,
-                translation=(pnt.x, pnt.y, pnt.z),
-                worldSpace=True
-            )
-
-            if relock is True:
-                for plug in plugs:
-                    value = lock_state.get(plug)
-                    maya.cmds.setAttr(plug, lock=value)
-    finally:
-        maya.cmds.currentTime(prev_frame, update=False)
-    return
+    success = mmapi.triangulate_bundle(
+        bnd,
+        relock=relock,
+        max_distance=max_distance,
+        direction_tolerance=direction_tolerance,
+    )
+    return success

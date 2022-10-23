@@ -29,6 +29,7 @@ from __future__ import print_function
 import time
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -57,9 +58,8 @@ def _populateWidgetsEnabled(widgets):
     return
 
 
-class SolverLegacyWidget(QtWidgets.QWidget,
-                         ui_solver_legacy_widget.Ui_Form):
-    
+class SolverLegacyWidget(QtWidgets.QWidget, ui_solver_legacy_widget.Ui_Form):
+
     itemAdded = QtCore.Signal()
     itemRemoved = QtCore.Signal()
     viewUpdated = QtCore.Signal()
@@ -86,6 +86,9 @@ class SolverLegacyWidget(QtWidgets.QWidget,
         e = time.time()
         LOG.debug('SolverLegacyWidget init: %r seconds', e - s)
         return
+
+    def getDescriptionText(self):
+        return "Deprecated - do not use."
 
     def createTableView(self):
         self.model = solver_nodes.SolverModel(font=self.font)
@@ -166,9 +169,7 @@ class SolverLegacyWidget(QtWidgets.QWidget,
 
     def removeClicked(self):
         ui_nodes = lib_uiquery.get_selected_ui_table_row(
-            self.tableView,
-            self.model,
-            self.filterModel
+            self.tableView, self.model, self.filterModel
         )
         names = map(lambda x: x.name(), ui_nodes)
         col_nodes = lib_uiquery.convert_ui_nodes_to_nodes(ui_nodes, 'collection_node')
@@ -196,7 +197,7 @@ class SolverLegacyWidget(QtWidgets.QWidget,
         """
         assert isinstance(value, bool)
         lib_col.set_override_current_frame_on_collection(col, value)
-        
+
         self.dataChanged.emit()
         self.viewUpdated.emit()
         return

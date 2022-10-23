@@ -26,7 +26,7 @@ Run this Python command:
 .. code:: python
 
     import mmSolver.tools.togglebundlelock.tool as tool
-    tool.toggle_bundle_lock()
+    tool.main()
 
 .. _move-bundle-to-marker-tool-ref:
 
@@ -84,76 +84,6 @@ Run this Python command:
 
     import mmSolver.tools.triangulatebundle.tool as tool
     tool.main()
-
-.. _aim-at-camera-tool-ref:
-
-Aim at Camera
--------------
-
-Aim the selected transform nodes toward the active viewport camera.
-
-Usage:
-
-1) Select a transform node.
-
-2) Select active viewport.
-
-3) Run *Aim at Camera* tool.
-
-   - The selected transform nodes will be aimed at the active
-     viewport's camera.
-
-.. note::
-
-    This tool is deprecated and hidden from the menus. Use the
-    "Screen-Z Manipulator" tool instead.
-
-Run this Python command:
-
-.. code:: python
-
-    import mmSolver.tools.cameraaim.tool as tool
-    tool.main()
-
-.. _screen-z-manipulator-tool-ref:
-
-Screen-Z Manipulator
---------------------
-
-Aims the Maya *Move manipulator* tool at the active viewport camera.
-
-After aiming the move tool at the camera, the screen-space Z axis is
-highlighted, ready to be middle-click dragged. When the user
-de-selects the object, the previous manipulator mode is reverted.
-
-This tool can be used for interactive node depth editing on a single
-frame. For example this tool can be used for a character's hand, or or
-body control, it does not need to be used with mmSolver nodes.  For
-real-time interactive Screen-Space modifications of transform nodes,
-please use the :ref:`screen-space-transform-ref` tool.
-
-Usage:
-
-1) Select a transform node.
-
-2) Run *Screen-Z Manipulator* tool.
-
-   - The current tool is changed to *Move*.
-
-3) Middle-click in the active viewport to move the object in
-   screen-space depth.
-
-4) De-select the node.
-
-   - The *Move* manipulator will be reverted to the previous settings
-     from step 1.
-
-Run this Python command:
-
-.. code:: python
-
-    import mmSolver.tools.screenzmanipulator.tool
-    mmSolver.tools.screenzmanipulator.tool.main()
 
 .. _attach-bundle-to-curve-tool-ref:
 

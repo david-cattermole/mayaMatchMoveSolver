@@ -19,6 +19,10 @@
 Smooths the selected keyframes.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import datetime
 import uuid
 
@@ -47,19 +51,16 @@ def smooth_selected_keyframes():
     """
     key_attrs = maya.cmds.keyframe(query=True, name=True) or []
     if len(key_attrs) == 0:
-        msg = (
-            'Please select keyframes '
-            '(in the Graph Editor) to smooth.'
-        )
+        msg = 'Please select keyframes ' '(in the Graph Editor) to smooth.'
         LOG.warning(msg)
         return
 
     smooth_type = configmaya.get_scene_option(
-        const.CONFIG_MODE_KEY,
-        default=const.DEFAULT_MODE)
+        const.CONFIG_MODE_KEY, default=const.DEFAULT_MODE
+    )
     width = configmaya.get_scene_option(
-        const.CONFIG_WIDTH_KEY,
-        default=const.DEFAULT_WIDTH)
+        const.CONFIG_WIDTH_KEY, default=const.DEFAULT_WIDTH
+    )
 
     blend_smooth_type = utils_const.SMOOTH_TYPE_AVERAGE
     blend_width = width
@@ -68,22 +69,19 @@ def smooth_selected_keyframes():
     undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
     undo_id += ' '
     undo_id += str(uuid.uuid4())
-    with tools_utils.tool_context(use_undo_chunk=True,
-                                  undo_chunk_name=undo_id,
-                                  restore_current_frame=True,
-                                  use_dg_evaluation_mode=False,
-                                  disable_viewport=False):
+    with tools_utils.tool_context(
+        use_undo_chunk=True,
+        undo_chunk_name=undo_id,
+        restore_current_frame=True,
+        use_dg_evaluation_mode=False,
+        disable_viewport=False,
+    ):
         for key_attr in key_attrs:
-            selected_keyframes = maya.cmds.keyframe(
-                key_attr,
-                query=True,
-                selected=True
-            ) or []
+            selected_keyframes = (
+                maya.cmds.keyframe(key_attr, query=True, selected=True) or []
+            )
             if len(selected_keyframes) == 0:
-                msg = (
-                    'Please select keyframes '
-                    '(in the Graph Editor) to smooth.'
-                )
+                msg = 'Please select keyframes ' '(in the Graph Editor) to smooth.'
                 LOG.warning(msg)
                 continue
 
@@ -93,10 +91,12 @@ def smooth_selected_keyframes():
                 smooth_type,
                 width,
                 blend_smooth_type,
-                blend_width)
+                blend_width,
+            )
     return
 
 
 def main():
     import mmSolver.tools.smoothkeyframes.ui.smoothkeys_window as window
+
     window.main()

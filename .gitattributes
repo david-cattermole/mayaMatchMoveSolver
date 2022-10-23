@@ -1,0 +1,37 @@
+# This file applies attributes to different files in the git
+# repository.
+#
+# This is used to apply end of line (EOL) codes, and how it's handled
+# using different regex tokens.
+#
+# Different operating systems use different conventions:
+# - Mac (before OSX): "\r" CR (Carriage Return)
+# - Unix (Linux and Mac OSX): "\n" LF (Line Feed)
+# - MS Windows - "\r\n" CRLF (Carriage Return and Line Feed)
+#
+
+# Set the default behavior, in case people don't have the git
+# 'core.autocrlf' config option set.
+* text=auto
+
+# Explicitly declare text files you want to always be normalized and
+# converted to native line endings on checkout.
+*.cpp text
+*.h text
+*.py text
+*.rs text
+*.mel text
+
+# Declare files that will always have CRLF line endings on checkout.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Declare files that will always have LF line endings on checkout.
+*.bash text eol=lf
+*.sh text eol=lf
+
+# Denote all files that are truly binary and should not be modified.
+*.mb binary
+*.ma binary
+*.png binary
+*.jpg binary

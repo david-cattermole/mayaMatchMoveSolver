@@ -1,0 +1,49 @@
+// World-view-projection transformation.
+uniform mat4 gWVPXf : WorldViewProjection;
+
+// The solid color uniform, its default value and several extra
+// parameters
+uniform vec4 gSolidColor : DIFFUSE = {1, 1, 1, 1};
+
+// Transforms to be applied to the vertices in various ways.
+uniform float4x4 gRescaleTransform < string UIWidget = "None"; >;
+uniform float4x4 gGeometryTransform < string UIWidget = "None"; >;
+
+attribute vs_input
+{
+    vec3 in_position : POSITION;
+};
+
+attribute vs_to_ps
+{
+};
+
+attribute ps_output
+{
+    vec4 out_color : COLOR0;
+}
+
+GLSLShader VS
+{
+    void main()
+    {
+        gl_Position = gWVPXf * gGeometryTransform * gRescaleTransform * vec4(in_position, 1);
+    }
+}
+
+GLSLShader PS
+{
+    void main()
+    {
+        out_color = gSolidColor;
+    }
+}
+
+technique Main
+{
+    pass p0
+    {
+        VertexShader (in vs_input, out vs_to_ps vsOut) = VS;
+        PixelShader (in vs_to_ps psIn, out ps_output) = PS;
+    }
+}

@@ -41,6 +41,7 @@ def wrap_as_undo_chunk(func):
     Puts the wrapped 'func' into a single Maya Undo action.
     If 'func' raises and exception, we close the chunk.
     """
+
     @wraps(func)
     def _func(*args, **kwargs):
         try:
@@ -51,6 +52,7 @@ def wrap_as_undo_chunk(func):
             # after calling the func, end the undo chunk and undo
             maya.cmds.undoInfo(closeChunk=True)
             maya.cmds.undo()
+
     return _func
 
 

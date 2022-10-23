@@ -73,15 +73,11 @@ def reproject_bundle(mkr_list, frame_list, relock=None):
 
         # Get distance vector between camera and marker.
         mkr_trans = maya.cmds.xform(
-            mkr_node,
-            query=True,
-            worldSpace=True,
-            translation=True)
+            mkr_node, query=True, worldSpace=True, translation=True
+        )
         cam_trans = maya.cmds.xform(
-            cam_tfm_node,
-            query=True,
-            worldSpace=True,
-            translation=True)
+            cam_tfm_node, query=True, worldSpace=True, translation=True
+        )
         assert len(mkr_trans) == 3
         assert len(cam_trans) == 3
         cam_pnt = maya.OpenMaya.MPoint(*cam_trans)
@@ -103,20 +99,17 @@ def reproject_bundle(mkr_list, frame_list, relock=None):
                 maya.cmds.setAttr(plug, lock=False)
 
         # Set value.
-        maya.cmds.xform(
-            bnd_node,
-            worldSpace=True,
-            translation=value)
+        maya.cmds.xform(bnd_node, worldSpace=True, translation=value)
 
         # Set keyframe (on animated attributes only)
         for attr in attrs:
             plug = bnd_node + '.' + attr
-            anim_curves = maya.cmds.listConnections(
-                plug,
-                source=True,
-                destination=False,
-                type='animCurve'
-            ) or []
+            anim_curves = (
+                maya.cmds.listConnections(
+                    plug, source=True, destination=False, type='animCurve'
+                )
+                or []
+            )
             if len(anim_curves) > 0:
                 maya.cmds.setKeyframe(bnd_node, attribute=attr)
 
@@ -161,15 +154,11 @@ def reproject_bundle_current_frame(mkr_list, relock=None):
 
         # Get distance vector between camera and marker.
         mkr_trans = maya.cmds.xform(
-            mkr_node,
-            query=True,
-            worldSpace=True,
-            translation=True)
+            mkr_node, query=True, worldSpace=True, translation=True
+        )
         cam_trans = maya.cmds.xform(
-            cam_tfm_node,
-            query=True,
-            worldSpace=True,
-            translation=True)
+            cam_tfm_node, query=True, worldSpace=True, translation=True
+        )
         assert len(mkr_trans) == 3
         assert len(cam_trans) == 3
         cam_pnt = maya.OpenMaya.MPoint(*cam_trans)
@@ -191,20 +180,17 @@ def reproject_bundle_current_frame(mkr_list, relock=None):
                 maya.cmds.setAttr(plug, lock=False)
 
         # Set value.
-        maya.cmds.xform(
-            bnd_node,
-            worldSpace=True,
-            translation=value)
+        maya.cmds.xform(bnd_node, worldSpace=True, translation=value)
 
         # Set keyframe (on animated attributes only)
         for attr in attrs:
             plug = bnd_node + '.' + attr
-            anim_curves = maya.cmds.listConnections(
-                plug,
-                source=True,
-                destination=False,
-                type='animCurve'
-            ) or []
+            anim_curves = (
+                maya.cmds.listConnections(
+                    plug, source=True, destination=False, type='animCurve'
+                )
+                or []
+            )
             if len(anim_curves) > 0:
                 maya.cmds.setKeyframe(bnd_node, attribute=attr)
 

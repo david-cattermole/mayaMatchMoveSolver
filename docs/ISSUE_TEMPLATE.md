@@ -34,4 +34,4 @@ print 'GPU:', ''.join(maya.cmds.ogs(deviceInformation=True))
 
 [Maya version number or print out here]
 
-- Operating System (OS): [Possible options: Windows, Linux and MacOS]
+- Operating System (OS): [Possible options: Windows or LinuxOS]

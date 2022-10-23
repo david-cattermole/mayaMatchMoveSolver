@@ -38,8 +38,7 @@ LOG = mmSolver.logger.get_logger()
 
 def __get_override_current_frame_value(col, tab):
     value = None
-    if tab in [const.SOLVER_TAB_BASIC_VALUE,
-               const.SOLVER_TAB_STANDARD_VALUE]:
+    if tab in [const.SOLVER_TAB_BASIC_VALUE, const.SOLVER_TAB_STANDARD_VALUE]:
         value = lib_col_state.get_solver_range_type_from_collection(col)
     elif tab == const.SOLVER_TAB_LEGACY_VALUE:
         value = lib_col.get_override_current_frame_from_collection(col)
@@ -50,8 +49,7 @@ def __get_override_current_frame_value(col, tab):
 
 def __set_override_current_frame_value(col, layout_ui, tab, value):
     if layout_ui is None:
-        if tab in [const.SOLVER_TAB_BASIC_VALUE,
-                   const.SOLVER_TAB_STANDARD_VALUE]:
+        if tab in [const.SOLVER_TAB_BASIC_VALUE, const.SOLVER_TAB_STANDARD_VALUE]:
             if value is True:
                 value = const.RANGE_TYPE_CURRENT_FRAME_VALUE
             lib_col_state.set_solver_range_type_on_collection(col, value)
@@ -77,7 +75,7 @@ def run_solve(override_current_frame=None):
     If the Solver UI is found, the window will update and show
     progress messages.
 
-    This function is strongly dependant on the Solver UI.
+    This function is strongly dependent on the Solver UI.
     The following state information is set via the Solver UI.
 
     - Active Collection
@@ -89,8 +87,7 @@ def run_solve(override_current_frame=None):
                                    this value.
     :type override_current_frame: bool
     """
-    assert (override_current_frame is None
-            or isinstance(override_current_frame, bool))
+    assert override_current_frame is None or isinstance(override_current_frame, bool)
     if override_current_frame is None:
         override_current_frame = False
 
@@ -140,13 +137,15 @@ def run_solve_on_current_frame():
     undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
     undo_id += ' '
     undo_id += str(uuid.uuid4())
-    with tools_utils.tool_context(use_undo_chunk=True,
-                                  undo_chunk_name=undo_id,
-                                  restore_current_frame=False,
-                                  pre_update_frame=False,
-                                  post_update_frame=False,
-                                  use_dg_evaluation_mode=True,
-                                  disable_viewport=False):
+    with tools_utils.tool_context(
+        use_undo_chunk=True,
+        undo_chunk_name=undo_id,
+        restore_current_frame=False,
+        pre_update_frame=False,
+        post_update_frame=False,
+        use_dg_evaluation_mode=True,
+        disable_viewport=False,
+    ):
         run_solve(override_current_frame=True)
     return
 
@@ -159,13 +158,15 @@ def run_solve_on_all_frames():
     undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
     undo_id += ' '
     undo_id += str(uuid.uuid4())
-    with tools_utils.tool_context(use_undo_chunk=True,
-                                  undo_chunk_name=undo_id,
-                                  restore_current_frame=False,
-                                  pre_update_frame=False,
-                                  post_update_frame=False,
-                                  use_dg_evaluation_mode=True,
-                                  disable_viewport=False):
+    with tools_utils.tool_context(
+        use_undo_chunk=True,
+        undo_chunk_name=undo_id,
+        restore_current_frame=False,
+        pre_update_frame=False,
+        post_update_frame=False,
+        use_dg_evaluation_mode=True,
+        disable_viewport=False,
+    ):
         run_solve(override_current_frame=False)
     return
 
@@ -176,8 +177,15 @@ def open_window():
     """
     col = lib_state.get_active_collection()
     if col is None:
-        msg = 'No active Collection found, creating new Collection...'
-        LOG.warn(msg)
-        lib_col.create_collection()
+        col_list = lib_col.get_collections()
+        if len(col_list) == 0:
+            msg = 'No active Collection found, creating new Collection...'
+            LOG.warn(msg)
+            lib_col.create_collection()
+        elif len(col_list) > 0:
+            col_list = sorted(col_list, key=lambda x: x.get_node())
+            col = col_list[0]
+            lib_state.set_active_collection(col)
+
     solver_window.main()
     return

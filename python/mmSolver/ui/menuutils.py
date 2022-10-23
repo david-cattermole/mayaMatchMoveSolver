@@ -60,15 +60,17 @@ def create_menu(parent=None, name=None, **kwargs):
     return menu
 
 
-def create_menu_item(parent=None,
-                     name=None,
-                     tooltip=None,
-                     cmd=None,
-                     cmdLanguage=None,
-                     divider=None,
-                     subMenu=None,
-                     tearOff=None,
-                     optionBox=None):
+def create_menu_item(
+    parent=None,
+    name=None,
+    tooltip=None,
+    cmd=None,
+    cmdLanguage=None,
+    divider=None,
+    subMenu=None,
+    tearOff=None,
+    optionBox=None,
+):
     """
     Create a Menu Item on a menu.
 
@@ -146,39 +148,26 @@ def create_menu_item(parent=None,
             kwargs['optionBox'] = optionBox
 
         item = maya.cmds.menuItem(
-            parent=parent,
-            label=label,
-            annotation=annotation,
-            **kwargs
+            parent=parent, label=label, annotation=annotation, **kwargs
         )
     elif subMenu is True:
         kwargs = {}
         if tearOff is not None:
             kwargs['tearOff'] = tearOff
         item = maya.cmds.menuItem(
-            parent=parent,
-            label=label,
-            annotation=annotation,
-            subMenu=True,
-            **kwargs
+            parent=parent, label=label, annotation=annotation, subMenu=True, **kwargs
         )
     elif divider is True:
         kwargs = {}
         if name is not None:
             kwargs['dividerLabel'] = str(label)
-        item = maya.cmds.menuItem(
-            parent=parent,
-            divider=True,
-            **kwargs
-        )
+        item = maya.cmds.menuItem(parent=parent, divider=True, **kwargs)
     else:
         raise RuntimeError
     return item
 
 
-def create_popup_menu(parent=None,
-                      postCmd=None,
-                      button=None):
+def create_popup_menu(parent=None, postCmd=None, button=None):
     """
     Create a Pop-Up menu (for a shelf button).
 
@@ -202,12 +191,8 @@ def create_popup_menu(parent=None,
     if button is None:
         button = 3
     assert isinstance(button, int)
-    menu = maya.cmds.popupMenu(
-        parent=parent,
-        button=button)
+    menu = maya.cmds.popupMenu(parent=parent, button=button)
     if postCmd is not None:
         cmd = str(postCmd).format(menu=menu)
-        maya.cmds.popupMenu(
-            menu, edit=True,
-            postMenuCommand=cmd)
+        maya.cmds.popupMenu(menu, edit=True, postMenuCommand=cmd)
     return menu

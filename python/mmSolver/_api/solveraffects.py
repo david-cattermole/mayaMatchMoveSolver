@@ -56,8 +56,9 @@ def _runAndSetUsedSolveObjects(col_name, *args, **kwargs):
     :param kwargs:
     :return:
     """
-    # Generate mmSolver command.
     import maya.cmds
+
+    # Generate mmSolver command.
     solver_args = args
     solver_kwargs = kwargs.copy()
     del solver_kwargs['mode']
@@ -72,6 +73,7 @@ def _runAndSetUsedSolveObjects(col_name, *args, **kwargs):
 
     # Set usage value attributes on Markers and Attributes.
     import mmSolver.api as mmapi
+
     for mkr_node in markers_used:
         mkr = mmapi.Marker(node=mkr_node)
         mkr.set_used_hint(const.MARKER_USED_HINT_USED_VALUE)
@@ -85,13 +87,13 @@ def _runAndSetUsedSolveObjects(col_name, *args, **kwargs):
         col.set_attribute_used_hint(attr, const.ATTRIBUTE_USED_HINT_USED_VALUE)
     for node_attr in attributes_unused:
         attr = mmapi.Attribute(name=node_attr)
-        col.set_attribute_used_hint(
-            attr, const.ATTRIBUTE_USED_HINT_NOT_USED_VALUE)
+        col.set_attribute_used_hint(attr, const.ATTRIBUTE_USED_HINT_NOT_USED_VALUE)
     return
 
 
 def reset_marker_used_hints(mkr_nodes):
     import mmSolver.api as mmapi
+
     for mkr_node in mkr_nodes:
         mkr = mmapi.Marker(node=mkr_node)
         mkr.set_used_hint(const.MARKER_USED_HINT_UNKNOWN_VALUE)
@@ -100,11 +102,11 @@ def reset_marker_used_hints(mkr_nodes):
 
 def reset_attr_used_hints(col_name, node_attr_list):
     import mmSolver.api as mmapi
+
     col = mmapi.Collection(col_name)
     for node_attr in node_attr_list:
         attr = mmapi.Attribute(name=node_attr)
-        col.set_attribute_used_hint(
-            attr, const.ATTRIBUTE_USED_HINT_UNKNOWN_VALUE)
+        col.set_attribute_used_hint(attr, const.ATTRIBUTE_USED_HINT_UNKNOWN_VALUE)
     return
 
 
@@ -116,6 +118,7 @@ class SolverAffects(solverbase.SolverBase):
     The SolverAffects contains no properties, other than the base
     Markers, and Attributes lists.
     """
+
     def __init__(self, *args, **kwargs):
         """
         Create a SolverAffects class with default values.
@@ -172,15 +175,13 @@ class SolverAffects(solverbase.SolverBase):
 
         # Get precomputed data to reduce re-querying Maya for data.
         precomputed_data = self.get_precomputed_data()
-        mkr_state_values = precomputed_data.get(
-            solverbase.MARKER_STATIC_VALUES_KEY)
-        attr_state_values = precomputed_data.get(
-            solverbase.ATTR_STATIC_VALUES_KEY)
+        mkr_state_values = precomputed_data.get(solverbase.MARKER_STATIC_VALUES_KEY)
+        attr_state_values = precomputed_data.get(solverbase.ATTR_STATIC_VALUES_KEY)
 
         # Get Markers and Cameras
         markers, cameras = api_compile.markersAndCameras_compile_flags(
-            mkr_list,
-            mkr_static_values=mkr_state_values)
+            mkr_list, mkr_static_values=mkr_state_values
+        )
         if len(markers) == 0 and len(cameras) == 0:
             LOG.warning('No Markers or Cameras found!')
             return
@@ -204,7 +205,8 @@ class SolverAffects(solverbase.SolverBase):
             attr_list,
             use_animated,
             use_static,
-            attr_static_values=attr_state_values)
+            attr_static_values=attr_state_values,
+        )
         if len(attrs) == 0:
             LOG.warning('No Attributes found!')
             return
@@ -213,19 +215,11 @@ class SolverAffects(solverbase.SolverBase):
         kwargs['camera'] = cameras
         kwargs['attr'] = attrs
 
-        action = api_action.Action(
-            func=func,
-            args=args,
-            kwargs=kwargs
-        )
+        action = api_action.Action(func=func, args=args, kwargs=kwargs)
         yield action, action
 
         # Query and set 'used solver object' values on nodes.
         func = _runAndSetUsedSolveObjects
         args = [col.get_node()]
-        action = api_action.Action(
-            func=func,
-            args=args,
-            kwargs=kwargs
-        )
+        action = api_action.Action(func=func, args=args, kwargs=kwargs)
         yield action, action

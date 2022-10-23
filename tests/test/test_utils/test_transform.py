@@ -19,6 +19,10 @@
 Test functions for transform utilities module.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import unittest
 
 import test.test_utils.utilsutils as test_utils
@@ -160,74 +164,122 @@ class TestTransform(test_utils.UtilsTestCase):
         cache.process()
 
         book_world_matrix_list = mod.get_transform_matrix_list(
-            cache,
-            frame_range,
-            book_tfm)
+            cache, frame_range, book_tfm
+        )
         self.assertEqual(len(book_world_matrix_list), 1)
         book_world_matrix = list(book_world_matrix_list[0].asMatrix())
 
         spine_world_matrix_list = mod.get_transform_matrix_list(
-            cache,
-            frame_range,
-            spine_tfm)
+            cache, frame_range, spine_tfm
+        )
         self.assertEqual(len(spine_world_matrix_list), 1)
         spine_world_matrix = list(spine_world_matrix_list[0].asMatrix())
 
         cover_world_matrix_list = mod.get_transform_matrix_list(
-            cache,
-            frame_range,
-            cover_tfm)
+            cache, frame_range, cover_tfm
+        )
         self.assertEqual(len(cover_world_matrix_list), 1)
         cover_world_matrix = list(cover_world_matrix_list[0].asMatrix())
 
         latch_world_matrix_list = mod.get_transform_matrix_list(
-            cache,
-            frame_range,
-            latch_tfm)
+            cache, frame_range, latch_tfm
+        )
         self.assertEqual(len(latch_world_matrix_list), 1)
         latch_world_matrix = list(latch_world_matrix_list[0].asMatrix())
 
         # Expected Matrices
         expected_book_matrix = [
-            0.0, 1.0, 0.0, 0.0,
-            -1.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.0, 10.0, 0.0, 1.0]
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            10.0,
+            0.0,
+            1.0,
+        ]
         expected_spine_matrix = [
-            -1.0, 0.0, 0.0, 0.0,
-            0.0, -1.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.3518918752670288, 8.476484298706055, 0.0029969215393066406, 1.0]
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.3518918752670288,
+            8.476484298706055,
+            0.0029969215393066406,
+            1.0,
+        ]
         expected_cover_matrix = [
-            0.0, -1.0, 0.0, 0.0,
-            1.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.3488234877586365, 7.9185943603515625, 0.0029969215393066406, 1.0]
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.3488234877586365,
+            7.9185943603515625,
+            0.0029969215393066406,
+            1.0,
+        ]
         expected_latch_matrix = [
-            0.0, 1.0, 0.0, 0.0,
-            -1.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.3430972993373871, 11.661497116088867, 0.0001980811357498169, 1.0]
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.3430972993373871,
+            11.661497116088867,
+            0.0001980811357498169,
+            1.0,
+        ]
 
         # Confirm matrix values in the cache are correct
         self.assertGreater(
             closeness.compare_floats(book_world_matrix, expected_book_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
         self.assertGreater(
             closeness.compare_floats(spine_world_matrix, expected_spine_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
         self.assertGreater(
             closeness.compare_floats(cover_world_matrix, expected_cover_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
         self.assertGreater(
             closeness.compare_floats(latch_world_matrix, expected_latch_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
         return
 
@@ -261,59 +313,107 @@ class TestTransform(test_utils.UtilsTestCase):
         cache.process()
 
         book_world_matrix_list = mod.get_transform_matrix_list(
-            cache,
-            frame_range,
-            book_tfm)
+            cache, frame_range, book_tfm
+        )
         self.assertEqual(len(book_world_matrix_list), 1)
         book_world_matrix = list(book_world_matrix_list[0].asMatrix())
 
         spine_world_matrix_list = mod.get_transform_matrix_list(
-            cache,
-            frame_range,
-            spine_tfm)
+            cache, frame_range, spine_tfm
+        )
         self.assertEqual(len(spine_world_matrix_list), 1)
         spine_world_matrix = list(spine_world_matrix_list[0].asMatrix())
 
         cover_world_matrix_list = mod.get_transform_matrix_list(
-            cache,
-            frame_range,
-            cover_tfm)
+            cache, frame_range, cover_tfm
+        )
         self.assertEqual(len(cover_world_matrix_list), 1)
         cover_world_matrix = list(cover_world_matrix_list[0].asMatrix())
 
         latch_world_matrix_list = mod.get_transform_matrix_list(
-            cache,
-            frame_range,
-            latch_tfm)
+            cache, frame_range, latch_tfm
+        )
         self.assertEqual(len(latch_world_matrix_list), 1)
         latch_world_matrix = list(latch_world_matrix_list[0].asMatrix())
 
         # Expected Matrices
         expected_book_matrix = [
-            0.7071067811865475, 0.7071067811865476, 0.0, 0.0,
-            -0.7071067811865476, 0.7071067811865475, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.0, 10.0, 0.0, 1.0]
+            0.7071067811865475,
+            0.7071067811865476,
+            0.0,
+            0.0,
+            -0.7071067811865476,
+            0.7071067811865475,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            10.0,
+            0.0,
+            1.0,
+        ]
         expected_spine_matrix = [
-            -0.7071067811865475, 0.7071067811865477, 0.0, 0.0,
-            -0.7071067811865477, -0.7071067811865475, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            -0.8284631523833599, 8.673886585125107, 0.0029969215393066406, 1.0]
+            -0.7071067811865475,
+            0.7071067811865477,
+            0.0,
+            0.0,
+            -0.7071067811865477,
+            -0.7071067811865475,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            -0.8284631523833599,
+            8.673886585125107,
+            0.0029969215393066406,
+            1.0,
+        ]
         expected_cover_matrix = [
-            -0.7071067811865479, -0.7071067811865474, 0.0, 0.0,
-            0.7071067811865474, -0.7071067811865479, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            -1.2251205885640575, 8.281568504173393, 0.0029969215393066406, 1.0]
+            -0.7071067811865479,
+            -0.7071067811865474,
+            0.0,
+            0.0,
+            0.7071067811865474,
+            -0.7071067811865479,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            -1.2251205885640575,
+            8.281568504173393,
+            0.0029969215393066406,
+            1.0,
+        ]
         expected_latch_matrix = [
-            0.7071067811865475, 0.7071067811865476, 0.0, 0.0,
-            -0.7071067811865476, 0.7071067811865475, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            1.417462229728698, 10.932249069213867, 0.0001980811357498169, 1.0]
+            0.7071067811865475,
+            0.7071067811865476,
+            0.0,
+            0.0,
+            -0.7071067811865476,
+            0.7071067811865475,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            1.417462229728698,
+            10.932249069213867,
+            0.0001980811357498169,
+            1.0,
+        ]
 
         # Confirm matrix values in the cache are correct
         self.assertGreater(
             closeness.compare_floats(book_world_matrix, expected_book_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
         tol = 0.000001
@@ -323,7 +423,7 @@ class TestTransform(test_utils.UtilsTestCase):
 
         self.assertGreater(
             closeness.compare_floats(spine_world_matrix, expected_spine_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
         mat_a = OpenMaya2.MMatrix(spine_world_matrix)
         mat_b = OpenMaya2.MMatrix(expected_spine_matrix)
@@ -331,7 +431,7 @@ class TestTransform(test_utils.UtilsTestCase):
 
         self.assertGreater(
             closeness.compare_floats(cover_world_matrix, expected_cover_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
         mat_a = OpenMaya2.MMatrix(cover_world_matrix)
         mat_b = OpenMaya2.MMatrix(expected_cover_matrix)
@@ -339,7 +439,7 @@ class TestTransform(test_utils.UtilsTestCase):
 
         self.assertGreater(
             closeness.compare_floats(latch_world_matrix, expected_latch_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
         mat_a = OpenMaya2.MMatrix(latch_world_matrix)
         mat_b = OpenMaya2.MMatrix(expected_latch_matrix)
@@ -370,9 +470,13 @@ class TestTransform(test_utils.UtilsTestCase):
         start_frame = 1001
         end_frame = 1101
         node = maya.cmds.createNode('transform')
-        maya.cmds.setKeyframe(node, attribute='translateX', time=start_frame, value=-100.0)
+        maya.cmds.setKeyframe(
+            node, attribute='translateX', time=start_frame, value=-100.0
+        )
         maya.cmds.setKeyframe(node, attribute='translateX', time=end_frame, value=100.0)
-        maya.cmds.setKeyframe(node, attribute='translateY', time=start_frame, value=-10.0)
+        maya.cmds.setKeyframe(
+            node, attribute='translateY', time=start_frame, value=-10.0
+        )
         maya.cmds.setKeyframe(node, attribute='translateY', time=end_frame, value=10.0)
         maya.cmds.setKeyframe(node, attribute='rotateY', time=start_frame, value=90.0)
         maya.cmds.setKeyframe(node, attribute='rotateY', time=end_frame, value=-90.0)
@@ -387,13 +491,16 @@ class TestTransform(test_utils.UtilsTestCase):
         dst_node = maya.cmds.createNode('transform')
         dst_tfm_node = mod.TransformNode(node=dst_node)
 
-        mod.set_transform_values(tfm_cache, frame_range,
-            tfm_node, dst_tfm_node,
+        mod.set_transform_values(
+            tfm_cache,
+            frame_range,
+            tfm_node,
+            dst_tfm_node,
             delete_static_anim_curves=True,
         )
 
         # save the output scene file
-        path = 'test_transform.ma'
+        path = 'test_transform_after.ma'
         path = self.get_data_path(path)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
@@ -428,105 +535,202 @@ class TestTransform(test_utils.UtilsTestCase):
 
         book_dst_node = maya.cmds.createNode('transform', name='book_CTRL')
         book_dst_tfm_node = mod.TransformNode(node=book_dst_node)
-        mod.set_transform_values(cache, frame_range,
-                                 book_tfm, book_dst_tfm_node,
-                                 delete_static_anim_curves=False)
+        mod.set_transform_values(
+            cache,
+            frame_range,
+            book_tfm,
+            book_dst_tfm_node,
+            delete_static_anim_curves=False,
+        )
 
         spine_dst_node = maya.cmds.createNode('transform', name='spine_CTRL')
         spine_dst_tfm_node = mod.TransformNode(node=spine_dst_node)
-        mod.set_transform_values(cache, frame_range,
-                                 spine_tfm, spine_dst_tfm_node,
-                                 delete_static_anim_curves=False)
+        mod.set_transform_values(
+            cache,
+            frame_range,
+            spine_tfm,
+            spine_dst_tfm_node,
+            delete_static_anim_curves=False,
+        )
 
         cover_dst_node = maya.cmds.createNode('transform', name='cover_CTRL')
         cover_dst_tfm_node = mod.TransformNode(node=cover_dst_node)
-        mod.set_transform_values(cache, frame_range,
-                                 cover_tfm, cover_dst_tfm_node,
-                                 delete_static_anim_curves=False)
+        mod.set_transform_values(
+            cache,
+            frame_range,
+            cover_tfm,
+            cover_dst_tfm_node,
+            delete_static_anim_curves=False,
+        )
 
         # save the output scene file
-        path = 'test_transform_set_transforms_with_rotate_pivot.ma'
+        path = 'test_transform_set_transforms_with_rotate_pivot_after.ma'
         path = self.get_data_path(path)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
         # Expected Matrices
         expected_book_matrix = [
-            0.0, 1.0, 0.0, 0.0,
-            -1.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.0, 10.0, 0.0, 1.0]
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            10.0,
+            0.0,
+            1.0,
+        ]
         expected_spine_matrix = [
-            -1.0, 0.0, 0.0, 0.0,
-            0.0, -1.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.3518918752670288, 8.476484298706055, 0.0029969215393066406, 1.0]
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.3518918752670288,
+            8.476484298706055,
+            0.0029969215393066406,
+            1.0,
+        ]
         expected_cover_matrix = [
-            0.0, -1.0, 0.0, 0.0,
-            1.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            0.3488234877586365, 7.9185943603515625, 0.0029969215393066406, 1.0]
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.3488234877586365,
+            7.9185943603515625,
+            0.0029969215393066406,
+            1.0,
+        ]
         expected_spine_par_inv_matrix = [
-            0.0, -1.0, 0.0, 0.0,
-            1.0, 0.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            -10.0, 0.0, 0.0, 1.0]
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            -10.0,
+            0.0,
+            0.0,
+            1.0,
+        ]
         expected_front_cover_par_inv_matrix = [
-            -1.0, 0.0, 0.0, 0.0,
-            0.0, -1.0, 0.0, 0.0,
-            0.0, 0.0, 1.0, 0.0,
-            -1.1716232898755894, 8.124592860140336, 0.0, 1.0]
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            -1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            1.0,
+            0.0,
+            -1.1716232898755894,
+            8.124592860140336,
+            0.0,
+            1.0,
+        ]
 
         # Confirm attributes in the cache are correct
         book_attrs = cache.get_attrs_for_node(book_tfm)
-        self.assertItemsEqual(book_attrs, ["worldMatrix[0]"])
+        self.assertEqual(list(book_attrs), ["worldMatrix[0]"])
 
         attr_names_with_pivot = [
-            "worldMatrix[0]", "matrix", "parentInverseMatrix[0]",
-            "rotatePivotX", "rotatePivotY", "rotatePivotZ",
+            "worldMatrix[0]",
+            "matrix",
+            "parentInverseMatrix[0]",
+            "rotatePivotX",
+            "rotatePivotY",
+            "rotatePivotZ",
         ]
         spine_attrs = cache.get_attrs_for_node(spine_tfm)
-        self.assertItemsEqual(spine_attrs, attr_names_with_pivot)
+        self.assertEqual(list(spine_attrs), attr_names_with_pivot)
 
         cover_attrs = cache.get_attrs_for_node(cover_tfm)
-        self.assertItemsEqual(cover_attrs, attr_names_with_pivot)
+        self.assertEqual(list(cover_attrs), attr_names_with_pivot)
 
         # Confirm matrix values in the cache are correct
-        book_world_matrix = list(cache.get_node_attr(book_tfm, "worldMatrix[0]", frame_range)[0])
+        book_world_matrix = list(
+            cache.get_node_attr(book_tfm, "worldMatrix[0]", frame_range)[0]
+        )
         self.assertGreater(
             closeness.compare_floats(book_world_matrix, expected_book_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
-        spine_par_inv_matrix = list(cache.get_node_attr(spine_tfm, "parentInverseMatrix[0]", frame_range)[0])
+        spine_par_inv_matrix = list(
+            cache.get_node_attr(spine_tfm, "parentInverseMatrix[0]", frame_range)[0]
+        )
         self.assertGreater(
-            closeness.compare_floats(spine_par_inv_matrix, expected_spine_par_inv_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.compare_floats(
+                spine_par_inv_matrix, expected_spine_par_inv_matrix
+            ),
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
-        cover_par_inv_matrix = list(cache.get_node_attr(cover_tfm, "parentInverseMatrix[0]", frame_range)[0])
+        cover_par_inv_matrix = list(
+            cache.get_node_attr(cover_tfm, "parentInverseMatrix[0]", frame_range)[0]
+        )
         self.assertGreater(
-            closeness.compare_floats(cover_par_inv_matrix, expected_front_cover_par_inv_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.compare_floats(
+                cover_par_inv_matrix, expected_front_cover_par_inv_matrix
+            ),
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
         # Compare destination node matrices with the original
-        book_matrix = maya.cmds.xform(book_dst_node, query=True, matrix=True, worldSpace=True)
+        book_matrix = maya.cmds.xform(
+            book_dst_node, query=True, matrix=True, worldSpace=True
+        )
         self.assertGreater(
             closeness.compare_floats(book_matrix, expected_book_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
-        spine_matrix = maya.cmds.xform(spine_dst_node, query=True, matrix=True, worldSpace=True)
+        spine_matrix = maya.cmds.xform(
+            spine_dst_node, query=True, matrix=True, worldSpace=True
+        )
         self.assertGreater(
             closeness.compare_floats(spine_matrix, expected_spine_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
 
-        cover_matrix = maya.cmds.xform(cover_dst_node, query=True, matrix=True, worldSpace=True)
+        cover_matrix = maya.cmds.xform(
+            cover_dst_node, query=True, matrix=True, worldSpace=True
+        )
         self.assertGreater(
             closeness.compare_floats(cover_matrix, expected_cover_matrix),
-            closeness.DEFAULT_SIGNIFICANT_DIGITS
+            closeness.DEFAULT_SIGNIFICANT_DIGITS,
         )
         return
 
@@ -562,11 +766,7 @@ class TestTransform(test_utils.UtilsTestCase):
         tfm_matrix_cache.add_node(tfm_node, times)
         tfm_matrix_cache.process()
         attr_name = 'translateX'
-        tfm_matrix_cache.get_node_attr_matrix(
-            tfm_node,
-            attr_name,
-            times
-        )
+        tfm_matrix_cache.get_node_attr_matrix(tfm_node, attr_name, times)
         return
 
 

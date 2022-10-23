@@ -92,10 +92,7 @@ def smooth(smooth_type, value_array, width):
     elif smooth_type == const.SMOOTH_TYPE_FOURIER:
         new_array = fourier_smooth(value_array, width)
     else:
-        msg = (
-            'smoothType argument is invalid, '
-            'must be SMOOTH_TYPE_* attribute'
-        )
+        msg = 'smoothType argument is invalid, ' 'must be SMOOTH_TYPE_* attribute'
         raise ValueError(msg)
     return new_array
 
@@ -118,7 +115,7 @@ def average_smooth(value_array, width):
     :returns: Smoothed copy of 'value_array'.
     :rtype: [float, ..]
     """
-    sigma_val = (width - 1.0)
+    sigma_val = width - 1.0
     if sigma_val <= 0.0:
         return value_array
 
@@ -138,11 +135,12 @@ def average_smooth(value_array, width):
             end = value_num
         for j in range(start, end):
             sum_avg = sum_avg + value_array[j]
-        sum_avg = sum_avg / (end-start)
+        sum_avg = sum_avg / (end - start)
 
         for k in range(value_num):
-            new_array[i] = ((sum_avg * weights[i]) +
-                            (value_array[i] * (1.0 - weights[i])))
+            new_array[i] = (sum_avg * weights[i]) + (
+                value_array[i] * (1.0 - weights[i])
+            )
         sum_avg = 0
 
     assert len(value_array) == len(new_array)
@@ -185,7 +183,7 @@ def gaussian_smooth(value_array, width):
     :returns: Smoothed copy of 'value_array'.
     :rtype: [float, ..]
     """
-    sigma_val = (width-1.0)*0.5
+    sigma_val = (width - 1.0) * 0.5
     if sigma_val <= 0.0:
         return value_array
 
@@ -201,7 +199,9 @@ def gaussian_smooth(value_array, width):
             tmp_gaussian[j] = _gaussian(sigma_val, i, j)
             sum_gaussian = sum_gaussian + tmp_gaussian[j]
         for k in range(value_num):
-            new_array[i] = new_array[i] + (value_array[k] * (tmp_gaussian[k] / sum_gaussian))
+            new_array[i] = new_array[i] + (
+                value_array[k] * (tmp_gaussian[k] / sum_gaussian)
+            )
 
         sum_gaussian = 0
 
@@ -228,7 +228,7 @@ def _generate_window_raw(n, filtr=None):
         filtr = 'gaussian'
 
     mean = 1.0
-    std = float(n-1) / 2.0
+    std = float(n - 1) / 2.0
     window = [0] * n
 
     if filtr == 'gaussian':
@@ -286,11 +286,11 @@ def _fft_convolve_raw(signal, window):
 
     # zero pad the window
     tmp = [0.0] * len(signal)
-    tmp[:len(window)] = window
+    tmp[: len(window)] = window
     window = tmp
 
     r = fft.convolve(signal, window)  # , realoutput=True
-    r = r[(min(m, n)-1):]
+    r = r[(min(m, n) - 1) :]
     return r
 
 
@@ -313,7 +313,7 @@ def _fourier_smooth_raw(data, width, filtr=None):
 
     :returns: Smoothed copy of 'data'.
     """
-    sigma_val = (width-1.0)*0.5
+    sigma_val = (width - 1.0) * 0.5
     if sigma_val <= 0.0:
         return data
 
@@ -331,16 +331,16 @@ def _fourier_smooth_raw(data, width, filtr=None):
     window = _generate_window_raw(n, filtr=filtr)
 
     # Custom Convolve ('valid')
-    s = data[n-1:0:-1]
+    s = data[n - 1 : 0 : -1]
     s += data
-    s += data[-2:-n-1:-1]
+    s += data[-2 : -n - 1 : -1]
     x = _fft_convolve_raw(s, window)
     if n % 2 == 1:
         # n is odd
-        x = x[n//2:-(n//2)]
+        x = x[n // 2 : -(n // 2)]
     else:
         # n is even
-        x = x[(n//2)-1:-(n//2)]
+        x = x[(n // 2) - 1 : -(n // 2)]
 
     assert len(x) == len(data)
     return x
@@ -366,7 +366,7 @@ def _generate_window_numpy(n, filtr=None):
         filtr = 'gaussian'
 
     mean = 1.0
-    std = float(n-1) / 2.0
+    std = float(n - 1) / 2.0
     window = np.zeros(n)
 
     if filtr == 'gaussian':
@@ -436,14 +436,14 @@ def _fourier_smooth_numpy(data, width, filtr=None):
     window = _generate_window_numpy(n, filtr=filtr)
 
     # NumPy Convolve (with 'valid' mode)
-    s = np.r_[data[n-1:0:-1], data, data[-2:-n-1:-1]]
+    s = np.r_[data[n - 1 : 0 : -1], data, data[-2 : -n - 1 : -1]]
     x = np.convolve(s, window, mode='valid')
     if n % 2 == 1:
         # n is odd
-        x = x[n//2:-(n//2)]
+        x = x[n // 2 : -(n // 2)]
     else:
         # n is even
-        x = x[(n//2)-1:-(n//2)]
+        x = x[(n // 2) - 1 : -(n // 2)]
 
     assert len(x) == len(data)
     return x

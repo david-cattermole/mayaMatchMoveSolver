@@ -29,10 +29,7 @@ LOG = mmSolver.logger.get_logger()
 
 
 def main():
-    nodes = maya.cmds.ls(
-        selection=True,
-        long=True,
-        type='transform') or []
+    nodes = maya.cmds.ls(selection=True, long=True, type='transform') or []
     if len(nodes) == 0:
         LOG.warn("Please select at least 1 transform.")
         return
@@ -53,12 +50,14 @@ def main():
         restore_current_frame=True,
         use_dg_evaluation_mode=True,
         disable_viewport=True,
-        disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE)
+        disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE,
+    )
     with ctx:
         for node in nodes:
             if maya.cmds.objExists(node) is False:
                 continue
             baked_nodes += lib.remove_controller(
-                node, start_frame, end_frame, attrs=attrs)
+                node, start_frame, end_frame, attrs=attrs
+            )
         maya.cmds.select(baked_nodes, replace=True)
     return

@@ -73,8 +73,7 @@ def main():
         lock_value = lib.__get_lock_state(marker, const.MKR_ATTRS)
 
         mkr_name = mmapi.get_new_marker_name(mkr_name)
-        new_mkr = mmapi.Marker().create_node(cam=cam_from_mkr,
-                                             name=mkr_name)
+        new_mkr = mmapi.Marker().create_node(cam=cam_from_mkr, name=mkr_name)
         new_mkr_node = new_mkr.get_node()
         bnd_name = mmapi.get_new_bundle_name(bnd_name)
         new_bnd = mmapi.Bundle().create_node(name=bnd_name)

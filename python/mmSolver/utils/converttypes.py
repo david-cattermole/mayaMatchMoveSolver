@@ -70,7 +70,7 @@ def stringToIntList(value):
 
     :param value: The string value to convert.
     :type value: str
-    
+
     :return: List of integer numbers parsed from the string.
     :rtype: [int, ..]
     """

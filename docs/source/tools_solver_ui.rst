@@ -31,7 +31,7 @@ Input Objects
 The Objects are the inputs to the current Solve. This will display
 of Markers used for detecting deviation.
 To display the Markers, and the related objects, you may turn on/off
-the ``CAM``, ``MKR`` and ``BND`` buttons.
+the ``CAM``, ``MKR``, ``LN``` and ``BND`` buttons.
 
 There are various columns showing attributes of the input Objects.
 To display the column visibility, use the Edit menu.
@@ -45,15 +45,6 @@ To display the column visibility, use the Edit menu.
 
    * - Node
      - The input Object's Node.
-
-   * - Status
-     - The status of the input object; tick (✓), cross (❌) or dash
-       (—).
-
-       If the Solver detects an object is not used by the solver, it
-       will be disabled and marked with a cross mark.  Otherwise, a
-       tick mark is displayed. If the object's status has not been
-       detected the status is a dash mark.
 
    * - Weight
      - The weight the Marker will have in the solver. Higher values
@@ -91,14 +82,6 @@ This section of the UI shows the Attributes solved.
      - The ``Attribute`` column displays nodes and attributes added
        into the active Collection.
 
-   * - Status
-     - The status of the attribute; tick (✓), cross (❌) or dash (—).
-
-       If an attribute cannot be modified by any Marker, then the
-       attribute status is set to a cross. Otherwise, attributes that
-       are valid have a tick mark. If the attributes's status has not
-       been detected the status is a dash mark.
-
    * - State
      - The State column displays if the attribute is Static or
        Animated.
@@ -117,7 +100,7 @@ The documentation for each Solver tab is below.
 
     tools_solver_ui_tab_basic
     tools_solver_ui_tab_standard
-    tools_solver_ui_tab_legacy
+    tools_solver_ui_tab_camera
 
 Menus
 ~~~~~
@@ -147,40 +130,6 @@ overall use of the Solver UI, such as Collections.
      - Deletes the active Collection.
    * - Close Window
      - Closes the Solver UI window.
-
-Edit Menu
-+++++++++
-
-.. figure:: images/tools_solver_ui_menu_edit.png
-    :alt: Edit Menu
-    :align: right
-    :scale: 100%
-
-The ``Edit`` menu displays options and features for how to change the
-solve or the usage of the Solver UI.
-
-.. list-table:: Edit Menu
-   :widths: auto
-   :header-rows: 1
-
-   * - Name
-     - Description
-   * - Undo (without UI update)
-     - Performs an undo operation, while stopping the viewport from
-       evaluating.
-   * - Redo (without UI update)
-     - Performs a redo operation, while stopping the viewport from
-       evaluating.
-   * - Auto-Update Solver Validation
-     - When an option in the UI changes, the Solver Validation will be
-       re-evaluated.
-   * - Pre-Solve Force Evaluation
-     - Before a Solve is performed mmSolver will update the DG Node
-       Graph.
-   * - Refresh Viewport
-     - The viewport will be updated during a solve.
-   * - Force DG Update
-     - mmSolver will ensure Maya updates the DG Node Graph.
 
 View Menu
 +++++++++
@@ -217,24 +166,6 @@ the Maya Viewport during solves.
 
    * - Display Attribute Min/Max
      - The minimum and maximum value attribute columns are displayed.
-
-   * - Display Attribute Smoothness
-     - The smoothness variance attribute column is displayed.
-
-   * - Display Attribute Stiffness
-     - The stiffness variance attribute column is displayed.
-
-   * - Display Image Planes
-     - Image Planes will be visible while a solve is calculating,
-       otherwise all Image Planes are hidden.
-
-   * - Display Meshes
-     - Polygon meshes will be visible while a solve is calculating,
-       otherwise all meshes are hidden.
-
-   * - Isolate Objects
-     - mmSolver will hide all objects not used in a solve, while a
-       solve is calculated.
 
 Log Menu
 ++++++++

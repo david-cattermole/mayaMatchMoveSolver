@@ -415,8 +415,7 @@ class Config(object):
 
         If no key exists, returns the default_value.
         """
-        if (self._auto_read is True
-                and (self._values is None or len(self._values) == 0)):
+        if self._auto_read is True and (self._values is None or len(self._values) == 0):
             self.read()
         data = self._values
         if data is None or len(data) == 0:
@@ -425,7 +424,7 @@ class Config(object):
         return value
 
     def set_value(self, key, value):
-        """Set the key/value in the Config file. """
+        """Set the key/value in the Config file."""
         data = {}
         if isinstance(self._values, dict):
             data = self._values.copy()

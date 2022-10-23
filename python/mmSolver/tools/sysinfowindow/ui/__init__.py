@@ -18,4 +18,3 @@
 """
 System Information window, displaying information about software/hardware.
 """
-

@@ -18,4 +18,3 @@
 """
 About window, telling users about mmSolver.
 """
-

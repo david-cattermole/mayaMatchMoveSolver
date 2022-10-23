@@ -60,7 +60,7 @@
         <enum>Qt::Horizontal</enum>
        </property>
        <property name="handleWidth">
-        <number>10</number>
+        <number>5</number>
        </property>
        <widget class="QFrame" name="object_frame">
         <property name="sizePolicy">
@@ -143,7 +143,11 @@
     </layout>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="solver_layout"/>
+    <layout class="QHBoxLayout" name="solver_layout">
+     <property name="spacing">
+      <number>1</number>
+     </property>
+    </layout>
    </item>
    <item>
     <widget class="Line" name="line_1">

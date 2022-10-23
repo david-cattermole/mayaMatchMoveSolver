@@ -24,7 +24,9 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.ui.channelboxutils as channelbox_utils
 import mmSolver.utils.python_compat as pycompat
+import mmSolver.utils.camera as cam_utils
 import mmSolver.tools.solver.constant as const
 
 
@@ -42,24 +44,6 @@ def ensure_plugin_loaded():
     if name not in dir(maya.cmds):
         raise mmapi.SolverNotAvailable
     return
-
-
-def _get_channel_box_ui_name():
-    """
-    Get the internal channel box Maya UI path.
-
-    .. note::
-        When the Maya GUI has not launched yet, this function
-        returns None.
-
-    :return: UI path str.
-    :rtype: str or None
-    """
-    cmd = (
-        'global string $gChannelBoxName;'
-        'string $temp = $gChannelBoxName;'
-    )
-    return maya.mel.eval(cmd)
 
 
 def get_scene_selection():
@@ -144,8 +128,8 @@ def set_current_frame(value, update=None):
     :return: Frame number
     :rtype: int
     """
-    assert isinstance(value, (float, ) + pycompat.INT_TYPES)
-    if isinstance(update, (bool, ) + pycompat.INT_TYPES):
+    assert isinstance(value, (float,) + pycompat.INT_TYPES)
+    if isinstance(update, (bool,) + pycompat.INT_TYPES):
         maya.cmds.currentTime(value, update=update)
     else:
         maya.cmds.currentTime(value)
@@ -194,32 +178,51 @@ def get_markers_from_selection():
     """
     nodes = maya.cmds.ls(long=True, selection=True) or []
     node_categories = mmapi.filter_nodes_into_categories(nodes)
-    marker_nodes = node_categories.get('marker', [])
+    marker_nodes = node_categories.get(mmapi.OBJECT_TYPE_MARKER, [])
 
-    camera_nodes = node_categories.get('camera', [])
+    camera_nodes = node_categories.get(mmapi.OBJECT_TYPE_CAMERA, [])
     for node in camera_nodes:
-        node_type = maya.cmds.nodeType(node)
-        cam = None
-        if node_type == 'transform':
-            cam = mmapi.Camera(transform=node)
-        if node_type == 'camera':
-            cam = mmapi.Camera(shape=node)
-        tfm_node = cam.get_transform_node()
-        below_nodes = maya.cmds.ls(tfm_node, dag=True, long=True)
+        cam_tfm, cam_shp = cam_utils.get_camera(node)
+        below_nodes = maya.cmds.ls(cam_tfm, dag=True, long=True)
         marker_nodes += mmapi.filter_marker_nodes(below_nodes)
 
-    marker_group_nodes = list(node_categories['markergroup'])
+    marker_group_nodes = list(node_categories[mmapi.OBJECT_TYPE_MARKER_GROUP])
     for node in marker_group_nodes:
         below_nodes = maya.cmds.ls(node, dag=True, long=True)
         marker_nodes += mmapi.filter_marker_nodes(below_nodes)
 
     # Convert nodes into Marker objects.
     marker_nodes = list(set(marker_nodes))
-    marker_list = []
-    for node in marker_nodes:
-        mkr = mmapi.Marker(node=node)
-        marker_list.append(mkr)
-    return marker_list
+    mkr_list = [mmapi.Marker(node=x) for x in marker_nodes]
+    return mkr_list
+
+
+def get_lines_from_selection():
+    """
+    Given a selection of nodes, find the associated markers.
+
+    :return: list of Marker objects.
+    :rtype: [Marker, ..]
+    """
+    nodes = maya.cmds.ls(long=True, selection=True) or []
+    node_categories = mmapi.filter_nodes_into_categories(nodes)
+    line_nodes = node_categories.get(mmapi.OBJECT_TYPE_LINE, [])
+
+    camera_nodes = node_categories.get(mmapi.OBJECT_TYPE_CAMERA, [])
+    for node in camera_nodes:
+        cam_tfm, cam_shp = cam_utils.get_camera(node)
+        below_nodes = maya.cmds.ls(cam_tfm, dag=True, long=True)
+        line_nodes += mmapi.filter_line_nodes(below_nodes)
+
+    marker_group_nodes = list(node_categories[mmapi.OBJECT_TYPE_MARKER_GROUP])
+    for node in marker_group_nodes:
+        below_nodes = maya.cmds.ls(node, dag=True, long=True)
+        line_nodes += mmapi.filter_line_nodes(below_nodes)
+
+    # Convert nodes into Marker objects.
+    line_nodes = list(set(line_nodes))
+    line_list = [mmapi.Line(node=x) for x in line_nodes]
+    return line_list
 
 
 def get_selected_maya_attributes():
@@ -232,47 +235,31 @@ def get_selected_maya_attributes():
     :return: List of Attribute objects for all nodes in the Channel Box.
     :rtype: list of Attribute
     """
-    name = _get_channel_box_ui_name()
+    name = channelbox_utils.get_ui_name()
 
     # Main Nodes and Attribute
-    main_nodes = maya.cmds.channelBox(
-        name, query=True,
-        mainObjectList=True
-    ) or []
-    main_attrs = maya.cmds.channelBox(
-        name, query=True,
-        selectedMainAttributes=True
-    ) or []
+    main_nodes = maya.cmds.channelBox(name, query=True, mainObjectList=True) or []
+    main_attrs = (
+        maya.cmds.channelBox(name, query=True, selectedMainAttributes=True) or []
+    )
 
     # Shape Nodes and Attribute
-    shape_nodes = maya.cmds.channelBox(
-        name, query=True,
-        shapeObjectList=True
-    ) or []
-    shape_attrs = maya.cmds.channelBox(
-        name, query=True,
-        selectedShapeAttributes=True
-    ) or []
+    shape_nodes = maya.cmds.channelBox(name, query=True, shapeObjectList=True) or []
+    shape_attrs = (
+        maya.cmds.channelBox(name, query=True, selectedShapeAttributes=True) or []
+    )
 
     # History Nodes and Attribute
-    history_nodes = maya.cmds.channelBox(
-        name, query=True,
-        historyObjectList=True
-    ) or []
-    history_attrs = maya.cmds.channelBox(
-        name, query=True,
-        selectedHistoryAttributes=True
-    ) or []
+    history_nodes = maya.cmds.channelBox(name, query=True, historyObjectList=True) or []
+    history_attrs = (
+        maya.cmds.channelBox(name, query=True, selectedHistoryAttributes=True) or []
+    )
 
     # Output Nodes and Attribute
-    output_nodes = maya.cmds.channelBox(
-        name, query=True,
-        outputObjectList=True
-    ) or []
-    output_attrs = maya.cmds.channelBox(
-        name, query=True,
-        selectedOutputAttributes=True
-    ) or []
+    output_nodes = maya.cmds.channelBox(name, query=True, outputObjectList=True) or []
+    output_attrs = (
+        maya.cmds.channelBox(name, query=True, selectedOutputAttributes=True) or []
+    )
 
     attr_list = []
     nodes_and_attrs = [
@@ -334,27 +321,33 @@ def get_node_default_attributes(nodes):
                 ]
         else:
             # Fallback - get all logical attributes.
-            attrs = maya.cmds.listAttr(
-                node,
-                keyable=True,
-                settable=True,
-                scalar=True,
-                shortNames=False,
-            ) or []
+            attrs = (
+                maya.cmds.listAttr(
+                    node,
+                    keyable=True,
+                    settable=True,
+                    scalar=True,
+                    shortNames=False,
+                )
+                or []
+            )
             attr_types = [
                 'doubleLinear',
                 'doubleAngle',
                 'double',
                 'float',
             ]
-            attr_names += [n for n in attrs
-                           if maya.cmds.attributeQuery(
-                                  n, node=node,
-                                  attributeType=True) in attr_types]
+            attr_names += [
+                attr
+                for attr in attrs
+                if maya.cmds.attributeQuery(attr, node=node, attributeType=True)
+                in attr_types
+            ]
 
         for attr_name in attr_names:
             attr_obj = mmapi.Attribute(node=node, attr=attr_name)
-            attr_list.append(attr_obj)
+            if attr_obj.get_name() is not None:
+                attr_list.append(attr_obj)
     return attr_list
 
 

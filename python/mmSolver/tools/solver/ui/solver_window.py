@@ -30,6 +30,7 @@ import uuid
 from functools import partial
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt as Qt
@@ -38,7 +39,6 @@ import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
-import mmSolver.utils.undo as undo_utils
 import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.python_compat as pycompat
 import mmSolver.ui.uiutils as uiutils
@@ -59,9 +59,7 @@ baseModule, BaseWindow = uiutils.getBaseWindow()
 
 def _open_help():
     src = helputils.get_help_source()
-    helputils.open_help_in_browser(
-        page='tools_solver_ui.html',
-        help_source=src)
+    helputils.open_help_in_browser(page='tools_solver_ui.html', help_source=src)
     return
 
 
@@ -175,80 +173,90 @@ class SolverWindow(BaseWindow):
         edit_menu = QtWidgets.QMenu('Edit', menubar)
         edit_menu.setTearOffEnabled(True)
 
-        if Qt.IsPySide2 or Qt.IsPyQt5:
-            edit_menu.addSection('Undo / Redo')
-
-        # Undo
-        label = 'Undo last command (with disabled viewport)'
-        tooltip = ('Undo the Maya scene state, '
-                   'without updating the viewport or solver UI')
+        # Solver Preferences
+        label = 'Solver Preferences...'
+        tooltip = 'Adjust how the solver displays and executes.'
         action = QtWidgets.QAction(label, edit_menu)
         action.setStatusTip(tooltip)
-        action.triggered.connect(self.undoTriggeredCB)
+        action.triggered.connect(self.solverPrefWindowTriggeredCB)
         edit_menu.addAction(action)
 
-        # Redo
-        label = 'Redo last command (with disabled viewport)'
-        tooltip = ('Redo the Maya scene state, '
-                   'without updating the viewport or solver UI')
-        action = QtWidgets.QAction(label, edit_menu)
-        action.setStatusTip(tooltip)
-        action.triggered.connect(self.redoTriggeredCB)
-        edit_menu.addAction(action)
+        # if Qt.IsPySide2 or Qt.IsPyQt5:
+        #     edit_menu.addSection('Undo / Redo')
 
-        if Qt.IsPySide2 or Qt.IsPyQt5:
-            edit_menu.addSection('Window Update')
+        # # Undo
+        # label = 'Undo last command (with disabled viewport)'
+        # tooltip = (
+        #     'Undo the Maya scene state, without updating the viewport or solver UI'
+        # )
+        # action = QtWidgets.QAction(label, edit_menu)
+        # action.setStatusTip(tooltip)
+        # action.triggered.connect(self.undoTriggeredCB)
+        # edit_menu.addAction(action)
 
-        # Auto Update Solver Validation
-        label = 'Auto-Update Solver Validation'
-        tooltip = 'Auto-update details of the solver parameter/error numbers.'
-        value = lib_state.get_auto_update_solver_validation_state()
-        action = QtWidgets.QAction(label, edit_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(value)
-        action.toggled.connect(
-            self.subForm.solver_settings.autoUpdateSolverValidationChanged)
-        edit_menu.addAction(action)
+        # # Redo
+        # label = 'Redo last command (with disabled viewport)'
+        # tooltip = (
+        #     'Redo the Maya scene state, without updating the viewport or solver UI'
+        # )
+        # action = QtWidgets.QAction(label, edit_menu)
+        # action.setStatusTip(tooltip)
+        # action.triggered.connect(self.redoTriggeredCB)
+        # edit_menu.addAction(action)
 
-        if Qt.IsPySide2 or Qt.IsPyQt5:
-            edit_menu.addSection('Solver Execution')
+        # if Qt.IsPySide2 or Qt.IsPyQt5:
+        #     edit_menu.addSection('Window Update')
 
-        # Pre-Solve Force Evaluation
-        label = 'Pre-Solve Force Evaluation'
-        tooltip = ('Before starting a solve, '
-                   'update the scene to force an evaluation.')
-        pre_solve_force_eval = lib_state.get_pre_solve_force_eval_state()
-        action = QtWidgets.QAction(label, edit_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(pre_solve_force_eval)
-        action.toggled.connect(type(self).preSolveForceEvalActionToggledCB)
-        edit_menu.addAction(action)
+        # # Auto Update Solver Validation
+        # label = 'Auto-Update Solver Validation'
+        # tooltip = 'Auto-update details of the solver parameter/error numbers.'
+        # value = lib_state.get_auto_update_solver_validation_state()
+        # action = QtWidgets.QAction(label, edit_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # action.setChecked(value)
+        # action.toggled.connect(
+        #     self.subForm.solver_settings.autoUpdateSolverValidationChanged
+        # )
+        # edit_menu.addAction(action)
 
-        # Refresh Viewport During Solve
-        label = 'Refresh Viewport'
-        tooltip = 'Refresh the viewport while Solving.'
-        refresh_value = lib_state.get_refresh_viewport_state()
-        action = QtWidgets.QAction(label, edit_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(refresh_value)
-        action.toggled.connect(type(self).refreshActionToggledCB)
-        edit_menu.addAction(action)
+        # if Qt.IsPySide2 or Qt.IsPyQt5:
+        #     edit_menu.addSection('Solver Execution')
 
-        # Force DG evaluation.
-        label = 'Force DG Update'
-        tooltip = 'Force Maya DG Evaluation while solving.'
-        force_dg_update_value = lib_state.get_force_dg_update_state()
-        action = QtWidgets.QAction(label, edit_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(force_dg_update_value)
-        action.toggled.connect(type(self).forceDgUpdateActionToggledCB)
-        edit_menu.addAction(action)
+        # # Pre-Solve Force Evaluation
+        # label = 'Pre-Solve Force Evaluation'
+        # tooltip = 'Before starting a solve, update the scene to force an evaluation.'
+        # pre_solve_force_eval = lib_state.get_pre_solve_force_eval_state()
+        # action = QtWidgets.QAction(label, edit_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # action.setChecked(pre_solve_force_eval)
+        # action.toggled.connect(type(self).preSolveForceEvalActionToggledCB)
+        # edit_menu.addAction(action)
 
-        menubar.addMenu(edit_menu)
+        # # Refresh Viewport During Solve
+        # label = 'Refresh Viewport'
+        # tooltip = 'Refresh the viewport while Solving.'
+        # refresh_value = lib_state.get_refresh_viewport_state()
+        # action = QtWidgets.QAction(label, edit_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # action.setChecked(refresh_value)
+        # action.toggled.connect(type(self).refreshActionToggledCB)
+        # edit_menu.addAction(action)
+
+        # # Force DG evaluation.
+        # label = 'Force DG Update'
+        # tooltip = 'Force Maya DG Evaluation while solving.'
+        # force_dg_update_value = lib_state.get_force_dg_update_state()
+        # action = QtWidgets.QAction(label, edit_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # action.setChecked(force_dg_update_value)
+        # action.toggled.connect(type(self).forceDgUpdateActionToggledCB)
+        # edit_menu.addAction(action)
+
+        # menubar.addMenu(edit_menu)
 
         # View Menu
         view_menu = QtWidgets.QMenu('View', menubar)
@@ -265,8 +273,7 @@ class SolverWindow(BaseWindow):
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(
-            self.subForm.object_browser.displayWeightColumnChanged)
+        action.toggled.connect(self.subForm.object_browser.displayWeightColumnChanged)
         view_menu.addAction(action)
 
         # Display Object Frame Deviation
@@ -278,7 +285,8 @@ class SolverWindow(BaseWindow):
         action.setCheckable(True)
         action.setChecked(value)
         action.toggled.connect(
-            self.subForm.object_browser.displayFrameDeviationColumnChanged)
+            self.subForm.object_browser.displayFrameDeviationColumnChanged
+        )
         view_menu.addAction(action)
 
         # Display Object Average Deviation
@@ -290,7 +298,8 @@ class SolverWindow(BaseWindow):
         action.setCheckable(True)
         action.setChecked(value)
         action.toggled.connect(
-            self.subForm.object_browser.displayAverageDeviationColumnChanged)
+            self.subForm.object_browser.displayAverageDeviationColumnChanged
+        )
         view_menu.addAction(action)
 
         # Display Object Maximum Deviation
@@ -302,7 +311,8 @@ class SolverWindow(BaseWindow):
         action.setCheckable(True)
         action.setChecked(value)
         action.toggled.connect(
-            self.subForm.object_browser.displayMaximumDeviationColumnChanged)
+            self.subForm.object_browser.displayMaximumDeviationColumnChanged
+        )
         view_menu.addAction(action)
 
         if Qt.IsPySide2 or Qt.IsPyQt5:
@@ -316,32 +326,7 @@ class SolverWindow(BaseWindow):
         action.setStatusTip(tooltip)
         action.setCheckable(True)
         action.setChecked(value)
-        action.toggled.connect(
-            self.subForm.attribute_browser.displayStateColumnChanged)
-        view_menu.addAction(action)
-
-        # Display Attribute Smoothness
-        label = 'Display Attribute Smoothness'
-        tooltip = 'Display Attribute Smoothness columns'
-        value = lib_state.get_display_attribute_smoothness_state()
-        action = QtWidgets.QAction(label, view_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(value)
-        action.toggled.connect(
-            self.subForm.attribute_browser.displaySmoothnessColumnChanged)
-        view_menu.addAction(action)
-
-        # Display Attribute Stiffness
-        label = 'Display Attribute Stiffness'
-        tooltip = 'Display Attribute Stiffness columns'
-        value = lib_state.get_display_attribute_stiffness_state()
-        action = QtWidgets.QAction(label, view_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(value)
-        action.toggled.connect(
-            self.subForm.attribute_browser.displayStiffnessColumnChanged)
+        action.toggled.connect(self.subForm.attribute_browser.displayStateColumnChanged)
         view_menu.addAction(action)
 
         # Display Attribute Min/Max
@@ -353,50 +338,48 @@ class SolverWindow(BaseWindow):
         action.setCheckable(True)
         action.setChecked(value)
         action.toggled.connect(
-            self.subForm.attribute_browser.displayMinMaxColumnChanged)
+            self.subForm.attribute_browser.displayMinMaxColumnChanged
+        )
         view_menu.addAction(action)
 
         if Qt.IsPySide2 or Qt.IsPyQt5:
             view_menu.addSection('During Solve')
 
-        # Display the Image Planes while solving.
-        #
-        # TODO: Add other object types to show/hide while solving,
-        #  such as camera, nurbsCurves, nurbsSurfaces, and locators.
-        label = 'Display Image Planes'
-        tooltip = 'Display Image Planes while solving.'
-        value = lib_state.get_display_image_plane_while_solving_state()
-        action = QtWidgets.QAction(label, view_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(value)
-        action.toggled.connect(
-            type(self).displayImagePlaneWhileSolvingActionToggledCB)
-        view_menu.addAction(action)
+        # # Display the Image Planes while solving.
+        # #
+        # # TODO: Add other object types to show/hide while solving,
+        # #  such as camera, nurbsCurves, nurbsSurfaces, and locators.
+        # label = 'Display Image Planes'
+        # tooltip = 'Display Image Planes while solving.'
+        # value = lib_state.get_display_image_plane_while_solving_state()
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # action.setChecked(value)
+        # action.toggled.connect(type(self).displayImagePlaneWhileSolvingActionToggledCB)
+        # view_menu.addAction(action)
 
-        # Display the Meshes while solving.
-        label = 'Display Meshes'
-        tooltip = 'Display Meshes while solving.'
-        value = lib_state.get_display_meshes_while_solving_state()
-        action = QtWidgets.QAction(label, view_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(value)
-        action.toggled.connect(
-            type(self).displayMeshesWhileSolvingActionToggledCB)
-        view_menu.addAction(action)
+        # # Display the Meshes while solving.
+        # label = 'Display Meshes'
+        # tooltip = 'Display Meshes while solving.'
+        # value = lib_state.get_display_meshes_while_solving_state()
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # action.setChecked(value)
+        # action.toggled.connect(type(self).displayMeshesWhileSolvingActionToggledCB)
+        # view_menu.addAction(action)
 
-        # Isolate Objects while solving
-        label = 'Isolate Objects'
-        tooltip = 'Isolate visibility of all Markers and Bundles while solving.'
-        isolate_value = lib_state.get_isolate_object_while_solving_state()
-        action = QtWidgets.QAction(label, view_menu)
-        action.setStatusTip(tooltip)
-        action.setCheckable(True)
-        action.setChecked(isolate_value)
-        action.toggled.connect(
-            type(self).isolateObjectWhileSolvingActionToggledCB)
-        view_menu.addAction(action)
+        # # Isolate Objects while solving
+        # label = 'Isolate Objects'
+        # tooltip = 'Isolate visibility of all Markers and Bundles while solving.'
+        # isolate_value = lib_state.get_isolate_object_while_solving_state()
+        # action = QtWidgets.QAction(label, view_menu)
+        # action.setStatusTip(tooltip)
+        # action.setCheckable(True)
+        # action.setChecked(isolate_value)
+        # action.toggled.connect(type(self).isolateObjectWhileSolvingActionToggledCB)
+        # view_menu.addAction(action)
 
         menubar.addMenu(view_menu)
 
@@ -477,9 +460,7 @@ class SolverWindow(BaseWindow):
 
         # Help Menu
         help_menu = QtWidgets.QMenu('Help', menubar)
-        commonmenus.create_help_menu_items(
-            help_menu,
-            tool_help_func=_open_help)
+        commonmenus.create_help_menu_items(help_menu, tool_help_func=_open_help)
         menubar.addMenu(help_menu)
         return
 
@@ -528,34 +509,40 @@ class SolverWindow(BaseWindow):
         self.subForm.attribute_browser.dataChanged.emit()
         return
 
-    def undoTriggeredCB(self):
-        LOG.debug('undoTriggeredCB')
-        import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
-        validation = lib_state.get_auto_update_solver_validation_state()
-        with undo_utils.no_undo_context():
-            lib_state.set_auto_update_solver_validation_state(False)
-        block = self.blockSignals(True)
-        try:
-            undoredoscene_tool.main_undo()
-        finally:
-            with undo_utils.no_undo_context():
-                lib_state.set_auto_update_solver_validation_state(validation)
-            self.blockSignals(block)
-        return
+    # def undoTriggeredCB(self):
+    #     LOG.debug('undoTriggeredCB')
+    #     import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
 
-    def redoTriggeredCB(self):
-        LOG.debug('redoTriggeredCB')
-        import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
-        validation = lib_state.get_auto_update_solver_validation_state()
-        with undo_utils.no_undo_context():
-            lib_state.set_auto_update_solver_validation_state(False)
-        block = self.blockSignals(True)
-        try:
-            undoredoscene_tool.main_redo()
-        finally:
-            with undo_utils.no_undo_context():
-                lib_state.set_auto_update_solver_validation_state(validation)
-            self.blockSignals(block)
+    #     validation = lib_state.get_auto_update_solver_validation_state()
+    #     with undo_utils.no_undo_context():
+    #         lib_state.set_auto_update_solver_validation_state(False)
+    #     block = self.blockSignals(True)
+    #     try:
+    #         undoredoscene_tool.main_undo()
+    #     finally:
+    #         with undo_utils.no_undo_context():
+    #             lib_state.set_auto_update_solver_validation_state(validation)
+    #         self.blockSignals(block)
+    #     return
+
+    # def redoTriggeredCB(self):
+    #     LOG.debug('redoTriggeredCB')
+    #     import mmSolver.tools.undoredoscene.tool as undoredoscene_tool
+
+    #     validation = lib_state.get_auto_update_solver_validation_state()
+    #     with undo_utils.no_undo_context():
+    #         lib_state.set_auto_update_solver_validation_state(False)
+    #     block = self.blockSignals(True)
+    #     try:
+    #         undoredoscene_tool.main_redo()
+    #     finally:
+    #         with undo_utils.no_undo_context():
+    #             lib_state.set_auto_update_solver_validation_state(validation)
+    #         self.blockSignals(block)
+    #     return
+
+    def solverPrefWindowTriggeredCB(self):
+        LOG.debug('solverPrefWindowTriggeredCB')
         return
 
     @staticmethod
@@ -625,7 +612,7 @@ class SolverWindow(BaseWindow):
         """
         assert isinstance(value, bool)
 
-        def _set_widget_visibilty(window, visible):
+        def _set_widget_visibility(window, visible):
             self.menubar.setVisible(visible)
             self.subForm.collection_widget.setVisible(visible)
             self.subForm.object_browser.setVisible(visible)
@@ -638,7 +625,7 @@ class SolverWindow(BaseWindow):
         if uiutils.isValidQtObject(self) is True:
             QtWidgets.QApplication.processEvents()
             if value is False:
-                _set_widget_visibilty(self, True)
+                _set_widget_visibility(self, True)
 
                 # Restore non-minimal window size.
                 QtWidgets.QApplication.processEvents()
@@ -646,9 +633,11 @@ class SolverWindow(BaseWindow):
             else:
                 self._saved_ui_size = self.size()
 
-                # QtWidgets.QApplication.processEvents()
-                _set_widget_visibilty(self, False)
+                # TODO: Can we find out how many pending events ther
+                # eare so we can call 'processEvents' that many times?
+
                 QtWidgets.QApplication.processEvents()
+                _set_widget_visibility(self, False)
 
                 # Resize the bottom window edge upwards.
                 width = self.size().width()
@@ -656,7 +645,7 @@ class SolverWindow(BaseWindow):
                 QtWidgets.QApplication.processEvents()
 
                 # Run again to trigger the UI to resize properly.
-                _set_widget_visibilty(self, False)
+                _set_widget_visibility(self, False)
                 self.resize(width, 1)
                 QtWidgets.QApplication.processEvents()
 
@@ -679,13 +668,15 @@ class SolverWindow(BaseWindow):
         undo_id += str(datetime.datetime.isoformat(datetime.datetime.now()))
         undo_id += ' '
         undo_id += str(uuid.uuid4())
-        with tools_utils.tool_context(use_undo_chunk=True,
-                                      undo_chunk_name=undo_id,
-                                      restore_current_frame=False,
-                                      pre_update_frame=False,
-                                      post_update_frame=False,
-                                      use_dg_evaluation_mode=True,
-                                      disable_viewport=False):
+        with tools_utils.tool_context(
+            use_undo_chunk=True,
+            undo_chunk_name=undo_id,
+            restore_current_frame=False,
+            pre_update_frame=False,
+            post_update_frame=False,
+            use_dg_evaluation_mode=True,
+            disable_viewport=False,
+        ):
             block = self.blockSignals(True)
             try:
                 mmapi.set_solver_running(True)
@@ -694,11 +685,7 @@ class SolverWindow(BaseWindow):
                 options = lib_collection.gather_execute_options()
                 log_level = lib_state.get_log_level()
                 col = lib_state.get_active_collection()
-                lib_collection.run_solve_ui(
-                    col,
-                    options,
-                    log_level,
-                    self)
+                lib_collection.run_solve_ui(col, options, log_level, self)
             finally:
                 mmapi.set_solver_running(False)
                 if uiutils.isValidQtObject(self) is True:
@@ -764,9 +751,6 @@ def main(show=True, auto_raise=True, delete=False, dock=True):
     loadAllResources()
 
     win = SolverWindow.open_window(
-        show=show,
-        auto_raise=auto_raise,
-        delete=delete,
-        dock=dock
+        show=show, auto_raise=auto_raise, delete=delete, dock=dock
     )
     return win

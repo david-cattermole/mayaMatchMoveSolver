@@ -26,6 +26,7 @@ from __future__ import print_function
 import sys
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt as Qt
@@ -82,15 +83,17 @@ def getMayaMainWindow():
     :rtype: QWidget
     """
     import maya.OpenMayaUI as omui
+
     window_ptr = omui.MQtUtil.mainWindow()
     window = Qt.QtCompat.wrapInstance(
-        pycompat.LONG_TYPE(window_ptr),
-        QtWidgets.QMainWindow)
+        pycompat.LONG_TYPE(window_ptr), QtWidgets.QMainWindow
+    )
     return window
 
 
 def findControlMayaWidget(name, clsTyp):
     import maya.OpenMayaUI as omui
+
     ptr = omui.MQtUtil.findControl(name)
     widget = None
     if ptr:
@@ -166,6 +169,7 @@ def getBaseWindow():
     host = getHostApplication()
     if host == 'maya':
         import mmSolver.ui.base_maya_window as baseModule
+
         BaseWindow = baseModule.BaseMayaWindow
     else:
         print('Warning: Unknown application host, %r' % host)
@@ -269,9 +273,11 @@ class QtInfoMixin(object):
 
     def qtAboveVersion(self, major, minor, patch):
         self.qtInitVersion()
-        return (self.qt_ver_major >= major and
-                self.qt_ver_minor >= minor and
-                self.qt_ver_patch >= patch)
+        return (
+            self.qt_ver_major >= major
+            and self.qt_ver_minor >= minor
+            and self.qt_ver_patch >= patch
+        )
 
     def qtEqualOrAbove_4_6_X(self):
         self.qtInitVersion()
@@ -292,4 +298,3 @@ class QtInfoMixin(object):
     def qtEqual_5_X_X(self):
         self.qtInitVersion()
         return self.qt_ver_major == 5
-

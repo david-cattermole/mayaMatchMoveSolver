@@ -29,7 +29,7 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.tools.loadmarker.lib.interface as interface
+import mmSolver.utils.loadfile.floatutils as floatutils
 
 LOG = mmSolver.logger.get_logger()
 
@@ -120,8 +120,8 @@ def calculate_overscan_ratio(cam, mkr_grp, camera_fov):
             last_ratio_x = ratio_x
             last_ratio_y = ratio_y
 
-        ratio_same_x = interface.float_is_equal(ratio_x, last_ratio_x)
-        ratio_same_y = interface.float_is_equal(ratio_y, last_ratio_y)
+        ratio_same_x = floatutils.float_is_equal(ratio_x, last_ratio_x)
+        ratio_same_y = floatutils.float_is_equal(ratio_y, last_ratio_y)
         if not ratio_same_x:
             all_same_ratio_x = False
         if not ratio_same_y:

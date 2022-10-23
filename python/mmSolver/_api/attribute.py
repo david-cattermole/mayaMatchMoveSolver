@@ -57,6 +57,7 @@ class Attribute(object):
         1  # 1 == ATTR_STATE_STATIC
 
     """
+
     def __init__(self, name=None, node=None, attr=None):
         """
         Initialise an Attribute object.
@@ -81,8 +82,9 @@ class Attribute(object):
             attr = part[-1]
 
         self._plug = None
-        if (isinstance(node, pycompat.TEXT_TYPE)
-                and isinstance(attr, pycompat.TEXT_TYPE)):
+        if isinstance(node, pycompat.TEXT_TYPE) and isinstance(
+            attr, pycompat.TEXT_TYPE
+        ):
             assert maya.cmds.objExists(node)
             # Long and short names must be checked.
             attr_list_long = maya.cmds.listAttr(node, shortNames=False) or []
@@ -128,7 +130,7 @@ class Attribute(object):
             node = dag_fn.fullPathName()
         except RuntimeError:
             depend_fn = OpenMaya.MFnDependencyNode(node_obj)
-            node = depend_fn.absoluteName()
+            node = depend_fn.name()
         if full_path is False:
             nodes = maya.cmds.ls(node) or []
             if len(nodes) > 0:
@@ -170,16 +172,25 @@ class Attribute(object):
                 include_instanced_indices,
                 use_alias,
                 use_full_attribute_path,
-                long_name  # use long name.
+                long_name,  # use long name.
             )
         return name
+
+    def get_attr_nice_name(self):
+        nice_name = None
+        node = self.get_node()
+        attr = self.get_attr()
+        if node is not None and attr is not None:
+            nice_name = maya.cmds.attributeQuery(attr, node=node, niceName=True)
+        return nice_name
 
     def get_name(self, full_path=True):
         name = None
         node = self.get_node(full_path=full_path)
         attr = self.get_attr(long_name=full_path)
-        if (isinstance(node, pycompat.TEXT_TYPE)
-                and isinstance(attr, pycompat.TEXT_TYPE)):
+        if isinstance(node, pycompat.TEXT_TYPE) and isinstance(
+            attr, pycompat.TEXT_TYPE
+        ):
             name = node + '.' + attr
         return name
 
@@ -195,9 +206,9 @@ class Attribute(object):
 
         check_parents = False
         animPlugs = OpenMaya.MPlugArray()
-        OpenMayaAnim.MAnimUtil.findAnimatedPlugs(self._plug.node(),
-                                                 animPlugs,
-                                                 check_parents)
+        OpenMayaAnim.MAnimUtil.findAnimatedPlugs(
+            self._plug.node(), animPlugs, check_parents
+        )
         for i in range(animPlugs.length()):
             plug = animPlugs[i]
             if self._plug.name() == plug.name():
@@ -230,12 +241,13 @@ class Attribute(object):
         attr_type = None
         node_name = self.get_node()
         attr_name = self.get_attr()
-        if (isinstance(node_name, pycompat.TEXT_TYPE)
-                and isinstance(attr_name, pycompat.TEXT_TYPE)):
-            attr_type = maya.cmds.attributeQuery(
-                attr_name,
-                node=node_name,
-                attributeType=True) or None
+        if isinstance(node_name, pycompat.TEXT_TYPE) and isinstance(
+            attr_name, pycompat.TEXT_TYPE
+        ):
+            attr_type = (
+                maya.cmds.attributeQuery(attr_name, node=node_name, attributeType=True)
+                or None
+            )
         return attr_type
 
     def get_min_value(self):

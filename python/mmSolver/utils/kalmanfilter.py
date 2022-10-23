@@ -31,10 +31,10 @@ import collections
 State = collections.namedtuple(
     'State',
     (
-        'value',     # the value
-        'mean',      # average or 'mu'
+        'value',  # the value
+        'mean',  # average or 'mu'
         'variance',  # 'sigma'
-     )
+    ),
 )
 
 
@@ -51,8 +51,8 @@ def update(state_a, state_b):
     :return: New state.
     :rtype: State
     """
-    new_mean = (state_b.variance * state_a.mean + state_a.variance * state_b.mean)
-    new_mean /= (state_b.variance + state_a.variance)
+    new_mean = state_b.variance * state_a.mean + state_a.variance * state_b.mean
+    new_mean /= state_b.variance + state_a.variance
     new_variance = 1.0 / (1.0 / state_b.variance + 1.0 / state_a.variance)
     new_value = state_b.value
     return State(mean=new_mean, variance=new_variance, value=new_value)

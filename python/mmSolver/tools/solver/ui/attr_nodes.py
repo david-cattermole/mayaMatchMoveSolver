@@ -26,6 +26,7 @@ from __future__ import print_function
 import maya.cmds
 
 import mmSolver.ui.qtpyutils as qtpyutils
+
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
@@ -41,15 +42,18 @@ LOG = mmSolver.logger.get_logger()
 
 
 class PlugNode(nodes.Node):
-    def __init__(self, name,
-                 parent=None,
-                 data=None,
-                 icon=None,
-                 enabled=True,
-                 editable=False,
-                 selectable=True,
-                 checkable=False,
-                 neverHasChildren=False):
+    def __init__(
+        self,
+        name,
+        parent=None,
+        data=None,
+        icon=None,
+        enabled=True,
+        editable=False,
+        selectable=True,
+        checkable=False,
+        neverHasChildren=False,
+    ):
         if icon is None:
             icon = const.PLUG_ICON_NAME
         super(PlugNode, self).__init__(
@@ -61,7 +65,8 @@ class PlugNode(nodes.Node):
             selectable=selectable,
             editable=editable,
             checkable=checkable,
-            neverHasChildren=neverHasChildren)
+            neverHasChildren=neverHasChildren,
+        )
         self.typeInfo = 'plug'
 
     def uuid(self):
@@ -101,27 +106,25 @@ def _get_attr_type(attr):
         return None
     attr_name = attr.get_attr().lower()
     attr_type = const.ATTR_TYPE_OTHER
-    if 'translate' in attr_name:
-        attr_type = const.ATTR_TYPE_TRANSLATE
-    elif 'rotate' in attr_name:
-        attr_type = const.ATTR_TYPE_ROTATE
-    elif 'scale' in attr_name:
-        attr_type = const.ATTR_TYPE_SCALE
-    else:
-        node_name = attr.get_node()
-        node_type = maya.cmds.nodeType(node_name)
-        node_type = node_type.lower()
-        if node_type == 'camera':
-            attr_type = const.ATTR_TYPE_CAMERA
-        elif 'lens' in node_type:
-            attr_type = const.ATTR_TYPE_LENS
+    node_name = attr.get_node()
+    node_type = maya.cmds.nodeType(node_name)
+    node_type = node_type.lower()
+    if node_type == 'camera':
+        attr_type = const.ATTR_TYPE_CAMERA
+    elif 'lens' in node_type:
+        attr_type = const.ATTR_TYPE_LENS
+    elif 'transform' in node_type:
+        if 'translate' in attr_name:
+            attr_type = const.ATTR_TYPE_TRANSLATE
+        elif 'rotate' in attr_name:
+            attr_type = const.ATTR_TYPE_ROTATE
+        elif 'scale' in attr_name:
+            attr_type = const.ATTR_TYPE_SCALE
     return attr_type
 
 
 class AttrNode(PlugNode):
-    def __init__(self, name,
-                 data=None,
-                 parent=None):
+    def __init__(self, name, data=None, parent=None):
         attr = None
         if data is not None:
             attr = data.get('data')
@@ -146,7 +149,8 @@ class AttrNode(PlugNode):
             icon=icon,
             selectable=True,
             editable=False,
-            neverHasChildren=True)
+            neverHasChildren=True,
+        )
         self.typeInfo = 'attr'
 
     def status(self):
@@ -237,9 +241,7 @@ class AttrNode(PlugNode):
 
 
 class MayaNode(PlugNode):
-    def __init__(self, name,
-                 data=None,
-                 parent=None):
+    def __init__(self, name, data=None, parent=None):
         icon = const.NODE_ICON_NAME
         super(MayaNode, self).__init__(
             name,
@@ -248,7 +250,8 @@ class MayaNode(PlugNode):
             icon=icon,
             selectable=True,
             editable=False,
-            neverHasChildren=False)
+            neverHasChildren=False,
+        )
         self.typeInfo = 'node'
 
     def mayaNodeName(self):
@@ -271,12 +274,11 @@ class AttrModel(uimodels.ItemModel):
     def columnNames(self):
         column_names = {
             0: const.ATTR_COLUMN_NAME_ATTRIBUTE,
-            1: const.ATTR_COLUMN_NAME_STATUS,
-            2: const.ATTR_COLUMN_NAME_STATE,
-            3: const.ATTR_COLUMN_NAME_VALUE_SMOOTHNESS,
-            4: const.ATTR_COLUMN_NAME_VALUE_STIFFNESS,
-            5: const.ATTR_COLUMN_NAME_VALUE_MIN_MAX,
-            6: const.ATTR_COLUMN_NAME_UUID,
+            1: const.ATTR_COLUMN_NAME_STATE,
+            2: const.ATTR_COLUMN_NAME_VALUE_SMOOTHNESS,
+            3: const.ATTR_COLUMN_NAME_VALUE_STIFFNESS,
+            4: const.ATTR_COLUMN_NAME_VALUE_MIN_MAX,
+            5: const.ATTR_COLUMN_NAME_UUID,
         }
         return column_names
 

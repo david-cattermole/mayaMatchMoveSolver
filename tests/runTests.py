@@ -43,6 +43,10 @@ Run code like this from Maya's Script Editor:
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import sys
 
@@ -58,12 +62,17 @@ sys.path.insert(0, tests_path)
 def main(path_list):
     try:
         import maya.standalone
+
         maya.standalone.initialize()
     except RuntimeError:
-        pass
+        raise
     import maya.cmds
 
+    # Load the plug-in.
+    maya.cmds.loadPlugin('mmSolver')
+
     import unittest
+
     loader = unittest.TestLoader()
     final_suite = None
     if len(path_list) == 0:
@@ -83,13 +92,15 @@ def main(path_list):
     results = runner.run(final_suite)
 
     if maya.cmds.about(batch=True):
-        maya.standalone.uninitialize()
-        if results.wasSuccessful() is True:
-            maya.cmds.quit(force=True)
-        else:
-            print >> sys.stderr, "Tests failed!"
-            failure_code = 1
-            exit(failure_code)
+        maya.cmds.file(new=True, force=True)
+        exit_code = 0
+        if results.wasSuccessful() is False:
+            exit_code = 1
+            print("Tests failed!", file=sys.stderr)
+        print("Press CTRL+C to exit 'mayapy'.")
+        if int(maya.cmds.about(apiVersion=True)) < 20220000:
+            maya.standalone.uninitialize()
+        sys.exit(exit_code)
     return
 
 

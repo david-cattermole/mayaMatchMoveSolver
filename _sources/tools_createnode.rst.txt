@@ -4,7 +4,7 @@ Create Node Tools
 .. figure:: images/tools_shelf_icons_creation.png
     :alt: Node Creation Shelf Icons
     :align: center
-    :width: 60%
+    :width: 40%
 
 Creating various nodes and objects with mmSolver uses the tools below.
 
@@ -40,7 +40,7 @@ Load Markers
 .. figure:: images/tools_loadmarker_overview.png
     :alt: Load Markers UI
     :align: right
-    :scale: 100%
+    :scale: 70%
 
     Load Markers UI
 
@@ -283,7 +283,7 @@ Updating / Replacing Markers in Maya
 .. figure:: images/tools_loadmarker_load_mode_replace.png
     :alt: Replace the selected Marker nodes.
     :align: right
-    :scale: 40%
+    :scale: 60%
 
     Replace the selected Marker nodes.
 

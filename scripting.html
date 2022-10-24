@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.createcontroller2" href="mmSolver.tools.createcontroller2.html" /><link rel="prev" title="mmSolver.tools.createbundle" href="mmSolver.tools.createbundle.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools" href="mmSolver.tools.html" /><link rel="prev" title="Display Commands" href="commands_display.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
-        <title>mmSolver.tools.createcontroller - mayaMatchMoveSolver master documentation</title>
+        <title>Scripting - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -206,8 +206,8 @@
 <li class="toctree-l2"><a class="reference internal" href="commands_display.html">Display Commands</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="scripting.html">Scripting</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children"><a class="reference internal" href="mmSolver.tools.html">mmSolver.tools</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">Scripting</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="mmSolver.tools.html">mmSolver.tools</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.aboutwindow.html">mmSolver.tools.aboutwindow</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.attachbundletocurve.html">mmSolver.tools.attachbundletocurve</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.averagemarker.html">mmSolver.tools.averagemarker</a></li>
@@ -217,7 +217,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.convertmarker.html">mmSolver.tools.convertmarker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.copypastecamera.html">mmSolver.tools.copypastecamera</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createbundle.html">mmSolver.tools.createbundle</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">mmSolver.tools.createcontroller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createcontroller.html">mmSolver.tools.createcontroller</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createcontroller2.html">mmSolver.tools.createcontroller2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createmarker.html">mmSolver.tools.createmarker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.deformmarker.html">mmSolver.tools.deformmarker</a></li>
@@ -306,115 +306,29 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-mmSolver.tools.createcontroller">
-<span id="mmsolver-tools-createcontroller"></span><h1>mmSolver.tools.createcontroller<a class="headerlink" href="#module-mmSolver.tools.createcontroller" title="Permalink to this headline">#</a></h1>
-<p>Create a new transform node to control an existing node.</p>
-<section id="module-mmSolver.tools.createcontroller.tool">
-<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.createcontroller.tool" title="Permalink to this headline">#</a></h2>
-<p>Create a controller transform node.</p>
-<p>Usage:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span><span class="p">)</span> <span class="n">Select</span> <span class="n">transform</span> <span class="n">node</span><span class="o">.</span>
-
-<span class="mi">2</span><span class="p">)</span> <span class="n">Run</span> <span class="s1">&#39;create&#39;</span> <span class="n">tool</span><span class="p">,</span> <span class="n">new</span> <span class="n">world</span><span class="o">-</span><span class="n">space</span> <span class="n">transform</span> <span class="ow">is</span> <span class="n">created</span> <span class="n">at</span> <span class="n">same</span>
-   <span class="n">position</span> <span class="k">as</span> <span class="nb">input</span> <span class="n">transform</span> <span class="n">nodes</span><span class="o">.</span>
-
-<span class="mi">3</span><span class="p">)</span> <span class="n">New</span> <span class="n">nodes</span> <span class="n">are</span> <span class="n">selected</span><span class="o">.</span>
-
-<span class="mi">4</span><span class="p">)</span> <span class="n">User</span> <span class="n">manipulates</span> <span class="n">newly</span> <span class="n">created</span> <span class="n">nodes</span><span class="o">.</span>
-
-<span class="mi">5</span><span class="p">)</span> <span class="n">Run</span> <span class="s1">&#39;bake&#39;</span> <span class="n">tool</span><span class="p">,</span> <span class="n">selected</span> <span class="n">transform</span> <span class="n">nodes</span> <span class="n">are</span> <span class="n">deleted</span> <span class="ow">and</span>
-    <span class="n">animation</span> <span class="ow">is</span> <span class="n">transfered</span> <span class="n">back</span> <span class="n">onto</span> <span class="n">original</span> <span class="n">nodes</span><span class="o">.</span>
-</pre></div>
-</div>
-<dl class="py function">
-<dt class="sig sig-object py" id="mmSolver.tools.createcontroller.tool.create">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.createcontroller.tool.</span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createcontroller.tool.create" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a controller for selected nodes.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="mmSolver.tools.createcontroller.tool.remove">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.createcontroller.tool.</span></span><span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createcontroller.tool.remove" title="Permalink to this definition">#</a></dt>
-<dd><p>Remove selected controllers and bake data on controlled nodes.</p>
-</dd></dl>
-
-</section>
-<section id="module-mmSolver.tools.createcontroller.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.createcontroller.lib" title="Permalink to this headline">#</a></h2>
-<p>Create a controller transform node.</p>
-<p>Ideas:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Have</span> <span class="n">a</span> <span class="n">flag</span> <span class="n">to</span> <span class="n">allow</span> <span class="n">maintaining</span> <span class="n">the</span> <span class="n">relative</span> <span class="n">hierarchy</span> <span class="n">of</span> <span class="n">the</span>
-  <span class="nb">input</span> <span class="n">transforms</span><span class="o">.</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>If no keyframes are set, this tool works on the current
-frame and adds a keyframe to the controller.</p>
-</div>
-<dl class="py function">
-<dt class="sig sig-object py" id="mmSolver.tools.createcontroller.lib.create">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.createcontroller.lib.</span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createcontroller.lib.create" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a Controller for the given nodes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>..</em><em>]</em>) – The nodes to create Controller for.</p></li>
-<li><p><strong>current_frame</strong> (<em>float</em><em> or </em><em>int</em>) – What frame number is considered to be
-‘current’ when evaluating transforms without
-any keyframes.</p></li>
-<li><p><strong>eval_mode</strong> (<em>mmSolver.utils.constant.EVAL_MODE_*</em>) – What type of transform evaluation method to use?</p></li>
+          <section id="scripting">
+<h1>Scripting<a class="headerlink" href="#scripting" title="Permalink to this headline">#</a></h1>
+<p><cite>mmSolver</cite> can be controlled and extended using Python Scripting.</p>
+<p><cite>mmSolver</cite> hyas an API, as well as tools and utilties that are all
+accessable once <cite>mmSolver</cite> is installed. All modules are available
+inside the <cite>mmSolver</cite> package namespace.</p>
+<p>The Python modules are split into categories, based on the
+functionality of the module:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.html">mmSolver.tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.api.html">mmSolver.api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.logger.html">mmSolver.logger</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.html">mmSolver.ui</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.utils.html">mmSolver.utils</a></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of controller transform nodes.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[str, ..]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="mmSolver.tools.createcontroller.lib.remove">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.createcontroller.lib.</span></span><span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createcontroller.lib.remove" title="Permalink to this definition">#</a></dt>
-<dd><p>Remove a controller and push the animation back to the controlled
-object.</p>
-<p>Order the nodes to remove by hierarchy depth. This means that
-children will be removed first, then parents, this ensures we
-don’t delete a controller accidentally when a parent controller is
-deleted first.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>..</em><em>]</em>) – The nodes to delete.</p></li>
-<li><p><strong>current_frame</strong> (<em>float</em><em> or </em><em>int</em>) – What frame number is considered to be
-‘current’ when evaluating transforms without
-any keyframes.</p></li>
-<li><p><strong>eval_mode</strong> (<em>mmSolver.utils.constant.EVAL_MODE_*</em>) – What type of transform evaluation method to use?</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List of once controlled transform nodes, that are no
-longer controlled.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>[str, ..]</p>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-<section id="module-mmSolver.tools.createcontroller.constant">
-<span id="constant"></span><h2>Constant<a class="headerlink" href="#module-mmSolver.tools.createcontroller.constant" title="Permalink to this headline">#</a></h2>
-<p>Constant values for the create controller tool.</p>
-</section>
+</div>
 </section>
 
         </article>
@@ -422,23 +336,23 @@ longer controlled.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="mmSolver.tools.createcontroller2.html">
+          <a class="next-page" href="mmSolver.tools.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">mmSolver.tools.createcontroller2</div>
+                <div class="title">mmSolver.tools</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="mmSolver.tools.createbundle.html">
+          <a class="prev-page" href="commands_display.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">mmSolver.tools.createbundle</div>
+                <div class="title">Display Commands</div>
                 
               </div>
             </a>
@@ -462,29 +376,8 @@ longer controlled.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">mmSolver.tools.createcontroller</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.createcontroller.tool">Tool</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.createcontroller.lib">Library</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.createcontroller.constant">Constant</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

@@ -41,19 +41,9 @@ details and features to use.
    solver_design
    nodes
    commands
+   scripting
    configuration
    references
-
-Documentation for the mmSolver Python tools, Python API and utilities.
-
-.. toctree::
-   :maxdepth: 1
-
-   mmSolver.tools
-   mmSolver.api
-   mmSolver.logger
-   mmSolver.ui
-   mmSolver.utils
 
 Licenses
 +++++++++

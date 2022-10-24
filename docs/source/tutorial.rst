@@ -14,7 +14,7 @@ Usage Guide
 These videos explain the use of the Solver UI, and mmSolver shelf. Many
 features are explored and show examples for how the tools can be used.
 
-These video uses mmSolver v0.2.0 (beta).
+These videos use mmSolver v0.2.0 (beta).
 
 *Part 1*
 
@@ -40,7 +40,7 @@ For more information, see the
 <https://david-cattermole.github.io/mayaMatchMoveSolver/tools_createnode.html#copy-2d-tracks-from-3dequalizer>`_
 and
 `Copy Camera to Clipboard tool
-<https://david-cattermole.github.io/mayaMatchMoveSolver/tools_generaltools.html#copy-camera-to-clipboard>`_
+<https://david-cattermole.github.io/mayaMatchMoveSolver/tools_inputoutput.html#copy-camera-to-clipboard>`_
 documentation.
 
 This video uses mmSolver v0.3.6.

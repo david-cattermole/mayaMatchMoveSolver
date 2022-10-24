@@ -1,52 +1,318 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Nodes" href="nodes.html" /><link rel="prev" title="Solving Rigid Object Techniques" href="techniques_solving_rigid_objects.html" />
 
-<!DOCTYPE html>
-
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-
-    <title>Solver Design &#8212; mayaMatchMoveSolver master documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+        <title>Solver Design - mayaMatchMoveSolver master documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
     
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Nodes" href="nodes.html" />
-    <link rel="prev" title="Solving Rigid Object Techniques" href="techniques_solving_rigid_objects.html" /> 
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="nodes.html" title="Nodes"
-             accesskey="N">next</a> |</li>
-        <li class="right" >
-          <a href="techniques_solving_rigid_objects.html" title="Solving Rigid Object Techniques"
-             accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Solver Design</a></li> 
-      </ul>
-    </div>  
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-  <section id="solver-design">
-<span id="solver-design-heading"></span><h1>Solver Design<a class="headerlink" href="#solver-design" title="Permalink to this headline">¶</a></h1>
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">mayaMatchMoveSolver master documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">mayaMatchMoveSolver master documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tools.html">Tools</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="tools_solver_ui.html">Solver UI</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_basic.html">Basic Solver Tab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_standard.html">Standard Solver Tab</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tools_createnode.html">Create Node Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_selection.html">Selection Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_frametools.html">Frame Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_cameracontextmenu.html">Camera Context Menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_attributetools.html">Attribute Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_cameratools.html">Camera Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markerbundletools.html">Marker Bundle Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_bundletools.html">Bundle Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markertools.html">Marker Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_linetools.html">Line Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_displaytools.html">Display Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_zdepthtools.html">Z-Depth Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_generaltools.html">General Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_inputoutput.html">Input/Output Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_hotkeys.html">Hotkeys</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="techniques.html">MM Solver Techniques</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="techniques_lens_distortion.html">Lens Distortion Techniques</a></li>
+<li class="toctree-l2"><a class="reference internal" href="techniques_rotomation.html">Rotomation Techniques</a></li>
+<li class="toctree-l2"><a class="reference internal" href="techniques_solving_cameras.html">Camera Solving Techniques</a></li>
+<li class="toctree-l2"><a class="reference internal" href="techniques_solving_rigid_objects.html">Solving Rigid Object Techniques</a></li>
+</ul>
+</li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Solver Design</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="nodes.html">Nodes</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodes_transforms.html">Transform Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_shapes.html">Shape Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_imageplane.html">Image Plane Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_lens.html">Lens Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_display.html">Display Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_other.html">Other Nodes</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="commands.html">Commands</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="commands_solve.html">Solve Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_other.html">Other Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_image.html">Image Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_display.html">Display Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">Related Books and Papers</a></li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="mmSolver.tools.html">mmSolver.tools</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.aboutwindow.html">mmSolver.tools.aboutwindow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.attachbundletocurve.html">mmSolver.tools.attachbundletocurve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.averagemarker.html">mmSolver.tools.averagemarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.cameraaim.html">mmSolver.tools.cameraaim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.centertwodee.html">mmSolver.tools.centertwodee</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.channelsen.html">mmSolver.tools.channelsen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.convertmarker.html">mmSolver.tools.convertmarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.copypastecamera.html">mmSolver.tools.copypastecamera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.createbundle.html">mmSolver.tools.createbundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.createcontroller.html">mmSolver.tools.createcontroller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.createcontroller2.html">mmSolver.tools.createcontroller2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.createmarker.html">mmSolver.tools.createmarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.deformmarker.html">mmSolver.tools.deformmarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.duplicatemarker.html">mmSolver.tools.duplicatemarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.editrootframes.html">mmSolver.tools.editrootframes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.hotkeyswitcher.html">mmSolver.tools.hotkeyswitcher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.linkmarkerbundle.html">mmSolver.tools.linkmarkerbundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.loadmarker.html">mmSolver.tools.loadmarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.markerbundlerename.html">mmSolver.tools.markerbundlerename</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.markerbundlerenamewithmetadata.html">mmSolver.tools.markerbundlerenamewithmetadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.mmhotkeyset.html">mmSolver.tools.mmhotkeyset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.mmmenu.html">mmSolver.tools.mmmenu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.mmshelf.html">mmSolver.tools.mmshelf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.navigaterootframes.html">mmSolver.tools.navigaterootframes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.placemarkermanip.html">mmSolver.tools.placemarkermanip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.raycastmarker.html">mmSolver.tools.raycastmarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.removecontroller2.html">mmSolver.tools.removecontroller2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.removesolvernodes.html">mmSolver.tools.removesolvernodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.reparent.html">mmSolver.tools.reparent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.reparent2.html">mmSolver.tools.reparent2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.reprojectbundle.html">mmSolver.tools.reprojectbundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.screenspacemotiontrail.html">mmSolver.tools.screenspacemotiontrail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.screenspacetransform.html">mmSolver.tools.screenspacetransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.screenzmanipulator.html">mmSolver.tools.screenzmanipulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.selection.html">mmSolver.tools.selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.setattributedetails.html">mmSolver.tools.setattributedetails</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.showdeviationcurves.html">mmSolver.tools.showdeviationcurves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.smoothkeyframes.html">mmSolver.tools.smoothkeyframes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html">mmSolver.tools.solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.sortoutlinernodes.html">mmSolver.tools.sortoutlinernodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.surfacerivet.html">mmSolver.tools.surfacerivet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.sysinfowindow.html">mmSolver.tools.sysinfowindow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.togglebundlelock.html">mmSolver.tools.togglebundlelock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.togglemarkerlock.html">mmSolver.tools.togglemarkerlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.triangulatebundle.html">mmSolver.tools.triangulatebundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.undoredoscene.html">mmSolver.tools.undoredoscene</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.userpreferences.html">mmSolver.tools.userpreferences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.userprefswindow.html">mmSolver.tools.userprefswindow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.api.html">mmSolver.api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.logger.html">mmSolver.logger</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="mmSolver.ui.html">mmSolver.ui</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.base_maya_window.html">mmSolver.ui.base_maya_window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.converttypes.html">mmSolver.ui.converttypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.commonmenus.html">mmSolver.ui.commonmenus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.nodes.html">mmSolver.ui.nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.shelfutils.html">mmSolver.ui.shelfutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uimodels.html">mmSolver.ui.uimodels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uiutils.html">mmSolver.ui.uiutils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.utils.html">mmSolver.utils</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="licenses.html">Licenses</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="solver-design">
+<span id="solver-design-heading"></span><h1>Solver Design<a class="headerlink" href="#solver-design" title="Permalink to this headline">#</a></h1>
 <p>Many users of MatchMove software find that by understanding how the
 underlying processes of the software work they are able to obtain better
 results by utilising the software as it’s intended to work.</p>
@@ -55,7 +321,7 @@ results by utilising the software as it’s intended to work.</p>
 <div><p><em>How does the MM Solver work?</em></p>
 </div></blockquote>
 <section id="how-does-the-solver-work">
-<span id="solver-design-how-does-it-work"></span><h2>How does the solver work?<a class="headerlink" href="#how-does-the-solver-work" title="Permalink to this headline">¶</a></h2>
+<span id="solver-design-how-does-it-work"></span><h2>How does the solver work?<a class="headerlink" href="#how-does-the-solver-work" title="Permalink to this headline">#</a></h2>
 <p>The solver inside MM Solver is an <em>optimisation</em> solver. The solver
 attempts to optimise the <em>measured error</em> with various <em>unknown
 parameter</em> values. The solver’s purpose is to find the parameter values
@@ -67,7 +333,7 @@ where the parameters of 3D points (Bundles) and cameras are solved to
 produce a 3D Scene with the least possible error.</p>
 </section>
 <section id="attributes">
-<span id="solver-design-attributes"></span><h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">¶</a></h2>
+<span id="solver-design-attributes"></span><h2>Attributes<a class="headerlink" href="#attributes" title="Permalink to this headline">#</a></h2>
 <p>In the MM Solver, we refer to <em>unknown parameters</em> as Attributes.
 Attributes are the Maya attributes that are allowed to be modified
 inside the solver. Maya attributes that are not added into the solver
@@ -88,7 +354,7 @@ solving algorithm only floating-point attribute values can be solved.
 Commonly solved Attributes are 3D translate and rotate axes.</p>
 </section>
 <section id="markers-and-bundles">
-<span id="solver-design-markers-and-bundles"></span><h2>Markers and Bundles<a class="headerlink" href="#markers-and-bundles" title="Permalink to this headline">¶</a></h2>
+<span id="solver-design-markers-and-bundles"></span><h2>Markers and Bundles<a class="headerlink" href="#markers-and-bundles" title="Permalink to this headline">#</a></h2>
 <p><em>Markers</em> and <em>Bundles</em> are used to compute the <em>measured error</em> inside
 the solver. The word <em>Marker</em> is used to describe a 2D point on an image
 plane, and <em>Bundle</em> to describe the 3D Point.</p>
@@ -108,7 +374,7 @@ this is that the <em>measured error</em> is the distance between the
 screen-space re-projected 3D Bundles with the linked 2D Markers.</p>
 </section>
 <section id="solving">
-<span id="solver-design-solving"></span><h2>Solving<a class="headerlink" href="#solving" title="Permalink to this headline">¶</a></h2>
+<span id="solver-design-solving"></span><h2>Solving<a class="headerlink" href="#solving" title="Permalink to this headline">#</a></h2>
 <p>Once the solver has <em>Attributes</em>, <em>Cameras</em> and <em>Markers</em> and linked
 <em>Bundles</em>, the solver can start a solve.</p>
 <p>The solver may only start if some conditions are met. One important
@@ -163,7 +429,7 @@ or <em>Bundles</em>.</p></li>
 </ol>
 </section>
 <section id="solving-process">
-<span id="solver-design-solving-process"></span><h2>Solving Process<a class="headerlink" href="#solving-process" title="Permalink to this headline">¶</a></h2>
+<span id="solver-design-solving-process"></span><h2>Solving Process<a class="headerlink" href="#solving-process" title="Permalink to this headline">#</a></h2>
 <p>Each time you execute a solve, the solver goes though a number of steps
 to perform the optimisation and reduce the error.</p>
 <p>This is an overview of the solver’s process:</p>
@@ -204,7 +470,7 @@ hundreds or thousands of times, depending on the number of <em>Attributes</em>
 and <em>Markers</em> that are in the solve.</p>
 </section>
 <section id="time-static-and-animated-attributes">
-<span id="solver-design-static-and-animated-attributes"></span><h2>Time - Static and Animated Attributes<a class="headerlink" href="#time-static-and-animated-attributes" title="Permalink to this headline">¶</a></h2>
+<span id="solver-design-static-and-animated-attributes"></span><h2>Time - Static and Animated Attributes<a class="headerlink" href="#time-static-and-animated-attributes" title="Permalink to this headline">#</a></h2>
 <p>Up until now we’ve been concerned with solving a single frame in time.
 Now we need to extend that into multiple frames. In the MM Solver there
 are <em>animated Attributes</em> that change per-frame and <em>static Attributes</em>
@@ -233,7 +499,7 @@ Solving Animated and Static values as described is a <strong>Brute Force</strong
 approach, but other strategies may be used.</p>
 </section>
 <section id="attribute-value-evaluation-at-different-times">
-<span id="solver-design-time-evaluation"></span><h2>Attribute Value Evaluation at Different Times<a class="headerlink" href="#attribute-value-evaluation-at-different-times" title="Permalink to this headline">¶</a></h2>
+<span id="solver-design-time-evaluation"></span><h2>Attribute Value Evaluation at Different Times<a class="headerlink" href="#attribute-value-evaluation-at-different-times" title="Permalink to this headline">#</a></h2>
 <p>This topic is unrelated to the actual solver engine in mmSolver, but
 documents an interesting implementation detail when correctly
 evaluating values at different times in Autodesk Maya. From mmSolver
@@ -262,13 +528,13 @@ the ‘mmSolver’ command directly, then ‘timeEvalMode’ is important to
 set.</p>
 </section>
 <section id="attribute-details">
-<span id="solver-design-attribute-details"></span><h2>Attribute Details<a class="headerlink" href="#attribute-details" title="Permalink to this headline">¶</a></h2>
+<span id="solver-design-attribute-details"></span><h2>Attribute Details<a class="headerlink" href="#attribute-details" title="Permalink to this headline">#</a></h2>
 <p>Attribute Details are properties of an Attribute. Attribute Details
 are used to add constraints such as value limits.</p>
 <p>In mmSolver, there are 2 details per-attribute; minimum and maximum.
 See below for more details on how each property works.</p>
 <section id="minimum-and-maximum-limits">
-<h3>Minimum and Maximum Limits<a class="headerlink" href="#minimum-and-maximum-limits" title="Permalink to this headline">¶</a></h3>
+<h3>Minimum and Maximum Limits<a class="headerlink" href="#minimum-and-maximum-limits" title="Permalink to this headline">#</a></h3>
 <p>Minimum and maximum limits will force <em>mmSolver</em> to solve an attribute
 with-in specific values. Attribute min/max limits apply to both static
 and animated attributes. If a mnimium or maximum value is not set, the
@@ -286,7 +552,7 @@ Bounds”.</p>
 </section>
 </section>
 <section id="solver-strategies">
-<span id="solver-design-solver-strategies"></span><h2>Solver Strategies<a class="headerlink" href="#solver-strategies" title="Permalink to this headline">¶</a></h2>
+<span id="solver-design-solver-strategies"></span><h2>Solver Strategies<a class="headerlink" href="#solver-strategies" title="Permalink to this headline">#</a></h2>
 <p>Solver strategies are patterns of evaluation that attempt to solve the
 input attributes across time while reducing the number of evaluations
 and increasing solve quality.</p>
@@ -308,7 +574,7 @@ strategy for animated and static attributes is <strong>All Frames</strong></p>
 </ol>
 </section>
 <section id="solver-scene-graph">
-<span id="solver-design-solver-scene-graph"></span><h2>Solver Scene Graph<a class="headerlink" href="#solver-scene-graph" title="Permalink to this headline">¶</a></h2>
+<span id="solver-design-solver-scene-graph"></span><h2>Solver Scene Graph<a class="headerlink" href="#solver-scene-graph" title="Permalink to this headline">#</a></h2>
 <p>Starting with v0.4.0, mmSolver supports a ‘scene graph’ used for scene
 construction and evaluation. Before the v0.4.0, mmSolver only used the
 Maya DAG to construct and evaluate Markers, Cameras and Bundles.</p>
@@ -348,7 +614,7 @@ scene graph you are solving, then it will immediately fail with an
 error, and automatically switch to <cite>Maya DAG</cite>.</p>
 </section>
 <section id="solver-options">
-<span id="solver-design-solver-options"></span><h2>Solver Options<a class="headerlink" href="#solver-options" title="Permalink to this headline">¶</a></h2>
+<span id="solver-design-solver-options"></span><h2>Solver Options<a class="headerlink" href="#solver-options" title="Permalink to this headline">#</a></h2>
 <p>Like many solvers, the MM Solver has options, however the options are
 hidden from the Solver UI and are set automatically by the Python API.</p>
 <p>To explain the Solver Options below an analogy of climbing a mountain,
@@ -360,11 +626,11 @@ peak (the gradient or mountain slope).</p>
 <figure class="align-center" id="id1">
 <a class="reference internal image-reference" href="_images/algorithm_steepest_decent.png"><img alt="Mountain Climbing" src="_images/algorithm_steepest_decent.png" style="width: 80%;" /></a>
 <figcaption>
-<p><span class="caption-text">Mountain Climbing with Steepest Decent</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<p><span class="caption-text">Mountain Climbing with Steepest Decent</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
 <section id="maximum-number-of-iterations">
-<span id="solver-design-solver-max-iterations"></span><h3>Maximum Number of Iterations<a class="headerlink" href="#maximum-number-of-iterations" title="Permalink to this headline">¶</a></h3>
+<span id="solver-design-solver-max-iterations"></span><h3>Maximum Number of Iterations<a class="headerlink" href="#maximum-number-of-iterations" title="Permalink to this headline">#</a></h3>
 <p>Value type: <code class="docutils literal notranslate"><span class="pre">integer</span></code></p>
 <p>This option does not directly control the number of evaluations
 the solver may run, but instead controls how many attempts the
@@ -373,7 +639,7 @@ solver will try before giving up.</p>
 solve will stop.</p>
 </section>
 <section id="tau-initial-damping-factor">
-<span id="solver-design-solver-tau"></span><h3>Tau - Initial Damping Factor<a class="headerlink" href="#tau-initial-damping-factor" title="Permalink to this headline">¶</a></h3>
+<span id="solver-design-solver-tau"></span><h3>Tau - Initial Damping Factor<a class="headerlink" href="#tau-initial-damping-factor" title="Permalink to this headline">#</a></h3>
 <p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
 <p>The <em>tau</em> factor determines whether the solver will try to refine the
 current parameters a lot (large tau number), or only a small amount
@@ -388,7 +654,7 @@ approximation to the ‘final parameter values’. Otherwise, use ‘tau
 = 10-3’ or even ‘tau = 1.0’.”</p>
 </section>
 <section id="delta-amount-to-change-parameters">
-<span id="solver-design-solver-delta"></span><h3>Delta - Amount to Change Parameters<a class="headerlink" href="#delta-amount-to-change-parameters" title="Permalink to this headline">¶</a></h3>
+<span id="solver-design-solver-delta"></span><h3>Delta - Amount to Change Parameters<a class="headerlink" href="#delta-amount-to-change-parameters" title="Permalink to this headline">#</a></h3>
 <p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
 <p>Delta is the amount of change to the guessed parameters at each
 iteration.</p>
@@ -401,7 +667,7 @@ over-estimate and will likely lead to poor convergence (the solver
 won’t find a good solution).</p>
 </section>
 <section id="epsilon-1-acceptable-gradient-change">
-<span id="solver-design-solver-epsilon-one"></span><h3>Epsilon #1 - Acceptable Gradient Change<a class="headerlink" href="#epsilon-1-acceptable-gradient-change" title="Permalink to this headline">¶</a></h3>
+<span id="solver-design-solver-epsilon-one"></span><h3>Epsilon #1 - Acceptable Gradient Change<a class="headerlink" href="#epsilon-1-acceptable-gradient-change" title="Permalink to this headline">#</a></h3>
 <p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
 <p>The gradient error (sometimes named epsilon #1) is used to find when
 the solver has reached the “top of the mountain peak”. The gradient
@@ -415,7 +681,7 @@ decreased the gradient by at least this value, the solver gives up
 trying to reduce the error any more, and stops solving.</p>
 </section>
 <section id="epsilon-2-acceptable-parameter-change">
-<span id="solver-design-solver-epsilon-two"></span><h3>Epsilon #2 - Acceptable Parameter Change<a class="headerlink" href="#epsilon-2-acceptable-parameter-change" title="Permalink to this headline">¶</a></h3>
+<span id="solver-design-solver-epsilon-two"></span><h3>Epsilon #2 - Acceptable Parameter Change<a class="headerlink" href="#epsilon-2-acceptable-parameter-change" title="Permalink to this headline">#</a></h3>
 <p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
 <p>The parameter error (sometimes named epsilon #2) is used to determine
 the when the solver can stop changing parameter values because the
@@ -427,7 +693,7 @@ not change by at least this value, the solver gives up trying to
 reduce the error any more.</p>
 </section>
 <section id="epsilon-3-acceptable-deviation-error">
-<span id="solver-design-solver-epsilon-three"></span><h3>Epsilon #3 - Acceptable Deviation Error<a class="headerlink" href="#epsilon-3-acceptable-deviation-error" title="Permalink to this headline">¶</a></h3>
+<span id="solver-design-solver-epsilon-three"></span><h3>Epsilon #3 - Acceptable Deviation Error<a class="headerlink" href="#epsilon-3-acceptable-deviation-error" title="Permalink to this headline">#</a></h3>
 <p>Value type: <code class="docutils literal notranslate"><span class="pre">float</span></code></p>
 <p>The deviation error (sometimes named epsilon #3 or deviation) is the
 error level that is considered a good solve. To use a mountain
@@ -438,12 +704,13 @@ this value, the solver considers the error to be low enough for the
 user’s needs and stops trying to reduce the error.</p>
 </section>
 <section id="auto-differencing-type">
-<span id="solver-design-solver-auto-diff-type"></span><h3>Auto-Differencing Type<a class="headerlink" href="#auto-differencing-type" title="Permalink to this headline">¶</a></h3>
+<span id="solver-design-solver-auto-diff-type"></span><h3>Auto-Differencing Type<a class="headerlink" href="#auto-differencing-type" title="Permalink to this headline">#</a></h3>
 <p>Value type: <code class="docutils literal notranslate"><span class="pre">integer</span></code></p>
 <p>The strategy used to compute the direction (gradient slope) the solver
 should move toward.</p>
+<div class="table-wrapper colwidths-auto docutils container" id="id2">
 <table class="colwidths-auto docutils align-default" id="id2">
-<caption><span class="caption-text">Auto-Differencing Types</span><a class="headerlink" href="#id2" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Auto-Differencing Types</span><a class="headerlink" href="#id2" title="Permalink to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Index</p></th>
 <th class="head"><p>Name</p></th>
@@ -461,29 +728,30 @@ should move toward.</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p>In practice, the authors of mmSolver have found <code class="docutils literal notranslate"><span class="pre">central</span></code>
 dramatically slows down the solver and does not increase accuracy very
 much. It is therefore recommended to use <code class="docutils literal notranslate"><span class="pre">forward</span></code>.</p>
 </section>
 </section>
 <section id="general-solving-concepts">
-<h2>General Solving Concepts<a class="headerlink" href="#general-solving-concepts" title="Permalink to this headline">¶</a></h2>
+<h2>General Solving Concepts<a class="headerlink" href="#general-solving-concepts" title="Permalink to this headline">#</a></h2>
 <p><strong>To be written</strong></p>
 <section id="over-parameterization">
-<h3>Over-Parameterization<a class="headerlink" href="#over-parameterization" title="Permalink to this headline">¶</a></h3>
+<h3>Over-Parameterization<a class="headerlink" href="#over-parameterization" title="Permalink to this headline">#</a></h3>
 <p>Parameters-errors ratio is too high.</p>
 <p><strong>To be written</strong></p>
 </section>
 <section id="plane-line-and-curve-constraints">
-<h3>Plane, Line and Curve Constraints<a class="headerlink" href="#plane-line-and-curve-constraints" title="Permalink to this headline">¶</a></h3>
+<h3>Plane, Line and Curve Constraints<a class="headerlink" href="#plane-line-and-curve-constraints" title="Permalink to this headline">#</a></h3>
 <p><strong>To be written</strong></p>
 </section>
 </section>
 <section id="frequently-asked-questions-faq">
-<span id="solver-faq-heading"></span><h2>Frequently Asked Questions (FAQ)<a class="headerlink" href="#frequently-asked-questions-faq" title="Permalink to this headline">¶</a></h2>
+<span id="solver-faq-heading"></span><h2>Frequently Asked Questions (FAQ)<a class="headerlink" href="#frequently-asked-questions-faq" title="Permalink to this headline">#</a></h2>
 <p>Below are the some common questions and answers.</p>
 <section id="how-do-i-get-the-list-of-supported-solver-types">
-<span id="solver-faq-how-to-get-supported-solver-types"></span><h3>How do I get the list of supported Solver Types?<a class="headerlink" href="#how-do-i-get-the-list-of-supported-solver-types" title="Permalink to this headline">¶</a></h3>
+<span id="solver-faq-how-to-get-supported-solver-types"></span><h3>How do I get the list of supported Solver Types?<a class="headerlink" href="#how-do-i-get-the-list-of-supported-solver-types" title="Permalink to this headline">#</a></h3>
 <p>To dynamically get the supported list of solver types, run this Python
 command in Maya:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">loadPlugin</span><span class="p">(</span><span class="s1">&#39;mmSolver&#39;</span><span class="p">)</span>
@@ -493,8 +761,9 @@ command in Maya:</p>
 </div>
 <p>The full list of solver types supported are listed below. Please note
 that depending on compilation, some solver types will not be available.</p>
+<div class="table-wrapper colwidths-auto docutils container" id="id3">
 <table class="colwidths-auto docutils align-default" id="id3">
-<caption><span class="caption-text">Solver Types</span><a class="headerlink" href="#id3" title="Permalink to this table">¶</a></caption>
+<caption><span class="caption-text">Solver Types</span><a class="headerlink" href="#id3" title="Permalink to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Index</p></th>
 <th class="head"><p>Name</p></th>
@@ -516,33 +785,82 @@ that depending on compilation, some solver types will not be available.</p>
 </tr>
 </tbody>
 </table>
+</div>
 </section>
 <section id="what-transform-space-is-used-for-solving">
-<span id="solver-faq-what-transform-space-is-used-for-solving"></span><h3>What transform space is used for solving?<a class="headerlink" href="#what-transform-space-is-used-for-solving" title="Permalink to this headline">¶</a></h3>
+<span id="solver-faq-what-transform-space-is-used-for-solving"></span><h3>What transform space is used for solving?<a class="headerlink" href="#what-transform-space-is-used-for-solving" title="Permalink to this headline">#</a></h3>
 <p><em>MM Solver</em> evaluates all <em>Marker</em> and <em>Bundle</em> screen-space errors in
 <strong>world-space</strong>, but solving is not performed in a transform space.
 Solving is performed directly on <em>Attribute</em> values.</p>
 </section>
 <section id="how-can-i-use-a-dag-hierarchy-to-reduce-the-number-of-attributes">
-<span id="solver-faq-how-to-reduce-attribute-count-with-dag"></span><h3>How can I use a DAG hierarchy to reduce the number of <em>Attributes</em>?<a class="headerlink" href="#how-can-i-use-a-dag-hierarchy-to-reduce-the-number-of-attributes" title="Permalink to this headline">¶</a></h3>
+<span id="solver-faq-how-to-reduce-attribute-count-with-dag"></span><h3>How can I use a DAG hierarchy to reduce the number of <em>Attributes</em>?<a class="headerlink" href="#how-can-i-use-a-dag-hierarchy-to-reduce-the-number-of-attributes" title="Permalink to this headline">#</a></h3>
 <p><strong>To be written</strong></p>
 </section>
 <section id="how-can-i-make-my-solves-faster">
-<span id="solver-faq-how-to-increase-solve-speed"></span><h3>How can I make my solves faster?<a class="headerlink" href="#how-can-i-make-my-solves-faster" title="Permalink to this headline">¶</a></h3>
+<span id="solver-faq-how-to-increase-solve-speed"></span><h3>How can I make my solves faster?<a class="headerlink" href="#how-can-i-make-my-solves-faster" title="Permalink to this headline">#</a></h3>
 <p><strong>To be written</strong></p>
 </section>
 </section>
 </section>
 
-
-            <div class="clearer"></div>
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="nodes.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Nodes</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="techniques_solving_rigid_objects.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Solving Rigid Object Techniques</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli.
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              
+            </div>
           </div>
         </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-  <h3><a href="index.html">Table of Contents</a></h3>
-  <ul>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
 <li><a class="reference internal" href="#">Solver Design</a><ul>
 <li><a class="reference internal" href="#how-does-the-solver-work">How does the solver work?</a></li>
 <li><a class="reference internal" href="#attributes">Attributes</a></li>
@@ -583,55 +901,17 @@ Solving is performed directly on <em>Attribute</em> values.</p>
 </li>
 </ul>
 
-  <h4>Previous topic</h4>
-  <p class="topless"><a href="techniques_solving_rigid_objects.html"
-                        title="previous chapter">Solving Rigid Object Techniques</a></p>
-  <h4>Next topic</h4>
-  <p class="topless"><a href="nodes.html"
-                        title="next chapter">Nodes</a></p>
-  <div role="note" aria-label="source link">
-    <h3>This Page</h3>
-    <ul class="this-page-menu">
-      <li><a href="_sources/solver_design.rst.txt"
-            rel="nofollow">Show Source</a></li>
-    </ul>
-   </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
+          </div>
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="py-modindex.html" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="right" >
-          <a href="nodes.html" title="Nodes"
-             >next</a> |</li>
-        <li class="right" >
-          <a href="techniques_solving_rigid_objects.html" title="Solving Rigid Object Techniques"
-             >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Solver Design</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
-    </div>
-  </body>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/scripts/furo.js"></script>
+    </body>
 </html>

@@ -1,1115 +1,1589 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
 
-<!DOCTYPE html>
-
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Python Module Index &#8212; mayaMatchMoveSolver master documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/><title>Python Module Index - mayaMatchMoveSolver master documentation</title>
+<link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">mayaMatchMoveSolver master documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">mayaMatchMoveSolver master documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tools.html">Tools</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="tools_solver_ui.html">Solver UI</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_basic.html">Basic Solver Tab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_standard.html">Standard Solver Tab</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tools_createnode.html">Create Node Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_selection.html">Selection Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_frametools.html">Frame Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_cameracontextmenu.html">Camera Context Menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_attributetools.html">Attribute Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_cameratools.html">Camera Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markerbundletools.html">Marker Bundle Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_bundletools.html">Bundle Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markertools.html">Marker Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_linetools.html">Line Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_displaytools.html">Display Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_zdepthtools.html">Z-Depth Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_generaltools.html">General Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_inputoutput.html">Input/Output Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_hotkeys.html">Hotkeys</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="techniques.html">MM Solver Techniques</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="techniques_lens_distortion.html">Lens Distortion Techniques</a></li>
+<li class="toctree-l2"><a class="reference internal" href="techniques_rotomation.html">Rotomation Techniques</a></li>
+<li class="toctree-l2"><a class="reference internal" href="techniques_solving_cameras.html">Camera Solving Techniques</a></li>
+<li class="toctree-l2"><a class="reference internal" href="techniques_solving_rigid_objects.html">Solving Rigid Object Techniques</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="nodes.html">Nodes</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodes_transforms.html">Transform Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_shapes.html">Shape Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_imageplane.html">Image Plane Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_lens.html">Lens Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_display.html">Display Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_other.html">Other Nodes</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="commands.html">Commands</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="commands_solve.html">Solve Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_other.html">Other Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_image.html">Image Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_display.html">Display Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">Related Books and Papers</a></li>
+</ul>
+<ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="mmSolver.tools.html">mmSolver.tools</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.aboutwindow.html">mmSolver.tools.aboutwindow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.attachbundletocurve.html">mmSolver.tools.attachbundletocurve</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.averagemarker.html">mmSolver.tools.averagemarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.cameraaim.html">mmSolver.tools.cameraaim</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.centertwodee.html">mmSolver.tools.centertwodee</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.channelsen.html">mmSolver.tools.channelsen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.convertmarker.html">mmSolver.tools.convertmarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.copypastecamera.html">mmSolver.tools.copypastecamera</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.createbundle.html">mmSolver.tools.createbundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.createcontroller.html">mmSolver.tools.createcontroller</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.createcontroller2.html">mmSolver.tools.createcontroller2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.createmarker.html">mmSolver.tools.createmarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.deformmarker.html">mmSolver.tools.deformmarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.duplicatemarker.html">mmSolver.tools.duplicatemarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.editrootframes.html">mmSolver.tools.editrootframes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.hotkeyswitcher.html">mmSolver.tools.hotkeyswitcher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.linkmarkerbundle.html">mmSolver.tools.linkmarkerbundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.loadmarker.html">mmSolver.tools.loadmarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.markerbundlerename.html">mmSolver.tools.markerbundlerename</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.markerbundlerenamewithmetadata.html">mmSolver.tools.markerbundlerenamewithmetadata</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.mmhotkeyset.html">mmSolver.tools.mmhotkeyset</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.mmmenu.html">mmSolver.tools.mmmenu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.mmshelf.html">mmSolver.tools.mmshelf</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.navigaterootframes.html">mmSolver.tools.navigaterootframes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.placemarkermanip.html">mmSolver.tools.placemarkermanip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.raycastmarker.html">mmSolver.tools.raycastmarker</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.removecontroller2.html">mmSolver.tools.removecontroller2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.removesolvernodes.html">mmSolver.tools.removesolvernodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.reparent.html">mmSolver.tools.reparent</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.reparent2.html">mmSolver.tools.reparent2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.reprojectbundle.html">mmSolver.tools.reprojectbundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.screenspacemotiontrail.html">mmSolver.tools.screenspacemotiontrail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.screenspacetransform.html">mmSolver.tools.screenspacetransform</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.screenzmanipulator.html">mmSolver.tools.screenzmanipulator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.selection.html">mmSolver.tools.selection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.setattributedetails.html">mmSolver.tools.setattributedetails</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.showdeviationcurves.html">mmSolver.tools.showdeviationcurves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.smoothkeyframes.html">mmSolver.tools.smoothkeyframes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.solver.html">mmSolver.tools.solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.sortoutlinernodes.html">mmSolver.tools.sortoutlinernodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.surfacerivet.html">mmSolver.tools.surfacerivet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.sysinfowindow.html">mmSolver.tools.sysinfowindow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.togglebundlelock.html">mmSolver.tools.togglebundlelock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.togglemarkerlock.html">mmSolver.tools.togglemarkerlock</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.triangulatebundle.html">mmSolver.tools.triangulatebundle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.undoredoscene.html">mmSolver.tools.undoredoscene</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.userpreferences.html">mmSolver.tools.userpreferences</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.tools.userprefswindow.html">mmSolver.tools.userprefswindow</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.api.html">mmSolver.api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.logger.html">mmSolver.logger</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="mmSolver.ui.html">mmSolver.ui</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.base_maya_window.html">mmSolver.ui.base_maya_window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.converttypes.html">mmSolver.ui.converttypes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.commonmenus.html">mmSolver.ui.commonmenus</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.nodes.html">mmSolver.ui.nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.shelfutils.html">mmSolver.ui.shelfutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uimodels.html">mmSolver.ui.uimodels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uiutils.html">mmSolver.ui.uiutils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.utils.html">mmSolver.utils</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="licenses.html">Licenses</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          
+<section class="domainindex-section">
+  <h1>Python Module Index</h1>
+  <div class="domainindex-jumpbox"><a href="#cap-m"><strong>m</strong></a></div>
+</section>
+<table class="domainindex-table">
+  <tr class="pcap">
+    <td></td><td>&#160;</td><td></td>
+  </tr>
+  <tr class="cap" id="cap-m">
+    <td></td><td><strong>m</strong></td><td></td>
+  </tr>
+  <tr>
+    <td><img src="_static/minus.png" class="toggler"
+              id="toggle-1" style="display: none" alt="-" /></td>
+    <td>
+        <code class="xref">mmSolver</code></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.logger.html#module-mmSolver.logger"><code class="xref">mmSolver.logger</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.html#module-mmSolver.tools"><code class="xref">mmSolver.tools</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.aboutwindow.html#module-mmSolver.tools.aboutwindow"><code class="xref">mmSolver.tools.aboutwindow</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.aboutwindow.html#module-mmSolver.tools.aboutwindow.constant"><code class="xref">mmSolver.tools.aboutwindow.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.attachbundletocurve.html#module-mmSolver.tools.attachbundletocurve"><code class="xref">mmSolver.tools.attachbundletocurve</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.attachbundletocurve.html#module-mmSolver.tools.attachbundletocurve.constant"><code class="xref">mmSolver.tools.attachbundletocurve.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.attachbundletocurve.html#module-mmSolver.tools.attachbundletocurve.lib"><code class="xref">mmSolver.tools.attachbundletocurve.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.attachbundletocurve.html#module-mmSolver.tools.attachbundletocurve.tool"><code class="xref">mmSolver.tools.attachbundletocurve.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.attributebake.html#module-mmSolver.tools.attributebake"><code class="xref">mmSolver.tools.attributebake</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.attributebake.html#module-mmSolver.tools.attributebake.constant"><code class="xref">mmSolver.tools.attributebake.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.attributebake.html#module-mmSolver.tools.attributebake.lib"><code class="xref">mmSolver.tools.attributebake.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.attributebake.html#module-mmSolver.tools.attributebake.tool"><code class="xref">mmSolver.tools.attributebake.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.averagemarker.html#module-mmSolver.tools.averagemarker"><code class="xref">mmSolver.tools.averagemarker</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.averagemarker.html#module-mmSolver.tools.averagemarker.lib"><code class="xref">mmSolver.tools.averagemarker.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.averagemarker.html#module-mmSolver.tools.averagemarker.tool"><code class="xref">mmSolver.tools.averagemarker.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.cameraaim.html#module-mmSolver.tools.cameraaim"><code class="xref">mmSolver.tools.cameraaim</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.cameraaim.html#module-mmSolver.tools.cameraaim.lib"><code class="xref">mmSolver.tools.cameraaim.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.cameraaim.html#module-mmSolver.tools.cameraaim.tool"><code class="xref">mmSolver.tools.cameraaim.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.centertwodee.html#module-mmSolver.tools.centertwodee"><code class="xref">mmSolver.tools.centertwodee</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.centertwodee.html#module-mmSolver.tools.centertwodee.constant"><code class="xref">mmSolver.tools.centertwodee.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.centertwodee.html#module-mmSolver.tools.centertwodee.tool"><code class="xref">mmSolver.tools.centertwodee.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.channelsen.html#module-mmSolver.tools.channelsen"><code class="xref">mmSolver.tools.channelsen</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.channelsen.html#module-mmSolver.tools.channelsen.constant"><code class="xref">mmSolver.tools.channelsen.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.channelsen.html#module-mmSolver.tools.channelsen.lib"><code class="xref">mmSolver.tools.channelsen.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.channelsen.html#module-mmSolver.tools.channelsen.tool"><code class="xref">mmSolver.tools.channelsen.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.convertmarker.html#module-mmSolver.tools.convertmarker"><code class="xref">mmSolver.tools.convertmarker</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.convertmarker.html#module-mmSolver.tools.convertmarker.constant"><code class="xref">mmSolver.tools.convertmarker.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.convertmarker.html#module-mmSolver.tools.convertmarker.lib"><code class="xref">mmSolver.tools.convertmarker.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.convertmarker.html#module-mmSolver.tools.convertmarker.tool"><code class="xref">mmSolver.tools.convertmarker.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.copypastecamera.html#module-mmSolver.tools.copypastecamera"><code class="xref">mmSolver.tools.copypastecamera</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.copypastecamera.html#module-mmSolver.tools.copypastecamera.constant"><code class="xref">mmSolver.tools.copypastecamera.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.copypastecamera.html#module-mmSolver.tools.copypastecamera.lib"><code class="xref">mmSolver.tools.copypastecamera.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.copypastecamera.html#module-mmSolver.tools.copypastecamera.tool"><code class="xref">mmSolver.tools.copypastecamera.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createbundle.html#module-mmSolver.tools.createbundle"><code class="xref">mmSolver.tools.createbundle</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createbundle.html#module-mmSolver.tools.createbundle.constant"><code class="xref">mmSolver.tools.createbundle.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createbundle.html#module-mmSolver.tools.createbundle.tool"><code class="xref">mmSolver.tools.createbundle.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createcontroller.html#module-mmSolver.tools.createcontroller"><code class="xref">mmSolver.tools.createcontroller</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createcontroller.html#module-mmSolver.tools.createcontroller.constant"><code class="xref">mmSolver.tools.createcontroller.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createcontroller.html#module-mmSolver.tools.createcontroller.lib"><code class="xref">mmSolver.tools.createcontroller.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createcontroller.html#module-mmSolver.tools.createcontroller.tool"><code class="xref">mmSolver.tools.createcontroller.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createcontroller2.html#module-mmSolver.tools.createcontroller2"><code class="xref">mmSolver.tools.createcontroller2</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createcontroller2.html#module-mmSolver.tools.createcontroller2.constant"><code class="xref">mmSolver.tools.createcontroller2.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createcontroller2.html#module-mmSolver.tools.createcontroller2.lib"><code class="xref">mmSolver.tools.createcontroller2.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createcontroller2.html#module-mmSolver.tools.createcontroller2.tool"><code class="xref">mmSolver.tools.createcontroller2.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createcontroller2.html#module-mmSolver.tools.createcontroller2.ui"><code class="xref">mmSolver.tools.createcontroller2.ui</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createmarker.html#module-mmSolver.tools.createmarker"><code class="xref">mmSolver.tools.createmarker</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createmarker.html#module-mmSolver.tools.createmarker.constant"><code class="xref">mmSolver.tools.createmarker.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.createmarker.html#module-mmSolver.tools.createmarker.tool"><code class="xref">mmSolver.tools.createmarker.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.deformmarker.html#module-mmSolver.tools.deformmarker"><code class="xref">mmSolver.tools.deformmarker</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.deformmarker.html#module-mmSolver.tools.deformmarker.constant"><code class="xref">mmSolver.tools.deformmarker.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.deformmarker.html#module-mmSolver.tools.deformmarker.lib"><code class="xref">mmSolver.tools.deformmarker.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.deformmarker.html#module-mmSolver.tools.deformmarker.tool"><code class="xref">mmSolver.tools.deformmarker.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.duplicatemarker.html#module-mmSolver.tools.duplicatemarker"><code class="xref">mmSolver.tools.duplicatemarker</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.duplicatemarker.html#module-mmSolver.tools.duplicatemarker.constant"><code class="xref">mmSolver.tools.duplicatemarker.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.duplicatemarker.html#module-mmSolver.tools.duplicatemarker.lib"><code class="xref">mmSolver.tools.duplicatemarker.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.duplicatemarker.html#module-mmSolver.tools.duplicatemarker.tool"><code class="xref">mmSolver.tools.duplicatemarker.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.editrootframes.html#module-mmSolver.tools.editrootframes"><code class="xref">mmSolver.tools.editrootframes</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.editrootframes.html#module-mmSolver.tools.editrootframes.lib"><code class="xref">mmSolver.tools.editrootframes.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.hotkeyswitcher.html#module-mmSolver.tools.hotkeyswitcher"><code class="xref">mmSolver.tools.hotkeyswitcher</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.hotkeyswitcher.html#module-mmSolver.tools.hotkeyswitcher.constant"><code class="xref">mmSolver.tools.hotkeyswitcher.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.hotkeyswitcher.html#module-mmSolver.tools.hotkeyswitcher.lib"><code class="xref">mmSolver.tools.hotkeyswitcher.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.hotkeyswitcher.html#module-mmSolver.tools.hotkeyswitcher.tool"><code class="xref">mmSolver.tools.hotkeyswitcher.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.linkmarkerbundle.html#module-mmSolver.tools.linkmarkerbundle"><code class="xref">mmSolver.tools.linkmarkerbundle</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.linkmarkerbundle.html#module-mmSolver.tools.linkmarkerbundle.constant"><code class="xref">mmSolver.tools.linkmarkerbundle.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.linkmarkerbundle.html#module-mmSolver.tools.linkmarkerbundle.lib"><code class="xref">mmSolver.tools.linkmarkerbundle.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.linkmarkerbundle.html#module-mmSolver.tools.linkmarkerbundle.tool"><code class="xref">mmSolver.tools.linkmarkerbundle.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.loadmarker.html#module-mmSolver.tools.loadmarker"><code class="xref">mmSolver.tools.loadmarker</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.loadmarker.html#module-mmSolver.tools.loadmarker.constant"><code class="xref">mmSolver.tools.loadmarker.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.loadmarker.html#module-mmSolver.tools.loadmarker.lib.fieldofview"><code class="xref">mmSolver.tools.loadmarker.lib.fieldofview</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.loadmarker.html#module-mmSolver.tools.loadmarker.lib.mayareadfile"><code class="xref">mmSolver.tools.loadmarker.lib.mayareadfile</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.loadmarker.html#module-mmSolver.tools.loadmarker.lib.utils"><code class="xref">mmSolver.tools.loadmarker.lib.utils</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.loadmarker.html#module-mmSolver.tools.loadmarker.tool"><code class="xref">mmSolver.tools.loadmarker.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.markerbundlerename.html#module-mmSolver.tools.markerbundlerename"><code class="xref">mmSolver.tools.markerbundlerename</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.markerbundlerename.html#module-mmSolver.tools.markerbundlerename.constant"><code class="xref">mmSolver.tools.markerbundlerename.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.markerbundlerename.html#module-mmSolver.tools.markerbundlerename.lib"><code class="xref">mmSolver.tools.markerbundlerename.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.markerbundlerename.html#module-mmSolver.tools.markerbundlerename.tool"><code class="xref">mmSolver.tools.markerbundlerename.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.markerbundlerenamewithmetadata.html#module-mmSolver.tools.markerbundlerenamewithmetadata"><code class="xref">mmSolver.tools.markerbundlerenamewithmetadata</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.markerbundlerenamewithmetadata.html#module-mmSolver.tools.markerbundlerenamewithmetadata.constant"><code class="xref">mmSolver.tools.markerbundlerenamewithmetadata.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.markerbundlerenamewithmetadata.html#module-mmSolver.tools.markerbundlerenamewithmetadata.lib"><code class="xref">mmSolver.tools.markerbundlerenamewithmetadata.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.markerbundlerenamewithmetadata.html#module-mmSolver.tools.markerbundlerenamewithmetadata.tool"><code class="xref">mmSolver.tools.markerbundlerenamewithmetadata.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.mmhotkeyset.html#module-mmSolver.tools.mmhotkeyset"><code class="xref">mmSolver.tools.mmhotkeyset</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.mmhotkeyset.html#module-mmSolver.tools.mmhotkeyset.tool"><code class="xref">mmSolver.tools.mmhotkeyset.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.mmmenu.html#module-mmSolver.tools.mmmenu"><code class="xref">mmSolver.tools.mmmenu</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.mmmenu.html#module-mmSolver.tools.mmmenu.constant"><code class="xref">mmSolver.tools.mmmenu.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.mmmenu.html#module-mmSolver.tools.mmmenu.lib"><code class="xref">mmSolver.tools.mmmenu.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.mmmenu.html#module-mmSolver.tools.mmmenu.tool"><code class="xref">mmSolver.tools.mmmenu.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.mmshelf.html#module-mmSolver.tools.mmshelf"><code class="xref">mmSolver.tools.mmshelf</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.mmshelf.html#module-mmSolver.tools.mmshelf.constant"><code class="xref">mmSolver.tools.mmshelf.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.mmshelf.html#module-mmSolver.tools.mmshelf.lib"><code class="xref">mmSolver.tools.mmshelf.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.mmshelf.html#module-mmSolver.tools.mmshelf.tool"><code class="xref">mmSolver.tools.mmshelf.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.navigaterootframes.html#module-mmSolver.tools.navigaterootframes"><code class="xref">mmSolver.tools.navigaterootframes</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.navigaterootframes.html#module-mmSolver.tools.navigaterootframes.lib"><code class="xref">mmSolver.tools.navigaterootframes.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.navigaterootframes.html#module-mmSolver.tools.navigaterootframes.tool"><code class="xref">mmSolver.tools.navigaterootframes.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.placemarkermanip.html#module-mmSolver.tools.placemarkermanip"><code class="xref">mmSolver.tools.placemarkermanip</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.placemarkermanip.html#module-mmSolver.tools.placemarkermanip.constant"><code class="xref">mmSolver.tools.placemarkermanip.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.placemarkermanip.html#module-mmSolver.tools.placemarkermanip.tool"><code class="xref">mmSolver.tools.placemarkermanip.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.raycastmarker.html#module-mmSolver.tools.raycastmarker"><code class="xref">mmSolver.tools.raycastmarker</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.raycastmarker.html#module-mmSolver.tools.raycastmarker.tool"><code class="xref">mmSolver.tools.raycastmarker.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.removecontroller2.html#module-mmSolver.tools.removecontroller2"><code class="xref">mmSolver.tools.removecontroller2</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.removecontroller2.html#module-mmSolver.tools.removecontroller2.tool"><code class="xref">mmSolver.tools.removecontroller2.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.removesolvernodes.html#module-mmSolver.tools.removesolvernodes"><code class="xref">mmSolver.tools.removesolvernodes</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.removesolvernodes.html#module-mmSolver.tools.removesolvernodes.tool"><code class="xref">mmSolver.tools.removesolvernodes.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.reparent.html#module-mmSolver.tools.reparent"><code class="xref">mmSolver.tools.reparent</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.reparent.html#module-mmSolver.tools.reparent.keytimeutils"><code class="xref">mmSolver.tools.reparent.keytimeutils</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.reparent.html#module-mmSolver.tools.reparent.lib"><code class="xref">mmSolver.tools.reparent.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.reparent.html#module-mmSolver.tools.reparent.tool"><code class="xref">mmSolver.tools.reparent.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.reparent2.html#module-mmSolver.tools.reparent2"><code class="xref">mmSolver.tools.reparent2</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.reparent2.html#module-mmSolver.tools.reparent2.lib"><code class="xref">mmSolver.tools.reparent2.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.reparent2.html#module-mmSolver.tools.reparent2.tool"><code class="xref">mmSolver.tools.reparent2.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.reprojectbundle.html#module-mmSolver.tools.reprojectbundle"><code class="xref">mmSolver.tools.reprojectbundle</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.reprojectbundle.html#module-mmSolver.tools.reprojectbundle.lib"><code class="xref">mmSolver.tools.reprojectbundle.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.reprojectbundle.html#module-mmSolver.tools.reprojectbundle.tool"><code class="xref">mmSolver.tools.reprojectbundle.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.screenspacemotiontrail.html#module-mmSolver.tools.screenspacemotiontrail"><code class="xref">mmSolver.tools.screenspacemotiontrail</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.screenspacemotiontrail.html#module-mmSolver.tools.screenspacemotiontrail.constant"><code class="xref">mmSolver.tools.screenspacemotiontrail.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.screenspacemotiontrail.html#module-mmSolver.tools.screenspacemotiontrail.lib"><code class="xref">mmSolver.tools.screenspacemotiontrail.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.screenspacemotiontrail.html#module-mmSolver.tools.screenspacemotiontrail.tool"><code class="xref">mmSolver.tools.screenspacemotiontrail.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.screenspacerigbake.html#module-mmSolver.tools.screenspacerigbake"><code class="xref">mmSolver.tools.screenspacerigbake</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.screenspacerigbake.html#module-mmSolver.tools.screenspacerigbake.tool"><code class="xref">mmSolver.tools.screenspacerigbake.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.screenspacetransform.html#module-mmSolver.tools.screenspacetransform"><code class="xref">mmSolver.tools.screenspacetransform</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.screenspacetransform.html#module-mmSolver.tools.screenspacetransform.lib"><code class="xref">mmSolver.tools.screenspacetransform.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.screenspacetransform.html#module-mmSolver.tools.screenspacetransform.tool"><code class="xref">mmSolver.tools.screenspacetransform.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.screenzmanipulator.html#module-mmSolver.tools.screenzmanipulator"><code class="xref">mmSolver.tools.screenzmanipulator</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.screenzmanipulator.html#module-mmSolver.tools.screenzmanipulator.constant"><code class="xref">mmSolver.tools.screenzmanipulator.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.screenzmanipulator.html#module-mmSolver.tools.screenzmanipulator.lib"><code class="xref">mmSolver.tools.screenzmanipulator.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.screenzmanipulator.html#module-mmSolver.tools.screenzmanipulator.tool"><code class="xref">mmSolver.tools.screenzmanipulator.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.selection.html#module-mmSolver.tools.selection.tools"><code class="xref">mmSolver.tools.selection.tools</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.setattributedetails.html#module-mmSolver.tools.setattributedetails"><code class="xref">mmSolver.tools.setattributedetails</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.setattributedetails.html#module-mmSolver.tools.setattributedetails.constant"><code class="xref">mmSolver.tools.setattributedetails.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.setattributedetails.html#module-mmSolver.tools.setattributedetails.lib"><code class="xref">mmSolver.tools.setattributedetails.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.showdeviationcurves.html#module-mmSolver.tools.showdeviationcurves"><code class="xref">mmSolver.tools.showdeviationcurves</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.showdeviationcurves.html#module-mmSolver.tools.showdeviationcurves.tool"><code class="xref">mmSolver.tools.showdeviationcurves.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.smoothkeyframes.html#module-mmSolver.tools.smoothkeyframes"><code class="xref">mmSolver.tools.smoothkeyframes</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.smoothkeyframes.html#module-mmSolver.tools.smoothkeyframes.constant"><code class="xref">mmSolver.tools.smoothkeyframes.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.smoothkeyframes.html#module-mmSolver.tools.smoothkeyframes.lib"><code class="xref">mmSolver.tools.smoothkeyframes.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.smoothkeyframes.html#module-mmSolver.tools.smoothkeyframes.tool"><code class="xref">mmSolver.tools.smoothkeyframes.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver"><code class="xref">mmSolver.tools.solver</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.constant"><code class="xref">mmSolver.tools.solver.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.collection"><code class="xref">mmSolver.tools.solver.lib.collection</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.collectionstate"><code class="xref">mmSolver.tools.solver.lib.collectionstate</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.marker"><code class="xref">mmSolver.tools.solver.lib.marker</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.maya_utils"><code class="xref">mmSolver.tools.solver.lib.maya_utils</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.scene_data"><code class="xref">mmSolver.tools.solver.lib.scene_data</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.solver"><code class="xref">mmSolver.tools.solver.lib.solver</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.solver_step"><code class="xref">mmSolver.tools.solver.lib.solver_step</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.state"><code class="xref">mmSolver.tools.solver.lib.state</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.uiquery"><code class="xref">mmSolver.tools.solver.lib.uiquery</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.maya_callbacks"><code class="xref">mmSolver.tools.solver.maya_callbacks</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.ui.attr_nodes"><code class="xref">mmSolver.tools.solver.ui.attr_nodes</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.ui.convert_to_ui"><code class="xref">mmSolver.tools.solver.ui.convert_to_ui</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.ui.object_nodes"><code class="xref">mmSolver.tools.solver.ui.object_nodes</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.ui.solver_nodes"><code class="xref">mmSolver.tools.solver.ui.solver_nodes</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.sortoutlinernodes.html#module-mmSolver.tools.sortoutlinernodes"><code class="xref">mmSolver.tools.sortoutlinernodes</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.sortoutlinernodes.html#module-mmSolver.tools.sortoutlinernodes.lib"><code class="xref">mmSolver.tools.sortoutlinernodes.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.sortoutlinernodes.html#module-mmSolver.tools.sortoutlinernodes.tool"><code class="xref">mmSolver.tools.sortoutlinernodes.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.sysinfowindow.html#module-mmSolver.tools.sysinfowindow"><code class="xref">mmSolver.tools.sysinfowindow</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.sysinfowindow.html#module-mmSolver.tools.sysinfowindow.constant"><code class="xref">mmSolver.tools.sysinfowindow.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.togglebundlelock.html#module-mmSolver.tools.togglebundlelock"><code class="xref">mmSolver.tools.togglebundlelock</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.togglebundlelock.html#module-mmSolver.tools.togglebundlelock.constant"><code class="xref">mmSolver.tools.togglebundlelock.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.togglebundlelock.html#module-mmSolver.tools.togglebundlelock.tool"><code class="xref">mmSolver.tools.togglebundlelock.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.togglemarkerlock.html#module-mmSolver.tools.togglemarkerlock"><code class="xref">mmSolver.tools.togglemarkerlock</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.togglemarkerlock.html#module-mmSolver.tools.togglemarkerlock.constant"><code class="xref">mmSolver.tools.togglemarkerlock.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.togglemarkerlock.html#module-mmSolver.tools.togglemarkerlock.tool"><code class="xref">mmSolver.tools.togglemarkerlock.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.triangulatebundle.html#module-mmSolver.tools.triangulatebundle"><code class="xref">mmSolver.tools.triangulatebundle</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.triangulatebundle.html#module-mmSolver.tools.triangulatebundle.lib"><code class="xref">mmSolver.tools.triangulatebundle.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.triangulatebundle.html#module-mmSolver.tools.triangulatebundle.tool"><code class="xref">mmSolver.tools.triangulatebundle.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.undoredoscene.html#module-mmSolver.tools.undoredoscene"><code class="xref">mmSolver.tools.undoredoscene</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.undoredoscene.html#module-mmSolver.tools.undoredoscene.lib"><code class="xref">mmSolver.tools.undoredoscene.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.undoredoscene.html#module-mmSolver.tools.undoredoscene.tool"><code class="xref">mmSolver.tools.undoredoscene.tool</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.userpreferences.html#module-mmSolver.tools.userpreferences"><code class="xref">mmSolver.tools.userpreferences</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.userpreferences.html#module-mmSolver.tools.userpreferences.constant"><code class="xref">mmSolver.tools.userpreferences.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.userpreferences.html#module-mmSolver.tools.userpreferences.lib"><code class="xref">mmSolver.tools.userpreferences.lib</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.userprefswindow.html#module-mmSolver.tools.userprefswindow"><code class="xref">mmSolver.tools.userprefswindow</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.userprefswindow.html#module-mmSolver.tools.userprefswindow.constant"><code class="xref">mmSolver.tools.userprefswindow.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.tools.userprefswindow.html#module-mmSolver.tools.userprefswindow.ui"><code class="xref">mmSolver.tools.userprefswindow.ui</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.ui.html#module-mmSolver.ui"><code class="xref">mmSolver.ui</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.ui.commonmenus.html#module-mmSolver.ui.commonmenus"><code class="xref">mmSolver.ui.commonmenus</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.ui.converttypes.html#module-mmSolver.ui.converttypes"><code class="xref">mmSolver.ui.converttypes</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.ui.nodes.html#module-mmSolver.ui.nodes"><code class="xref">mmSolver.ui.nodes</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.ui.shelfutils.html#module-mmSolver.ui.shelfutils"><code class="xref">mmSolver.ui.shelfutils</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.ui.uimodels.html#module-mmSolver.ui.uimodels"><code class="xref">mmSolver.ui.uimodels</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.ui.uiutils.html#module-mmSolver.ui.uiutils"><code class="xref">mmSolver.ui.uiutils</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.animcurve"><code class="xref">mmSolver.utils.animcurve</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.camera"><code class="xref">mmSolver.utils.camera</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.config"><code class="xref">mmSolver.utils.config</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.configmaya"><code class="xref">mmSolver.utils.configmaya</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.constant"><code class="xref">mmSolver.utils.constant</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.converttypes"><code class="xref">mmSolver.utils.converttypes</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.event"><code class="xref">mmSolver.utils.event</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.imageseq"><code class="xref">mmSolver.utils.imageseq</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.kalmanfilter"><code class="xref">mmSolver.utils.kalmanfilter</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.lineintersect"><code class="xref">mmSolver.utils.lineintersect</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.node"><code class="xref">mmSolver.utils.node</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.nodeaffects"><code class="xref">mmSolver.utils.nodeaffects</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.python_compat"><code class="xref">mmSolver.utils.python_compat</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.raytrace"><code class="xref">mmSolver.utils.raytrace</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.reproject"><code class="xref">mmSolver.utils.reproject</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.smooth"><code class="xref">mmSolver.utils.smooth</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.sort"><code class="xref">mmSolver.utils.sort</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.time"><code class="xref">mmSolver.utils.time</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.tools"><code class="xref">mmSolver.utils.tools</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.transform"><code class="xref">mmSolver.utils.transform</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.undo"><code class="xref">mmSolver.utils.undo</code></a></td><td>
+    <em></em></td>
+  </tr>
+  <tr class="cg-1">
+    <td></td>
+    <td>&#160;&#160;&#160;
+        <a href="mmSolver.utils.html#module-mmSolver.utils.viewport"><code class="xref">mmSolver.utils.viewport</code></a></td><td>
+    <em></em></td>
+  </tr>
+</table>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli.
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
- 
-
-
-  </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             accesskey="I">index</a></li>
-        <li class="right" >
-          <a href="#" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Python Module Index</a></li> 
-      </ul>
-    </div>  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          <div class="body" role="main">
-            
-
-   <h1>Python Module Index</h1>
-
-   <div class="modindex-jumpbox">
-   <a href="#cap-m"><strong>m</strong></a>
-   </div>
-
-   <table class="indextable modindextable">
-     <tr class="pcap"><td></td><td>&#160;</td><td></td></tr>
-     <tr class="cap" id="cap-m"><td></td><td>
-       <strong>m</strong></td><td></td></tr>
-     <tr>
-       <td><img src="_static/minus.png" class="toggler"
-              id="toggle-1" style="display: none" alt="-" /></td>
-       <td>
-       <code class="xref">mmSolver</code></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.logger.html#module-mmSolver.logger"><code class="xref">mmSolver.logger</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.html#module-mmSolver.tools"><code class="xref">mmSolver.tools</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.aboutwindow.html#module-mmSolver.tools.aboutwindow"><code class="xref">mmSolver.tools.aboutwindow</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.aboutwindow.html#module-mmSolver.tools.aboutwindow.constant"><code class="xref">mmSolver.tools.aboutwindow.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.attachbundletocurve.html#module-mmSolver.tools.attachbundletocurve"><code class="xref">mmSolver.tools.attachbundletocurve</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.attachbundletocurve.html#module-mmSolver.tools.attachbundletocurve.constant"><code class="xref">mmSolver.tools.attachbundletocurve.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.attachbundletocurve.html#module-mmSolver.tools.attachbundletocurve.lib"><code class="xref">mmSolver.tools.attachbundletocurve.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.attachbundletocurve.html#module-mmSolver.tools.attachbundletocurve.tool"><code class="xref">mmSolver.tools.attachbundletocurve.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.attributebake.html#module-mmSolver.tools.attributebake"><code class="xref">mmSolver.tools.attributebake</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.attributebake.html#module-mmSolver.tools.attributebake.constant"><code class="xref">mmSolver.tools.attributebake.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.attributebake.html#module-mmSolver.tools.attributebake.lib"><code class="xref">mmSolver.tools.attributebake.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.attributebake.html#module-mmSolver.tools.attributebake.tool"><code class="xref">mmSolver.tools.attributebake.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.averagemarker.html#module-mmSolver.tools.averagemarker"><code class="xref">mmSolver.tools.averagemarker</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.averagemarker.html#module-mmSolver.tools.averagemarker.lib"><code class="xref">mmSolver.tools.averagemarker.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.averagemarker.html#module-mmSolver.tools.averagemarker.tool"><code class="xref">mmSolver.tools.averagemarker.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.cameraaim.html#module-mmSolver.tools.cameraaim"><code class="xref">mmSolver.tools.cameraaim</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.cameraaim.html#module-mmSolver.tools.cameraaim.lib"><code class="xref">mmSolver.tools.cameraaim.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.cameraaim.html#module-mmSolver.tools.cameraaim.tool"><code class="xref">mmSolver.tools.cameraaim.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.centertwodee.html#module-mmSolver.tools.centertwodee"><code class="xref">mmSolver.tools.centertwodee</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.centertwodee.html#module-mmSolver.tools.centertwodee.constant"><code class="xref">mmSolver.tools.centertwodee.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.centertwodee.html#module-mmSolver.tools.centertwodee.tool"><code class="xref">mmSolver.tools.centertwodee.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.channelsen.html#module-mmSolver.tools.channelsen"><code class="xref">mmSolver.tools.channelsen</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.channelsen.html#module-mmSolver.tools.channelsen.constant"><code class="xref">mmSolver.tools.channelsen.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.channelsen.html#module-mmSolver.tools.channelsen.lib"><code class="xref">mmSolver.tools.channelsen.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.channelsen.html#module-mmSolver.tools.channelsen.tool"><code class="xref">mmSolver.tools.channelsen.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.convertmarker.html#module-mmSolver.tools.convertmarker"><code class="xref">mmSolver.tools.convertmarker</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.convertmarker.html#module-mmSolver.tools.convertmarker.constant"><code class="xref">mmSolver.tools.convertmarker.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.convertmarker.html#module-mmSolver.tools.convertmarker.lib"><code class="xref">mmSolver.tools.convertmarker.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.convertmarker.html#module-mmSolver.tools.convertmarker.tool"><code class="xref">mmSolver.tools.convertmarker.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.copypastecamera.html#module-mmSolver.tools.copypastecamera"><code class="xref">mmSolver.tools.copypastecamera</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.copypastecamera.html#module-mmSolver.tools.copypastecamera.constant"><code class="xref">mmSolver.tools.copypastecamera.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.copypastecamera.html#module-mmSolver.tools.copypastecamera.lib"><code class="xref">mmSolver.tools.copypastecamera.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.copypastecamera.html#module-mmSolver.tools.copypastecamera.tool"><code class="xref">mmSolver.tools.copypastecamera.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createbundle.html#module-mmSolver.tools.createbundle"><code class="xref">mmSolver.tools.createbundle</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createbundle.html#module-mmSolver.tools.createbundle.constant"><code class="xref">mmSolver.tools.createbundle.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createbundle.html#module-mmSolver.tools.createbundle.tool"><code class="xref">mmSolver.tools.createbundle.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createcontroller.html#module-mmSolver.tools.createcontroller"><code class="xref">mmSolver.tools.createcontroller</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createcontroller.html#module-mmSolver.tools.createcontroller.constant"><code class="xref">mmSolver.tools.createcontroller.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createcontroller.html#module-mmSolver.tools.createcontroller.lib"><code class="xref">mmSolver.tools.createcontroller.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createcontroller.html#module-mmSolver.tools.createcontroller.tool"><code class="xref">mmSolver.tools.createcontroller.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createcontroller2.html#module-mmSolver.tools.createcontroller2"><code class="xref">mmSolver.tools.createcontroller2</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createcontroller2.html#module-mmSolver.tools.createcontroller2.constant"><code class="xref">mmSolver.tools.createcontroller2.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createcontroller2.html#module-mmSolver.tools.createcontroller2.lib"><code class="xref">mmSolver.tools.createcontroller2.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createcontroller2.html#module-mmSolver.tools.createcontroller2.tool"><code class="xref">mmSolver.tools.createcontroller2.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createcontroller2.html#module-mmSolver.tools.createcontroller2.ui"><code class="xref">mmSolver.tools.createcontroller2.ui</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createmarker.html#module-mmSolver.tools.createmarker"><code class="xref">mmSolver.tools.createmarker</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createmarker.html#module-mmSolver.tools.createmarker.constant"><code class="xref">mmSolver.tools.createmarker.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.createmarker.html#module-mmSolver.tools.createmarker.tool"><code class="xref">mmSolver.tools.createmarker.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.deformmarker.html#module-mmSolver.tools.deformmarker"><code class="xref">mmSolver.tools.deformmarker</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.deformmarker.html#module-mmSolver.tools.deformmarker.constant"><code class="xref">mmSolver.tools.deformmarker.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.deformmarker.html#module-mmSolver.tools.deformmarker.lib"><code class="xref">mmSolver.tools.deformmarker.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.deformmarker.html#module-mmSolver.tools.deformmarker.tool"><code class="xref">mmSolver.tools.deformmarker.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.duplicatemarker.html#module-mmSolver.tools.duplicatemarker"><code class="xref">mmSolver.tools.duplicatemarker</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.duplicatemarker.html#module-mmSolver.tools.duplicatemarker.constant"><code class="xref">mmSolver.tools.duplicatemarker.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.duplicatemarker.html#module-mmSolver.tools.duplicatemarker.lib"><code class="xref">mmSolver.tools.duplicatemarker.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.duplicatemarker.html#module-mmSolver.tools.duplicatemarker.tool"><code class="xref">mmSolver.tools.duplicatemarker.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.editrootframes.html#module-mmSolver.tools.editrootframes"><code class="xref">mmSolver.tools.editrootframes</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.editrootframes.html#module-mmSolver.tools.editrootframes.lib"><code class="xref">mmSolver.tools.editrootframes.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.hotkeyswitcher.html#module-mmSolver.tools.hotkeyswitcher"><code class="xref">mmSolver.tools.hotkeyswitcher</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.hotkeyswitcher.html#module-mmSolver.tools.hotkeyswitcher.constant"><code class="xref">mmSolver.tools.hotkeyswitcher.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.hotkeyswitcher.html#module-mmSolver.tools.hotkeyswitcher.lib"><code class="xref">mmSolver.tools.hotkeyswitcher.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.hotkeyswitcher.html#module-mmSolver.tools.hotkeyswitcher.tool"><code class="xref">mmSolver.tools.hotkeyswitcher.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.linkmarkerbundle.html#module-mmSolver.tools.linkmarkerbundle"><code class="xref">mmSolver.tools.linkmarkerbundle</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.linkmarkerbundle.html#module-mmSolver.tools.linkmarkerbundle.constant"><code class="xref">mmSolver.tools.linkmarkerbundle.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.linkmarkerbundle.html#module-mmSolver.tools.linkmarkerbundle.lib"><code class="xref">mmSolver.tools.linkmarkerbundle.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.linkmarkerbundle.html#module-mmSolver.tools.linkmarkerbundle.tool"><code class="xref">mmSolver.tools.linkmarkerbundle.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.loadmarker.html#module-mmSolver.tools.loadmarker"><code class="xref">mmSolver.tools.loadmarker</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.loadmarker.html#module-mmSolver.tools.loadmarker.constant"><code class="xref">mmSolver.tools.loadmarker.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.loadmarker.html#module-mmSolver.tools.loadmarker.lib.fieldofview"><code class="xref">mmSolver.tools.loadmarker.lib.fieldofview</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.loadmarker.html#module-mmSolver.tools.loadmarker.lib.mayareadfile"><code class="xref">mmSolver.tools.loadmarker.lib.mayareadfile</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.loadmarker.html#module-mmSolver.tools.loadmarker.lib.utils"><code class="xref">mmSolver.tools.loadmarker.lib.utils</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.loadmarker.html#module-mmSolver.tools.loadmarker.tool"><code class="xref">mmSolver.tools.loadmarker.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.markerbundlerename.html#module-mmSolver.tools.markerbundlerename"><code class="xref">mmSolver.tools.markerbundlerename</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.markerbundlerename.html#module-mmSolver.tools.markerbundlerename.constant"><code class="xref">mmSolver.tools.markerbundlerename.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.markerbundlerename.html#module-mmSolver.tools.markerbundlerename.lib"><code class="xref">mmSolver.tools.markerbundlerename.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.markerbundlerename.html#module-mmSolver.tools.markerbundlerename.tool"><code class="xref">mmSolver.tools.markerbundlerename.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.markerbundlerenamewithmetadata.html#module-mmSolver.tools.markerbundlerenamewithmetadata"><code class="xref">mmSolver.tools.markerbundlerenamewithmetadata</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.markerbundlerenamewithmetadata.html#module-mmSolver.tools.markerbundlerenamewithmetadata.constant"><code class="xref">mmSolver.tools.markerbundlerenamewithmetadata.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.markerbundlerenamewithmetadata.html#module-mmSolver.tools.markerbundlerenamewithmetadata.lib"><code class="xref">mmSolver.tools.markerbundlerenamewithmetadata.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.markerbundlerenamewithmetadata.html#module-mmSolver.tools.markerbundlerenamewithmetadata.tool"><code class="xref">mmSolver.tools.markerbundlerenamewithmetadata.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.mmhotkeyset.html#module-mmSolver.tools.mmhotkeyset"><code class="xref">mmSolver.tools.mmhotkeyset</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.mmhotkeyset.html#module-mmSolver.tools.mmhotkeyset.tool"><code class="xref">mmSolver.tools.mmhotkeyset.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.mmmenu.html#module-mmSolver.tools.mmmenu"><code class="xref">mmSolver.tools.mmmenu</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.mmmenu.html#module-mmSolver.tools.mmmenu.constant"><code class="xref">mmSolver.tools.mmmenu.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.mmmenu.html#module-mmSolver.tools.mmmenu.lib"><code class="xref">mmSolver.tools.mmmenu.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.mmmenu.html#module-mmSolver.tools.mmmenu.tool"><code class="xref">mmSolver.tools.mmmenu.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.mmshelf.html#module-mmSolver.tools.mmshelf"><code class="xref">mmSolver.tools.mmshelf</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.mmshelf.html#module-mmSolver.tools.mmshelf.constant"><code class="xref">mmSolver.tools.mmshelf.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.mmshelf.html#module-mmSolver.tools.mmshelf.lib"><code class="xref">mmSolver.tools.mmshelf.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.mmshelf.html#module-mmSolver.tools.mmshelf.tool"><code class="xref">mmSolver.tools.mmshelf.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.navigaterootframes.html#module-mmSolver.tools.navigaterootframes"><code class="xref">mmSolver.tools.navigaterootframes</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.navigaterootframes.html#module-mmSolver.tools.navigaterootframes.lib"><code class="xref">mmSolver.tools.navigaterootframes.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.navigaterootframes.html#module-mmSolver.tools.navigaterootframes.tool"><code class="xref">mmSolver.tools.navigaterootframes.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.placemarkermanip.html#module-mmSolver.tools.placemarkermanip"><code class="xref">mmSolver.tools.placemarkermanip</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.placemarkermanip.html#module-mmSolver.tools.placemarkermanip.constant"><code class="xref">mmSolver.tools.placemarkermanip.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.placemarkermanip.html#module-mmSolver.tools.placemarkermanip.tool"><code class="xref">mmSolver.tools.placemarkermanip.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.raycastmarker.html#module-mmSolver.tools.raycastmarker"><code class="xref">mmSolver.tools.raycastmarker</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.raycastmarker.html#module-mmSolver.tools.raycastmarker.tool"><code class="xref">mmSolver.tools.raycastmarker.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.removecontroller2.html#module-mmSolver.tools.removecontroller2"><code class="xref">mmSolver.tools.removecontroller2</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.removecontroller2.html#module-mmSolver.tools.removecontroller2.tool"><code class="xref">mmSolver.tools.removecontroller2.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.removesolvernodes.html#module-mmSolver.tools.removesolvernodes"><code class="xref">mmSolver.tools.removesolvernodes</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.removesolvernodes.html#module-mmSolver.tools.removesolvernodes.tool"><code class="xref">mmSolver.tools.removesolvernodes.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.reparent.html#module-mmSolver.tools.reparent"><code class="xref">mmSolver.tools.reparent</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.reparent.html#module-mmSolver.tools.reparent.keytimeutils"><code class="xref">mmSolver.tools.reparent.keytimeutils</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.reparent.html#module-mmSolver.tools.reparent.lib"><code class="xref">mmSolver.tools.reparent.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.reparent.html#module-mmSolver.tools.reparent.tool"><code class="xref">mmSolver.tools.reparent.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.reparent2.html#module-mmSolver.tools.reparent2"><code class="xref">mmSolver.tools.reparent2</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.reparent2.html#module-mmSolver.tools.reparent2.lib"><code class="xref">mmSolver.tools.reparent2.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.reparent2.html#module-mmSolver.tools.reparent2.tool"><code class="xref">mmSolver.tools.reparent2.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.reprojectbundle.html#module-mmSolver.tools.reprojectbundle"><code class="xref">mmSolver.tools.reprojectbundle</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.reprojectbundle.html#module-mmSolver.tools.reprojectbundle.lib"><code class="xref">mmSolver.tools.reprojectbundle.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.reprojectbundle.html#module-mmSolver.tools.reprojectbundle.tool"><code class="xref">mmSolver.tools.reprojectbundle.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.screenspacemotiontrail.html#module-mmSolver.tools.screenspacemotiontrail"><code class="xref">mmSolver.tools.screenspacemotiontrail</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.screenspacemotiontrail.html#module-mmSolver.tools.screenspacemotiontrail.constant"><code class="xref">mmSolver.tools.screenspacemotiontrail.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.screenspacemotiontrail.html#module-mmSolver.tools.screenspacemotiontrail.lib"><code class="xref">mmSolver.tools.screenspacemotiontrail.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.screenspacemotiontrail.html#module-mmSolver.tools.screenspacemotiontrail.tool"><code class="xref">mmSolver.tools.screenspacemotiontrail.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.screenspacerigbake.html#module-mmSolver.tools.screenspacerigbake"><code class="xref">mmSolver.tools.screenspacerigbake</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.screenspacerigbake.html#module-mmSolver.tools.screenspacerigbake.tool"><code class="xref">mmSolver.tools.screenspacerigbake.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.screenspacetransform.html#module-mmSolver.tools.screenspacetransform"><code class="xref">mmSolver.tools.screenspacetransform</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.screenspacetransform.html#module-mmSolver.tools.screenspacetransform.lib"><code class="xref">mmSolver.tools.screenspacetransform.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.screenspacetransform.html#module-mmSolver.tools.screenspacetransform.tool"><code class="xref">mmSolver.tools.screenspacetransform.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.screenzmanipulator.html#module-mmSolver.tools.screenzmanipulator"><code class="xref">mmSolver.tools.screenzmanipulator</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.screenzmanipulator.html#module-mmSolver.tools.screenzmanipulator.constant"><code class="xref">mmSolver.tools.screenzmanipulator.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.screenzmanipulator.html#module-mmSolver.tools.screenzmanipulator.lib"><code class="xref">mmSolver.tools.screenzmanipulator.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.screenzmanipulator.html#module-mmSolver.tools.screenzmanipulator.tool"><code class="xref">mmSolver.tools.screenzmanipulator.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.selection.html#module-mmSolver.tools.selection.tools"><code class="xref">mmSolver.tools.selection.tools</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.setattributedetails.html#module-mmSolver.tools.setattributedetails"><code class="xref">mmSolver.tools.setattributedetails</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.setattributedetails.html#module-mmSolver.tools.setattributedetails.constant"><code class="xref">mmSolver.tools.setattributedetails.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.setattributedetails.html#module-mmSolver.tools.setattributedetails.lib"><code class="xref">mmSolver.tools.setattributedetails.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.showdeviationcurves.html#module-mmSolver.tools.showdeviationcurves"><code class="xref">mmSolver.tools.showdeviationcurves</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.showdeviationcurves.html#module-mmSolver.tools.showdeviationcurves.tool"><code class="xref">mmSolver.tools.showdeviationcurves.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.smoothkeyframes.html#module-mmSolver.tools.smoothkeyframes"><code class="xref">mmSolver.tools.smoothkeyframes</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.smoothkeyframes.html#module-mmSolver.tools.smoothkeyframes.constant"><code class="xref">mmSolver.tools.smoothkeyframes.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.smoothkeyframes.html#module-mmSolver.tools.smoothkeyframes.lib"><code class="xref">mmSolver.tools.smoothkeyframes.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.smoothkeyframes.html#module-mmSolver.tools.smoothkeyframes.tool"><code class="xref">mmSolver.tools.smoothkeyframes.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver"><code class="xref">mmSolver.tools.solver</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.constant"><code class="xref">mmSolver.tools.solver.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.collection"><code class="xref">mmSolver.tools.solver.lib.collection</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.collectionstate"><code class="xref">mmSolver.tools.solver.lib.collectionstate</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.marker"><code class="xref">mmSolver.tools.solver.lib.marker</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.maya_utils"><code class="xref">mmSolver.tools.solver.lib.maya_utils</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.scene_data"><code class="xref">mmSolver.tools.solver.lib.scene_data</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.solver"><code class="xref">mmSolver.tools.solver.lib.solver</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.solver_step"><code class="xref">mmSolver.tools.solver.lib.solver_step</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.state"><code class="xref">mmSolver.tools.solver.lib.state</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.uiquery"><code class="xref">mmSolver.tools.solver.lib.uiquery</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.maya_callbacks"><code class="xref">mmSolver.tools.solver.maya_callbacks</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.ui.attr_nodes"><code class="xref">mmSolver.tools.solver.ui.attr_nodes</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.ui.convert_to_ui"><code class="xref">mmSolver.tools.solver.ui.convert_to_ui</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.ui.object_nodes"><code class="xref">mmSolver.tools.solver.ui.object_nodes</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.ui.solver_nodes"><code class="xref">mmSolver.tools.solver.ui.solver_nodes</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.sortoutlinernodes.html#module-mmSolver.tools.sortoutlinernodes"><code class="xref">mmSolver.tools.sortoutlinernodes</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.sortoutlinernodes.html#module-mmSolver.tools.sortoutlinernodes.lib"><code class="xref">mmSolver.tools.sortoutlinernodes.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.sortoutlinernodes.html#module-mmSolver.tools.sortoutlinernodes.tool"><code class="xref">mmSolver.tools.sortoutlinernodes.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.sysinfowindow.html#module-mmSolver.tools.sysinfowindow"><code class="xref">mmSolver.tools.sysinfowindow</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.sysinfowindow.html#module-mmSolver.tools.sysinfowindow.constant"><code class="xref">mmSolver.tools.sysinfowindow.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.togglebundlelock.html#module-mmSolver.tools.togglebundlelock"><code class="xref">mmSolver.tools.togglebundlelock</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.togglebundlelock.html#module-mmSolver.tools.togglebundlelock.constant"><code class="xref">mmSolver.tools.togglebundlelock.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.togglebundlelock.html#module-mmSolver.tools.togglebundlelock.tool"><code class="xref">mmSolver.tools.togglebundlelock.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.togglemarkerlock.html#module-mmSolver.tools.togglemarkerlock"><code class="xref">mmSolver.tools.togglemarkerlock</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.togglemarkerlock.html#module-mmSolver.tools.togglemarkerlock.constant"><code class="xref">mmSolver.tools.togglemarkerlock.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.togglemarkerlock.html#module-mmSolver.tools.togglemarkerlock.tool"><code class="xref">mmSolver.tools.togglemarkerlock.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.triangulatebundle.html#module-mmSolver.tools.triangulatebundle"><code class="xref">mmSolver.tools.triangulatebundle</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.triangulatebundle.html#module-mmSolver.tools.triangulatebundle.lib"><code class="xref">mmSolver.tools.triangulatebundle.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.triangulatebundle.html#module-mmSolver.tools.triangulatebundle.tool"><code class="xref">mmSolver.tools.triangulatebundle.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.undoredoscene.html#module-mmSolver.tools.undoredoscene"><code class="xref">mmSolver.tools.undoredoscene</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.undoredoscene.html#module-mmSolver.tools.undoredoscene.lib"><code class="xref">mmSolver.tools.undoredoscene.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.undoredoscene.html#module-mmSolver.tools.undoredoscene.tool"><code class="xref">mmSolver.tools.undoredoscene.tool</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.userpreferences.html#module-mmSolver.tools.userpreferences"><code class="xref">mmSolver.tools.userpreferences</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.userpreferences.html#module-mmSolver.tools.userpreferences.constant"><code class="xref">mmSolver.tools.userpreferences.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.userpreferences.html#module-mmSolver.tools.userpreferences.lib"><code class="xref">mmSolver.tools.userpreferences.lib</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.userprefswindow.html#module-mmSolver.tools.userprefswindow"><code class="xref">mmSolver.tools.userprefswindow</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.userprefswindow.html#module-mmSolver.tools.userprefswindow.constant"><code class="xref">mmSolver.tools.userprefswindow.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.tools.userprefswindow.html#module-mmSolver.tools.userprefswindow.ui"><code class="xref">mmSolver.tools.userprefswindow.ui</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.ui.html#module-mmSolver.ui"><code class="xref">mmSolver.ui</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.ui.commonmenus.html#module-mmSolver.ui.commonmenus"><code class="xref">mmSolver.ui.commonmenus</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.ui.converttypes.html#module-mmSolver.ui.converttypes"><code class="xref">mmSolver.ui.converttypes</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.ui.nodes.html#module-mmSolver.ui.nodes"><code class="xref">mmSolver.ui.nodes</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.ui.shelfutils.html#module-mmSolver.ui.shelfutils"><code class="xref">mmSolver.ui.shelfutils</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.ui.uimodels.html#module-mmSolver.ui.uimodels"><code class="xref">mmSolver.ui.uimodels</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.ui.uiutils.html#module-mmSolver.ui.uiutils"><code class="xref">mmSolver.ui.uiutils</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.animcurve"><code class="xref">mmSolver.utils.animcurve</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.camera"><code class="xref">mmSolver.utils.camera</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.config"><code class="xref">mmSolver.utils.config</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.configmaya"><code class="xref">mmSolver.utils.configmaya</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.constant"><code class="xref">mmSolver.utils.constant</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.converttypes"><code class="xref">mmSolver.utils.converttypes</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.event"><code class="xref">mmSolver.utils.event</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.imageseq"><code class="xref">mmSolver.utils.imageseq</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.kalmanfilter"><code class="xref">mmSolver.utils.kalmanfilter</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.lineintersect"><code class="xref">mmSolver.utils.lineintersect</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.node"><code class="xref">mmSolver.utils.node</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.nodeaffects"><code class="xref">mmSolver.utils.nodeaffects</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.python_compat"><code class="xref">mmSolver.utils.python_compat</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.raytrace"><code class="xref">mmSolver.utils.raytrace</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.reproject"><code class="xref">mmSolver.utils.reproject</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.smooth"><code class="xref">mmSolver.utils.smooth</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.sort"><code class="xref">mmSolver.utils.sort</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.time"><code class="xref">mmSolver.utils.time</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.tools"><code class="xref">mmSolver.utils.tools</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.transform"><code class="xref">mmSolver.utils.transform</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.undo"><code class="xref">mmSolver.utils.undo</code></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&#160;&#160;&#160;
-       <a href="mmSolver.utils.html#module-mmSolver.utils.viewport"><code class="xref">mmSolver.utils.viewport</code></a></td><td>
-       <em></em></td></tr>
-   </table>
-
-
-            <div class="clearer"></div>
-          </div>
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="related" role="navigation" aria-label="related navigation">
-      <h3>Navigation</h3>
-      <ul>
-        <li class="right" style="margin-right: 10px">
-          <a href="genindex.html" title="General Index"
-             >index</a></li>
-        <li class="right" >
-          <a href="#" title="Python Module Index"
-             >modules</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">mayaMatchMoveSolver master documentation</a> &#187;</li>
-        <li class="nav-item nav-item-this"><a href="">Python Module Index</a></li> 
-      </ul>
-    </div>
-    <div class="footer" role="contentinfo">
-        &#169; Copyright 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli..
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.3.1.
-    </div>
-  </body>
+    <script src="_static/scripts/furo.js"></script>
+    </body>
 </html>

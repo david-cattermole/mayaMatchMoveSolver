@@ -56,6 +56,27 @@ To run the tool, use this Python command:
     # Remove Centering from active camera
     tool.remove()
 
+
+.. _set-object-colour-tool-ref:
+
+Set Object Colour / Reset Object Colour
+---------------------------------------
+
+*To be written*
+
+Usage:
+
+1) ...
+
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.setobjectcolour.tool as tool
+    tool.main()
+
+
 .. _create-screen-space-motion-trail-tool-ref:
 
 Create Screen-Space Motion Trail

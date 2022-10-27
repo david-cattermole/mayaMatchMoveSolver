@@ -63,7 +63,6 @@ mmSolver.tools
    mmSolver.tools.smoothkeyframes
    mmSolver.tools.solver
    mmSolver.tools.sortoutlinernodes
-   mmSolver.tools.surfacerivet
    mmSolver.tools.subdivideline
    mmSolver.tools.sysinfowindow
    mmSolver.tools.togglebundlelock

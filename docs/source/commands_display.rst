@@ -1,9 +1,10 @@
 Display Commands
-==============
+================
 
 *To be written.*
 
 ``mmRenderer`` Command
-++++++++++++++++++++++++++++++
+++++++++++++++++++++++
 
-*To be written.*
+The ``mmRenderer`` command is unfinished and is disabled in the C++
+build by default.

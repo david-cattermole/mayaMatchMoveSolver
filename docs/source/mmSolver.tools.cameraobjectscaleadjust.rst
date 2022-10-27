@@ -23,15 +23,15 @@ Library
 User Interface
 ++++++++++++++
 
-About Window
-------------
+Window
+------
 
 .. automodule:: mmSolver.tools.cameraobjectscaleadjust.ui.cameraobjectscaleadjust_window
    :members:
    :undoc-members:
 
-About Layout
-------------
+Layout
+------
 
 .. automodule:: mmSolver.tools.cameraobjectscaleadjust.ui.cameraobjectscaleadjust_layout
    :members:

@@ -31,6 +31,26 @@ Run this Python command:
     import mmSolver.tools.togglelinelock.tool as tool
     tool.main()
 
+
+.. _subdivide-line-tool-ref:
+
+Subdivide Line
+--------------
+
+*To be written*
+
+Usage:
+
+1) ...
+
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.subdivideline.tool as tool
+    tool.main()
+
 .. _camera-calibration-tool-ref:
 
 Camera Calibration

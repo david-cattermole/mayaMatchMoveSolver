@@ -9,21 +9,32 @@ mmSolver.tools
 
    mmSolver.tools.aboutwindow
    mmSolver.tools.attachbundletocurve
+   mmSolver.tools.attributebake
    mmSolver.tools.averagemarker
    mmSolver.tools.cameraaim
+   mmSolver.tools.cameracontextmenu
+   mmSolver.tools.cameraobjectscaleadjust
+   mmSolver.tools.cameraobjectscaleremove
    mmSolver.tools.centertwodee
    mmSolver.tools.channelsen
    mmSolver.tools.convertmarker
    mmSolver.tools.copypastecamera
+   mmSolver.tools.copypastemarker
    mmSolver.tools.createbundle
+   mmSolver.tools.createcamera
    mmSolver.tools.createcontroller
    mmSolver.tools.createcontroller2
+   mmSolver.tools.createimageplane
+   mmSolver.tools.createlens
+   mmSolver.tools.createline
    mmSolver.tools.createmarker
+   mmSolver.tools.createskydome
    mmSolver.tools.deformmarker
    mmSolver.tools.duplicatemarker
    mmSolver.tools.editrootframes
    mmSolver.tools.hotkeyswitcher
    mmSolver.tools.linkmarkerbundle
+   mmSolver.tools.loadlens
    mmSolver.tools.loadmarker
    mmSolver.tools.markerbundlerename
    mmSolver.tools.markerbundlerenamewithmetadata
@@ -38,18 +49,25 @@ mmSolver.tools
    mmSolver.tools.reparent
    mmSolver.tools.reparent2
    mmSolver.tools.reprojectbundle
+   mmSolver.tools.savelensfile
+   mmSolver.tools.savemarkerfile
    mmSolver.tools.screenspacemotiontrail
+   mmSolver.tools.screenspacerigbake
    mmSolver.tools.screenspacetransform
    mmSolver.tools.screenzmanipulator
    mmSolver.tools.selection
    mmSolver.tools.setattributedetails
+   mmSolver.tools.setcameraoriginframe
+   mmSolver.tools.setobjectcolour
    mmSolver.tools.showdeviationcurves
    mmSolver.tools.smoothkeyframes
    mmSolver.tools.solver
    mmSolver.tools.sortoutlinernodes
-   mmSolver.tools.surfacerivet
+   mmSolver.tools.subdivideline
    mmSolver.tools.sysinfowindow
    mmSolver.tools.togglebundlelock
+   mmSolver.tools.togglecameradistort
+   mmSolver.tools.togglelinelock
    mmSolver.tools.togglemarkerlock
    mmSolver.tools.triangulatebundle
    mmSolver.tools.undoredoscene

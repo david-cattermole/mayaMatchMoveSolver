@@ -66,6 +66,72 @@ Line Intersect
     :members:
     :undoc-members:
 
+Load File
++++++++++
+
+.. automodule:: mmSolver.utils.loadfile.excep
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadfile.floatutils
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadfile.formatmanager
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadfile.keyframedata
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadfile.loader
+    :members:
+    :undoc-members:
+
+
+Load Marker
++++++++++
+
+.. automodule:: mmSolver.utils.loadmarker.fileinfo
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadmarker.fileutils
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadmarker.formatmanager
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadmarker.markerdata
+    :members:
+    :undoc-members:
+
+Formats
+-------
+
+.. automodule:: mmSolver.utils.loadmarker.formats
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadmarker.pftrack2dt
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadmarker.rz2
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadmarker.tdetxt
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadmarker.uvtrack
+    :members:
+    :undoc-members:
+              
 Node
 ++++
 

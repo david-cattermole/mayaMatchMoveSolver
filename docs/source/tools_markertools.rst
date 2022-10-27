@@ -19,6 +19,7 @@ Usage:
 1) Select marker nodes.
 
 2) Run tool.
+
    - The selected marker node attributes will be toggled between locked and unlocked.
 
 Run this Python command:

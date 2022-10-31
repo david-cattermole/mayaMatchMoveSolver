@@ -198,15 +198,16 @@ It is possible to use Blender (v2.80+) to track 2D Markers for use in mmSolver.
      Therefore it is recommended not to use the "overscan" feature of the
      ``Load Marker`` tool in Maya.
 
-   -  There is no Python function to undistort 2D data.
-      Therefore it is not recommended to track "distorted" footage
-      because there is no way to undistort the 2D Markers in Maya (currently).
+   - There is no Python function to undistort 2D data. Therefore when
+     tracking with Blender you must solve for lens distortion inside
+     mmSolver and use the MM Image Plane to preview lens
+     (un)distortion.
 
 .. note::
 
-    Blender versions 2.83.18 LTS, 2.93.6 LTS, and v3.0.0 are known to work,
-    other Blender versions with-in the same minor release will likely work,
-    but has not been tested.
+    Blender versions 2.83.18 LTS, 2.93.6 LTS, and v3.0.0 are known to
+    work, other Blender versions with-in the same minor release will
+    likely work, but have not been tested.
 
 .. _load-markers-in-maya-ref:
 

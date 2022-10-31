@@ -84,7 +84,7 @@ while preserving other parts and avoiding bumps at the boundry.
 
 Usage:
 
-1) Use the menu ``mmSolver > General Tools > Smooth Keyframes UI``.
+1) Use the menu ``mmSolver > Attribute Tools > Smooth Keyframes UI``.
 
 2) Edit the options in the UI.
 
@@ -228,8 +228,8 @@ Bake Attributes
 Bake Attributes will bake the values of an attribute on each frame and
 replace the connection with an animation curve.
 
-This tool is almost identical to the default Maya `Edit > Keys > Bake
-Simulation` tool, but has additional features.
+This tool is almost identical to the default Maya ``Edit > Keys > Bake
+Simulation`` tool, but has additional features.
 
 - The viewport is always disabled while baking.
 
@@ -256,7 +256,7 @@ Usage:
 .. note:: In Maya scenes that rely on legacy viewport update for
           correct evaluation, this tool may produce incorrect results
           (because the viewport is disabled). If this happens, please
-          use Maya's default `Edit > Keys > Bake Simulation` tool. In
+          use Maya's default ``Edit > Keys > Bake Simulation`` tool. In
           the experience of the tool authors, this has never happened
           and this tool is a faster baking tool.
 

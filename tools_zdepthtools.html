@@ -416,6 +416,9 @@ components.</p>
 <li><p>Freeze a transform to a static Z-depth.</p></li>
 </ul>
 </div></blockquote>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/tools_screen_space_rig_bake_ui.png"><img alt="Screen-Space Rig Bake UI" src="_images/tools_screen_space_rig_bake_ui.png" style="width: 80%;" /></a>
+</figure>
 <p>Usage:</p>
 <ol class="arabic simple">
 <li><p>Select a transform node.</p></li>
@@ -443,6 +446,78 @@ keyframes will be baked.</p></li>
 <span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
 </pre></div>
 </div>
+</section>
+<section id="adjust-camera-object-scale">
+<span id="adjust-camera-object-scale-tool-ref"></span><h2>Adjust Camera/Object Scale<a class="headerlink" href="#adjust-camera-object-scale" title="Permalink to this headline">#</a></h2>
+<p>The <cite>Adjust Camera/Object Scale</cite> tool is used to change the scale of a
+camera matchmove while maintaining the matchmove of a object, or vice
+versa.</p>
+<p>This tool is very helpful for correcting the scale/depth of a camera
+or object. When the camera scale is known (because LiDAR geometry was
+used during camera solving), the object scale can be adjusted. If an
+object with a known scale is visible in a camera, the camera scale can
+be adjusted to match the object.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/tools_camera_object_scale_adjust_ui.png"><img alt="Adjust the scale of a Camera/Object" src="_images/tools_camera_object_scale_adjust_ui.png" style="width: 80%;" /></a>
+</figure>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.cameraobjectscaleadjust.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="scale-a-camera">
+<h3>Scale a Camera<a class="headerlink" href="#scale-a-camera" title="Permalink to this headline">#</a></h3>
+<p>In this example, the object will stay same scale, and the camera will be scaled.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Set your current frame to the frame you want to scale/pivot from.</p></li>
+<li><p>Open the <cite>Adjust Camera/Object Scale</cite> UI.</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Type a unique name for <cite>Scale Rig Name</cite>.</p></li>
+<li><p>Choose <cite>Adjust Camera Scale</cite> mode.</p></li>
+<li><p>Select the top level <cite>Scene</cite> node that contains all 3D
+transforms/bundles.</p></li>
+<li><p>Select the <cite>Camera</cite> that will adjust scale.</p></li>
+<li><p>Select the <cite>Objects</cite> that will <cite>not</cite> change scale.</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>Press <cite>Create</cite> button.</p></li>
+<li><p>Move your current frame to a frame where parallax can be seen in
+the camera, and use the Maya Scale manipulator tool to scale newly
+created Scale Rig until the desired scale is found.</p></li>
+<li><p>When desired scale is found, select the created <cite>Scale Rig</cite> and use
+the <cite>Remove Camera/Object Scale</cite> tool.</p></li>
+</ol>
+</section>
+<section id="scale-an-object">
+<h3>Scale an Object<a class="headerlink" href="#scale-an-object" title="Permalink to this headline">#</a></h3>
+<p>In this example camera will stay the same scale, and the object will
+be scaled.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Set your current frame to the frame you want to scale/pivot from.</p></li>
+<li><p>Open the <cite>Adjust Camera/Object Scale</cite> UI.</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>Type a unique name for <cite>Scale Rig Name</cite>.</p></li>
+<li><p>Choose <cite>Adjust Object Scale</cite> mode.</p></li>
+<li><p>Select the <cite>Camera</cite> that will <cite>not</cite> change scale.</p></li>
+<li><p>Select the <cite>Objects</cite> that will adjust scale.</p></li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="3">
+<li><p>Press <cite>Create</cite> button.</p></li>
+<li><p>Move your current frame to a frame where parallax can be seen in
+the camera, and use the Maya Scale manipulator tool to scale newly
+created Scale Rig until the desired scale is found.</p></li>
+<li><p>When desired scale is found, select the created <cite>Scale Rig</cite> and use
+the <cite>Remove Camera/Object Scale</cite> tool.</p></li>
+</ol>
+</section>
 </section>
 </section>
 
@@ -507,6 +582,11 @@ keyframes will be baked.</p></li>
 <li><a class="reference internal" href="#screen-z-manipulator">Screen-Z Manipulator</a></li>
 <li><a class="reference internal" href="#screen-space-transform">Screen-Space Transform</a></li>
 <li><a class="reference internal" href="#screen-space-rig-bake">Screen-Space Rig Bake</a></li>
+<li><a class="reference internal" href="#adjust-camera-object-scale">Adjust Camera/Object Scale</a><ul>
+<li><a class="reference internal" href="#scale-a-camera">Scale a Camera</a></li>
+<li><a class="reference internal" href="#scale-an-object">Scale an Object</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

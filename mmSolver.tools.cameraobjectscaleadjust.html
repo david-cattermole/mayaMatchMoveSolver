@@ -341,16 +341,64 @@
 <dd></dd></dl>
 
 </section>
-<section id="library">
-<h2>Library<a class="headerlink" href="#library" title="Permalink to this headline">#</a></h2>
+<section id="module-mmSolver.tools.cameraobjectscaleadjust.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.cameraobjectscaleadjust.lib" title="Permalink to this headline">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.cameraobjectscaleadjust.lib.create_scale_rig">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.cameraobjectscaleadjust.lib.</span></span><span class="sig-name descname"><span class="pre">create_scale_rig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scene</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">object_track_controls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">framerange</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_rig_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.cameraobjectscaleadjust.lib.create_scale_rig" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a camera track scale rig.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Scale rig name.</p></li>
+<li><p><strong>camera</strong> (<em>Transform node</em>) – Camera node.</p></li>
+<li><p><strong>scene</strong> (<em>Transform node</em><em> or </em><em>None</em>) – Scene node.</p></li>
+<li><p><strong>object_track_controls</strong> (<em>Transforms list</em><em> or </em><em>[</em><em>]</em>) – Object track controls transforms.</p></li>
+<li><p><strong>scale_rig_type</strong> – Which type of scale rig to be created?
+mmSolver.tools.cameraobjectscaleadjust.constant.SCALE_RIG_LIST.</p></li>
+<li><p><strong>framerange</strong> – The start/end frame range to operate on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>(int, int)</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>[str]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.cameraobjectscaleadjust.lib.remove_scale_rig">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.cameraobjectscaleadjust.lib.</span></span><span class="sig-name descname"><span class="pre">remove_scale_rig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rigs_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">framerange</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.cameraobjectscaleadjust.lib.remove_scale_rig" title="Permalink to this definition">#</a></dt>
+<dd><p>Bake and remove scale rig(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rigs_list</strong> (<em>list</em>) – Scale rig(s).</p></li>
+<li><p><strong>framerange</strong> – The start/end frame range to operate on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Type</dt>
+<dd class="field-even"><p>(int, int)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="user-interface">
 <h2>User Interface<a class="headerlink" href="#user-interface" title="Permalink to this headline">#</a></h2>
-<section id="about-window">
-<h3>About Window<a class="headerlink" href="#about-window" title="Permalink to this headline">#</a></h3>
+<section id="window">
+<h3>Window<a class="headerlink" href="#window" title="Permalink to this headline">#</a></h3>
 </section>
-<section id="about-layout">
-<h3>About Layout<a class="headerlink" href="#about-layout" title="Permalink to this headline">#</a></h3>
+<section id="layout">
+<h3>Layout<a class="headerlink" href="#layout" title="Permalink to this headline">#</a></h3>
 </section>
 </section>
 <section id="module-mmSolver.tools.cameraobjectscaleadjust.constant">
@@ -417,10 +465,10 @@
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.cameraobjectscaleadjust</a><ul>
 <li><a class="reference internal" href="#module-mmSolver.tools.cameraobjectscaleadjust.tool">Tool</a></li>
-<li><a class="reference internal" href="#library">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.cameraobjectscaleadjust.lib">Library</a></li>
 <li><a class="reference internal" href="#user-interface">User Interface</a><ul>
-<li><a class="reference internal" href="#about-window">About Window</a></li>
-<li><a class="reference internal" href="#about-layout">About Layout</a></li>
+<li><a class="reference internal" href="#window">Window</a></li>
+<li><a class="reference internal" href="#layout">Layout</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-mmSolver.tools.cameraobjectscaleadjust.constant">Constant</a></li>

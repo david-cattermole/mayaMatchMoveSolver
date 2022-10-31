@@ -115,6 +115,11 @@ Project Marker on Mesh (Ray-Cast)
 Ray-casts each bundle connected to the selected markers on to the mesh
 from the associated camera.
 
+.. figure:: images/tools_project_markers_on_mesh_ui.png
+    :alt: Project Markers on Mesh UI
+    :align: center
+    :width: 60%
+
 Select markers and mesh objects to ray-cast on to, if no mesh objects
 are selected the tool will ray-cast on to all visible mesh objects.
 
@@ -154,9 +159,11 @@ Usage:
 
 3) Run tool.
 
+   - (Optional) Open the UI to adjust options and press `Apply`.
+
    - The Bundles connected to the selected Markers will be projected
      from the currently active viewport camera onto the mesh in the
-     scene
+     scene.
 
 Run this Python command:
 

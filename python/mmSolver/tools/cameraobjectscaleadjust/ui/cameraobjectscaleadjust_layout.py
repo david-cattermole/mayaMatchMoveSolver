@@ -37,6 +37,7 @@ import mmSolver.ui.Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.constant as const_utils
+import mmSolver.utils.time as time_utils
 import mmSolver.tools.cameraobjectscaleadjust.constant as const
 import mmSolver.tools.cameraobjectscaleadjust.ui.ui_cameraobjectscaleadjust_layout as ui_layout
 import mmSolver.tools.loadmarker.lib.utils as cam_lib
@@ -46,7 +47,6 @@ import mmSolver.tools.cameraobjectscaleadjust.lib as lib
 LOG = mmSolver.logger.get_logger()
 
 
-# TODO: Move to another file.
 def _transform_has_constraints(tfm_node):
     constraints = (
         maya.cmds.listRelatives(tfm_node, children=True, type='pointConstraint') or []
@@ -64,7 +64,6 @@ def _transform_has_constraints(tfm_node):
     return has_constraints
 
 
-# TODO: Move to another file.
 def unlock_node_attrs(tfm_node):
     axes = ['x', 'y', 'z']
     attrs = ['t', 'r', 's']
@@ -170,6 +169,7 @@ class CameraObjectScaleAdjustLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             rig_controls = rig_controls.split(',')
         body_scale_checked = self.bodyTrackScaleRadioButton.isChecked()
         camera_scale_checked = self.cameraTrackScaleRadioButton.isChecked()
+        framerange = time_utils.get_maya_timeline_range_inner()
 
         ctx = tools_utils.tool_context(
             use_undo_chunk=True,
@@ -184,13 +184,23 @@ class CameraObjectScaleAdjustLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
                     LOG.warn('Please select scale rig name, camera and rigs.')
                     return
                 lib.create_scale_rig(
-                    name, camera, scene, rig_controls, const.SCALE_RIG_TYPE_OBJECT_TRACK
+                    name,
+                    camera,
+                    scene,
+                    rig_controls,
+                    framerange,
+                    const.SCALE_RIG_TYPE_OBJECT_TRACK,
                 )
             if camera_scale_checked is True:
                 if None in [name, camera, scene, rig_controls]:
                     LOG.warn('Please select scale rig name, camera, scene and rigs.')
                     return
                 lib.create_scale_rig(
-                    name, camera, scene, rig_controls, const.SCALE_RIG_TYPE_CAMERA_TRACK
+                    name,
+                    camera,
+                    scene,
+                    rig_controls,
+                    framerange,
+                    const.SCALE_RIG_TYPE_CAMERA_TRACK,
                 )
         return

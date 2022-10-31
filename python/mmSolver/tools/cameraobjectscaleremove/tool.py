@@ -25,6 +25,7 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.constant as const_utils
+import mmSolver.utils.time as time_utils
 import mmSolver.tools.cameraobjectscaleadjust.lib as lib
 
 
@@ -36,6 +37,8 @@ def main():
     if not selection:
         LOG.warn('Please select scale rig(s) nodes.')
         return
+    framerange = time_utils.get_maya_timeline_range_inner()
+
     ctx = tools_utils.tool_context(
         use_undo_chunk=True,
         restore_current_frame=True,
@@ -44,4 +47,4 @@ def main():
         disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE,
     )
     with ctx:
-        lib.remove_scale_rig(selection)
+        lib.remove_scale_rig(selection, framerange)

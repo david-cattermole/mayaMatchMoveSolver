@@ -68,7 +68,7 @@ class ChannelSenWindow(BaseWindow):
 
     def help(self):
         src = helputils.get_help_source()
-        page = 'tools.html#channel-sensitivity'
+        page = 'tools_attributetools.html#channel-sensitivity'
         helputils.open_help_in_browser(page=page, help_source=src)
         return
 

@@ -114,12 +114,6 @@ See the video tutorial
 `Using 3DEqualizer with mmSolver - Copy 2D Tracks <https://david-cattermole.github.io/mayaMatchMoveSolver/tutorial.html#using-3dequalizer-with-mmsolver-copy-2d-tracks>`_
 for a step-by-step example of the tool.
 
-.. note::
-    The ``Copy 2D Tracks`` tool uses the "First Frame is Frame"
-    parameter on the Camera in 3DEqualizer to correctly synchronise
-    frame numbers between Maya and 3DEqualizer. It is recommended to
-    correctly set "First Frame is Frame".
-
 .. _track-2d-rolling-shutter-correct-ref:
 
 2D Tracks Rolling Shutter Correction

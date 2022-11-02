@@ -119,13 +119,13 @@ Surfaces`, and `NURBS Curves`, as well as MM Solver shape nodes, like
 .. figure:: images/tools_set_object_colour_ui.png
     :alt: Set Object Colour UI
     :align: center
-    :width: 90%
+    :width: 60%
 
-.. note:: Starting with Maya 2023 the Set Object Colur UI contains an
+.. note:: Starting with Maya 2023 the Set Object Colour UI contains an
     Alpha channel value, allowing the wireframe to be transparent.
 
 
-Usage - Set Colour:
+Usage - *Set Colour*:
 
 1) Select object(s).
 
@@ -136,7 +136,7 @@ Usage - Set Colour:
    - Move mouse away from window to set and close the colour.
 
 
-Usage - Reset Colour:
+Usage - *Reset Colour*:
 
 1) Select object(s).
 

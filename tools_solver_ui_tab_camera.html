@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.convertmarker" href="mmSolver.tools.convertmarker.html" /><link rel="prev" title="mmSolver.tools.centertwodee" href="mmSolver.tools.centertwodee.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Create Node Tools" href="tools_createnode.html" /><link rel="prev" title="Standard Solver Tab" href="tools_solver_ui_tab_standard.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
-        <title>mmSolver.tools.channelsen - mayaMatchMoveSolver master documentation</title>
+        <title>Camera Solver Tab - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -154,14 +154,14 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="tools.html">Tools</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2 has-children"><a class="reference internal" href="tools_solver_ui.html">Solver UI</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="tools.html">Tools</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current has-children"><a class="reference internal" href="tools_solver_ui.html">Solver UI</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_basic.html">Basic Solver Tab</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_standard.html">Standard Solver Tab</a></li>
-<li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_camera.html">Camera Solver Tab</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">Camera Solver Tab</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="tools_createnode.html">Create Node Tools</a></li>
@@ -189,7 +189,7 @@
 </ul>
 </li>
 </ul>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="nodes.html">Nodes</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="nodes_transforms.html">Transform Nodes</a></li>
@@ -207,8 +207,8 @@
 <li class="toctree-l2"><a class="reference internal" href="commands_display.html">Display Commands</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="scripting.html">Scripting</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children"><a class="reference internal" href="mmSolver.tools.html">mmSolver.tools</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="scripting.html">Scripting</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="mmSolver.tools.html">mmSolver.tools</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.aboutwindow.html">mmSolver.tools.aboutwindow</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.attachbundletocurve.html">mmSolver.tools.attachbundletocurve</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.attributebake.html">mmSolver.tools.attributebake</a></li>
@@ -218,7 +218,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.cameraobjectscaleadjust.html">mmSolver.tools.cameraobjectscaleadjust</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.cameraobjectscaleremove.html">mmSolver.tools.cameraobjectscaleremove</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.centertwodee.html">mmSolver.tools.centertwodee</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">mmSolver.tools.channelsen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.channelsen.html">mmSolver.tools.channelsen</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.convertmarker.html">mmSolver.tools.convertmarker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.copypastecamera.html">mmSolver.tools.copypastecamera</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.copypastemarker.html">mmSolver.tools.copypastemarker</a></li>
@@ -325,62 +325,21 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-mmSolver.tools.channelsen">
-<span id="mmsolver-tools-channelsen"></span><h1>mmSolver.tools.channelsen<a class="headerlink" href="#module-mmSolver.tools.channelsen" title="Permalink to this headline">#</a></h1>
-<p>Change the Maya Channel Box Sensitivity.</p>
-<section id="module-mmSolver.tools.channelsen.tool">
-<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.channelsen.tool" title="Permalink to this headline">#</a></h2>
-<p>The channelsen - user facing.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="mmSolver.tools.channelsen.tool.main">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.channelsen.tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.channelsen.tool.main" title="Permalink to this definition">#</a></dt>
-<dd><p>Open the Channel Sensitivity window.</p>
-</dd></dl>
-
-</section>
-<section id="module-mmSolver.tools.channelsen.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.channelsen.lib" title="Permalink to this headline">#</a></h2>
-<p>The Channel Sensitivity tool - user facing.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="mmSolver.tools.channelsen.lib.get_value">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.channelsen.lib.</span></span><span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.channelsen.lib.get_value" title="Permalink to this definition">#</a></dt>
-<dd><p>Get the current channel sensitivity value.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Current channel sensitivity value</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="mmSolver.tools.channelsen.lib.set_value">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.channelsen.lib.</span></span><span class="sig-name descname"><span class="pre">set_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.channelsen.lib.set_value" title="Permalink to this definition">#</a></dt>
-<dd><p>Set channel sensitivity value.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>value</strong> – A possible value to set channel sensitivity
-value</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-</section>
-<section id="module-mmSolver.tools.channelsen.constant">
-<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.channelsen.constant" title="Permalink to this headline">#</a></h2>
-<p>Contains constant values for the channelsen tool.</p>
-</section>
+          <section id="camera-solver-tab">
+<h1>Camera Solver Tab<a class="headerlink" href="#camera-solver-tab" title="Permalink to this headline">#</a></h1>
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/tools_solver_ui_solver_tab_camera.png"><img alt="Solver Camera Tab" src="_images/tools_solver_ui_solver_tab_camera.png" style="width: 90%;" /></a>
+<figcaption>
+<p><span class="caption-text">Solver Camera Tab</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<p><em>To be written</em>.</p>
 </section>
 
         </article>
@@ -388,23 +347,23 @@ value</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="mmSolver.tools.convertmarker.html">
+          <a class="next-page" href="tools_createnode.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">mmSolver.tools.convertmarker</div>
+                <div class="title">Create Node Tools</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="mmSolver.tools.centertwodee.html">
+          <a class="prev-page" href="tools_solver_ui_tab_standard.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">mmSolver.tools.centertwodee</div>
+                <div class="title">Standard Solver Tab</div>
                 
               </div>
             </a>
@@ -428,29 +387,8 @@ value</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">mmSolver.tools.channelsen</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.channelsen.tool">Tools</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.channelsen.lib">Library</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.channelsen.constant">Constants</a></li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

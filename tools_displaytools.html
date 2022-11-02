@@ -161,6 +161,7 @@
 <li class="toctree-l2 has-children"><a class="reference internal" href="tools_solver_ui.html">Solver UI</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_basic.html">Basic Solver Tab</a></li>
 <li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_standard.html">Standard Solver Tab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_camera.html">Camera Solver Tab</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="tools_createnode.html">Create Node Tools</a></li>
@@ -379,15 +380,108 @@ backslash (’ \ ‘) key).</p></li>
 </pre></div>
 </div>
 </section>
+<section id="create-horizon-axis-dome-sky-dome">
+<span id="create-sky-dome-tool-ref"></span><h2>Create Horizon / Axis Dome / Sky Dome<a class="headerlink" href="#create-horizon-axis-dome-sky-dome" title="Permalink to this headline">#</a></h2>
+<p><cite>MM Solver</cite> includes a flexible <cite>Sky Dome</cite> node that can be used to
+visualize the rotations of a camera with lines.</p>
+<p>Simply create the <cite>Sky Dome</cite>, <cite>Axis Dome</cite> or <cite>Horizon</cite> to create a
+<code class="docutils literal notranslate"><span class="pre">mmSkyDomeShape</span></code> node, then you can edit the attributes in the
+Attribute Editor.</p>
+<ul class="simple">
+<li><p>Set the <cite>Draw Mode</cite> and <cite>Radius</cite> attributes to control how the depth
+of Sky Dome.</p></li>
+<li><p>Set the <cite>Alpha</cite> and <cite>Line Width</cite> attributes to easily adjust the
+brightness of the lines.</p></li>
+<li><p>Enable Anti-Aliasing in Maya Viewport 2.0 to see the lines with
+better quality.</p></li>
+<li><p>By default the centre of the Sky Dome will always be positioned to
+your visible camera - it will “dynamically attach” to your camera in
+each viewport.</p></li>
+<li><p>The <cite>Sky Dome</cite> is not renderable in software renders (like Arnold),
+it only supports Viewport 2.0.</p></li>
+</ul>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createskydome.tool</span>
+<span class="kn">import</span> <span class="nn">mmSolver.tools.createskydome.constant</span> <span class="k">as</span> <span class="nn">const</span>
+
+<span class="c1"># Create Sky Dome</span>
+<span class="n">mmSolver</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">createskydome</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">preset_name</span><span class="o">=</span><span class="n">const</span><span class="o">.</span><span class="n">PRESET_SKY_DOME_NAME</span><span class="p">)</span>
+
+<span class="c1"># Create Axis Dome</span>
+<span class="n">mmSolver</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">createskydome</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">preset_name</span><span class="o">=</span><span class="n">const</span><span class="o">.</span><span class="n">PRESET_AXIS_DOME_NAME</span><span class="p">)</span>
+
+<span class="c1"># Create Horizon Line</span>
+<span class="n">mmSolver</span><span class="o">.</span><span class="n">tools</span><span class="o">.</span><span class="n">createskydome</span><span class="o">.</span><span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">(</span><span class="n">preset_name</span><span class="o">=</span><span class="n">const</span><span class="o">.</span><span class="n">PRESET_HORIZON_LINE_NAME</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 <section id="set-object-colour-reset-object-colour">
 <span id="set-object-colour-tool-ref"></span><h2>Set Object Colour / Reset Object Colour<a class="headerlink" href="#set-object-colour-reset-object-colour" title="Permalink to this headline">#</a></h2>
-<p><em>To be written</em></p>
-<p>Usage:</p>
+<p>The <cite>Set Object Colour</cite> tools can be used to override the wireframe
+colour of the selected objects.</p>
+<p>Likewise to remove the colour overrides, use the <cite>Reset Object Colour</cite>
+to reset selected objects.</p>
+<p>This tool works on common Maya shape nodes, such as <cite>Meshes</cite>, <cite>NURBS
+Surfaces</cite>, and <cite>NURBS Curves</cite>, as well as MM Solver shape nodes, like
+<cite>Markers</cite>, <cite>Bundles</cite> and <cite>Lines</cite>.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/tools_set_object_colour_ui.png"><img alt="Set Object Colour UI" src="_images/tools_set_object_colour_ui.png" style="width: 90%;" /></a>
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Starting with Maya 2023 the Set Object Colur UI contains an
+Alpha channel value, allowing the wireframe to be transparent.</p>
+</div>
+<p>Usage - Set Colour:</p>
 <ol class="arabic simple">
-<li><p>…</p></li>
+<li><p>Select object(s).</p></li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>Choose colour.</p></li>
+<li><p>Move mouse away from window to set and close the colour.</p></li>
+</ul>
+</li>
+</ol>
+<p>Usage - Reset Colour:</p>
+<ol class="arabic simple">
+<li><p>Select object(s).</p></li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>All selected objects have colour overrides removed back to
+default colours.</p></li>
+</ul>
+</li>
 </ol>
 <p>To run the tool, use this Python command:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.setobjectcolour.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_mini_window</span><span class="p">()</span>
+
+<span class="c1"># Or run with the larger window.</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+
+<span class="c1"># Or reset the colour on selected objects.</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">reset_colour</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="toggle-object-motion-trail">
+<span id="toggle-object-motion-trail-tool-ref"></span><h2>Toggle Object Motion Trail<a class="headerlink" href="#toggle-object-motion-trail" title="Permalink to this headline">#</a></h2>
+<p>The <cite>Object Motion Trail</cite> can be used to view the position of a 3D
+transform (or object) for a series of frames, using a line. This tool
+can be used to toggle the <cite>Motion Trail</cite> to easily create and view.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select Object transform node(s).</p></li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>If the object has no motion trail, the motion trail will be
+created or unhidden.</p></li>
+<li><p>If the object has a motion trail it will be hidden.</p></li>
+</ul>
+</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.toggleobjectmotiontrail.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -516,7 +610,9 @@ motion trail parented under the camera is created.</p></li>
             <ul>
 <li><a class="reference internal" href="#">Display Tools</a><ul>
 <li><a class="reference internal" href="#center-2d-on-selection">Center 2D On Selection</a></li>
+<li><a class="reference internal" href="#create-horizon-axis-dome-sky-dome">Create Horizon / Axis Dome / Sky Dome</a></li>
 <li><a class="reference internal" href="#set-object-colour-reset-object-colour">Set Object Colour / Reset Object Colour</a></li>
+<li><a class="reference internal" href="#toggle-object-motion-trail">Toggle Object Motion Trail</a></li>
 <li><a class="reference internal" href="#create-screen-space-motion-trail">Create Screen-Space Motion Trail</a></li>
 </ul>
 </li>

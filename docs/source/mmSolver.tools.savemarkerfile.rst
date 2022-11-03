@@ -1,27 +1,27 @@
-mmSolver.tools.savelensfile
-===========================
+mmSolver.tools.savemarkerfile
+=============================
 
-.. automodule:: mmSolver.tools.savelensfile
+.. automodule:: mmSolver.tools.savemarkerfile
     :members:
     :undoc-members:
 
 Tool
 ++++
 
-.. automodule:: mmSolver.tools.savelensfile.tool
+.. automodule:: mmSolver.tools.savemarkerfile.tool
     :members:
     :undoc-members:
 
 Library
 ++++++++++++++++
 
-.. automodule:: mmSolver.tools.savelensfile.lib
+.. automodule:: mmSolver.tools.savemarkerfile.lib
     :members:
     :undoc-members:
 
 Constants
 +++++++++
 
-.. automodule:: mmSolver.tools.savelensfile.constant
+.. automodule:: mmSolver.tools.savemarkerfile.constant
     :members:
     :undoc-members:

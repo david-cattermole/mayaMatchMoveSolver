@@ -141,41 +141,55 @@ The UI for this tool can be used control the baking method, and the
 'space' of the created controller. These features create a very
 powerful workflow for editing, and solving characters and objects.
 
+.. figure:: images/tools_create_controller_ui.png
+    :alt: Create Controller UI
+    :align: center
+    :width: 40%
+
+.. note:: For a simple, straight-forward tool to create a world-space
+    controller for each selected object, use the `Create (World-Space)
+    Controllers` tool.
+
 Usage:
 
 1) Select a Maya transform node.
 
 2) Open 'Create Controller' tool UI.
 
-3) Type a name for the controller
+3) Type a name for the controller.
 
-4) Select your 'pivot object' and press 'Pick Selection'.
+4) Select your `pivot object` and press `Pick Selection`.
 
-5) Select your 'main object' and press 'Pick Selection'.
+5) Select your `main object` and press `Pick Selection`.
 
-6) Select your options for 'Type', 'Bake' mode, and 'Space'.
+6) Select your options for `Type`, `Pivot`, `Bake` mode, and `Space`.
 
-   - 'Type' changes the node types created for the controller. Choose
-     "Group" if you do not like to see locators in your viewport.
+   - Use the `Controller Type` menu to change the node types created
+     for the controller. Choose "Group" if you do not like to see
+     locators in your viewport.
 
-   - 'Bake' changes the method used to bake keyframe times. Choose
-     'Full Bake' to bake every frame, and choose 'Smart Bake' to bake
+   - `Pivot` changes how the pivot object is baked; `Static` assumes
+     the pivot object does not animate or is baked on the current
+     frame. `Dynamic` uses an animated pivot.
+
+   - `Bake` changes the method used to bake keyframe times. Choose
+     `Full Bake` to bake every frame, and choose `Smart Bake` to bake
      some frames.
 
-   - 'Space' changes the heirachy and orientation of the Controller
-     nodes. Using 'Screen Space' allows you to move an object in
+   - `Space` changes the heirachy and orientation of the Controller
+     nodes. Using `Screen Space` allows you to move an object in
      screen-space, with X and Y the position on the screen, and Z the
      depth into the screen. This can be very helpful for smoothing
      Z-bumps and depth problems.
 
-7) Press 'Create Controller' button.
+7) Press `Create Controller` button.
 
-   - A new 'Controller' node is created at the same position as the
-     'pick object'.
+   - A new `Controller` node is created at the same position as the
+     `pick object`.
 
 8) Select and move the created Controller as you wish.
 
-9) Select the Controller, run 'Remove Controller' tool.
+9) Select the Controller, run `Remove Controller` tool.
 
    - The source node is baked and the Controller node is deleted.
 
@@ -185,6 +199,14 @@ To run the tool, use this Python command:
 
     import mmSolver.tools.createcontroller2.tool as tool
     tool.open_window()
+
+To create world-space controllers for the current selection, without
+using any of the UI options, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.createcontroller2.tool as tool
+    tool.create_world_controllers()
 
 To remove a controller, use this Python command:
 

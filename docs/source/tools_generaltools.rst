@@ -144,7 +144,7 @@ powerful workflow for editing, and solving characters and objects.
 .. figure:: images/tools_create_controller_ui.png
     :alt: Create Controller UI
     :align: center
-    :width: 40%
+    :width: 60%
 
 .. note:: For a simple, straight-forward tool to create a world-space
     controller for each selected object, use the `Create (World-Space)

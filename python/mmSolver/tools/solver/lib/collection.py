@@ -36,7 +36,6 @@ import mmSolver.tools.userpreferences.constant as userprefs_const
 import mmSolver.tools.userpreferences.lib as userprefs_lib
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as col_state
-import mmSolver.tools.solver.lib.solver as solver_utils
 import mmSolver.tools.solver.lib.solver_step as solver_step
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const

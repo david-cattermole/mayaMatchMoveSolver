@@ -21,7 +21,7 @@
 
 # Create Python file with some build options baked in.
 configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/constant.py.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/constant.py
   ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/constant.py
   @ONLY)
 

@@ -364,66 +364,10 @@ Camera Focal Length.</p>
 <li><p>Using DAG hierarchies to solve objects in specific spaces (for example object or camera space).</p></li>
 <li><p>Generation of 3D positions from 2D screen-space positions.</p></li>
 <li><p>Reconstruction of multi-camera shooting environments (photogrammetry).</p></li>
+<li><p>3D Camera Solving with no known 3D positions.</p></li>
+<li><p>Camera line up and Lens Calibration using a single view (no
+parallax) using straight lines in the image.</p></li>
 </ul>
-</section>
-<section id="features">
-<h2>Features<a class="headerlink" href="#features" title="Permalink to this headline">#</a></h2>
-<ul class="simple">
-<li><p>Solver User Interface</p>
-<ul>
-<li><p>Uses Plug-In to set up and run solver.</p></li>
-<li><p>Displays relationships of Cameras, (2D) Markers and (3D) Bundles
-nodes.</p></li>
-<li><p>Lists Maya Attributes used for solving.</p></li>
-<li><p>Lists individual Solver ‘steps’ depicting how the Solver will execute.</p></li>
-<li><p>Supports creation of mmSolver arguments using a GUI.</p></li>
-<li><p>Single-Frame solve override</p></li>
-</ul>
-</li>
-<li><p>User Tools</p>
-<ul>
-<li><p>Load 2D Tracks (Markers) from Third-Party software</p>
-<ul>
-<li><p>Supports 3DEqualizer .txt, MatchMover .rz2 and custom .uv file formats.</p></li>
-</ul>
-</li>
-<li><p>Convert from 3D Transform Nodes to 2D Markers.</p></li>
-<li><p>Center Viewport on 3D Transform Node</p></li>
-<li><p>Maya Shelf for quick access to tools</p></li>
-<li><p>Selection tools</p>
-<ul>
-<li><p>Toggle Selection between 2D and 3D nodes</p></li>
-<li><p>Select connected 2D and 3D nodes</p></li>
-</ul>
-</li>
-<li><p>Control 2D and 3D node relationships; linking and unlinking nodes.</p></li>
-<li><p>And more…</p></li>
-</ul>
-</li>
-<li><p>Solver Plug-in</p>
-<ul>
-<li><p>Maya DG and DAG evaluation support.</p></li>
-<li><p>Options to tune the required solver iterations and error thresholds.</p></li>
-<li><p>Minimising residual error between 2D and 3D positions.</p></li>
-<li><p>Solving translate, rotate, scale and any custom floating point values, including camera focal length.</p></li>
-<li><p>Static and animated attribute solving.</p></li>
-<li><p>Per-frame, single-frame and multi-frame solving is supported.</p></li>
-<li><p>Multi-camera solving (photogrammetry).</p></li>
-<li><p>Marker weights support (force a point to solve with higher weight
-than others).</p></li>
-<li><p>Marker ‘validity’ support - frames where markers are occluded.</p></li>
-<li><p>Full undo/redo support.</p></li>
-</ul>
-</li>
-<li><p>Python API</p>
-<ul>
-<li><p>Object-Oriented helper classes to create node networks and store the data structure inside a Maya scene.</p></li>
-<li><p>Allows storage of multiple ‘collections’ of solver arguments in one Maya scene file - all data is stored in the Maya scene file.</p></li>
-<li><p>Creates Maya nodes to represent Markers and Bundles.</p></li>
-</ul>
-</li>
-</ul>
-<p>For a list of future features please see the GitHub <a class="reference external" href="https://github.com/david-cattermole/mayaMatchMoveSolver/issues">issues</a> page.</p>
 </section>
 </section>
 
@@ -486,7 +430,6 @@ than others).</p></li>
             <ul>
 <li><a class="reference internal" href="#">Introduction</a><ul>
 <li><a class="reference internal" href="#use-cases">Use Cases</a></li>
-<li><a class="reference internal" href="#features">Features</a></li>
 </ul>
 </li>
 </ul>

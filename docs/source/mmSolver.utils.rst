@@ -91,7 +91,7 @@ Load File
 
 
 Load Marker
-+++++++++
++++++++++++
 
 .. automodule:: mmSolver.utils.loadmarker.fileinfo
     :members:
@@ -116,19 +116,19 @@ Formats
     :members:
     :undoc-members:
 
-.. automodule:: mmSolver.utils.loadmarker.pftrack2dt
+.. automodule:: mmSolver.utils.loadmarker.formats.pftrack2dt
     :members:
     :undoc-members:
 
-.. automodule:: mmSolver.utils.loadmarker.rz2
+.. automodule:: mmSolver.utils.loadmarker.formats.rz2
     :members:
     :undoc-members:
 
-.. automodule:: mmSolver.utils.loadmarker.tdetxt
+.. automodule:: mmSolver.utils.loadmarker.formats.tdetxt
     :members:
     :undoc-members:
 
-.. automodule:: mmSolver.utils.loadmarker.uvtrack
+.. automodule:: mmSolver.utils.loadmarker.formats.uvtrack
     :members:
     :undoc-members:
               

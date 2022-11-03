@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.screenspacemotiontrail" href="mmSolver.tools.screenspacemotiontrail.html" /><link rel="prev" title="mmSolver.tools.savelensfile" href="mmSolver.tools.savelensfile.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
-        <title>mmSolver.tools.savelensfile - mayaMatchMoveSolver master documentation</title>
+        <title>mmSolver.tools.savemarkerfile - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -252,7 +252,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.reparent2.html">mmSolver.tools.reparent2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.reprojectbundle.html">mmSolver.tools.reprojectbundle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.savelensfile.html">mmSolver.tools.savelensfile</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">mmSolver.tools.savelensfile</a></li>
+<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">mmSolver.tools.savemarkerfile</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.screenspacemotiontrail.html">mmSolver.tools.screenspacemotiontrail</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.screenspacerigbake.html">mmSolver.tools.screenspacerigbake</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.screenspacetransform.html">mmSolver.tools.screenspacetransform</a></li>
@@ -331,72 +331,103 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-mmSolver.tools.savelensfile">
-<span id="mmsolver-tools-savelensfile"></span><h1>mmSolver.tools.savelensfile<a class="headerlink" href="#module-mmSolver.tools.savelensfile" title="Permalink to this headline">#</a></h1>
-<section id="module-mmSolver.tools.savelensfile.tool">
-<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.savelensfile.tool" title="Permalink to this headline">#</a></h2>
-<p>The Save Lens File tool.</p>
-<p>This tool will save the selected Lenss to a .uv file, for loading in
+          <section id="module-mmSolver.tools.savemarkerfile">
+<span id="mmsolver-tools-savemarkerfile"></span><h1>mmSolver.tools.savemarkerfile<a class="headerlink" href="#module-mmSolver.tools.savemarkerfile" title="Permalink to this headline">#</a></h1>
+<p>Tool to convert a Maya Camera (and Image Plane) into a file format
+readable by third-party software (for example, 3DEqualizer).</p>
+<p>The aim is to make the tool similar to the Load Markers tool, allowing
+minimal set-up time for getting data between Maya and
+3DEqualizer.</p>
+<section id="module-mmSolver.tools.savemarkerfile.tool">
+<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.savemarkerfile.tool" title="Permalink to this headline">#</a></h2>
+<p>The Save Marker File tool.</p>
+<p>This tool will save the selected Markers to a .uv file, for loading in
 third-party software (such as 3DEqualizer).</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="mmSolver.tools.savelensfile.tool.main">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.savelensfile.tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.savelensfile.tool.main" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="mmSolver.tools.savemarkerfile.tool.main">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.savemarkerfile.tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.savemarkerfile.tool.main" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 </section>
-<section id="module-mmSolver.tools.savelensfile.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.savelensfile.lib" title="Permalink to this headline">#</a></h2>
-<p>The Save Lens File library functions.</p>
-<p>Write out a mmSolver Lens node as a .nk file, readable in The Foundry
-Nuke.</p>
+<section id="module-mmSolver.tools.savemarkerfile.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.savemarkerfile.lib" title="Permalink to this headline">#</a></h2>
+<p>The Save Marker File library functions.</p>
+<p>Write out a mmSolver Marker node as a .uv file.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="mmSolver.tools.savelensfile.lib.generate">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.savelensfile.lib.</span></span><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_range</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.savelensfile.lib.generate" title="Permalink to this definition">#</a></dt>
-<dd><p>Convert camera-lens pair to data that can be written to a file.</p>
+<dt class="sig sig-object py" id="mmSolver.tools.savemarkerfile.lib.generate">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.savemarkerfile.lib.</span></span><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_range</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.savemarkerfile.lib.generate" title="Permalink to this definition">#</a></dt>
+<dd><p>Convert all Markers to data that can be written out.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Data structure containing the data from the lens, ready to be written.</p>
+<dd class="field-odd"><p>List of Markers</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
+<dd class="field-even"><p>[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker">Marker</a>]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="mmSolver.tools.savelensfile.lib.write_nuke_file">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.savelensfile.lib.</span></span><span class="sig-name descname"><span class="pre">write_nuke_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.savelensfile.lib.write_nuke_file" title="Permalink to this definition">#</a></dt>
-<dd><p>Write data_list to a Nuke file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>True or False, indicating success or not.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>bool</p>
-</dd>
-</dl>
-</dd></dl>
+<dt class="sig sig-object py" id="mmSolver.tools.savemarkerfile.lib.write_file">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.savemarkerfile.lib.</span></span><span class="sig-name descname"><span class="pre">write_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.savemarkerfile.lib.write_file" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="mmSolver.tools.savelensfile.lib.write_nuke_temp_file">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.savelensfile.lib.</span></span><span class="sig-name descname"><span class="pre">write_nuke_temp_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.savelensfile.lib.write_nuke_temp_file" title="Permalink to this definition">#</a></dt>
-<dd><p>Write data_list to temporary Nuke file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>String of the written file path, or None if writing failed.</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>str or None</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="mmSolver.tools.savemarkerfile.lib.write_temp_file">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.savemarkerfile.lib.</span></span><span class="sig-name descname"><span class="pre">write_temp_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.savemarkerfile.lib.write_temp_file" title="Permalink to this definition">#</a></dt>
+<dd><p>Write file.</p>
 </dd></dl>
 
 </section>
-<section id="module-mmSolver.tools.savelensfile.constant">
-<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.savelensfile.constant" title="Permalink to this headline">#</a></h2>
-<p>Contains constant values for the Save Lens File tool.</p>
-<p>The Save Lens File tool can write mmSolver Lens nodes as .nk files,
-readable by The Foundry Nuke.</p>
+<section id="module-mmSolver.tools.savemarkerfile.constant">
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.savemarkerfile.constant" title="Permalink to this headline">#</a></h2>
+<p>Contains constant values for the Save Marker File tool.</p>
+<p>The .uv format, resolution independent 2D tracking format.</p>
+<p>This file supports only the .uv version 4 format.</p>
+<p>The UV coordinate (0.0, 0.0) is the lower-left.
+The UV coordinate (1.0, 1.0) is the upper-right.</p>
+<p>Format version 4:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s1">&#39;num_points&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s1">&#39;is_undistorted&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Deprecated</span>
+    <span class="s1">&#39;points&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>  <span class="c1"># or None</span>
+            <span class="s1">&#39;set_name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="s1">&#39;per_frame&#39;</span><span class="p">:</span> <span class="p">[</span>
+                <span class="p">{</span>
+                    <span class="s1">&#39;frame&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                    <span class="s1">&#39;pos_dist&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                    <span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                    <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="nb">float</span>
+                <span class="p">},</span>
+            <span class="p">],</span>
+           <span class="s1">&#39;3d&#39;</span><span class="p">:</span> <span class="p">{</span>
+                <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="c1"># or None</span>
+                <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="c1"># or None</span>
+                <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="c1"># or None</span>
+                <span class="s1">&#39;x_lock&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># or None</span>
+                <span class="s1">&#39;y_lock&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># or None</span>
+                <span class="s1">&#39;z_lock&#39;</span><span class="p">:</span> <span class="nb">bool</span>  <span class="c1"># or None</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
+    <span class="s1">&#39;camera&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
+        <span class="s1">&#39;film_back_cm&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+        <span class="s1">&#39;lens_center_offset_cm&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+        <span class="s1">&#39;per_frame&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;frame&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="s1">&#39;focal_length_cm&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">],</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
 </section>
 </section>
 
@@ -457,10 +488,10 @@ readable by The Foundry Nuke.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">mmSolver.tools.savelensfile</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.savelensfile.tool">Tool</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.savelensfile.lib">Library</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.savelensfile.constant">Constants</a></li>
+<li><a class="reference internal" href="#">mmSolver.tools.savemarkerfile</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.tools.savemarkerfile.tool">Tool</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.savemarkerfile.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.savemarkerfile.constant">Constants</a></li>
 </ul>
 </li>
 </ul>

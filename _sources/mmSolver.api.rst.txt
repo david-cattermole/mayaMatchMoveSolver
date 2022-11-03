@@ -20,6 +20,7 @@ Class                                Description
 ==================================== ==============================================================
 :py:class:`mmSolver.api.Marker`      2D point to determine screen-space features
 :py:class:`mmSolver.api.Bundle`      3D point to determine real-location of 2D feature
+:py:class:`mmSolver.api.Line`        2D line to define straight line features
 :py:class:`mmSolver.api.Attribute`   Attribute that will be solved
 :py:class:`mmSolver.api.Camera`      Camera to view the world
 :py:class:`mmSolver.api.Frame`       Point in time
@@ -132,6 +133,17 @@ Marker
 
 .. autofunction:: mmSolver.api.find_marker_attr_mapping
 
+
+Line
+++++
+
+2D line to define straight line features.
+
+.. autoclass:: mmSolver.api.Line
+   :members:
+   :undoc-members:
+   :special-members: __init__
+
 MarkerGroup
 +++++++++++
 
@@ -159,6 +171,19 @@ Frame
    :members:
    :undoc-members:
    :special-members: __init__
+
+Root Frame
+++++++++++
+
+Calculating root (or user) frames is essential for solving static
+attributes with some solvers. These helper functions easily allow you
+to create, edit and join lists of root frames together.
+
+.. autofunction:: mmSolver.api.get_root_frames_from_markers
+
+.. autofunction:: mmSolver.api.root_frames_subdivide
+
+.. autofunction:: mmSolver.api.root_frames_list_combine
 
 Solver
 ++++++
@@ -191,6 +216,14 @@ Solver Standard
 ---------------
 
 .. autoclass:: mmSolver.api.SolverStandard
+   :members:
+   :undoc-members:
+   :special-members: __init__
+
+Solver Camera
+-------------
+
+.. autoclass:: mmSolver.api.SolverCamera
    :members:
    :undoc-members:
    :special-members: __init__
@@ -237,7 +270,7 @@ Collection
 .. autofunction:: mmSolver.api.generate_isolate_nodes
 
 Action
-+++++++
+++++++
 
 .. autoclass:: mmSolver.api.Action
    :members:
@@ -245,6 +278,8 @@ Action
    :special-members: __init__
 
 .. autofunction:: mmSolver.api.action_func_is_mmSolver
+
+.. autofunction:: mmSolver.api.action_func_is_mmSolverAffects
 
 .. autofunction:: mmSolver.api.func_str_to_callable
 
@@ -294,6 +329,8 @@ Naming
 .. autofunction:: mmSolver.api.get_new_marker_name
 
 .. autofunction:: mmSolver.api.get_new_bundle_name
+
+.. autofunction:: mmSolver.api.get_new_line_name
 
 Utilities
 +++++++++
@@ -346,6 +383,12 @@ Nodes Filter
 .. autofunction:: mmSolver.api.filter_nodes_into_categories
 
 .. autofunction:: mmSolver.api.filter_marker_nodes
+
+.. autofunction:: mmSolver.api.filter_line_nodes
+
+.. autofunction:: mmSolver.api.filter_lens_nodes
+
+.. autofunction:: mmSolver.api.filter_image_plane_nodes
 
 .. autofunction:: mmSolver.api.filter_marker_group_nodes
 
@@ -407,7 +450,13 @@ referenced inside the documentation.
 
 .. autoattribute:: mmSolver.api.OBJECT_TYPE_BUNDLE
 
+.. autoattribute:: mmSolver.api.OBJECT_TYPE_LINE
+
+.. autoattribute:: mmSolver.api.OBJECT_TYPE_LENS
+
 .. autoattribute:: mmSolver.api.OBJECT_TYPE_COLLECTION
+
+.. autoattribute:: mmSolver.api.OBJECT_TYPE_IMAGE_PLANE
 
 .. autoattribute:: mmSolver.api.OBJECT_TYPE_LIST
 

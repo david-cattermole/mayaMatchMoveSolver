@@ -361,22 +361,25 @@ the alias <cite>mmapi</cite>, examples assume this is done.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#mmSolver.api.Bundle" title="mmSolver.api.Bundle"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Bundle</span></code></a></p></td>
 <td><p>3D point to determine real-location of 2D feature</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mmSolver.api.Attribute" title="mmSolver.api.Attribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Attribute</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mmSolver.api.Line" title="mmSolver.api.Line"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Line</span></code></a></p></td>
+<td><p>2D line to define straight line features</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mmSolver.api.Attribute" title="mmSolver.api.Attribute"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Attribute</span></code></a></p></td>
 <td><p>Attribute that will be solved</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Camera</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Camera</span></code></a></p></td>
 <td><p>Camera to view the world</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mmSolver.api.Frame" title="mmSolver.api.Frame"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Frame</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mmSolver.api.Frame" title="mmSolver.api.Frame"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Frame</span></code></a></p></td>
 <td><p>Point in time</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mmSolver.api.SolverBase" title="mmSolver.api.SolverBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.SolverBase</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mmSolver.api.SolverBase" title="mmSolver.api.SolverBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.SolverBase</span></code></a></p></td>
 <td><p>Options that describe how the solving algorithm will run</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Collection</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.Collection</span></code></a></p></td>
 <td><p>A set of Markers, Attributes and Solvers to use during solving</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.SolveResult</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#mmSolver.api.SolveResult" title="mmSolver.api.SolveResult"><code class="xref py py-class docutils literal notranslate"><span class="pre">mmSolver.api.SolveResult</span></code></a></p></td>
 <td><p>Output of the solver; Details of what happened in a solve</p></td>
 </tr>
 </tbody>
@@ -1467,6 +1470,343 @@ index of the mkr_list and attr_list given.</p>
 </dd></dl>
 
 </section>
+<section id="line">
+<h3>Line<a class="headerlink" href="#line" title="Permalink to this headline">#</a></h3>
+<p>2D line to define straight line features.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mmSolver.api.Line">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">Line</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line" title="Permalink to this definition">#</a></dt>
+<dd><p>The 2D Line object.</p>
+<p>A Line defines a wrapper around a Maya node that contains 2D
+information, in a camera’s screen-space.</p>
+<p>Example usage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">line</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Line</span><span class="p">(</span><span class="n">node</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">line</span><span class="o">.</span><span class="n">get_node</span><span class="p">()</span>
+<span class="go">&#39;|myNode&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cam</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Camera</span><span class="p">()</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;myCamera1&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">line</span> <span class="o">=</span> <span class="n">mmapi</span><span class="o">.</span><span class="n">Line</span><span class="p">()</span><span class="o">.</span><span class="n">create_node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;myLine1&#39;</span><span class="p">,</span> <span class="n">cam</span><span class="o">=</span><span class="n">cam</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">line</span><span class="o">.</span><span class="n">get_node</span><span class="p">()</span>
+<span class="go">&#39;|myLine1&#39;</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialize a Line, give a name to connect to an existing Maya node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node</strong> (<em>None</em><em> or </em><em>str</em>) – The Maya node to connect to.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.get_node">
+<span class="sig-name descname"><span class="pre">get_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.get_node" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the Maya node this object is bound to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The node this Line object is bound to, or None.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None or str or unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.set_node">
+<span class="sig-name descname"><span class="pre">set_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.set_node" title="Permalink to this definition">#</a></dt>
+<dd><p>Change the underlying Maya node that this Line class will manipulate.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>node</strong> (<em>str</em>) – The existing Maya node.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.get_node_uid">
+<span class="sig-name descname"><span class="pre">get_node_uid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.get_node_uid" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the line transform unique identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The line UUID or None</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None or str or unicode</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.create_node">
+<span class="sig-name descname"><span class="pre">create_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'line1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colour</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_grp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.create_node" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a line node network from scratch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of the line to create.</p></li>
+<li><p><strong>colour</strong> (<em>(</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>) or </em><em>None</em>) – Colour of line as R, G and B.
+‘None’ will leave as default.</p></li>
+<li><p><strong>cam</strong> (<a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – The camera to create the line underneath.</p></li>
+<li><p><strong>mkr_grp</strong> (<a class="reference internal" href="#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a>) – The marker group to create the line underneath.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Line object with newly created node.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mmSolver.api.Line" title="mmSolver.api.Line">Line</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.delete_node">
+<span class="sig-name descname"><span class="pre">delete_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.delete_node" title="Permalink to this definition">#</a></dt>
+<dd><p>Remove the Maya node (and all data) of this Line object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>This Line object, with Maya node removed.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#mmSolver.api.Line" title="mmSolver.api.Line">Line</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.add_attributes">
+<span class="sig-name descname"><span class="pre">add_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.add_attributes" title="Permalink to this definition">#</a></dt>
+<dd><p>Add dynamic attributes to line.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.get_enable">
+<span class="sig-name descname"><span class="pre">get_enable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.get_enable" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the enabled state of the Line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>float</em>) – The time to query the enable, if not given the
+current frame is used.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The enabled state of the line.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.get_enabled_frames">
+<span class="sig-name descname"><span class="pre">get_enabled_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_range_start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_range_end</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.get_enabled_frames" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the list of frames that this Line is enabled.</p>
+<p>If there is no animation curve on a Line we use the
+frame_range_start and frame_range_end arguments to determine
+the enabled frame list. If these frame_range_* arguments are
+not given the default Maya outer timeline range is used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame_range_start</strong> (<em>int</em>) – The frame range start of the line
+to consider when no animCurve exists.</p></li>
+<li><p><strong>frame_range_end</strong> (<em>int</em>) – The frame range end of the line
+to consider when no animCurve exists.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The enabled frame numbers of the line.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[int, ..]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.get_weight">
+<span class="sig-name descname"><span class="pre">get_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.get_weight" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the current wire-frame colour of the Line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>time</strong> (<em>float</em>) – The time to query the weight, if not given the
+current frame is used.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The weight of the line.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.get_colour_rgb">
+<span class="sig-name descname"><span class="pre">get_colour_rgb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.get_colour_rgb" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the current RGBA colour (0.0 to 1.0) of the Line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Tuple of red, green and blue, or None if colour cannot be
+found. Each channel is floating point; 0.0 to 1.0.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(float, float, float) or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.set_colour_rgb">
+<span class="sig-name descname"><span class="pre">set_colour_rgb</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgb</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.set_colour_rgb" title="Permalink to this definition">#</a></dt>
+<dd><p>Change the RGBA colour (0.0 to 1.0) of the Line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rgb</strong> (<em>tuple</em><em> or </em><em>None</em>) – Colour as R, G, B; Or None to reset to default colour.
+Each channel is floating point; 0.0 to 1.0.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.get_colour_rgba">
+<span class="sig-name descname"><span class="pre">get_colour_rgba</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.get_colour_rgba" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the current RGBA colour (0.0 to 1.0) of the Line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Tuple of red, green, blue, and alpha, or None if colour
+cannot be found. Each channel is floating point; 0.0 to 1.0.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(float, float, float, float) or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.set_colour_rgba">
+<span class="sig-name descname"><span class="pre">set_colour_rgba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rgba</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.set_colour_rgba" title="Permalink to this definition">#</a></dt>
+<dd><p>Change the RGB colour (0.0 to 1.0) of the Line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>rgba</strong> (<em>tuple</em><em> or </em><em>None</em>) – Colour as R, G, B, A; Or None to reset to default colour.
+Each channel is floating point; 0.0 to 1.0.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.get_camera">
+<span class="sig-name descname"><span class="pre">get_camera</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.get_camera" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the camera connected implicitly with the Line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Camera object, or None if Line does not have a
+Camera (for example it’s unparented to world).</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>None or <a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera">Camera</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.set_camera">
+<span class="sig-name descname"><span class="pre">set_camera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.set_camera" title="Permalink to this definition">#</a></dt>
+<dd><p>Connect this Line to the given camera.</p>
+<p>Connecting Lines to cameras happens by parenting a Line
+under a Camera’s Line Group.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If the <cite>cam</cite> argument is None, the Line is
+disconnected from any camera.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>cam</strong> (<em>None</em><em> or </em><a class="reference internal" href="#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – The camera to connect this Line to.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.get_marker_group">
+<span class="sig-name descname"><span class="pre">get_marker_group</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.get_marker_group" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the marker group that implicitly connected to this Line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Marker group object.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><a class="reference internal" href="#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup">MarkerGroup</a> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.set_marker_group">
+<span class="sig-name descname"><span class="pre">set_marker_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_grp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.set_marker_group" title="Permalink to this definition">#</a></dt>
+<dd><p>Set the MarkerGroup for this Line, or None to unlink the Line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mkr_grp</strong> (<a class="reference internal" href="#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup"><em>MarkerGroup</em></a><em> or </em><em>None</em>) – Marker group object to link to this Line.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.get_marker_list">
+<span class="sig-name descname"><span class="pre">get_marker_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.get_marker_list" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the markers connected implicitly with the Line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Marker objects, or empty list if Line does not have
+any Markers connected.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List of Markers</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.set_marker_list">
+<span class="sig-name descname"><span class="pre">set_marker_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.set_marker_list" title="Permalink to this definition">#</a></dt>
+<dd><p>Connect this Line to the given markers.</p>
+<p>If mkr_list is None, this removes all Markers from the Line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.Line.get_marker_point_intersect">
+<span class="sig-name descname"><span class="pre">get_marker_point_intersect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.Line.get_marker_point_intersect" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the mmLinePointIntersect node connected to the given Marker,
+or return None.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>None or str</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="markergroup">
 <h3>MarkerGroup<a class="headerlink" href="#markergroup" title="Permalink to this headline">#</a></h3>
 <p>A group containing Marker nodes.</p>
@@ -1866,6 +2206,72 @@ please use Collection.get/set_attribute* functions.</p>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+</section>
+<section id="root-frame">
+<h3>Root Frame<a class="headerlink" href="#root-frame" title="Permalink to this headline">#</a></h3>
+<p>Calculating root (or user) frames is essential for solving static
+attributes with some solvers. These helper functions easily allow you
+to create, edit and join lists of root frames together.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.api.get_root_frames_from_markers">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">get_root_frames_from_markers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_frames_per_marker</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_frame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_root_frames_from_markers" title="Permalink to this definition">#</a></dt>
+<dd><p>Get root frames numbers from the markers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>..</em><em>]</em>) – List of Markers to compute root frames from.</p></li>
+<li><p><strong>min_frames_per_marker</strong> (<em>int</em>) – The number of frames that are required for each marker.</p></li>
+<li><p><strong>start_frame</strong> (<em>int</em>) – The first frame to consider as a root frame.</p></li>
+<li><p><strong>end_frame</strong> (<em>int</em>) – The last frame to consider as a root frame.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of frame numbers.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[int, ..]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.api.root_frames_subdivide">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">root_frames_subdivide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root_frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_frame_span</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.root_frames_subdivide" title="Permalink to this definition">#</a></dt>
+<dd><p>Get root frames numbers from the markers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>max_frame_span</strong> (<em>int</em>) – The maximum number of frames between a frame pair the list of
+root frames.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of frame numbers.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[int, ..]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.api.root_frames_list_combine">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">root_frames_list_combine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_list_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_list_b</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.root_frames_list_combine" title="Permalink to this definition">#</a></dt>
+<dd><p>Get root frames numbers from the markers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frame_list_a</strong> (<em>[</em><em>int</em><em>, </em><em>..</em><em>]</em>) – List of Frames that will be added to the root frames.</p></li>
+<li><p><strong>frame_list_b</strong> (<em>[</em><em>int</em><em>, </em><em>..</em><em>]</em>) – List of Frames that will be added to the root frames.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of frame numbers.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>[int, ..]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>
@@ -2882,6 +3288,407 @@ Value must be one in ROOT_FRAME_STRATEGY_VALUE_LIST.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mmSolver.api.SolverStandard.compile">
 <span class="sig-name descname"><span class="pre">compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">withtest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStandard.compile" title="Permalink to this definition">#</a></dt>
+<dd><p>Compile solver into actions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p>‘NotValid’, if the compile goes wrong.</p>
+</dd>
+<dt class="field-even">Parameters</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>col</strong> (<a class="reference internal" href="#mmSolver.api.Collection" title="mmSolver.api.Collection"><em>Collection</em></a>) – Collection to be compile.</p></li>
+<li><p><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>..</em><em>]</em>) – List of Markers used in the Solve.</p></li>
+<li><p><strong>attr_list</strong> (<em>[</em><a class="reference internal" href="#mmSolver.api.Attribute" title="mmSolver.api.Attribute"><em>Attribute</em></a><em>, </em><em>..</em><em>]</em>) – Attributes to be solved for.</p></li>
+<li><p><strong>withtest</strong> (<em>bool</em>) – Should the tests (validation) be generated
+along with the real solver steps?</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Return a generator, to yield two Action objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="solver-camera">
+<h4>Solver Camera<a class="headerlink" href="#solver-camera" title="Permalink to this headline">#</a></h4>
+<dl class="py class">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">SolverCamera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera" title="Permalink to this definition">#</a></dt>
+<dd><p>The camera solver for mmSolver.</p>
+<p>This solver is designed to solve a camera from scratch, with only
+2D Markers as input. The solver assumes the camera is not nodal
+and has parallax. The camera translations, rotations, focal length
+and lens distortion can be calculated by this solver.</p>
+<p>This solver requires that the camera and bundles are fully
+unlocked - attributes will be calculated automatically.</p>
+<p>Parameters for solver:</p>
+<ul class="simple">
+<li><p>Frame Range - with options:</p>
+<ul>
+<li><p>“Single Frame”</p></li>
+<li><p>“Time Slider (Inner)”</p></li>
+<li><p>“Time Slider (Outer)”</p></li>
+<li><p>“Custom”</p></li>
+</ul>
+</li>
+<li><p>User Frames - A list of integer frame numbers.</p></li>
+<li><p>Root Frames - An semi-automatic list of integer frame numbers.</p></li>
+<li><p>Choices of what to solve.</p>
+<ul>
+<li><p>“Solve Everything at Once” option - On or Off</p></li>
+<li><p>“Solve Root Frames Only” option - On or Off</p></li>
+</ul>
+</li>
+<li><p>Scene Scale and Orientation options.</p>
+<ul>
+<li><p>Origin Frame - The frame to set the camera at the origin.</p></li>
+<li><p>Scene Scale - How large will the entire camera path be?</p></li>
+</ul>
+</li>
+</ul>
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.__init__" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialise a SolverBase.</p>
+<p>This __init__ should be called by sub-classes, for example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MySolver</span><span class="p">(</span><span class="n">SolverBase</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="nb">super</span><span class="p">(</span><span class="n">MySolver</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>basestring</em>) – The name of the Solver.</p></li>
+<li><p><strong>data</strong> (<em>dict</em>) – The internal data structure to set inside the Solver base.
+The data holds information about the current options of
+the solver.</p></li>
+<li><p><strong>args</strong> (<em>list</em>) – Whatever positional arguments to give to the init function.</p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em>) – Whatever keyword arguments to give to the init function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.get_solver_type">
+<span class="sig-name descname"><span class="pre">get_solver_type</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.get_solver_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Get ‘Scene Graph Mode’ value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.set_solver_type">
+<span class="sig-name descname"><span class="pre">set_solver_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.set_solver_type" title="Permalink to this definition">#</a></dt>
+<dd><p>Set ‘Scene Graph Mode’ value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>int</em>) – Value to be set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.get_bundle_iteration_num">
+<span class="sig-name descname"><span class="pre">get_bundle_iteration_num</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.get_bundle_iteration_num" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.set_bundle_iteration_num">
+<span class="sig-name descname"><span class="pre">set_bundle_iteration_num</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.set_bundle_iteration_num" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>int</em>) – Value to be set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.get_root_iteration_num">
+<span class="sig-name descname"><span class="pre">get_root_iteration_num</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.get_root_iteration_num" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.set_root_iteration_num">
+<span class="sig-name descname"><span class="pre">set_root_iteration_num</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.set_root_iteration_num" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>int</em>) – Value to be set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.get_anim_iteration_num">
+<span class="sig-name descname"><span class="pre">get_anim_iteration_num</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.get_anim_iteration_num" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.set_anim_iteration_num">
+<span class="sig-name descname"><span class="pre">set_anim_iteration_num</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.set_anim_iteration_num" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>int</em>) – Value to be set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.get_frame_list">
+<span class="sig-name descname"><span class="pre">get_frame_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.get_frame_list" title="Permalink to this definition">#</a></dt>
+<dd><p>Get frame objects attached to the solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>frame objects.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of frame.Frame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.get_frame_list_length">
+<span class="sig-name descname"><span class="pre">get_frame_list_length</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.get_frame_list_length" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the number of frames in the frame list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.add_frame">
+<span class="sig-name descname"><span class="pre">add_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.add_frame" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.add_frame_list">
+<span class="sig-name descname"><span class="pre">add_frame_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frm_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.add_frame_list" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.remove_frame">
+<span class="sig-name descname"><span class="pre">remove_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.remove_frame" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.remove_frame_list">
+<span class="sig-name descname"><span class="pre">remove_frame_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frm_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.remove_frame_list" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.set_frame_list">
+<span class="sig-name descname"><span class="pre">set_frame_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frm_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.set_frame_list" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.clear_frame_list">
+<span class="sig-name descname"><span class="pre">clear_frame_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.clear_frame_list" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.get_root_frame_list">
+<span class="sig-name descname"><span class="pre">get_root_frame_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.get_root_frame_list" title="Permalink to this definition">#</a></dt>
+<dd><p>Get frame objects attached to the solver.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>frame objects.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list of frame.Frame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.get_root_frame_list_length">
+<span class="sig-name descname"><span class="pre">get_root_frame_list_length</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.get_root_frame_list_length" title="Permalink to this definition">#</a></dt>
+<dd><p>Return the number of frames in the root frame list.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.add_root_frame">
+<span class="sig-name descname"><span class="pre">add_root_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.add_root_frame" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.add_root_frame_list">
+<span class="sig-name descname"><span class="pre">add_root_frame_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frm_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.add_root_frame_list" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.remove_root_frame">
+<span class="sig-name descname"><span class="pre">remove_root_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.remove_root_frame" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.remove_root_frame_list">
+<span class="sig-name descname"><span class="pre">remove_root_frame_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frm_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.remove_root_frame_list" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.set_root_frame_list">
+<span class="sig-name descname"><span class="pre">set_root_frame_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frm_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.set_root_frame_list" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.clear_root_frame_list">
+<span class="sig-name descname"><span class="pre">clear_root_frame_list</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.clear_root_frame_list" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.get_origin_frame">
+<span class="sig-name descname"><span class="pre">get_origin_frame</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.get_origin_frame" title="Permalink to this definition">#</a></dt>
+<dd><p>Get Origin Frame value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mmSolver.api.Frame" title="mmSolver.api.Frame">Frame</a> or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.set_origin_frame">
+<span class="sig-name descname"><span class="pre">set_origin_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.set_origin_frame" title="Permalink to this definition">#</a></dt>
+<dd><p>Set Origin Frame value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<a class="reference internal" href="#mmSolver.api.Frame" title="mmSolver.api.Frame"><em>Frame</em></a><em> or </em><em>int</em>) – Value to be set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.get_triangulate_bundles">
+<span class="sig-name descname"><span class="pre">get_triangulate_bundles</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.get_triangulate_bundles" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.set_triangulate_bundles">
+<span class="sig-name descname"><span class="pre">set_triangulate_bundles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.set_triangulate_bundles" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>bool</em><em> or </em><em>int</em>) – Value to be set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.get_adjust_every_n_poses">
+<span class="sig-name descname"><span class="pre">get_adjust_every_n_poses</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.get_adjust_every_n_poses" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.set_adjust_every_n_poses">
+<span class="sig-name descname"><span class="pre">set_adjust_every_n_poses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.set_adjust_every_n_poses" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>bool</em><em> or </em><em>int</em>) – Value to be set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.get_scene_scale">
+<span class="sig-name descname"><span class="pre">get_scene_scale</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.get_scene_scale" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.set_scene_scale">
+<span class="sig-name descname"><span class="pre">set_scene_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.set_scene_scale" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em>) – Value to be set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.get_solve_focal_length">
+<span class="sig-name descname"><span class="pre">get_solve_focal_length</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.get_solve_focal_length" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.set_solve_focal_length">
+<span class="sig-name descname"><span class="pre">set_solve_focal_length</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.set_solve_focal_length" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>bool</em><em> or </em><em>int</em>) – Value to be set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.get_solve_lens_distortion">
+<span class="sig-name descname"><span class="pre">get_solve_lens_distortion</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.get_solve_lens_distortion" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.set_solve_lens_distortion">
+<span class="sig-name descname"><span class="pre">set_solve_lens_distortion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.set_solve_lens_distortion" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>bool</em><em> or </em><em>int</em>) – Value to be set.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverCamera.compile">
+<span class="sig-name descname"><span class="pre">compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">withtest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverCamera.compile" title="Permalink to this definition">#</a></dt>
 <dd><p>Compile solver into actions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
@@ -4014,6 +4821,11 @@ existing animCurves.</p>
 <dd></dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.api.action_func_is_mmSolverAffects">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">action_func_is_mmSolverAffects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">action</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.action_func_is_mmSolverAffects" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.api.func_str_to_callable">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">func_str_to_callable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func_str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.func_str_to_callable" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert a function written as a string, to be a callable object.</p>
@@ -4507,6 +5319,30 @@ default name is added.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.api.get_new_line_name">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">get_new_line_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">suffix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.get_new_line_name" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a name for a line object, using ‘name’ as the base
+identifier.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Name of object.</p></li>
+<li><p><strong>prefix</strong> (<em>str</em><em> or </em><em>None</em>) – Prefix of the line, if a number is the first
+character. If None, a default name is added.</p></li>
+<li><p><strong>suffix</strong> (<em>str</em><em> or </em><em>None</em>) – Suffix of the line, added to the name. If None, a
+default name is added.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Name for the line.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="utilities">
 <h3>Utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">#</a></h3>
@@ -4759,6 +5595,57 @@ errors).</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.api.filter_line_nodes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">filter_line_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.filter_line_nodes" title="Permalink to this definition">#</a></dt>
+<dd><p>Filter the given ‘nodes’ by only the Line nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>list</em><em> or </em><em>str</em>) – List of nodes to query.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of Line nodes, or empty list if no Line nodes.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.api.filter_lens_nodes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">filter_lens_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.filter_lens_nodes" title="Permalink to this definition">#</a></dt>
+<dd><p>Filter the given ‘nodes’ by only the lens nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>list</em><em> or </em><em>str</em>) – List of nodes to query.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of lens nodes, or empty list if no lens nodes.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.api.filter_image_plane_nodes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">filter_image_plane_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.filter_image_plane_nodes" title="Permalink to this definition">#</a></dt>
+<dd><p>Filter the given ‘nodes’ by only the imagePlane nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nodes</strong> (<em>list</em><em> or </em><em>str</em>) – List of nodes to query.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of imagePlane nodes, or empty list if no imagePlane nodes.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.api.filter_marker_group_nodes">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">filter_marker_group_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.filter_marker_group_nodes" title="Permalink to this definition">#</a></dt>
 <dd><p>Filter the given ‘nodes’ by only the MarkerGroup nodes.</p>
@@ -4902,8 +5789,23 @@ referenced inside the documentation.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.api.OBJECT_TYPE_LINE">
+<span class="sig-prename descclassname"><span class="pre">api.</span></span><span class="sig-name descname"><span class="pre">OBJECT_TYPE_LINE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'line'</span></em><a class="headerlink" href="#mmSolver.api.OBJECT_TYPE_LINE" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.api.OBJECT_TYPE_LENS">
+<span class="sig-prename descclassname"><span class="pre">api.</span></span><span class="sig-name descname"><span class="pre">OBJECT_TYPE_LENS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'lens'</span></em><a class="headerlink" href="#mmSolver.api.OBJECT_TYPE_LENS" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="mmSolver.api.OBJECT_TYPE_COLLECTION">
 <span class="sig-prename descclassname"><span class="pre">api.</span></span><span class="sig-name descname"><span class="pre">OBJECT_TYPE_COLLECTION</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'collection'</span></em><a class="headerlink" href="#mmSolver.api.OBJECT_TYPE_COLLECTION" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.api.OBJECT_TYPE_IMAGE_PLANE">
+<span class="sig-prename descclassname"><span class="pre">api.</span></span><span class="sig-name descname"><span class="pre">OBJECT_TYPE_IMAGE_PLANE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'imageplane'</span></em><a class="headerlink" href="#mmSolver.api.OBJECT_TYPE_IMAGE_PLANE" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -5019,13 +5921,16 @@ referenced inside the documentation.</p>
 <li><a class="reference internal" href="#camera">Camera</a></li>
 <li><a class="reference internal" href="#bundle">Bundle</a></li>
 <li><a class="reference internal" href="#marker">Marker</a></li>
+<li><a class="reference internal" href="#line">Line</a></li>
 <li><a class="reference internal" href="#markergroup">MarkerGroup</a></li>
 <li><a class="reference internal" href="#attribute">Attribute</a></li>
 <li><a class="reference internal" href="#frame">Frame</a></li>
+<li><a class="reference internal" href="#root-frame">Root Frame</a></li>
 <li><a class="reference internal" href="#solver">Solver</a><ul>
 <li><a class="reference internal" href="#solver-base">Solver Base</a></li>
 <li><a class="reference internal" href="#solver-basic">Solver Basic</a></li>
 <li><a class="reference internal" href="#solver-standard">Solver Standard</a></li>
+<li><a class="reference internal" href="#solver-camera">Solver Camera</a></li>
 <li><a class="reference internal" href="#solver-step">Solver Step</a></li>
 </ul>
 </li>

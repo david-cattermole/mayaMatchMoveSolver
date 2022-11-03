@@ -160,7 +160,7 @@
        <item>
         <widget class="QLabel" name="type_label">
          <property name="text">
-          <string>Type:</string>
+          <string>Pivot:</string>
          </property>
         </widget>
        </item>
@@ -290,16 +290,16 @@
      <item row="1" column="2">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QRadioButton" name="group_rdo_btn">
+        <widget class="QRadioButton" name="pivot_static_rdo_btn">
          <property name="text">
-          <string>Group</string>
+          <string>Static</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="locator_rdo_btn">
+        <widget class="QRadioButton" name="pivot_dynamic_rdo_btn">
          <property name="text">
-          <string>Locator</string>
+          <string>Dynamic</string>
          </property>
         </widget>
        </item>

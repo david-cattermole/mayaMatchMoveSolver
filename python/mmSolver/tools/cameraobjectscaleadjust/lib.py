@@ -140,7 +140,7 @@ def create_scale_rig(
     """
     # Create camera witness
     attrs = ['tx', 'ty', 'tz', 'rx', 'ry', 'rz']
-    controller_type = createcontroller_const.CONTROLLER_TYPE_WORLD_SPACE
+    controller_type = createcontroller_const.CONTROLLER_SPACE_WORLD
     camera_witness = None
     if scale_rig_type == const.SCALE_RIG_TYPE_OBJECT_TRACK:
         camera_witness = _create_scale_rig_main_grp(

@@ -286,7 +286,7 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             # Set time
             start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
             bake_value = self.get_combo_box_value(row, ui_const.COLUMN_BAKE_INDEX)
-            if bake_value == const.BAKE_ITEM_CURRENT_FRAME_BAKE:
+            if bake_value == const.BAKE_CURRENT_FRAME_BAKE:
                 start_frame = int(maya.cmds.currentTime(query=True))
                 end_frame = start_frame
 
@@ -303,7 +303,7 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             camera = self.get_combo_box_value(row, ui_const.COLUMN_CAMERA_INDEX)
 
             pivot_type = self.get_combo_box_value(row, ui_const.COLUMN_PIVOT_TYPE_INDEX)
-            dynamic_pivot = pivot_type == const.PIVOT_TYPE_ITEM_DYNAMIC
+            dynamic_pivot = pivot_type == const.PIVOT_TYPE_DYNAMIC
 
             loc_grp_node = self.create_locator_group(
                 controller_name, main_node, pivot_node
@@ -312,16 +312,16 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             # Space options
             space = None
             space_option = self.get_combo_box_value(row, ui_const.COLUMN_SPACE_INDEX)
-            if space_option == const.SPACE_ITEM_WORLD_SPACE:
-                space = const.CONTROLLER_TYPE_WORLD_SPACE
-            elif space_option == const.SPACE_ITEM_OBJECT_SPACE:
-                space = const.CONTROLLER_TYPE_OBJECT_SPACE
-            elif space_option == const.SPACE_ITEM_SCREEN_SPACE:
-                space = const.CONTROLLER_TYPE_SCREEN_SPACE
+            if space_option == const.SPACE_WORLD_SPACE:
+                space = const.CONTROLLER_SPACE_WORLD
+            elif space_option == const.SPACE_OBJECT_SPACE:
+                space = const.CONTROLLER_SPACE_OBJECT
+            elif space_option == const.SPACE_SCREEN_SPACE:
+                space = const.CONTROLLER_SPACE_SCREEN
             else:
                 LOG.error('Invalid space.')
                 return
-            if space_option == const.SPACE_ITEM_SCREEN_SPACE and not camera:
+            if space_option == const.SPACE_SCREEN_SPACE and not camera:
                 LOG.warn('Please select camera from UI.')
                 if maya.cmds.objExists(loc_grp_node[0]):
                     maya.cmds.delete(loc_grp_node[0])
@@ -329,7 +329,7 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
             # Bake options
             bake_option = self.get_combo_box_value(row, ui_const.COLUMN_BAKE_INDEX)
-            smart_bake = bake_option == const.BAKE_ITEM_SMART_BAKE
+            smart_bake = bake_option == const.BAKE_SMART_BAKE
             if not controller_name or not pivot_node or not main_node:
                 return
 

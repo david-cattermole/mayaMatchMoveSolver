@@ -67,7 +67,7 @@ def create_world_controllers():
         return
 
     start_frame, end_frame = time_utils.get_maya_timeline_range_outer()
-    controller_type = const.CONTROLLER_TYPE_WORLD_SPACE
+    controller_type = const.CONTROLLER_SPACE_WORLD
     smart_bake = False
     dynamic_pivot = False
     camera = None

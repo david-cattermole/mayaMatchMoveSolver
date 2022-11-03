@@ -492,10 +492,11 @@ def create_controller(
     if start_frame == end_frame:
         current_frame = True
         end_frame = start_frame + 1
-
-    # Handle group node
-    if not maya.cmds.listRelatives(loc_grp_node, shapes=True):
-        loc_grp_node = [loc_grp_node]
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
+    assert isinstance(dynamic_pivot, bool)
+    assert isinstance(smart_bake, bool)
+    assert len(loc_grp_node) == 1
 
     # Add custom identify attribute
     maya.cmds.addAttr(
@@ -508,7 +509,7 @@ def create_controller(
         lock=True,
     )
 
-    if controller_type == const.CONTROLLER_TYPE_WORLD_SPACE:
+    if controller_type == const.CONTROLLER_SPACE_WORLD:
         loc_grp_node = _create_controller_world_space(
             name,
             pivot_node,
@@ -518,10 +519,10 @@ def create_controller(
             end_frame,
             smart_bake,
             current_frame,
-            dynamic_pivot=dynamic_pivot,
+            dynamic_pivot,
         )
 
-    elif controller_type == const.CONTROLLER_TYPE_OBJECT_SPACE:
+    elif controller_type == const.CONTROLLER_SPACE_OBJECT:
         loc_grp_node = _create_controller_object_space(
             name,
             pivot_node,
@@ -531,10 +532,10 @@ def create_controller(
             end_frame,
             smart_bake,
             current_frame,
-            dynamic_pivot=dynamic_pivot,
+            dynamic_pivot,
         )
 
-    elif controller_type == const.CONTROLLER_TYPE_SCREEN_SPACE:
+    elif controller_type == const.CONTROLLER_SPACE_SCREEN:
         loc_grp_node = _create_controller_screen_space(
             name,
             pivot_node,
@@ -545,7 +546,7 @@ def create_controller(
             smart_bake,
             current_frame,
             camera,
-            dynamic_pivot=dynamic_pivot,
+            dynamic_pivot,
         )
 
     else:

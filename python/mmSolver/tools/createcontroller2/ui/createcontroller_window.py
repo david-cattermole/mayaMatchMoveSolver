@@ -39,6 +39,8 @@ import mmSolver.ui.helputils as helputils
 import mmSolver.ui.commonmenus as commonmenus
 import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.constant as const_utils
+import mmSolver.utils.configmaya as configmaya
+import mmSolver.tools.createcontroller2.constant as const
 import mmSolver.tools.createcontroller2.ui.createcontroller_layout as createcontroller_layout
 
 LOG = mmSolver.logger.get_logger()
@@ -87,6 +89,9 @@ class CreateControllerWindow(BaseWindow):
         self.add_menus(self.menubar)
         self.menubar.show()
 
+        self.locator_action.triggered.connect(self._controller_type_toggled)
+        self.group_action.triggered.connect(self._controller_type_toggled)
+
     def add_menus(self, menubar):
         edit_menu = QtWidgets.QMenu('Edit', menubar)
         commonmenus.create_edit_menu_items(
@@ -94,9 +99,37 @@ class CreateControllerWindow(BaseWindow):
         )
         menubar.addMenu(edit_menu)
 
+        # Type menu
+        self.type_menu = QtWidgets.QMenu('Controller Type', self.menubar)
+
+        self.group_action = QtWidgets.QAction('Group', self.type_menu)
+        self.group_action.setCheckable(True)
+
+        self.locator_action = QtWidgets.QAction('Locator', self.type_menu)
+        self.locator_action.setCheckable(True)
+        self.locator_action.setChecked(True)
+
+        self.type_action_group = QtWidgets.QActionGroup(self.type_menu)
+        self.group_action.setActionGroup(self.type_action_group)
+        self.locator_action.setActionGroup(self.type_action_group)
+
+        self.type_menu.addAction(self.group_action)
+        self.type_menu.addAction(self.locator_action)
+        self.menubar.addMenu(self.type_menu)
+
         help_menu = QtWidgets.QMenu('Help', menubar)
         commonmenus.create_help_menu_items(help_menu, tool_help_func=_open_help)
         menubar.addMenu(help_menu)
+
+    def _controller_type_toggled(self):
+        name = const.CONTROLLER_TYPE_CONFIG_KEY
+        if self.locator_action.isChecked():
+            value = const.CONTROLLER_TYPE_LOCATOR
+        elif self.group_action.isChecked():
+            value = const.CONTROLLER_TYPE_GROUP
+        else:
+            raise NotImplementedError
+        configmaya.set_scene_option(name, value, add_attr=True)
 
     def create_controller(self):
         form = self.getSubForm()
@@ -112,8 +145,18 @@ class CreateControllerWindow(BaseWindow):
         return
 
     def reset_options(self):
+        # User preference of the type of controller node.
+        name = const.CONTROLLER_TYPE_CONFIG_KEY
+        default_value = const.CONTROLLER_TYPE_LOCATOR
+        ctrl_type = configmaya.get_scene_option(name, default_value)
+        if ctrl_type == const.CONTROLLER_TYPE_LOCATOR:
+            self.locator_action.setChecked(True)
+        elif ctrl_type == const.CONTROLLER_TYPE_GROUP:
+            self.group_action.setChecked(True)
+
         form = self.getSubForm()
         form.reset_options()
+        return
 
 
 def main(show=True, auto_raise=True, delete=False):

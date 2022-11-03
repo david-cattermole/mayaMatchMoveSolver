@@ -346,7 +346,7 @@ all end in tears.</p>
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='139930736196688'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='139930736196752'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='139930736196944'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='139746473839824'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='139746473839760'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='139746473839952'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1508,9 +1508,9 @@ given file.</p></li>
 </dd></dl>
 
 </section>
-<section id="load-marker">
-<h2>Load Marker<a class="headerlink" href="#load-marker" title="Permalink to this headline">#</a></h2>
-<span class="target" id="module-mmSolver.utils.loadmarker.fileinfo"></span><p>Provides a base interface for marker import plug-ins.</p>
+<section id="module-mmSolver.utils.loadmarker.fileinfo">
+<span id="load-marker"></span><h2>Load Marker<a class="headerlink" href="#module-mmSolver.utils.loadmarker.fileinfo" title="Permalink to this headline">#</a></h2>
+<p>Provides a base interface for marker import plug-ins.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mmSolver.utils.loadmarker.fileinfo.FileInfo">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.fileinfo.</span></span><span class="sig-name descname"><span class="pre">FileInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">marker_distorted</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">marker_undistorted</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle_positions</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_field_of_view</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.fileinfo.FileInfo" title="Permalink to this definition">#</a></dt>
@@ -1856,6 +1856,392 @@ given file.</p></li>
 <p>File Formats for loadmarker tool.</p>
 <p>This file is used to automatically load all formats so the user
 doesn’t need to import each format individually.</p>
+<span class="target" id="module-mmSolver.utils.loadmarker.formats.pftrack2dt"></span><p>The .txt format from PFTrack / PFMatchIt.</p>
+<p>The position coordinate (-0.5, -0.5) is the lower-left.
+The position coordinate (width - 0.5, height - 0.5) is the upper-right.</p>
+<p>This format is resolution dependent!</p>
+<p>The data block looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;trackerName&quot;</span>   <span class="c1"># Tracker name.</span>
+<span class="nb">int</span>     <span class="c1"># Clip number. First number is 1, then 2, etc.</span>
+<span class="nb">int</span>     <span class="c1"># Number of frames</span>
+<span class="nb">int</span> <span class="nb">float</span> <span class="nb">float</span> <span class="nb">float</span>  <span class="c1"># Frame, X position, Y position, residual</span>
+</pre></div>
+</div>
+<p>Or another variation:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;trackerName&quot;</span>   <span class="c1"># Tracker name.</span>
+<span class="s2">&quot;cameraName&quot;</span>    <span class="c1"># Camera name</span>
+<span class="nb">int</span>     <span class="c1"># Number of frames</span>
+<span class="nb">int</span> <span class="nb">float</span> <span class="nb">float</span> <span class="nb">float</span> <span class="nb">float</span>  <span class="c1"># Frame, X position, Y position, residual</span>
+</pre></div>
+</div>
+<p>Each block of data is separated by whitespace (usually a blank line).</p>
+<p>Optionally, each line of tracker frame and position may also have a
+Z-Depth value, like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;trackerName&quot;</span>   <span class="c1"># Tracker name.</span>
+<span class="nb">int</span>     <span class="c1"># Clip number.</span>
+<span class="nb">int</span>     <span class="c1"># Number of frames</span>
+<span class="nb">int</span> <span class="nb">float</span> <span class="nb">float</span> <span class="nb">float</span> <span class="nb">float</span>  <span class="c1"># Frame, X position, Y position, residual, z-depth</span>
+</pre></div>
+</div>
+<p>Simple file with 1 2D track and 1 frame of data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;MyFeature1&quot;</span>
+<span class="mi">1</span>
+<span class="mi">1</span>
+<span class="mi">1</span> <span class="mf">1920.000</span> <span class="mf">1080.000</span> <span class="mf">0.000</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.pftrack2dt.LoaderPFTrack2DT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.formats.pftrack2dt.</span></span><span class="sig-name descname"><span class="pre">LoaderPFTrack2DT</span></span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.pftrack2dt.LoaderPFTrack2DT" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.pftrack2dt.LoaderPFTrack2DT.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'PFTrack</span> <span class="pre">2D</span> <span class="pre">Tracks</span> <span class="pre">(*.2dt</span> <span class="pre">/</span> <span class="pre">*.txt)'</span></em><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.pftrack2dt.LoaderPFTrack2DT.name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.pftrack2dt.LoaderPFTrack2DT.file_exts">
+<span class="sig-name descname"><span class="pre">file_exts</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['.2dt',</span> <span class="pre">'.txt']</span></em><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.pftrack2dt.LoaderPFTrack2DT.file_exts" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.pftrack2dt.LoaderPFTrack2DT.args">
+<span class="sig-name descname"><span class="pre">args</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('image_width',</span> <span class="pre">None),</span> <span class="pre">('image_height',</span> <span class="pre">None)]</span></em><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.pftrack2dt.LoaderPFTrack2DT.args" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.pftrack2dt.LoaderPFTrack2DT.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.pftrack2dt.LoaderPFTrack2DT.parse" title="Permalink to this definition">#</a></dt>
+<dd><p>Parse the file path as a PFTrack .2dt/.txt file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>str</em>) – File path to parse.</p></li>
+<li><p><strong>kwargs</strong> – expected to contain ‘image_width’ and ‘image_height’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of MarkerData.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mmSolver.utils.loadmarker.formats.rz2"></span><p>Reads a Matchmover rz2 file.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.rz2.LoaderRZ2">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.formats.rz2.</span></span><span class="sig-name descname"><span class="pre">LoaderRZ2</span></span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.rz2.LoaderRZ2" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.rz2.LoaderRZ2.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'MatchMover</span> <span class="pre">TrackPoints</span> <span class="pre">(*.rz2)'</span></em><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.rz2.LoaderRZ2.name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.rz2.LoaderRZ2.file_exts">
+<span class="sig-name descname"><span class="pre">file_exts</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['.rz2']</span></em><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.rz2.LoaderRZ2.file_exts" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.rz2.LoaderRZ2.args">
+<span class="sig-name descname"><span class="pre">args</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.rz2.LoaderRZ2.args" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.rz2.LoaderRZ2.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.rz2.LoaderRZ2.parse" title="Permalink to this definition">#</a></dt>
+<dd><p>Parse the given file path.</p>
+<p>Inherit from LoaderBase and override this method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#mmSolver.utils.loadfile.excep.ParserError" title="mmSolver.utils.loadfile.excep.ParserError"><strong>ParserError</strong></a> – When the parser encounters an error related to parsing.</p></li>
+<li><p><strong>OSError</strong> – When there is a problem with reading or accessing the
+given file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tuple of FileInfo and List of MarkerData.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference internal" href="#mmSolver.utils.loadmarker.fileinfo.FileInfo" title="mmSolver.utils.loadmarker.fileinfo.FileInfo">FileInfo</a>, [<a class="reference internal" href="#mmSolver.utils.loadmarker.markerdata.MarkerData" title="mmSolver.utils.loadmarker.markerdata.MarkerData">MarkerData</a>, …])</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mmSolver.utils.loadmarker.formats.tdetxt"></span><p>The .txt format from the 3DEqualizer 2D Points exporter.</p>
+<p>The position coordinate (0.0, 0.0) is the lower-left.
+The position coordinate (width, height) is the upper-right.</p>
+<p>This format is resolution dependent!</p>
+<p>The file format looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">int</span>     <span class="c1"># Number of track points in the file</span>
+<span class="n">string</span>  <span class="c1"># Name of point</span>
+<span class="nb">int</span>     <span class="c1"># Color of the point</span>
+<span class="nb">int</span>     <span class="c1"># Number of frames</span>
+<span class="nb">int</span> <span class="nb">float</span> <span class="nb">float</span>  <span class="c1"># Frame, X position, Y position</span>
+</pre></div>
+</div>
+<p>Simple file with 1 2D track and 1 frame of data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span>
+<span class="n">My</span> <span class="n">Point</span> <span class="n">Name</span>
+<span class="mi">0</span>
+<span class="mi">1</span>
+<span class="mi">1</span> <span class="mf">1920.0</span> <span class="mf">1080.0</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.tdetxt.Loader3DETXT">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.formats.tdetxt.</span></span><span class="sig-name descname"><span class="pre">Loader3DETXT</span></span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.tdetxt.Loader3DETXT" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.tdetxt.Loader3DETXT.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'3DEqualizer</span> <span class="pre">Track</span> <span class="pre">Points</span> <span class="pre">(*.txt)'</span></em><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.tdetxt.Loader3DETXT.name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.tdetxt.Loader3DETXT.file_exts">
+<span class="sig-name descname"><span class="pre">file_exts</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['.txt']</span></em><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.tdetxt.Loader3DETXT.file_exts" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.tdetxt.Loader3DETXT.args">
+<span class="sig-name descname"><span class="pre">args</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[('image_width',</span> <span class="pre">None),</span> <span class="pre">('image_height',</span> <span class="pre">None)]</span></em><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.tdetxt.Loader3DETXT.args" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.tdetxt.Loader3DETXT.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.tdetxt.Loader3DETXT.parse" title="Permalink to this definition">#</a></dt>
+<dd><p>Parse the file path as a 3DEqualizer .txt file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>str</em>) – File path to parse.</p></li>
+<li><p><strong>kwargs</strong> – expected to contain ‘image_width’ and ‘image_height’.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of MarkerData.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<span class="target" id="module-mmSolver.utils.loadmarker.formats.uvtrack"></span><p>The .uv format has two versions; v1 ASCII format and v2 JSON format.</p>
+<p>The v1 ASCII format is derived from the 3DEqualizer 2D Points exporter.</p>
+<p>The UV coordinate (0.0, 0.0) is the lower-left.
+The UV coordinate (1.0, 1.0) is the upper-right.</p>
+<p>The ASCII file format looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">int</span>     <span class="c1"># Number of track points in the file</span>
+<span class="n">string</span>  <span class="c1"># Name of point</span>
+<span class="nb">int</span>     <span class="c1"># Number of frames</span>
+<span class="nb">int</span> <span class="nb">float</span> <span class="nb">float</span> <span class="nb">float</span>  <span class="c1"># Frame, U coord, V coord, Point Weight</span>
+</pre></div>
+</div>
+<p>Simple ASCII v1 file with 1 2D track and 1 frame of data:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">1</span>
+<span class="n">My</span> <span class="n">Point</span> <span class="n">Name</span>
+<span class="mi">1</span>
+<span class="mi">1</span> <span class="mf">0.0</span> <span class="mf">1.0</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+<p>The JSON format takes the shape of a dictionary.
+The dictionary looks like this, format version 2:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s1">&#39;num_points&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s1">&#39;is_undistorted&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+    <span class="s1">&#39;points&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>  <span class="c1"># or None</span>
+        <span class="s1">&#39;set_name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="s1">&#39;per_frame&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;frame&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>  <span class="c1"># assumed to be undistorted.</span>
+                <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="nb">float</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Format version 3:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s1">&#39;num_points&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s1">&#39;is_undistorted&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Deprecated</span>
+    <span class="s1">&#39;points&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>  <span class="c1"># or None</span>
+        <span class="s1">&#39;set_name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="s1">&#39;per_frame&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;frame&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="s1">&#39;pos_dist&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                <span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="nb">float</span>
+            <span class="p">},</span>
+        <span class="p">],</span>
+        <span class="s1">&#39;3d&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;x_lock&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;y_lock&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;z_lock&#39;</span><span class="p">:</span> <span class="nb">bool</span>  <span class="c1"># or None</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Format version 4:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s1">&#39;version&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s1">&#39;num_points&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="s1">&#39;is_undistorted&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Deprecated</span>
+    <span class="s1">&#39;points&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="s1">&#39;id&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>  <span class="c1"># or None</span>
+        <span class="s1">&#39;set_name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="s1">&#39;per_frame&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;frame&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="s1">&#39;pos_dist&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                <span class="s1">&#39;pos&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                <span class="s1">&#39;weight&#39;</span><span class="p">:</span> <span class="nb">float</span>
+            <span class="p">},</span>
+        <span class="p">],</span>
+        <span class="s1">&#39;3d&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;z&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;x_lock&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;y_lock&#39;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="c1"># or None</span>
+            <span class="s1">&#39;z_lock&#39;</span><span class="p">:</span> <span class="nb">bool</span>  <span class="c1"># or None</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+    <span class="s1">&#39;camera&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s1">&#39;resolution&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">),</span>
+        <span class="s1">&#39;film_back_cm&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+        <span class="s1">&#39;lens_center_offset_cm&#39;</span><span class="p">:</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+        <span class="s1">&#39;per_frame&#39;</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s1">&#39;frame&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                <span class="s1">&#39;focal_length_cm&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">],</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.uvtrack.determine_format_version">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.formats.uvtrack.</span></span><span class="sig-name descname"><span class="pre">determine_format_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.uvtrack.determine_format_version" title="Permalink to this definition">#</a></dt>
+<dd><p>Work out the format version by reading the ‘file_path’.</p>
+<dl class="simple">
+<dt>returns: The format version, must be one of</dt><dd><p>constants.UV_TRACK_FORMAT_VERSION_LIST</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.uvtrack.parse_v1">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.formats.uvtrack.</span></span><span class="sig-name descname"><span class="pre">parse_v1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.uvtrack.parse_v1" title="Permalink to this definition">#</a></dt>
+<dd><p>Parse the UV file format or 3DEqualizer .txt format.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_path</strong> – </p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.uvtrack.parse_v2">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.formats.uvtrack.</span></span><span class="sig-name descname"><span class="pre">parse_v2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.uvtrack.parse_v2" title="Permalink to this definition">#</a></dt>
+<dd><p>Parse the UV file format, using JSON.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – File path to read.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of MarkerData objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.uvtrack.parse_v3">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.formats.uvtrack.</span></span><span class="sig-name descname"><span class="pre">parse_v3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.uvtrack.parse_v3" title="Permalink to this definition">#</a></dt>
+<dd><p>Parse the UV file format, using JSON.</p>
+<p>Accepts the keyword ‘undistorted’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – File path to read.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of MarkerData objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.uvtrack.parse_v4">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.formats.uvtrack.</span></span><span class="sig-name descname"><span class="pre">parse_v4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.uvtrack.parse_v4" title="Permalink to this definition">#</a></dt>
+<dd><p>Parse the UV file format, using JSON.</p>
+<p>Accepts the keyword ‘undistorted’, ‘overscan_x’ and ‘overscan_y’.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>file_path</strong> (<em>str</em>) – File path to read.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of MarkerData objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.uvtrack.LoaderUVTrack">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.utils.loadmarker.formats.uvtrack.</span></span><span class="sig-name descname"><span class="pre">LoaderUVTrack</span></span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.uvtrack.LoaderUVTrack" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.uvtrack.LoaderUVTrack.name">
+<span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'UV</span> <span class="pre">Track</span> <span class="pre">Points</span> <span class="pre">(*.uv)'</span></em><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.uvtrack.LoaderUVTrack.name" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.uvtrack.LoaderUVTrack.file_exts">
+<span class="sig-name descname"><span class="pre">file_exts</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['.uv']</span></em><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.uvtrack.LoaderUVTrack.file_exts" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.uvtrack.LoaderUVTrack.args">
+<span class="sig-name descname"><span class="pre">args</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['undistorted',</span> <span class="pre">'with_3d_pos']</span></em><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.uvtrack.LoaderUVTrack.args" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.utils.loadmarker.formats.uvtrack.LoaderUVTrack.parse">
+<span class="sig-name descname"><span class="pre">parse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.loadmarker.formats.uvtrack.LoaderUVTrack.parse" title="Permalink to this definition">#</a></dt>
+<dd><p>Decodes a file path into a list of MarkerData.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>file_path</strong> (<em>str</em>) – The file path to parse.</p></li>
+<li><p><strong>kwargs</strong> – The keyword ‘undistorted’ is used by
+UV_TRACK_FORMAT_VERSION_3 formats. ‘with_3d_pos’ can be
+used to use the (3D) bundle positions or not.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of MarkerData</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 <section id="module-mmSolver.utils.node">
@@ -3903,7 +4289,7 @@ isolate object list.</p>
 <li><a class="reference internal" href="#module-mmSolver.utils.kalmanfilter">Kalman Filter</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.lineintersect">Line Intersect</a></li>
 <li><a class="reference internal" href="#module-mmSolver.utils.loadfile.excep">Load File</a></li>
-<li><a class="reference internal" href="#load-marker">Load Marker</a><ul>
+<li><a class="reference internal" href="#module-mmSolver.utils.loadmarker.fileinfo">Load Marker</a><ul>
 <li><a class="reference internal" href="#module-mmSolver.utils.loadmarker.formats">Formats</a></li>
 </ul>
 </li>

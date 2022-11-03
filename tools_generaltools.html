@@ -452,35 +452,48 @@ transform node can have a separate hierarchy than the source node.</p>
 <p>The UI for this tool can be used control the baking method, and the
 ‘space’ of the created controller. These features create a very
 powerful workflow for editing, and solving characters and objects.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/tools_create_controller_ui.png"><img alt="Create Controller UI" src="_images/tools_create_controller_ui.png" style="width: 40%;" /></a>
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For a simple, straight-forward tool to create a world-space
+controller for each selected object, use the <cite>Create (World-Space)
+Controllers</cite> tool.</p>
+</div>
 <p>Usage:</p>
 <ol class="arabic simple">
 <li><p>Select a Maya transform node.</p></li>
 <li><p>Open ‘Create Controller’ tool UI.</p></li>
-<li><p>Type a name for the controller</p></li>
-<li><p>Select your ‘pivot object’ and press ‘Pick Selection’.</p></li>
-<li><p>Select your ‘main object’ and press ‘Pick Selection’.</p></li>
-<li><p>Select your options for ‘Type’, ‘Bake’ mode, and ‘Space’.</p>
+<li><p>Type a name for the controller.</p></li>
+<li><p>Select your <cite>pivot object</cite> and press <cite>Pick Selection</cite>.</p></li>
+<li><p>Select your <cite>main object</cite> and press <cite>Pick Selection</cite>.</p></li>
+<li><p>Select your options for <cite>Type</cite>, <cite>Pivot</cite>, <cite>Bake</cite> mode, and <cite>Space</cite>.</p>
 <ul class="simple">
-<li><p>‘Type’ changes the node types created for the controller. Choose
-“Group” if you do not like to see locators in your viewport.</p></li>
-<li><p>‘Bake’ changes the method used to bake keyframe times. Choose
-‘Full Bake’ to bake every frame, and choose ‘Smart Bake’ to bake
+<li><p>Use the <cite>Controller Type</cite> menu to change the node types created
+for the controller. Choose “Group” if you do not like to see
+locators in your viewport.</p></li>
+<li><p><cite>Pivot</cite> changes how the pivot object is baked; <cite>Static</cite> assumes
+the pivot object does not animate or is baked on the current
+frame. <cite>Dynamic</cite> uses an animated pivot.</p></li>
+<li><p><cite>Bake</cite> changes the method used to bake keyframe times. Choose
+<cite>Full Bake</cite> to bake every frame, and choose <cite>Smart Bake</cite> to bake
 some frames.</p></li>
-<li><p>‘Space’ changes the heirachy and orientation of the Controller
-nodes. Using ‘Screen Space’ allows you to move an object in
+<li><p><cite>Space</cite> changes the heirachy and orientation of the Controller
+nodes. Using <cite>Screen Space</cite> allows you to move an object in
 screen-space, with X and Y the position on the screen, and Z the
 depth into the screen. This can be very helpful for smoothing
 Z-bumps and depth problems.</p></li>
 </ul>
 </li>
-<li><p>Press ‘Create Controller’ button.</p>
+<li><p>Press <cite>Create Controller</cite> button.</p>
 <ul class="simple">
-<li><p>A new ‘Controller’ node is created at the same position as the
-‘pick object’.</p></li>
+<li><p>A new <cite>Controller</cite> node is created at the same position as the
+<cite>pick object</cite>.</p></li>
 </ul>
 </li>
 <li><p>Select and move the created Controller as you wish.</p></li>
-<li><p>Select the Controller, run ‘Remove Controller’ tool.</p>
+<li><p>Select the Controller, run <cite>Remove Controller</cite> tool.</p>
 <ul class="simple">
 <li><p>The source node is baked and the Controller node is deleted.</p></li>
 </ul>
@@ -489,6 +502,12 @@ Z-bumps and depth problems.</p></li>
 <p>To run the tool, use this Python command:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createcontroller2.tool</span> <span class="k">as</span> <span class="nn">tool</span>
 <span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>To create world-space controllers for the current selection, without
+using any of the UI options, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createcontroller2.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">create_world_controllers</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>To remove a controller, use this Python command:</p>

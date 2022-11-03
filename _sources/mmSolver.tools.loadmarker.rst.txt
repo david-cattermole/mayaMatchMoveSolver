@@ -22,14 +22,6 @@ Library - Basics
 Library - Advanced
 ++++++++++++++++++
 
-.. automodule:: mmSolver.tools.loadmarker.lib.formatmanager
-    :members:
-    :undoc-members:
-
-.. automodule:: mmSolver.tools.loadmarker.lib.interface
-    :members:
-    :undoc-members:
-
 .. automodule:: mmSolver.tools.loadmarker.lib.utils
     :members:
     :undoc-members:

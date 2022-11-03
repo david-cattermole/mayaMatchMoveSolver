@@ -258,7 +258,7 @@ Execute
    :undoc-members:
    :special-members: __init__
 
-.. autofunction:: mmSolver.api.createExecuteOptions
+.. autofunction:: mmSolver.api.create_execute_options
 
 .. autofunction:: mmSolver.api.validate
 

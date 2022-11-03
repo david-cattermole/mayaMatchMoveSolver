@@ -4087,6 +4087,41 @@ existing animCurves.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.api.create_execute_options">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">create_execute_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">refresh</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">disable_viewport_two</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">do_isolate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pre_solve_force_eval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_grid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_node_types</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_minimal_ui</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.create_execute_options" title="Permalink to this definition">#</a></dt>
+<dd><p>Create <a class="reference internal" href="#mmSolver.api.ExecuteOptions" title="mmSolver.api.ExecuteOptions"><code class="xref py py-class docutils literal notranslate"><span class="pre">ExecuteOptions</span></code></a> object.</p>
+<p>If a keyword argument is not given, a reasonable default value is
+used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>verbose</strong> (<em>bool</em>) – Print extra solver information while a solve is running.</p></li>
+<li><p><strong>refresh</strong> (<em>bool</em>) – Should the solver refresh the viewport while solving?</p></li>
+<li><p><strong>disable_viewport_two</strong> (<em>bool</em>) – Turn off Viewport 2.0 update, before solving?</p></li>
+<li><p><strong>force_update</strong> (<em>bool</em>) – Force updating the DG network, to help the
+solver in case of a Maya evaluation DG bug.</p></li>
+<li><p><strong>do_isolate</strong> (<em>bool</em>) – Isolate only solving objects while performing
+the solve.</p></li>
+<li><p><strong>pre_solve_force_eval</strong> (<em>bool</em>) – Before solving, we kick-start the
+evaluation by changing time and
+forcing update.</p></li>
+<li><p><strong>display_grid</strong> (<em>bool</em>) – Display grid in the viewport while performing
+the solve?</p></li>
+<li><p><strong>display_node_types</strong> – Allow a dict to be passed to the function
+specifying the object type and the
+visibility status during solving. This
+allows us to turn on/off any object type
+during solving. If an argument is not
+given or is None, the object type
+visibility will not be changed.</p></li>
+<li><p><strong>use_minimal_ui</strong> (<em>bool</em>) – Change the Solver UI to be “minimal”, the
+revert after a solve completes (or fails).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.api.validate">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">validate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.validate" title="Permalink to this definition">#</a></dt>
 <dd><p>Validates the given collection state, is it ready for solving?</p>

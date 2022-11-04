@@ -25,12 +25,6 @@ CONTROLLER_SPACE_LIST = [
     CONTROLLER_SPACE_SCREEN,
 ]
 
-# Keys and values to save values in the Maya scene file.  The value is
-# saved in the Maya scene and re-used in the same Maya scene.
-CONTROLLER_TYPE_CONFIG_KEY = 'mmsolver_createcontroller_type'
-CONTROLLER_TYPE_GROUP = 'group'
-CONTROLLER_TYPE_LOCATOR = 'locator'
-
 
 # Used in create controller 3 (beta)
 SPACE_WORLD_SPACE = 'World Space'

@@ -39,7 +39,8 @@ import mmSolver.ui.helputils as helputils
 import mmSolver.ui.commonmenus as commonmenus
 import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.constant as const_utils
-import mmSolver.utils.configmaya as configmaya
+import mmSolver.tools.userpreferences.constant as userprefs_const
+import mmSolver.tools.userpreferences.lib as userprefs_lib
 import mmSolver.tools.createcontroller2.constant as const
 import mmSolver.tools.createcontroller2.ui.createcontroller_layout as createcontroller_layout
 
@@ -122,14 +123,15 @@ class CreateControllerWindow(BaseWindow):
         menubar.addMenu(help_menu)
 
     def _controller_type_toggled(self):
-        name = const.CONTROLLER_TYPE_CONFIG_KEY
         if self.locator_action.isChecked():
-            value = const.CONTROLLER_TYPE_LOCATOR
+            value = userprefs_const.CREATE_CONTROLLER_SHAPE_LOCATOR_VALUE
         elif self.group_action.isChecked():
-            value = const.CONTROLLER_TYPE_GROUP
+            value = userprefs_const.CREATE_CONTROLLER_SHAPE_GROUP_VALUE
         else:
             raise NotImplementedError
-        configmaya.set_scene_option(name, value, add_attr=True)
+        config = userprefs_lib.get_config()
+        key = userprefs_const.CREATE_CONTROLLER_SHAPE_KEY
+        userprefs_lib.set_value(config, key, value)
 
     def create_controller(self):
         form = self.getSubForm()
@@ -146,12 +148,12 @@ class CreateControllerWindow(BaseWindow):
 
     def reset_options(self):
         # User preference of the type of controller node.
-        name = const.CONTROLLER_TYPE_CONFIG_KEY
-        default_value = const.CONTROLLER_TYPE_LOCATOR
-        ctrl_type = configmaya.get_scene_option(name, default_value)
-        if ctrl_type == const.CONTROLLER_TYPE_LOCATOR:
+        config = userprefs_lib.get_config()
+        key = userprefs_const.CREATE_CONTROLLER_SHAPE_KEY
+        ctrl_type = userprefs_lib.get_value(config, key)
+        if ctrl_type == userprefs_const.CREATE_CONTROLLER_SHAPE_LOCATOR_VALUE:
             self.locator_action.setChecked(True)
-        elif ctrl_type == const.CONTROLLER_TYPE_GROUP:
+        elif ctrl_type == userprefs_const.CREATE_CONTROLLER_SHAPE_GROUP_VALUE:
             self.group_action.setChecked(True)
 
         form = self.getSubForm()

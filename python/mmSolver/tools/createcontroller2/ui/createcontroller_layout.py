@@ -31,7 +31,8 @@ import maya.cmds as cmds
 import mmSolver.logger
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.viewport as viewport_utils
-import mmSolver.utils.configmaya as configmaya
+import mmSolver.tools.userpreferences.constant as userprefs_const
+import mmSolver.tools.userpreferences.lib as userprefs_lib
 import mmSolver.tools.createcontroller2.constant as const
 import mmSolver.tools.createcontroller2.ui.ui_createcontroller_layout as ui_layout
 import mmSolver.tools.createcontroller2.lib as lib
@@ -134,14 +135,15 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             LOG.warn('Please type controller name.')
             return
 
-        # TODO: Should this option come from the scene preferences or
-        # the user preferences?
-        name = const.CONTROLLER_TYPE_CONFIG_KEY
-        default_value = const.CONTROLLER_TYPE_LOCATOR
-        ctrl_type = configmaya.get_scene_option(name, default_value)
-        if ctrl_type == const.CONTROLLER_TYPE_LOCATOR:
+        # The user preferences are used so that the user only has to
+        # change this value once, for all Maya scenes. It is assumed
+        # that users won't often want to change this value.
+        config = userprefs_lib.get_config()
+        key = userprefs_const.CREATE_CONTROLLER_SHAPE_KEY
+        ctrl_type = userprefs_lib.get_value(config, key)
+        if ctrl_type == userprefs_const.CREATE_CONTROLLER_SHAPE_LOCATOR_VALUE:
             loc_grp_node = cmds.spaceLocator(name=loc_grp_name)
-        elif ctrl_type == const.CONTROLLER_TYPE_GROUP:
+        elif ctrl_type == userprefs_const.CREATE_CONTROLLER_SHAPE_GROUP_VALUE:
             loc_grp_node = cmds.group(empty=True, name=loc_grp_name)
             loc_grp_node = [loc_grp_node]
         else:

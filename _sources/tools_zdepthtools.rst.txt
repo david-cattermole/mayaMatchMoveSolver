@@ -98,9 +98,9 @@ components.
 
 The tool can be use to:
 
- - Smooth a bumpy Z-depth curve.
+- Smooth a bumpy Z-depth curve.
 
- - Freeze a transform to a static Z-depth.
+- Freeze a transform to a static Z-depth.
 
 .. figure:: images/tools_screen_space_rig_bake_ui.png
     :alt: Screen-Space Rig Bake UI

@@ -10,13 +10,17 @@ distortion.
     :align: center
     :scale: 100%
 
-- Cameras can be selected or created.
+- Cameras can be selected or created. See :ref:`Create Camera
+  <create-camera-ref>` tool.
 
 - MM Image Planes (special image planes for mmSolver) can be created
-  or selected.
+  or selected. See :ref:`Create Image Plane <create-imageplane-ref>`
+  tool.
 
 - Lens Layers can be selected, created, or disabled using the *Toggle
-  Camera Distortion* menu item.
+  Camera Distortion* menu item.  See :ref:`Create Lens
+  <create-lens-ref>` and :ref:`Toggle Camera Lens Distortion
+  <toggle-camera-lens-distortion-tool-ref>` tool
 
 .. note::
 

@@ -419,6 +419,29 @@ between all the selected Markers.</p>
 </pre></div>
 </div>
 </section>
+<section id="convert-to-marker">
+<span id="convert-to-marker-ref"></span><h2>Convert to Marker<a class="headerlink" href="#convert-to-marker" title="Permalink to this headline">#</a></h2>
+<p>Converts the selected transform nodes into screen-space Markers, as
+viewed though the active viewport camera.</p>
+<p>The created markers are named based on the selected transform nodes, and
+are parented under the active viewport camera.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Click into an active 3D viewport.</p></li>
+<li><p>Select one or more Maya transform nodes.</p></li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>A Marker will be created for each Maya transform node selected,
+across the current timeline’s frame range.</p></li>
+</ul>
+</li>
+</ol>
+<p>Run this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.convertmarker.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
 <section id="project-marker-on-mesh-ray-cast">
 <span id="project-marker-on-mesh-tool-ref"></span><h2>Project Marker on Mesh (Ray-Cast)<a class="headerlink" href="#project-marker-on-mesh-ray-cast" title="Permalink to this headline">#</a></h2>
 <p>Ray-casts each bundle connected to the selected markers on to the mesh
@@ -612,6 +635,7 @@ normal visibility.</p></li>
 <li><a class="reference internal" href="#place-marker-manipulator">Place Marker Manipulator</a></li>
 <li><a class="reference internal" href="#duplicate-marker">Duplicate Marker</a></li>
 <li><a class="reference internal" href="#average-marker">Average Marker</a></li>
+<li><a class="reference internal" href="#convert-to-marker">Convert to Marker</a></li>
 <li><a class="reference internal" href="#project-marker-on-mesh-ray-cast">Project Marker on Mesh (Ray-Cast)</a></li>
 <li><a class="reference internal" href="#deform-marker">Deform Marker</a></li>
 <li><a class="reference internal" href="#show-hide-deviation-curves">Show / Hide Deviation Curves</a></li>

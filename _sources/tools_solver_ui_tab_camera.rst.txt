@@ -9,3 +9,41 @@ Camera Solver Tab
     Solver Camera Tab
 
 *To be written*.
+
+Frames
+------
+
+*To be written*.
+
+User and Root Frames
+--------------------
+
+*To be written*.
+
+Solver Options
+--------------
+
+Solve All at Once
+~~~~~~~~~~~~~~~~~
+
+*To be written*.
+
+Solve Only Root Frames
+~~~~~~~~~~~~~~~~~~~~~~
+
+*To be written*.
+
+Solve Focal Length
+~~~~~~~~~~~~~~~~~~
+
+*To be written*.
+
+Solve Lens Distortion
+~~~~~~~~~~~~~~~~~~~~~
+
+*To be written*.
+
+Evaluate Mesh Rivets
+~~~~~~~~~~~~~~~~~~~~
+
+*To be written*.

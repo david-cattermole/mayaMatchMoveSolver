@@ -279,6 +279,54 @@ Marker nodes in Maya can be overwritten with newly tracked data.
    loaded using 3DEqualizer - there is a link between the 2D data in
    3DEqualizer and the Marker node in Maya.
 
+.. _save-marker-tool-ref:
+
+Save Marker
+-----------
+
+Saves 2D `Markers` into a ``.uv`` file that can be loaded into `MM
+Solver` (or any other software that supports the `MM Solver .uv`
+format).
+
+Usage:
+
+1) Select `Marker` nodes.
+
+2) Run tool.
+
+   - Browse with the Save dialog UI presented.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.savemarkerfile.tool as tool
+    tool.main()
+
+.. _copy-marker-to-clipboard-tool-ref:
+
+Copy Marker to Clipboard
+------------------------
+
+Saves the selected `Marker` node into a temporary file and saves the
+file path onto the OS Copy/Paste clipboard.
+
+Usage:
+
+1) Select a Maya `Marker` node.
+
+2) Run tool.
+
+   - Open software or tool supporting loading Markers in ``.uv``
+     format, such as the :ref:`Load Markers <load-markers-ref>` tool.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.copypastemarker.tool as tool
+    tool.main()
+
 .. _copy-camera-to-clipboard-tool-ref:
 
 Copy Camera to Clipboard
@@ -293,15 +341,53 @@ Usage:
 
 2) Run tool.
 
-3) Open 3DEqualizer
+3) Open 3DEqualizer.
 
 4) Select Camera in Object Browser.
 
-5) Right-click and run *Paste Camera (MM Solver)...*.
+5) Right-click and run ``Paste Camera (MM Solver)...``.
 
 To run the tool, use this Python command:
 
 .. code:: python
 
     import mmSolver.tools.copypastecamera.tool as tool
+    tool.main()
+
+.. _load-lens-tool-ref:
+
+Load Lens
+---------
+
+*To be written*
+
+Usage:
+
+1) ...
+
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.loadlens.tool as tool
+    tool.main()
+
+.. _save-lens-tool-ref:
+
+Save Lens
+---------
+
+*To be written*
+
+Usage:
+
+1) ...
+
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.savelensfile.tool as tool
     tool.main()

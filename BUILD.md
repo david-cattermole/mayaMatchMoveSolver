@@ -92,7 +92,7 @@ mmSolver v0.4.0 a C++ compiler with at least C++11 is required.
 Graph`` features inside mmSolver.
 
 Rust is a modern programming language comparable to C or C++ in terms
-of speed, and is highly performant and provides safety and stability
+of speed, is highly performant and provides safety and stability
 guarantees for software written in Rust.
 
 Both the Rust compiler (``rustc``) and the Rust package manager
@@ -111,7 +111,9 @@ Scene Graph`` features.
 
 ## Eigen
 
-[Eigen](https://eigen.tuxfamily.org/) is a requirement of mmSolver.
+[Eigen](https://eigen.tuxfamily.org/) is a requirement of mmSolver and
+is used to store 3D vectors, matrices, perform linear algebra, and is
+also required for `OpenMVG` (see below).
 
 ## CMinpack
 
@@ -132,6 +134,8 @@ the speed of the library depends on the underlying sparse matrix
 libraries and functions. Feel free to compile and use whatever
 underlying dependencies provides the best performance for you -
 however make sure that sparse matrix solving is available.
+
+Ceres Solver is not optional, and is required for `OpenMVG` features.
 
 In a future version of mmSolver Ceres may replace CMinpack as the
 default and recommended solving engine.

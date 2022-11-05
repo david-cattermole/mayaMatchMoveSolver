@@ -107,6 +107,35 @@ Run this Python command:
     import mmSolver.tools.averagemarker.tool
     mmSolver.tools.averagemarker.tool.main()
 
+.. _convert-to-marker-ref:
+
+Convert to Marker
+-----------------
+
+Converts the selected transform nodes into screen-space Markers, as
+viewed though the active viewport camera.
+
+The created markers are named based on the selected transform nodes, and
+are parented under the active viewport camera.
+
+Usage:
+
+1) Click into an active 3D viewport.
+
+2) Select one or more Maya transform nodes.
+
+3) Run tool.
+
+   - A Marker will be created for each Maya transform node selected,
+     across the current timeline's frame range.
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.convertmarker.tool as tool
+    tool.main()
+
 .. _project-marker-on-mesh-tool-ref:
 
 Project Marker on Mesh (Ray-Cast)

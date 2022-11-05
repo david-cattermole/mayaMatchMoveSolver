@@ -17,6 +17,11 @@ For a simple installation, **do not** install from the
 `Source code (zip)` or `Source code (tar.gz)` archives. These archives
 are for developers only.
 
+*NOTE:* The pre-built binaries provided have been statically built
+with special care for ABI compatibility and the recommended Linux
+(CentOS), Windows, Maya API and VFX Platforms versions. If there are
+any build or ABI issues, PRs are welcome or please file an
+[issue](https://github.com/david-cattermole/mayaMatchMoveSolver/issues).
 
 # Install Maya Module
 

@@ -1,5 +1,10 @@
 # Building on MacOS
 
+*NOTE:* Building for MacOS is no longer supported after v0.3.15 on
+Maya 2019 with MacOS El Capitan 10.11. These build instructions are
+provided for historical reasons only and are not up to date (as of
+Maya 2020).
+
 We can build `mmSolver` on MacOS. We have provided a Bash build script
 and CMake script which are configurable and readable for developers.
 

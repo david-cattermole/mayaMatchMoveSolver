@@ -19,7 +19,6 @@ dependency.
 - C++ Compilier
   - [GCC](https://gcc.gnu.org/) (Linux)
   - [Visual Studio (MSVC)](https://visualstudio.microsoft.com/downloads/) (Windows)
-  - [Xcode annd clang](https://developer.apple.com/download) (MacOS)
 - [Rust](https://www.rust-lang.org/)
   - [cxx-bridge](https://cxx.rs/)
 - [CMinpack](https://github.com/devernay/cminpack)
@@ -57,7 +56,7 @@ may fail to generate.
 ### Ninja
 
 As of mmSolver v0.4.0, the [Ninja build system](https://ninja-build.org/)
-is used in the default Windows Batch scripts - Linux (and MacOS) build
+is used in the default Windows Batch scripts - Linux build
 scripts are not affected. Alternate build systems will likely work
 (such as NMake or Visual Studio projects) but are not tested.
 
@@ -86,9 +85,6 @@ mmSolver v0.4.0 a C++ compiler with at least C++11 is required.
   - [Visual Studio 2015 update 3 (MSVC 14.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2018 and 2019)
   - [Visual Studio 2017 (MSVC 15.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2020)
   - [Visual Studio 2019 (MSVC 16.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2022 and 2023)
-- MacOS
-  - [Xcode 7.3.1 with SDK 10.11, clang with libc++](https://developer.apple.com/download) (Maya 2018)
-  - [Xcode version 7.3.1 and CMake are required](https://developer.apple.com/download) (Maya 2019)
 
 ## Rust
 

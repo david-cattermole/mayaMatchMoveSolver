@@ -27,7 +27,6 @@ An overview of the features available inside mmSolver.
    introduction
    tutorial
    tools
-   techniques
 
 Technical Details
 +++++++++++++++++

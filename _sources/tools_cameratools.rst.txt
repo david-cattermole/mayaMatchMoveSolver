@@ -9,12 +9,22 @@ in some way.
 Toggle Camera Lens Distortion
 -----------------------------
 
-*To be written*
+The `Toggle Camera Lens Distortion` tool is used to quickly enable or
+disable the effect of lens distortion on `Markers` and/or `MM
+ImagePlane` nodes.
 
 Usage:
 
-1) ...
+1) Activate 3D Viewport or select camera node(s).
 
+2) Run tool (with shelf or menu).
+
+   - The effect of lens distortion for the given cameras is toggled;
+     all Markers and MM ImagePlanes will have lens distortion enabled
+     or disabled.
+
+   - Press the Maya "g" hotkey on your keyboard to repeat the last
+     command, to toggle back and forth.
 
 To run the tool, use this Python command:
 
@@ -34,7 +44,7 @@ Set Camera Origin Frame
 .. figure:: images/tools_set_camera_origin_frame.png
     :alt: Node Solver Shelf Icons
     :align: center
-    :width: 30%
+    :width: 60%
 
 Usage:
 

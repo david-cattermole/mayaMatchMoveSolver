@@ -31,6 +31,11 @@ Set Camera Origin Frame
 
 *To be written*
 
+.. figure:: images/tools_set_camera_origin_frame.png
+    :alt: Node Solver Shelf Icons
+    :align: center
+    :width: 30%
+
 Usage:
 
 1) ...

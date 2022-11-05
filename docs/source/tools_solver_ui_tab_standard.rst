@@ -93,15 +93,15 @@ frames.
 
 Therefore the full list of iterations look like this...
 
- - Iteration 1: 1,95
+- Iteration 1: 1,95
 
- - Iteration 2: 1,48,95
+- Iteration 2: 1,48,95
 
- - Iteration 3: 1,25,48,72,95
+- Iteration 3: 1,25,48,72,95
 
- - Iteration 4: 1,13,25,37,48,60,72,84,95
+- Iteration 4: 1,13,25,37,48,60,72,84,95
 
- - Iteration 5: 1,7,13,19,25,31,37,43,48,54,60,66,72,78,84,90,95
+- Iteration 5: 1,7,13,19,25,31,37,43,48,54,60,66,72,78,84,90,95
 
 Solver Options
 --------------

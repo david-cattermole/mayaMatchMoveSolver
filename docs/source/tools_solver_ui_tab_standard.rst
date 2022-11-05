@@ -109,6 +109,26 @@ Solver Options
 The solver options below are extra options used to change how the
 solver works internally.
 
+Solve All at Once
+~~~~~~~~~~~~~~~~~
+
+*To be written*.
+
+Solve Only Root Frames
+~~~~~~~~~~~~~~~~~~~~~~
+
+*To be written*.
+
+Solve Focal Length
+~~~~~~~~~~~~~~~~~~
+
+*To be written*.
+
+Solve Lens Distortion
+~~~~~~~~~~~~~~~~~~~~~
+
+*To be written*.
+
 Evaluate Mesh Rivets
 ~~~~~~~~~~~~~~~~~~~~
 

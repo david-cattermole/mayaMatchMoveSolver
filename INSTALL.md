@@ -17,11 +17,6 @@ For a simple installation, **do not** install from the
 `Source code (zip)` or `Source code (tar.gz)` archives. These archives
 are for developers only.
 
-# Install Qt.py
-
-In *Maya MatchMove Solver* v0.3.14 and above the
-[Qt.py](https://github.com/mottosso/Qt.py) project is now included
-inside mmSolver, there is no need to install it at all.
 
 # Install Maya Module
 

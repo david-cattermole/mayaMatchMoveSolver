@@ -65,7 +65,7 @@ def get_config():
 def _open_help():
     src = helputils.get_help_source()
     helputils.open_help_in_browser(
-        page='tools_createnode.html#load-markers', help_source=src
+        page='tools_inputoutput.html#load-markers', help_source=src
     )
     return
 

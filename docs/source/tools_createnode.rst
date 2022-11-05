@@ -8,22 +8,27 @@ Create Node Tools
 
 Creating various nodes and objects with mmSolver uses the tools below.
 
+.. _create-marker-ref:
+
 Create Marker
 -------------
 
-Create a default Marker node under the active viewport's camera.
+Create a default `Marker` node under the active viewport's `Camera`.
 
 Usage:
 
-1) Click in a Maya 3D viewport, to activate the camera.
+1) Click in a Maya 3D viewport, to activate the `Camera`.
 
-2) Run the Create Marker tool, using the shelf, menu or marking menu.
+2) Run the `Create Marker` tool, using the shelf, menu or marking menu.
 
-   - A Marker will be created in the center of the viewport.
+   - A `Marker` will be created in the center of the viewport.
 
 .. note::
     Default Maya cameras (such as ``persp``, ``top``, ``front``, etc)
     are not supported to create Markers.
+
+.. note:: To create Markers, with 2D data from external 3D software
+    use the :ref:`Load Markers <load-markers-ref>` tool.
 
 Run this Python command:
 

@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.createlens" href="mmSolver.tools.createlens.html" /><link rel="prev" title="mmSolver.tools.createcontroller2" href="mmSolver.tools.createcontroller2.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.createimageplane - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,10 +325,10 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.createimageplane">
-<span id="mmsolver-tools-createimageplane"></span><h1>mmSolver.tools.createimageplane<a class="headerlink" href="#module-mmSolver.tools.createimageplane" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-createimageplane"></span><h1>mmSolver.tools.createimageplane<a class="headerlink" href="#module-mmSolver.tools.createimageplane" title="Permalink to this heading">#</a></h1>
 <p>Create an Image Plane on a camera.</p>
 <section id="module-mmSolver.tools.createimageplane.tool">
-<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.createimageplane.tool" title="Permalink to this headline">#</a></h2>
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.createimageplane.tool" title="Permalink to this heading">#</a></h2>
 <p>The Create Image Plane tool.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.createimageplane.tool.prompt_user_for_image_sequence">
@@ -343,7 +343,7 @@
 
 </section>
 <section id="module-mmSolver.tools.createimageplane.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.createimageplane.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.createimageplane.lib" title="Permalink to this heading">#</a></h2>
 <p>Library functions for creating and modifying image planes.</p>
 <p>Idea - Create wrapper image plane node
 - The node should adjust either ‘live’ or ‘baked’ nodes.</p>
@@ -410,7 +410,7 @@ shape node with the ‘ocgImagePlane’.</p></li>
 
 </section>
 <section id="module-mmSolver.tools.createimageplane.constant">
-<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.createimageplane.constant" title="Permalink to this headline">#</a></h2>
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.createimageplane.constant" title="Permalink to this heading">#</a></h2>
 </section>
 </section>
 
@@ -472,8 +472,18 @@ shape node with the ‘ocgImagePlane’.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.createimageplane</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.createimageplane.tool">Tools</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.createimageplane.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.createimageplane.tool">Tools</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.createimageplane.tool.prompt_user_for_image_sequence"><code class="docutils literal notranslate"><span class="pre">prompt_user_for_image_sequence()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.createimageplane.tool.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.createimageplane.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.createimageplane.lib.create_image_plane_on_camera"><code class="docutils literal notranslate"><span class="pre">create_image_plane_on_camera()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.createimageplane.lib.convert_image_planes_on_camera"><code class="docutils literal notranslate"><span class="pre">convert_image_planes_on_camera()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.createimageplane.lib.set_image_sequence"><code class="docutils literal notranslate"><span class="pre">set_image_sequence()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.createimageplane.lib.get_default_image_path"><code class="docutils literal notranslate"><span class="pre">get_default_image_path()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-mmSolver.tools.createimageplane.constant">Constants</a></li>
 </ul>
 </li>
@@ -489,7 +499,9 @@ shape node with the ‘ocgImagePlane’.</p></li>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

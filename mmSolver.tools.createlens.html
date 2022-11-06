@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.createline" href="mmSolver.tools.createline.html" /><link rel="prev" title="mmSolver.tools.createimageplane" href="mmSolver.tools.createimageplane.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.createlens - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,10 +325,10 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.createlens">
-<span id="mmsolver-tools-createlens"></span><h1>mmSolver.tools.createlens<a class="headerlink" href="#module-mmSolver.tools.createlens" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-createlens"></span><h1>mmSolver.tools.createlens<a class="headerlink" href="#module-mmSolver.tools.createlens" title="Permalink to this heading">#</a></h1>
 <p>Create a lens on a camera.</p>
 <section id="module-mmSolver.tools.createlens.tool">
-<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.createlens.tool" title="Permalink to this headline">#</a></h2>
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.createlens.tool" title="Permalink to this heading">#</a></h2>
 <p>The Create Lens tool.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.createlens.tool.main">
@@ -338,7 +338,7 @@
 
 </section>
 <section id="module-mmSolver.tools.createlens.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.createlens.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.createlens.lib" title="Permalink to this heading">#</a></h2>
 <p>Library functions for creating and modifying Lenses.</p>
 <p>Use Case:</p>
 <ol class="arabic simple">
@@ -377,14 +377,14 @@ attribute will fan-out and connect to each Marker as needed.</p>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.createlens.lib.</span></span><span class="sig-name descname"><span class="pre">create_lens_on_camera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_create_new</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createlens.lib.create_lens_on_camera" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a lens node and connect it to the given camera.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>mmSolver.api.Camera</em></a>) – The camera to create a lens for.</p></li>
 <li><p><strong>force_create_new</strong> (<em>bool</em><em> or </em><em>None</em>) – Should the function create a new lens
 node, even if a node already exists?</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>mmSolver.api.Lens</p>
 </dd>
 </dl>
@@ -395,10 +395,10 @@ node, even if a node already exists?</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.createlens.lib.</span></span><span class="sig-name descname"><span class="pre">add_lens_layer_on_camera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createlens.lib.add_lens_layer_on_camera" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a new lens node as a ‘layer’ on the the given camera.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>mmSolver.api.Camera</em></a>) – The camera to create a lens for.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>mmSolver.api.Lens</p>
 </dd>
 </dl>
@@ -406,7 +406,7 @@ node, even if a node already exists?</p></li>
 
 </section>
 <section id="module-mmSolver.tools.createlens.constant">
-<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.createlens.constant" title="Permalink to this headline">#</a></h2>
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.createlens.constant" title="Permalink to this heading">#</a></h2>
 <p>Contains constant values for the Create Lens tool.</p>
 </section>
 </section>
@@ -469,8 +469,16 @@ node, even if a node already exists?</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.createlens</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.createlens.tool">Tools</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.createlens.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.createlens.tool">Tools</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.createlens.tool.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.createlens.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.createlens.lib.create_marker_connections"><code class="docutils literal notranslate"><span class="pre">create_marker_connections()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.createlens.lib.create_lens_on_camera"><code class="docutils literal notranslate"><span class="pre">create_lens_on_camera()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.createlens.lib.add_lens_layer_on_camera"><code class="docutils literal notranslate"><span class="pre">add_lens_layer_on_camera()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-mmSolver.tools.createlens.constant">Constants</a></li>
 </ul>
 </li>
@@ -486,7 +494,9 @@ node, even if a node already exists?</p></li>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

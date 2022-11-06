@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.markerbundlerename" href="mmSolver.tools.markerbundlerename.html" /><link rel="prev" title="mmSolver.tools.loadlens" href="mmSolver.tools.loadlens.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.loadmarker - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,10 +325,10 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.loadmarker">
-<span id="mmsolver-tools-loadmarker"></span><h1>mmSolver.tools.loadmarker<a class="headerlink" href="#module-mmSolver.tools.loadmarker" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-loadmarker"></span><h1>mmSolver.tools.loadmarker<a class="headerlink" href="#module-mmSolver.tools.loadmarker" title="Permalink to this heading">#</a></h1>
 <p>Tool to load markers into Maya from various thirdparty file formats.</p>
 <section id="module-mmSolver.tools.loadmarker.tool">
-<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.loadmarker.tool" title="Permalink to this headline">#</a></h2>
+<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.loadmarker.tool" title="Permalink to this heading">#</a></h2>
 <p>The Load Marker tool - user facing.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.loadmarker.tool.open_window">
@@ -338,7 +338,7 @@
 
 </section>
 <section id="module-mmSolver.tools.loadmarker.lib.mayareadfile">
-<span id="library-basics"></span><h2>Library - Basics<a class="headerlink" href="#module-mmSolver.tools.loadmarker.lib.mayareadfile" title="Permalink to this headline">#</a></h2>
+<span id="library-basics"></span><h2>Library - Basics<a class="headerlink" href="#module-mmSolver.tools.loadmarker.lib.mayareadfile" title="Permalink to this heading">#</a></h2>
 <p>Module for reading marker files.</p>
 <p>This should be used by end-users, not the internal modules.</p>
 <dl class="py function">
@@ -352,7 +352,7 @@
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.mayareadfile.</span></span><span class="sig-name descname"><span class="pre">create_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_data_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cam</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_grp</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_bundles</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_bundle_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera_field_of_view</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.mayareadfile.create_nodes" title="Permalink to this definition">#</a></dt>
 <dd><p>Create Markers for all given MarkerData objects</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mkr_data_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.loadmarker.markerdata.MarkerData" title="mmSolver.utils.loadmarker.markerdata.MarkerData"><em>MarkerData</em></a><em>, </em><em>..</em><em>]</em>) – List of MarkerData with data for creating
 markers.</p></li>
@@ -366,10 +366,10 @@ be created under.</p></li>
 original camera with this 2D data.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of Markers.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker">Marker</a>, ..]</p>
 </dd>
 </dl>
@@ -381,7 +381,7 @@ original camera with this 2D data.</p></li>
 <dd><p>Update the given mkr_list with data from mkr_data_list.
 The length of both lists must match.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>..</em><em>]</em>) – Markers to update.</p></li>
 <li><p><strong>mkr_data_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.loadmarker.markerdata.MarkerData" title="mmSolver.utils.loadmarker.markerdata.MarkerData"><em>MarkerData</em></a><em>, </em><em>..</em><em>]</em>) – The MarkerData list to search for a match.</p></li>
@@ -390,10 +390,10 @@ The length of both lists must match.</p>
 original camera with this 2D data.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of Marker objects that were changed.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker">Marker</a>, ..]</p>
 </dd>
 </dl>
@@ -401,17 +401,17 @@ original camera with this 2D data.</p></li>
 
 </section>
 <section id="module-mmSolver.tools.loadmarker.lib.utils">
-<span id="library-advanced"></span><h2>Library - Advanced<a class="headerlink" href="#module-mmSolver.tools.loadmarker.lib.utils" title="Permalink to this headline">#</a></h2>
+<span id="library-advanced"></span><h2>Library - Advanced<a class="headerlink" href="#module-mmSolver.tools.loadmarker.lib.utils" title="Permalink to this heading">#</a></h2>
 <p>The Load Marker tool - user facing.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.loadmarker.lib.utils.get_selected_cameras">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">get_selected_cameras</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_selected_cameras" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the (associated) Camera objects from the selection.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Camera objects.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera">mmSolver.api.Camera</a></p>
 </dd>
 </dl>
@@ -423,8 +423,8 @@ original camera with this 2D data.</p></li>
 <dd><p>Get all cameras in the scene file.</p>
 <p>Start-up cameras are ignored (‘persp’, ‘top’, ‘side’, ‘front’, etc)</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list of mmSolver.api.Camera</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera">mmSolver.api.Camera</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -434,8 +434,8 @@ original camera with this 2D data.</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">get_marker_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_marker_groups" title="Permalink to this definition">#</a></dt>
 <dd><p>Get all MarkerGroups for the given camera.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list of mmSolver.api.MarkerGroup</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="mmSolver.api.html#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup">mmSolver.api.MarkerGroup</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -445,8 +445,8 @@ original camera with this 2D data.</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">get_selected_markers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_selected_markers" title="Permalink to this definition">#</a></dt>
 <dd><p>Get selected Marker object.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>list of mmSolver.api.Marker</p>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of <a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker">mmSolver.api.Marker</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -456,10 +456,10 @@ original camera with this 2D data.</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">get_active_viewport_camera</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_active_viewport_camera" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the Camera that is attached to the active viewport.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The Camera object, or None.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera">Camera</a> or None</p>
 </dd>
 </dl>
@@ -470,10 +470,10 @@ original camera with this 2D data.</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">get_start_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_start_directory" title="Permalink to this definition">#</a></dt>
 <dd><p>Get a start directory for a file browser window.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>file_path</strong> – An input</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
 </dl>
@@ -484,10 +484,10 @@ original camera with this 2D data.</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">create_new_camera</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.create_new_camera" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a new camera nodes and object.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Camera object.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera">Camera</a></p>
 </dd>
 </dl>
@@ -498,13 +498,13 @@ original camera with this 2D data.</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">create_new_marker_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.create_new_marker_group" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a new marker group node and object.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – The camera to create the Marker Group under.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>MarkerGroup object.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="mmSolver.api.html#mmSolver.api.MarkerGroup" title="mmSolver.api.MarkerGroup">MarkerGroup</a></p>
 </dd>
 </dl>
@@ -515,10 +515,10 @@ original camera with this 2D data.</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.utils.</span></span><span class="sig-name descname"><span class="pre">get_default_image_resolution</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.utils.get_default_image_resolution" title="Permalink to this definition">#</a></dt>
 <dd><p>Get image resolution from Maya Render Settings (Render ‘Globals’).</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>tuple of two ints.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>(int, int)</p>
 </dd>
 </dl>
@@ -542,16 +542,16 @@ original camera with this 2D data.</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.loadmarker.lib.fieldofview.</span></span><span class="sig-name descname"><span class="pre">get_camera_field_of_view</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam_shp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.loadmarker.lib.fieldofview.get_camera_field_of_view" title="Permalink to this definition">#</a></dt>
 <dd><p>Compute the Camera’s field of view with a camera shape node at frames.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cam_shp</strong> (<em>str</em>) – Maya camera shape node.</p></li>
 <li><p><strong>frames</strong> (<em>[</em><em>int</em><em>, </em><em>..</em><em>]</em>) – List of frames to sample the camera/marker group</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[(int, float, float), ..]</p>
 </dd>
 </dl>
@@ -564,7 +564,7 @@ original camera with this 2D data.</p></li>
 <p>Query the overscan of cam by comparing to the camera_fov
 field of view.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cam</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Camera" title="mmSolver.api.Camera"><em>Camera</em></a>) – The mmSolver.api.Camera object to query field of view from.</p></li>
 <li><p><strong>camera_fov</strong> (<em>[</em><em>(</em><em>int</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em><em>, </em><em>..</em><em>]</em>) – Tuple of camera field of view per-frame values X and Y.</p></li>
@@ -572,10 +572,10 @@ field of view.</p>
 provided camera to calculate the overscan.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Overscan X and Y values.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(float, float)</p>
 </dd>
 </dl>
@@ -583,10 +583,10 @@ provided camera to calculate the overscan.</p></li>
 
 </section>
 <section id="library-formats">
-<h2>Library - Formats<a class="headerlink" href="#library-formats" title="Permalink to this headline">#</a></h2>
+<h2>Library - Formats<a class="headerlink" href="#library-formats" title="Permalink to this heading">#</a></h2>
 </section>
 <section id="module-mmSolver.tools.loadmarker.constant">
-<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.loadmarker.constant" title="Permalink to this headline">#</a></h2>
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.loadmarker.constant" title="Permalink to this heading">#</a></h2>
 <p>Contains constant values for the Load Marker tool.</p>
 </section>
 </section>
@@ -649,9 +649,32 @@ provided camera to calculate the overscan.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.loadmarker</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.tool">Tool</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.lib.mayareadfile">Library - Basics</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.lib.utils">Library - Advanced</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.tool">Tool</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.tool.open_window"><code class="docutils literal notranslate"><span class="pre">open_window()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.lib.mayareadfile">Library - Basics</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.mayareadfile.read"><code class="docutils literal notranslate"><span class="pre">read()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.mayareadfile.create_nodes"><code class="docutils literal notranslate"><span class="pre">create_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.mayareadfile.update_nodes"><code class="docutils literal notranslate"><span class="pre">update_nodes()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.lib.utils">Library - Advanced</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.get_selected_cameras"><code class="docutils literal notranslate"><span class="pre">get_selected_cameras()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.get_cameras"><code class="docutils literal notranslate"><span class="pre">get_cameras()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.get_marker_groups"><code class="docutils literal notranslate"><span class="pre">get_marker_groups()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.get_selected_markers"><code class="docutils literal notranslate"><span class="pre">get_selected_markers()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.get_active_viewport_camera"><code class="docutils literal notranslate"><span class="pre">get_active_viewport_camera()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.get_start_directory"><code class="docutils literal notranslate"><span class="pre">get_start_directory()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.create_new_camera"><code class="docutils literal notranslate"><span class="pre">create_new_camera()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.create_new_marker_group"><code class="docutils literal notranslate"><span class="pre">create_new_marker_group()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.get_default_image_resolution"><code class="docutils literal notranslate"><span class="pre">get_default_image_resolution()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.trigger_maya_to_refresh"><code class="docutils literal notranslate"><span class="pre">trigger_maya_to_refresh()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.utils.deferred_revert_of_config_value"><code class="docutils literal notranslate"><span class="pre">deferred_revert_of_config_value()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.fieldofview.get_camera_field_of_view"><code class="docutils literal notranslate"><span class="pre">get_camera_field_of_view()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.loadmarker.lib.fieldofview.calculate_overscan_ratio"><code class="docutils literal notranslate"><span class="pre">calculate_overscan_ratio()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#library-formats">Library - Formats</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.loadmarker.constant">Constants</a></li>
 </ul>
@@ -668,7 +691,9 @@ provided camera to calculate the overscan.</p></li>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

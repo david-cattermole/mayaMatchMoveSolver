@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.userpreferences" href="mmSolver.tools.userpreferences.html" /><link rel="prev" title="mmSolver.tools.triangulatebundle" href="mmSolver.tools.triangulatebundle.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.undoredoscene - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,10 +325,10 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.undoredoscene">
-<span id="mmsolver-tools-undoredoscene"></span><h1>mmSolver.tools.undoredoscene<a class="headerlink" href="#module-mmSolver.tools.undoredoscene" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-undoredoscene"></span><h1>mmSolver.tools.undoredoscene<a class="headerlink" href="#module-mmSolver.tools.undoredoscene" title="Permalink to this heading">#</a></h1>
 <p>Undo/Redo, with special customisations, for performance.</p>
 <section id="module-mmSolver.tools.undoredoscene.tool">
-<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.undoredoscene.tool" title="Permalink to this headline">#</a></h2>
+<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.undoredoscene.tool" title="Permalink to this heading">#</a></h2>
 <p>User facing undo/redo function.</p>
 <p>This function may be called in a UI context.</p>
 <dl class="py function">
@@ -343,7 +343,7 @@
 
 </section>
 <section id="module-mmSolver.tools.undoredoscene.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.undoredoscene.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.undoredoscene.lib" title="Permalink to this heading">#</a></h2>
 <p>Library functions for undo/redo.</p>
 <p>This module should not have any UI code.</p>
 <dl class="py function">
@@ -417,8 +417,16 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.undoredoscene</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.undoredoscene.tool">Tool</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.undoredoscene.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.undoredoscene.tool">Tool</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.undoredoscene.tool.main_undo"><code class="docutils literal notranslate"><span class="pre">main_undo()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.undoredoscene.tool.main_redo"><code class="docutils literal notranslate"><span class="pre">main_redo()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.undoredoscene.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.undoredoscene.lib.undo"><code class="docutils literal notranslate"><span class="pre">undo()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.undoredoscene.lib.redo"><code class="docutils literal notranslate"><span class="pre">redo()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -433,7 +441,9 @@
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

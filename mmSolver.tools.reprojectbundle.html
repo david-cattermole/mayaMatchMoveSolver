@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.savelensfile" href="mmSolver.tools.savelensfile.html" /><link rel="prev" title="mmSolver.tools.reparent2" href="mmSolver.tools.reparent2.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.reprojectbundle - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,10 +325,10 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.reprojectbundle">
-<span id="mmsolver-tools-reprojectbundle"></span><h1>mmSolver.tools.reprojectbundle<a class="headerlink" href="#module-mmSolver.tools.reprojectbundle" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-reprojectbundle"></span><h1>mmSolver.tools.reprojectbundle<a class="headerlink" href="#module-mmSolver.tools.reprojectbundle" title="Permalink to this heading">#</a></h1>
 <p>Move a bundle in front of the camera.</p>
 <section id="module-mmSolver.tools.reprojectbundle.tool">
-<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.reprojectbundle.tool" title="Permalink to this headline">#</a></h2>
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.reprojectbundle.tool" title="Permalink to this heading">#</a></h2>
 <p>Position Bundle under the Marker, in screen-space.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.reprojectbundle.tool.main">
@@ -351,14 +351,14 @@ then relocked.</p>
 
 </section>
 <section id="module-mmSolver.tools.reprojectbundle.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.reprojectbundle.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.reprojectbundle.lib" title="Permalink to this heading">#</a></h2>
 <p>Position Bundle under the Marker, in screen-space.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.reprojectbundle.lib.reproject_bundle">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.reprojectbundle.lib.</span></span><span class="sig-name descname"><span class="pre">reproject_bundle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relock</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reprojectbundle.lib.reproject_bundle" title="Permalink to this definition">#</a></dt>
 <dd><p>Re-project Marker’s Bundle underneath the Marker in screen-space.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>..</em><em>]</em>) – Markers to have Bundles triangulated.</p></li>
 <li><p><strong>frame_list</strong> (<em>[</em><em>float</em><em>, </em><em>..</em><em>]</em>) – Frame numbers to re-project Bundle on, if there
@@ -369,10 +369,10 @@ number given.</p></li>
 unlocked, changed then relocked.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of Bundle</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Bundle" title="mmSolver.api.Bundle">Bundle</a>, ..]</p>
 </dd>
 </dl>
@@ -384,17 +384,17 @@ unlocked, changed then relocked.</p></li>
 <dd><p>Re-project Marker’s Bundle underneath the Marker in screen-space,
 on the current-frame.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mkr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker"><em>Marker</em></a><em>, </em><em>..</em><em>]</em>) – Markers to have Bundles triangulated.</p></li>
 <li><p><strong>relock</strong> (<em>bool</em>) – If True any bundle translate attributes will be
 unlocked, changed then relocked.  then relocked.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of Bundle</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Bundle" title="mmSolver.api.Bundle">Bundle</a>, ..]</p>
 </dd>
 </dl>
@@ -461,8 +461,15 @@ unlocked, changed then relocked.  then relocked.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.reprojectbundle</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.reprojectbundle.tool">Tools</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.reprojectbundle.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.reprojectbundle.tool">Tools</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.reprojectbundle.tool.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.reprojectbundle.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.reprojectbundle.lib.reproject_bundle"><code class="docutils literal notranslate"><span class="pre">reproject_bundle()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.reprojectbundle.lib.reproject_bundle_current_frame"><code class="docutils literal notranslate"><span class="pre">reproject_bundle_current_frame()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -477,7 +484,9 @@ unlocked, changed then relocked.  then relocked.</p></li>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

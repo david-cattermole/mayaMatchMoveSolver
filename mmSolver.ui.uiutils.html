@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.utils" href="mmSolver.utils.html" /><link rel="prev" title="mmSolver.ui.uimodels" href="mmSolver.ui.uimodels.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.ui.uiutils - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -318,14 +318,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
           <section id="module-mmSolver.ui.uiutils">
-<span id="mmsolver-ui-uiutils"></span><h1>mmSolver.ui.uiutils<a class="headerlink" href="#module-mmSolver.ui.uiutils" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-ui-uiutils"></span><h1>mmSolver.ui.uiutils<a class="headerlink" href="#module-mmSolver.ui.uiutils" title="Permalink to this heading">#</a></h1>
 <p>User interface utilities for Qt and Qt based applications.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.ui.uiutils.getHostApplication">
@@ -342,11 +342,11 @@
 </pre></div>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The application name, or None if the application could not
 be recognised.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>str or None</p>
 </dd>
 </dl>
@@ -361,10 +361,10 @@ be recognised.</p>
 <p>For Maya only.</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The Maya main window, as a Qt Widget object.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>QWidget</p>
 </dd>
 </dl>
@@ -381,13 +381,13 @@ be recognised.</p>
 <dd><p>Does the Python object given contain a valid Qt reference pointer?</p>
 <p>Only supports host ‘maya’.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>obj</strong> – Qt class object.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Is the given object valid in C++?</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
@@ -399,7 +399,7 @@ be recognised.</p>
 <dd><p>Get the parent Qt QApplication object.</p>
 <p>Only supports hosts ‘standalone’ and ‘maya’.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Qt object for the top level parent object.</p>
 </dd>
 </dl>
@@ -413,10 +413,10 @@ be recognised.</p>
 custom UIs to be built around.</p>
 <p>Only supports hosts ‘standalone’ and ‘maya’.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The module and class to be used.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>(module, class)</p>
 </dd>
 </dl>
@@ -427,15 +427,15 @@ custom UIs to be built around.</p>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.ui.uiutils.</span></span><span class="sig-name descname"><span class="pre">getFont</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.getFont" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a Qt font, using a name containing hints/keywords.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Font name to create. Can contain multiple sub-strings.
 Supported sub-strings are ‘normal’, ‘small’,
 ‘mediumlarge’, ‘large’, ‘monospace’, ‘bold’, ‘italic’.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Qt QFont object, with names used to set the font.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>QFont</p>
 </dd>
 </dl>
@@ -446,13 +446,13 @@ Supported sub-strings are ‘normal’, ‘small’,
 <span class="sig-prename descclassname"><span class="pre">mmSolver.ui.uiutils.</span></span><span class="sig-name descname"><span class="pre">getIcon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.getIcon" title="Permalink to this definition">#</a></dt>
 <dd><p>Creates an Qt Icon from a resource path.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>path</strong> (<em>str</em>) – Resource file path.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Qt Icon object.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>QIcon</p>
 </dd>
 </dl>
@@ -463,7 +463,7 @@ Supported sub-strings are ‘normal’, ‘small’,
 <span class="sig-prename descclassname"><span class="pre">mmSolver.ui.uiutils.</span></span><span class="sig-name descname"><span class="pre">setWindowWidthHeight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ui</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width_height</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.uiutils.setWindowWidthHeight" title="Permalink to this definition">#</a></dt>
 <dd><p>Set a window’s width and height.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ui</strong> (<em>QWidget</em>) – Qt Window UI to set.</p></li>
 <li><p><strong>width_height</strong> (<em>(</em><em>int</em><em>, </em><em>int</em><em>)</em>) – Width and height to set.</p></li>
@@ -560,8 +560,45 @@ Supported sub-strings are ‘normal’, ‘small’,
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">mmSolver.ui.uiutils</a><ul>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.getHostApplication"><code class="docutils literal notranslate"><span class="pre">getHostApplication()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.getMayaMainWindow"><code class="docutils literal notranslate"><span class="pre">getMayaMainWindow()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.findControlMayaWidget"><code class="docutils literal notranslate"><span class="pre">findControlMayaWidget()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.isValidQtObject"><code class="docutils literal notranslate"><span class="pre">isValidQtObject()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.getParent"><code class="docutils literal notranslate"><span class="pre">getParent()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.getBaseWindow"><code class="docutils literal notranslate"><span class="pre">getBaseWindow()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.getFont"><code class="docutils literal notranslate"><span class="pre">getFont()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.getIcon"><code class="docutils literal notranslate"><span class="pre">getIcon()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.setWindowWidthHeight"><code class="docutils literal notranslate"><span class="pre">setWindowWidthHeight()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.QtInfoMixin"><code class="docutils literal notranslate"><span class="pre">QtInfoMixin</span></code></a><ul>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.QtInfoMixin.qtInitVersion"><code class="docutils literal notranslate"><span class="pre">QtInfoMixin.qtInitVersion()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.QtInfoMixin.qtAboveVersion"><code class="docutils literal notranslate"><span class="pre">QtInfoMixin.qtAboveVersion()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.QtInfoMixin.qtEqualOrAbove_4_6_X"><code class="docutils literal notranslate"><span class="pre">QtInfoMixin.qtEqualOrAbove_4_6_X()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.QtInfoMixin.qtEqualOrAbove_4_7_X"><code class="docutils literal notranslate"><span class="pre">QtInfoMixin.qtEqualOrAbove_4_7_X()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.QtInfoMixin.qtEqualOrAbove_4_8_X"><code class="docutils literal notranslate"><span class="pre">QtInfoMixin.qtEqualOrAbove_4_8_X()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.QtInfoMixin.qtEqual_4_X_X"><code class="docutils literal notranslate"><span class="pre">QtInfoMixin.qtEqual_4_X_X()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.uiutils.QtInfoMixin.qtEqual_5_X_X"><code class="docutils literal notranslate"><span class="pre">QtInfoMixin.qtEqual_5_X_X()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -569,7 +606,9 @@ Supported sub-strings are ‘normal’, ‘small’,
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

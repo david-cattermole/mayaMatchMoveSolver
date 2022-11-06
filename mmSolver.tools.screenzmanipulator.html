@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.selection" href="mmSolver.tools.selection.html" /><link rel="prev" title="mmSolver.tools.screenspacetransform" href="mmSolver.tools.screenspacetransform.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.screenzmanipulator - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,9 +325,9 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.screenzmanipulator">
-<span id="mmsolver-tools-screenzmanipulator"></span><h1>mmSolver.tools.screenzmanipulator<a class="headerlink" href="#module-mmSolver.tools.screenzmanipulator" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-screenzmanipulator"></span><h1>mmSolver.tools.screenzmanipulator<a class="headerlink" href="#module-mmSolver.tools.screenzmanipulator" title="Permalink to this heading">#</a></h1>
 <section id="module-mmSolver.tools.screenzmanipulator.tool">
-<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.screenzmanipulator.tool" title="Permalink to this headline">#</a></h2>
+<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.screenzmanipulator.tool" title="Permalink to this heading">#</a></h2>
 <p>This tool aims the move manipulator tool at the active viewport camera.
 After aiming the move tool at the camera, the screen-space Z axis is
 highlighted, ready to be middle-click dragged.</p>
@@ -336,10 +336,10 @@ highlighted, ready to be middle-click dragged.</p>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.screenzmanipulator.tool.</span></span><span class="sig-name descname"><span class="pre">screen_space_z</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_tfm</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.screenzmanipulator.tool.screen_space_z" title="Permalink to this definition">#</a></dt>
 <dd><p>Modifies moveManipContext to custom and points one of the axis to the camera.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>camera_tfm</strong> (<em>str</em>) – Camera to point to</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
@@ -350,7 +350,7 @@ highlighted, ready to be middle-click dragged.</p>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.screenzmanipulator.tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.screenzmanipulator.tool.main" title="Permalink to this definition">#</a></dt>
 <dd><p>Main function toggles between screen-space Z and object</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
 </dd>
 </dl>
@@ -358,11 +358,11 @@ highlighted, ready to be middle-click dragged.</p>
 
 </section>
 <section id="module-mmSolver.tools.screenzmanipulator.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.screenzmanipulator.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.screenzmanipulator.lib" title="Permalink to this heading">#</a></h2>
 <p>This module contains all the helpful function for screenz manipulator</p>
 </section>
 <section id="module-mmSolver.tools.screenzmanipulator.constant">
-<span id="constant"></span><h2>Constant<a class="headerlink" href="#module-mmSolver.tools.screenzmanipulator.constant" title="Permalink to this headline">#</a></h2>
+<span id="constant"></span><h2>Constant<a class="headerlink" href="#module-mmSolver.tools.screenzmanipulator.constant" title="Permalink to this heading">#</a></h2>
 <p>This file contains all the constants helpful for screen z manipulator
 tool</p>
 </section>
@@ -426,7 +426,11 @@ tool</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.screenzmanipulator</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.screenzmanipulator.tool">Tool</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.screenzmanipulator.tool">Tool</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.screenzmanipulator.tool.screen_space_z"><code class="docutils literal notranslate"><span class="pre">screen_space_z()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.screenzmanipulator.tool.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-mmSolver.tools.screenzmanipulator.lib">Library</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.screenzmanipulator.constant">Constant</a></li>
 </ul>
@@ -443,7 +447,9 @@ tool</p>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

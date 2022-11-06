@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Display Tools" href="tools_displaytools.html" /><link rel="prev" title="Marker Tools" href="tools_markertools.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>Line Tools - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,13 +325,13 @@
         </div>
         <article role="main">
           <section id="line-tools">
-<h1>Line Tools<a class="headerlink" href="#line-tools" title="Permalink to this headline">#</a></h1>
+<h1>Line Tools<a class="headerlink" href="#line-tools" title="Permalink to this heading">#</a></h1>
 <p>Line tools offer the ability to create and edit 2D lines on an
 image. These 2D lines can be used visualise straight lines and solve
 lens distortion, and are used as part of the Camera Calibration
 tool-set.</p>
 <section id="toggle-line-lock-state">
-<span id="toggle-line-lock-state-tool-ref"></span><h2>Toggle Line Lock State<a class="headerlink" href="#toggle-line-lock-state" title="Permalink to this headline">#</a></h2>
+<span id="toggle-line-lock-state-tool-ref"></span><h2>Toggle Line Lock State<a class="headerlink" href="#toggle-line-lock-state" title="Permalink to this heading">#</a></h2>
 <p>Toggle line lock state will toggle lock state of the selected line’s
 attributes, if any of the lines attributes are locked, running this
 tool will unlock all attributes on the selected lines, and running the
@@ -352,7 +352,7 @@ tool again will lock all attributes.</p>
 </div>
 </section>
 <section id="subdivide-line">
-<span id="subdivide-line-tool-ref"></span><h2>Subdivide Line<a class="headerlink" href="#subdivide-line" title="Permalink to this headline">#</a></h2>
+<span id="subdivide-line-tool-ref"></span><h2>Subdivide Line<a class="headerlink" href="#subdivide-line" title="Permalink to this heading">#</a></h2>
 <p>The <cite>Subdivide Line</cite> tool is used to add more 2D points (<cite>Markers</cite>) to
 an existing <cite>Line</cite> to define a straight line in an image with lens
 distortion.</p>
@@ -381,7 +381,7 @@ in an image plane.</p></li>
 </div>
 </section>
 <section id="camera-calibration">
-<span id="camera-calibration-tool-ref"></span><h2>Camera Calibration<a class="headerlink" href="#camera-calibration" title="Permalink to this headline">#</a></h2>
+<span id="camera-calibration-tool-ref"></span><h2>Camera Calibration<a class="headerlink" href="#camera-calibration" title="Permalink to this heading">#</a></h2>
 <p>The Camera calibration toolset can be used to estimate the position
 and rotation of a camera using parallel lines in an image - as is
 common in city-scape or architectural photographs.</p>
@@ -389,17 +389,13 @@ common in city-scape or architectural photographs.</p>
 tool works from a single image only.</p>
 <p>Other terms for this “calibration” process is camera “line up”.</p>
 <section id="calibration-use-cases">
-<span id="camera-calibration-use-cases-tool-ref"></span><h3>Calibration Use Cases<a class="headerlink" href="#calibration-use-cases" title="Permalink to this headline">#</a></h3>
+<span id="camera-calibration-use-cases-tool-ref"></span><h3>Calibration Use Cases<a class="headerlink" href="#calibration-use-cases" title="Permalink to this heading">#</a></h3>
 <p>The tool is very helpful for as an aid for modeling buildings or any
 other environment that contains a flat rectangular surface.</p>
 <section id="calibration-use-cases-one-point-perspective">
-<span id="camera-calibration-use-cases-one-point-tool-ref"></span><h4>Calibration Use Cases - One Point Perspective<a class="headerlink" href="#calibration-use-cases-one-point-perspective" title="Permalink to this headline">#</a></h4>
+<span id="camera-calibration-use-cases-one-point-tool-ref"></span><h4>Calibration Use Cases - One Point Perspective<a class="headerlink" href="#calibration-use-cases-one-point-perspective" title="Permalink to this heading">#</a></h4>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><figure class="align-center">
 <a class="reference internal image-reference" href="https://upload.wikimedia.org/wikipedia/commons/7/75/SketchVP.jpg"><img alt="Diagram of one point perspective" src="https://upload.wikimedia.org/wikipedia/commons/7/75/SketchVP.jpg" /></a>
@@ -424,13 +420,9 @@ back must be given - field of view cannot be estimated.</p>
 to estimate the camera roll.</p>
 </section>
 <section id="calibration-use-cases-two-point-perspective">
-<span id="camera-calibration-use-cases-two-point-tool-ref"></span><h4>Calibration Use Cases - Two Point Perspective<a class="headerlink" href="#calibration-use-cases-two-point-perspective" title="Permalink to this headline">#</a></h4>
+<span id="camera-calibration-use-cases-two-point-tool-ref"></span><h4>Calibration Use Cases - Two Point Perspective<a class="headerlink" href="#calibration-use-cases-two-point-perspective" title="Permalink to this heading">#</a></h4>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 50%" />
-<col style="width: 50%" />
-</colgroup>
 <tbody>
 <tr class="row-odd"><td><figure class="align-center">
 <a class="reference internal image-reference" href="https://upload.wikimedia.org/wikipedia/commons/4/4e/Perspective1.jpg"><img alt="Diagram of two point perspective." src="https://upload.wikimedia.org/wikipedia/commons/4/4e/Perspective1.jpg" /></a>
@@ -458,7 +450,7 @@ need to square.</p>
 </section>
 </section>
 <section id="tool-usage">
-<span id="camera-calibration-tool-usage-tool-ref"></span><h3>Tool Usage<a class="headerlink" href="#tool-usage" title="Permalink to this headline">#</a></h3>
+<span id="camera-calibration-tool-usage-tool-ref"></span><h3>Tool Usage<a class="headerlink" href="#tool-usage" title="Permalink to this heading">#</a></h3>
 <ol class="arabic simple">
 <li><p>Create default setup.</p></li>
 <li><p>Add image plane file path.</p></li>
@@ -468,7 +460,7 @@ need to square.</p>
 </ol>
 </section>
 <section id="calibration-tool-limitations">
-<span id="camera-calibration-limitations-tool-ref"></span><h3>Calibration Tool Limitations<a class="headerlink" href="#calibration-tool-limitations" title="Permalink to this headline">#</a></h3>
+<span id="camera-calibration-limitations-tool-ref"></span><h3>Calibration Tool Limitations<a class="headerlink" href="#calibration-tool-limitations" title="Permalink to this heading">#</a></h3>
 <p>This tool has a number of limitations and known issues, and a future
 version of mmSolver may fix or reduce these issues.</p>
 <ul>
@@ -573,7 +565,9 @@ Maya.</p>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

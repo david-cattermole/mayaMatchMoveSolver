@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.copypastemarker" href="mmSolver.tools.copypastemarker.html" /><link rel="prev" title="mmSolver.tools.convertmarker" href="mmSolver.tools.convertmarker.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.copypastecamera - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,14 +325,14 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.copypastecamera">
-<span id="mmsolver-tools-copypastecamera"></span><h1>mmSolver.tools.copypastecamera<a class="headerlink" href="#module-mmSolver.tools.copypastecamera" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-copypastecamera"></span><h1>mmSolver.tools.copypastecamera<a class="headerlink" href="#module-mmSolver.tools.copypastecamera" title="Permalink to this heading">#</a></h1>
 <p>Tool to convert a Maya Camera (and Image Plane) into a file format
 readable by third-party software (for example, 3DEqualizer).</p>
 <p>The aim is to make the tool similar to the Load Markers tool, allowing
 minimal set-up time for getting data between Maya and
 3DEqualizer.</p>
 <section id="module-mmSolver.tools.copypastecamera.tool">
-<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.copypastecamera.tool" title="Permalink to this headline">#</a></h2>
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.copypastecamera.tool" title="Permalink to this heading">#</a></h2>
 <p>The Copy/Paste Camera tool.</p>
 <p>This tool will save the a camera and plate to a temporary file, for
 loading in third-party software (such as 3DEqualizer).</p>
@@ -343,7 +343,7 @@ loading in third-party software (such as 3DEqualizer).</p>
 
 </section>
 <section id="module-mmSolver.tools.copypastecamera.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.copypastecamera.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.copypastecamera.lib" title="Permalink to this heading">#</a></h2>
 <p>The Copy/Paste Camera library functions.</p>
 <p>The file saved will contain:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">-</span> <span class="n">Camera</span> <span class="n">Name</span>
@@ -396,10 +396,10 @@ in a standardized way.</p>
 ‘file_1001.ext’ into tokens.</p>
 <p>The file_path can be a full path, not just a file name.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A dictionary with keys ‘name’, ‘frame’ and ‘ext’, or None.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>dict or None</p>
 </dd>
 </dl>
@@ -410,20 +410,20 @@ in a standardized way.</p>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.copypastecamera.lib.</span></span><span class="sig-name descname"><span class="pre">get_image_path_single_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_disk</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.copypastecamera.lib.get_image_path_single_frame" title="Permalink to this definition">#</a></dt>
 <dd><p>Determine if the file_path is represents a single file, or not.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>image_path</strong> (<em>basestring</em>) – The input image path to test.</p></li>
 <li><p><strong>test_disk</strong> (<em>bool</em>) – Should we access the disk to find files, or just test
 the string and assume the file exists?</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Image file path and boolean of whether the image path
 represents an image sequence, or not.
 Returns (None, None) if the function cannot determine
 the values accurately.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(str, bool) or (None, None)</p>
 </dd>
 </dl>
@@ -435,20 +435,20 @@ the values accurately.</p>
 <dd><p>Determine if the given image_path represents multiple frames or
 not.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>image_path</strong> (<em>basestring</em>) – The input image path to test.</p></li>
 <li><p><strong>test_disk</strong> (<em>bool</em>) – Should we access the disk to find multiple frames, or just test
 the string and assume the files exist?</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Image file path and boolean of whether the image path
 represents an image sequence, or not.
 Returns (None, None) if the function cannot determine
 the values accurately.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(str, bool) or (None, None)</p>
 </dd>
 </dl>
@@ -476,7 +476,7 @@ the values accurately.</p>
 path and directory on disk (not just string assumptions).</p>
 </div>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>image_name</strong> (<em>str</em>) – Maya imagePlane file (sequence) path.</p></li>
 <li><p><strong>use_frame_ext</strong> (<em>bool</em>) – The value of imagePlane node’s
@@ -487,13 +487,13 @@ only string manipulation but do not test
 (for example) the actual file existence.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Image file path and boolean of whether the image path
 represents an image sequence, or not.
 Returns (None, None) if the function cannot determine
 the values accurately.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>(str, bool) or (None, None)</p>
 </dd>
 </dl>
@@ -505,10 +505,10 @@ the values accurately.</p>
 <dd><p>Given a file pattern with ‘#’ characters representing the frame
 number, get the full frame range on disk.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>FrameRange</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.time.FrameRange" title="mmSolver.utils.time.FrameRange">FrameRange</a> or (int, int)</p>
 </dd>
 </dl>
@@ -520,11 +520,11 @@ number, get the full frame range on disk.</p>
 <dd><p>Given a camera node, image plane node and file path pattern try to
 guess the expected pixel aspect ratio.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Pixel aspect ratio (PAR) for the camera, or None if none can be
 determined.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>float or None</p>
 </dd>
 </dl>
@@ -535,7 +535,7 @@ determined.</p>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.copypastecamera.lib.</span></span><span class="sig-name descname"><span class="pre">query_plate_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam_tfm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cam_shp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img_pl_shp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_disk</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.copypastecamera.lib.query_plate_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Query plate information from the given camera and image plane.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cam_tfm</strong> (<em>str</em>) – Camera transform node of given image plane shape.</p></li>
 <li><p><strong>cam_shp</strong> (<em>str</em>) – Camera shape node of given image plane shape.</p></li>
@@ -566,7 +566,7 @@ determined.</p>
 
 </section>
 <section id="module-mmSolver.tools.copypastecamera.constant">
-<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.copypastecamera.constant" title="Permalink to this headline">#</a></h2>
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.copypastecamera.constant" title="Permalink to this heading">#</a></h2>
 <p>Contains constant values for the Copy/Paste Camera tool.</p>
 </section>
 </section>
@@ -629,8 +629,23 @@ determined.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.copypastecamera</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.copypastecamera.tool">Tools</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.copypastecamera.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.copypastecamera.tool">Tools</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.copypastecamera.tool.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.copypastecamera.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.copypastecamera.lib.get_image_path_tokens"><code class="docutils literal notranslate"><span class="pre">get_image_path_tokens()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.copypastecamera.lib.get_image_path_single_frame"><code class="docutils literal notranslate"><span class="pre">get_image_path_single_frame()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.copypastecamera.lib.get_image_path_multi_frame"><code class="docutils literal notranslate"><span class="pre">get_image_path_multi_frame()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.copypastecamera.lib.get_image_path_pattern"><code class="docutils literal notranslate"><span class="pre">get_image_path_pattern()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.copypastecamera.lib.get_frame_range_from_file_pattern"><code class="docutils literal notranslate"><span class="pre">get_frame_range_from_file_pattern()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.copypastecamera.lib.guess_pixel_aspect_ratio"><code class="docutils literal notranslate"><span class="pre">guess_pixel_aspect_ratio()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.copypastecamera.lib.query_plate_data"><code class="docutils literal notranslate"><span class="pre">query_plate_data()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.copypastecamera.lib.query_camera_data"><code class="docutils literal notranslate"><span class="pre">query_camera_data()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.copypastecamera.lib.generate"><code class="docutils literal notranslate"><span class="pre">generate()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.copypastecamera.lib.write_temp_file"><code class="docutils literal notranslate"><span class="pre">write_temp_file()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-mmSolver.tools.copypastecamera.constant">Constants</a></li>
 </ul>
 </li>
@@ -646,7 +661,9 @@ determined.</p>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

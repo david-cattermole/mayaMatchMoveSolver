@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Input/Output Tools" href="tools_inputoutput.html" /><link rel="prev" title="Z-Depth Tools" href="tools_zdepthtools.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>General Tools - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,12 +325,12 @@
         </div>
         <article role="main">
           <section id="general-tools">
-<h1>General Tools<a class="headerlink" href="#general-tools" title="Permalink to this headline">#</a></h1>
+<h1>General Tools<a class="headerlink" href="#general-tools" title="Permalink to this heading">#</a></h1>
 <p>The tools on this page are not specific to Markers, Cameras or
 Bundles, but are general tools useful in Maya for many different
 tasks.</p>
 <section id="reparent-under-node">
-<span id="reparent-under-node-tool-ref"></span><h2>Reparent Under Node<a class="headerlink" href="#reparent-under-node" title="Permalink to this headline">#</a></h2>
+<span id="reparent-under-node-tool-ref"></span><h2>Reparent Under Node<a class="headerlink" href="#reparent-under-node" title="Permalink to this heading">#</a></h2>
 <p>This is equivalent to Maya’s <em>Parent</em> tool (<cite>p</cite> hotkey), except the
 tool will maintain the world-space position of the transform node for
 each keyframe applied to the node.</p>
@@ -358,7 +358,7 @@ keyframes.</p></li>
 </div>
 </section>
 <section id="unparent-to-world">
-<span id="unparent-to-world-tool-ref"></span><h2>Unparent to World<a class="headerlink" href="#unparent-to-world" title="Permalink to this headline">#</a></h2>
+<span id="unparent-to-world-tool-ref"></span><h2>Unparent to World<a class="headerlink" href="#unparent-to-world" title="Permalink to this heading">#</a></h2>
 <p>This is equalivent to Maya’s <em>Unparent</em> tool (<cite>Shift + p</cite> hotkey), except the tool will
 maintain the world-space position of the transform node for each
 keyframe applied to the node.</p>
@@ -385,7 +385,7 @@ parented under any node).</p></li>
 </div>
 </section>
 <section id="reparent-ui">
-<span id="reparent-window-tool-ref"></span><h2>Reparent UI<a class="headerlink" href="#reparent-ui" title="Permalink to this headline">#</a></h2>
+<span id="reparent-window-tool-ref"></span><h2>Reparent UI<a class="headerlink" href="#reparent-ui" title="Permalink to this heading">#</a></h2>
 <p>This window displays options for how to re-parent nodes.</p>
 <p><em>Reparent</em> is the underlying tool window used by both
 <a class="reference internal" href="#reparent-under-node-tool-ref"><span class="std std-ref">Reparent Under Node</span></a>
@@ -394,7 +394,7 @@ and <a class="reference internal" href="#unparent-to-world-tool-ref"><span class
 <a class="reference internal image-reference" href="_images/tools_reparent_ui.png"><img alt="Reparent UI" src="_images/tools_reparent_ui.png" style="width: 40%;" /></a>
 </figure>
 <div class="table-wrapper colwidths-auto docutils container" id="id1">
-<table class="colwidths-auto docutils align-default" id="id1">
+<table class="docutils align-default" id="id1">
 <caption><span class="caption-text">Reparent UI Options</span><a class="headerlink" href="#id1" title="Permalink to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
@@ -439,7 +439,7 @@ with a static value.</p></td>
 </div>
 </section>
 <section id="create-remove-controller">
-<span id="create-remove-controller-tool-ref"></span><h2>Create / Remove Controller<a class="headerlink" href="#create-remove-controller" title="Permalink to this headline">#</a></h2>
+<span id="create-remove-controller-tool-ref"></span><h2>Create / Remove Controller<a class="headerlink" href="#create-remove-controller" title="Permalink to this heading">#</a></h2>
 <p>Create a new transform node to control another node. The <cite>Controller</cite>
 transform node can have a separate hierarchy than the source node.</p>
 <p>The UI for this tool can be used control the baking method, and the
@@ -521,7 +521,7 @@ version 1, use this python code to run it.</p>
 </div>
 </section>
 <section id="marker-bundle-rename">
-<span id="marker-bundle-rename-tool-ref"></span><h2>Marker Bundle Rename<a class="headerlink" href="#marker-bundle-rename" title="Permalink to this headline">#</a></h2>
+<span id="marker-bundle-rename-tool-ref"></span><h2>Marker Bundle Rename<a class="headerlink" href="#marker-bundle-rename" title="Permalink to this heading">#</a></h2>
 <p>Renames selected markers and bundles connected, takes the input name
 given in prompt window.</p>
 <p>Usage:</p>
@@ -543,7 +543,7 @@ Markers will named <code class="docutils literal notranslate"><span class="pre">
 </div>
 </section>
 <section id="marker-bundle-rename-with-metadata">
-<span id="marker-bundle-rename-with-metadata-tool-ref"></span><h2>Marker Bundle Rename (with Metadata)<a class="headerlink" href="#marker-bundle-rename-with-metadata" title="Permalink to this headline">#</a></h2>
+<span id="marker-bundle-rename-with-metadata-tool-ref"></span><h2>Marker Bundle Rename (with Metadata)<a class="headerlink" href="#marker-bundle-rename-with-metadata" title="Permalink to this heading">#</a></h2>
 <p>Renames the selected Markers and Bundles using only the metadata saved
 onto the Marker nodes.</p>
 <p>For example, metadata from 3DEqualizer is saved onto the Marker node.</p>
@@ -564,7 +564,7 @@ not found, the Marker/Bundle is not renamed.</p></li>
 </div>
 </section>
 <section id="sort-selected-nodes-in-outliner">
-<span id="sort-selected-nodes-in-outliner-tool-ref"></span><h2>Sort Selected Nodes In Outliner<a class="headerlink" href="#sort-selected-nodes-in-outliner" title="Permalink to this headline">#</a></h2>
+<span id="sort-selected-nodes-in-outliner-tool-ref"></span><h2>Sort Selected Nodes In Outliner<a class="headerlink" href="#sort-selected-nodes-in-outliner" title="Permalink to this heading">#</a></h2>
 <p>Alphabetically sorts (re-orders) the selected nodes in the Maya Outliner window.</p>
 <p>This tool avoids the Maya Outliner window’s (interactive) “Sort Order” feature
 and encourages an organised workflow when working with many nodes.</p>
@@ -588,7 +588,7 @@ and encourages an organised workflow when working with many nodes.</p>
 </div>
 </section>
 <section id="remove-solver-nodes">
-<span id="remove-solver-nodes-tool-ref"></span><h2>Remove Solver Nodes<a class="headerlink" href="#remove-solver-nodes" title="Permalink to this headline">#</a></h2>
+<span id="remove-solver-nodes-tool-ref"></span><h2>Remove Solver Nodes<a class="headerlink" href="#remove-solver-nodes" title="Permalink to this heading">#</a></h2>
 <p>Remove Solver Nodes tool allows for the removal of
 some or all nodes related to the matchmoveSolver
 plugin, allowing for a clean scene to be prepped
@@ -617,14 +617,14 @@ removal.</p>
 </div>
 </section>
 <section id="user-preferences">
-<span id="user-preferences-tool-ref"></span><h2>User Preferences<a class="headerlink" href="#user-preferences" title="Permalink to this headline">#</a></h2>
+<span id="user-preferences-tool-ref"></span><h2>User Preferences<a class="headerlink" href="#user-preferences" title="Permalink to this heading">#</a></h2>
 <figure class="align-center">
 <a class="reference internal image-reference" href="_images/tools_user_preferences_ui.png"><img alt="User Preferences window" src="_images/tools_user_preferences_ui.png" style="width: 60%;" /></a>
 </figure>
 <p>The <em>User Preferences</em> window is used to change how mmSolver tools and
 general functions behave, by default.</p>
 <div class="table-wrapper colwidths-auto docutils container" id="id2">
-<table class="colwidths-auto docutils align-default" id="id2">
+<table class="docutils align-default" id="id2">
 <caption><span class="caption-text">Options</span><a class="headerlink" href="#id2" title="Permalink to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
@@ -748,7 +748,9 @@ will not be adjusted.</p></td>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

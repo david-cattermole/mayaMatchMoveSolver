@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.screenspacemotiontrail" href="mmSolver.tools.screenspacemotiontrail.html" /><link rel="prev" title="mmSolver.tools.savelensfile" href="mmSolver.tools.savelensfile.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.savemarkerfile - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,14 +325,14 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.savemarkerfile">
-<span id="mmsolver-tools-savemarkerfile"></span><h1>mmSolver.tools.savemarkerfile<a class="headerlink" href="#module-mmSolver.tools.savemarkerfile" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-savemarkerfile"></span><h1>mmSolver.tools.savemarkerfile<a class="headerlink" href="#module-mmSolver.tools.savemarkerfile" title="Permalink to this heading">#</a></h1>
 <p>Tool to convert a Maya Camera (and Image Plane) into a file format
 readable by third-party software (for example, 3DEqualizer).</p>
 <p>The aim is to make the tool similar to the Load Markers tool, allowing
 minimal set-up time for getting data between Maya and
 3DEqualizer.</p>
 <section id="module-mmSolver.tools.savemarkerfile.tool">
-<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.savemarkerfile.tool" title="Permalink to this headline">#</a></h2>
+<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.savemarkerfile.tool" title="Permalink to this heading">#</a></h2>
 <p>The Save Marker File tool.</p>
 <p>This tool will save the selected Markers to a .uv file, for loading in
 third-party software (such as 3DEqualizer).</p>
@@ -343,7 +343,7 @@ third-party software (such as 3DEqualizer).</p>
 
 </section>
 <section id="module-mmSolver.tools.savemarkerfile.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.savemarkerfile.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.savemarkerfile.lib" title="Permalink to this heading">#</a></h2>
 <p>The Save Marker File library functions.</p>
 <p>Write out a mmSolver Marker node as a .uv file.</p>
 <dl class="py function">
@@ -351,10 +351,10 @@ third-party software (such as 3DEqualizer).</p>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.savemarkerfile.lib.</span></span><span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_range</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.savemarkerfile.lib.generate" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert all Markers to data that can be written out.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List of Markers</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Marker" title="mmSolver.api.Marker">Marker</a>]</p>
 </dd>
 </dl>
@@ -373,7 +373,7 @@ third-party software (such as 3DEqualizer).</p>
 
 </section>
 <section id="module-mmSolver.tools.savemarkerfile.constant">
-<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.savemarkerfile.constant" title="Permalink to this headline">#</a></h2>
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.savemarkerfile.constant" title="Permalink to this heading">#</a></h2>
 <p>Contains constant values for the Save Marker File tool.</p>
 <p>The .uv format, resolution independent 2D tracking format.</p>
 <p>This file supports only the .uv version 4 format.</p>
@@ -482,8 +482,16 @@ The UV coordinate (1.0, 1.0) is the upper-right.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.savemarkerfile</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.savemarkerfile.tool">Tool</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.savemarkerfile.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.savemarkerfile.tool">Tool</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.savemarkerfile.tool.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.savemarkerfile.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.savemarkerfile.lib.generate"><code class="docutils literal notranslate"><span class="pre">generate()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.savemarkerfile.lib.write_file"><code class="docutils literal notranslate"><span class="pre">write_file()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.savemarkerfile.lib.write_temp_file"><code class="docutils literal notranslate"><span class="pre">write_temp_file()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-mmSolver.tools.savemarkerfile.constant">Constants</a></li>
 </ul>
 </li>
@@ -499,7 +507,9 @@ The UV coordinate (1.0, 1.0) is the upper-right.</p>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

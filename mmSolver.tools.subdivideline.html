@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.sysinfowindow" href="mmSolver.tools.sysinfowindow.html" /><link rel="prev" title="mmSolver.tools.sortoutlinernodes" href="mmSolver.tools.sortoutlinernodes.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.subdivideline - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,9 +325,9 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.subdivideline">
-<span id="mmsolver-tools-subdivideline"></span><h1>mmSolver.tools.subdivideline<a class="headerlink" href="#module-mmSolver.tools.subdivideline" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-subdivideline"></span><h1>mmSolver.tools.subdivideline<a class="headerlink" href="#module-mmSolver.tools.subdivideline" title="Permalink to this heading">#</a></h1>
 <section id="module-mmSolver.tools.subdivideline.tool">
-<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.subdivideline.tool" title="Permalink to this headline">#</a></h2>
+<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.subdivideline.tool" title="Permalink to this heading">#</a></h2>
 <p>Subdivide the number of markers in selected line.</p>
 <p>This allows adding more detail in areas that are needed without
 adding line segments where they are not needed.</p>
@@ -342,7 +342,7 @@ the line segments around the markers are subdivided.</p>
 
 </section>
 <section id="module-mmSolver.tools.subdivideline.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.subdivideline.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.subdivideline.lib" title="Permalink to this heading">#</a></h2>
 <p>Functions for sub-dividing a line with more markers.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.subdivideline.lib.subdivide_line">
@@ -351,7 +351,7 @@ the line segments around the markers are subdivided.</p>
 <p>The line segments between each marker in ‘mkr_list’ will be
 subdivided.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>line</strong> (<em>mmapi.Line</em>) – The line to subdivide.</p></li>
 <li><p><strong>mkr_list</strong> (<em>[</em><em>mmapi.Marker</em><em>, </em><em>..</em><em>]</em>) – List of marker to subdivide between. Each pair of
@@ -359,10 +359,10 @@ markers represents a ‘line segment’ that will have a new Marker
 added.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>([mmapi.Marker, ..], [mmapi.Marker, ..])</p>
 </dd>
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Two lists of markers, first list is all the markers that
 are part of the new line, and the second list are the newly
 created markers.</p>
@@ -431,8 +431,14 @@ created markers.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.subdivideline</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.subdivideline.tool">Tool</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.subdivideline.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.subdivideline.tool">Tool</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.subdivideline.tool.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.subdivideline.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.subdivideline.lib.subdivide_line"><code class="docutils literal notranslate"><span class="pre">subdivide_line()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -447,7 +453,9 @@ created markers.</p>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

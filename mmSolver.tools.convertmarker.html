@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.copypastecamera" href="mmSolver.tools.copypastecamera.html" /><link rel="prev" title="mmSolver.tools.channelsen" href="mmSolver.tools.channelsen.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.convertmarker - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,17 +325,17 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.convertmarker">
-<span id="mmsolver-tools-convertmarker"></span><h1>mmSolver.tools.convertmarker<a class="headerlink" href="#module-mmSolver.tools.convertmarker" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-convertmarker"></span><h1>mmSolver.tools.convertmarker<a class="headerlink" href="#module-mmSolver.tools.convertmarker" title="Permalink to this heading">#</a></h1>
 <p>Convert a Maya transform into a marker, viewed though the camera.</p>
 <section id="module-mmSolver.tools.convertmarker.tool">
-<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.convertmarker.tool" title="Permalink to this headline">#</a></h2>
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.convertmarker.tool" title="Permalink to this heading">#</a></h2>
 <p>The ‘Convert to Marker’ tool.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.convertmarker.tool.main">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.convertmarker.tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_range_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_frame</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle_position_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_static_anim_curves</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.convertmarker.tool.main" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert all selected transforms into 2D markers under a camera.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>frame_range_mode</strong> (<em>FRAME_RANGE_MODE_*_VALUE</em>) – The type of frame range to use, see
 ‘mmSolver.utils.constant.FRAME_RANGE_MODE_*_VALUE’ for more
@@ -365,7 +365,7 @@ all keyframes from the bundle, if the bundle is not animated.</p></li>
 
 </section>
 <section id="module-mmSolver.tools.convertmarker.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.convertmarker.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.convertmarker.lib" title="Permalink to this heading">#</a></h2>
 <p>The ‘Convert to Marker’ library functions.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.convertmarker.lib.convert_nodes_to_marker_data_list">
@@ -377,7 +377,7 @@ all keyframes from the bundle, if the bundle is not animated.</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.convertmarker.lib.</span></span><span class="sig-name descname"><span class="pre">create_markers_from_transforms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cam_tfm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cam_shp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tfm_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bundle_position_mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_static_anim_curves</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.convertmarker.lib.create_markers_from_transforms" title="Permalink to this definition">#</a></dt>
 <dd><p>Create Markers from Maya transform nodes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>cam_tfm</strong> (<em>str</em>) – Camera transform node.</p></li>
 <li><p><strong>cam_shp</strong> (<em>str</em>) – Camera shape node.</p></li>
@@ -392,12 +392,12 @@ Bundle (connected to the Marker).</p></li>
 all keyframes from the bundle, if the bundle is not animated.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A tuple of 2 lists; First list is the Marker nodes
 created by the function, and the second list is the bundle
 nodes created by this function.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>([str, …], [str, …])</p>
 </dd>
 </dl>
@@ -405,7 +405,7 @@ nodes created by this function.</p>
 
 </section>
 <section id="module-mmSolver.tools.convertmarker.constant">
-<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.convertmarker.constant" title="Permalink to this headline">#</a></h2>
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.convertmarker.constant" title="Permalink to this heading">#</a></h2>
 <p>Contains constant values for the Convert To Marker tool.</p>
 </section>
 </section>
@@ -468,8 +468,17 @@ nodes created by this function.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.convertmarker</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.convertmarker.tool">Tools</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.convertmarker.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.convertmarker.tool">Tools</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.convertmarker.tool.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.convertmarker.tool.convert_to_marker"><code class="docutils literal notranslate"><span class="pre">convert_to_marker()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.convertmarker.tool.open_window"><code class="docutils literal notranslate"><span class="pre">open_window()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.convertmarker.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.convertmarker.lib.convert_nodes_to_marker_data_list"><code class="docutils literal notranslate"><span class="pre">convert_nodes_to_marker_data_list()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.convertmarker.lib.create_markers_from_transforms"><code class="docutils literal notranslate"><span class="pre">create_markers_from_transforms()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-mmSolver.tools.convertmarker.constant">Constants</a></li>
 </ul>
 </li>
@@ -485,7 +494,9 @@ nodes created by this function.</p>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

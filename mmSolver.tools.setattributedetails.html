@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.setcameraoriginframe" href="mmSolver.tools.setcameraoriginframe.html" /><link rel="prev" title="mmSolver.tools.selection" href="mmSolver.tools.selection.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.setattributedetails - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,13 +325,13 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.setattributedetails">
-<span id="mmsolver-tools-setattributedetails"></span><h1>mmSolver.tools.setattributedetails<a class="headerlink" href="#module-mmSolver.tools.setattributedetails" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-setattributedetails"></span><h1>mmSolver.tools.setattributedetails<a class="headerlink" href="#module-mmSolver.tools.setattributedetails" title="Permalink to this heading">#</a></h1>
 <p>A tool to set meta-data on individual attributes, per-Collection.</p>
 <section id="tool">
-<h2>Tool<a class="headerlink" href="#tool" title="Permalink to this headline">#</a></h2>
+<h2>Tool<a class="headerlink" href="#tool" title="Permalink to this heading">#</a></h2>
 </section>
 <section id="module-mmSolver.tools.setattributedetails.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.setattributedetails.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.setattributedetails.lib" title="Permalink to this heading">#</a></h2>
 <p>Library functions for Solver UI.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mmSolver.tools.setattributedetails.lib.AttrDetail">
@@ -501,11 +501,11 @@
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.setattributedetails.lib.</span></span><span class="sig-name descname"><span class="pre">get_active_collection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.setattributedetails.lib.get_active_collection" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the active collection object in the current scene file.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The active Collection object, or None if no Collection
 is active.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Collection" title="mmSolver.api.Collection">Collection</a> or None</p>
 </dd>
 </dl>
@@ -518,11 +518,11 @@ is active.</p>
 <p>This function uses Maya ChannelBox logic to get the objects, which
 is based on the selection, but may be doing more complex logic.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List of Attribute objects for all nodes in the Channel Box.</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>list of Attribute</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of <a class="reference internal" href="mmSolver.api.html#mmSolver.api.Attribute" title="mmSolver.api.Attribute">Attribute</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -532,10 +532,10 @@ is based on the selection, but may be doing more complex logic.</p>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.setattributedetails.lib.</span></span><span class="sig-name descname"><span class="pre">get_selected_node_default_attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.setattributedetails.lib.get_selected_node_default_attributes" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the attributes on the selected nodes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List of mmSolver API Attribute objects.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Attribute" title="mmSolver.api.Attribute">Attribute</a>, ..]</p>
 </dd>
 </dl>
@@ -546,13 +546,13 @@ is based on the selection, but may be doing more complex logic.</p>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.setattributedetails.lib.</span></span><span class="sig-name descname"><span class="pre">input_attributes_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.setattributedetails.lib.input_attributes_filter" title="Permalink to this definition">#</a></dt>
 <dd><p>Apply logic to remove any non-input attributes from the given list.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>attr_list</strong> (<em>[</em><a class="reference internal" href="mmSolver.api.html#mmSolver.api.Attribute" title="mmSolver.api.Attribute"><em>Attribute</em></a><em>, </em><em>..</em><em>]</em>) – Attribute list to filter.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of attributes that are filtered.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Attribute" title="mmSolver.api.Attribute">Attribute</a>, ..]</p>
 </dd>
 </dl>
@@ -580,10 +580,10 @@ is based on the selection, but may be doing more complex logic.</p>
 
 </section>
 <section id="user-interface">
-<h2>User Interface<a class="headerlink" href="#user-interface" title="Permalink to this headline">#</a></h2>
+<h2>User Interface<a class="headerlink" href="#user-interface" title="Permalink to this heading">#</a></h2>
 </section>
 <section id="module-mmSolver.tools.setattributedetails.constant">
-<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.setattributedetails.constant" title="Permalink to this headline">#</a></h2>
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.setattributedetails.constant" title="Permalink to this heading">#</a></h2>
 <p>Holds all constant data needed for the ‘set attr details’ UI.</p>
 </section>
 </section>
@@ -647,7 +647,49 @@ is based on the selection, but may be doing more complex logic.</p>
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.setattributedetails</a><ul>
 <li><a class="reference internal" href="#tool">Tool</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.setattributedetails.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.setattributedetails.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail"><code class="docutils literal notranslate"><span class="pre">AttrDetail</span></code></a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.curve_frame_variance"><code class="docutils literal notranslate"><span class="pre">AttrDetail.curve_frame_variance</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.curve_max"><code class="docutils literal notranslate"><span class="pre">AttrDetail.curve_max</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.curve_max_variance"><code class="docutils literal notranslate"><span class="pre">AttrDetail.curve_max_variance</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.curve_mean"><code class="docutils literal notranslate"><span class="pre">AttrDetail.curve_mean</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.curve_min"><code class="docutils literal notranslate"><span class="pre">AttrDetail.curve_min</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.curve_variance"><code class="docutils literal notranslate"><span class="pre">AttrDetail.curve_variance</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.max_enable"><code class="docutils literal notranslate"><span class="pre">AttrDetail.max_enable</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.max_value"><code class="docutils literal notranslate"><span class="pre">AttrDetail.max_value</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.min_enable"><code class="docutils literal notranslate"><span class="pre">AttrDetail.min_enable</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.min_value"><code class="docutils literal notranslate"><span class="pre">AttrDetail.min_value</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.smoothness_enable"><code class="docutils literal notranslate"><span class="pre">AttrDetail.smoothness_enable</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.smoothness_variance"><code class="docutils literal notranslate"><span class="pre">AttrDetail.smoothness_variance</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.smoothness_weight"><code class="docutils literal notranslate"><span class="pre">AttrDetail.smoothness_weight</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.state"><code class="docutils literal notranslate"><span class="pre">AttrDetail.state</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.stiffness_enable"><code class="docutils literal notranslate"><span class="pre">AttrDetail.stiffness_enable</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.stiffness_variance"><code class="docutils literal notranslate"><span class="pre">AttrDetail.stiffness_variance</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.AttrDetail.stiffness_weight"><code class="docutils literal notranslate"><span class="pre">AttrDetail.stiffness_weight</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.create_attr_detail"><code class="docutils literal notranslate"><span class="pre">create_attr_detail()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.attr_detail_from_previous"><code class="docutils literal notranslate"><span class="pre">attr_detail_from_previous()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.CurveStatistics"><code class="docutils literal notranslate"><span class="pre">CurveStatistics</span></code></a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.CurveStatistics.frame_variance"><code class="docutils literal notranslate"><span class="pre">CurveStatistics.frame_variance</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.CurveStatistics.max_value"><code class="docutils literal notranslate"><span class="pre">CurveStatistics.max_value</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.CurveStatistics.max_variance"><code class="docutils literal notranslate"><span class="pre">CurveStatistics.max_variance</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.CurveStatistics.mean_value"><code class="docutils literal notranslate"><span class="pre">CurveStatistics.mean_value</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.CurveStatistics.min_value"><code class="docutils literal notranslate"><span class="pre">CurveStatistics.min_value</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.CurveStatistics.variance"><code class="docutils literal notranslate"><span class="pre">CurveStatistics.variance</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.create_curve_statistics"><code class="docutils literal notranslate"><span class="pre">create_curve_statistics()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.get_active_collection"><code class="docutils literal notranslate"><span class="pre">get_active_collection()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.get_selected_maya_attributes"><code class="docutils literal notranslate"><span class="pre">get_selected_maya_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.get_selected_node_default_attributes"><code class="docutils literal notranslate"><span class="pre">get_selected_node_default_attributes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.input_attributes_filter"><code class="docutils literal notranslate"><span class="pre">input_attributes_filter()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.get_curve_statistics"><code class="docutils literal notranslate"><span class="pre">get_curve_statistics()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.convert_attributes_to_detail_values"><code class="docutils literal notranslate"><span class="pre">convert_attributes_to_detail_values()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.set_attribute_state"><code class="docutils literal notranslate"><span class="pre">set_attribute_state()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.setattributedetails.lib.set_attribute_details"><code class="docutils literal notranslate"><span class="pre">set_attribute_details()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#user-interface">User Interface</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.setattributedetails.constant">Constants</a></li>
 </ul>
@@ -664,7 +706,9 @@ is based on the selection, but may be doing more complex logic.</p>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

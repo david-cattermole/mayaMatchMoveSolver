@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.solver" href="mmSolver.tools.solver.html" /><link rel="prev" title="mmSolver.tools.showdeviationcurves" href="mmSolver.tools.showdeviationcurves.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.smoothkeyframes - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,10 +325,10 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.smoothkeyframes">
-<span id="mmsolver-tools-smoothkeyframes"></span><h1>mmSolver.tools.smoothkeyframes<a class="headerlink" href="#module-mmSolver.tools.smoothkeyframes" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-smoothkeyframes"></span><h1>mmSolver.tools.smoothkeyframes<a class="headerlink" href="#module-mmSolver.tools.smoothkeyframes" title="Permalink to this heading">#</a></h1>
 <p>Smooth keyframes tool - Smooth the keyframe values of Animation Curves.</p>
 <section id="module-mmSolver.tools.smoothkeyframes.tool">
-<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.smoothkeyframes.tool" title="Permalink to this headline">#</a></h2>
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.smoothkeyframes.tool" title="Permalink to this heading">#</a></h2>
 <p>Smooths the selected keyframes.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.smoothkeyframes.tool.smooth_selected_keyframes">
@@ -349,7 +349,7 @@
 
 </section>
 <section id="module-mmSolver.tools.smoothkeyframes.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.smoothkeyframes.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.smoothkeyframes.lib" title="Permalink to this heading">#</a></h2>
 <p>Functions to support smoothing animation curve keyframes.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.smoothkeyframes.lib.calculate_chunks">
@@ -383,7 +383,7 @@ linear smooth curve, to the smoothed curve.</p></li>
 <li><p>Blend between the smooth and original value.</p></li>
 </ol>
 <dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[float, ..]</p>
 </dd>
 </dl>
@@ -394,7 +394,7 @@ linear smooth curve, to the smoothed curve.</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.smoothkeyframes.lib.</span></span><span class="sig-name descname"><span class="pre">smooth_animcurve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">animcurve</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_keyframes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smooth_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blend_smooth_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blend_width</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.smoothkeyframes.lib.smooth_animcurve" title="Permalink to this definition">#</a></dt>
 <dd><p>Smooth the given keyframes for an animCurve.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>animcurve</strong> (<em>str</em>) – Animation curve node name.</p></li>
 <li><p><strong>selected_keyframes</strong> (<em>[</em><em>int</em><em>, </em><em>..</em><em>] or </em><em>[</em><em>]</em>) – The frame numbers that are ‘selected’ to be smoothed.</p></li>
@@ -411,13 +411,13 @@ smoothing, and is slower to compute.</p></li>
 
 </section>
 <section id="ui-layout">
-<h2>UI - Layout<a class="headerlink" href="#ui-layout" title="Permalink to this headline">#</a></h2>
+<h2>UI - Layout<a class="headerlink" href="#ui-layout" title="Permalink to this heading">#</a></h2>
 </section>
 <section id="ui-window">
-<h2>UI - Window<a class="headerlink" href="#ui-window" title="Permalink to this headline">#</a></h2>
+<h2>UI - Window<a class="headerlink" href="#ui-window" title="Permalink to this heading">#</a></h2>
 </section>
 <section id="module-mmSolver.tools.smoothkeyframes.constant">
-<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.smoothkeyframes.constant" title="Permalink to this headline">#</a></h2>
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.smoothkeyframes.constant" title="Permalink to this heading">#</a></h2>
 <p>Smooth keyframes constants.</p>
 </section>
 </section>
@@ -480,8 +480,18 @@ smoothing, and is slower to compute.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.smoothkeyframes</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.smoothkeyframes.tool">Tools</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.smoothkeyframes.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.smoothkeyframes.tool">Tools</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.smoothkeyframes.tool.smooth_selected_keyframes"><code class="docutils literal notranslate"><span class="pre">smooth_selected_keyframes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.smoothkeyframes.tool.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.smoothkeyframes.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.smoothkeyframes.lib.calculate_chunks"><code class="docutils literal notranslate"><span class="pre">calculate_chunks()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.smoothkeyframes.lib.create_first_last_keyframe_animCurve"><code class="docutils literal notranslate"><span class="pre">create_first_last_keyframe_animCurve()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.smoothkeyframes.lib.blend_curves_with_difference"><code class="docutils literal notranslate"><span class="pre">blend_curves_with_difference()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.smoothkeyframes.lib.smooth_animcurve"><code class="docutils literal notranslate"><span class="pre">smooth_animcurve()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#ui-layout">UI - Layout</a></li>
 <li><a class="reference internal" href="#ui-window">UI - Window</a></li>
 <li><a class="reference internal" href="#module-mmSolver.tools.smoothkeyframes.constant">Constants</a></li>
@@ -499,7 +509,9 @@ smoothing, and is slower to compute.</p></li>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

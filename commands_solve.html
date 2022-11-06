@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Other Commands" href="commands_other.html" /><link rel="prev" title="Commands" href="commands.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>Solve Commands - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,23 +325,17 @@
         </div>
         <article role="main">
           <section id="solve-commands">
-<h1>Solve Commands<a class="headerlink" href="#solve-commands" title="Permalink to this headline">#</a></h1>
+<h1>Solve Commands<a class="headerlink" href="#solve-commands" title="Permalink to this heading">#</a></h1>
 <section id="mmsolver-command">
-<h2><code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> Command<a class="headerlink" href="#mmsolver-command" title="Permalink to this headline">#</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> Command<a class="headerlink" href="#mmsolver-command" title="Permalink to this heading">#</a></h2>
 <p>The command named <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> is the primary command used to perform a
 solve.</p>
 <section id="flags">
-<h3>Flags<a class="headerlink" href="#flags" title="Permalink to this headline">#</a></h3>
+<h3>Flags<a class="headerlink" href="#flags" title="Permalink to this heading">#</a></h3>
 <p>The command can be run in both MEL and Python.</p>
 <p>Here is a table of command flags, as currently specified in the command.</p>
 <div class="table-wrapper docutils container">
 <table class="docutils align-default">
-<colgroup>
-<col style="width: 16%" />
-<col style="width: 28%" />
-<col style="width: 47%" />
-<col style="width: 10%" />
-</colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Flag</p></th>
 <th class="head"><p>Type</p></th>
@@ -440,13 +434,13 @@ solve.</p>
 </div>
 </section>
 <section id="return">
-<h3>Return<a class="headerlink" href="#return" title="Permalink to this headline">#</a></h3>
+<h3>Return<a class="headerlink" href="#return" title="Permalink to this heading">#</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> command will return a list of strings.</p>
 <p>The list of strings has a specific structure and stores all the data
 from the core solver engines, so the user can do whatever they wish to.</p>
 </section>
 <section id="example">
-<h3>Example<a class="headerlink" href="#example" title="Permalink to this headline">#</a></h3>
+<h3>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h3>
 <p>Python Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">maya</span><span class="o">.</span><span class="n">cmds</span><span class="o">.</span><span class="n">mmSolver</span><span class="p">(</span>
     <span class="n">camera</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;camera1&#39;</span><span class="p">,</span> <span class="s1">&#39;cameraShape1&#39;</span><span class="p">),</span>
@@ -483,7 +477,7 @@ from the core solver engines, so the user can do whatever they wish to.</p>
 </section>
 </section>
 <section id="mmsolvertype-command">
-<h2><code class="docutils literal notranslate"><span class="pre">mmSolverType</span></code> Command<a class="headerlink" href="#mmsolvertype-command" title="Permalink to this headline">#</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">mmSolverType</span></code> Command<a class="headerlink" href="#mmsolvertype-command" title="Permalink to this heading">#</a></h2>
 <p><cite>mmSolverType</cite> is used to query the current plug-in’s available
 solvers.</p>
 <p>This tool is commonly used to dynamically query for the different
@@ -497,19 +491,19 @@ this.</p>
 </div>
 </section>
 <section id="mmsolveraffects-command">
-<h2><code class="docutils literal notranslate"><span class="pre">mmSolverAffects</span></code> Command<a class="headerlink" href="#mmsolveraffects-command" title="Permalink to this headline">#</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">mmSolverAffects</span></code> Command<a class="headerlink" href="#mmsolveraffects-command" title="Permalink to this heading">#</a></h2>
 <p><em>To be written.</em></p>
 </section>
 <section id="mmsolverscenegraph-command">
-<h2><code class="docutils literal notranslate"><span class="pre">mmSolverSceneGraph</span></code> Command<a class="headerlink" href="#mmsolverscenegraph-command" title="Permalink to this headline">#</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">mmSolverSceneGraph</span></code> Command<a class="headerlink" href="#mmsolverscenegraph-command" title="Permalink to this heading">#</a></h2>
 <p><em>To be written.</em></p>
 </section>
 <section id="mmcamerarelativepose-command">
-<h2><code class="docutils literal notranslate"><span class="pre">mmCameraRelativePose</span></code> Command<a class="headerlink" href="#mmcamerarelativepose-command" title="Permalink to this headline">#</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">mmCameraRelativePose</span></code> Command<a class="headerlink" href="#mmcamerarelativepose-command" title="Permalink to this heading">#</a></h2>
 <p><em>To be written.</em></p>
 </section>
 <section id="mmcameraposefrompoints-command">
-<h2><code class="docutils literal notranslate"><span class="pre">mmCameraPoseFromPoints</span></code> Command<a class="headerlink" href="#mmcameraposefrompoints-command" title="Permalink to this headline">#</a></h2>
+<h2><code class="docutils literal notranslate"><span class="pre">mmCameraPoseFromPoints</span></code> Command<a class="headerlink" href="#mmcameraposefrompoints-command" title="Permalink to this heading">#</a></h2>
 <p><em>To be written.</em></p>
 </section>
 </section>
@@ -597,7 +591,9 @@ this.</p>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.navigaterootframes" href="mmSolver.tools.navigaterootframes.html" /><link rel="prev" title="mmSolver.tools.mmmenu" href="mmSolver.tools.mmmenu.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.mmshelf - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,7 +325,7 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.mmshelf">
-<span id="mmsolver-tools-mmshelf"></span><h1>mmSolver.tools.mmshelf<a class="headerlink" href="#module-mmSolver.tools.mmshelf" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-mmshelf"></span><h1>mmSolver.tools.mmshelf<a class="headerlink" href="#module-mmSolver.tools.mmshelf" title="Permalink to this heading">#</a></h1>
 <p>Create a shelf.</p>
 <p>Shelves are created automatically based on the configuration options.</p>
 <div class="admonition note">
@@ -335,7 +335,7 @@ using a Python function so that users and studios may embed
 mmSolver into already existing shelves.</p>
 </div>
 <section id="module-mmSolver.tools.mmshelf.tool">
-<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.mmshelf.tool" title="Permalink to this headline">#</a></h2>
+<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.mmshelf.tool" title="Permalink to this heading">#</a></h2>
 <p>Build the mmSolver Maya shelf.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.mmshelf.tool.build_shelf">
@@ -354,17 +354,17 @@ with the parent shelf and the items will be created.</p>
 
 </section>
 <section id="module-mmSolver.tools.mmshelf.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.mmshelf.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.mmshelf.lib" title="Permalink to this heading">#</a></h2>
 <p>Supporting functions for building the mmSolver menu.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.mmshelf.lib.activate_shelf_tab">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.mmshelf.lib.</span></span><span class="sig-name descname"><span class="pre">activate_shelf_tab</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shelf_tab_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.mmshelf.lib.activate_shelf_tab" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the Maya shelf to the shelf with ‘shelf_tab_name’ as the name.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>shelf_tab_name</strong> – The shelf name to activate.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
@@ -375,13 +375,13 @@ with the parent shelf and the items will be created.</p>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.mmshelf.lib.</span></span><span class="sig-name descname"><span class="pre">split_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.mmshelf.lib.split_key" title="Permalink to this definition">#</a></dt>
 <dd><p>Split a key into separate name hierarchy, with a ‘/’ character.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – Split this string into a list.</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of keys.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[str, ..]</p>
 </dd>
 </dl>
@@ -392,16 +392,16 @@ with the parent shelf and the items will be created.</p>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.mmshelf.lib.</span></span><span class="sig-name descname"><span class="pre">get_function_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.mmshelf.lib.get_function_definition" title="Permalink to this definition">#</a></dt>
 <dd><p>Look up a function definition in the list of data given.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>key</strong> (<em>str</em>) – String to look up the function definition.</p></li>
 <li><p><strong>data_list</strong> (<em>[</em><em>{..}</em><em>, </em><em>..</em><em>]</em>) – List of dictionary to look up.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Get the value at the key.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str or None</p>
 </dd>
 </dl>
@@ -412,16 +412,16 @@ with the parent shelf and the items will be created.</p>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.mmshelf.lib.</span></span><span class="sig-name descname"><span class="pre">compile_function_definition</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">funcs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.mmshelf.lib.compile_function_definition" title="Permalink to this definition">#</a></dt>
 <dd><p>Find and create a function definition.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>item</strong> (<em>str</em><em> or </em><em>dict</em>) – Item to compile.</p></li>
 <li><p><strong>funcs</strong> (<em>dict</em>) – Function data structures.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The function definition data structure.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict or None</p>
 </dd>
 </dl>
@@ -433,14 +433,14 @@ with the parent shelf and the items will be created.</p>
 <dd><p>Look up a key on the data, preferring the key ending with suffix
 rather than name.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>{str: ..</em><em>, </em><em>..}</em>) – Search into this data structure for a value.</p></li>
 <li><p><strong>name</strong> (<em>str</em>) – Key to look-up.</p></li>
 <li><p><strong>suffix</strong> (<em>str</em>) – Test the key and suffix.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The found value, or None if nothing was found.</p>
 </dd>
 </dl>
@@ -452,17 +452,17 @@ rather than name.</p>
 <dd><p>Convert a list of items and function definitions in configs, to a
 list of command items.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>items</strong> (<em>[</em><em>str</em><em>, </em><em>..</em><em>]</em>) – The item name paths to look up and create.</p></li>
 <li><p><strong>function_defs</strong> (<em>[</em><em>{str: any}</em><em>, </em><em>..</em><em>]</em>) – Function definitions, describing how the item
 will be created and what it will do.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p></p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p>
 </dd>
 </dl>
@@ -473,16 +473,16 @@ will be created and what it will do.</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.mmshelf.lib.</span></span><span class="sig-name descname"><span class="pre">create_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items_to_create</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_parent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.mmshelf.lib.create_items" title="Permalink to this definition">#</a></dt>
 <dd><p>Create shelf items.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>items_to_create</strong> (<em>[</em><em>{}</em><em>, </em><em>..</em><em>]</em>) – List of items to be created.</p></li>
 <li><p><strong>main_parent</strong> (<em>str</em>) – The parent index name.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The created items in a dictionary data structure.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>{str: {}, ..}</p>
 </dd>
 </dl>
@@ -493,7 +493,7 @@ will be created and what it will do.</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.mmshelf.lib.</span></span><span class="sig-name descname"><span class="pre">create_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parents</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func_def</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_first_item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_last_item</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.mmshelf.lib.create_item" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a shelf or menu item with a function definition.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parents</strong> (<em>[</em><em>str</em><em>, </em><em>..</em><em>]</em>) – The list of parent items this item will be created
 under.</p></li>
@@ -502,10 +502,10 @@ under.</p></li>
 <li><p><strong>is_last_item</strong> (<em>bool</em>) – Will this item be the end of the hierarchy?</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of items created.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[{}, ..]</p>
 </dd>
 </dl>
@@ -516,17 +516,17 @@ under.</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.mmshelf.lib.</span></span><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">shelf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">func_config_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shelf_config_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.mmshelf.lib.build" title="Permalink to this definition">#</a></dt>
 <dd><p>Build shelf items with configuration file names.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>shelf</strong> (<em>str</em>) – Maya shelf UI path.</p></li>
 <li><p><strong>func_config_name</strong> (<em>str</em>) – Function configuration file name.</p></li>
 <li><p><strong>shelf_config_name</strong> (<em>str</em>) – Shelf configuration file name.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The Maya shelf UI path.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -534,7 +534,7 @@ under.</p></li>
 
 </section>
 <section id="module-mmSolver.tools.mmshelf.constant">
-<span id="constant"></span><h2>Constant<a class="headerlink" href="#module-mmSolver.tools.mmshelf.constant" title="Permalink to this headline">#</a></h2>
+<span id="constant"></span><h2>Constant<a class="headerlink" href="#module-mmSolver.tools.mmshelf.constant" title="Permalink to this heading">#</a></h2>
 <p>mmSolver shelf constant values.</p>
 </section>
 </section>
@@ -597,8 +597,23 @@ under.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.mmshelf</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.mmshelf.tool">Tool</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.mmshelf.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.mmshelf.tool">Tool</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.mmshelf.tool.build_shelf"><code class="docutils literal notranslate"><span class="pre">build_shelf()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.mmshelf.tool.build_minimal_shelf_items"><code class="docutils literal notranslate"><span class="pre">build_minimal_shelf_items()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.mmshelf.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.mmshelf.lib.activate_shelf_tab"><code class="docutils literal notranslate"><span class="pre">activate_shelf_tab()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.mmshelf.lib.split_key"><code class="docutils literal notranslate"><span class="pre">split_key()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.mmshelf.lib.get_function_definition"><code class="docutils literal notranslate"><span class="pre">get_function_definition()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.mmshelf.lib.compile_function_definition"><code class="docutils literal notranslate"><span class="pre">compile_function_definition()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.mmshelf.lib.lookup_value"><code class="docutils literal notranslate"><span class="pre">lookup_value()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.mmshelf.lib.compile_items"><code class="docutils literal notranslate"><span class="pre">compile_items()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.mmshelf.lib.create_items"><code class="docutils literal notranslate"><span class="pre">create_items()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.mmshelf.lib.create_item"><code class="docutils literal notranslate"><span class="pre">create_item()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.mmshelf.lib.build"><code class="docutils literal notranslate"><span class="pre">build()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-mmSolver.tools.mmshelf.constant">Constant</a></li>
 </ul>
 </li>
@@ -614,7 +629,9 @@ under.</p></li>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

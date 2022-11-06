@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.undoredoscene" href="mmSolver.tools.undoredoscene.html" /><link rel="prev" title="mmSolver.tools.togglemarkerlock" href="mmSolver.tools.togglemarkerlock.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.triangulatebundle - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,10 +325,10 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.triangulatebundle">
-<span id="mmsolver-tools-triangulatebundle"></span><h1>mmSolver.tools.triangulatebundle<a class="headerlink" href="#module-mmSolver.tools.triangulatebundle" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-triangulatebundle"></span><h1>mmSolver.tools.triangulatebundle<a class="headerlink" href="#module-mmSolver.tools.triangulatebundle" title="Permalink to this heading">#</a></h1>
 <p>Calculate a 3D position of a bundle, based on the camera and 2D marker.</p>
 <section id="module-mmSolver.tools.triangulatebundle.tool">
-<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.triangulatebundle.tool" title="Permalink to this headline">#</a></h2>
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.triangulatebundle.tool" title="Permalink to this heading">#</a></h2>
 <p>Triangulate a 3D Bundle from a 2D Marker.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.triangulatebundle.tool.main">
@@ -344,7 +344,7 @@
 
 </section>
 <section id="module-mmSolver.tools.triangulatebundle.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.triangulatebundle.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.triangulatebundle.lib" title="Permalink to this heading">#</a></h2>
 <p>Position Bundle under the Marker, using multiple frames.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.triangulatebundle.lib.triangulate_bundle">
@@ -353,7 +353,7 @@
 <p>Deprecated: Please use ‘mmSolver.api.triangulate_bundle()’
 instead.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>bnd</strong> (<a class="reference internal" href="mmSolver.api.html#mmSolver.api.Bundle" title="mmSolver.api.Bundle"><em>Bundle</em></a>) – Bundle to be triangulated.</p></li>
 <li><p><strong>relock</strong> (<em>bool</em><em> or </em><em>None</em>) – If True any bundle translate attributes will be
@@ -368,13 +368,13 @@ documentation doesn’t really explain the units. The default
 value (if not given) is 1.0.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>True if the bundle successfully triangulated, False if
 the bundle could not accurately be triangulated. For example
 if the bundle was computed to behind the camera this would be
 considered a failure.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
@@ -441,8 +441,14 @@ considered a failure.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.triangulatebundle</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.triangulatebundle.tool">Tools</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.triangulatebundle.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.triangulatebundle.tool">Tools</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.triangulatebundle.tool.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.triangulatebundle.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.triangulatebundle.lib.triangulate_bundle"><code class="docutils literal notranslate"><span class="pre">triangulate_bundle()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -457,7 +463,9 @@ considered a failure.</p>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

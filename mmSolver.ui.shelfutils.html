@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.ui.uimodels" href="mmSolver.ui.uimodels.html" /><link rel="prev" title="mmSolver.ui.nodes" href="mmSolver.ui.nodes.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.ui.shelfutils - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -318,24 +318,24 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
           <section id="module-mmSolver.ui.shelfutils">
-<span id="mmsolver-ui-shelfutils"></span><h1>mmSolver.ui.shelfutils<a class="headerlink" href="#module-mmSolver.ui.shelfutils" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-ui-shelfutils"></span><h1>mmSolver.ui.shelfutils<a class="headerlink" href="#module-mmSolver.ui.shelfutils" title="Permalink to this heading">#</a></h1>
 <p>Functions to create Maya shelves and buttons.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.ui.shelfutils.get_shelves_parent">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.ui.shelfutils.</span></span><span class="sig-name descname"><span class="pre">get_shelves_parent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.get_shelves_parent" title="Permalink to this definition">#</a></dt>
 <dd><p>Get Maya UI path to the parent of all shelves in Maya.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Maya UI path of shelf parent layout.</p>
 </dd>
-<dt class="field-even">Return type</dt>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>str</p>
 </dd>
 </dl>
@@ -348,7 +348,7 @@
 <p>If a shelf with ‘name’ is already exists, the exising shelf will
 be deleted, and re-created under the ‘parent’ argument given.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parent</strong> (<em>str</em>) – What layout will this shelf be placed under?</p></li>
 <li><p><strong>name</strong> (<em>str</em>) – Name (label) of the shelf displayed to the user.
@@ -356,10 +356,10 @@ The value should only contain characters A-Z
 (or a-z) and underscores ‘_’.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Shelf UI path, or None if cannot be found.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str or None</p>
 </dd>
 </dl>
@@ -370,7 +370,7 @@ The value should only contain characters A-Z
 <span class="sig-prename descclassname"><span class="pre">mmSolver.ui.shelfutils.</span></span><span class="sig-name descname"><span class="pre">create_shelf_button</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tooltip</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">icon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cmdLanguage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.create_shelf_button" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a shelf button.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>parent</strong> (<em>str</em>) – What should this control be placed under?</p></li>
 <li><p><strong>name</strong> (<em>str</em>) – Name (label) of the shelf button. Should be under
@@ -385,10 +385,10 @@ pressed.</p></li>
 or ‘mel’?</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Maya button UI control path.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -399,13 +399,13 @@ or ‘mel’?</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.ui.shelfutils.</span></span><span class="sig-name descname"><span class="pre">create_shelf_separator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.shelfutils.create_shelf_separator" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a shelf button separator.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>parent</strong> (<em>str</em>) – What should this control be placed under?</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Maya separator UI control path.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -468,8 +468,32 @@ or ‘mel’?</p></li>
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">mmSolver.ui.shelfutils</a><ul>
+<li><a class="reference internal" href="#mmSolver.ui.shelfutils.get_shelves_parent"><code class="docutils literal notranslate"><span class="pre">get_shelves_parent()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.shelfutils.create_shelf"><code class="docutils literal notranslate"><span class="pre">create_shelf()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.shelfutils.create_shelf_button"><code class="docutils literal notranslate"><span class="pre">create_shelf_button()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.shelfutils.create_shelf_separator"><code class="docutils literal notranslate"><span class="pre">create_shelf_separator()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.shelfutils.create_popup_menu"><code class="docutils literal notranslate"><span class="pre">create_popup_menu()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.shelfutils.create_menu_item"><code class="docutils literal notranslate"><span class="pre">create_menu_item()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -477,7 +501,9 @@ or ‘mel’?</p></li>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

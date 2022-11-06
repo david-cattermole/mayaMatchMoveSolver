@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.markerbundlerenamewithmetadata" href="mmSolver.tools.markerbundlerenamewithmetadata.html" /><link rel="prev" title="mmSolver.tools.loadmarker" href="mmSolver.tools.loadmarker.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.markerbundlerename - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,9 +325,9 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.markerbundlerename">
-<span id="mmsolver-tools-markerbundlerename"></span><h1>mmSolver.tools.markerbundlerename<a class="headerlink" href="#module-mmSolver.tools.markerbundlerename" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-markerbundlerename"></span><h1>mmSolver.tools.markerbundlerename<a class="headerlink" href="#module-mmSolver.tools.markerbundlerename" title="Permalink to this heading">#</a></h1>
 <section id="module-mmSolver.tools.markerbundlerename.tool">
-<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.markerbundlerename.tool" title="Permalink to this headline">#</a></h2>
+<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.markerbundlerename.tool" title="Permalink to this heading">#</a></h2>
 <p>This tool renames selected markers and bundles (and the connected nodes).</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.markerbundlerename.tool.main">
@@ -337,14 +337,14 @@
 
 </section>
 <section id="module-mmSolver.tools.markerbundlerename.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.markerbundlerename.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.markerbundlerename.lib" title="Permalink to this heading">#</a></h2>
 <p>This file holds all the helpful functions for markerbundlerename</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.markerbundlerename.lib.prompt_for_new_node_name">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.markerbundlerename.lib.</span></span><span class="sig-name descname"><span class="pre">prompt_for_new_node_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.markerbundlerename.lib.prompt_for_new_node_name" title="Permalink to this definition">#</a></dt>
 <dd><p>Ask the user for a new node name.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>title</strong> (<em>str</em>) – Dialog box window title.</p></li>
 <li><p><strong>message</strong> (<em>str</em>) – Read-only text to show the user, for making a
@@ -353,10 +353,10 @@ decision.</p></li>
 point.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>New node name, or None if user cancelled.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str or None</p>
 </dd>
 </dl>
@@ -367,7 +367,7 @@ point.</p></li>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.markerbundlerename.lib.</span></span><span class="sig-name descname"><span class="pre">rename_markers_and_bundles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mkr_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bnd_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bnd_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">number_format</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_suffix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bnd_suffix</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.markerbundlerename.lib.rename_markers_and_bundles" title="Permalink to this definition">#</a></dt>
 <dd><p>Rename the given marker and bundle nodes.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mkr_nodes</strong> (<em>[</em><em>str</em><em>, </em><em>..</em><em>]</em>) – Marker nodes to rename.</p></li>
 <li><p><strong>bnd_nodes</strong> (<em>[</em><em>str</em><em>, </em><em>..</em><em>]</em>) – Bundle nodes to rename.</p></li>
@@ -378,10 +378,10 @@ point.</p></li>
 <li><p><strong>bnd_suffix</strong> (<em>str</em>) – Set the bundle suffix name.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Nodes that have been renamed.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[str, ..]</p>
 </dd>
 </dl>
@@ -389,7 +389,7 @@ point.</p></li>
 
 </section>
 <section id="module-mmSolver.tools.markerbundlerename.constant">
-<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.markerbundlerename.constant" title="Permalink to this headline">#</a></h2>
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.markerbundlerename.constant" title="Permalink to this heading">#</a></h2>
 <p>This file holds all the constants for markerbundlerename tool.</p>
 </section>
 </section>
@@ -452,8 +452,15 @@ point.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.markerbundlerename</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.markerbundlerename.tool">Tools</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.markerbundlerename.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.markerbundlerename.tool">Tools</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.markerbundlerename.tool.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.markerbundlerename.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.markerbundlerename.lib.prompt_for_new_node_name"><code class="docutils literal notranslate"><span class="pre">prompt_for_new_node_name()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.markerbundlerename.lib.rename_markers_and_bundles"><code class="docutils literal notranslate"><span class="pre">rename_markers_and_bundles()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-mmSolver.tools.markerbundlerename.constant">Constants</a></li>
 </ul>
 </li>
@@ -469,7 +476,9 @@ point.</p></li>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.ui.base_maya_window" href="mmSolver.ui.base_maya_window.html" /><link rel="prev" title="mmSolver.logger" href="mmSolver.logger.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.ui - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,17 +325,62 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.ui">
-<span id="mmsolver-ui"></span><h1>mmSolver.ui<a class="headerlink" href="#module-mmSolver.ui" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-ui"></span><h1>mmSolver.ui<a class="headerlink" href="#module-mmSolver.ui" title="Permalink to this heading">#</a></h1>
 <p>UIs for the mmSolver project are defined here.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.base_maya_window.html">mmSolver.ui.base_maya_window</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.converttypes.html">mmSolver.ui.converttypes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.commonmenus.html">mmSolver.ui.commonmenus</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.nodes.html">mmSolver.ui.nodes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.shelfutils.html">mmSolver.ui.shelfutils</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.uimodels.html">mmSolver.ui.uimodels</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.uiutils.html">mmSolver.ui.uiutils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.converttypes.html">mmSolver.ui.converttypes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.converttypes.html#mmSolver.ui.converttypes.stringToStrategy"><code class="docutils literal notranslate"><span class="pre">stringToStrategy()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.converttypes.html#mmSolver.ui.converttypes.stringToAttrFilter"><code class="docutils literal notranslate"><span class="pre">stringToAttrFilter()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.converttypes.html#mmSolver.ui.converttypes.booleanToCheckState"><code class="docutils literal notranslate"><span class="pre">booleanToCheckState()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.converttypes.html#mmSolver.ui.converttypes.checkStateToBoolean"><code class="docutils literal notranslate"><span class="pre">checkStateToBoolean()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.commonmenus.html">mmSolver.ui.commonmenus</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.commonmenus.html#mmSolver.ui.commonmenus.create_edit_menu_items"><code class="docutils literal notranslate"><span class="pre">create_edit_menu_items()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.commonmenus.html#mmSolver.ui.commonmenus.create_help_menu_items"><code class="docutils literal notranslate"><span class="pre">create_help_menu_items()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.nodes.html">mmSolver.ui.nodes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.nodes.html#mmSolver.ui.nodes.get_nodes_recursively"><code class="docutils literal notranslate"><span class="pre">get_nodes_recursively()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.nodes.html#mmSolver.ui.nodes.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.shelfutils.html">mmSolver.ui.shelfutils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.shelfutils.html#mmSolver.ui.shelfutils.get_shelves_parent"><code class="docutils literal notranslate"><span class="pre">get_shelves_parent()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.shelfutils.html#mmSolver.ui.shelfutils.create_shelf"><code class="docutils literal notranslate"><span class="pre">create_shelf()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.shelfutils.html#mmSolver.ui.shelfutils.create_shelf_button"><code class="docutils literal notranslate"><span class="pre">create_shelf_button()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.shelfutils.html#mmSolver.ui.shelfutils.create_shelf_separator"><code class="docutils literal notranslate"><span class="pre">create_shelf_separator()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.shelfutils.html#mmSolver.ui.shelfutils.create_popup_menu"><code class="docutils literal notranslate"><span class="pre">create_popup_menu()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.shelfutils.html#mmSolver.ui.shelfutils.create_menu_item"><code class="docutils literal notranslate"><span class="pre">create_menu_item()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.uimodels.html">mmSolver.ui.uimodels</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uimodels.html#mmSolver.ui.uimodels.getNameFromDict"><code class="docutils literal notranslate"><span class="pre">getNameFromDict()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uimodels.html#mmSolver.ui.uimodels.ItemModel"><code class="docutils literal notranslate"><span class="pre">ItemModel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uimodels.html#mmSolver.ui.uimodels.TableModel"><code class="docutils literal notranslate"><span class="pre">TableModel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uimodels.html#mmSolver.ui.uimodels.StringDataListModel"><code class="docutils literal notranslate"><span class="pre">StringDataListModel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uimodels.html#mmSolver.ui.uimodels.ComboBoxDelegate"><code class="docutils literal notranslate"><span class="pre">ComboBoxDelegate</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uimodels.html#id0"><code class="docutils literal notranslate"><span class="pre">ItemModel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uimodels.html#id28"><code class="docutils literal notranslate"><span class="pre">TableModel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uimodels.html#id51"><code class="docutils literal notranslate"><span class="pre">StringDataListModel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uimodels.html#id61"><code class="docutils literal notranslate"><span class="pre">ComboBoxDelegate</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="mmSolver.ui.uiutils.html">mmSolver.ui.uiutils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uiutils.html#mmSolver.ui.uiutils.getHostApplication"><code class="docutils literal notranslate"><span class="pre">getHostApplication()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uiutils.html#mmSolver.ui.uiutils.getMayaMainWindow"><code class="docutils literal notranslate"><span class="pre">getMayaMainWindow()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uiutils.html#mmSolver.ui.uiutils.findControlMayaWidget"><code class="docutils literal notranslate"><span class="pre">findControlMayaWidget()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uiutils.html#mmSolver.ui.uiutils.isValidQtObject"><code class="docutils literal notranslate"><span class="pre">isValidQtObject()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uiutils.html#mmSolver.ui.uiutils.getParent"><code class="docutils literal notranslate"><span class="pre">getParent()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uiutils.html#mmSolver.ui.uiutils.getBaseWindow"><code class="docutils literal notranslate"><span class="pre">getBaseWindow()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uiutils.html#mmSolver.ui.uiutils.getFont"><code class="docutils literal notranslate"><span class="pre">getFont()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uiutils.html#mmSolver.ui.uiutils.getIcon"><code class="docutils literal notranslate"><span class="pre">getIcon()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uiutils.html#mmSolver.ui.uiutils.setWindowWidthHeight"><code class="docutils literal notranslate"><span class="pre">setWindowWidthHeight()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.ui.uiutils.html#mmSolver.ui.uiutils.QtInfoMixin"><code class="docutils literal notranslate"><span class="pre">QtInfoMixin</span></code></a></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -394,7 +439,9 @@
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

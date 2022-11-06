@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.reparent2" href="mmSolver.tools.reparent2.html" /><link rel="prev" title="mmSolver.tools.removesolvernodes" href="mmSolver.tools.removesolvernodes.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.reparent - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,10 +325,10 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.reparent">
-<span id="mmsolver-tools-reparent"></span><h1>mmSolver.tools.reparent<a class="headerlink" href="#module-mmSolver.tools.reparent" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-reparent"></span><h1>mmSolver.tools.reparent<a class="headerlink" href="#module-mmSolver.tools.reparent" title="Permalink to this heading">#</a></h1>
 <p>Re-parent transform node to a new parent, across time.</p>
 <section id="module-mmSolver.tools.reparent.tool">
-<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.reparent.tool" title="Permalink to this headline">#</a></h2>
+<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.reparent.tool" title="Permalink to this heading">#</a></h2>
 <p>Re-parent transform node to a new parent, across time.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.reparent.tool.reparent_under_node">
@@ -344,14 +344,14 @@
 
 </section>
 <section id="module-mmSolver.tools.reparent.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.reparent.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.reparent.lib" title="Permalink to this heading">#</a></h2>
 <p>Re-parent transform node to a new parent, across time.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.reparent.lib.reparent">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.reparent.lib.</span></span><span class="sig-name descname"><span class="pre">reparent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">children</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sparse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_static_anim_curves</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.reparent.lib.reparent" title="Permalink to this definition">#</a></dt>
 <dd><p>Reparent the children under the given parent.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>children</strong> (<em>[</em><a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em>, </em><em>..</em><em>]</em>) – List of child nodes to be modified.</p></li>
 <li><p><strong>parent</strong> (<a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode"><em>TransformNode</em></a><em> or </em><em>None</em>) – The new parent node for children, or None means
@@ -362,12 +362,12 @@ un-parent.</p></li>
 have the same values.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of ‘children’ TransformNodes modified, will not
 contain child nodes if the child is already parented under
 ‘parent’.</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>[<a class="reference internal" href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode" title="mmSolver.utils.transform.TransformNode">TransformNode</a>, ..]</p>
 </dd>
 </dl>
@@ -375,7 +375,7 @@ contain child nodes if the child is already parented under
 
 </section>
 <section id="module-mmSolver.tools.reparent.keytimeutils">
-<span id="key-time-utilities"></span><h2>Key-Time Utilities<a class="headerlink" href="#module-mmSolver.tools.reparent.keytimeutils" title="Permalink to this headline">#</a></h2>
+<span id="key-time-utilities"></span><h2>Key-Time Utilities<a class="headerlink" href="#module-mmSolver.tools.reparent.keytimeutils" title="Permalink to this heading">#</a></h2>
 <p>Keyframe time querying utilities.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="mmSolver.tools.reparent.keytimeutils.KeyframeTimes">
@@ -470,9 +470,26 @@ contain child nodes if the child is already parented under
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.reparent</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.reparent.tool">Tool</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.reparent.lib">Library</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.reparent.keytimeutils">Key-Time Utilities</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.reparent.tool">Tool</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.reparent.tool.reparent_under_node"><code class="docutils literal notranslate"><span class="pre">reparent_under_node()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.reparent.tool.unparent_to_world"><code class="docutils literal notranslate"><span class="pre">unparent_to_world()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.reparent.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.reparent.lib.reparent"><code class="docutils literal notranslate"><span class="pre">reparent()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.reparent.keytimeutils">Key-Time Utilities</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.reparent.keytimeutils.KeyframeTimes"><code class="docutils literal notranslate"><span class="pre">KeyframeTimes</span></code></a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.reparent.keytimeutils.KeyframeTimes.add_node_attrs"><code class="docutils literal notranslate"><span class="pre">KeyframeTimes.add_node_attrs()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.reparent.keytimeutils.KeyframeTimes.get_nodes"><code class="docutils literal notranslate"><span class="pre">KeyframeTimes.get_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.reparent.keytimeutils.KeyframeTimes.get_frame_range_for_node"><code class="docutils literal notranslate"><span class="pre">KeyframeTimes.get_frame_range_for_node()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.reparent.keytimeutils.KeyframeTimes.sum_frame_range_for_nodes"><code class="docutils literal notranslate"><span class="pre">KeyframeTimes.sum_frame_range_for_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.reparent.keytimeutils.KeyframeTimes.get_times"><code class="docutils literal notranslate"><span class="pre">KeyframeTimes.get_times()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -487,7 +504,9 @@ contain child nodes if the child is already parented under
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

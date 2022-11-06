@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.duplicatemarker" href="mmSolver.tools.duplicatemarker.html" /><link rel="prev" title="mmSolver.tools.createskydome" href="mmSolver.tools.createskydome.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.tools.deformmarker - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -325,17 +325,17 @@
         </div>
         <article role="main">
           <section id="module-mmSolver.tools.deformmarker">
-<span id="mmsolver-tools-deformmarker"></span><h1>mmSolver.tools.deformmarker<a class="headerlink" href="#module-mmSolver.tools.deformmarker" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-tools-deformmarker"></span><h1>mmSolver.tools.deformmarker<a class="headerlink" href="#module-mmSolver.tools.deformmarker" title="Permalink to this heading">#</a></h1>
 <p>Deform Marker tool; offset a Marker animation with sparse keyframes.</p>
 <section id="module-mmSolver.tools.deformmarker.tool">
-<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.deformmarker.tool" title="Permalink to this headline">#</a></h2>
+<span id="tool"></span><h2>Tool<a class="headerlink" href="#module-mmSolver.tools.deformmarker.tool" title="Permalink to this heading">#</a></h2>
 <p>This tool creates anim layer override to create offset for markers</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.deformmarker.tool.create_offset_layer">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.deformmarker.tool.</span></span><span class="sig-name descname"><span class="pre">create_offset_layer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.deformmarker.tool.create_offset_layer" title="Permalink to this definition">#</a></dt>
 <dd><p>Creates anim layer for the selected markers.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
 </dd>
 </dl>
@@ -346,7 +346,7 @@
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.deformmarker.tool.</span></span><span class="sig-name descname"><span class="pre">bake_offset</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.deformmarker.tool.bake_offset" title="Permalink to this definition">#</a></dt>
 <dd><p>Bakes offset for the selected markers.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
 </dd>
 </dl>
@@ -357,7 +357,7 @@
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.deformmarker.tool.</span></span><span class="sig-name descname"><span class="pre">remove_layer_override</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.deformmarker.tool.remove_layer_override" title="Permalink to this definition">#</a></dt>
 <dd><p>Removed markers layer override.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
 </dd>
 </dl>
@@ -365,23 +365,23 @@
 
 </section>
 <section id="module-mmSolver.tools.deformmarker.lib">
-<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.deformmarker.lib" title="Permalink to this headline">#</a></h2>
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.deformmarker.lib" title="Permalink to this heading">#</a></h2>
 <p>This file contains all the lib function to help deformmarker tool</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.deformmarker.lib.is_in_layer">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.deformmarker.lib.</span></span><span class="sig-name descname"><span class="pre">is_in_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_layer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.deformmarker.lib.is_in_layer" title="Permalink to this definition">#</a></dt>
 <dd><p>Checking if given attr is in anim layer.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>attr</strong> (<em>str</em>) – Attribute</p></li>
 <li><p><strong>anim_layer</strong> (<em>str</em>) – anim layer name</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>boolean</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
@@ -392,16 +392,16 @@
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.deformmarker.lib.</span></span><span class="sig-name descname"><span class="pre">get_attr_blend_plugs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_layer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.deformmarker.lib.get_attr_blend_plugs" title="Permalink to this definition">#</a></dt>
 <dd><p>Checking if given attr is in anim layer</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>attr</strong> (<em>str</em>) – Attribute</p></li>
 <li><p><strong>anim_layer</strong> (<em>str</em>) – anim layer name</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Attr inputs plugs</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
@@ -412,13 +412,13 @@
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.deformmarker.lib.</span></span><span class="sig-name descname"><span class="pre">get_min_and_max_from_plugs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">plug</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.deformmarker.lib.get_min_and_max_from_plugs" title="Permalink to this definition">#</a></dt>
 <dd><p>Minimum and maximum keyframe for the given plug</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>plug</strong> (<em>str</em>) – anim_layer plug</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>minimum and maximum keyframe</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>int, int</p>
 </dd>
 </dl>
@@ -429,7 +429,7 @@
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.deformmarker.lib.</span></span><span class="sig-name descname"><span class="pre">set_attr_value_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_frame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.deformmarker.lib.set_attr_value_array" title="Permalink to this definition">#</a></dt>
 <dd><p>Sets value for a attribute for given frame range</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>attr</strong> (<em>str</em>) – Attribute</p></li>
 <li><p><strong>new_array</strong> (<em>list</em>) – array with values</p></li>
@@ -437,7 +437,7 @@
 <li><p><strong>last_frame</strong> (<em>int</em>) – End frame</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
@@ -448,13 +448,13 @@
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.deformmarker.lib.</span></span><span class="sig-name descname"><span class="pre">is_key_framed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.deformmarker.lib.is_key_framed" title="Permalink to this definition">#</a></dt>
 <dd><p>Querying if any of the given attribute is keyed.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>attrs</strong> (<em>list</em>) – Attributes</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Boolean</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
 </dd>
 </dl>
@@ -466,13 +466,13 @@
 <dd><p>Finds whether given layer name is in the scene, if not then creates
 new anim layer with given name.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>anim_layer</strong> (<em>str</em>) – Anim layer name</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Anim Layer</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
 </dd>
 </dl>
@@ -483,13 +483,13 @@ new anim layer with given name.</p>
 <span class="sig-prename descclassname"><span class="pre">mmSolver.tools.deformmarker.lib.</span></span><span class="sig-name descname"><span class="pre">get_attrs_for_offset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selection</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.deformmarker.lib.get_attrs_for_offset" title="Permalink to this definition">#</a></dt>
 <dd><p>Getting attributes for creating offset.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>selection</strong> (<em>list</em>) – Maya selection</p>
 </dd>
-<dt class="field-even">Returns</dt>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>Offset attributes</p>
 </dd>
-<dt class="field-odd">Return type</dt>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list</p>
 </dd>
 </dl>
@@ -497,7 +497,7 @@ new anim layer with given name.</p>
 
 </section>
 <section id="module-mmSolver.tools.deformmarker.constant">
-<span id="constant"></span><h2>Constant<a class="headerlink" href="#module-mmSolver.tools.deformmarker.constant" title="Permalink to this headline">#</a></h2>
+<span id="constant"></span><h2>Constant<a class="headerlink" href="#module-mmSolver.tools.deformmarker.constant" title="Permalink to this heading">#</a></h2>
 <p>This file contains all the constants for deform marker tool.</p>
 </section>
 </section>
@@ -560,8 +560,22 @@ new anim layer with given name.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">mmSolver.tools.deformmarker</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.deformmarker.tool">Tool</a></li>
-<li><a class="reference internal" href="#module-mmSolver.tools.deformmarker.lib">Library</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.deformmarker.tool">Tool</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.deformmarker.tool.create_offset_layer"><code class="docutils literal notranslate"><span class="pre">create_offset_layer()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.deformmarker.tool.bake_offset"><code class="docutils literal notranslate"><span class="pre">bake_offset()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.deformmarker.tool.remove_layer_override"><code class="docutils literal notranslate"><span class="pre">remove_layer_override()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.deformmarker.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.deformmarker.lib.is_in_layer"><code class="docutils literal notranslate"><span class="pre">is_in_layer()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.deformmarker.lib.get_attr_blend_plugs"><code class="docutils literal notranslate"><span class="pre">get_attr_blend_plugs()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.deformmarker.lib.get_min_and_max_from_plugs"><code class="docutils literal notranslate"><span class="pre">get_min_and_max_from_plugs()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.deformmarker.lib.set_attr_value_array"><code class="docutils literal notranslate"><span class="pre">set_attr_value_array()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.deformmarker.lib.is_key_framed"><code class="docutils literal notranslate"><span class="pre">is_key_framed()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.deformmarker.lib.find_animlayer"><code class="docutils literal notranslate"><span class="pre">find_animlayer()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.deformmarker.lib.get_attrs_for_offset"><code class="docutils literal notranslate"><span class="pre">get_attrs_for_offset()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#module-mmSolver.tools.deformmarker.constant">Constant</a></li>
 </ul>
 </li>
@@ -577,7 +591,9 @@ new anim layer with given name.</p>
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

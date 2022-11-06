@@ -1,11 +1,11 @@
 <!doctype html>
-<html class="no-js">
+<html class="no-js" lang="en">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.ui.shelfutils" href="mmSolver.ui.shelfutils.html" /><link rel="prev" title="mmSolver.ui.commonmenus" href="mmSolver.ui.commonmenus.html" />
 
-    <meta name="generator" content="sphinx-4.5.0, furo 2022.09.29"/>
+    <meta name="generator" content="sphinx-5.3.0, furo 2022.09.29"/>
         <title>mmSolver.ui.nodes - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=d81277517bee4d6b0349d71bb2661d4890b5617c" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -318,14 +318,14 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
           <section id="module-mmSolver.ui.nodes">
-<span id="mmsolver-ui-nodes"></span><h1>mmSolver.ui.nodes<a class="headerlink" href="#module-mmSolver.ui.nodes" title="Permalink to this headline">#</a></h1>
+<span id="mmsolver-ui-nodes"></span><h1>mmSolver.ui.nodes<a class="headerlink" href="#module-mmSolver.ui.nodes" title="Permalink to this heading">#</a></h1>
 <p>Defines a basic node class able to be used for tree data models.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.ui.nodes.get_nodes_recursively">
@@ -490,7 +490,7 @@
 <span class="sig-name descname"><span class="pre">parentTags</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.parentTags" title="Permalink to this definition">#</a></dt>
 <dd><p>Get list of names for all nodes above the current node.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of strs</p>
 </dd>
 </dl>
@@ -501,7 +501,7 @@
 <span class="sig-name descname"><span class="pre">childrenTags</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.childrenTags" title="Permalink to this definition">#</a></dt>
 <dd><p>Get list of names for nodes below the current node.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of strs</p>
 </dd>
 </dl>
@@ -512,7 +512,7 @@
 <span class="sig-name descname"><span class="pre">allTags</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.ui.nodes.Node.allTags" title="Permalink to this definition">#</a></dt>
 <dd><p>Get list of names for nodes above and below the current node.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list of strs</p>
 </dd>
 </dl>
@@ -572,8 +572,63 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">mmSolver.ui.nodes</a><ul>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.get_nodes_recursively"><code class="docutils literal notranslate"><span class="pre">get_nodes_recursively()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a><ul>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.name"><code class="docutils literal notranslate"><span class="pre">Node.name()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.setName"><code class="docutils literal notranslate"><span class="pre">Node.setName()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.toolTip"><code class="docutils literal notranslate"><span class="pre">Node.toolTip()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.setToolTip"><code class="docutils literal notranslate"><span class="pre">Node.setToolTip()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.statusTip"><code class="docutils literal notranslate"><span class="pre">Node.statusTip()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.setStatusTip"><code class="docutils literal notranslate"><span class="pre">Node.setStatusTip()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.color"><code class="docutils literal notranslate"><span class="pre">Node.color()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.setColor"><code class="docutils literal notranslate"><span class="pre">Node.setColor()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.data"><code class="docutils literal notranslate"><span class="pre">Node.data()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.setData"><code class="docutils literal notranslate"><span class="pre">Node.setData()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.enabled"><code class="docutils literal notranslate"><span class="pre">Node.enabled()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.setEnabled"><code class="docutils literal notranslate"><span class="pre">Node.setEnabled()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.checkable"><code class="docutils literal notranslate"><span class="pre">Node.checkable()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.setCheckable"><code class="docutils literal notranslate"><span class="pre">Node.setCheckable()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.editable"><code class="docutils literal notranslate"><span class="pre">Node.editable()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.setEditable"><code class="docutils literal notranslate"><span class="pre">Node.setEditable()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.selectable"><code class="docutils literal notranslate"><span class="pre">Node.selectable()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.setSelectable"><code class="docutils literal notranslate"><span class="pre">Node.setSelectable()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.neverHasChildren"><code class="docutils literal notranslate"><span class="pre">Node.neverHasChildren()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.setNeverHasChildren"><code class="docutils literal notranslate"><span class="pre">Node.setNeverHasChildren()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.icon"><code class="docutils literal notranslate"><span class="pre">Node.icon()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.addChild"><code class="docutils literal notranslate"><span class="pre">Node.addChild()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.insertChild"><code class="docutils literal notranslate"><span class="pre">Node.insertChild()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.removeChild"><code class="docutils literal notranslate"><span class="pre">Node.removeChild()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.child"><code class="docutils literal notranslate"><span class="pre">Node.child()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.childCount"><code class="docutils literal notranslate"><span class="pre">Node.childCount()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.children"><code class="docutils literal notranslate"><span class="pre">Node.children()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.parent"><code class="docutils literal notranslate"><span class="pre">Node.parent()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.row"><code class="docutils literal notranslate"><span class="pre">Node.row()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.parentTags"><code class="docutils literal notranslate"><span class="pre">Node.parentTags()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.childrenTags"><code class="docutils literal notranslate"><span class="pre">Node.childrenTags()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.allTags"><code class="docutils literal notranslate"><span class="pre">Node.allTags()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.ui.nodes.Node.allTagsStr"><code class="docutils literal notranslate"><span class="pre">Node.allTagsStr()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>
@@ -581,7 +636,9 @@
 </div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
     <script src="_static/scripts/furo.js"></script>
     </body>
 </html>

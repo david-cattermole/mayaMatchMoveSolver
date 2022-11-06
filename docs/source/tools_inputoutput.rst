@@ -356,15 +356,25 @@ To run the tool, use this Python command:
 
 .. _load-lens-tool-ref:
 
-Load Lens
----------
+Load Lens File On Selected Nodes
+--------------------------------
 
-*To be written*
+Load the attributes of a `Lens` using a ``.nk`` file. Files supporting
+static and animated values is supported.
+
+The ``.nk`` files given to `MM Solver` are expected to be saved with
+the :ref:`Save Lens File <save-lens-tool-ref>` tool or saved with the
+`3DEqualizer Export Nuke Lens Distortion` tool.
 
 Usage:
 
-1) ...
+1) Select `Lens` node.
 
+2) Run tool, a browse dialog UI will be displayed.
+
+3) Browse to a file and press "Open".
+
+   - The file will be read and values will be set on the `Lens` node.
 
 To run the tool, use this Python command:
 

@@ -72,7 +72,6 @@ UV_TRACK_FORMAT_VERSION_PREFERRED = UV_TRACK_FORMAT_VERSION_4
 
 # Do we have support for new features of 3DE tde4 module?
 SUPPORT_PERSISTENT_ID = 'getPointPersistentID' in dir(tde4)
-SUPPORT_CAMERA_FRAME_OFFSET = 'getCameraFrameOffset' in dir(tde4)
 SUPPORT_POINT_WEIGHT_BY_FRAME = 'getPointWeightByFrame' in dir(tde4)
 SUPPORT_CLIPBOARD = 'setClipboardString' in dir(tde4)
 SUPPORT_POINT_VALID_MODE = 'getPointValidMode' in dir(tde4)

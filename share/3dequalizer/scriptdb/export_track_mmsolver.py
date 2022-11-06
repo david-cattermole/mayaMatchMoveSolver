@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Export 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version:  v1.9
+# 3DE4.script.version:  v1.10
 #
 # 3DE4.script.gui:      Main Window::3DE4::File::Export
 # 3DE4.script.gui:      Object Browser::Context Menu Point
@@ -89,7 +89,6 @@ UV_TRACK_FORMAT_VERSION_PREFERRED = UV_TRACK_FORMAT_VERSION_4
 
 # Do we have support for new features of 3DE tde4 module?
 SUPPORT_PERSISTENT_ID = 'getPointPersistentID' in dir(tde4)
-SUPPORT_CAMERA_FRAME_OFFSET = 'getCameraFrameOffset' in dir(tde4)
 SUPPORT_POINT_WEIGHT_BY_FRAME = 'getPointWeightByFrame' in dir(tde4)
 SUPPORT_CLIPBOARD = 'setClipboardString' in dir(tde4)
 SUPPORT_POINT_VALID_MODE = 'getPointValidMode' in dir(tde4)
@@ -131,9 +130,6 @@ def main():
     # widget default values
     start, end, step = tde4.getCameraSequenceAttr(camera)
     start_frame = start
-    # Backwards compatibility with 3DE4 Release 2.
-    if SUPPORT_CAMERA_FRAME_OFFSET is True:
-        start_frame = tde4.getCameraFrameOffset(camera)
     pattern = '*' + EXT
 
     rs_enabled = False

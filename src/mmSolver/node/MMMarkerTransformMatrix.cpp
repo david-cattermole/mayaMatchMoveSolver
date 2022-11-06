@@ -31,6 +31,7 @@
 #include <maya/MTransformationMatrix.h>
 
 // MM Solver
+#include "mmSolver/core/mmmath.h"
 #include "mmSolver/nodeTypeIds.h"
 
 namespace mmsolver {
@@ -55,6 +56,10 @@ void MMMarkerTransformMatrix::setLensModel(std::shared_ptr<LensModel> value) {
 // attributes which are outside of the regular transform attributes to
 // build a new matrix.  This new matrix will be passed back to Maya.
 MMatrix MMMarkerTransformMatrix::asMatrix() const {
+    return MMMarkerTransformMatrix::asMatrix(1.0);
+}
+
+MMatrix MMMarkerTransformMatrix::asMatrix(double percent) const {
     MStatus status;
     // Get the current transform matrix
     MMatrix m = ParentClass::asMatrix();
@@ -73,11 +78,22 @@ MMatrix MMMarkerTransformMatrix::asMatrix() const {
         double temp_out_y = translate.y;
         lensModel->applyModelUndistort(translate.x, translate.y, temp_out_x,
                                        temp_out_y);
-        if (std::isfinite(temp_out_x)) {
-            out_translate.x = temp_out_x;
-        }
-        if (std::isfinite(temp_out_y)) {
-            out_translate.y = temp_out_y;
+        if (percent == 1.0) {
+            if (std::isfinite(temp_out_x)) {
+                out_translate.x = temp_out_x;
+            }
+            if (std::isfinite(temp_out_y)) {
+                out_translate.y = temp_out_y;
+            }
+        } else {
+            if (std::isfinite(temp_out_x)) {
+                out_translate.x =
+                    mmmath::lerp(translate.x, temp_out_x, percent);
+            }
+            if (std::isfinite(temp_out_y)) {
+                out_translate.y =
+                    mmmath::lerp(translate.y, temp_out_y, percent);
+            }
         }
 
         status = tm.setTranslation(out_translate, MSpace::kTransform);
@@ -85,15 +101,6 @@ MMatrix MMMarkerTransformMatrix::asMatrix() const {
     }
 
     return tm.asMatrix();
-}
-
-MMatrix MMMarkerTransformMatrix::asMatrix(double percent) const {
-    MMatrix m = ParentClass::asMatrix(percent);
-
-    // TODO: Calculate and add lens distortion to the translates of
-    // the matrix.
-
-    return m;
 }
 
 }  // namespace mmsolver

@@ -33,7 +33,8 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/constant.py
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
         DESTINATION "${MODULE_FULL_NAME}/python"
         FILES_MATCHING PATTERN "*.py"
-        PATTERN "__pycache__" EXCLUDE)
+        PATTERN "__pycache__" EXCLUDE
+        PATTERN "*mmSolver/constant.py" EXCLUDE)
 
 
 if (MMSOLVER_BUILD_QT_UI)

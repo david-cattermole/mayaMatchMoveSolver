@@ -37,11 +37,26 @@ Run this Python command:
 Subdivide Line
 --------------
 
-*To be written*
+The `Subdivide Line` tool is used to add more 2D points (`Markers`) to
+an existing `Line` to define a straight line in an image with lens
+distortion.
+
+.. note:: To display a straight line select the ``mmLineShape`` shape
+   node and enable `Draw Middle`.
 
 Usage:
 
-1) ...
+1) Select `Line` or `Markers` on a `Line`.
+
+2) Run tool.
+
+   - New `Markers` are created on the `Line` and selected.
+
+3) Re-position the created `Markers` to match a straight line visible
+   in an image plane.
+
+4) Use :ref:`Solver UI <solver-ui-ref>` with `Line Markers` to solve
+   `Lens` distortion attributes.
 
 
 To run the tool, use this Python command:
@@ -149,6 +164,8 @@ Tool Usage
 3) Set markers for lines.
 
 4) Press "update".
+
+5) Repeat steps 3 to 5 until the desired calibration is found.
 
 .. _camera-calibration-limitations-tool-ref:
 

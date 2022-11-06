@@ -354,13 +354,46 @@ command, to toggle back and forth.</p></li>
 </section>
 <section id="set-camera-origin-frame">
 <span id="set-camera-origin-frame-tool-ref"></span><h2>Set Camera Origin Frame<a class="headerlink" href="#set-camera-origin-frame" title="Permalink to this headline">#</a></h2>
-<p><em>To be written</em></p>
+<p>The <cite>Set Camera Origin Frame</cite> tool moves a camera (and world-space
+<cite>Bundles</cite>) to the origin on the current frame, and normalizes the
+scene (Camera and Bundles) scale to a consistent value.</p>
+<p>The tool is instended to be used to provide world-space consistency
+when solving a camera with no known 3D positions.</p>
 <figure class="align-center">
 <a class="reference internal image-reference" href="_images/tools_set_camera_origin_frame.png"><img alt="Node Solver Shelf Icons" src="_images/tools_set_camera_origin_frame.png" style="width: 60%;" /></a>
 </figure>
 <p>Usage:</p>
 <ol class="arabic simple">
-<li><p>…</p></li>
+<li><p>Set current frame to desired ‘line-up frame’.</p>
+<ul class="simple">
+<li><p>The current frame will be used as the “origin frame” - the camera
+transform values will be exactly zero (identity) on this frame.</p></li>
+</ul>
+</li>
+<li><p>Select Camera node.</p>
+<ul class="simple">
+<li><p>Bundles are automatically found from the Camera’s Markers.</p></li>
+</ul>
+</li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>Optionally, open the <cite>Set Camera Origin Frame</cite> UI to set options.</p></li>
+<li><p>Use <cite>Create Group</cite> to create a transform node above the <cite>Camera</cite>
+and <cite>Bundles</cite> automatically.</p></li>
+<li><p>Use <cite>Scene Scale</cite> to adjust the length the <cite>Camera</cite> and <cite>Bundles</cite>
+is scaled to.</p></li>
+</ul>
+</li>
+<li><p>If <cite>Create Group</cite> option was enabled, select created
+<code class="docutils literal notranslate"><span class="pre">_originGroup</span></code> node and translate and rotate camera into desired
+transform (such as a line up matching the horizon line).</p>
+<ul class="simple">
+<li><p>Use the <code class="docutils literal notranslate"><span class="pre">_originGroup</span></code> node scale attributes to increase the
+size of the scene scale.</p></li>
+</ul>
+</li>
+<li><p>Re-solve the camera using the <a class="reference internal" href="tools_solver_ui.html#solver-ui-ref"><span class="std std-ref">Solver UI</span></a>.</p></li>
+<li><p>Repeat steps 1 to 3.</p></li>
 </ol>
 <p>To run the tool, use this Python command:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.setcameraoriginframe.tool</span> <span class="k">as</span> <span class="nn">tool</span>

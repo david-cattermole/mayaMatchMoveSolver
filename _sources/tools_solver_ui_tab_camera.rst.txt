@@ -1,3 +1,5 @@
+.. _camera-solver-tab-heading:
+
 Camera Solver Tab
 =================
 

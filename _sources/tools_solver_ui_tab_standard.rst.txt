@@ -1,3 +1,5 @@
+.. _standard-solver-tab-heading:
+
 Standard Solver Tab
 ===================
 

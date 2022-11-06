@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -318,7 +318,7 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
@@ -337,65 +337,6 @@ Static attributes will not be solved.</p>
 <p>The Basic solver tab contains a stripped-down solver with minimal
 options designed for simple per-frame animated attribute solving.</p>
 <p>For many simple uses the Basic solver is all that is required.</p>
-<section id="frames">
-<h2>Frames<a class="headerlink" href="#frames" title="Permalink to this headline">#</a></h2>
-<p>The Frames option defines the list of frames to be solved.</p>
-<p>Choose one of the options:</p>
-<div class="table-wrapper colwidths-auto docutils container" id="id2">
-<table class="colwidths-auto docutils align-default" id="id2">
-<caption><span class="caption-text">Frames</span><a class="headerlink" href="#id2" title="Permalink to this table">#</a></caption>
-<thead>
-<tr class="row-odd"><th class="head"><p>Option</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Current Frame</p></td>
-<td><p>Use the current Maya frame number to solve.</p></td>
-</tr>
-<tr class="row-odd"><td><p>Timeline (Inner)</p></td>
-<td><p>Use the frame range of the timeline inner bar.</p></td>
-</tr>
-<tr class="row-even"><td><p>Timeline (Outer)</p></td>
-<td><p>Use the frame range of the timeline outer bar.</p></td>
-</tr>
-<tr class="row-odd"><td><p>Custom Frames</p></td>
-<td><p>Manually type the frame numbers to be solved.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<p>The frame numbers can be entered as ‘#-#’ to define a range, or
-‘#,#,#,#’ to define a list of individual frame numbers. Examples are
-‘1,10,20,30,40,50’ or ‘10-20,30,40-50’.</p>
-<p>The ‘by # frames’ option allow skipping the every # frames. For
-example, with a value of ‘by 2 frames’, the every second frame is
-chosen; 1, 3, 5, 7, 9, etc. Using this tool can speed up solving a
-limited number of frames to build confidence in the solver attributes
-currently created, and then reducing this number to ‘1’ to solve each
-frame.</p>
-</section>
-<section id="solver-options">
-<h2>Solver Options<a class="headerlink" href="#solver-options" title="Permalink to this headline">#</a></h2>
-<p>The solver options below are extra options used to change how the
-solver works internally.</p>
-<section id="evaluate-mesh-rivets">
-<h3>Evaluate Mesh Rivets<a class="headerlink" href="#evaluate-mesh-rivets" title="Permalink to this headline">#</a></h3>
-<p>When enabled, <em>Evaluate Mesh Rivets</em> will change the internal
-evaluation method to help solve “complex” node networks (such as Mesh
-Rivets which have cyclical node connection networks).</p>
-<p>Evaluation of “complex” node graphs can significantly impact performance.
-It is recommended to turn this feature <strong>off</strong> unless the Maya scene
-is not evaluating correctly without this feature.</p>
-<p>Mesh Rivets, using the classic <a class="reference external" href="https://www.highend3d.com/maya/script/rivet-button-for-maya">rivet.mel</a> script can be evaluated using
-this feature enabled.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>In mmSolver v0.3.x, this feature was known as <em>Evaluate
-Complex Node Graphs</em>.</p>
-</div>
-</section>
-</section>
 </section>
 
         </article>
@@ -443,31 +384,8 @@ Complex Node Graphs</em>.</p>
         
       </footer>
     </div>
-    <aside class="toc-drawer">
+    <aside class="toc-drawer no-toc">
       
-      
-      <div class="toc-sticky toc-scroll">
-        <div class="toc-title-container">
-          <span class="toc-title">
-            On this page
-          </span>
-        </div>
-        <div class="toc-tree-container">
-          <div class="toc-tree">
-            <ul>
-<li><a class="reference internal" href="#">Basic Solver Tab</a><ul>
-<li><a class="reference internal" href="#frames">Frames</a></li>
-<li><a class="reference internal" href="#solver-options">Solver Options</a><ul>
-<li><a class="reference internal" href="#evaluate-mesh-rivets">Evaluate Mesh Rivets</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-
-          </div>
-        </div>
-      </div>
       
       
     </aside>

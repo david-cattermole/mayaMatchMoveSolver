@@ -415,25 +415,133 @@ but each Solver tab is independent.</p>
 <p>The documentation for each Solver tab is below.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="tools_solver_ui_tab_basic.html">Basic Solver Tab</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_basic.html#frames">Frames</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_basic.html#solver-options">Solver Options</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="tools_solver_ui_tab_standard.html">Standard Solver Tab</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_standard.html#frames">Frames</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_standard.html#user-and-root-frames">User and Root Frames</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_standard.html#solver-options">Solver Options</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="tools_solver_ui_tab_basic.html">Basic Solver Tab</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tools_solver_ui_tab_standard.html">Standard Solver Tab</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tools_solver_ui_tab_camera.html">Camera Solver Tab</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_camera.html#frames">Frames</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_camera.html#user-and-root-frames">User and Root Frames</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_solver_ui_tab_camera.html#solver-options">Solver Options</a></li>
 </ul>
 </li>
 </ul>
 </div>
+<section id="common-solver-options">
+<h3>Common Solver Options<a class="headerlink" href="#common-solver-options" title="Permalink to this headline">#</a></h3>
+<p>The options below are the same on one or many of the Solver tabs.</p>
+<section id="frames">
+<h4>Frames<a class="headerlink" href="#frames" title="Permalink to this headline">#</a></h4>
+<p>The Frames option defines the list of frames to be solved.</p>
+<p>Choose one of the options:</p>
+<div class="table-wrapper colwidths-auto docutils container" id="id4">
+<table class="colwidths-auto docutils align-default" id="id4">
+<caption><span class="caption-text">Frames</span><a class="headerlink" href="#id4" title="Permalink to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Current Frame</p></td>
+<td><p>Use the current Maya frame number to solve.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Timeline (Inner)</p></td>
+<td><p>Use the frame range of the timeline inner bar.</p></td>
+</tr>
+<tr class="row-even"><td><p>Timeline (Outer)</p></td>
+<td><p>Use the frame range of the timeline outer bar.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Custom Frames</p></td>
+<td><p>Manually type the frame numbers to be solved.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The frame numbers can be entered as ‘#-#’ to define a range, or
+‘#,#,#,#’ to define a list of individual frame numbers. Examples are
+‘1,10,20,30,40,50’ or ‘10-20,30,40-50’.</p>
+<p>The ‘by # frames’ option allow skipping the every # frames. For
+example, with a value of ‘by 2 frames’, the every second frame is
+chosen; 1, 3, 5, 7, 9, etc. Using this tool can speed up solving a
+limited number of frames to build confidence in the solver attributes
+currently created, and then reducing this number to ‘1’ to solve each
+frame.</p>
+</section>
+<section id="user-and-root-frames">
+<h4>User and Root Frames<a class="headerlink" href="#user-and-root-frames" title="Permalink to this headline">#</a></h4>
+<p>The <cite>Root Frames</cite> are used to solve static and animated attributes,
+and are therefore not used with the <a class="reference internal" href="tools_solver_ui_tab_basic.html#basic-solver-tab-heading"><span class="std std-ref">Basic Solver Tab</span></a>.  <cite>Root Frames</cite> are chosen manually using
+the <cite>User Frames</cite> field, and automatically using the <cite>Per-Marker</cite> and
+<cite>Span</cite> options.</p>
+<p>Beside the <cite>User Frames</cite> field are buttons for adding, removing and
+changing the current frame to the next/previous <cite>User Frame</cite>. For more
+details on tools to change frame, create or remove <cite>User Frames</cite>, see
+the <a class="reference internal" href="tools_frametools.html#frame-tools-heading"><span class="std std-ref">Frame Tools</span></a>.</p>
+<p>The <cite>Per-Marker</cite> value is used to auto-detect the best frame numbers
+so that each <cite>Marker</cite> is sampled, to accurately triangulate a <cite>Bundle</cite>
+position. The smallest valid frames per-marker is 2.</p>
+<p>The <cite>Span</cite> value makes sure that the largest gap between 2 <cite>Root
+Frames</cite> is at least 10 (or whatever value you use).</p>
+<p>For example, with a <cite>Span</cite> value of 10, <cite>MM Solver</cite> starts with frames
+1 and 95, then subdivides the frames in half choosing a value halfway
+between 1 and 95, 48. Next the same process happens on frames 1 and
+48, and then again on frames 48 and 95, so you get: 1, 25, 48,
+72, 95. The process the continues until the <cite>gap</cite> is at least 10
+frames.</p>
+<p>Therefore the full list of iterations look like this…</p>
+<ul class="simple">
+<li><p>Iteration 1: <code class="docutils literal notranslate"><span class="pre">1,95</span></code></p></li>
+<li><p>Iteration 2: <code class="docutils literal notranslate"><span class="pre">1,48,95</span></code></p></li>
+<li><p>Iteration 3: <code class="docutils literal notranslate"><span class="pre">1,25,48,72,95</span></code></p></li>
+<li><p>Iteration 4: <code class="docutils literal notranslate"><span class="pre">1,13,25,37,48,60,72,84,95</span></code></p></li>
+<li><p>Iteration 5: <code class="docutils literal notranslate"><span class="pre">1,7,13,19,25,31,37,43,48,54,60,66,72,78,84,90,95</span></code></p></li>
+</ul>
+</section>
+<section id="solve-all-at-once">
+<h4>Solve All at Once<a class="headerlink" href="#solve-all-at-once" title="Permalink to this headline">#</a></h4>
+<p><cite>Solve All at Once</cite> will solve all frames in a single solver
+step. This is the most accurate method of solving, because all
+Attributes and Frames are considered when reducing the error, however
+this is much slower.</p>
+</section>
+<section id="solve-only-root-frames">
+<h4>Solve Only Root Frames<a class="headerlink" href="#solve-only-root-frames" title="Permalink to this headline">#</a></h4>
+<p><cite>Solve Only Root Frames</cite> will skip the last solver step when solving
+only animated attributes for the full frame range. As a result only
+<cite>Root Frames</cite> are solved and all other frames will not have keyframes.</p>
+<p>Enable this option when you want to speed up the solver and get
+feedback faster, at the cost of solving each frame. Once you are
+confident your static values are correct you may re-enable this
+option, or solve with the <a class="reference internal" href="tools_solver_ui_tab_basic.html#basic-solver-tab-heading"><span class="std std-ref">Basic Solver Tab</span></a>.</p>
+</section>
+<section id="solve-focal-length">
+<h4>Solve Focal Length<a class="headerlink" href="#solve-focal-length" title="Permalink to this headline">#</a></h4>
+<p>A toggle to allow focal length attributes to be solved. If this value
+is disabled, all camera focal length attributes will be ignored. This
+option is helpful to quickly enable/disable focal length attributes in
+the solver.</p>
+</section>
+<section id="solve-lens-distortion">
+<h4>Solve Lens Distortion<a class="headerlink" href="#solve-lens-distortion" title="Permalink to this headline">#</a></h4>
+<p>A toggle to allow lens distortion attributes to be solved. If this
+value is disabled, all camera lens distortion attributes will be
+ignored. This option is helpful to quickly enable/disable lens
+distortion attributes in the solver.</p>
+</section>
+<section id="evaluate-mesh-rivets">
+<h4>Evaluate Mesh Rivets<a class="headerlink" href="#evaluate-mesh-rivets" title="Permalink to this headline">#</a></h4>
+<p>When enabled, <em>Evaluate Mesh Rivets</em> will change the internal
+evaluation method to help solve “complex” node networks (such as Mesh
+Rivets which have cyclical node connection networks).</p>
+<p>Evaluation of “complex” node graphs can significantly impact performance.
+It is recommended to turn this feature <strong>off</strong> unless the Maya scene
+is not evaluating correctly without this feature.</p>
+<p>Mesh Rivets, using the classic <a class="reference external" href="https://www.highend3d.com/maya/script/rivet-button-for-maya">rivet.mel</a> script can be evaluated using
+this feature enabled.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In mmSolver v0.3.x, this feature was known as <em>Evaluate
+Complex Node Graphs</em>.</p>
+</div>
+</section>
+</section>
 </section>
 <section id="menus">
 <h2>Menus<a class="headerlink" href="#menus" title="Permalink to this headline">#</a></h2>
@@ -444,9 +552,9 @@ but each Solver tab is independent.</p>
 </figure>
 <p>The <code class="docutils literal notranslate"><span class="pre">File</span></code> menu contains features to create and manipulate the
 overall use of the Solver UI, such as Collections.</p>
-<div class="table-wrapper colwidths-auto docutils container" id="id4">
-<table class="colwidths-auto docutils align-default" id="id4">
-<caption><span class="caption-text">File Menu</span><a class="headerlink" href="#id4" title="Permalink to this table">#</a></caption>
+<div class="table-wrapper colwidths-auto docutils container" id="id5">
+<table class="colwidths-auto docutils align-default" id="id5">
+<caption><span class="caption-text">File Menu</span><a class="headerlink" href="#id5" title="Permalink to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
 <th class="head"><p>Description</p></th>
@@ -476,9 +584,9 @@ the Maya Viewport during solves.</p>
 <figure class="align-right">
 <a class="reference internal image-reference" href="_images/tools_solver_ui_menu_view.png"><img alt="View Menu" src="_images/tools_solver_ui_menu_view.png" style="width: 213.0px; height: 155.0px;" /></a>
 </figure>
-<div class="table-wrapper colwidths-auto docutils container" id="id5">
-<table class="colwidths-auto docutils align-default" id="id5">
-<caption><span class="caption-text">View Menu</span><a class="headerlink" href="#id5" title="Permalink to this table">#</a></caption>
+<div class="table-wrapper colwidths-auto docutils container" id="id6">
+<table class="colwidths-auto docutils align-default" id="id6">
+<caption><span class="caption-text">View Menu</span><a class="headerlink" href="#id6" title="Permalink to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
 <th class="head"><p>Description</p></th>
@@ -514,9 +622,9 @@ Editor.</p>
 <figure class="align-right">
 <a class="reference internal image-reference" href="_images/tools_solver_ui_menu_log.png"><img alt="Log Menu" src="_images/tools_solver_ui_menu_log.png" style="width: 139.0px; height: 133.0px;" /></a>
 </figure>
-<div class="table-wrapper colwidths-auto docutils container" id="id6">
-<table class="colwidths-auto docutils align-default" id="id6">
-<caption><span class="caption-text">Log Menu</span><a class="headerlink" href="#id6" title="Permalink to this table">#</a></caption>
+<div class="table-wrapper colwidths-auto docutils container" id="id7">
+<table class="colwidths-auto docutils align-default" id="id7">
+<caption><span class="caption-text">Log Menu</span><a class="headerlink" href="#id7" title="Permalink to this table">#</a></caption>
 <thead>
 <tr class="row-odd"><th class="head"><p>Name</p></th>
 <th class="head"><p>Description</p></th>
@@ -634,7 +742,19 @@ custom buttons to be created.</p>
 <li><a class="reference internal" href="#">Solver UI</a><ul>
 <li><a class="reference internal" href="#input-objects">Input Objects</a></li>
 <li><a class="reference internal" href="#output-attributes">Output Attributes</a></li>
-<li><a class="reference internal" href="#solver-tabs">Solver Tabs</a></li>
+<li><a class="reference internal" href="#solver-tabs">Solver Tabs</a><ul>
+<li><a class="reference internal" href="#common-solver-options">Common Solver Options</a><ul>
+<li><a class="reference internal" href="#frames">Frames</a></li>
+<li><a class="reference internal" href="#user-and-root-frames">User and Root Frames</a></li>
+<li><a class="reference internal" href="#solve-all-at-once">Solve All at Once</a></li>
+<li><a class="reference internal" href="#solve-only-root-frames">Solve Only Root Frames</a></li>
+<li><a class="reference internal" href="#solve-focal-length">Solve Focal Length</a></li>
+<li><a class="reference internal" href="#solve-lens-distortion">Solve Lens Distortion</a></li>
+<li><a class="reference internal" href="#evaluate-mesh-rivets">Evaluate Mesh Rivets</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li><a class="reference internal" href="#menus">Menus</a><ul>
 <li><a class="reference internal" href="#file-menu">File Menu</a></li>
 <li><a class="reference internal" href="#view-menu">View Menu</a></li>

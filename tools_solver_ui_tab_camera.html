@@ -332,36 +332,55 @@
 <p><span class="caption-text">Solver Camera Tab</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p><em>To be written</em>.</p>
-<section id="frames">
-<h2>Frames<a class="headerlink" href="#frames" title="Permalink to this headline">#</a></h2>
-<p><em>To be written</em>.</p>
-</section>
-<section id="user-and-root-frames">
-<h2>User and Root Frames<a class="headerlink" href="#user-and-root-frames" title="Permalink to this headline">#</a></h2>
-<p><em>To be written</em>.</p>
-</section>
+<p>The <cite>Camera Solver</cite> is designed to solve a “free move” Camera using no
+known 3D <cite>Bundle</cite> positions.</p>
+<p>The <cite>Camera Solver</cite> assumes:</p>
+<ul class="simple">
+<li><p>The current <cite>Camera</cite> focal length value is an approximation of the
+focal length used in the solver.</p></li>
+<li><p>The current <cite>Lens</cite> distortion values will be used by the <cite>Camera
+Solver</cite>, or refined if <cite>Lens</cite> attributes are included in the <cite>Output
+Attributes</cite>.</p></li>
+<li><p>If the <cite>Camera</cite> focal length is added to the <cite>Output Attributes</cite>, the
+<cite>Camera</cite> focal length will be refined during <cite>Camera</cite> solving.</p></li>
+<li><p>All <cite>Bundle</cite> attributes are assumed to be static - with no keyframe
+animation.</p></li>
+<li><p>All <cite>Camera</cite> translate and rotate attributes will be animated.</p></li>
+<li><p>The solved <cite>Camera</cite> and <cite>Bundle</cite> nodes share the same parent
+transform values. The <cite>Camera</cite> and <cite>Bundle</cite> world-space values are
+<em>not</em> used - only the attribute values themselves.</p></li>
+</ul>
+<p>To position, scale and orient the solved camera and bundles the
+<a class="reference internal" href="tools_cameratools.html#set-camera-origin-frame-tool-ref"><span class="std std-ref">Set Camera Origin Frame</span></a> tool
+is automatically used. This is intended to provide some world-space
+stability to the <cite>Camera Solver</cite> avoids a random transform each time
+the Camera Solver is run.</p>
+<p>After solving with the <cite>Camera Solver</cite> it is intended to refine the
+solve with more flexibility using the <a class="reference internal" href="tools_solver_ui_tab_standard.html#standard-solver-tab-heading"><span class="std std-ref">Standard Solver</span></a> and <a class="reference internal" href="tools_solver_ui_tab_basic.html#basic-solver-tab-heading"><span class="std std-ref">Basic Solver</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although technically possible to solve lens distortion
+attributes during the Camera Solve, results are currently (as of
+2022-11-06) not very accurate. This limitation may be improved in
+the future.</p>
+</div>
 <section id="solver-options">
 <h2>Solver Options<a class="headerlink" href="#solver-options" title="Permalink to this headline">#</a></h2>
-<section id="solve-all-at-once">
-<h3>Solve All at Once<a class="headerlink" href="#solve-all-at-once" title="Permalink to this headline">#</a></h3>
-<p><em>To be written</em>.</p>
+<p>The solver options below are extra options used to change how the
+solver works internally.</p>
+<section id="origin-frame">
+<h3>Origin Frame<a class="headerlink" href="#origin-frame" title="Permalink to this headline">#</a></h3>
+<p>The <cite>Origin Frame</cite> is the ‘current frame’ from the <a class="reference internal" href="tools_cameratools.html#set-camera-origin-frame-tool-ref"><span class="std std-ref">Set Camera
+Origin Frame</span></a> tool and signifies
+the frame number where the solved <cite>Camera</cite> transform will be zero
+(identity).</p>
+<p>This frame number can often be associated with a ‘line-up frame’.</p>
 </section>
-<section id="solve-only-root-frames">
-<h3>Solve Only Root Frames<a class="headerlink" href="#solve-only-root-frames" title="Permalink to this headline">#</a></h3>
-<p><em>To be written</em>.</p>
-</section>
-<section id="solve-focal-length">
-<h3>Solve Focal Length<a class="headerlink" href="#solve-focal-length" title="Permalink to this headline">#</a></h3>
-<p><em>To be written</em>.</p>
-</section>
-<section id="solve-lens-distortion">
-<h3>Solve Lens Distortion<a class="headerlink" href="#solve-lens-distortion" title="Permalink to this headline">#</a></h3>
-<p><em>To be written</em>.</p>
-</section>
-<section id="evaluate-mesh-rivets">
-<h3>Evaluate Mesh Rivets<a class="headerlink" href="#evaluate-mesh-rivets" title="Permalink to this headline">#</a></h3>
-<p><em>To be written</em>.</p>
+<section id="scene-scale">
+<h3>Scene Scale<a class="headerlink" href="#scene-scale" title="Permalink to this headline">#</a></h3>
+<p>The <cite>Scene Scale</cite> (same as the option in the <a class="reference internal" href="tools_cameratools.html#set-camera-origin-frame-tool-ref"><span class="std std-ref">Set Camera Origin
+Frame</span></a> tool) normalises the maximum
+camera distance to this value.</p>
 </section>
 </section>
 </section>
@@ -424,14 +443,9 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Camera Solver Tab</a><ul>
-<li><a class="reference internal" href="#frames">Frames</a></li>
-<li><a class="reference internal" href="#user-and-root-frames">User and Root Frames</a></li>
 <li><a class="reference internal" href="#solver-options">Solver Options</a><ul>
-<li><a class="reference internal" href="#solve-all-at-once">Solve All at Once</a></li>
-<li><a class="reference internal" href="#solve-only-root-frames">Solve Only Root Frames</a></li>
-<li><a class="reference internal" href="#solve-focal-length">Solve Focal Length</a></li>
-<li><a class="reference internal" href="#solve-lens-distortion">Solve Lens Distortion</a></li>
-<li><a class="reference internal" href="#evaluate-mesh-rivets">Evaluate Mesh Rivets</a></li>
+<li><a class="reference internal" href="#origin-frame">Origin Frame</a></li>
+<li><a class="reference internal" href="#scene-scale">Scene Scale</a></li>
 </ul>
 </li>
 </ul>

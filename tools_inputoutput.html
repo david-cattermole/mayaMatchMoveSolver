@@ -622,12 +622,22 @@ file path onto the OS Copy/Paste clipboard.</p>
 </pre></div>
 </div>
 </section>
-<section id="load-lens">
-<span id="load-lens-tool-ref"></span><h2>Load Lens<a class="headerlink" href="#load-lens" title="Permalink to this headline">#</a></h2>
-<p><em>To be written</em></p>
+<section id="load-lens-file-on-selected-nodes">
+<span id="load-lens-tool-ref"></span><h2>Load Lens File On Selected Nodes<a class="headerlink" href="#load-lens-file-on-selected-nodes" title="Permalink to this headline">#</a></h2>
+<p>Load the attributes of a <cite>Lens</cite> using a <code class="docutils literal notranslate"><span class="pre">.nk</span></code> file. Files supporting
+static and animated values is supported.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">.nk</span></code> files given to <cite>MM Solver</cite> are expected to be saved with
+the <a class="reference internal" href="#save-lens-tool-ref"><span class="std std-ref">Save Lens File</span></a> tool or saved with the
+<cite>3DEqualizer Export Nuke Lens Distortion</cite> tool.</p>
 <p>Usage:</p>
 <ol class="arabic simple">
-<li><p>…</p></li>
+<li><p>Select <cite>Lens</cite> node.</p></li>
+<li><p>Run tool, a browse dialog UI will be displayed.</p></li>
+<li><p>Browse to a file and press “Open”.</p>
+<ul class="simple">
+<li><p>The file will be read and values will be set on the <cite>Lens</cite> node.</p></li>
+</ul>
+</li>
 </ol>
 <p>To run the tool, use this Python command:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.loadlens.tool</span> <span class="k">as</span> <span class="nn">tool</span>
@@ -635,12 +645,19 @@ file path onto the OS Copy/Paste clipboard.</p>
 </pre></div>
 </div>
 </section>
-<section id="save-lens">
-<span id="save-lens-tool-ref"></span><h2>Save Lens<a class="headerlink" href="#save-lens" title="Permalink to this headline">#</a></h2>
-<p><em>To be written</em></p>
+<section id="save-lens-file">
+<span id="save-lens-tool-ref"></span><h2>Save Lens File<a class="headerlink" href="#save-lens-file" title="Permalink to this headline">#</a></h2>
+<p>Save the values on a <cite>Lens</cite> node into a <code class="docutils literal notranslate"><span class="pre">.nk</span></code> file. Both static and
+animated attributes are saved.</p>
 <p>Usage:</p>
 <ol class="arabic simple">
-<li><p>…</p></li>
+<li><p>Select <cite>Lens</cite> node.</p></li>
+<li><p>Run tool, a browse dialog UI will be displayed.</p></li>
+<li><p>Browse to a file and press “Save”.</p>
+<ul class="simple">
+<li><p>The node values will written to the file.</p></li>
+</ul>
+</li>
 </ol>
 <p>To run the tool, use this Python command:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.savelensfile.tool</span> <span class="k">as</span> <span class="nn">tool</span>
@@ -719,8 +736,8 @@ file path onto the OS Copy/Paste clipboard.</p>
 <li><a class="reference internal" href="#save-marker">Save Marker</a></li>
 <li><a class="reference internal" href="#copy-marker-to-clipboard">Copy Marker to Clipboard</a></li>
 <li><a class="reference internal" href="#copy-camera-to-clipboard">Copy Camera to Clipboard</a></li>
-<li><a class="reference internal" href="#load-lens">Load Lens</a></li>
-<li><a class="reference internal" href="#save-lens">Save Lens</a></li>
+<li><a class="reference internal" href="#load-lens-file-on-selected-nodes">Load Lens File On Selected Nodes</a></li>
+<li><a class="reference internal" href="#save-lens-file">Save Lens File</a></li>
 </ul>
 </li>
 </ul>

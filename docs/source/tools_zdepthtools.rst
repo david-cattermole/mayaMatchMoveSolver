@@ -177,16 +177,16 @@ Usage:
 
 2) Open the `Adjust Camera/Object Scale` UI.
 
-  - Type a unique name for `Scale Rig Name`.
+   - Type a unique name for `Scale Rig Name`.
 
-  - Choose `Adjust Camera Scale` mode.
+   - Choose `Adjust Camera Scale` mode.
 
-  - Select the top level `Scene` node that contains all 3D
-    transforms/bundles.
+   - Select the top level `Scene` node that contains all 3D
+     transforms/bundles.
 
-  - Select the `Camera` that will adjust scale.
+   - Select the `Camera` that will adjust scale.
 
-  - Select the `Objects` that will `not` change scale.
+   - Select the `Objects` that will `not` change scale.
 
 3) Press `Create` button.
 
@@ -209,13 +209,13 @@ Usage:
 
 2) Open the `Adjust Camera/Object Scale` UI.
 
-  - Type a unique name for `Scale Rig Name`.
+   - Type a unique name for `Scale Rig Name`.
 
-  - Choose `Adjust Object Scale` mode.
+   - Choose `Adjust Object Scale` mode.
 
-  - Select the `Camera` that will `not` change scale.
+   - Select the `Camera` that will `not` change scale.
 
-  - Select the `Objects` that will adjust scale.
+   - Select the `Objects` that will adjust scale.
 
 3) Press `Create` button.
 

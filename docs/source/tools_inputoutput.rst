@@ -385,14 +385,21 @@ To run the tool, use this Python command:
 
 .. _save-lens-tool-ref:
 
-Save Lens
----------
+Save Lens File
+--------------
 
-*To be written*
+Save the values on a `Lens` node into a ``.nk`` file. Both static and
+animated attributes are saved.
 
 Usage:
 
-1) ...
+1) Select `Lens` node.
+
+2) Run tool, a browse dialog UI will be displayed.
+
+3) Browse to a file and press "Save".
+
+   - The node values will written to the file.
 
 
 To run the tool, use this Python command:

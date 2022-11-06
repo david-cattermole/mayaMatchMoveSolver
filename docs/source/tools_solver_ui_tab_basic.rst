@@ -1,3 +1,5 @@
+.. _basic-solver-tab-heading:
+
 Basic Solver Tab
 ================
 

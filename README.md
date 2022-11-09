@@ -18,6 +18,7 @@ changes.
 
 | Releases                                                                                | Description                                        |
 | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| [v0.4.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.1)   | Bug fix Basic solver tab.                          |
 | [v0.4.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.0)   | Lens distortion, ImagePlane and Camera Solver.     |
 | [v0.3.16](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.16) | Maya 2022 support.                                 |
 | [v0.3.15](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.15) | Added Camera Calibration tool and 3DE R7 support.  |

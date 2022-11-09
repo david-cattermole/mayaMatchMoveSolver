@@ -605,12 +605,20 @@ class SolverStep(solverbase.SolverBase):
             kwargs['solverType'] = solver_type
 
         scene_graph_mode = self.get_scene_graph_mode()
+        frame_solve_mode = self.get_frame_solve_mode()
         if scene_graph_mode is not None:
-            scene_graph_mode = min(const.SCENE_GRAPH_MODE_MAYA_DAG, scene_graph_mode)
+            # Otherwise the 'auto' scene graph will be passed to
+            # mmSolver and mmSolver command does not support 'auto'
+            # mode.
+            scene_graph_mode = max(const.SCENE_GRAPH_MODE_MAYA_DAG, scene_graph_mode)
+
+            if scene_graph_mode == const.SCENE_GRAPH_MODE_MAYA_DAG:
+                assert frame_solve_mode == const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE
             kwargs['sceneGraphMode'] = scene_graph_mode
 
-        frame_solve_mode = self.get_frame_solve_mode()
         if frame_solve_mode is not None:
+            if frame_solve_mode == const.FRAME_SOLVE_MODE_PER_FRAME:
+                assert scene_graph_mode == const.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
             kwargs['frameSolveMode'] = frame_solve_mode
 
         iterations = self.get_max_iterations()

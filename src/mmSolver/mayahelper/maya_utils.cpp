@@ -125,6 +125,24 @@ MStatus getAsDagPath(const MString &nodeName, MDagPath &nodeDagPath) {
     return status;
 }
 
+MStatus getUniqueNodeName(MObject &node, MString &out_uniqueNodeName) {
+    MStatus status = MS::kSuccess;
+
+    MDagPath dagPath;
+    status = MDagPath::getAPathTo(node, dagPath);
+    if (status == MS::kSuccess) {
+        out_uniqueNodeName = dagPath.fullPathName();
+    } else {
+        MFnDependencyNode fnDependNode(node, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        out_uniqueNodeName = fnDependNode.name(&status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    return status;
+}
+
 bool hasAttrName(MFnDependencyNode &dependFn, const MString &attrName) {
     MStatus status = MStatus::kSuccess;
     auto network_plug = true;

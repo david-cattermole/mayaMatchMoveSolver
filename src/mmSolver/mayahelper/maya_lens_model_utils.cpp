@@ -341,24 +341,6 @@ MStatus getConnectedLensNode(const MObject &node, const MString &inputAttrName,
     return status;
 }
 
-MStatus getUniqueNodeName(MObject &node, MString &out_uniqueNodeName) {
-    MStatus status = MS::kSuccess;
-
-    MDagPath dagPath;
-    status = MDagPath::getAPathTo(node, dagPath);
-    if (status == MS::kSuccess) {
-        out_uniqueNodeName = dagPath.fullPathName();
-    } else {
-        MFnDependencyNode fnDependNode(node, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-
-        out_uniqueNodeName = fnDependNode.name(&status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-    }
-
-    return status;
-}
-
 // Get the Lenses for each Camera, and make sure to store the upstream
 // lenses too.
 MStatus getLensesFromCameraList(

@@ -84,6 +84,8 @@ MStatus getAsObject(const MString &nodeName, MObject &object);
 
 MStatus getAsDagPath(const MString &nodeName, MDagPath &nodeDagPath);
 
+MStatus getUniqueNodeName(MObject &node, MString &out_uniqueNodeName);
+
 bool hasAttrName(MFnDependencyNode &dependFn, const MString &attrName);
 
 // Analogous to the Python function "mmSolver.api.get_object_type()"

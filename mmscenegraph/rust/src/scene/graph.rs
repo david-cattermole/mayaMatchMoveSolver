@@ -645,4 +645,54 @@ mod tests {
 
         assert_eq!(sg.num_transform_nodes(), 3);
     }
+
+    // Creates two transform nodes that both share the same translateY
+    // value - AKA, it's a connection from one attribute to the other
+    // so both share the same value.
+    #[test]
+    fn test_create_input_only_attr_connection() {
+        let mut sg = SceneGraph::new();
+        let mut attrdb = AttrDataBlock::new();
+        assert_eq!(sg.num_transform_nodes(), 0);
+
+        let rotate_order = RotateOrder::XYZ;
+        let tfm_a = create_static_transform(
+            &mut sg,
+            &mut attrdb,
+            (0.0, 42.0, 0.0),
+            (0.0, 0.0, 0.0),
+            (1.0, 1.0, 1.0),
+            rotate_order,
+        );
+
+        let (tx, _ty, tz) = (42.0, 0.0, 0.0);
+        let attr_tx = attrdb.create_attr_static(tx);
+        // Connection from tfm_a.ty to tfm_b.ty.
+        let attr_ty = tfm_a.get_attr_ty();
+        let attr_tz = attrdb.create_attr_static(tz);
+        let translate_attrs = (attr_tx, attr_ty, attr_tz);
+
+        let (rx, ry, rz) = (0.0, 0.0, 0.0);
+        let attr_rx = attrdb.create_attr_static(rx);
+        let attr_ry = attrdb.create_attr_static(ry);
+        let attr_rz = attrdb.create_attr_static(rz);
+        let rotate_attrs = (attr_rx, attr_ry, attr_rz);
+
+        let (sx, sy, sz) = (1.0, 1.0, 1.0);
+        let attr_sx = attrdb.create_attr_static(sx);
+        let attr_sy = attrdb.create_attr_static(sy);
+        let attr_sz = attrdb.create_attr_static(sz);
+        let scale_attrs = (attr_sx, attr_sy, attr_sz);
+
+        let tfm_b = sg.create_transform_node(
+            translate_attrs,
+            rotate_attrs,
+            scale_attrs,
+            rotate_order,
+        );
+
+        sg.set_node_parent(tfm_a.get_id(), NodeId::Root);
+        sg.set_node_parent(tfm_b.get_id(), NodeId::Root);
+        assert_eq!(sg.num_transform_nodes(), 2);
+    }
 }

@@ -47,7 +47,7 @@ fn upstream_node_indices_set(
     sg: &SceneGraph,
     node_ids: &[NodeId],
 ) -> HashSet<PGNodeIndex> {
-    let graph = &sg.get_graph();
+    let graph = &sg.get_hierarchy_graph();
     let mut node_indices_set = HashSet::new();
     for node_id in node_ids {
         let node_index = match sg.get_node_index_from_node_id(*node_id) {
@@ -72,7 +72,7 @@ fn flatten_filter_and_sort_graph_nodes(
     sg: &SceneGraph,
     node_ids: Vec<NodeId>,
 ) -> Option<(Vec<PGNodeIndex>, Vec<NodeId>)> {
-    // let debug_string = sg.graph_debug_string();
+    // let debug_string = sg.hierarchy_graph_debug_string();
     // println!("{}", debug_string);
 
     // Get the node indices, including all parents required.
@@ -80,7 +80,7 @@ fn flatten_filter_and_sort_graph_nodes(
     // println!("Node Indices to keep: {:#?}", node_indices_set);
 
     // Filter-topo-sort.
-    let graph = &sg.get_graph();
+    let graph = &sg.get_hierarchy_graph();
     match PGtoposort(graph, None) {
         Ok(nodes) => {
             // println!("Toposort nodes: {:#?}", nodes);
@@ -113,7 +113,7 @@ fn get_parent_index_list(
 ) -> Vec<Option<usize>> {
     let mut list = Vec::<Option<usize>>::new();
     let dir = PGDirection::Incoming;
-    let graph = &sg.get_graph();
+    let graph = &sg.get_hierarchy_graph();
     for (i, node_index) in (0..).zip(node_indices) {
         let edges: Vec<_> = graph.edges_directed(*node_index, dir).collect();
         assert!(edges.len() < 2);
@@ -136,7 +136,7 @@ fn get_parent_index_list(
     list
 }
 
-/// Bake down graph into a more efficient representation that has a
+/// Bake down graph into a more efficient representation that has an
 /// un-editable hierarchy.
 pub fn bake_scene_graph(
     sg: &SceneGraph,

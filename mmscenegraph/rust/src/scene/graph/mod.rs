@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020, 2021 David Cattermole.
+// Copyright (C) 2020, 2021, 2022 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -18,13 +18,18 @@
 // ====================================================================
 //
 
-use petgraph::dot::Config as PGConfig;
-use petgraph::dot::Dot as PGDot;
+pub mod hierarchy;
+pub mod links;
+pub mod nodes;
+
+use crate::scene::graph::hierarchy::HierarchyGraph;
+use crate::scene::graph::links::SceneLinks;
+use crate::scene::graph::nodes::SceneNodes;
+
 use petgraph::graph::NodeIndex as PGNodeIndex;
 use petgraph::Graph as PGGraph;
 
 use crate::attr::AttrId;
-use crate::constant::NodeIndex;
 use crate::math::camera::FilmFit;
 use crate::math::rotate::euler::RotateOrder;
 use crate::node::bundle::BundleNode;
@@ -45,51 +50,24 @@ type Graph = PGGraph<NodeId, ()>;
 
 #[derive(Debug, Clone)]
 pub struct SceneGraph {
-    hierarchy: Graph,
-    tfm_nodes: Vec<TransformNode>,
-    mkr_nodes: Vec<MarkerNode>,
-    bnd_nodes: Vec<BundleNode>,
-    cam_nodes: Vec<CameraNode>,
-    tfm_indices: Vec<PGNodeIndex>,
-    mkr_indices: Vec<PGNodeIndex>,
-    bnd_indices: Vec<PGNodeIndex>,
-    cam_indices: Vec<PGNodeIndex>,
-    mkr_to_cam_node_ids: Vec<NodeId>,
-    mkr_to_bnd_node_ids: Vec<NodeId>,
+    hierarchy: HierarchyGraph,
+    scene_nodes: SceneNodes,
+    scene_links: SceneLinks,
 }
 
 impl SceneGraph {
     pub fn new() -> SceneGraph {
         SceneGraph {
-            hierarchy: Graph::new(),
-            tfm_nodes: Vec::<TransformNode>::new(),
-            mkr_nodes: Vec::<MarkerNode>::new(),
-            bnd_nodes: Vec::<BundleNode>::new(),
-            cam_nodes: Vec::<CameraNode>::new(),
-            tfm_indices: Vec::<PGNodeIndex>::new(),
-            mkr_indices: Vec::<PGNodeIndex>::new(),
-            bnd_indices: Vec::<PGNodeIndex>::new(),
-            cam_indices: Vec::<PGNodeIndex>::new(),
-            mkr_to_cam_node_ids: Vec::<NodeId>::new(),
-            mkr_to_bnd_node_ids: Vec::<NodeId>::new(),
+            hierarchy: HierarchyGraph::new(),
+            scene_nodes: SceneNodes::new(),
+            scene_links: SceneLinks::new(),
         }
     }
 
     pub fn clear(&mut self) {
         self.hierarchy.clear();
-
-        self.tfm_nodes.clear();
-        self.mkr_nodes.clear();
-        self.bnd_nodes.clear();
-        self.cam_nodes.clear();
-
-        self.tfm_indices.clear();
-        self.mkr_indices.clear();
-        self.bnd_indices.clear();
-        self.cam_indices.clear();
-
-        self.mkr_to_cam_node_ids.clear();
-        self.mkr_to_bnd_node_ids.clear();
+        self.scene_nodes.clear();
+        self.scene_links.clear();
     }
 
     pub fn create_transform_node(
@@ -117,12 +95,8 @@ impl SceneGraph {
         node.set_attr_sy(sy);
         node.set_attr_sz(sz);
 
-        let node_id = NodeId::Transform(self.tfm_nodes.len() as NodeIndex);
-        node.set_id(node_id);
-        self.tfm_nodes.push(node);
-
-        let node_index = self.hierarchy.add_node(node_id);
-        self.tfm_indices.push(node_index);
+        let node = self.scene_nodes.add_transform_node(node);
+        self.hierarchy.add_node_id(node.get_id());
 
         node
     }
@@ -152,12 +126,8 @@ impl SceneGraph {
         node.set_attr_sy(sy);
         node.set_attr_sz(sz);
 
-        let node_id = NodeId::Bundle(self.bnd_nodes.len() as NodeIndex);
-        node.set_id(node_id);
-        self.bnd_nodes.push(node);
-
-        let node_index = self.hierarchy.add_node(node_id);
-        self.bnd_indices.push(node_index);
+        let node = self.scene_nodes.add_bundle_node(node);
+        self.hierarchy.add_node_id(node.get_id());
 
         node
     }
@@ -211,12 +181,8 @@ impl SceneGraph {
         node.set_render_image_width(render_image_width);
         node.set_render_image_height(render_image_height);
 
-        let node_id = NodeId::Camera(self.cam_nodes.len() as NodeIndex);
-        node.set_id(node_id);
-        self.cam_nodes.push(node);
-
-        let node_index = self.hierarchy.add_node(node_id);
-        self.cam_indices.push(node_index);
+        let node = self.scene_nodes.add_camera_node(node);
+        self.hierarchy.add_node_id(node.get_id());
 
         node
     }
@@ -233,20 +199,48 @@ impl SceneGraph {
         node.set_attr_ty(ty);
         node.set_attr_weight(weight_attr);
 
-        let node_id = NodeId::Marker(self.mkr_nodes.len() as NodeIndex);
-        node.set_id(node_id);
-        self.mkr_nodes.push(node);
-
-        let node_index = self.hierarchy.add_node(node_id);
-        self.mkr_indices.push(node_index);
+        let node = self.scene_nodes.add_marker_node(node);
+        let node_id = node.get_id();
+        self.hierarchy.add_node_id(node_id);
 
         // Markers do not link to any camera by default.
-        self.mkr_to_cam_node_ids.push(NodeId::None);
+        self.scene_links.add_marker_to_camera_node_ids(NodeId::None);
 
         // Markers are not linked to any bundle by default.
-        self.mkr_to_bnd_node_ids.push(NodeId::None);
+        self.scene_links.add_marker_to_bundle_node_ids(NodeId::None);
 
         node
+    }
+
+    pub fn num_transform_nodes(&self) -> usize {
+        let num = self.scene_nodes.num_transform_nodes();
+        assert_eq!(num, self.hierarchy.num_transform_indices());
+        num
+    }
+
+    pub fn num_camera_nodes(&self) -> usize {
+        let num = self.scene_nodes.num_camera_nodes();
+        assert_eq!(num, self.hierarchy.num_camera_indices());
+        num
+    }
+
+    pub fn num_marker_nodes(&self) -> usize {
+        let num = self.scene_nodes.num_marker_nodes();
+        assert_eq!(num, self.hierarchy.num_marker_indices());
+        num
+    }
+
+    pub fn num_bundle_nodes(&self) -> usize {
+        let num = self.scene_nodes.num_bundle_nodes();
+        assert_eq!(num, self.hierarchy.num_bundle_indices());
+        num
+    }
+
+    pub fn get_transformable_nodes(
+        &self,
+        node_ids: &[NodeId],
+    ) -> Option<Vec<Box<dyn NodeCanTransform3D>>> {
+        self.scene_nodes.get_transformable_nodes(node_ids)
     }
 
     pub fn link_marker_to_camera(
@@ -254,17 +248,8 @@ impl SceneGraph {
         mkr_node_id: NodeId,
         cam_node_id: NodeId,
     ) -> bool {
-        let mkr_index = match mkr_node_id {
-            NodeId::Marker(index) => index,
-            _ => return false,
-        };
-        match cam_node_id {
-            NodeId::Camera(_) => {
-                self.mkr_to_cam_node_ids[mkr_index] = cam_node_id
-            }
-            _ => return false,
-        };
-        return true;
+        self.scene_links
+            .link_marker_to_camera(mkr_node_id, cam_node_id)
     }
 
     pub fn link_marker_to_bundle(
@@ -272,206 +257,57 @@ impl SceneGraph {
         mkr_node_id: NodeId,
         bnd_node_id: NodeId,
     ) -> bool {
-        let mkr_index = match mkr_node_id {
-            NodeId::Marker(index) => index,
-            _ => return false,
-        };
-        match bnd_node_id {
-            NodeId::Bundle(_) => {
-                self.mkr_to_bnd_node_ids[mkr_index] = bnd_node_id
-            }
-            _ => return false,
-        };
-        return true;
-    }
-
-    pub fn get_transform_node(&self, node_id: NodeId) -> Option<TransformNode> {
-        match node_id {
-            NodeId::Transform(index) => Some(self.tfm_nodes[index]),
-            _ => None,
-        }
-    }
-
-    pub fn get_bundle_node(&self, node_id: NodeId) -> Option<BundleNode> {
-        match node_id {
-            NodeId::Bundle(index) => Some(self.bnd_nodes[index]),
-            _ => None,
-        }
-    }
-
-    pub fn get_camera_node(&self, node_id: NodeId) -> Option<CameraNode> {
-        match node_id {
-            NodeId::Camera(index) => Some(self.cam_nodes[index]),
-            _ => None,
-        }
-    }
-
-    pub fn get_marker_node(&self, node_id: NodeId) -> Option<MarkerNode> {
-        match node_id {
-            NodeId::Marker(index) => Some(self.mkr_nodes[index]),
-            _ => None,
-        }
+        self.scene_links
+            .link_marker_to_bundle(mkr_node_id, bnd_node_id)
     }
 
     pub fn get_camera_node_id_from_marker_node_id(
         &self,
         node_id: NodeId,
     ) -> Option<NodeId> {
-        match node_id {
-            NodeId::Marker(index) => Some(self.mkr_to_cam_node_ids[index]),
-            _ => None,
-        }
+        self.scene_links
+            .get_camera_node_id_from_marker_node_id(node_id)
     }
 
     pub fn get_bundle_node_id_from_marker_node_id(
         &self,
         node_id: NodeId,
     ) -> Option<NodeId> {
-        match node_id {
-            NodeId::Marker(index) => Some(self.mkr_to_bnd_node_ids[index]),
-            _ => None,
-        }
+        self.scene_links
+            .get_bundle_node_id_from_marker_node_id(node_id)
     }
 
     pub fn get_node_index_from_node_id(
         &self,
         node_id: NodeId,
     ) -> Option<PGNodeIndex> {
-        match node_id {
-            NodeId::Transform(index) => Some(self.tfm_indices[index]),
-            NodeId::Camera(index) => Some(self.cam_indices[index]),
-            NodeId::Marker(index) => Some(self.mkr_indices[index]),
-            NodeId::Bundle(index) => Some(self.bnd_indices[index]),
-            _ => None,
-        }
+        self.hierarchy.get_node_index(node_id)
     }
 
-    /// Users can inspect the internal graph structure, but they are
-    /// not allowed to edit it.
-    pub fn get_graph(&self) -> &Graph {
-        &self.hierarchy
-    }
-
-    pub fn get_transformable_nodes(
-        &self,
-        node_ids: &[NodeId],
-    ) -> Option<Vec<Box<dyn NodeCanTransform3D>>> {
-        let mut nodes = Vec::<Box<dyn NodeCanTransform3D>>::new();
-        for node_id in node_ids {
-            match node_id {
-                NodeId::Transform(_) => {
-                    let node = self.get_transform_node(*node_id).unwrap();
-                    let node_box = Box::new(node);
-                    nodes.push(node_box);
-                }
-                NodeId::Camera(_) => {
-                    let node = self.get_camera_node(*node_id).unwrap();
-                    let node_box = Box::new(node);
-                    nodes.push(node_box);
-                }
-                NodeId::Bundle(_) => {
-                    let node = self.get_bundle_node(*node_id).unwrap();
-                    let node_box = Box::new(node);
-                    nodes.push(node_box);
-                }
-                _ => {
-                    println!("Invalid node id: {:?}", node_id);
-                    return None;
-                }
-            };
-        }
-        Some(nodes)
-    }
-
-    pub fn get_graph_node_index(&self, node_id: NodeId) -> Option<PGNodeIndex> {
-        match node_id {
-            NodeId::Transform(index) => Some(self.tfm_indices[index]),
-            NodeId::Bundle(index) => Some(self.bnd_indices[index]),
-            NodeId::Camera(index) => Some(self.cam_indices[index]),
-            NodeId::Marker(index) => Some(self.mkr_indices[index]),
-            _ => None,
-        }
-    }
-
-    /// Set the parent of child_node_id to parent_node_id.
-    ///
-    /// Note: `set_node_parent` cannot be used to "unparent" a node to
-    /// the root.
     pub fn set_node_parent(
         &mut self,
         child_node_id: NodeId,
         parent_node_id: NodeId,
     ) -> bool {
-        let node_index = self.get_graph_node_index(child_node_id);
-        if node_index == None {
-            return false;
-        }
-        let node_index = node_index.unwrap();
-
-        let parent_node_index = self.get_graph_node_index(parent_node_id);
-        if parent_node_index == None {
-            return false;
-        }
-        let parent_node_index = parent_node_index.unwrap();
-
         self.hierarchy
-            .update_edge(parent_node_index, node_index, ());
-        return true;
+            .set_node_parent(child_node_id, parent_node_id)
     }
 
-    /// Set all the child_node_ids to have the same parent_node_id
     pub fn set_nodes_parent(
         &mut self,
         child_node_ids: &[NodeId],
         parent_node_id: NodeId,
     ) -> bool {
-        let node_indices: Vec<PGNodeIndex> = child_node_ids
-            .iter()
-            .filter_map(|x| self.get_graph_node_index(*x))
-            .collect();
-        if node_indices.len() == 0 {
-            return false;
-        }
-
-        let parent_node_index = self.get_graph_node_index(parent_node_id);
-        if parent_node_index == None {
-            return false;
-        }
-        let parent_node_index = parent_node_index.unwrap();
-
-        for node_index in node_indices {
-            self.hierarchy
-                .update_edge(parent_node_index, node_index, ());
-        }
-        return true;
+        self.hierarchy
+            .set_nodes_parent(child_node_ids, parent_node_id)
     }
 
-    pub fn num_transform_nodes(&self) -> usize {
-        debug_assert_eq!(self.tfm_nodes.len(), self.tfm_indices.len());
-        self.tfm_nodes.len()
+    pub fn get_hierarchy_graph(&self) -> &Graph {
+        self.hierarchy.get_graph()
     }
 
-    pub fn num_camera_nodes(&self) -> usize {
-        debug_assert_eq!(self.cam_nodes.len(), self.cam_indices.len());
-        self.cam_nodes.len()
-    }
-
-    pub fn num_marker_nodes(&self) -> usize {
-        debug_assert_eq!(self.mkr_nodes.len(), self.mkr_indices.len());
-        self.mkr_nodes.len()
-    }
-
-    pub fn num_bundle_nodes(&self) -> usize {
-        debug_assert_eq!(self.bnd_nodes.len(), self.bnd_indices.len());
-        self.bnd_nodes.len()
-    }
-
-    // Return a nice string for the user to use to debug the graph.
-    pub fn graph_debug_string(&self) -> String {
-        String::from(format!(
-            "Graph: {:?}",
-            PGDot::with_config(&self.hierarchy, &[PGConfig::EdgeNoLabel])
-        ))
+    pub fn hierarchy_graph_debug_string(&self) -> String {
+        self.hierarchy.graph_debug_string()
     }
 }
 

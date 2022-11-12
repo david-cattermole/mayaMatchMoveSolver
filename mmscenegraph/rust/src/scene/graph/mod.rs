@@ -22,10 +22,6 @@ pub mod hierarchy;
 pub mod links;
 pub mod nodes;
 
-use crate::scene::graph::hierarchy::HierarchyGraph;
-use crate::scene::graph::links::SceneLinks;
-use crate::scene::graph::nodes::SceneNodes;
-
 use petgraph::graph::NodeIndex as PGNodeIndex;
 use petgraph::Graph as PGGraph;
 
@@ -45,8 +41,11 @@ use crate::node::traits::NodeHasId;
 use crate::node::traits::NodeHasWeight;
 use crate::node::transform::TransformNode;
 use crate::node::NodeId;
+use crate::scene::graph::hierarchy::HierarchyGraph;
+use crate::scene::graph::links::SceneLinks;
+use crate::scene::graph::nodes::SceneNodes;
 
-type Graph = PGGraph<NodeId, ()>;
+type NodeGraph = PGGraph<NodeId, ()>;
 
 #[derive(Debug, Clone)]
 pub struct SceneGraph {
@@ -302,7 +301,7 @@ impl SceneGraph {
             .set_nodes_parent(child_node_ids, parent_node_id)
     }
 
-    pub fn get_hierarchy_graph(&self) -> &Graph {
+    pub fn get_hierarchy_graph(&self) -> &NodeGraph {
         self.hierarchy.get_graph()
     }
 

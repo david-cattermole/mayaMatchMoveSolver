@@ -321,21 +321,150 @@ mod tests {
     use crate::scene::helper::create_static_marker;
     use crate::scene::helper::create_static_transform;
 
-    // #[test]
-    // fn test_create_transform_node() {
-    // }
+    #[test]
+    fn test_create_transform_node() {
+        let mut sg = SceneGraph::new();
+        let mut attrdb = AttrDataBlock::new();
+        assert_eq!(sg.num_transform_nodes(), 0);
 
-    // #[test]
-    // fn test_create_bundle_node() {
-    // }
+        let (tx, ty, tz) = (0.0, 0.0, 0.0);
+        let attr_tx = attrdb.create_attr_static(tx);
+        let attr_ty = attrdb.create_attr_static(ty);
+        let attr_tz = attrdb.create_attr_static(tz);
+        let translate_attrs = (attr_tx, attr_ty, attr_tz);
 
-    // #[test]
-    // fn test_create_camera_node() {
-    // }
+        let (rx, ry, rz) = (0.0, 0.0, 0.0);
+        let attr_rx = attrdb.create_attr_static(rx);
+        let attr_ry = attrdb.create_attr_static(ry);
+        let attr_rz = attrdb.create_attr_static(rz);
+        let rotate_attrs = (attr_rx, attr_ry, attr_rz);
 
-    // #[test]
-    // fn test_create_marker_node() {
-    // }
+        let (sx, sy, sz) = (1.0, 1.0, 1.0);
+        let attr_sx = attrdb.create_attr_static(sx);
+        let attr_sy = attrdb.create_attr_static(sy);
+        let attr_sz = attrdb.create_attr_static(sz);
+        let scale_attrs = (attr_sx, attr_sy, attr_sz);
+
+        let _node = sg.create_transform_node(
+            translate_attrs,
+            rotate_attrs,
+            scale_attrs,
+            RotateOrder::XYZ,
+        );
+        assert_eq!(sg.num_transform_nodes(), 1);
+    }
+
+    #[test]
+    fn test_create_bundle_node() {
+        let mut sg = SceneGraph::new();
+        let mut attrdb = AttrDataBlock::new();
+        assert_eq!(sg.num_bundle_nodes(), 0);
+
+        let (tx, ty, tz) = (0.0, 0.0, 0.0);
+        let attr_tx = attrdb.create_attr_static(tx);
+        let attr_ty = attrdb.create_attr_static(ty);
+        let attr_tz = attrdb.create_attr_static(tz);
+        let translate_attrs = (attr_tx, attr_ty, attr_tz);
+
+        let (rx, ry, rz) = (0.0, 0.0, 0.0);
+        let attr_rx = attrdb.create_attr_static(rx);
+        let attr_ry = attrdb.create_attr_static(ry);
+        let attr_rz = attrdb.create_attr_static(rz);
+        let rotate_attrs = (attr_rx, attr_ry, attr_rz);
+
+        let (sx, sy, sz) = (1.0, 1.0, 1.0);
+        let attr_sx = attrdb.create_attr_static(sx);
+        let attr_sy = attrdb.create_attr_static(sy);
+        let attr_sz = attrdb.create_attr_static(sz);
+        let scale_attrs = (attr_sx, attr_sy, attr_sz);
+
+        let _node = sg.create_bundle_node(
+            translate_attrs,
+            rotate_attrs,
+            scale_attrs,
+            RotateOrder::XYZ,
+        );
+        assert_eq!(sg.num_bundle_nodes(), 1);
+    }
+
+    #[test]
+    fn test_create_camera_node() {
+        let mut sg = SceneGraph::new();
+        let mut attrdb = AttrDataBlock::new();
+        assert_eq!(sg.num_camera_nodes(), 0);
+
+        let (tx, ty, tz) = (0.0, 0.0, 0.0);
+        let attr_tx = attrdb.create_attr_static(tx);
+        let attr_ty = attrdb.create_attr_static(ty);
+        let attr_tz = attrdb.create_attr_static(tz);
+        let translate_attrs = (attr_tx, attr_ty, attr_tz);
+
+        let (rx, ry, rz) = (0.0, 0.0, 0.0);
+        let attr_rx = attrdb.create_attr_static(rx);
+        let attr_ry = attrdb.create_attr_static(ry);
+        let attr_rz = attrdb.create_attr_static(rz);
+        let rotate_attrs = (attr_rx, attr_ry, attr_rz);
+
+        let (sx, sy, sz) = (1.0, 1.0, 1.0);
+        let attr_sx = attrdb.create_attr_static(sx);
+        let attr_sy = attrdb.create_attr_static(sy);
+        let attr_sz = attrdb.create_attr_static(sz);
+        let scale_attrs = (attr_sx, attr_sy, attr_sz);
+
+        let (sensor_width, sensor_height) = (36.0, 24.0);
+        let (lens_offset_x, lens_offset_y) = (0.0, 0.0);
+        let focal_length = 50.0;
+        let near_clip_plane = 0.1;
+        let far_clip_plane = 0.1;
+        let camera_scale = 1.0;
+        let rotate_order = RotateOrder::XYZ;
+        let film_fit = FilmFit::Horizontal;
+        let render_image_width = 2048;
+        let render_image_height = 2048;
+
+        let attr_sensor_width = attrdb.create_attr_static(sensor_width);
+        let attr_sensor_height = attrdb.create_attr_static(sensor_height);
+        let attr_focal_length = attrdb.create_attr_static(focal_length);
+        let attr_lens_offset_x = attrdb.create_attr_static(lens_offset_x);
+        let attr_lens_offset_y = attrdb.create_attr_static(lens_offset_y);
+        let attr_near_clip_plane = attrdb.create_attr_static(near_clip_plane);
+        let attr_far_clip_plane = attrdb.create_attr_static(far_clip_plane);
+        let attr_camera_scale = attrdb.create_attr_static(camera_scale);
+
+        let _node = sg.create_camera_node(
+            translate_attrs,
+            rotate_attrs,
+            scale_attrs,
+            attr_sensor_width,
+            attr_sensor_height,
+            attr_focal_length,
+            attr_lens_offset_x,
+            attr_lens_offset_y,
+            attr_near_clip_plane,
+            attr_far_clip_plane,
+            attr_camera_scale,
+            rotate_order,
+            film_fit,
+            render_image_width,
+            render_image_height,
+        );
+        assert_eq!(sg.num_camera_nodes(), 1);
+    }
+
+    #[test]
+    fn test_create_marker_node() {
+        let mut sg = SceneGraph::new();
+        let mut attrdb = AttrDataBlock::new();
+        assert_eq!(sg.num_marker_nodes(), 0);
+
+        let weight = 1.0;
+        let (tx, ty) = (0.0, 0.0);
+        let attr_tx = attrdb.create_attr_static(tx);
+        let attr_ty = attrdb.create_attr_static(ty);
+        let attr_weight = attrdb.create_attr_static(weight);
+        let _node = sg.create_marker_node((attr_tx, attr_ty), attr_weight);
+        assert_eq!(sg.num_marker_nodes(), 1);
+    }
 
     #[test]
     fn test_link_marker_to_camera() {

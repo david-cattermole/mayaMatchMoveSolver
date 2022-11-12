@@ -36,8 +36,10 @@ version = "0.29"
 default-features = false
 features = ["std", "matrixmultiply"]
 
-[dev-dependencies]
-criterion = "0.3.3"
+[dev-dependencies.criterion]
+version = "0.3.6"
+default-features = false
+features = ["html_reports"]
 
 [profile.release]
 opt-level = 3

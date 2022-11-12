@@ -21,7 +21,13 @@
 use criterion::measurement::WallTime;
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
+use rand::distributions::Uniform;
+use rand::thread_rng;
+use rand::Rng;
+
+use mmscenegraph_rust::attr::datablock::AttrDataBlock;
 use mmscenegraph_rust::constant::Matrix44;
+use mmscenegraph_rust::constant::Real;
 use mmscenegraph_rust::math::camera::get_projection_matrix;
 use mmscenegraph_rust::math::camera::FilmFit;
 use mmscenegraph_rust::math::reprojection::reproject_as_normalised_coord;
@@ -29,6 +35,15 @@ use mmscenegraph_rust::math::rotate::euler::RotateOrder;
 use mmscenegraph_rust::math::transform::calculate_matrix;
 use mmscenegraph_rust::math::transform::calculate_matrix_with_values;
 use mmscenegraph_rust::math::transform::Transform;
+use mmscenegraph_rust::node::traits::NodeHasId;
+use mmscenegraph_rust::node::NodeId;
+use mmscenegraph_rust::scene::bake::bake_scene_graph;
+use mmscenegraph_rust::scene::evaluationobjects::EvaluationObjects;
+use mmscenegraph_rust::scene::graph::SceneGraph;
+use mmscenegraph_rust::scene::helper::create_static_bundle;
+use mmscenegraph_rust::scene::helper::create_static_camera;
+use mmscenegraph_rust::scene::helper::create_static_marker;
+use mmscenegraph_rust::scene::helper::create_static_transform;
 
 fn bench_transform_calculate_matrix(c: &mut Criterion) {
     let tx = -2.0;
@@ -317,251 +332,376 @@ fn bench_reprojection(c: &mut Criterion) {
     });
 }
 
-// fn create_scene_normal(size: usize) -> mmsg::scene::SceneGraph {
-//     let mut scene = mmsg::scene::SceneGraph::new();
-//     let tfm_root = mmsg::scene::ROOT_INDEX;
+fn bench_construct_scene_graph_static_transforms(c: &mut Criterion) {
+    const MAX_MIN_TRANSLATE_VALUE: Real = 10000.0;
+    const MAX_MIN_ROTATE_VALUE: Real = 180.0;
+    const MAX_MIN_SCALE_VALUE: Real = 10000.0;
 
-//     const MAX_MIN_TRANSLATE_VALUE: Real = 10000.0;
-//     const MAX_MIN_ROTATE_VALUE: Real = 180.0;
-//     const MAX_MIN_SCALE_VALUE: Real = 10000.0;
+    let mut rng = thread_rng();
+    let translate_side =
+        Uniform::new(-MAX_MIN_TRANSLATE_VALUE, MAX_MIN_TRANSLATE_VALUE);
+    let rotate_side = Uniform::new(-MAX_MIN_ROTATE_VALUE, MAX_MIN_ROTATE_VALUE);
+    let scale_side = Uniform::new(-MAX_MIN_SCALE_VALUE, MAX_MIN_SCALE_VALUE);
 
-//     // Transform A (parented under to root)
-//     let mut rng = thread_rng();
-//     let translate_side = Uniform::new(-MAX_MIN_TRANSLATE_VALUE, MAX_MIN_TRANSLATE_VALUE);
-//     let rotate_side = Uniform::new(-MAX_MIN_ROTATE_VALUE, MAX_MIN_ROTATE_VALUE);
-//     let scale_side = Uniform::new(-MAX_MIN_SCALE_VALUE, MAX_MIN_SCALE_VALUE);
-//     for _ in 0..size {
-//         // Root Transform
-//         let parent_index = tfm_root;
-//         let tx = rng.sample(translate_side);
-//         let ty = rng.sample(translate_side);
-//         let tz = rng.sample(translate_side);
-//         let rx = rng.sample(rotate_side);
-//         let ry = rng.sample(rotate_side);
-//         let rz = rng.sample(rotate_side);
-//         let sx = rng.sample(scale_side);
-//         let sy = rng.sample(scale_side);
-//         let sz = rng.sample(scale_side);
-//         let tfm_a = mmsg::scene::add_transform_to_scene(
-//             tx,
-//             ty,
-//             tz,
-//             rx,
-//             ry,
-//             rz,
-//             sx,
-//             sy,
-//             sz,
-//             RotateOrder::ZXY,
-//             parent_index,
-//             &mut scene,
-//         );
+    c.bench_function("construct_scene_graph_static_transforms", |b| {
+        b.iter(|| {
+            let mut sg = SceneGraph::new();
+            let mut attrdb = AttrDataBlock::new();
 
-//         // Transform B (parented under Transform A)
-//         let parent_index = tfm_a;
-//         let tx = rng.sample(translate_side);
-//         let ty = rng.sample(translate_side);
-//         let tz = rng.sample(translate_side);
-//         let rx = rng.sample(rotate_side);
-//         let ry = rng.sample(rotate_side);
-//         let rz = rng.sample(rotate_side);
-//         let sx = rng.sample(scale_side);
-//         let sy = rng.sample(scale_side);
-//         let sz = rng.sample(scale_side);
-//         let tfm_b = mmsg::scene::add_transform_to_scene(
-//             tx,
-//             ty,
-//             tz,
-//             rx,
-//             ry,
-//             rz,
-//             sx,
-//             sy,
-//             sz,
-//             RotateOrder::ZXY,
-//             parent_index,
-//             &mut scene,
-//         );
+            for _ in 0..100 {
+                let rotate_order = RotateOrder::ZXY;
+                let tx = rng.sample(translate_side);
+                let ty = rng.sample(translate_side);
+                let tz = rng.sample(translate_side);
+                let rx = rng.sample(rotate_side);
+                let ry = rng.sample(rotate_side);
+                let rz = rng.sample(rotate_side);
+                let sx = rng.sample(scale_side);
+                let sy = rng.sample(scale_side);
+                let sz = rng.sample(scale_side);
+                create_static_transform(
+                    &mut sg,
+                    &mut attrdb,
+                    (tx, ty, tz),
+                    (rx, ry, rz),
+                    (sx, sy, sz),
+                    rotate_order,
+                );
+            }
+            black_box(sg.get_hierarchy_graph());
+        })
+    });
+}
 
-//         // Transform C (parented under root)
-//         let parent_index = tfm_root;
-//         let tx = rng.sample(translate_side);
-//         let ty = rng.sample(translate_side);
-//         let tz = rng.sample(translate_side);
-//         let rx = rng.sample(rotate_side);
-//         let ry = rng.sample(rotate_side);
-//         let rz = rng.sample(rotate_side);
-//         let sx = rng.sample(scale_side);
-//         let sy = rng.sample(scale_side);
-//         let sz = rng.sample(scale_side);
-//         let tfm_c = mmsg::scene::add_transform_to_scene(
-//             tx,
-//             ty,
-//             tz,
-//             rx,
-//             ry,
-//             rz,
-//             sx,
-//             sy,
-//             sz,
-//             RotateOrder::ZXY,
-//             parent_index,
-//             &mut scene,
-//         );
+fn bench_construct_scene_graph_hierarchy_transforms(c: &mut Criterion) {
+    const MAX_MIN_TRANSLATE_VALUE: Real = 10000.0;
+    const MAX_MIN_ROTATE_VALUE: Real = 180.0;
+    const MAX_MIN_SCALE_VALUE: Real = 10000.0;
 
-//         // Transform D (parented under Transform B)
-//         let parent_index = tfm_b;
-//         let tx = rng.sample(translate_side);
-//         let ty = rng.sample(translate_side);
-//         let tz = rng.sample(translate_side);
-//         let rx = rng.sample(rotate_side);
-//         let ry = rng.sample(rotate_side);
-//         let rz = rng.sample(rotate_side);
-//         let sx = rng.sample(scale_side);
-//         let sy = rng.sample(scale_side);
-//         let sz = rng.sample(scale_side);
-//         let tfm_d = mmsg::scene::add_transform_to_scene(
-//             tx,
-//             ty,
-//             tz,
-//             rx,
-//             ry,
-//             rz,
-//             sx,
-//             sy,
-//             sz,
-//             RotateOrder::ZXY,
-//             parent_index,
-//             &mut scene,
-//         );
+    let mut rng = thread_rng();
+    let translate_side =
+        Uniform::new(-MAX_MIN_TRANSLATE_VALUE, MAX_MIN_TRANSLATE_VALUE);
+    let rotate_side = Uniform::new(-MAX_MIN_ROTATE_VALUE, MAX_MIN_ROTATE_VALUE);
+    let scale_side = Uniform::new(-MAX_MIN_SCALE_VALUE, MAX_MIN_SCALE_VALUE);
 
-//         // Transform E (parented under Transform D)
-//         let parent_index = tfm_d;
-//         let tx = rng.sample(translate_side);
-//         let ty = rng.sample(translate_side);
-//         let tz = rng.sample(translate_side);
-//         let rx = rng.sample(rotate_side);
-//         let ry = rng.sample(rotate_side);
-//         let rz = rng.sample(rotate_side);
-//         let sx = rng.sample(scale_side);
-//         let sy = rng.sample(scale_side);
-//         let sz = rng.sample(scale_side);
-//         let tfm_e = mmsg::scene::add_transform_to_scene(
-//             tx,
-//             ty,
-//             tz,
-//             rx,
-//             ry,
-//             rz,
-//             sx,
-//             sy,
-//             sz,
-//             RotateOrder::ZXY,
-//             parent_index,
-//             &mut scene,
-//         );
+    c.bench_function("construct_scene_graph_hierarchy_transforms", |b| {
+        b.iter(|| {
+            let mut sg = SceneGraph::new();
+            let mut attrdb = AttrDataBlock::new();
 
-//         // Transform F (parented under Transform E)
-//         let parent_index = tfm_e;
-//         let tx = rng.sample(translate_side);
-//         let ty = rng.sample(translate_side);
-//         let tz = rng.sample(translate_side);
-//         let rx = rng.sample(rotate_side);
-//         let ry = rng.sample(rotate_side);
-//         let rz = rng.sample(rotate_side);
-//         let sx = rng.sample(scale_side);
-//         let sy = rng.sample(scale_side);
-//         let sz = rng.sample(scale_side);
-//         let tfm_f = mmsg::scene::add_transform_to_scene(
-//             tx,
-//             ty,
-//             tz,
-//             rx,
-//             ry,
-//             rz,
-//             sx,
-//             sy,
-//             sz,
-//             RotateOrder::ZXY,
-//             parent_index,
-//             &mut scene,
-//         );
+            // Transform A (parented under to root)
+            let rotate_order = RotateOrder::ZXY;
+            let tx = rng.sample(translate_side);
+            let ty = rng.sample(translate_side);
+            let tz = rng.sample(translate_side);
+            let rx = rng.sample(rotate_side);
+            let ry = rng.sample(rotate_side);
+            let rz = rng.sample(rotate_side);
+            let sx = rng.sample(scale_side);
+            let sy = rng.sample(scale_side);
+            let sz = rng.sample(scale_side);
+            let tfm_a = create_static_transform(
+                &mut sg,
+                &mut attrdb,
+                (tx, ty, tz),
+                (rx, ry, rz),
+                (sx, sy, sz),
+                rotate_order,
+            );
+            sg.set_node_parent(tfm_a.get_id(), NodeId::Root);
 
-//         // Transform G (parented under Transform F)
-//         let parent_index = tfm_f;
-//         let tx = rng.sample(translate_side);
-//         let ty = rng.sample(translate_side);
-//         let tz = rng.sample(translate_side);
-//         let rx = rng.sample(rotate_side);
-//         let ry = rng.sample(rotate_side);
-//         let rz = rng.sample(rotate_side);
-//         let sx = rng.sample(scale_side);
-//         let sy = rng.sample(scale_side);
-//         let sz = rng.sample(scale_side);
-//         let tfm_g = mmsg::scene::add_transform_to_scene(
-//             tx,
-//             ty,
-//             tz,
-//             rx,
-//             ry,
-//             rz,
-//             sx,
-//             sy,
-//             sz,
-//             RotateOrder::ZXY,
-//             parent_index,
-//             &mut scene,
-//         );
-//     }
+            // Transform B (parented under Transform A)
+            let tx = rng.sample(translate_side);
+            let ty = rng.sample(translate_side);
+            let tz = rng.sample(translate_side);
+            let rx = rng.sample(rotate_side);
+            let ry = rng.sample(rotate_side);
+            let rz = rng.sample(rotate_side);
+            let sx = rng.sample(scale_side);
+            let sy = rng.sample(scale_side);
+            let sz = rng.sample(scale_side);
+            let tfm_b = create_static_transform(
+                &mut sg,
+                &mut attrdb,
+                (tx, ty, tz),
+                (rx, ry, rz),
+                (sx, sy, sz),
+                rotate_order,
+            );
+            sg.set_node_parent(tfm_b.get_id(), tfm_a.get_id());
 
-//     scene
-// }
+            // Transform C (parented under root)
+            let tx = rng.sample(translate_side);
+            let ty = rng.sample(translate_side);
+            let tz = rng.sample(translate_side);
+            let rx = rng.sample(rotate_side);
+            let ry = rng.sample(rotate_side);
+            let rz = rng.sample(rotate_side);
+            let sx = rng.sample(scale_side);
+            let sy = rng.sample(scale_side);
+            let sz = rng.sample(scale_side);
+            let tfm_c = create_static_transform(
+                &mut sg,
+                &mut attrdb,
+                (tx, ty, tz),
+                (rx, ry, rz),
+                (sx, sy, sz),
+                rotate_order,
+            );
+            sg.set_node_parent(tfm_c.get_id(), NodeId::Root);
 
-// fn create_scene_depth(size: usize, depth: usize) -> mmsg::scene::SceneGraph {
-//     let mut scene = mmsg::scene::SceneGraph::new();
-//     let tfm_root = mmsg::scene::ROOT_INDEX;
+            // Transform D (parented under Transform B)
+            let tx = rng.sample(translate_side);
+            let ty = rng.sample(translate_side);
+            let tz = rng.sample(translate_side);
+            let rx = rng.sample(rotate_side);
+            let ry = rng.sample(rotate_side);
+            let rz = rng.sample(rotate_side);
+            let sx = rng.sample(scale_side);
+            let sy = rng.sample(scale_side);
+            let sz = rng.sample(scale_side);
+            let tfm_d = create_static_transform(
+                &mut sg,
+                &mut attrdb,
+                (tx, ty, tz),
+                (rx, ry, rz),
+                (sx, sy, sz),
+                rotate_order,
+            );
+            sg.set_node_parent(tfm_d.get_id(), tfm_b.get_id());
 
-//     const MAX_MIN_TRANSLATE_VALUE: Real = 100000.0;
-//     const MAX_MIN_ROTATE_VALUE: Real = 180.0;
-//     const MAX_MIN_SCALE_VALUE: Real = 1000.0;
+            // Transform E (parented under Transform D)
+            let tx = rng.sample(translate_side);
+            let ty = rng.sample(translate_side);
+            let tz = rng.sample(translate_side);
+            let rx = rng.sample(rotate_side);
+            let ry = rng.sample(rotate_side);
+            let rz = rng.sample(rotate_side);
+            let sx = rng.sample(scale_side);
+            let sy = rng.sample(scale_side);
+            let sz = rng.sample(scale_side);
+            let tfm_e = create_static_transform(
+                &mut sg,
+                &mut attrdb,
+                (tx, ty, tz),
+                (rx, ry, rz),
+                (sx, sy, sz),
+                rotate_order,
+            );
+            sg.set_node_parent(tfm_e.get_id(), tfm_d.get_id());
 
-//     let mut rng = thread_rng();
-//     let translate_side = Uniform::new(-MAX_MIN_TRANSLATE_VALUE, MAX_MIN_TRANSLATE_VALUE);
-//     let rotate_side = Uniform::new(-MAX_MIN_ROTATE_VALUE, MAX_MIN_ROTATE_VALUE);
-//     let scale_side = Uniform::new(-MAX_MIN_SCALE_VALUE, MAX_MIN_SCALE_VALUE);
-//     for _ in 0..size {
-//         let mut parent_index = tfm_root;
-//         for _j in 0..depth {
-//             // Transform (parented under previous transform)
-//             let tx = rng.sample(translate_side);
-//             let ty = rng.sample(translate_side);
-//             let tz = rng.sample(translate_side);
-//             let rx = rng.sample(rotate_side);
-//             let ry = rng.sample(rotate_side);
-//             let rz = rng.sample(rotate_side);
-//             let sx = rng.sample(scale_side);
-//             let sy = rng.sample(scale_side);
-//             let sz = rng.sample(scale_side);
-//             let tfm = mmsg::scene::add_transform_to_scene(
-//                 tx,
-//                 ty,
-//                 tz,
-//                 rx,
-//                 ry,
-//                 rz,
-//                 sx,
-//                 sy,
-//                 sz,
-//                 RotateOrder::ZXY,
-//                 parent_index,
-//                 &mut scene,
-//             );
-//             parent_index = tfm;
-//         }
-//     }
+            // Transform F (parented under Transform E)
+            let tx = rng.sample(translate_side);
+            let ty = rng.sample(translate_side);
+            let tz = rng.sample(translate_side);
+            let rx = rng.sample(rotate_side);
+            let ry = rng.sample(rotate_side);
+            let rz = rng.sample(rotate_side);
+            let sx = rng.sample(scale_side);
+            let sy = rng.sample(scale_side);
+            let sz = rng.sample(scale_side);
+            let tfm_f = create_static_transform(
+                &mut sg,
+                &mut attrdb,
+                (tx, ty, tz),
+                (rx, ry, rz),
+                (sx, sy, sz),
+                rotate_order,
+            );
+            sg.set_node_parent(tfm_f.get_id(), tfm_e.get_id());
 
-//     scene
-// }
+            // Transform G (parented under Transform F)
+            let tx = rng.sample(translate_side);
+            let ty = rng.sample(translate_side);
+            let tz = rng.sample(translate_side);
+            let rx = rng.sample(rotate_side);
+            let ry = rng.sample(rotate_side);
+            let rz = rng.sample(rotate_side);
+            let sx = rng.sample(scale_side);
+            let sy = rng.sample(scale_side);
+            let sz = rng.sample(scale_side);
+            let tfm_g = create_static_transform(
+                &mut sg,
+                &mut attrdb,
+                (tx, ty, tz),
+                (rx, ry, rz),
+                (sx, sy, sz),
+                rotate_order,
+            );
+            sg.set_node_parent(tfm_g.get_id(), tfm_f.get_id());
+
+            black_box(sg.get_hierarchy_graph());
+        })
+    });
+}
+
+fn bench_construct_scene_graph_depth_transforms(c: &mut Criterion) {
+    const MAX_MIN_TRANSLATE_VALUE: Real = 10000.0;
+    const MAX_MIN_ROTATE_VALUE: Real = 180.0;
+    const MAX_MIN_SCALE_VALUE: Real = 10000.0;
+
+    let mut rng = thread_rng();
+    let translate_side =
+        Uniform::new(-MAX_MIN_TRANSLATE_VALUE, MAX_MIN_TRANSLATE_VALUE);
+    let rotate_side = Uniform::new(-MAX_MIN_ROTATE_VALUE, MAX_MIN_ROTATE_VALUE);
+    let scale_side = Uniform::new(-MAX_MIN_SCALE_VALUE, MAX_MIN_SCALE_VALUE);
+
+    c.bench_function("construct_scene_graph_depth_transforms", |b| {
+        b.iter(|| {
+            let mut sg = SceneGraph::new();
+            let mut attrdb = AttrDataBlock::new();
+
+            let mut parent_index = NodeId::Root;
+
+            for _ in 0..100 {
+                // Transform (parented under previous transform)
+                let rotate_order = RotateOrder::ZXY;
+                let tx = rng.sample(translate_side);
+                let ty = rng.sample(translate_side);
+                let tz = rng.sample(translate_side);
+                let rx = rng.sample(rotate_side);
+                let ry = rng.sample(rotate_side);
+                let rz = rng.sample(rotate_side);
+                let sx = rng.sample(scale_side);
+                let sy = rng.sample(scale_side);
+                let sz = rng.sample(scale_side);
+                let tfm = create_static_transform(
+                    &mut sg,
+                    &mut attrdb,
+                    (tx, ty, tz),
+                    (rx, ry, rz),
+                    (sx, sy, sz),
+                    rotate_order,
+                );
+                let tfm_node_id = tfm.get_id();
+                sg.set_node_parent(tfm_node_id, parent_index);
+                parent_index = tfm_node_id;
+            }
+
+            black_box(sg.get_hierarchy_graph());
+        })
+    });
+}
+
+fn bench_construct_and_evaluate_scene_graph(c: &mut Criterion) {
+    const MAX_MIN_TRANSLATE_VALUE: Real = 10000.0;
+    const MAX_MIN_ROTATE_VALUE: Real = 180.0;
+    const MAX_MIN_SCALE_VALUE: Real = 10000.0;
+    const MAX_MIN_MARKER_VALUE: Real = 0.5;
+
+    let mut rng = thread_rng();
+    let translate_side =
+        Uniform::new(-MAX_MIN_TRANSLATE_VALUE, MAX_MIN_TRANSLATE_VALUE);
+    let rotate_side = Uniform::new(-MAX_MIN_ROTATE_VALUE, MAX_MIN_ROTATE_VALUE);
+    let scale_side = Uniform::new(-MAX_MIN_SCALE_VALUE, MAX_MIN_SCALE_VALUE);
+    let marker_side = Uniform::new(-MAX_MIN_MARKER_VALUE, MAX_MIN_MARKER_VALUE);
+
+    c.bench_function("construct_and_evaluate_scene_graph", |b| {
+        b.iter(|| {
+            let mut sg = SceneGraph::new();
+            let mut attrdb = AttrDataBlock::new();
+            let mut eval_objects = EvaluationObjects::new();
+
+            let tx = rng.sample(translate_side);
+            let ty = rng.sample(translate_side);
+            let tz = rng.sample(translate_side);
+            let rx = rng.sample(rotate_side);
+            let ry = rng.sample(rotate_side);
+            let rz = rng.sample(rotate_side);
+            let cam = create_static_camera(
+                &mut sg,
+                &mut attrdb,
+                (tx, ty, tz),
+                (rx, ry, rz),
+                // Cameras should always have no scale values.
+                (1.0, 1.0, 1.0),
+                (36.0, 24.0),
+                35.0,
+                (0.0, 0.0),
+                1.0,
+                10000.0,
+                1.0,
+                RotateOrder::ZXY,
+                FilmFit::Horizontal,
+                2048,
+                2048,
+            );
+            eval_objects.add_camera(cam);
+
+            let rotate_order = RotateOrder::ZXY;
+            for _ in 0..100 {
+                let tx = rng.sample(translate_side);
+                let ty = rng.sample(translate_side);
+                let tz = rng.sample(translate_side);
+                let rx = rng.sample(rotate_side);
+                let ry = rng.sample(rotate_side);
+                let rz = rng.sample(rotate_side);
+                let sx = rng.sample(scale_side);
+                let sy = rng.sample(scale_side);
+                let sz = rng.sample(scale_side);
+                let tfm = create_static_transform(
+                    &mut sg,
+                    &mut attrdb,
+                    (tx, ty, tz),
+                    (rx, ry, rz),
+                    (sx, sy, sz),
+                    rotate_order,
+                );
+
+                let tx = rng.sample(translate_side);
+                let ty = rng.sample(translate_side);
+                let tz = rng.sample(translate_side);
+                let rx = rng.sample(rotate_side);
+                let ry = rng.sample(rotate_side);
+                let rz = rng.sample(rotate_side);
+                let sx = rng.sample(scale_side);
+                let sy = rng.sample(scale_side);
+                let sz = rng.sample(scale_side);
+                let bnd = create_static_bundle(
+                    &mut sg,
+                    &mut attrdb,
+                    (tx, ty, tz),
+                    (rx, ry, rz),
+                    (sx, sy, sz),
+                    rotate_order,
+                );
+
+                let mkr_tx = rng.sample(marker_side);
+                let mkr_ty = rng.sample(marker_side);
+                let mkr = create_static_marker(
+                    &mut sg,
+                    &mut attrdb,
+                    (mkr_tx, mkr_ty),
+                    1.0,
+                );
+
+                sg.set_node_parent(bnd.get_id(), tfm.get_id());
+                sg.link_marker_to_camera(mkr.get_id(), cam.get_id());
+                sg.link_marker_to_bundle(mkr.get_id(), bnd.get_id());
+
+                eval_objects.add_marker(mkr);
+                eval_objects.add_bundle(bnd);
+            }
+
+            let mut flat_scene = bake_scene_graph(&sg, &eval_objects);
+
+            let mut frame_list = Vec::new();
+            for frame in 1001..1121 {
+                frame_list.push(frame);
+            }
+
+            flat_scene.evaluate(&attrdb, &frame_list);
+
+            let out_point_list = flat_scene.points();
+            black_box(out_point_list);
+            let points_iter = out_point_list.chunks_exact(2);
+            for (i, point) in (0..).zip(points_iter) {
+                black_box(i);
+                black_box(point);
+            }
+        })
+    });
+}
 
 // fn bench_compute_dag_matrices_deep(c: &mut Criterion) {
 //     let mut group = c.benchmark_group("dag::compute_matrices (deep graph)");
@@ -793,6 +933,10 @@ criterion_group!(
         bench_camera_get_projection_matrix,
         bench_reprojection_reproject_as_normalised_coord,
         bench_reprojection,
+        bench_construct_scene_graph_static_transforms,
+        bench_construct_scene_graph_hierarchy_transforms,
+        bench_construct_scene_graph_depth_transforms,
+        bench_construct_and_evaluate_scene_graph,
         // bench_compute_dag_matrices,
         // bench_compute_dag_matrices_deep,
         // bench_compute_dag_matrices_wide

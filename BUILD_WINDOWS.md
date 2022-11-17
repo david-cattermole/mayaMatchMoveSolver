@@ -9,7 +9,6 @@ to build the entire project and dependencies:
 On Windows:
 ```cmd
 > CD <project root>
-> scripts\build_thirdparty_windows64_mayaXXXX.bat
 > scripts\build_mmSolver_windows64_mayaXXXX.bat
 ```
 
@@ -35,51 +34,28 @@ It is *important* you use the `x64` Command Prompt, *not*
 mmSolver has a few dependencies, and are listed in
 [BUILD.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/BUILD.md#dependencies).
 
-The dependencies can be easily downloaded and built for mmSolver using
-build scripts provided in the `<project root>/scripts` directory.
+The third-party dependencies are downloaded and built for
+mmSolver automatically using the standard build script
+`<project root>/scripts/build_mmSolver_windows64_mayaXXXX.bat`
+(see below).
 
-On Windows:
-```cmd
-> CD <project root>
-> scripts\build_thirdparty_windows64_mayaXXXX.bat
-```
-
-Note: Replace XXXX, with the Maya version to build for.
-
-If the commands above have worked, you should see the following
-directories under `<project root>\external\install`.
-
-- cminpack
-- eigen
-- libmv
-- openMVG
-
-These dependencies will automatically be found by the mmSolver build
-script and installed.
+Using the CMake configuration, you can override the third-party
+dependencies Git repositories URLs as needed - use `cmake-gui` to see
+and configure the CMake variables.
 
 # Build mmSolver
-
-After installing Third-party dependencies, you can now build mmSolver.
 
 Run these commands, on Windows:
 ```cmd
 > CD <project root>
 > scripts\build_mmSolver_windows64_mayaXXXX.bat
 
-# Run tests (optional but encouraged)
-> CD build
-> NMAKE test
-< CD ..
+# Run tests (optional, but encouraged)
+> CD <project root>
+> "C:\Program Files\Autodesk\MayaVERSION\bin\mayapy.exe" tests\runTests.py > tests.log
 ```
 
 Note: Replace XXXX, with the Maya version to build for.
-
-The build script (using CMake) will perform the following tasks:
- - Build documentation using Sphinx.
- - Compile Qt Designer .ui files into a format for Maya's version of
-   Qt (PySide or PySide2).
- - Create a module (.mod) with configuration options.
- - Copy all needed files (including dependencies) into a module.
 
 Following the steps above you will have the Maya plug-in compiled, and
 installed into your `%USERPROFILE%\maya\MAYA_VERSION\modules` directory.
@@ -154,25 +130,25 @@ $ cd ~/dev/mayaMatchMoveSolver_maya2023Deploy_windows64/; git fetch --all; git c
 Run in the Windows Command Prompt:
 ```cmd
 REM Maya 2016 - Visual Studio 2012
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2016Deploy_windows64 && scripts\build_thirdparty_windows64_maya2016.bat && scripts\build_mmSolver_windows64_maya2016.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2016Deploy_windows64 && scripts\build_mmSolver_windows64_maya2016.bat
 
 REM Maya 2017 - Visual Studio 2012
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2017Deploy_windows64 && scripts\build_thirdparty_windows64_maya2017.bat && scripts\build_mmSolver_windows64_maya2017.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2017Deploy_windows64 && scripts\build_mmSolver_windows64_maya2017.bat
 
 REM Maya 2018 - Visual Studio 2015:
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2018Deploy_windows64 && scripts\build_thirdparty_windows64_maya2018.bat && scripts\build_mmSolver_windows64_maya2018.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2018Deploy_windows64 && scripts\build_mmSolver_windows64_maya2018.bat
 
 REM Maya 2019 - Visual Studio 2015:
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2019Deploy_windows64 && scripts\build_thirdparty_windows64_maya2019.bat && scripts\build_mmSolver_windows64_maya2019.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2019Deploy_windows64 && scripts\build_mmSolver_windows64_maya2019.bat
 
 REM Maya 2020 - Visual Studio 2017:
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2020Deploy_windows64 && scripts\build_thirdparty_windows64_maya2020.bat && scripts\build_mmSolver_windows64_maya2020.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2020Deploy_windows64 && scripts\build_mmSolver_windows64_maya2020.bat
 
 REM Maya 2022 - Visual Studio 2019:
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2022Deploy_windows64 && scripts\build_thirdparty_windows64_maya2022.bat && scripts\build_mmSolver_windows64_maya2022.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2022Deploy_windows64 && scripts\build_mmSolver_windows64_maya2022.bat
 
 REM Maya 2023 - Visual Studio 2019:
-> cd %userprofile%\dev\mayaMatchMoveSolver_maya2023Deploy_windows64 && scripts\build_thirdparty_windows64_maya2023.bat && scripts\build_mmSolver_windows64_maya2023.bat
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2023Deploy_windows64 && scripts\build_mmSolver_windows64_maya2023.bat
 ```
 
 NOTE: Starting in mmSolver v0.4.0, the Visual Studio compiler version

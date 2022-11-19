@@ -410,8 +410,9 @@ Animated.</p></td>
 <section id="solver-tabs">
 <h2>Solver Tabs<a class="headerlink" href="#solver-tabs" title="Permalink to this heading">#</a></h2>
 <p>The Solver tabs define the different solvers and the options for each
-solver. The different solvers tabs share options, such as frame range,
-but each Solver tab is independent.</p>
+solver. The different solvers tabs share
+<a class="reference internal" href="#solver-ui-common-solver-options-ref"><span class="std std-ref">Common Solver Options</span></a>, such as frame range, but
+each Solver tab is independent.</p>
 <p>The documentation for each Solver tab is below.</p>
 <div class="toctree-wrapper compound">
 <ul>
@@ -423,12 +424,16 @@ but each Solver tab is independent.</p>
 </li>
 </ul>
 </div>
+</section>
 <section id="common-solver-options">
-<h3>Common Solver Options<a class="headerlink" href="#common-solver-options" title="Permalink to this heading">#</a></h3>
+<span id="solver-ui-common-solver-options-ref"></span><h2>Common Solver Options<a class="headerlink" href="#common-solver-options" title="Permalink to this heading">#</a></h2>
 <p>The options below are the same on one or many of the Solver tabs.</p>
 <section id="frames">
-<h4>Frames<a class="headerlink" href="#frames" title="Permalink to this heading">#</a></h4>
+<h3>Frames<a class="headerlink" href="#frames" title="Permalink to this heading">#</a></h3>
 <p>The Frames option defines the list of frames to be solved.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/tools_solver_ui_solver_options_frames.png"><img alt="Solver Frame Options" src="_images/tools_solver_ui_solver_options_frames.png" style="width: 629.0px; height: 39.0px;" /></a>
+</figure>
 <p>Choose one of the options:</p>
 <div class="table-wrapper colwidths-auto docutils container" id="id4">
 <table class="docutils align-default" id="id4">
@@ -465,7 +470,10 @@ currently created, and then reducing this number to ‘1’ to solve each
 frame.</p>
 </section>
 <section id="user-and-root-frames">
-<h4>User and Root Frames<a class="headerlink" href="#user-and-root-frames" title="Permalink to this heading">#</a></h4>
+<h3>User and Root Frames<a class="headerlink" href="#user-and-root-frames" title="Permalink to this heading">#</a></h3>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/tools_solver_ui_solver_options_user_root_frames.png"><img alt="Solver User and Root Frame Options" src="_images/tools_solver_ui_solver_options_user_root_frames.png" style="width: 627.0px; height: 63.0px;" /></a>
+</figure>
 <p>The <cite>Root Frames</cite> are used to solve static and animated attributes,
 and are therefore not used with the <a class="reference internal" href="tools_solver_ui_tab_basic.html#basic-solver-tab-heading"><span class="std std-ref">Basic Solver Tab</span></a>.  <cite>Root Frames</cite> are chosen manually using
 the <cite>User Frames</cite> field, and automatically using the <cite>Per-Marker</cite> and
@@ -495,14 +503,14 @@ frames.</p>
 </ul>
 </section>
 <section id="solve-all-at-once">
-<h4>Solve All at Once<a class="headerlink" href="#solve-all-at-once" title="Permalink to this heading">#</a></h4>
+<h3>Solve All at Once<a class="headerlink" href="#solve-all-at-once" title="Permalink to this heading">#</a></h3>
 <p><cite>Solve All at Once</cite> will solve all frames in a single solver
 step. This is the most accurate method of solving, because all
 Attributes and Frames are considered when reducing the error, however
 this is much slower.</p>
 </section>
 <section id="solve-only-root-frames">
-<h4>Solve Only Root Frames<a class="headerlink" href="#solve-only-root-frames" title="Permalink to this heading">#</a></h4>
+<h3>Solve Only Root Frames<a class="headerlink" href="#solve-only-root-frames" title="Permalink to this heading">#</a></h3>
 <p><cite>Solve Only Root Frames</cite> will skip the last solver step when solving
 only animated attributes for the full frame range. As a result only
 <cite>Root Frames</cite> are solved and all other frames will not have keyframes.</p>
@@ -512,21 +520,21 @@ confident your static values are correct you may re-enable this
 option, or solve with the <a class="reference internal" href="tools_solver_ui_tab_basic.html#basic-solver-tab-heading"><span class="std std-ref">Basic Solver Tab</span></a>.</p>
 </section>
 <section id="solve-focal-length">
-<h4>Solve Focal Length<a class="headerlink" href="#solve-focal-length" title="Permalink to this heading">#</a></h4>
+<h3>Solve Focal Length<a class="headerlink" href="#solve-focal-length" title="Permalink to this heading">#</a></h3>
 <p>A toggle to allow focal length attributes to be solved. If this value
 is disabled, all camera focal length attributes will be ignored. This
 option is helpful to quickly enable/disable focal length attributes in
 the solver.</p>
 </section>
 <section id="solve-lens-distortion">
-<h4>Solve Lens Distortion<a class="headerlink" href="#solve-lens-distortion" title="Permalink to this heading">#</a></h4>
+<h3>Solve Lens Distortion<a class="headerlink" href="#solve-lens-distortion" title="Permalink to this heading">#</a></h3>
 <p>A toggle to allow lens distortion attributes to be solved. If this
 value is disabled, all camera lens distortion attributes will be
 ignored. This option is helpful to quickly enable/disable lens
 distortion attributes in the solver.</p>
 </section>
 <section id="evaluate-mesh-rivets">
-<h4>Evaluate Mesh Rivets<a class="headerlink" href="#evaluate-mesh-rivets" title="Permalink to this heading">#</a></h4>
+<h3>Evaluate Mesh Rivets<a class="headerlink" href="#evaluate-mesh-rivets" title="Permalink to this heading">#</a></h3>
 <p>When enabled, <em>Evaluate Mesh Rivets</em> will change the internal
 evaluation method to help solve “complex” node networks (such as Mesh
 Rivets which have cyclical node connection networks).</p>
@@ -540,7 +548,6 @@ this feature enabled.</p>
 <p>In mmSolver v0.3.x, this feature was known as <em>Evaluate
 Complex Node Graphs</em>.</p>
 </div>
-</section>
 </section>
 </section>
 <section id="menus">
@@ -742,7 +749,7 @@ custom buttons to be created.</p>
 <li><a class="reference internal" href="#">Solver UI</a><ul>
 <li><a class="reference internal" href="#input-objects">Input Objects</a></li>
 <li><a class="reference internal" href="#output-attributes">Output Attributes</a></li>
-<li><a class="reference internal" href="#solver-tabs">Solver Tabs</a><ul>
+<li><a class="reference internal" href="#solver-tabs">Solver Tabs</a></li>
 <li><a class="reference internal" href="#common-solver-options">Common Solver Options</a><ul>
 <li><a class="reference internal" href="#frames">Frames</a></li>
 <li><a class="reference internal" href="#user-and-root-frames">User and Root Frames</a></li>
@@ -751,8 +758,6 @@ custom buttons to be created.</p>
 <li><a class="reference internal" href="#solve-focal-length">Solve Focal Length</a></li>
 <li><a class="reference internal" href="#solve-lens-distortion">Solve Lens Distortion</a></li>
 <li><a class="reference internal" href="#evaluate-mesh-rivets">Evaluate Mesh Rivets</a></li>
-</ul>
-</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#menus">Menus</a><ul>

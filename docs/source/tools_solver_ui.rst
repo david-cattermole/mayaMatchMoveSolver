@@ -90,8 +90,9 @@ Solver Tabs
 ~~~~~~~~~~~
 
 The Solver tabs define the different solvers and the options for each
-solver. The different solvers tabs share options, such as frame range,
-but each Solver tab is independent.
+solver. The different solvers tabs share
+:ref:`solver-ui-common-solver-options-ref`, such as frame range, but
+each Solver tab is independent.
 
 The documentation for each Solver tab is below.
 
@@ -102,15 +103,22 @@ The documentation for each Solver tab is below.
     tools_solver_ui_tab_standard
     tools_solver_ui_tab_camera
 
+.. _solver-ui-common-solver-options-ref:
+
 Common Solver Options
-+++++++++++++++++++++
+~~~~~~~~~~~~~~~~~~~~~
 
 The options below are the same on one or many of the Solver tabs.
 
 Frames
-------
+++++++
 
 The Frames option defines the list of frames to be solved.
+
+.. figure:: images/tools_solver_ui_solver_options_frames.png
+    :alt: Solver Frame Options
+    :align: center
+    :scale: 100%
 
 Choose one of the options:
 
@@ -133,6 +141,7 @@ Choose one of the options:
    * - Custom Frames
      - Manually type the frame numbers to be solved.
 
+
 The frame numbers can be entered as '#-#' to define a range, or
 '#,#,#,#' to define a list of individual frame numbers. Examples are
 '1,10,20,30,40,50' or '10-20,30,40-50'.
@@ -145,7 +154,12 @@ currently created, and then reducing this number to '1' to solve each
 frame.
 
 User and Root Frames
---------------------
+++++++++++++++++++++
+
+.. figure:: images/tools_solver_ui_solver_options_user_root_frames.png
+    :alt: Solver User and Root Frame Options
+    :align: center
+    :scale: 100%
 
 The `Root Frames` are used to solve static and animated attributes,
 and are therefore not used with the :ref:`Basic Solver Tab
@@ -185,7 +199,7 @@ Therefore the full list of iterations look like this...
 - Iteration 5: ``1,7,13,19,25,31,37,43,48,54,60,66,72,78,84,90,95``
 
 Solve All at Once
------------------
++++++++++++++++++
 
 `Solve All at Once` will solve all frames in a single solver
 step. This is the most accurate method of solving, because all
@@ -193,7 +207,7 @@ Attributes and Frames are considered when reducing the error, however
 this is much slower.
 
 Solve Only Root Frames
-----------------------
+++++++++++++++++++++++
 
 `Solve Only Root Frames` will skip the last solver step when solving
 only animated attributes for the full frame range. As a result only
@@ -206,7 +220,7 @@ option, or solve with the :ref:`Basic Solver Tab
 <basic-solver-tab-heading>`.
 
 Solve Focal Length
-------------------
+++++++++++++++++++
 
 A toggle to allow focal length attributes to be solved. If this value
 is disabled, all camera focal length attributes will be ignored. This
@@ -214,7 +228,7 @@ option is helpful to quickly enable/disable focal length attributes in
 the solver.
 
 Solve Lens Distortion
----------------------
++++++++++++++++++++++
 
 A toggle to allow lens distortion attributes to be solved. If this
 value is disabled, all camera lens distortion attributes will be
@@ -222,7 +236,7 @@ ignored. This option is helpful to quickly enable/disable lens
 distortion attributes in the solver.
 
 Evaluate Mesh Rivets
---------------------
+++++++++++++++++++++
 
 When enabled, *Evaluate Mesh Rivets* will change the internal
 evaluation method to help solve "complex" node networks (such as Mesh

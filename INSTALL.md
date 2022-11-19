@@ -190,4 +190,4 @@ included in the 'blender' directory.
 
 If you wish to use Blender's 2D tracking featurs along with mmSolver
 please see the documentation for installation and usage tips:
-https://david-cattermole.github.io/mayaMatchMoveSolver/tools_createnode.html#copy-2d-tracks-from-blender
+https://david-cattermole.github.io/mayaMatchMoveSolver/tools_inputoutput.html#copy-2d-tracks-from-blender

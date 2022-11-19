@@ -128,6 +128,11 @@ Create a MM Solver ImagePlane node, with the chosen image file
    Maya's ``file`` node, but can be buggy when reading image
    sequences.
 
+.. figure:: images/tools_create_mm_image_plane.png
+    :alt: MM Image Plane
+    :align: center
+    :width: 90%
+
 Usage:
 
 1) Activate 3D viewport or select camera node(s).

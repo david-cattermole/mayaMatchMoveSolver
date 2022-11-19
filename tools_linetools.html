@@ -451,21 +451,168 @@ need to square.</p>
 </section>
 <section id="tool-usage">
 <span id="camera-calibration-tool-usage-tool-ref"></span><h3>Tool Usage<a class="headerlink" href="#tool-usage" title="Permalink to this heading">#</a></h3>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/tools_camera_calibration_setup.png"><img alt="Camera Calibration Setup" src="_images/tools_camera_calibration_setup.png" style="width: 90%;" /></a>
+</figure>
 <ol class="arabic simple">
-<li><p>Create default setup.</p></li>
-<li><p>Add image plane file path.</p></li>
-<li><p>Set markers for lines.</p></li>
-<li><p>Press “update”.</p></li>
-<li><p>Repeat steps 3 to 5 until the desired calibration is found.</p></li>
+<li><p>Create a Calibration set up with the <code class="docutils literal notranslate"><span class="pre">mmSolver</span> <span class="pre">&gt;</span> <span class="pre">Line</span> <span class="pre">Tools</span> <span class="pre">&gt;</span>
+<span class="pre">Create</span> <span class="pre">Camera</span> <span class="pre">Calibration</span> <span class="pre">Setup</span></code> menu.</p></li>
+<li><p>Select the <code class="docutils literal notranslate"><span class="pre">mmImagePlane1</span></code> node and set the image to point to your image(s).
+Add image plane file path.</p></li>
+<li><p>Select the <code class="docutils literal notranslate"><span class="pre">calibrationCamera</span></code> node, and navigate to the
+<code class="docutils literal notranslate"><span class="pre">mmCameraCalibrate1</span></code> node - this node is reponsible for
+calculating the camera translation, rotation, focal length, and
+film back (camera aperture).</p>
+<ul class="simple">
+<li><p>Change <em>Calibration Mode</em> depending on how many lines you can see
+in your image: <code class="docutils literal notranslate"><span class="pre">OneVanishingPoint</span></code>,
+<code class="docutils literal notranslate"><span class="pre">OneVanishingPointAndHorizon</span></code> or <code class="docutils literal notranslate"><span class="pre">TwoVanishingPoints</span></code>. See
+<a class="reference internal" href="#camera-calibration-use-cases-tool-ref"><span class="std std-ref">Calibration Use Cases</span></a> (above) to understand
+the meaning of vanishing points. This value changes which <em>Axis</em>
+lines are used to compute the camera calibration and imposes
+limitations on what can be computed by the tool - for example the
+Camera focal length cannot be estimated using only 1 vanishing
+point.</p></li>
+<li><p>Change <em>Camera Aperture</em> width if the value is known.</p></li>
+<li><p>Change <em>Image Pixel Aspect Ratio</em> to a value other than 1.0 (such
+as 2.0 or 1.8) depending on the shot/image you are using. For
+example if your image was captured using an Anamorphic lens and
+the input image is not “desqueezed” set your pixel aspect ratio
+here.</p></li>
+</ul>
+</li>
+<li><p>Set the lines based on the parallel lines in the shot.</p>
+<ul class="simple">
+<li><p>Move the <code class="docutils literal notranslate"><span class="pre">origin_point</span></code> to the intended (2D) origin. This 2D
+point is where the 3D origin (0.0, 0.0, 0.0) will be placed. For
+example, place the origin at a corner of a building to make it
+easier to easily create models that line up with the corner of
+the building.</p></li>
+<li><p>Select Markers under <code class="docutils literal notranslate"><span class="pre">axis1_lineA_LN</span></code> and adjust to align the
+Line with the a parallel line that is visible in your
+shot. Repeat for <code class="docutils literal notranslate"><span class="pre">axis1_lineB_LN</span></code> so that both lines are aimed
+along the same axis.</p></li>
+<li><p>If the <em>Calibration Mode</em> is <code class="docutils literal notranslate"><span class="pre">TwoVanishingPoints</span></code>, align the
+<code class="docutils literal notranslate"><span class="pre">axis2</span></code> lines as well.</p></li>
+<li><p>If the <em>Calibration Mode</em> is <code class="docutils literal notranslate"><span class="pre">OneVanishingPointAndHorizon</span></code>,
+unhide <code class="docutils literal notranslate"><span class="pre">horizon_line_LN</span></code> and set the line to match the horizon
+line.</p></li>
+</ul>
+</li>
+<li><p>“Update” the calibration with the <code class="docutils literal notranslate"><span class="pre">mmSolver</span> <span class="pre">&gt;</span> <span class="pre">Line</span> <span class="pre">Tools</span> <span class="pre">&gt;</span> <span class="pre">Update</span>
+<span class="pre">Camera</span> <span class="pre">Calibration</span></code> menu to calculate the camera orientation.</p></li>
+<li><p>Repeat steps 3 to 5 until the desired calibration is found.</p>
+<ul class="simple">
+<li><p>If the parallel lines in your image are long enough, you can
+estimate lens distortion values using the following steps.</p></li>
+</ul>
+</li>
 </ol>
+<ol class="arabic simple" start="8">
+<li><p>Select the Line nodes in the Outliner and use the
+<a class="reference internal" href="#subdivide-line-tool-ref"><span class="std std-ref">Subdivide Line</span></a> tool to add more Markers to define the
+line.</p>
+<ul class="simple">
+<li><p>Move the Markers to match the straight edges in your image and
+repeat by adding more Markers as needed.</p></li>
+</ul>
+</li>
+<li><p>Select the camera node in the Outliner and use the <em>Camera Context
+Menu</em> to add a <em>Lens</em> to the camera.</p></li>
+<li><p>Then open the <a class="reference internal" href="tools_solver_ui.html#solver-ui-ref"><span class="std std-ref">Solver UI</span></a> and add the <em>Lines</em> you want to
+solve with to the <em>Input Objects</em>.</p></li>
+<li><p>Select the lens distortion attributes (in the channel box), and
+add them to the Solver UI <em>Output Attributes</em>.</p></li>
+<li><p>Switch to the <a class="reference internal" href="tools_solver_ui_tab_standard.html#standard-solver-tab-heading"><span class="std std-ref">Standard Solver Tab</span></a> and press
+<em>Solve</em>.</p></li>
+<li><p>After the lens distortion is solved, use <code class="docutils literal notranslate"><span class="pre">mmSolver</span> <span class="pre">&gt;</span> <span class="pre">Line</span> <span class="pre">Tools</span> <span class="pre">&gt;</span>
+<span class="pre">Update</span> <span class="pre">Camera</span> <span class="pre">Calibration</span></code> menu to update the camera again with
+the straightened lines.</p></li>
+</ol>
+</section>
+<section id="node-options">
+<span id="camera-calibration-node-options-tool-ref"></span><h3>Node Options<a class="headerlink" href="#node-options" title="Permalink to this heading">#</a></h3>
+<p>The <em>Camera Calibration</em> tool is driven by the <cite>mmCameraCalibrate</cite>
+node and calculates the camera translation, rotation, and focal
+length. The options below explain how the camera values are calculated
+using this.</p>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/tools_camera_calibration_node_options.png"><img alt="Calibration Node Options" src="_images/tools_camera_calibration_node_options.png" style="width: 60%;" /></a>
+</figure>
+<div class="table-wrapper colwidths-auto docutils container" id="id1">
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Calibration Node Options</span><a class="headerlink" href="#id1" title="Permalink to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Calibration Mode</p></td>
+<td><p>Controls how the axis lines are used to calculate the camera
+calibration. <code class="docutils literal notranslate"><span class="pre">OneVanishingPoint</span></code> will use just <code class="docutils literal notranslate"><span class="pre">axis1</span></code>
+lines to calculate the camera tilt and pan (rotation X and Y)
+and translation. Addtionally <code class="docutils literal notranslate"><span class="pre">OneVanishingPointAndHorizon</span></code>
+uses the <code class="docutils literal notranslate"><span class="pre">horizon_line_LN</span></code> line to define the camera roll
+(rotation Z). <code class="docutils literal notranslate"><span class="pre">TwoVanishingPoints</span></code> uses only <code class="docutils literal notranslate"><span class="pre">axis1</span></code> and
+<code class="docutils literal notranslate"><span class="pre">axis2</span></code> lines to compute the camera tilt, pan, roll (rotation
+X, Y and Z), translation as well as the camera focal length.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Focal Length</p></td>
+<td><p>Defines the camera focal length, when <code class="docutils literal notranslate"><span class="pre">OneVanishingPoint</span></code> or
+<code class="docutils literal notranslate"><span class="pre">OneVanishingPointAndHorizon</span></code> is used.</p></td>
+</tr>
+<tr class="row-even"><td><p>Camera Aperture</p></td>
+<td><p>Defines the camera aperture (film back or sensor size)
+width. The height is automatically calculated from the loaded
+image width and height.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Image Width/Height</p></td>
+<td><p>Used to define teh <em>Camera Aperture</em> height and is
+automatically connected to the MM Image Plane outputs.</p></td>
+</tr>
+<tr class="row-even"><td><p>Image Pixel Aspect Ratio</p></td>
+<td><p>The pixel aspect ratio of the input image. For example if your
+image was captured using an Anamorphic lens and the input image
+is not “desqueezed” set the pixel aspect ratio.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Scene Scale Mode</p></td>
+<td><p>The scale of the computed translation values is can be
+calculated with <code class="docutils literal notranslate"><span class="pre">UniformScale</span></code> or
+<code class="docutils literal notranslate"><span class="pre">CameraHeight</span></code>. <code class="docutils literal notranslate"><span class="pre">CameraHeight</span></code> should be used if the height
+of camera taking the image is (roughly) known, in all other
+cases, <code class="docutils literal notranslate"><span class="pre">Uniform</span> <span class="pre">Scale</span></code> is the best option.</p></td>
+</tr>
+<tr class="row-even"><td><p>Uniform Scale</p></td>
+<td><p>When <code class="docutils literal notranslate"><span class="pre">UniformScale</span></code> <em>Scene Scale Mode</em> is used, this
+attribute scales the camera translations by this number.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Camera Height</p></td>
+<td><p>When <code class="docutils literal notranslate"><span class="pre">CameraHeight</span></code> <em>Scene Scale Mode</em> is used, this value
+defines the exact distance of the camera in the Y axis. Use
+this value if you know (or roughly know) the height of the
+camera. The distance is measured in Maya units.</p></td>
+</tr>
+<tr class="row-even"><td><p>Rotate Plane</p></td>
+<td><p>The calculated Camera Calibration can sometimes have a strange
+axis - for example the camera is upside down. To fix this, use
+the <em>Rotate Plane</em> to offset the axis values. Use multiples of
+90 degrees, or hold-CTRL-middle-mouse-click-drag to shift the
+values in each X, Y and Z field.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
 </section>
 <section id="calibration-tool-limitations">
 <span id="camera-calibration-limitations-tool-ref"></span><h3>Calibration Tool Limitations<a class="headerlink" href="#calibration-tool-limitations" title="Permalink to this heading">#</a></h3>
 <p>This tool has a number of limitations and known issues, and a future
 version of mmSolver may fix or reduce these issues.</p>
 <ul>
-<li><p>The camera does not yet update automatically while dragging the 2D points.</p></li>
-<li><p>Only 2 vanishing points can be used.</p>
+<li><p>The camera does not yet update automatically while dragging the 2D
+points.</p></li>
+<li><p>Only 2 vanishing points (2 sets of parallel lines or 4 lines) can be
+used.</p>
 <p>Some images may require 3 vanishing points, if the center of the
 lens (“principal point” or “camera film offsets”) is not in the
 center of the image.</p>
@@ -548,6 +695,7 @@ Maya.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#tool-usage">Tool Usage</a></li>
+<li><a class="reference internal" href="#node-options">Node Options</a></li>
 <li><a class="reference internal" href="#calibration-tool-limitations">Calibration Tool Limitations</a></li>
 </ul>
 </li>

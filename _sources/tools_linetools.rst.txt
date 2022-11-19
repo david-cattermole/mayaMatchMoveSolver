@@ -157,15 +157,165 @@ need to square.
 Tool Usage
 ~~~~~~~~~~
 
-1) Create default setup.
+.. figure:: images/tools_camera_calibration_setup.png
+    :alt: Camera Calibration Setup
+    :align: center
+    :width: 90%
 
-2) Add image plane file path.
+1) Create a Calibration set up with the ``mmSolver > Line Tools >
+   Create Camera Calibration Setup`` menu.
 
-3) Set markers for lines.
+2) Select the ``mmImagePlane1`` node and set the image to point to your image(s).
+   Add image plane file path.
 
-4) Press "update".
+3) Select the ``calibrationCamera`` node, and navigate to the
+   ``mmCameraCalibrate1`` node - this node is reponsible for
+   calculating the camera translation, rotation, focal length, and
+   film back (camera aperture).
 
-5) Repeat steps 3 to 5 until the desired calibration is found.
+   - Change *Calibration Mode* depending on how many lines you can see
+     in your image: ``OneVanishingPoint``,
+     ``OneVanishingPointAndHorizon`` or ``TwoVanishingPoints``. See
+     :ref:`Calibration Use Cases
+     <camera-calibration-use-cases-tool-ref>` (above) to understand
+     the meaning of vanishing points. This value changes which *Axis*
+     lines are used to compute the camera calibration and imposes
+     limitations on what can be computed by the tool - for example the
+     Camera focal length cannot be estimated using only 1 vanishing
+     point.
+
+   - Change *Camera Aperture* width if the value is known.
+
+   - Change *Image Pixel Aspect Ratio* to a value other than 1.0 (such
+     as 2.0 or 1.8) depending on the shot/image you are using. For
+     example if your image was captured using an Anamorphic lens and
+     the input image is not "desqueezed" set your pixel aspect ratio
+     here.
+
+4) Set the lines based on the parallel lines in the shot.
+
+   - Move the ``origin_point`` to the intended (2D) origin. This 2D
+     point is where the 3D origin (0.0, 0.0, 0.0) will be placed. For
+     example, place the origin at a corner of a building to make it
+     easier to easily create models that line up with the corner of
+     the building.
+
+   - Select Markers under ``axis1_lineA_LN`` and adjust to align the
+     Line with the a parallel line that is visible in your
+     shot. Repeat for ``axis1_lineB_LN`` so that both lines are aimed
+     along the same axis.
+
+   - If the *Calibration Mode* is ``TwoVanishingPoints``, align the
+     ``axis2`` lines as well.
+
+   - If the *Calibration Mode* is ``OneVanishingPointAndHorizon``,
+     unhide ``horizon_line_LN`` and set the line to match the horizon
+     line.
+
+5) "Update" the calibration with the ``mmSolver > Line Tools > Update
+   Camera Calibration`` menu to calculate the camera orientation.
+
+6) Repeat steps 3 to 5 until the desired calibration is found.
+
+   - If the parallel lines in your image are long enough, you can
+     estimate lens distortion values using the following steps.
+
+8) Select the Line nodes in the Outliner and use the
+   :ref:`subdivide-line-tool-ref` tool to add more Markers to define the
+   line.
+
+   - Move the Markers to match the straight edges in your image and
+     repeat by adding more Markers as needed.
+
+9) Select the camera node in the Outliner and use the *Camera Context
+   Menu* to add a *Lens* to the camera.
+
+10) Then open the :ref:`solver-ui-ref` and add the *Lines* you want to
+    solve with to the *Input Objects*.
+
+11) Select the lens distortion attributes (in the channel box), and
+    add them to the Solver UI *Output Attributes*.
+
+12) Switch to the :ref:`standard-solver-tab-heading` and press
+    *Solve*.
+
+13) After the lens distortion is solved, use ``mmSolver > Line Tools >
+    Update Camera Calibration`` menu to update the camera again with
+    the straightened lines.
+
+.. _camera-calibration-node-options-tool-ref:
+
+Node Options
+~~~~~~~~~~~~
+
+The *Camera Calibration* tool is driven by the `mmCameraCalibrate`
+node and calculates the camera translation, rotation, and focal
+length. The options below explain how the camera values are calculated
+using this.
+
+.. figure:: images/tools_camera_calibration_node_options.png
+    :alt: Calibration Node Options
+    :align: center
+    :width: 60%
+
+.. list-table:: Calibration Node Options
+   :widths: auto
+   :header-rows: 1
+
+   * - Attribute
+     - Description
+
+   * - Calibration Mode
+     - Controls how the axis lines are used to calculate the camera
+       calibration. ``OneVanishingPoint`` will use just ``axis1``
+       lines to calculate the camera tilt and pan (rotation X and Y)
+       and translation. Addtionally ``OneVanishingPointAndHorizon``
+       uses the ``horizon_line_LN`` line to define the camera roll
+       (rotation Z). ``TwoVanishingPoints`` uses only ``axis1`` and
+       ``axis2`` lines to compute the camera tilt, pan, roll (rotation
+       X, Y and Z), translation as well as the camera focal length.
+
+   * - Focal Length
+     - Defines the camera focal length, when ``OneVanishingPoint`` or
+       ``OneVanishingPointAndHorizon`` is used.
+
+   * - Camera Aperture
+     - Defines the camera aperture (film back or sensor size)
+       width. The height is automatically calculated from the loaded
+       image width and height.
+
+   * - Image Width/Height
+     - Used to define teh *Camera Aperture* height and is
+       automatically connected to the MM Image Plane outputs.
+
+   * - Image Pixel Aspect Ratio
+     - The pixel aspect ratio of the input image. For example if your
+       image was captured using an Anamorphic lens and the input image
+       is not "desqueezed" set the pixel aspect ratio.
+
+   * - Scene Scale Mode
+     - The scale of the computed translation values is can be
+       calculated with ``UniformScale`` or
+       ``CameraHeight``. ``CameraHeight`` should be used if the height
+       of camera taking the image is (roughly) known, in all other
+       cases, ``Uniform Scale`` is the best option.
+
+   * - Uniform Scale
+     - When ``UniformScale`` *Scene Scale Mode* is used, this
+       attribute scales the camera translations by this number.
+
+   * - Camera Height
+     - When ``CameraHeight`` *Scene Scale Mode* is used, this value
+       defines the exact distance of the camera in the Y axis. Use
+       this value if you know (or roughly know) the height of the
+       camera. The distance is measured in Maya units.
+
+   * - Rotate Plane
+     - The calculated Camera Calibration can sometimes have a strange
+       axis - for example the camera is upside down. To fix this, use
+       the *Rotate Plane* to offset the axis values. Use multiples of
+       90 degrees, or hold-CTRL-middle-mouse-click-drag to shift the
+       values in each X, Y and Z field.
 
 .. _camera-calibration-limitations-tool-ref:
 
@@ -175,9 +325,11 @@ Calibration Tool Limitations
 This tool has a number of limitations and known issues, and a future
 version of mmSolver may fix or reduce these issues.
 
-- The camera does not yet update automatically while dragging the 2D points.
+- The camera does not yet update automatically while dragging the 2D
+  points.
 
-- Only 2 vanishing points can be used.
+- Only 2 vanishing points (2 sets of parallel lines or 4 lines) can be
+  used.
 
   Some images may require 3 vanishing points, if the center of the
   lens ("principal point" or "camera film offsets") is not in the

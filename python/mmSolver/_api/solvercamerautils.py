@@ -59,6 +59,9 @@ def _calculate_marker_frame_score(mkr_nodes, frame, position_marker_nodes):
     """
     score = 0
 
+    # This algorithm tries to score how well distributed a set of
+    # points between -0.5 and 0.5. Point distributions that are more
+    # uniform and cover the full frame lead to a higher score.
     min_pos = -0.5
     max_pos = 0.5
     levels = 3

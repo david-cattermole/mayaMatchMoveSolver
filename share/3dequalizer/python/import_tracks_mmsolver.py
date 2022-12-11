@@ -113,7 +113,7 @@ def read(file_path, **kwargs):
     """
     Read a file path, find the format parser based on the file extension.
     """
-    if isinstance(file_path, TEXT_TYPE) is False:
+    if isinstance(file_path, pycompat.TEXT_TYPE) is False:
         msg = 'file path must be a string, got %r'
         raise TypeError(msg % type(file_path))
     if os.path.isfile(file_path) is False:
@@ -121,7 +121,7 @@ def read(file_path, **kwargs):
         raise OSError(msg % file_path)
 
     file_format_classes = []
-    mgr = get_format_manager()
+    mgr = formatmanager.get_format_manager()
     for fmt in mgr.get_formats():
         attr = getattr(fmt, 'file_exts', None)
         if attr is None:
@@ -141,7 +141,7 @@ def read(file_path, **kwargs):
         file_format_obj = file_format_class()
         try:
             contents = file_format_obj.parse(file_path, **kwargs)
-        except (ParserError, OSError):
+        except (excep.ParserError, OSError):
             contents = (None, [])
 
         file_info, mkr_data_list = contents

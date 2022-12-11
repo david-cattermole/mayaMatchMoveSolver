@@ -98,7 +98,7 @@ void createAttributeDetailsSyntax(MSyntax &syntax);
  * Parse arguments into attribute details.
  */
 MStatus parseAttributeDetailsArguments(const MArgDatabase &argData,
-                                       const AttrPtrList attrList,
+                                       const AttrPtrList &attrList,
                                        StiffAttrsPtrList &out_stiffAttrsList,
                                        SmoothAttrsPtrList &out_smoothAttrsList);
 

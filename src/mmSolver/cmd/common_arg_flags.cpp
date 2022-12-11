@@ -299,7 +299,7 @@ void createAttributeDetailsSyntax(MSyntax &syntax) {
 }
 
 MStatus parseAttributeDetailsArguments(
-    const MArgDatabase &argData, const AttrPtrList attrList,
+    const MArgDatabase &argData, const AttrPtrList &attrList,
     StiffAttrsPtrList &out_stiffAttrsList,
     SmoothAttrsPtrList &out_smoothAttrsList) {
     MStatus status = MStatus::kSuccess;

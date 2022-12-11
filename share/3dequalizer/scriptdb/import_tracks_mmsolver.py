@@ -1373,9 +1373,9 @@ def create_markers(c, pg, start_frame, file_info, mkr_data_list):
             tde4.setPointSurveyXYZEnabledFlags(
                 pg,
                 p,
-                mkr_data.bundle_x_lock,
-                mkr_data.bundle_y_lock,
-                mkr_data.bundle_z_lock,
+                mkr_data.bundle_lock_x,
+                mkr_data.bundle_lock_y,
+                mkr_data.bundle_lock_z,
             )
 
     return point_list

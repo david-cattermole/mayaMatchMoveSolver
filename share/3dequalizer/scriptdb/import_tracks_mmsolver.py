@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:    Import 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version: v1.1
+# 3DE4.script.version: v1.2
 #
 # 3DE4.script.gui:     Main Window::3DE4::File::Import
 # 3DE4.script.gui:     Object Browser::Context Menu Point
@@ -76,7 +76,6 @@ UV_TRACK_HEADER_VERSION_4 = {
 }
 
 WINDOW_TITLE = 'Import 2D Tracks (MM Solver)...'
-SUPPORT_FRAME_OFFSET = 'getCameraFrameOffset' in dir(tde4)
 SUPPORT_POINT_SURVEY_XYZ_ENABLED = 'setPointSurveyXYZEnabledFlags' in dir(tde4)
 
 
@@ -1396,8 +1395,6 @@ if c is not None and pg is not None:
 
             start, end, step = tde4.getCameraSequenceAttr(c)
             start_frame = start
-            if SUPPORT_FRAME_OFFSET is True:
-                start_frame = tde4.getCameraFrameOffset(c)
 
             create_markers(c, pg, start_frame, file_info, mkr_data_list)
 else:

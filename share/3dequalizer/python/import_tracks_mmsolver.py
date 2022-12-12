@@ -167,7 +167,7 @@ def _set_3d_point(pg, p, mkr_data):
     bundle_lock = [
         int(mkr_data.bundle_lock_x or 0),
         int(mkr_data.bundle_lock_y or 0),
-        int(mkr_data.bundle_lock_z or 0)
+        int(mkr_data.bundle_lock_z or 0),
     ]
     if any(bundle_lock) is True:
         tde4.setPointSurveyXYZEnabledFlags(

@@ -64,9 +64,6 @@
 #define SCENE_GRAPH_MODE_FLAG "-sgm"
 #define SCENE_GRAPH_MODE_FLAG_LONG "-sceneGraphMode"
 
-#define ATTR_CURVE_LINEAR_FLAG "-acl"
-#define ATTR_CURVE_LINEAR_FLAG_LONG "-attrCurveLinear"
-
 namespace mmsolver {
 
 // Add flags for solver objects to the command syntax.

@@ -151,6 +151,35 @@ def read(file_path, **kwargs):
     return file_info, mkr_data_list
 
 
+def _set_3d_point(pg, p, mkr_data):
+    bundle_pos = [mkr_data.bundle_x, mkr_data.bundle_y, mkr_data.bundle_z]
+    bundle_pos_are_float = [isinstance(x, float) for x in bundle_pos]
+    if all(bundle_pos_are_float) is False:
+        return False
+
+    tde4.setPointCalculated3D(pg, p, 1)
+    tde4.setPointSurveyPosition3D(pg, p, bundle_pos)
+    tde4.setPointSurveyMode(pg, p, 'SURVEY_EXACT')
+
+    if SUPPORT_POINT_SURVEY_XYZ_ENABLED is False:
+        return True
+
+    bundle_lock = [
+        int(mkr_data.bundle_lock_x or 0),
+        int(mkr_data.bundle_lock_y or 0),
+        int(mkr_data.bundle_lock_z or 0)
+    ]
+    if any(bundle_lock) is True:
+        tde4.setPointSurveyXYZEnabledFlags(
+            pg,
+            p,
+            bundle_lock[0],
+            bundle_lock[1],
+            bundle_lock[2],
+        )
+    return True
+
+
 def create_markers(c, pg, start_frame, file_info, mkr_data_list):
     frames = tde4.getCameraNoFrames(c)
     if frames == 0:
@@ -178,21 +207,7 @@ def create_markers(c, pg, start_frame, file_info, mkr_data_list):
         tde4.setPointPosition2DBlock(pg, p, c, tde_start_frame, curve)
         point_list.append(p)
 
-        bundle_pos = [mkr_data.bundle_x, mkr_data.bundle_y, mkr_data.bundle_z]
-        bundle_pos_are_float = [isinstance(x, float) for x in bundle_pos]
-        if all(bundle_pos_are_float):
-            tde4.setPointCalculated3D(pg, p, 1)
-            tde4.setPointSurveyPosition3D(pg, p, bundle_pos)
-            tde4.setPointSurveyMode(pg, p, 'SURVEY_EXACT')
-
-            if SUPPORT_POINT_SURVEY_XYZ_ENABLED is True:
-                tde4.setPointSurveyXYZEnabledFlags(
-                    pg,
-                    p,
-                    mkr_data.bundle_lock_x,
-                    mkr_data.bundle_lock_y,
-                    mkr_data.bundle_lock_z,
-                )
+        _set_3d_point(pg, p, mkr_data)
 
     return point_list
 

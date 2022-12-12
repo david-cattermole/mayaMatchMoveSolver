@@ -39,7 +39,7 @@ def main():
     """
     mmapi.load_plugin()
 
-    sel = maya.cmds.ls(sl=True, long=True)
+    sel = maya.cmds.ls(sl=True, long=True) or []
     node_filtered = mmapi.filter_nodes_into_categories(sel)
     cams = node_filtered[mmapi.OBJECT_TYPE_CAMERA]
     cams = list(filter(utils_camera.is_not_startup_cam, cams))

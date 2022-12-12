@@ -36,7 +36,18 @@ set(SOURCE_FILES
   mmSolver/adjust/adjust_solveFunc.cpp
   mmSolver/calibrate/calibrate_common.cpp
   mmSolver/calibrate/vanishing_point.cpp
-  mmSolver/cmd/common_arg_flags.cpp
+  mmSolver/cmd/arg_flags_attr_details.cpp
+  mmSolver/cmd/arg_flags_attr_details.h
+  mmSolver/cmd/arg_flags_solve_frames.cpp
+  mmSolver/cmd/arg_flags_solve_frames.h
+  mmSolver/cmd/arg_flags_solve_info.cpp
+  mmSolver/cmd/arg_flags_solve_info.h
+  mmSolver/cmd/arg_flags_solve_log.cpp
+  mmSolver/cmd/arg_flags_solve_log.h
+  mmSolver/cmd/arg_flags_solve_object.cpp
+  mmSolver/cmd/arg_flags_solve_object.h
+  mmSolver/cmd/arg_flags_solve_scene_graph.cpp
+  mmSolver/cmd/arg_flags_solve_scene_graph.h
   mmSolver/cmd/MMCameraPoseFromPointsCmd.cpp
   mmSolver/cmd/MMCameraRelativePoseCmd.cpp
   mmSolver/cmd/MMCameraSolveCmd.cpp

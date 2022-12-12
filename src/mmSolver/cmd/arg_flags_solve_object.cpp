@@ -17,29 +17,21 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Command for running mmSolver.
  */
 
-#include "common_arg_flags.h"
-
-// STL
-#include <algorithm>
-#include <cassert>
-#include <cmath>
-#include <cstdlib>
+#include "arg_flags_solve_object.h"
 
 // Maya
-#include <maya/MFnDependencyNode.h>
+#include <maya/MArgDatabase.h>
+#include <maya/MArgList.h>
+#include <maya/MArgParser.h>
 #include <maya/MObject.h>
-#include <maya/MPlug.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
+#include <maya/MSyntax.h>
 
 // Internal Objects
-#include "MMSolverCmd.h"
-#include "mmSolver/adjust/adjust_base.h"
 #include "mmSolver/adjust/adjust_data.h"
-#include "mmSolver/adjust/adjust_defines.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -283,206 +275,6 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             MPlug attrPlug = attr->getPlug();
         }
     }
-
-    return status;
-}
-
-void createAttributeDetailsSyntax(MSyntax &syntax) {
-    syntax.addFlag(STIFFNESS_FLAG, STIFFNESS_FLAG_LONG, MSyntax::kString,
-                   MSyntax::kString, MSyntax::kString, MSyntax::kString);
-    syntax.addFlag(SMOOTHNESS_FLAG, SMOOTHNESS_FLAG_LONG, MSyntax::kString,
-                   MSyntax::kString, MSyntax::kString, MSyntax::kString);
-
-    syntax.makeFlagMultiUse(STIFFNESS_FLAG);
-    syntax.makeFlagMultiUse(SMOOTHNESS_FLAG);
-    return;
-}
-
-MStatus parseAttributeDetailsArguments(
-    const MArgDatabase &argData, const AttrPtrList &attrList,
-    StiffAttrsPtrList &out_stiffAttrsList,
-    SmoothAttrsPtrList &out_smoothAttrsList) {
-    MStatus status = MStatus::kSuccess;
-
-    out_stiffAttrsList.clear();
-    out_smoothAttrsList.clear();
-
-    // Get Stiffness Values
-    unsigned int stiffnessNum = argData.numberOfFlagUses(STIFFNESS_FLAG);
-    for (unsigned int i = 0; i < stiffnessNum; ++i) {
-        MArgList stiffnessArgs;
-        status = argData.getFlagArgumentList(STIFFNESS_FLAG, i, stiffnessArgs);
-        if (status == MStatus::kSuccess) {
-            if (stiffnessArgs.length() != 4) {
-                MMSOLVER_ERR(
-                    "Attribute Stiffness argument list must have 4 argument; "
-                    << "\"node.attribute\", "
-                    << "\"node.attributeStiffWeight\", "
-                    << "\"node.attributeStiffVariance\", "
-                    << "\"node.attributeStiffValue\".");
-                continue;
-            }
-
-            // Find the already created Attribute.
-            MString nodeAttrName = stiffnessArgs.asString(0);
-            AttrPtr foundAttr;
-            int foundIndex = 0;
-            for (AttrPtrListCIt ait = attrList.cbegin(); ait != attrList.cend();
-                 ++ait) {
-                AttrPtr attr = *ait;
-                if (nodeAttrName == attr->getName()) {
-                    foundAttr = attr;
-                    break;
-                }
-                foundIndex++;
-            }
-            if (foundAttr->getName() == ".") {
-                MMSOLVER_ERR(
-                    "Attribute Stiffness name is not a declared attribute; "
-                    << nodeAttrName);
-                continue;
-            }
-            AttrPtr stiffWeightAttr = AttrPtr(new Attr());
-            MString weightNodeAttrName = stiffnessArgs.asString(1);
-            stiffWeightAttr->setName(weightNodeAttrName);
-
-            AttrPtr stiffVarianceAttr = AttrPtr(new Attr());
-            MString varianceNodeAttrName = stiffnessArgs.asString(2);
-            stiffVarianceAttr->setName(varianceNodeAttrName);
-
-            AttrPtr stiffValueAttr = AttrPtr(new Attr());
-            MString valueNodeAttrName = stiffnessArgs.asString(3);
-            stiffValueAttr->setName(valueNodeAttrName);
-
-            StiffAttrsPtr stiffAttrs = StiffAttrsPtr(new StiffAttrs());
-            stiffAttrs->attrIndex = foundIndex;
-            stiffAttrs->weightAttr = stiffWeightAttr;
-            stiffAttrs->varianceAttr = stiffVarianceAttr;
-            stiffAttrs->valueAttr = stiffValueAttr;
-
-            out_stiffAttrsList.push_back(stiffAttrs);
-        }
-    }
-
-    // Get Smoothness Values
-    unsigned int smoothnessNum = argData.numberOfFlagUses(SMOOTHNESS_FLAG);
-    for (unsigned int i = 0; i < smoothnessNum; ++i) {
-        MArgList smoothnessArgs;
-        status =
-            argData.getFlagArgumentList(SMOOTHNESS_FLAG, i, smoothnessArgs);
-        if (status == MStatus::kSuccess) {
-            if (smoothnessArgs.length() != 4) {
-                MMSOLVER_ERR(
-                    "Attribute Smoothness argument list must have 4 argument; "
-                    << "\"node.attribute\", "
-                    << "\"node.attributeSmoothWeight\", "
-                    << "\"node.attributeSmoothVariance\", "
-                    << "\"node.attributeSmoothValue\".");
-                continue;
-            }
-
-            // Find the already created Attribute.
-            MString nodeAttrName = smoothnessArgs.asString(0);
-            AttrPtr foundAttr;
-            int foundIndex = 0;
-            for (AttrPtrListCIt ait = attrList.cbegin(); ait != attrList.cend();
-                 ++ait) {
-                AttrPtr attr = *ait;
-                if (nodeAttrName == attr->getName()) {
-                    foundAttr = attr;
-                    break;
-                }
-                foundIndex++;
-            }
-            if (foundAttr->getName() == ".") {
-                MMSOLVER_ERR(
-                    "Attribute Smoothness name is not a declared attribute; "
-                    << nodeAttrName);
-                continue;
-            }
-            AttrPtr smoothWeightAttr = AttrPtr(new Attr());
-            MString weightNodeAttrName = smoothnessArgs.asString(1);
-            smoothWeightAttr->setName(weightNodeAttrName);
-
-            AttrPtr smoothVarianceAttr = AttrPtr(new Attr());
-            MString varianceNodeAttrName = smoothnessArgs.asString(2);
-            smoothVarianceAttr->setName(varianceNodeAttrName);
-
-            AttrPtr smoothValueAttr = AttrPtr(new Attr());
-            MString valueNodeAttrName = smoothnessArgs.asString(3);
-            smoothValueAttr->setName(valueNodeAttrName);
-
-            SmoothAttrsPtr smoothAttrs = SmoothAttrsPtr(new SmoothAttrs());
-            smoothAttrs->attrIndex = foundIndex;
-            smoothAttrs->weightAttr = smoothWeightAttr;
-            smoothAttrs->varianceAttr = smoothVarianceAttr;
-            smoothAttrs->valueAttr = smoothValueAttr;
-
-            out_smoothAttrsList.push_back(smoothAttrs);
-        }
-    }
-
-    return status;
-}
-
-void createSolveFramesSyntax(MSyntax &syntax) {
-    syntax.addFlag(FRAME_FLAG, FRAME_FLAG_LONG, MSyntax::kLong);
-    syntax.makeFlagMultiUse(FRAME_FLAG);
-    return;
-}
-
-MStatus parseSolveFramesArguments(const MArgDatabase &argData,
-                                  MTimeArray &out_frameList) {
-    MStatus status = MStatus::kSuccess;
-
-    // Get 'Frames'
-    out_frameList.clear();
-    MTime::Unit unit = MTime::uiUnit();
-    unsigned int framesNum = argData.numberOfFlagUses(FRAME_FLAG);
-    for (unsigned int i = 0; i < framesNum; ++i) {
-        MArgList frameArgs;
-        status = argData.getFlagArgumentList(FRAME_FLAG, i, frameArgs);
-        if (status == MStatus::kSuccess) {
-            if (frameArgs.length() != 1) {
-                MMSOLVER_ERR(
-                    "Attribute argument list must have 1 argument; \"frame\".");
-                continue;
-            }
-            int value = frameArgs.asInt(0, &status);
-            CHECK_MSTATUS_AND_RETURN_IT(status);
-
-            MTime frame = MTime((double)value, unit);
-            out_frameList.append(frame);
-        }
-    }
-
-    // Make sure we have a frame list.
-    if (out_frameList.length() == 0) {
-        status = MS::kFailure;
-        status.perror("Frame List length is 0, must have a frame to solve.");
-    }
-
-    return status;
-}
-
-void createSolveSceneGraphSyntax(MSyntax &syntax) {
-    syntax.addFlag(SCENE_GRAPH_MODE_FLAG, SCENE_GRAPH_MODE_FLAG_LONG,
-                   MSyntax::kUnsigned);
-    return;
-}
-
-MStatus parseSolveSceneGraphArguments(const MArgDatabase &argData,
-                                      SceneGraphMode &out_sceneGraphMode) {
-    MStatus status = MStatus::kSuccess;
-
-    // Get 'Scene Graph Mode'
-    uint32_t sceneGraphMode = SCENE_GRAPH_MODE_DEFAULT_VALUE;
-    if (argData.isFlagSet(SCENE_GRAPH_MODE_FLAG)) {
-        status =
-            argData.getFlagArgument(SCENE_GRAPH_MODE_FLAG, 0, sceneGraphMode);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-    }
-    out_sceneGraphMode = static_cast<SceneGraphMode>(sceneGraphMode);
 
     return status;
 }

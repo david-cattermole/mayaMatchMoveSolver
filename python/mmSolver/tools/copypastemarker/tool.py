@@ -49,7 +49,13 @@ def main():
     if len(nodes) == 0:
         LOG.warn("Please select some Marker nodes.")
         return
-    mkr_list = [mmapi.Marker(node=node) for node in nodes]
+
+    # Make sure the node is a marker, before trying passing it to the
+    # Marker class, because the Marker class will automatically update
+    # the node and treat it as a 'new style' Marker.
+    mkr_nodes = mmapi.filter_marker_nodes(nodes)
+
+    mkr_list = [mmapi.Marker(node=mkr_node) for mkr_node in mkr_nodes]
     mkr_list = [mkr for mkr in mkr_list if mkr.get_node()]
     if len(mkr_list) == 0:
         LOG.warn("Please select some Marker nodes.")

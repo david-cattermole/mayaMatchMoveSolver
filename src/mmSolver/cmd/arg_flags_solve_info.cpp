@@ -73,7 +73,7 @@ void createSolveInfoSyntax(MSyntax &syntax) {
 }
 
 MStatus parseSolveInfoArguments(
-    const MArgDatabase &argData, unsigned int &out_iterations, double &out_tau,
+    const MArgDatabase &argData, int &out_iterations, double &out_tau,
     double &out_epsilon1, double &out_epsilon2, double &out_epsilon3,
     double &out_delta, int &out_autoDiffType, int &out_autoParamScale,
     int &out_robustLossType, double &out_robustLossScale, int &out_solverType,

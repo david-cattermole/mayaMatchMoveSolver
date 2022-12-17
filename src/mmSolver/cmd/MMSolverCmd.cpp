@@ -161,6 +161,7 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     solverOptions.solverType = m_solverType;
     solverOptions.timeEvalMode = m_timeEvalMode;
     solverOptions.acceptOnlyBetter = m_acceptOnlyBetter;
+    solverOptions.imageWidth = m_imageWidth;
     solverOptions.frameSolveMode = m_frameSolveMode;
     solverOptions.solverSupportsAutoDiffForward = m_supportAutoDiffForward;
     solverOptions.solverSupportsAutoDiffCentral = m_supportAutoDiffCentral;
@@ -170,10 +171,10 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     solverOptions.removeUnusedAttributes = m_removeUnusedAttributes;
 
     MStringArray outResult;
-    bool ret = solve(solverOptions, m_cameraList, m_markerList, m_bundleList,
-                     m_attrList, m_frameList, m_stiffAttrsList,
-                     m_smoothAttrsList, m_dgmod, m_curveChange, m_computation,
-                     m_imageWidth, m_printStatsList, m_logLevel, outResult);
+    bool ret = solve_v1(solverOptions, m_cameraList, m_markerList, m_bundleList,
+                        m_attrList, m_frameList, m_stiffAttrsList,
+                        m_smoothAttrsList, m_dgmod, m_curveChange,
+                        m_computation, m_printStatsList, m_logLevel, outResult);
 
     MMSolverCmd::setResult(outResult);
     if (ret == false) {

@@ -123,13 +123,20 @@ MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList markerList,
                                          const BoolList2D markerToAttrList,
                                          MStringArray &outResult);
 
-bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
-           MarkerPtrList &markerList, BundlePtrList &bundleList,
-           AttrPtrList &attrList, const MTimeArray &frameList,
-           StiffAttrsPtrList &stiffAttrsList,
-           SmoothAttrsPtrList &smoothAttrsList, MDGModifier &dgmod,
-           MAnimCurveChange &curveChange, MComputation &computation,
-           const double &imageWidth, MStringArray &printStatsList,
-           const LogLevel &logLevel, MStringArray &outResult);
+bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
+              MarkerPtrList &markerList, BundlePtrList &bundleList,
+              AttrPtrList &attrList, const MTimeArray &frameList,
+              StiffAttrsPtrList &stiffAttrsList,
+              SmoothAttrsPtrList &smoothAttrsList, MDGModifier &dgmod,
+              MAnimCurveChange &curveChange, MComputation &computation,
+              MStringArray &printStatsList, const LogLevel &logLevel,
+              MStringArray &outResult);
+
+bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
+              MarkerPtrList &markerList, BundlePtrList &bundleList,
+              AttrPtrList &attrList, const MTimeArray &frameList,
+              MDGModifier &dgmod, MAnimCurveChange &curveChange,
+              MComputation &computation, MStringArray &printStatsList,
+              const LogLevel &logLevel, MStringArray &outResult);
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H

@@ -84,7 +84,7 @@ private:
     MStatus parseArgs(const MArgList &args);
 
     // Solver Information.
-    unsigned int m_iterations;
+    int m_iterations;
     double m_tau;       // Scale factor for initial transform mu
     double m_epsilon1;  // Stopping threshold for ||J^T e||_inf  (ftol)
     double m_epsilon2;  // Stopping threshold for ||Dp||_2       (xtol)

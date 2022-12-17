@@ -266,6 +266,8 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
     ud->timer.funcBenchTimer.start();
     ud->timer.funcBenchTicks.start();
 
+    auto imageWidth = ud->solverOptions->imageWidth;
+
     auto frameCount = ud->frameList.length();
     if (!ud->doCalcJacobian && frameCount > 1) {
         ud->computation->setProgress(ud->iterNum);
@@ -348,8 +350,8 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
             measureErrors(numberOfErrors, numberOfMarkerErrors,
                           numberOfAttrStiffnessErrors,
                           numberOfAttrSmoothnessErrors, frameIndexEnable,
-                          evalMeasurements, errors, ud, error_avg, error_max,
-                          error_min, status);
+                          evalMeasurements, imageWidth, errors, ud, error_avg,
+                          error_max, error_min, status);
             ud->timer.errorBenchTimer.stop();
             ud->timer.errorBenchTicks.stop();
         }
@@ -447,11 +449,12 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
                 // measure the markers that can modify the attribute -
                 // we do this using 'frameIndexEnabled' and
                 // 'evalMeasurements'.
-                measureErrors(
-                    numberOfErrors, numberOfMarkerErrors,
-                    numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors,
-                    frameIndexEnabled, evalMeasurements, &errorListA[0], ud,
-                    error_avg_tmp, error_max_tmp, error_min_tmp, status);
+                measureErrors(numberOfErrors, numberOfMarkerErrors,
+                              numberOfAttrStiffnessErrors,
+                              numberOfAttrSmoothnessErrors, frameIndexEnabled,
+                              evalMeasurements, imageWidth, &errorListA[0], ud,
+                              error_avg_tmp, error_max_tmp, error_min_tmp,
+                              status);
                 ud->timer.errorBenchTimer.stop();
                 ud->timer.errorBenchTicks.stop();
             }
@@ -524,8 +527,9 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
                                       numberOfAttrStiffnessErrors,
                                       numberOfAttrSmoothnessErrors,
                                       frameIndexEnabled, evalMeasurements,
-                                      &errorListB[0], ud, error_avg_tmp,
-                                      error_max_tmp, error_min_tmp, status);
+                                      imageWidth, &errorListB[0], ud,
+                                      error_avg_tmp, error_max_tmp,
+                                      error_min_tmp, status);
                         ud->timer.errorBenchTimer.stop();
                         ud->timer.errorBenchTicks.stop();
                     }

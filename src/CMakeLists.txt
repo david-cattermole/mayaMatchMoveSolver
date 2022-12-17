@@ -57,6 +57,7 @@ set(SOURCE_FILES
   mmSolver/cmd/MMReprojectionCmd.cpp
   mmSolver/cmd/MMSolverAffectsCmd.cpp
   mmSolver/cmd/MMSolverCmd.cpp
+  mmSolver/cmd/MMSolver2Cmd.cpp
   mmSolver/cmd/MMSolverSceneGraphCmd.cpp
   mmSolver/cmd/MMSolverTypeCmd.cpp
   mmSolver/cmd/MMTestCameraMatrixCmd.cpp

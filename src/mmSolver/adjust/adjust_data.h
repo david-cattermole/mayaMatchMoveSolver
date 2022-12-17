@@ -118,6 +118,7 @@ struct SolverOptions {
     int solverType;
     int timeEvalMode;
     bool acceptOnlyBetter;
+    double imageWidth;
     FrameSolveMode frameSolveMode;
 
     // Auto-adjust the input solve objects before solving?
@@ -176,7 +177,6 @@ struct SolverData {
     int iterNum;
     int jacIterNum;
     int solverType;
-    double imageWidth;
     int numberOfMarkerErrors;
     int numberOfAttrStiffnessErrors;
     int numberOfAttrSmoothnessErrors;

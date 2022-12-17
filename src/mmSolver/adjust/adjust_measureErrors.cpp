@@ -113,9 +113,9 @@ void measureErrors_mayaDag(const int numberOfErrors,
                            const int numberOfAttrSmoothnessErrors,
                            const std::vector<bool> &frameIndexEnable,
                            const std::vector<bool> &errorMeasurements,
-                           double *errors, SolverData *ud, double &error_avg,
-                           double &error_max, double &error_min,
-                           MStatus &status) {
+                           const double imageWidth, double *errors,
+                           SolverData *ud, double &error_avg, double &error_max,
+                           double &error_min, MStatus &status) {
     UNUSED(numberOfErrors);
 
     // Trigger an DG Evaluation at a different time, to help Maya
@@ -255,8 +255,8 @@ void measureErrors_mayaDag(const int numberOfErrors,
         // bad idea as it will introduce non-linearities, we are
         // better off using something like 'x*x - y*y'. It would
         // be best to test this detail.
-        const double dx = std::fabs(mkr_x - point_x) * ud->imageWidth;
-        const double dy = std::fabs(mkr_y - point_y) * ud->imageWidth;
+        const double dx = std::fabs(mkr_x - point_x) * imageWidth;
+        const double dy = std::fabs(mkr_y - point_y) * imageWidth;
 
         auto errorIndex_x = i * ERRORS_PER_MARKER;
         auto errorIndex_y = errorIndex_x + 1;
@@ -269,7 +269,7 @@ void measureErrors_mayaDag(const int numberOfErrors,
         ud->errorList[errorIndex_y] = dy * behind_camera_error_factor;
 
         const double d =
-            distance_2d(mkr_x, mkr_y, point_x, point_y) * ud->imageWidth;
+            distance_2d(mkr_x, mkr_y, point_x, point_y) * imageWidth;
         ud->errorDistanceList[i] = d;
         error_avg += d;
         if (d > error_max) {
@@ -376,9 +376,10 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
                                 const int numberOfAttrSmoothnessErrors,
                                 const std::vector<bool> &frameIndexEnable,
                                 const std::vector<bool> &errorMeasurements,
-                                double *errors, SolverData *ud,
-                                double &error_avg, double &error_max,
-                                double &error_min, MStatus &status) {
+                                const double imageWidth, double *errors,
+                                SolverData *ud, double &error_avg,
+                                double &error_max, double &error_min,
+                                MStatus &status) {
     UNUSED(numberOfErrors);
     UNUSED(numberOfAttrStiffnessErrors);
     UNUSED(numberOfAttrSmoothnessErrors);
@@ -460,8 +461,8 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
 
         auto dx = std::fabs(mkr_x - point_x);
         auto dy = std::fabs(mkr_y - point_y);
-        auto dx_pixels = dx * ud->imageWidth;
-        auto dy_pixels = dy * ud->imageWidth;
+        auto dx_pixels = dx * imageWidth;
+        auto dy_pixels = dy * imageWidth;
 
         auto errorIndex_x = i * ERRORS_PER_MARKER;
         auto errorIndex_y = errorIndex_x + 1;
@@ -475,7 +476,7 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
         ud->errorList[errorIndex_x] = dx_pixels * behind_camera_error_factor;
         ud->errorList[errorIndex_y] = dy_pixels * behind_camera_error_factor;
 
-        const double d = std::sqrt((dx * dx) + (dy * dy)) * ud->imageWidth;
+        const double d = std::sqrt((dx * dx) + (dy * dy)) * imageWidth;
         ud->errorDistanceList[i] = d;
         error_avg += d;
         if (d > error_max) {
@@ -504,9 +505,10 @@ void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
                    const int numberOfAttrStiffnessErrors,
                    const int numberOfAttrSmoothnessErrors,
                    const std::vector<bool> &frameIndexEnable,
-                   const std::vector<bool> &errorMeasurements, double *errors,
-                   SolverData *ud, double &error_avg, double &error_max,
-                   double &error_min, MStatus &status) {
+                   const std::vector<bool> &errorMeasurements,
+                   const double imageWidth, double *errors, SolverData *ud,
+                   double &error_avg, double &error_max, double &error_min,
+                   MStatus &status) {
     error_avg = 0.0;
     error_max = -0.0;
     error_min = std::numeric_limits<double>::max();
@@ -519,12 +521,12 @@ void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
         measureErrors_mayaDag(
             numberOfErrors, numberOfMarkerErrors, numberOfAttrStiffnessErrors,
             numberOfAttrSmoothnessErrors, frameIndexEnable, errorMeasurements,
-            errors, ud, error_avg, error_max, error_min, status);
+            imageWidth, errors, ud, error_avg, error_max, error_min, status);
     } else if (sceneGraphMode == SceneGraphMode::kMMSceneGraph) {
         measureErrors_mmSceneGraph(
             numberOfErrors, numberOfMarkerErrors, numberOfAttrStiffnessErrors,
             numberOfAttrSmoothnessErrors, frameIndexEnable, errorMeasurements,
-            errors, ud, error_avg, error_max, error_min, status);
+            imageWidth, errors, ud, error_avg, error_max, error_min, status);
     }
 
     // Changes the errors to be scaled by the loss function.

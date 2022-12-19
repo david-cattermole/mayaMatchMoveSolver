@@ -286,8 +286,9 @@ def _apply_rs_correction(dt, q_minus, q_center, q_plus):
     a = q_center
     b = q_plus - q_minus
     b = vl_sdv.vec3d(b[0] / 2.0, b[1] / 2.0, b[2] / 2.0)
-    c = -q_center + (q_plus + q_minus)
+    c = q_plus + q_minus
     c = vl_sdv.vec3d(c[0] / 2.0, c[1] / 2.0, c[2] / 2.0)
+    c = -q_center + c
     return a + dt * b + dt * dt * c
 
 

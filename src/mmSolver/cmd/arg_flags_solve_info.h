@@ -174,10 +174,11 @@
 namespace mmsolver {
 
 // Add flags for solver info to the command syntax.
-void createSolveInfoSyntax(MSyntax &syntax);
+void createSolveInfoSyntax_v1(MSyntax &syntax);
+void createSolveInfoSyntax_v2(MSyntax &syntax);
 
 // Parse arguments into solver info.
-MStatus parseSolveInfoArguments(
+MStatus parseSolveInfoArguments_v1(
     const MArgDatabase &argData, int &out_iterations, double &out_tau,
     double &out_epsilon1, double &out_epsilon2, double &out_epsilon3,
     double &out_delta, int &out_autoDiffType, int &out_autoParamScale,
@@ -187,6 +188,17 @@ MStatus parseSolveInfoArguments(
     bool &out_supportAutoDiffForward, bool &out_supportAutoDiffCentral,
     bool &out_supportParameterBounds, bool &out_supportRobustLoss,
     bool &out_removeUnusedMarkers, bool &out_removeUnusedAttributes,
+    double &out_imageWidth);
+
+MStatus parseSolveInfoArguments_v2(
+    const MArgDatabase &argData, int &out_iterations, double &out_tau,
+    double &out_epsilon1, double &out_epsilon2, double &out_epsilon3,
+    double &out_delta, int &out_autoDiffType, int &out_autoParamScale,
+    int &out_robustLossType, double &out_robustLossScale, int &out_solverType,
+    SceneGraphMode &out_sceneGraphMode, int &out_timeEvalMode,
+    bool &out_acceptOnlyBetter, FrameSolveMode &out_frameSolveMode,
+    bool &out_supportAutoDiffForward, bool &out_supportAutoDiffCentral,
+    bool &out_supportParameterBounds, bool &out_supportRobustLoss,
     double &out_imageWidth);
 
 }  // namespace mmsolver

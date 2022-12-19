@@ -76,7 +76,7 @@ MSyntax MMSolver2Cmd::newSyntax() {
 
     createSolveObjectSyntax(syntax);
     createSolveFramesSyntax(syntax);
-    createSolveInfoSyntax(syntax);
+    createSolveInfoSyntax_v2(syntax);
     createSolveLogSyntax(syntax);
 
     return syntax;
@@ -98,7 +98,7 @@ MStatus MMSolver2Cmd::parseArgs(const MArgList &args) {
     status = parseSolveFramesArguments(argData, m_frameList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = parseSolveInfoArguments(
+    status = parseSolveInfoArguments_v2(
         argData, m_solverOptions.iterMax, m_solverOptions.tau,
         m_solverOptions.eps1, m_solverOptions.eps2, m_solverOptions.eps3,
         m_solverOptions.delta, m_solverOptions.autoDiffType,
@@ -109,9 +109,7 @@ MStatus MMSolver2Cmd::parseArgs(const MArgList &args) {
         m_solverOptions.solverSupportsAutoDiffForward,
         m_solverOptions.solverSupportsAutoDiffCentral,
         m_solverOptions.solverSupportsParameterBounds,
-        m_solverOptions.solverSupportsRobustLoss,
-        m_solverOptions.removeUnusedMarkers,
-        m_solverOptions.removeUnusedAttributes, m_solverOptions.imageWidth);
+        m_solverOptions.solverSupportsRobustLoss, m_solverOptions.imageWidth);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     status = parseSolveLogArguments(argData, m_printStatsList, m_logLevel);

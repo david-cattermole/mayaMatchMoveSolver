@@ -39,7 +39,7 @@
 
 namespace mmsolver {
 
-void createSolveInfoSyntax(MSyntax &syntax) {
+void createSolveInfoSyntax_solverType(MSyntax &syntax) {
     syntax.addFlag(TAU_FLAG, TAU_FLAG_LONG, MSyntax::kDouble);
     syntax.addFlag(EPSILON1_FLAG, EPSILON1_FLAG_LONG, MSyntax::kDouble);
     syntax.addFlag(EPSILON2_FLAG, EPSILON2_FLAG_LONG, MSyntax::kDouble);
@@ -55,15 +55,13 @@ void createSolveInfoSyntax(MSyntax &syntax) {
                    MSyntax::kDouble);
     syntax.addFlag(SOLVER_TYPE_FLAG, SOLVER_TYPE_FLAG_LONG, MSyntax::kUnsigned);
     syntax.addFlag(ITERATIONS_FLAG, ITERATIONS_FLAG_LONG, MSyntax::kUnsigned);
+}
+
+void createSolveInfoSyntax_other(MSyntax &syntax) {
     syntax.addFlag(ACCEPT_ONLY_BETTER_FLAG, ACCEPT_ONLY_BETTER_FLAG_LONG,
                    MSyntax::kBoolean);
     syntax.addFlag(FRAME_SOLVE_MODE_FLAG, FRAME_SOLVE_MODE_FLAG_LONG,
                    MSyntax::kUnsigned);
-
-    syntax.addFlag(REMOVE_UNUSED_MARKERS_FLAG, REMOVE_UNUSED_MARKERS_FLAG_LONG,
-                   MSyntax::kBoolean);
-    syntax.addFlag(REMOVE_UNUSED_ATTRIBUTES_FLAG,
-                   REMOVE_UNUSED_ATTRIBUTES_FLAG_LONG, MSyntax::kBoolean);
 
     syntax.addFlag(IMAGE_WIDTH_FLAG, IMAGE_WIDTH_FLAG_LONG, MSyntax::kDouble);
 
@@ -72,52 +70,46 @@ void createSolveInfoSyntax(MSyntax &syntax) {
                    MSyntax::kUnsigned);
 }
 
-MStatus parseSolveInfoArguments(
+void createSolveInfoSyntax_removeUnused(MSyntax &syntax) {
+    syntax.addFlag(REMOVE_UNUSED_MARKERS_FLAG, REMOVE_UNUSED_MARKERS_FLAG_LONG,
+                   MSyntax::kBoolean);
+    syntax.addFlag(REMOVE_UNUSED_ATTRIBUTES_FLAG,
+                   REMOVE_UNUSED_ATTRIBUTES_FLAG_LONG, MSyntax::kBoolean);
+}
+
+void createSolveInfoSyntax_v1(MSyntax &syntax) {
+    createSolveInfoSyntax_solverType(syntax);
+    createSolveInfoSyntax_removeUnused(syntax);
+    createSolveInfoSyntax_other(syntax);
+}
+
+void createSolveInfoSyntax_v2(MSyntax &syntax) {
+    createSolveInfoSyntax_solverType(syntax);
+    createSolveInfoSyntax_other(syntax);
+}
+
+void createSolveInfoSyntax(MSyntax &syntax, const int command_version = 0) {
+    if (command_version == 2) {
+        createSolveInfoSyntax_v2(syntax);
+    } else {
+        createSolveInfoSyntax_v1(syntax);
+    }
+}
+
+MStatus parseSolveInfoArguments_solverType(
     const MArgDatabase &argData, int &out_iterations, double &out_tau,
     double &out_epsilon1, double &out_epsilon2, double &out_epsilon3,
     double &out_delta, int &out_autoDiffType, int &out_autoParamScale,
     int &out_robustLossType, double &out_robustLossScale, int &out_solverType,
-    SceneGraphMode &out_sceneGraphMode, int &out_timeEvalMode,
-    bool &out_acceptOnlyBetter, FrameSolveMode &out_frameSolveMode,
     bool &out_supportAutoDiffForward, bool &out_supportAutoDiffCentral,
-    bool &out_supportParameterBounds, bool &out_supportRobustLoss,
-    bool &out_removeUnusedMarkers, bool &out_removeUnusedAttributes,
-    double &out_imageWidth) {
+    bool &out_supportParameterBounds, bool &out_supportRobustLoss) {
     MStatus status = MStatus::kSuccess;
-
-    // Get 'Accept Only Better'
-    out_acceptOnlyBetter = ACCEPT_ONLY_BETTER_DEFAULT_VALUE;
-    if (argData.isFlagSet(ACCEPT_ONLY_BETTER_FLAG)) {
-        status = argData.getFlagArgument(ACCEPT_ONLY_BETTER_FLAG, 0,
-                                         out_acceptOnlyBetter);
-        CHECK_MSTATUS(status);
-    }
 
     // Get 'Solver Type'
     SolverTypePair solverType = getSolverTypeDefault();
     out_solverType = solverType.first;
     if (argData.isFlagSet(SOLVER_TYPE_FLAG)) {
         status = argData.getFlagArgument(SOLVER_TYPE_FLAG, 0, out_solverType);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-    }
-
-    status = parseSolveSceneGraphArguments(argData, out_sceneGraphMode);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-
-    // Get 'Frame Solve Mode'
-    auto frameSolveMode = FRAME_SOLVE_MODE_DEFAULT_VALUE;
-    if (argData.isFlagSet(FRAME_SOLVE_MODE_FLAG)) {
-        status =
-            argData.getFlagArgument(FRAME_SOLVE_MODE_FLAG, 0, frameSolveMode);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-    }
-    out_frameSolveMode = static_cast<FrameSolveMode>(frameSolveMode);
-
-    // Get 'Time Evaluation Mode'
-    out_timeEvalMode = TIME_EVAL_MODE_DEFAULT_VALUE;
-    if (argData.isFlagSet(TIME_EVAL_MODE_FLAG)) {
-        status =
-            argData.getFlagArgument(TIME_EVAL_MODE_FLAG, 0, out_timeEvalMode);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -251,6 +243,14 @@ MStatus parseSolveInfoArguments(
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
+    return status;
+}
+
+MStatus parseSolveInfoArguments_removeUnused(const MArgDatabase &argData,
+                                             bool &out_removeUnusedMarkers,
+                                             bool &out_removeUnusedAttributes) {
+    MStatus status = MStatus::kSuccess;
+
     // Get 'Remove Unused Markers'
     out_removeUnusedMarkers = REMOVE_UNUSED_MARKERS_DEFAULT_VALUE;
     if (argData.isFlagSet(REMOVE_UNUSED_MARKERS_FLAG)) {
@@ -267,12 +267,112 @@ MStatus parseSolveInfoArguments(
         CHECK_MSTATUS(status);
     }
 
+    return status;
+}
+
+MStatus parseSolveInfoArguments_other(const MArgDatabase &argData,
+                                      SceneGraphMode &out_sceneGraphMode,
+                                      int &out_timeEvalMode,
+                                      bool &out_acceptOnlyBetter,
+                                      FrameSolveMode &out_frameSolveMode,
+                                      double &out_imageWidth) {
+    MStatus status = MStatus::kSuccess;
+
+    // Get 'Scene Graph Mode'
+    status = parseSolveSceneGraphArguments(argData, out_sceneGraphMode);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    // Get 'Time Evaluation Mode'
+    out_timeEvalMode = TIME_EVAL_MODE_DEFAULT_VALUE;
+    if (argData.isFlagSet(TIME_EVAL_MODE_FLAG)) {
+        status =
+            argData.getFlagArgument(TIME_EVAL_MODE_FLAG, 0, out_timeEvalMode);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    // Get 'Accept Only Better'
+    out_acceptOnlyBetter = ACCEPT_ONLY_BETTER_DEFAULT_VALUE;
+    if (argData.isFlagSet(ACCEPT_ONLY_BETTER_FLAG)) {
+        status = argData.getFlagArgument(ACCEPT_ONLY_BETTER_FLAG, 0,
+                                         out_acceptOnlyBetter);
+        CHECK_MSTATUS(status);
+    }
+
+    // Get 'Frame Solve Mode'
+    auto frameSolveMode = FRAME_SOLVE_MODE_DEFAULT_VALUE;
+    if (argData.isFlagSet(FRAME_SOLVE_MODE_FLAG)) {
+        status =
+            argData.getFlagArgument(FRAME_SOLVE_MODE_FLAG, 0, frameSolveMode);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+    out_frameSolveMode = static_cast<FrameSolveMode>(frameSolveMode);
+
     // Get 'Image Width'
     out_imageWidth = IMAGE_WIDTH_DEFAULT_VALUE;
     if (argData.isFlagSet(IMAGE_WIDTH_FLAG)) {
         status = argData.getFlagArgument(IMAGE_WIDTH_FLAG, 0, out_imageWidth);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
+
+    return status;
+}
+
+MStatus parseSolveInfoArguments_v1(
+    const MArgDatabase &argData, int &out_iterations, double &out_tau,
+    double &out_epsilon1, double &out_epsilon2, double &out_epsilon3,
+    double &out_delta, int &out_autoDiffType, int &out_autoParamScale,
+    int &out_robustLossType, double &out_robustLossScale, int &out_solverType,
+    SceneGraphMode &out_sceneGraphMode, int &out_timeEvalMode,
+    bool &out_acceptOnlyBetter, FrameSolveMode &out_frameSolveMode,
+    bool &out_supportAutoDiffForward, bool &out_supportAutoDiffCentral,
+    bool &out_supportParameterBounds, bool &out_supportRobustLoss,
+    bool &out_removeUnusedMarkers, bool &out_removeUnusedAttributes,
+    double &out_imageWidth) {
+    MStatus status = MStatus::kSuccess;
+
+    status = parseSolveInfoArguments_solverType(
+        argData, out_iterations, out_tau, out_epsilon1, out_epsilon2,
+        out_epsilon3, out_delta, out_autoDiffType, out_autoParamScale,
+        out_robustLossType, out_robustLossScale, out_solverType,
+        out_supportAutoDiffForward, out_supportAutoDiffCentral,
+        out_supportParameterBounds, out_supportRobustLoss);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    status = parseSolveInfoArguments_other(
+        argData, out_sceneGraphMode, out_timeEvalMode, out_acceptOnlyBetter,
+        out_frameSolveMode, out_imageWidth);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    status = parseSolveInfoArguments_removeUnused(
+        argData, out_removeUnusedMarkers, out_removeUnusedAttributes);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    return status;
+}
+
+MStatus parseSolveInfoArguments_v2(
+    const MArgDatabase &argData, int &out_iterations, double &out_tau,
+    double &out_epsilon1, double &out_epsilon2, double &out_epsilon3,
+    double &out_delta, int &out_autoDiffType, int &out_autoParamScale,
+    int &out_robustLossType, double &out_robustLossScale, int &out_solverType,
+    SceneGraphMode &out_sceneGraphMode, int &out_timeEvalMode,
+    bool &out_acceptOnlyBetter, FrameSolveMode &out_frameSolveMode,
+    bool &out_supportAutoDiffForward, bool &out_supportAutoDiffCentral,
+    bool &out_supportParameterBounds, bool &out_supportRobustLoss,
+    double &out_imageWidth) {
+    MStatus status = MStatus::kSuccess;
+
+    status = parseSolveInfoArguments_solverType(
+        argData, out_iterations, out_tau, out_epsilon1, out_epsilon2,
+        out_epsilon3, out_delta, out_autoDiffType, out_autoParamScale,
+        out_robustLossType, out_robustLossScale, out_solverType,
+        out_supportAutoDiffForward, out_supportAutoDiffCentral,
+        out_supportParameterBounds, out_supportRobustLoss);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    status = parseSolveInfoArguments_other(
+        argData, out_sceneGraphMode, out_timeEvalMode, out_acceptOnlyBetter,
+        out_frameSolveMode, out_imageWidth);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
 }

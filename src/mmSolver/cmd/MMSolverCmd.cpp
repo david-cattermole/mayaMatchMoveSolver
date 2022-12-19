@@ -77,7 +77,7 @@ MSyntax MMSolverCmd::newSyntax() {
     createSolveObjectSyntax(syntax);
     createAttributeDetailsSyntax(syntax);
     createSolveFramesSyntax(syntax);
-    createSolveInfoSyntax(syntax);
+    createSolveInfoSyntax_v1(syntax);
     createSolveLogSyntax(syntax);
 
     return syntax;
@@ -103,7 +103,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
     status = parseSolveFramesArguments(argData, m_frameList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = parseSolveInfoArguments(
+    status = parseSolveInfoArguments_v1(
         argData, m_iterations, m_tau, m_epsilon1, m_epsilon2, m_epsilon3,
         m_delta, m_autoDiffType, m_autoParamScale, m_robustLossType,
         m_robustLossScale, m_solverType, m_sceneGraphMode, m_timeEvalMode,

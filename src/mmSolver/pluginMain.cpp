@@ -43,6 +43,7 @@
 #include "mmSolver/cmd/MMMarkerHomographyCmd.h"
 #include "mmSolver/cmd/MMReadImageCmd.h"
 #include "mmSolver/cmd/MMReprojectionCmd.h"
+#include "mmSolver/cmd/MMSolver2Cmd.h"
 #include "mmSolver/cmd/MMSolverAffectsCmd.h"
 #include "mmSolver/cmd/MMSolverCmd.h"
 #include "mmSolver/cmd/MMSolverSceneGraphCmd.h"
@@ -210,6 +211,10 @@ MStatus initializePlugin(MObject obj) {
     REGISTER_COMMAND(plugin, mmsolver::MMSolverCmd::cmdName(),
                      mmsolver::MMSolverCmd::creator,
                      mmsolver::MMSolverCmd::newSyntax, status);
+
+    REGISTER_COMMAND(plugin, mmsolver::MMSolver2Cmd::cmdName(),
+                     mmsolver::MMSolver2Cmd::creator,
+                     mmsolver::MMSolver2Cmd::newSyntax, status);
 
     REGISTER_COMMAND(plugin, mmsolver::MMSolverTypeCmd::cmdName(),
                      mmsolver::MMSolverTypeCmd::creator,
@@ -552,6 +557,7 @@ MStatus uninitializePlugin(MObject obj) {
 #endif
 
     DEREGISTER_COMMAND(plugin, mmsolver::MMSolverCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, mmsolver::MMSolver2Cmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMSolverTypeCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMReprojectionCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMSolverAffectsCmd::cmdName(), status);

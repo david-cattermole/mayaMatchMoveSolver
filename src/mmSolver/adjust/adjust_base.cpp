@@ -348,7 +348,8 @@ bool compute_error_stats(const int numberOfMarkerErrors,
     out_errorAvg = 0;
     out_errorMin = std::numeric_limits<double>::max();
     out_errorMax = -0.0;
-    for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
+    const auto marker_error_count = numberOfMarkerErrors / ERRORS_PER_MARKER;
+    for (int i = 0; i < marker_error_count; ++i) {
         const double err = errorDistanceList[i];
         if (!std::isfinite(err)) {
             MMSOLVER_ERR("Error distance value is invalid, skipping: " << err);
@@ -363,7 +364,7 @@ bool compute_error_stats(const int numberOfMarkerErrors,
         }
     }
     assert(numberOfMarkerErrors > 0);
-    out_errorAvg /= (double)(numberOfMarkerErrors / ERRORS_PER_MARKER);
+    out_errorAvg /= marker_error_count;
     return true;
 }
 

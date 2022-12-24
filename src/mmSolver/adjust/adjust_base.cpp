@@ -112,7 +112,7 @@ SolverTypePair getSolverTypeDefault() {
                 solverTypeName = name;
             }
         }
-        if (solverTypeName == "") {
+        if (solverTypeName.empty()) {
             MMSOLVER_ERR(
                 "MMSOLVER_DEFAULT_SOLVER environment variable is invalid. "
                 << "Value may be "
@@ -180,7 +180,6 @@ void applyLossFunctionToErrors(const int numberOfErrors, double *f,
         J_scale = std::pow(J_scale, 0.5);
         f[i] *= rho1 / J_scale;
     }
-    return;
 }
 
 // Convert an unbounded parameter value (that has already run through
@@ -414,7 +413,7 @@ void logResultsSolveDetails(SolverResult &solverResult, SolverData &userData,
         double seconds = debug::timestamp_as_seconds(debug::get_timestamp() -
                                                      timer.startTimestamp);
         seconds = std::max(1e-9, seconds);
-        size_t evals_per_sec = static_cast<size_t>(
+        auto evals_per_sec = static_cast<size_t>(
             static_cast<double>(solverResult.functionEvals) / seconds);
         std::string evals_per_sec_string =
             mmstring::numberToStringWithCommas(evals_per_sec);
@@ -816,13 +815,12 @@ void _splitIntoUsedAndUnusedLists(_T inputList, IndexCountMap indexCountMap,
                 used = true;
             }
         }
-        if (used == true) {
+        if (used) {
             usedList.push_back(object);
         } else {
             unusedList.push_back(object);
         }
     }
-    return;
 }
 
 /*
@@ -1078,8 +1076,8 @@ MStatus solveFrames(
                                      errorToParamList, status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    if (printStats.input == true) {
-        assert(printStats.enable == true);
+    if (printStats.input) {
+        assert(printStats.enable);
         status = logResultsObjectCounts(
             numberOfParameters, numberOfErrors, numberOfMarkerErrors,
             numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors,
@@ -1087,16 +1085,16 @@ MStatus solveFrames(
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    if (printStats.usedSolveObjects == true) {
-        assert(printStats.enable == true);
         status =
             logResultsSolveObjectUsage(usedMarkerList, unusedMarkerList,
                                        usedAttrList, unusedAttrList, outResult);
+    if (printStats.usedSolveObjects) {
+        assert(printStats.enable);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    if (printStats.affects == true) {
-        assert(printStats.enable == true);
+    if (printStats.affects) {
+        assert(printStats.enable);
         status = logResultsMarkerAffectsAttribute(usedMarkerList, usedAttrList,
                                                   markerToAttrList, outResult);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -1121,8 +1119,8 @@ MStatus solveFrames(
 
     // Bail out of solve if we don't have enough used markers or
     // attributes.
-    if ((usedMarkerList.size() == 0) || (usedAttrList.size() == 0)) {
-        if (printStats.enable == true) {
+    if ((usedMarkerList.empty()) || (usedAttrList.empty())) {
+        if (printStats.enable) {
             // If the user is asking to print statistics, then we have
             // successfully achieved that goal and we cannot continue
             // to generate statistics, because not enought markers or
@@ -1142,7 +1140,7 @@ MStatus solveFrames(
     }
 
     if (numberOfParameters > numberOfErrors) {
-        if (printStats.enable == true) {
+        if (printStats.enable) {
             // If the user is asking to print statistics, then we have
             // successfully achieved that goal and we cannot continue
             // to generate statistics, because of an invalid number of
@@ -1195,7 +1193,7 @@ MStatus solveFrames(
         std::stringstream ss;
         addFrameListToStringStream(frameList, ss);
         MMSOLVER_INFO("Frames:" << ss.str());
-    } else if (printStats.enable == false && logLevel >= LogLevel::kVerbose) {
+    } else if (!printStats.enable && logLevel >= LogLevel::kVerbose) {
         MMSOLVER_INFO(
             "------------------------------------------------------------------"
             "-------------");
@@ -1210,8 +1208,7 @@ MStatus solveFrames(
     }
 
     // MComputation helper.
-    if (printStats.enable == false && logLevel >= LogLevel::kInfo &&
-        frameCount > 1) {
+    if (!printStats.enable && logLevel >= LogLevel::kInfo && frameCount > 1) {
         const bool showProgressBar = true;
         const bool isInterruptable = true;
         const bool useWaitCursor = true;
@@ -1223,7 +1220,7 @@ MStatus solveFrames(
     // Start Solving
     SolverTimer timer;
     timer.startTimestamp = debug::get_timestamp();
-    if (printStats.enable == false) {
+    if (!printStats.enable) {
         timer.solveBenchTimer.start();
         timer.solveBenchTicks.start();
     }
@@ -1369,7 +1366,7 @@ MStatus solveFrames(
                             initialErrorAvg, initialErrorMin, initialErrorMax);
     }
 
-    if (printStats.deviation == true) {
+    if (printStats.deviation) {
         out_solveResult.success = true;
         out_solveResult.reason_number = 0;
         out_solveResult.reason = "";
@@ -1386,7 +1383,7 @@ MStatus solveFrames(
             numberOfMarkerErrors, numberOfAttrStiffnessErrors,
             numberOfAttrSmoothnessErrors, logLevel, out_paramList, outResult);
     }
-    if (printStats.enable == true) {
+    if (printStats.enable) {
         // There is no more printing to do, we must solve now if we
         // want to solve.
         status = MS::kSuccess;
@@ -1443,12 +1440,11 @@ MStatus solveFrames(
         return status;
     }
 
-    if (printStats.enable == false) {
+    if (!printStats.enable) {
         timer.solveBenchTicks.stop();
         timer.solveBenchTimer.stop();
     }
-    if (printStats.enable == false && logLevel >= LogLevel::kInfo &&
-        frameCount > 1) {
+    if (!printStats.enable && logLevel >= LogLevel::kInfo && frameCount > 1) {
         out_computation.endComputation();
     }
 
@@ -1530,7 +1526,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
 
     bool verbose = logLevel >= LogLevel::kDebug;
     auto printStats = constructPrintStats(printStatsList);
-    if (printStats.enable == true) {
+    if (printStats.enable) {
         // When printing statistics, turn off verbosity.
         verbose = false;
     }
@@ -1577,7 +1573,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
                                       usedAttrList, unusedAttrList);
 
         // Print warnings about unused solve objects.
-        if ((unusedMarkerList.size() > 0) &&
+        if ((!unusedMarkerList.empty()) &&
             (solverOptions.removeUnusedMarkers)) {
             MMSOLVER_WRN("Unused Markers detected and ignored:");
             for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
@@ -1588,7 +1584,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
             }
         }
 
-        if ((unusedAttrList.size() > 0) &&
+        if ((!unusedAttrList.empty()) &&
             (solverOptions.removeUnusedAttributes)) {
             MMSOLVER_WRN("Unused Attributes detected and ignored:");
             for (AttrPtrListCIt ait = unusedAttrList.cbegin();
@@ -1614,7 +1610,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
             usedAttrList = attrList;
         }
 
-        if (usedObjectsChanged == true) {
+        if (usedObjectsChanged) {
             getMarkerToAttributeRelationship(usedMarkerList, usedAttrList,
                                              markerToAttrList, status);
             CHECK_MSTATUS(status);
@@ -1656,7 +1652,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
     } else if (frameSolveMode == FrameSolveMode::kPerFrame) {
         auto frameCount = frameList.length();
 
-        if (printStats.enable == false) {
+        if (!printStats.enable) {
             const bool showProgressBar = true;
             const bool isInterruptable = true;
             const bool useWaitCursor = true;
@@ -1746,7 +1742,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
 
     bool verbose = logLevel >= LogLevel::kDebug;
     auto printStats = constructPrintStats(printStatsList);
-    if (printStats.enable == true) {
+    if (printStats.enable) {
         // When printing statistics, turn off verbosity.
         verbose = false;
     }
@@ -1796,7 +1792,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
                                       usedAttrList, unusedAttrList);
 
         // Print warnings about unused solve objects.
-        if ((unusedMarkerList.size() > 0) &&
+        if ((!unusedMarkerList.empty()) &&
             (solverOptions.removeUnusedMarkers)) {
             MMSOLVER_WRN("Unused Markers detected and ignored:");
             for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
@@ -1807,7 +1803,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
             }
         }
 
-        if ((unusedAttrList.size() > 0) &&
+        if ((!unusedAttrList.empty()) &&
             (solverOptions.removeUnusedAttributes)) {
             MMSOLVER_WRN("Unused Attributes detected and ignored:");
             for (AttrPtrListCIt ait = unusedAttrList.cbegin();
@@ -1833,7 +1829,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
             usedAttrList = attrList;
         }
 
-        if (usedObjectsChanged == true) {
+        if (usedObjectsChanged) {
             getMarkerToAttributeRelationship(usedMarkerList, usedAttrList,
                                              markerToAttrList, status);
             CHECK_MSTATUS(status);
@@ -1875,7 +1871,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
     } else if (frameSolveMode == FrameSolveMode::kPerFrame) {
         auto frameCount = frameList.length();
 
-        if (printStats.enable == false) {
+        if (!printStats.enable) {
             const bool showProgressBar = true;
             const bool isInterruptable = true;
             const bool useWaitCursor = true;

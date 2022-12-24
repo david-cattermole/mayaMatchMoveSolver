@@ -201,7 +201,7 @@ MStatus MMSolverCmd::redoIt() {
     //    MS::kFailure - redoIt failed.  this is a serious problem that will
     //                     likely cause the undo queue to be purged
     //
-    MStatus status;
+    MStatus status = MS::kSuccess;
     m_dgmod.doIt();
     m_curveChange.redoIt();
     return status;
@@ -221,7 +221,7 @@ MStatus MMSolverCmd::undoIt() {
     //    MS::kFailure - redoIt failed.  this is a serious problem that will
     //                     likely cause the undo queue to be purged
     //
-    MStatus status;
+    MStatus status = MS::kSuccess;
     m_curveChange.undoIt();
     m_dgmod.undoIt();
     return status;

@@ -57,7 +57,7 @@ MMSolver2Cmd::~MMSolver2Cmd() {}
 
 void *MMSolver2Cmd::creator() { return new MMSolver2Cmd(); }
 
-MString MMSolver2Cmd::cmdName() { return MString("mmSolver"); }
+MString MMSolver2Cmd::cmdName() { return MString("mmSolver2"); }
 
 /*
  * Tell Maya we have a syntax function.

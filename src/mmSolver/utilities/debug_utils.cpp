@@ -80,7 +80,7 @@ Timestamp get_timestamp() {
 #endif
 }
 
-double timestamp_as_seconds(Timestamp timestamp) {
+double timestamp_as_seconds(const Timestamp timestamp) {
     return static_cast<double>(timestamp) / 1000.0;
 }
 
@@ -88,7 +88,7 @@ void CPUBenchmark::start() { ticktime = rdtsc(); }
 
 Ticks CPUBenchmark::stop() { return ticktimeTotal += rdtsc() - ticktime; }
 
-Ticks CPUBenchmark::get_ticks(uint32_t loopNums) {
+Ticks CPUBenchmark::get_ticks(const uint32_t loopNums) const {
     Ticks total = ticktimeTotal;
     if (loopNums > 0) {
         total /= loopNums;
@@ -96,8 +96,9 @@ Ticks CPUBenchmark::get_ticks(uint32_t loopNums) {
     return total;
 }
 
-void CPUBenchmark::print(std::string heading, uint32_t loopNums) {
-    Ticks ticks = get_ticks(loopNums);
+void CPUBenchmark::print(const std::string &heading,
+                         const uint32_t loopNums) const {
+    const Ticks ticks = get_ticks(loopNums);
     if (loopNums <= 1) {
         MStreamUtils::stdErrorStream() << heading << " Ticks: ";
     } else if (loopNums > 0) {
@@ -113,7 +114,7 @@ Timestamp TimestampBenchmark::stop() {
     return timestampTotal += get_timestamp() - timestamp;
 }
 
-double TimestampBenchmark::get_seconds(uint32_t loopNums) {
+double TimestampBenchmark::get_seconds(const uint32_t loopNums) const {
     double secs = timestamp_as_seconds(timestampTotal);
     if (loopNums > 0) {
         secs /= loopNums;
@@ -121,12 +122,14 @@ double TimestampBenchmark::get_seconds(uint32_t loopNums) {
     return secs;
 }
 
-void TimestampBenchmark::print(std::string heading, uint32_t loopNums) {
+void TimestampBenchmark::print(const std::string &heading,
+                               const uint32_t loopNums) const {
     return printInSec(heading, loopNums);
 }
 
-void TimestampBenchmark::printInSec(std::string heading, uint32_t loopNums) {
-    double secs = get_seconds(loopNums);
+void TimestampBenchmark::printInSec(const std::string &heading,
+                                    const uint32_t loopNums) const {
+    const double secs = get_seconds(loopNums);
     if (loopNums <= 1) {
         MStreamUtils::stdErrorStream() << heading << " Time: ";
     } else if (loopNums > 0) {

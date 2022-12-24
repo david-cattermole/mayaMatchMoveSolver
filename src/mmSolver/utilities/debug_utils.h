@@ -176,7 +176,7 @@ uint64_t rdtsc();
 // Returns the amount of milliseconds elapsed since the UNIX epoch.
 Timestamp get_timestamp();
 
-double timestamp_as_seconds(Timestamp timestamp);
+double timestamp_as_seconds(const Timestamp timestamp);
 
 // CPU Clock-cycle timing.
 //
@@ -208,8 +208,8 @@ public:
 
     void start();
     Ticks stop();
-    Ticks get_ticks(uint32_t loopNums = 0);
-    void print(std::string heading, uint32_t loopNums = 0);
+    Ticks get_ticks(const uint32_t loopNums = 0) const;
+    void print(const std::string &heading, const uint32_t loopNums = 0) const;
 };
 
 // Wrapper struct around 'get_timestamp' timer.
@@ -223,9 +223,10 @@ public:
     void start();
     Timestamp stop();
 
-    double get_seconds(uint32_t loopNums = 0);
-    void print(std::string heading, uint32_t loopNums = 0);
-    void printInSec(std::string heading, uint32_t loopNums = 0);
+    double get_seconds(const uint32_t loopNums = 0) const;
+    void print(const std::string &heading, const uint32_t loopNums = 0) const;
+    void printInSec(const std::string &heading,
+                    const uint32_t loopNums = 0) const;
 };
 
 }  // namespace debug

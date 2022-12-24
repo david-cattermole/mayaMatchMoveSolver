@@ -147,15 +147,19 @@ MStatus MMSolver2Cmd::doIt(const MArgList &args) {
     m_curveChange.setInteractive(true);
 
     MStringArray outResult;
-    bool ret =
+    const bool ret =
         solve_v2(m_solverOptions, m_cameraList, m_markerList, m_bundleList,
                  m_attrList, m_frameList, m_dgmod, m_curveChange, m_computation,
                  m_printStatsList, m_logLevel, outResult);
 
     MMSolver2Cmd::setResult(outResult);
-    if (ret == false) {
+    if (!ret) {
         MStreamUtils::stdErrorStream()
-            << "WARNING: mmSolver: Solver returned false!" << '\n';
+            << "WARNING: mmSolver: Solver returned false!\n";
+    }
+    if (status != MS::kSuccess) {
+        MStreamUtils::stdErrorStream()
+            << "WARNING: mmSolver: Solver status is not success!\n";
     }
 
     return status;

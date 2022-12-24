@@ -177,9 +177,13 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
                         m_computation, m_printStatsList, m_logLevel, outResult);
 
     MMSolverCmd::setResult(outResult);
-    if (ret == false) {
+    if (!ret) {
         MStreamUtils::stdErrorStream()
-            << "WARNING: mmSolver: Solver returned false!" << '\n';
+            << "WARNING: mmSolver: Solver returned false!\n";
+    }
+    if (status != MS::kSuccess) {
+        MStreamUtils::stdErrorStream()
+            << "WARNING: mmSolver: Solver status is not success!\n";
     }
 
     // Mouse cursor back to normal.

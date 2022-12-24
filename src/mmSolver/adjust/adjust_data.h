@@ -96,10 +96,25 @@ enum class LogLevel {
 };
 
 struct PrintStatOptions {
+    // Are print stats enabled? 'true' if any of the other options are
+    // true.
     bool enable;
+
+    // Prints details about how many object counts are used; number of
+    // paramters, number of errors, number of marker errors, and
+    // smoothness/stiffness error counts.
     bool input;
+
+    // Prints a 2D matrix of Markers and Attributes, which markers
+    // affect which attributes?
     bool affects;
+
+    // If true, prints solve object usage. For example, which markers
+    // are used or unused, and which attributes are used or unused.
     bool usedSolveObjects;
+
+    // Print deviation details; the individual error values reported
+    // from the solver, per-frame and per-marker-per-frame.
     bool deviation;
 };
 

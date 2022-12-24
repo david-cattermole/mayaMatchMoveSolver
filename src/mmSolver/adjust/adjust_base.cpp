@@ -683,7 +683,7 @@ MStatus logResultsObjectCounts(const int numberOfParameters,
 MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList &markerList,
                                          const AttrPtrList &attrList,
                                          const BoolList2D &markerToAttrList,
-                                         AffectsResult &out_result) {
+                                         MStringArray &outResult) {
     MStatus status = MStatus::kSuccess;
     std::string resultStr;
 
@@ -747,7 +747,7 @@ MStatus logResultsSolveObjectUsage(const MarkerPtrList &usedMarkerList,
                                    const MarkerPtrList &unusedMarkerList,
                                    const AttrPtrList &usedAttrList,
                                    const AttrPtrList &unusedAttrList,
-                                   SolverObjectUsageResult &out_result) {
+                                   MStringArray &outResult) {
     MStatus status = MStatus::kSuccess;
 
     // Append a string with all the *used* marker names.

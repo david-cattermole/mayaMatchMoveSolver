@@ -118,10 +118,10 @@ MStatus logResultsObjectCounts(const int numberOfParameters,
                                const int numberOfAttrSmoothnessErrors,
                                MStringArray &outResult);
 
-MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList markerList,
-                                         const AttrPtrList attrList,
-                                         const BoolList2D markerToAttrList,
-                                         MStringArray &outResult);
+MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList &markerList,
+                                         const AttrPtrList &attrList,
+                                         const BoolList2D &markerToAttrList,
+                                         AffectsResult &out_result);
 
 bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
               MarkerPtrList &markerList, BundlePtrList &bundleList,

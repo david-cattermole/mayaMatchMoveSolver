@@ -679,10 +679,10 @@ MStatus logResultsObjectCounts(const int numberOfParameters,
  * markerToAttrList is expected to be pre-computed from the function
  * 'getMarkerToAttributeRelationship'.
  */
-MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList markerList,
-                                         const AttrPtrList attrList,
-                                         const BoolList2D markerToAttrList,
-                                         MStringArray &outResult) {
+MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList &markerList,
+                                         const AttrPtrList &attrList,
+                                         const BoolList2D &markerToAttrList,
+                                         AffectsResult &out_result) {
     MStatus status = MStatus::kSuccess;
     std::string resultStr;
 
@@ -732,11 +732,11 @@ MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList markerList,
  * Print out if objects added to the solve (such as markers and
  * attributes) are being used, or are unused.
  */
-MStatus logResultsSolveObjectUsage(const MarkerPtrList usedMarkerList,
-                                   const MarkerPtrList unusedMarkerList,
-                                   const AttrPtrList usedAttrList,
-                                   const AttrPtrList unusedAttrList,
-                                   MStringArray &outResult) {
+MStatus logResultsSolveObjectUsage(const MarkerPtrList &usedMarkerList,
+                                   const MarkerPtrList &unusedMarkerList,
+                                   const AttrPtrList &usedAttrList,
+                                   const AttrPtrList &unusedAttrList,
+                                   SolverObjectUsageResult &out_result) {
     MStatus status = MStatus::kSuccess;
 
     // Append a string with all the *used* marker names.
@@ -847,9 +847,9 @@ IndexCountMap _incrementMapIndex(const size_t key,
  * Split the given Markers and Attributes into both used and unused
  * objects.
  */
-MStatus splitUsedMarkersAndAttributes(const MarkerPtrList markerList,
-                                      const AttrPtrList attrList,
-                                      const BoolList2D markerToAttrList,
+MStatus splitUsedMarkersAndAttributes(const MarkerPtrList &markerList,
+                                      const AttrPtrList &attrList,
+                                      const BoolList2D &markerToAttrList,
                                       MarkerPtrList &out_usedMarkerList,
                                       MarkerPtrList &out_unusedMarkerList,
                                       AttrPtrList &out_usedAttrList,

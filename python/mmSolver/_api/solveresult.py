@@ -84,7 +84,7 @@ def _convert_to(name, key, typ, value, index):
     """
     msg = 'mmSolver data is incomplete, '
     msg += 'a solver error may have occurred: '
-    msg += 'name={0} key={1} typ={2} value={3}'
+    msg += 'name={0} key={1} type={2} value={3}'
 
     if value is None or len(value) == 0:
         LOG.debug(msg.format(name, key, typ, value))
@@ -145,7 +145,7 @@ class SolveResult(object):
         # Common warning message in this method.
         msg = 'mmSolver data is incomplete, '
         msg += 'a solver error may have occurred: '
-        msg += 'name={0} key={1} typ={2} value={3}'
+        msg += 'name={0} key={1} type={2} value={3}'
 
         # Solver statistics
         name_keys = [

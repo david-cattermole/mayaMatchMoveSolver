@@ -706,8 +706,18 @@ MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList &markerList,
             MObject attrNode = plug.node();
             MFnDagNode attrFnDagNode(attrNode);
             MString attrNodeName = attrFnDagNode.fullPathName();
+
+            const bool includeNodeName = false;
+            const bool includeNonMandatoryIndices = true;
+            const bool includeInstancedIndices = true;
+            const bool useAlias = false;
+            const bool useFullAttributePath = false;
+            const bool useLongNames = true;
             MString attrAttrName =
-                plug.partialName(false, true, true, false, false, true);
+                plug.partialName(includeNodeName, includeNonMandatoryIndices,
+                                 includeInstancedIndices, useAlias,
+                                 useFullAttributePath, useLongNames);
+
             MString attrNameString = attrNodeName + "." + attrAttrName;
             const char *attrName = attrNameString.asChar();
 

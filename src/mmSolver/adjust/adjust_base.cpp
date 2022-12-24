@@ -29,9 +29,6 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
-#include <ctime>
-#include <fstream>
-#include <iostream>
 #include <limits>
 #include <map>
 #include <string>
@@ -40,23 +37,20 @@
 // Maya
 #include <maya/MAnimCurveChange.h>
 #include <maya/MComputation.h>
-#include <maya/MDagPath.h>
 #include <maya/MFloatMatrix.h>
 #include <maya/MFnAnimCurve.h>
-#include <maya/MFnAttribute.h>
 #include <maya/MFnCamera.h>
-#include <maya/MFnDependencyNode.h>
 #include <maya/MGlobal.h>
 #include <maya/MItDependencyGraph.h>
-#include <maya/MMatrix.h>
 #include <maya/MObject.h>
 #include <maya/MPoint.h>
-#include <maya/MProfiler.h>
-#include <maya/MSelectionList.h>
 #include <maya/MStreamUtils.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
-#include <maya/MVector.h>
+
+#ifdef MAYA_PROFILE
+#include <maya/MProfiler.h>
+#endif
 
 // MM Solver
 #include "adjust_cminpack_base.h"
@@ -70,9 +64,7 @@
 #include "mmSolver/mayahelper/maya_lens_model_utils.h"
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_scene_graph.h"
-#include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 #include "mmscenegraph/mmscenegraph.h"
 

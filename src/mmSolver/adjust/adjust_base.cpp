@@ -1096,12 +1096,12 @@ MStatus solveFrames(
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-        status =
-            logResultsSolveObjectUsage(usedMarkerList, unusedMarkerList,
-                                       usedAttrList, unusedAttrList, outResult);
     if (printStats.usedSolveObjects) {
         assert(printStats.enable);
         CHECK_MSTATUS_AND_RETURN_IT(status);
+        status =
+            logResultsSolveObjectUsage(usedMarkerList, unusedMarkerList,
+                                       usedAttrList, unusedAttrList, outResult);
     }
 
     if (printStats.affects) {

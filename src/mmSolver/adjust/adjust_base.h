@@ -103,27 +103,6 @@ bool compute_error_stats(const int numberOfMarkerErrors,
                          double &out_errorAvg, double &out_errorMin,
                          double &out_errorMax);
 
-void logResultsSolveDetails(
-    const SolverResult &solverResult, SolverData &userData,
-    const SolverTimer &timer, const int numberOfParameters,
-    const int numberOfMarkerErrors, const int numberOfAttrStiffnessErrors,
-    const int numberOfAttrSmoothnessErrors, const LogLevel &logLevel,
-    std::vector<double> &paramList,
-    //
-    // CommandResults, split into different components.
-    SolverResult &outSolverResult, TimerResult &outTimerResult,
-    SolveValuesResult &outSolveValuesResult,
-    ErrorMetricsResult &outErrorMetricsResult, AffectsResult &outAffectsResult,
-    SolverObjectUsageResult &outSolverObjectUsageResult,
-    SolverObjectCountResult &outSolverObjectCountResult);
-
-MStatus logResultsObjectCounts(const int numberOfParameters,
-                               const int numberOfErrors,
-                               const int numberOfMarkerErrors,
-                               const int numberOfAttrStiffnessErrors,
-                               const int numberOfAttrSmoothnessErrors,
-                               SolverObjectCountResult &out_result);
-
 MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList &markerList,
                                          const AttrPtrList &attrList,
                                          const BoolList2D &markerToAttrList,

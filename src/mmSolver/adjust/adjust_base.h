@@ -90,7 +90,7 @@ bool get_initial_parameters(const int numberOfParameters,
                             std::vector<double> &paramList,
                             std::vector<std::pair<int, int> > &paramToAttrList,
                             AttrPtrList &attrList, MTimeArray &frameList,
-                            SolveStateResult &out_solveStateResult);
+                            SolverResult &out_solverResult);
 
 bool set_maya_attribute_values(
     const int numberOfParameters,
@@ -111,7 +111,7 @@ void logResultsSolveDetails(
     std::vector<double> &paramList,
     //
     // CommandResults, split into different components.
-    SolveStateResult &outSolveStateResult, TimerResult &outTimerResult,
+    SolverResult &outSolverResult, TimerResult &outTimerResult,
     SolveValuesResult &outSolveValuesResult,
     ErrorMetricsResult &outErrorMetricsResult, AffectsResult &outAffectsResult,
     SolverObjectUsageResult &outSolverObjectUsageResult,

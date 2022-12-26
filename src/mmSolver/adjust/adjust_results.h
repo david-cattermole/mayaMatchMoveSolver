@@ -61,6 +61,7 @@ struct SolverResult {
     int functionEvals;
     int jacobianEvals;
     double errorFinal;
+    bool user_interrupted;
     int count;  // number of samples in this result.
 
     SolverResult()
@@ -73,6 +74,7 @@ struct SolverResult {
         , iterations(0)
         , functionEvals(0)
         , jacobianEvals(0)
+        , user_interrupted(false)
         , count(1) {}
 
     void add(const Self &other) {
@@ -104,74 +106,6 @@ struct SolverResult {
 
         Self::count = 1;
     }
-};
-
-struct SolveStateResult {
-    typedef SolveStateResult Self;
-
-    int count;
-    bool success;
-    int reason_num;
-    double error_final;          // errorFinal
-    double error_final_average;  // errorAvg
-    double error_final_maximum;  // errorMax
-    double error_final_minimum;  // errorMin
-    int iteration_num;           // iterations
-    int iteration_function_num;  // functionEvals
-    int iteration_jacobian_num;  // jacobianEvals
-    bool user_interrupted;
-
-    SolveStateResult()
-        : count(1)
-        , success(true)
-        , error_final_average(0.0)
-        , error_final_minimum(std::numeric_limits<double>::max())
-        , error_final_maximum(-0.0)
-        , error_final(0.0)
-        , reason_num(0)
-        , iteration_num(0)
-        , iteration_function_num(0)
-        , iteration_jacobian_num(0)
-        , user_interrupted(false) {}
-
-    void fill(const SolverResult &solverResult, const bool userInterrupted) {
-        Self::success = solverResult.success;
-        Self::reason_num = solverResult.reason_number;
-        Self::error_final = solverResult.errorFinal;
-        Self::error_final_average = solverResult.errorAvg;
-        Self::error_final_maximum = solverResult.errorMax;
-        Self::error_final_minimum = solverResult.errorMin;
-        Self::iteration_num = solverResult.iterations;
-        Self::iteration_function_num = solverResult.functionEvals;
-        Self::iteration_jacobian_num = solverResult.jacobianEvals;
-        Self::user_interrupted = userInterrupted;
-    }
-
-    void add(const SolveStateResult &other) {
-        Self::success = std::min(Self::success, other.success);
-
-        Self::error_final_average += other.error_final_average;
-        Self::error_final_minimum =
-            std::min(Self::error_final_minimum, other.error_final_minimum);
-        Self::error_final_maximum =
-            std::max(Self::error_final_maximum, other.error_final_maximum);
-
-        Self::iteration_num += other.iteration_num;
-        Self::iteration_function_num += other.iteration_function_num;
-        Self::iteration_jacobian_num += other.iteration_jacobian_num;
-        Self::error_final += other.error_final;
-
-        Self::count += other.count;
-    }
-
-    void divide() {
-        double count_inverse = 0.0;
-        if (Self::count > 0) {
-            count_inverse = 1.0 / static_cast<double>(Self::count);
-        }
-        Self::error_final_average *= count_inverse;
-        Self::error_final *= count_inverse;
-    }
 
     void appendToMStringArray(MStringArray &result) {
         std::string str;
@@ -180,35 +114,35 @@ struct SolveStateResult {
         str = "success=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<int>(Self::reason_num);
+        value = mmstring::numberToString<int>(Self::reason_number);
         str = "reason_num=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<double>(Self::error_final);
+        value = mmstring::numberToString<double>(Self::errorFinal);
         str = "error_final=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<double>(Self::error_final_average);
+        value = mmstring::numberToString<double>(Self::errorAvg);
         str = "error_final_average=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<double>(Self::error_final_maximum);
+        value = mmstring::numberToString<double>(Self::errorMax);
         str = "error_final_maximum=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<double>(Self::error_final_minimum);
+        value = mmstring::numberToString<double>(Self::errorMin);
         str = "error_final_minimum=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<int>(Self::iteration_num);
+        value = mmstring::numberToString<int>(Self::iterations);
         str = "iteration_num=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<int>(Self::iteration_function_num);
+        value = mmstring::numberToString<int>(Self::functionEvals);
         str = "iteration_function_num=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<int>(Self::iteration_jacobian_num);
+        value = mmstring::numberToString<int>(Self::jacobianEvals);
         str = "iteration_jacobian_num=" + value;
         result.append(MString(str.c_str()));
 
@@ -811,7 +745,7 @@ struct CommandResult {
     // Used to control what parts of the command result are used.
     PrintStatOptions printStats;
 
-    SolveStateResult solveStateResult;
+    SolverResult solverResult;
     TimerResult timerResult;
     SolveValuesResult solveValuesResult;
     ErrorMetricsResult errorMetricsResult;
@@ -834,7 +768,7 @@ struct CommandResult {
             Self::solverObjectCountResult.add(other.solverObjectCountResult);
         }
 
-        Self::solveStateResult.add(other.solveStateResult);
+        Self::solverResult.add(other.solverResult);
         Self::timerResult.add(other.timerResult);
         Self::errorMetricsResult.add(other.errorMetricsResult);
         Self::solveValuesResult.add(other.solveValuesResult);
@@ -845,7 +779,7 @@ struct CommandResult {
             Self::solverObjectCountResult.divide();
         }
 
-        Self::solveStateResult.divide();
+        Self::solverResult.divide();
         Self::timerResult.divide();
         Self::errorMetricsResult.divide();
         Self::solveValuesResult.divide();
@@ -867,7 +801,7 @@ struct CommandResult {
             Self::affectsResult.appendToMStringArray(result);
         }
 
-        Self::solveStateResult.appendToMStringArray(result);
+        Self::solverResult.appendToMStringArray(result);
         Self::timerResult.appendToMStringArray(result);
         Self::errorMetricsResult.appendToMStringArray(result);
         Self::solveValuesResult.appendToMStringArray(result);

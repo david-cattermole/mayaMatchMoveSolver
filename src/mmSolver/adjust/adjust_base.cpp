@@ -257,7 +257,7 @@ bool get_initial_parameters(
     const int numberOfParameters, std::vector<double> &paramList,
     const std::vector<std::pair<int, int>> &paramToAttrList,
     AttrPtrList &attrList, const MTimeArray &frameList,
-    SolveStateResult &out_solveStateResult) {
+    SolverResult &out_solverResult) {
     MStatus status = MS::kSuccess;
     const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     MTime currentFrame = MAnimControl::currentTime();
@@ -275,7 +275,7 @@ bool get_initial_parameters(
         status = attr->getValue(value, frame, timeEvalMode);
         CHECK_MSTATUS(status);
         if (status != MS::kSuccess) {
-            out_solveStateResult.success = false;
+            out_solverResult.success = false;
             return false;
         }
 
@@ -368,12 +368,6 @@ bool compute_error_stats(const int numberOfMarkerErrors,
 
 void logResultsTimer(SolverTimer &timer, TimerResult &outTimerResult) {
     outTimerResult.fill(timer);
-}
-
-void logResultsSolveState(const SolverResult &solverResult,
-                          const bool userInterrupted,
-                          SolveStateResult &outSolveStateResult) {
-    outSolveStateResult.fill(solverResult, userInterrupted);
 }
 
 void logResultsSolveValues(const int numberOfParameters,
@@ -808,9 +802,9 @@ MStatus solveFrames(
     std::vector<double> &out_previousParamList,
     std::vector<double> &out_jacobianList,
     //
-    SolverResult &out_solveResult, CommandResult &out_cmdResult) {
+    CommandResult &out_cmdResult) {
     MStatus status = MS::kSuccess;
-    out_solveResult.success = true;
+    out_cmdResult.solverResult.success = true;
 
     const bool verbose = logLevel >= LogLevel::kDebug;
 
@@ -927,8 +921,7 @@ MStatus solveFrames(
             // successfully achieved that goal and we cannot continue
             // to generate statistics, because not enough markers or
             // attributes were used.
-            out_cmdResult.solveStateResult.success = true;
-            out_solveResult.success = true;
+            out_cmdResult.solverResult.success = true;
             status = MS::kSuccess;
             return status;
         }
@@ -937,8 +930,7 @@ MStatus solveFrames(
             "solver "
             << "used markers=" << usedMarkerList.size() << " "
             << "used attributes=" << usedAttrList.size());
-        out_cmdResult.solveStateResult.success = false;
-        out_solveResult.success = false;
+        out_cmdResult.solverResult.success = false;
         status = MS::kFailure;
         return status;
     }
@@ -949,8 +941,7 @@ MStatus solveFrames(
             // successfully achieved that goal and we cannot continue
             // to generate statistics, because of an invalid number of
             // parameters/errors.
-            out_cmdResult.solveStateResult.success = true;
-            out_solveResult.success = true;
+            out_cmdResult.solverResult.success = true;
             status = MS::kSuccess;
             return status;
         }
@@ -959,8 +950,7 @@ MStatus solveFrames(
             << "than number of markers (\"errors\"). "
             << "parameters=" << numberOfParameters << " "
             << "errors=" << numberOfErrors);
-        out_cmdResult.solveStateResult.success = false;
-        out_solveResult.success = false;
+        out_cmdResult.solverResult.success = false;
         status = MS::kFailure;
         return status;
     }
@@ -1062,16 +1052,14 @@ MStatus solveFrames(
             CHECK_MSTATUS(status);
             MMSOLVER_ERR("Maya DAG is invalid for use with MM Scene Graph, "
                          << "please switch to Maya DAG and solve again.");
-            out_cmdResult.solveStateResult.success = false;
-            out_solveResult.success = false;
+            out_cmdResult.solverResult.success = false;
             return status;
         }
     } else if (solverOptions.sceneGraphMode == SceneGraphMode::kMayaDag) {
         // Nothing to do.
     } else {
         MMSOLVER_ERR("Invalid Scene Graph mode!");
-        out_cmdResult.solveStateResult.success = false;
-        out_solveResult.success = false;
+        out_cmdResult.solverResult.success = false;
         status = MS::kFailure;
         return status;
     }
@@ -1178,25 +1166,23 @@ MStatus solveFrames(
             initialErrorMin, initialErrorMax);
         if (!error_stats_ok) {
             MMSOLVER_ERR("Failed to compute initial error stats.");
-            out_cmdResult.solveStateResult.success = false;
-            out_solveResult.success = false;
+            out_cmdResult.solverResult.success = false;
             status = MS::kFailure;
             return status;
         }
     }
 
     // Fill in default values, with initial error values.
-    out_cmdResult.solveStateResult.success = true;
-    out_solveResult.success = true;
-    out_solveResult.reason_number = 0;
-    out_solveResult.reason = "";
-    out_solveResult.iterations = 0;
-    out_solveResult.functionEvals = 0;
-    out_solveResult.jacobianEvals = 0;
-    out_solveResult.errorFinal = 0.0;
-    out_solveResult.errorAvg = initialErrorAvg;
-    out_solveResult.errorMin = initialErrorMin;
-    out_solveResult.errorMax = initialErrorMax;
+    out_cmdResult.solverResult.success = true;
+    out_cmdResult.solverResult.reason_number = 0;
+    out_cmdResult.solverResult.reason = "";
+    out_cmdResult.solverResult.iterations = 0;
+    out_cmdResult.solverResult.functionEvals = 0;
+    out_cmdResult.solverResult.jacobianEvals = 0;
+    out_cmdResult.solverResult.errorFinal = 0.0;
+    out_cmdResult.solverResult.errorAvg = initialErrorAvg;
+    out_cmdResult.solverResult.errorMin = initialErrorMin;
+    out_cmdResult.solverResult.errorMax = initialErrorMax;
 
     if (printStats.doNotSolve) {
         logResultsErrorMetrics(numberOfMarkerErrors, userData.markerList,
@@ -1204,8 +1190,7 @@ MStatus solveFrames(
                                userData.errorDistanceList,
                                out_cmdResult.errorMetricsResult);
         logResultsTimer(timer, out_cmdResult.timerResult);
-        logResultsSolveState(out_solveResult, userData.userInterrupted,
-                             out_cmdResult.solveStateResult);
+        out_cmdResult.solverResult.user_interrupted = userData.userInterrupted;
         logResultsSolveValues(
             numberOfParameters,
             numberOfMarkerErrors + numberOfAttrStiffnessErrors +
@@ -1215,8 +1200,7 @@ MStatus solveFrames(
         // There is no more printing to do, we must solve now if we
         // want to solve.
         status = MS::kSuccess;
-        out_cmdResult.solveStateResult.success = true;
-        out_solveResult.success = true;
+        out_cmdResult.solverResult.success = true;
         return status;
     }
 
@@ -1224,11 +1208,10 @@ MStatus solveFrames(
     MMSOLVER_VRB("Get Initial parameters...");
     const bool initial_ok = get_initial_parameters(
         numberOfParameters, out_paramList, out_paramToAttrList, usedAttrList,
-        frameList, out_cmdResult.solveStateResult);
+        frameList, out_cmdResult.solverResult);
     if (!initial_ok) {
         MMSOLVER_ERR("Failed to get initial parameters.");
-        out_cmdResult.solveStateResult.success = false;
-        out_solveResult.success = false;
+        out_cmdResult.solverResult.success = false;
         status = MS::kFailure;
         return status;
     }
@@ -1253,23 +1236,23 @@ MStatus solveFrames(
     if (solverOptions.solverType == SOLVER_TYPE_LEVMAR) {
         MMSOLVER_ERR("Solver Type is not supported by this compiled plug-in. "
                      << "solverType=" << solverOptions.solverType);
-        out_cmdResult.solveStateResult.success = false;
-        out_solveResult.success = false;
+        out_cmdResult.solverResult.success = false;
         status = MS::kFailure;
         return status;
     } else if (solverOptions.solverType == SOLVER_TYPE_CMINPACK_LMDIF) {
         solve_3d_cminpack_lmdif(solverOptions, numberOfParameters,
                                 numberOfErrors, out_paramList, out_errorList,
-                                paramWeightList, userData, out_solveResult);
+                                paramWeightList, userData,
+                                out_cmdResult.solverResult);
     } else if (solverOptions.solverType == SOLVER_TYPE_CMINPACK_LMDER) {
         solve_3d_cminpack_lmder(solverOptions, numberOfParameters,
                                 numberOfErrors, out_paramList, out_errorList,
-                                paramWeightList, userData, out_solveResult);
+                                paramWeightList, userData,
+                                out_cmdResult.solverResult);
     } else {
         MMSOLVER_ERR(
             "Solver Type is invalid. solverType=" << solverOptions.solverType);
-        out_cmdResult.solveStateResult.success = false;
-        out_solveResult.success = false;
+        out_cmdResult.solverResult.success = false;
         status = MS::kFailure;
         return status;
     }
@@ -1288,8 +1271,7 @@ MStatus solveFrames(
                            userData.errorDistanceList,
                            out_cmdResult.errorMetricsResult);
     logResultsTimer(timer, out_cmdResult.timerResult);
-    logResultsSolveState(out_solveResult, userData.userInterrupted,
-                         out_cmdResult.solveStateResult);
+    out_cmdResult.solverResult.user_interrupted = userData.userInterrupted;
 
     // Solve Finished, re-calculate error, and only set parameters if
     // the average error is lower.
@@ -1302,15 +1284,14 @@ MStatus solveFrames(
                             errorAvg, errorMin, errorMax);
     if (!error_stats_ok) {
         MMSOLVER_ERR("Failed to compute error stats.");
-        out_cmdResult.solveStateResult.success = false;
-        out_solveResult.success = false;
+        out_cmdResult.solverResult.success = false;
         status = MS::kFailure;
         return status;
     }
 
-    out_solveResult.errorAvg = errorAvg;
-    out_solveResult.errorMin = errorMin;
-    out_solveResult.errorMax = errorMax;
+    out_cmdResult.solverResult.errorAvg = errorAvg;
+    out_cmdResult.solverResult.errorMin = errorMin;
+    out_cmdResult.solverResult.errorMax = errorMax;
     if (solverOptions.acceptOnlyBetter) {
         errorIsBetter = errorAvg <= initialErrorAvg;
     }
@@ -1331,8 +1312,7 @@ MStatus solveFrames(
     }
     if (!set_attrs_ok) {
         MMSOLVER_ERR("Failed to set solved parameters.");
-        out_cmdResult.solveStateResult.success = false;
-        out_solveResult.success = false;
+        out_cmdResult.solverResult.success = false;
         status = MS::kFailure;
         return status;
     }
@@ -1364,9 +1344,10 @@ MStatus solveFrames(
                               numberOfAttrSmoothnessErrors,
                           out_paramList, userData.errorList,
                           out_cmdResult.solveValuesResult);
-    printSolveDetails(out_solveResult, userData, timer, numberOfParameters,
-                      numberOfMarkerErrors, numberOfAttrStiffnessErrors,
-                      numberOfAttrSmoothnessErrors, logLevel, out_paramList);
+    printSolveDetails(out_cmdResult.solverResult, userData, timer,
+                      numberOfParameters, numberOfMarkerErrors,
+                      numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors,
+                      logLevel, out_paramList);
 
     CHECK_MSTATUS(status);
 
@@ -1497,7 +1478,6 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
     MGlobal::MMayaState mayaSessionState = MGlobal::mayaState(&status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    SolverResult solveResult;
     CommandResult cmdResult;
     cmdResult.printStats = printStats;
 
@@ -1518,7 +1498,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
             paramToAttrList, errorToMarkerList, markerPosList, markerWeightList,
             errorList, paramList, previousParamList, jacobianList,
             //
-            solveResult, cmdResult);
+            cmdResult);
     } else if (frameSolveMode == FrameSolveMode::kPerFrame) {
         auto frameCount = frameList.length();
 
@@ -1543,7 +1523,6 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
         for (auto i = 0; i < frameCount; ++i) {
             computation.setProgress(i);
 
-            SolverResult perFrameSolveResult;
             CommandResult perFrameCmdResult;
             perFrameCmdResult.printStats = printStats;
 
@@ -1563,10 +1542,9 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
                                  markerPosList, markerWeightList, errorList,
                                  paramList, previousParamList, jacobianList,
                                  //
-                                 perFrameSolveResult, perFrameCmdResult);
+                                 perFrameCmdResult);
 
             // Combine results from each iteration.
-            solveResult.add(perFrameSolveResult);
             cmdResult.add(perFrameCmdResult);
 
             if (status != MS::kSuccess) {
@@ -1577,14 +1555,13 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
             }
         }
 
-        solveResult.divide();
         cmdResult.divide();
 
         computation.endComputation();
     }
 
     cmdResult.appendToMStringArray(outResult);
-    return solveResult.success;
+    return cmdResult.solverResult.success;
 }
 
 bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
@@ -1704,8 +1681,6 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
     MGlobal::MMayaState mayaSessionState = MGlobal::mayaState(&status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    SolverResult solveResult;
-
     auto frameSolveMode = solverOptions.frameSolveMode;
     MMSOLVER_VRB("frameSolveMode: " << static_cast<uint32_t>(frameSolveMode));
     if (frameSolveMode == FrameSolveMode::kAllFrameAtOnce) {
@@ -1723,7 +1698,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
             paramToAttrList, errorToMarkerList, markerPosList, markerWeightList,
             errorList, paramList, previousParamList, jacobianList,
             //
-            solveResult, out_cmdResult);
+            out_cmdResult);
     } else if (frameSolveMode == FrameSolveMode::kPerFrame) {
         auto frameCount = frameList.length();
 
@@ -1748,7 +1723,6 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
         for (auto i = 0; i < frameCount; ++i) {
             computation.setProgress(i);
 
-            SolverResult perFrameSolveResult;
             CommandResult perFrameCmdResult;
             perFrameCmdResult.printStats = printStats;
 
@@ -1768,10 +1742,9 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
                                  markerPosList, markerWeightList, errorList,
                                  paramList, previousParamList, jacobianList,
                                  //
-                                 perFrameSolveResult, perFrameCmdResult);
+                                 perFrameCmdResult);
 
             // Combine results from each iteration.
-            solveResult.add(perFrameSolveResult);
             out_cmdResult.add(perFrameCmdResult);
 
             if (status != MS::kSuccess) {
@@ -1782,11 +1755,10 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
             }
         }
 
-        solveResult.divide();
         out_cmdResult.divide();
 
         computation.endComputation();
     }
 
-    return solveResult.success;
+    return out_cmdResult.solverResult.success;
 }

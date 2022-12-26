@@ -96,9 +96,10 @@ enum class LogLevel {
 };
 
 struct PrintStatOptions {
-    // Are print stats enabled? 'true' if any of the other options are
-    // true.
-    bool enable;
+    // Do not actually solve anything, just stop after preparing to
+    // solve, because we have already calculated all the data needed
+    // to print statistics.
+    bool doNotSolve;
 
     // Prints details about how many object counts are used; number of
     // paramters, number of errors, number of marker errors, and
@@ -220,19 +221,6 @@ struct SolverData {
     MGlobal::MMayaState mayaSessionState;
 
     LogLevel logLevel;
-};
-
-struct SolverResult {
-    bool success;
-    double errorAvg;
-    double errorMin;
-    double errorMax;
-    int reason_number;
-    std::string reason;
-    int iterations;
-    int functionEvals;
-    int jacobianEvals;
-    double errorFinal;
 };
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H

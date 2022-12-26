@@ -38,6 +38,7 @@
 
 // MM Solver
 #include "adjust_base.h"
+#include "adjust_results.h"
 #include "adjust_solveFunc.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"

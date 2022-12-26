@@ -26,30 +26,15 @@
 #include "MMSolver2Cmd.h"
 
 // STL
-#include <algorithm>
 #include <cassert>
-#include <cmath>
-#include <cstdlib>
 
 // Maya
-#include <maya/MFnDependencyNode.h>
-#include <maya/MObject.h>
-#include <maya/MPlug.h>
 #include <maya/MStreamUtils.h>
 #include <maya/MString.h>
-#include <maya/MStringArray.h>
 
 // MM Solver
 #include "mmSolver/adjust/adjust_base.h"
-#include "mmSolver/adjust/adjust_data.h"
-#include "mmSolver/adjust/adjust_defines.h"
 #include "mmSolver/cmd/common_arg_flags.h"
-#include "mmSolver/mayahelper/maya_attr.h"
-#include "mmSolver/mayahelper/maya_bundle.h"
-#include "mmSolver/mayahelper/maya_camera.h"
-#include "mmSolver/mayahelper/maya_marker.h"
-#include "mmSolver/mayahelper/maya_utils.h"
-#include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
 
@@ -146,13 +131,12 @@ MStatus MMSolver2Cmd::doIt(const MArgList &args) {
     // of edits.
     m_curveChange.setInteractive(true);
 
-    MStringArray outResult;
     const bool ret =
         solve_v2(m_solverOptions, m_cameraList, m_markerList, m_bundleList,
                  m_attrList, m_frameList, m_dgmod, m_curveChange, m_computation,
-                 m_printStatsList, m_logLevel, outResult);
+                 m_printStatsList, m_logLevel, m_cmdResult);
 
-    MMSolver2Cmd::setResult(outResult);
+    MMSolver2Cmd::setResult(ret);
     if (!ret) {
         MStreamUtils::stdErrorStream()
             << "WARNING: mmSolver: Solver returned false!\n";

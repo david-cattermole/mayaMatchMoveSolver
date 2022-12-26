@@ -52,6 +52,7 @@
 
 // MM Solver
 #include "mmSolver/adjust/adjust_base.h"
+#include "mmSolver/adjust/adjust_results.h"
 #include "mmSolver/cmd/common_arg_flags.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
@@ -90,6 +91,7 @@ private:
     // Solver printing.
     MStringArray m_printStatsList;
     LogLevel m_logLevel;
+    CommandResult m_cmdResult;
 
     // Solver Objects
     CameraPtrList m_cameraList;

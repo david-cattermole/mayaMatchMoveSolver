@@ -19,7 +19,7 @@
  *
  * Command for running the main solver.
  *
- * 'mmSolver2' is the second iteration of the 'mmSolver' solving
+ * 'mmSolver_v2' is the second iteration of the 'mmSolver' solving
  * command, with a cleaner syntax.
  */
 
@@ -42,7 +42,7 @@ MMSolver2Cmd::~MMSolver2Cmd() {}
 
 void *MMSolver2Cmd::creator() { return new MMSolver2Cmd(); }
 
-MString MMSolver2Cmd::cmdName() { return MString("mmSolver2"); }
+MString MMSolver2Cmd::cmdName() { return MString("mmSolver_v2"); }
 
 /*
  * Tell Maya we have a syntax function.
@@ -106,7 +106,7 @@ MStatus MMSolver2Cmd::parseArgs(const MArgList &args) {
 MStatus MMSolver2Cmd::doIt(const MArgList &args) {
     //
     //  Description:
-    //    implements the MEL mmSolver command.
+    //    implements the MEL mmSolver_v2 command.
     //
     //  Arguments:
     //    argList - the argument list that was passes to the command from MEL
@@ -139,11 +139,11 @@ MStatus MMSolver2Cmd::doIt(const MArgList &args) {
     MMSolver2Cmd::setResult(ret);
     if (!ret) {
         MStreamUtils::stdErrorStream()
-            << "WARNING: mmSolver: Solver returned false!\n";
+            << "WARNING: mmSolver_v2: Solver returned false!\n";
     }
     if (status != MS::kSuccess) {
         MStreamUtils::stdErrorStream()
-            << "WARNING: mmSolver: Solver status is not success!\n";
+            << "WARNING: mmSolver_v2: Solver status is not success!\n";
     }
 
     return status;
@@ -172,7 +172,7 @@ MStatus MMSolver2Cmd::redoIt() {
 MStatus MMSolver2Cmd::undoIt() {
     //
     //  Description:
-    //    implements undo for the MEL mmSolver command.
+    //    implements undo for the MEL mmSolver_v2 command.
     //
     //    This method is called to undo a previous command of this type.  The
     //    system should be returned to the exact state that it was it previous

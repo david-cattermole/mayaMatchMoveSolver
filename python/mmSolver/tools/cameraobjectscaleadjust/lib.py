@@ -173,7 +173,7 @@ def create_scale_rig(
             name,
             control,
             control,
-            null_node,
+            [null_node],
             frame_start,
             frame_end,
             controller_type,

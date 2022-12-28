@@ -19,6 +19,7 @@
 Collection and solving functions.
 """
 
+import logging
 import pprint
 import time
 import uuid

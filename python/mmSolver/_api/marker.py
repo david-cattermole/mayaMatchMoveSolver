@@ -896,7 +896,6 @@ class Marker(object):
         anim_curve_fn = self.get_deviation_anim_curve_fn()
 
         dev_list = [None] * len(frames)
-        unit = OpenMaya.MTime.uiUnit()
         if anim_curve_fn is not None:
             # Evaluate Curve
             unit = OpenMaya.MTime.uiUnit()

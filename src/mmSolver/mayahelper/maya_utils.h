@@ -97,8 +97,8 @@ ObjectType computeObjectType(const MObject &node_obj);
 
 // Generate attribute name used to set and look up 'attribute affects'
 // on nodes.
-MStatus constructAttrAffectsName(const MString attrName,
-                                 const MString attrUuidStr,
+MStatus constructAttrAffectsName(const MString &attrName,
+                                 const MString &attrUuidStr,
                                  MString &outAttrName);
 
 namespace mmsolver {

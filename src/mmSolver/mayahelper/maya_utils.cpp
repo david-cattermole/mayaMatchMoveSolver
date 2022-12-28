@@ -292,8 +292,8 @@ ObjectType computeObjectType(const MObject &node_obj) {
     return objectType;
 }
 
-MStatus constructAttrAffectsName(const MString attrName,
-                                 const MString attrUuidStr,
+MStatus constructAttrAffectsName(const MString &attrName,
+                                 const MString &attrUuidStr,
                                  MString &outAttrName) {
     MStatus status = MStatus::kSuccess;
 

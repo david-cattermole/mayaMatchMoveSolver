@@ -1368,7 +1368,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
               StiffAttrsPtrList &stiffAttrsList,
               SmoothAttrsPtrList &smoothAttrsList, MDGModifier &dgmod,
               MAnimCurveChange &curveChange, MComputation &computation,
-              MStringArray &printStatsList, const LogLevel &logLevel,
+              MStringArray &printStatsList, const LogLevel logLevel,
               MStringArray &outResult) {
     MStatus status = MS::kSuccess;
 
@@ -1569,7 +1569,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
               AttrPtrList &attrList, const MTimeArray &frameList,
               MDGModifier &dgmod, MAnimCurveChange &curveChange,
               MComputation &computation, MStringArray &printStatsList,
-              const LogLevel &logLevel, CommandResult &out_cmdResult) {
+              const LogLevel logLevel, CommandResult &out_cmdResult) {
     MStatus status = MS::kSuccess;
 
     bool verbose = logLevel >= LogLevel::kDebug;

@@ -300,11 +300,12 @@ MStatus constructAttrAffectsName(const MString &attrName,
     const MString attrNamePrefix = "node_";
     const MString attrNameSuffix = "_attr_";
 
-    MString attrSubstitue(attrName);
-    status = attrSubstitue.substitute(".", "_");
+    MString attrSubstitute(attrName);
+    status = attrSubstitute.substitute(".", "_");
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    outAttrName = attrNamePrefix + attrUuidStr + attrNameSuffix + attrSubstitue;
+    outAttrName =
+        attrNamePrefix + attrUuidStr + attrNameSuffix + attrSubstitute;
     status = outAttrName.substitute("-", "_");
     CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;

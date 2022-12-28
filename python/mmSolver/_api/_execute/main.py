@@ -67,7 +67,7 @@ def validate(col, as_state=None):
         for more details.
     :rtype: (bool, [str, ..], [(int, int, int), ..]) or [ActionState, ..]
     """
-    # TODO Remove the 'as_state' keyword in v0.4.0 release and
+    # TODO Remove the 'as_state' keyword in v0.5.0 release and
     #  always return the ActionState.
     if as_state is None:
         as_state = False

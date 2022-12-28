@@ -285,13 +285,12 @@ def log_solve_results(
         long_status_str += 'Failed | '
 
     frame_error_list = mmapi.merge_frame_error_list(solres_list)
-    frame_error_txt = pprint.pformat(dict(frame_error_list))
-    if log:
+    if log and (log.level > logging.DEBUG):
+        frame_error_txt = pprint.pformat(dict(frame_error_list))
         log.debug('Per-Frame Errors:\n%s', frame_error_txt)
 
-    timer_stats = mmapi.combine_timer_stats(solres_list)
-    timer_stats_txt = pprint.pformat(dict(timer_stats))
-    if log:
+        timer_stats = mmapi.combine_timer_stats(solres_list)
+        timer_stats_txt = pprint.pformat(dict(timer_stats))
         log.debug('Timer Statistics:\n%s', timer_stats_txt)
 
     avg_error = mmapi.get_average_frame_error_list(frame_error_list)

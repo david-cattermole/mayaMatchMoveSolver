@@ -148,7 +148,10 @@ class TestSolveRefineGoodSolveStA(test_api_utils.APITestCase):
         col.add_attribute_list(attr_list)
 
         # save the output
-        path = self.get_data_path('test_solve_stA_refine_before.ma')
+        file_name = 'test_solve_stA_refine_{}_{}_before.ma'.format(
+            solver_name, scene_graph_name
+        )
+        path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -161,7 +164,10 @@ class TestSolveRefineGoodSolveStA(test_api_utils.APITestCase):
         mmapi.update_deviation_on_collection(col, results)
 
         # save the output
-        path = self.get_data_path('test_solve_stA_refine_after.ma')
+        file_name = 'test_solve_stA_refine_{}_{}_after.ma'.format(
+            solver_name, scene_graph_name
+        )
+        path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 

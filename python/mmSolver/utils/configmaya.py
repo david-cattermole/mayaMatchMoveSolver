@@ -172,7 +172,7 @@ def set_node_option_structure(node_name, attr_name, data_struct, add_attr=None):
     """
     Set arbitrary Plain-Old-Data onto a node.attr path.
 
-    .. note: If you use use add_attr, be aware that the first value
+    .. note: If you use add_attr, be aware that the first value
         type will determine the attribute automatically created.
         Once created the attribute type cannot be changed.
 

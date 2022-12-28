@@ -112,7 +112,7 @@ def run_validate_action(vaction):
     solve_data = vfunc(*vargs, **vkwargs)
 
     if vfunc_is_mmsolver is False:
-        msg = 'Validated parameters, errors and frames: ' 'param=%r errors=%r frames=%r'
+        msg = 'Validated parameters, errors and frames: param=%r errors=%r frames=%r'
         message = msg % (num_param, num_err, num_frames)
         state = create_action_state(
             status=const.ACTION_STATUS_SUCCESS,
@@ -141,7 +141,7 @@ def run_validate_action(vaction):
         )
         return state
 
-    msg = 'Validated parameters, errors and frames: ' 'param=%r errors=%r frames=%r'
+    msg = 'Validated parameters, errors and frames: param=%r errors=%r frames=%r'
     message = msg % (num_param, num_err, num_frames)
     state = create_action_state(
         status=const.ACTION_STATUS_SUCCESS,

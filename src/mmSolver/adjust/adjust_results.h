@@ -71,6 +71,7 @@ struct SolverResult {
         , errorMax(-0.0)
         , errorFinal(0.0)
         , reason_number(0)
+        , reason()
         , iterations(0)
         , functionEvals(0)
         , jacobianEvals(0)
@@ -80,6 +81,7 @@ struct SolverResult {
     void add(const Self &other) {
         Self::success = std::min(Self::success, other.success);
 
+        Self::errorFinal += other.errorFinal;
         Self::errorAvg += other.errorAvg;
         Self::errorMin = std::min(Self::errorMin, other.errorMin);
         Self::errorMax = std::max(Self::errorMax, other.errorMax);
@@ -87,7 +89,6 @@ struct SolverResult {
         Self::iterations += other.iterations;
         Self::functionEvals += other.functionEvals;
         Self::jacobianEvals += other.jacobianEvals;
-        Self::errorFinal += other.errorFinal;
 
         Self::reason_number = other.reason_number;
         Self::reason = other.reason;
@@ -96,8 +97,8 @@ struct SolverResult {
     }
 
     void divide() {
-        double count_inverse = 0.0;
-        if (Self::count > 0) {
+        double count_inverse = 1.0;
+        if (Self::count > 1) {
             count_inverse = 1.0 / static_cast<double>(Self::count);
         }
 
@@ -211,8 +212,8 @@ struct TimerResult {
     }
 
     void divide() {
-        double count_inverse = 0.0;
-        if (Self::count > 0) {
+        double count_inverse = 1.0;
+        if (Self::count > 1) {
             count_inverse = 1.0 / static_cast<double>(Self::count);
         }
 
@@ -317,8 +318,8 @@ struct SolveValuesResult {
     }
 
     void divide() {
-        double count_inverse = 0.0;
-        if (Self::count > 0) {
+        double count_inverse = 1.0;
+        if (Self::count > 1) {
             count_inverse = 1.0 / static_cast<double>(Self::count);
         }
 
@@ -753,7 +754,7 @@ struct CommandResult {
     SolverObjectUsageResult solverObjectUsageResult;
     SolverObjectCountResult solverObjectCountResult;
 
-    CommandResult() {}
+    CommandResult() = default;
 
     void add(const CommandResult &other) {
         if (Self::printStats.affects) {

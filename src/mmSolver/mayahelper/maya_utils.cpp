@@ -70,7 +70,7 @@ MStatus getAsSelectionList(const MStringArray &nodeNames,
     return status;
 }
 
-MStatus getAsSelectionList(const MString nodeName, MSelectionList &selList) {
+MStatus getAsSelectionList(const MString &nodeName, MSelectionList &selList) {
     MStringArray nodeNames;
     nodeNames.append(nodeName);
     return getAsSelectionList(nodeNames, selList);

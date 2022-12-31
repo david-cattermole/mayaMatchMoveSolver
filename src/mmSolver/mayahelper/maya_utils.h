@@ -76,7 +76,7 @@ enum class ObjectType {
 MStatus getAsSelectionList(const MStringArray &nodeNames,
                            MSelectionList &selList);
 
-MStatus getAsSelectionList(const MString nodeName, MSelectionList &selList);
+MStatus getAsSelectionList(const MString &nodeName, MSelectionList &selList);
 
 MStatus nodeExistsAndIsType(const MString &nodeName, const MFn::Type nodeType);
 

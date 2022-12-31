@@ -22,10 +22,6 @@
 
 #include "RenderGlobalsNode.h"
 
-// STL
-#include <cmath>
-#include <cstring>
-
 // Maya
 #include <maya/M3dView.h>
 #include <maya/MDataBlock.h>
@@ -42,6 +38,7 @@
 
 #include "RenderOverride.h"
 #include "mmSolver/nodeTypeIds.h"
+#include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
 namespace render {
@@ -49,7 +46,7 @@ namespace render {
 MTypeId RenderGlobalsNode::m_id(MM_RENDER_GLOBALS_TYPE_ID);
 
 // Input Attributes
-MObject RenderGlobalsNode::a_mode;
+MObject RenderGlobalsNode::a_renderMode;
 MObject RenderGlobalsNode::a_renderFormat;
 MObject RenderGlobalsNode::a_multiSampleCount;
 MObject RenderGlobalsNode::a_wireframeAlpha;
@@ -83,10 +80,11 @@ void RenderGlobalsNode::postConstructor() {
 void RenderGlobalsNode::attr_change_func(MNodeMessage::AttributeMessage msg,
                                          MPlug &plug, MPlug & /*other_plug*/,
                                          void * /*client_data*/) {
+    const bool verbose = true;
+
     MStatus status = MS::kFailure;
     if (msg & MNodeMessage::kAttributeSet) {
-        MStreamUtils::stdOutStream()
-            << "Attribute value set on: " << plug.info() << '\n';
+        MMSOLVER_VRB("Attribute value set on: " << plug.info());
     } else {
         return;
     }
@@ -118,24 +116,21 @@ void RenderGlobalsNode::attr_change_func(MNodeMessage::AttributeMessage msg,
         auto value = plug.asDouble(&status);
         CHECK_MSTATUS(status);
         override_ptr->setWireframeAlpha(value);
-        MStreamUtils::stdOutStream()
-            << "Wireframe Alpha value set: " << value << '\n';
+        MMSOLVER_VRB("Wireframe Alpha value set: " << value);
     }
 
     if (plug_name == "edgeThickness") {
         auto value = plug.asDouble(&status);
         CHECK_MSTATUS(status);
         override_ptr->setEdgeThickness(value);
-        MStreamUtils::stdOutStream()
-            << "Edge Thickness value set: " << value << '\n';
+        MMSOLVER_VRB("Edge Thickness value set: " << value);
     }
 
     if (plug_name == "edgeThreshold") {
         auto value = plug.asDouble(&status);
         CHECK_MSTATUS(status);
         override_ptr->setEdgeThreshold(value);
-        MStreamUtils::stdOutStream()
-            << "Edge Threshold value set: " << value << '\n';
+        MMSOLVER_VRB("Edge Threshold value set: " << value);
     }
 
     // Update viewport.
@@ -145,7 +140,6 @@ void RenderGlobalsNode::attr_change_func(MNodeMessage::AttributeMessage msg,
         return;
     }
     view.refresh(/*all=*/false, /*force=*/true);
-    return;
 }
 
 MStatus RenderGlobalsNode::compute(const MPlug & /*plug*/,
@@ -179,17 +173,21 @@ MStatus RenderGlobalsNode::initialize() {
     CHECK_MSTATUS(eAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_renderFormat));
 
-    // Render Format; 0=8-bit float, 1=16-bit float, 2=32-bit float
-    a_mode = eAttr.create("mode", "md", 0, &status);
+    // Render Mode
+    a_renderMode = eAttr.create("renderMode", "rndmd",
+                                static_cast<short>(RenderMode::kZero), &status);
     CHECK_MSTATUS(status);
-    CHECK_MSTATUS(eAttr.addField("Zero", 0));
-    CHECK_MSTATUS(eAttr.addField("One", 1));
-    CHECK_MSTATUS(eAttr.addField("Two", 2));
-    CHECK_MSTATUS(eAttr.addField("Three", 3));
-    CHECK_MSTATUS(eAttr.addField("Four", 4));
+    CHECK_MSTATUS(
+        eAttr.addField("Zero", static_cast<short>(RenderMode::kZero)));
+    CHECK_MSTATUS(eAttr.addField("One", static_cast<short>(RenderMode::kOne)));
+    CHECK_MSTATUS(eAttr.addField("Two", static_cast<short>(RenderMode::kTwo)));
+    CHECK_MSTATUS(
+        eAttr.addField("Three", static_cast<short>(RenderMode::kThree)));
+    CHECK_MSTATUS(
+        eAttr.addField("Four", static_cast<short>(RenderMode::kFour)));
     CHECK_MSTATUS(eAttr.setStorable(true));
     CHECK_MSTATUS(eAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_mode));
+    CHECK_MSTATUS(addAttribute(a_renderMode));
 
     // Multi-Sample Count
     auto sample_min = 1;

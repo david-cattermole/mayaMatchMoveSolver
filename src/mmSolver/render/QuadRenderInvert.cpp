@@ -24,7 +24,9 @@
 #include <maya/MShaderManager.h>
 #include <maya/MStreamUtils.h>
 
+// MM Solver
 #include "constants.h"
+#include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
 namespace render {
@@ -52,7 +54,6 @@ QuadRenderInvert::~QuadRenderInvert() {
         shaderMgr->releaseShader(m_shader_instance);
         m_shader_instance = nullptr;
     }
-    return;
 }
 
 // Determine the targets to be used.
@@ -71,6 +72,8 @@ MHWRender::MRenderTarget *const *QuadRenderInvert::targetOverrideList(
 // Maya calls this method to know what shader should be used for this
 // quad render operation.
 const MHWRender::MShaderInstance *QuadRenderInvert::shader() {
+    const bool verbose = false;
+
     // Compile shader
     if (!m_shader_instance) {
         MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
@@ -83,7 +86,7 @@ const MHWRender::MShaderInstance *QuadRenderInvert::shader() {
             return nullptr;
         }
 
-        MStreamUtils::stdOutStream() << "QuadRenderInvert: Compile shader...\n";
+        MMSOLVER_VRB("QuadRenderInvert: Compile shader...");
         MString file_name = "Invert";
         MString shader_technique = "";
         m_shader_instance = shaderMgr->getEffectsFileShader(
@@ -92,15 +95,13 @@ const MHWRender::MShaderInstance *QuadRenderInvert::shader() {
 
     // Set default parameters
     if (m_shader_instance) {
-        MStreamUtils::stdOutStream()
-            << "QuadRenderInvert: Assign shader parameters...\n";
+        MMSOLVER_VRB("QuadRenderInvert: Assign shader parameters...");
 
         if (m_targets) {
-            MHWRender::MRenderTargetAssignment assignment1;
             MHWRender::MRenderTarget *target1 = m_targets[m_target_index_input];
             if (target1) {
-                MStreamUtils::stdOutStream()
-                    << "QuadRenderInvert: Assign texture1 to shader...\n";
+                MMSOLVER_VRB("QuadRenderInvert: Assign texture1 to shader...");
+                MHWRender::MRenderTargetAssignment assignment1;
                 assignment1.target = target1;
                 CHECK_MSTATUS(
                     m_shader_instance->setParameter("gInputTex", assignment1));

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 David Cattermole.
+ * Copyright (C) 2021, 2023 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -32,7 +32,6 @@
 // Maya
 #include <maya/MBoundingBox.h>
 #include <maya/MObject.h>
-#include <maya/MObjectHandle.h>
 #include <maya/MPlug.h>
 #include <maya/MShaderManager.h>
 #include <maya/MStreamUtils.h>
@@ -49,6 +48,7 @@
 #include "QuadRenderInvert.h"
 #include "SceneRender.h"
 #include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
 namespace render {
@@ -84,38 +84,39 @@ RenderOverride::RenderOverride(const MString &name)
     unsigned int sampleCount = 1;  // 1 == no multi-sampling
     // TODO: Allow user to control the raster format from a list of choices.
     MHWRender::MRasterFormat colorFormat = MHWRender::kR8G8B8A8_UNORM;
-    ;
-    // MHWRender::MRasterFormat depthFormat = MHWRender::kD24S8;
+    // MHWRender::kR16G16B16A16_FLOAT;
+    // MHWRender::kR32G32B32A32_FLOAT;
     MHWRender::MRasterFormat depthFormat = MHWRender::kD32_FLOAT;
+    // MHWRender::MRasterFormat depthFormat = MHWRender::kD24S8;
 
     // Initalise the targets.
     for (auto i = 0; i < kTargetCount; ++i) {
         m_targets[i] = nullptr;
     }
 
+    const auto default_width = 256;
+    const auto default_height = 256;
+    const auto array_slice_count = 0;
+    const bool is_cube_map = false;
+
     // 1st Color target
     m_target_override_names[kMyColorTarget] = MString(kMyColorTargetName);
     m_target_descs[kMyColorTarget] = new MHWRender::MRenderTargetDescription(
-        m_target_override_names[kMyColorTarget], 256, 256, sampleCount,
-        colorFormat,
-        /*arraySliceCount=*/0,
-        /*isCubeMap=*/false);
+        m_target_override_names[kMyColorTarget], default_width, default_height,
+        sampleCount, colorFormat, array_slice_count, is_cube_map);
 
     // 1st Depth target
     m_target_override_names[kMyDepthTarget] = MString(kMyDepthTargetName);
     m_target_descs[kMyDepthTarget] = new MHWRender::MRenderTargetDescription(
-        m_target_override_names[kMyDepthTarget], 256, 256, sampleCount,
-        depthFormat,
-        /*arraySliceCount=*/0,
-        /*isCubeMap=*/false);
+        m_target_override_names[kMyDepthTarget], default_width, default_height,
+        sampleCount, depthFormat, array_slice_count, is_cube_map);
 
     // 2nd Color target
     m_target_override_names[kMyAuxColorTarget] = MString(kMyAuxColorTargetName);
     m_target_descs[kMyAuxColorTarget] = new MHWRender::MRenderTargetDescription(
-        m_target_override_names[kMyAuxColorTarget], 256, 256, sampleCount,
-        colorFormat,
-        /*arraySliceCount=*/0,
-        /*isCubeMap=*/false);
+        m_target_override_names[kMyAuxColorTarget], default_width,
+        default_height, sampleCount, colorFormat, array_slice_count,
+        is_cube_map);
 }
 
 RenderOverride::~RenderOverride() {
@@ -188,17 +189,16 @@ MHWRender::MRenderOperation *RenderOverride::renderOperation() {
 
 bool RenderOverride::nextRenderOperation() {
     m_current_op++;
-    if (m_current_op < kNumberOfOps) {
-        return true;
-    }
-    return false;
+    return m_current_op < kNumberOfOps;
 }
 
+// Read node plug attributes and set the values.
 MStatus RenderOverride::updateParameters() {
-    MMSOLVER_INFO("RenderOverride::updateParameters: ");
+    const bool verbose = false;
+    MMSOLVER_VRB("RenderOverride::updateParameters: ");
 
     MStatus status = MS::kSuccess;
-    if (m_pull_updates == false) {
+    if (!m_pull_updates) {
         return status;
     }
 
@@ -208,12 +208,13 @@ MStatus RenderOverride::updateParameters() {
         // instance.
         MObject node_obj;
         MString node_name = "mmRenderGlobals1";
-        CHECK_MSTATUS(getAsObject(node_name, node_obj));
+        status = getAsObject(node_name, node_obj);
 
         if (!node_obj.isNull()) {
             m_globals_node = node_obj;
         } else {
             // Could not find a valid render globals node.
+            // CHECK_MSTATUS(status);
             return status;
         }
     }
@@ -222,50 +223,41 @@ MStatus RenderOverride::updateParameters() {
     MFnDependencyNode depends_node(node_obj, &status);
     CHECK_MSTATUS(status);
 
-    MPlug mode_plug =
-        depends_node.findPlug("mode", /*wantNetworkedPlug=*/true, &status);
+    bool want_networked_plug = true;
+    MPlug render_mode_plug =
+        depends_node.findPlug("renderMode", want_networked_plug, &status);
     CHECK_MSTATUS(status);
     if (status == MStatus::kSuccess) {
-        m_mode = mode_plug.asShort();
+        m_render_mode = static_cast<RenderMode>(render_mode_plug.asShort());
     }
-    MMSOLVER_INFO("RenderOverride mode: " << m_mode);
+    MMSOLVER_VRB("RenderOverride mode: " << static_cast<short>(m_render_mode));
 
     MPlug render_format_plug =
-        depends_node.findPlug("renderFormat",
-                              /*wantNetworkedPlug=*/true, &status);
+        depends_node.findPlug("renderFormat", want_networked_plug, &status);
     CHECK_MSTATUS(status);
     if (status == MStatus::kSuccess) {
         short value = render_format_plug.asShort();
         m_render_format = static_cast<RenderFormat>(value);
-        // MHWRender::kR16G16B16A16_FLOAT;
-        // MHWRender::kR32G32B32A32_FLOAT;
-        // MHWRender::kR8G8B8A8_UNORM;;
     }
-    MMSOLVER_INFO("RenderOverride render_format: "
-                  << static_cast<short>(m_render_format));
+    MMSOLVER_VRB("RenderOverride render_format: "
+                 << static_cast<short>(m_render_format));
 
-    // MString attr_name = "wireframeAlpha";
     MPlug wire_alpha_plug =
-        depends_node.findPlug("wireframeAlpha",
-                              /*wantNetworkedPlug=*/true, &status);
+        depends_node.findPlug("wireframeAlpha", want_networked_plug, &status);
     CHECK_MSTATUS(status);
     if (status == MStatus::kSuccess) {
         m_wireframe_alpha = wire_alpha_plug.asDouble();
     }
 
-    // MString attr_name = "edgeThickness";
     MPlug edge_thickness_plug =
-        depends_node.findPlug("edgeThickness",
-                              /*wantNetworkedPlug=*/true, &status);
+        depends_node.findPlug("edgeThickness", want_networked_plug, &status);
     CHECK_MSTATUS(status);
     if (status == MStatus::kSuccess) {
         m_edge_thickness = edge_thickness_plug.asDouble();
     }
 
-    // MString attr_name = "edgeThreshold";
     MPlug edge_threshold_plug =
-        depends_node.findPlug("edgeThreshold",
-                              /*wantNetworkedPlug=*/true, &status);
+        depends_node.findPlug("edgeThreshold", want_networked_plug, &status);
     CHECK_MSTATUS(status);
     if (status == MStatus::kSuccess) {
         m_edge_threshold = edge_threshold_plug.asDouble();
@@ -275,10 +267,11 @@ MStatus RenderOverride::updateParameters() {
 }
 
 MStatus RenderOverride::updateRenderOperations() {
-    MMSOLVER_INFO("RenderOverride::updateRenderOperations: ");
+    const bool verbose = false;
+    MMSOLVER_VRB("RenderOverride::updateRenderOperations: ");
 
     if (m_ops[kPresentOp] != nullptr) {
-        // render opations are already up-to-date.
+        // render operations are already up-to-date.
         return MS::kSuccess;
     }
 
@@ -305,7 +298,7 @@ MStatus RenderOverride::updateRenderOperations() {
         static_cast<MHWRender::MSceneRender::MDisplayMode>(
             MHWRender::MSceneRender::kWireFrame);
 
-    // Operatation names
+    // Operation names
     m_op_names[kSceneDepthPass] = "mmRenderer_SceneRender_Standard";
     m_op_names[kSceneBackgroundPass] = "mmRenderer_SceneRender_Background";
     m_op_names[kSceneSelectionPass] = "mmRenderer_SceneRender_Select";
@@ -419,7 +412,11 @@ MStatus RenderOverride::updateRenderOperations() {
 // operations as required so that they will send their output to the
 // appropriate location.
 MStatus RenderOverride::updateRenderTargets() {
-    MMSOLVER_INFO("RenderOverride::updateRenderTargets");
+    MStatus status = MS::kSuccess;
+
+    const bool verbose = false;
+    MMSOLVER_VRB("RenderOverride::updateRenderTargets");
+
     MHWRender::MRenderer *theRenderer = MHWRender::MRenderer::theRenderer();
     if (!theRenderer) {
         return MS::kFailure;
@@ -461,32 +458,40 @@ MStatus RenderOverride::updateRenderTargets() {
     //
     // This section will determine the outputs of each operation.  The
     // input of each operation is assumed to be the Maya provided
-    // color and depth targets, but shaders may interally reference
+    // color and depth targets, but shaders may internally reference
     // specific render targets.
 
-    if (m_mode == 0) {
-        MMSOLVER_INFO("RenderOverride::mode = Zero");
+    if (m_render_mode == RenderMode::kZero) {
+        MMSOLVER_VRB("RenderOverride::mode = ZERO");
         // Blend edge detect on/off.
-        auto depthPassOp = (SceneRender *)m_ops[kSceneDepthPass];
+
+        // Draw scene (without image plane) into the depth channel.
+        auto depthPassOp = dynamic_cast<SceneRender *>(m_ops[kSceneDepthPass]);
         if (depthPassOp) {
             depthPassOp->setEnabled(true);
             depthPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto backgroundPassOp = (SceneRender *)m_ops[kSceneBackgroundPass];
+        // Draw viewport background (with image plane).
+        auto backgroundPassOp =
+            dynamic_cast<SceneRender *>(m_ops[kSceneBackgroundPass]);
         if (backgroundPassOp) {
             backgroundPassOp->setEnabled(true);
             // Note: Only render to the color target, depth is ignored.
             backgroundPassOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }
 
-        auto selectSceneOp = (SceneRender *)m_ops[kSceneSelectionPass];
+        // Draw manipulators.
+        auto selectSceneOp =
+            dynamic_cast<SceneRender *>(m_ops[kSceneSelectionPass]);
         if (selectSceneOp) {
             selectSceneOp->setEnabled(true);
             selectSceneOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto edgeDetectOp = (QuadRenderEdgeDetect *)m_ops[kEdgeDetectOp];
+        // Draw edge detection.
+        auto edgeDetectOp =
+            dynamic_cast<QuadRenderEdgeDetect *>(m_ops[kEdgeDetectOp]);
         if (edgeDetectOp) {
             edgeDetectOp->setEnabled(true);
             edgeDetectOp->setInputTarget(kMyDepthTarget);
@@ -495,69 +500,79 @@ MStatus RenderOverride::updateRenderTargets() {
             edgeDetectOp->setThickness(static_cast<float>(m_edge_thickness));
         }
 
-        auto copyOp = (QuadRenderCopy *)m_ops[kCopyOp];
+        // Copy kMyColorTarget to kMyAuxColorTarget.
+        auto copyOp = dynamic_cast<QuadRenderCopy *>(m_ops[kCopyOp]);
         if (copyOp) {
             copyOp->setEnabled(true);
             copyOp->setInputTarget(kMyColorTarget);
             copyOp->setRenderTargets(m_targets, kMyAuxColorTarget, 1);
         }
 
-        auto wireframePassOp = (SceneRender *)m_ops[kSceneWireframePass];
+        // Render wireframe into kMyColorTarget.
+        auto wireframePassOp =
+            dynamic_cast<SceneRender *>(m_ops[kSceneWireframePass]);
         if (wireframePassOp) {
             wireframePassOp->setEnabled(true);
             wireframePassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto wireBlendOp = (QuadRenderBlend *)m_ops[kWireframeBlendOp];
+        // Blend between kMyColorTarget and kMyAuxColorTarget, and output
+        // to kMyColorTarget.
+        auto wireBlendOp =
+            dynamic_cast<QuadRenderBlend *>(m_ops[kWireframeBlendOp]);
         if (wireBlendOp) {
             wireBlendOp->setEnabled(true);
             wireBlendOp->setInputTarget1(kMyColorTarget);
             wireBlendOp->setInputTarget2(kMyAuxColorTarget);
             wireBlendOp->setRenderTargets(m_targets, kMyColorTarget, 1);
-            // wireBlendOp->setInputTarget1(0);
-            // wireBlendOp->setInputTarget2(0);
-            // wireBlendOp->setRenderTargets(nullptr, 0, 0);
             wireBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
         }
 
-        auto invertOp = (QuadRenderInvert *)m_ops[kInvertOp];
+        // Invert kMyColorTarget image, and output to kMyColorTarget.
+        auto invertOp = dynamic_cast<QuadRenderInvert *>(m_ops[kInvertOp]);
         if (invertOp) {
             invertOp->setEnabled(false);
         }
 
-        auto hudOp = (HudRender *)m_ops[kHudPass];
+        // Draw the HUD on kMyColorTarget.
+        auto hudOp = dynamic_cast<HudRender *>(m_ops[kHudPass]);
         if (hudOp) {
             hudOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto presentOp = (PresentTarget *)m_ops[kPresentOp];
+        // Display kMyColorTarget to the screen.
+        auto presentOp = dynamic_cast<PresentTarget *>(m_ops[kPresentOp]);
         if (presentOp) {
             presentOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-    } else if (m_mode == 1) {
-        MMSOLVER_INFO("RenderOverride::mode = ONE");
+    } else if (m_render_mode == RenderMode::kOne) {
+        MMSOLVER_VRB("RenderOverride::mode = ONE");
+
         // Blending wireframes.
-        auto depthPassOp = (SceneRender *)m_ops[kSceneDepthPass];
+        auto depthPassOp = dynamic_cast<SceneRender *>(m_ops[kSceneDepthPass]);
         if (depthPassOp) {
             depthPassOp->setEnabled(true);
             depthPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto backgroundPassOp = (SceneRender *)m_ops[kSceneBackgroundPass];
+        auto backgroundPassOp =
+            dynamic_cast<SceneRender *>(m_ops[kSceneBackgroundPass]);
         if (backgroundPassOp) {
             backgroundPassOp->setEnabled(true);
             // Note: Only render to the color target, depth is ignored.
             backgroundPassOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }
 
-        auto selectSceneOp = (SceneRender *)m_ops[kSceneSelectionPass];
+        auto selectSceneOp =
+            dynamic_cast<SceneRender *>(m_ops[kSceneSelectionPass]);
         if (selectSceneOp) {
             selectSceneOp->setEnabled(true);
             selectSceneOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto edgeDetectOp = (QuadRenderEdgeDetect *)m_ops[kEdgeDetectOp];
+        auto edgeDetectOp =
+            dynamic_cast<QuadRenderEdgeDetect *>(m_ops[kEdgeDetectOp]);
         if (edgeDetectOp) {
             edgeDetectOp->setEnabled(false);
             edgeDetectOp->setInputTarget(kMyDepthTarget);
@@ -566,20 +581,22 @@ MStatus RenderOverride::updateRenderTargets() {
             edgeDetectOp->setThickness(static_cast<float>(m_edge_thickness));
         }
 
-        auto copyOp = (QuadRenderCopy *)m_ops[kCopyOp];
+        auto copyOp = dynamic_cast<QuadRenderCopy *>(m_ops[kCopyOp]);
         if (copyOp) {
             copyOp->setEnabled(true);
             copyOp->setInputTarget(kMyColorTarget);
             copyOp->setRenderTargets(m_targets, kMyAuxColorTarget, 1);
         }
 
-        auto wireframePassOp = (SceneRender *)m_ops[kSceneWireframePass];
+        auto wireframePassOp =
+            dynamic_cast<SceneRender *>(m_ops[kSceneWireframePass]);
         if (wireframePassOp) {
             wireframePassOp->setEnabled(true);
             wireframePassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto wireBlendOp = (QuadRenderBlend *)m_ops[kWireframeBlendOp];
+        auto wireBlendOp =
+            dynamic_cast<QuadRenderBlend *>(m_ops[kWireframeBlendOp]);
         if (wireBlendOp) {
             wireBlendOp->setEnabled(true);
             wireBlendOp->setInputTarget1(kMyColorTarget);
@@ -588,59 +605,64 @@ MStatus RenderOverride::updateRenderTargets() {
             wireBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
         }
 
-        auto invertOp = (QuadRenderInvert *)m_ops[kInvertOp];
+        auto invertOp = dynamic_cast<QuadRenderInvert *>(m_ops[kInvertOp]);
         if (invertOp) {
             invertOp->setEnabled(false);
         }
 
-        auto hudOp = (HudRender *)m_ops[kHudPass];
+        auto hudOp = dynamic_cast<HudRender *>(m_ops[kHudPass]);
         if (hudOp) {
             hudOp->setEnabled(true);
             hudOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto presentOp = (PresentTarget *)m_ops[kPresentOp];
+        auto presentOp = dynamic_cast<PresentTarget *>(m_ops[kPresentOp]);
         if (presentOp) {
             presentOp->setEnabled(true);
             presentOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
+
     } else {
-        MMSOLVER_INFO("RenderOverride::mode = ELSE");
+        MMSOLVER_VRB("RenderOverride::mode = ELSE");
 
         // No blending or post operations.
-        auto depthPassOp = (SceneRender *)m_ops[kSceneDepthPass];
+        auto depthPassOp = dynamic_cast<SceneRender *>(m_ops[kSceneDepthPass]);
         if (depthPassOp) {
             depthPassOp->setEnabled(true);
             depthPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto backgroundPassOp = (SceneRender *)m_ops[kSceneBackgroundPass];
+        auto backgroundPassOp =
+            dynamic_cast<SceneRender *>(m_ops[kSceneBackgroundPass]);
         if (backgroundPassOp) {
             backgroundPassOp->setEnabled(true);
             // Note: Only render to the color target, depth is ignored.
             backgroundPassOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }
 
-        auto selectSceneOp = (SceneRender *)m_ops[kSceneSelectionPass];
+        auto selectSceneOp =
+            dynamic_cast<SceneRender *>(m_ops[kSceneSelectionPass]);
         if (selectSceneOp) {
             selectSceneOp->setEnabled(true);
             selectSceneOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto copyOp = (QuadRenderCopy *)m_ops[kCopyOp];
+        auto copyOp = dynamic_cast<QuadRenderCopy *>(m_ops[kCopyOp]);
         if (copyOp) {
             copyOp->setEnabled(false);
             copyOp->setInputTarget(0);
             copyOp->setRenderTargets(nullptr, 0, 0);
         }
 
-        auto wireframePassOp = (SceneRender *)m_ops[kSceneWireframePass];
+        auto wireframePassOp =
+            dynamic_cast<SceneRender *>(m_ops[kSceneWireframePass]);
         if (wireframePassOp) {
             wireframePassOp->setEnabled(true);
             wireframePassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto edgeDetectOp = (QuadRenderEdgeDetect *)m_ops[kEdgeDetectOp];
+        auto edgeDetectOp =
+            dynamic_cast<QuadRenderEdgeDetect *>(m_ops[kEdgeDetectOp]);
         if (edgeDetectOp) {
             edgeDetectOp->setEnabled(false);
             edgeDetectOp->setInputTarget(0);
@@ -649,7 +671,8 @@ MStatus RenderOverride::updateRenderTargets() {
             edgeDetectOp->setThickness(static_cast<float>(m_edge_thickness));
         }
 
-        auto wireBlendOp = (QuadRenderBlend *)m_ops[kWireframeBlendOp];
+        auto wireBlendOp =
+            dynamic_cast<QuadRenderBlend *>(m_ops[kWireframeBlendOp]);
         if (wireBlendOp) {
             wireBlendOp->setEnabled(false);
             wireBlendOp->setInputTarget1(0);
@@ -658,7 +681,8 @@ MStatus RenderOverride::updateRenderTargets() {
             wireBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
         }
 
-        auto edgeBlendOp = (QuadRenderBlend *)m_ops[kWireframeBlendOp];
+        auto edgeBlendOp =
+            dynamic_cast<QuadRenderBlend *>(m_ops[kWireframeBlendOp]);
         if (edgeBlendOp) {
             edgeBlendOp->setEnabled(false);
             edgeBlendOp->setInputTarget1(0);
@@ -667,27 +691,27 @@ MStatus RenderOverride::updateRenderTargets() {
             edgeBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
         }
 
-        auto invertOp = (QuadRenderInvert *)m_ops[kInvertOp];
+        auto invertOp = dynamic_cast<QuadRenderInvert *>(m_ops[kInvertOp]);
         if (invertOp) {
             invertOp->setEnabled(false);
             invertOp->setInputTarget(kMyColorTarget);
             invertOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }
 
-        auto hudOp = (HudRender *)m_ops[kHudPass];
+        auto hudOp = dynamic_cast<HudRender *>(m_ops[kHudPass]);
         if (hudOp) {
             hudOp->setEnabled(true);
             hudOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto presentOp = (PresentTarget *)m_ops[kPresentOp];
+        auto presentOp = dynamic_cast<PresentTarget *>(m_ops[kPresentOp]);
         if (presentOp) {
             presentOp->setEnabled(true);
             presentOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
     }
 
-    MStatus status = MS::kFailure;
+    status = MS::kFailure;
     if (m_targets[kMyColorTarget] && m_targets[kMyDepthTarget] &&
         m_targets[kMyAuxColorTarget]) {
         status = MS::kSuccess;
@@ -696,33 +720,37 @@ MStatus RenderOverride::updateRenderTargets() {
 }
 
 MStatus RenderOverride::setPanelNames(const MString &name) {
-    MMSOLVER_INFO("RenderOverride::setPanelNames: " << name.asChar());
+    const bool verbose = false;
+    MMSOLVER_VRB("RenderOverride::setPanelNames: " << name.asChar());
+
     // Set the name of the panel on operations which may use the panel
     // name to find out the associated M3dView.
     if (m_ops[kSceneDepthPass]) {
-        auto op = (SceneRender *)m_ops[kSceneDepthPass];
+        auto op = dynamic_cast<SceneRender *>(m_ops[kSceneDepthPass]);
         op->setPanelName(name);
     }
 
     if (m_ops[kSceneBackgroundPass]) {
-        auto op = (SceneRender *)m_ops[kSceneBackgroundPass];
+        auto op = dynamic_cast<SceneRender *>(m_ops[kSceneBackgroundPass]);
         op->setPanelName(name);
     }
 
     if (m_ops[kSceneSelectionPass]) {
-        auto op = (SceneRender *)m_ops[kSceneSelectionPass];
+        auto op = dynamic_cast<SceneRender *>(m_ops[kSceneSelectionPass]);
         op->setPanelName(name);
     }
 
     if (m_ops[kSceneWireframePass]) {
-        auto op = (SceneRender *)m_ops[kSceneWireframePass];
+        auto op = dynamic_cast<SceneRender *>(m_ops[kSceneWireframePass]);
         op->setPanelName(name);
     }
     return MS::kSuccess;
 }
 
 MStatus RenderOverride::setup(const MString &destination) {
-    MMSOLVER_INFO("RenderOverride::setup: " << destination.asChar());
+    const bool verbose = false;
+    MMSOLVER_VRB("RenderOverride::setup: " << destination.asChar());
+
     MStatus status = MS::kSuccess;
 
     // Track changes to the renderer and override for this viewport (nothing
@@ -763,7 +791,8 @@ MStatus RenderOverride::setup(const MString &destination) {
 // End of frame cleanup. Clears out any data on operations which may
 // change from frame to frame (render target, output panel name etc).
 MStatus RenderOverride::cleanup() {
-    // MMSOLVER_INFO("RenderOverride::cleanup: ");
+    const bool verbose = false;
+    MMSOLVER_VRB("RenderOverride::cleanup: ");
 
     // Reset the active view
     m_panel_name.clear();
@@ -779,10 +808,11 @@ void RenderOverride::renderer_change_func(const MString &panel_name,
                                           const MString &old_renderer,
                                           const MString &new_renderer,
                                           void * /*client_data*/) {
-    MMSOLVER_INFO("Renderer changed for panel '"
-                  << panel_name.asChar() << "'. "
-                  << "New renderer is '" << new_renderer.asChar() << "', "
-                  << "old was '" << old_renderer.asChar() << "'.");
+    const bool verbose = false;
+    MMSOLVER_VRB("Renderer changed for panel '"
+                 << panel_name.asChar() << "'. "
+                 << "New renderer is '" << new_renderer.asChar() << "', "
+                 << "old was '" << old_renderer.asChar() << "'.");
 }
 
 // Callback for tracking render override changes
@@ -790,12 +820,13 @@ void RenderOverride::render_override_change_func(const MString &panel_name,
                                                  const MString &old_renderer,
                                                  const MString &new_renderer,
                                                  void * /*client_data*/) {
-    // TODO: When the 'new_renderer' is MM_RENDERER_NAME, we must forcably
+    const bool verbose = false;
+    // TODO: When the 'new_renderer' is MM_RENDERER_NAME, we must forcibly
     //  create a new 'mmRenderGlobals' node.
-    MMSOLVER_INFO("Render override changed for panel '"
-                  << panel_name.asChar() << "'. "
-                  << "New override is '" << new_renderer.asChar() << "', "
-                  << "old was '" << old_renderer.asChar() << "'.");
+    MMSOLVER_VRB("Render override changed for panel '"
+                 << panel_name.asChar() << "'. "
+                 << "New override is '" << new_renderer.asChar() << "', "
+                 << "old was '" << old_renderer.asChar() << "'.");
 }
 
 }  // namespace render

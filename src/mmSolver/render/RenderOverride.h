@@ -32,7 +32,9 @@
 #include <maya/MUiMessage.h>
 #include <maya/MViewport2Renderer.h>
 
+// MM Solver
 #include "RenderGlobalsNode.h"
+#include "RenderMode.h"
 #include "constants.h"
 
 namespace mmsolver {
@@ -64,7 +66,7 @@ public:
         // Selection pass.
         //
         // Draw manipulators and excluded objects (but image planes
-        // are draw here).
+        // are drawn here).
         kSceneSelectionPass,
 
         // Post ops on target 1
@@ -179,7 +181,7 @@ private:
     bool m_pull_updates;
 
     // Renderer settings
-    short m_mode;
+    RenderMode m_render_mode;
     RenderFormat m_render_format;
     int32_t m_multi_sample_count;
     double m_wireframe_alpha;

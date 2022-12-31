@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 David Cattermole.
+ * Copyright (C) 2022 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -19,31 +19,22 @@
  *
  */
 
-#include "QuadRenderBase.h"
-
-#include <maya/MShaderManager.h>
+#ifndef MM_SOLVER_RENDER_RENDER_MODE_H
+#define MM_SOLVER_RENDER_RENDER_MODE_H
 
 namespace mmsolver {
 namespace render {
 
-// Render a full-screen quad, with a preset shader applied.
-//
-// Reads from 'auxiliary' Target, and writes to 'main' Target.
-//
-QuadRenderBase::QuadRenderBase(const MString &name)
-    : MQuadRender(name)
-    , m_targets(nullptr)
-    , m_target_index(0)
-    , m_target_count(0)
-    , m_clear_mask(MHWRender::MClearOperation::kClearNone) {}
-
-QuadRenderBase::~QuadRenderBase() { m_targets = nullptr; }
-
-MHWRender::MClearOperation &QuadRenderBase::clearOperation() {
-    mClearOperation.setClearGradient(false);
-    mClearOperation.setMask(m_clear_mask);
-    return mClearOperation;
-}
+enum class RenderMode : short {
+    kZero = 0,
+    kOne = 1,
+    kTwo = 2,
+    kThree = 3,
+    kFour = 4,
+    kRenderModeCount,
+};
 
 }  // namespace render
 }  // namespace mmsolver
+
+#endif  // MM_SOLVER_RENDER_RENDER_MODE_H

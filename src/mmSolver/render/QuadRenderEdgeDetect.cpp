@@ -24,7 +24,9 @@
 #include <maya/MShaderManager.h>
 #include <maya/MStreamUtils.h>
 
+// MM Solver
 #include "constants.h"
+#include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
 namespace render {
@@ -51,7 +53,6 @@ QuadRenderEdgeDetect::~QuadRenderEdgeDetect() {
         shaderMgr->releaseShader(m_shader_instance);
         m_shader_instance = nullptr;
     }
-    return;
 }
 
 // Determine the targets to be used.
@@ -70,6 +71,8 @@ MHWRender::MRenderTarget *const *QuadRenderEdgeDetect::targetOverrideList(
 // Maya calls this method to know what shader should be used for this
 // quad render operation.
 const MHWRender::MShaderInstance *QuadRenderEdgeDetect::shader() {
+    const bool verbose = false;
+
     // Compile shader
     if (!m_shader_instance) {
         MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
@@ -82,8 +85,7 @@ const MHWRender::MShaderInstance *QuadRenderEdgeDetect::shader() {
             return nullptr;
         }
 
-        MStreamUtils::stdOutStream()
-            << "QuardRenderEdgeDetect: Compile shader...\n";
+        MMSOLVER_VRB("QuardRenderEdgeDetect: Compile shader...");
         MString file_name = "mmSilhouette";
         MString shader_technique = "Sobel";
         m_shader_instance = shaderMgr->getEffectsFileShader(
@@ -92,15 +94,14 @@ const MHWRender::MShaderInstance *QuadRenderEdgeDetect::shader() {
 
     // Set default parameters
     if (m_shader_instance) {
-        MStreamUtils::stdOutStream()
-            << "QuardRenderEdgeDetect: Assign shader parameters...\n";
+        MMSOLVER_VRB("QuardRenderEdgeDetect: Assign shader parameters...");
 
         if (m_targets) {
-            MHWRender::MRenderTargetAssignment assignment;
             MHWRender::MRenderTarget *target = m_targets[m_target_index_input];
             if (target) {
-                MStreamUtils::stdOutStream()
-                    << "QuardRenderEdgeDetect: Assign texture to shader...\n";
+                MMSOLVER_VRB(
+                    "QuardRenderEdgeDetect: Assign texture to shader...");
+                MHWRender::MRenderTargetAssignment assignment;
                 assignment.target = target;
                 CHECK_MSTATUS(
                     m_shader_instance->setParameter("gDepthTex", assignment));

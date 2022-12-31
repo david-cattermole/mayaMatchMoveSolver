@@ -56,7 +56,7 @@ attribute VS_TO_PS {
 // Vertex Shader
 GLSLShader VS_Silhouette {
     void main() {
-        gl_Position = gWVPXf*Pos;
+        gl_Position = gWVPXf * Pos;
         VSUV = UV;
     }
 }
@@ -71,30 +71,31 @@ attribute pixelOut {
 // https://rastergrid.com/blog/2011/01/frei-chen-edge-detector/
 GLSLShader PS_SilhouetteSobel {
     void main() {
-
         vec2 ox = vec2(gThickness / gTargetSize.x, 0.0);
         vec2 oy = vec2(0.0, gThickness / gTargetSize.y);
+
         vec2 uv = VSUV;
         vec2 PP = uv - oy;
-        vec4 CC = texture2D(gDepthSampler, PP-ox);
+
+        vec4 CC = texture2D(gDepthSampler, PP - ox);
         float g00 = CC.r;
         CC = texture2D(gDepthSampler, PP);
         float g01 = CC.r;
-        CC = texture2D(gDepthSampler, PP+ox);
+        CC = texture2D(gDepthSampler, PP + ox);
         float g02 = CC.r;
         PP = uv;
-        CC = texture2D(gDepthSampler, PP-ox);
+        CC = texture2D(gDepthSampler, PP - ox);
         float g10 = CC.r;
         CC = texture2D(gDepthSampler, PP);
         float g11 = CC.r;
-        CC = texture2D(gDepthSampler, PP+ox);
+        CC = texture2D(gDepthSampler, PP + ox);
         float g12 = CC.r;
         PP = uv + oy;
-        CC = texture2D(gDepthSampler, PP-ox);
+        CC = texture2D(gDepthSampler, PP - ox);
         float g20 = CC.r;
         CC = texture2D(gDepthSampler, PP);
         float g21 = CC.r;
-        CC = texture2D(gDepthSampler, PP+ox);
+        CC = texture2D(gDepthSampler, PP + ox);
         float g22 = CC.r;
 
         float K00 = -1;
@@ -128,7 +129,7 @@ GLSLShader PS_SilhouetteSobel {
         sy += g21 * K12;
         sy += g22 * K22;
 
-        float dist = sqrt(sx*sx+sy*sy);
+        float dist = sqrt(sx * sx + sy * sy);
         if (dist > gThreshold) {
             colorOut = gLineColor;
         } else {

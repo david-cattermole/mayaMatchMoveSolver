@@ -9,7 +9,7 @@ global proc AEmmRenderGlobalsTemplate(string $name) {
                 -beginLayout (uiRes("m_AEmmRenderGlobalsTemplate.kDisplayOptions"))
                 -collapse false;
 
-                editorTemplate -addControl "mode";
+                editorTemplate -addControl "renderMode";
                 editorTemplate -addControl "renderFormat";
                 editorTemplate -addControl "multiSampleCount";
 

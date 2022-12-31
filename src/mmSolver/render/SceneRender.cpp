@@ -23,16 +23,12 @@
 
 // Maya
 #include <maya/M3dView.h>
-#include <maya/MDrawContext.h>
 #include <maya/MItDag.h>
-#include <maya/MPoint.h>
 #include <maya/MRenderTargetManager.h>
 #include <maya/MSelectionList.h>
 #include <maya/MShaderManager.h>
 #include <maya/MStateManager.h>
-#include <maya/MStreamUtils.h>
 #include <maya/MString.h>
-#include <maya/MTextureManager.h>
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver

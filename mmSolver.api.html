@@ -4165,6 +4165,26 @@ ROBUST_LOSS_TYPE_LIST.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverStep.get_solver_version">
+<span class="sig-name descname"><span class="pre">get_solver_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.get_solver_version" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.api.SolverStep.set_solver_version">
+<span class="sig-name descname"><span class="pre">set_solver_version</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.set_solver_version" title="Permalink to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – May be SOLVER_VERSION_ONE or SOLVER_VERSION_TWO.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="mmSolver.api.SolverStep.compile">
 <span class="sig-name descname"><span class="pre">compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mkr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attr_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">withtest</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolverStep.compile" title="Permalink to this definition">#</a></dt>
 <dd><p>Compiles data given into flags for a single run of ‘mmSolver’.</p>
@@ -4983,14 +5003,14 @@ messages to the user.</p></li>
 <h3>SolveResult<a class="headerlink" href="#solveresult" title="Permalink to this heading">#</a></h3>
 <dl class="py class">
 <dt class="sig sig-object py" id="mmSolver.api.SolveResult">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">SolveResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolveResult" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.api.</span></span><span class="sig-name descname"><span class="pre">SolveResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolveResult" title="Permalink to this definition">#</a></dt>
 <dd><p>The information returned from a solve.</p>
 <p>All information from the solver, can then be queried as
 needed. This class never modifies data, it only stores and queries
 data.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="mmSolver.api.SolveResult.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cmd_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolveResult.__init__" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.api.SolveResult.__init__" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a new SolveResult using command data from
 <em>maya.cmds.mmSolver</em> command.</p>
 <dl class="field-list simple">
@@ -6279,6 +6299,8 @@ referenced inside the documentation.</p>
 <li><a class="reference internal" href="#mmSolver.api.SolverStep.remove_frame_list"><code class="docutils literal notranslate"><span class="pre">SolverStep.remove_frame_list()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.api.SolverStep.set_frame_list"><code class="docutils literal notranslate"><span class="pre">SolverStep.set_frame_list()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.api.SolverStep.clear_frame_list"><code class="docutils literal notranslate"><span class="pre">SolverStep.clear_frame_list()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.api.SolverStep.get_solver_version"><code class="docutils literal notranslate"><span class="pre">SolverStep.get_solver_version()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.api.SolverStep.set_solver_version"><code class="docutils literal notranslate"><span class="pre">SolverStep.set_solver_version()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.api.SolverStep.compile"><code class="docutils literal notranslate"><span class="pre">SolverStep.compile()</span></code></a></li>
 </ul>
 </li>

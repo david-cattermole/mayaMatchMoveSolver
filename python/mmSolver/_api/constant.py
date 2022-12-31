@@ -202,6 +202,17 @@ FRAME_SOLVE_MODE_LIST = [
 ]
 
 
+# The solver command version to use.
+SOLVER_VERSION_ONE = 1
+SOLVER_VERSION_TWO = 2
+# This solver version is by default, unless overridden.
+SOLVER_VERSION_DEFAULT = SOLVER_VERSION_ONE
+SOLVER_VERSION_LIST = [
+    SOLVER_VERSION_ONE,
+    SOLVER_VERSION_TWO,
+]
+
+
 # Attribute States
 ATTR_STATE_INVALID = 0
 ATTR_STATE_STATIC = 1

@@ -32,8 +32,16 @@ import mmSolver.utils.python_compat as pycompat
 Action = collections.namedtuple('Action', ('func', 'args', 'kwargs'))
 
 
-def action_func_is_mmSolver(action):
+def action_func_is_mmSolver_v1(action):
     return _action_func_is_name(action, 'mmSolver')
+
+
+# For backwards compatibility.
+action_func_is_mmSolver = action_func_is_mmSolver_v1
+
+
+def action_func_is_mmSolver_v2(action):
+    return _action_func_is_name(action, 'mmSolver_v2')
 
 
 def action_func_is_camera_solve(action):

@@ -48,6 +48,8 @@ from mmSolver._api.rootframe import (
 from mmSolver._api.action import (
     Action,
     action_func_is_mmSolver,
+    action_func_is_mmSolver_v1,
+    action_func_is_mmSolver_v2,
     action_func_is_mmSolverAffects,
     func_str_to_callable,
     action_to_components,
@@ -407,6 +409,8 @@ __all__ = [
     'generate_isolate_nodes',
     # Action
     'action_func_is_mmSolver',
+    'action_func_is_mmSolver_v1',
+    'action_func_is_mmSolver_v2',
     'action_func_is_mmSolverAffects',
     'func_str_to_callable',
     'action_to_components',

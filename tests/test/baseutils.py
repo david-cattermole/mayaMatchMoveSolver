@@ -23,6 +23,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import pprint
 import os
 import math
 import time
@@ -138,6 +139,7 @@ class TestBase(unittest.TestCase):
 
         # Check the final error values
         frm_err_list = mmapi.merge_frame_error_list(solres_list)
+        print('frame error list', pprint.pformat(dict(frm_err_list)))
 
         avg_err = mmapi.get_average_frame_error_list(frm_err_list)
         print('avg error', avg_err)

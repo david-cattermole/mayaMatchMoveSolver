@@ -66,7 +66,7 @@ MSyntax MMSolverCmd::newSyntax() {
     createAttributeDetailsSyntax(syntax);
     createSolveFramesSyntax(syntax);
     createSolveInfoSyntax_v1(syntax);
-    createSolveLogSyntax(syntax);
+    createSolveLogSyntax_v1(syntax);
 
     return syntax;
 }
@@ -100,7 +100,7 @@ MStatus MMSolverCmd::parseArgs(const MArgList &args) {
         m_removeUnusedMarkers, m_removeUnusedAttributes, m_imageWidth);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = parseSolveLogArguments(argData, m_printStatsList, m_logLevel);
+    status = parseSolveLogArguments_v1(argData, m_printStatsList, m_logLevel);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;

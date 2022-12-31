@@ -150,8 +150,11 @@ def _compile_camera_solve(
         assert y.get_state() == const.ATTR_STATE_STATIC
         assert z.get_state() == const.ATTR_STATE_STATIC
 
+    col_node = col.get_node()
+
     func = 'mmSolver._api.solvercamerautils.camera_solve'
     args = [
+        col_node,
         cam_tfm,
         cam_shp,
         mkr_nodes,

@@ -37,6 +37,7 @@ import mmSolver._api.excep as excep
 import mmSolver._api.solveresult as solveresult
 import mmSolver._api.action as api_action
 import mmSolver._api.solverbase as solverbase
+import mmSolver._api.collection as api_collection
 import mmSolver._api.collectionutils as collectionutils
 import mmSolver._api.constant as const
 
@@ -126,11 +127,45 @@ def _validate_scene_graph_in_actions(action_list, vaction_list):
     return is_valid
 
 
+def _override_actions_set_results_node(col, action_list, vaction_list):
+    assert isinstance(col, api_collection.Collection)
+
+    col_node = col.get_node()
+    assert col_node is not None
+    assert maya.cmds.objExists(col_node)
+
+    new_action_list = []
+    new_vaction_list = []
+    for action, vaction in zip(action_list, vaction_list):
+        is_mmsolver_v2 = api_action.action_func_is_mmSolver_v2(action)
+        vis_mmsolver_v2 = api_action.action_func_is_mmSolver_v2(vaction)
+        if is_mmsolver_v2 is False or vis_mmsolver_v2 is False:
+            new_action_list.append(action)
+            new_vaction_list.append(vaction)
+            continue
+
+        func, args, kwargs = api_action.action_to_components(action)
+        vfunc, vargs, vkwargs = api_action.action_to_components(vaction)
+        kwargs['resultsNode'] = col_node
+        vkwargs['resultsNode'] = col_node
+
+        new_action = api_action.Action(func=func, args=args, kwargs=kwargs)
+        new_vaction = api_action.Action(func=vfunc, args=vargs, kwargs=vkwargs)
+        new_action_list.append(new_action)
+        new_vaction_list.append(new_vaction)
+
+    action_list = new_action_list
+    vaction_list = new_vaction_list
+    return action_list, vaction_list
+
+
 def _override_actions_scene_graph_use_maya_dag(action_list, vaction_list):
     new_action_list = []
     new_vaction_list = []
     for action, vaction in zip(action_list, vaction_list):
-        if api_action.action_func_is_mmSolver(action) is not True:
+        is_mmsolver_v1 = api_action.action_func_is_mmSolver_v1(action)
+        is_mmsolver_v2 = api_action.action_func_is_mmSolver_v2(action)
+        if any((is_mmsolver_v1, is_mmsolver_v2)) is not True:
             continue
 
         func, args, kwargs = api_action.action_to_components(action)
@@ -260,7 +295,10 @@ def execute(
     # 'finally' block.
     kwargs = {}
     save_node_attrs = []
-    func_is_mmsolver = False
+    marker_relock_nodes = set()
+    collection_relock_nodes = set()
+    func_is_mmsolver_v1 = False
+    func_is_mmsolver_v2 = False
     is_single_frame = False
 
     try:
@@ -276,6 +314,7 @@ def execute(
             const.VALIDATE_MODE_PRE_VALIDATE_VALUE,
             const.VALIDATE_MODE_AT_RUNTIME_VALUE,
         ]
+        col_node = col.get_node()
         sol_list = col.get_solver_list()
         mkr_list = col.get_marker_list()
         attr_list = col.get_attribute_list()
@@ -302,12 +341,23 @@ def execute(
                 action_list, vaction_list
             )
 
+        # Prepare nodes so they can be set from mmSolver commands,
+        # without needing to unlock attributes (which is not possible
+        # using MDGModifier API class).
+        collection_relock_nodes |= executepresolve.preSolve_unlockCollectionAttrs(col)
+        marker_relock_nodes |= executepresolve.preSolve_unlockMarkerAttrs(mkr_list)
+
         # Prepare frame solve
         executepresolve.preSolve_setIsolatedNodes(action_list, options, panels)
         executepresolve.preSolve_triggerEvaluation(action_list, cur_frame, options)
 
         # Ensure prediction attributes are created and initialised.
         collectionutils.set_initial_prediction_attributes(col, attr_list, cur_frame)
+
+        # Ensure the resultsNode flag is set for mmSolver_v2 commands.
+        action_list, vaction_list = _override_actions_set_results_node(
+            col, action_list, vaction_list
+        )
 
         vaction_state_list = []
         if validate_before is True:
@@ -339,7 +389,9 @@ def execute(
                     continue
 
             func, args, kwargs = api_action.action_to_components(action)
-            func_is_mmsolver = api_action.action_func_is_mmSolver(action)
+            func_is_mmsolver_v1 = api_action.action_func_is_mmSolver_v1(action)
+            func_is_mmsolver_v2 = api_action.action_func_is_mmSolver_v2(action)
+            func_is_mmsolver = any((func_is_mmsolver_v2, func_is_mmsolver_v1))
             func_is_scene_graph = api_action.action_func_is_mmSolverSceneGraph(action)
             func_is_camera_solve = api_action.action_func_is_camera_solve(action)
 
@@ -348,6 +400,7 @@ def execute(
                 # pre-process, so we can skip them now we're properly
                 # solving.
                 continue
+
             if func_is_mmsolver is True:
                 frame = kwargs.get('frame')
                 if frame is None or len(frame) == 0:
@@ -384,9 +437,9 @@ def execute(
                     kwargs['sceneGraphMode'] = const.SCENE_GRAPH_MODE_MAYA_DAG
 
             elif func_is_camera_solve is True:
-                root_frames = args[5]
-                start_frame = args[6]
-                end_frame = args[7]
+                root_frames = args[6]
+                start_frame = args[7]
+                end_frame = args[8]
                 assert isinstance(root_frames, list)
                 assert isinstance(start_frame, int)
                 assert isinstance(end_frame, int)
@@ -411,13 +464,22 @@ def execute(
             # Create SolveResult.
             solres = None
             if solve_data is not None:
-                if func_is_mmsolver is True or func_is_camera_solve is True:
+                if func_is_mmsolver_v2 is True:
+                    solve_data = kwargs['resultsNode']
+                    solres = solveresult.SolveResult(solve_data)
+                    solres_list.append(solres)
+                elif func_is_mmsolver_v1 is True:
                     solres = solveresult.SolveResult(solve_data)
                     solres_list.append(solres)
                 elif func_is_scene_graph is True:
                     solres = solve_data
+                elif func_is_camera_solve is True:
+                    if const.SOLVER_VERSION_DEFAULT == const.SOLVER_VERSION_TWO:
+                        solve_data = args[0]  # Get the collection node.
+                    solres = solveresult.SolveResult(solve_data)
+                    solres_list.append(solres)
 
-            if func_is_mmsolver is True and solres.get_success() is True:
+            if func_is_mmsolver_v1 is True and solres.get_success() is True:
                 frame = kwargs.get('frame')
                 if frame is None or len(frame) == 0:
                     raise excep.NotValid
@@ -447,16 +509,23 @@ def execute(
                 break
 
             # Refresh the Viewport.
-            if func_is_mmsolver is True:
+            if func_is_mmsolver_v1 is True:
                 frame = kwargs.get('frame')
                 executepostsolve.postSolve_refreshViewport(options, frame)
     finally:
         # If something has gone wrong, or the user cancels the solver
         # without finishing, then we make sure to reconnect animcurves
         # that were disconnected for single frame solves.
-        if func_is_mmsolver is True and is_single_frame is True:
+        if func_is_mmsolver_v1 is True and is_single_frame is True:
             if len(save_node_attrs):
                 collectionutils.reconnect_animcurves(kwargs, save_node_attrs)
+
+        # Re-lock attributes that were unlocked so that the
+        # mmSolver command could set values on them.
+        executepostsolve.postSolve_relockCollectionAttrs(collection_relock_nodes)
+        executepostsolve.postSolve_relockMarkerAttrs(marker_relock_nodes)
+        collection_relock_nodes = set()
+        marker_relock_nodes = set()
 
         executepostsolve.postSolve_setViewportState(
             options, panel_objs, panel_node_type_vis

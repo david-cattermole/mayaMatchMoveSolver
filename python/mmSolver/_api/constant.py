@@ -288,6 +288,64 @@ LINE_ATTR_LONG_NAME_ENABLE = 'enable'
 LINE_ATTR_LONG_NAME_WEIGHT = 'weight'
 
 
+# Attribute names used to store results on Marker nodes.
+MARKER_RESULTS_STORE_ATTR_NAMES = [
+    MARKER_ATTR_LONG_NAME_DEVIATION,
+    MARKER_ATTR_LONG_NAME_AVG_DEVIATION,
+    MARKER_ATTR_LONG_NAME_MAX_DEVIATION,
+    MARKER_ATTR_LONG_NAME_MAX_DEV_FRAME,
+]
+
+# Attribute names used to store results on Collection nodes.
+COLLECTION_RESULTS_STORE_ATTR_NAMES = [
+    # Existing Attributes
+    COLLECTION_ATTR_LONG_NAME_SOLVE_TIMESTAMP,
+    COLLECTION_ATTR_LONG_NAME_SOLVE_DURATION,
+    #
+    # SolverResult
+    'success',
+    'reason_num',
+    'reason_string',
+    'error_final',
+    'error_final_average',
+    'error_final_maximum',
+    'error_final_minimum',
+    'iteration_num',
+    'iteration_function_num',
+    'iteration_jacobian_num',
+    'user_interrupted',
+    #
+    # SolverObjectCountResult
+    'numberOfParameters',
+    'numberOfErrors',
+    'numberOfMarkerErrors',
+    'numberOfAttrStiffnessErrors',
+    'numberOfattrSmoothnessErrors',
+    #
+    # ErrorMetricsResult
+    COLLECTION_ATTR_LONG_NAME_DEVIATION,  # Same as "error_per_frame".
+    'average_deviation',
+    'maximum_deviation',
+    'maximum_deviation_frame',
+    'error_per_marker_per_frame',
+    #
+    # SolveValuesResult
+    'solve_parameter_list',
+    'solve_error_list',
+    #
+    # TimerResult
+    'timer_solve',
+    'timer_function',
+    'timer_jacobian',
+    'timer_parameter',
+    'timer_error',
+    'ticks_solve',
+    'ticks_function',
+    'ticks_jacobian',
+    'ticks_parameter',
+    'ticks_error',
+]
+
 # Default plate fallback values.
 DEFAULT_PLATE_WIDTH = 2048
 DEFAULT_PLATE_HEIGHT = 1556

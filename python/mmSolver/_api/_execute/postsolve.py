@@ -24,6 +24,8 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
+import mmSolver.utils.node as node_utils
+import mmSolver._api.constant as const
 import mmSolver._api.state as api_state
 import mmSolver._api.solveresult as solveresult
 import mmSolver._api.collectionutils as collectionutils
@@ -165,3 +167,25 @@ def postSolve_setUpdateProgress(
             collectionutils.run_status_func(status_fn, 'ERROR: ' + msg)
             LOG.error(msg)
     return stop_solving
+
+
+def _postSolve_relockAttrs(nodes, possible_attrs):
+    assert isinstance(nodes, set)
+    assert isinstance(possible_attrs, set)
+    for node_name in nodes:
+        existing_attrs = set(maya.cmds.listAttr(node_name))
+        attrs = existing_attrs & possible_attrs
+        for attr_name in attrs:
+            plug = '{}.{}'.format(node_name, attr_name)
+            maya.cmds.setAttr(plug, lock=True)
+    return
+
+
+def postSolve_relockCollectionAttrs(relock_nodes):
+    possible_attrs = set(const.COLLECTION_RESULTS_STORE_ATTR_NAMES)
+    return _postSolve_relockAttrs(relock_nodes, possible_attrs)
+
+
+def postSolve_relockMarkerAttrs(relock_nodes):
+    possible_attrs = set(const.MARKER_RESULTS_STORE_ATTR_NAMES)
+    return _postSolve_relockAttrs(relock_nodes, possible_attrs)

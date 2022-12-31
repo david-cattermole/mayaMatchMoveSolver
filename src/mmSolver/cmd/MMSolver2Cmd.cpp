@@ -34,6 +34,8 @@
 
 // MM Solver
 #include "mmSolver/adjust/adjust_base.h"
+#include "mmSolver/adjust/adjust_results_setMarkerData.h"
+#include "mmSolver/adjust/adjust_results_setSolveData.h"
 #include "mmSolver/cmd/common_arg_flags.h"
 
 namespace mmsolver {
@@ -62,7 +64,7 @@ MSyntax MMSolver2Cmd::newSyntax() {
     createSolveObjectSyntax(syntax);
     createSolveFramesSyntax(syntax);
     createSolveInfoSyntax_v2(syntax);
-    createSolveLogSyntax(syntax);
+    createSolveLogSyntax_v2(syntax);
 
     return syntax;
 }
@@ -97,7 +99,9 @@ MStatus MMSolver2Cmd::parseArgs(const MArgList &args) {
         m_solverOptions.solverSupportsRobustLoss, m_solverOptions.imageWidth);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    status = parseSolveLogArguments(argData, m_printStatsList, m_logLevel);
+    status = parseSolveLogArguments_v2(argData, m_printStatsList, m_logLevel,
+                                       m_resultsNodeObject,
+                                       m_setMarkerDeviationAttrs);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     return status;
@@ -135,6 +139,23 @@ MStatus MMSolver2Cmd::doIt(const MArgList &args) {
         solve_v2(m_solverOptions, m_cameraList, m_markerList, m_bundleList,
                  m_attrList, m_frameList, m_dgmod, m_curveChange, m_computation,
                  m_printStatsList, m_logLevel, m_cmdResult);
+
+    // Set the solve results, using m_dgmod and m_curveChange, so that
+    // the values can be reverted if the user undoes a 'mmSolver_v2'
+    // command.
+    if (!m_resultsNodeObject.isNull()) {
+        status = setCommandResultDataOnNode(m_cmdResult, m_cmdResult.printStats,
+                                            m_resultsNodeObject, m_dgmod,
+                                            m_curveChange);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    if (m_setMarkerDeviationAttrs) {
+        status = setErrorMetricsResultDataOnMarkers(
+            m_cmdResult.errorMetricsResult, m_markerList, m_dgmod,
+            m_curveChange);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
 
     MMSolver2Cmd::setResult(ret);
     if (!ret) {

@@ -226,6 +226,7 @@ def _filter_badly_solved_bundles(mkr_bnd_nodes, value_min, value_max):
 
 
 def _sub_bundle_adjustment(
+    col_node,
     cam_tfm,
     cam_shp,
     mkr_nodes,
@@ -350,20 +351,35 @@ def _sub_bundle_adjustment(
     # After each pose is added to the camera solve, we must do a
     # mmSolver refinement with 'MM Scene Graph', solving the
     # camera position, rotation and bundle positions.
-    result = maya.cmds.mmSolver(
-        frame=frames,
-        solverType=solver_type,
-        sceneGraphMode=scene_graph_mode,
-        iterations=iteration_num,
-        frameSolveMode=frame_solve_mode,
-        **kwargs
-    )
-    assert result[0] == 'success=1'
-
+    result = None
+    if const.SOLVER_VERSION_DEFAULT == const.SOLVER_VERSION_ONE:
+        result = maya.cmds.mmSolver(
+            frame=frames,
+            solverType=solver_type,
+            sceneGraphMode=scene_graph_mode,
+            iterations=iteration_num,
+            frameSolveMode=frame_solve_mode,
+            **kwargs
+        )
+        assert result[0] == 'success=1'
+    elif const.SOLVER_VERSION_DEFAULT == const.SOLVER_VERSION_TWO:
+        result = maya.cmds.mmSolver_v2(
+            frame=frames,
+            solverType=solver_type,
+            sceneGraphMode=scene_graph_mode,
+            iterations=iteration_num,
+            frameSolveMode=frame_solve_mode,
+            resultsNode=col_node,
+            **kwargs
+        )
+        assert result is True
+    else:
+        raise NotImplementedError
     return result
 
 
 def _bundle_adjust(
+    col_node,
     cam_tfm,
     cam_shp,
     mkr_nodes,
@@ -380,6 +396,7 @@ def _bundle_adjust(
     solver_type=None,
 ):
     LOG.debug('_bundle_adjust')
+    LOG.debug('col_node: %r', col_node)
     LOG.debug('cam_tfm: %r', cam_tfm)
     LOG.debug('cam_shp: %r', cam_shp)
     LOG.debug('mkr_nodes: %r', mkr_nodes)
@@ -413,6 +430,7 @@ def _bundle_adjust(
     result = None
     if adjust_lens_distortion is False:
         result = _sub_bundle_adjustment(
+            col_node,
             cam_tfm,
             cam_shp,
             mkr_nodes,
@@ -439,6 +457,7 @@ def _bundle_adjust(
 
         # Solve camera transform and bundle positions
         _sub_bundle_adjustment(
+            col_node,
             cam_tfm,
             cam_shp,
             mkr_nodes,
@@ -457,6 +476,7 @@ def _bundle_adjust(
 
         # Solve camera focal length
         _sub_bundle_adjustment(
+            col_node,
             cam_tfm,
             cam_shp,
             mkr_nodes,
@@ -475,6 +495,7 @@ def _bundle_adjust(
 
         # Solve lens distortion
         _sub_bundle_adjustment(
+            col_node,
             cam_tfm,
             cam_shp,
             mkr_nodes,
@@ -493,6 +514,7 @@ def _bundle_adjust(
 
         # Solve camera focal length
         _sub_bundle_adjustment(
+            col_node,
             cam_tfm,
             cam_shp,
             mkr_nodes,
@@ -511,6 +533,7 @@ def _bundle_adjust(
 
         # Solve lens distortion
         _sub_bundle_adjustment(
+            col_node,
             cam_tfm,
             cam_shp,
             mkr_nodes,
@@ -529,6 +552,7 @@ def _bundle_adjust(
 
         # Solve everything
         result = _sub_bundle_adjustment(
+            col_node,
             cam_tfm,
             cam_shp,
             mkr_nodes,
@@ -549,6 +573,7 @@ def _bundle_adjust(
 
 
 def _solve_relative_poses(
+    col_node,
     cam_tfm,
     cam_shp,
     mkr_nodes_a,
@@ -640,6 +665,7 @@ def _solve_relative_poses(
 
             frames = list(sorted(solved_frames))
             _bundle_adjust(
+                col_node,
                 cam_tfm,
                 cam_shp,
                 accumulated_mkr_nodes,
@@ -933,6 +959,7 @@ def _precompute_values(mkr_list, root_frames, start_frame, end_frame):
 # TODO: Make arguments keywords arguments. This will make things
 # easier to understand for calling code.
 def camera_solve(
+    col_node,
     cam_tfm,
     cam_shp,
     mkr_nodes,
@@ -949,6 +976,7 @@ def camera_solve(
     adjust_every_n_poses,
     solver_type,
 ):
+    assert isinstance(col_node, pycompat.TEXT_TYPE)
     assert isinstance(cam_tfm, pycompat.TEXT_TYPE)
     assert isinstance(cam_shp, pycompat.TEXT_TYPE)
     assert isinstance(start_frame, int)
@@ -971,6 +999,7 @@ def camera_solve(
     cam = camera.Camera(shape=cam_shp)
     mkr_list = [marker.Marker(node=x) for x in mkr_nodes]
 
+    LOG.debug('col_node: %s', col_node)
     LOG.debug('cam: %s', cam)
     LOG.debug('mkr_list: %s', mkr_list)
     LOG.debug('cam_shp_node_attrs: %s', cam_shp_node_attrs)
@@ -1041,6 +1070,7 @@ def camera_solve(
             solved_frames,
             failed_frames,
         ) = _solve_relative_poses(
+            col_node,
             cam_tfm,
             cam_shp,
             mkr_nodes_a,
@@ -1093,6 +1123,7 @@ def camera_solve(
             overlapping_frames = list(sorted(overlapping_frames))
 
             _bundle_adjust(
+                col_node,
                 cam_tfm,
                 cam_shp,
                 [mkr_node],
@@ -1117,6 +1148,7 @@ def camera_solve(
         adjust_mkr_nodes = list(sorted(adjust_mkr_nodes))
 
         _bundle_adjust(
+            col_node,
             cam_tfm,
             cam_shp,
             adjust_mkr_nodes,
@@ -1164,6 +1196,7 @@ def camera_solve(
             overlapping_frames = list(sorted(overlapping_frames))
 
             _bundle_adjust(
+                col_node,
                 cam_tfm,
                 cam_shp,
                 [mkr_node],
@@ -1188,6 +1221,7 @@ def camera_solve(
         adjust_mkr_nodes = list(sorted(adjust_mkr_nodes))
 
         _bundle_adjust(
+            col_node,
             cam_tfm,
             cam_shp,
             adjust_mkr_nodes,
@@ -1232,6 +1266,7 @@ def camera_solve(
         # Solve per-frame. Only animated attributes are solved - bundles
         # and (static) focal lengths are ignored.
         result = _bundle_adjust(
+            col_node,
             cam_tfm,
             cam_shp,
             adjust_mkr_nodes,

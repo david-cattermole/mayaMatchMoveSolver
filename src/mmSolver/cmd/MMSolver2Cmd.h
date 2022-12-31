@@ -92,6 +92,8 @@ private:
     MStringArray m_printStatsList;
     LogLevel m_logLevel;
     CommandResult m_cmdResult;
+    MObject m_resultsNodeObject;
+    bool m_setMarkerDeviationAttrs;
 
     // Solver Objects
     CameraPtrList m_cameraList;

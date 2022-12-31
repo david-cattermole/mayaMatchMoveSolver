@@ -117,6 +117,13 @@ struct PrintStatOptions {
     // Print deviation details; the individual error values reported
     // from the solver, per-frame and per-marker-per-frame.
     bool deviation;
+
+    PrintStatOptions()
+        : doNotSolve(false)
+        , input(false)
+        , affects(false)
+        , usedSolveObjects(false)
+        , deviation(false) {}
 };
 
 struct SolverOptions {
@@ -147,6 +154,30 @@ struct SolverOptions {
     bool solverSupportsAutoDiffCentral;
     bool solverSupportsParameterBounds;
     bool solverSupportsRobustLoss;
+
+    SolverOptions()
+        : iterMax(0)
+        , tau(0.0)
+        , eps1(0.0)
+        , eps2(0.0)
+        , eps3(0.0)
+        , delta(0.0)
+        , autoDiffType(AUTO_DIFF_TYPE_FORWARD)
+        , autoParamScale(0)
+        , robustLossType(ROBUST_LOSS_TYPE_TRIVIAL)
+        , robustLossScale(1.0)
+        , sceneGraphMode(SceneGraphMode::kMayaDag)
+        , solverType(SOLVER_TYPE_DEFAULT_VALUE)
+        , timeEvalMode(TIME_EVAL_MODE_DG_CONTEXT)
+        , acceptOnlyBetter(false)
+        , imageWidth(1.0)
+        , frameSolveMode(FrameSolveMode::kAllFrameAtOnce)
+        , removeUnusedMarkers(false)
+        , removeUnusedAttributes(false)
+        , solverSupportsAutoDiffForward(false)
+        , solverSupportsAutoDiffCentral(false)
+        , solverSupportsParameterBounds(false)
+        , solverSupportsRobustLoss(false) {}
 };
 
 // The user data given to the solve function.
@@ -221,6 +252,8 @@ struct SolverData {
     MGlobal::MMayaState mayaSessionState;
 
     LogLevel logLevel;
+
+    SolverData() = default;
 };
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H

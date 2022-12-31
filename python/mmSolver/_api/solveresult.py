@@ -27,6 +27,8 @@ import collections
 import math
 import datetime
 
+import maya.cmds
+
 import mmSolver.logger
 import mmSolver.utils.python_compat as pycompat
 
@@ -82,6 +84,7 @@ def _convert_to(name, key, typ, value, index):
 
     :returns: A value of 'typ' kind.
     """
+    assert callable(typ) is True
     msg = 'mmSolver data is incomplete, '
     msg += 'a solver error may have occurred: '
     msg += 'name={0} key={1} type={2} value={3}'
@@ -119,6 +122,261 @@ def _convert_to(name, key, typ, value, index):
     return v
 
 
+def _string_get_solver_stats(input_data):
+    name_keys = [
+        ('success', 'success', bool),
+        ('stop_message', 'reason_string', str),
+        ('stop_id', 'reason_num', int),
+        ('iteration_total_calls', 'iteration_num', int),
+        ('iteration_function_calls', 'iteration_function_num', int),
+        ('iteration_jacobian_calls', 'iteration_jacobian_num', int),
+        ('attempts', 'iteration_attempt_num', int),
+        ('user_interrupted', 'user_interrupted', bool),
+    ]
+    index = 0
+    solver_stats = {}
+    for name, key, typ in name_keys:
+        value = input_data.get(key)
+        v = _convert_to(name, key, typ, value, index)
+        solver_stats[name] = v
+    return solver_stats
+
+
+def _string_get_error_stats(input_data):
+    name_keys = [
+        ('initial', 'error_initial', float),
+        ('maximum', 'error_maximum', float),
+        ('final', 'error_final', float),
+        ('final_average', 'error_final_average', float),
+        ('final_maximum', 'error_final_maximum', float),
+        ('final_minimum', 'error_final_minimum', float),
+        ('jt', 'error_jt', float),
+        ('dp', 'error_dp', float),
+    ]
+    index = 0
+    error_stats = {}
+    for name, key, typ in name_keys:
+        value = input_data.get(key)
+        v = _convert_to(name, key, typ, value, index)
+        error_stats[name] = v
+    return error_stats
+
+
+def _string_get_timer_stats(input_data):
+    name_keys = [
+        ('solve_seconds', 'timer_solve', float),
+        ('function_seconds', 'timer_function', float),
+        ('jacobian_seconds', 'timer_jacobian', float),
+        ('parameter_seconds', 'timer_parameter', float),
+        ('error_seconds', 'timer_error', float),
+        ('solve_ticks', 'ticks_solve', int),
+        ('function_ticks', 'ticks_function', int),
+        ('jacobian_ticks', 'ticks_jacobian', int),
+        ('parameter_ticks', 'ticks_parameter', int),
+        ('error_ticks', 'ticks_error', int),
+    ]
+    index = 0
+    timer_stats = {}
+    for name, key, typ in name_keys:
+        value = input_data.get(key)
+        v = _convert_to(name, key, typ, value, index)
+        timer_stats[name] = v
+    return timer_stats
+
+
+def _string_get_print_stats(input_data):
+    name_keys = [
+        ('number_of_parameters', 'numberOfParameters', int),
+        ('number_of_errors', 'numberOfErrors', int),
+    ]
+    index = 0
+    print_stats = {}
+    for name, key, typ in name_keys:
+        value = input_data.get(key)
+        v = _convert_to(name, key, typ, value, index)
+        print_stats[name] = v
+    return print_stats
+
+
+def _string_get_error_per_frame(input_data):
+    # Common warning message in this method.
+    msg = 'mmSolver data is incomplete, '
+    msg += 'a solver error may have occurred: '
+    msg += 'name={0} key={1} type={2} value={3}'
+
+    # Errors per frame
+    # Allows graphing the errors and detecting problems.
+    per_frame_error = {}
+    name = ''
+    key = 'error_per_frame'
+    values = input_data.get(key)
+    if values is None or len(values) == 0:
+        LOG.debug(msg.format(name, key, 'None', values))
+    else:
+        for value in values:
+            t = _convert_to(name, key, float, value, 0)
+            v = _convert_to(name, key, float, value, 1)
+            per_frame_error[t] = v
+    return per_frame_error
+
+
+def _string_get_error_per_marker_per_frame(input_data):
+    # Common warning message in this method.
+    msg = 'mmSolver data is incomplete, '
+    msg += 'a solver error may have occurred: '
+    msg += 'name={0} key={1} type={2} value={3}'
+
+    # List of errors, per-marker, per-frame.
+    # Allows graphing the errors and detecting problems.
+    per_marker_per_frame_error = collections.defaultdict(dict)
+    key = 'error_per_marker_per_frame'
+    values = input_data.get(key)
+    name = ''
+    if values is None or len(values) == 0:
+        LOG.debug(msg.format(name, key, 'None', values))
+    else:
+        for value in values:
+            mkr = _convert_to(name, key, str, value, 0)
+            t = _convert_to(name, key, float, value, 1)
+            v = _convert_to(name, key, float, value, 2)
+            per_marker_per_frame_error[mkr][t] = v
+
+    return per_marker_per_frame_error
+
+
+def _get_maya_attr_anim_curve(node, attr_name, existing_attrs):
+    if attr_name not in existing_attrs:
+        return None
+    plug = '{}.{}'.format(node, attr_name)
+    anim_curves = maya.cmds.listConnections(plug, type='animCurve') or []
+    if len(anim_curves) == 0:
+        return None
+    return anim_curves[0]
+
+
+def _get_node_frame_error_list(node, attr_name, existing_attrs):
+    anim_curve = _get_maya_attr_anim_curve(node, attr_name, existing_attrs)
+    if anim_curve is None:
+        return {}
+
+    keyframe_times = maya.cmds.keyframe(anim_curve, query=True, timeChange=True) or []
+    times_and_values = {}
+    for keyframe_time in keyframe_times:
+        time = (keyframe_time, keyframe_time)
+        value = maya.cmds.keyframe(anim_curve, query=True, eval=True, time=time)[0]
+        if value > 0.0:
+            times_and_values[keyframe_time] = value
+    return times_and_values
+
+
+def _get_maya_attr(node, attr_name, typ, existing_attrs):
+    if attr_name not in existing_attrs:
+        return typ()
+    plug = '{}.{}'.format(node, attr_name)
+    return typ(maya.cmds.getAttr(plug))
+
+
+def _node_get_error_stats(node, existing_attrs):
+    assert maya.cmds.objExists(node) is True
+    data = {
+        'initial': _get_maya_attr(node, 'error_initial', float, existing_attrs),
+        'maximum': _get_maya_attr(node, 'error_maximum', float, existing_attrs),
+        'final': _get_maya_attr(node, 'error_final', float, existing_attrs),
+        'final_average': _get_maya_attr(
+            node, 'error_final_average', float, existing_attrs
+        ),
+        'final_maximum': _get_maya_attr(
+            node, 'error_final_maximum', float, existing_attrs
+        ),
+        'final_minimum': _get_maya_attr(
+            node, 'error_final_minimum', float, existing_attrs
+        ),
+        'jt': _get_maya_attr(node, 'error_jt', float, existing_attrs),
+        'dp': _get_maya_attr(node, 'error_dp', float, existing_attrs),
+    }
+    return data
+
+
+def _node_get_timer_stats(node, existing_attrs):
+    assert maya.cmds.objExists(node) is True
+    data = {
+        'solve_seconds': _get_maya_attr(node, 'timer_solve', float, existing_attrs),
+        'function_seconds': _get_maya_attr(
+            node, 'timer_function', float, existing_attrs
+        ),
+        'jacobian_seconds': _get_maya_attr(
+            node, 'timer_jacobian', float, existing_attrs
+        ),
+        'parameter_seconds': _get_maya_attr(
+            node, 'timer_parameter', float, existing_attrs
+        ),
+        'error_seconds': _get_maya_attr(node, 'timer_error', float, existing_attrs),
+        'solve_ticks': _get_maya_attr(node, 'ticks_solve', int, existing_attrs),
+        'function_ticks': _get_maya_attr(node, 'ticks_function', int, existing_attrs),
+        'jacobian_ticks': _get_maya_attr(node, 'ticks_jacobian', int, existing_attrs),
+        'parameter_ticks': _get_maya_attr(node, 'ticks_parameter', int, existing_attrs),
+        'error_ticks': _get_maya_attr(node, 'ticks_error', int, existing_attrs),
+    }
+    return data
+
+
+def _node_get_solver_stats(node, existing_attrs):
+    assert maya.cmds.objExists(node) is True
+    data = {
+        'success': _get_maya_attr(node, 'success', bool, existing_attrs),
+        'stop_message': _get_maya_attr(node, 'reason_string', str, existing_attrs),
+        'stop_id': _get_maya_attr(node, 'reason_num', int, existing_attrs),
+        'iteration_total_calls': _get_maya_attr(
+            node, 'iteration_num', int, existing_attrs
+        ),
+        'iteration_function_calls': _get_maya_attr(
+            node, 'iteration_function_num', int, existing_attrs
+        ),
+        'iteration_jacobian_calls': _get_maya_attr(
+            node, 'iteration_jacobian_num', int, existing_attrs
+        ),
+        'attempts': _get_maya_attr(node, 'iteration_attempt_num', int, existing_attrs),
+        'user_interrupted': _get_maya_attr(
+            node, 'user_interrupted', int, existing_attrs
+        ),
+    }
+    return data
+
+
+def _node_get_print_stats(node, existing_attrs):
+    assert maya.cmds.objExists(node) is True
+    data = {
+        'number_of_parameters': _get_maya_attr(
+            node, 'numberOfParameters', int, existing_attrs
+        ),
+        'number_of_errors': _get_maya_attr(node, 'numberOfErrors', int, existing_attrs),
+    }
+    return data
+
+
+def _node_get_per_frame_error(node, existing_attrs):
+    return _get_node_frame_error_list(node, 'deviation', existing_attrs)
+
+
+def _node_get_per_marker_per_frame_error(node, existing_attrs):
+    assert maya.cmds.objExists(node) is True
+
+    # Get all Marker nodes
+    marker_attrs = [x for x in existing_attrs if x.startswith("mkr___")]
+    marker_names = set([x.split('___')[1] for x in marker_attrs])
+    marker_nodes = [x for x in marker_names if maya.cmds.objExists(x) is True]
+    marker_nodes = [maya.cmds.ls(x, long=True) or [] for x in marker_nodes]
+    marker_nodes = set([x[0] for x in marker_nodes if len(x) > 0])
+
+    data = collections.defaultdict(dict)
+    for mkr_node in marker_nodes:
+        mkr_existing_attrs = maya.cmds.listAttr(mkr_node) or []
+        data[mkr_node] = _get_node_frame_error_list(
+            mkr_node, 'deviation', mkr_existing_attrs
+        )
+    return data
+
+
 class SolveResult(object):
     """
     The information returned from a solve.
@@ -128,7 +386,7 @@ class SolveResult(object):
     data.
     """
 
-    def __init__(self, cmd_data):
+    def __init__(self, *args, **kwargs):
         """
         Create a new SolveResult using command data from
         *maya.cmds.mmSolver* command.
@@ -136,113 +394,35 @@ class SolveResult(object):
         :param cmd_data: Command data from mmSolver.
         :type cmd_data: [[str, ..], ..]
         """
-        if isinstance(cmd_data, list) is False:
-            msg = 'cmd_data is of type %r, expected a list object.'
-            raise TypeError(msg % type(cmd_data))
-        self._raw_data = list(cmd_data)
-        data = parse_command_result(cmd_data)
+        if isinstance(args[0], pycompat.TEXT_TYPE) is True:
+            self._input_mode = 0
+            node = args[0]
+            existing_attrs = maya.cmds.listAttr(node)
+            self._solver_stats = _node_get_solver_stats(node, existing_attrs)
+            self._error_stats = _node_get_error_stats(node, existing_attrs)
+            self._timer_stats = _node_get_timer_stats(node, existing_attrs)
+            self._print_stats = _node_get_print_stats(node, existing_attrs)
 
-        # Common warning message in this method.
-        msg = 'mmSolver data is incomplete, '
-        msg += 'a solver error may have occurred: '
-        msg += 'name={0} key={1} type={2} value={3}'
-
-        # Solver statistics
-        name_keys = [
-            ('success', 'success', bool),
-            ('stop_message', 'reason_string', str),
-            ('stop_id', 'reason_num', int),
-            ('iteration_total_calls', 'iteration_num', int),
-            ('iteration_function_calls', 'iteration_function_num', int),
-            ('iteration_jacobian_calls', 'iteration_jacobian_num', int),
-            ('attempts', 'iteration_attempt_num', int),
-            ('user_interrupted', 'user_interrupted', bool),
-        ]
-        index = 0
-        self._solver_stats = {}
-        for name, key, typ in name_keys:
-            value = data.get(key)
-            v = _convert_to(name, key, typ, value, index)
-            self._solver_stats[name] = v
-
-        # Error statistics
-        name_keys = [
-            ('initial', 'error_initial', float),
-            ('maximum', 'error_maximum', float),
-            ('final', 'error_final', float),
-            ('final_average', 'error_final_average', float),
-            ('final_maximum', 'error_final_maximum', float),
-            ('final_minimum', 'error_final_minimum', float),
-            ('jt', 'error_jt', float),
-            ('dp', 'error_dp', float),
-        ]
-        index = 0
-        self._error_stats = {}
-        for name, key, typ in name_keys:
-            value = data.get(key)
-            v = _convert_to(name, key, typ, value, index)
-            self._error_stats[name] = v
-
-        # Timer statistics
-        name_keys = [
-            ('solve_seconds', 'timer_solve', float),
-            ('function_seconds', 'timer_function', float),
-            ('jacobian_seconds', 'timer_jacobian', float),
-            ('parameter_seconds', 'timer_parameter', float),
-            ('error_seconds', 'timer_error', float),
-            ('solve_ticks', 'ticks_solve', int),
-            ('function_ticks', 'ticks_function', int),
-            ('jacobian_ticks', 'ticks_jacobian', int),
-            ('parameter_ticks', 'ticks_parameter', int),
-            ('error_ticks', 'ticks_error', int),
-        ]
-        index = 0
-        self._timer_stats = {}
-        for name, key, typ in name_keys:
-            value = data.get(key)
-            v = _convert_to(name, key, typ, value, index)
-            self._timer_stats[name] = v
-
-        # Print statistics
-        name_keys = [
-            ('number_of_parameters', 'numberOfParameters', int),
-            ('number_of_errors', 'numberOfErrors', int),
-        ]
-        index = 0
-        self._print_stats = {}
-        for name, key, typ in name_keys:
-            value = data.get(key)
-            v = _convert_to(name, key, typ, value, index)
-            self._print_stats[name] = v
-
-        # List of errors, per-marker, per-frame.
-        # Allows graphing the errors and detecting problems.
-        self._per_marker_per_frame_error = collections.defaultdict(dict)
-        key = 'error_per_marker_per_frame'
-        values = data.get(key)
-        name = ''
-        if values is None or len(values) == 0:
-            LOG.debug(msg.format(name, key, 'None', values))
+            self._per_frame_error = _node_get_per_frame_error(node, existing_attrs)
+            self._per_marker_per_frame_error = _node_get_per_marker_per_frame_error(
+                node, existing_attrs
+            )
+        elif isinstance(args[0], list) is True:
+            self._input_mode = 1
+            cmd_data = args[0]
+            self._raw_data = list(cmd_data)
+            data = parse_command_result(cmd_data)
+            self._solver_stats = _string_get_solver_stats(data)
+            self._error_stats = _string_get_error_stats(data)
+            self._timer_stats = _string_get_timer_stats(data)
+            self._print_stats = _string_get_print_stats(data)
+            self._per_marker_per_frame_error = _string_get_error_per_marker_per_frame(
+                data
+            )
+            self._per_frame_error = _string_get_error_per_frame(data)
         else:
-            for value in values:
-                mkr = _convert_to(name, key, str, value, 0)
-                t = _convert_to(name, key, float, value, 1)
-                v = _convert_to(name, key, float, value, 2)
-                self._per_marker_per_frame_error[mkr][t] = v
-
-        # Errors per frame
-        # Allows graphing the errors and detecting problems.
-        self._per_frame_error = {}
-        name = ''
-        key = 'error_per_frame'
-        values = data.get(key)
-        if values is None or len(values) == 0:
-            LOG.debug(msg.format(name, key, 'None', values))
-        else:
-            for value in values:
-                t = _convert_to(name, key, float, value, 0)
-                v = _convert_to(name, key, float, value, 1)
-                self._per_frame_error[t] = v
+            msg = 'argument is of type %r, expected a list or str.'
+            raise TypeError(msg % type(args[0]))
         return
 
     def get_data_raw(self):
@@ -252,7 +432,26 @@ class SolveResult(object):
         It is possible to re-create this object exactly by saving this
         raw data and re-initializing the object with this data.
         """
-        return list(self._raw_data)
+        if self._input_mode == 1:
+            return list(self._raw_data)
+        elif self._input_mode == 0:
+            error_stats = self.get_error_stats()
+            timer_stats = self.get_timer_stats()
+            solver_stats = self.get_solver_stats()
+            print_stats = self.get_print_stats()
+            per_frame_error = self.get_frame_error_list()
+            per_marker_per_frame_error = self.get_marker_error_list(marker_node=None)
+            data = {
+                'error_stats': error_stats,
+                'timer_stats': timer_stats,
+                'solver_stats': solver_stats,
+                'print_stats': print_stats,
+                'per_frame_error': per_frame_error,
+                'per_marker_per_frame_error': per_marker_per_frame_error,
+            }
+            return data
+        else:
+            raise NotImplementedError
 
     def get_success(self):
         """

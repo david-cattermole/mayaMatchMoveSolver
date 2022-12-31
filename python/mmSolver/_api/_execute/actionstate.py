@@ -89,7 +89,10 @@ def run_validate_action(vaction):
         )
         return state
     vfunc, vargs, vkwargs = api_action.action_to_components(vaction)
-    vfunc_is_mmsolver = api_action.action_func_is_mmSolver(vaction)
+    vfunc_is_mmsolver_v1 = api_action.action_func_is_mmSolver_v1(vaction)
+    vfunc_is_mmsolver_v2 = api_action.action_func_is_mmSolver_v2(vaction)
+    vfunc_is_camera_solve = api_action.action_func_is_camera_solve(vaction)
+    vfunc_is_mmsolver = any((vfunc_is_mmsolver_v1, vfunc_is_mmsolver_v2))
 
     num_param = 0
     num_err = 0
@@ -124,7 +127,15 @@ def run_validate_action(vaction):
         )
         return state
 
+    if vfunc_is_mmsolver_v2 is True:
+        solve_data = vkwargs['resultsNode']
+    if vfunc_is_camera_solve is True:
+        if const.SOLVER_VERSION_DEFAULT == const.SOLVER_VERSION_TWO:
+            # Get the collection node given to the camera solve.
+            solve_data = vargs[0]
+
     solres = solveresult.SolveResult(solve_data)
+
     print_stats = solres.get_print_stats()
     num_param = print_stats.get('number_of_parameters', 0)
     num_err = print_stats.get('number_of_errors', 0)

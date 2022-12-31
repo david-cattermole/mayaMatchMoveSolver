@@ -31,6 +31,9 @@ set(SOURCE_FILES
   mmSolver/adjust/adjust_cminpack_lmder.cpp
   mmSolver/adjust/adjust_cminpack_lmdif.cpp
   mmSolver/adjust/adjust_relationships.cpp
+  mmSolver/adjust/adjust_results_helpers.cpp
+  mmSolver/adjust/adjust_results_setMarkerData.cpp
+  mmSolver/adjust/adjust_results_setSolveData.cpp
   mmSolver/adjust/adjust_setParameters.cpp
   mmSolver/adjust/adjust_measureErrors.cpp
   mmSolver/adjust/adjust_solveFunc.cpp

@@ -48,15 +48,35 @@
 #define PRINT_STATS_FLAG "-pst"
 #define PRINT_STATS_FLAG_LONG "-printStatistics"
 
+// Defines a Maya node that will be filled with attributes and values
+// from the solve. For example, the number of iterations solved will
+// be set as an integer on the given node.
+#define RESULTS_NODE_FLAG "-rsn"
+#define RESULTS_NODE_FLAG_LONG "-resultsNode"
+
+// If true, the solver will create and set attributes on the Markers for the
+// deviation values calculated by the solver.
+#define SET_MARKER_DEVIATION_ATTRS_FLAG "-smd"
+#define SET_MARKER_DEVIATION_ATTRS_FLAG_LONG "-setMarkerDeviationAttrs"
+#define SET_MARKER_DEVIATION_ATTRS_DEFAULT_VALUE true
+
 namespace mmsolver {
 
 // Add flags for solver logging to the command syntax.
-void createSolveLogSyntax(MSyntax &syntax);
+void createSolveLogSyntax_v1(MSyntax &syntax);
+
+void createSolveLogSyntax_v2(MSyntax &syntax);
 
 // Parse arguments into solver logging.
-MStatus parseSolveLogArguments(const MArgDatabase &argData,
-                               MStringArray &out_printStatsList,
-                               LogLevel &out_logLevel);
+MStatus parseSolveLogArguments_v1(const MArgDatabase &argData,
+                                  MStringArray &out_printStatsList,
+                                  LogLevel &out_logLevel);
+
+MStatus parseSolveLogArguments_v2(const MArgDatabase &argData,
+                                  MStringArray &out_printStatsList,
+                                  LogLevel &out_logLevel,
+                                  MObject &out_resultsNodeObject,
+                                  bool &out_setMarkerDeviationAttrs);
 
 }  // namespace mmsolver
 

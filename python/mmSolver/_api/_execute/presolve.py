@@ -27,10 +27,14 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
+import mmSolver._api.constant as const
 import mmSolver._api.state as api_state
 import mmSolver._api.excep as excep
 import mmSolver._api.solveresult as solveresult
 import mmSolver._api.collectionutils as collectionutils
+import mmSolver._api.marker as api_marker
+import mmSolver._api.collection as api_collection
+
 
 LOG = mmSolver.logger.get_logger()
 
@@ -160,3 +164,55 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
             update=options.force_update,
         )
     return
+
+
+def preSolve_unlockCollectionAttrs(col):
+    """
+    Unlock all Collection attributes that will be set by mmSolver
+    commands.
+    """
+    assert isinstance(col, api_collection.Collection)
+
+    col_node = col.get_node()
+    assert col_node is not None
+    assert maya.cmds.objExists(col_node)
+    relock_nodes = set([col_node])
+
+    existing_attrs = set(maya.cmds.listAttr(col_node))
+    attrs = existing_attrs & set(const.COLLECTION_RESULTS_STORE_ATTR_NAMES)
+
+    for attr_name in attrs:
+        # The plug may not exist, yet, but after a solve has finished the
+        # attribute may need to be locked.
+        plug = '{0}.{1}'.format(col_node, attr_name)
+
+        locked = maya.cmds.getAttr(plug, lock=True)
+        if locked is True:
+            maya.cmds.setAttr(plug, lock=False)
+    return relock_nodes
+
+
+def preSolve_unlockMarkerAttrs(mkr_list):
+    """
+    Unlock all Marker attributes that will be set by mmSolver
+    commands.
+    """
+    relock_nodes = set()
+    for mkr in mkr_list:
+        assert isinstance(mkr, api_marker.Marker)
+        mkr_node = mkr.get_node()
+        assert mkr_node is not None
+        relock_nodes.add(mkr_node)
+
+        existing_attrs = set(maya.cmds.listAttr(mkr_node))
+        attrs = existing_attrs & set(const.MARKER_RESULTS_STORE_ATTR_NAMES)
+
+        for attr_name in attrs:
+            # The plug may not exist, yet, but after a solve has finished the
+            # attribute may need to be locked.
+            plug = '{0}.{1}'.format(mkr_node, attr_name)
+
+            locked = maya.cmds.getAttr(plug, lock=True)
+            if locked is True:
+                maya.cmds.setAttr(plug, lock=False)
+    return relock_nodes

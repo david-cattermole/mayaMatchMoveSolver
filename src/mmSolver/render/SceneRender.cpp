@@ -46,6 +46,7 @@ SceneRender::SceneRender(const MString &name)
     , m_scene_filter(MHWRender::MSceneRender::kNoSceneFilterOverride)
     , m_clear_mask(MHWRender::MClearOperation::kClearNone)
     , m_display_mode_override(MHWRender::MSceneRender::kNoDisplayModeOverride)
+    , m_post_effects_override(MHWRender::MSceneRender::kPostEffectDisableAll)
     , m_targets(nullptr)
     , m_target_index(0)
     , m_target_count(0)
@@ -112,6 +113,10 @@ MHWRender::MClearOperation &SceneRender::clearOperation() {
     mClearOperation.setMask(m_clear_mask);
 
     return mClearOperation;
+}
+
+MHWRender::MSceneRender::MPostEffectsOverride SceneRender::postEffectsOverride() {
+    return m_post_effects_override;
 }
 
 const MSelectionList *SceneRender::objectSetOverride() {

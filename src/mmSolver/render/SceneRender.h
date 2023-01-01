@@ -54,6 +54,9 @@ public:
     MUint64 getObjectTypeExclusions() override;
     MHWRender::MClearOperation &clearOperation() override;
 
+    MHWRender::MSceneRender::MPostEffectsOverride postEffectsOverride() override;
+    void setPostEffectsOverride(const MHWRender::MSceneRender::MPostEffectsOverride value) { m_post_effects_override = value; }
+
     void setRenderTargets(MHWRender::MRenderTarget **targets,
                           const uint32_t index, const uint32_t count) {
         m_targets = targets;
@@ -131,6 +134,8 @@ protected:
 
     // Mask for clear override
     uint32_t m_clear_mask;
+
+    MHWRender::MSceneRender::MPostEffectsOverride m_post_effects_override;
 
     // The node types to be excluded from drawing.
     MUint64 m_exclude_types;

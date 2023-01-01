@@ -115,7 +115,8 @@ MHWRender::MClearOperation &SceneRender::clearOperation() {
     return mClearOperation;
 }
 
-MHWRender::MSceneRender::MPostEffectsOverride SceneRender::postEffectsOverride() {
+MHWRender::MSceneRender::MPostEffectsOverride
+SceneRender::postEffectsOverride() {
     return m_post_effects_override;
 }
 

@@ -227,7 +227,9 @@ MStatus RenderOverride::updateParameters() {
     MPlug render_mode_plug =
         depends_node.findPlug("renderMode", want_networked_plug, &status);
     CHECK_MSTATUS(status);
-    if (status == MStatus::kSuccess) {
+    if (status != MStatus::kSuccess) {
+        m_render_mode = RenderMode::kFour;
+    } else {
         m_render_mode = static_cast<RenderMode>(render_mode_plug.asShort());
     }
     MMSOLVER_VRB("RenderOverride mode: " << static_cast<short>(m_render_mode));
@@ -299,7 +301,7 @@ MStatus RenderOverride::updateRenderOperations() {
             MHWRender::MSceneRender::kWireFrame);
 
     // Operation names
-    m_op_names[kSceneDepthPass] = "mmRenderer_SceneRender_Standard";
+    m_op_names[kSceneDepthPass] = "mmRenderer_SceneRender_DepthOnly";
     m_op_names[kSceneBackgroundPass] = "mmRenderer_SceneRender_Background";
     m_op_names[kSceneSelectionPass] = "mmRenderer_SceneRender_Select";
     m_op_names[kCopyOp] = "mmRenderer_Copy";
@@ -307,6 +309,7 @@ MStatus RenderOverride::updateRenderOperations() {
     m_op_names[kEdgeDetectOp] = "mmRenderer_EdgeDetectOp1";
     m_op_names[kWireframeBlendOp] = "mmRenderer_WireframeBlend";
     m_op_names[kInvertOp] = "mmRenderer_InvertOp2";
+    m_op_names[kSceneManipulatorPass] = "mmRenderer_SceneRender_Manipulator";
     m_op_names[kPresentOp] = "mmRenderer_PresentTarget";
 
     SceneRender *sceneOp = nullptr;
@@ -350,10 +353,10 @@ MStatus RenderOverride::updateRenderOperations() {
     m_ops[kCopyOp] = copyOp;
 
     // Wireframe pass.
-    // TODO: Do not draw manipulators.
     sceneOp = new SceneRender(m_op_names[kSceneWireframePass]);
     sceneOp->setViewRectangle(rect);
     sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
+    sceneOp->setExcludeTypes(MHWRender::MFrameContext::kExcludeManipulators);
     sceneOp->setDisplayModeOverride(display_mode_wireframe);
     // do not override objects to be drawn.
     sceneOp->setDoSelectable(false);
@@ -382,17 +385,15 @@ MStatus RenderOverride::updateRenderOperations() {
     invertOp->setClearMask(clear_mask_none);
     m_ops[kInvertOp] = invertOp;
 
-    // // Manipulators pass.
-    // // TODO: Draw manipulators only.
-    // sceneOp = new SceneRender(m_op_names[kSceneWireframePass]);
-    // sceneOp->setViewRectangle(rect);
-    // sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
-    // sceneOp->setDisplayModeOverride(display_mode_wireframe);
-    // // do not override objects to be drawn.
-    // sceneOp->setDoSelectable(false);
-    // sceneOp->setDoBackground(false);
-    // sceneOp->setClearMask(clear_mask_none);
-    // m_ops[kSceneWireframePass] = sceneOp;
+    // Manipulators pass.
+    sceneOp = new SceneRender(m_op_names[kSceneManipulatorPass]);
+    sceneOp->setViewRectangle(rect);
+    sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
+    sceneOp->setExcludeTypes(~MHWRender::MFrameContext::kExcludeManipulators);
+    sceneOp->setDoSelectable(false);
+    sceneOp->setDoBackground(false);
+    sceneOp->setClearMask(clear_mask_none);
+    m_ops[kSceneManipulatorPass] = sceneOp;
 
     // A preset 2D HUD render operation
     auto hudOp = new HudRender();
@@ -481,7 +482,7 @@ MStatus RenderOverride::updateRenderTargets() {
             backgroundPassOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }
 
-        // Draw manipulators.
+        // Allow selection of objects.
         auto selectSceneOp =
             dynamic_cast<SceneRender *>(m_ops[kSceneSelectionPass]);
         if (selectSceneOp) {
@@ -534,6 +535,14 @@ MStatus RenderOverride::updateRenderTargets() {
             invertOp->setEnabled(false);
         }
 
+        // Draw manipulators over the top of all objects.
+        auto manipulatorPassOp =
+            dynamic_cast<SceneRender *>(m_ops[kSceneManipulatorPass]);
+        if (manipulatorPassOp) {
+            manipulatorPassOp->setEnabled(true);
+            manipulatorPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
+        }
+
         // Draw the HUD on kMyColorTarget.
         auto hudOp = dynamic_cast<HudRender *>(m_ops[kHudPass]);
         if (hudOp) {
@@ -547,9 +556,9 @@ MStatus RenderOverride::updateRenderTargets() {
         }
 
     } else if (m_render_mode == RenderMode::kOne) {
+        // Blending wireframes.
         MMSOLVER_VRB("RenderOverride::mode = ONE");
 
-        // Blending wireframes.
         auto depthPassOp = dynamic_cast<SceneRender *>(m_ops[kSceneDepthPass]);
         if (depthPassOp) {
             depthPassOp->setEnabled(true);
@@ -610,6 +619,14 @@ MStatus RenderOverride::updateRenderTargets() {
             invertOp->setEnabled(false);
         }
 
+        // Draw manipulators over the top of all objects.
+        auto manipulatorPassOp =
+            dynamic_cast<SceneRender *>(m_ops[kSceneManipulatorPass]);
+        if (manipulatorPassOp) {
+            manipulatorPassOp->setEnabled(true);
+            manipulatorPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
+        }
+
         auto hudOp = dynamic_cast<HudRender *>(m_ops[kHudPass]);
         if (hudOp) {
             hudOp->setEnabled(true);
@@ -623,9 +640,9 @@ MStatus RenderOverride::updateRenderTargets() {
         }
 
     } else {
-        MMSOLVER_VRB("RenderOverride::mode = ELSE");
-
         // No blending or post operations.
+        MMSOLVER_VRB("RenderOverride::renderMode = RenderMode::kFour");
+
         auto depthPassOp = dynamic_cast<SceneRender *>(m_ops[kSceneDepthPass]);
         if (depthPassOp) {
             depthPassOp->setEnabled(true);
@@ -698,6 +715,13 @@ MStatus RenderOverride::updateRenderTargets() {
             invertOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }
 
+        auto manipulatorPassOp =
+            dynamic_cast<SceneRender *>(m_ops[kSceneManipulatorPass]);
+        if (manipulatorPassOp) {
+            manipulatorPassOp->setEnabled(true);
+            manipulatorPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
+        }
+
         auto hudOp = dynamic_cast<HudRender *>(m_ops[kHudPass]);
         if (hudOp) {
             hudOp->setEnabled(true);
@@ -742,6 +766,11 @@ MStatus RenderOverride::setPanelNames(const MString &name) {
 
     if (m_ops[kSceneWireframePass]) {
         auto op = dynamic_cast<SceneRender *>(m_ops[kSceneWireframePass]);
+        op->setPanelName(name);
+    }
+
+    if (m_ops[kSceneManipulatorPass]) {
+        auto op = dynamic_cast<SceneRender *>(m_ops[kSceneManipulatorPass]);
         op->setPanelName(name);
     }
     return MS::kSuccess;

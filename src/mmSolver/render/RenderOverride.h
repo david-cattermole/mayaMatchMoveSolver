@@ -55,7 +55,7 @@ public:
         // --------------------------------------------------------------------
         // Background pass.
         //
-        // Draw the Maya background colour using the Maya preferences,
+        // Draw the Maya background color using the Maya preferences,
         // and draw imagePlanes.
         //
         // The render targets used for this pass is only the colour,
@@ -90,6 +90,12 @@ public:
 
         // Post ops on target 1
         kInvertOp,
+
+        // --------------------------------------------------------------------
+        // Manipulator pass.
+        //
+        // Draw only manipulators.
+        kSceneManipulatorPass,
 
         // --------------------------------------------------------------------
         // HUD pass. Draw 2D heads-up-display elements.

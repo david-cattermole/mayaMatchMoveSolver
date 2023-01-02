@@ -183,12 +183,16 @@ private:
     // A handle to the 'mmRenderGlobals' node.
     MObjectHandle m_globals_node;
 
+    // A handle to the 'hardwareRenderingGlobals' node.
+    MObjectHandle m_maya_hardware_globals_node;
+
     // Query update parameters from the mmRenderGlobals node.
     bool m_pull_updates;
 
     // Renderer settings
     RenderMode m_render_mode;
     RenderFormat m_render_format;
+    bool m_multi_sample_enable;
     int32_t m_multi_sample_count;
     double m_wireframe_alpha;
     double m_edge_thickness;

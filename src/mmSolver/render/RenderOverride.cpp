@@ -61,16 +61,15 @@ RenderOverride::RenderOverride(const MString &name)
     , m_render_override_change_callback(0)
     , m_globals_node()
     , m_pull_updates(true)
+    , m_multi_sample_enable(false)
+    , m_multi_sample_count(1)
     , m_wireframe_alpha(kWireframeAlphaDefault)
     , m_edge_thickness(kEdgeThicknessDefault)
     , m_edge_threshold(kEdgeThresholdDefault) {
     // Remove any operations that already exist from Maya.
     mOperations.clear();
 
-    // // TODO: Ensure a node named 'mmRenderGlobals' exists in the scene.
-    // nodeExistsAndIsType(MString nodeName, MFn::Type nodeType);
-
-    // Initalise the operations for this override.
+    // Initialise the operations for this override.
     for (auto i = 0; i < kNumberOfOps; ++i) {
         m_ops[i] = nullptr;
     }
@@ -78,10 +77,7 @@ RenderOverride::RenderOverride(const MString &name)
     m_panel_name.clear();
 
     // Init target information for the override.
-    //
-    // TODO: control the MSAA sample count (to allow users to change
-    // quality)
-    unsigned int sampleCount = 1;  // 1 == no multi-sampling
+    unsigned int sample_count = 1;  // 1 == no multi-sampling, by default.
     // TODO: Allow user to control the raster format from a list of choices.
     MHWRender::MRasterFormat colorFormat = MHWRender::kR8G8B8A8_UNORM;
     // MHWRender::kR16G16B16A16_FLOAT;
@@ -103,19 +99,19 @@ RenderOverride::RenderOverride(const MString &name)
     m_target_override_names[kMyColorTarget] = MString(kMyColorTargetName);
     m_target_descs[kMyColorTarget] = new MHWRender::MRenderTargetDescription(
         m_target_override_names[kMyColorTarget], default_width, default_height,
-        sampleCount, colorFormat, array_slice_count, is_cube_map);
+        sample_count, colorFormat, array_slice_count, is_cube_map);
 
     // 1st Depth target
     m_target_override_names[kMyDepthTarget] = MString(kMyDepthTargetName);
     m_target_descs[kMyDepthTarget] = new MHWRender::MRenderTargetDescription(
         m_target_override_names[kMyDepthTarget], default_width, default_height,
-        sampleCount, depthFormat, array_slice_count, is_cube_map);
+        sample_count, depthFormat, array_slice_count, is_cube_map);
 
     // 2nd Color target
     m_target_override_names[kMyAuxColorTarget] = MString(kMyAuxColorTargetName);
     m_target_descs[kMyAuxColorTarget] = new MHWRender::MRenderTargetDescription(
         m_target_override_names[kMyAuxColorTarget], default_width,
-        default_height, sampleCount, colorFormat, array_slice_count,
+        default_height, sample_count, colorFormat, array_slice_count,
         is_cube_map);
 }
 
@@ -214,13 +210,39 @@ MStatus RenderOverride::updateParameters() {
             m_globals_node = node_obj;
         } else {
             // Could not find a valid render globals node.
-            // CHECK_MSTATUS(status);
+            //
+            // TODO: Run a MEL/Python command callback that will
+            // create a mmRenderGlobals node, when no node can be
+            // found.
             return status;
         }
     }
 
-    MObject node_obj = m_globals_node.object();
-    MFnDependencyNode depends_node(node_obj, &status);
+    MObject globals_node_obj = m_globals_node.object();
+    MFnDependencyNode depends_node(globals_node_obj, &status);
+    CHECK_MSTATUS(status);
+
+    if (!m_maya_hardware_globals_node.isValid()) {
+        // Get the node and cache the handle in an 'MObjectHandle'
+        // instance.
+        MObject node_obj;
+        MString node_name = "hardwareRenderingGlobals";
+        status = getAsObject(node_name, node_obj);
+
+        if (!node_obj.isNull()) {
+            m_maya_hardware_globals_node = node_obj;
+        } else {
+            // Could not find a valid 'hardwareRenderingGlobals' node,
+            // which should always succeed because that node always
+            // exists in the Maya scene.
+            return status;
+        }
+    }
+
+    MObject maya_hardware_globals_node_obj =
+        m_maya_hardware_globals_node.object();
+    MFnDependencyNode maya_hardware_globals_depends_node(
+        maya_hardware_globals_node_obj, &status);
     CHECK_MSTATUS(status);
 
     bool want_networked_plug = true;
@@ -243,6 +265,24 @@ MStatus RenderOverride::updateParameters() {
     }
     MMSOLVER_VRB("RenderOverride render_format: "
                  << static_cast<short>(m_render_format));
+
+    m_multi_sample_enable = false;
+    MPlug sample_enable_plug = maya_hardware_globals_depends_node.findPlug(
+        "multiSampleEnable", want_networked_plug, &status);
+    CHECK_MSTATUS(status);
+    if (status == MStatus::kSuccess) {
+        m_multi_sample_enable = sample_enable_plug.asInt();
+    }
+
+    m_multi_sample_count = 1;
+    if (m_multi_sample_enable) {
+        MPlug sample_count_plug = maya_hardware_globals_depends_node.findPlug(
+            "multiSampleCount", want_networked_plug, &status);
+        CHECK_MSTATUS(status);
+        if (status == MStatus::kSuccess) {
+            m_multi_sample_count = sample_count_plug.asInt();
+        }
+    }
 
     MPlug wire_alpha_plug =
         depends_node.findPlug("wireframeAlpha", want_networked_plug, &status);
@@ -456,7 +496,7 @@ MStatus RenderOverride::updateRenderTargets() {
         // Update size value for all target descriptions kept
         m_target_descs[target_id]->setWidth(target_width);
         m_target_descs[target_id]->setHeight(target_height);
-        // TODO: Get and set the multi-sample count.
+        m_target_descs[target_id]->setMultiSampleCount(m_multi_sample_count);
     }
 
     // Either acquire a new target if it didn't exist before, resize

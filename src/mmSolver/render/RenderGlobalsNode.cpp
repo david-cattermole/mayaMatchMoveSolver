@@ -189,17 +189,6 @@ MStatus RenderGlobalsNode::initialize() {
     CHECK_MSTATUS(eAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_renderMode));
 
-    // Multi-Sample Count
-    auto sample_min = 1;
-    auto sample_max = 128;
-    a_multiSampleCount =
-        nAttr.create("multiSampleCount", "mssmpct", MFnNumericData::kInt, 1);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setMin(sample_min));
-    CHECK_MSTATUS(nAttr.setMax(sample_max));
-    CHECK_MSTATUS(addAttribute(a_multiSampleCount));
-
     // Wireframe Alpha
     auto alpha_min = 0.0;
     auto alpha_max = 1.0;

@@ -46,7 +46,6 @@
 #include "QuadRenderBlend.h"
 #include "QuadRenderCopy.h"
 #include "QuadRenderEdgeDetect.h"
-#include "QuadRenderInvert.h"
 #include "RenderColorFormat.h"
 #include "SceneRender.h"
 #include "mmSolver/mayahelper/maya_utils.h"
@@ -358,7 +357,6 @@ MStatus RenderOverride::updateRenderOperations() {
     m_op_names[kSceneWireframePass] = "mmRenderer_SceneRender_Wireframe";
     m_op_names[kEdgeDetectOp] = "mmRenderer_EdgeDetectOp1";
     m_op_names[kWireframeBlendOp] = "mmRenderer_WireframeBlend";
-    m_op_names[kInvertOp] = "mmRenderer_InvertOp2";
     m_op_names[kSceneManipulatorPass] = "mmRenderer_SceneRender_Manipulator";
     m_op_names[kPresentOp] = "mmRenderer_PresentTarget";
 
@@ -451,12 +449,6 @@ MStatus RenderOverride::updateRenderOperations() {
     wireBlendOp->setClearMask(clear_mask_none);
     wireBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
     m_ops[kWireframeBlendOp] = wireBlendOp;
-
-    // Apply invert.
-    auto invertOp = new QuadRenderInvert(m_op_names[kInvertOp]);
-    invertOp->setViewRectangle(rect);
-    invertOp->setClearMask(clear_mask_none);
-    m_ops[kInvertOp] = invertOp;
 
     // Manipulators pass.
     sceneOp = new SceneRender(m_op_names[kSceneManipulatorPass]);
@@ -616,12 +608,6 @@ MStatus RenderOverride::updateRenderTargets() {
             wireBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
         }
 
-        // Invert kMyColorTarget image, and output to kMyColorTarget.
-        auto invertOp = dynamic_cast<QuadRenderInvert *>(m_ops[kInvertOp]);
-        if (invertOp) {
-            invertOp->setEnabled(false);
-        }
-
         // Draw manipulators over the top of all objects.
         auto manipulatorPassOp =
             dynamic_cast<SceneRender *>(m_ops[kSceneManipulatorPass]);
@@ -695,11 +681,6 @@ MStatus RenderOverride::updateRenderTargets() {
             wireBlendOp->setInputTarget2(kMyAuxColorTarget);
             wireBlendOp->setRenderTargets(m_targets, kMyColorTarget, 1);
             wireBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
-        }
-
-        auto invertOp = dynamic_cast<QuadRenderInvert *>(m_ops[kInvertOp]);
-        if (invertOp) {
-            invertOp->setEnabled(false);
         }
 
         // Draw manipulators over the top of all objects.
@@ -785,13 +766,6 @@ MStatus RenderOverride::updateRenderTargets() {
             edgeBlendOp->setInputTarget2(0);
             edgeBlendOp->setRenderTargets(nullptr, 0, 0);
             edgeBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
-        }
-
-        auto invertOp = dynamic_cast<QuadRenderInvert *>(m_ops[kInvertOp]);
-        if (invertOp) {
-            invertOp->setEnabled(false);
-            invertOp->setInputTarget(kMyColorTarget);
-            invertOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }
 
         auto manipulatorPassOp =

@@ -90,9 +90,6 @@ public:
         // Blend target 1 and 2 back to target 1
         kWireframeBlendOp,
 
-        // Post ops on target 1
-        kInvertOp,
-
         // --------------------------------------------------------------------
         // Manipulator pass.
         //

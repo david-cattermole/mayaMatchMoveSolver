@@ -258,14 +258,14 @@ MStatus RenderOverride::updateParameters() {
     }
     MMSOLVER_VRB("RenderOverride mode: " << static_cast<short>(m_render_mode));
 
-    MPlug render_format_plug =
-        depends_node.findPlug("renderFormat", want_networked_plug, &status);
+    MPlug render_color_format_plug = depends_node.findPlug(
+        "renderColorFormat", want_networked_plug, &status);
     CHECK_MSTATUS(status);
     if (status == MStatus::kSuccess) {
-        short value = render_format_plug.asShort();
+        short value = render_color_format_plug.asShort();
         m_render_color_format = static_cast<RenderColorFormat>(value);
     }
-    MMSOLVER_VRB("RenderOverride render_format: "
+    MMSOLVER_VRB("RenderOverride render_color_format: "
                  << static_cast<short>(m_render_color_format));
 
     m_multi_sample_enable = false;

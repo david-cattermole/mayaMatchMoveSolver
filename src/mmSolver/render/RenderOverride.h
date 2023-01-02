@@ -33,6 +33,7 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
+#include "RenderFormat.h"
 #include "RenderGlobalsNode.h"
 #include "RenderMode.h"
 #include "constants.h"

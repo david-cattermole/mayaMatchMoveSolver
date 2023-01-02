@@ -46,6 +46,7 @@
 #include "QuadRenderCopy.h"
 #include "QuadRenderEdgeDetect.h"
 #include "QuadRenderInvert.h"
+#include "RenderFormat.h"
 #include "SceneRender.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
@@ -77,41 +78,40 @@ RenderOverride::RenderOverride(const MString &name)
     m_panel_name.clear();
 
     // Init target information for the override.
-    unsigned int sample_count = 1;  // 1 == no multi-sampling, by default.
-    // TODO: Allow user to control the raster format from a list of choices.
-    MHWRender::MRasterFormat colorFormat = MHWRender::kR8G8B8A8_UNORM;
-    // MHWRender::kR16G16B16A16_FLOAT;
-    // MHWRender::kR32G32B32A32_FLOAT;
-    MHWRender::MRasterFormat depthFormat = MHWRender::kD32_FLOAT;
-    // MHWRender::MRasterFormat depthFormat = MHWRender::kD24S8;
+    MHWRender::MRasterFormat color_format = MHWRender::kR8G8B8A8_UNORM;
+    MHWRender::MRasterFormat depth_format = MHWRender::kD32_FLOAT;
+    // MHWRender::MRasterFormat depth_format = MHWRender::kD24S8;
 
-    // Initalise the targets.
+    // Initialise the targets.
     for (auto i = 0; i < kTargetCount; ++i) {
         m_targets[i] = nullptr;
     }
 
+    // Default values, width, height and samples will be over-written
+    // by parameters, as needed.
+    const auto sample_count = 1;  // 1 == no multi-sampling.
     const auto default_width = 256;
     const auto default_height = 256;
     const auto array_slice_count = 0;
-    const bool is_cube_map = false;
+    const auto is_cube_map = false;
 
     // 1st Color target
     m_target_override_names[kMyColorTarget] = MString(kMyColorTargetName);
     m_target_descs[kMyColorTarget] = new MHWRender::MRenderTargetDescription(
         m_target_override_names[kMyColorTarget], default_width, default_height,
-        sample_count, colorFormat, array_slice_count, is_cube_map);
+        sample_count, color_format, array_slice_count, is_cube_map);
 
     // 1st Depth target
     m_target_override_names[kMyDepthTarget] = MString(kMyDepthTargetName);
     m_target_descs[kMyDepthTarget] = new MHWRender::MRenderTargetDescription(
         m_target_override_names[kMyDepthTarget], default_width, default_height,
-        sample_count, depthFormat, array_slice_count, is_cube_map);
+        sample_count, depth_format, array_slice_count, is_cube_map);
 
     // 2nd Color target
     m_target_override_names[kMyAuxColorTarget] = MString(kMyAuxColorTargetName);
     m_target_descs[kMyAuxColorTarget] = new MHWRender::MRenderTargetDescription(
         m_target_override_names[kMyAuxColorTarget], default_width,
-        default_height, sample_count, colorFormat, array_slice_count,
+        default_height, sample_count, color_format, array_slice_count,
         is_cube_map);
 }
 
@@ -498,6 +498,18 @@ MStatus RenderOverride::updateRenderTargets() {
         m_target_descs[target_id]->setHeight(target_height);
         m_target_descs[target_id]->setMultiSampleCount(m_multi_sample_count);
     }
+
+    // Set the bit-depth for color buffers.
+    MHWRender::MRasterFormat color_format = MHWRender::kR8G8B8A8_UNORM;
+    if (m_render_format == RenderFormat::kRGBA8BitInt) {
+        color_format = MHWRender::kR8G8B8A8_UNORM;
+    } else if (m_render_format == RenderFormat::kRGBA16BitFloat) {
+        color_format = MHWRender::kR16G16B16A16_FLOAT;
+    } else if (m_render_format == RenderFormat::kRGBA32BitFloat) {
+        color_format = MHWRender::kR32G32B32A32_FLOAT;
+    }
+    m_target_descs[kMyColorTarget]->setRasterFormat(color_format);
+    m_target_descs[kMyAuxColorTarget]->setRasterFormat(color_format);
 
     // Either acquire a new target if it didn't exist before, resize
     // the current target.

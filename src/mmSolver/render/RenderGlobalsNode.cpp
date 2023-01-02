@@ -36,6 +36,8 @@
 #include <maya/MStreamUtils.h>
 #include <maya/MViewport2Renderer.h>
 
+// MM Solver
+#include "RenderFormat.h"
 #include "RenderOverride.h"
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/utilities/debug_utils.h"

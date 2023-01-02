@@ -34,13 +34,6 @@
 namespace mmsolver {
 namespace render {
 
-enum class RenderFormat : short {
-    kRGBA8BitInt = 0,
-    kRGBA16BitFloat = 1,
-    kRGBA32BitFloat = 2,
-    kDrawModeCount,
-};
-
 class RenderGlobalsNode : public MPxNode {
 public:
     RenderGlobalsNode();

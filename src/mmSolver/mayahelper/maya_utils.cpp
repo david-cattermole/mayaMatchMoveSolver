@@ -28,14 +28,12 @@
 #include <maya/MObjectArray.h>
 #include <maya/MPlug.h>
 #include <maya/MPlugArray.h>
-#include <maya/MPoint.h>
 #include <maya/MPxNode.h>
 #include <maya/MSelectionList.h>
 #include <maya/MStatus.h>
 #include <maya/MStreamUtils.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
-#include <maya/MVector.h>
 
 MStatus MMNodeInitUtils::attributeAffectsMulti(
     const MObjectArray &inputAttrs, const MObjectArray &outputAttrs) {

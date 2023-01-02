@@ -49,7 +49,6 @@ MTypeId RenderGlobalsNode::m_id(MM_RENDER_GLOBALS_TYPE_ID);
 
 // Input Attributes
 MObject RenderGlobalsNode::a_renderMode;
-MObject RenderGlobalsNode::a_multiSampleCount;
 MObject RenderGlobalsNode::a_renderColorFormat;
 MObject RenderGlobalsNode::a_wireframeAlpha;
 MObject RenderGlobalsNode::a_edgeThickness;

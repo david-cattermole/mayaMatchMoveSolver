@@ -54,7 +54,6 @@ public:
 
     // Input Attributes
     static MObject a_renderMode;
-    static MObject a_multiSampleCount;
     static MObject a_renderColorFormat;
     static MObject a_wireframeAlpha;
     static MObject a_edgeThickness;

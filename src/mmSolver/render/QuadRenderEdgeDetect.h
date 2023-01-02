@@ -27,6 +27,8 @@
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 
+// MM Solver
+#include "EdgeDetectMode.h"
 #include "QuadRenderBase.h"
 
 namespace mmsolver {
@@ -42,18 +44,29 @@ public:
     MHWRender::MRenderTarget *const *targetOverrideList(
         unsigned int &listSize) override;
 
-    void setInputTarget(const uint32_t index) { m_target_index_input = index; }
+    void setInputDepthTarget(const uint32_t index) {
+        m_target_index_depth = index;
+    }
+
+    void setInputColorTarget(const uint32_t index) {
+        m_target_index_color = index;
+    }
 
     void setThickness(const float value) { m_thickness = value; }
 
     void setThreshold(const float value) { m_threshold = value; }
 
+    void setEdgeDetectMode(const EdgeDetectMode value) { m_edge_detect_mode = value; }
+
 protected:
     // Shader to use for the quad render
-    MHWRender::MShaderInstance *m_shader_instance;
+    MHWRender::MShaderInstance *m_shader_instance_sobel;
+    MHWRender::MShaderInstance *m_shader_instance_frei_chen;
 
-    uint32_t m_target_index_input;
+    uint32_t m_target_index_depth;
+    uint32_t m_target_index_color;
 
+    EdgeDetectMode m_edge_detect_mode;
     float m_thickness;
     float m_threshold;
 };

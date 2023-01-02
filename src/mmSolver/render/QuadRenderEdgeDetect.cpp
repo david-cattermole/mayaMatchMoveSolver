@@ -33,25 +33,34 @@ namespace render {
 
 QuadRenderEdgeDetect::QuadRenderEdgeDetect(const MString &name)
     : QuadRenderBase(name)
-    , m_shader_instance(nullptr)
-    , m_target_index_input(0)
-    , m_thickness(1.5f)
-    , m_threshold(0.2f) {}
+    , m_shader_instance_sobel(nullptr)
+    , m_shader_instance_frei_chen(nullptr)
+    , m_target_index_depth(0)
+    , m_target_index_color(0)
+    , m_edge_detect_mode(kEdgeDetectModeDefault)
+    , m_thickness(kEdgeThicknessDefault)
+    , m_threshold(kEdgeThresholdDefault) {}
 
 QuadRenderEdgeDetect::~QuadRenderEdgeDetect() {
-    // Release all shaders.
-    if (m_shader_instance) {
-        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-        if (!renderer) {
-            return;
-        }
-        const MHWRender::MShaderManager *shaderMgr =
-            renderer->getShaderManager();
-        if (!shaderMgr) {
-            return;
-        }
-        shaderMgr->releaseShader(m_shader_instance);
-        m_shader_instance = nullptr;
+    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+    if (!renderer) {
+        return;
+    }
+    const MHWRender::MShaderManager *shaderMgr = renderer->getShaderManager();
+    if (!shaderMgr) {
+        return;
+    }
+
+    // Release Sobel shader.
+    if (m_shader_instance_sobel) {
+        shaderMgr->releaseShader(m_shader_instance_sobel);
+        m_shader_instance_sobel = nullptr;
+    }
+
+    // Release Frei-Chen shader.
+    if (m_shader_instance_frei_chen) {
+        shaderMgr->releaseShader(m_shader_instance_frei_chen);
+        m_shader_instance_frei_chen = nullptr;
     }
 }
 
@@ -73,57 +82,90 @@ MHWRender::MRenderTarget *const *QuadRenderEdgeDetect::targetOverrideList(
 const MHWRender::MShaderInstance *QuadRenderEdgeDetect::shader() {
     const bool verbose = false;
 
-    // Compile shader
-    if (!m_shader_instance) {
-        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-        if (!renderer) {
-            return nullptr;
-        }
-        const MHWRender::MShaderManager *shaderMgr =
-            renderer->getShaderManager();
-        if (!shaderMgr) {
-            return nullptr;
-        }
+    const MString file_name = "mmSilhouette";
+    const MString sobel_technique = "Sobel";
+    const MString frei_chen_technique = "FreiChen";
 
-        MMSOLVER_VRB("QuardRenderEdgeDetect: Compile shader...");
-        MString file_name = "mmSilhouette";
-        MString shader_technique = "Sobel";
-        m_shader_instance = shaderMgr->getEffectsFileShader(
-            file_name.asChar(), shader_technique.asChar());
+    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+    if (!renderer) {
+        return nullptr;
+    }
+    const MHWRender::MShaderManager *shader_manager =
+        renderer->getShaderManager();
+    if (!shader_manager) {
+        return nullptr;
+    }
+
+    // Compile Sobel shader
+    if (!m_shader_instance_sobel) {
+        MMSOLVER_VRB("QuardRenderEdgeDetect: Compile Sobel shader...");
+        m_shader_instance_sobel = shader_manager->getEffectsFileShader(
+            file_name.asChar(), sobel_technique.asChar());
+    }
+
+    // Compile Frei-Chen shader
+    if (!m_shader_instance_frei_chen) {
+        MMSOLVER_VRB("QuardRenderEdgeDetect: Compile Frei-Chen shader...");
+        m_shader_instance_frei_chen = shader_manager->getEffectsFileShader(
+            file_name.asChar(), frei_chen_technique.asChar());
     }
 
     // Set default parameters
-    if (m_shader_instance) {
+    if (m_shader_instance_sobel && m_shader_instance_frei_chen) {
         MMSOLVER_VRB("QuardRenderEdgeDetect: Assign shader parameters...");
 
         if (m_targets) {
-            MHWRender::MRenderTarget *target = m_targets[m_target_index_input];
-            if (target) {
+            MHWRender::MRenderTarget *depth_target =
+                m_targets[m_target_index_depth];
+            MHWRender::MRenderTarget *color_target =
+                m_targets[m_target_index_color];
+            if (depth_target) {
                 MMSOLVER_VRB(
-                    "QuardRenderEdgeDetect: Assign texture to shader...");
+                    "QuardRenderEdgeDetect: Assign depth texture to shader...");
                 MHWRender::MRenderTargetAssignment assignment;
-                assignment.target = target;
-                CHECK_MSTATUS(
-                    m_shader_instance->setParameter("gDepthTex", assignment));
+                assignment.target = depth_target;
+                CHECK_MSTATUS(m_shader_instance_sobel->setParameter(
+                    "gDepthTex", assignment));
+                CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter(
+                    "gDepthTex", assignment));
+            }
+            if (color_target) {
+                MMSOLVER_VRB(
+                    "QuardRenderEdgeDetect: Assign color texture to shader...");
+                MHWRender::MRenderTargetAssignment assignment;
+                assignment.target = color_target;
+                CHECK_MSTATUS(m_shader_instance_sobel->setParameter(
+                    "gColorTex", assignment));
+                CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter(
+                    "gColorTex", assignment));
             }
         }
 
         // The edge thickness.
         CHECK_MSTATUS(
-            m_shader_instance->setParameter("gThickness", m_thickness));
+            m_shader_instance_sobel->setParameter("gThickness", m_thickness));
+        CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter("gThickness",
+                                                                m_thickness));
 
         // The edge detection threshold.
         CHECK_MSTATUS(
-            m_shader_instance->setParameter("gThreshold", m_threshold));
+            m_shader_instance_sobel->setParameter("gThreshold", m_threshold));
+        CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter("gThreshold",
+                                                                m_threshold));
 
         // Colors
-        CHECK_MSTATUS(
-            m_shader_instance->setParameter("gLineColor", kEdgeColorDefault));
-        CHECK_MSTATUS(m_shader_instance->setParameter("gBackgroundColor",
-                                                      kTransparentBlackColor));
+        CHECK_MSTATUS(m_shader_instance_sobel->setParameter("gLineColor",
+                                                            kEdgeColorDefault));
+        CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter(
+            "gLineColor", kEdgeColorDefault));
     }
-    // }
-    return m_shader_instance;
+
+    if (m_edge_detect_mode == EdgeDetectMode::kSobel) {
+        return m_shader_instance_sobel;
+    } else if (m_edge_detect_mode == EdgeDetectMode::kFreiChen) {
+        return m_shader_instance_frei_chen;
+    }
+    return nullptr;
 }
 
 }  // namespace render

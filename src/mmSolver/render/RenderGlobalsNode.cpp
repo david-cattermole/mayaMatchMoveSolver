@@ -51,6 +51,7 @@ MTypeId RenderGlobalsNode::m_id(MM_RENDER_GLOBALS_TYPE_ID);
 MObject RenderGlobalsNode::a_renderMode;
 MObject RenderGlobalsNode::a_renderColorFormat;
 MObject RenderGlobalsNode::a_wireframeAlpha;
+MObject RenderGlobalsNode::a_edgeDetectMode;
 MObject RenderGlobalsNode::a_edgeThickness;
 MObject RenderGlobalsNode::a_edgeThreshold;
 
@@ -118,6 +119,14 @@ void RenderGlobalsNode::attr_change_func(MNodeMessage::AttributeMessage msg,
         CHECK_MSTATUS(status);
         override_ptr->setWireframeAlpha(value);
         MMSOLVER_VRB("Wireframe Alpha value set: " << value);
+    }
+
+    if (plug_name == "edgeDetectMode") {
+        short value = plug.asShort(&status);
+        CHECK_MSTATUS(status);
+        auto edge_detect_mode = static_cast<EdgeDetectMode>(value);
+        override_ptr->setEdgeDetectMode(edge_detect_mode);
+        MMSOLVER_VRB("Edge Detect Mode value set: " << value);
     }
 
     if (plug_name == "edgeThickness") {
@@ -202,28 +211,40 @@ MStatus RenderGlobalsNode::initialize() {
     CHECK_MSTATUS(nAttr.setMax(alpha_max));
     CHECK_MSTATUS(addAttribute(a_wireframeAlpha));
 
+    // Edge Detect Mode
+    a_edgeDetectMode = eAttr.create("edgeDetectMode", "edgdtmd",
+                                    static_cast<short>(kEdgeDetectModeDefault), &status);
+    CHECK_MSTATUS(status);
+    CHECK_MSTATUS(
+        eAttr.addField("Sobel", static_cast<short>(EdgeDetectMode::kSobel)));
+    CHECK_MSTATUS(eAttr.addField(
+        "Frei-Chen", static_cast<short>(EdgeDetectMode::kFreiChen)));
+    CHECK_MSTATUS(eAttr.setStorable(true));
+    CHECK_MSTATUS(eAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(a_edgeDetectMode));
+
     // Edge Thickness
     auto thickness_min = 0.0;
-    // auto thickness_max = 1.0;
+    auto thickness_max = 2.0;
     a_edgeThickness =
         nAttr.create("edgeThickness", "edgthk", MFnNumericData::kDouble,
                      kEdgeThicknessDefault);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(thickness_min));
-    // CHECK_MSTATUS(nAttr.setMax(thickness_max));
+    CHECK_MSTATUS(nAttr.setSoftMax(thickness_max));
     CHECK_MSTATUS(addAttribute(a_edgeThickness));
 
     // Edge Threshold
     auto threshold_min = 0.0;
-    auto threshold_max = 1.0;
+    auto threshold_max = 2.0;
     a_edgeThreshold =
         nAttr.create("edgeThreshold", "edgthd", MFnNumericData::kDouble,
                      kEdgeThresholdDefault);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(threshold_min));
-    CHECK_MSTATUS(nAttr.setMax(threshold_max));
+    CHECK_MSTATUS(nAttr.setSoftMax(threshold_max));
     CHECK_MSTATUS(addAttribute(a_edgeThreshold));
 
     return MS::kSuccess;

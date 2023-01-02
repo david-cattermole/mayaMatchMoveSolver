@@ -16,6 +16,9 @@ global proc AEmmRenderGlobalsTemplate(string $name) {
                     -label (uiRes("m_AEmmRenderGlobalsTemplate.kWireframeAlpha"))
                     -addControl "wireframeAlpha";
                 editorTemplate
+                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kEdgeDetectMode"))
+                    -addControl "edgeDetectMode";
+                editorTemplate
                     -label (uiRes("m_AEmmRenderGlobalsTemplate.kEdgeThickness"))
                     -addControl "edgeThickness";
                 editorTemplate

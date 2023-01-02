@@ -28,6 +28,9 @@
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 
+// MM Solver
+#include "EdgeDetectMode.h"
+
 namespace mmsolver {
 namespace render {
 
@@ -53,8 +56,9 @@ const float kTransparentBlackColor[] = {0.0f, 0.0f, 0.0f, 0.0f};
 // Default parameters
 const float kEdgeColorDefault[] = {1.0f, 0.0f, 0.0f, 1.0f};
 const float kWireframeAlphaDefault = 1.0f;
+const EdgeDetectMode kEdgeDetectModeDefault = EdgeDetectMode::kSobel;
 const float kEdgeThicknessDefault = 1.5f;
-const float kEdgeThresholdDefault = 0.05f;
+const float kEdgeThresholdDefault = 1.0f;
 
 }  // namespace render
 }  // namespace mmsolver

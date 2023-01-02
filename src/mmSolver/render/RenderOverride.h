@@ -33,6 +33,7 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
+#include "EdgeDetectMode.h"
 #include "RenderColorFormat.h"
 #include "RenderGlobalsNode.h"
 #include "RenderMode.h"
@@ -136,6 +137,9 @@ public:
     double wireframeAlpha() const { return m_wireframe_alpha; }
     void setWireframeAlpha(const double value) { m_wireframe_alpha = value; }
 
+    EdgeDetectMode edgeDetectMode() const { return m_edge_detect_mode; }
+    void setEdgeDetectMode(const EdgeDetectMode value) { m_edge_detect_mode = value; }
+
     double edgeThickness() const { return m_edge_thickness; }
     void setEdgeThickness(const double value) { m_edge_thickness = value; }
 
@@ -196,6 +200,7 @@ private:
     bool m_multi_sample_enable;
     int32_t m_multi_sample_count;
     double m_wireframe_alpha;
+    EdgeDetectMode m_edge_detect_mode;
     double m_edge_thickness;
     double m_edge_threshold;
 };

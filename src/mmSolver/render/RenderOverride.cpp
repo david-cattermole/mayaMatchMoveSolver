@@ -40,6 +40,7 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
+#include "EdgeDetectMode.h"
 #include "HudRender.h"
 #include "PresentTarget.h"
 #include "QuadRenderBlend.h"
@@ -65,6 +66,7 @@ RenderOverride::RenderOverride(const MString &name)
     , m_multi_sample_enable(false)
     , m_multi_sample_count(1)
     , m_wireframe_alpha(kWireframeAlphaDefault)
+    , m_edge_detect_mode(kEdgeDetectModeDefault)
     , m_edge_thickness(kEdgeThicknessDefault)
     , m_edge_threshold(kEdgeThresholdDefault) {
     // Remove any operations that already exist from Maya.
@@ -289,6 +291,14 @@ MStatus RenderOverride::updateParameters() {
     CHECK_MSTATUS(status);
     if (status == MStatus::kSuccess) {
         m_wireframe_alpha = wire_alpha_plug.asDouble();
+    }
+
+    MPlug edge_detect_mode_plug =
+        depends_node.findPlug("edgeDetectMode", want_networked_plug, &status);
+    CHECK_MSTATUS(status);
+    if (status == MStatus::kSuccess) {
+        short value = edge_detect_mode_plug.asShort();
+        m_edge_detect_mode = static_cast<EdgeDetectMode>(value);
     }
 
     MPlug edge_thickness_plug =
@@ -570,10 +580,12 @@ MStatus RenderOverride::updateRenderTargets() {
             dynamic_cast<QuadRenderEdgeDetect *>(m_ops[kEdgeDetectOp]);
         if (edgeDetectOp) {
             edgeDetectOp->setEnabled(true);
-            edgeDetectOp->setInputTarget(kMyDepthTarget);
+            edgeDetectOp->setInputColorTarget(kMyColorTarget);
+            edgeDetectOp->setInputDepthTarget(kMyDepthTarget);
             edgeDetectOp->setRenderTargets(m_targets, kMyColorTarget, 1);
             edgeDetectOp->setThreshold(static_cast<float>(m_edge_threshold));
             edgeDetectOp->setThickness(static_cast<float>(m_edge_thickness));
+            edgeDetectOp->setEdgeDetectMode(m_edge_detect_mode);
         }
 
         // Copy kMyColorTarget to kMyAuxColorTarget.
@@ -659,10 +671,6 @@ MStatus RenderOverride::updateRenderTargets() {
             dynamic_cast<QuadRenderEdgeDetect *>(m_ops[kEdgeDetectOp]);
         if (edgeDetectOp) {
             edgeDetectOp->setEnabled(false);
-            edgeDetectOp->setInputTarget(kMyDepthTarget);
-            edgeDetectOp->setRenderTargets(m_targets, kMyColorTarget, 1);
-            edgeDetectOp->setThreshold(static_cast<float>(m_edge_threshold));
-            edgeDetectOp->setThickness(static_cast<float>(m_edge_thickness));
         }
 
         auto copyOp = dynamic_cast<QuadRenderCopy *>(m_ops[kCopyOp]);
@@ -757,10 +765,6 @@ MStatus RenderOverride::updateRenderTargets() {
             dynamic_cast<QuadRenderEdgeDetect *>(m_ops[kEdgeDetectOp]);
         if (edgeDetectOp) {
             edgeDetectOp->setEnabled(false);
-            edgeDetectOp->setInputTarget(0);
-            edgeDetectOp->setRenderTargets(nullptr, 0, 0);
-            edgeDetectOp->setThreshold(static_cast<float>(m_edge_threshold));
-            edgeDetectOp->setThickness(static_cast<float>(m_edge_thickness));
         }
 
         auto wireBlendOp =

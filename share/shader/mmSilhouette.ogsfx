@@ -32,15 +32,24 @@ uniform sampler2D gDepthSampler = sampler_state {
     Texture = <gDepthTex>;
 };
 
+// Color texture.
+// Expected to be a single channel zero to one image.
+uniform texture2D gColorTex : InputTexture
+<
+    string UIName = "Color Texture";
+>;
+uniform sampler2D gColorSampler = sampler_state {
+    Texture = <gColorTex>;
+};
+
 // Colours
 uniform vec4 gLineColor : DIFFUSE = {1, 0, 0, 1};
-uniform vec4 gBackgroundColor : DIFFUSE = {0, 0, 0, 0};
 
 // Distance in pixels to detect an edge.
 uniform float gThickness = 2.0f;
 
 // The edge detection 'distance' threshold.
-uniform float gThreshold = 0.1;
+uniform float gThreshold = 1.0;
 
 // Vertex Shader inputs.
 attribute VS_INPUT {
@@ -129,11 +138,86 @@ GLSLShader PS_SilhouetteSobel {
         sy += g21 * K12;
         sy += g22 * K22;
 
+        colorOut = texture2D(gColorSampler, VSUV.xy);
         float dist = sqrt(sx * sx + sy * sy);
-        if (dist > gThreshold) {
+        if (dist > (gThreshold * 0.001)) {
             colorOut = gLineColor;
-        } else {
-            colorOut = gBackgroundColor;
+        }
+    }
+}
+
+// Frei-Chen Edge Detection
+//
+// https://rastergrid.com/blog/2011/01/frei-chen-edge-detector/
+GLSLShader PS_SilhouetteFreiChen {
+    void main() {
+        vec2 ox = vec2(gThickness / gTargetSize.x, 0.0);
+        vec2 oy = vec2(0.0, gThickness / gTargetSize.y);
+
+        vec2 uv = VSUV;
+        vec2 PP = uv - oy;
+
+        // Intensity of the pixel.
+        vec4 CC = texture2D(gDepthSampler, PP - ox);
+        float I00 = CC.r;
+        CC = texture2D(gDepthSampler, PP);
+        float I01 = CC.r;
+        CC = texture2D(gDepthSampler, PP + ox);
+        float I02 = CC.r;
+        PP = uv;
+        CC = texture2D(gDepthSampler, PP - ox);
+        float I10 = CC.r;
+        CC = texture2D(gDepthSampler, PP);
+        float I11 = CC.r;
+        CC = texture2D(gDepthSampler, PP + ox);
+        float I12 = CC.r;
+        PP = uv + oy;
+        CC = texture2D(gDepthSampler, PP - ox);
+        float I20 = CC.r;
+        CC = texture2D(gDepthSampler, PP);
+        float I21 = CC.r;
+        CC = texture2D(gDepthSampler, PP + ox);
+        float I22 = CC.r;
+        mat3 I = mat3(I00, I01, I02, I10, I11, I12, I20, I21, I22);
+
+        // The weighting matrixes.
+        mat3 G0 = 1.0 / (2.0 * sqrt(2.0)) * mat3(1.0, sqrt(2.0), 1.0, 0.0, 0.0, 0.0, -1.0, -sqrt(2.0), -1.0);
+        mat3 G1 = 1.0 / (2.0 * sqrt(2.0)) * mat3(1.0, 0.0, -1.0, sqrt(2.0), 0.0, -sqrt(2.0), 1.0, 0.0, -1.0);
+        mat3 G2 = 1.0 / (2.0 * sqrt(2.0)) * mat3(0.0, -1.0, sqrt(2.0), 1.0, 0.0, -1.0, -sqrt(2.0), 1.0, 0.0);
+        mat3 G3 = 1.0 / (2.0 * sqrt(2.0)) * mat3(sqrt(2.0), -1.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, -sqrt(2.0));
+        mat3 G4 = 1.0 / 2.0 * mat3(0.0, 1.0, 0.0, -1.0, 0.0, -1.0, 0.0, 1.0, 0.0);
+        mat3 G5 = 1.0 / 2.0 * mat3(-1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0);
+        mat3 G6 = 1.0 / 6.0 * mat3(1.0, -2.0, 1.0, -2.0, 4.0, -2.0, 1.0, -2.0, 1.0);
+        mat3 G7 = 1.0 / 6.0 * mat3(-2.0, 1.0, -2.0, 1.0, 4.0, 1.0, -2.0, 1.0, -2.0);
+        mat3 G8 = 1.0 / 3.0 * mat3(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+
+        float convolve0_dp3 = dot(G0[0], I[0]) + dot(G0[1], I[1]) + dot(G0[2], I[2]);
+        float convolve1_dp3 = dot(G1[0], I[0]) + dot(G1[1], I[1]) + dot(G1[2], I[2]);
+        float convolve2_dp3 = dot(G2[0], I[0]) + dot(G2[1], I[1]) + dot(G2[2], I[2]);
+        float convolve3_dp3 = dot(G3[0], I[0]) + dot(G3[1], I[1]) + dot(G3[2], I[2]);
+        float convolve4_dp3 = dot(G4[0], I[0]) + dot(G4[1], I[1]) + dot(G4[2], I[2]);
+        float convolve5_dp3 = dot(G5[0], I[0]) + dot(G5[1], I[1]) + dot(G5[2], I[2]);
+        float convolve6_dp3 = dot(G6[0], I[0]) + dot(G6[1], I[1]) + dot(G6[2], I[2]);
+        float convolve7_dp3 = dot(G7[0], I[0]) + dot(G7[1], I[1]) + dot(G7[2], I[2]);
+        float convolve8_dp3 = dot(G8[0], I[0]) + dot(G8[1], I[1]) + dot(G8[2], I[2]);
+
+        float convolve0 = convolve0_dp3 * convolve0_dp3;
+        float convolve1 = convolve1_dp3 * convolve1_dp3;
+        float convolve2 = convolve2_dp3 * convolve2_dp3;
+        float convolve3 = convolve3_dp3 * convolve3_dp3;
+        float convolve4 = convolve4_dp3 * convolve4_dp3;
+        float convolve5 = convolve5_dp3 * convolve5_dp3;
+        float convolve6 = convolve6_dp3 * convolve6_dp3;
+        float convolve7 = convolve7_dp3 * convolve7_dp3;
+        float convolve8 = convolve8_dp3 * convolve8_dp3;
+
+        float m = convolve0 + convolve1 + convolve2 + convolve3;
+        float s = convolve4 + convolve5 + convolve6 + convolve7 + convolve8 + m;
+
+        colorOut = texture2D(gColorSampler, VSUV.xy);
+        float dist = sqrt(m / s) * 10.0;
+        if (dist > (gThreshold * 0.001)) {
+            colorOut = gLineColor;
         }
     }
 }
@@ -145,5 +229,16 @@ technique Sobel
     {
         VertexShader (in VS_INPUT, out VS_TO_PS) = VS_Silhouette;
         PixelShader (in VS_TO_PS, out pixelOut) = PS_SilhouetteSobel;
+    }
+}
+
+
+// The 'FreiChen' technique, using the Frei-Chen algorithm.
+technique FreiChen
+{
+    pass p0
+    {
+        VertexShader (in VS_INPUT, out VS_TO_PS) = VS_Silhouette;
+        PixelShader (in VS_TO_PS, out pixelOut) = PS_SilhouetteFreiChen;
     }
 }

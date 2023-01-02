@@ -12,9 +12,14 @@ global proc AEmmRenderGlobalsTemplate(string $name) {
                 editorTemplate -addControl "renderMode";
                 editorTemplate -addControl "renderColorFormat";
 
+                editorTemplate -addSeparator;
+
                 editorTemplate
                     -label (uiRes("m_AEmmRenderGlobalsTemplate.kWireframeAlpha"))
                     -addControl "wireframeAlpha";
+
+                editorTemplate -addSeparator;
+
                 editorTemplate
                     -label (uiRes("m_AEmmRenderGlobalsTemplate.kEdgeDetectMode"))
                     -addControl "edgeDetectMode";

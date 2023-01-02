@@ -56,7 +56,9 @@ public:
 
     void setThreshold(const float value) { m_threshold = value; }
 
-    void setEdgeDetectMode(const EdgeDetectMode value) { m_edge_detect_mode = value; }
+    void setEdgeDetectMode(const EdgeDetectMode value) {
+        m_edge_detect_mode = value;
+    }
 
 protected:
     // Shader to use for the quad render

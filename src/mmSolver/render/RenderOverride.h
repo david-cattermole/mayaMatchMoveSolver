@@ -115,7 +115,9 @@ public:
     void setWireframeAlpha(const double value) { m_wireframe_alpha = value; }
 
     EdgeDetectMode edgeDetectMode() const { return m_edge_detect_mode; }
-    void setEdgeDetectMode(const EdgeDetectMode value) { m_edge_detect_mode = value; }
+    void setEdgeDetectMode(const EdgeDetectMode value) {
+        m_edge_detect_mode = value;
+    }
 
     double edgeThickness() const { return m_edge_thickness; }
     void setEdgeThickness(const double value) { m_edge_thickness = value; }

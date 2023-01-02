@@ -212,8 +212,9 @@ MStatus RenderGlobalsNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_wireframeAlpha));
 
     // Edge Detect Mode
-    a_edgeDetectMode = eAttr.create("edgeDetectMode", "edgdtmd",
-                                    static_cast<short>(kEdgeDetectModeDefault), &status);
+    a_edgeDetectMode =
+        eAttr.create("edgeDetectMode", "edgdtmd",
+                     static_cast<short>(kEdgeDetectModeDefault), &status);
     CHECK_MSTATUS(status);
     CHECK_MSTATUS(
         eAttr.addField("Sobel", static_cast<short>(EdgeDetectMode::kSobel)));

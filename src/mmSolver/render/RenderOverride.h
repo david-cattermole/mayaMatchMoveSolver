@@ -48,14 +48,11 @@ public:
     // a list of operations.
     enum {
         // --------------------------------------------------------------------
-        // Depth pass.
+        // Start passes.
         //
         // Draw the scene (except image planes), but only write to the
         // depth channel.
         kSceneDepthPass = 0,
-
-        // --------------------------------------------------------------------
-        // Background pass.
         //
         // Draw the Maya background color using the Maya preferences,
         // and draw imagePlanes.
@@ -63,46 +60,29 @@ public:
         // The render targets used for this pass is only the colour,
         // so the depth is ignored.
         kSceneBackgroundPass,
-
-        // --------------------------------------------------------------------
-        // Selection pass.
         //
         // Draw manipulators and excluded objects (but image planes
         // are drawn here).
         kSceneSelectionPass,
 
-        // Post ops on target 1
-        kEdgeDetectOp,
-
-        // Copy target 1 to target 2.
-        kCopyOp,
+        // --------------------------------------------------------------------
+        // Edge Detect Layer
+        kEdgeDetectOp,  // Post ops on target 1
+        kCopyOp,        // Copy target 1 to target 2.
 
         // --------------------------------------------------------------------
-        // Wireframe pass.
+        // Hidden Line Layer
         //
         // Draw the scene as wireframe, but it will be cut out from
         // the depth pass.
         kSceneWireframePass,
+        kWireframeBlendOp,  // Blend target 1 and 2 back to target 1
 
         // --------------------------------------------------------------------
-        // Blend pass.
-        //
-        // Blend target 1 and 2 back to target 1
-        kWireframeBlendOp,
-
-        // --------------------------------------------------------------------
-        // Manipulator pass.
-        //
-        // Draw only manipulators.
-        kSceneManipulatorPass,
-
-        // --------------------------------------------------------------------
-        // HUD pass. Draw 2D heads-up-display elements.
-        kHudPass,
-
-        // --------------------------------------------------------------------
-        // Present pass. Present the drawn texture to the screen.
-        kPresentOp,
+        // End passes.
+        kSceneManipulatorPass,  // Manipulator pass.
+        kHudPass,               // HUD pass. Draw 2D heads-up-display elements.
+        kPresentOp,             // Present the drawn texture to the screen.
 
         // Holds the total number of entries (must be last field).
         kNumberOfOps

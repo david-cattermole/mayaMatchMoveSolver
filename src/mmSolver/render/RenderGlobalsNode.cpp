@@ -82,7 +82,7 @@ void RenderGlobalsNode::postConstructor() {
 void RenderGlobalsNode::attr_change_func(MNodeMessage::AttributeMessage msg,
                                          MPlug &plug, MPlug & /*other_plug*/,
                                          void * /*client_data*/) {
-    const bool verbose = true;
+    const bool verbose = false;
 
     MStatus status = MS::kFailure;
     if (msg & MNodeMessage::kAttributeSet) {

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef MM_SOLVER_RENDER_RENDER_FORMAT_H
-#define MM_SOLVER_RENDER_RENDER_FORMAT_H
+#ifndef MM_SOLVER_RENDER_RENDER_COLOR_FORMAT_H
+#define MM_SOLVER_RENDER_RENDER_COLOR_FORMAT_H
 
 namespace mmsolver {
 namespace render {
@@ -35,4 +35,4 @@ enum class RenderColorFormat : short {
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MM_SOLVER_RENDER_RENDER_FORMAT_H
+#endif  // MM_SOLVER_RENDER_RENDER_COLOR_FORMAT_H

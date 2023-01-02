@@ -46,7 +46,7 @@
 #include "QuadRenderCopy.h"
 #include "QuadRenderEdgeDetect.h"
 #include "QuadRenderInvert.h"
-#include "RenderFormat.h"
+#include "RenderColorFormat.h"
 #include "SceneRender.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
@@ -261,10 +261,10 @@ MStatus RenderOverride::updateParameters() {
     CHECK_MSTATUS(status);
     if (status == MStatus::kSuccess) {
         short value = render_format_plug.asShort();
-        m_render_format = static_cast<RenderFormat>(value);
+        m_render_color_format = static_cast<RenderColorFormat>(value);
     }
     MMSOLVER_VRB("RenderOverride render_format: "
-                 << static_cast<short>(m_render_format));
+                 << static_cast<short>(m_render_color_format));
 
     m_multi_sample_enable = false;
     MPlug sample_enable_plug = maya_hardware_globals_depends_node.findPlug(
@@ -501,11 +501,11 @@ MStatus RenderOverride::updateRenderTargets() {
 
     // Set the bit-depth for color buffers.
     MHWRender::MRasterFormat color_format = MHWRender::kR8G8B8A8_UNORM;
-    if (m_render_format == RenderFormat::kRGBA8BitInt) {
+    if (m_render_color_format == RenderColorFormat::kRGBA8BitInt) {
         color_format = MHWRender::kR8G8B8A8_UNORM;
-    } else if (m_render_format == RenderFormat::kRGBA16BitFloat) {
+    } else if (m_render_color_format == RenderColorFormat::kRGBA16BitFloat) {
         color_format = MHWRender::kR16G16B16A16_FLOAT;
-    } else if (m_render_format == RenderFormat::kRGBA32BitFloat) {
+    } else if (m_render_color_format == RenderColorFormat::kRGBA32BitFloat) {
         color_format = MHWRender::kR32G32B32A32_FLOAT;
     }
     m_target_descs[kMyColorTarget]->setRasterFormat(color_format);

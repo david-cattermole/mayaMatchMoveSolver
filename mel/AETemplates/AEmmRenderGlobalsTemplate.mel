@@ -10,7 +10,7 @@ global proc AEmmRenderGlobalsTemplate(string $name) {
                 -collapse false;
 
                 editorTemplate -addControl "renderMode";
-                editorTemplate -addControl "renderFormat";
+                editorTemplate -addControl "renderColorFormat";
                 editorTemplate -addControl "multiSampleCount";
 
                 editorTemplate

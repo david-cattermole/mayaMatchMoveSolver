@@ -37,7 +37,7 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "RenderFormat.h"
+#include "RenderColorFormat.h"
 #include "RenderOverride.h"
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/utilities/debug_utils.h"
@@ -49,8 +49,8 @@ MTypeId RenderGlobalsNode::m_id(MM_RENDER_GLOBALS_TYPE_ID);
 
 // Input Attributes
 MObject RenderGlobalsNode::a_renderMode;
-MObject RenderGlobalsNode::a_renderFormat;
 MObject RenderGlobalsNode::a_multiSampleCount;
+MObject RenderGlobalsNode::a_renderColorFormat;
 MObject RenderGlobalsNode::a_wireframeAlpha;
 MObject RenderGlobalsNode::a_edgeThickness;
 MObject RenderGlobalsNode::a_edgeThreshold;
@@ -157,23 +157,23 @@ MStatus RenderGlobalsNode::initialize() {
     MFnNumericAttribute nAttr;
     MFnEnumAttribute eAttr;
 
-    // Render Format; 0=8-bit float, 1=16-bit float, 2=32-bit float
-    a_renderFormat =
-        eAttr.create("renderFormat", "rndfmt",
-                     static_cast<short>(RenderFormat::kRGBA8BitInt), &status);
+    // Render Color Format; 0=8-bit float, 1=16-bit float, 2=32-bit float
+    a_renderColorFormat = eAttr.create(
+        "renderColorFormat", "rndcolfmt",
+        static_cast<short>(RenderColorFormat::kRGBA8BitInt), &status);
     CHECK_MSTATUS(status);
     CHECK_MSTATUS(
         eAttr.addField("RGBA 8-Bit (integer)",
-                       static_cast<short>(RenderFormat::kRGBA8BitInt)));
+                       static_cast<short>(RenderColorFormat::kRGBA8BitInt)));
     CHECK_MSTATUS(
         eAttr.addField("RGBA 16-Bit (float)",
-                       static_cast<short>(RenderFormat::kRGBA16BitFloat)));
+                       static_cast<short>(RenderColorFormat::kRGBA16BitFloat)));
     CHECK_MSTATUS(
         eAttr.addField("RGBA 32-Bit (float)",
-                       static_cast<short>(RenderFormat::kRGBA32BitFloat)));
+                       static_cast<short>(RenderColorFormat::kRGBA32BitFloat)));
     CHECK_MSTATUS(eAttr.setStorable(true));
     CHECK_MSTATUS(eAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_renderFormat));
+    CHECK_MSTATUS(addAttribute(a_renderColorFormat));
 
     // Render Mode
     a_renderMode = eAttr.create("renderMode", "rndmd",

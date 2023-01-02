@@ -25,7 +25,7 @@
 namespace mmsolver {
 namespace render {
 
-enum class RenderFormat : short {
+enum class RenderColorFormat : short {
     kRGBA8BitInt = 0,
     kRGBA16BitFloat = 1,
     kRGBA32BitFloat = 2,

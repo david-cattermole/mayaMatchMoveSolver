@@ -33,7 +33,7 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "RenderFormat.h"
+#include "RenderColorFormat.h"
 #include "RenderGlobalsNode.h"
 #include "RenderMode.h"
 #include "constants.h"
@@ -192,7 +192,7 @@ private:
 
     // Renderer settings
     RenderMode m_render_mode;
-    RenderFormat m_render_format;
+    RenderColorFormat m_render_color_format;
     bool m_multi_sample_enable;
     int32_t m_multi_sample_count;
     double m_wireframe_alpha;

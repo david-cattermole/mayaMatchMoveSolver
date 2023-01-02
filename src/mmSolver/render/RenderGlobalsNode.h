@@ -38,13 +38,13 @@ class RenderGlobalsNode : public MPxNode {
 public:
     RenderGlobalsNode();
 
-    virtual ~RenderGlobalsNode();
+    ~RenderGlobalsNode() override;
 
-    virtual MStatus compute(const MPlug &plug, MDataBlock &data);
+    MStatus compute(const MPlug &plug, MDataBlock &data) override;
 
     static void *creator();
 
-    void postConstructor();
+    void postConstructor() override;
 
     static MStatus initialize();
 

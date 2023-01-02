@@ -314,7 +314,7 @@ MStatus initializePlugin(MObject obj) {
     const MString markerClassification = MM_MARKER_DRAW_CLASSIFY;
     const MString bundleClassification = MM_BUNDLE_DRAW_CLASSIFY;
     const MString imagePlaneShapeClassification =
-        MM_IMAGE_PLANE_SHAPE_DRAW_CLASSIFY;
+        MM_IMAGE_PLANE_SHAPE_NODE_CLASSIFY;
     const MString skyDomeClassification = MM_SKY_DOME_DRAW_CLASSIFY;
     const MString lineClassification = MM_LINE_DRAW_CLASSIFY;
     REGISTER_LOCATOR_NODE(plugin, mmsolver::MarkerShapeNode::nodeName(),

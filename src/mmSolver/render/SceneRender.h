@@ -111,7 +111,8 @@ public:
     void setDoBackground(const bool value) { m_do_background = value; }
 
 protected:
-    MSelectionList mSelectionList;
+    // Objects Set override. Override which objects are drawn.
+    MSelectionList m_selection_list;
 
     // 3D viewport panel name, if available
     MString m_panel_name;

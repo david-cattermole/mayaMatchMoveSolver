@@ -312,13 +312,35 @@ MStatus RenderOverride::updateRenderOperations() {
     m_op_names[kSceneManipulatorPass] = "mmRenderer_SceneRender_Manipulator";
     m_op_names[kPresentOp] = "mmRenderer_PresentTarget";
 
+    // Draw these objects for transparency.
+    auto wire_draw_object_types =
+        ~(MHWRender::MFrameContext::kExcludeMeshes |
+          MHWRender::MFrameContext::kExcludeNurbsCurves |
+          MHWRender::MFrameContext::kExcludeNurbsSurfaces |
+          MHWRender::MFrameContext::kExcludeSubdivSurfaces);
+
+    // Draw all non-geometry normally.
+    auto non_wire_draw_object_types =
+        ((~wire_draw_object_types) |
+         MHWRender::MFrameContext::kExcludeImagePlane |
+         MHWRender::MFrameContext::kExcludePluginShapes);
+
+    // What objects types to draw for depth buffer?
+    auto depth_draw_object_types =
+        wire_draw_object_types | MHWRender::MFrameContext::kExcludeImagePlane;
+
+    // Draw image planes in the background always.
+    auto bg_draw_object_types =
+        ~(MHWRender::MFrameContext::kExcludeImagePlane |
+          MHWRender::MFrameContext::kExcludePluginShapes);
+
     SceneRender *sceneOp = nullptr;
 
     // Depth pass.
     sceneOp = new SceneRender(m_op_names[kSceneDepthPass]);
     sceneOp->setViewRectangle(rect);
     sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
-    sceneOp->setExcludeTypes(MHWRender::MFrameContext::kExcludeImagePlane);
+    sceneOp->setExcludeTypes(depth_draw_object_types);
     sceneOp->setDisplayModeOverride(display_mode_shaded);
     // do not override objects to be drawn.
     sceneOp->setDoSelectable(false);
@@ -330,6 +352,7 @@ MStatus RenderOverride::updateRenderOperations() {
     sceneOp = new SceneRender(m_op_names[kSceneBackgroundPass]);
     sceneOp->setViewRectangle(rect);
     sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
+    // sceneOp->setExcludeTypes(bg_draw_object_types);
     // override drawn objects to only image planes under cameras.
     sceneOp->setDoSelectable(true);
     sceneOp->setDoBackground(true);
@@ -356,7 +379,7 @@ MStatus RenderOverride::updateRenderOperations() {
     sceneOp = new SceneRender(m_op_names[kSceneWireframePass]);
     sceneOp->setViewRectangle(rect);
     sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
-    sceneOp->setExcludeTypes(MHWRender::MFrameContext::kExcludeManipulators);
+    sceneOp->setExcludeTypes(wire_draw_object_types);
     sceneOp->setDisplayModeOverride(display_mode_wireframe);
     // do not override objects to be drawn.
     sceneOp->setDoSelectable(false);
@@ -389,7 +412,7 @@ MStatus RenderOverride::updateRenderOperations() {
     sceneOp = new SceneRender(m_op_names[kSceneManipulatorPass]);
     sceneOp->setViewRectangle(rect);
     sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
-    sceneOp->setExcludeTypes(~MHWRender::MFrameContext::kExcludeManipulators);
+    sceneOp->setExcludeTypes(non_wire_draw_object_types);
     sceneOp->setDoSelectable(false);
     sceneOp->setDoBackground(false);
     sceneOp->setClearMask(clear_mask_none);

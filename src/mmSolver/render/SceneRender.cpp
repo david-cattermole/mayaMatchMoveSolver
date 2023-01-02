@@ -123,8 +123,11 @@ SceneRender::postEffectsOverride() {
 const MSelectionList *SceneRender::objectSetOverride() {
     // If m_do_selectable is false and m_do_background is false: do
     // not override.
-    mSelectionList.clear();
-    if (m_do_selectable && m_do_background) {
+    m_selection_list.clear();
+    if (!m_do_selectable && !m_do_background) {
+        // This is the most common branch, so it is first.
+        return nullptr;
+    } else if (m_do_selectable && m_do_background) {
         // If m_do_selectable is true and m_do_background is true:
         // override drawn objects to only image planes under cameras.
         MItDag it;
@@ -137,10 +140,14 @@ const MSelectionList *SceneRender::objectSetOverride() {
                 if (path.pathCount() < 2) {
                     continue;
                 }
-                mSelectionList.add(path);
+                m_selection_list.add(path);
+            } else if (item.apiType() == MFn::kPluginLocatorNode) {
+                MDagPath path;
+                it.getPath(path);
+                m_selection_list.add(path);
             }
         }
-        return &mSelectionList;
+        return &m_selection_list;
     } else if (m_do_selectable && !m_do_background) {
         // If m_do_selectable is true and m_do_background is false:
         // override drawn objects to all image planes not under cameras.
@@ -148,13 +155,14 @@ const MSelectionList *SceneRender::objectSetOverride() {
         it.traverseUnderWorld(false);
         for (it.reset(); !it.isDone(); it.next()) {
             auto item = it.currentItem();
-            if (item.hasFn(MFn::kImagePlane)) {
+            if (item.hasFn(MFn::kImagePlane) ||
+                (item.apiType() == MFn::kPluginLocatorNode)) {
                 MDagPath path;
                 it.getPath(path);
-                mSelectionList.add(path);
+                m_selection_list.add(path);
             }
         }
-        return &mSelectionList;
+        return &m_selection_list;
     }
     return nullptr;
 }

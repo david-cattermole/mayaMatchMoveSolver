@@ -44,12 +44,25 @@ namespace render {
 
 class RenderOverride : public MHWRender::MRenderOverride {
 public:
-    // Enumerations to identify an operation within
-    // a list of operations.
-    enum {
-        // --------------------------------------------------------------------
-        // Start passes.
-        //
+    // Enumerations to identify the different operation stage. Each of
+    // these passes refers to the enums below: "PassesStart",
+    // "PassesLayer", and "PassesEnd",
+    enum Pass {
+        kUninitialized = 0,
+        kStart,
+        kLayer,
+        kEnd,
+
+        // Holds the total number of entries (must be last field).
+        kPassCount
+    };
+
+    // --------------------------------------------------------------------
+    // Start Passes
+    //
+    // Enumerations to identify an operation within a list of
+    // operations, used at the start of the render override.
+    enum PassesStart {
         // Draw the scene (except image planes), but only write to the
         // depth channel.
         kSceneDepthPass = 0,
@@ -65,27 +78,49 @@ public:
         // are drawn here).
         kSceneSelectionPass,
 
+        // Holds the total number of entries (must be last field).
+        kPassesStartCount
+    };
+
+    // Layer passes
+    //
+    // Enumerations to identify an operation within a list of
+    // operations, used for each layer of the render override.
+    enum PassesLayer {
         // --------------------------------------------------------------------
-        // Edge Detect Layer
-        kEdgeDetectOp,  // Post ops on target 1
-        kCopyOp,        // Copy target 1 to target 2.
+        // Edge Detect
+        //
+        // Post ops on target 1
+        kEdgeDetectOp = 0,
+        // Copy target 1 to target 2.
+        kEdgeCopyOp,
+        // --------------------------------------------------------------------
 
         // --------------------------------------------------------------------
-        // Hidden Line Layer
+        // Hidden Line
         //
         // Draw the scene as wireframe, but it will be cut out from
         // the depth pass.
         kSceneWireframePass,
-        kWireframeBlendOp,  // Blend target 1 and 2 back to target 1
-
+        // Blend target 1 and 2 back to target 1
+        kWireframeBlendOp,
         // --------------------------------------------------------------------
-        // End passes.
-        kSceneManipulatorPass,  // Manipulator pass.
-        kHudPass,               // HUD pass. Draw 2D heads-up-display elements.
-        kPresentOp,             // Present the drawn texture to the screen.
 
         // Holds the total number of entries (must be last field).
-        kNumberOfOps
+        kPassesLayerCount
+    };
+
+    // End Passes
+    //
+    // Enumerations to identify an operation within
+    // a list of operations, used at the start of the render override.
+    enum PassesEnd {
+        kSceneManipulatorPass = 0,  // Draw the scene with 3D manipulators.
+        kHudPass,                   // Draw 2D Heads-Up-Display (HUD) elements.
+        kPresentOp,                 // Present the drawn texture to the screen.
+
+        // Holds the total number of entries (must be last field).
+        kPassesEndCount
     };
 
     RenderOverride(const MString& name);
@@ -132,8 +167,12 @@ protected:
     MStatus setPanelNames(const MString& name);
 
     // Operation lists
-    MHWRender::MRenderOperation* m_ops[kNumberOfOps];
-    MString m_op_names[kNumberOfOps];
+    MHWRender::MRenderOperation* m_ops_start[PassesStart::kPassesStartCount];
+    MHWRender::MRenderOperation* m_ops_layer[PassesLayer::kPassesLayerCount];
+    MHWRender::MRenderOperation* m_ops_end[PassesEnd::kPassesEndCount];
+
+    // Keep track of the current state of the render operation layers.
+    Pass m_current_pass;
     int32_t m_current_op;
 
     // Shared render target list
@@ -161,6 +200,10 @@ protected:
     friend class MMRendererCmd;
 
 private:
+    MRenderOperation* getOperationFromList(int32_t& current_op,
+                                           MRenderOperation** ops,
+                                           const int32_t count);
+
     // Override is for this panel
     MString m_panel_name;
 

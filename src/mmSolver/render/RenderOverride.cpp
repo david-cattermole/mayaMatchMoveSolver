@@ -54,6 +54,16 @@
 namespace mmsolver {
 namespace render {
 
+const MString kSceneDepthPassName = "mmRenderer_SceneRender_DepthOnly";
+const MString kSceneBackgroundPassName = "mmRenderer_SceneRender_Background";
+const MString kSceneSelectionPassName = "mmRenderer_SceneRender_Select";
+const MString kEdgeDetectOpName = "mmRenderer_EdgeDetectOp";
+const MString kEdgeCopyOpName = "mmRenderer_EdgeCopy";
+const MString kSceneWireframePassName = "mmRenderer_SceneRender_Wireframe";
+const MString kWireframeBlendOpName = "mmRenderer_WireframeBlend";
+const MString kSceneManipulatorPassName = "mmRenderer_SceneRender_Manipulator";
+const MString kPresentOpName = "mmRenderer_PresentTarget";
+
 // Set up operations
 RenderOverride::RenderOverride(const MString &name)
     : MRenderOverride(name)
@@ -72,9 +82,16 @@ RenderOverride::RenderOverride(const MString &name)
     mOperations.clear();
 
     // Initialise the operations for this override.
-    for (auto i = 0; i < kNumberOfOps; ++i) {
-        m_ops[i] = nullptr;
+    for (auto i = 0; i < PassesStart::kPassesStartCount; ++i) {
+        m_ops_start[i] = nullptr;
     }
+    for (auto i = 0; i < PassesLayer::kPassesLayerCount; ++i) {
+        m_ops_layer[i] = nullptr;
+    }
+    for (auto i = 0; i < PassesEnd::kPassesEndCount; ++i) {
+        m_ops_end[i] = nullptr;
+    }
+    m_current_pass = Pass::kUninitialized;
     m_current_op = -1;
     m_panel_name.clear();
 
@@ -143,9 +160,17 @@ RenderOverride::~RenderOverride() {
 
     // Delete all the operations. This will release any references to
     // other resources user per operation.
-    for (auto i = 0; i < kNumberOfOps; ++i) {
-        delete m_ops[i];
-        m_ops[i] = nullptr;
+    for (auto i = 0; i < PassesStart::kPassesStartCount; ++i) {
+        delete m_ops_start[i];
+        m_ops_start[i] = nullptr;
+    }
+    for (auto i = 0; i < PassesLayer::kPassesLayerCount; ++i) {
+        delete m_ops_layer[i];
+        m_ops_layer[i] = nullptr;
+    }
+    for (auto i = 0; i < PassesEnd::kPassesEndCount; ++i) {
+        delete m_ops_end[i];
+        m_ops_end[i] = nullptr;
     }
 
     // Clean up callbacks
@@ -166,27 +191,90 @@ MHWRender::DrawAPI RenderOverride::supportedDrawAPIs() const {
 
 bool RenderOverride::startOperationIterator() {
     m_current_op = 0;
+    m_current_pass = Pass::kStart;
     return true;
 }
 
-MHWRender::MRenderOperation *RenderOverride::renderOperation() {
-    if (m_current_op >= 0 && m_current_op < kNumberOfOps) {
-        while (!m_ops[m_current_op] || !m_ops[m_current_op]->enabled()) {
-            m_current_op++;
-            if (m_current_op >= kNumberOfOps) {
+MHWRender::MRenderOperation *RenderOverride::getOperationFromList(
+    int32_t &current_op, MRenderOperation **ops, const int32_t count) {
+    if (current_op >= 0 && current_op < count) {
+        while (!ops[current_op] || !ops[current_op]->enabled()) {
+            current_op++;
+            if (current_op >= count) {
                 return nullptr;
             }
         }
-        if (m_ops[m_current_op]) {
-            return m_ops[m_current_op];
+        if (ops[current_op]) {
+            return ops[current_op];
         }
     }
     return nullptr;
 }
 
+MHWRender::MRenderOperation *RenderOverride::renderOperation() {
+    if (m_current_pass == Pass::kStart) {
+        const auto count = PassesStart::kPassesStartCount;
+        auto op = getOperationFromList(m_current_op, m_ops_start, count);
+        if (op != nullptr) {
+            return op;
+        } else {
+            m_current_pass = Pass::kLayer;
+        }
+    }
+
+    if (m_current_pass == Pass::kLayer) {
+        const auto count = PassesLayer::kPassesLayerCount;
+        auto op = getOperationFromList(m_current_op, m_ops_layer, count);
+        if (op != nullptr) {
+            return op;
+        } else {
+            m_current_pass = Pass::kEnd;
+        }
+    }
+
+    if (m_current_pass == Pass::kEnd) {
+        const auto count = PassesEnd::kPassesEndCount;
+        auto op = getOperationFromList(m_current_op, m_ops_end, count);
+        if (op != nullptr) {
+            return op;
+        }
+    }
+
+    return nullptr;
+}
+
 bool RenderOverride::nextRenderOperation() {
+    if (m_current_pass == Pass::kUninitialized) {
+        return false;
+    }
+
     m_current_op++;
-    return m_current_op < kNumberOfOps;
+
+    if (m_current_pass == Pass::kStart) {
+        const auto count = PassesStart::kPassesStartCount;
+        if (m_current_op >= count) {
+            m_current_op = 0;
+            m_current_pass = Pass::kLayer;
+        }
+    }
+
+    if (m_current_pass == Pass::kLayer) {
+        const auto count = PassesLayer::kPassesLayerCount;
+        if (m_current_op >= count) {
+            m_current_op = 0;
+            m_current_pass = Pass::kEnd;
+        }
+    }
+
+    if (m_current_pass == Pass::kEnd) {
+        const auto count = PassesEnd::kPassesEndCount;
+        if (m_current_op >= count) {
+            m_current_op = -1;
+            m_current_pass = Pass::kUninitialized;
+        }
+    }
+
+    return m_current_op >= 0;
 }
 
 // Read node plug attributes and set the values.
@@ -321,7 +409,7 @@ MStatus RenderOverride::updateRenderOperations() {
     const bool verbose = false;
     MMSOLVER_VRB("RenderOverride::updateRenderOperations: ");
 
-    if (m_ops[kPresentOp] != nullptr) {
+    if (m_ops_end[PassesEnd::kPresentOp] != nullptr) {
         // render operations are already up-to-date.
         return MS::kSuccess;
     }
@@ -349,17 +437,6 @@ MStatus RenderOverride::updateRenderOperations() {
         static_cast<MHWRender::MSceneRender::MDisplayMode>(
             MHWRender::MSceneRender::kWireFrame);
 
-    // Operation names
-    m_op_names[kSceneDepthPass] = "mmRenderer_SceneRender_DepthOnly";
-    m_op_names[kSceneBackgroundPass] = "mmRenderer_SceneRender_Background";
-    m_op_names[kSceneSelectionPass] = "mmRenderer_SceneRender_Select";
-    m_op_names[kCopyOp] = "mmRenderer_Copy";
-    m_op_names[kSceneWireframePass] = "mmRenderer_SceneRender_Wireframe";
-    m_op_names[kEdgeDetectOp] = "mmRenderer_EdgeDetectOp1";
-    m_op_names[kWireframeBlendOp] = "mmRenderer_WireframeBlend";
-    m_op_names[kSceneManipulatorPass] = "mmRenderer_SceneRender_Manipulator";
-    m_op_names[kPresentOp] = "mmRenderer_PresentTarget";
-
     // Draw these objects for transparency.
     auto wire_draw_object_types =
         ~(MHWRender::MFrameContext::kExcludeMeshes |
@@ -385,7 +462,7 @@ MStatus RenderOverride::updateRenderOperations() {
     SceneRender *sceneOp = nullptr;
 
     // Depth pass.
-    sceneOp = new SceneRender(m_op_names[kSceneDepthPass]);
+    sceneOp = new SceneRender(kSceneDepthPassName);
     sceneOp->setViewRectangle(rect);
     sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
     sceneOp->setExcludeTypes(depth_draw_object_types);
@@ -394,10 +471,10 @@ MStatus RenderOverride::updateRenderOperations() {
     sceneOp->setDoSelectable(false);
     sceneOp->setDoBackground(false);
     sceneOp->setClearMask(clear_mask_depth);
-    m_ops[kSceneDepthPass] = sceneOp;
+    m_ops_start[PassesStart::kSceneDepthPass] = sceneOp;
 
     // Background pass.
-    sceneOp = new SceneRender(m_op_names[kSceneBackgroundPass]);
+    sceneOp = new SceneRender(kSceneBackgroundPassName);
     sceneOp->setViewRectangle(rect);
     sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
     // sceneOp->setExcludeTypes(bg_draw_object_types);
@@ -405,26 +482,26 @@ MStatus RenderOverride::updateRenderOperations() {
     sceneOp->setDoSelectable(true);
     sceneOp->setDoBackground(true);
     sceneOp->setClearMask(clear_mask_all);
-    m_ops[kSceneBackgroundPass] = sceneOp;
+    m_ops_start[PassesStart::kSceneBackgroundPass] = sceneOp;
 
     // Select pass.
-    sceneOp = new SceneRender(m_op_names[kSceneSelectionPass]);
+    sceneOp = new SceneRender(kSceneSelectionPassName);
     sceneOp->setViewRectangle(rect);
     sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
     // override drawn objects to all image planes not under cameras.
     sceneOp->setDoSelectable(true);
     sceneOp->setDoBackground(false);
     sceneOp->setClearMask(clear_mask_none);
-    m_ops[kSceneSelectionPass] = sceneOp;
+    m_ops_start[PassesStart::kSceneSelectionPass] = sceneOp;
 
     // Copy select pass to another target for blending later.
-    auto copyOp = new QuadRenderCopy(m_op_names[kCopyOp]);
+    auto copyOp = new QuadRenderCopy(kEdgeCopyOpName);
     copyOp->setViewRectangle(rect);
     copyOp->setClearMask(clear_mask_none);
-    m_ops[kCopyOp] = copyOp;
+    m_ops_layer[PassesLayer::kEdgeCopyOp] = copyOp;
 
     // Wireframe pass.
-    sceneOp = new SceneRender(m_op_names[kSceneWireframePass]);
+    sceneOp = new SceneRender(kSceneWireframePassName);
     sceneOp->setViewRectangle(rect);
     sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
     sceneOp->setExcludeTypes(wire_draw_object_types);
@@ -433,43 +510,42 @@ MStatus RenderOverride::updateRenderOperations() {
     sceneOp->setDoSelectable(false);
     sceneOp->setDoBackground(false);
     sceneOp->setClearMask(clear_mask_none);
-    m_ops[kSceneWireframePass] = sceneOp;
+    m_ops_layer[PassesLayer::kSceneWireframePass] = sceneOp;
 
     // Apply edge detect.
-    auto edgeDetectOp = new QuadRenderEdgeDetect(m_op_names[kEdgeDetectOp]);
+    auto edgeDetectOp = new QuadRenderEdgeDetect(kEdgeDetectOpName);
     edgeDetectOp->setViewRectangle(rect);
     edgeDetectOp->setClearMask(clear_mask_none);
     edgeDetectOp->setThreshold(static_cast<float>(m_edge_threshold));
     edgeDetectOp->setThickness(static_cast<float>(m_edge_thickness));
-    m_ops[kEdgeDetectOp] = edgeDetectOp;
+    m_ops_layer[PassesLayer::kEdgeDetectOp] = edgeDetectOp;
 
     // Blend between 'no-wireframe' and 'wireframe'.
-    auto wireBlendOp = new QuadRenderBlend(m_op_names[kWireframeBlendOp]);
+    auto wireBlendOp = new QuadRenderBlend(kWireframeBlendOpName);
     wireBlendOp->setViewRectangle(rect);
     wireBlendOp->setClearMask(clear_mask_none);
     wireBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
-    m_ops[kWireframeBlendOp] = wireBlendOp;
+    m_ops_layer[PassesLayer::kWireframeBlendOp] = wireBlendOp;
 
     // Manipulators pass.
-    sceneOp = new SceneRender(m_op_names[kSceneManipulatorPass]);
+    sceneOp = new SceneRender(kSceneManipulatorPassName);
     sceneOp->setViewRectangle(rect);
     sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
     sceneOp->setExcludeTypes(non_wire_draw_object_types);
     sceneOp->setDoSelectable(false);
     sceneOp->setDoBackground(false);
     sceneOp->setClearMask(clear_mask_none);
-    m_ops[kSceneManipulatorPass] = sceneOp;
+    m_ops_end[PassesEnd::kSceneManipulatorPass] = sceneOp;
 
     // A preset 2D HUD render operation
     auto hudOp = new HudRender();
-    m_ops[kHudPass] = hudOp;
-    m_op_names[kHudPass] = hudOp->name();
+    m_ops_end[PassesEnd::kHudPass] = hudOp;
 
     // "Present" operation which will display the target for
     // viewports.  Operation is a no-op for batch rendering as
     // there is no on-screen buffer to send the result to.
-    auto presentOp = new PresentTarget(m_op_names[kPresentOp]);
-    m_ops[kPresentOp] = presentOp;
+    auto presentOp = new PresentTarget(kPresentOpName);
+    m_ops_end[PassesEnd::kPresentOp] = presentOp;
     return MS::kSuccess;
 }
 
@@ -544,15 +620,16 @@ MStatus RenderOverride::updateRenderTargets() {
         // Blend edge detect on/off.
 
         // Draw scene (without image plane) into the depth channel.
-        auto depthPassOp = dynamic_cast<SceneRender *>(m_ops[kSceneDepthPass]);
+        auto depthPassOp = dynamic_cast<SceneRender *>(
+            m_ops_start[PassesStart::kSceneDepthPass]);
         if (depthPassOp) {
             depthPassOp->setEnabled(true);
             depthPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
         // Draw viewport background (with image plane).
-        auto backgroundPassOp =
-            dynamic_cast<SceneRender *>(m_ops[kSceneBackgroundPass]);
+        auto backgroundPassOp = dynamic_cast<SceneRender *>(
+            m_ops_start[PassesStart::kSceneBackgroundPass]);
         if (backgroundPassOp) {
             backgroundPassOp->setEnabled(true);
             // Note: Only render to the color target, depth is ignored.
@@ -560,16 +637,16 @@ MStatus RenderOverride::updateRenderTargets() {
         }
 
         // Allow selection of objects.
-        auto selectSceneOp =
-            dynamic_cast<SceneRender *>(m_ops[kSceneSelectionPass]);
+        auto selectSceneOp = dynamic_cast<SceneRender *>(
+            m_ops_start[PassesStart::kSceneSelectionPass]);
         if (selectSceneOp) {
             selectSceneOp->setEnabled(true);
             selectSceneOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
         // Draw edge detection.
-        auto edgeDetectOp =
-            dynamic_cast<QuadRenderEdgeDetect *>(m_ops[kEdgeDetectOp]);
+        auto edgeDetectOp = dynamic_cast<QuadRenderEdgeDetect *>(
+            m_ops_layer[PassesLayer::kEdgeDetectOp]);
         if (edgeDetectOp) {
             edgeDetectOp->setEnabled(true);
             edgeDetectOp->setInputColorTarget(kMyColorTarget);
@@ -581,7 +658,8 @@ MStatus RenderOverride::updateRenderTargets() {
         }
 
         // Copy kMyColorTarget to kMyAuxColorTarget.
-        auto copyOp = dynamic_cast<QuadRenderCopy *>(m_ops[kCopyOp]);
+        auto copyOp = dynamic_cast<QuadRenderCopy *>(
+            m_ops_layer[PassesLayer::kEdgeCopyOp]);
         if (copyOp) {
             copyOp->setEnabled(true);
             copyOp->setInputTarget(kMyColorTarget);
@@ -589,8 +667,8 @@ MStatus RenderOverride::updateRenderTargets() {
         }
 
         // Render wireframe into kMyColorTarget.
-        auto wireframePassOp =
-            dynamic_cast<SceneRender *>(m_ops[kSceneWireframePass]);
+        auto wireframePassOp = dynamic_cast<SceneRender *>(
+            m_ops_layer[PassesLayer::kSceneWireframePass]);
         if (wireframePassOp) {
             wireframePassOp->setEnabled(true);
             wireframePassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
@@ -598,8 +676,8 @@ MStatus RenderOverride::updateRenderTargets() {
 
         // Blend between kMyColorTarget and kMyAuxColorTarget, and output
         // to kMyColorTarget.
-        auto wireBlendOp =
-            dynamic_cast<QuadRenderBlend *>(m_ops[kWireframeBlendOp]);
+        auto wireBlendOp = dynamic_cast<QuadRenderBlend *>(
+            m_ops_layer[PassesLayer::kWireframeBlendOp]);
         if (wireBlendOp) {
             wireBlendOp->setEnabled(true);
             wireBlendOp->setInputTarget1(kMyColorTarget);
@@ -609,22 +687,25 @@ MStatus RenderOverride::updateRenderTargets() {
         }
 
         // Draw manipulators over the top of all objects.
-        auto manipulatorPassOp =
-            dynamic_cast<SceneRender *>(m_ops[kSceneManipulatorPass]);
+        auto manipulatorPassOp = dynamic_cast<SceneRender *>(
+            m_ops_end[PassesEnd::kSceneManipulatorPass]);
         if (manipulatorPassOp) {
             manipulatorPassOp->setEnabled(true);
             manipulatorPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
         // Draw the HUD on kMyColorTarget.
-        auto hudOp = dynamic_cast<HudRender *>(m_ops[kHudPass]);
+        auto hudOp = dynamic_cast<HudRender *>(m_ops_end[PassesEnd::kHudPass]);
         if (hudOp) {
+            hudOp->setEnabled(true);
             hudOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
         // Display kMyColorTarget to the screen.
-        auto presentOp = dynamic_cast<PresentTarget *>(m_ops[kPresentOp]);
+        auto presentOp =
+            dynamic_cast<PresentTarget *>(m_ops_end[PassesEnd::kPresentOp]);
         if (presentOp) {
+            presentOp->setEnabled(true);
             presentOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
@@ -632,49 +713,57 @@ MStatus RenderOverride::updateRenderTargets() {
         // Blending wireframes.
         MMSOLVER_VRB("RenderOverride::mode = ONE");
 
-        auto depthPassOp = dynamic_cast<SceneRender *>(m_ops[kSceneDepthPass]);
+        // Draw scene (without image plane) into the depth channel.
+        auto depthPassOp = dynamic_cast<SceneRender *>(
+            m_ops_start[PassesStart::kSceneDepthPass]);
         if (depthPassOp) {
             depthPassOp->setEnabled(true);
             depthPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto backgroundPassOp =
-            dynamic_cast<SceneRender *>(m_ops[kSceneBackgroundPass]);
+        // Draw viewport background (with image plane).
+        auto backgroundPassOp = dynamic_cast<SceneRender *>(
+            m_ops_start[PassesStart::kSceneBackgroundPass]);
         if (backgroundPassOp) {
             backgroundPassOp->setEnabled(true);
             // Note: Only render to the color target, depth is ignored.
             backgroundPassOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }
 
-        auto selectSceneOp =
-            dynamic_cast<SceneRender *>(m_ops[kSceneSelectionPass]);
+        // Allow selection of objects.
+        auto selectSceneOp = dynamic_cast<SceneRender *>(
+            m_ops_start[PassesStart::kSceneSelectionPass]);
         if (selectSceneOp) {
             selectSceneOp->setEnabled(true);
             selectSceneOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto edgeDetectOp =
-            dynamic_cast<QuadRenderEdgeDetect *>(m_ops[kEdgeDetectOp]);
+        auto edgeDetectOp = dynamic_cast<QuadRenderEdgeDetect *>(
+            m_ops_layer[PassesLayer::kEdgeDetectOp]);
         if (edgeDetectOp) {
             edgeDetectOp->setEnabled(false);
+            edgeDetectOp->setInputColorTarget(0);
+            edgeDetectOp->setInputDepthTarget(0);
+            edgeDetectOp->setRenderTargets(nullptr, 0, 0);
         }
 
-        auto copyOp = dynamic_cast<QuadRenderCopy *>(m_ops[kCopyOp]);
+        auto copyOp = dynamic_cast<QuadRenderCopy *>(
+            m_ops_layer[PassesLayer::kEdgeCopyOp]);
         if (copyOp) {
             copyOp->setEnabled(true);
             copyOp->setInputTarget(kMyColorTarget);
             copyOp->setRenderTargets(m_targets, kMyAuxColorTarget, 1);
         }
 
-        auto wireframePassOp =
-            dynamic_cast<SceneRender *>(m_ops[kSceneWireframePass]);
+        auto wireframePassOp = dynamic_cast<SceneRender *>(
+            m_ops_layer[PassesLayer::kSceneWireframePass]);
         if (wireframePassOp) {
             wireframePassOp->setEnabled(true);
             wireframePassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto wireBlendOp =
-            dynamic_cast<QuadRenderBlend *>(m_ops[kWireframeBlendOp]);
+        auto wireBlendOp = dynamic_cast<QuadRenderBlend *>(
+            m_ops_layer[PassesLayer::kWireframeBlendOp]);
         if (wireBlendOp) {
             wireBlendOp->setEnabled(true);
             wireBlendOp->setInputTarget1(kMyColorTarget);
@@ -684,20 +773,23 @@ MStatus RenderOverride::updateRenderTargets() {
         }
 
         // Draw manipulators over the top of all objects.
-        auto manipulatorPassOp =
-            dynamic_cast<SceneRender *>(m_ops[kSceneManipulatorPass]);
+        auto manipulatorPassOp = dynamic_cast<SceneRender *>(
+            m_ops_end[PassesEnd::kSceneManipulatorPass]);
         if (manipulatorPassOp) {
             manipulatorPassOp->setEnabled(true);
             manipulatorPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto hudOp = dynamic_cast<HudRender *>(m_ops[kHudPass]);
+        // Draw the HUD on kMyColorTarget.
+        auto hudOp = dynamic_cast<HudRender *>(m_ops_end[PassesEnd::kHudPass]);
         if (hudOp) {
             hudOp->setEnabled(true);
             hudOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto presentOp = dynamic_cast<PresentTarget *>(m_ops[kPresentOp]);
+        // Display kMyColorTarget to the screen.
+        auto presentOp =
+            dynamic_cast<PresentTarget *>(m_ops_end[PassesEnd::kPresentOp]);
         if (presentOp) {
             presentOp->setEnabled(true);
             presentOp->setRenderTargets(m_targets, kMyColorTarget, 2);
@@ -707,81 +799,83 @@ MStatus RenderOverride::updateRenderTargets() {
         // No blending or post operations.
         MMSOLVER_VRB("RenderOverride::renderMode = RenderMode::kFour");
 
-        auto depthPassOp = dynamic_cast<SceneRender *>(m_ops[kSceneDepthPass]);
+        // Draw scene (without image plane) into the depth channel.
+        auto depthPassOp = dynamic_cast<SceneRender *>(
+            m_ops_start[PassesStart::kSceneDepthPass]);
         if (depthPassOp) {
             depthPassOp->setEnabled(true);
             depthPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto backgroundPassOp =
-            dynamic_cast<SceneRender *>(m_ops[kSceneBackgroundPass]);
+        // Draw viewport background (with image plane).
+        auto backgroundPassOp = dynamic_cast<SceneRender *>(
+            m_ops_start[PassesStart::kSceneBackgroundPass]);
         if (backgroundPassOp) {
             backgroundPassOp->setEnabled(true);
             // Note: Only render to the color target, depth is ignored.
             backgroundPassOp->setRenderTargets(m_targets, kMyColorTarget, 1);
         }
 
-        auto selectSceneOp =
-            dynamic_cast<SceneRender *>(m_ops[kSceneSelectionPass]);
+        // Allow selection of objects.
+        auto selectSceneOp = dynamic_cast<SceneRender *>(
+            m_ops_start[PassesStart::kSceneSelectionPass]);
         if (selectSceneOp) {
             selectSceneOp->setEnabled(true);
             selectSceneOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto copyOp = dynamic_cast<QuadRenderCopy *>(m_ops[kCopyOp]);
+        auto copyOp = dynamic_cast<QuadRenderCopy *>(
+            m_ops_layer[PassesLayer::kEdgeCopyOp]);
         if (copyOp) {
-            copyOp->setEnabled(false);
-            copyOp->setInputTarget(0);
-            copyOp->setRenderTargets(nullptr, 0, 0);
+            copyOp->setEnabled(true);
+            copyOp->setInputTarget(kMyColorTarget);
+            copyOp->setRenderTargets(m_targets, kMyAuxColorTarget, 1);
         }
 
-        auto wireframePassOp =
-            dynamic_cast<SceneRender *>(m_ops[kSceneWireframePass]);
+        auto wireframePassOp = dynamic_cast<SceneRender *>(
+            m_ops_layer[PassesLayer::kSceneWireframePass]);
         if (wireframePassOp) {
             wireframePassOp->setEnabled(true);
             wireframePassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto edgeDetectOp =
-            dynamic_cast<QuadRenderEdgeDetect *>(m_ops[kEdgeDetectOp]);
+        auto edgeDetectOp = dynamic_cast<QuadRenderEdgeDetect *>(
+            m_ops_layer[PassesLayer::kEdgeDetectOp]);
         if (edgeDetectOp) {
             edgeDetectOp->setEnabled(false);
+            edgeDetectOp->setInputColorTarget(0);
+            edgeDetectOp->setInputDepthTarget(0);
+            edgeDetectOp->setRenderTargets(nullptr, 0, 0);
         }
 
-        auto wireBlendOp =
-            dynamic_cast<QuadRenderBlend *>(m_ops[kWireframeBlendOp]);
+        auto wireBlendOp = dynamic_cast<QuadRenderBlend *>(
+            m_ops_layer[PassesLayer::kWireframeBlendOp]);
         if (wireBlendOp) {
-            wireBlendOp->setEnabled(false);
-            wireBlendOp->setInputTarget1(0);
-            wireBlendOp->setInputTarget2(0);
-            wireBlendOp->setRenderTargets(nullptr, 0, 0);
-            wireBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
+            wireBlendOp->setEnabled(true);
+            wireBlendOp->setInputTarget1(kMyColorTarget);
+            wireBlendOp->setInputTarget2(kMyAuxColorTarget);
+            wireBlendOp->setRenderTargets(m_targets, kMyColorTarget, 1);
+            wireBlendOp->setBlend(1.0f);
         }
 
-        auto edgeBlendOp =
-            dynamic_cast<QuadRenderBlend *>(m_ops[kWireframeBlendOp]);
-        if (edgeBlendOp) {
-            edgeBlendOp->setEnabled(false);
-            edgeBlendOp->setInputTarget1(0);
-            edgeBlendOp->setInputTarget2(0);
-            edgeBlendOp->setRenderTargets(nullptr, 0, 0);
-            edgeBlendOp->setBlend(static_cast<float>(m_wireframe_alpha));
-        }
-
-        auto manipulatorPassOp =
-            dynamic_cast<SceneRender *>(m_ops[kSceneManipulatorPass]);
+        // Draw manipulators over the top of all objects.
+        auto manipulatorPassOp = dynamic_cast<SceneRender *>(
+            m_ops_end[PassesEnd::kSceneManipulatorPass]);
         if (manipulatorPassOp) {
             manipulatorPassOp->setEnabled(true);
             manipulatorPassOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto hudOp = dynamic_cast<HudRender *>(m_ops[kHudPass]);
+        // Draw the HUD on kMyColorTarget.
+        auto hudOp = dynamic_cast<HudRender *>(m_ops_end[PassesEnd::kHudPass]);
         if (hudOp) {
             hudOp->setEnabled(true);
             hudOp->setRenderTargets(m_targets, kMyColorTarget, 2);
         }
 
-        auto presentOp = dynamic_cast<PresentTarget *>(m_ops[kPresentOp]);
+        // Display kMyColorTarget to the screen.
+        auto presentOp =
+            dynamic_cast<PresentTarget *>(m_ops_end[PassesEnd::kPresentOp]);
         if (presentOp) {
             presentOp->setEnabled(true);
             presentOp->setRenderTargets(m_targets, kMyColorTarget, 2);
@@ -802,28 +896,33 @@ MStatus RenderOverride::setPanelNames(const MString &name) {
 
     // Set the name of the panel on operations which may use the panel
     // name to find out the associated M3dView.
-    if (m_ops[kSceneDepthPass]) {
-        auto op = dynamic_cast<SceneRender *>(m_ops[kSceneDepthPass]);
+    if (m_ops_start[PassesStart::kSceneDepthPass]) {
+        auto op = dynamic_cast<SceneRender *>(
+            m_ops_start[PassesStart::kSceneDepthPass]);
         op->setPanelName(name);
     }
 
-    if (m_ops[kSceneBackgroundPass]) {
-        auto op = dynamic_cast<SceneRender *>(m_ops[kSceneBackgroundPass]);
+    if (m_ops_start[PassesStart::kSceneBackgroundPass]) {
+        auto op = dynamic_cast<SceneRender *>(
+            m_ops_start[PassesStart::kSceneBackgroundPass]);
         op->setPanelName(name);
     }
 
-    if (m_ops[kSceneSelectionPass]) {
-        auto op = dynamic_cast<SceneRender *>(m_ops[kSceneSelectionPass]);
+    if (m_ops_start[PassesStart::kSceneSelectionPass]) {
+        auto op = dynamic_cast<SceneRender *>(
+            m_ops_start[PassesStart::kSceneSelectionPass]);
         op->setPanelName(name);
     }
 
-    if (m_ops[kSceneWireframePass]) {
-        auto op = dynamic_cast<SceneRender *>(m_ops[kSceneWireframePass]);
+    if (m_ops_layer[PassesLayer::kSceneWireframePass]) {
+        auto op = dynamic_cast<SceneRender *>(
+            m_ops_layer[PassesLayer::kSceneWireframePass]);
         op->setPanelName(name);
     }
 
-    if (m_ops[kSceneManipulatorPass]) {
-        auto op = dynamic_cast<SceneRender *>(m_ops[kSceneManipulatorPass]);
+    if (m_ops_end[PassesEnd::kSceneManipulatorPass]) {
+        auto op = dynamic_cast<SceneRender *>(
+            m_ops_end[PassesEnd::kSceneManipulatorPass]);
         op->setPanelName(name);
     }
     return MS::kSuccess;
@@ -866,6 +965,7 @@ MStatus RenderOverride::setup(const MString &destination) {
     status = setPanelNames(m_panel_name);
     CHECK_MSTATUS(status);
 
+    m_current_pass = Pass::kUninitialized;
     m_current_op = -1;
     return status;
 }
@@ -880,6 +980,7 @@ MStatus RenderOverride::cleanup() {
     m_panel_name.clear();
 
     // Reset current operation
+    m_current_pass = Pass::kUninitialized;
     m_current_op = -1;
 
     return MStatus::kSuccess;

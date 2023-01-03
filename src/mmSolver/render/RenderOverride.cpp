@@ -585,6 +585,9 @@ MStatus RenderOverride::updateRenderTargets() {
         color_format = MHWRender::kR16G16B16A16_FLOAT;
     } else if (m_render_color_format == RenderColorFormat::kRGBA32BitFloat) {
         color_format = MHWRender::kR32G32B32A32_FLOAT;
+    } else {
+        MMSOLVER_ERR("Invalid RenderColorFormat given: "
+                     << static_cast<short>(m_render_color_format));
     }
     m_target_descs[kMyColorTarget]->setRasterFormat(color_format);
     m_target_descs[kMyAuxColorTarget]->setRasterFormat(color_format);

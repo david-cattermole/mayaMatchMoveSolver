@@ -156,7 +156,7 @@ RenderOverride::~RenderOverride() {
         }
     }
 
-    cleanup();
+    RenderOverride::cleanup();
 
     // Delete all the operations. This will release any references to
     // other resources user per operation.
@@ -953,19 +953,19 @@ MStatus RenderOverride::setup(const MString &destination) {
     }
 
     // Get override values.
-    updateParameters();
+    RenderOverride::updateParameters();
 
     // Construct the render operations.
-    status = updateRenderOperations();
+    status = RenderOverride::updateRenderOperations();
     CHECK_MSTATUS(status);
 
     // Update any of the render targets which will be required
-    status = updateRenderTargets();
+    status = RenderOverride::updateRenderTargets();
     CHECK_MSTATUS(status);
 
     // The panel name, used to get the current 3d view (M3dView).
     m_panel_name.set(destination.asChar());
-    status = setPanelNames(m_panel_name);
+    status = RenderOverride::setPanelNames(m_panel_name);
     CHECK_MSTATUS(status);
 
     m_current_pass = Pass::kUninitialized;

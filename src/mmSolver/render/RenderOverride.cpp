@@ -343,7 +343,8 @@ MStatus RenderOverride::updateParameters() {
     } else {
         m_render_mode = static_cast<RenderMode>(render_mode_plug.asShort());
     }
-    MMSOLVER_VRB("RenderOverride mode: " << static_cast<short>(m_render_mode));
+    MMSOLVER_VRB(
+        "RenderOverride RenderMode: " << static_cast<short>(m_render_mode));
 
     MPlug render_color_format_plug = depends_node.findPlug(
         "renderColorFormat", want_networked_plug, &status);
@@ -619,7 +620,7 @@ MStatus RenderOverride::updateRenderTargets() {
     // specific render targets.
 
     if (m_render_mode == RenderMode::kZero) {
-        MMSOLVER_VRB("RenderOverride::mode = ZERO");
+        MMSOLVER_VRB("RenderOverride::renderMode = ZERO");
         // Blend edge detect on/off.
 
         // Draw scene (without image plane) into the depth channel.
@@ -714,7 +715,7 @@ MStatus RenderOverride::updateRenderTargets() {
 
     } else if (m_render_mode == RenderMode::kOne) {
         // Blending wireframes.
-        MMSOLVER_VRB("RenderOverride::mode = ONE");
+        MMSOLVER_VRB("RenderOverride::renderMode = ONE");
 
         // Draw scene (without image plane) into the depth channel.
         auto depthPassOp = dynamic_cast<SceneRender *>(
@@ -800,7 +801,7 @@ MStatus RenderOverride::updateRenderTargets() {
 
     } else {
         // No blending or post operations.
-        MMSOLVER_VRB("RenderOverride::renderMode = RenderMode::kFour");
+        MMSOLVER_VRB("RenderOverride::renderMode = kFour");
 
         // Draw scene (without image plane) into the depth channel.
         auto depthPassOp = dynamic_cast<SceneRender *>(

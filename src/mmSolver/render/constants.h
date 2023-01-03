@@ -60,6 +60,17 @@ const EdgeDetectMode kEdgeDetectModeDefault = EdgeDetectMode::kSobel;
 const float kEdgeThicknessDefault = 1.5f;
 const float kEdgeThresholdDefault = 1.0f;
 
+// Render Operation Pass Names
+const MString kSceneDepthPassName = "mmRenderer_SceneRender_DepthOnly";
+const MString kSceneBackgroundPassName = "mmRenderer_SceneRender_Background";
+const MString kSceneSelectionPassName = "mmRenderer_SceneRender_Select";
+const MString kEdgeDetectOpName = "mmRenderer_EdgeDetectOp";
+const MString kEdgeCopyOpName = "mmRenderer_EdgeCopy";
+const MString kSceneWireframePassName = "mmRenderer_SceneRender_Wireframe";
+const MString kWireframeBlendOpName = "mmRenderer_WireframeBlend";
+const MString kSceneManipulatorPassName = "mmRenderer_SceneRender_Manipulator";
+const MString kPresentOpName = "mmRenderer_PresentTarget";
+
 }  // namespace render
 }  // namespace mmsolver
 

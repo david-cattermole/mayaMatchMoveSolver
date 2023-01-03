@@ -48,21 +48,12 @@
 #include "QuadRenderEdgeDetect.h"
 #include "RenderColorFormat.h"
 #include "SceneRender.h"
+#include "constants.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
 namespace render {
-
-const MString kSceneDepthPassName = "mmRenderer_SceneRender_DepthOnly";
-const MString kSceneBackgroundPassName = "mmRenderer_SceneRender_Background";
-const MString kSceneSelectionPassName = "mmRenderer_SceneRender_Select";
-const MString kEdgeDetectOpName = "mmRenderer_EdgeDetectOp";
-const MString kEdgeCopyOpName = "mmRenderer_EdgeCopy";
-const MString kSceneWireframePassName = "mmRenderer_SceneRender_Wireframe";
-const MString kWireframeBlendOpName = "mmRenderer_WireframeBlend";
-const MString kSceneManipulatorPassName = "mmRenderer_SceneRender_Manipulator";
-const MString kPresentOpName = "mmRenderer_PresentTarget";
 
 // Set up operations
 RenderOverride::RenderOverride(const MString &name)

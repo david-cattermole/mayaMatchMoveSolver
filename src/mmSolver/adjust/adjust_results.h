@@ -547,17 +547,19 @@ struct MarkerAttrNamePair {
     }
 };
 
+namespace std {
 template <>
-struct std::hash<MarkerAttrNamePair> {
-    std::size_t operator()(MarkerAttrNamePair const &s) const noexcept {
-        std::size_t result = 0;
-        std::size_t h1 = std::hash<std::string>{}(s.marker_name);
-        std::size_t h2 = std::hash<std::string>{}(s.attr_name);
+struct hash<MarkerAttrNamePair> {
+    size_t operator()(MarkerAttrNamePair const &s) const noexcept {
+        size_t result = 0;
+        size_t h1 = hash<string>{}(s.marker_name);
+        size_t h2 = hash<string>{}(s.attr_name);
         hash_combine(result, h1);
         hash_combine(result, h2);
         return result;
     }
 };
+}  // namespace std
 
 struct AffectsResult {
     typedef AffectsResult Self;

@@ -128,11 +128,12 @@ but may work with older versions.
 
 There are currently three 3DEqualizer tools available:
 
-| File Name                | Tool Name                       |
-| ------------------------ | ------------------------------- |
-| copy_track_mmsolver.py   | Copy 2D Tracks (MM Solver)      |
-| export_track_mmsolver.py | Export 2D Tracks (MM Solver)... |
-| paste_camera_mmsolver.py | Paste Camera (MM Solver)...     |
+| File Name                 | Tool Name                       |
+| ------------------------- | ------------------------------- |
+| copy_track_mmsolver.py    | Copy 2D Tracks (MM Solver)      |
+| export_track_mmsolver.py  | Export 2D Tracks (MM Solver)... |
+| import_tracks_mmsolver.py | Import 2D Tracks (MM Solver)... |
+| paste_camera_mmsolver.py  | Paste Camera (MM Solver)...     |
 
 ## Script Database
 

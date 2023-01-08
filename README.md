@@ -18,6 +18,7 @@ changes.
 
 | Releases                                                                                | Description                                        |
 | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| [v0.4.2](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.2)   | Bug fixes and 2D Marker round-tripping             |
 | [v0.4.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.1)   | Bug fix Basic solver tab.                          |
 | [v0.4.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.0)   | Lens distortion, ImagePlane and Camera Solver.     |
 | [v0.3.16](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.3.16) | Maya 2022 support.                                 |

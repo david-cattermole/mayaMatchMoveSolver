@@ -464,16 +464,14 @@ struct ErrorMetricsResult {
     }
 
     void divide() {
-        // "upper_bound" allows us to iterate over unique keys only.
-        //
-        // https://stackoverflow.com/questions/9371236/is-there-an-iterator-across-unique-keys-in-a-stdmultimap
         for (auto it = Self::error_per_frame.begin();
-             it != Self::error_per_frame.end();
-             it = Self::error_per_frame.upper_bound(it->first)) {
+             it != Self::error_per_frame.end();) {
+            auto const &key = it->first;
+
             // Sum all values given for the same key.
             double value = 0.0;
             auto count = 0;
-            auto value_iterators = Self::error_per_frame.equal_range(it->first);
+            auto value_iterators = Self::error_per_frame.equal_range(key);
 
             for (auto vit = value_iterators.first;
                  vit != value_iterators.second; vit++) {
@@ -486,6 +484,12 @@ struct ErrorMetricsResult {
 
             if (count > 1) {
                 it->second = value / static_cast<double>(count);
+            }
+
+            // Only iterate over unique keys once.
+            //
+            // Skip to the next iterator that doesn't start with 'key'.
+            while (++it != Self::error_per_frame.end() && it->first == key) {
             }
         }
     }
@@ -511,8 +515,7 @@ struct ErrorMetricsResult {
         }
 
         for (auto it = Self::error_per_frame.cbegin();
-             it != Self::error_per_frame.cend();
-             it = Self::error_per_frame.upper_bound(it->first)) {
+             it != Self::error_per_frame.cend();) {
             const auto frame_value = it->first;
             const auto error_value = it->second;
 
@@ -521,6 +524,14 @@ struct ErrorMetricsResult {
             str += CMD_RESULT_SPLIT_CHAR;
             str += mmstring::numberToString<double>(error_value);
             result.append(MString(str.c_str()));
+
+            // Only iterate over unique keys once.
+            //
+            // Skip to the next iterator that doesn't start with
+            // 'frame_value'.
+            while (++it != Self::error_per_frame.cend() &&
+                   it->first == frame_value) {
+            }
         }
     }
 };

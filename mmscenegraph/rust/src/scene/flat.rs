@@ -70,6 +70,32 @@ pub struct FlatScene {
     out_point_list: Vec<Real>,
 }
 
+fn scale_xy_with_film_fit(
+    film_fit: FilmFit,
+    sensor_aspect_ratio: Real,
+    render_aspect_ratio: Real,
+    out_x: &mut Real,
+    out_y: &mut Real,
+) {
+    if film_fit == FilmFit::Horizontal {
+        *out_y *= render_aspect_ratio / sensor_aspect_ratio;
+    } else if film_fit == FilmFit::Vertical {
+        *out_x *= 1.0 / (render_aspect_ratio / sensor_aspect_ratio);
+    } else if film_fit == FilmFit::Fill {
+        if sensor_aspect_ratio > render_aspect_ratio {
+            *out_x *= sensor_aspect_ratio / render_aspect_ratio;
+        } else {
+            *out_y *= render_aspect_ratio / sensor_aspect_ratio;
+        }
+    } else if film_fit == FilmFit::Overscan {
+        if sensor_aspect_ratio > render_aspect_ratio {
+            *out_y *= render_aspect_ratio / sensor_aspect_ratio;
+        } else {
+            *out_x *= sensor_aspect_ratio / render_aspect_ratio;
+        }
+    }
+}
+
 impl FlatScene {
     pub fn new(
         bnd_ids: Vec<NodeId>,
@@ -247,8 +273,8 @@ impl FlatScene {
             (cam_attrs, (cam_film_fit, (cam_render_width, cam_render_height))),
         ) in cam_attrs_iter
         {
-            let attr_cam_sensor_width = cam_attrs.sensor_width;
-            let attr_cam_sensor_height = cam_attrs.sensor_height;
+            let attr_cam_sensor_x = cam_attrs.sensor_width;
+            let attr_cam_sensor_y = cam_attrs.sensor_height;
             let attr_cam_focal_length = cam_attrs.focal_length;
             let attr_cam_lens_offset_x = cam_attrs.lens_offset_x;
             let attr_cam_lens_offset_y = cam_attrs.lens_offset_y;
@@ -274,8 +300,8 @@ impl FlatScene {
                         self.out_cam_world_matrix_list[cam_index_at_frame];
                     let cam_proj_matrix = compute_projection_matrix_with_attrs(
                         &attrdb,
-                        attr_cam_sensor_width,
-                        attr_cam_sensor_height,
+                        attr_cam_sensor_x,
+                        attr_cam_sensor_y,
                         attr_cam_focal_length,
                         attr_cam_lens_offset_x,
                         attr_cam_lens_offset_y,
@@ -299,18 +325,25 @@ impl FlatScene {
                     self.out_point_list.push(reproj_mat[1]);
 
                     // Scale the Marker Y for deviation calculation.
-                    let cam_sensor_width =
-                        attrdb.get_attr_value(attr_cam_sensor_width, frame);
-                    let cam_sensor_height =
-                        attrdb.get_attr_value(attr_cam_sensor_height, frame);
-                    let sensor_aspect = cam_sensor_width / cam_sensor_height;
-                    let render_aspect = (*cam_render_width as Real)
-                        / (*cam_render_height as Real);
-                    let aspect = render_aspect / sensor_aspect;
+                    let cam_sensor_x =
+                        attrdb.get_attr_value(attr_cam_sensor_x, frame);
+                    let cam_sensor_y =
+                        attrdb.get_attr_value(attr_cam_sensor_y, frame);
+                    let sensor_aspect = cam_sensor_x / cam_sensor_y;
+                    let render_x = *cam_render_width as Real;
+                    let render_y = *cam_render_height as Real;
+                    let render_aspect = render_x / render_y;
 
-                    let mkr_tx = attrdb.get_attr_value(mkr_attrs.tx, frame);
-                    let mkr_ty = attrdb.get_attr_value(mkr_attrs.ty, frame);
-                    let mkr_ty = mkr_ty * aspect;
+                    let mut mkr_tx = attrdb.get_attr_value(mkr_attrs.tx, frame);
+                    let mut mkr_ty = attrdb.get_attr_value(mkr_attrs.ty, frame);
+                    scale_xy_with_film_fit(
+                        *cam_film_fit,
+                        sensor_aspect,
+                        render_aspect,
+                        &mut mkr_tx,
+                        &mut mkr_ty,
+                    );
+
                     self.out_marker_list.push(mkr_tx);
                     self.out_marker_list.push(mkr_ty);
 

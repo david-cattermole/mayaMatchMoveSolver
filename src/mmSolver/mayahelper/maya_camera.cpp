@@ -631,7 +631,7 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time,
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMatrix floatProjMat = MMatrix(&floatProjMat_maya.matrix[0]);
 #else
-        short filmFit = 1;
+        short filmFit = 1;  // 1 == Horizontal
         double imageWidth = 640.0;
         double imageHeight = 480.0;
         double filmWidth = 0.0;

@@ -147,7 +147,8 @@ int countUpNumberOfErrors(
                 }
                 weightMaxPerFrame.insert(std::pair<int, double>(j, weight_max));
 
-                // Get Marker Position.
+                // Get unedited Marker Position, just the translate
+                // X/Y values directly.
                 double px = 0.0;
                 double py = 0.0;
                 status = marker->getPosXY(px, py, frame, timeEvalMode);

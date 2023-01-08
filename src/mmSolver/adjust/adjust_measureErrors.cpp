@@ -107,6 +107,37 @@ inline double distance_2d(const double ax, const double ay, const double bx,
     return std::sqrt((dx * dx) + (dy * dy));
 }
 
+// Scale marker XY based on camera FilmFit attribute value.
+inline void scale_xy_with_film_fit(const short filmFit,
+                                   const double filmBackAspect,
+                                   const double renderAspect, double &out_x,
+                                   double &out_y) {
+    assert((filmFit >= 0) && (filmFit < 4));
+    if (filmFit == 1) {
+        // FilmFit Horizontal
+        out_y *= renderAspect / filmBackAspect;
+    } else if (filmFit == 2) {
+        // FilmFit Vertical
+        out_x *= 1.0 / (renderAspect / filmBackAspect);
+    } else if (filmFit == 0) {
+        // FilmFit Fill
+        if (filmBackAspect > renderAspect) {
+            out_x *= filmBackAspect / renderAspect;
+        } else {
+            out_y *= renderAspect / filmBackAspect;
+        }
+    } else if (filmFit == 3) {
+        // FilmFit Overscan
+        if (filmBackAspect > renderAspect) {
+            out_y *= renderAspect / filmBackAspect;
+        } else {
+            out_x *= filmBackAspect / renderAspect;
+        }
+    }
+
+    return;
+}
+
 void measureErrors_mayaDag(const int numberOfErrors,
                            const int numberOfMarkerErrors,
                            const int numberOfAttrStiffnessErrors,
@@ -187,20 +218,29 @@ void measureErrors_mayaDag(const int numberOfErrors,
         status = marker->getPosXY(mkr_x, mkr_y, frame, timeEvalMode);
         CHECK_MSTATUS(status);
 #endif
-        // Scale marker Y.
-        {
-            double filmBackWidth =
-                camera->getFilmbackWidthValue(frame, timeEvalMode);
-            double filmBackHeight =
-                camera->getFilmbackHeightValue(frame, timeEvalMode);
-            int32_t renderWidth = camera->getRenderWidthValue();
-            int32_t renderHeight = camera->getRenderHeightValue();
-            double filmBackAspect = filmBackWidth / filmBackHeight;
-            double renderAspect = static_cast<double>(renderWidth) /
-                                  static_cast<double>(renderHeight);
-            double aspect = renderAspect / filmBackAspect;
-            mkr_y *= aspect;
-        }
+
+        const short filmFit = camera->getFilmFitValue();
+        const double filmBackWidth =
+            camera->getFilmbackWidthValue(frame, timeEvalMode);
+        const double filmBackHeight =
+            camera->getFilmbackHeightValue(frame, timeEvalMode);
+        const int32_t renderWidth = camera->getRenderWidthValue();
+        const int32_t renderHeight = camera->getRenderHeightValue();
+
+        const double filmBackAspect = filmBackWidth / filmBackHeight;
+        const double renderAspect = static_cast<double>(renderWidth) /
+                                    static_cast<double>(renderHeight);
+
+        // The Marker position must be scaled slightly based on the
+        // Camera's FilmFit attribute, because the camera projection
+        // matrix already has the same scale factors embedded in the
+        // matrix.
+        //
+        // This is only needed for the 'Maya DAG' mode, because the
+        // 'MM SceneGraph' (Rust) code already accounts for this
+        // change.
+        scale_xy_with_film_fit(filmFit, filmBackAspect, renderAspect, mkr_x,
+                               mkr_y);
 
         double mkr_weight = ud->markerWeightList[i];
         assert(mkr_weight >

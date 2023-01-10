@@ -37,7 +37,6 @@ import mmSolver._api.excep as excep
 import mmSolver._api.solveresult as solveresult
 import mmSolver._api.action as api_action
 import mmSolver._api.solverbase as solverbase
-import mmSolver._api.collection as api_collection
 import mmSolver._api.collectionutils as collectionutils
 import mmSolver._api.constant as const
 
@@ -128,8 +127,6 @@ def _validate_scene_graph_in_actions(action_list, vaction_list):
 
 
 def _override_actions_set_results_node(col, action_list, vaction_list):
-    assert isinstance(col, api_collection.Collection)
-
     col_node = col.get_node()
     assert col_node is not None
     assert maya.cmds.objExists(col_node)

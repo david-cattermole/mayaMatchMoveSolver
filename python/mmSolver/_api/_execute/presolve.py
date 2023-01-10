@@ -33,7 +33,6 @@ import mmSolver._api.excep as excep
 import mmSolver._api.solveresult as solveresult
 import mmSolver._api.collectionutils as collectionutils
 import mmSolver._api.marker as api_marker
-import mmSolver._api.collection as api_collection
 
 
 LOG = mmSolver.logger.get_logger()
@@ -171,8 +170,6 @@ def preSolve_unlockCollectionAttrs(col):
     Unlock all Collection attributes that will be set by mmSolver
     commands.
     """
-    assert isinstance(col, api_collection.Collection)
-
     col_node = col.get_node()
     assert col_node is not None
     assert maya.cmds.objExists(col_node)

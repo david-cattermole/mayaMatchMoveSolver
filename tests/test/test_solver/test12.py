@@ -42,13 +42,22 @@ import test.test_solver.solverutils as solverUtils
 
 # @unittest.skip
 class TestSolver12(solverUtils.SolverTestCase):
-    def do_solve(self, solver_name, solver_index, scene_graph_mode):
+    def do_solve(self, solver_name, solver_index, scene_graph_mode, single_frame):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
         scene_graph_name = mmapi.SCENE_GRAPH_MODE_NAME_LIST[scene_graph_mode]
         scene_graph_label = mmapi.SCENE_GRAPH_MODE_LABEL_LIST[scene_graph_mode]
         print('Scene Graph:', scene_graph_label)
+
+        start_frame = 1
+        end_frame = 10
+        maya.cmds.playbackOptions(
+            animationStartTime=start_frame,
+            minTime=start_frame,
+            animationEndTime=end_frame,
+            maxTime=end_frame,
+        )
 
         cam_tfm, cam_shp = self.create_camera('cam')
         maya.cmds.setAttr(cam_tfm + '.tx', -1.0)
@@ -59,6 +68,9 @@ class TestSolver12(solverUtils.SolverTestCase):
         maya.cmds.setAttr(tfm_a + '.tx', -5.5)
         maya.cmds.setAttr(tfm_a + '.ty', 6.4)
         maya.cmds.setAttr(tfm_a + '.tz', -25.0)
+        if single_frame is False:
+            maya.cmds.setKeyframe(tfm_a + '.tx', time=start_frame)
+            maya.cmds.setKeyframe(tfm_a + '.ty', time=end_frame)
 
         tfm_b = maya.cmds.createNode('transform')
         maya.cmds.connectAttr(tfm_a + '.tx', tfm_b + '.tx')
@@ -77,6 +89,17 @@ class TestSolver12(solverUtils.SolverTestCase):
         maya.cmds.setAttr(marker_tfm + '.tx', -0.243056042)
         maya.cmds.setAttr(marker_tfm + '.ty', 0.189583713)
         maya.cmds.setAttr(marker_tfm + '.tz', -1)
+        if single_frame is False:
+            maya.cmds.setKeyframe(
+                marker_tfm + '.tx', time=start_frame, value=-0.243056042
+            )
+            maya.cmds.setKeyframe(marker_tfm + '.tx', time=end_frame, value=0.243056042)
+            maya.cmds.setKeyframe(
+                marker_tfm + '.ty', time=start_frame, value=0.189583713
+            )
+            maya.cmds.setKeyframe(
+                marker_tfm + '.ty', time=end_frame, value=-0.189583713
+            )
 
         cameras = ((cam_tfm, cam_shp),)
         markers = ((marker_tfm, cam_shp, bundle_tfm),)
@@ -84,9 +107,12 @@ class TestSolver12(solverUtils.SolverTestCase):
             (tfm_a + '.tx', 'None', 'None', 'None', 'None'),
             (tfm_a + '.ty', 'None', 'None', 'None', 'None'),
         ]
-        frames = [
-            (1),
-        ]
+
+        frames = []
+        if single_frame is True:
+            frames = [(1)]
+        else:
+            frames = [(1), (2), (3), (4), (5), (6), (7), (8), (9), (10)]
 
         # save the output
         file_name = 'solver_test12_{}_{}_before.ma'.format(
@@ -124,47 +150,119 @@ class TestSolver12(solverUtils.SolverTestCase):
 
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
-        tx = maya.cmds.getAttr(bundle_tfm + '.tx')
-        ty = maya.cmds.getAttr(bundle_tfm + '.ty')
+        tx = maya.cmds.getAttr(bundle_tfm + '.tx', time=start_frame)
+        ty = maya.cmds.getAttr(bundle_tfm + '.ty', time=start_frame)
         print('tx:', tx)
         print('ty:', ty)
         assert self.approx_equal(tx, -6.0)
         assert self.approx_equal(ty, 3.6)
 
-    def test_init_ceres_maya_dag(self):
-        self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
-
-    def test_init_ceres_mmscenegraph(self):
+    def test_init_ceres_maya_dag_single_frame(self):
+        single_frame = True
         self.do_solve(
-            'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
+            'ceres',
+            mmapi.SOLVER_TYPE_CERES,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+            single_frame,
         )
 
-    def test_init_cminpack_lmdif_maya_dag(self):
+    def test_init_ceres_maya_dag_multi_frame(self):
+        single_frame = False
+        self.do_solve(
+            'ceres',
+            mmapi.SOLVER_TYPE_CERES,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+            single_frame,
+        )
+
+    def test_init_ceres_mmscenegraph_single_frame(self):
+        single_frame = True
+        self.do_solve(
+            'ceres',
+            mmapi.SOLVER_TYPE_CERES,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            single_frame,
+        )
+
+    def test_init_ceres_mmscenegraph_multi_frame(self):
+        single_frame = False
+        self.do_solve(
+            'ceres',
+            mmapi.SOLVER_TYPE_CERES,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            single_frame,
+        )
+
+    def test_init_cminpack_lmdif_maya_dag_single_frame(self):
+        single_frame = True
         self.do_solve(
             'cminpack_lmdif',
             mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
             mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+            single_frame,
         )
 
-    def test_init_cminpack_lmdif_mmscenegraph(self):
+    def test_init_cminpack_lmdif_maya_dag_multi_frame(self):
+        single_frame = False
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+            single_frame,
+        )
+
+    def test_init_cminpack_lmdif_mmscenegraph_single_frame(self):
+        single_frame = True
         self.do_solve(
             'cminpack_lmdif',
             mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
             mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            single_frame,
         )
 
-    def test_init_cminpack_lmder_maya_dag(self):
+    def test_init_cminpack_lmdif_mmscenegraph_multi_frame(self):
+        single_frame = False
+        self.do_solve(
+            'cminpack_lmdif',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            single_frame,
+        )
+
+    def test_init_cminpack_lmder_maya_dag_single_frame(self):
+        single_frame = True
         self.do_solve(
             'cminpack_lmder',
             mmapi.SOLVER_TYPE_CMINPACK_LMDER,
             mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+            single_frame,
         )
 
-    def test_init_cminpack_lmder_mmscenegraph(self):
+    def test_init_cminpack_lmder_maya_dag_multi_frame(self):
+        single_frame = False
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+            single_frame,
+        )
+
+    def test_init_cminpack_lmder_mmscenegraph_single_frame(self):
+        single_frame = True
         self.do_solve(
             'cminpack_lmder',
             mmapi.SOLVER_TYPE_CMINPACK_LMDER,
             mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            single_frame,
+        )
+
+    def test_init_cminpack_lmder_mmscenegraph_multi_frame(self):
+        single_frame = False
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            single_frame,
         )
 
 

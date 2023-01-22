@@ -89,7 +89,14 @@ def create_marker_bundle(cam, mkr_values, bnd_values):
 class TestSolveFilmFit(test_api_utils.APITestCase):
 
     # @unittest.skip
-    def do_solve(self, solver_name, solver_type_index, scene_graph_mode, film_fit):
+    def do_solve(
+        self,
+        solver_name,
+        solver_type_index,
+        scene_graph_mode,
+        film_fit,
+        use_standard_solver,
+    ):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
@@ -119,15 +126,22 @@ class TestSolveFilmFit(test_api_utils.APITestCase):
 
         # Cube geometry
         cube_tfm, poly_shp = maya.cmds.polyCube()
-        maya.cmds.setAttr(cube_tfm + ".tx", 77.9)
-        maya.cmds.setAttr(cube_tfm + ".ty", 128.3)
-        maya.cmds.setAttr(cube_tfm + ".tz", 0.0)
-        maya.cmds.setAttr(cube_tfm + ".rx", 33.7)
-        maya.cmds.setAttr(cube_tfm + ".ry", -7.1)
-        maya.cmds.setAttr(cube_tfm + ".rz", -57.7)
-        maya.cmds.setAttr(cube_tfm + ".sx", 26.0)
-        maya.cmds.setAttr(cube_tfm + ".sy", 26.0)
-        maya.cmds.setAttr(cube_tfm + ".sz", 26.0)
+        maya.cmds.setAttr(cube_tfm + '.tx', 77.9)
+        maya.cmds.setAttr(cube_tfm + '.ty', 128.3)
+        maya.cmds.setAttr(cube_tfm + '.tz', 0.0)
+        maya.cmds.setAttr(cube_tfm + '.rx', 33.7)
+        maya.cmds.setAttr(cube_tfm + '.ry', -7.1)
+        maya.cmds.setAttr(cube_tfm + '.rz', -57.7)
+        maya.cmds.setAttr(cube_tfm + '.sx', 26.0)
+        maya.cmds.setAttr(cube_tfm + '.sy', 26.0)
+        maya.cmds.setAttr(cube_tfm + '.sz', 26.0)
+
+        if use_standard_solver is False:
+            # Attributes must be keyed to be adjusted by the "Basic"
+            # solver.
+            attrs = ['tx', 'ty', 'tz', 'rx', 'ry', 'rz', 'sx', 'sy', 'sz']
+            for attr in attrs:
+                maya.cmds.setKeyframe('{}.{}'.format(cube_tfm, attr))
 
         # Camera attributes
         cam_tfm = 'trackboy_1_1'
@@ -186,11 +200,16 @@ class TestSolveFilmFit(test_api_utils.APITestCase):
 
         # Run solver!
         sol_list = []
-        sol = mmapi.SolverStandard()
-        sol.set_only_root_frames(False)
-        sol.set_use_single_frame(True)
-        sol.set_root_frame_list(frm_list)
-        sol.set_single_frame(frm)
+        if use_standard_solver is True:
+            sol = mmapi.SolverStandard()
+            sol.set_only_root_frames(False)
+            sol.set_root_frame_list(frm_list)
+            sol.set_use_single_frame(True)
+            sol.set_single_frame(frm)
+        else:
+            sol = mmapi.SolverBasic()
+            sol.set_use_single_frame(True)
+            sol.set_single_frame(frm)
         sol.set_solver_type(solver_type_index)
         sol.set_scene_graph_mode(scene_graph_mode)
         sol_list.append(sol)
@@ -212,6 +231,7 @@ class TestSolveFilmFit(test_api_utils.APITestCase):
         col.set_marker_list(mkr_list)
         col.set_attribute_list(attr_list)
         col.set_solver_list(sol_list)
+
         e = time.time()
         print('pre-solve time:', e - s)
 
@@ -246,68 +266,164 @@ class TestSolveFilmFit(test_api_utils.APITestCase):
         )
         return
 
-    def test_cminpack_lmder_maya_dag_film_fit_fill(self):
+    def test_cminpack_lmder_maya_dag_film_fit_fill_solver_basic(self):
+        use_standard_solver = False
         self.do_solve(
             'cminpack_lmder',
             mmapi.SOLVER_TYPE_CMINPACK_LMDER,
             mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
             FILM_FIT_FILL_VALUE,
+            use_standard_solver,
         )
 
-    def test_cminpack_lmder_maya_dag_film_fit_horizontal(self):
+    def test_cminpack_lmder_maya_dag_film_fit_fill_solver_standard(self):
+        use_standard_solver = True
         self.do_solve(
             'cminpack_lmder',
             mmapi.SOLVER_TYPE_CMINPACK_LMDER,
             mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
-            FILM_FIT_HORIZONTAL_VALUE,
-        )
-
-    def test_cminpack_lmder_maya_dag_film_fit_vertical(self):
-        self.do_solve(
-            'cminpack_lmder',
-            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
-            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
-            FILM_FIT_VERTICAL_VALUE,
-        )
-
-    def test_cminpack_lmder_maya_dag_film_fit_overscan(self):
-        self.do_solve(
-            'cminpack_lmder',
-            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
-            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
-            FILM_FIT_OVERSCAN_VALUE,
-        )
-
-    def test_cminpack_lmder_mmscenegraph_film_fit_fill(self):
-        self.do_solve(
-            'cminpack_lmder',
-            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
-            mmapi.SCENE_GRAPH_MODE_AUTO,
             FILM_FIT_FILL_VALUE,
+            use_standard_solver,
         )
 
-    def test_cminpack_lmder_mmscenegraph_film_fit_horizontal(self):
+    def test_cminpack_lmder_maya_dag_film_fit_horizontal_solver_basic(self):
+        use_standard_solver = False
         self.do_solve(
             'cminpack_lmder',
             mmapi.SOLVER_TYPE_CMINPACK_LMDER,
-            mmapi.SCENE_GRAPH_MODE_AUTO,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
             FILM_FIT_HORIZONTAL_VALUE,
+            use_standard_solver,
         )
 
-    def test_cminpack_lmder_mmscenegraph_film_fit_vertical(self):
+    def test_cminpack_lmder_maya_dag_film_fit_horizontal_solver_standard(self):
+        use_standard_solver = True
         self.do_solve(
             'cminpack_lmder',
             mmapi.SOLVER_TYPE_CMINPACK_LMDER,
-            mmapi.SCENE_GRAPH_MODE_AUTO,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+            FILM_FIT_HORIZONTAL_VALUE,
+            use_standard_solver,
+        )
+
+    def test_cminpack_lmder_maya_dag_film_fit_vertical_solver_basic(self):
+        use_standard_solver = False
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
             FILM_FIT_VERTICAL_VALUE,
+            use_standard_solver,
         )
 
-    def test_cminpack_lmder_mmscenegraph_film_fit_overscan(self):
+    def test_cminpack_lmder_maya_dag_film_fit_vertical_solver_standard(self):
+        use_standard_solver = True
         self.do_solve(
             'cminpack_lmder',
             mmapi.SOLVER_TYPE_CMINPACK_LMDER,
-            mmapi.SCENE_GRAPH_MODE_AUTO,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+            FILM_FIT_VERTICAL_VALUE,
+            use_standard_solver,
+        )
+
+    def test_cminpack_lmder_maya_dag_film_fit_overscan_solver_basic(self):
+        use_standard_solver = False
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
             FILM_FIT_OVERSCAN_VALUE,
+            use_standard_solver,
+        )
+
+    def test_cminpack_lmder_maya_dag_film_fit_overscan_solver_standard(self):
+        use_standard_solver = True
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+            FILM_FIT_OVERSCAN_VALUE,
+            use_standard_solver,
+        )
+
+    def test_cminpack_lmder_mmscenegraph_film_fit_fill_solver_basic(self):
+        use_standard_solver = False
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            FILM_FIT_FILL_VALUE,
+            use_standard_solver,
+        )
+
+    def test_cminpack_lmder_mmscenegraph_film_fit_fill_solver_standard(self):
+        use_standard_solver = True
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            FILM_FIT_FILL_VALUE,
+            use_standard_solver,
+        )
+
+    def test_cminpack_lmder_mmscenegraph_film_fit_horizontal_solver_basic(self):
+        use_standard_solver = False
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            FILM_FIT_HORIZONTAL_VALUE,
+            use_standard_solver,
+        )
+
+    def test_cminpack_lmder_mmscenegraph_film_fit_horizontal_solver_standard(self):
+        use_standard_solver = True
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            FILM_FIT_HORIZONTAL_VALUE,
+            use_standard_solver,
+        )
+
+    def test_cminpack_lmder_mmscenegraph_film_fit_vertical_solver_basic(self):
+        use_standard_solver = False
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            FILM_FIT_VERTICAL_VALUE,
+            use_standard_solver,
+        )
+
+    def test_cminpack_lmder_mmscenegraph_film_fit_vertical_solver_standard(self):
+        use_standard_solver = True
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            FILM_FIT_VERTICAL_VALUE,
+            use_standard_solver,
+        )
+
+    def test_cminpack_lmder_mmscenegraph_film_fit_overscan_solver_basic(self):
+        use_standard_solver = False
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            FILM_FIT_OVERSCAN_VALUE,
+            use_standard_solver,
+        )
+
+    def test_cminpack_lmder_mmscenegraph_film_fit_overscan_solver_standard(self):
+        use_standard_solver = True
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MM_SCENE_GRAPH,
+            FILM_FIT_OVERSCAN_VALUE,
+            use_standard_solver,
         )
 
 

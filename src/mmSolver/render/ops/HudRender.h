@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef MM_SOLVER_RENDER_PRESENT_TARGET_H
-#define MM_SOLVER_RENDER_PRESENT_TARGET_H
+#ifndef MM_SOLVER_RENDER_OPS_HUD_RENDER_H
+#define MM_SOLVER_RENDER_OPS_HUD_RENDER_H
 
 #include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
@@ -29,14 +29,18 @@
 namespace mmsolver {
 namespace render {
 
-class PresentTarget : public MHWRender::MPresentTarget {
+// Heads up display
+class HudRender : public MHWRender::MHUDRender {
 public:
-    PresentTarget(const MString &name);
-
-    ~PresentTarget() override;
+    HudRender();
+    ~HudRender() override;
 
     MHWRender::MRenderTarget *const *targetOverrideList(
         unsigned int &listSize) override;
+
+    bool hasUIDrawables() const override;
+    void addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
+                        const MHWRender::MFrameContext &frameContext) override;
 
     void setRenderTargets(MHWRender::MRenderTarget **targets,
                           const uint32_t index, const uint32_t count) {
@@ -58,4 +62,4 @@ protected:
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MAYA_MM_SOLVER_RENDER_PRESENT_TARGET_H
+#endif  // MAYA_MM_SOLVER_RENDER_OPS_HUD_RENDER_H

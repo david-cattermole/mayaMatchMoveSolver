@@ -32,9 +32,9 @@
 
 // MM Solver
 #include "mmSolver/mayahelper/maya_utils.h"
-#include "mmSolver/render/HudRender.h"
-#include "mmSolver/render/PresentTarget.h"
-#include "mmSolver/render/SceneRender.h"
+#include "mmSolver/render/ops/HudRender.h"
+#include "mmSolver/render/ops/PresentTarget.h"
+#include "mmSolver/render/ops/SceneRender.h"
 #include "mmSolver/render/data/constants.h"
 #include "mmSolver/utilities/debug_utils.h"
 

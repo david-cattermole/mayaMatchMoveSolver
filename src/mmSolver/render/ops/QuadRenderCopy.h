@@ -20,8 +20,8 @@
  * A full-screen quad render, with a shader applied.
  */
 
-#ifndef MM_SOLVER_RENDER_QUAD_RENDER_INVERT_H
-#define MM_SOLVER_RENDER_QUAD_RENDER_INVERT_H
+#ifndef MM_SOLVER_RENDER_OPS_QUAD_RENDER_COPY_H
+#define MM_SOLVER_RENDER_OPS_QUAD_RENDER_COPY_H
 
 #include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
@@ -32,15 +32,15 @@
 namespace mmsolver {
 namespace render {
 
-class QuadRenderInvert : public QuadRenderBase {
+class QuadRenderCopy : public QuadRenderBase {
 public:
-    QuadRenderInvert(const MString &name);
-    ~QuadRenderInvert() override;
+    QuadRenderCopy(const MString &name);
+    ~QuadRenderCopy() override;
+
+    const MHWRender::MShaderInstance *shader() override;
 
     MHWRender::MRenderTarget *const *targetOverrideList(
         unsigned int &listSize) override;
-
-    const MHWRender::MShaderInstance *shader() override;
 
     void setInputTarget(const uint32_t index) { m_target_index_input = index; }
 
@@ -54,4 +54,4 @@ protected:
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MM_SOLVER_RENDER_QUAD_RENDER_INVERT_H
+#endif  // MM_SOLVER_RENDER_OPS_QUAD_RENDER_COPY_H

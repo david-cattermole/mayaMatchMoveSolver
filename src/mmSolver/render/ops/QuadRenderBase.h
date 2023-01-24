@@ -20,8 +20,8 @@
  * A full-screen quad render, with a shader applied.
  */
 
-#ifndef MM_SOLVER_RENDER_QUAD_RENDER_BASE_H
-#define MM_SOLVER_RENDER_QUAD_RENDER_BASE_H
+#ifndef MM_SOLVER_RENDER_OPS_QUAD_RENDER_BASE_H
+#define MM_SOLVER_RENDER_OPS_QUAD_RENDER_BASE_H
 
 #include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
@@ -69,4 +69,4 @@ protected:
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MM_SOLVER_RENDER_QUAD_RENDER_BASE_H
+#endif  // MM_SOLVER_RENDER_OPS_QUAD_RENDER_BASE_H

@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef MM_SOLVER_RENDER_SCENE_RENDER_H
-#define MM_SOLVER_RENDER_SCENE_RENDER_H
+#ifndef MM_SOLVER_RENDER_OPS_SCENE_RENDER_H
+#define MM_SOLVER_RENDER_OPS_SCENE_RENDER_H
 
 // Maya
 #include <maya/M3dView.h>
@@ -176,4 +176,4 @@ protected:
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MAYA_MM_SOLVER_RENDER_SCENE_RENDER_H
+#endif  // MAYA_MM_SOLVER_RENDER_OPS_SCENE_RENDER_H

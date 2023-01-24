@@ -17,49 +17,41 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
+ * A full-screen quad render, with a shader applied.
  */
 
-#ifndef MM_SOLVER_RENDER_HUD_RENDER_H
-#define MM_SOLVER_RENDER_HUD_RENDER_H
+#ifndef MM_SOLVER_RENDER_OPS_QUAD_RENDER_INVERT_H
+#define MM_SOLVER_RENDER_OPS_QUAD_RENDER_INVERT_H
 
 #include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 
+#include "QuadRenderBase.h"
+
 namespace mmsolver {
 namespace render {
 
-// Heads up display
-class HudRender : public MHWRender::MHUDRender {
+class QuadRenderInvert : public QuadRenderBase {
 public:
-    HudRender();
-    ~HudRender() override;
+    QuadRenderInvert(const MString &name);
+    ~QuadRenderInvert() override;
 
     MHWRender::MRenderTarget *const *targetOverrideList(
         unsigned int &listSize) override;
 
-    bool hasUIDrawables() const override;
-    void addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
-                        const MHWRender::MFrameContext &frameContext) override;
+    const MHWRender::MShaderInstance *shader() override;
 
-    void setRenderTargets(MHWRender::MRenderTarget **targets,
-                          const uint32_t index, const uint32_t count) {
-        m_targets = targets;
-        m_target_index = index;
-        m_target_count = count;
-    }
+    void setInputTarget(const uint32_t index) { m_target_index_input = index; }
 
 protected:
-    // Targets to be used for operation
-    MHWRender::MRenderTarget **m_targets;
+    // Shader to use for the quad render
+    MHWRender::MShaderInstance *m_shader_instance;
 
-    // The index (and count) into the m_targets list of pointers. We
-    // are able to give the exact targets.
-    uint32_t m_target_index;
-    uint32_t m_target_count;
+    uint32_t m_target_index_input;
 };
 
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MAYA_MM_SOLVER_RENDER_HUD_RENDER_H
+#endif  // MM_SOLVER_RENDER_OPS_QUAD_RENDER_INVERT_H

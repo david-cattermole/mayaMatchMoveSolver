@@ -122,18 +122,18 @@ set(SOURCE_FILES
 if (MMSOLVER_BUILD_RENDERER)
   set(SOURCE_FILES
     ${SOURCE_FILES}
-    mmSolver/render/HudRender.cpp
     mmSolver/render/MMRendererCmd.cpp
-    mmSolver/render/PresentTarget.cpp
-    mmSolver/render/QuadRenderBase.cpp
-    mmSolver/render/QuadRenderBlend.cpp
-    mmSolver/render/QuadRenderCopy.cpp
-    mmSolver/render/QuadRenderEdgeDetect.cpp
-    mmSolver/render/QuadRenderInvert.cpp
-    mmSolver/render/QuadRenderLayerMerge.cpp
     mmSolver/render/RenderGlobalsNode.cpp
     mmSolver/render/RenderOverride.cpp
-    mmSolver/render/SceneRender.cpp
+    mmSolver/render/ops/HudRender.cpp
+    mmSolver/render/ops/PresentTarget.cpp
+    mmSolver/render/ops/QuadRenderBase.cpp
+    mmSolver/render/ops/QuadRenderBlend.cpp
+    mmSolver/render/ops/QuadRenderCopy.cpp
+    mmSolver/render/ops/QuadRenderEdgeDetect.cpp
+    mmSolver/render/ops/QuadRenderInvert.cpp
+    mmSolver/render/ops/QuadRenderLayerMerge.cpp
+    mmSolver/render/ops/SceneRender.cpp
     mmSolver/render/passes/BeginPasses.cpp
     mmSolver/render/passes/DisplayLayer.cpp
     mmSolver/render/passes/DisplayLayerList.cpp

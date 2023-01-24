@@ -17,53 +17,45 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * A full-screen quad render, with a shader applied.
  */
 
-#ifndef MM_SOLVER_RENDER_QUAD_RENDER_BLEND_H
-#define MM_SOLVER_RENDER_QUAD_RENDER_BLEND_H
+#ifndef MM_SOLVER_RENDER_OPS_PRESENT_TARGET_H
+#define MM_SOLVER_RENDER_OPS_PRESENT_TARGET_H
 
 #include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 
-#include "QuadRenderBase.h"
-
 namespace mmsolver {
 namespace render {
 
-class QuadRenderBlend : public QuadRenderBase {
+class PresentTarget : public MHWRender::MPresentTarget {
 public:
-    QuadRenderBlend(const MString &name);
-    ~QuadRenderBlend() override;
+    PresentTarget(const MString &name);
+
+    ~PresentTarget() override;
 
     MHWRender::MRenderTarget *const *targetOverrideList(
         unsigned int &listSize) override;
 
-    const MHWRender::MShaderInstance *shader() override;
-
-    void setInputTarget1(const uint32_t index) {
-        m_target_index_input1 = index;
+    void setRenderTargets(MHWRender::MRenderTarget **targets,
+                          const uint32_t index, const uint32_t count) {
+        m_targets = targets;
+        m_target_index = index;
+        m_target_count = count;
     }
-
-    void setInputTarget2(const uint32_t index) {
-        m_target_index_input2 = index;
-    }
-
-    void setBlend(const float value) { m_blend = value; }
 
 protected:
-    // Shader to use for the quad render
-    MHWRender::MShaderInstance *m_shader_instance;
+    // Targets to be used for operation
+    MHWRender::MRenderTarget **m_targets;
 
-    // The target indexes for render targets used to blend between.
-    uint32_t m_target_index_input1;
-    uint32_t m_target_index_input2;
-
-    float m_blend;
+    // The index (and count) into the m_targets list of pointers. We
+    // are able to give the exact targets.
+    uint32_t m_target_index;
+    uint32_t m_target_count;
 };
 
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MM_SOLVER_RENDER_QUAD_RENDER_BLEND_H
+#endif  // MAYA_MM_SOLVER_RENDER_OPS_PRESENT_TARGET_H

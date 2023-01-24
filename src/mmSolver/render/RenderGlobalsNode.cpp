@@ -37,9 +37,9 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "RenderColorFormat.h"
 #include "RenderOverride.h"
 #include "mmSolver/nodeTypeIds.h"
+#include "mmSolver/render/data/RenderColorFormat.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
@@ -48,12 +48,7 @@ namespace render {
 MTypeId RenderGlobalsNode::m_id(MM_RENDER_GLOBALS_TYPE_ID);
 
 // Input Attributes
-MObject RenderGlobalsNode::a_renderMode;
 MObject RenderGlobalsNode::a_renderColorFormat;
-MObject RenderGlobalsNode::a_wireframeAlpha;
-MObject RenderGlobalsNode::a_edgeDetectMode;
-MObject RenderGlobalsNode::a_edgeThickness;
-MObject RenderGlobalsNode::a_edgeThreshold;
 
 RenderGlobalsNode::RenderGlobalsNode() : m_attr_change_callback(0) {}
 
@@ -114,35 +109,6 @@ void RenderGlobalsNode::attr_change_func(MNodeMessage::AttributeMessage msg,
         return;
     }
 
-    if (plug_name == "wireframeAlpha") {
-        auto value = plug.asDouble(&status);
-        CHECK_MSTATUS(status);
-        override_ptr->setWireframeAlpha(value);
-        MMSOLVER_VRB("Wireframe Alpha value set: " << value);
-    }
-
-    if (plug_name == "edgeDetectMode") {
-        short value = plug.asShort(&status);
-        CHECK_MSTATUS(status);
-        auto edge_detect_mode = static_cast<EdgeDetectMode>(value);
-        override_ptr->setEdgeDetectMode(edge_detect_mode);
-        MMSOLVER_VRB("Edge Detect Mode value set: " << value);
-    }
-
-    if (plug_name == "edgeThickness") {
-        auto value = plug.asDouble(&status);
-        CHECK_MSTATUS(status);
-        override_ptr->setEdgeThickness(value);
-        MMSOLVER_VRB("Edge Thickness value set: " << value);
-    }
-
-    if (plug_name == "edgeThreshold") {
-        auto value = plug.asDouble(&status);
-        CHECK_MSTATUS(status);
-        override_ptr->setEdgeThreshold(value);
-        MMSOLVER_VRB("Edge Threshold value set: " << value);
-    }
-
     // Update viewport.
     M3dView view = M3dView::active3dView(&status);
     if (!status) {
@@ -166,9 +132,9 @@ MStatus RenderGlobalsNode::initialize() {
     MFnEnumAttribute eAttr;
 
     // Render Color Format; 0=8-bit float, 1=16-bit float, 2=32-bit float
-    a_renderColorFormat = eAttr.create(
-        "renderColorFormat", "rndcolfmt",
-        static_cast<short>(RenderColorFormat::kRGBA8BitInt), &status);
+    a_renderColorFormat =
+        eAttr.create("renderColorFormat", "rndcolfmt",
+                     static_cast<short>(kRenderColorFormatDefault), &status);
     CHECK_MSTATUS(status);
     CHECK_MSTATUS(
         eAttr.addField("RGBA 8-Bit (integer)",
@@ -182,71 +148,6 @@ MStatus RenderGlobalsNode::initialize() {
     CHECK_MSTATUS(eAttr.setStorable(true));
     CHECK_MSTATUS(eAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_renderColorFormat));
-
-    // Render Mode
-    a_renderMode = eAttr.create("renderMode", "rndmd",
-                                static_cast<short>(RenderMode::kZero), &status);
-    CHECK_MSTATUS(status);
-    CHECK_MSTATUS(
-        eAttr.addField("Zero", static_cast<short>(RenderMode::kZero)));
-    CHECK_MSTATUS(eAttr.addField("One", static_cast<short>(RenderMode::kOne)));
-    CHECK_MSTATUS(eAttr.addField("Two", static_cast<short>(RenderMode::kTwo)));
-    CHECK_MSTATUS(
-        eAttr.addField("Three", static_cast<short>(RenderMode::kThree)));
-    CHECK_MSTATUS(
-        eAttr.addField("Four", static_cast<short>(RenderMode::kFour)));
-    CHECK_MSTATUS(eAttr.setStorable(true));
-    CHECK_MSTATUS(eAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_renderMode));
-
-    // Wireframe Alpha
-    auto alpha_min = 0.0;
-    auto alpha_max = 1.0;
-    a_wireframeAlpha =
-        nAttr.create("wireframeAlpha", "wralp", MFnNumericData::kDouble,
-                     kWireframeAlphaDefault);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setMin(alpha_min));
-    CHECK_MSTATUS(nAttr.setMax(alpha_max));
-    CHECK_MSTATUS(addAttribute(a_wireframeAlpha));
-
-    // Edge Detect Mode
-    a_edgeDetectMode =
-        eAttr.create("edgeDetectMode", "edgdtmd",
-                     static_cast<short>(kEdgeDetectModeDefault), &status);
-    CHECK_MSTATUS(status);
-    CHECK_MSTATUS(
-        eAttr.addField("Sobel", static_cast<short>(EdgeDetectMode::kSobel)));
-    CHECK_MSTATUS(eAttr.addField(
-        "Frei-Chen", static_cast<short>(EdgeDetectMode::kFreiChen)));
-    CHECK_MSTATUS(eAttr.setStorable(true));
-    CHECK_MSTATUS(eAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_edgeDetectMode));
-
-    // Edge Thickness
-    auto thickness_min = 0.0;
-    auto thickness_max = 2.0;
-    a_edgeThickness =
-        nAttr.create("edgeThickness", "edgthk", MFnNumericData::kDouble,
-                     kEdgeThicknessDefault);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setMin(thickness_min));
-    CHECK_MSTATUS(nAttr.setSoftMax(thickness_max));
-    CHECK_MSTATUS(addAttribute(a_edgeThickness));
-
-    // Edge Threshold
-    auto threshold_min = 0.0;
-    auto threshold_max = 2.0;
-    a_edgeThreshold =
-        nAttr.create("edgeThreshold", "edgthd", MFnNumericData::kDouble,
-                     kEdgeThresholdDefault);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setMin(threshold_min));
-    CHECK_MSTATUS(nAttr.setSoftMax(threshold_max));
-    CHECK_MSTATUS(addAttribute(a_edgeThreshold));
 
     return MS::kSuccess;
 }

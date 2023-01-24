@@ -43,12 +43,6 @@ namespace render {
 #define MM_RENDERER_FISH_EYE_FLAG "-fe"
 #define MM_RENDERER_FISH_EYE_FLAG_LONG "-fishEye"
 
-#define MM_RENDERER_EDGE_DETECT_FLAG "-ed"
-#define MM_RENDERER_EDGE_DETECT_FLAG_LONG "-edgeDetect"
-
-#define MM_RENDERER_WIREFRAME_ALPHA_FLAG "-wa"
-#define MM_RENDERER_WIREFRAME_ALPHA_FLAG_LONG "-wireframeAlpha"
-
 /*
  * MM Renderer command.
  */
@@ -69,8 +63,6 @@ public:
 private:
     bool m_fishEye;
     bool m_swirl;
-    bool m_edgeDetect;
-    double m_wireframe_alpha;
 };
 
 }  // namespace render

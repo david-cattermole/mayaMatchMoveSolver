@@ -24,7 +24,7 @@
 #include <maya/MShaderManager.h>
 #include <maya/MStreamUtils.h>
 
-#include "constants.h"
+#include "mmSolver/render/data/constants.h"
 
 namespace mmsolver {
 namespace render {

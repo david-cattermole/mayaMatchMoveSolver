@@ -25,7 +25,7 @@
 #include <maya/MStreamUtils.h>
 
 // MM Solver
-#include "constants.h"
+#include "mmSolver/render/data/constants.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {

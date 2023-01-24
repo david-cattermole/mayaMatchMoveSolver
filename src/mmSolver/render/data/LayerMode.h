@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 David Cattermole.
+ * Copyright (C) 2023 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -19,22 +19,20 @@
  *
  */
 
-#ifndef MM_SOLVER_RENDER_RENDER_MODE_H
-#define MM_SOLVER_RENDER_RENDER_MODE_H
+#ifndef MM_SOLVER_RENDER_DATA_LAYER_MODE_H
+#define MM_SOLVER_RENDER_DATA_LAYER_MODE_H
 
 namespace mmsolver {
 namespace render {
 
-enum class RenderMode : short {
-    kZero = 0,
-    kOne = 1,
-    kTwo = 2,
-    kThree = 3,
-    kFour = 4,
+enum class LayerMode : short {
+    kZDepth = 0,  // Default
+    kOver,        // A over B.
+    kPlus,        // Add A and B together.
     kRenderModeCount,
 };
 
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MM_SOLVER_RENDER_RENDER_MODE_H
+#endif  // MM_SOLVER_RENDER_DATA_LAYER_MODE_H

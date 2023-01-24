@@ -43,6 +43,10 @@ clang-format -i --style=file ^
        "%PROJECT_ROOT%\src\mmSolver\node\*.h" ^
        "%PROJECT_ROOT%\src\mmSolver\render\*.cpp" ^
        "%PROJECT_ROOT%\src\mmSolver\render\*.h" ^
+       "%PROJECT_ROOT%\src\mmSolver\render\passes\*.cpp" ^
+       "%PROJECT_ROOT%\src\mmSolver\render\passes\*.h" ^
+       "%PROJECT_ROOT%\src\mmSolver\render\data\*.cpp" ^
+       "%PROJECT_ROOT%\src\mmSolver\render\data\*.h" ^
        "%PROJECT_ROOT%\src\mmSolver\sfm\*.cpp" ^
        "%PROJECT_ROOT%\src\mmSolver\sfm\*.h" ^
        "%PROJECT_ROOT%\src\mmSolver\shape\*.cpp" ^

@@ -1,0 +1,78 @@
+// Copyright (C) 2021, 2023 David Cattermole.
+//
+// This file is part of mmSolver.
+//
+// mmSolver is free software: you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// mmSolver is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+// --------------------------------------------------------------------
+//
+// Draw the depth pass, with a small offset to the Z-Depth value.
+
+// World-view-projection matrix.
+uniform mat4 gWVPXf : WorldViewProjection;
+
+// How much to offset the Z-Depth?
+//
+// If you assume the depth buffer has at least 24 bits for the depth
+// value, then the minimum difference between 2 values is:
+//
+//     1 / ((2 ^ 24) / 16) = 1.0 / 1048576.0
+//
+// Therefore, the Z-Depth offset should be at least plus or minus
+// "1.0 / 1048576.0".
+uniform float gDepthOffset = 0.0f;
+
+// Vertex Shader inputs.
+attribute VS_INPUT {
+    vec4 Pos : POSITION;
+    vec2 UV : TEXCOORD0;
+};
+
+// Vertex Shader outputs.
+//
+// NOTE: No inputs are needed for the pixel shader.
+attribute VS_TO_PS {
+    vec2 VSUV : TEXCOORD0;
+};
+
+// Vertex Shader
+GLSLShader VS_mmDepth {
+    void main() {
+        vec4 position = gWVPXf * Pos;
+
+        // Offset the Z-Depth of the position a little bit, to avoid
+        // Z-fighting.
+        position.z -= position.w * gDepthOffset;
+
+        gl_Position = position;
+    }
+}
+
+// Pixel Shader Outputs
+attribute pixelOut {
+    vec4 colorOut : COLOR0;
+}
+
+GLSLShader PS_mmDepth_Main {
+    void main() {
+        colorOut = vec4(0.0, 0.0, 0.0, 0.0);
+    }
+}
+
+// The technique, used to merge textures together.
+technique Main {
+    pass p0 {
+        VertexShader(in VS_INPUT, out VS_TO_PS) = VS_mmDepth;
+        PixelShader(in VS_TO_PS, out pixelOut) = PS_mmDepth_Main;
+    }
+}

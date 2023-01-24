@@ -19,8 +19,8 @@
  *
  */
 
-#ifndef MM_SOLVER_RENDER_EDGE_DETECT_MODE_H
-#define MM_SOLVER_RENDER_EDGE_DETECT_MODE_H
+#ifndef MM_SOLVER_RENDER_DATA_EDGE_DETECT_MODE_H
+#define MM_SOLVER_RENDER_DATA_EDGE_DETECT_MODE_H
 
 namespace mmsolver {
 namespace render {
@@ -34,4 +34,4 @@ enum class EdgeDetectMode : short {
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MM_SOLVER_RENDER_EDGE_DETECT_MODE_H
+#endif  // MM_SOLVER_RENDER_DATA_EDGE_DETECT_MODE_H

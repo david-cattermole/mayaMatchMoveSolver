@@ -25,7 +25,7 @@
 #include <maya/MStreamUtils.h>
 
 // MM Solver
-#include "constants.h"
+#include "mmSolver/render/data/constants.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
@@ -38,6 +38,8 @@ QuadRenderEdgeDetect::QuadRenderEdgeDetect(const MString &name)
     , m_target_index_depth(0)
     , m_target_index_color(0)
     , m_edge_detect_mode(kEdgeDetectModeDefault)
+    , m_edge_color(kEdgeColorDefault)
+    , m_edge_alpha(kEdgeAlphaDefault)
     , m_thickness(kEdgeThicknessDefault)
     , m_threshold(kEdgeThresholdDefault) {}
 
@@ -153,11 +155,18 @@ const MHWRender::MShaderInstance *QuadRenderEdgeDetect::shader() {
         CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter("gThreshold",
                                                                 m_threshold));
 
-        // Colors
-        CHECK_MSTATUS(m_shader_instance_sobel->setParameter("gLineColor",
-                                                            kEdgeColorDefault));
-        CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter(
-            "gLineColor", kEdgeColorDefault));
+        // Edge Color and Alpha
+        const float alpha = m_edge_alpha;
+        const float color[] = {m_edge_color.r, m_edge_color.g, m_edge_color.b,
+                               1.0};
+        CHECK_MSTATUS(
+            m_shader_instance_sobel->setParameter("gEdgeColor", color));
+        CHECK_MSTATUS(
+            m_shader_instance_frei_chen->setParameter("gEdgeColor", color));
+        CHECK_MSTATUS(
+            m_shader_instance_sobel->setParameter("gEdgeAlpha", alpha));
+        CHECK_MSTATUS(
+            m_shader_instance_frei_chen->setParameter("gEdgeAlpha", alpha));
     }
 
     if (m_edge_detect_mode == EdgeDetectMode::kSobel) {

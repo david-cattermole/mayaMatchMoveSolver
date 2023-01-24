@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 David Cattermole.
+ * Copyright (C) 2023 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -19,20 +19,19 @@
  *
  */
 
-#ifndef MM_SOLVER_RENDER_RENDER_COLOR_FORMAT_H
-#define MM_SOLVER_RENDER_RENDER_COLOR_FORMAT_H
+#ifndef MM_SOLVER_RENDER_DATA_BACKGROUND_STYLE_H
+#define MM_SOLVER_RENDER_DATA_BACKGROUND_STYLE_H
 
 namespace mmsolver {
 namespace render {
 
-enum class RenderColorFormat : short {
-    kRGBA8BitInt = 0,
-    kRGBA16BitFloat = 1,
-    kRGBA32BitFloat = 2,
-    kRenderFormatCount,
+enum class BackgroundStyle : short {
+    kMayaDefault = 0,
+    kTransparentBlack,
+    kBackgroundStyleCount,
 };
 
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MM_SOLVER_RENDER_RENDER_COLOR_FORMAT_H
+#endif  // MM_SOLVER_RENDER_DATA_BACKGROUND_STYLE_H

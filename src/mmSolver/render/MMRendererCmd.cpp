@@ -33,8 +33,7 @@
 namespace mmsolver {
 namespace render {
 
-MMRendererCmd::MMRendererCmd()
-    : m_fishEye(true), m_swirl(false), m_edgeDetect(true) {}
+MMRendererCmd::MMRendererCmd() : m_fishEye(true), m_swirl(false) {}
 
 MMRendererCmd::~MMRendererCmd() {}
 
@@ -48,10 +47,6 @@ MSyntax MMRendererCmd::newSyntax() {
                    MSyntax::kBoolean);
     syntax.addFlag(MM_RENDERER_FISH_EYE_FLAG, MM_RENDERER_FISH_EYE_FLAG_LONG,
                    MSyntax::kBoolean);
-    syntax.addFlag(MM_RENDERER_EDGE_DETECT_FLAG,
-                   MM_RENDERER_EDGE_DETECT_FLAG_LONG, MSyntax::kBoolean);
-    syntax.addFlag(MM_RENDERER_WIREFRAME_ALPHA_FLAG,
-                   MM_RENDERER_WIREFRAME_ALPHA_FLAG_LONG, MSyntax::kDouble);
     syntax.enableQuery(true);
     return syntax;
 }
@@ -117,17 +112,17 @@ MStatus MMRendererCmd::doIt(const MArgList &args) {
     //     }
     // }
 
-    // Blend
-    if (argData.isFlagSet(MM_RENDERER_WIREFRAME_ALPHA_FLAG)) {
-        if (isQuery) {
-            m_wireframe_alpha = override_ptr->wireframeAlpha();
-            MPxCommand::setResult(m_wireframe_alpha);
-        } else {
-            argData.getFlagArgument(MM_RENDERER_WIREFRAME_ALPHA_FLAG, 0,
-                                    m_wireframe_alpha);
-            override_ptr->setWireframeAlpha(m_wireframe_alpha);
-        }
-    }
+    // // Blend
+    // if (argData.isFlagSet(MM_RENDERER_WIREFRAME_ALPHA_FLAG)) {
+    //     if (isQuery) {
+    //         m_wireframe_alpha = override_ptr->wireframeAlpha();
+    //         MPxCommand::setResult(m_wireframe_alpha);
+    //     } else {
+    //         argData.getFlagArgument(MM_RENDERER_WIREFRAME_ALPHA_FLAG, 0,
+    //                                 m_wireframe_alpha);
+    //         override_ptr->setWireframeAlpha(m_wireframe_alpha);
+    //     }
+    // }
 
     M3dView view = M3dView::active3dView(&status);
     if (!status) {
@@ -135,7 +130,9 @@ MStatus MMRendererCmd::doIt(const MArgList &args) {
         return status;
     }
 
-    view.refresh(false, true);
+    const bool all_views = false;
+    const bool force_refresh = true;
+    view.refresh(all_views, force_refresh);
 
     return MStatus::kSuccess;
 }

@@ -130,9 +130,14 @@ if (MMSOLVER_BUILD_RENDERER)
     mmSolver/render/QuadRenderCopy.cpp
     mmSolver/render/QuadRenderEdgeDetect.cpp
     mmSolver/render/QuadRenderInvert.cpp
+    mmSolver/render/QuadRenderLayerMerge.cpp
     mmSolver/render/RenderGlobalsNode.cpp
     mmSolver/render/RenderOverride.cpp
     mmSolver/render/SceneRender.cpp
+    mmSolver/render/passes/BeginPasses.cpp
+    mmSolver/render/passes/DisplayLayer.cpp
+    mmSolver/render/passes/DisplayLayerList.cpp
+    mmSolver/render/passes/EndPasses.cpp
   )
 
   # Allow C++ source code to query the defined 'WITH_MM_RENDERER'

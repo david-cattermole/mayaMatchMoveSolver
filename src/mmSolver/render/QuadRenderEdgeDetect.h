@@ -28,8 +28,8 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "EdgeDetectMode.h"
 #include "QuadRenderBase.h"
+#include "mmSolver/render/data/EdgeDetectMode.h"
 
 namespace mmsolver {
 namespace render {
@@ -47,18 +47,21 @@ public:
     void setInputDepthTarget(const uint32_t index) {
         m_target_index_depth = index;
     }
-
     void setInputColorTarget(const uint32_t index) {
         m_target_index_color = index;
     }
 
-    void setThickness(const float value) { m_thickness = value; }
-
-    void setThreshold(const float value) { m_threshold = value; }
-
     void setEdgeDetectMode(const EdgeDetectMode value) {
         m_edge_detect_mode = value;
     }
+    void setEdgeColor(const float r, const float g, const float b) {
+        m_edge_color.r = r;
+        m_edge_color.g = g;
+        m_edge_color.b = b;
+    }
+    void setEdgeAlpha(const float value) { m_edge_alpha = value; }
+    void setThickness(const float value) { m_thickness = value; }
+    void setThreshold(const float value) { m_threshold = value; }
 
 protected:
     // Shader to use for the quad render
@@ -69,6 +72,8 @@ protected:
     uint32_t m_target_index_color;
 
     EdgeDetectMode m_edge_detect_mode;
+    MColor m_edge_color;
+    float m_edge_alpha;
     float m_thickness;
     float m_threshold;
 };

@@ -45,11 +45,9 @@ public:
     }
 
     const MFloatPoint &viewRectangle() const { return m_view_rectangle; }
-
     void setViewRectangle(const MFloatPoint &rect) { m_view_rectangle = rect; }
 
     uint32_t clearMask() { return m_clear_mask; }
-
     void setClearMask(const uint32_t clear_mask) { m_clear_mask = clear_mask; }
 
 protected:

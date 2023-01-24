@@ -33,7 +33,7 @@ uniform sampler2D gDepthSampler = sampler_state {
 };
 
 // Color texture.
-// Expected to be a single channel zero to one image.
+// Expected to be a normal RGB three channel image.
 uniform texture2D gColorTex : InputTexture
 <
     string UIName = "Color Texture";
@@ -42,8 +42,9 @@ uniform sampler2D gColorSampler = sampler_state {
     Texture = <gColorTex>;
 };
 
-// Colours
-uniform vec4 gLineColor : DIFFUSE = {1, 0, 0, 1};
+// Colors
+uniform vec4 gEdgeColor : DIFFUSE = {1, 0, 0, 1};
+uniform float gEdgeAlpha = 1.0f;
 
 // Distance in pixels to detect an edge.
 uniform float gThickness = 2.0f;
@@ -141,7 +142,7 @@ GLSLShader PS_SilhouetteSobel {
         colorOut = texture2D(gColorSampler, VSUV.xy);
         float dist = sqrt(sx * sx + sy * sy);
         if (dist > (gThreshold * 0.001)) {
-            colorOut = gLineColor;
+            colorOut = lerp(colorOut, gEdgeColor, gEdgeAlpha);
         }
     }
 }
@@ -217,7 +218,7 @@ GLSLShader PS_SilhouetteFreiChen {
         colorOut = texture2D(gColorSampler, VSUV.xy);
         float dist = sqrt(m / s) * 10.0;
         if (dist > (gThreshold * 0.001)) {
-            colorOut = gLineColor;
+            colorOut = lerp(colorOut, gEdgeColor, gEdgeAlpha);
         }
     }
 }

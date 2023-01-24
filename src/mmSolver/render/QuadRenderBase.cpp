@@ -35,11 +35,19 @@ QuadRenderBase::QuadRenderBase(const MString &name)
     , m_targets(nullptr)
     , m_target_index(0)
     , m_target_count(0)
-    , m_clear_mask(MHWRender::MClearOperation::kClearNone) {}
+    , m_clear_mask(MHWRender::MClearOperation::kClearNone) {
+    m_view_rectangle[0] = 0.0f;
+    m_view_rectangle[1] = 0.0f;
+    m_view_rectangle[2] = 1.0f;
+    m_view_rectangle[3] = 1.0f;
+}
 
 QuadRenderBase::~QuadRenderBase() { m_targets = nullptr; }
 
 MHWRender::MClearOperation &QuadRenderBase::clearOperation() {
+    float val[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+    mClearOperation.setClearColor(val);
+    mClearOperation.setClearColor2(val);
     mClearOperation.setClearGradient(false);
     mClearOperation.setMask(m_clear_mask);
     return mClearOperation;

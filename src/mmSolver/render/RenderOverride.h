@@ -21,9 +21,13 @@
  *
  */
 
-#ifndef MM_SOLVER_RENDER_MAIN_OVERRIDE_H
-#define MM_SOLVER_RENDER_MAIN_OVERRIDE_H
+#ifndef MM_SOLVER_RENDER_RENDER_OVERRIDE_H
+#define MM_SOLVER_RENDER_RENDER_OVERRIDE_H
 
+// STL
+#include <vector>
+
+// Maya
 #include <maya/MBoundingBox.h>
 #include <maya/MDagMessage.h>
 #include <maya/MObjectHandle.h>
@@ -33,106 +37,38 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "EdgeDetectMode.h"
-#include "RenderColorFormat.h"
 #include "RenderGlobalsNode.h"
-#include "RenderMode.h"
-#include "constants.h"
+#include "mmSolver/render/data/EdgeDetectMode.h"
+#include "mmSolver/render/data/RenderColorFormat.h"
+#include "mmSolver/render/data/RenderMode.h"
+#include "mmSolver/render/data/constants.h"
+#include "mmSolver/render/passes/BeginPasses.h"
+#include "mmSolver/render/passes/DisplayLayerList.h"
+#include "mmSolver/render/passes/EndPasses.h"
 
 namespace mmsolver {
 namespace render {
 
 class RenderOverride : public MHWRender::MRenderOverride {
 public:
-    // Enumerations to identify the different operation stage. Each of
-    // these passes refers to the enums below: "PassesStart",
-    // "PassesLayer", and "PassesEnd",
+    // Enumerations to identify the different operation stage.
     enum Pass {
         kUninitialized = 0,
-        kStart,
-        kLayer,
+        kBegin,
+        kLayers,
         kEnd,
 
         // Holds the total number of entries (must be last field).
         kPassCount
     };
 
-    // --------------------------------------------------------------------
-    // Start Passes
-    //
-    // Enumerations to identify an operation within a list of
-    // operations, used at the start of the render override.
-    enum PassesStart {
-        // Draw the scene (except image planes), but only write to the
-        // depth channel.
-        kSceneDepthPass = 0,
-        //
-        // Draw the Maya background color using the Maya preferences,
-        // and draw imagePlanes.
-        //
-        // The render targets used for this pass is only the colour,
-        // so the depth is ignored.
-        kSceneBackgroundPass,
-        //
-        // Draw manipulators and excluded objects (but image planes
-        // are drawn here).
-        kSceneSelectionPass,
-
-        // Holds the total number of entries (must be last field).
-        kPassesStartCount
-    };
-
-    // Layer passes
-    //
-    // Enumerations to identify an operation within a list of
-    // operations, used for each layer of the render override.
-    enum PassesLayer {
-        // --------------------------------------------------------------------
-        // Edge Detect
-        //
-        // Post ops on target 1
-        kEdgeDetectOp = 0,
-        // Copy target 1 to target 2.
-        kEdgeCopyOp,
-        // --------------------------------------------------------------------
-
-        // --------------------------------------------------------------------
-        // Hidden Line
-        //
-        // Draw the scene as wireframe, but it will be cut out from
-        // the depth pass.
-        kSceneWireframePass,
-        // Blend target 1 and 2 back to target 1
-        kWireframeBlendOp,
-        // --------------------------------------------------------------------
-
-        // Holds the total number of entries (must be last field).
-        kPassesLayerCount
-    };
-
-    // End Passes
-    //
-    // Enumerations to identify an operation within
-    // a list of operations, used at the start of the render override.
-    enum PassesEnd {
-        kSceneManipulatorPass = 0,  // Draw the scene with 3D manipulators.
-        kHudPass,                   // Draw 2D Heads-Up-Display (HUD) elements.
-        kPresentOp,                 // Present the drawn texture to the screen.
-
-        // Holds the total number of entries (must be last field).
-        kPassesEndCount
-    };
-
     RenderOverride(const MString& name);
-
     ~RenderOverride() override;
 
     MHWRender::DrawAPI supportedDrawAPIs() const override;
 
     bool startOperationIterator() override;
-
     MHWRender::MRenderOperation* renderOperation() override;
-
     bool nextRenderOperation() override;
 
     // Basic setup and cleanup
@@ -145,35 +81,12 @@ public:
     // The Maya panel name this override is locked to.
     const MString& panelName() const { return m_panel_name; }
 
-    // The blend value between wireframe and non-wireframe.
-    double wireframeAlpha() const { return m_wireframe_alpha; }
-    void setWireframeAlpha(const double value) { m_wireframe_alpha = value; }
-
-    EdgeDetectMode edgeDetectMode() const { return m_edge_detect_mode; }
-    void setEdgeDetectMode(const EdgeDetectMode value) {
-        m_edge_detect_mode = value;
-    }
-
-    double edgeThickness() const { return m_edge_thickness; }
-    void setEdgeThickness(const double value) { m_edge_thickness = value; }
-
-    double edgeThreshold() const { return m_edge_threshold; }
-    void setEdgeThreshold(const double value) { m_edge_threshold = value; }
-
 protected:
     MStatus updateParameters();
+    MStatus updateDisplayLayers();
     MStatus updateRenderOperations();
     MStatus updateRenderTargets();
     MStatus setPanelNames(const MString& name);
-
-    // Operation lists
-    MHWRender::MRenderOperation* m_ops_start[PassesStart::kPassesStartCount];
-    MHWRender::MRenderOperation* m_ops_layer[PassesLayer::kPassesLayerCount];
-    MHWRender::MRenderOperation* m_ops_end[PassesEnd::kPassesEndCount];
-
-    // Keep track of the current state of the render operation layers.
-    Pass m_current_pass;
-    int32_t m_current_op;
 
     // Shared render target list
     MString m_target_override_names[kTargetCount];
@@ -200,9 +113,8 @@ protected:
     friend class MMRendererCmd;
 
 private:
-    MRenderOperation* getOperationFromList(int32_t& current_op,
-                                           MRenderOperation** ops,
-                                           const int32_t count);
+    static MStatus getDisplayLayerFromNode(MFnDependencyNode& depends_node,
+                                           DisplayLayer& out_display_layer);
 
     // Override is for this panel
     MString m_panel_name;
@@ -213,21 +125,27 @@ private:
     // A handle to the 'hardwareRenderingGlobals' node.
     MObjectHandle m_maya_hardware_globals_node;
 
+    // Display layer node object handles.
+    std::vector<MObjectHandle> m_display_layer_nodes;
+
     // Query update parameters from the mmRenderGlobals node.
     bool m_pull_updates;
 
+    // Keep track of the current state of the render operation layers.
+    Pass m_current_pass;
+
     // Renderer settings
-    RenderMode m_render_mode;
     RenderColorFormat m_render_color_format;
     bool m_multi_sample_enable;
     int32_t m_multi_sample_count;
-    double m_wireframe_alpha;
-    EdgeDetectMode m_edge_detect_mode;
-    double m_edge_thickness;
-    double m_edge_threshold;
+
+    // Passes and Layers.
+    BeginPasses m_begin_passes;
+    EndPasses m_end_passes;
+    DisplayLayerList m_display_layers;
 };
 
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MAYA_MM_SOLVER_RENDER_MAIN_OVERRIDE_H
+#endif  // MAYA_MM_SOLVER_RENDER_RENDER_OVERRIDE_H

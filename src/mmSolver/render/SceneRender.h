@@ -34,7 +34,7 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "constants.h"
+#include "mmSolver/render/data/constants.h"
 
 namespace mmsolver {
 namespace render {
@@ -54,6 +54,11 @@ public:
     MUint64 getObjectTypeExclusions() override;
     MHWRender::MClearOperation &clearOperation() override;
 
+    const MHWRender::MShaderInstance *shaderOverride() override;
+    void setShaderOverride(MHWRender::MShaderInstance *value) {
+        m_shader_override = value;
+    }
+
     MHWRender::MSceneRender::MPostEffectsOverride postEffectsOverride()
         override;
     void setPostEffectsOverride(
@@ -69,46 +74,53 @@ public:
     }
 
     const MString &panelName() const { return m_panel_name; }
-
     void setPanelName(const MString &name) { m_panel_name.set(name.asChar()); }
 
     const MFloatPoint &viewRectangle() const { return m_view_rectangle; }
-
     void setViewRectangle(const MFloatPoint &rect) { m_view_rectangle = rect; }
 
     const MHWRender::MSceneRender::MSceneFilterOption sceneFilter() const {
         return m_scene_filter;
     }
-
     void setSceneFilter(
         const MHWRender::MSceneRender::MSceneFilterOption value) {
         m_scene_filter = value;
     }
 
-    const uint32_t clearMask() const { return m_clear_mask; }
+    // "Background Style" is the color/alpha of the pixels that get
+    // cleared (by the "clear operation"), which also uses the
+    // "clearMask" to know which parts of the buffer are cleared (with
+    // the requested color).
+    const BackgroundStyle backgroundStyle() const { return m_background_style; }
+    void setBackgroundStyle(const BackgroundStyle value) {
+        m_background_style = value;
+    }
 
+    const uint32_t clearMask() const { return m_clear_mask; }
     void setClearMask(const uint32_t value) { m_clear_mask = value; }
 
     const MUint64 excludeTypes() const { return m_exclude_types; }
-
     void setExcludeTypes(const MUint64 value) { m_exclude_types = value; }
 
     const MHWRender::MSceneRender::MDisplayMode displayModeOverride() const {
         return m_display_mode_override;
     }
-
     void setDisplayModeOverride(
         const MHWRender::MSceneRender::MDisplayMode value) {
         m_display_mode_override = value;
     }
 
     const bool doSelectable() const { return m_do_selectable; }
-
     void setDoSelectable(const bool value) { m_do_selectable = value; }
 
     const bool doBackground() const { return m_do_background; }
-
     void setDoBackground(const bool value) { m_do_background = value; }
+
+    const bool useLayer() const { return m_use_layer; }
+    void setUseLayer(const bool value) { m_use_layer = value; }
+
+    const MString layerName() const { return m_layer_name; }
+    void setLayerName(const MString value) { m_layer_name = value; }
 
 protected:
     // Objects Set override. Override which objects are drawn.
@@ -140,6 +152,8 @@ protected:
     // Mask for clear override
     uint32_t m_clear_mask;
 
+    BackgroundStyle m_background_style;
+
     MHWRender::MSceneRender::MPostEffectsOverride m_post_effects_override;
 
     // The node types to be excluded from drawing.
@@ -151,6 +165,10 @@ protected:
     // Specific values to control the objects to be drawn.
     bool m_do_selectable;
     bool m_do_background;
+
+    // The display layer to override the drawn objects with.
+    bool m_use_layer;
+    MString m_layer_name;
 
     M3dView::DisplayStyle m_prev_display_style;
 };

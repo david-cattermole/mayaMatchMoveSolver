@@ -31,7 +31,7 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "constants.h"
+#include "mmSolver/render/data/constants.h"
 
 namespace mmsolver {
 namespace render {

@@ -23,7 +23,10 @@
 
 // Maya
 #include <maya/M3dView.h>
+#include <maya/MFnDependencyNode.h>
 #include <maya/MItDag.h>
+#include <maya/MPlug.h>
+#include <maya/MPlugArray.h>
 #include <maya/MRenderTargetManager.h>
 #include <maya/MSelectionList.h>
 #include <maya/MShaderManager.h>
@@ -32,15 +35,18 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "constants.h"
+
+#include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
 namespace render {
 
 SceneRender::SceneRender(const MString &name)
     : MSceneRender(name)
+    , m_background_style(kBackgroundStyleDefault)
     , m_do_background(false)
     , m_do_selectable(false)
+    , m_use_layer(false)
     , m_exclude_types(kExcludeNone)
     , m_prev_display_style(M3dView::kGouraudShaded)
     , m_scene_filter(MHWRender::MSceneRender::kNoSceneFilterOverride)
@@ -97,22 +103,43 @@ MHWRender::MSceneRender::MDisplayMode SceneRender::displayModeOverride() {
 MUint64 SceneRender::getObjectTypeExclusions() { return m_exclude_types; }
 
 MHWRender::MClearOperation &SceneRender::clearOperation() {
-    // Background color override. We get the current colors from the
-    // renderer and use them.
-    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-    bool gradient = renderer->useGradient();
-    MColor color1 = renderer->clearColor();
-    MColor color2 = renderer->clearColor2();
-    float val1[4] = {color1[0], color1[1], color1[2], 1.0f};
-    float val2[4] = {color2[0], color2[1], color2[2], 1.0f};
-
-    mClearOperation.setClearColor(val1);
-    mClearOperation.setClearColor2(val2);
-    mClearOperation.setClearGradient(gradient);
+    if (m_background_style == BackgroundStyle::kTransparentBlack) {
+        float val[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+        mClearOperation.setClearColor(val);
+        mClearOperation.setClearColor2(val);
+        mClearOperation.setClearGradient(false);
+        mClearOperation.setClearStencil(0);
+        // A depth value of 1.0f represents the 'most distant'
+        // object. As objects draw, they draw darker pixels on top of
+        // this background color.
+        mClearOperation.setClearDepth(1.0f);
+    } else if (m_background_style == BackgroundStyle::kMayaDefault) {
+        // Background color override. We get the current colors from the
+        // renderer and use them.
+        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+        bool gradient = renderer->useGradient();
+        MColor color1 = renderer->clearColor();
+        MColor color2 = renderer->clearColor2();
+        float val1[4] = {color1[0], color1[1], color1[2], 1.0f};
+        float val2[4] = {color2[0], color2[1], color2[2], 1.0f};
+        mClearOperation.setClearColor(val1);
+        mClearOperation.setClearColor2(val2);
+        mClearOperation.setClearGradient(gradient);
+        mClearOperation.setClearStencil(0);
+        mClearOperation.setClearDepth(1.0f);
+    } else {
+        MMSOLVER_ERR(
+            "SceneRender::clearOperation: Background style is invalid: "
+            << static_cast<short>(m_background_style));
+    }
 
     mClearOperation.setMask(m_clear_mask);
 
     return mClearOperation;
+}
+
+const MHWRender::MShaderInstance *SceneRender::shaderOverride() {
+    return m_shader_override;
 }
 
 MHWRender::MSceneRender::MPostEffectsOverride
@@ -121,11 +148,76 @@ SceneRender::postEffectsOverride() {
 }
 
 const MSelectionList *SceneRender::objectSetOverride() {
+    const bool verbose = false;
+
     // If m_do_selectable is false and m_do_background is false: do
     // not override.
     m_selection_list.clear();
-    if (!m_do_selectable && !m_do_background) {
-        // This is the most common branch, so it is first.
+
+    if (m_use_layer) {
+        // Get the objects from the given display layer node.
+        MObject layer_node;
+        MStatus status = getAsObject(m_layer_name, layer_node);
+        CHECK_MSTATUS(status);
+        if ((status != MS::kSuccess) || layer_node.isNull()) {
+            return nullptr;
+        }
+
+        MFnDependencyNode layer_depends_fn(layer_node, &status);
+        CHECK_MSTATUS(status);
+        MMSOLVER_VRB("SceneRender::objectSetOverride::layer: "
+                     << layer_depends_fn.name().asChar());
+
+        const bool want_networked_plug = true;
+
+        // Get connection from layer to objects;
+        // 'DisplayLater.drawInfo' -> 'Transform.drawOverrides'.
+        MPlug draw_info_plug =
+            layer_depends_fn.findPlug("drawInfo", want_networked_plug, &status);
+        CHECK_MSTATUS(status);
+        if (status == MStatus::kSuccess && !draw_info_plug.isNull()) {
+            MPlugArray destination_plugs;
+            draw_info_plug.destinations(destination_plugs, &status);
+            MMSOLVER_VRB("SceneRender::objectSetOverride::count: "
+                         << destination_plugs.length());
+
+            for (auto i = 0; i < destination_plugs.length(); ++i) {
+                if (destination_plugs[i].isNull()) {
+                    continue;
+                }
+                MObject destination_node = destination_plugs[i].node();
+
+                MDagPath dag_path;
+                status = MDagPath::getAPathTo(destination_node, dag_path);
+                if (status == MStatus::kSuccess) {
+                    if ((dag_path.apiType() == MFn::kShape) ||
+                        (dag_path.apiType() == MFn::kPluginLocatorNode) ||
+                        (dag_path.apiType() == MFn::kPluginShape)) {
+                        MMSOLVER_VRB(
+                            "SceneRender::objectSetOverride::node: i = "
+                            << i << " - " << dag_path.fullPathName().asChar());
+                        m_selection_list.add(dag_path);
+                    }
+
+                    unsigned int shape_count = 0;
+                    status = dag_path.numberOfShapesDirectlyBelow(shape_count);
+                    for (auto j = 0; j < shape_count; ++j) {
+                        MDagPath shape_path(dag_path);
+                        shape_path.extendToShapeDirectlyBelow(j);
+
+                        MMSOLVER_VRB(
+                            "SceneRender::objectSetOverride::shape_node: i="
+                            << i << " j=" << j << " - "
+                            << shape_path.fullPathName().asChar());
+
+                        m_selection_list.add(shape_path);
+                    }
+                }
+            }
+        }
+
+        return &m_selection_list;
+    } else if (!m_do_selectable && !m_do_background) {
         return nullptr;
     } else if (m_do_selectable && m_do_background) {
         // If m_do_selectable is true and m_do_background is true:

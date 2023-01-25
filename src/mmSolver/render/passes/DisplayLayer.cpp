@@ -30,12 +30,12 @@
 
 // MM Solver
 #include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/render/data/constants.h"
 #include "mmSolver/render/ops/QuadRenderBlend.h"
 #include "mmSolver/render/ops/QuadRenderCopy.h"
 #include "mmSolver/render/ops/QuadRenderEdgeDetect.h"
 #include "mmSolver/render/ops/QuadRenderLayerMerge.h"
 #include "mmSolver/render/ops/SceneRender.h"
-#include "mmSolver/render/data/constants.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {

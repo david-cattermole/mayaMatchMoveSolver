@@ -34,6 +34,7 @@
 #include "mmSolver/render/ops/QuadRenderEdgeDetect.h"
 #include "mmSolver/render/ops/QuadRenderLayerMerge.h"
 #include "mmSolver/render/ops/SceneRender.h"
+#include "mmSolver/render/shader/shader_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
@@ -42,25 +43,12 @@ namespace render {
 static MShaderInstance *create_depth_shader(const float depth_offset) {
     const bool verbose = false;
 
-    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-    if (!renderer) {
-        return nullptr;
-    }
-    const MHWRender::MShaderManager *shader_manager =
-        renderer->getShaderManager();
-    if (!shader_manager) {
-        return nullptr;
-    }
-
-    // Compile Main shader
     MMSOLVER_VRB("create_depth_shader: Compile Depth Main shader...");
     const MString file_name = "mmDepth";
     const MString main_technique = "Main";
     MHWRender::MShaderInstance *shader_instance =
-        shader_manager->getEffectsFileShader(file_name.asChar(),
-                                             main_technique.asChar());
+        compile_shader_file(file_name, main_technique);
 
-    // Set default parameters
     if (shader_instance) {
         MMSOLVER_VRB("create_depth_shader: Assign Depth shader parameters...");
         CHECK_MSTATUS(

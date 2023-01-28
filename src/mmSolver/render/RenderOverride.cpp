@@ -53,7 +53,8 @@ RenderOverride::RenderOverride(const MString &name)
     , m_pull_updates(true)
     , m_multi_sample_enable(false)
     , m_multi_sample_count(1)
-    , m_draw_textures(false) {
+    , m_viewport_display_style(0)
+    , m_viewport_draw_textures(false) {
     // Remove any operations that already exist from Maya.
     mOperations.clear();
 
@@ -318,7 +319,8 @@ MStatus RenderOverride::updateParameters() {
 // Get parameters on each layer and set up the values for the
 // DisplayLayerList object.
 MStatus RenderOverride::getDisplayLayerFromNode(
-    MFnDependencyNode &depends_node, DisplayLayer &out_display_layer) {
+    MFnDependencyNode &depends_node, unsigned int viewport_display_style,
+    DisplayLayer &out_display_layer) {
     MStatus status = MS::kSuccess;
 
     const bool verbose = false;
@@ -381,6 +383,7 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     MMSOLVER_VRB("RenderOverride Layer Draw Debug: " << layer_draw_debug);
 
     // Display Style
+    // - No Override.
     // - Hold Out (invisible, but draws in depth).
     // - Wireframe.
     // - Hidden Line.
@@ -392,6 +395,31 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     if (status == MStatus::kSuccess) {
         short value = display_style_plug.asShort();
         object_display_style = static_cast<DisplayStyle>(value);
+    }
+    if (object_display_style == DisplayStyle::kNoDisplayStyleOverride) {
+        bool use_shaded =
+            viewport_display_style &
+            static_cast<unsigned int>(MHWRender::MFrameContext::kGouraudShaded);
+        bool use_flat_shaded =
+            viewport_display_style &
+            static_cast<unsigned int>(MHWRender::MFrameContext::kFlatShaded);
+        bool use_wireframe =
+            viewport_display_style &
+            static_cast<unsigned int>(MHWRender::MFrameContext::kWireFrame);
+
+        if (use_flat_shaded) {
+            use_shaded = true;
+        }
+
+        if (use_shaded && use_wireframe) {
+            object_display_style = DisplayStyle::kWireframeOnShaded;
+        } else if (use_shaded) {
+            object_display_style = DisplayStyle::kShaded;
+        } else if (use_wireframe) {
+            object_display_style = DisplayStyle::kWireframe;
+        } else {
+            object_display_style = DisplayStyle::kHoldOut;
+        }
     }
     MMSOLVER_VRB("RenderOverride Display Style: "
                  << static_cast<short>(object_display_style));
@@ -528,11 +556,11 @@ MStatus RenderOverride::updateDisplayLayers() {
         m_display_layer_nodes.push_back(node_handle);
 
         DisplayLayer display_layer;
-        status = RenderOverride::getDisplayLayerFromNode(depends_node,
-                                                         display_layer);
+        status = RenderOverride::getDisplayLayerFromNode(
+            depends_node, m_viewport_display_style, display_layer);
         CHECK_MSTATUS(status);
         if (status == MS::kSuccess) {
-            display_layer.setObjectDisplayTextures(m_draw_textures);
+            display_layer.setObjectDisplayTextures(m_viewport_draw_textures);
             m_display_layers.pushDisplayLayer(std::move(display_layer));
         }
     }
@@ -684,9 +712,10 @@ MStatus RenderOverride::setup(const MString &destination) {
         MRenderOverride::getFrameContext();
     if (frameContext) {
         unsigned int display_style = frameContext->getDisplayStyle();
-        m_draw_textures =
+        m_viewport_draw_textures =
             display_style &
             static_cast<unsigned int>(MHWRender::MFrameContext::kTextured);
+        m_viewport_display_style = static_cast<unsigned int>(display_style);
     }
 
     // Get override values.

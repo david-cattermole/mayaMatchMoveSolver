@@ -114,6 +114,7 @@ protected:
 
 private:
     static MStatus getDisplayLayerFromNode(MFnDependencyNode& depends_node,
+                                           unsigned int viewport_display_style,
                                            DisplayLayer& out_display_layer);
 
     // Override is for this panel
@@ -138,7 +139,8 @@ private:
     RenderColorFormat m_render_color_format;
     bool m_multi_sample_enable;
     int32_t m_multi_sample_count;
-    bool m_draw_textures;
+    unsigned int m_viewport_display_style;
+    bool m_viewport_draw_textures;
 
     // Passes and Layers.
     BeginPasses m_begin_passes;

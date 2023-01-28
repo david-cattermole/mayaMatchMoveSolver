@@ -90,7 +90,8 @@ const LayerMode kLayerModeDefault = LayerMode::kZDepth;
 const float kLayerMixDefault = 1.0f;
 const bool kLayerDrawDebugDefault = false;
 
-const DisplayStyle kObjectDisplayStyleDefault = DisplayStyle::kHiddenLine;
+const DisplayStyle kObjectDisplayStyleDefault =
+    DisplayStyle::kNoDisplayStyleOverride;
 const bool kObjectDisplayTexturesDefault = false;
 const float kObjectAlphaDefault = 1.0f;
 

@@ -55,11 +55,16 @@ MStatus MMNodeInitUtils::attributeAffectsMulti(
 }
 
 MStatus getAsSelectionList(const MStringArray &nodeNames,
-                           MSelectionList &selList) {
+                           MSelectionList &selList, bool quiet) {
     MStatus status;
     for (unsigned int i = 0; i < nodeNames.length(); ++i) {
         status = selList.add(nodeNames[i]);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        if (!quiet) {
+            CHECK_MSTATUS(status);
+        }
+        if (status != MS::kSuccess) {
+            return status;
+        }
     }
     if (selList.length() != nodeNames.length()) {
         status = MStatus::kFailure;
@@ -68,10 +73,11 @@ MStatus getAsSelectionList(const MStringArray &nodeNames,
     return status;
 }
 
-MStatus getAsSelectionList(const MString &nodeName, MSelectionList &selList) {
+MStatus getAsSelectionList(const MString &nodeName, MSelectionList &selList,
+                           bool quiet) {
     MStringArray nodeNames;
     nodeNames.append(nodeName);
-    return getAsSelectionList(nodeNames, selList);
+    return getAsSelectionList(nodeNames, selList, quiet);
 }
 
 MStatus nodeExistsAndIsType(const MString &nodeName, const MFn::Type nodeType) {
@@ -99,14 +105,22 @@ MStatus nodeExistsAndIsType(const MString &nodeName, const MFn::Type nodeType) {
     return status;
 }
 
-MStatus getAsObject(const MString &nodeName, MObject &object) {
+MStatus getAsObject(const MString &nodeName, MObject &object, bool quiet) {
     MStatus status;
     MSelectionList selList;
-    status = getAsSelectionList(nodeName, selList);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    status = getAsSelectionList(nodeName, selList, quiet);
+    if (!quiet) {
+        CHECK_MSTATUS(status);
+    }
+    if (status != MS::kSuccess) {
+        return status;
+    }
+
     if (selList.length() == 1) {
         status = selList.getDependNode(0, object);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        if (!quiet) {
+            CHECK_MSTATUS(status);
+        }
     }
     return status;
 }

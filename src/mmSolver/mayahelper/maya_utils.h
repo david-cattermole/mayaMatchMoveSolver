@@ -74,13 +74,15 @@ enum class ObjectType {
 };
 
 MStatus getAsSelectionList(const MStringArray &nodeNames,
-                           MSelectionList &selList);
+                           MSelectionList &selList, bool quiet = false);
 
-MStatus getAsSelectionList(const MString &nodeName, MSelectionList &selList);
+MStatus getAsSelectionList(const MString &nodeName, MSelectionList &selList,
+                           bool quiet = false);
 
 MStatus nodeExistsAndIsType(const MString &nodeName, const MFn::Type nodeType);
 
-MStatus getAsObject(const MString &nodeName, MObject &object);
+MStatus getAsObject(const MString &nodeName, MObject &object,
+                    bool quiet = false);
 
 MStatus getAsDagPath(const MString &nodeName, MDagPath &nodeDagPath);
 

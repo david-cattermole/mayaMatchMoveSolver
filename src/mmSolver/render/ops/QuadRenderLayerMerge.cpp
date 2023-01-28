@@ -39,8 +39,13 @@ QuadRenderLayerMerge::QuadRenderLayerMerge(const MString &name)
     , m_target_index_depth_a(0)
     , m_target_index_color_b(0)
     , m_target_index_depth_b(0)
+    , m_target_index_color_c(0)
+    , m_use_color_target_c(false)
     , m_layer_mode(kLayerModeDefault)
-    , m_layer_mix(0.5f) {}
+    , m_layer_mix(0.5f)
+    , m_alpha_a(1.0f)
+    , m_alpha_b(1.0f)
+    , m_alpha_c(1.0f) {}
 
 QuadRenderLayerMerge::~QuadRenderLayerMerge() {
     // Release all shaders.
@@ -145,12 +150,31 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
                 CHECK_MSTATUS(
                     m_shader_instance->setParameter("gDepthTexB", assignment));
             }
+
+            if (m_use_color_target_c) {
+                MHWRender::MRenderTarget *target_color_c =
+                    m_targets[m_target_index_color_c];
+
+                if (target_color_c) {
+                    MMSOLVER_VRB(
+                        "QuadRenderLayerMerge: Assign Color C to shader...");
+                    MHWRender::MRenderTargetAssignment assignment{};
+                    assignment.target = target_color_c;
+                    CHECK_MSTATUS(m_shader_instance->setParameter("gColorTexC",
+                                                                  assignment));
+                }
+            }
         }
 
         CHECK_MSTATUS(m_shader_instance->setParameter(
             "gLayerMode", static_cast<int32_t>(m_layer_mode)));
         CHECK_MSTATUS(
             m_shader_instance->setParameter("gLayerMix", m_layer_mix));
+        CHECK_MSTATUS(m_shader_instance->setParameter("gAlphaA", m_alpha_a));
+        CHECK_MSTATUS(m_shader_instance->setParameter("gAlphaB", m_alpha_b));
+        CHECK_MSTATUS(m_shader_instance->setParameter("gAlphaC", m_alpha_c));
+        CHECK_MSTATUS(m_shader_instance->setParameter(
+            "gUseColorC", static_cast<int32_t>(m_use_color_target_c)));
         CHECK_MSTATUS(m_shader_instance->setParameter(
             "gDebugMode", static_cast<int32_t>(m_debug)));
     }

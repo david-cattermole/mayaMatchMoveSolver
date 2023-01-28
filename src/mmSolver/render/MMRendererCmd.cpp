@@ -115,7 +115,7 @@ MStatus MMRendererCmd::doIt(const MArgList &args) {
     // // Blend
     // if (argData.isFlagSet(MM_RENDERER_WIREFRAME_ALPHA_FLAG)) {
     //     if (isQuery) {
-    //         m_wireframe_alpha = override_ptr->wireframeAlpha();
+    //         m_wireframe_alpha = override_ptr->objectAlpha();
     //         MPxCommand::setResult(m_wireframe_alpha);
     //     } else {
     //         argData.getFlagArgument(MM_RENDERER_WIREFRAME_ALPHA_FLAG, 0,

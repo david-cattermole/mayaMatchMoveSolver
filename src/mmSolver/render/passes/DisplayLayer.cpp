@@ -24,7 +24,6 @@
 // Maya
 #include <maya/MObject.h>
 #include <maya/MShaderManager.h>
-#include <maya/MStreamUtils.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 
@@ -32,7 +31,6 @@
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/render/data/constants.h"
 #include "mmSolver/render/ops/QuadRenderBlend.h"
-#include "mmSolver/render/ops/QuadRenderCopy.h"
 #include "mmSolver/render/ops/QuadRenderEdgeDetect.h"
 #include "mmSolver/render/ops/QuadRenderLayerMerge.h"
 #include "mmSolver/render/ops/SceneRender.h"
@@ -75,11 +73,12 @@ static MShaderInstance *create_depth_shader(const float depth_offset) {
 DisplayLayer::DisplayLayer()
     : m_name()
     , m_display_order(-1)
-    , m_display_style(kDisplayStyleDefault)
     , m_layer_mode(kLayerModeDefault)
     , m_layer_mix(kLayerMixDefault)
     , m_layer_draw_debug(kLayerDrawDebugDefault)
-    , m_wireframe_alpha(kWireframeAlphaDefault)
+    , m_object_display_style(kObjectDisplayStyleDefault)
+    , m_object_display_textures(kObjectDisplayTexturesDefault)
+    , m_object_alpha(kObjectAlphaDefault)
     , m_edge_enable(kEdgeEnableDefault)
     , m_edge_detect_mode(kEdgeDetectModeDefault)
     , m_edge_color(kEdgeColorDefault)
@@ -104,7 +103,7 @@ MStatus DisplayLayer::updateRenderOperations() {
     const bool verbose = false;
     MMSOLVER_VRB("DisplayLayer::updateRenderOperations: " << m_name.asChar());
 
-    if (m_ops[DisplayLayerPasses::kSceneWireframePass] != nullptr) {
+    if (m_ops[DisplayLayerPasses::kSceneRenderPass] != nullptr) {
         // render operations are already up-to-date.
         return MS::kSuccess;
     }
@@ -123,12 +122,22 @@ MStatus DisplayLayer::updateRenderOperations() {
     const auto display_mode_shaded =
         static_cast<MHWRender::MSceneRender::MDisplayMode>(
             MHWRender::MSceneRender::kShaded);
+    const auto display_mode_shaded_textured =
+        static_cast<MHWRender::MSceneRender::MDisplayMode>(
+            MHWRender::MSceneRender::kShaded |
+            MHWRender::MSceneRender::kTextured);
     const auto display_mode_wireframe =
         static_cast<MHWRender::MSceneRender::MDisplayMode>(
             MHWRender::MSceneRender::kWireFrame);
     const auto display_mode_shaded_wireframe =
         static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kShaded | display_mode_wireframe);
+            MHWRender::MSceneRender::kShaded |
+            MHWRender::MSceneRender::kWireFrame);
+    const auto display_mode_shaded_wireframe_textured =
+        static_cast<MHWRender::MSceneRender::MDisplayMode>(
+            MHWRender::MSceneRender::kShaded |
+            MHWRender::MSceneRender::kWireFrame |
+            MHWRender::MSceneRender::kTextured);
 
     // Draw these objects for transparency.
     const auto wire_draw_object_types =
@@ -159,17 +168,9 @@ MStatus DisplayLayer::updateRenderOperations() {
     // are farther away.
     const float depthValueRange = 1048576.0f;  // (2 ^ 24) / 16
     const float depthValueStep = 1.0f / depthValueRange;
-    const float depthOffset = depthValueStep * 2;
+    const float depthOffset = depthValueStep * 4;
     // Shader to push depth away from camera.
-    auto depthShader1 = create_depth_shader(depthOffset);
-    MHWRender::MShaderInstance *depthShader2 = nullptr;
-    // auto depthShader2 = create_depth_shader(-depthOffset);
-
-    // const MString copyLayerStartOpName =
-    //     MString(kLayerCopyStartOpName) + m_name;
-    // auto copyLayerStartOp = new QuadRenderCopy(copyLayerStartOpName);
-    // copyLayerStartOp->setClearMask(clear_mask_all);
-    // m_ops[DisplayLayerPasses::kLayerCopyStartOp] = copyLayerStartOp;
+    auto depthShader1 = create_depth_shader(-depthOffset);
 
     const MString depthSceneOpName = MString(kLayerDepthPassName) + m_name;
     auto depthPassOp = new SceneRender(depthSceneOpName);
@@ -185,43 +186,26 @@ MStatus DisplayLayer::updateRenderOperations() {
     depthPassOp->setLayerName(m_name);
     m_ops[DisplayLayerPasses::kSceneDepthPass] = depthPassOp;
 
-    // // Apply edge detect.
-    // const MString edgeDetectOpName = MString(kLayerEdgeDetectOpName) +
-    // m_name; auto edgeDetectOp = new QuadRenderEdgeDetect(edgeDetectOpName);
-    // edgeDetectOp->setClearMask(clear_mask_none);
-    // edgeDetectOp->setThreshold(m_edge_threshold);
-    // edgeDetectOp->setThickness(m_edge_thickness);
-    // m_ops[DisplayLayerPasses::kEdgeDetectOp] = edgeDetectOp;
+    // Apply edge detect.
+    const MString edgeDetectOpName = MString(kLayerEdgeDetectOpName) + m_name;
+    auto edgeDetectOp = new QuadRenderEdgeDetect(edgeDetectOpName);
+    edgeDetectOp->setClearMask(clear_mask_all);
+    edgeDetectOp->setThreshold(m_edge_threshold);
+    edgeDetectOp->setThickness(m_edge_thickness);
+    m_ops[DisplayLayerPasses::kEdgeDetectOp] = edgeDetectOp;
 
-    // const MString copyLayerEndOpName = MString(kLayerCopyEndOpName) + m_name;
-    // auto copyLayerEndOp = new QuadRenderCopy(copyLayerEndOpName);
-    // copyLayerEndOp->setClearMask(~clear_mask_color);
-    // m_ops[DisplayLayerPasses::kLayerCopyEndOp] = copyLayerEndOp;
-
-    // Wireframe pass.
-    const MString wirePassOpName = MString(kLayerWireframePassName) + m_name;
-    auto wirePassOp = new SceneRender(wirePassOpName);
-    wirePassOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
-    wirePassOp->setClearMask(clear_mask_none);
-    // wirePassOp->setSceneFilter(
-    //     MHWRender::MSceneRender::kRenderPostSceneUIItems);
-    // wirePassOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
-    wirePassOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
-    wirePassOp->setExcludeTypes(wire_draw_object_types);
-    // wirePassOp->setShaderOverride(depthShader2);
-    wirePassOp->setDoSelectable(false);
-    wirePassOp->setDoBackground(false);
-    wirePassOp->setUseLayer(true);
-    wirePassOp->setLayerName(m_name);
-    m_ops[DisplayLayerPasses::kSceneWireframePass] = wirePassOp;
-
-    // // Blend between 'no-wireframe' and 'wireframe'.
-    // const MString wireBlendOpName =
-    //     MString(kLayerWireframeBlendOpName) + m_name;
-    // auto wireBlendOp = new QuadRenderBlend(wireBlendOpName);
-    // wireBlendOp->setClearMask(clear_mask_none);
-    // wireBlendOp->setBlend(m_wireframe_alpha);
-    // m_ops[DisplayLayerPasses::kWireframeBlendOp] = wireBlendOp;
+    // Scene Object Render pass.
+    const MString scenePassOpName = MString(kLayerObjectPassName) + m_name;
+    auto scenePassOp = new SceneRender(scenePassOpName);
+    scenePassOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
+    scenePassOp->setClearMask(clear_mask_none);
+    scenePassOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
+    scenePassOp->setExcludeTypes(wire_draw_object_types);
+    scenePassOp->setDoSelectable(false);
+    scenePassOp->setDoBackground(false);
+    scenePassOp->setUseLayer(true);
+    scenePassOp->setLayerName(m_name);
+    m_ops[DisplayLayerPasses::kSceneRenderPass] = scenePassOp;
 
     // Merge the result into the main color and depth targets.
     const MString layerMergeOpName = MString(kLayerMergeOpName) + m_name;
@@ -229,6 +213,7 @@ MStatus DisplayLayer::updateRenderOperations() {
     layerMergeOp->setClearMask(clear_mask_none);
     layerMergeOp->setLayerMode(m_layer_mode);
     layerMergeOp->setLayerMix(m_layer_mix);
+    layerMergeOp->setAlphaA(m_object_alpha);
     m_ops[DisplayLayerPasses::kLayerMergeOp] = layerMergeOp;
 
     return MS::kSuccess;
@@ -245,25 +230,16 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     // color and depth targets, but shaders may internally reference
     // specific render targets.
 
-    // auto copyLayerStartOp = dynamic_cast<QuadRenderCopy *>(
-    //     m_ops[DisplayLayerPasses::kLayerCopyStartOp]);
     auto depthPassOp =
         dynamic_cast<SceneRender *>(m_ops[DisplayLayerPasses::kSceneDepthPass]);
-    // auto edgeDetectOp = dynamic_cast<QuadRenderEdgeDetect *>(
-    //     m_ops[DisplayLayerPasses::kEdgeDetectOp]);
-    // auto copyLayerEndOp = dynamic_cast<QuadRenderCopy *>(
-    //     m_ops[DisplayLayerPasses::kLayerCopyEndOp]);
-    auto wirePassOp = dynamic_cast<SceneRender *>(
-        m_ops[DisplayLayerPasses::kSceneWireframePass]);
-    // auto wireBlendOp = dynamic_cast<QuadRenderBlend *>(
-    //     m_ops[DisplayLayerPasses::kWireframeBlendOp]);
+    auto edgeDetectOp = dynamic_cast<QuadRenderEdgeDetect *>(
+        m_ops[DisplayLayerPasses::kEdgeDetectOp]);
+    auto scenePassOp = dynamic_cast<SceneRender *>(
+        m_ops[DisplayLayerPasses::kSceneRenderPass]);
     auto layerMergeOp = dynamic_cast<QuadRenderLayerMerge *>(
         m_ops[DisplayLayerPasses::kLayerMergeOp]);
 
-    if (                 // !copyLayerStartOp ||
-        !depthPassOp ||  // !edgeDetectOp || !copyLayerEndOp ||
-        !wirePassOp ||   // !wireBlendOp ||
-        !layerMergeOp) {
+    if (!depthPassOp || !edgeDetectOp || !scenePassOp || !layerMergeOp) {
         return MS::kFailure;
     }
 
@@ -281,6 +257,10 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     const auto display_mode_shaded =
         static_cast<MHWRender::MSceneRender::MDisplayMode>(
             MHWRender::MSceneRender::kShaded);
+    const auto display_mode_shaded_textured =
+        static_cast<MHWRender::MSceneRender::MDisplayMode>(
+            MHWRender::MSceneRender::kShaded |
+            MHWRender::MSceneRender::kTextured);
     const auto display_mode_wireframe =
         static_cast<MHWRender::MSceneRender::MDisplayMode>(
             MHWRender::MSceneRender::kWireFrame);
@@ -288,96 +268,95 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
         static_cast<MHWRender::MSceneRender::MDisplayMode>(
             MHWRender::MSceneRender::kShaded |
             MHWRender::MSceneRender::kWireFrame);
+    const auto display_mode_shaded_wireframe_textured =
+        static_cast<MHWRender::MSceneRender::MDisplayMode>(
+            MHWRender::MSceneRender::kShaded |
+            MHWRender::MSceneRender::kWireFrame |
+            MHWRender::MSceneRender::kTextured);
 
-    if (m_display_style == DisplayStyle::kHiddenLine) {
-        // // Copy kMainColorTarget to kLayerColorTarget.
-        // copyLayerStartOp->setEnabled(true);
-        // copyLayerStartOp->setInputTarget(kMainColorTarget);
-        // copyLayerStartOp->setRenderTargets(targets, kLayerColorTarget, 1);
+    const float edge_alpha = m_edge_alpha * static_cast<float>(m_edge_enable);
+    edgeDetectOp->setEnabled(true);
+    edgeDetectOp->setInputColorTarget(kLayerColorTarget);
+    edgeDetectOp->setInputDepthTarget(kLayerDepthTarget);
+    edgeDetectOp->setRenderTargets(targets, kTempColorTarget, 1);
+    edgeDetectOp->setThreshold(m_edge_threshold);
+    edgeDetectOp->setThickness(m_edge_thickness);
+    edgeDetectOp->setEdgeAlpha(edge_alpha);
+    edgeDetectOp->setEdgeColor(m_edge_color.r, m_edge_color.g, m_edge_color.b);
+    edgeDetectOp->setEdgeDetectMode(m_edge_detect_mode);
 
-        // Render object depth into kLayerColorTarget and
-        // kLayerDepthTarget.
+    if (m_object_display_style == DisplayStyle::kHiddenLine) {
         depthPassOp->setEnabled(true);
         depthPassOp->setClearMask(clear_mask_all);
         depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
 
-        // // Detect edges using kLayerDepthTarget, and draw in
-        // // kLayerColorTarget.
-        // edgeDetectOp->setEnabled(m_edge_enable);
-        // edgeDetectOp->setInputColorTarget(kLayerColorTarget);
-        // edgeDetectOp->setInputDepthTarget(kLayerDepthTarget);
-        // edgeDetectOp->setRenderTargets(targets, kLayerColorTarget, 1);
-        // edgeDetectOp->setThreshold(m_edge_threshold);
-        // edgeDetectOp->setThickness(m_edge_thickness);
-        // edgeDetectOp->setEdgeAlpha(m_edge_alpha);
-        // edgeDetectOp->setEdgeColor(m_edge_color.r, m_edge_color.g,
-        // m_edge_color.b); edgeDetectOp->setEdgeDetectMode(m_edge_detect_mode);
+        scenePassOp->setEnabled(true);
+        scenePassOp->setClearMask(clear_mask_color);
+        scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+        scenePassOp->setDisplayModeOverride(display_mode_wireframe);
 
-        // // Copy kLayerColorTarget to kTempColorTarget.
-        // copyLayerEndOp->setEnabled(true);
-        // copyLayerEndOp->setInputTarget(kLayerColorTarget);
-        // copyLayerEndOp->setRenderTargets(targets, kTempColorTarget, 1);
-
-        // Render wireframe into kLayerColorTarget and kLayerDepthTarget.
-        wirePassOp->setEnabled(true);
-        wirePassOp->setClearMask(clear_mask_none);
-        wirePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
-        wirePassOp->setDisplayModeOverride(display_mode_wireframe);
-
-        // // Blend between kLayerColorTarget and kTempColorTarget, and output
-        // // to kLayerColorTarget.
-        // wireBlendOp->setEnabled(false);
-        // wireBlendOp->setInputTarget1(kLayerColorTarget);
-        // wireBlendOp->setInputTarget2(kTempColorTarget);
-        // wireBlendOp->setRenderTargets(targets, kLayerColorTarget, 1);
-        // wireBlendOp->setBlend(m_wireframe_alpha);
-    } else if (m_display_style == DisplayStyle::kShaded) {
-        // Render object depth into kLayerColorTarget and
-        // kLayerDepthTarget.
-        depthPassOp->setEnabled(false);
+        layerMergeOp->setAlphaA(m_object_alpha);
+    } else if (m_object_display_style == DisplayStyle::kShaded) {
+        depthPassOp->setEnabled(m_edge_enable);
         depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
 
-        // Render wireframe into kLayerColorTarget and kLayerDepthTarget.
-        wirePassOp->setEnabled(true);
-        wirePassOp->setClearMask(clear_mask_all);
-        wirePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
-        wirePassOp->setDisplayModeOverride(display_mode_shaded);
-    } else if (m_display_style == DisplayStyle::kWireframe) {
-        // Render object depth into kLayerColorTarget and
-        // kLayerDepthTarget.
-        depthPassOp->setEnabled(false);
+        scenePassOp->setEnabled(true);
+        scenePassOp->setClearMask(clear_mask_all);
+        scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+        if (!m_object_display_textures) {
+            scenePassOp->setDisplayModeOverride(display_mode_shaded);
+        } else {
+            scenePassOp->setDisplayModeOverride(display_mode_shaded_textured);
+        }
+    } else if (m_object_display_style == DisplayStyle::kHoldOut) {
+        depthPassOp->setEnabled(true);
+        depthPassOp->setClearMask(clear_mask_all);
         depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
 
-        // Render wireframe into kLayerColorTarget and kLayerDepthTarget.
-        wirePassOp->setEnabled(true);
-        wirePassOp->setClearMask(clear_mask_all);
-        wirePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
-        wirePassOp->setDisplayModeOverride(display_mode_wireframe);
-    } else if (m_display_style == DisplayStyle::kWireframeOnShaded) {
-        // Render object depth into kLayerColorTarget and
-        // kLayerDepthTarget.
-        depthPassOp->setEnabled(false);
+        scenePassOp->setEnabled(true);
+        scenePassOp->setClearMask(clear_mask_color);
+        scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+        scenePassOp->setDisplayModeOverride(display_mode_wireframe);
+
+        layerMergeOp->setAlphaA(0.0);
+    } else if (m_object_display_style == DisplayStyle::kWireframe) {
+        depthPassOp->setEnabled(m_edge_enable);
         depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
 
-        // Render wireframe into kLayerColorTarget and kLayerDepthTarget.
-        wirePassOp->setEnabled(true);
-        wirePassOp->setClearMask(clear_mask_all);
-        wirePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
-        wirePassOp->setDisplayModeOverride(display_mode_shaded_wireframe);
+        scenePassOp->setEnabled(true);
+        scenePassOp->setClearMask(clear_mask_all);
+        scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+        scenePassOp->setDisplayModeOverride(display_mode_wireframe);
+
+        layerMergeOp->setAlphaA(m_object_alpha);
+    } else if (m_object_display_style == DisplayStyle::kWireframeOnShaded) {
+        depthPassOp->setEnabled(m_edge_enable);
+        depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+
+        scenePassOp->setEnabled(true);
+        scenePassOp->setClearMask(clear_mask_all);
+        scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+        if (!m_object_display_textures) {
+            scenePassOp->setDisplayModeOverride(display_mode_shaded_wireframe);
+        } else {
+            scenePassOp->setDisplayModeOverride(
+                display_mode_shaded_wireframe_textured);
+        }
+
+        layerMergeOp->setAlphaA(m_object_alpha);
     } else {
         MMSOLVER_ERR("DisplayLayer::updateRenderTargets: Display Layer \""
                      << m_name.asChar() << "\" has an invalid Display Style: "
-                     << static_cast<short>(m_display_style));
+                     << static_cast<short>(m_object_display_style));
     }
 
-    // Merge kLayerColorTarget over kMainColorTarget, and output to
-    // kMainColorTarget. Depth targets are used if the Layer Merge is set to
-    // Z-Depth mode.
     layerMergeOp->setEnabled(true);
     layerMergeOp->setColorTargetA(kLayerColorTarget);
     layerMergeOp->setDepthTargetA(kLayerDepthTarget);
     layerMergeOp->setColorTargetB(kMainColorTarget);
     layerMergeOp->setDepthTargetB(kMainDepthTarget);
+    layerMergeOp->setColorTargetC(kTempColorTarget);
+    layerMergeOp->setUseColorTargetC(m_edge_enable);
     layerMergeOp->setRenderTargets(targets, kMainColorTarget, 1);
     layerMergeOp->setLayerMode(m_layer_mode);
     layerMergeOp->setLayerMix(m_layer_mix);
@@ -392,7 +371,7 @@ MStatus DisplayLayer::setPanelNames(const MString &name) {
                  << m_name.asChar() << " panelName: " << name.asChar());
 
     MHWRender::MRenderOperation *base_op =
-        m_ops[DisplayLayerPasses::kSceneWireframePass];
+        m_ops[DisplayLayerPasses::kSceneRenderPass];
     if (base_op) {
         auto op = dynamic_cast<SceneRender *>(base_op);
         op->setPanelName(name);

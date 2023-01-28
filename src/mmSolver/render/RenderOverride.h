@@ -138,6 +138,7 @@ private:
     RenderColorFormat m_render_color_format;
     bool m_multi_sample_enable;
     int32_t m_multi_sample_count;
+    bool m_draw_textures;
 
     // Passes and Layers.
     BeginPasses m_begin_passes;

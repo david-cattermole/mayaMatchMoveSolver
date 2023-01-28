@@ -50,31 +50,17 @@ namespace render {
 // Enumerations to identify an operation within a list of
 // operations, used for each layer of the render override.
 enum DisplayLayerPasses {
-    // kLayerCopyStartOp = 0,
-
     // Draw the scene (except image planes), but only write to the
     // depth channel.
     kSceneDepthPass = 0,
 
-    // // --------------------------------------------------------------------
-    // // Edge Detect
-    // //
-    // // Post ops on target 1
-    // kEdgeDetectOp,
+    kEdgeDetectOp,
 
-    // kLayerCopyEndOp,
+    // Hidden Line - Draw the scene as wireframe, but it will be cut
+    // out from the depth pass.
+    kSceneRenderPass,
 
-    // --------------------------------------------------------------------
-    // Hidden Line
-    //
-    // Draw the scene as wireframe, but it will be cut out from
-    // the depth pass.
-    kSceneWireframePass,
-
-    // // Blend target 1 and 2 back to target 1
-    // kWireframeBlendOp,
-    // // --------------------------------------------------------------------
-
+    // Merges all render layers together.
     kLayerMergeOp,
 
     // Holds the total number of entries (must be last field).
@@ -113,12 +99,18 @@ public:
     void setLayerDrawDebug(const bool value) { m_layer_draw_debug = value; }
 
     // How does the Display Layer render?
-    DisplayStyle displayStyle() const { return m_display_style; }
-    void setDisplayStyle(const DisplayStyle value) { m_display_style = value; }
+    DisplayStyle objectDisplayStyle() const { return m_object_display_style; }
+    void setObjectDisplayStyle(const DisplayStyle value) {
+        m_object_display_style = value;
+    }
 
-    // The blend value between wireframe and non-wireframe.
-    float wireframeAlpha() const { return m_wireframe_alpha; }
-    void setWireframeAlpha(const float value) { m_wireframe_alpha = value; }
+    bool objectDisplayTextures() const { return m_object_display_textures; }
+    void setObjectDisplayTextures(const bool value) {
+        m_object_display_textures = value;
+    }
+
+    float objectAlpha() const { return m_object_alpha; }
+    void setObjectAlpha(const float value) { m_object_alpha = value; }
 
     bool edgeEnable() const { return m_edge_enable; }
     void setEdgeEnable(const bool value) { m_edge_enable = value; }
@@ -156,9 +148,12 @@ private:
     float m_layer_mix;
     bool m_layer_draw_debug;
 
-    // Layer appearance
-    DisplayStyle m_display_style;
-    float m_wireframe_alpha;
+    // Object Pass appearance
+    DisplayStyle m_object_display_style;
+    bool m_object_display_textures;
+    float m_object_alpha;
+
+    // Edge Pass appearance
     bool m_edge_enable;
     EdgeDetectMode m_edge_detect_mode;
     MColor m_edge_color;

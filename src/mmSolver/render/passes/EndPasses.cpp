@@ -23,7 +23,6 @@
 #include "EndPasses.h"
 
 // Maya
-#include <maya/MBoundingBox.h>
 #include <maya/MObject.h>
 #include <maya/MShaderManager.h>
 #include <maya/MStreamUtils.h>
@@ -126,37 +125,30 @@ MStatus EndPasses::updateRenderOperations() {
         static_cast<MHWRender::MSceneRender::MDisplayMode>(
             MHWRender::MSceneRender::kWireFrame);
 
-    // Draw these objects for transparency.
-    const auto wire_draw_object_types =
-        ~(MHWRender::MFrameContext::kExcludeMeshes |
-          MHWRender::MFrameContext::kExcludeNurbsCurves |
-          MHWRender::MFrameContext::kExcludeNurbsSurfaces |
-          MHWRender::MFrameContext::kExcludeSubdivSurfaces);
-
-    // Draw all non-geometry normally.
-    const auto non_wire_draw_object_types =
-        ((~wire_draw_object_types) |
-         MHWRender::MFrameContext::kExcludeImagePlane |
-         MHWRender::MFrameContext::kExcludePluginShapes);
-
-    // What objects types to draw for depth buffer?
-    const auto depth_draw_object_types =
-        wire_draw_object_types | MHWRender::MFrameContext::kExcludeImagePlane;
-
-    // Draw image planes in the background always.
-    const auto bg_draw_object_types =
-        ~(MHWRender::MFrameContext::kExcludeImagePlane |
-          MHWRender::MFrameContext::kExcludePluginShapes);
-
-    // SceneRender *sceneOp = nullptr;
+    const auto manipulator_object_types =
+        ~(MHWRender::MFrameContext::kExcludeCameras |
+          MHWRender::MFrameContext::kExcludeClipGhosts |
+          MHWRender::MFrameContext::kExcludeDimensions |
+          MHWRender::MFrameContext::kExcludeGreasePencils |
+          MHWRender::MFrameContext::kExcludeGrid |
+          MHWRender::MFrameContext::kExcludeIkHandles |
+          MHWRender::MFrameContext::kExcludeJoints |
+          MHWRender::MFrameContext::kExcludeLights |
+          MHWRender::MFrameContext::kExcludeLocators |
+          MHWRender::MFrameContext::kExcludeManipulators |
+          MHWRender::MFrameContext::kExcludeMotionTrails |
+          MHWRender::MFrameContext::kExcludePivots |
+          MHWRender::MFrameContext::kExcludeSelectHandles);
 
     // // Manipulators pass.
-    // sceneOp = new SceneRender(kSceneManipulatorPassName);
+    // auto *sceneOp = new SceneRender(kSceneManipulatorPassName);
+    // sceneOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
+    // sceneOp->setClearMask(clear_mask_none);
     // sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
-    // sceneOp->setExcludeTypes(non_wire_draw_object_types);
+    // sceneOp->setExcludeTypes(manipulator_object_types);
     // sceneOp->setDoSelectable(false);
     // sceneOp->setDoBackground(false);
-    // sceneOp->setClearMask(clear_mask_none);
+    // sceneOp->setUseLayer(false);
     // m_ops[EndPass::kSceneManipulatorPass] = sceneOp;
 
     // // A preset 2D HUD render operation
@@ -187,7 +179,6 @@ MStatus EndPasses::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     // color and depth targets, but shaders may internally reference
     // specific render targets.
 
-    // // Draw manipulators over the top of all objects.
     // auto manipulatorPassOp =
     //     dynamic_cast<SceneRender *>(m_ops[EndPass::kSceneManipulatorPass]);
     // if (manipulatorPassOp) {
@@ -195,14 +186,12 @@ MStatus EndPasses::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     //     manipulatorPassOp->setRenderTargets(targets, kMainColorTarget, 2);
     // }
 
-    // // Draw the HUD on kMainColorTarget.
     // auto hudOp = dynamic_cast<HudRender *>(m_ops[EndPass::kHudPass]);
     // if (hudOp) {
     //     hudOp->setEnabled(true);
     //     hudOp->setRenderTargets(targets, kMainColorTarget, 2);
     // }
 
-    // Display kMainColorTarget to the screen.
     auto presentOp = dynamic_cast<PresentTarget *>(m_ops[EndPass::kPresentOp]);
     if (presentOp) {
         presentOp->setEnabled(true);

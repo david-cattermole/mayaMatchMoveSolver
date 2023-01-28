@@ -77,6 +77,23 @@ uniform sampler2D gDepthSamplerB = sampler_state {
     Texture = <gDepthTexB>;
 };
 
+// Color texture for C input.  Expected to be a normal RGB three
+// channel image.
+uniform texture2D gColorTexC : InputTexture
+<
+    string UIName = "Color Texture C";
+>;
+uniform sampler2D gColorSamplerC = sampler_state {
+    Texture = <gColorTexC>;
+};
+uniform int gUseColorC = 0;
+
+// Factors to pre-multiply the A, B and C input colors with. This
+// allows controlling how much of each input is used.
+uniform float gAlphaA = 1.0;
+uniform float gAlphaB = 1.0;
+uniform float gAlphaC = 1.0;
+
 // Display for debugging.
 #define kDEBUG_MODE_OFF 0
 #define kDEBUG_MODE_ON 1
@@ -88,8 +105,8 @@ uniform int gDebugMode = 0;
 #define kLAYER_MODE_PLUS 2    // Add A and B together.
 uniform int gLayerMode = 0;
 
-// What is the opacity of A input? This can be used to reduce the
-// layer merge effect. For example to make input A semi-transparent,
+// What is the opacity of the input? This can be used to reduce the
+// layer merge effect. For example to make the input semi-transparent,
 // set the opacity to a value below 1.0.
 uniform float gLayerMix = 1.0;
 
@@ -99,34 +116,39 @@ attribute VS_INPUT {
     vec2 UV : TEXCOORD0;
 };
 
-// Vertex Shader outputs.
-attribute VS_TO_PS {
-    vec2 VSUV : TEXCOORD0;
+attribute SHADER_DATA {
+    vec2 UV : TEXCOORD0;
 };
 
 // Vertex Shader
 GLSLShader VS_mmLayerMerge {
     void main() {
         gl_Position = gWVPXf * Pos;
-        VSUV = UV;
+        VS_OUTPUT.UV = UV;
     }
 }
 
 // Pixel Shader Outputs
-attribute pixelOut {
+attribute PIXEL_DATA {
     vec4 colorOut : COLOR0;
 }
 
 GLSLShader PS_mmLayerMerge_Main {
     void main() {
         vec4 result = vec4(0.0, 1.0, 0.0, 1.0);
-        vec4 color_A = texture2D(gColorSamplerA, VSUV.xy);
-        vec4 color_B = texture2D(gColorSamplerB, VSUV.xy);
-        color_A = color_A * gLayerMix;
+        vec4 color_A = texture2D(gColorSamplerA, PS_INPUT.UV.xy) * gAlphaA;
+        vec4 color_B = texture2D(gColorSamplerB, PS_INPUT.UV.xy) * gAlphaB;
+
+        vec4 color_C = vec4(0.0, 0.0, 0.0, 0.0);
+        if (gUseColorC > 0) {
+            color_C = texture2D(gColorSamplerC, PS_INPUT.UV.xy) * gAlphaC;
+        }
+
+        color_A = (color_A + color_C) * gLayerMix;
 
         if (gLayerMode == kLAYER_MODE_ZDEPTH) {
-            vec4 depth_A = texture2D(gDepthSamplerA, VSUV.xy);
-            vec4 depth_B = texture2D(gDepthSamplerB, VSUV.xy);
+            vec4 depth_A = texture2D(gDepthSamplerA, PS_INPUT.UV.xy);
+            vec4 depth_B = texture2D(gDepthSamplerB, PS_INPUT.UV.xy);
 
             result = color_B;
             if (depth_A.r <= depth_B.r) {
@@ -145,22 +167,22 @@ GLSLShader PS_mmLayerMerge_Main {
         }
 
         if (gDebugMode == kDEBUG_MODE_ON) {
-            if (VSUV.x <= 0.125) {
+            if (PS_INPUT.UV.x <= 0.125) {
                 result = color_A;
-            } else if (VSUV.x <= 0.25) {
-                if (VSUV.y < 0.5) {
+            } else if (PS_INPUT.UV.x <= 0.25) {
+                if (PS_INPUT.UV.y < 0.5) {
                     result = vec4(color_A.w, color_A.w, color_A.w, 1.0);
                 } else {
-                    vec4 depth_A = texture2D(gDepthSamplerA, VSUV.xy);
+                    vec4 depth_A = texture2D(gDepthSamplerA, PS_INPUT.UV.xy);
                     result = vec4(depth_A.r, depth_A.r, depth_A.r, 1.0);
                 }
-            } else if (VSUV.x <= 0.375) {
+            } else if (PS_INPUT.UV.x <= 0.375) {
                 result = color_B;
-            } else if (VSUV.x <= 0.5) {
-                if (VSUV.y < 0.5) {
+            } else if (PS_INPUT.UV.x <= 0.5) {
+                if (PS_INPUT.UV.y < 0.5) {
                     result = vec4(color_B.w, color_B.w, color_B.w, 1.0);
                 } else {
-                    vec4 depth_B = texture2D(gDepthSamplerB, VSUV.xy);
+                    vec4 depth_B = texture2D(gDepthSamplerB, PS_INPUT.UV.xy);
                     result = vec4(depth_B.r, depth_B.r, depth_B.r, 1.0);
                 }
             }
@@ -173,7 +195,7 @@ GLSLShader PS_mmLayerMerge_Main {
 // The technique, used to merge textures together.
 technique Main {
     pass p0 {
-        VertexShader(in VS_INPUT, out VS_TO_PS) = VS_mmLayerMerge;
-        PixelShader(in VS_TO_PS, out pixelOut) = PS_mmLayerMerge_Main;
+        VertexShader(in VS_INPUT, out SHADER_DATA VS_OUTPUT) = VS_mmLayerMerge;
+        PixelShader(in SHADER_DATA PS_INPUT, out PIXEL_DATA) = PS_mmLayerMerge_Main;
     }
 }

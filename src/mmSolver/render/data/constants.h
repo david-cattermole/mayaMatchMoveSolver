@@ -81,41 +81,53 @@ const MString kDisplayLayerManagerNodeName = "layerManager";
 
 // Default parameters
 const BackgroundStyle kBackgroundStyleDefault = BackgroundStyle::kMayaDefault;
-const DisplayStyle kDisplayStyleDefault = DisplayStyle::kHiddenLine;
-const EdgeDetectMode kEdgeDetectModeDefault = EdgeDetectMode::kSobel;
-const LayerMode kLayerModeDefault = LayerMode::kZDepth;
 const RenderColorFormat kRenderColorFormatDefault =
     RenderColorFormat::kRGBA16BitFloat;
-const RenderMode kRenderModeDefault = RenderMode::kFour;
-const bool kEdgeEnableDefault = false;
+
+const bool kLayerVisibilityDefault = true;
+const int32_t kLayerDisplayOrderDefault = -1;
+const LayerMode kLayerModeDefault = LayerMode::kZDepth;
+const float kLayerMixDefault = 1.0f;
 const bool kLayerDrawDebugDefault = false;
-const bool kVisibilityDefault = true;
-const float kEdgeAlphaDefault = 1.0f;
+
+const DisplayStyle kObjectDisplayStyleDefault = DisplayStyle::kHiddenLine;
+const bool kObjectDisplayTexturesDefault = false;
+const float kObjectAlphaDefault = 1.0f;
+
+const bool kEdgeEnableDefault = false;
 const float kEdgeColorDefault[] = {1.0f, 0.0f, 0.0f, 1.0f};
+const float kEdgeAlphaDefault = 1.0f;
+const EdgeDetectMode kEdgeDetectModeDefault = EdgeDetectMode::kFreiChen;
 const float kEdgeThicknessDefault = 1.0f;
 const float kEdgeThresholdDefault = 1.0f;
-const float kLayerMixDefault = 1.0f;
-const float kWireframeAlphaDefault = 1.0f;
-const int32_t kDisplayOrderDefault = -1;
 
 // Render Operation Pass Names
-const MString kLayerCopyEndOpName = "mmRenderer_Layer_CopyEnd_";
-const MString kLayerCopyStartOpName = "mmRenderer_Layer_CopyStart_";
 const MString kLayerDepthPassName = "mmRenderer_Layer_DepthRender_";
 const MString kLayerEdgeDetectOpName = "mmRenderer_Layer_EdgeDetectOp_";
 const MString kLayerMergeOpName = "mmRenderer_Layer_Merge_";
-const MString kLayerWireframeBlendOpName = "mmRenderer_Layer_WireframeBlend_";
-const MString kLayerWireframePassName = "mmRenderer_Layer_WireframeRender_";
+const MString kLayerObjectPassName = "mmRenderer_Layer_ObjectRender_";
 const MString kPresentOpName = "mmRenderer_PresentTarget";
 const MString kSceneBackgroundPassName = "mmRenderer_SceneRender_Background";
-const MString kSceneDepthPassName = "mmRenderer_SceneRender_DepthOnly";
 const MString kSceneManipulatorPassName = "mmRenderer_SceneRender_Manipulator";
-const MString kSceneSelectionPassName = "mmRenderer_SceneRender_Select";
 
 // Attribute Names
+const MString kAttrNameLayerVisibility = "visibility";
+const MString kAttrNameLayerDisplayOrder = "displayOrder";
+const MString kAttrNameLayerMode = "mmLayerMode";
+const MString kAttrNameLayerMix = "mmLayerMix";
+const MString kAttrNameLayerDrawDebug = "mmLayerDrawDebug";
+
+const MString kAttrNameObjectDisplayStyle = "mmObjectDisplayStyle";
+const MString kAttrNameObjectAlpha = "mmObjectAlpha";
+
+const MString kAttrNameEdgeEnable = "mmEdgeEnable";
 const MString kAttrNameEdgeColorR = "mmEdgeColorR";
 const MString kAttrNameEdgeColorG = "mmEdgeColorG";
 const MString kAttrNameEdgeColorB = "mmEdgeColorB";
+const MString kAttrNameEdgeAlpha = "mmEdgeAlpha";
+const MString kAttrNameEdgeDetectMode = "mmEdgeDetectMode";
+const MString kAttrNameEdgeThickness = "mmEdgeThickness";
+const MString kAttrNameEdgeThreshold = "mmEdgeThreshold";
 
 }  // namespace render
 }  // namespace mmsolver

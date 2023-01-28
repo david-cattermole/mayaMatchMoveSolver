@@ -52,7 +52,8 @@ RenderOverride::RenderOverride(const MString &name)
     , m_globals_node()
     , m_pull_updates(true)
     , m_multi_sample_enable(false)
-    , m_multi_sample_count(1) {
+    , m_multi_sample_count(1)
+    , m_draw_textures(false) {
     // Remove any operations that already exist from Maya.
     mOperations.clear();
 
@@ -329,22 +330,22 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     const bool want_networked_plug = true;
 
     // Visibility - should the layer draw?
-    bool visibility = kVisibilityDefault;
-    MPlug visibility_plug =
-        depends_node.findPlug("visibility", want_networked_plug, &status);
+    bool layer_visibility = kLayerVisibilityDefault;
+    MPlug visibility_plug = depends_node.findPlug(kAttrNameLayerVisibility,
+                                                  want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
-        visibility = visibility_plug.asBool();
+        layer_visibility = visibility_plug.asBool();
     }
-    MMSOLVER_VRB("RenderOverride Visibility: " << visibility);
+    MMSOLVER_VRB("RenderOverride Visibility: " << layer_visibility);
 
     // Display Order - what is the order of the display layer?
-    int32_t display_order = kDisplayOrderDefault;
-    MPlug display_order_plug =
-        depends_node.findPlug("displayOrder", want_networked_plug, &status);
+    int32_t layer_display_order = kLayerDisplayOrderDefault;
+    MPlug display_order_plug = depends_node.findPlug(
+        kAttrNameLayerDisplayOrder, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
-        display_order = display_order_plug.asInt();
+        layer_display_order = display_order_plug.asInt();
     }
-    MMSOLVER_VRB("RenderOverride Display Order: " << display_order);
+    MMSOLVER_VRB("RenderOverride Display Order: " << layer_display_order);
 
     // Layer Mode
     // - Z-Depth (default)
@@ -352,7 +353,7 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     // - Add / Plus
     LayerMode layer_mode = kLayerModeDefault;
     MPlug layer_mode_plug =
-        depends_node.findPlug("mmLayerMode", want_networked_plug, &status);
+        depends_node.findPlug(kAttrNameLayerMode, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         short value = layer_mode_plug.asShort();
         layer_mode = static_cast<LayerMode>(value);
@@ -364,7 +365,7 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     // - Controls the transparency of the layer over other layers.
     float layer_mix = kLayerMixDefault;
     MPlug layer_mix_plug =
-        depends_node.findPlug("mmLayerMix", want_networked_plug, &status);
+        depends_node.findPlug(kAttrNameLayerMix, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         layer_mix = layer_mix_plug.asFloat();
     }
@@ -372,8 +373,8 @@ MStatus RenderOverride::getDisplayLayerFromNode(
 
     // Draw_Debug the layer detection mode.
     bool layer_draw_debug = kLayerDrawDebugDefault;
-    MPlug layer_draw_debug_plug =
-        depends_node.findPlug("mmLayerDrawDebug", want_networked_plug, &status);
+    MPlug layer_draw_debug_plug = depends_node.findPlug(
+        kAttrNameLayerDrawDebug, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         layer_draw_debug = layer_draw_debug_plug.asBool();
     }
@@ -385,28 +386,28 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     // - Hidden Line.
     // - Shaded.
     // - Wireframe On Shaded.
-    DisplayStyle display_style = kDisplayStyleDefault;
-    MPlug display_style_plug =
-        depends_node.findPlug("mmDisplayStyle", want_networked_plug, &status);
+    DisplayStyle object_display_style = kObjectDisplayStyleDefault;
+    MPlug display_style_plug = depends_node.findPlug(
+        kAttrNameObjectDisplayStyle, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         short value = display_style_plug.asShort();
-        display_style = static_cast<DisplayStyle>(value);
+        object_display_style = static_cast<DisplayStyle>(value);
     }
-    MMSOLVER_VRB(
-        "RenderOverride Display Style: " << static_cast<short>(display_style));
+    MMSOLVER_VRB("RenderOverride Display Style: "
+                 << static_cast<short>(object_display_style));
 
-    float wireframe_alpha = kWireframeAlphaDefault;
-    MPlug wire_alpha_plug =
-        depends_node.findPlug("mmWireframeAlpha", want_networked_plug, &status);
+    float object_alpha = kObjectAlphaDefault;
+    MPlug object_alpha_plug = depends_node.findPlug(
+        kAttrNameObjectAlpha, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
-        wireframe_alpha = wire_alpha_plug.asFloat();
+        object_alpha = object_alpha_plug.asFloat();
     }
-    MMSOLVER_VRB("RenderOverride Wireframe Alpha: " << wireframe_alpha);
+    MMSOLVER_VRB("RenderOverride Wireframe Alpha: " << object_alpha);
 
     // Enable the edge detection mode.
     bool edge_enable = kEdgeEnableDefault;
-    MPlug edge_enable_plug =
-        depends_node.findPlug("mmEdgeEnable", want_networked_plug, &status);
+    MPlug edge_enable_plug = depends_node.findPlug(
+        kAttrNameEdgeEnable, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         edge_enable = edge_enable_plug.asBool();
     }
@@ -437,15 +438,15 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     // Edge Alpha - The alpha for detected edges.
     float edge_alpha = kEdgeAlphaDefault;
     MPlug edge_alpha_plug =
-        depends_node.findPlug("mmEdgeAlpha", want_networked_plug, &status);
+        depends_node.findPlug(kAttrNameEdgeAlpha, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         edge_alpha = edge_alpha_plug.asFloat();
     }
     MMSOLVER_VRB("RenderOverride Edge Alpha: " << edge_alpha);
 
     EdgeDetectMode edge_detect_mode = kEdgeDetectModeDefault;
-    MPlug edge_detect_mode_plug =
-        depends_node.findPlug("mmEdgeDetectMode", want_networked_plug, &status);
+    MPlug edge_detect_mode_plug = depends_node.findPlug(
+        kAttrNameEdgeDetectMode, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         short value = edge_detect_mode_plug.asShort();
         edge_detect_mode = static_cast<EdgeDetectMode>(value);
@@ -454,29 +455,29 @@ MStatus RenderOverride::getDisplayLayerFromNode(
                  << static_cast<short>(edge_detect_mode));
 
     float edge_thickness = kEdgeThicknessDefault;
-    MPlug edge_thickness_plug =
-        depends_node.findPlug("mmEdgeThickness", want_networked_plug, &status);
+    MPlug edge_thickness_plug = depends_node.findPlug(
+        kAttrNameEdgeThickness, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         edge_thickness = edge_thickness_plug.asFloat();
     }
     MMSOLVER_VRB("RenderOverride Edge Thickness: " << edge_thickness);
 
     float edge_threshold = kEdgeThresholdDefault;
-    MPlug edge_threshold_plug =
-        depends_node.findPlug("mmEdgeThreshold", want_networked_plug, &status);
+    MPlug edge_threshold_plug = depends_node.findPlug(
+        kAttrNameEdgeThreshold, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         edge_threshold = edge_threshold_plug.asFloat();
     }
     MMSOLVER_VRB("RenderOverride Edge Threshold: " << edge_threshold);
 
     out_display_layer.setName(layer_name);
-    out_display_layer.setVisibility(visibility);
-    out_display_layer.setDisplayOrder(display_order);
+    out_display_layer.setVisibility(layer_visibility);
+    out_display_layer.setDisplayOrder(layer_display_order);
     out_display_layer.setLayerMode(layer_mode);
     out_display_layer.setLayerMix(static_cast<float>(layer_mix));
     out_display_layer.setLayerDrawDebug(layer_draw_debug);
-    out_display_layer.setDisplayStyle(display_style);
-    out_display_layer.setWireframeAlpha(static_cast<float>(wireframe_alpha));
+    out_display_layer.setObjectDisplayStyle(object_display_style);
+    out_display_layer.setObjectAlpha(static_cast<float>(object_alpha));
     out_display_layer.setEdgeEnable(edge_enable);
     out_display_layer.setEdgeDetectMode(edge_detect_mode);
     out_display_layer.setEdgeColor(edge_color);
@@ -531,6 +532,7 @@ MStatus RenderOverride::updateDisplayLayers() {
                                                          display_layer);
         CHECK_MSTATUS(status);
         if (status == MS::kSuccess) {
+            display_layer.setObjectDisplayTextures(m_draw_textures);
             m_display_layers.pushDisplayLayer(std::move(display_layer));
         }
     }
@@ -676,6 +678,15 @@ MStatus RenderOverride::setup(const MString &destination) {
         m_render_override_change_callback =
             MUiMessage::add3dViewRenderOverrideChangedCallback(
                 destination, render_override_change_func, client_data);
+    }
+
+    const MHWRender::MFrameContext *frameContext =
+        MRenderOverride::getFrameContext();
+    if (frameContext) {
+        unsigned int display_style = frameContext->getDisplayStyle();
+        m_draw_textures =
+            display_style &
+            static_cast<unsigned int>(MHWRender::MFrameContext::kTextured);
     }
 
     // Get override values.

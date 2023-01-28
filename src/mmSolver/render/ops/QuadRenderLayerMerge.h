@@ -55,9 +55,18 @@ public:
     void setDepthTargetB(const uint32_t index) {
         m_target_index_depth_b = index;
     }
+    void setColorTargetC(const uint32_t index) {
+        m_target_index_color_c = index;
+    }
+
+    void setUseColorTargetC(const bool value) { m_use_color_target_c = value; }
 
     void setLayerMode(const LayerMode value) { m_layer_mode = value; }
     void setLayerMix(const float value) { m_layer_mix = value; }
+
+    void setAlphaA(const float value) { m_alpha_a = value; }
+    void setAlphaB(const float value) { m_alpha_b = value; }
+    void setAlphaC(const float value) { m_alpha_c = value; }
 
     void setDebug(const bool value) { m_debug = value; }
 
@@ -70,9 +79,14 @@ protected:
     uint32_t m_target_index_depth_a;
     uint32_t m_target_index_color_b;
     uint32_t m_target_index_depth_b;
+    uint32_t m_target_index_color_c;
+    bool m_use_color_target_c;
 
     LayerMode m_layer_mode;
     float m_layer_mix;
+    float m_alpha_a;
+    float m_alpha_b;
+    float m_alpha_c;
     bool m_debug;
 };
 

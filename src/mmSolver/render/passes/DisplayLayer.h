@@ -109,8 +109,8 @@ public:
     float layerMix() const { return m_layer_mix; }
     void setLayerMix(const float value) { m_layer_mix = value; }
 
-    float layerDrawDebug() const { return m_layer_draw_debug; }
-    void setLayerDrawDebug(const float value) { m_layer_draw_debug = value; }
+    bool layerDrawDebug() const { return m_layer_draw_debug; }
+    void setLayerDrawDebug(const bool value) { m_layer_draw_debug = value; }
 
     // How does the Display Layer render?
     DisplayStyle displayStyle() const { return m_display_style; }

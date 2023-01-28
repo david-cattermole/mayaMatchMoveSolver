@@ -49,6 +49,8 @@ clang-format -i --style=file ^
        "%PROJECT_ROOT%\src\mmSolver\render\ops\*.h" ^
        "%PROJECT_ROOT%\src\mmSolver\render\passes\*.cpp" ^
        "%PROJECT_ROOT%\src\mmSolver\render\passes\*.h" ^
+       "%PROJECT_ROOT%\src\mmSolver\render\shader\*.cpp" ^
+       "%PROJECT_ROOT%\src\mmSolver\render\shader\*.h" ^
        "%PROJECT_ROOT%\src\mmSolver\sfm\*.cpp" ^
        "%PROJECT_ROOT%\src\mmSolver\sfm\*.h" ^
        "%PROJECT_ROOT%\src\mmSolver\shape\*.cpp" ^

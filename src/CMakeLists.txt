@@ -138,6 +138,7 @@ if (MMSOLVER_BUILD_RENDERER)
     mmSolver/render/passes/DisplayLayer.cpp
     mmSolver/render/passes/DisplayLayerList.cpp
     mmSolver/render/passes/EndPasses.cpp
+    mmSolver/render/shader/shader_utils.cpp
   )
 
   # Allow C++ source code to query the defined 'WITH_MM_RENDERER'

@@ -26,7 +26,8 @@ namespace mmsolver {
 namespace render {
 
 enum class DisplayStyle : short {
-    kWireframe = 0,
+    kHoldOut = 0,
+    kWireframe,
     kHiddenLine,
     kWireframeOnShaded,
     kShaded,

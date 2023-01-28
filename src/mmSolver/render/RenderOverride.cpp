@@ -380,6 +380,7 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     MMSOLVER_VRB("RenderOverride Layer Draw Debug: " << layer_draw_debug);
 
     // Display Style
+    // - Hold Out (invisible, but draws in depth).
     // - Wireframe.
     // - Hidden Line.
     // - Shaded.

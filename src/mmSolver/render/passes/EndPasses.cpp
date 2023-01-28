@@ -117,14 +117,6 @@ MStatus EndPasses::updateRenderOperations() {
     const auto clear_mask_depth =
         static_cast<uint32_t>(MHWRender::MClearOperation::kClearDepth);
 
-    // Display modes
-    const auto display_mode_shaded =
-        static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kShaded);
-    const auto display_mode_wireframe =
-        static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kWireFrame);
-
     // Draw these objects for transparency.
     const auto wire_draw_object_types =
         ~(MHWRender::MFrameContext::kExcludeMeshes |
@@ -137,30 +129,6 @@ MStatus EndPasses::updateRenderOperations() {
         ((~wire_draw_object_types) |
          MHWRender::MFrameContext::kExcludeImagePlane |
          MHWRender::MFrameContext::kExcludePluginShapes);
-
-    // What objects types to draw for depth buffer?
-    const auto depth_draw_object_types =
-        wire_draw_object_types | MHWRender::MFrameContext::kExcludeImagePlane;
-
-    // Draw image planes in the background always.
-    const auto bg_draw_object_types =
-        ~(MHWRender::MFrameContext::kExcludeImagePlane |
-          MHWRender::MFrameContext::kExcludePluginShapes);
-
-    const auto manipulator_object_types =
-        ~(MHWRender::MFrameContext::kExcludeCameras |
-          MHWRender::MFrameContext::kExcludeClipGhosts |
-          MHWRender::MFrameContext::kExcludeDimensions |
-          MHWRender::MFrameContext::kExcludeGreasePencils |
-          MHWRender::MFrameContext::kExcludeGrid |
-          MHWRender::MFrameContext::kExcludeIkHandles |
-          MHWRender::MFrameContext::kExcludeJoints |
-          MHWRender::MFrameContext::kExcludeLights |
-          MHWRender::MFrameContext::kExcludeLocators |
-          MHWRender::MFrameContext::kExcludeManipulators |
-          MHWRender::MFrameContext::kExcludeMotionTrails |
-          MHWRender::MFrameContext::kExcludePivots |
-          MHWRender::MFrameContext::kExcludeSelectHandles);
 
     // Manipulators pass.
     auto *sceneOp = new SceneRender(kSceneManipulatorPassName);

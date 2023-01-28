@@ -70,6 +70,8 @@ enum TargetId {
 const char kRendererUiName[] = "mmRenderer (beta)";
 const float kTransparentBlackColor[] = {0.0f, 0.0f, 0.0f, 0.0f};
 
+const MString kRenderGlobalsNodeName = "mmRenderGlobals";
+
 // The node Maya uses to store all attributes that define how the
 // hardware renderer works - such as formats/bit-depths and
 // anti-aliasing options.

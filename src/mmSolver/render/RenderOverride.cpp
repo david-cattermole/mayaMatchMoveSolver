@@ -24,6 +24,7 @@
 #include "RenderOverride.h"
 
 // Maya
+#include <maya/MGlobal.h>
 #include <maya/MItDependencyNodes.h>
 #include <maya/MObject.h>
 #include <maya/MPlug.h>
@@ -35,6 +36,7 @@
 
 // MM Solver
 #include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/render/ops/HudRender.h"
 #include "mmSolver/render/ops/SceneRender.h"
 #include "mmSolver/render/passes/DisplayLayer.h"
@@ -42,6 +44,15 @@
 
 namespace mmsolver {
 namespace render {
+
+static MStatus create_render_globals_node() {
+    const MString command =
+        "createNode \"" + MString(MM_RENDER_GLOBALS_TYPE_NAME) + "\" -name \"" +
+        MString(kRenderGlobalsNodeName) + "\" -shared -skipSelect;";
+    return MGlobal::executeCommand(command,
+                                   /*displayEnabled*/ false,
+                                   /*undoEnabled*/ false);
+}
 
 // Set up operations
 RenderOverride::RenderOverride(const MString &name)
@@ -237,34 +248,12 @@ MStatus RenderOverride::updateParameters() {
     }
 
     status = MS::kFailure;
-    if (!m_globals_node.isValid()) {
-        // Get the node and cache the handle in an 'MObjectHandle'
-        // instance.
-        MObject node_obj;
-        MString node_name = "mmRenderGlobals1";
-        status = getAsObject(node_name, node_obj);
-
-        if (!node_obj.isNull()) {
-            m_globals_node = node_obj;
-        } else {
-            // Could not find a valid render globals node.
-            //
-            // TODO: Run a MEL/Python command callback that will
-            // create a mmRenderGlobals node, when no node can be
-            // found.
-            return status;
-        }
-    }
-
-    MObject globals_node_obj = m_globals_node.object();
-    MFnDependencyNode depends_node(globals_node_obj, &status);
-    CHECK_MSTATUS(status);
-
     if (!m_maya_hardware_globals_node.isValid()) {
         // Get the node and cache the handle in an 'MObjectHandle'
         // instance.
         MObject node_obj;
-        status = getAsObject(kHardwareRenderGlobalsNodeName, node_obj);
+        status = getAsObject(kHardwareRenderGlobalsNodeName, node_obj,
+                             /*quiet=*/false);
 
         if (!node_obj.isNull()) {
             m_maya_hardware_globals_node = node_obj;
@@ -284,17 +273,6 @@ MStatus RenderOverride::updateParameters() {
 
     const bool want_networked_plug = true;
 
-    m_render_color_format = kRenderColorFormatDefault;
-    MPlug render_color_format_plug = depends_node.findPlug(
-        "renderColorFormat", want_networked_plug, &status);
-    CHECK_MSTATUS(status);
-    if (status == MStatus::kSuccess) {
-        short value = render_color_format_plug.asShort();
-        m_render_color_format = static_cast<RenderColorFormat>(value);
-    }
-    MMSOLVER_VRB("RenderOverride render_color_format: "
-                 << static_cast<short>(m_render_color_format));
-
     m_multi_sample_enable = false;
     MPlug sample_enable_plug = maya_hardware_globals_depends_node.findPlug(
         "multiSampleEnable", want_networked_plug, &status);
@@ -312,6 +290,53 @@ MStatus RenderOverride::updateParameters() {
             m_multi_sample_count = sample_count_plug.asInt();
         }
     }
+
+    if (!m_globals_node.isValid()) {
+        // Get the node and cache the handle in an 'MObjectHandle'
+        // instance.
+        MObject node_obj;
+        status = getAsObject(kRenderGlobalsNodeName, node_obj, /*quiet=*/true);
+
+        if (!node_obj.isNull()) {
+            m_globals_node = node_obj;
+        } else {
+            MMSOLVER_VRB(
+                "MM Renderer: "
+                "Could not find \"mmRenderGlobals\" node, creating node.");
+            status = create_render_globals_node();
+            CHECK_MSTATUS(status);
+
+            if (status == MS::kSuccess) {
+                status = getAsObject(kRenderGlobalsNodeName, node_obj,
+                                     /*quiet=*/true);
+                if (!node_obj.isNull()) {
+                    m_globals_node = node_obj;
+                } else {
+                    return MS::kSuccess;
+                }
+            } else {
+                return MS::kSuccess;
+            }
+        }
+    }
+    if (status != MS::kSuccess) {
+        return MS::kSuccess;
+    }
+
+    MObject globals_node_obj = m_globals_node.object();
+    MFnDependencyNode depends_node(globals_node_obj, &status);
+    CHECK_MSTATUS(status);
+
+    m_render_color_format = kRenderColorFormatDefault;
+    MPlug render_color_format_plug = depends_node.findPlug(
+        "renderColorFormat", want_networked_plug, &status);
+    CHECK_MSTATUS(status);
+    if (status == MStatus::kSuccess) {
+        short value = render_color_format_plug.asShort();
+        m_render_color_format = static_cast<RenderColorFormat>(value);
+    }
+    MMSOLVER_VRB("RenderOverride render_color_format: "
+                 << static_cast<short>(m_render_color_format));
 
     return MS::kSuccess;
 }
@@ -770,6 +795,11 @@ void RenderOverride::renderer_change_func(const MString &panel_name,
                  << panel_name.asChar() << "'. "
                  << "New renderer is '" << new_renderer.asChar() << "', "
                  << "old was '" << old_renderer.asChar() << "'.");
+
+    if (new_renderer == MM_RENDERER_NAME) {
+        MStatus status = create_render_globals_node();
+        CHECK_MSTATUS(status);
+    }
 }
 
 // Callback for tracking render override changes
@@ -778,12 +808,15 @@ void RenderOverride::render_override_change_func(const MString &panel_name,
                                                  const MString &new_renderer,
                                                  void * /*client_data*/) {
     const bool verbose = false;
-    // TODO: When the 'new_renderer' is MM_RENDERER_NAME, we must forcibly
-    //  create a new 'mmRenderGlobals' node.
     MMSOLVER_VRB("Render override changed for panel '"
                  << panel_name.asChar() << "'. "
                  << "New override is '" << new_renderer.asChar() << "', "
                  << "old was '" << old_renderer.asChar() << "'.");
+
+    if (new_renderer == MM_RENDERER_NAME) {
+        MStatus status = create_render_globals_node();
+        CHECK_MSTATUS(status);
+    }
 }
 
 }  // namespace render

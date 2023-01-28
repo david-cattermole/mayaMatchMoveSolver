@@ -125,6 +125,28 @@ MStatus EndPasses::updateRenderOperations() {
         static_cast<MHWRender::MSceneRender::MDisplayMode>(
             MHWRender::MSceneRender::kWireFrame);
 
+    // Draw these objects for transparency.
+    const auto wire_draw_object_types =
+        ~(MHWRender::MFrameContext::kExcludeMeshes |
+          MHWRender::MFrameContext::kExcludeNurbsCurves |
+          MHWRender::MFrameContext::kExcludeNurbsSurfaces |
+          MHWRender::MFrameContext::kExcludeSubdivSurfaces);
+
+    // Draw all non-geometry normally.
+    const auto non_wire_draw_object_types =
+        ((~wire_draw_object_types) |
+         MHWRender::MFrameContext::kExcludeImagePlane |
+         MHWRender::MFrameContext::kExcludePluginShapes);
+
+    // What objects types to draw for depth buffer?
+    const auto depth_draw_object_types =
+        wire_draw_object_types | MHWRender::MFrameContext::kExcludeImagePlane;
+
+    // Draw image planes in the background always.
+    const auto bg_draw_object_types =
+        ~(MHWRender::MFrameContext::kExcludeImagePlane |
+          MHWRender::MFrameContext::kExcludePluginShapes);
+
     const auto manipulator_object_types =
         ~(MHWRender::MFrameContext::kExcludeCameras |
           MHWRender::MFrameContext::kExcludeClipGhosts |
@@ -140,18 +162,18 @@ MStatus EndPasses::updateRenderOperations() {
           MHWRender::MFrameContext::kExcludePivots |
           MHWRender::MFrameContext::kExcludeSelectHandles);
 
-    // // Manipulators pass.
-    // auto *sceneOp = new SceneRender(kSceneManipulatorPassName);
-    // sceneOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
-    // sceneOp->setClearMask(clear_mask_none);
-    // sceneOp->setDrawObjects(DrawObjects::kNoOverride);
-    // sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
-    // sceneOp->setExcludeTypes(manipulator_object_types);
-    // m_ops[EndPass::kSceneManipulatorPass] = sceneOp;
+    // Manipulators pass.
+    auto *sceneOp = new SceneRender(kSceneManipulatorPassName);
+    sceneOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
+    sceneOp->setClearMask(clear_mask_none);
+    sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderPostSceneUIItems);
+    sceneOp->setExcludeTypes(non_wire_draw_object_types);
+    sceneOp->setDrawObjects(DrawObjects::kNoOverride);
+    m_ops[EndPass::kSceneManipulatorPass] = sceneOp;
 
-    // // A preset 2D HUD render operation
-    // auto hudOp = new HudRender();
-    // m_ops[EndPass::kHudPass] = hudOp;
+    // A preset 2D HUD render operation
+    auto hudOp = new HudRender();
+    m_ops[EndPass::kHudPass] = hudOp;
 
     // "Present" operation which will display the target for
     // viewports.  Operation is a no-op for batch rendering as
@@ -177,24 +199,24 @@ MStatus EndPasses::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     // color and depth targets, but shaders may internally reference
     // specific render targets.
 
-    // auto manipulatorPassOp =
-    //     dynamic_cast<SceneRender *>(m_ops[EndPass::kSceneManipulatorPass]);
-    // if (manipulatorPassOp) {
-    //     manipulatorPassOp->setEnabled(true);
-    //     manipulatorPassOp->setRenderTargets(targets, kMainColorTarget, 2);
-    // }
-
-    // auto hudOp = dynamic_cast<HudRender *>(m_ops[EndPass::kHudPass]);
-    // if (hudOp) {
-    //     hudOp->setEnabled(true);
-    //     hudOp->setRenderTargets(targets, kMainColorTarget, 2);
-    // }
-
+    auto manipulatorPassOp =
+        dynamic_cast<SceneRender *>(m_ops[EndPass::kSceneManipulatorPass]);
+    auto hudOp = dynamic_cast<HudRender *>(m_ops[EndPass::kHudPass]);
     auto presentOp = dynamic_cast<PresentTarget *>(m_ops[EndPass::kPresentOp]);
-    if (presentOp) {
-        presentOp->setEnabled(true);
-        presentOp->setRenderTargets(targets, kMainColorTarget, 2);
+
+    if (!manipulatorPassOp || !hudOp || !presentOp) {
+        return MS::kFailure;
     }
+
+    manipulatorPassOp->setEnabled(true);
+    manipulatorPassOp->setRenderTargets(targets, kMainColorTarget, 2);
+
+    hudOp->setEnabled(false);
+    hudOp->setRenderTargets(targets, kMainColorTarget, 2);
+
+    presentOp->setEnabled(true);
+    presentOp->setRenderTargets(targets, kMainColorTarget, 2);
+
     return status;
 }
 
@@ -202,14 +224,13 @@ MStatus EndPasses::setPanelNames(const MString &name) {
     const bool verbose = false;
     MMSOLVER_VRB("EndPasses::setPanelNames: " << name.asChar());
 
-    // // Set the name of the panel on operations which may use the panel
-    // // name to find out the associated M3dView.
-    // if (m_ops[EndPass::kSceneManipulatorPass]) {
-    //     auto op =
-    //         dynamic_cast<SceneRender
-    //         *>(m_ops[EndPass::kSceneManipulatorPass]);
-    //     op->setPanelName(name);
-    // }
+    // Set the name of the panel on operations which may use the panel
+    // name to find out the associated M3dView.
+    if (m_ops[EndPass::kSceneManipulatorPass]) {
+        auto op =
+            dynamic_cast<SceneRender *>(m_ops[EndPass::kSceneManipulatorPass]);
+        op->setPanelName(name);
+    }
 
     return MS::kSuccess;
 }

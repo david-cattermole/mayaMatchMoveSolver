@@ -147,36 +147,41 @@ MStatus BeginPasses::updateRenderOperations() {
         ~(MHWRender::MFrameContext::kExcludeImagePlane |
           MHWRender::MFrameContext::kExcludePluginShapes);
 
-    SceneRender *sceneOp = nullptr;
-
-    // // Depth pass.
-    // sceneOp = new SceneRender(kSceneDepthPassName);
-    // sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
-    // sceneOp->setExcludeTypes(depth_draw_object_types);
-    // sceneOp->setDisplayModeOverride(display_mode_shaded);
-    // // do not override objects to be drawn.
-    // sceneOp->setDoSelectable(false);
-    // sceneOp->setDoBackground(false);
-    // sceneOp->setClearMask(clear_mask_depth);
-    // m_ops[BeginPass::kSceneDepthPass] = sceneOp;
-
     // Background pass.
-    sceneOp = new SceneRender(kSceneBackgroundPassName);
+    auto sceneOp = new SceneRender(kSceneBackgroundPassName);
     sceneOp->setBackgroundStyle(BackgroundStyle::kMayaDefault);
     sceneOp->setClearMask(clear_mask_all);
-    sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
-    // sceneOp->setExcludeTypes(bg_draw_object_types);
+#if MAYA_API_VERSION != 20220000
+    const auto draw_object_types =
+        ~(MHWRender::MFrameContext::kExcludeGrid |
+          MHWRender::MFrameContext::kExcludeImagePlane |
+          MHWRender::MFrameContext::kExcludePluginShapes);
+    sceneOp->setExcludeTypes(draw_object_types);
+    sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderAllItems);
+#else
+    // The behaviour of the MSceneRender::MSceneFilterOption was
+    // broken in Maya 2022.0, and was fixed in Maya 2022.1 and
+    // 2023. The weird behaviour appears to be absent in Maya 2020, so
+    // only Maya 2022.0 is affected.
+    //
+    // See fixed issues MAYA-111526 and MAYA-110627:
+    //
+    // "VP2: MSceneRender always rendering selection highlight even
+    // though it is not set in the MSceneFilterOption
+    // (kRenderPostSceneUIItems is disabled)"
+    //
+    // https://help.autodesk.com/view/MAYAUL/2023/ENU/?guid=Maya_ReleaseNotes_2023_release_notes_fixed_issues2023_html
+    // https://help.autodesk.com/view/MAYAUL/2022/ENU/?guid=Maya_ReleaseNotes_2022_1_release_notes_html
+    //
+    // This workaround provides roughly the same appearance, compared to above.
+    sceneOp->setExcludeTypes(MHWRender::MFrameContext::kExcludeNone);
+    sceneOp->setSceneFilter(
+        static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
+            MHWRender::MSceneRender::kRenderPreSceneUIItems |
+            MHWRender::MSceneRender::kRenderShadedItems));
+#endif
     sceneOp->setDrawObjects(DrawObjects::kOnlyCameraBackgroundImagePlanes);
     m_ops[BeginPass::kSceneBackgroundPass] = sceneOp;
-
-    // // Select pass.
-    // sceneOp = new SceneRender(kSceneSelectionPassName);
-    // sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
-    // // override drawn objects to all image planes not under cameras.
-    // sceneOp->setDoSelectable(true);
-    // sceneOp->setDoBackground(false);
-    // sceneOp->setClearMask(clear_mask_none);
-    // m_ops[BeginPass::kSceneSelectionPass] = sceneOp;
 
     return MS::kSuccess;
 }
@@ -198,30 +203,13 @@ MStatus BeginPasses::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     // color and depth targets, but shaders may internally reference
     // specific render targets.
 
-    // // Draw scene (without image plane) into the depth channel.
-    // auto depthPassOp =
-    //     dynamic_cast<SceneRender *>(m_ops[BeginPass::kSceneDepthPass]);
-    // if (depthPassOp) {
-    //     depthPassOp->setEnabled(true);
-    //     depthPassOp->setRenderTargets(targets, kMainColorTarget, 2);
-    // }
-
     // Draw viewport background (with image plane).
     auto backgroundPassOp =
         dynamic_cast<SceneRender *>(m_ops[BeginPass::kSceneBackgroundPass]);
     if (backgroundPassOp) {
         backgroundPassOp->setEnabled(true);
-        // Note: Only render to the color target, depth is ignored.
         backgroundPassOp->setRenderTargets(targets, kMainColorTarget, 2);
     }
-
-    // // Allow selection of objects.
-    // auto selectSceneOp =
-    //     dynamic_cast<SceneRender *>(m_ops[BeginPass::kSceneSelectionPass]);
-    // if (selectSceneOp) {
-    //     selectSceneOp->setEnabled(true);
-    //     selectSceneOp->setRenderTargets(targets, kMainColorTarget, 2);
-    // }
 
     return status;
 }
@@ -230,26 +218,11 @@ MStatus BeginPasses::setPanelNames(const MString &name) {
     const bool verbose = false;
     MMSOLVER_VRB("BeginPasses::setPanelNames: " << name.asChar());
 
-    // // Set the name of the panel on operations which may use the panel
-    // // name to find out the associated M3dView.
-    // if (m_ops[BeginPass::kSceneDepthPass]) {
-    //     auto op =
-    //         dynamic_cast<SceneRender *>(m_ops[BeginPass::kSceneDepthPass]);
-    //     op->setPanelName(name);
-    // }
-
     if (m_ops[BeginPass::kSceneBackgroundPass]) {
         auto op =
             dynamic_cast<SceneRender *>(m_ops[BeginPass::kSceneBackgroundPass]);
         op->setPanelName(name);
     }
-
-    // if (m_ops[BeginPass::kSceneSelectionPass]) {
-    //     auto op =
-    //         dynamic_cast<SceneRender
-    //         *>(m_ops[BeginPass::kSceneSelectionPass]);
-    //     op->setPanelName(name);
-    // }
 
     return MS::kSuccess;
 }

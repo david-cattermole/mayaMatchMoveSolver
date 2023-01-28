@@ -50,20 +50,12 @@ public:
     // Enumerations to identify an operation within a list of
     // operations, used at the start of the render override.
     enum BeginPass {
-        // Draw the scene (except image planes), but only write to the
-        // depth channel.
-        kSceneDepthPass = 0,
-
         // Draw the Maya background color using the Maya preferences,
         // and draw imagePlanes.
         //
         // The render targets used for this pass is only the colour,
         // so the depth is ignored.
-        kSceneBackgroundPass,
-
-        // // Draw manipulators and excluded objects (but image planes
-        // // are drawn here).
-        // kSceneSelectionPass,
+        kSceneBackgroundPass = 0,
 
         // Holds the total number of entries (must be last field).
         kBeginPassCount

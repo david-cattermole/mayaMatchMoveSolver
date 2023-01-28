@@ -185,7 +185,6 @@ MStatus DisplayLayer::updateRenderOperations() {
     auto scenePassOp = new SceneRender(scenePassOpName);
     scenePassOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
     scenePassOp->setClearMask(clear_mask_none);
-    scenePassOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
     scenePassOp->setExcludeTypes(wire_draw_object_types);
     scenePassOp->setDrawObjects(DrawObjects::kOnlyNamedLayerObjects);
     scenePassOp->setLayerName(m_name);
@@ -273,20 +272,30 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
         depthPassOp->setEnabled(true);
         depthPassOp->setClearMask(clear_mask_all);
         depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+        depthPassOp->setSceneFilter(
+            MHWRender::MSceneRender::kRenderShadedItems);
 
         scenePassOp->setEnabled(true);
         scenePassOp->setClearMask(clear_mask_color);
         scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
         scenePassOp->setDisplayModeOverride(display_mode_wireframe);
+        scenePassOp->setSceneFilter(
+            MHWRender::MSceneRender::kRenderPostSceneUIItems);
 
         layerMergeOp->setAlphaA(m_object_alpha);
     } else if (m_object_display_style == DisplayStyle::kShaded) {
         depthPassOp->setEnabled(m_edge_enable);
         depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+        depthPassOp->setSceneFilter(
+            MHWRender::MSceneRender::kRenderShadedItems);
 
         scenePassOp->setEnabled(true);
         scenePassOp->setClearMask(clear_mask_all);
         scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+        scenePassOp->setSceneFilter(
+            static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
+                MHWRender::MSceneRender::kRenderShadedItems |
+                MHWRender::MSceneRender::kRenderPostSceneUIItems));
         if (!m_object_display_textures) {
             scenePassOp->setDisplayModeOverride(display_mode_shaded);
         } else {
@@ -296,30 +305,44 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
         depthPassOp->setEnabled(true);
         depthPassOp->setClearMask(clear_mask_all);
         depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+        depthPassOp->setSceneFilter(
+            MHWRender::MSceneRender::kRenderShadedItems);
 
         scenePassOp->setEnabled(true);
         scenePassOp->setClearMask(clear_mask_color);
         scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
         scenePassOp->setDisplayModeOverride(display_mode_wireframe);
+        scenePassOp->setSceneFilter(
+            MHWRender::MSceneRender::kRenderShadedItems);
 
         layerMergeOp->setAlphaA(0.0);
     } else if (m_object_display_style == DisplayStyle::kWireframe) {
         depthPassOp->setEnabled(m_edge_enable);
         depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+        depthPassOp->setSceneFilter(
+            MHWRender::MSceneRender::kRenderShadedItems);
 
         scenePassOp->setEnabled(true);
         scenePassOp->setClearMask(clear_mask_all);
         scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
         scenePassOp->setDisplayModeOverride(display_mode_wireframe);
+        scenePassOp->setSceneFilter(
+            MHWRender::MSceneRender::kRenderPostSceneUIItems);
 
         layerMergeOp->setAlphaA(m_object_alpha);
     } else if (m_object_display_style == DisplayStyle::kWireframeOnShaded) {
         depthPassOp->setEnabled(m_edge_enable);
         depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+        depthPassOp->setSceneFilter(
+            MHWRender::MSceneRender::kRenderShadedItems);
 
         scenePassOp->setEnabled(true);
         scenePassOp->setClearMask(clear_mask_all);
         scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+        scenePassOp->setSceneFilter(
+            static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
+                MHWRender::MSceneRender::kRenderShadedItems |
+                MHWRender::MSceneRender::kRenderPostSceneUIItems));
         if (!m_object_display_textures) {
             scenePassOp->setDisplayModeOverride(display_mode_shaded_wireframe);
         } else {

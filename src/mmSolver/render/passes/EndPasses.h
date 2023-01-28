@@ -48,10 +48,9 @@ public:
     // Enumerations to identify an operation within
     // a list of operations, used at the start of the render override.
     enum EndPass {
-        // kSceneManipulatorPass = 0,  // Draw the scene with 3D manipulators.
-        // kHudPass,                   // Draw 2D Heads-Up-Display (HUD)
-        // elements.
-        kPresentOp = 0,  // Present the drawn texture to the screen.
+        kSceneManipulatorPass = 0,  // Draw the scene with 3D manipulators.
+        kHudPass,                   // Draw 2D Heads-Up-Display (HUD) elements.
+        kPresentOp,                 // Present the drawn texture to the screen.
 
         // Holds the total number of entries (must be last field).
         kEndPassCount

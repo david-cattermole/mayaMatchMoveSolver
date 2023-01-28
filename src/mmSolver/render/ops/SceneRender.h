@@ -39,6 +39,14 @@
 namespace mmsolver {
 namespace render {
 
+enum class DrawObjects : short {
+    kNoOverride = 0,
+    kAllImagePlanes,
+    kOnlyCameraBackgroundImagePlanes,
+    kOnlyNamedLayerObjects,
+    kDrawObjectsCount,
+};
+
 class SceneRender : public MHWRender::MSceneRender {
 public:
     SceneRender(const MString &name);
@@ -110,14 +118,8 @@ public:
         m_display_mode_override = value;
     }
 
-    const bool doSelectable() const { return m_do_selectable; }
-    void setDoSelectable(const bool value) { m_do_selectable = value; }
-
-    const bool doBackground() const { return m_do_background; }
-    void setDoBackground(const bool value) { m_do_background = value; }
-
-    const bool useLayer() const { return m_use_layer; }
-    void setUseLayer(const bool value) { m_use_layer = value; }
+    const DrawObjects drawObjects() const { return m_draw_objects; }
+    void setDrawObjects(const DrawObjects value) { m_draw_objects = value; }
 
     const MString layerName() const { return m_layer_name; }
     void setLayerName(const MString value) { m_layer_name = value; }
@@ -162,12 +164,10 @@ protected:
     // Override the display mode (wireframe, shaded, etc)
     MHWRender::MSceneRender::MDisplayMode m_display_mode_override;
 
-    // Specific values to control the objects to be drawn.
-    bool m_do_selectable;
-    bool m_do_background;
+    // Control the objects to be drawn.
+    DrawObjects m_draw_objects;
 
     // The display layer to override the drawn objects with.
-    bool m_use_layer;
     MString m_layer_name;
 
     M3dView::DisplayStyle m_prev_display_style;

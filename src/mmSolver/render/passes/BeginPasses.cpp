@@ -166,9 +166,7 @@ MStatus BeginPasses::updateRenderOperations() {
     sceneOp->setClearMask(clear_mask_all);
     sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
     // sceneOp->setExcludeTypes(bg_draw_object_types);
-    // override drawn objects to only image planes under cameras.
-    sceneOp->setDoSelectable(true);
-    sceneOp->setDoBackground(true);
+    sceneOp->setDrawObjects(DrawObjects::kOnlyCameraBackgroundImagePlanes);
     m_ops[BeginPass::kSceneBackgroundPass] = sceneOp;
 
     // // Select pass.

@@ -168,9 +168,7 @@ MStatus DisplayLayer::updateRenderOperations() {
     depthPassOp->setExcludeTypes(depth_draw_object_types);
     depthPassOp->setDisplayModeOverride(display_mode_shaded);
     depthPassOp->setShaderOverride(depthShader1);
-    depthPassOp->setDoSelectable(false);
-    depthPassOp->setDoBackground(false);
-    depthPassOp->setUseLayer(true);
+    depthPassOp->setDrawObjects(DrawObjects::kOnlyNamedLayerObjects);
     depthPassOp->setLayerName(m_name);
     m_ops[DisplayLayerPasses::kSceneDepthPass] = depthPassOp;
 
@@ -189,9 +187,7 @@ MStatus DisplayLayer::updateRenderOperations() {
     scenePassOp->setClearMask(clear_mask_none);
     scenePassOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
     scenePassOp->setExcludeTypes(wire_draw_object_types);
-    scenePassOp->setDoSelectable(false);
-    scenePassOp->setDoBackground(false);
-    scenePassOp->setUseLayer(true);
+    scenePassOp->setDrawObjects(DrawObjects::kOnlyNamedLayerObjects);
     scenePassOp->setLayerName(m_name);
     m_ops[DisplayLayerPasses::kSceneRenderPass] = scenePassOp;
 

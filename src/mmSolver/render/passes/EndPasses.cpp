@@ -144,11 +144,9 @@ MStatus EndPasses::updateRenderOperations() {
     // auto *sceneOp = new SceneRender(kSceneManipulatorPassName);
     // sceneOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
     // sceneOp->setClearMask(clear_mask_none);
+    // sceneOp->setDrawObjects(DrawObjects::kNoOverride);
     // sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderUIItems);
     // sceneOp->setExcludeTypes(manipulator_object_types);
-    // sceneOp->setDoSelectable(false);
-    // sceneOp->setDoBackground(false);
-    // sceneOp->setUseLayer(false);
     // m_ops[EndPass::kSceneManipulatorPass] = sceneOp;
 
     // // A preset 2D HUD render operation

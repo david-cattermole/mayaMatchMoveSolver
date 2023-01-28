@@ -35,7 +35,6 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-
 #include "mmSolver/mayahelper/maya_utils.h"
 
 namespace mmsolver {
@@ -44,9 +43,7 @@ namespace render {
 SceneRender::SceneRender(const MString &name)
     : MSceneRender(name)
     , m_background_style(kBackgroundStyleDefault)
-    , m_do_background(false)
-    , m_do_selectable(false)
-    , m_use_layer(false)
+    , m_draw_objects(DrawObjects::kNoOverride)
     , m_exclude_types(kExcludeNone)
     , m_prev_display_style(M3dView::kGouraudShaded)
     , m_scene_filter(MHWRender::MSceneRender::kNoSceneFilterOverride)
@@ -154,7 +151,7 @@ const MSelectionList *SceneRender::objectSetOverride() {
     // not override.
     m_selection_list.clear();
 
-    if (m_use_layer) {
+    if (m_draw_objects == DrawObjects::kOnlyNamedLayerObjects) {
         // Get the objects from the given display layer node.
         MObject layer_node;
         MStatus status = getAsObject(m_layer_name, layer_node);
@@ -217,10 +214,10 @@ const MSelectionList *SceneRender::objectSetOverride() {
         }
 
         return &m_selection_list;
-    } else if (!m_do_selectable && !m_do_background) {
+    } else if (m_draw_objects == DrawObjects::kNoOverride) {
         return nullptr;
-    } else if (m_do_selectable && m_do_background) {
-        // If m_do_selectable is true and m_do_background is true:
+    } else if (m_draw_objects ==
+               DrawObjects::kOnlyCameraBackgroundImagePlanes) {
         // override drawn objects to only image planes under cameras.
         MItDag it;
         it.traverseUnderWorld(true);
@@ -240,8 +237,7 @@ const MSelectionList *SceneRender::objectSetOverride() {
             }
         }
         return &m_selection_list;
-    } else if (m_do_selectable && !m_do_background) {
-        // If m_do_selectable is true and m_do_background is false:
+    } else if (m_draw_objects == DrawObjects::kAllImagePlanes) {
         // override drawn objects to all image planes not under cameras.
         MItDag it;
         it.traverseUnderWorld(false);

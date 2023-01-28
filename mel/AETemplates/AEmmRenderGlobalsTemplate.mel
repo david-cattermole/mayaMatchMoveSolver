@@ -9,26 +9,9 @@ global proc AEmmRenderGlobalsTemplate(string $name) {
                 -beginLayout (uiRes("m_AEmmRenderGlobalsTemplate.kDisplayOptions"))
                 -collapse false;
 
-                editorTemplate -addControl "renderMode";
-                editorTemplate -addControl "renderColorFormat";
-
-                editorTemplate -addSeparator;
-
                 editorTemplate
-                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kWireframeAlpha"))
-                    -addControl "wireframeAlpha";
-
-                editorTemplate -addSeparator;
-
-                editorTemplate
-                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kEdgeDetectMode"))
-                    -addControl "edgeDetectMode";
-                editorTemplate
-                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kEdgeThickness"))
-                    -addControl "edgeThickness";
-                editorTemplate
-                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kEdgeThreshold"))
-                    -addControl "edgeThreshold";
+                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kRenderColorFormat"))
+                    -addControl "renderColorFormat";
 
             editorTemplate -endLayout;
 

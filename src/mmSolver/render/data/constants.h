@@ -112,6 +112,11 @@ const MString kSceneDepthPassName = "mmRenderer_SceneRender_DepthOnly";
 const MString kSceneManipulatorPassName = "mmRenderer_SceneRender_Manipulator";
 const MString kSceneSelectionPassName = "mmRenderer_SceneRender_Select";
 
+// Attribute Names
+const MString kAttrNameEdgeColorR = "mmEdgeColorR";
+const MString kAttrNameEdgeColorG = "mmEdgeColorG";
+const MString kAttrNameEdgeColorB = "mmEdgeColorB";
+
 }  // namespace render
 }  // namespace mmsolver
 

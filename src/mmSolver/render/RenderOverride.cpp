@@ -412,9 +412,24 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     }
     MMSOLVER_VRB("RenderOverride Edge Enable: " << edge_enable);
 
-    // TODO: Get Edge Color. The color for detected edges.
+    // Edge Color. The color for detected edges.
     MColor edge_color(kEdgeColorDefault[0], kEdgeColorDefault[1],
                       kEdgeColorDefault[2]);
+    MPlug edge_color_r_plug = depends_node.findPlug(
+        kAttrNameEdgeColorR, want_networked_plug, &status);
+    if (status == MStatus::kSuccess) {
+        edge_color.r = edge_color_r_plug.asFloat();
+    }
+    MPlug edge_color_g_plug = depends_node.findPlug(
+        kAttrNameEdgeColorG, want_networked_plug, &status);
+    if (status == MStatus::kSuccess) {
+        edge_color.g = edge_color_g_plug.asFloat();
+    }
+    MPlug edge_color_b_plug = depends_node.findPlug(
+        kAttrNameEdgeColorB, want_networked_plug, &status);
+    if (status == MStatus::kSuccess) {
+        edge_color.b = edge_color_b_plug.asFloat();
+    }
     MMSOLVER_VRB("RenderOverride Edge Color: R=" << edge_color.r
                                                  << " G=" << edge_color.g
                                                  << " B=" << edge_color.b);

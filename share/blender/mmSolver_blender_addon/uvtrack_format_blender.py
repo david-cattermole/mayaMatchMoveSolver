@@ -197,7 +197,11 @@ def get_track_data(context, clip, track, frame_range):
     per_frame_list = []
     start_frame, end_frame = frame_range
     for f in range(start_frame, end_frame + 1):
-        marker_at_frame = track.markers.find_frame(f)
+        # Blender access the Marker data with the image sequence
+        # starting at frame 1, not the "real" frame number of the
+        # image sequence loaded.
+        blender_frame = 1 + (f - start_frame)
+        marker_at_frame = track.markers.find_frame(blender_frame)
         if marker_at_frame and not marker_at_frame.mute:
 
             # NOTE:

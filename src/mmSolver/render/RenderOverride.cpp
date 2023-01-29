@@ -50,8 +50,17 @@ static MStatus create_render_globals_node() {
         "createNode \"" + MString(MM_RENDER_GLOBALS_TYPE_NAME) + "\" -name \"" +
         MString(kRenderGlobalsNodeName) + "\" -shared -skipSelect;";
     return MGlobal::executeCommand(command,
-                                   /*displayEnabled*/ false,
-                                   /*undoEnabled*/ false);
+                                   /*displayEnabled*/ true,
+                                   /*undoEnabled*/ true);
+}
+
+static MStatus add_custom_attributes_to_all_layers() {
+    const MString command =
+        "import mmSolver.tools.mmrendererlayers.tool as tool;"
+        "tool.setup_all_layers();";
+    return MGlobal::executePythonCommand(command,
+                                         /*displayEnabled*/ true,
+                                         /*undoEnabled*/ true);
 }
 
 // Set up operations
@@ -311,6 +320,7 @@ MStatus RenderOverride::updateParameters() {
                                      /*quiet=*/true);
                 if (!node_obj.isNull()) {
                     m_globals_node = node_obj;
+                    add_custom_attributes_to_all_layers();
                 } else {
                     return MS::kSuccess;
                 }
@@ -799,6 +809,8 @@ void RenderOverride::renderer_change_func(const MString &panel_name,
     if (new_renderer == MM_RENDERER_NAME) {
         MStatus status = create_render_globals_node();
         CHECK_MSTATUS(status);
+        status = add_custom_attributes_to_all_layers();
+        CHECK_MSTATUS(status);
     }
 }
 
@@ -815,6 +827,8 @@ void RenderOverride::render_override_change_func(const MString &panel_name,
 
     if (new_renderer == MM_RENDERER_NAME) {
         MStatus status = create_render_globals_node();
+        CHECK_MSTATUS(status);
+        status = add_custom_attributes_to_all_layers();
         CHECK_MSTATUS(status);
     }
 }

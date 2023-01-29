@@ -69,7 +69,7 @@ The UV Track format v4 contains the following data:
 import json
 
 # UV Track format
-# This is copied from 'mmSolver.tools.loadmarker.constant module',
+# This is copied from 'mmSolver.tools.loadmarker.constant' module.
 UV_TRACK_FORMAT_VERSION_UNKNOWN = -1
 UV_TRACK_FORMAT_VERSION_4 = 4
 

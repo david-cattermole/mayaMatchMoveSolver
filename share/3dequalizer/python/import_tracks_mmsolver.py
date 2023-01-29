@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:    Import 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version: v1.2
+# 3DE4.script.version: v1.3
 #
 # 3DE4.script.gui:     Main Window::3DE4::File::Import
 # 3DE4.script.gui:     Object Browser::Context Menu Point
@@ -220,17 +220,26 @@ if c is not None and pg is not None:
     tde4.addTextAreaWidget(req, 'help_text', 'Help', 170, 0)
     tde4.addSeparatorWidget(req, 'separator1')
     tde4.addFileWidget(req, 'file_browser', 'File Name...', '*')
+    tde4.addOptionMenuWidget(
+        req, 'distortion_mode', 'Distortion Mode', 'Distorted', 'Undistorted'
+    )
 
     tde4.appendTextAreaWidgetString(req, 'help_text', HELP_TEXT)
 
-    ret = tde4.postCustomRequester(req, WINDOW_TITLE, 800, 300, 'Ok', 'Cancel')
+    ret = tde4.postCustomRequester(req, WINDOW_TITLE, 800, 320, 'Ok', 'Cancel')
     if ret == 1:
         file_path = tde4.getWidgetValue(req, 'file_browser')
         if file_path is not None and os.path.isfile(file_path):
+            distortion_mode = tde4.getWidgetValue(req, 'distortion_mode')
+            undistorted = distortion_mode == 2
+
             image_width = tde4.getCameraImageWidth(c)
             image_height = tde4.getCameraImageHeight(c)
             file_info, mkr_data_list = read(
-                file_path, image_width=image_width, image_height=image_height
+                file_path,
+                image_width=image_width,
+                image_height=image_height,
+                undistorted=undistorted,
             )
 
             start, end, step = tde4.getCameraSequenceAttr(c)

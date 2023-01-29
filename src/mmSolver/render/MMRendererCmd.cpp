@@ -43,10 +43,10 @@ MString MMRendererCmd::cmdName() { return MString("mmRenderer"); }
 
 MSyntax MMRendererCmd::newSyntax() {
     MSyntax syntax;
-    syntax.addFlag(MM_RENDERER_SWIRL_FLAG, MM_RENDERER_SWIRL_FLAG_LONG,
-                   MSyntax::kBoolean);
-    syntax.addFlag(MM_RENDERER_FISH_EYE_FLAG, MM_RENDERER_FISH_EYE_FLAG_LONG,
-                   MSyntax::kBoolean);
+    // syntax.addFlag(MM_RENDERER_SWIRL_FLAG, MM_RENDERER_SWIRL_FLAG_LONG,
+    //                MSyntax::kBoolean);
+    // syntax.addFlag(MM_RENDERER_FISH_EYE_FLAG, MM_RENDERER_FISH_EYE_FLAG_LONG,
+    //                MSyntax::kBoolean);
     syntax.enableQuery(true);
     return syntax;
 }

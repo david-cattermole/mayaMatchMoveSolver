@@ -134,21 +134,37 @@ It is possible to use Blender (v2.80+) to track 2D Markers for use in mmSolver.
 
    See the `Blender Addons documentation <https://docs.blender.org/manual/en/latest/editors/preferences/addons.html>`_.
 
-2) Open the ``Motion Clip Editor`` and track 2D points.
+2) In Blender, open the ``Motion Clip Editor`` and make sure the
+   ``(right-side) Sidebar > Footage > Start Frame`` value is set to
+   the first frame number in the image sequence you will track.
 
-3) Select the 2D Track points you wish to copy/export.
+   For example, if the file of your image sequence is
+   ``image.1001.jpg``, use a Start Frame number of 1001.
 
-4) Go to the ``Motion Clip Editor > (right-side) Sidebar > Track > MM Solver``
+   This is important because all mmSolver importers and exporters will
+   assume the alignment of the 2D Tracking numbers to the the frame
+   range of the tracked image sequence.
+
+3) In the ``Motion Clip Editor``, track 2D points as needed using
+   Blenders 2D tracking tool set.
+
+4) Select the 2D Track points you wish to copy/export.
+
+5) Go to the ``Motion Clip Editor > (right-side) Sidebar > Track > MM Solver``
    panel, then click ``Copy 2D Tracks``.
 
    This will export the selected 2D tracks to a temporary .uv file
    and then save the file path on your copy-paste buffer
    (ready for "CTRL + V").
 
-5) Open Maya, and open the ``Load Marker`` tool
+6) Open Maya, and open the ``Load Marker`` tool
    (menu ``mmSolver > Load Marker...``), and press ``Load``.
 
    For more details, see :ref:`Load Markers in Maya <load-markers-in-maya-ref>`.
+
+   Alternatively you can load the generated ``.uv`` file into
+   3DEqualizer using the ``Import Tracks (MM Solver)`` tool provided
+   with mmSolver.
 
 .. note::
 

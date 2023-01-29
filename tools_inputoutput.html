@@ -428,7 +428,17 @@ with the default <code class="docutils literal notranslate"><span class="pre">Co
 click “Install…” and browse to the <code class="docutils literal notranslate"><span class="pre">mmSolver_blender_addon.zip</span></code>.</p>
 <p>See the <a class="reference external" href="https://docs.blender.org/manual/en/latest/editors/preferences/addons.html">Blender Addons documentation</a>.</p>
 </li>
-<li><p>Open the <code class="docutils literal notranslate"><span class="pre">Motion</span> <span class="pre">Clip</span> <span class="pre">Editor</span></code> and track 2D points.</p></li>
+<li><p>In Blender, open the <code class="docutils literal notranslate"><span class="pre">Motion</span> <span class="pre">Clip</span> <span class="pre">Editor</span></code> and make sure the
+<code class="docutils literal notranslate"><span class="pre">(right-side)</span> <span class="pre">Sidebar</span> <span class="pre">&gt;</span> <span class="pre">Footage</span> <span class="pre">&gt;</span> <span class="pre">Start</span> <span class="pre">Frame</span></code> value is set to
+the first frame number in the image sequence you will track.</p>
+<p>For example, if the file of your image sequence is
+<code class="docutils literal notranslate"><span class="pre">image.1001.jpg</span></code>, use a Start Frame number of 1001.</p>
+<p>This is important because all mmSolver importers and exporters will
+assume the alignment of the 2D Tracking numbers to the the frame
+range of the tracked image sequence.</p>
+</li>
+<li><p>In the <code class="docutils literal notranslate"><span class="pre">Motion</span> <span class="pre">Clip</span> <span class="pre">Editor</span></code>, track 2D points as needed using
+Blenders 2D tracking tool set.</p></li>
 <li><p>Select the 2D Track points you wish to copy/export.</p></li>
 <li><p>Go to the <code class="docutils literal notranslate"><span class="pre">Motion</span> <span class="pre">Clip</span> <span class="pre">Editor</span> <span class="pre">&gt;</span> <span class="pre">(right-side)</span> <span class="pre">Sidebar</span> <span class="pre">&gt;</span> <span class="pre">Track</span> <span class="pre">&gt;</span> <span class="pre">MM</span> <span class="pre">Solver</span></code>
 panel, then click <code class="docutils literal notranslate"><span class="pre">Copy</span> <span class="pre">2D</span> <span class="pre">Tracks</span></code>.</p>
@@ -439,6 +449,9 @@ and then save the file path on your copy-paste buffer
 <li><p>Open Maya, and open the <code class="docutils literal notranslate"><span class="pre">Load</span> <span class="pre">Marker</span></code> tool
 (menu <code class="docutils literal notranslate"><span class="pre">mmSolver</span> <span class="pre">&gt;</span> <span class="pre">Load</span> <span class="pre">Marker...</span></code>), and press <code class="docutils literal notranslate"><span class="pre">Load</span></code>.</p>
 <p>For more details, see <a class="reference internal" href="#load-markers-in-maya-ref"><span class="std std-ref">Load Markers in Maya</span></a>.</p>
+<p>Alternatively you can load the generated <code class="docutils literal notranslate"><span class="pre">.uv</span></code> file into
+3DEqualizer using the <code class="docutils literal notranslate"><span class="pre">Import</span> <span class="pre">Tracks</span> <span class="pre">(MM</span> <span class="pre">Solver)</span></code> tool provided
+with mmSolver.</p>
 </li>
 </ol>
 <div class="admonition note">

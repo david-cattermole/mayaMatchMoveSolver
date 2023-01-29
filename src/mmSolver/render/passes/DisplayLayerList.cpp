@@ -79,13 +79,21 @@ bool DisplayLayerList::nextRenderOperation() {
             m_current_layer = -1;
             m_current_op = -1;
         } else {
-            DisplayLayer* layer =
-                DisplayLayerList::getDisplayLayer(m_current_layer);
-            for (; (m_current_layer < layer_count) &&
-                   (layer->visibility() == false);
-                 m_current_layer++) {
-                layer = DisplayLayerList::getDisplayLayer(m_current_layer);
-            }
+            // Get next layer index that is visible.
+            do {
+                DisplayLayer* layer =
+                    DisplayLayerList::getDisplayLayer(m_current_layer);
+                if (layer->visibility()) {
+                    break;
+                } else {
+                    m_current_layer += 1;
+                }
+                if (m_current_layer >= layer_count) {
+                    m_current_layer = -1;
+                    m_current_op = -1;
+                    break;
+                }
+            } while (m_current_layer < layer_count);
         }
     }
 

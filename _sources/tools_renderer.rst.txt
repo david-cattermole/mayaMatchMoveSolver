@@ -21,18 +21,19 @@ the following features:
 
 - 2D Composite objects in "layers" to force objects in front/behind
   others.
-- Show a edges for objects.
-- Supports "Hidden Line" rendering, without needing to enable "Hold
-  Out" toggles or assign a useBackground shader.
+- Show silhouettes/edges for objects.
+- Supports `Hidden Line` rendering, without needing to enable `Hold
+  Out` toggles or assign a ``useBackground`` shader.
 
 Getting Started
 ~~~~~~~~~~~~~~~
 
 1) Load mmSolver plug-in.
 
-   To use `MM Renderer`, simply load the mmSolver plug-in (for example
-   open the Solver UI to ensure the plug-in is loaded), then use the
-   Viewport's "Renderer" menu to switch to "MM Renderer (beta)".
+   To use `MM Renderer`, simply load the ``mmSolver`` plug-in (for
+   example open the Solver UI to ensure the plug-in is loaded), then
+   use the Viewport's "Renderer" menu to switch to ``MM Renderer
+   (beta)``.
 
 2) Add objects into Display Layers.
 
@@ -43,8 +44,8 @@ Getting Started
 3) Adjust Display Layer attributes.
 
    Once your objects are in a Display Layer you can use the Display
-   Layer's "Extra Attributes" in the Attribute Editor to control specific
-   options for how the objects in each layer are displayed.
+   Layer's "Extra Attributes" in the Attribute Editor to control
+   specific options for how the objects in each layer are displayed.
 
 Display Layers
 ~~~~~~~~~~~~~~
@@ -59,8 +60,8 @@ by `MM Renderer`) that can customize the display of the objects.
 
 Using these attributes you can:
 
-- Control how different Display Layers are combined (merged)
-  together - like in a layer-based composting software (eg Photoshop).
+- Control how different Display Layers are merged together - like in a
+  layer-based composting software (eg Photoshop).
 - For a specific display mode (Shaded, Wireframe, Hidden Line, etc)
 - Toggle display of object edges.
 - Control the alpha of different effects (Layer Mix mode, Objects and Edges)

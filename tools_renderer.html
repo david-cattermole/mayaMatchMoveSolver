@@ -342,17 +342,18 @@ the following features:</p>
 <ul class="simple">
 <li><p>2D Composite objects in “layers” to force objects in front/behind
 others.</p></li>
-<li><p>Show a edges for objects.</p></li>
-<li><p>Supports “Hidden Line” rendering, without needing to enable “Hold
-Out” toggles or assign a useBackground shader.</p></li>
+<li><p>Show silhouettes/edges for objects.</p></li>
+<li><p>Supports <cite>Hidden Line</cite> rendering, without needing to enable <cite>Hold
+Out</cite> toggles or assign a <code class="docutils literal notranslate"><span class="pre">useBackground</span></code> shader.</p></li>
 </ul>
 <section id="getting-started">
 <h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h2>
 <ol class="arabic">
 <li><p>Load mmSolver plug-in.</p>
-<p>To use <cite>MM Renderer</cite>, simply load the mmSolver plug-in (for example
-open the Solver UI to ensure the plug-in is loaded), then use the
-Viewport’s “Renderer” menu to switch to “MM Renderer (beta)”.</p>
+<p>To use <cite>MM Renderer</cite>, simply load the <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> plug-in (for
+example open the Solver UI to ensure the plug-in is loaded), then
+use the Viewport’s “Renderer” menu to switch to <code class="docutils literal notranslate"><span class="pre">MM</span> <span class="pre">Renderer</span>
+<span class="pre">(beta)</span></code>.</p>
 </li>
 <li><p>Add objects into Display Layers.</p>
 <p>Initially you’ll likely find all objects are invisible(!), however
@@ -361,8 +362,8 @@ objects to a Maya Display Layer to see them.</p>
 </li>
 <li><p>Adjust Display Layer attributes.</p>
 <p>Once your objects are in a Display Layer you can use the Display
-Layer’s “Extra Attributes” in the Attribute Editor to control specific
-options for how the objects in each layer are displayed.</p>
+Layer’s “Extra Attributes” in the Attribute Editor to control
+specific options for how the objects in each layer are displayed.</p>
 </li>
 </ol>
 </section>
@@ -375,8 +376,8 @@ options for how the objects in each layer are displayed.</p>
 by <cite>MM Renderer</cite>) that can customize the display of the objects.</p>
 <p>Using these attributes you can:</p>
 <ul class="simple">
-<li><p>Control how different Display Layers are combined (merged)
-together - like in a layer-based composting software (eg Photoshop).</p></li>
+<li><p>Control how different Display Layers are merged together - like in a
+layer-based composting software (eg Photoshop).</p></li>
 <li><p>For a specific display mode (Shaded, Wireframe, Hidden Line, etc)</p></li>
 <li><p>Toggle display of object edges.</p></li>
 <li><p>Control the alpha of different effects (Layer Mix mode, Objects and Edges)</p></li>

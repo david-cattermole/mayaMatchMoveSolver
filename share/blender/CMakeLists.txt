@@ -41,10 +41,10 @@ endfunction()
 zip_up_blender_addon(
         mmSolver_blender_addon
         ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver_blender_addon
-        ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver_blender_addon.zip
+        ${CMAKE_CURRENT_BINARY_DIR}/mmSolver_blender_addon.zip
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
 # Install Blender addon.
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/mmSolver_blender_addon.zip"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/mmSolver_blender_addon.zip"
         DESTINATION "${MODULE_FULL_NAME}/blender/")

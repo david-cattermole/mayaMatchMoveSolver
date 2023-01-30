@@ -533,20 +533,53 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     }
     MMSOLVER_VRB("RenderOverride Edge Threshold: " << edge_threshold);
 
+    float edge_threshold_color = kEdgeThresholdColorDefault;
+    MPlug edge_threshold_color_plug = depends_node.findPlug(
+        kAttrNameEdgeThresholdColor, want_networked_plug, &status);
+    if (status == MStatus::kSuccess) {
+        edge_threshold_color = edge_threshold_color_plug.asFloat();
+    }
+    MMSOLVER_VRB(
+        "RenderOverride Edge Threshold Color: " << edge_threshold_color);
+
+    float edge_threshold_alpha = kEdgeThresholdAlphaDefault;
+    MPlug edge_threshold_alpha_plug = depends_node.findPlug(
+        kAttrNameEdgeThresholdAlpha, want_networked_plug, &status);
+    if (status == MStatus::kSuccess) {
+        edge_threshold_alpha = edge_threshold_alpha_plug.asFloat();
+    }
+    MMSOLVER_VRB(
+        "RenderOverride Edge Threshold Alpha: " << edge_threshold_alpha);
+
+    float edge_threshold_depth = kEdgeThresholdDepthDefault;
+    MPlug edge_threshold_depth_plug = depends_node.findPlug(
+        kAttrNameEdgeThresholdDepth, want_networked_plug, &status);
+    if (status == MStatus::kSuccess) {
+        edge_threshold_depth = edge_threshold_depth_plug.asFloat();
+    }
+    MMSOLVER_VRB(
+        "RenderOverride Edge Threshold Depth: " << edge_threshold_depth);
+
+    edge_threshold_color *= edge_threshold;
+    edge_threshold_alpha *= edge_threshold;
+    edge_threshold_depth *= edge_threshold;
+
     out_display_layer.setName(layer_name);
     out_display_layer.setVisibility(layer_visibility);
     out_display_layer.setDisplayOrder(layer_display_order);
     out_display_layer.setLayerMode(layer_mode);
-    out_display_layer.setLayerMix(static_cast<float>(layer_mix));
+    out_display_layer.setLayerMix(layer_mix);
     out_display_layer.setLayerDrawDebug(layer_draw_debug);
     out_display_layer.setObjectDisplayStyle(object_display_style);
-    out_display_layer.setObjectAlpha(static_cast<float>(object_alpha));
+    out_display_layer.setObjectAlpha(object_alpha);
     out_display_layer.setEdgeEnable(edge_enable);
     out_display_layer.setEdgeDetectMode(edge_detect_mode);
     out_display_layer.setEdgeColor(edge_color);
-    out_display_layer.setEdgeAlpha(static_cast<float>(edge_alpha));
-    out_display_layer.setEdgeThickness(static_cast<float>(edge_thickness));
-    out_display_layer.setEdgeThreshold(static_cast<float>(edge_threshold));
+    out_display_layer.setEdgeAlpha(edge_alpha);
+    out_display_layer.setEdgeThickness(edge_thickness);
+    out_display_layer.setEdgeThresholdColor(edge_threshold_color);
+    out_display_layer.setEdgeThresholdAlpha(edge_threshold_alpha);
+    out_display_layer.setEdgeThresholdDepth(edge_threshold_depth);
 
     return MStatus::kSuccess;
 }

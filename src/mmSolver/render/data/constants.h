@@ -103,6 +103,9 @@ const float kEdgeAlphaDefault = 1.0f;
 const EdgeDetectMode kEdgeDetectModeDefault = EdgeDetectMode::kFreiChen;
 const float kEdgeThicknessDefault = 1.0f;
 const float kEdgeThresholdDefault = 1.0f;
+const float kEdgeThresholdColorDefault = 1.0f;
+const float kEdgeThresholdAlphaDefault = 1.0f;
+const float kEdgeThresholdDepthDefault = 1.0f;
 
 // Render Operation Pass Names
 const MString kLayerDepthPassName = "mmRenderer_Layer_DepthRender_";
@@ -131,6 +134,9 @@ const MString kAttrNameEdgeAlpha = "mmEdgeAlpha";
 const MString kAttrNameEdgeDetectMode = "mmEdgeDetectMode";
 const MString kAttrNameEdgeThickness = "mmEdgeThickness";
 const MString kAttrNameEdgeThreshold = "mmEdgeThreshold";
+const MString kAttrNameEdgeThresholdColor = "mmEdgeThresholdColor";
+const MString kAttrNameEdgeThresholdAlpha = "mmEdgeThresholdAlpha";
+const MString kAttrNameEdgeThresholdDepth = "mmEdgeThresholdDepth";
 
 }  // namespace render
 }  // namespace mmsolver

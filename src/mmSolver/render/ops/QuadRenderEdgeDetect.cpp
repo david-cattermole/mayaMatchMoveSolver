@@ -31,6 +31,15 @@
 namespace mmsolver {
 namespace render {
 
+const char kPARAMETER_COLOR_TEX[] = "gColorTex";
+const char kPARAMETER_DEPTH_TEX[] = "gDepthTex";
+const char kPARAMETER_EDGE_COLOR[] = "gEdgeColor";
+const char kPARAMETER_EDGE_ALPHA[] = "gEdgeAlpha";
+const char kPARAMETER_THICKNESS[] = "gThickness";
+const char kPARAMETER_THRESHOLD_COLOR[] = "gThresholdColor";
+const char kPARAMETER_THRESHOLD_ALPHA[] = "gThresholdAlpha";
+const char kPARAMETER_THRESHOLD_DEPTH[] = "gThresholdDepth";
+
 QuadRenderEdgeDetect::QuadRenderEdgeDetect(const MString &name)
     : QuadRenderBase(name)
     , m_shader_instance_sobel(nullptr)
@@ -41,7 +50,9 @@ QuadRenderEdgeDetect::QuadRenderEdgeDetect(const MString &name)
     , m_edge_color(kEdgeColorDefault)
     , m_edge_alpha(kEdgeAlphaDefault)
     , m_thickness(kEdgeThicknessDefault)
-    , m_threshold(kEdgeThresholdDefault) {}
+    , m_threshold_color(kEdgeThresholdColorDefault)
+    , m_threshold_alpha(kEdgeThresholdAlphaDefault)
+    , m_threshold_depth(kEdgeThresholdDepthDefault) {}
 
 QuadRenderEdgeDetect::~QuadRenderEdgeDetect() {
     MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
@@ -127,9 +138,9 @@ const MHWRender::MShaderInstance *QuadRenderEdgeDetect::shader() {
                 MHWRender::MRenderTargetAssignment assignment;
                 assignment.target = depth_target;
                 CHECK_MSTATUS(m_shader_instance_sobel->setParameter(
-                    "gDepthTex", assignment));
+                    kPARAMETER_DEPTH_TEX, assignment));
                 CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter(
-                    "gDepthTex", assignment));
+                    kPARAMETER_DEPTH_TEX, assignment));
             }
             if (color_target) {
                 MMSOLVER_VRB(
@@ -137,36 +148,44 @@ const MHWRender::MShaderInstance *QuadRenderEdgeDetect::shader() {
                 MHWRender::MRenderTargetAssignment assignment;
                 assignment.target = color_target;
                 CHECK_MSTATUS(m_shader_instance_sobel->setParameter(
-                    "gColorTex", assignment));
+                    kPARAMETER_COLOR_TEX, assignment));
                 CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter(
-                    "gColorTex", assignment));
+                    kPARAMETER_COLOR_TEX, assignment));
             }
         }
 
         // The edge thickness.
-        CHECK_MSTATUS(
-            m_shader_instance_sobel->setParameter("gThickness", m_thickness));
-        CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter("gThickness",
-                                                                m_thickness));
+        CHECK_MSTATUS(m_shader_instance_sobel->setParameter(
+            kPARAMETER_THICKNESS, m_thickness));
+        CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter(
+            kPARAMETER_THICKNESS, m_thickness));
 
-        // The edge detection threshold.
-        CHECK_MSTATUS(
-            m_shader_instance_sobel->setParameter("gThreshold", m_threshold));
-        CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter("gThreshold",
-                                                                m_threshold));
+        // The edge threshold.
+        CHECK_MSTATUS(m_shader_instance_sobel->setParameter(
+            kPARAMETER_THRESHOLD_COLOR, m_threshold_color));
+        CHECK_MSTATUS(m_shader_instance_sobel->setParameter(
+            kPARAMETER_THRESHOLD_ALPHA, m_threshold_alpha));
+        CHECK_MSTATUS(m_shader_instance_sobel->setParameter(
+            kPARAMETER_THRESHOLD_DEPTH, m_threshold_depth));
+        CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter(
+            kPARAMETER_THRESHOLD_COLOR, m_threshold_color));
+        CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter(
+            kPARAMETER_THRESHOLD_ALPHA, m_threshold_alpha));
+        CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter(
+            kPARAMETER_THRESHOLD_DEPTH, m_threshold_depth));
 
         // Edge Color and Alpha
         const float alpha = m_edge_alpha;
         const float color[] = {m_edge_color.r, m_edge_color.g, m_edge_color.b,
                                1.0};
-        CHECK_MSTATUS(
-            m_shader_instance_sobel->setParameter("gEdgeColor", color));
-        CHECK_MSTATUS(
-            m_shader_instance_frei_chen->setParameter("gEdgeColor", color));
-        CHECK_MSTATUS(
-            m_shader_instance_sobel->setParameter("gEdgeAlpha", alpha));
-        CHECK_MSTATUS(
-            m_shader_instance_frei_chen->setParameter("gEdgeAlpha", alpha));
+        CHECK_MSTATUS(m_shader_instance_sobel->setParameter(
+            kPARAMETER_EDGE_COLOR, color));
+        CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter(
+            kPARAMETER_EDGE_COLOR, color));
+        CHECK_MSTATUS(m_shader_instance_sobel->setParameter(
+            kPARAMETER_EDGE_ALPHA, alpha));
+        CHECK_MSTATUS(m_shader_instance_frei_chen->setParameter(
+            kPARAMETER_EDGE_ALPHA, alpha));
     }
 
     if (m_edge_detect_mode == EdgeDetectMode::kSobel) {

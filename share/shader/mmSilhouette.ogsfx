@@ -1,4 +1,4 @@
-// Copyright (C) 2021 David Cattermole.
+// Copyright (C) 2021, 2023 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -47,10 +47,13 @@ uniform vec4 gEdgeColor : DIFFUSE = {1, 0, 0, 1};
 uniform float gEdgeAlpha = 1.0f;
 
 // Distance in pixels to detect an edge.
-uniform float gThickness = 2.0f;
+uniform float gThickness = 1.0f;
 
 // The edge detection 'distance' threshold.
-uniform float gThreshold = 1.0;
+uniform float gThresholdColor = 1.0;
+uniform float gThresholdAlpha = 1.0;
+uniform float gThresholdDepth = 1.0;
+
 
 // Vertex Shader inputs.
 attribute VS_INPUT {
@@ -117,8 +120,9 @@ GLSLShader PS_SilhouetteSobel {
     }
 
     void main() {
-        vec2 ox = vec2(gThickness / gTargetSize.x, 0.0);
-        vec2 oy = vec2(0.0, gThickness / gTargetSize.y);
+        float thickness = gThickness;
+        vec2 ox = vec2(thickness / gTargetSize.x, 0.0);
+        vec2 oy = vec2(0.0, thickness / gTargetSize.y);
 
         vec2 uv = PS_INPUT.UV;
 
@@ -185,20 +189,26 @@ GLSLShader PS_SilhouetteSobel {
         vec2 dist_z = sobel_weight(z0, z1, z2);
 
         // The Z-Depth buffer has much smaller differences than the
-        // Color buffer, so this (arbitrary) number is used to
-        // artificially increase the effect of differences in the
-        // depth buffer.
-        float depth_factor = 100.0;
+        // Color buffer, so these (arbitrary) numbers are used to
+        // artificially increase the effect of differences in each
+        // component.
+        float factor = 1.0;
+        float color_factor = factor * 1.0;
+        float alpha_factor = factor * 2.0;
+        float depth_factor = factor * 100.0;
 
-        // TODO: Split gThreshold into 'color threshold' for the
-        // color/normals, and 'depth threshold' to detect changes in
-        // depth.
+        vec2 dist_color_sum = (dist_r + dist_g + dist_b) * color_factor;
+        vec2 dist_alpha_sum = dist_a * alpha_factor;
+        vec2 dist_depth_sum = dist_z * depth_factor;
 
-        vec2 dist_sum = dist_r + dist_g + dist_b + dist_a + (dist_z * depth_factor);
-        float dist = sqrt(dist_sum.x * dist_sum.x + dist_sum.y * dist_sum.y);
+        float dist_color = sqrt(dist_color_sum.x * dist_color_sum.x + dist_color_sum.y * dist_color_sum.y);
+        float dist_alpha = sqrt(dist_alpha_sum.x * dist_alpha_sum.x + dist_alpha_sum.y * dist_alpha_sum.y);
+        float dist_depth = sqrt(dist_depth_sum.x * dist_depth_sum.x + dist_depth_sum.y * dist_depth_sum.y);
 
         colorOut = vec4(0.0, 0.0, 0.0, 0.0);
-        if (dist > gThreshold) {
+        if ((dist_color > gThresholdColor) ||
+            (dist_alpha > gThresholdAlpha) ||
+            (dist_depth > gThresholdDepth)) {
             colorOut = gEdgeColor * gEdgeAlpha;
         }
     }
@@ -247,8 +257,9 @@ GLSLShader PS_SilhouetteFreiChen {
     }
 
     void main() {
-        vec2 ox = vec2(gThickness / gTargetSize.x, 0.0);
-        vec2 oy = vec2(0.0, gThickness / gTargetSize.y);
+        float thickness = gThickness * 0.25;
+        vec2 ox = vec2(thickness / gTargetSize.x, 0.0);
+        vec2 oy = vec2(0.0, thickness / gTargetSize.y);
 
         vec2 uv = PS_INPUT.UV;
 
@@ -302,21 +313,26 @@ GLSLShader PS_SilhouetteFreiChen {
         vec2 dist_z = frei_chen_weight(I_z);
 
         // The Z-Depth buffer has much smaller differences than the
-        // Color buffer, so this (arbitrary) number is used to
-        // artificially increase the effect of differences in the
-        // depth buffer.
-        float depth_factor = 1000.0;
+        // Color buffer, so these (arbitrary) numbers are used to
+        // artificially increase the effect of differences in each
+        // component.
+        float factor = 10.0;
+        float color_factor = factor * 1.0;
+        float alpha_factor = factor * 2.0;
+        float depth_factor = factor * 100.0;
 
-        // TODO: Split gThreshold into 'color threshold' for the
-        // color/normals, and 'depth threshold' to detect changes in
-        // depth.
+        vec2 dist_color_sum = (dist_r + dist_g + dist_b);
+        vec2 dist_alpha_sum = dist_a;
+        vec2 dist_depth_sum = dist_z;
 
-        vec2 dist_sum = dist_r + dist_g + dist_b + dist_a;
-        float dist = sqrt(dist_sum.x / dist_sum.y) * 10.0;
-        dist += sqrt(dist_z.x / dist_z.y) * 10.0 * depth_factor;
+        float dist_color = sqrt(dist_color_sum.x / dist_color_sum.y) * color_factor;
+        float dist_alpha = sqrt(dist_alpha_sum.x / dist_alpha_sum.y) * alpha_factor;
+        float dist_depth = sqrt(dist_depth_sum.x / dist_depth_sum.y) * depth_factor;
 
         colorOut = vec4(0.0, 0.0, 0.0, 0.0);
-        if (dist > gThreshold) {
+        if ((dist_color > gThresholdColor) ||
+            (dist_alpha > gThresholdAlpha) ||
+            (dist_depth > gThresholdDepth)) {
             colorOut = gEdgeColor * gEdgeAlpha;
         }
     }

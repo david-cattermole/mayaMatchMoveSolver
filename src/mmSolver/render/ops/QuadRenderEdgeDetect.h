@@ -61,7 +61,9 @@ public:
     }
     void setEdgeAlpha(const float value) { m_edge_alpha = value; }
     void setThickness(const float value) { m_thickness = value; }
-    void setThreshold(const float value) { m_threshold = value; }
+    void setThresholdColor(const float value) { m_threshold_color = value; }
+    void setThresholdAlpha(const float value) { m_threshold_alpha = value; }
+    void setThresholdDepth(const float value) { m_threshold_depth = value; }
 
 protected:
     // Shader to use for the quad render
@@ -75,7 +77,9 @@ protected:
     MColor m_edge_color;
     float m_edge_alpha;
     float m_thickness;
-    float m_threshold;
+    float m_threshold_color;
+    float m_threshold_alpha;
+    float m_threshold_depth;
 };
 
 }  // namespace render

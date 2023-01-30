@@ -69,10 +69,12 @@ DisplayLayer::DisplayLayer()
     , m_object_alpha(kObjectAlphaDefault)
     , m_edge_enable(kEdgeEnableDefault)
     , m_edge_detect_mode(kEdgeDetectModeDefault)
+    , m_edge_thickness(kEdgeThicknessDefault)
     , m_edge_color(kEdgeColorDefault)
     , m_edge_alpha(kEdgeAlphaDefault)
-    , m_edge_thickness(kEdgeThicknessDefault)
-    , m_edge_threshold(kEdgeThresholdDefault) {
+    , m_edge_threshold_color(kEdgeThresholdColorDefault)
+    , m_edge_threshold_alpha(kEdgeThresholdAlphaDefault)
+    , m_edge_threshold_depth(kEdgeThresholdDepthDefault) {
     for (auto i = 0; i < DisplayLayerPasses::kLayerPassesCount; ++i) {
         m_ops[i] = nullptr;
     }
@@ -176,8 +178,10 @@ MStatus DisplayLayer::updateRenderOperations() {
     const MString edgeDetectOpName = MString(kLayerEdgeDetectOpName) + m_name;
     auto edgeDetectOp = new QuadRenderEdgeDetect(edgeDetectOpName);
     edgeDetectOp->setClearMask(clear_mask_all);
-    edgeDetectOp->setThreshold(m_edge_threshold);
     edgeDetectOp->setThickness(m_edge_thickness);
+    edgeDetectOp->setThresholdColor(m_edge_threshold_color);
+    edgeDetectOp->setThresholdAlpha(m_edge_threshold_alpha);
+    edgeDetectOp->setThresholdDepth(m_edge_threshold_depth);
     m_ops[DisplayLayerPasses::kEdgeDetectOp] = edgeDetectOp;
 
     // Scene Object Render pass.
@@ -262,8 +266,10 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     edgeDetectOp->setInputColorTarget(kLayerColorTarget);
     edgeDetectOp->setInputDepthTarget(kLayerDepthTarget);
     edgeDetectOp->setRenderTargets(targets, kTempColorTarget, 1);
-    edgeDetectOp->setThreshold(m_edge_threshold);
     edgeDetectOp->setThickness(m_edge_thickness);
+    edgeDetectOp->setThresholdColor(m_edge_threshold_color);
+    edgeDetectOp->setThresholdAlpha(m_edge_threshold_alpha);
+    edgeDetectOp->setThresholdDepth(m_edge_threshold_depth);
     edgeDetectOp->setEdgeAlpha(edge_alpha);
     edgeDetectOp->setEdgeColor(m_edge_color.r, m_edge_color.g, m_edge_color.b);
     edgeDetectOp->setEdgeDetectMode(m_edge_detect_mode);

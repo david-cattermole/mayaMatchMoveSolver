@@ -130,9 +130,21 @@ public:
     float edgeThickness() const { return m_edge_thickness; }
     void setEdgeThickness(const float value) { m_edge_thickness = value; }
 
-    // What is the depth-threshold for when an edge is detected?
-    float edgeThreshold() const { return m_edge_threshold; }
-    void setEdgeThreshold(const float value) { m_edge_threshold = value; }
+    // What is the threshold for when an edge is detected?
+    float edgeThresholdColor() const { return m_edge_threshold_color; }
+    void setEdgeThresholdColor(const float value) {
+        m_edge_threshold_color = value;
+    }
+
+    float edgeThresholdAlpha() const { return m_edge_threshold_alpha; }
+    void setEdgeThresholdAlpha(const float value) {
+        m_edge_threshold_alpha = value;
+    }
+
+    float edgeThresholdDepth() const { return m_edge_threshold_depth; }
+    void setEdgeThresholdDepth(const float value) {
+        m_edge_threshold_depth = value;
+    }
 
 private:
     // Operations for each layer. The same operations are used for all
@@ -159,7 +171,9 @@ private:
     MColor m_edge_color;
     float m_edge_alpha;
     float m_edge_thickness;
-    float m_edge_threshold;
+    float m_edge_threshold_color;
+    float m_edge_threshold_alpha;
+    float m_edge_threshold_depth;
 };
 
 // Used to compare two DisplayLists and return the smallest. This can

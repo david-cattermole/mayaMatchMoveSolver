@@ -236,6 +236,21 @@ def add_attrs_to_layer(node):
     if attr_name not in existing_attrs:
         _add_attr_float(node, attr_name, nice_name, default=1.0)
 
+    attr_name = const.LAYER_ATTR_EDGE_THRESHOLD_COLOR
+    nice_name = const.LAYER_NICE_EDGE_THRESHOLD_COLOR
+    if attr_name not in existing_attrs:
+        _add_attr_float(node, attr_name, nice_name, default=1.0)
+
+    attr_name = const.LAYER_ATTR_EDGE_THRESHOLD_ALPHA
+    nice_name = const.LAYER_NICE_EDGE_THRESHOLD_ALPHA
+    if attr_name not in existing_attrs:
+        _add_attr_float(node, attr_name, nice_name, default=1.0)
+
+    attr_name = const.LAYER_ATTR_EDGE_THRESHOLD_DEPTH
+    nice_name = const.LAYER_NICE_EDGE_THRESHOLD_DEPTH
+    if attr_name not in existing_attrs:
+        _add_attr_float(node, attr_name, nice_name, default=1.0)
+
     _set_attrs_keyable(node, const.LAYER_ATTR_LIST_ALL)
     return
 

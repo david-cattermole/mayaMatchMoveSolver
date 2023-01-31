@@ -75,9 +75,12 @@ LAYER_NICE_EDGE_ALPHA = 'Edge Alpha'
 LAYER_NICE_EDGE_DETECT_MODE = 'Edge Detect Mode'
 LAYER_NICE_EDGE_THICKNESS = 'Edge Thickness'
 LAYER_NICE_EDGE_THRESHOLD = 'Edge Threshold'
-LAYER_NICE_EDGE_THRESHOLD_COLOR = 'Edge Threshold Color'
-LAYER_NICE_EDGE_THRESHOLD_ALPHA = 'Edge Threshold Alpha'
-LAYER_NICE_EDGE_THRESHOLD_DEPTH = 'Edge Threshold Depth'
+# These attribute nice names are determined by the rendered outputs
+# from the 'mmDepth' OGSFX shader:
+# <project_root>/share/shader/mmDepth.ogsfx
+LAYER_NICE_EDGE_THRESHOLD_COLOR = 'Edge Threshold (Object Normals)'
+LAYER_NICE_EDGE_THRESHOLD_ALPHA = 'Edge Threshold (Facing Ratio)'
+LAYER_NICE_EDGE_THRESHOLD_DEPTH = 'Edge Threshold (Z-Depth)'
 
 LAYER_MODE_ZDEPTH = 'ZDepth'
 LAYER_MODE_OVER = 'Over'

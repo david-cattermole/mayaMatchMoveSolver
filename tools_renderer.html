@@ -382,6 +382,83 @@ layer-based composting software (eg Photoshop).</p></li>
 <li><p>Toggle display of object edges.</p></li>
 <li><p>Control the alpha of different effects (Layer Mix mode, Objects and Edges)</p></li>
 </ul>
+<section id="display-layer-attributes">
+<h3>Display Layer Attributes<a class="headerlink" href="#display-layer-attributes" title="Permalink to this heading">#</a></h3>
+<p>Each Display Layer can have attributes that change how the display
+layer is rendered and composited by <cite>MM Renderer</cite>. These attributes
+are used to add extra functionality and lock Display Layers to
+specific modes, independent of the <cite>Viewport 2.0</cite> settings (such as
+<cite>Display Mode</cite> - Shaded, Wireframe, etc).</p>
+<div class="table-wrapper colwidths-auto docutils container" id="id2">
+<table class="docutils align-default" id="id2">
+<caption><span class="caption-text">Display Layer Attributes</span><a class="headerlink" href="#id2" title="Permalink to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Attribute</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Layer Mode</p></td>
+<td><p>How will the layer be merged with layers below it? Similar to
+Photoshop layer modes.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Layer Mix</p></td>
+<td><p>Adjust the opacity of the layer - mixing between the layer
+below and this layer.</p></td>
+</tr>
+<tr class="row-even"><td><p>Object Display Style</p></td>
+<td><p>How will the object in the layer be displayed? Wireframe,
+Hidden Line, Shaded, etc?</p></td>
+</tr>
+<tr class="row-odd"><td><p>Object Alpha</p></td>
+<td><p>Fade the rendered objects as an image - this is <em>not</em> object
+transparency.</p></td>
+</tr>
+<tr class="row-even"><td><p>Edge Enable</p></td>
+<td><p>Toggle edge/silhouette rendering for the objects.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Edge Color</p></td>
+<td><p>The color of the rendered edge?</p></td>
+</tr>
+<tr class="row-even"><td><p>Edge Alpha</p></td>
+<td><p>Fade the edges to control the bright and transparent they look.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Edge Detect Mode</p></td>
+<td><p>Different algorithms of (2D) edge detection produce subtly
+different styles of lines. Use this option to control subtle
+details of the edge detection look.</p></td>
+</tr>
+<tr class="row-even"><td><p>Edge Thickness</p></td>
+<td><p>How thick will the edges be? Larger values produce thicker
+lines, but might take longer to render (lower FPS of
+viewport). Smaller thick values run the risk of missing edge
+details.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Edge Threshold</p></td>
+<td><p>An overall control of the edge detection threshold, any
+detected over the threshold will be rendered with the Edge
+Color. This value multiplies the fine-grain edge threshold
+values.</p></td>
+</tr>
+<tr class="row-even"><td><p>Edge Threshold (Normals)</p></td>
+<td><p>Provides fine-grain control over the detection of edges,
+adjusting how much the object <cite>normals</cite> are used for detecting
+edges.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Edge Threshold (Facing Ratio)</p></td>
+<td><p>Provides fine-grain control over the detection of edges,
+adjusting how much the object <cite>facing ratio</cite> is used for
+detecting edges.</p></td>
+</tr>
+<tr class="row-even"><td><p>Edge Threshold (Z-Depth)</p></td>
+<td><p>Provides fine-grain control over the detection of edges,
+adjusting how much the object <cite>Z-depth</cite> is used for
+detecting edges.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 </section>
 <section id="python-function">
 <h2>Python Function<a class="headerlink" href="#python-function" title="Permalink to this heading">#</a></h2>
@@ -457,7 +534,10 @@ custom buttons to be created.</p>
             <ul>
 <li><a class="reference internal" href="#">MM Renderer</a><ul>
 <li><a class="reference internal" href="#getting-started">Getting Started</a></li>
-<li><a class="reference internal" href="#display-layers">Display Layers</a></li>
+<li><a class="reference internal" href="#display-layers">Display Layers</a><ul>
+<li><a class="reference internal" href="#display-layer-attributes">Display Layer Attributes</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#python-function">Python Function</a></li>
 </ul>
 </li>

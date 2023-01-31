@@ -66,6 +66,79 @@ Using these attributes you can:
 - Toggle display of object edges.
 - Control the alpha of different effects (Layer Mix mode, Objects and Edges)
 
+Display Layer Attributes
+++++++++++++++++++++++++
+
+Each Display Layer can have attributes that change how the display
+layer is rendered and composited by `MM Renderer`. These attributes
+are used to add extra functionality and lock Display Layers to
+specific modes, independent of the `Viewport 2.0` settings (such as
+`Display Mode` - Shaded, Wireframe, etc).
+
+.. list-table:: Display Layer Attributes
+   :widths: auto
+   :header-rows: 1
+
+   * - Attribute
+     - Description
+
+   * - Layer Mode
+     - How will the layer be merged with layers below it? Similar to
+       Photoshop layer modes.
+
+   * - Layer Mix
+     - Adjust the opacity of the layer - mixing between the layer
+       below and this layer.
+
+   * - Object Display Style
+     - How will the object in the layer be displayed? Wireframe,
+       Hidden Line, Shaded, etc?
+
+   * - Object Alpha
+     - Fade the rendered objects as an image - this is *not* object
+       transparency.
+
+   * - Edge Enable
+     - Toggle edge/silhouette rendering for the objects.
+
+   * - Edge Color
+     - The color of the rendered edge?
+
+   * - Edge Alpha
+     - Fade the edges to control the bright and transparent they look.
+
+   * - Edge Detect Mode
+     - Different algorithms of (2D) edge detection produce subtly
+       different styles of lines. Use this option to control subtle
+       details of the edge detection look.
+
+   * - Edge Thickness
+     - How thick will the edges be? Larger values produce thicker
+       lines, but might take longer to render (lower FPS of
+       viewport). Smaller thick values run the risk of missing edge
+       details.
+
+   * - Edge Threshold
+     - An overall control of the edge detection threshold, any
+       detected over the threshold will be rendered with the Edge
+       Color. This value multiplies the fine-grain edge threshold
+       values.
+
+   * - Edge Threshold (Normals)
+     - Provides fine-grain control over the detection of edges,
+       adjusting how much the object `normals` are used for detecting
+       edges.
+
+   * - Edge Threshold (Facing Ratio)
+     - Provides fine-grain control over the detection of edges,
+       adjusting how much the object `facing ratio` is used for
+       detecting edges.
+
+   * - Edge Threshold (Z-Depth)
+     - Provides fine-grain control over the detection of edges,
+       adjusting how much the object `Z-depth` is used for
+       detecting edges.
+
 Python Function
 ~~~~~~~~~~~~~~~
 

@@ -261,6 +261,10 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
             MHWRender::MSceneRender::kWireFrame |
             MHWRender::MSceneRender::kTextured);
 
+    depthPassOp->setClearMask(clear_mask_all);
+    depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+    depthPassOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
+
     const float edge_alpha = m_edge_alpha * static_cast<float>(m_edge_enable);
     edgeDetectOp->setEnabled(true);
     edgeDetectOp->setInputColorTarget(kLayerColorTarget);
@@ -274,16 +278,13 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     edgeDetectOp->setEdgeColor(m_edge_color.r, m_edge_color.g, m_edge_color.b);
     edgeDetectOp->setEdgeDetectMode(m_edge_detect_mode);
 
+    scenePassOp->setEnabled(true);
+    scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
+
     if (m_object_display_style == DisplayStyle::kHiddenLine) {
         depthPassOp->setEnabled(true);
-        depthPassOp->setClearMask(clear_mask_all);
-        depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
-        depthPassOp->setSceneFilter(
-            MHWRender::MSceneRender::kRenderShadedItems);
 
-        scenePassOp->setEnabled(true);
         scenePassOp->setClearMask(clear_mask_color);
-        scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
         scenePassOp->setDisplayModeOverride(display_mode_wireframe);
         scenePassOp->setSceneFilter(
             MHWRender::MSceneRender::kRenderPostSceneUIItems);
@@ -291,13 +292,8 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
         layerMergeOp->setAlphaA(m_object_alpha);
     } else if (m_object_display_style == DisplayStyle::kShaded) {
         depthPassOp->setEnabled(m_edge_enable);
-        depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
-        depthPassOp->setSceneFilter(
-            MHWRender::MSceneRender::kRenderShadedItems);
 
-        scenePassOp->setEnabled(true);
         scenePassOp->setClearMask(clear_mask_all);
-        scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
         scenePassOp->setSceneFilter(
             static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
                 MHWRender::MSceneRender::kRenderShadedItems |
@@ -309,14 +305,8 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
         }
     } else if (m_object_display_style == DisplayStyle::kHoldOut) {
         depthPassOp->setEnabled(true);
-        depthPassOp->setClearMask(clear_mask_all);
-        depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
-        depthPassOp->setSceneFilter(
-            MHWRender::MSceneRender::kRenderShadedItems);
 
-        scenePassOp->setEnabled(true);
         scenePassOp->setClearMask(clear_mask_color);
-        scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
         scenePassOp->setDisplayModeOverride(display_mode_wireframe);
         scenePassOp->setSceneFilter(
             MHWRender::MSceneRender::kRenderShadedItems);
@@ -324,13 +314,8 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
         layerMergeOp->setAlphaA(0.0);
     } else if (m_object_display_style == DisplayStyle::kWireframe) {
         depthPassOp->setEnabled(m_edge_enable);
-        depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
-        depthPassOp->setSceneFilter(
-            MHWRender::MSceneRender::kRenderShadedItems);
 
-        scenePassOp->setEnabled(true);
         scenePassOp->setClearMask(clear_mask_all);
-        scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
         scenePassOp->setDisplayModeOverride(display_mode_wireframe);
         scenePassOp->setSceneFilter(
             MHWRender::MSceneRender::kRenderPostSceneUIItems);
@@ -338,13 +323,8 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
         layerMergeOp->setAlphaA(m_object_alpha);
     } else if (m_object_display_style == DisplayStyle::kWireframeOnShaded) {
         depthPassOp->setEnabled(m_edge_enable);
-        depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
-        depthPassOp->setSceneFilter(
-            MHWRender::MSceneRender::kRenderShadedItems);
 
-        scenePassOp->setEnabled(true);
         scenePassOp->setClearMask(clear_mask_all);
-        scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
         scenePassOp->setSceneFilter(
             static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
                 MHWRender::MSceneRender::kRenderShadedItems |

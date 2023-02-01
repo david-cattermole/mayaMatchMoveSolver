@@ -139,6 +139,85 @@ specific modes, independent of the `Viewport 2.0` settings (such as
        adjusting how much the object `Z-depth` is used for
        detecting edges.
 
+Known Issues
+~~~~~~~~~~~~
+
+`MM Renderer` is *beta* software and is currently only released in
+``v0.4.4.beta1``. There are numerous bugs and issues that are not yet
+resolved and the viewport renderer is available as a preview only.
+
+.. note::
+
+   ``OpenGL - Core Profile`` is the only supported Rendering Engine -
+   you will not see any viewport if you are not using a ``OpenGL -
+   Core Profile`` mode. Other Rendering Engines, such as ``OpenGL -
+   Legacy`` and ``DirectX 11`` are not supported.
+
+   ``OpenGL - Core Profile`` is the default Rendering Engine in all(?)
+   versions of Maya.
+
+   You can check, and change, your Rendering Engine in the Maya
+   Preferences window, by going to the menu ``Windows >
+   Settings/Preferences > Preferences``, then click on the ``Display``
+   category, and see the `Viewport 2.0` Rendering Engine option at the
+   bottom of the Preferences window.
+
+Objects are Invisible By Default
++++++++++++++++++++++++++++++++++
+
+The objects in the Display Layer "defaultLayer" are ignored.
+
+*Workaround:* You must create a new Display Layer and add the objects
+into it.
+
+This will be fixed in a later release.
+
+Attributes Missing From Display Layers
+++++++++++++++++++++++++++++++++++++++
+
+Display Layers may not have MM Renderer attributes added.
+
+In this beta release Display Layers will have attributes automatically
+added when the viewport renderer is toggled.
+
+*Workaround:* Set your viewport renderer to Viewport 2.0, then back to
+"MM Renderer (beta)".
+
+This will be fixed in a later release.
+
+The Maya HUD is not displayed
++++++++++++++++++++++++++++++
+
+This will be fixed in a later release.
+
+Slow Viewport Frame Rate
+++++++++++++++++++++++++
+
+Performance with many objects and/or Display Layers will reduce the
+speed of the viewport.
+
+This will be fixed in a later release.
+
+Wireframes Are Shown in "Edges"
++++++++++++++++++++++++++++++++
+
+On `Maya 2022.0`, you may have some incorrect visuals.
+
+*Workaround:* Upgrade to at least Maya 2022.1+.
+
+Objects Are Incorrectly Depth Layered
++++++++++++++++++++++++++++++++++++++
+
+"ZDepth" Layer Mode doesn't work.
+
+When you have multiple Display Layers in a scene the order of the
+layers matters. The objects in each layer are rendered and then
+composited "over" the previous layer - like a Photoshop layer. This is
+correct when the Layer mode is "Over", but is not currently working as
+expected with the "ZDepth" layer mode (which should not do that).
+
+This will be fixed in a later release.
+
 Python Function
 ~~~~~~~~~~~~~~~
 

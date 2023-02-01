@@ -139,6 +139,29 @@ specific modes, independent of the `Viewport 2.0` settings (such as
        adjusting how much the object `Z-depth` is used for
        detecting edges.
 
+Known Issues
+~~~~~~~~~~~~
+
+`MM Renderer` is *beta* software and is currently only released in
+``v0.4.4.beta1``. There are numerous bugs and issues that are not yet
+resolved and the viewport renderer is available as a preview only.
+
+.. note::
+
+   ``OpenGL - Core Profile`` is the only supported Rendering Engine -
+   you will not see any viewport if you are not using a ``OpenGL -
+   Core Profile`` mode. Other Rendering Engines, such as ``OpenGL -
+   Legacy`` and ``DirectX 11`` are not supported.
+
+   ``OpenGL - Core Profile`` is the default Rendering Engine in all(?)
+   versions of Maya.
+
+   You can check, and change, your Rendering Engine in the Maya
+   Preferences window, by going to the menu ``Windows >
+   Settings/Preferences > Preferences``, then click on the ``Display``
+   category, and see the `Viewport 2.0` Rendering Engine option at the
+   bottom of the Preferences window.
+
 Python Function
 ~~~~~~~~~~~~~~~
 

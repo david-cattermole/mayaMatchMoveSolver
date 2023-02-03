@@ -230,7 +230,8 @@ const MSelectionList *SceneRender::objectSetOverride() {
                     continue;
                 }
                 m_selection_list.add(path);
-            } else if (item.apiType() == MFn::kPluginLocatorNode) {
+            } else if ((item.apiType() == MFn::kPluginLocatorNode) ||
+                       (item.apiType() == MFn::kPluginShape)) {
                 MDagPath path;
                 it.getPath(path);
                 m_selection_list.add(path);
@@ -244,7 +245,8 @@ const MSelectionList *SceneRender::objectSetOverride() {
         for (it.reset(); !it.isDone(); it.next()) {
             auto item = it.currentItem();
             if (item.hasFn(MFn::kImagePlane) ||
-                (item.apiType() == MFn::kPluginLocatorNode)) {
+                (item.apiType() == MFn::kPluginLocatorNode) ||
+                (item.apiType() == MFn::kPluginShape)) {
                 MDagPath path;
                 it.getPath(path);
                 m_selection_list.add(path);

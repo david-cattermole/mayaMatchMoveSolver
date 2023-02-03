@@ -27,9 +27,6 @@ namespace mmsolver {
 namespace render {
 
 // Render a full-screen quad, with a preset shader applied.
-//
-// Reads from 'auxiliary' Target, and writes to 'main' Target.
-//
 QuadRenderBase::QuadRenderBase(const MString &name)
     : MQuadRender(name)
     , m_targets(nullptr)

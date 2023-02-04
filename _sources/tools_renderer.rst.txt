@@ -153,8 +153,8 @@ resolved and the viewport renderer is available as a preview only.
    Core Profile`` mode. Other Rendering Engines, such as ``OpenGL -
    Legacy`` and ``DirectX 11`` are not supported.
 
-   ``OpenGL - Core Profile`` is the default Rendering Engine in all(?)
-   versions of Maya.
+   ``OpenGL - Core Profile`` is the default Rendering Engine in all
+   (recent) versions of Maya.
 
    You can check, and change, your Rendering Engine in the Maya
    Preferences window, by going to the menu ``Windows >

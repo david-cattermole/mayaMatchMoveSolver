@@ -223,15 +223,18 @@ if c is not None and pg is not None:
     tde4.addOptionMenuWidget(
         req, 'distortion_mode', 'Distortion Mode', 'Distorted', 'Undistorted'
     )
+    tde4.addToggleWidget(req, 'with_3d_position', 'Use Survey Position', 0)
 
     tde4.appendTextAreaWidgetString(req, 'help_text', HELP_TEXT)
 
-    ret = tde4.postCustomRequester(req, WINDOW_TITLE, 800, 320, 'Ok', 'Cancel')
+    ret = tde4.postCustomRequester(req, WINDOW_TITLE, 800, 340, 'Ok', 'Cancel')
     if ret == 1:
         file_path = tde4.getWidgetValue(req, 'file_browser')
         if file_path is not None and os.path.isfile(file_path):
             distortion_mode = tde4.getWidgetValue(req, 'distortion_mode')
             undistorted = distortion_mode == 2
+
+            with_3d_pos = tde4.getWidgetValue(req, 'with_3d_position') == 1
 
             image_width = tde4.getCameraImageWidth(c)
             image_height = tde4.getCameraImageHeight(c)
@@ -240,6 +243,7 @@ if c is not None and pg is not None:
                 image_width=image_width,
                 image_height=image_height,
                 undistorted=undistorted,
+                with_3d_pos=with_3d_pos,
             )
 
             start, end, step = tde4.getCameraSequenceAttr(c)

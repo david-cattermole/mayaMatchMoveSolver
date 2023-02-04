@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:    Import 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version: v1.3
+# 3DE4.script.version: v1.4
 #
 # 3DE4.script.gui:     Main Window::3DE4::File::Import
 # 3DE4.script.gui:     Object Browser::Context Menu Point

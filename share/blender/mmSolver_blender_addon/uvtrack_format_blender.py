@@ -202,30 +202,33 @@ def get_track_data(context, clip, track, frame_range):
         # image sequence loaded.
         blender_frame = 1 + (f - start_frame)
         marker_at_frame = track.markers.find_frame(blender_frame)
-        if marker_at_frame and not marker_at_frame.mute:
+        if marker_at_frame is None:
+            continue
+        if marker_at_frame.mute:
+            continue
 
-            # NOTE:
-            #  Lower left is (0.0, 0.0) coordinate.
-            #  Upper left is (0.0, 1.0) coordinate.
-            #  Upper right is (1.0, 1.0) coordinate.
-            #  Lower right is (1.0, 0.0) coordinate.
-            coords = marker_at_frame.co.xy
-            pos_distort_x = coords[0]
-            pos_distort_y = coords[1]
+        # NOTE:
+        #  Lower left is (0.0, 0.0) coordinate.
+        #  Upper left is (0.0, 1.0) coordinate.
+        #  Upper right is (1.0, 1.0) coordinate.
+        #  Lower right is (1.0, 0.0) coordinate.
+        coords = marker_at_frame.co.xy
+        pos_distort_x = coords[0]
+        pos_distort_y = coords[1]
 
-            # Currently there is no way to create undistorted 2D tracking
-            # position data. Therefore we set a very stupid value so that
-            # users know it's wrong.
-            pos_x = 0.0
-            pos_y = 0.0
+        # Currently there is no way to create undistorted 2D tracking
+        # position data. Therefore we set a very stupid value so that
+        # users know it's wrong.
+        pos_x = 0.0
+        pos_y = 0.0
 
-            frame_data = {
-                'frame': f,
-                'pos': (pos_x, pos_y),
-                'weight': weight,
-                'pos_dist': (pos_distort_x, pos_distort_y),
-            }
-            per_frame_list.append(frame_data)
+        frame_data = {
+            'frame': f,
+            'pos': (pos_x, pos_y),
+            'weight': weight,
+            'pos_dist': (pos_distort_x, pos_distort_y),
+        }
+        per_frame_list.append(frame_data)
     data['per_frame'] = per_frame_list
 
     return data

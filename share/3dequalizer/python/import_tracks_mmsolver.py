@@ -188,12 +188,13 @@ def create_markers(c, pg, start_frame, file_info, mkr_data_list):
     point_list = []
     for mkr_data in mkr_data_list:
         curve = [[-1.0, -1.0]] * (frames + 1)
+        enable_times = mkr_data.enable.get_times()
         for frame in range(frames):
             pos_x = -1.0
             pos_y = -1.0
             real_frame = start_frame + frame
             enable = mkr_data.enable.get_value(real_frame)
-            if enable:
+            if (real_frame in enable_times) and enable:
                 pos_x = mkr_data.x.get_value(real_frame)
                 pos_y = mkr_data.y.get_value(real_frame)
             curve[frame] = [pos_x, pos_y]

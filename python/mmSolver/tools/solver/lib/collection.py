@@ -302,8 +302,8 @@ def log_solve_results(
     long_status_str += 'Average Deviation %.2fpx' % avg_error
 
     max_frame, max_error = mmapi.get_max_frame_error(frame_error_list)
-    status_str += ' | max deviation %.2fpx at %s' % (max_error, max_frame)
-    long_status_str += ' | Max Deviation %.2fpx at %s' % (max_error, max_frame)
+    status_str += ' | max deviation %.2fpx at f%s' % (max_error, max_frame)
+    long_status_str += ' | Max Deviation %.2fpx at f%s' % (max_error, max_frame)
 
     if total_time is not None:
         if log:

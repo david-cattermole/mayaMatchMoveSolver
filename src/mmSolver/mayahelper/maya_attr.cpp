@@ -176,7 +176,8 @@ MPlug Attr::getPlug() {
         MObject nodeObj = Attr::getObject();
         MString attrName = Attr::getAttrName();
         MFnDependencyNode dependsNode(nodeObj, &status);
-        MPlug plug = dependsNode.findPlug(attrName, true, &status);
+        MPlug plug =
+            dependsNode.findPlug(attrName, /*wantNetworkedPlug=*/true, &status);
         if (status != MStatus::kSuccess) {
             // MString name = Attr::getName();
             // MMSOLVER_WRN("Attribute cannot be found; " << name);

@@ -254,7 +254,7 @@ def log_solve_results(
                       number (as returned by 'time.time()').
     :type timestamp: None or float
 
-    :param total_time: The duration of the solve to log.
+    :param total_time: The duration of the solve to log, in seconds.
     :type total_time: None or float
 
     :param status_fn: Function to set the status text.
@@ -306,10 +306,21 @@ def log_solve_results(
     long_status_str += ' | Max Deviation %.2fpx at f%s' % (max_error, max_frame)
 
     if total_time is not None:
+        minutes_in_hour = 60
+        seconds_in_minute = 60
+        seconds_in_hour = minutes_in_hour * seconds_in_minute
+        hours, remainder = divmod(total_time, seconds_in_hour)
+        minutes, seconds = divmod(remainder, seconds_in_minute)
+        minutes += hours * minutes_in_hour
+        time_str = "{}:{:.2f}s".format(int(minutes), seconds)
+
+        frames_per_second = float(num_frames) / total_time
+        fps_str = ' (%.2f fps)' % frames_per_second
+
         if log:
-            log.info('Total Time: %.3f seconds', total_time)
-        status_str += ' | time %.3fsec' % total_time
-        long_status_str += ' | Time %.3fsec' % total_time
+            log.info('Total Time: %s %s', time_str, fps_str)
+        status_str += ' | time ' + time_str + fps_str
+        long_status_str += ' | Time ' + time_str + fps_str
 
     if log:
         log.info('Max Frame Deviation: %.2f pixels at frame %s', max_error, max_frame)

@@ -604,8 +604,6 @@ def compile_multi_frame(
         LOG.warn("Not enough Markers given for root frames.")
         return
 
-    # if use_attr_blocks is True:
-
     attr_blocks = solverutils.create_attr_blocks(use_attr_blocks, attr_list)
 
     # TODO: Create a list of markers specially for root frames.

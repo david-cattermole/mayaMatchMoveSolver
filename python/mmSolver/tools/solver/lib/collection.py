@@ -271,6 +271,9 @@ def log_solve_results(
         status_str += stamp + ' | '
         long_status_str += stamp + ' | '
 
+    frame_list = mmapi.merge_frame_list(solres_list)
+    num_frames = len(frame_list)
+
     # Get Solver success.
     success = True
     for solres in solres_list:
@@ -279,11 +282,11 @@ def log_solve_results(
             success = False
             break
     if success is True:
-        status_str += 'Solved | '
-        long_status_str += 'Solved | '
+        status_str += 'Solved %s frames | ' % num_frames
+        long_status_str += 'Solved %s frames | ' % num_frames
     else:
-        status_str += 'Failed | '
-        long_status_str += 'Failed | '
+        status_str += 'Failed %s frames | ' % num_frames
+        long_status_str += 'Failed %s frames | ' % num_frames
 
     frame_error_list = mmapi.merge_frame_error_list(solres_list)
     if log and (log.level > logging.DEBUG):

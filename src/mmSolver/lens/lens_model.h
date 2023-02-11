@@ -177,9 +177,13 @@ public:
         }
     }
 
+    // The 'x' and 'y' values are expected to be in the standard
+    // Marker coordinate positions for MM Solver, where (0, 0) means
+    // the center of the camera, (-0.5, -0.5) means lower-left of the
+    // camera frustum and (+0.5, +0.5) means upper-right of the camera
+    // frustum.
     virtual void applyModelUndistort(const double x, const double y,
                                      double &out_x, double &out_y) = 0;
-
     virtual void applyModelDistort(const double x, const double y,
                                    double &out_x, double &out_y) = 0;
 

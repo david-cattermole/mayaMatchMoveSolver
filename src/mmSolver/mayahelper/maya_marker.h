@@ -36,6 +36,8 @@ class Camera;
 
 class Bundle;
 
+class MarkerGroup;
+
 class Marker {
 public:
     Marker();
@@ -46,9 +48,11 @@ public:
 
     std::shared_ptr<Camera> getCamera();
     std::shared_ptr<Bundle> getBundle();
+    std::shared_ptr<MarkerGroup> getMarkerGroup();
 
     MStatus setCamera(std::shared_ptr<Camera> &value);
     MStatus setBundle(std::shared_ptr<Bundle> &value);
+    MStatus setMarkerGroup(std::shared_ptr<MarkerGroup> &value);
 
     Attr &getMatrixAttr();
     Attr &getPosXAttr();
@@ -81,6 +85,7 @@ private:
 
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<Bundle> m_bundle;
+    std::shared_ptr<MarkerGroup> m_markerGroup;
 
     Attr m_matrix;
     Attr m_px;

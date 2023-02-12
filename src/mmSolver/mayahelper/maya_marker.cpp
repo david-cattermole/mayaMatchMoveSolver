@@ -22,6 +22,10 @@
 
 #include "maya_marker.h"
 
+// STL
+#include <memory>
+
+// Maya
 #include <maya/MDagPath.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MFnMatrixData.h>
@@ -30,15 +34,17 @@
 #include <maya/MPlug.h>
 #include <maya/MPoint.h>
 
-#include <memory>
-
+// MM Solver
 #include "maya_attr.h"
 #include "maya_bundle.h"
 #include "maya_camera.h"
+#include "maya_marker_group.h"
 #include "maya_utils.h"
 #include "mmSolver/adjust/adjust_defines.h"
+#include "mmSolver/utilities/debug_utils.h"
 
-Marker::Marker() : m_nodeName(""), m_object(), m_camera(), m_bundle() {
+Marker::Marker()
+    : m_nodeName(""), m_object(), m_camera(), m_bundle(), m_markerGroup() {
     m_matrix.setAttrName("worldMatrix");
     m_px.setAttrName("translateX");
     m_py.setAttrName("translateY");
@@ -94,6 +100,13 @@ BundlePtr Marker::getBundle() { return m_bundle; }
 
 MStatus Marker::setBundle(BundlePtr &value) {
     m_bundle = value;
+    return MS::kSuccess;
+}
+
+MarkerGroupPtr Marker::getMarkerGroup() { return m_markerGroup; }
+
+MStatus Marker::setMarkerGroup(MarkerGroupPtr &value) {
+    m_markerGroup = value;
     return MS::kSuccess;
 }
 

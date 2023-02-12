@@ -274,6 +274,11 @@ ObjectType computeObjectType(
 ) {
     ObjectType objectType = ObjectType::kUnknown;
 
+    if (node_obj.isNull() || !nodeDagPath.isValid()) {
+        MMSOLVER_ERR("computeObjectType: Given node is null or not valid!");
+        return objectType;
+    }
+
     if (node_obj.hasFn(MFn::kDagNode)) {
         objectType = computeDagObjectType(node_obj, nodeDagPath);
     } else if (node_obj.hasFn(MFn::kDependencyNode)) {
@@ -289,6 +294,11 @@ ObjectType computeObjectType(
 
 ObjectType computeObjectType(const MObject &node_obj) {
     ObjectType objectType = ObjectType::kUnknown;
+
+    if (node_obj.isNull()) {
+        MMSOLVER_ERR("computeObjectType: Given node is null!");
+        return objectType;
+    }
 
     if (node_obj.hasFn(MFn::kDagNode)) {
         MDagPath nodeDagPath;

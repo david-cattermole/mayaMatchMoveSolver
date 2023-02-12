@@ -168,21 +168,45 @@ MStatus Marker::getPos(MPoint &point, const int timeEvalMode) {
     return status;
 }
 
-MStatus Marker::getPosXY(double &x, double &y, const MTime &time,
-                         const int timeEvalMode) {
+MStatus Marker::getPosXY(double &out_x, double &out_y, const MTime &time,
+                         const int timeEvalMode, const bool applyOverscan) {
     MStatus status;
     auto attr_pos_x = Marker::getPosXAttr();
     auto attr_pos_y = Marker::getPosYAttr();
-    status = attr_pos_x.getValue(x, time, timeEvalMode);
+
+    double overscan_x = 1.0;
+    double overscan_y = 1.0;
+    if (applyOverscan) {
+        if (m_markerGroup) {
+            // Take into account the MarkerGroup's 'overscan'
+            // attributes. The Marker X/Y values should be multiplied by
+            // the inverse of the overscan X/Y values.
+            status = m_markerGroup->getOverscanXY(overscan_x, overscan_y, time,
+                                                  timeEvalMode);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            overscan_x = 1.0 / overscan_x;
+            overscan_y = 1.0 / overscan_y;
+        } else {
+            MMSOLVER_WRN("Marker::getPosXY: MarkerGroup node not found for \""
+                         << m_nodeName.asChar() << "\".");
+        }
+    }
+
+    status = attr_pos_x.getValue(out_x, time, timeEvalMode);
     CHECK_MSTATUS_AND_RETURN_IT(status);
-    status = attr_pos_y.getValue(y, time, timeEvalMode);
+    status = attr_pos_y.getValue(out_y, time, timeEvalMode);
     CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    out_x *= overscan_x;
+    out_y *= overscan_y;
     return status;
 }
 
-MStatus Marker::getPosXY(double &x, double &y, const int timeEvalMode) {
+MStatus Marker::getPosXY(double &out_x, double &out_y, const int timeEvalMode,
+                         const bool applyOverscan) {
     MTime time = MAnimControl::currentTime();
-    MStatus status = Marker::getPosXY(x, y, time, timeEvalMode);
+    MStatus status =
+        Marker::getPosXY(out_x, out_y, time, timeEvalMode, applyOverscan);
     return status;
 }
 

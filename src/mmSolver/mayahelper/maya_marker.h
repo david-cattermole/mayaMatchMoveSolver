@@ -70,9 +70,10 @@ public:
     MStatus getPos(double &x, double &y, double &z, const int timeEvalMode);
     MStatus getPos(MPoint &point, const int timeEvalMode);
 
-    MStatus getPosXY(double &x, double &y, const MTime &time,
-                     const int timeEvalMode);
-    MStatus getPosXY(double &x, double &y, const int timeEvalMode);
+    MStatus getPosXY(double &out_x, double &out_y, const MTime &time,
+                     const int timeEvalMode, const bool applyOverscan = true);
+    MStatus getPosXY(double &out_x, double &out_y, const int timeEvalMode,
+                     const bool applyOverscan = true);
 
     MStatus getEnable(bool &value, const MTime &time, const int timeEvalMode);
     MStatus getWeight(double &value, const MTime &time, const int timeEvalMode);

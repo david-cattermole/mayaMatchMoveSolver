@@ -550,7 +550,7 @@ Attr &Camera::getRenderHeightAttr() { return m_renderHeight; }
 Attr &Camera::getRenderAspectAttr() { return m_renderAspect; }
 
 double Camera::getFilmbackWidthValue(const MTime &time,
-                                     const int timeEvalMode) {
+                                     const int32_t timeEvalMode) {
     MStatus status;
     double value = 1.0;
     Attr attr = getFilmbackWidthAttr();
@@ -560,7 +560,7 @@ double Camera::getFilmbackWidthValue(const MTime &time,
 }
 
 double Camera::getFilmbackHeightValue(const MTime &time,
-                                      const int timeEvalMode) {
+                                      const int32_t timeEvalMode) {
     MStatus status;
     double value = 1.0;
     Attr attr = getFilmbackHeightAttr();
@@ -570,7 +570,7 @@ double Camera::getFilmbackHeightValue(const MTime &time,
 }
 
 double Camera::getFilmbackOffsetXValue(const MTime &time,
-                                       const int timeEvalMode) {
+                                       const int32_t timeEvalMode) {
     MStatus status;
     double value = 1.0;
     Attr attr = getFilmbackOffsetXAttr();
@@ -580,7 +580,7 @@ double Camera::getFilmbackOffsetXValue(const MTime &time,
 }
 
 double Camera::getFilmbackOffsetYValue(const MTime &time,
-                                       const int timeEvalMode) {
+                                       const int32_t timeEvalMode) {
     MStatus status;
     double value = 1.0;
     Attr attr = getFilmbackOffsetYAttr();
@@ -589,7 +589,8 @@ double Camera::getFilmbackOffsetYValue(const MTime &time,
     return value;
 }
 
-double Camera::getFocalLengthValue(const MTime &time, const int timeEvalMode) {
+double Camera::getFocalLengthValue(const MTime &time,
+                                   const int32_t timeEvalMode) {
     MStatus status;
     double value = 1.0;
     Attr attr = getFocalLengthAttr();
@@ -599,7 +600,7 @@ double Camera::getFocalLengthValue(const MTime &time, const int timeEvalMode) {
 }
 
 double Camera::getCameraScaleValue() {
-    const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    const int32_t timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     double value = 1.0;
     if (m_cameraScaleCached) {
         value = m_cameraScaleValue;
@@ -615,7 +616,7 @@ double Camera::getCameraScaleValue() {
 }
 
 double Camera::getNearClipPlaneValue() {
-    const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    const int32_t timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     double value = 0.1;
     if (m_nearClipPlaneCached) {
         value = m_nearClipPlaneValue;
@@ -631,7 +632,7 @@ double Camera::getNearClipPlaneValue() {
 }
 
 double Camera::getFarClipPlaneValue() {
-    const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    const int32_t timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     double value = 1000.0;
     if (m_farClipPlaneCached) {
         value = m_farClipPlaneValue;
@@ -647,7 +648,7 @@ double Camera::getFarClipPlaneValue() {
 }
 
 short Camera::getFilmFitValue() {
-    const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    const int32_t timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     short value = 0;
     if (m_filmFitCached) {
         value = m_filmFitValue;
@@ -662,9 +663,9 @@ short Camera::getFilmFitValue() {
     return value;
 }
 
-int Camera::getRenderWidthValue() {
-    const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
-    int value = 128;
+int32_t Camera::getRenderWidthValue() {
+    const int32_t timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    int32_t value = 128;
     if (m_renderWidthCached) {
         value = m_renderWidthValue;
     } else {
@@ -678,9 +679,9 @@ int Camera::getRenderWidthValue() {
     return value;
 }
 
-int Camera::getRenderHeightValue() {
-    const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
-    int value = 128;
+int32_t Camera::getRenderHeightValue() {
+    const int32_t timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    int32_t value = 128;
     if (m_renderHeightCached) {
         value = m_renderHeightValue;
     } else {
@@ -695,7 +696,7 @@ int Camera::getRenderHeightValue() {
 }
 
 double Camera::getRenderAspectValue() {
-    const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
+    const int32_t timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     double value = 1.0;
     if (m_renderAspectCached) {
         value = m_renderAspectValue;
@@ -712,7 +713,7 @@ double Camera::getRenderAspectValue() {
 
 MStatus Camera::getFrustum(double &left, double &right, double &top,
                            double &bottom, const MTime &time,
-                           const int timeEvalMode) {
+                           const int32_t timeEvalMode) {
     MStatus status = MS::kSuccess;
 
     double filmWidth = 0.0;
@@ -739,7 +740,7 @@ MStatus Camera::getFrustum(double &left, double &right, double &top,
 }
 
 MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time,
-                              const int timeEvalMode) {
+                              const int32_t timeEvalMode) {
     MStatus status;
 
     MTime::Unit unit = MTime::uiUnit();
@@ -808,13 +809,13 @@ MStatus Camera::getProjMatrix(MMatrix &value, const MTime &time,
     return status;
 }
 
-MStatus Camera::getProjMatrix(MMatrix &value, const int timeEvalMode) {
+MStatus Camera::getProjMatrix(MMatrix &value, const int32_t timeEvalMode) {
     MTime time = MAnimControl::currentTime();
     return Camera::getProjMatrix(value, time, timeEvalMode);
 }
 
 MStatus Camera::getWorldPosition(MPoint &value, const MTime &time,
-                                 const int timeEvalMode) {
+                                 const int32_t timeEvalMode) {
     MStatus status;
 
     // Get world matrix at time
@@ -832,13 +833,13 @@ MStatus Camera::getWorldPosition(MPoint &value, const MTime &time,
     return status;
 }
 
-MStatus Camera::getWorldPosition(MPoint &value, const int timeEvalMode) {
+MStatus Camera::getWorldPosition(MPoint &value, const int32_t timeEvalMode) {
     MTime time = MAnimControl::currentTime();
     return Camera::getWorldPosition(value, time, timeEvalMode);
 }
 
 MStatus Camera::getForwardDirection(MVector &value, const MTime &time,
-                                    const int timeEvalMode) {
+                                    const int32_t timeEvalMode) {
     MStatus status;
 
     // Get world matrix at time
@@ -853,13 +854,14 @@ MStatus Camera::getForwardDirection(MVector &value, const MTime &time,
     return status;
 }
 
-MStatus Camera::getForwardDirection(MVector &value, const int timeEvalMode) {
+MStatus Camera::getForwardDirection(MVector &value,
+                                    const int32_t timeEvalMode) {
     MTime time = MAnimControl::currentTime();
     return Camera::getForwardDirection(value, time, timeEvalMode);
 }
 
 MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time,
-                                   const int timeEvalMode) {
+                                   const int32_t timeEvalMode) {
     MStatus status;
 
     MTime::Unit unit = MTime::uiUnit();
@@ -892,7 +894,7 @@ MStatus Camera::getWorldProjMatrix(MMatrix &value, const MTime &time,
 }
 
 MStatus Camera::getRotateOrder(MEulerRotation::RotationOrder &value,
-                               const MTime &time, const int timeEvalMode) {
+                               const MTime &time, const int32_t timeEvalMode) {
     MStatus status;
 
     short attr_value = 0;
@@ -942,7 +944,7 @@ MStatus Camera::clearProjMatrixCache() {
     return MS::kSuccess;
 }
 
-MStatus Camera::getWorldProjMatrix(MMatrix &value, const int timeEvalMode) {
+MStatus Camera::getWorldProjMatrix(MMatrix &value, const int32_t timeEvalMode) {
     MTime time = MAnimControl::currentTime();
     return Camera::getWorldProjMatrix(value, time, timeEvalMode);
 }

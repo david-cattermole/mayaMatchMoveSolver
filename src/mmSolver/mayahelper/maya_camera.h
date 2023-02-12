@@ -140,46 +140,46 @@ public:
     Attr &getRenderHeightAttr();
     Attr &getRenderAspectAttr();
 
-    double getFilmbackWidthValue(const MTime &time, const int timeEvalMode);
-    double getFilmbackHeightValue(const MTime &time, const int timeEvalMode);
-    double getFilmbackOffsetXValue(const MTime &time, const int timeEvalMode);
-    double getFilmbackOffsetYValue(const MTime &time, const int timeEvalMode);
+    double getFilmbackWidthValue(const MTime &time, const int32_t timeEvalMode);
+    double getFilmbackHeightValue(const MTime &time, const int32_t timeEvalMode);
+    double getFilmbackOffsetXValue(const MTime &time, const int32_t timeEvalMode);
+    double getFilmbackOffsetYValue(const MTime &time, const int32_t timeEvalMode);
 
-    double getFocalLengthValue(const MTime &time, const int timeEvalMode);
+    double getFocalLengthValue(const MTime &time, const int32_t timeEvalMode);
     double getCameraScaleValue();
     double getNearClipPlaneValue();
     double getFarClipPlaneValue();
     short getFilmFitValue();
 
-    int getRenderWidthValue();
-    int getRenderHeightValue();
+    int32_t getRenderWidthValue();
+    int32_t getRenderHeightValue();
     double getRenderAspectValue();
 
     MStatus getFrustum(double &left, double &right, double &top, double &bottom,
-                       const MTime &time, const int timeEvalMode);
+                       const MTime &time, const int32_t timeEvalMode);
 
     MStatus getProjMatrix(MMatrix &value, const MTime &time,
-                          const int timeEvalMode);
+                          const int32_t timeEvalMode);
 
-    MStatus getProjMatrix(MMatrix &value, const int timeEvalMode);
+    MStatus getProjMatrix(MMatrix &value, const int32_t timeEvalMode);
 
     MStatus getWorldPosition(MPoint &value, const MTime &time,
-                             const int timeEvalMode);
+                             const int32_t timeEvalMode);
 
-    MStatus getWorldPosition(MPoint &value, const int timeEvalMode);
+    MStatus getWorldPosition(MPoint &value, const int32_t timeEvalMode);
 
     MStatus getForwardDirection(MVector &value, const MTime &time,
-                                const int timeEvalMode);
+                                const int32_t timeEvalMode);
 
-    MStatus getForwardDirection(MVector &value, const int timeEvalMode);
+    MStatus getForwardDirection(MVector &value, const int32_t timeEvalMode);
 
     MStatus getWorldProjMatrix(MMatrix &value, const MTime &time,
-                               const int timeEvalMode);
+                               const int32_t timeEvalMode);
 
-    MStatus getWorldProjMatrix(MMatrix &value, const int timeEvalMode);
+    MStatus getWorldProjMatrix(MMatrix &value, const int32_t timeEvalMode);
 
     MStatus getRotateOrder(MEulerRotation::RotationOrder &value,
-                           const MTime &time, const int timeEvalMode);
+                           const MTime &time, const int32_t timeEvalMode);
 
     MStatus clearAuxilaryAttrsCache();
 
@@ -226,8 +226,8 @@ private:
     double m_nearClipPlaneValue;
     double m_farClipPlaneValue;
     short m_filmFitValue;
-    int m_renderWidthValue;
-    int m_renderHeightValue;
+    int32_t m_renderWidthValue;
+    int32_t m_renderHeightValue;
     double m_renderAspectValue;
 
     DoubleMatrixMap m_projMatrixCache;

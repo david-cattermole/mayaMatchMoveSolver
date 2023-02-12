@@ -90,7 +90,8 @@ bool get_marker_coords_at_frame(const MTime &time, MarkerPtr &mkr, double &x,
                                 double &y, double &weight, bool &enable) {
     auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
 
-    mkr->getPosXY(x, y, time, timeEvalMode);
+    bool applyOverscan = true;
+    mkr->getPosXY(x, y, time, timeEvalMode, applyOverscan);
     mkr->getEnable(enable, time, timeEvalMode);
     mkr->getWeight(weight, time, timeEvalMode);
 
@@ -102,7 +103,8 @@ bool get_marker_coords_at_frame(const MTime time, MMMarker &mkr, double &x,
                                 double &y, double &weight, bool &enable) {
     auto timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
 
-    mkr.getPosXY(x, y, time, timeEvalMode);
+    bool applyOverscan = true;
+    mkr.getPosXY(x, y, time, timeEvalMode, applyOverscan);
     mkr.getEnable(enable, time, timeEvalMode);
     mkr.getWeight(weight, time, timeEvalMode);
 

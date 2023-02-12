@@ -32,6 +32,7 @@ import maya.api.OpenMayaUI as OpenMayaUI
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.utils.constant as utils_const
 import mmSolver.tools.placemarkermanip.constant as const
 
 LOG = mmSolver.logger.get_logger()
@@ -69,15 +70,16 @@ def place_marker():
     camDag.pop()
     camTfm = camDag.fullPathName()
 
-    # 'Image resolution' is used to make sure the film back aspect
-    # ratio is respected.
-    imageWidth = maya.cmds.getAttr(camShp + '.horizontalFilmAperture') * 100.0
-    imageHeight = maya.cmds.getAttr(camShp + '.verticalFilmAperture') * 100.0
-
     # Get the world-space location for the clicked point.
     position = OpenMaya.MPoint()
     direction = OpenMaya.MVector()
     view.viewToWorld(int(vpX), int(vpY), position, direction)
+
+    # NOTE: When lens distortion is applied to the camera/lens there
+    # will always be a cycle if the marker node is also '2D centered'
+    # using the 'centertwodee' tool. For now, we cannot work-around
+    # this, but the solution may be to use events, rather than a
+    # mmReprojection node as 'centertwodee' currently does.
 
     # Compute the Marker coordinates for the given camera.
     frame = maya.cmds.currentTime(query=True)
@@ -85,17 +87,14 @@ def place_marker():
         worldPoint=(position.x, position.y, position.z),
         camera=(camTfm, camShp),
         asMarkerCoordinate=True,
-        imageResolution=(imageWidth, imageHeight),
         time=frame,
+        distortMode=utils_const.DISTORT_MODE_REDISTORT,
     )
     if coord is None:
         msg = 'Could not get Marker coordinate.'
         LOG.warning(msg)
         return
     assert len(coord) == 3
-
-    # TODO: Calculate the lens distortion (if any) for the current 2D
-    # coordinate.
 
     # Set the marker position
     for mkr in mkr_list:

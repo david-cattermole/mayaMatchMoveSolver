@@ -36,6 +36,7 @@
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
+#include "mmSolver/mayahelper/maya_marker_group.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
@@ -54,6 +55,39 @@ void createSolveObjectSyntax(MSyntax &syntax) {
     syntax.makeFlagMultiUse(MARKER_FLAG);
     syntax.makeFlagMultiUse(ATTR_FLAG);
     return;
+}
+
+MStatus createMarkerGroupFromMarkerNodeName(const MString &markerName,
+                                            MarkerGroupPtr &out_markerGroup) {
+    MStatus status = MStatus::kSuccess;
+
+    MDagPath node_path;
+    status = getAsDagPath(markerName, node_path);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    MObject node_obj;
+    while (node_path.length() > 1) {
+        status = node_path.pop(1);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        node_obj = node_path.node(&status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        ObjectType obj_type = computeObjectType(node_obj, node_path);
+        if (obj_type == ObjectType::kMarkerGroup) {
+            MString markerGroupNodeName = node_path.fullPathName(&status);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            out_markerGroup = MarkerGroupPtr(new MarkerGroup());
+            out_markerGroup->setNodeName(markerGroupNodeName);
+        }
+    }
+    if (!out_markerGroup) {
+        MMSOLVER_WRN(
+            "createMarkerGroupFromMarkerNodeName: No MarkerGroup node found "
+            "for \""
+            << markerName.asChar() << "\".");
+    }
+    return status;
 }
 
 MStatus parseSolveObjectArguments(const MArgDatabase &argData,
@@ -205,6 +239,14 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             marker->setNodeName(markerName);
             marker->setBundle(bundle);
             marker->setCamera(camera);
+
+            // Get Marker Group (if it exists), if not the MarkerGroup
+            // pointer will be empty.
+            MarkerGroupPtr markerGroup;
+            status =
+                createMarkerGroupFromMarkerNodeName(markerName, markerGroup);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            marker->setMarkerGroup(markerGroup);
 
             out_markerList.push_back(marker);
             out_bundleList.push_back(bundle);

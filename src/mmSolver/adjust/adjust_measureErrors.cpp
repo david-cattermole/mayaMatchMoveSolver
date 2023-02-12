@@ -184,7 +184,9 @@ void measureErrors_mayaDag(const int numberOfErrors,
         mkr_x = mkr_mpos.x;
         mkr_y = mkr_mpos.y;
 #else
-        status = marker->getPosXY(mkr_x, mkr_y, frame, timeEvalMode);
+        bool applyOverscan = true;
+        status =
+            marker->getPosXY(mkr_x, mkr_y, frame, timeEvalMode, applyOverscan);
         CHECK_MSTATUS(status);
 #endif
 

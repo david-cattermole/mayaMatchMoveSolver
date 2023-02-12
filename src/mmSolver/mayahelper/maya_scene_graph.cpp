@@ -46,6 +46,7 @@
 #include "maya_bundle.h"
 #include "maya_camera.h"
 #include "maya_marker.h"
+#include "maya_marker_group.h"
 #include "maya_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
@@ -490,20 +491,26 @@ MStatus get_film_fit_attr(Attr &mayaAttr, const int timeEvalMode,
 MStatus get_marker_attrs(Attr &mayaAttr, const MTimeArray &frameList,
                          const mmsg::FrameValue start_frame,
                          const mmsg::FrameValue end_frame,
-                         const int timeEvalMode,
+                         const int timeEvalMode, const double overscan_x,
+                         const double overscan_y,
                          mmsg::AttrDataBlock &out_attrDataBlock,
                          mmsg::MarkerAttrIds &out_attrIds,
                          StringToAttrIdMap &out_attrNameToAttrIdMap) {
     MStatus status = MS::kSuccess;
     double scaleFactor = 1.0;  // No conversion.
 
+    // The MarkerGroup's overscan values are used to correct the
+    // marker's position as if the overscan values never existed.
+    double scaleFactor_x = 1.0 / overscan_x;
+    double scaleFactor_y = 1.0 / overscan_y;
+
     add_attribute(mayaAttr, MString("translateX"), frameList, start_frame,
-                  end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
+                  end_frame, timeEvalMode, scaleFactor_x, out_attrDataBlock,
                   out_attrIds.tx, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     add_attribute(mayaAttr, MString("translateY"), frameList, start_frame,
-                  end_frame, timeEvalMode, scaleFactor, out_attrDataBlock,
+                  end_frame, timeEvalMode, scaleFactor_y, out_attrDataBlock,
                   out_attrIds.ty, out_attrNameToAttrIdMap);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -972,8 +979,22 @@ MStatus add_markers(
         status = mayaAttr.setNodeName(transform_name);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
+        // MarkerGroup's Overscan
+        double overscan_x = 1.0;
+        double overscan_y = 1.0;
+        MarkerGroupPtr mkr_grp_ptr = mkr_ptr->getMarkerGroup();
+        if (mkr_grp_ptr) {
+            // Overscan is assumed to be static, animated overscan is
+            // not current supported.
+            auto first_frame = frameList[0];
+            status = mkr_grp_ptr->getOverscanXY(overscan_x, overscan_y,
+                                                first_frame, timeEvalMode);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+        }
+
         status = get_marker_attrs(mayaAttr, frameList, start_frame, end_frame,
-                                  timeEvalMode, out_attrDataBlock, mkr_attr_ids,
+                                  timeEvalMode, overscan_x, overscan_y,
+                                  out_attrDataBlock, mkr_attr_ids,
                                   out_attrNameToAttrIdMap);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 

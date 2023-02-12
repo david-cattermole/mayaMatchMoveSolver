@@ -70,6 +70,16 @@ MStatus applyFilmFitLogic(
     double &screenSizeY, double &screenRight, double &screenLeft,
     double &screenTop, double &screenBottom);
 
+void applyFilmFitCorrectionScaleForward(
+    const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
+    const double filmBackAspect, const double renderAspect, double &out_x,
+    double &out_y);
+
+void applyFilmFitCorrectionScaleBackward(
+    const short filmFit,  // 0=fill, 1=horizontal, 2=vertical, 3=overscan
+    const double filmBackAspect, const double renderAspect, double &out_x,
+    double &out_y);
+
 MStatus computeProjectionMatrix(
     const double filmFitScaleX, const double filmFitScaleY,
     const double screenSizeX, const double screenSizeY, const double screenLeft,

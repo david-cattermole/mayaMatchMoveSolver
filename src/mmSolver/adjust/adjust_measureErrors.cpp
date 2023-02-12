@@ -107,37 +107,6 @@ inline double distance_2d(const double ax, const double ay, const double bx,
     return std::sqrt((dx * dx) + (dy * dy));
 }
 
-// Scale marker XY based on camera FilmFit attribute value.
-inline void scale_xy_with_film_fit(const short filmFit,
-                                   const double filmBackAspect,
-                                   const double renderAspect, double &out_x,
-                                   double &out_y) {
-    assert((filmFit >= 0) && (filmFit < 4));
-    if (filmFit == 1) {
-        // FilmFit Horizontal
-        out_y *= renderAspect / filmBackAspect;
-    } else if (filmFit == 2) {
-        // FilmFit Vertical
-        out_x *= 1.0 / (renderAspect / filmBackAspect);
-    } else if (filmFit == 0) {
-        // FilmFit Fill
-        if (filmBackAspect > renderAspect) {
-            out_x *= filmBackAspect / renderAspect;
-        } else {
-            out_y *= renderAspect / filmBackAspect;
-        }
-    } else if (filmFit == 3) {
-        // FilmFit Overscan
-        if (filmBackAspect > renderAspect) {
-            out_y *= renderAspect / filmBackAspect;
-        } else {
-            out_x *= filmBackAspect / renderAspect;
-        }
-    }
-
-    return;
-}
-
 void measureErrors_mayaDag(const int numberOfErrors,
                            const int numberOfMarkerErrors,
                            const int numberOfAttrStiffnessErrors,
@@ -239,8 +208,8 @@ void measureErrors_mayaDag(const int numberOfErrors,
         // This is only needed for the 'Maya DAG' mode, because the
         // 'MM SceneGraph' (Rust) code already accounts for this
         // change.
-        scale_xy_with_film_fit(filmFit, filmBackAspect, renderAspect, mkr_x,
-                               mkr_y);
+        applyFilmFitCorrectionScaleBackward(filmFit, filmBackAspect,
+                                            renderAspect, mkr_x, mkr_y);
 
         double mkr_weight = ud->markerWeightList[i];
         assert(mkr_weight >

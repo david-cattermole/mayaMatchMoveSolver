@@ -141,9 +141,12 @@ public:
     Attr &getRenderAspectAttr();
 
     double getFilmbackWidthValue(const MTime &time, const int32_t timeEvalMode);
-    double getFilmbackHeightValue(const MTime &time, const int32_t timeEvalMode);
-    double getFilmbackOffsetXValue(const MTime &time, const int32_t timeEvalMode);
-    double getFilmbackOffsetYValue(const MTime &time, const int32_t timeEvalMode);
+    double getFilmbackHeightValue(const MTime &time,
+                                  const int32_t timeEvalMode);
+    double getFilmbackOffsetXValue(const MTime &time,
+                                   const int32_t timeEvalMode);
+    double getFilmbackOffsetYValue(const MTime &time,
+                                   const int32_t timeEvalMode);
 
     double getFocalLengthValue(const MTime &time, const int32_t timeEvalMode);
     double getCameraScaleValue();

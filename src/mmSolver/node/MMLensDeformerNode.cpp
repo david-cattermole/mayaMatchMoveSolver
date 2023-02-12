@@ -187,7 +187,7 @@ MStatus MMLensDeformerNode::deform(MDataBlock& data, MItGeometry& iter,
     double pixelAspect = pixelAspectHandle.asDouble();
     double lensCenterOffsetX = horizontalFilmOffsetHandle.asDouble();
     double lensCenterOffsetY = verticalFilmOffsetHandle.asDouble();
-    focalLength *= MM_TO_INCH;
+    focalLength *= MM_TO_CM;
     filmBackWidth *= INCH_TO_CM;
     filmBackHeight *= INCH_TO_CM;
     lensCenterOffsetX *= INCH_TO_CM;

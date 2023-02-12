@@ -48,21 +48,14 @@ def __get_override_current_frame_value(col, tab):
 
 
 def __set_override_current_frame_value(col, layout_ui, tab, value):
-    if layout_ui is None:
-        if tab in [const.SOLVER_TAB_BASIC_VALUE, const.SOLVER_TAB_STANDARD_VALUE]:
-            if value is True:
-                value = const.RANGE_TYPE_CURRENT_FRAME_VALUE
-            lib_col_state.set_solver_range_type_on_collection(col, value)
-        elif tab == const.SOLVER_TAB_LEGACY_VALUE:
-            lib_col.set_override_current_frame_on_collection(col, value)
-        else:
-            raise ValueError('tab is not supported; tab=%r' % tab)
-    elif tab == const.SOLVER_TAB_BASIC_VALUE:
-        pass
-    elif tab == const.SOLVER_TAB_STANDARD_VALUE:
-        pass
+    if tab in [const.SOLVER_TAB_BASIC_VALUE, const.SOLVER_TAB_STANDARD_VALUE]:
+        if value is True:
+            value = const.RANGE_TYPE_CURRENT_FRAME_VALUE
+        lib_col_state.set_solver_range_type_on_collection(col, value)
     elif tab == const.SOLVER_TAB_LEGACY_VALUE:
-        layout_ui.solver_settings.legacy_widget.setOverrideCurrentFrame(col, value)
+        lib_col.set_override_current_frame_on_collection(col, value)
+        if layout_ui is not None:
+            layout_ui.solver_settings.legacy_widget.setOverrideCurrentFrame(col, value)
     else:
         raise ValueError('tab is not supported; tab=%r' % tab)
     return
@@ -85,7 +78,7 @@ def run_solve(override_current_frame=None):
     :param override_current_frame: Before running the solver, change
                                    the "override current frame" state to
                                    this value.
-    :type override_current_frame: bool
+    :type override_current_frame: bool or None
     """
     assert override_current_frame is None or isinstance(override_current_frame, bool)
     if override_current_frame is None:

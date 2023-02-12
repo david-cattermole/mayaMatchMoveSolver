@@ -84,7 +84,10 @@ namespace mmsg = mmscenegraph;
 // the matrix of a marker node. It doesn't matter which marker node,
 // however it does matter that it's a marker node, if the eval is
 // performed with a bundle node the error continues to happen.
-#define FORCE_TRIGGER_EVAL 1
+//
+// 2023-02-06 (YYYY-MM-DD): Disabling this toggle. It doesn't seem to
+// make any difference in real-world tests.
+#define FORCE_TRIGGER_EVAL 0
 
 // Pre-processor-level on/off switch for re-use of the Marker
 // positions. This is an optimisation to avoid re-evaluating the

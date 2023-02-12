@@ -147,11 +147,14 @@ int countUpNumberOfErrors(
                 }
                 weightMaxPerFrame.insert(std::pair<int, double>(j, weight_max));
 
-                // Get unedited Marker Position, just the translate
-                // X/Y values directly.
+                // Get 'distorted' Marker positions, just the
+                // translate X/Y values, with any overscan factors on
+                // the MarkerGroup taken into account.
                 double px = 0.0;
                 double py = 0.0;
-                status = marker->getPosXY(px, py, frame, timeEvalMode);
+                bool applyOverscan = true;
+                status = marker->getPosXY(px, py, frame, timeEvalMode,
+                                          applyOverscan);
                 CHECK_MSTATUS(status);
                 MPoint marker_pos(px, py, 0.0);
                 out_markerPosList.push_back(marker_pos);

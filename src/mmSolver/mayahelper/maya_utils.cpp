@@ -231,17 +231,26 @@ ObjectType computeDagObjectType(const MObject &node_obj,
         return objectType;
     }
 
-    auto attrNameEnable = MString("enable");
-    auto attrNameWeight = MString("weight");
-    auto attrNameBundle = MString("bundle");
-    auto attrNameSolverList = MString("solverList");
-    bool hasAttrEnable = hasAttrName(dependFn, attrNameEnable);
-    bool hasAttrWeight = hasAttrName(dependFn, attrNameWeight);
-    bool hasAttrBundle = hasAttrName(dependFn, attrNameBundle);
-    bool hasAttrSolverList = hasAttrName(dependFn, attrNameSolverList);
+    const auto attrNameEnable = MString("enable");
+    const auto attrNameWeight = MString("weight");
+    const auto attrNameBundle = MString("bundle");
+    const auto attrNameDepth = MString("depth");
+    const auto attrNameOverscanX = MString("overscanX");
+    const auto attrNameOverscanY = MString("overscanY");
+    const auto attrNameSolverList = MString("solverList");
+    const bool hasAttrEnable = hasAttrName(dependFn, attrNameEnable);
+    const bool hasAttrWeight = hasAttrName(dependFn, attrNameWeight);
+    const bool hasAttrBundle = hasAttrName(dependFn, attrNameBundle);
+    const bool hasAttrDepth = hasAttrName(dependFn, attrNameDepth);
+    const bool hasAttrOverscanX = hasAttrName(dependFn, attrNameOverscanX);
+    const bool hasAttrOverscanY = hasAttrName(dependFn, attrNameOverscanY);
+    const bool hasAttrSolverList = hasAttrName(dependFn, attrNameSolverList);
     if (hasTransformNode && hasLocatorShape && hasAttrEnable && hasAttrWeight &&
         hasAttrBundle) {
         objectType = ObjectType::kMarker;
+    } else if (hasTransformNode && hasAttrDepth && hasAttrOverscanX &&
+               hasAttrOverscanY) {
+        objectType = ObjectType::kMarkerGroup;
     } else if (hasTransformNode && hasLocatorShape) {
         objectType = ObjectType::kBundle;
     } else if (hasTransformNode && hasCameraShape) {
@@ -252,9 +261,6 @@ ObjectType computeDagObjectType(const MObject &node_obj,
         objectType = ObjectType::kImagePlane;
     } else if (hasImagePlaneShape) {
         objectType = ObjectType::kImagePlane;
-    } else if (node_tid == MFn::kPluginDependNode) {
-        // TODO: Check specifically for 'mmMarkerGroupTransform' node type.
-        objectType = ObjectType::kMarkerGroup;
     } else if (node_tid == MFn::kSet && hasAttrSolverList) {
         objectType = ObjectType::kCollection;
     }

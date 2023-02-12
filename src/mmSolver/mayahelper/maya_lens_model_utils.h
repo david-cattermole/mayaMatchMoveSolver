@@ -38,6 +38,9 @@
 
 namespace mmsolver {
 
+MStatus getLensModelFromCamera(const CameraPtr &camera,
+                               std::shared_ptr<LensModel> &out_lensModel);
+
 MStatus setLensModelAttributeValue(std::shared_ptr<LensModel> &lensModel,
                                    const AttrSolverType attrType,
                                    const double value);

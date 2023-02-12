@@ -467,6 +467,50 @@ MStatus getLensesFromCameraList(
     return status;
 }
 
+// Get the 'top' Lens for each Camera, and make sure to store the
+// upstream lenses too.
+MStatus getLensModelFromCamera(const CameraPtr &camera,
+                               std::shared_ptr<LensModel> &out_lensModel) {
+    CameraPtrList cameraList;
+    cameraList.push_back(camera);
+
+    std::unordered_map<std::string, int32_t> cameraNodeNameToCameraIndex;
+    std::vector<std::vector<MString>> cameraLensNodeNames;
+    std::vector<MString> lensNodeNamesVec;
+    std::unordered_map<std::string, std::shared_ptr<LensModel>>
+        lensNodeNameToLensModel;
+    MStatus status = getLensesFromCameraList(
+        cameraList, cameraNodeNameToCameraIndex, cameraLensNodeNames,
+        lensNodeNamesVec, lensNodeNameToLensModel);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    if (cameraLensNodeNames.size() != 1) {
+        return MS::kFailure;
+    }
+    std::vector<MString> &lensNodeNames = cameraLensNodeNames[0];
+    if (lensNodeNames.size() == 0) {
+        return MS::kSuccess;
+    }
+
+    // We assume that the first lens (index zero) is always the
+    // LensModel directly connected to the camera, and it will
+    // therefore have all connected upstream LensModels embedded.
+    MString lensNodeName = lensNodeNames[0];
+    std::string lensNodeNameStr(lensNodeName.asChar());
+
+    auto search = lensNodeNameToLensModel.find(lensNodeNameStr);
+    if (search == lensNodeNameToLensModel.end()) {
+        MMSOLVER_ERR("Lens node name "
+                     << "\"" << lensNodeNameStr << "\""
+                     << " does not have a LensModel object, this should "
+                        "not happen. ");
+        return MS::kFailure;
+    }
+    out_lensModel = search->second;
+
+    return MS::kSuccess;
+}
+
 MStatus getAttrsFromLensNode(const MObject &node, const MString &nodeName,
                              std::vector<Attr> &out_attrs) {
     MStatus status = MS::kSuccess;

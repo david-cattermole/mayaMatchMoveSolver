@@ -60,6 +60,7 @@ void createSolveObjectSyntax(MSyntax &syntax) {
 MStatus createMarkerGroupFromMarkerNodeName(const MString &markerName,
                                             MarkerGroupPtr &out_markerGroup) {
     MStatus status = MStatus::kSuccess;
+    const bool verbose = false;
 
     MDagPath node_path;
     status = getAsDagPath(markerName, node_path);
@@ -82,7 +83,7 @@ MStatus createMarkerGroupFromMarkerNodeName(const MString &markerName,
         }
     }
     if (!out_markerGroup) {
-        MMSOLVER_WRN(
+        MMSOLVER_VRB(
             "createMarkerGroupFromMarkerNodeName: No MarkerGroup node found "
             "for \""
             << markerName.asChar() << "\".");

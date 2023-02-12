@@ -171,6 +171,8 @@ MStatus Marker::getPos(MPoint &point, const int timeEvalMode) {
 MStatus Marker::getPosXY(double &out_x, double &out_y, const MTime &time,
                          const int timeEvalMode, const bool applyOverscan) {
     MStatus status;
+    const bool verbose = false;
+
     auto attr_pos_x = Marker::getPosXAttr();
     auto attr_pos_y = Marker::getPosYAttr();
 
@@ -187,7 +189,7 @@ MStatus Marker::getPosXY(double &out_x, double &out_y, const MTime &time,
             overscan_x = 1.0 / overscan_x;
             overscan_y = 1.0 / overscan_y;
         } else {
-            MMSOLVER_WRN("Marker::getPosXY: MarkerGroup node not found for \""
+            MMSOLVER_VRB("Marker::getPosXY: MarkerGroup node not found for \""
                          << m_nodeName.asChar() << "\".");
         }
     }

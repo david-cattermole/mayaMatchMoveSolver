@@ -47,7 +47,7 @@
 // only a DGContext.
 #define USE_MAYA_PROJECTION_MATRIX 0
 
-// The node in the Maya scene which containts the render resolution.
+// The node in the Maya scene which contains the render resolution.
 #define RENDER_RES_NODE "defaultResolution"
 
 MStatus getAngleOfView(const double filmBackSize_mm,

@@ -39,6 +39,7 @@
 #include <maya/MTimeArray.h>
 
 // MM Solver
+#include "mmSolver/core/reprojection.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 
 // Command arguments and command name:
@@ -91,6 +92,14 @@
 #define WITH_CAMERA_DIR_RATIO_FLAG "-wcd"
 #define WITH_CAMERA_DIR_RATIO_FLAG_LONG "-withCameraDirectionRatio"
 
+// Should the input transform be re-distorted or undistorted?
+//
+// This will only work if the camera has an 'outLens' attribute, and
+// the attribute is connected to a chain of lens nodes (with at least
+// one lens node in the chain).
+#define DISTORT_MODE_FLAG "-dsm"
+#define DISTORT_MODE_FLAG_LONG "-distortMode"
+
 namespace mmsolver {
 
 class MMReprojectionCmd : public MPxCommand {
@@ -99,7 +108,6 @@ public:
         : m_nodeList()
         , m_givenWorldPoint(false)
         , m_worldPoint()
-        , m_camera()
         , m_timeList()
         , m_asCameraPoint(false)
         , m_asWorldPoint(false)
@@ -107,7 +115,10 @@ public:
         , m_asNormalizedCoordinate(false)
         , m_asMarkerCoordinate(false)
         , m_asPixelCoordinate(false)
-        , m_withCameraDirRatio(false){};
+        , m_withCameraDirRatio(false)
+        , m_distort_mode(ReprojectionDistortMode::kNone) {
+        m_cameraPtr = CameraPtr(new Camera());
+    };
 
     virtual ~MMReprojectionCmd();
 
@@ -128,7 +139,7 @@ private:
     MSelectionList m_nodeList;
     bool m_givenWorldPoint;
     MPoint m_worldPoint;
-    Camera m_camera;
+    CameraPtr m_cameraPtr;
     MTimeArray m_timeList;
     double m_imageResX;
     double m_imageResY;
@@ -140,6 +151,7 @@ private:
     bool m_asMarkerCoordinate;
     bool m_asPixelCoordinate;
     bool m_withCameraDirRatio;
+    ReprojectionDistortMode m_distort_mode;
 };
 
 }  // namespace mmsolver

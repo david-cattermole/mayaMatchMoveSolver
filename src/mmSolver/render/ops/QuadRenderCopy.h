@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 David Cattermole.
+ * Copyright (C) 2021, 2023 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -39,16 +39,35 @@ public:
 
     const MHWRender::MShaderInstance *shader() override;
 
+    const MDepthStencilState *depthStencilStateOverride() override;
+
     MHWRender::MRenderTarget *const *targetOverrideList(
         unsigned int &listSize) override;
 
-    void setInputTarget(const uint32_t index) { m_target_index_input = index; }
+    void setUseColorTarget(const bool value) { m_use_color_target = value; }
+    void setUseDepthTarget(const bool value) { m_use_depth_target = value; }
+
+    void setColorTarget(const uint32_t index) {
+        m_target_index_color_input = index;
+    }
+    void setDepthTarget(const uint32_t index) {
+        m_target_index_depth_input = index;
+    }
 
 protected:
-    // Shader to use for the quad render
-    MHWRender::MShaderInstance *m_shader_instance;
+    // Shaders to use for the quad render
+    MHWRender::MShaderInstance *m_shader_color_and_depth;
+    MHWRender::MShaderInstance *m_shader_color_only;
+    MHWRender::MShaderInstance *m_shader_depth_only;
 
-    uint32_t m_target_index_input;
+    bool m_use_color_target;
+    bool m_use_depth_target;
+
+    uint32_t m_target_index_color_input;
+    uint32_t m_target_index_depth_input;
+
+private:
+    const MDepthStencilState *m_depth_stencil_state;
 };
 
 }  // namespace render

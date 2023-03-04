@@ -50,9 +50,11 @@ namespace render {
 // Enumerations to identify an operation within a list of
 // operations, used for each layer of the render override.
 enum DisplayLayerPasses {
+    kCopyOp = 0,
+
     // Draw the scene (except image planes), but only write to the
     // depth channel.
-    kSceneDepthPass = 0,
+    kSceneDepthPass,
 
     kEdgeDetectOp,
 

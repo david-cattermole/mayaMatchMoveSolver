@@ -54,6 +54,7 @@ enum TargetId {
     // A temporary render target to render and then blend/copy into
     // other targets.
     kTempColorTarget,
+    kTempDepthTarget,
 
     // Always last field, used as 'number of items'.
     kTargetCount
@@ -65,6 +66,7 @@ enum TargetId {
 #define kLayerColorTargetName "__mmRenderer_LayerColorTarget2__"
 #define kLayerDepthTargetName "__mmRenderer_LayerDepthTarget2__"
 #define kTempColorTargetName "__mmRenderer_TempColorTarget3__"
+#define kTempDepthTargetName "__mmRenderer_TempDepthTarget3__"
 
 // Constant values
 const char kRendererUiName[] = "mmRenderer (beta)";
@@ -108,6 +110,7 @@ const float kEdgeThresholdAlphaDefault = 1.0f;
 const float kEdgeThresholdDepthDefault = 1.0f;
 
 // Render Operation Pass Names
+const MString kLayerCopyOpName = "mmRenderer_Layer_Copy_";
 const MString kLayerDepthPassName = "mmRenderer_Layer_DepthRender_";
 const MString kLayerEdgeDetectOpName = "mmRenderer_Layer_EdgeDetectOp_";
 const MString kLayerMergeOpName = "mmRenderer_Layer_Merge_";

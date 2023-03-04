@@ -133,6 +133,13 @@ RenderOverride::RenderOverride(const MString &name)
         m_target_override_names[kTempColorTarget], default_width,
         default_height, sample_count, color_format, array_slice_count,
         is_cube_map);
+
+    // 3rd Depth target
+    m_target_override_names[kTempDepthTarget] = MString(kTempDepthTargetName);
+    m_target_descs[kTempDepthTarget] = new MHWRender::MRenderTargetDescription(
+        m_target_override_names[kTempDepthTarget], default_width,
+        default_height, sample_count, depth_format, array_slice_count,
+        is_cube_map);
 }
 
 RenderOverride::~RenderOverride() {
@@ -729,7 +736,7 @@ MStatus RenderOverride::updateRenderTargets() {
     status = MS::kFailure;
     if (m_targets[kMainColorTarget] && m_targets[kMainDepthTarget] &&
         m_targets[kLayerColorTarget] && m_targets[kLayerDepthTarget] &&
-        m_targets[kTempColorTarget]) {
+        m_targets[kTempColorTarget] && m_targets[kTempDepthTarget]) {
         status = MS::kSuccess;
     }
     return status;

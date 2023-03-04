@@ -135,21 +135,22 @@ attribute PIXEL_DATA {
 
 GLSLShader PS_mmLayerMerge_Main {
     void main() {
+        vec2 uv = PS_INPUT.UV.xy;
+
         vec4 result = vec4(0.0, 1.0, 0.0, 1.0);
-        vec4 color_A = texture2D(gColorSamplerA, PS_INPUT.UV.xy) * gAlphaA;
-        vec4 color_B = texture2D(gColorSamplerB, PS_INPUT.UV.xy) * gAlphaB;
+        vec4 color_A = texture2D(gColorSamplerA, uv) * gAlphaA;
+        vec4 depth_A = texture2D(gDepthSamplerA, uv);
+        vec4 color_B = texture2D(gColorSamplerB, uv) * gAlphaB;
+        vec4 depth_B = texture2D(gDepthSamplerB, uv);
 
         vec4 color_C = vec4(0.0, 0.0, 0.0, 0.0);
         if (gUseColorC > 0) {
-            color_C = texture2D(gColorSamplerC, PS_INPUT.UV.xy) * gAlphaC;
+            color_C = texture2D(gColorSamplerC, uv) * gAlphaC;
         }
 
         color_A = (color_A + color_C) * gLayerMix;
 
         if (gLayerMode == kLAYER_MODE_ZDEPTH) {
-            vec4 depth_A = texture2D(gDepthSamplerA, PS_INPUT.UV.xy);
-            vec4 depth_B = texture2D(gDepthSamplerB, PS_INPUT.UV.xy);
-
             result = color_B;
             if (depth_A.r <= depth_B.r) {
                 result = color_A + (color_B * (1.0 - color_A.a));
@@ -166,6 +167,11 @@ GLSLShader PS_mmLayerMerge_Main {
             // result = (color_A * 0.5) + (color_B * 0.5);
         }
 
+        float depth = depth_B.r;
+        if (depth_A.r <= depth_B.r) {
+            depth = depth_A.r;
+        }
+
         if (gDebugMode == kDEBUG_MODE_ON) {
             if (PS_INPUT.UV.x <= 0.125) {
                 result = color_A;
@@ -173,7 +179,6 @@ GLSLShader PS_mmLayerMerge_Main {
                 if (PS_INPUT.UV.y < 0.5) {
                     result = vec4(color_A.w, color_A.w, color_A.w, 1.0);
                 } else {
-                    vec4 depth_A = texture2D(gDepthSamplerA, PS_INPUT.UV.xy);
                     result = vec4(depth_A.r, depth_A.r, depth_A.r, 1.0);
                 }
             } else if (PS_INPUT.UV.x <= 0.375) {
@@ -182,13 +187,19 @@ GLSLShader PS_mmLayerMerge_Main {
                 if (PS_INPUT.UV.y < 0.5) {
                     result = vec4(color_B.w, color_B.w, color_B.w, 1.0);
                 } else {
-                    vec4 depth_B = texture2D(gDepthSamplerB, PS_INPUT.UV.xy);
                     result = vec4(depth_B.r, depth_B.r, depth_B.r, 1.0);
                 }
+            }
+
+            if (uv.x <= 0.5) {
+                result = vec4(depth_A.r, depth_A.r, depth_A.r, 1.0);
+            } else {
+                result = vec4(depth_B.r, depth_B.r, depth_B.r, 1.0);
             }
         }
 
         colorOut = result;
+        gl_FragDepth = depth;
     }
 }
 

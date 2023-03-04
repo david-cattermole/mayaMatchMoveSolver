@@ -31,6 +31,7 @@
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/render/data/constants.h"
 #include "mmSolver/render/ops/QuadRenderBlend.h"
+#include "mmSolver/render/ops/QuadRenderCopy.h"
 #include "mmSolver/render/ops/QuadRenderEdgeDetect.h"
 #include "mmSolver/render/ops/QuadRenderLayerMerge.h"
 #include "mmSolver/render/ops/SceneRender.h"
@@ -151,6 +152,11 @@ MStatus DisplayLayer::updateRenderOperations() {
         ~(MHWRender::MFrameContext::kExcludeImagePlane |
           MHWRender::MFrameContext::kExcludePluginShapes);
 
+    const MString copyOpName = MString(kLayerCopyOpName) + m_name;
+    auto copyOp = new QuadRenderCopy(copyOpName);
+    copyOp->setClearMask(clear_mask_none);
+    m_ops[DisplayLayerPasses::kCopyOp] = copyOp;
+
     // We assume the depth buffer has at least 24 bits for the depth
     // value.
     //
@@ -217,6 +223,8 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     // color and depth targets, but shaders may internally reference
     // specific render targets.
 
+    auto copyOp =
+        dynamic_cast<QuadRenderCopy *>(m_ops[DisplayLayerPasses::kCopyOp]);
     auto depthPassOp =
         dynamic_cast<SceneRender *>(m_ops[DisplayLayerPasses::kSceneDepthPass]);
     auto edgeDetectOp = dynamic_cast<QuadRenderEdgeDetect *>(
@@ -226,7 +234,8 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     auto layerMergeOp = dynamic_cast<QuadRenderLayerMerge *>(
         m_ops[DisplayLayerPasses::kLayerMergeOp]);
 
-    if (!depthPassOp || !edgeDetectOp || !scenePassOp || !layerMergeOp) {
+    if (!copyOp || !depthPassOp || !edgeDetectOp || !scenePassOp ||
+        !layerMergeOp) {
         return MS::kFailure;
     }
 
@@ -261,12 +270,19 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
             MHWRender::MSceneRender::kWireFrame |
             MHWRender::MSceneRender::kTextured);
 
-    depthPassOp->setClearMask(clear_mask_all);
+    copyOp->setClearMask(clear_mask_none);
+    copyOp->setUseColorTarget(true);
+    copyOp->setUseDepthTarget(true);
+    copyOp->setColorTarget(kMainColorTarget);
+    copyOp->setDepthTarget(kMainDepthTarget);
+    copyOp->setRenderTargets(targets, kTempColorTarget, 2);
+
+    depthPassOp->setClearMask(clear_mask_none);
     depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
     depthPassOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
 
     const float edge_alpha = m_edge_alpha * static_cast<float>(m_edge_enable);
-    edgeDetectOp->setEnabled(true);
+    edgeDetectOp->setEnabled(false);
     edgeDetectOp->setInputColorTarget(kLayerColorTarget);
     edgeDetectOp->setInputDepthTarget(kLayerDepthTarget);
     edgeDetectOp->setRenderTargets(targets, kTempColorTarget, 1);
@@ -347,10 +363,10 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     layerMergeOp->setColorTargetA(kLayerColorTarget);
     layerMergeOp->setDepthTargetA(kLayerDepthTarget);
     layerMergeOp->setColorTargetB(kMainColorTarget);
-    layerMergeOp->setDepthTargetB(kMainDepthTarget);
+    layerMergeOp->setDepthTargetB(kTempDepthTarget);
     layerMergeOp->setColorTargetC(kTempColorTarget);
-    layerMergeOp->setUseColorTargetC(m_edge_enable);
-    layerMergeOp->setRenderTargets(targets, kMainColorTarget, 1);
+    layerMergeOp->setUseColorTargetC(false);
+    layerMergeOp->setRenderTargets(targets, kMainColorTarget, 2);
     layerMergeOp->setLayerMode(m_layer_mode);
     layerMergeOp->setLayerMix(m_layer_mix);
     layerMergeOp->setDebug(m_layer_draw_debug);

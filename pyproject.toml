@@ -1,5 +1,6 @@
 [tool.black]
 line-length = 88  # The black default is a good compromise.
+skip-string-normalization = 1
 target-version = ['py34']
 include = '\.py$'
 extend-exclude = '''

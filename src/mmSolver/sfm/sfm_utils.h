@@ -125,6 +125,8 @@ bool add_bundle_at_frame(
     const MTime &time, BundlePtr &bundle,
     std::vector<std::tuple<double, double, double>> &bundle_coords);
 
+bool is_valid_pose(openMVG::geometry::Pose3 &pose);
+
 MTransformationMatrix convert_pose_to_maya_transform_matrix(
     openMVG::geometry::Pose3 &pose);
 

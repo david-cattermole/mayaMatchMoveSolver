@@ -41,6 +41,8 @@ public:
     MHWRender::MRenderTarget *const *targetOverrideList(
         unsigned int &listSize) override;
 
+    const MDepthStencilState *depthStencilStateOverride() override;
+
     const MHWRender::MShaderInstance *shader() override;
 
     void setColorTargetA(const uint32_t index) {
@@ -88,6 +90,9 @@ protected:
     float m_alpha_b;
     float m_alpha_c;
     bool m_debug;
+
+private:
+    const MDepthStencilState *m_depth_stencil_state;
 };
 
 }  // namespace render

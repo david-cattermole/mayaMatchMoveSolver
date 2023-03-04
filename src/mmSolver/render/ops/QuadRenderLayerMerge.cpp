@@ -35,6 +35,7 @@ namespace render {
 QuadRenderLayerMerge::QuadRenderLayerMerge(const MString &name)
     : QuadRenderBase(name)
     , m_shader_instance(nullptr)
+    , m_depth_stencil_state(nullptr)
     , m_target_index_color_a(0)
     , m_target_index_depth_a(0)
     , m_target_index_color_b(0)
@@ -62,6 +63,13 @@ QuadRenderLayerMerge::~QuadRenderLayerMerge() {
 
         shaderMgr->releaseShader(m_shader_instance);
         m_shader_instance = nullptr;
+    }
+
+    // Release any state
+    if (m_depth_stencil_state) {
+        MHWRender::MStateManager::releaseDepthStencilState(
+            m_depth_stencil_state);
+        m_depth_stencil_state = nullptr;
     }
 }
 
@@ -179,6 +187,18 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
             "gDebugMode", static_cast<int32_t>(m_debug)));
     }
     return m_shader_instance;
+}
+
+const MDepthStencilState *QuadRenderLayerMerge::depthStencilStateOverride() {
+    if (!m_depth_stencil_state) {
+        MHWRender::MDepthStencilStateDesc desc;
+        desc.depthEnable = true;
+        desc.depthWriteEnable = true;
+        desc.depthFunc = MHWRender::MStateManager::kCompareAlways;
+        m_depth_stencil_state =
+            MHWRender::MStateManager::acquireDepthStencilState(desc);
+    }
+    return m_depth_stencil_state;
 }
 
 }  // namespace render

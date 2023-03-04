@@ -32,6 +32,7 @@ QuadRenderBase::QuadRenderBase(const MString &name)
     , m_targets(nullptr)
     , m_target_index(0)
     , m_target_count(0)
+    , m_clear_depth(1.0f)
     , m_clear_mask(MHWRender::MClearOperation::kClearNone) {
     m_view_rectangle[0] = 0.0f;
     m_view_rectangle[1] = 0.0f;
@@ -46,6 +47,11 @@ MHWRender::MClearOperation &QuadRenderBase::clearOperation() {
     mClearOperation.setClearColor(val);
     mClearOperation.setClearColor2(val);
     mClearOperation.setClearGradient(false);
+    mClearOperation.setClearStencil(0);
+    // A depth value of 1.0f represents the 'most distant'
+    // object. As objects draw, they draw darker pixels on top of
+    // this background color.
+    mClearOperation.setClearDepth(m_clear_depth);
     mClearOperation.setMask(m_clear_mask);
     return mClearOperation;
 }

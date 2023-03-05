@@ -34,6 +34,7 @@
 #include "mmSolver/render/ops/QuadRenderCopy.h"
 #include "mmSolver/render/ops/QuadRenderEdgeDetect.h"
 #include "mmSolver/render/ops/QuadRenderLayerMerge.h"
+#include "mmSolver/render/ops/SceneDepthRender.h"
 #include "mmSolver/render/ops/SceneEdgeRender.h"
 #include "mmSolver/render/ops/SceneRender.h"
 #include "mmSolver/render/shader/shader_utils.h"
@@ -41,24 +42,6 @@
 
 namespace mmsolver {
 namespace render {
-
-static MShaderInstance *create_depth_shader(const float depth_offset) {
-    const bool verbose = false;
-
-    MMSOLVER_VRB("create_depth_shader: Compile Depth Main shader...");
-    const MString file_name = "mmDepth";
-    const MString main_technique = "Main";
-    MHWRender::MShaderInstance *shader_instance =
-        compile_shader_file(file_name, main_technique);
-
-    if (shader_instance) {
-        MMSOLVER_VRB("create_depth_shader: Assign Depth shader parameters...");
-        CHECK_MSTATUS(
-            shader_instance->setParameter("gDepthOffset", depth_offset));
-    }
-
-    return shader_instance;
-}
 
 DisplayLayer::DisplayLayer()
     : m_name()
@@ -161,25 +144,14 @@ MStatus DisplayLayer::updateRenderOperations() {
     copyOp->setUseDepthTarget(true);
     m_ops[DisplayLayerPasses::kCopyOp] = copyOp;
 
-    // We assume the depth buffer has at least 24 bits for the depth
-    // value.
-    //
-    // Smaller Z-Depth values are nearer the camera, and larger values
-    // are farther away.
-    const float depthValueRange = 1048576.0f;  // (2 ^ 24) / 16
-    const float depthValueStep = 1.0f / depthValueRange;
-    const float depthOffset = depthValueStep * 4;
-    // Shader to push depth away from camera.
-    auto depthShader1 = create_depth_shader(-depthOffset);
-
     const MString depthSceneOpName = MString(kLayerDepthPassName) + m_name;
-    auto depthPassOp = new SceneRender(depthSceneOpName);
+    auto depthPassOp = new SceneDepthRender(depthSceneOpName);
     depthPassOp->setClearMask(clear_mask_none);
     depthPassOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
     depthPassOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
     depthPassOp->setExcludeTypes(depth_draw_object_types);
     depthPassOp->setDisplayModeOverride(display_mode_shaded);
-    depthPassOp->setShaderOverride(depthShader1);
+    depthPassOp->setDepthPriority(-4.0);  // push Z-depth away from camera.
     depthPassOp->setDrawObjects(DrawObjects::kOnlyNamedLayerObjects);
     depthPassOp->setLayerName(m_name);
     m_ops[DisplayLayerPasses::kSceneDepthPass] = depthPassOp;
@@ -244,8 +216,8 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
 
     auto copyOp =
         dynamic_cast<QuadRenderCopy *>(m_ops[DisplayLayerPasses::kCopyOp]);
-    auto depthPassOp =
-        dynamic_cast<SceneRender *>(m_ops[DisplayLayerPasses::kSceneDepthPass]);
+    auto depthPassOp = dynamic_cast<SceneDepthRender *>(
+        m_ops[DisplayLayerPasses::kSceneDepthPass]);
     auto copyEdgeOp =
         dynamic_cast<QuadRenderCopy *>(m_ops[DisplayLayerPasses::kCopyEdgeOp]);
     auto edgeDetectOp = dynamic_cast<QuadRenderEdgeDetect *>(

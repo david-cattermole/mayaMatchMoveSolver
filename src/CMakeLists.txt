@@ -134,6 +134,7 @@ if (MMSOLVER_BUILD_RENDERER)
     mmSolver/render/ops/QuadRenderEdgeDetect.cpp
     mmSolver/render/ops/QuadRenderInvert.cpp
     mmSolver/render/ops/QuadRenderLayerMerge.cpp
+    mmSolver/render/ops/SceneDepthRender.cpp
     mmSolver/render/ops/SceneEdgeRender.cpp
     mmSolver/render/ops/SceneRender.cpp
     mmSolver/render/ops/SceneRenderBase.cpp

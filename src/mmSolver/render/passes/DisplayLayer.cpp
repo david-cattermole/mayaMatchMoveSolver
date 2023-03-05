@@ -34,6 +34,7 @@
 #include "mmSolver/render/ops/QuadRenderCopy.h"
 #include "mmSolver/render/ops/QuadRenderEdgeDetect.h"
 #include "mmSolver/render/ops/QuadRenderLayerMerge.h"
+#include "mmSolver/render/ops/SceneEdgeRender.h"
 #include "mmSolver/render/ops/SceneRender.h"
 #include "mmSolver/render/shader/shader_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
@@ -154,7 +155,10 @@ MStatus DisplayLayer::updateRenderOperations() {
 
     const MString copyOpName = MString(kLayerCopyOpName) + m_name;
     auto copyOp = new QuadRenderCopy(copyOpName);
+    copyOp->setEnabled(true);
     copyOp->setClearMask(clear_mask_none);
+    copyOp->setUseColorTarget(true);
+    copyOp->setUseDepthTarget(true);
     m_ops[DisplayLayerPasses::kCopyOp] = copyOp;
 
     // We assume the depth buffer has at least 24 bits for the depth
@@ -170,7 +174,7 @@ MStatus DisplayLayer::updateRenderOperations() {
 
     const MString depthSceneOpName = MString(kLayerDepthPassName) + m_name;
     auto depthPassOp = new SceneRender(depthSceneOpName);
-    depthPassOp->setClearMask(clear_mask_all);
+    depthPassOp->setClearMask(clear_mask_none);
     depthPassOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
     depthPassOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
     depthPassOp->setExcludeTypes(depth_draw_object_types);
@@ -180,14 +184,29 @@ MStatus DisplayLayer::updateRenderOperations() {
     depthPassOp->setLayerName(m_name);
     m_ops[DisplayLayerPasses::kSceneDepthPass] = depthPassOp;
 
+    const MString copyEdgeOpName = MString(kLayerCopyEdgeOpName) + m_name;
+    auto copyEdgeOp = new QuadRenderCopy(copyEdgeOpName);
+    copyEdgeOp->setClearMask(clear_mask_all);
+    copyEdgeOp->setUseColorTarget(true);
+    copyEdgeOp->setUseDepthTarget(true);
+    m_ops[DisplayLayerPasses::kCopyEdgeOp] = copyEdgeOp;
+
+    // Render the edges.
+    const MString sceneEdgeOpName = MString(kLayerEdgePassOpName) + m_name;
+    auto sceneEdgeOp = new SceneEdgeRender(sceneEdgeOpName);
+    sceneEdgeOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
+    sceneEdgeOp->setClearMask(clear_mask_color);
+    sceneEdgeOp->setExcludeTypes(wire_draw_object_types);
+    sceneEdgeOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
+    sceneEdgeOp->setDisplayModeOverride(display_mode_shaded);
+    sceneEdgeOp->setDrawObjects(DrawObjects::kOnlyNamedLayerObjects);
+    sceneEdgeOp->setLayerName(m_name);
+    m_ops[DisplayLayerPasses::kSceneEdgePass] = sceneEdgeOp;
+
     // Apply edge detect.
     const MString edgeDetectOpName = MString(kLayerEdgeDetectOpName) + m_name;
     auto edgeDetectOp = new QuadRenderEdgeDetect(edgeDetectOpName);
     edgeDetectOp->setClearMask(clear_mask_all);
-    edgeDetectOp->setThickness(m_edge_thickness);
-    edgeDetectOp->setThresholdColor(m_edge_threshold_color);
-    edgeDetectOp->setThresholdAlpha(m_edge_threshold_alpha);
-    edgeDetectOp->setThresholdDepth(m_edge_threshold_depth);
     m_ops[DisplayLayerPasses::kEdgeDetectOp] = edgeDetectOp;
 
     // Scene Object Render pass.
@@ -227,15 +246,19 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
         dynamic_cast<QuadRenderCopy *>(m_ops[DisplayLayerPasses::kCopyOp]);
     auto depthPassOp =
         dynamic_cast<SceneRender *>(m_ops[DisplayLayerPasses::kSceneDepthPass]);
+    auto copyEdgeOp =
+        dynamic_cast<QuadRenderCopy *>(m_ops[DisplayLayerPasses::kCopyEdgeOp]);
     auto edgeDetectOp = dynamic_cast<QuadRenderEdgeDetect *>(
         m_ops[DisplayLayerPasses::kEdgeDetectOp]);
+    auto sceneEdgeOp = dynamic_cast<SceneEdgeRender *>(
+        m_ops[DisplayLayerPasses::kSceneEdgePass]);
     auto scenePassOp = dynamic_cast<SceneRender *>(
         m_ops[DisplayLayerPasses::kSceneRenderPass]);
     auto layerMergeOp = dynamic_cast<QuadRenderLayerMerge *>(
         m_ops[DisplayLayerPasses::kLayerMergeOp]);
 
-    if (!copyOp || !depthPassOp || !edgeDetectOp || !scenePassOp ||
-        !layerMergeOp) {
+    if (!copyOp || !depthPassOp || !copyEdgeOp || !sceneEdgeOp ||
+        !edgeDetectOp || !scenePassOp || !layerMergeOp) {
         return MS::kFailure;
     }
 
@@ -270,19 +293,38 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
             MHWRender::MSceneRender::kWireFrame |
             MHWRender::MSceneRender::kTextured);
 
-    copyOp->setClearMask(clear_mask_none);
-    copyOp->setUseColorTarget(true);
-    copyOp->setUseDepthTarget(true);
     copyOp->setColorTarget(kMainColorTarget);
     copyOp->setDepthTarget(kMainDepthTarget);
     copyOp->setRenderTargets(targets, kTempColorTarget, 2);
 
-    depthPassOp->setClearMask(clear_mask_none);
     depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
-    depthPassOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
 
+    copyEdgeOp->setColorTarget(kLayerColorTarget);
+    copyEdgeOp->setDepthTarget(kLayerDepthTarget);
+
+    // Implement multi-pass silhouette rendering, adapted to Maya
+    // Viewport 2.0, using render targets, rather than OpenGL state.
+    //
+    // This implementation is also different from the slides, since I
+    // (David Cattermole - 2023-03-05) was unable to work out how to
+    // render the given shader as lines(wireframe) inside the Maya
+    // Viewport 2.0 API. Switching the draw mode to wireframe did not
+    // render the intended shader on the wireframe at all.
+    //
+    // Additionally, a limitation of modern OpenGL is the inability to
+    // adjust the line width, since that is deprecated in modern OpenGL.
+    //
+    // See "SIGGRAPH Asia 2008 Modern OpenGL", Page 97-98:
+    // https://www.slideshare.net/Mark_Kilgard/sigraph-asia-2008-modern-opengl-presentation
+    //
     const float edge_alpha = m_edge_alpha * static_cast<float>(m_edge_enable);
-    edgeDetectOp->setEnabled(false);
+    sceneEdgeOp->setEnabled(m_edge_enable);
+    sceneEdgeOp->setRenderTargets(targets, kTempColorTarget, 2);
+    sceneEdgeOp->setCullingOverride(MHWRender::MSceneRender::kCullFrontFaces);
+    sceneEdgeOp->setEdgeThickness(m_edge_thickness);
+    sceneEdgeOp->setEdgeAlpha(edge_alpha);
+    sceneEdgeOp->setEdgeColor(m_edge_color.r, m_edge_color.g, m_edge_color.b);
+
     edgeDetectOp->setInputColorTarget(kLayerColorTarget);
     edgeDetectOp->setInputDepthTarget(kLayerDepthTarget);
     edgeDetectOp->setRenderTargets(targets, kTempColorTarget, 1);
@@ -293,6 +335,16 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     edgeDetectOp->setEdgeAlpha(edge_alpha);
     edgeDetectOp->setEdgeColor(m_edge_color.r, m_edge_color.g, m_edge_color.b);
     edgeDetectOp->setEdgeDetectMode(m_edge_detect_mode);
+
+    if (m_edge_detect_mode == EdgeDetectMode::k3dSilhouette) {
+        sceneEdgeOp->setEnabled(m_edge_enable);
+        edgeDetectOp->setEnabled(false);
+        copyEdgeOp->setRenderTargets(targets, kTempDepthTarget, 1);
+    } else {
+        sceneEdgeOp->setEnabled(false);
+        edgeDetectOp->setEnabled(m_edge_enable);
+        copyEdgeOp->setRenderTargets(targets, kTempColorTarget, 2);
+    }
 
     scenePassOp->setEnabled(true);
     scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
@@ -363,9 +415,9 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     layerMergeOp->setColorTargetA(kLayerColorTarget);
     layerMergeOp->setDepthTargetA(kLayerDepthTarget);
     layerMergeOp->setColorTargetB(kMainColorTarget);
-    layerMergeOp->setDepthTargetB(kTempDepthTarget);
+    layerMergeOp->setDepthTargetB(kMainDepthTarget);
     layerMergeOp->setColorTargetC(kTempColorTarget);
-    layerMergeOp->setUseColorTargetC(false);
+    layerMergeOp->setUseColorTargetC(m_edge_enable);
     layerMergeOp->setRenderTargets(targets, kMainColorTarget, 2);
     layerMergeOp->setLayerMode(m_layer_mode);
     layerMergeOp->setLayerMix(m_layer_mix);

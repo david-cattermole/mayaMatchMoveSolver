@@ -28,7 +28,8 @@ namespace render {
 enum class EdgeDetectMode : short {
     kSobel = 0,
     kFreiChen = 1,
-    kRenderFormatCount,
+    k3dSilhouette = 2,
+    kEdgeDetectModeCount,
 };
 
 }  // namespace render

@@ -102,7 +102,7 @@ const float kObjectAlphaDefault = 1.0f;
 const bool kEdgeEnableDefault = false;
 const float kEdgeColorDefault[] = {1.0f, 0.0f, 0.0f, 1.0f};
 const float kEdgeAlphaDefault = 1.0f;
-const EdgeDetectMode kEdgeDetectModeDefault = EdgeDetectMode::kFreiChen;
+const EdgeDetectMode kEdgeDetectModeDefault = EdgeDetectMode::k3dSilhouette;
 const float kEdgeThicknessDefault = 1.0f;
 const float kEdgeThresholdDefault = 1.0f;
 const float kEdgeThresholdColorDefault = 1.0f;
@@ -110,9 +110,11 @@ const float kEdgeThresholdAlphaDefault = 1.0f;
 const float kEdgeThresholdDepthDefault = 1.0f;
 
 // Render Operation Pass Names
+const MString kLayerCopyEdgeOpName = "mmRenderer_Layer_CopyEdge_";
 const MString kLayerCopyOpName = "mmRenderer_Layer_Copy_";
 const MString kLayerDepthPassName = "mmRenderer_Layer_DepthRender_";
 const MString kLayerEdgeDetectOpName = "mmRenderer_Layer_EdgeDetectOp_";
+const MString kLayerEdgePassOpName = "mmRenderer_Layer_EdgeRender_";
 const MString kLayerMergeOpName = "mmRenderer_Layer_Merge_";
 const MString kLayerObjectPassName = "mmRenderer_Layer_ObjectRender_";
 const MString kPresentOpName = "mmRenderer_PresentTarget";

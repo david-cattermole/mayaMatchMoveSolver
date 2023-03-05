@@ -1,0 +1,79 @@
+// Copyright (C) 2021, 2023 David Cattermole.
+//
+// This file is part of mmSolver.
+//
+// mmSolver is free software: you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// mmSolver is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+// --------------------------------------------------------------------
+//
+// Draw the depth pass, with a small offset to the Z-Depth value.
+
+// Global variables provided by Maya.
+uniform mat4 gWVPXf : WorldViewProjection;
+uniform mat4 gWorld : World;
+uniform mat4 gViewInverse : ViewInverse;
+
+// Colors
+uniform vec4 gEdgeColor : DIFFUSE = {1, 0, 0, 1};
+uniform float gEdgeAlpha = 1.0f;
+
+// Push the geometry edge out by this amount.
+uniform float gEdgeThickness = 1.0f;
+
+// Vertex Shader inputs.
+attribute VS_INPUT {
+    vec3 Pos : POSITION;
+    vec3 Nrm : NORMAL;
+    vec2 UV : TEXCOORD0;
+};
+
+// Vertex Shader data outputs, to be used by the Pixel Shader.
+attribute SHADER_DATA {
+    vec3 Normal : NORMAL;
+    vec4 WorldPosition : TEXCOORD0;
+};
+
+// Vertex Shader
+GLSLShader VS_mmEdge {
+    void main() {
+        VS_OUTPUT.WorldPosition = gWorld * vec4(Pos, 1);
+        VS_OUTPUT.Normal = Nrm;
+
+        // NOTE: The normal direction is based on the vertex normal
+        // directly. If the edge is "hard", then the vertex normals on
+        // either side of the edge will not align, and there will be
+        // cracks in the geometry. The fix is set the edges to
+        // "smooth" the produced geometry.
+        vec4 position = gWVPXf * vec4(Pos + (normalize(Nrm) * gEdgeThickness), 1);
+        gl_Position = position;
+    }
+}
+
+// Pixel Shader Outputs
+attribute PIXEL_DATA {
+    vec4 colorOut : COLOR0;
+}
+
+GLSLShader PS_mmEdge_Main {
+    void main() {
+        colorOut = gEdgeColor * gEdgeAlpha;
+    }
+}
+
+// The technique, used to merge textures together.
+technique Main {
+    pass p0 {
+        VertexShader(in VS_INPUT, out SHADER_DATA VS_OUTPUT) = VS_mmEdge;
+        PixelShader(in SHADER_DATA PS_INPUT, out PIXEL_DATA) = PS_mmEdge_Main;
+    }
+}

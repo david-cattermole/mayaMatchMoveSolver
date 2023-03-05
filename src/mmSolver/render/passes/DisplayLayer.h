@@ -56,7 +56,10 @@ enum DisplayLayerPasses {
     // depth channel.
     kSceneDepthPass,
 
+    // Edge rendering and detection.
+    kCopyEdgeOp,
     kEdgeDetectOp,
+    kSceneEdgePass,
 
     // Hidden Line - Draw the scene as wireframe, but it will be cut
     // out from the depth pass.

@@ -95,6 +95,10 @@ MHWRender::MRenderTarget *const *QuadRenderEdgeDetect::targetOverrideList(
 const MHWRender::MShaderInstance *QuadRenderEdgeDetect::shader() {
     const bool verbose = false;
 
+    if (m_edge_detect_mode == EdgeDetectMode::k3dSilhouette) {
+        return nullptr;
+    }
+
     const MString file_name = "mmSilhouette";
     const MString sobel_technique = "Sobel";
     const MString frei_chen_technique = "FreiChen";

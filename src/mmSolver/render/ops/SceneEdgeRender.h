@@ -19,44 +19,46 @@
  *
  */
 
-#include "SceneRender.h"
+#ifndef MM_SOLVER_RENDER_OPS_SCENE_EDGE_RENDER_H
+#define MM_SOLVER_RENDER_OPS_SCENE_EDGE_RENDER_H
 
 // Maya
-#include <maya/MShaderManager.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/render/data/constants.h"
+#include "mmSolver/render/ops/SceneRenderBase.h"
 #include "mmSolver/render/ops/scene_utils.h"
 
 namespace mmsolver {
 namespace render {
 
-SceneRender::SceneRender(const MString &name)
-    : SceneRenderBase(name), m_shader_override(nullptr) {}
+class SceneEdgeRender : public SceneRenderBase {
+public:
+    SceneEdgeRender(const MString &name);
+    ~SceneEdgeRender() override;
 
-SceneRender::~SceneRender() {
-    m_targets = nullptr;
+    const MHWRender::MShaderInstance *shaderOverride() override;
 
-    if (m_shader_override) {
-        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-        if (!renderer) {
-            return;
-        }
-        const MHWRender::MShaderManager *shaderMgr =
-            renderer->getShaderManager();
-        if (!shaderMgr) {
-            return;
-        }
-        shaderMgr->releaseShader(m_shader_override);
-        m_shader_override = nullptr;
+    void setEdgeColor(const float r, const float g, const float b) {
+        m_edge_color.r = r;
+        m_edge_color.g = g;
+        m_edge_color.b = b;
     }
-}
+    void setEdgeAlpha(const float value) { m_edge_alpha = value; }
+    void setEdgeThickness(const float value) { m_edge_thickness = value; }
 
-const MHWRender::MShaderInstance *SceneRender::shaderOverride() {
-    return m_shader_override;
-}
+protected:
+    // Shader override for surfaces
+    MHWRender::MShaderInstance *m_shader_override;
+
+    MColor m_edge_color;
+    float m_edge_alpha;
+    float m_edge_thickness;
+};
 
 }  // namespace render
 }  // namespace mmsolver
+
+#endif  // MM_SOLVER_RENDER_OPS_SCENE_EDGE_RENDER_H

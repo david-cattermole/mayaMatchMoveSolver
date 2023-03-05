@@ -148,8 +148,6 @@ GLSLShader PS_mmLayerMerge_Main {
             color_C = texture2D(gColorSamplerC, uv) * gAlphaC;
         }
 
-        color_A = (color_A + color_C) * gLayerMix;
-
         if (gLayerMode == kLAYER_MODE_ZDEPTH) {
             result = color_B;
             if (depth_A.r <= depth_B.r) {
@@ -166,6 +164,9 @@ GLSLShader PS_mmLayerMerge_Main {
             // Average
             // result = (color_A * 0.5) + (color_B * 0.5);
         }
+
+        // 'C' is an edge effect that must go on top of all other colors.
+        result = color_C + (result * (1.0 - color_C.a));
 
         float depth = depth_B.r;
         if (depth_A.r <= depth_B.r) {
@@ -189,12 +190,6 @@ GLSLShader PS_mmLayerMerge_Main {
                 } else {
                     result = vec4(depth_B.r, depth_B.r, depth_B.r, 1.0);
                 }
-            }
-
-            if (uv.x <= 0.5) {
-                result = vec4(depth_A.r, depth_A.r, depth_A.r, 1.0);
-            } else {
-                result = vec4(depth_B.r, depth_B.r, depth_B.r, 1.0);
             }
         }
 

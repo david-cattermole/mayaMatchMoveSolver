@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021, 2023 David Cattermole.
+ * Copyright (C) 2023 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -19,44 +19,46 @@
  *
  */
 
-#include "SceneRender.h"
+#ifndef MM_SOLVER_RENDER_OPS_SCENE_UTILS_H
+#define MM_SOLVER_RENDER_OPS_SCENE_UTILS_H
 
 // Maya
+#include <maya/M3dView.h>
+#include <maya/MFnDependencyNode.h>
+#include <maya/MItDag.h>
+#include <maya/MPlug.h>
+#include <maya/MPlugArray.h>
+#include <maya/MRenderTargetManager.h>
+#include <maya/MSelectionList.h>
 #include <maya/MShaderManager.h>
+#include <maya/MStateManager.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
 #include "mmSolver/mayahelper/maya_utils.h"
-#include "mmSolver/render/ops/scene_utils.h"
+#include "mmSolver/render/data/BackgroundStyle.h"
 
 namespace mmsolver {
 namespace render {
 
-SceneRender::SceneRender(const MString &name)
-    : SceneRenderBase(name), m_shader_override(nullptr) {}
+enum class DrawObjects : short {
+    kNoOverride = 0,
+    kAllImagePlanes,
+    kOnlyCameraBackgroundImagePlanes,
+    kOnlyNamedLayerObjects,
+    kDrawObjectsCount,
+};
 
-SceneRender::~SceneRender() {
-    m_targets = nullptr;
+const MSelectionList *find_draw_objects(const DrawObjects draw_objects,
+                                        const MString &layer_name,
+                                        MSelectionList &out_selection_list);
 
-    if (m_shader_override) {
-        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-        if (!renderer) {
-            return;
-        }
-        const MHWRender::MShaderManager *shaderMgr =
-            renderer->getShaderManager();
-        if (!shaderMgr) {
-            return;
-        }
-        shaderMgr->releaseShader(m_shader_override);
-        m_shader_override = nullptr;
-    }
-}
-
-const MHWRender::MShaderInstance *SceneRender::shaderOverride() {
-    return m_shader_override;
-}
+bool set_background_clear_operation(
+    const BackgroundStyle background_style, const uint32_t clear_mask,
+    MHWRender::MClearOperation &out_clear_operation);
 
 }  // namespace render
 }  // namespace mmsolver
+
+#endif  // MM_SOLVER_RENDER_OPS_SCENE_UTILS_H

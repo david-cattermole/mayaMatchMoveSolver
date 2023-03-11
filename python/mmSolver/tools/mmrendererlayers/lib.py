@@ -288,11 +288,19 @@ def create_set_node(layer_node, hidden=None):
     if hidden is None:
         hidden = False
 
-    set_name = 'mmRenderer_objectSet_{}'.format(layer_node)
-    if maya.cmds.objExists(set_name) is False:
-        set_node = maya.cmds.sets(name=set_name, empty=True)
+    src_plug = '{}.message'.format(layer_node)
+
+    connected_nodes = maya.cmds.listConnections(src_plug, destination=True, source=False, type='objectSet') or []
+    if len(connected_nodes) > 0:
+        dst_plug = '{}.displayLayer'.format(connected_nodes[0])
+        if maya.cmds.isConnected(src_plug, dst_plug) is True:
+            set_node = connected_nodes[0]
     else:
-        set_node = set_name
+        set_name = 'mmRenderer_objectSet_{}'.format(layer_node)
+        if maya.cmds.objExists(set_name) is False:
+            set_node = maya.cmds.sets(name=set_name, empty=True)
+        else:
+            set_node = set_name
 
     maya.cmds.setAttr('{}.hiddenInOutliner'.format(set_node), hidden)
 
@@ -300,7 +308,6 @@ def create_set_node(layer_node, hidden=None):
     if node_utils.attribute_exists(attr_name, set_node) is False:
         maya.cmds.addAttr(set_node, longName=attr_name, attributeType='message')
 
-    src_plug = '{}.message'.format(layer_node)
     dst_plug = '{}.displayLayer'.format(set_node)
     if maya.cmds.isConnected(src_plug, dst_plug) is False:
         maya.cmds.connectAttr(src_plug, dst_plug)

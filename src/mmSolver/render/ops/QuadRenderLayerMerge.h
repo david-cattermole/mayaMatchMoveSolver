@@ -60,6 +60,9 @@ public:
     void setColorTargetC(const uint32_t index) {
         m_target_index_color_c = index;
     }
+    void setDepthTargetC(const uint32_t index) {
+        m_target_index_depth_c = index;
+    }
 
     void setUseColorTargetC(const bool value) { m_use_color_target_c = value; }
 
@@ -82,6 +85,7 @@ protected:
     uint32_t m_target_index_color_b;
     uint32_t m_target_index_depth_b;
     uint32_t m_target_index_color_c;
+    uint32_t m_target_index_depth_c;
     bool m_use_color_target_c;
 
     LayerMode m_layer_mode;

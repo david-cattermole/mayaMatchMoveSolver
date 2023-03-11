@@ -41,6 +41,7 @@ QuadRenderLayerMerge::QuadRenderLayerMerge(const MString &name)
     , m_target_index_color_b(0)
     , m_target_index_depth_b(0)
     , m_target_index_color_c(0)
+    , m_target_index_depth_c(0)
     , m_use_color_target_c(false)
     , m_layer_mode(kLayerModeDefault)
     , m_layer_mix(0.5f)
@@ -162,6 +163,8 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
             if (m_use_color_target_c) {
                 MHWRender::MRenderTarget *target_color_c =
                     m_targets[m_target_index_color_c];
+                MHWRender::MRenderTarget *target_depth_c =
+                    m_targets[m_target_index_depth_c];
 
                 if (target_color_c) {
                     MMSOLVER_VRB(
@@ -169,6 +172,15 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
                     MHWRender::MRenderTargetAssignment assignment{};
                     assignment.target = target_color_c;
                     CHECK_MSTATUS(m_shader_instance->setParameter("gColorTexC",
+                                                                  assignment));
+                }
+
+                if (target_depth_c) {
+                    MMSOLVER_VRB(
+                        "QuadRenderLayerMerge: Assign Depth C to shader...");
+                    MHWRender::MRenderTargetAssignment assignment{};
+                    assignment.target = target_depth_c;
+                    CHECK_MSTATUS(m_shader_instance->setParameter("gDepthTexC",
                                                                   assignment));
                 }
             }

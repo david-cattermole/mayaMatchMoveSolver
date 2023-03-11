@@ -170,6 +170,7 @@ MStatus DisplayLayer::updateRenderOperations(
     sceneEdgeOp->setClearMask(clear_mask_color);
     sceneEdgeOp->setExcludeTypes(wire_draw_object_types);
     sceneEdgeOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
+    sceneEdgeOp->setCullingOverride(MHWRender::MSceneRender::kCullFrontFaces);
     sceneEdgeOp->setDisplayModeOverride(display_mode_shaded);
     sceneEdgeOp->setObjectSetOverride(drawable_nodes);
     m_ops[DisplayLayerPasses::kSceneEdgePass] = sceneEdgeOp;
@@ -290,7 +291,6 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     const float edge_alpha = m_edge_alpha * static_cast<float>(m_edge_enable);
     sceneEdgeOp->setEnabled(m_edge_enable);
     sceneEdgeOp->setRenderTargets(targets, kTempColorTarget, 2);
-    sceneEdgeOp->setCullingOverride(MHWRender::MSceneRender::kCullFrontFaces);
     sceneEdgeOp->setEdgeThickness(m_edge_thickness);
     sceneEdgeOp->setEdgeAlpha(edge_alpha);
     sceneEdgeOp->setEdgeColor(m_edge_color.r, m_edge_color.g, m_edge_color.b);
@@ -307,13 +307,13 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     edgeDetectOp->setEdgeDetectMode(m_edge_detect_mode);
 
     if (m_edge_detect_mode == EdgeDetectMode::k3dSilhouette) {
+        copyEdgeOp->setRenderTargets(targets, kTempDepthTarget, 1);
         sceneEdgeOp->setEnabled(m_edge_enable);
         edgeDetectOp->setEnabled(false);
-        copyEdgeOp->setRenderTargets(targets, kTempDepthTarget, 1);
     } else {
+        copyEdgeOp->setRenderTargets(targets, kTempColorTarget, 2);
         sceneEdgeOp->setEnabled(false);
         edgeDetectOp->setEnabled(m_edge_enable);
-        copyEdgeOp->setRenderTargets(targets, kTempColorTarget, 2);
     }
 
     scenePassOp->setEnabled(true);

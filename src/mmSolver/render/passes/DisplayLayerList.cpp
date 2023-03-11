@@ -139,6 +139,7 @@ MStatus DisplayLayerList::updateNodes() {
     const bool verbose = false;
     MStatus status = MS::kSuccess;
 
+    m_layer_children_nodes.clear();
     for (int i = 0; i < m_layers.size(); i++) {
         const DisplayLayer display_layer = m_layers[i];
 

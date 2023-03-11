@@ -387,6 +387,7 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     layerMergeOp->setColorTargetB(kMainColorTarget);
     layerMergeOp->setDepthTargetB(kMainDepthTarget);
     layerMergeOp->setColorTargetC(kTempColorTarget);
+    layerMergeOp->setDepthTargetC(kTempDepthTarget);
     layerMergeOp->setUseColorTargetC(m_edge_enable);
     layerMergeOp->setRenderTargets(targets, kMainColorTarget, 2);
     layerMergeOp->setLayerMode(m_layer_mode);

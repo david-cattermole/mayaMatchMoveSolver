@@ -47,6 +47,9 @@ public:
     MHWRender::MSceneRender::MSceneFilterOption renderFilterOverride() override;
     MHWRender::MSceneRender::MDisplayMode displayModeOverride() override;
     const MSelectionList *objectSetOverride() override;
+    void setObjectSetOverride(const MSelectionList *selection_list) {
+        m_object_set_override = selection_list;
+    }
 
     MUint64 getObjectTypeExclusions() override;
     MHWRender::MClearOperation &clearOperation() override;
@@ -108,15 +111,9 @@ public:
         m_display_mode_override = value;
     }
 
-    const DrawObjects drawObjects() const { return m_draw_objects; }
-    void setDrawObjects(const DrawObjects value) { m_draw_objects = value; }
-
-    const MString layerName() const { return m_layer_name; }
-    void setLayerName(const MString value) { m_layer_name = value; }
-
 protected:
     // Objects Set override. Override which objects are drawn.
-    MSelectionList m_selection_list;
+    const MSelectionList *m_object_set_override;
 
     // 3D viewport panel name, if available
     MString m_panel_name;
@@ -151,12 +148,6 @@ protected:
 
     // Override the display mode (wireframe, shaded, etc)
     MHWRender::MSceneRender::MDisplayMode m_display_mode_override;
-
-    // Control the objects to be drawn.
-    DrawObjects m_draw_objects;
-
-    // The display layer to override the drawn objects with.
-    MString m_layer_name;
 
     M3dView::DisplayStyle m_prev_display_style;
 };

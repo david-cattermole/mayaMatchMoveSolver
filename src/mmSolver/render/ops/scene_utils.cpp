@@ -25,6 +25,8 @@
 #include <maya/M3dView.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MItDag.h>
+#include <maya/MItDependencyNodes.h>
+#include <maya/MIteratorType.h>
 #include <maya/MPlug.h>
 #include <maya/MPlugArray.h>
 #include <maya/MRenderTargetManager.h>
@@ -40,9 +42,159 @@
 namespace mmsolver {
 namespace render {
 
-const MSelectionList *find_draw_objects(const DrawObjects draw_objects,
-                                        const MString &layer_name,
-                                        MSelectionList &out_selection_list) {
+// Test if a node is an image plane.
+MString get_dependency_node_classification(MFnDependencyNode& depend_fn) {
+    const bool verbose = false;
+    MStatus status = MS::kSuccess;
+    MString node_type_name = depend_fn.typeName(&status);
+    if (status != MS::kSuccess) {
+        MMSOLVER_VRB(
+            "NodeManager::dependency_node_is_geometry: failed to get type "
+            "name for node \""
+            << depend_fn.absoluteName().asChar() << "\".");
+        return MString();
+    }
+    MString node_type_classification =
+        MFnDependencyNode::classification(node_type_name);
+    return node_type_classification;
+}
+
+bool node_classification_is_geometry(const MString& node_type_classification) {
+    const MString accepted_token("drawdb/geometry");
+    int32_t result = node_type_classification.indexW(accepted_token);
+    return result != -1;
+}
+
+bool node_classification_is_image_plane(
+    const MString& node_type_classification) {
+    const MString accepted_token("imageplane");
+    int32_t result = node_type_classification.indexW(accepted_token);
+    return result != -1;
+}
+
+MStatus add_all_image_planes(MSelectionList& out_selection_list) {
+    MStatus status = MS::kSuccess;
+
+    MIntArray filterTypes;
+    filterTypes.append(static_cast<int32_t>(MFn::kImagePlane));
+    filterTypes.append(static_cast<int32_t>(MFn::kPluginShape));
+    filterTypes.append(static_cast<int32_t>(MFn::kPluginLocatorNode));
+    filterTypes.append(static_cast<int32_t>(MFn::kPluginImagePlaneNode));
+
+    MIteratorType infoObject;
+    infoObject.setObjectType(MIteratorType::kMObject);
+    infoObject.setFilterList(filterTypes, &status);
+
+    MItDependencyNodes it(infoObject);
+    for (; !it.isDone(); it.next()) {
+        auto node = it.thisNode();
+
+        // By definition these must be image planes, so we don't need
+        // to check any further.
+        if (node.hasFn(MFn::kImagePlane) ||
+            node.hasFn(MFn::kPluginImagePlaneNode)) {
+            out_selection_list.add(node);
+            continue;
+        }
+
+        MFnDependencyNode depend_fn(node);
+        const MString node_classification =
+            get_dependency_node_classification(depend_fn);
+        if (node_classification_is_image_plane(node_classification)) {
+            out_selection_list.add(node);
+        }
+    }
+
+    return status;
+}
+
+MStatus only_named_layer_objects(MObject& layer_node,
+                                 MSelectionList& out_selection_list) {
+    const bool verbose = false;
+    MStatus status = MS::kSuccess;
+
+    MFnDependencyNode layer_depends_fn(layer_node, &status);
+    CHECK_MSTATUS(status);
+    MMSOLVER_VRB("only_named_layer_objects: layer: "
+                 << layer_depends_fn.name().asChar());
+
+    const bool want_networked_plug = true;
+
+    // Get connection from layer to objects;
+    // 'DisplayLayer.drawInfo' -> 'Transform.drawOverrides'.
+    MPlug draw_info_plug =
+        layer_depends_fn.findPlug("drawInfo", want_networked_plug, &status);
+    CHECK_MSTATUS(status);
+
+    if (status != MStatus::kSuccess || draw_info_plug.isNull()) {
+        return status;
+    }
+
+    MPlugArray destination_plugs;
+    draw_info_plug.destinations(destination_plugs, &status);
+    MMSOLVER_VRB(
+        "only_named_layer_objects: count: " << destination_plugs.length());
+
+    MDagPath dag_path;
+    for (auto i = 0; i < destination_plugs.length(); ++i) {
+        if (destination_plugs[i].isNull()) {
+            continue;
+        }
+
+        MObject destination_node = destination_plugs[i].node();
+
+        if (!destination_node.hasFn(MFn::kTransform) &&
+            !destination_node.hasFn(MFn::kMesh) &&
+            !destination_node.hasFn(MFn::kNurbsSurface) &&
+            !destination_node.hasFn(MFn::kShape) &&
+            !destination_node.hasFn(MFn::kPluginLocatorNode) &&
+            !destination_node.hasFn(MFn::kPluginShape)) {
+            if (verbose) {
+                MFnDependencyNode depend_fn(destination_node);
+                MMSOLVER_VRB("only_named_layer_objects: discard node: i = "
+                             << i << " - "
+                             << depend_fn.absoluteName().asChar());
+            }
+            continue;
+        }
+
+        MFnDependencyNode depend_fn(destination_node);
+        MMSOLVER_VRB("only_named_layer_objects: accept node: i = "
+                     << i << " - " << depend_fn.absoluteName().asChar());
+
+        const MString node_classification =
+            get_dependency_node_classification(depend_fn);
+
+        if (node_classification_is_image_plane(node_classification)) {
+            continue;
+        }
+        if (!node_classification_is_geometry(node_classification)) {
+            continue;
+        }
+        out_selection_list.add(destination_node);
+
+        status = MDagPath::getAPathTo(destination_node, dag_path);
+        if (status == MStatus::kSuccess) {
+            unsigned int shape_count = 0;
+            status = dag_path.numberOfShapesDirectlyBelow(shape_count);
+            for (auto j = 0; j < shape_count; ++j) {
+                MDagPath shape_path(dag_path);
+                shape_path.extendToShapeDirectlyBelow(j);
+
+                MMSOLVER_VRB("only_named_layer_objects: shape_node: i="
+                             << i << " j=" << j << " - "
+                             << shape_path.fullPathName().asChar());
+
+                out_selection_list.add(shape_path);
+            }
+        }
+    }
+    return status;
+}
+
+const MSelectionList* find_draw_objects(const DrawObjects draw_objects,
+                                        const MString& layer_name,
+                                        MSelectionList& out_selection_list) {
     const bool verbose = false;
 
     out_selection_list.clear();
@@ -153,7 +305,7 @@ const MSelectionList *find_draw_objects(const DrawObjects draw_objects,
 
 bool set_background_clear_operation(
     const BackgroundStyle background_style, const uint32_t clear_mask,
-    MHWRender::MClearOperation &out_clear_operation) {
+    MHWRender::MClearOperation& out_clear_operation) {
     if (background_style == BackgroundStyle::kTransparentBlack) {
         float val[4] = {0.0f, 0.0f, 0.0f, 0.0f};
         out_clear_operation.setClearColor(val);
@@ -167,7 +319,7 @@ bool set_background_clear_operation(
     } else if (background_style == BackgroundStyle::kMayaDefault) {
         // Background color override. We get the current colors from the
         // renderer and use them.
-        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+        MHWRender::MRenderer* renderer = MHWRender::MRenderer::theRenderer();
         bool gradient = renderer->useGradient();
         MColor color1 = renderer->clearColor();
         MColor color2 = renderer->clearColor2();

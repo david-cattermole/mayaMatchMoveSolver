@@ -35,6 +35,7 @@
 #include "mmSolver/render/data/constants.h"
 #include "mmSolver/render/ops/HudRender.h"
 #include "mmSolver/render/ops/SceneRender.h"
+#include "mmSolver/render/ops/scene_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
@@ -64,6 +65,9 @@ bool BeginPasses::startOperationIterator() {
 
 MHWRender::MRenderOperation *BeginPasses::getOperationFromList(
     size_t &current_op, MRenderOperation **ops, const size_t count) {
+    const bool verbose = false;
+    MMSOLVER_VRB("BeginPasses::getOperationFromList: current_op: "
+                 << current_op << " count: " << count);
     if (current_op >= 0 && current_op < count) {
         while (!ops[current_op] || !ops[current_op]->enabled()) {
             current_op++;
@@ -180,10 +184,16 @@ MStatus BeginPasses::updateRenderOperations() {
             MHWRender::MSceneRender::kRenderPreSceneUIItems |
             MHWRender::MSceneRender::kRenderShadedItems));
 #endif
-    sceneOp->setDrawObjects(DrawObjects::kOnlyCameraBackgroundImagePlanes);
+
+    MStatus status = MS::kSuccess;
+    m_image_plane_nodes.clear();
+    status = add_all_image_planes(m_image_plane_nodes);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    sceneOp->setObjectSetOverride(&m_image_plane_nodes);
     m_ops[BeginPass::kSceneBackgroundPass] = sceneOp;
 
-    return MS::kSuccess;
+    return status;
 }
 
 // Update the render targets that are required for the entire

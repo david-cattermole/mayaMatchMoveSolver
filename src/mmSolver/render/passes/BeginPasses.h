@@ -82,6 +82,8 @@ private:
     static MRenderOperation* getOperationFromList(size_t& current_op,
                                                   MRenderOperation** ops,
                                                   const size_t count);
+
+    MSelectionList m_image_plane_nodes;
 };
 
 }  // namespace render

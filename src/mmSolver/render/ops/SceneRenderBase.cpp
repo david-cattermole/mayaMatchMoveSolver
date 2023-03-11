@@ -39,7 +39,6 @@ namespace render {
 SceneRenderBase::SceneRenderBase(const MString &name)
     : MSceneRender(name)
     , m_background_style(kBackgroundStyleDefault)
-    , m_draw_objects(DrawObjects::kNoOverride)
     , m_exclude_types(kExcludeNone)
     , m_prev_display_style(M3dView::kGouraudShaded)
     , m_scene_filter(MHWRender::MSceneRender::kNoSceneFilterOverride)
@@ -47,6 +46,7 @@ SceneRenderBase::SceneRenderBase(const MString &name)
     , m_display_mode_override(MHWRender::MSceneRender::kNoDisplayModeOverride)
     , m_post_effects_override(MHWRender::MSceneRender::kPostEffectDisableAll)
     , m_culling_override(MHWRender::MSceneRender::kNoCullingOverride)
+    , m_object_set_override(nullptr)
     , m_targets(nullptr)
     , m_target_index(0)
     , m_target_count(0) {
@@ -95,7 +95,7 @@ MHWRender::MSceneRender::MCullingOption SceneRenderBase::cullingOverride() {
 }
 
 const MSelectionList *SceneRenderBase::objectSetOverride() {
-    return find_draw_objects(m_draw_objects, m_layer_name, m_selection_list);
+    return m_object_set_override;
 }
 
 }  // namespace render

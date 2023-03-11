@@ -21,15 +21,24 @@
 
 #include "DisplayLayerList.h"
 
+// STL
+#include <cassert>
+
 // Maya
+#include <maya/MFnDependencyNode.h>
+#include <maya/MFnSet.h>
+#include <maya/MItDag.h>
+#include <maya/MItDependencyNodes.h>
+#include <maya/MIteratorType.h>
+#include <maya/MSelectionList.h>
 #include <maya/MShaderManager.h>
-#include <maya/MStreamUtils.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
 #include "DisplayLayer.h"
 #include "mmSolver/render/data/constants.h"
+#include "mmSolver/render/ops/scene_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
@@ -105,7 +114,8 @@ MStatus DisplayLayerList::updateRenderOperations() {
     MMSOLVER_VRB("DisplayLayerList::updateRenderOperations: ");
 
     for (auto i = 0; i < m_layers.size(); ++i) {
-        m_layers[i].updateRenderOperations();
+        const MSelectionList* drawable_nodes = &m_layer_children_nodes[i];
+        m_layers[i].updateRenderOperations(drawable_nodes);
     }
 
     return MS::kSuccess;
@@ -120,6 +130,63 @@ MStatus DisplayLayerList::updateRenderTargets(
 
     for (auto i = 0; i < m_layers.size(); ++i) {
         m_layers[i].updateRenderTargets(targets);
+    }
+
+    return status;
+}
+
+MStatus DisplayLayerList::updateNodes() {
+    const bool verbose = false;
+    MStatus status = MS::kSuccess;
+
+    for (int i = 0; i < m_layers.size(); i++) {
+        const DisplayLayer display_layer = m_layers[i];
+
+        MObject object_set_node = display_layer.objectSetNode();
+        MSelectionList selection_list;
+        if (object_set_node.isNull()) {
+            MMSOLVER_WRN(
+                "DisplayLayerList::updateNodes: "
+                "ObjectSet node is not valid."
+                " i="
+                << i << " displayLayer name=" << display_layer.name().asChar());
+            m_layer_children_nodes.emplace_back(selection_list);
+            continue;
+        }
+
+        MFnSet mfn_object_set(object_set_node, &status);
+        CHECK_MSTATUS(status);
+        if (status != MS::kSuccess) {
+            MMSOLVER_WRN(
+                "DisplayLayerList::updateNodes: "
+                "Failed to construct a MFnSet object."
+                " i="
+                << i << " displayLayer name=" << display_layer.name().asChar());
+            continue;
+        }
+
+        MMSOLVER_VRB("DisplayLayerList::updateNodes: ObjectSet name: "
+                     << mfn_object_set.name().asChar());
+
+        // We do not expect to have any sets in our set.
+        const bool flatten = false;
+        status = mfn_object_set.getMembers(selection_list, flatten);
+        CHECK_MSTATUS(status);
+        if (status != MS::kSuccess) {
+            MMSOLVER_WRN(
+                "DisplayLayerList::updateNodes: "
+                "Failed to get members from a MFnSet object."
+                " i="
+                << i << " displayLayer name=" << display_layer.name().asChar()
+                << " ObjectSet node=" << mfn_object_set.name().asChar());
+            continue;
+        }
+
+        MMSOLVER_VRB(
+            "DisplayLayerList::updateNodes: Number of ObjectSet Members: "
+            << selection_list.length());
+
+        m_layer_children_nodes.emplace_back(selection_list);
     }
 
     return status;

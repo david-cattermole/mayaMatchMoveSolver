@@ -50,6 +50,11 @@ enum class DrawObjects : short {
     kDrawObjectsCount,
 };
 
+MStatus only_named_layer_objects(MObject &layer_node,
+                                 MSelectionList &out_selection_list);
+
+MStatus add_all_image_planes(MSelectionList &out_selection_list);
+
 const MSelectionList *find_draw_objects(const DrawObjects draw_objects,
                                         const MString &layer_name,
                                         MSelectionList &out_selection_list);

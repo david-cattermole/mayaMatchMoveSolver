@@ -44,7 +44,7 @@ def main():
 
 def setup_all_layers():
     """
-    Add MM Renderer attributes to the selected DisplayLayers
+    Add MM Renderer attributes to the selected Display Layers
     """
     nodes = maya.cmds.ls(type='displayLayer') or []
     if len(nodes) == 0:

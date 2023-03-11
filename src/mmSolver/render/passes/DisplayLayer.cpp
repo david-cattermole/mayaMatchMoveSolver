@@ -74,7 +74,8 @@ DisplayLayer::~DisplayLayer() {
     }
 }
 
-MStatus DisplayLayer::updateRenderOperations() {
+MStatus DisplayLayer::updateRenderOperations(
+    const MSelectionList *drawable_nodes) {
     const bool verbose = false;
     MMSOLVER_VRB("DisplayLayer::updateRenderOperations: " << m_name.asChar());
 
@@ -152,8 +153,7 @@ MStatus DisplayLayer::updateRenderOperations() {
     depthPassOp->setExcludeTypes(depth_draw_object_types);
     depthPassOp->setDisplayModeOverride(display_mode_shaded);
     depthPassOp->setDepthPriority(-4.0);  // push Z-depth away from camera.
-    depthPassOp->setDrawObjects(DrawObjects::kOnlyNamedLayerObjects);
-    depthPassOp->setLayerName(m_name);
+    depthPassOp->setObjectSetOverride(drawable_nodes);
     m_ops[DisplayLayerPasses::kSceneDepthPass] = depthPassOp;
 
     const MString copyEdgeOpName = MString(kLayerCopyEdgeOpName) + m_name;
@@ -171,8 +171,7 @@ MStatus DisplayLayer::updateRenderOperations() {
     sceneEdgeOp->setExcludeTypes(wire_draw_object_types);
     sceneEdgeOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
     sceneEdgeOp->setDisplayModeOverride(display_mode_shaded);
-    sceneEdgeOp->setDrawObjects(DrawObjects::kOnlyNamedLayerObjects);
-    sceneEdgeOp->setLayerName(m_name);
+    sceneEdgeOp->setObjectSetOverride(drawable_nodes);
     m_ops[DisplayLayerPasses::kSceneEdgePass] = sceneEdgeOp;
 
     // Apply edge detect.
@@ -187,8 +186,7 @@ MStatus DisplayLayer::updateRenderOperations() {
     scenePassOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
     scenePassOp->setClearMask(clear_mask_none);
     scenePassOp->setExcludeTypes(wire_draw_object_types);
-    scenePassOp->setDrawObjects(DrawObjects::kOnlyNamedLayerObjects);
-    scenePassOp->setLayerName(m_name);
+    scenePassOp->setObjectSetOverride(drawable_nodes);
     m_ops[DisplayLayerPasses::kSceneRenderPass] = scenePassOp;
 
     // Merge the result into the main color and depth targets.
@@ -414,6 +412,9 @@ MStatus DisplayLayer::setPanelNames(const MString &name) {
 }
 
 MHWRender::MRenderOperation *DisplayLayer::getOperation(size_t &current_op) {
+    const bool verbose = false;
+    MMSOLVER_VRB("DisplayLayer::getOperation: "
+                 << m_name.asChar() << " current_op: " << current_op);
     const auto count = DisplayLayerPasses::kLayerPassesCount;
     if (current_op >= 0 && current_op < count) {
         return DisplayLayer::m_ops[current_op];

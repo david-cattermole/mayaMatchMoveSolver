@@ -64,6 +64,9 @@ bool EndPasses::startOperationIterator() {
 
 MHWRender::MRenderOperation *EndPasses::getOperationFromList(
     size_t &current_op, MRenderOperation **ops, const size_t count) {
+    const bool verbose = false;
+    MMSOLVER_VRB("EndPasses::getOperationFromList: current_op: "
+                 << current_op << " count: " << count);
     if (current_op >= 0 && current_op < count) {
         while (!ops[current_op] || !ops[current_op]->enabled()) {
             current_op++;
@@ -136,7 +139,7 @@ MStatus EndPasses::updateRenderOperations() {
     sceneOp->setClearMask(clear_mask_none);
     sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderPostSceneUIItems);
     sceneOp->setExcludeTypes(non_wire_draw_object_types);
-    sceneOp->setDrawObjects(DrawObjects::kNoOverride);
+    sceneOp->setObjectSetOverride(nullptr);  // Be explicit, no override at all.
     m_ops[EndPass::kSceneManipulatorPass] = sceneOp;
 
     // A preset 2D HUD render operation

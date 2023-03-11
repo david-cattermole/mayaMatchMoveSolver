@@ -67,12 +67,10 @@ public:
 
     MHWRender::DrawAPI supportedDrawAPIs() const override;
 
+    MStatus setup(const MString& destination) override;
     bool startOperationIterator() override;
     MHWRender::MRenderOperation* renderOperation() override;
     bool nextRenderOperation() override;
-
-    // Basic setup and cleanup
-    MStatus setup(const MString& destination) override;
     MStatus cleanup() override;
 
     // Called by Maya to determine the name in the "Renderers" menu.
@@ -114,6 +112,7 @@ protected:
 
 private:
     static MStatus getDisplayLayerFromNode(MFnDependencyNode& depends_node,
+                                           MFnDependencyNode& object_set_node,
                                            unsigned int viewport_display_style,
                                            DisplayLayer& out_display_layer);
 

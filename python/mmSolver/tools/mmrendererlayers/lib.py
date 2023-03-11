@@ -290,7 +290,12 @@ def create_set_node(layer_node, hidden=None):
 
     src_plug = '{}.message'.format(layer_node)
 
-    connected_nodes = maya.cmds.listConnections(src_plug, destination=True, source=False, type='objectSet') or []
+    connected_nodes = (
+        maya.cmds.listConnections(
+            src_plug, destination=True, source=False, type='objectSet'
+        )
+        or []
+    )
     if len(connected_nodes) > 0:
         dst_plug = '{}.displayLayer'.format(connected_nodes[0])
         if maya.cmds.isConnected(src_plug, dst_plug) is True:

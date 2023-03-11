@@ -351,7 +351,7 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
 
         layerMergeOp->setAlphaA(0.0);
     } else if (m_object_display_style == DisplayStyle::kWireframe) {
-        depthPassOp->setEnabled(m_edge_enable);
+        depthPassOp->setEnabled(false);
 
         scenePassOp->setClearMask(clear_mask_all);
         scenePassOp->setDisplayModeOverride(display_mode_wireframe);

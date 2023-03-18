@@ -126,6 +126,7 @@ if (MMSOLVER_BUILD_RENDERER)
     mmSolver/render/MMRendererCmd.cpp
     mmSolver/render/RenderGlobalsNode.cpp
     mmSolver/render/RenderOverride.cpp
+    mmSolver/render/ops/ClearOperation.cpp
     mmSolver/render/ops/HudRender.cpp
     mmSolver/render/ops/PresentTarget.cpp
     mmSolver/render/ops/QuadRenderBase.cpp

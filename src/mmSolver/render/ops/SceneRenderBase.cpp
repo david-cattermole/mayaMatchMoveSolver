@@ -81,7 +81,7 @@ MUint64 SceneRenderBase::getObjectTypeExclusions() { return m_exclude_types; }
 
 MHWRender::MClearOperation &SceneRenderBase::clearOperation() {
     set_background_clear_operation(m_background_style, m_clear_mask,
-                                   mClearOperation);
+                                   MHWRender::MSceneRender::mClearOperation);
     return mClearOperation;
 }
 

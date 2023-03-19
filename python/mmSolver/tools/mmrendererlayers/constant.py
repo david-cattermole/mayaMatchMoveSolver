@@ -19,6 +19,14 @@
 Values used for MM Renderer Layers
 """
 
+EXCLUDE_DRAW_NODE_TYPES = set([
+    'transform',
+    'camera',
+    'imagePlane',
+    'mmImagePlaneShape',
+    'mmImagePlaneTransform',
+])
+
 LAYER_ATTR_LAYER_MODE = 'mmLayerMode'
 LAYER_ATTR_LAYER_MIX = 'mmLayerMix'
 LAYER_ATTR_LAYER_DRAW_DEBUG = 'mmLayerDrawDebug'

@@ -74,8 +74,12 @@ public:
         m_use_color_target_edges = value;
     }
 
-    void setAlphaCurrentLayer(const float value) { m_alpha_current_layout = value; }
-    void setAlphaPreviousLayer(const float value) { m_alpha_previous_layer = value; }
+    void setAlphaCurrentLayer(const float value) {
+        m_alpha_current_layout = value;
+    }
+    void setAlphaPreviousLayer(const float value) {
+        m_alpha_previous_layer = value;
+    }
     void setAlphaEdges(const float value) { m_alpha_edges = value; }
     void setAlphaBackground(const float value) { m_alpha_background = value; }
 

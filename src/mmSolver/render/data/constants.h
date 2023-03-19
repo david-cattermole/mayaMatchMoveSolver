@@ -120,8 +120,10 @@ const float kEdgeThresholdDepthDefault = 1.0f;
 
 // Render Operation Pass Names
 const MString kBeginClearMainTargetOpName = "mmRenderer_ClearMainTarget";
-const MString kBeginClearBackgroundTargetOpName = "mmRenderer_ClearBackgroundTarget";
-const MString kLayerClearLayerTargetOpName = "mmRenderer_Layer_ClearLayerTarget_";
+const MString kBeginClearBackgroundTargetOpName =
+    "mmRenderer_ClearBackgroundTarget";
+const MString kLayerClearLayerTargetOpName =
+    "mmRenderer_Layer_ClearLayerTarget_";
 const MString kLayerClearTempTargetOpName = "mmRenderer_Layer_ClearTempTarget_";
 const MString kLayerCopyEdgeOpName = "mmRenderer_Layer_CopyEdge_";
 const MString kLayerCopyOpName = "mmRenderer_Layer_Copy_";
@@ -182,19 +184,19 @@ const auto DISPLAY_MODE_SHADED_WIREFRAME =
 const auto DISPLAY_MODE_SHADED_WIREFRAME_TEXTURED =
     static_cast<MHWRender::MSceneRender::MDisplayMode>(
         MHWRender::MSceneRender::kShaded | MHWRender::MSceneRender::kWireFrame |
-            MHWRender::MSceneRender::kTextured);
+        MHWRender::MSceneRender::kTextured);
 
 // Draw these objects for transparency.
 const auto WIRE_DRAW_OBJECT_TYPES =
     ~(MHWRender::MFrameContext::kExcludeMeshes |
-        MHWRender::MFrameContext::kExcludeNurbsCurves |
-        MHWRender::MFrameContext::kExcludeNurbsSurfaces |
-        MHWRender::MFrameContext::kExcludeSubdivSurfaces);
+      MHWRender::MFrameContext::kExcludeNurbsCurves |
+      MHWRender::MFrameContext::kExcludeNurbsSurfaces |
+      MHWRender::MFrameContext::kExcludeSubdivSurfaces);
 
 // Draw all non-geometry normally.
 const auto NON_WIRE_DRAW_OBJECT_TYPES =
     ((~WIRE_DRAW_OBJECT_TYPES) | MHWRender::MFrameContext::kExcludeImagePlane |
-        MHWRender::MFrameContext::kExcludePluginShapes);
+     MHWRender::MFrameContext::kExcludePluginShapes);
 
 }  // namespace render
 }  // namespace mmsolver

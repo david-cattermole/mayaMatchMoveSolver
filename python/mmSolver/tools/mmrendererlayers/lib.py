@@ -325,8 +325,11 @@ def update_set_nodes(set_node, layer_node):
     layer_member_nodes = maya.cmds.editDisplayLayerMembers(layer_node, query=True) or []
     maya.cmds.sets(clear=set_node)
     if len(layer_member_nodes) > 0:
-        layer_member_nodes = [x for x in layer_member_nodes
-                              if maya.cmds.nodeType(x) not in const.EXCLUDE_DRAW_NODE_TYPES]
+        layer_member_nodes = [
+            x
+            for x in layer_member_nodes
+            if maya.cmds.nodeType(x) not in const.EXCLUDE_DRAW_NODE_TYPES
+        ]
         maya.cmds.sets(layer_member_nodes, addElement=set_node)
     return
 

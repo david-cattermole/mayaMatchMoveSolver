@@ -78,7 +78,7 @@ enum TargetId {
 #define kBackgroundDepthTargetName "__mmRenderer_BackgroundDepthTarget4__"
 
 // Constant values
-const char kRendererUiName[] = "mmRenderer (beta)";
+const char kRendererUiName[] = "mmRenderer";
 const float kTransparentBlackColor[] = {0.0f, 0.0f, 0.0f, 0.0f};
 
 const MString kRenderGlobalsNodeName = "mmRenderGlobals";

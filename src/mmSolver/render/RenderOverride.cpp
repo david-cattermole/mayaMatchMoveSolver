@@ -142,6 +142,24 @@ RenderOverride::RenderOverride(const MString &name)
         m_target_override_names[kTempDepthTarget], default_width,
         default_height, sample_count, depth_format, array_slice_count,
         is_cube_map);
+
+    // 4th Color target
+    m_target_override_names[kBackgroundColorTarget] =
+        MString(kBackgroundColorTargetName);
+    m_target_descs[kBackgroundColorTarget] =
+        new MHWRender::MRenderTargetDescription(
+            m_target_override_names[kBackgroundColorTarget], default_width,
+            default_height, sample_count, color_format, array_slice_count,
+            is_cube_map);
+
+    // 4th Depth target
+    m_target_override_names[kBackgroundDepthTarget] =
+        MString(kBackgroundDepthTargetName);
+    m_target_descs[kBackgroundDepthTarget] =
+        new MHWRender::MRenderTargetDescription(
+            m_target_override_names[kBackgroundDepthTarget], default_width,
+            default_height, sample_count, depth_format, array_slice_count,
+            is_cube_map);
 }
 
 RenderOverride::~RenderOverride() {
@@ -805,6 +823,7 @@ MStatus RenderOverride::updateRenderTargets() {
     m_target_descs[kMainColorTarget]->setRasterFormat(color_format);
     m_target_descs[kLayerColorTarget]->setRasterFormat(color_format);
     m_target_descs[kTempColorTarget]->setRasterFormat(color_format);
+    m_target_descs[kBackgroundColorTarget]->setRasterFormat(color_format);
 
     // Either acquire a new target if it didn't exist before, resize
     // the current target.
@@ -833,7 +852,9 @@ MStatus RenderOverride::updateRenderTargets() {
     status = MS::kFailure;
     if (m_targets[kMainColorTarget] && m_targets[kMainDepthTarget] &&
         m_targets[kLayerColorTarget] && m_targets[kLayerDepthTarget] &&
-        m_targets[kTempColorTarget] && m_targets[kTempDepthTarget]) {
+        m_targets[kTempColorTarget] && m_targets[kTempDepthTarget] &&
+        m_targets[kBackgroundColorTarget] &&
+        m_targets[kBackgroundDepthTarget]) {
         status = MS::kSuccess;
     }
     return status;

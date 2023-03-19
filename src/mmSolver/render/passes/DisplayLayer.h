@@ -49,13 +49,20 @@ namespace render {
 // Enumerations to identify an operation within a list of
 // operations, used for each layer of the render override.
 enum DisplayLayerPasses {
-    kCopyOp = 0,
+    // Reset auxiliary render targets to default values. (transparent
+    // black, with depth at far-clipping plane).
+    kClearLayerTargetOp = 0,
+    kClearTempTargetOp,
+
+    // Copy kMain*Target render targets to kTemp*Target.
+    kCopyOp,
 
     // Draw the scene (except image planes), but only write to the
     // depth channel.
     kSceneDepthPass,
+    kSceneDepthPass2,
 
-    // Edge rendering and detection.
+    // Edge 3D rendering and 2D edge detection.
     kCopyEdgeOp,
     kEdgeDetectOp,
     kSceneEdgePass,
@@ -97,10 +104,14 @@ public:
     void setObjectSetNode(const MObject& value) { m_object_set_node = value; }
 
     // How to composite the layer?
+    //
+    // TODO: Remove deprecated parameter.
     LayerMode layerMode() const { return m_layer_mode; }
     void setLayerMode(const LayerMode value) { m_layer_mode = value; }
 
     // How the layer blends into the layer stack.
+    //
+    // TODO: Remove deprecated parameter.
     float layerMix() const { return m_layer_mix; }
     void setLayerMix(const float value) { m_layer_mix = value; }
 
@@ -165,9 +176,11 @@ private:
     MString m_name;
     bool m_visibility;
     int32_t m_display_order;
+    bool m_layer_draw_debug;
+
+    // TODO: Remove deprecated parameters.
     LayerMode m_layer_mode;
     float m_layer_mix;
-    bool m_layer_draw_debug;
 
     MObject m_object_set_node;
 

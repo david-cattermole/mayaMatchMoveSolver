@@ -37,88 +37,67 @@ uniform mat4 gWVPXf : WorldViewProjection;
 // The size of the viewport.
 uniform vec2 gTargetSize : ViewportPixelSize;
 
-// Color texture for A input.  Expected to be a normal RGB three
-// channel image.
-uniform texture2D gColorTexA : InputTexture
+// All gColorTex* parameters are expected to be a normal RGB three channel image.
+// All gDepthTex* parameters are expected to be a single channel zero to one image.
+uniform texture2D gColorTexBackground : InputTexture
 <
-    string UIName = "Color Texture A";
+    string UIName = "Background - Color Texture";
 >;
-uniform sampler2D gColorSamplerA = sampler_state {
-    Texture = <gColorTexA>;
-};
-
-// Depth texture for A input.  Expected to be a single channel zero to
-// one image.
-uniform texture2D gDepthTexA : InputTexture
+uniform texture2D gDepthTexBackground : InputTexture
 <
-    string UIName = "Depth Texture A";
+    string UIName = "Background - Depth Texture";
 >;
-uniform sampler2D gDepthSamplerA = sampler_state {
-    Texture = <gDepthTexA>;
-};
-
-// Color texture for B input.  Expected to be a normal RGB three
-// channel image.
-uniform texture2D gColorTexB : InputTexture
+uniform texture2D gColorTexPreviousLayer : InputTexture
 <
-    string UIName = "Color Texture B";
+    string UIName = "Previous Layer - Color Texture";
 >;
-uniform sampler2D gColorSamplerB = sampler_state {
-    Texture = <gColorTexB>;
-};
-
-// Depth texture for B input.  Expected to be a single channel zero to
-// one image.
-uniform texture2D gDepthTexB : InputTexture
+uniform texture2D gDepthTexPreviousLayer : InputTexture
 <
-    string UIName = "Depth Texture B";
+    string UIName = "Previous Layer - Depth Texture";
 >;
-uniform sampler2D gDepthSamplerB = sampler_state {
-    Texture = <gDepthTexB>;
-};
-
-// Color texture for C input.  Expected to be a normal RGB three
-// channel image.
-uniform texture2D gColorTexC : InputTexture
+uniform texture2D gColorTexCurrentLayer : InputTexture
 <
-    string UIName = "Color Texture C";
+    string UIName = "Current Layer - Color Texture";
 >;
-uniform sampler2D gColorSamplerC = sampler_state {
-    Texture = <gColorTexC>;
-};
-uniform int gUseColorC = 0;
-
-// Depth texture for C input.  Expected to be a single channel zero to
-// one image.
-uniform texture2D gDepthTexC : InputTexture
+uniform texture2D gDepthTexCurrentLayer : InputTexture
 <
-    string UIName = "Depth Texture C";
+    string UIName = "Current Layer - Depth Texture";
 >;
-uniform sampler2D gDepthSamplerC = sampler_state {
-    Texture = <gDepthTexC>;
-};
+uniform texture2D gColorTexEdges : InputTexture
+<
+    string UIName = "Edges - Color Texture";
+>;
+uniform texture2D gDepthTexEdges : InputTexture
+<
+    string UIName = "Edges - Depth Texture";
+>;
 
-// Factors to pre-multiply the A, B and C input colors with. This
-// allows controlling how much of each input is used.
-uniform float gAlphaA = 1.0;
-uniform float gAlphaB = 1.0;
-uniform float gAlphaC = 1.0;
+uniform sampler2D gColorSamplerBackground = sampler_state { Texture = <gColorTexBackground>; };
+uniform sampler2D gDepthSamplerBackground = sampler_state { Texture = <gDepthTexBackground>; };
+uniform sampler2D gColorSamplerPreviousLayer = sampler_state { Texture = <gColorTexPreviousLayer>; };
+uniform sampler2D gDepthSamplerPreviousLayer = sampler_state { Texture = <gDepthTexPreviousLayer>; };
+uniform sampler2D gColorSamplerCurrentLayer = sampler_state { Texture = <gColorTexCurrentLayer>; };
+uniform sampler2D gDepthSamplerCurrentLayer = sampler_state { Texture = <gDepthTexCurrentLayer>; };
+uniform sampler2D gColorSamplerEdges = sampler_state { Texture = <gColorTexEdges>; };
+uniform sampler2D gDepthSamplerEdges = sampler_state { Texture = <gDepthTexEdges>; };
+
+uniform int gUseColorEdges = 0;
+
+// Factors to pre-multiply the input colors with. This allows
+// controlling how much of each input is used.
+uniform float gAlphaBackground = 1.0;
+uniform float gAlphaPreviousLayer = 1.0;
+uniform float gAlphaCurrentLayer = 1.0;
+uniform float gAlphaEdges = 1.0;
+
+// Controls if the input A is treated as a 'hold out', and therefore
+// the color of the input is ignored, but the alpha is used.
+uniform int gHoldOut = 0;
 
 // Display for debugging.
 #define kDEBUG_MODE_OFF 0
 #define kDEBUG_MODE_ON 1
 uniform int gDebugMode = 0;
-
-// Merge Mode. How to merge the A and B inputs?
-#define kLAYER_MODE_ZDEPTH 0  // Use the Z-Depth channels to merge.
-#define kLAYER_MODE_OVER 1    // Classic "A over B".
-#define kLAYER_MODE_PLUS 2    // Add A and B together.
-uniform int gLayerMode = 0;
-
-// What is the opacity of the input? This can be used to reduce the
-// layer merge effect. For example to make the input semi-transparent,
-// set the opacity to a value below 1.0.
-uniform float gLayerMix = 1.0;
 
 // Vertex Shader inputs.
 attribute VS_INPUT {
@@ -147,69 +126,99 @@ GLSLShader PS_mmLayerMerge_Main {
     void main() {
         vec2 uv = PS_INPUT.UV.xy;
 
-        vec4 result = vec4(0.0, 1.0, 0.0, 1.0);
-        vec4 color_A = texture2D(gColorSamplerA, uv) * gAlphaA;
-        vec4 depth_A = texture2D(gDepthSamplerA, uv);
-        vec4 color_B = texture2D(gColorSamplerB, uv) * gAlphaB;
-        vec4 depth_B = texture2D(gDepthSamplerB, uv);
+        vec4 result = vec4(0.0, 0.0, 0.0, 1.0);
 
-        vec4 color_C = vec4(0.0, 0.0, 0.0, 0.0);
-        vec4 depth_C = vec4(0.0, 0.0, 0.0, 0.0);
-        if (gUseColorC > 0) {
-            color_C = texture2D(gColorSamplerC, uv) * gAlphaC;
-            depth_C = texture2D(gDepthSamplerC, uv);
-            if (depth_C.r <= depth_A.r) {
-                depth_A = depth_C;
+        vec4 backgroundColor = texture2D(gColorSamplerBackground, uv) * gAlphaBackground;
+        vec4 backgroundDepth = texture2D(gDepthSamplerBackground, uv);
+
+        vec4 previousLayerColor = texture2D(gColorSamplerPreviousLayer, uv) * gAlphaPreviousLayer;
+        vec4 previousLayerDepth = texture2D(gDepthSamplerPreviousLayer, uv);
+
+        vec4 currentLayerColor = texture2D(gColorSamplerCurrentLayer, uv) * gAlphaCurrentLayer;
+        vec4 currentLayerDepth = texture2D(gDepthSamplerCurrentLayer, uv);
+
+        vec4 edgesColor = vec4(0.0, 0.0, 0.0, 0.0);
+        vec4 edgesDepth = vec4(1.0, 1.0, 1.0, 1.0);  // Defaults to far-clip plane.
+
+        if (gUseColorEdges > 0) {
+            edgesColor = texture2D(gColorSamplerEdges, uv) * gAlphaEdges;
+            edgesDepth = texture2D(gDepthSamplerEdges, uv);
+
+            if (edgesColor.a > 0.0) {
+                if (edgesDepth.r <= currentLayerDepth.r) {
+                    currentLayerDepth = edgesDepth;
+                }
             }
         }
 
-        bool use_depth_a = false;
-        float depth = depth_B.r;
-        if (depth_A.r <= depth_B.r) {
-            depth = depth_A.r;
-            use_depth_a = true;
+        if (gHoldOut == 1) {
+            // The interior of objects should be the
+            // 'backgroundColor', when the object is in "hold out"
+            // mode.
+            currentLayerColor = vec4(backgroundColor.r * currentLayerColor.a,
+                                     backgroundColor.g * currentLayerColor.a,
+                                     backgroundColor.b * currentLayerColor.a,
+                                     currentLayerColor.a);
         }
 
-        if (gLayerMode == kLAYER_MODE_ZDEPTH) {
-            result = color_B;
-            if (use_depth_a) {
-                result = color_A + (color_B * (1.0 - color_A.a));
-            }
-        } else if (gLayerMode == kLAYER_MODE_OVER) {
-            result = color_A + (color_B * (1.0 - color_A.a));
-        } else if (gLayerMode == kLAYER_MODE_PLUS) {
-            result = color_A + color_B;
-        } else {
-            // Linear Blend
-            result = vec4(lerp(color_B, color_A, gLayerMix).xyz, color_A.a);
-
-            // Average
-            // result = (color_A * 0.5) + (color_B * 0.5);
+        // Z-Depth Testing.
+        result = previousLayerColor;
+        float depth = previousLayerDepth.r;
+        if (currentLayerDepth.r <= previousLayerDepth.r) {
+            depth = currentLayerDepth.r;
+            result = currentLayerColor + (previousLayerColor * (1.0 - currentLayerColor.a));
         }
 
-        // 'C' is an edge effect that must go on top of all other colors.
-        result = color_C + (result * (1.0 - color_C.a));
+        // The edge effect that must go on top of all other colors.
+        result = edgesColor + (result * (1.0 - edgesColor.a));
 
         if (gDebugMode == kDEBUG_MODE_ON) {
-            if (PS_INPUT.UV.x <= 0.2) {
-                if (PS_INPUT.UV.y < 0.5) {
-                    result = color_A;
-                } else {
-                    result = vec4(depth_A.r, depth_A.r, depth_A.r, 1.0);
+            float HORIZONTAL_FACTOR_BACKGROUND = 0.2;
+            float HORIZONTAL_FACTOR_PREVIOUS_LAYER = 0.4;
+            float HORIZONTAL_FACTOR_CURRENT_LAYER = 0.6;
+            float HORIZONTAL_FACTOR_EDGES = 0.8;
+
+            float VERTICAL_FACTOR_COLOR = 0.25;
+            float VERTICAL_FACTOR_DEPTH = 0.5;
+            float VERTICAL_FACTOR_ALPHA = 0.75;
+
+            if (PS_INPUT.UV.x <= HORIZONTAL_FACTOR_BACKGROUND) {
+                if (PS_INPUT.UV.y < VERTICAL_FACTOR_COLOR) {
+                    result = backgroundColor;
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_ALPHA) {
+                    result = vec4(backgroundColor.a, backgroundColor.a, backgroundColor.a, 1.0);
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_DEPTH) {
+                    result = vec4(backgroundDepth.r, backgroundDepth.r, backgroundDepth.r, 1.0);
                 }
-            } else if (PS_INPUT.UV.x <= 0.4) {
-                if (PS_INPUT.UV.y < 0.5) {
-                    result = color_B;
-                } else {
-                    result = vec4(depth_B.r, depth_B.r, depth_B.r, 1.0);
+
+            } else if (PS_INPUT.UV.x <= HORIZONTAL_FACTOR_PREVIOUS_LAYER) {
+                if (PS_INPUT.UV.y < VERTICAL_FACTOR_COLOR) {
+                    result = previousLayerColor;
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_ALPHA) {
+                    result = vec4(previousLayerColor.a, previousLayerColor.a, previousLayerColor.a, 1.0);
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_DEPTH) {
+                    result = vec4(previousLayerDepth.r, previousLayerDepth.r, previousLayerDepth.r, 1.0);
                 }
-            } else if (PS_INPUT.UV.x <= 0.6) {
-                if (PS_INPUT.UV.y < 0.5) {
-                    result = color_C;
-                } else {
-                    result = vec4(depth_C.r, depth_C.r, depth_C.r, 1.0);
+
+            } else if (PS_INPUT.UV.x <= HORIZONTAL_FACTOR_CURRENT_LAYER) {
+                if (PS_INPUT.UV.y < VERTICAL_FACTOR_COLOR) {
+                    result = currentLayerColor;
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_ALPHA) {
+                    result = vec4(currentLayerColor.a, currentLayerColor.a, currentLayerColor.a, 1.0);
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_DEPTH) {
+                    result = vec4(currentLayerDepth.r, currentLayerDepth.r, currentLayerDepth.r, 1.0);
+                }
+
+            } else if (PS_INPUT.UV.x <= HORIZONTAL_FACTOR_EDGES) {
+                if (PS_INPUT.UV.y < VERTICAL_FACTOR_COLOR) {
+                    result = edgesColor;
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_ALPHA) {
+                    result = vec4(edgesColor.a, edgesColor.a, edgesColor.a, 1.0);
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_DEPTH) {
+                    result = vec4(edgesDepth.r, edgesDepth.r, edgesDepth.r, 1.0);
                 }
             }
+
         }
 
         colorOut = result;

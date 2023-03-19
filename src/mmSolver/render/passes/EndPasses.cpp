@@ -112,35 +112,16 @@ MStatus EndPasses::updateRenderOperations() {
         return MS::kSuccess;
     }
 
-    // Clear Masks
-    const auto clear_mask_none =
-        static_cast<uint32_t>(MHWRender::MClearOperation::kClearNone);
-    const auto clear_mask_all =
-        static_cast<uint32_t>(MHWRender::MClearOperation::kClearAll);
-    const auto clear_mask_depth =
-        static_cast<uint32_t>(MHWRender::MClearOperation::kClearDepth);
-
-    // Draw these objects for transparency.
-    const auto wire_draw_object_types =
-        ~(MHWRender::MFrameContext::kExcludeMeshes |
-          MHWRender::MFrameContext::kExcludeNurbsCurves |
-          MHWRender::MFrameContext::kExcludeNurbsSurfaces |
-          MHWRender::MFrameContext::kExcludeSubdivSurfaces);
-
-    // Draw all non-geometry normally.
-    const auto non_wire_draw_object_types =
-        ((~wire_draw_object_types) |
-         MHWRender::MFrameContext::kExcludeImagePlane |
-         MHWRender::MFrameContext::kExcludePluginShapes);
-
     // Manipulators pass.
-    auto *sceneOp = new SceneRender(kSceneManipulatorPassName);
-    sceneOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
-    sceneOp->setClearMask(clear_mask_none);
-    sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderPostSceneUIItems);
-    sceneOp->setExcludeTypes(non_wire_draw_object_types);
-    sceneOp->setObjectSetOverride(nullptr);  // Be explicit, no override at all.
-    m_ops[EndPass::kSceneManipulatorPass] = sceneOp;
+    auto *manipulatorPassOp = new SceneRender(kSceneManipulatorPassName);
+    manipulatorPassOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
+    manipulatorPassOp->setClearMask(CLEAR_MASK_NONE);
+    manipulatorPassOp->setSceneFilter(
+        MHWRender::MSceneRender::kRenderPostSceneUIItems);
+    manipulatorPassOp->setExcludeTypes(NON_WIRE_DRAW_OBJECT_TYPES);
+    manipulatorPassOp->setObjectSetOverride(
+        nullptr);  // Be explicit, no override at all.
+    m_ops[EndPass::kSceneManipulatorPass] = manipulatorPassOp;
 
     // A preset 2D HUD render operation
     auto hudOp = new HudRender();

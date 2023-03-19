@@ -74,6 +74,7 @@ bool node_classification_is_image_plane(
 
 MStatus add_all_image_planes(MSelectionList& out_selection_list) {
     MStatus status = MS::kSuccess;
+    const bool verbose = false;
 
     MIntArray filterTypes;
     filterTypes.append(static_cast<int32_t>(MFn::kImagePlane));
@@ -85,27 +86,66 @@ MStatus add_all_image_planes(MSelectionList& out_selection_list) {
     infoObject.setObjectType(MIteratorType::kMObject);
     infoObject.setFilterList(filterTypes, &status);
 
-    MItDependencyNodes it(infoObject);
+    MObject node;
+    MDagPath dagPath;
+    MItDag it(infoObject);
     for (; !it.isDone(); it.next()) {
-        auto node = it.thisNode();
-
-        // By definition these must be image planes, so we don't need
-        // to check any further.
-        if (node.hasFn(MFn::kImagePlane) ||
-            node.hasFn(MFn::kPluginImagePlaneNode)) {
-            out_selection_list.add(node);
+        status = it.getPath(dagPath);
+        CHECK_MSTATUS(status);
+        if (status != MS::kSuccess) {
+            continue;
+        }
+        if (!dagPath.isValid()) {
             continue;
         }
 
+        // By definition these must be image planes, so we don't need
+        // to check any further.
+        bool ok = false;
+        if (dagPath.hasFn(MFn::kImagePlane) ||
+            dagPath.hasFn(MFn::kPluginImagePlaneNode)) {
+            ok = true;
+        }
+
+        node = dagPath.node();
         MFnDependencyNode depend_fn(node);
         const MString node_classification =
             get_dependency_node_classification(depend_fn);
         if (node_classification_is_image_plane(node_classification)) {
-            out_selection_list.add(node);
+            ok = true;
+        }
+
+        if (ok) {
+            out_selection_list.add(dagPath);
+            while (dagPath.isValid() && (dagPath.pathCount() >= 1)) {
+                status = dagPath.pop();
+                if (status == MS::kSuccess) {
+                    node = dagPath.node();
+                    out_selection_list.add(node);
+                } else {
+                    break;
+                }
+            }
         }
     }
 
-    return status;
+    if (verbose) {
+        MStatus status = MS::kSuccess;
+        // MObject node;
+        MDagPath dagPath;
+        for (int i = 0; i < out_selection_list.length(); i++) {
+            status = out_selection_list.getDagPath(i, dagPath);
+            if (status == MS::kSuccess) {
+                MMSOLVER_VRB(
+                    "add_all_image_planes: "
+                    "i="
+                    << i << " node=\"" << dagPath.fullPathName().asChar()
+                    << "\".");
+            }
+        }
+    }
+
+    return MS::kSuccess;
 }
 
 MStatus only_named_layer_objects(MObject& layer_node,
@@ -317,8 +357,9 @@ bool set_background_clear_operation(
         // this background color.
         out_clear_operation.setClearDepth(1.0f);
     } else if (background_style == BackgroundStyle::kMayaDefault) {
-        // Background color override. We get the current colors from the
-        // renderer and use them.
+        // This is the default settings that come from the user's
+        // preferences. MRenderer provides us a way to get these
+        // values automatically.
         MHWRender::MRenderer* renderer = MHWRender::MRenderer::theRenderer();
         bool gradient = renderer->useGradient();
         MColor color1 = renderer->clearColor();

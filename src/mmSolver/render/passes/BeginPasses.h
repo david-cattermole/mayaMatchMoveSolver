@@ -50,12 +50,18 @@ public:
     // Enumerations to identify an operation within a list of
     // operations, used at the start of the render override.
     enum BeginPass {
+        // Clear the kMain*Target render targets.
+        kClearMainTargetOp = 0,
+
+        // Clear the kBackground*Target render targets.
+        kClearBackgroundTargetOp,
+
         // Draw the Maya background color using the Maya preferences,
         // and draw imagePlanes.
         //
         // The render targets used for this pass is only the colour,
         // so the depth is ignored.
-        kSceneBackgroundPass = 0,
+        kSceneBackgroundPass,
 
         // Holds the total number of entries (must be last field).
         kBeginPassCount

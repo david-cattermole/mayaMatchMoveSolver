@@ -162,11 +162,16 @@ GLSLShader PS_mmLayerMerge_Main {
         }
 
         // Z-Depth Testing.
-        result = previousLayerColor;
-        float depth = previousLayerDepth.r;
-        if (currentLayerDepth.r <= previousLayerDepth.r) {
-            depth = currentLayerDepth.r;
-            result = currentLayerColor + (previousLayerColor * (1.0 - currentLayerColor.a));
+        result = backgroundColor;
+        result.a = 1.0;
+        float depth = backgroundDepth.r;
+        if ((previousLayerColor.a > 0.0) && (previousLayerDepth.r <= backgroundDepth.r)) {
+            result = previousLayerColor;
+            depth = previousLayerDepth.r;
+            if ((currentLayerColor.a > 0.0) && (currentLayerDepth.r <= previousLayerDepth.r)) {
+                depth = currentLayerDepth.r;
+                result = currentLayerColor + (previousLayerColor * (1.0 - currentLayerColor.a));
+            }
         }
 
         // The edge effect that must go on top of all other colors.

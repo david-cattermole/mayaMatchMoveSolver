@@ -463,7 +463,7 @@ detecting edges.</p></td>
 <section id="known-issues">
 <h2>Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this heading">#</a></h2>
 <p><cite>MM Renderer</cite> is <em>beta</em> software and is currently only released in
-<code class="docutils literal notranslate"><span class="pre">v0.4.4.beta1</span></code>. There are numerous bugs and issues that are not yet
+<code class="docutils literal notranslate"><span class="pre">v0.4.4.beta*</span></code>. There are numerous bugs and issues that are not yet
 resolved and the viewport renderer is available as a preview only.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -479,13 +479,6 @@ Preferences window, by going to the menu <code class="docutils literal notransla
 category, and see the <cite>Viewport 2.0</cite> Rendering Engine option at the
 bottom of the Preferences window.</p>
 </div>
-<section id="objects-are-invisible-by-default">
-<h3>Objects are Invisible By Default<a class="headerlink" href="#objects-are-invisible-by-default" title="Permalink to this heading">#</a></h3>
-<p>The objects in the Display Layer “defaultLayer” are ignored.</p>
-<p><em>Workaround:</em> You must create a new Display Layer and add the objects
-into it.</p>
-<p>This will be fixed in a later release.</p>
-</section>
 <section id="attributes-missing-from-display-layers">
 <h3>Attributes Missing From Display Layers<a class="headerlink" href="#attributes-missing-from-display-layers" title="Permalink to this heading">#</a></h3>
 <p>Display Layers may not have MM Renderer attributes added.</p>
@@ -509,16 +502,6 @@ speed of the viewport.</p>
 <h3>Wireframes Are Shown in “Edges”<a class="headerlink" href="#wireframes-are-shown-in-edges" title="Permalink to this heading">#</a></h3>
 <p>On <cite>Maya 2022.0</cite>, you may have some incorrect visuals.</p>
 <p><em>Workaround:</em> Upgrade to at least Maya 2022.1+.</p>
-</section>
-<section id="objects-are-incorrectly-depth-layered">
-<h3>Objects Are Incorrectly Depth Layered<a class="headerlink" href="#objects-are-incorrectly-depth-layered" title="Permalink to this heading">#</a></h3>
-<p>“ZDepth” Layer Mode doesn’t work.</p>
-<p>When you have multiple Display Layers in a scene the order of the
-layers matters. The objects in each layer are rendered and then
-composited “over” the previous layer - like a Photoshop layer. This is
-correct when the Layer mode is “Over”, but is not currently working as
-expected with the “ZDepth” layer mode (which should not do that).</p>
-<p>This will be fixed in a later release.</p>
 </section>
 </section>
 <section id="python-function">
@@ -600,12 +583,10 @@ custom buttons to be created.</p>
 </ul>
 </li>
 <li><a class="reference internal" href="#known-issues">Known Issues</a><ul>
-<li><a class="reference internal" href="#objects-are-invisible-by-default">Objects are Invisible By Default</a></li>
 <li><a class="reference internal" href="#attributes-missing-from-display-layers">Attributes Missing From Display Layers</a></li>
 <li><a class="reference internal" href="#the-maya-hud-is-not-displayed">The Maya HUD is not displayed</a></li>
 <li><a class="reference internal" href="#slow-viewport-frame-rate">Slow Viewport Frame Rate</a></li>
 <li><a class="reference internal" href="#wireframes-are-shown-in-edges">Wireframes Are Shown in “Edges”</a></li>
-<li><a class="reference internal" href="#objects-are-incorrectly-depth-layered">Objects Are Incorrectly Depth Layered</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#python-function">Python Function</a></li>

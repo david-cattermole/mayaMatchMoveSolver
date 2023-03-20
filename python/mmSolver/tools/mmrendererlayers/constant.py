@@ -19,13 +19,12 @@
 Values used for MM Renderer Layers
 """
 
+DEFAULT_LAYER_NODE_NAME = 'defaultLayer'
+
 EXCLUDE_DRAW_NODE_TYPES = set(
     [
-        'transform',
-        'camera',
         'imagePlane',
         'mmImagePlaneShape',
-        'mmImagePlaneTransform',
     ]
 )
 

@@ -205,19 +205,6 @@ On `Maya 2022.0`, you may have some incorrect visuals.
 
 *Workaround:* Upgrade to at least Maya 2022.1+.
 
-Objects Are Incorrectly Depth Layered
-+++++++++++++++++++++++++++++++++++++
-
-"ZDepth" Layer Mode doesn't work.
-
-When you have multiple Display Layers in a scene the order of the
-layers matters. The objects in each layer are rendered and then
-composited "over" the previous layer - like a Photoshop layer. This is
-correct when the Layer mode is "Over", but is not currently working as
-expected with the "ZDepth" layer mode (which should not do that).
-
-This will be fixed in a later release.
-
 Python Function
 ~~~~~~~~~~~~~~~
 

@@ -143,7 +143,7 @@ Known Issues
 ~~~~~~~~~~~~
 
 `MM Renderer` is *beta* software and is currently only released in
-``v0.4.4.beta1``. There are numerous bugs and issues that are not yet
+``v0.4.4.beta*``. There are numerous bugs and issues that are not yet
 resolved and the viewport renderer is available as a preview only.
 
 .. note::

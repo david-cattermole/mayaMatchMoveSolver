@@ -267,7 +267,9 @@ def get_as_object_apitwo(node_name):
     sel_list = get_as_selection_list_apitwo([node_name])
     if not sel_list:
         return None
-    mobject = sel_list.getDependNode(0)
+    mobject = None
+    if sel_list.length() > 0:
+        mobject = sel_list.getDependNode(0)
     return mobject
 
 
@@ -275,13 +277,17 @@ def get_as_dag_path_apitwo(node_name):
     sel_list = get_as_selection_list_apitwo([node_name])
     if not sel_list:
         return None
-    dag_path = sel_list.getDagPath(0)
+    dag_path = None
+    if sel_list.length() > 0:
+        dag_path = sel_list.getDagPath(0)
     return dag_path
 
 
 def get_as_plug_apitwo(node_attr):
     sel = get_as_selection_list_apitwo([node_attr])
-    plug = sel.getPlug(0)
+    plug = None
+    if sel.length() > 0:
+        plug = sel.getPlug(0)
     return plug
 
 

@@ -162,16 +162,6 @@ resolved and the viewport renderer is available as a preview only.
    category, and see the `Viewport 2.0` Rendering Engine option at the
    bottom of the Preferences window.
 
-Objects are Invisible By Default
-+++++++++++++++++++++++++++++++++
-
-The objects in the Display Layer "defaultLayer" are ignored.
-
-*Workaround:* You must create a new Display Layer and add the objects
-into it.
-
-This will be fixed in a later release.
-
 Attributes Missing From Display Layers
 ++++++++++++++++++++++++++++++++++++++
 

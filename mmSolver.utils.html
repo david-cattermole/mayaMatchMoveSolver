@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Configuration" href="configuration.html" /><link rel="prev" title="mmSolver.ui.uiutils" href="mmSolver.ui.uiutils.html" />
 
-    <!-- Generated with Sphinx 5.3.0 and Furo 2022.12.07 -->
+    <!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
         <title>mmSolver.utils - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=91d0f0d1c444bdcb17a68e833c7a53903343c195" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
     
     
@@ -340,13 +340,13 @@ all end in tears.</p>
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='140272274625104'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='140272274625168'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='140272274625360'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='139731574060432'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='139731574060496'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='139731574060688'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>times</strong> (<em>list</em>) – Time values for the animCurve</p></li>
-<li><p><strong>values</strong> (<em>list</em>) – Values for the animCurve.</p></li>
+<li><p><strong>times</strong> (<em>tuple</em><em> or </em><em>list</em>) – Time values for the animCurve</p></li>
+<li><p><strong>values</strong> (<em>tuple</em><em> or </em><em>list</em>) – Values for the animCurve.</p></li>
 <li><p><strong>node_attr</strong> (<em>str</em>) – The ‘plug’ to connect the animCurve to.</p></li>
 <li><p><strong>tangent_in_type</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve.kTangent*</em>) – The “in” tangent type for keyframes.</p></li>
 <li><p><strong>tangent_out_type</strong> (<em>maya.OpenMayaAnim.MFnAnimCurve.kTangent*</em>) – The “out” tangent type for keyframes.</p></li>
@@ -2328,7 +2328,10 @@ will always have unique node names.</p>
 <dd><p>Sort nodes by depth, shallow nodes first.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>..</em><em>]</em>) – List of Maya DAG node paths.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nodes</strong> (<em>[</em><em>str</em><em>, </em><em>..</em><em>]</em>) – List of Maya DAG node paths.</p></li>
+<li><p><strong>reverse</strong> (<em>bool</em>) – Reverses the list of nodes.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>List of sorted nodes.</p>

@@ -128,6 +128,9 @@ def sort_nodes_by_depth(nodes, reverse=False):
     :param nodes: List of Maya DAG node paths.
     :type nodes: [str, ..]
 
+    :param reverse: Reverses the list of nodes.
+    :type reverse: bool
+
     :returns: List of sorted nodes.
     :rtype: [str, ..]
     """

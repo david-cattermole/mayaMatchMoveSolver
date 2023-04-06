@@ -63,7 +63,7 @@ def main():
         return
 
     start_frame, end_frame = utils_time.get_maya_timeline_range_inner()
-    times = range(start_frame, end_frame + 1)
+    times = list(range(start_frame, end_frame + 1))
 
     created_loc_tfms = []
     for node in nodes:
@@ -83,13 +83,13 @@ def main():
         step = 3
 
         plug = loc_tfm + '.translateX'
-        values_x = values[0:stop:step]
+        values_x = list(values[0:stop:step])
         animfn_x = anim_utils.create_anim_curve_node_apione(
             times, values_x, node_attr=plug
         )
 
         plug = loc_tfm + '.translateY'
-        values_y = values[1:stop:step]
+        values_y = list(values[1:stop:step])
         animfn_y = anim_utils.create_anim_curve_node_apione(
             times, values_y, node_attr=plug
         )

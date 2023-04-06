@@ -51,10 +51,10 @@ def create_anim_curve_node_apione(
     Create an animCurve using Maya API (one).
 
     :param times: Time values for the animCurve
-    :type times: list
+    :type times: tuple or list
 
     :param values: Values for the animCurve.
-    :type values: list
+    :type values: tuple or list
 
     :param node_attr: The 'plug' to connect the animCurve to.
     :type node_attr: str
@@ -75,10 +75,10 @@ def create_anim_curve_node_apione(
     :return: MFnAnimCurve object attached to a newly created animation curve.
     :rtype: maya.OpenMaya.MFnAnimCurve
     """
-    if not isinstance(times, list):
-        raise ValueError('times must be a list or sequence type; %r' % times)
-    if not isinstance(values, list):
-        raise ValueError('values must be a list or sequence type; %r' % values)
+    if not isinstance(times, (tuple, list)):
+        raise ValueError('times must be a tuple or list type; %r' % times)
+    if not isinstance(values, (tuple, list)):
+        raise ValueError('values must be a tuple or list type; %r' % values)
     if len(times) == 0:
         raise ValueError('times must have 1 or more values; %r' % times)
     if len(values) == 0:

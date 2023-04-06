@@ -76,15 +76,18 @@ def create_anim_curve_node_apione(
     :rtype: maya.OpenMaya.MFnAnimCurve
     """
     if not isinstance(times, list):
-        raise ValueError('times must be a list or sequence type.')
+        raise ValueError('times must be a list or sequence type; %r' % times)
     if not isinstance(values, list):
-        raise ValueError('times must be a list or sequence type.')
+        raise ValueError('values must be a list or sequence type; %r' % values)
     if len(times) == 0:
-        raise ValueError('times must have 1 or more values.')
+        raise ValueError('times must have 1 or more values; %r' % times)
     if len(values) == 0:
-        raise ValueError('values must have 1 or more values.')
+        raise ValueError('values must have 1 or more values; %r' % values)
     if len(times) != len(values):
-        raise ValueError('Number of times and values does not match.')
+        raise ValueError(
+            'Number of times and values does not match; times=%r values=%r'
+            % (len(times), len(values))
+        )
 
     # create anim curve
     animfn = OpenMayaAnim1.MFnAnimCurve()

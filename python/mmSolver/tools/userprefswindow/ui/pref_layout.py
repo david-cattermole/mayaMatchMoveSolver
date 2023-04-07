@@ -59,10 +59,14 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
     def populateUI(self, config):
         self.updateAddNewMarkersToWidget(config)
         self.updateAddNewLinesToWidget(config)
+        self.updateSolverUIMinimalUIWhileSolvingWidget(config)
+        self.updateRendererBackgroundNodeTypesWidget(config)
+
+        # Deprecated options, kept for backwards compatibility, but
+        # they are hidden by default anyway.
         self.updateSolverUIValidateOnOpenWidget(config)
         self.updateSolverUIShowValidateButtonWidget(config)
         self.updateSolverUIAllowObjectRelationsWidget(config)
-        self.updateSolverUIMinimalUIWhileSolvingWidget(config)
         return
 
     def updateAddNewMarkersToWidget(self, config):
@@ -177,4 +181,16 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         key = pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY
         label = self.minimalUIWhileSolvingComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)
+        return value
+
+    def updateRendererBackgroundNodeTypesWidget(self, config):
+        key = pref_const.MM_RENDERER_BACKGROUND_NODE_TYPES_KEY
+        value = userprefs_lib.get_value(config, key)
+        assert isinstance(value, pycompat.TEXT_TYPE)
+        self.backgroundNodeTypesLineEdit.setText(value)
+        return
+
+    def getRendererBackgroundNodeTypesConfigValue(self):
+        key = pref_const.MM_RENDERER_BACKGROUND_NODE_TYPES_KEY
+        value = self.backgroundNodeTypesLineEdit.text()
         return value

@@ -92,6 +92,7 @@ class PrefWindow(BaseWindow):
             pref_const.REG_EVNT_ADD_NEW_MKR_TO_KEY,
             pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY,
             pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
+            pref_const.MM_RENDERER_BACKGROUND_NODE_TYPES_KEY,
         ]
         for key in option_keys:
             value = pref_const.DEFAULT_VALUE_MAP[key]
@@ -115,6 +116,10 @@ class PrefWindow(BaseWindow):
             (
                 pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
                 self.subForm.getSolverUIMinimalUIWhileSolvingConfigValue,
+            ),
+            (
+                pref_const.MM_RENDERER_BACKGROUND_NODE_TYPES_KEY,
+                self.subForm.getRendererBackgroundNodeTypesConfigValue,
             ),
         ]
         for key, func in options:

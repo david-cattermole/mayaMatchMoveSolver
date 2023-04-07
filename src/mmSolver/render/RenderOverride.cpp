@@ -24,10 +24,12 @@
 #include "RenderOverride.h"
 
 // Maya
+#include <maya/MFnDependencyNode.h>
 #include <maya/MGlobal.h>
 #include <maya/MItDependencyNodes.h>
 #include <maya/MObject.h>
 #include <maya/MPlug.h>
+#include <maya/MPlugArray.h>
 #include <maya/MShaderManager.h>
 #include <maya/MStreamUtils.h>
 #include <maya/MString.h>
@@ -133,6 +135,31 @@ RenderOverride::RenderOverride(const MString &name)
         m_target_override_names[kTempColorTarget], default_width,
         default_height, sample_count, color_format, array_slice_count,
         is_cube_map);
+
+    // 3rd Depth target
+    m_target_override_names[kTempDepthTarget] = MString(kTempDepthTargetName);
+    m_target_descs[kTempDepthTarget] = new MHWRender::MRenderTargetDescription(
+        m_target_override_names[kTempDepthTarget], default_width,
+        default_height, sample_count, depth_format, array_slice_count,
+        is_cube_map);
+
+    // 4th Color target
+    m_target_override_names[kBackgroundColorTarget] =
+        MString(kBackgroundColorTargetName);
+    m_target_descs[kBackgroundColorTarget] =
+        new MHWRender::MRenderTargetDescription(
+            m_target_override_names[kBackgroundColorTarget], default_width,
+            default_height, sample_count, color_format, array_slice_count,
+            is_cube_map);
+
+    // 4th Depth target
+    m_target_override_names[kBackgroundDepthTarget] =
+        MString(kBackgroundDepthTargetName);
+    m_target_descs[kBackgroundDepthTarget] =
+        new MHWRender::MRenderTargetDescription(
+            m_target_override_names[kBackgroundDepthTarget], default_width,
+            default_height, sample_count, depth_format, array_slice_count,
+            is_cube_map);
 }
 
 RenderOverride::~RenderOverride() {
@@ -353,8 +380,8 @@ MStatus RenderOverride::updateParameters() {
 // Get parameters on each layer and set up the values for the
 // DisplayLayerList object.
 MStatus RenderOverride::getDisplayLayerFromNode(
-    MFnDependencyNode &depends_node, unsigned int viewport_display_style,
-    DisplayLayer &out_display_layer) {
+    MFnDependencyNode &depends_node, MFnDependencyNode &object_set_node,
+    unsigned int viewport_display_style, DisplayLayer &out_display_layer) {
     MStatus status = MS::kSuccess;
 
     const bool verbose = false;
@@ -388,8 +415,8 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     // - Over
     // - Add / Plus
     LayerMode layer_mode = kLayerModeDefault;
-    MPlug layer_mode_plug =
-        depends_node.findPlug(kAttrNameLayerMode, want_networked_plug, &status);
+    MPlug layer_mode_plug = object_set_node.findPlug(
+        kAttrNameLayerMode, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         short value = layer_mode_plug.asShort();
         layer_mode = static_cast<LayerMode>(value);
@@ -400,8 +427,8 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     // Layer Mix (float)
     // - Controls the transparency of the layer over other layers.
     float layer_mix = kLayerMixDefault;
-    MPlug layer_mix_plug =
-        depends_node.findPlug(kAttrNameLayerMix, want_networked_plug, &status);
+    MPlug layer_mix_plug = object_set_node.findPlug(
+        kAttrNameLayerMix, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         layer_mix = layer_mix_plug.asFloat();
     }
@@ -409,7 +436,7 @@ MStatus RenderOverride::getDisplayLayerFromNode(
 
     // Draw_Debug the layer detection mode.
     bool layer_draw_debug = kLayerDrawDebugDefault;
-    MPlug layer_draw_debug_plug = depends_node.findPlug(
+    MPlug layer_draw_debug_plug = object_set_node.findPlug(
         kAttrNameLayerDrawDebug, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         layer_draw_debug = layer_draw_debug_plug.asBool();
@@ -424,7 +451,7 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     // - Shaded.
     // - Wireframe On Shaded.
     DisplayStyle object_display_style = kObjectDisplayStyleDefault;
-    MPlug display_style_plug = depends_node.findPlug(
+    MPlug display_style_plug = object_set_node.findPlug(
         kAttrNameObjectDisplayStyle, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         short value = display_style_plug.asShort();
@@ -459,7 +486,7 @@ MStatus RenderOverride::getDisplayLayerFromNode(
                  << static_cast<short>(object_display_style));
 
     float object_alpha = kObjectAlphaDefault;
-    MPlug object_alpha_plug = depends_node.findPlug(
+    MPlug object_alpha_plug = object_set_node.findPlug(
         kAttrNameObjectAlpha, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         object_alpha = object_alpha_plug.asFloat();
@@ -468,7 +495,7 @@ MStatus RenderOverride::getDisplayLayerFromNode(
 
     // Enable the edge detection mode.
     bool edge_enable = kEdgeEnableDefault;
-    MPlug edge_enable_plug = depends_node.findPlug(
+    MPlug edge_enable_plug = object_set_node.findPlug(
         kAttrNameEdgeEnable, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         edge_enable = edge_enable_plug.asBool();
@@ -478,17 +505,17 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     // Edge Color. The color for detected edges.
     MColor edge_color(kEdgeColorDefault[0], kEdgeColorDefault[1],
                       kEdgeColorDefault[2]);
-    MPlug edge_color_r_plug = depends_node.findPlug(
+    MPlug edge_color_r_plug = object_set_node.findPlug(
         kAttrNameEdgeColorR, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         edge_color.r = edge_color_r_plug.asFloat();
     }
-    MPlug edge_color_g_plug = depends_node.findPlug(
+    MPlug edge_color_g_plug = object_set_node.findPlug(
         kAttrNameEdgeColorG, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         edge_color.g = edge_color_g_plug.asFloat();
     }
-    MPlug edge_color_b_plug = depends_node.findPlug(
+    MPlug edge_color_b_plug = object_set_node.findPlug(
         kAttrNameEdgeColorB, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         edge_color.b = edge_color_b_plug.asFloat();
@@ -499,15 +526,15 @@ MStatus RenderOverride::getDisplayLayerFromNode(
 
     // Edge Alpha - The alpha for detected edges.
     float edge_alpha = kEdgeAlphaDefault;
-    MPlug edge_alpha_plug =
-        depends_node.findPlug(kAttrNameEdgeAlpha, want_networked_plug, &status);
+    MPlug edge_alpha_plug = object_set_node.findPlug(
+        kAttrNameEdgeAlpha, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         edge_alpha = edge_alpha_plug.asFloat();
     }
     MMSOLVER_VRB("RenderOverride Edge Alpha: " << edge_alpha);
 
     EdgeDetectMode edge_detect_mode = kEdgeDetectModeDefault;
-    MPlug edge_detect_mode_plug = depends_node.findPlug(
+    MPlug edge_detect_mode_plug = object_set_node.findPlug(
         kAttrNameEdgeDetectMode, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         short value = edge_detect_mode_plug.asShort();
@@ -517,7 +544,7 @@ MStatus RenderOverride::getDisplayLayerFromNode(
                  << static_cast<short>(edge_detect_mode));
 
     float edge_thickness = kEdgeThicknessDefault;
-    MPlug edge_thickness_plug = depends_node.findPlug(
+    MPlug edge_thickness_plug = object_set_node.findPlug(
         kAttrNameEdgeThickness, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         edge_thickness = edge_thickness_plug.asFloat();
@@ -525,7 +552,7 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     MMSOLVER_VRB("RenderOverride Edge Thickness: " << edge_thickness);
 
     float edge_threshold = kEdgeThresholdDefault;
-    MPlug edge_threshold_plug = depends_node.findPlug(
+    MPlug edge_threshold_plug = object_set_node.findPlug(
         kAttrNameEdgeThreshold, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         edge_threshold = edge_threshold_plug.asFloat();
@@ -533,7 +560,7 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     MMSOLVER_VRB("RenderOverride Edge Threshold: " << edge_threshold);
 
     float edge_threshold_color = kEdgeThresholdColorDefault;
-    MPlug edge_threshold_color_plug = depends_node.findPlug(
+    MPlug edge_threshold_color_plug = object_set_node.findPlug(
         kAttrNameEdgeThresholdColor, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         edge_threshold_color = edge_threshold_color_plug.asFloat();
@@ -542,7 +569,7 @@ MStatus RenderOverride::getDisplayLayerFromNode(
         "RenderOverride Edge Threshold Color: " << edge_threshold_color);
 
     float edge_threshold_alpha = kEdgeThresholdAlphaDefault;
-    MPlug edge_threshold_alpha_plug = depends_node.findPlug(
+    MPlug edge_threshold_alpha_plug = object_set_node.findPlug(
         kAttrNameEdgeThresholdAlpha, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         edge_threshold_alpha = edge_threshold_alpha_plug.asFloat();
@@ -551,7 +578,7 @@ MStatus RenderOverride::getDisplayLayerFromNode(
         "RenderOverride Edge Threshold Alpha: " << edge_threshold_alpha);
 
     float edge_threshold_depth = kEdgeThresholdDepthDefault;
-    MPlug edge_threshold_depth_plug = depends_node.findPlug(
+    MPlug edge_threshold_depth_plug = object_set_node.findPlug(
         kAttrNameEdgeThresholdDepth, want_networked_plug, &status);
     if (status == MStatus::kSuccess) {
         edge_threshold_depth = edge_threshold_depth_plug.asFloat();
@@ -563,12 +590,16 @@ MStatus RenderOverride::getDisplayLayerFromNode(
     edge_threshold_alpha *= edge_threshold;
     edge_threshold_depth *= edge_threshold;
 
+    MObject object_set_obj = object_set_node.object(&status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
     out_display_layer.setName(layer_name);
     out_display_layer.setVisibility(layer_visibility);
     out_display_layer.setDisplayOrder(layer_display_order);
     out_display_layer.setLayerMode(layer_mode);
     out_display_layer.setLayerMix(layer_mix);
     out_display_layer.setLayerDrawDebug(layer_draw_debug);
+    out_display_layer.setObjectSetNode(object_set_obj);
     out_display_layer.setObjectDisplayStyle(object_display_style);
     out_display_layer.setObjectAlpha(object_alpha);
     out_display_layer.setEdgeEnable(edge_enable);
@@ -616,15 +647,104 @@ MStatus RenderOverride::updateDisplayLayers() {
 
         MFnDependencyNode depends_node(node_obj, &status);
         CHECK_MSTATUS(status);
+        if (status != MS::kSuccess) {
+            MMSOLVER_WRN(
+                "RenderOverride::updateDisplayLayers: Could not get "
+                "MFnDependencyNode for layer, skipping it.");
+            continue;
+        }
         MMSOLVER_VRB("RenderOverride::updateDisplayLayers: layer node name: "
                      << depends_node.name());
+
+        const bool want_networked_plug = true;
+
+        // Get the 'ObjectSet' node Connected to the Display Layer.
+        MPlug message_plug =
+            depends_node.findPlug("message", want_networked_plug, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        const bool message_plug_is_source = message_plug.isSource(&status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        if (!message_plug_is_source) {
+            MMSOLVER_VRB(
+                "RenderOverride::updateDisplayLayers: "
+                "\"message\" attribute is not a source: "
+                << depends_node.name().asChar());
+        }
+
+        const bool message_plug_is_connected =
+            message_plug.isConnected(&status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        if (!message_plug_is_connected) {
+            MMSOLVER_VRB(
+                "RenderOverride::updateDisplayLayers: "
+                "\"message\" attribute is not connected: "
+                << depends_node.name().asChar());
+        }
+
+        MObject object_set_obj;
+        MPlugArray connected_plugs;
+        message_plug.destinations(connected_plugs, &status);
+        CHECK_MSTATUS(status);
+        MMSOLVER_VRB(
+            "RenderOverride::updateDisplayLayers: "
+            "Number of \"message\" attribute destination connections: "
+            << connected_plugs.length());
+        if (status != MS::kSuccess) {
+            MMSOLVER_WRN(
+                "RenderOverride::updateDisplayLayers: "
+                "No valid destination connections from \"message\" attribute: "
+                << depends_node.name().asChar());
+            continue;
+        }
+        if (connected_plugs.length() == 0) {
+            MMSOLVER_WRN(
+                "RenderOverride::updateDisplayLayers: "
+                "No connections from \"message\" attribute: "
+                << depends_node.name().asChar());
+            continue;
+        }
+
+        for (int32_t i = 0; i < connected_plugs.length(); i++) {
+            MPlug connected_plug = connected_plugs[i];
+            MObject connected_node = connected_plug.node(&status);
+            CHECK_MSTATUS(status);
+
+            // TODO: Use 'MFn::kPluginObjectSet' if we switch to a custom object
+            // set type.
+            if (connected_node.hasFn(MFn::kSet)) {
+                object_set_obj = connected_node;
+                break;
+            }
+        }
+        if (object_set_obj.isNull()) {
+            MMSOLVER_WRN(
+                "RenderOverride::updateDisplayLayers: "
+                "Object set node is null: "
+                << depends_node.name().asChar());
+            continue;
+        }
+        MFnDependencyNode object_set_node(object_set_obj, &status);
+        CHECK_MSTATUS(status);
+        if (status != MS::kSuccess) {
+            MMSOLVER_WRN(
+                "RenderOverride::updateDisplayLayers: "
+                "Could not use MFnDependencyNode with object set node. "
+                "displayLayer: "
+                << depends_node.name().asChar());
+        }
+        MMSOLVER_VRB(
+            "RenderOverride::updateDisplayLayers: "
+            "ObjectSet node name: "
+            << object_set_node.name().asChar());
 
         MObjectHandle node_handle(node_obj);
         m_display_layer_nodes.push_back(node_handle);
 
         DisplayLayer display_layer;
         status = RenderOverride::getDisplayLayerFromNode(
-            depends_node, m_viewport_display_style, display_layer);
+            depends_node, object_set_node, m_viewport_display_style,
+            display_layer);
         CHECK_MSTATUS(status);
         if (status == MS::kSuccess) {
             display_layer.setObjectDisplayTextures(m_viewport_draw_textures);
@@ -636,6 +756,8 @@ MStatus RenderOverride::updateDisplayLayers() {
     // node. This is an integer that represents the order of the
     // DisplayLayers in the "Display Layer Editor" in Maya UI.
     m_display_layers.sortDisplayLayers();
+
+    m_display_layers.updateNodes();
 
     MMSOLVER_VRB("RenderOverride::updateDisplayLayers: end");
     return MS::kSuccess;
@@ -701,6 +823,7 @@ MStatus RenderOverride::updateRenderTargets() {
     m_target_descs[kMainColorTarget]->setRasterFormat(color_format);
     m_target_descs[kLayerColorTarget]->setRasterFormat(color_format);
     m_target_descs[kTempColorTarget]->setRasterFormat(color_format);
+    m_target_descs[kBackgroundColorTarget]->setRasterFormat(color_format);
 
     // Either acquire a new target if it didn't exist before, resize
     // the current target.
@@ -729,7 +852,9 @@ MStatus RenderOverride::updateRenderTargets() {
     status = MS::kFailure;
     if (m_targets[kMainColorTarget] && m_targets[kMainDepthTarget] &&
         m_targets[kLayerColorTarget] && m_targets[kLayerDepthTarget] &&
-        m_targets[kTempColorTarget]) {
+        m_targets[kTempColorTarget] && m_targets[kTempDepthTarget] &&
+        m_targets[kBackgroundColorTarget] &&
+        m_targets[kBackgroundDepthTarget]) {
         status = MS::kSuccess;
     }
     return status;

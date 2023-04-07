@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 David Cattermole.
+ * Copyright (C) 2021, 2023 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -23,157 +23,33 @@
 #define MM_SOLVER_RENDER_OPS_SCENE_RENDER_H
 
 // Maya
-#include <maya/M3dView.h>
-#include <maya/MDrawContext.h>
-#include <maya/MDrawTraversal.h>
-#include <maya/MFrameContext.h>
-#include <maya/MMessage.h>
-#include <maya/MRenderTargetManager.h>
-#include <maya/MSelectionList.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
 #include "mmSolver/render/data/constants.h"
+#include "mmSolver/render/ops/SceneRenderBase.h"
+#include "mmSolver/render/ops/scene_utils.h"
 
 namespace mmsolver {
 namespace render {
 
-enum class DrawObjects : short {
-    kNoOverride = 0,
-    kAllImagePlanes,
-    kOnlyCameraBackgroundImagePlanes,
-    kOnlyNamedLayerObjects,
-    kDrawObjectsCount,
-};
-
-class SceneRender : public MHWRender::MSceneRender {
+class SceneRender : public SceneRenderBase {
 public:
     SceneRender(const MString &name);
     ~SceneRender() override;
-
-    MHWRender::MRenderTarget *const *targetOverrideList(
-        unsigned int &listSize) override;
-
-    MHWRender::MSceneRender::MSceneFilterOption renderFilterOverride() override;
-    MHWRender::MSceneRender::MDisplayMode displayModeOverride() override;
-    const MSelectionList *objectSetOverride() override;
-
-    MUint64 getObjectTypeExclusions() override;
-    MHWRender::MClearOperation &clearOperation() override;
 
     const MHWRender::MShaderInstance *shaderOverride() override;
     void setShaderOverride(MHWRender::MShaderInstance *value) {
         m_shader_override = value;
     }
 
-    MHWRender::MSceneRender::MPostEffectsOverride postEffectsOverride()
-        override;
-    void setPostEffectsOverride(
-        const MHWRender::MSceneRender::MPostEffectsOverride value) {
-        m_post_effects_override = value;
-    }
-
-    void setRenderTargets(MHWRender::MRenderTarget **targets,
-                          const uint32_t index, const uint32_t count) {
-        m_targets = targets;
-        m_target_index = index;
-        m_target_count = count;
-    }
-
-    const MString &panelName() const { return m_panel_name; }
-    void setPanelName(const MString &name) { m_panel_name.set(name.asChar()); }
-
-    const MFloatPoint &viewRectangle() const { return m_view_rectangle; }
-    void setViewRectangle(const MFloatPoint &rect) { m_view_rectangle = rect; }
-
-    const MHWRender::MSceneRender::MSceneFilterOption sceneFilter() const {
-        return m_scene_filter;
-    }
-    void setSceneFilter(
-        const MHWRender::MSceneRender::MSceneFilterOption value) {
-        m_scene_filter = value;
-    }
-
-    // "Background Style" is the color/alpha of the pixels that get
-    // cleared (by the "clear operation"), which also uses the
-    // "clearMask" to know which parts of the buffer are cleared (with
-    // the requested color).
-    const BackgroundStyle backgroundStyle() const { return m_background_style; }
-    void setBackgroundStyle(const BackgroundStyle value) {
-        m_background_style = value;
-    }
-
-    const uint32_t clearMask() const { return m_clear_mask; }
-    void setClearMask(const uint32_t value) { m_clear_mask = value; }
-
-    const MUint64 excludeTypes() const { return m_exclude_types; }
-    void setExcludeTypes(const MUint64 value) { m_exclude_types = value; }
-
-    const MHWRender::MSceneRender::MDisplayMode displayModeOverride() const {
-        return m_display_mode_override;
-    }
-    void setDisplayModeOverride(
-        const MHWRender::MSceneRender::MDisplayMode value) {
-        m_display_mode_override = value;
-    }
-
-    const DrawObjects drawObjects() const { return m_draw_objects; }
-    void setDrawObjects(const DrawObjects value) { m_draw_objects = value; }
-
-    const MString layerName() const { return m_layer_name; }
-    void setLayerName(const MString value) { m_layer_name = value; }
-
 protected:
-    // Objects Set override. Override which objects are drawn.
-    MSelectionList m_selection_list;
-
-    // 3D viewport panel name, if available
-    MString m_panel_name;
-
-    // Camera override
-    MHWRender::MCameraOverride m_camera_override;
-
-    // Viewport rectangle override
-    MFloatPoint m_view_rectangle;
-
-    // Render targets
-    MHWRender::MRenderTarget **m_targets;
-
-    // The index (and count) into the m_targets list of pointers. We
-    // are able to give the exact targets.
-    uint32_t m_target_index;
-    uint32_t m_target_count;
-
     // Shader override for surfaces
     MHWRender::MShaderInstance *m_shader_override;
-
-    // Scene draw filter override
-    MHWRender::MSceneRender::MSceneFilterOption m_scene_filter;
-
-    // Mask for clear override
-    uint32_t m_clear_mask;
-
-    BackgroundStyle m_background_style;
-
-    MHWRender::MSceneRender::MPostEffectsOverride m_post_effects_override;
-
-    // The node types to be excluded from drawing.
-    MUint64 m_exclude_types;
-
-    // Override the display mode (wireframe, shaded, etc)
-    MHWRender::MSceneRender::MDisplayMode m_display_mode_override;
-
-    // Control the objects to be drawn.
-    DrawObjects m_draw_objects;
-
-    // The display layer to override the drawn objects with.
-    MString m_layer_name;
-
-    M3dView::DisplayStyle m_prev_display_style;
 };
 
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MAYA_MM_SOLVER_RENDER_OPS_SCENE_RENDER_H
+#endif  // MM_SOLVER_RENDER_OPS_SCENE_RENDER_H

@@ -56,6 +56,7 @@ public:
     bool nextRenderOperation();
 
     MStatus updateRenderOperations();
+    MStatus updateNodes();
     MStatus updateRenderTargets(MHWRender::MRenderTarget** targets);
     MStatus setPanelNames(const MString& name);
 
@@ -79,6 +80,7 @@ private:
     size_t m_current_layer;
 
     std::vector<DisplayLayer> m_layers;
+    std::vector<MSelectionList> m_layer_children_nodes;
 };
 
 }  // namespace render

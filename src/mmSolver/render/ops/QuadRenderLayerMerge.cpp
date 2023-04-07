@@ -35,17 +35,21 @@ namespace render {
 QuadRenderLayerMerge::QuadRenderLayerMerge(const MString &name)
     : QuadRenderBase(name)
     , m_shader_instance(nullptr)
-    , m_target_index_color_a(0)
-    , m_target_index_depth_a(0)
-    , m_target_index_color_b(0)
-    , m_target_index_depth_b(0)
-    , m_target_index_color_c(0)
-    , m_use_color_target_c(false)
-    , m_layer_mode(kLayerModeDefault)
-    , m_layer_mix(0.5f)
-    , m_alpha_a(1.0f)
-    , m_alpha_b(1.0f)
-    , m_alpha_c(1.0f) {}
+    , m_depth_stencil_state(nullptr)
+    , m_target_index_color_current_layer(0)
+    , m_target_index_depth_current_layer(0)
+    , m_target_index_color_previous_layer(0)
+    , m_target_index_depth_previous_layer(0)
+    , m_target_index_color_edges(0)
+    , m_target_index_depth_edges(0)
+    , m_target_index_color_background(0)
+    , m_target_index_depth_background(0)
+    , m_use_color_target_edges(false)
+    , m_alpha_current_layout(1.0f)
+    , m_alpha_previous_layer(1.0f)
+    , m_alpha_edges(1.0f)
+    , m_alpha_background(1.0f)
+    , m_hold_out(false) {}
 
 QuadRenderLayerMerge::~QuadRenderLayerMerge() {
     // Release all shaders.
@@ -62,6 +66,13 @@ QuadRenderLayerMerge::~QuadRenderLayerMerge() {
 
         shaderMgr->releaseShader(m_shader_instance);
         m_shader_instance = nullptr;
+    }
+
+    // Release any state
+    if (m_depth_stencil_state) {
+        MHWRender::MStateManager::releaseDepthStencilState(
+            m_depth_stencil_state);
+        m_depth_stencil_state = nullptr;
     }
 }
 
@@ -106,79 +117,135 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
     if (m_shader_instance) {
         MMSOLVER_VRB("QuadRenderLayerMerge: Assign shader parameters...");
         if (m_targets) {
-            MHWRender::MRenderTarget *target_color_a =
-                m_targets[m_target_index_color_a];
-            MHWRender::MRenderTarget *target_color_b =
-                m_targets[m_target_index_color_b];
-            MHWRender::MRenderTarget *target_depth_a =
-                m_targets[m_target_index_depth_a];
-            MHWRender::MRenderTarget *target_depth_b =
-                m_targets[m_target_index_depth_b];
+            MHWRender::MRenderTarget *target_color_current_layer =
+                m_targets[m_target_index_color_current_layer];
+            MHWRender::MRenderTarget *target_color_previous_layer =
+                m_targets[m_target_index_color_previous_layer];
+            MHWRender::MRenderTarget *target_color_d =
+                m_targets[m_target_index_color_background];
+            MHWRender::MRenderTarget *target_depth_current_layer =
+                m_targets[m_target_index_depth_current_layer];
+            MHWRender::MRenderTarget *target_depth_previous_layer =
+                m_targets[m_target_index_depth_previous_layer];
+            MHWRender::MRenderTarget *target_depth_d =
+                m_targets[m_target_index_depth_background];
 
-            if (target_color_a) {
+            if (target_color_current_layer) {
                 MMSOLVER_VRB(
-                    "QuadRenderLayerMerge: Assign Color A to shader...");
+                    "QuadRenderLayerMerge: "
+                    "Assign Current Layer Color to shader...");
                 MHWRender::MRenderTargetAssignment assignment{};
-                assignment.target = target_color_a;
-                CHECK_MSTATUS(
-                    m_shader_instance->setParameter("gColorTexA", assignment));
+                assignment.target = target_color_current_layer;
+                CHECK_MSTATUS(m_shader_instance->setParameter(
+                    "gColorTexCurrentLayer", assignment));
             }
 
-            if (target_depth_a) {
+            if (target_depth_current_layer) {
                 MMSOLVER_VRB(
-                    "QuadRenderLayerMerge: Assign Depth A to shader...");
+                    "QuadRenderLayerMerge: "
+                    "Assign Current Layer Depth to shader...");
                 MHWRender::MRenderTargetAssignment assignment{};
-                assignment.target = target_depth_a;
-                CHECK_MSTATUS(
-                    m_shader_instance->setParameter("gDepthTexA", assignment));
+                assignment.target = target_depth_current_layer;
+                CHECK_MSTATUS(m_shader_instance->setParameter(
+                    "gDepthTexCurrentLayer", assignment));
             }
 
-            if (target_color_b) {
+            if (target_color_previous_layer) {
                 MMSOLVER_VRB(
-                    "QuadRenderLayerMerge: Assign Color B to shader...");
+                    "QuadRenderLayerMerge: "
+                    "Assign Previous Layer Color to shader...");
                 MHWRender::MRenderTargetAssignment assignment{};
-                assignment.target = target_color_b;
-                CHECK_MSTATUS(
-                    m_shader_instance->setParameter("gColorTexB", assignment));
+                assignment.target = target_color_previous_layer;
+                CHECK_MSTATUS(m_shader_instance->setParameter(
+                    "gColorTexPreviousLayer", assignment));
             }
 
-            if (target_depth_b) {
+            if (target_depth_previous_layer) {
                 MMSOLVER_VRB(
-                    "QuadRenderLayerMerge: Assign Depth B to shader...");
+                    "QuadRenderLayerMerge: "
+                    "Assign Previous Layer Depth to shader...");
                 MHWRender::MRenderTargetAssignment assignment{};
-                assignment.target = target_depth_b;
-                CHECK_MSTATUS(
-                    m_shader_instance->setParameter("gDepthTexB", assignment));
+                assignment.target = target_depth_previous_layer;
+                CHECK_MSTATUS(m_shader_instance->setParameter(
+                    "gDepthTexPreviousLayer", assignment));
             }
 
-            if (m_use_color_target_c) {
-                MHWRender::MRenderTarget *target_color_c =
-                    m_targets[m_target_index_color_c];
+            if (m_use_color_target_edges) {
+                MHWRender::MRenderTarget *target_color_edges =
+                    m_targets[m_target_index_color_edges];
+                MHWRender::MRenderTarget *target_depth_edges =
+                    m_targets[m_target_index_depth_edges];
 
-                if (target_color_c) {
+                if (target_color_edges) {
                     MMSOLVER_VRB(
-                        "QuadRenderLayerMerge: Assign Color C to shader...");
+                        "QuadRenderLayerMerge: "
+                        "Assign Edges Color to shader...");
                     MHWRender::MRenderTargetAssignment assignment{};
-                    assignment.target = target_color_c;
-                    CHECK_MSTATUS(m_shader_instance->setParameter("gColorTexC",
-                                                                  assignment));
+                    assignment.target = target_color_edges;
+                    CHECK_MSTATUS(m_shader_instance->setParameter(
+                        "gColorTexEdges", assignment));
                 }
+
+                if (target_depth_edges) {
+                    MMSOLVER_VRB(
+                        "QuadRenderLayerMerge: "
+                        "Assign Edges Depth to shader...");
+                    MHWRender::MRenderTargetAssignment assignment{};
+                    assignment.target = target_depth_edges;
+                    CHECK_MSTATUS(m_shader_instance->setParameter(
+                        "gDepthTexEdges", assignment));
+                }
+            }
+
+            if (target_color_d) {
+                MMSOLVER_VRB(
+                    "QuadRenderLayerMerge: "
+                    "Assign Color Background to shader...");
+                MHWRender::MRenderTargetAssignment assignment{};
+                assignment.target = target_color_d;
+                CHECK_MSTATUS(m_shader_instance->setParameter(
+                    "gColorTexBackground", assignment));
+            }
+
+            if (target_depth_d) {
+                MMSOLVER_VRB(
+                    "QuadRenderLayerMerge: "
+                    "Assign Depth Background to shader...");
+                MHWRender::MRenderTargetAssignment assignment{};
+                assignment.target = target_depth_d;
+                CHECK_MSTATUS(m_shader_instance->setParameter(
+                    "gDepthTexBackground", assignment));
             }
         }
 
-        CHECK_MSTATUS(m_shader_instance->setParameter(
-            "gLayerMode", static_cast<int32_t>(m_layer_mode)));
+        CHECK_MSTATUS(m_shader_instance->setParameter("gAlphaCurrentLayer",
+                                                      m_alpha_current_layout));
+        CHECK_MSTATUS(m_shader_instance->setParameter("gAlphaPreviousLayer",
+                                                      m_alpha_previous_layer));
         CHECK_MSTATUS(
-            m_shader_instance->setParameter("gLayerMix", m_layer_mix));
-        CHECK_MSTATUS(m_shader_instance->setParameter("gAlphaA", m_alpha_a));
-        CHECK_MSTATUS(m_shader_instance->setParameter("gAlphaB", m_alpha_b));
-        CHECK_MSTATUS(m_shader_instance->setParameter("gAlphaC", m_alpha_c));
+            m_shader_instance->setParameter("gAlphaEdges", m_alpha_edges));
+        CHECK_MSTATUS(m_shader_instance->setParameter("gAlphaBackground",
+                                                      m_alpha_background));
         CHECK_MSTATUS(m_shader_instance->setParameter(
-            "gUseColorC", static_cast<int32_t>(m_use_color_target_c)));
+            "gUseColorEdges", static_cast<int32_t>(m_use_color_target_edges)));
+        CHECK_MSTATUS(m_shader_instance->setParameter(
+            "gHoldOut", static_cast<int32_t>(m_hold_out)));
         CHECK_MSTATUS(m_shader_instance->setParameter(
             "gDebugMode", static_cast<int32_t>(m_debug)));
     }
     return m_shader_instance;
+}
+
+const MDepthStencilState *QuadRenderLayerMerge::depthStencilStateOverride() {
+    if (!m_depth_stencil_state) {
+        MHWRender::MDepthStencilStateDesc desc;
+        desc.depthEnable = true;
+        desc.depthWriteEnable = true;
+        desc.depthFunc = MHWRender::MStateManager::kCompareAlways;
+        m_depth_stencil_state =
+            MHWRender::MStateManager::acquireDepthStencilState(desc);
+    }
+    return m_depth_stencil_state;
 }
 
 }  // namespace render

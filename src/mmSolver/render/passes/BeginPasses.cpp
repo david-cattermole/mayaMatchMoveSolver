@@ -33,8 +33,10 @@
 // MM Solver
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/render/data/constants.h"
+#include "mmSolver/render/ops/ClearOperation.h"
 #include "mmSolver/render/ops/HudRender.h"
 #include "mmSolver/render/ops/SceneRender.h"
+#include "mmSolver/render/ops/scene_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
@@ -64,6 +66,9 @@ bool BeginPasses::startOperationIterator() {
 
 MHWRender::MRenderOperation *BeginPasses::getOperationFromList(
     size_t &current_op, MRenderOperation **ops, const size_t count) {
+    const bool verbose = false;
+    MMSOLVER_VRB("BeginPasses::getOperationFromList: current_op: "
+                 << current_op << " count: " << count);
     if (current_op >= 0 && current_op < count) {
         while (!ops[current_op] || !ops[current_op]->enabled()) {
             current_op++;
@@ -109,55 +114,27 @@ MStatus BeginPasses::updateRenderOperations() {
         return MS::kSuccess;
     }
 
-    // Clear Masks
-    const auto clear_mask_none =
-        static_cast<uint32_t>(MHWRender::MClearOperation::kClearNone);
-    const auto clear_mask_all =
-        static_cast<uint32_t>(MHWRender::MClearOperation::kClearAll);
-    const auto clear_mask_depth =
-        static_cast<uint32_t>(MHWRender::MClearOperation::kClearDepth);
+    // Clear kMainColorTarget and kMainDepthTarget to defaults.
+    auto clearMainTargetOp = new ClearOperation(kBeginClearMainTargetOpName);
+    clearMainTargetOp->setEnabled(true);
+    clearMainTargetOp->setMask(CLEAR_MASK_ALL);
+    m_ops[BeginPass::kClearMainTargetOp] = clearMainTargetOp;
 
-    // Display modes
-    const auto display_mode_shaded =
-        static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kShaded);
-    const auto display_mode_wireframe =
-        static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kWireFrame);
-
-    // Draw these objects for transparency.
-    const auto wire_draw_object_types =
-        ~(MHWRender::MFrameContext::kExcludeMeshes |
-          MHWRender::MFrameContext::kExcludeNurbsCurves |
-          MHWRender::MFrameContext::kExcludeNurbsSurfaces |
-          MHWRender::MFrameContext::kExcludeSubdivSurfaces);
-
-    // Draw all non-geometry normally.
-    const auto non_wire_draw_object_types =
-        ((~wire_draw_object_types) |
-         MHWRender::MFrameContext::kExcludeImagePlane |
-         MHWRender::MFrameContext::kExcludePluginShapes);
-
-    // What objects types to draw for depth buffer?
-    const auto depth_draw_object_types =
-        wire_draw_object_types | MHWRender::MFrameContext::kExcludeImagePlane;
-
-    // Draw image planes in the background always.
-    const auto bg_draw_object_types =
-        ~(MHWRender::MFrameContext::kExcludeImagePlane |
-          MHWRender::MFrameContext::kExcludePluginShapes);
+    // Clear kBackgroundColorTarget and kBackgroundDepthTarget to defaults.
+    auto clearBackgroundTargetOp =
+        new ClearOperation(kBeginClearBackgroundTargetOpName);
+    clearBackgroundTargetOp->setEnabled(true);
+    clearBackgroundTargetOp->setMask(CLEAR_MASK_ALL);
+    m_ops[BeginPass::kClearBackgroundTargetOp] = clearBackgroundTargetOp;
 
     // Background pass.
-    auto sceneOp = new SceneRender(kSceneBackgroundPassName);
-    sceneOp->setBackgroundStyle(BackgroundStyle::kMayaDefault);
-    sceneOp->setClearMask(clear_mask_all);
+    auto backgroundPassOp = new SceneRender(kSceneBackgroundPassName);
+    backgroundPassOp->setEnabled(true);
+    backgroundPassOp->setBackgroundStyle(BackgroundStyle::kMayaDefault);
+    backgroundPassOp->setClearMask(CLEAR_MASK_ALL);
+    backgroundPassOp->setExcludeTypes(MHWRender::MFrameContext::kExcludeNone);
 #if MAYA_API_VERSION != 20220000
-    const auto draw_object_types =
-        ~(MHWRender::MFrameContext::kExcludeGrid |
-          MHWRender::MFrameContext::kExcludeImagePlane |
-          MHWRender::MFrameContext::kExcludePluginShapes);
-    sceneOp->setExcludeTypes(draw_object_types);
-    sceneOp->setSceneFilter(MHWRender::MSceneRender::kRenderAllItems);
+    backgroundPassOp->setSceneFilter(MHWRender::MSceneRender::kRenderAllItems);
 #else
     // The behaviour of the MSceneRender::MSceneFilterOption was
     // broken in Maya 2022.0, and was fixed in Maya 2022.1 and
@@ -174,16 +151,26 @@ MStatus BeginPasses::updateRenderOperations() {
     // https://help.autodesk.com/view/MAYAUL/2022/ENU/?guid=Maya_ReleaseNotes_2022_1_release_notes_html
     //
     // This workaround provides roughly the same appearance, compared to above.
-    sceneOp->setExcludeTypes(MHWRender::MFrameContext::kExcludeNone);
-    sceneOp->setSceneFilter(
+    backgroundPassOp->setSceneFilter(
         static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
             MHWRender::MSceneRender::kRenderPreSceneUIItems |
             MHWRender::MSceneRender::kRenderShadedItems));
 #endif
-    sceneOp->setDrawObjects(DrawObjects::kOnlyCameraBackgroundImagePlanes);
-    m_ops[BeginPass::kSceneBackgroundPass] = sceneOp;
 
-    return MS::kSuccess;
+    MStatus status = MS::kSuccess;
+    m_image_plane_nodes.clear();
+    status = add_all_image_planes(m_image_plane_nodes);
+    MMSOLVER_VRB(
+        "BeginPasses::updateRenderOperations: "
+        "m_image_plane_nodes.length()="
+        << m_image_plane_nodes.length());
+
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    backgroundPassOp->setObjectSetOverride(&m_image_plane_nodes);
+    m_ops[BeginPass::kSceneBackgroundPass] = backgroundPassOp;
+
+    return status;
 }
 
 // Update the render targets that are required for the entire
@@ -203,12 +190,24 @@ MStatus BeginPasses::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     // color and depth targets, but shaders may internally reference
     // specific render targets.
 
+    auto clearMainTargetOp =
+        dynamic_cast<ClearOperation *>(m_ops[BeginPass::kClearMainTargetOp]);
+    if (clearMainTargetOp) {
+        clearMainTargetOp->setRenderTargets(targets, kMainColorTarget, 2);
+    }
+
+    auto clearBackgroundTargetOp = dynamic_cast<ClearOperation *>(
+        m_ops[BeginPass::kClearBackgroundTargetOp]);
+    if (clearBackgroundTargetOp) {
+        clearBackgroundTargetOp->setRenderTargets(targets,
+                                                  kBackgroundColorTarget, 2);
+    }
+
     // Draw viewport background (with image plane).
     auto backgroundPassOp =
         dynamic_cast<SceneRender *>(m_ops[BeginPass::kSceneBackgroundPass]);
     if (backgroundPassOp) {
-        backgroundPassOp->setEnabled(true);
-        backgroundPassOp->setRenderTargets(targets, kMainColorTarget, 2);
+        backgroundPassOp->setRenderTargets(targets, kBackgroundColorTarget, 2);
     }
 
     return status;

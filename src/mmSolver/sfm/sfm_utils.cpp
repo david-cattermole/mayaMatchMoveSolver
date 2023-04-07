@@ -457,6 +457,27 @@ bool add_bundle_at_frame(
     return success;
 }
 
+bool is_valid_pose(openMVG::geometry::Pose3 &pose) {
+    const auto center = pose.center();
+    const auto pos = pose.translation();
+    const auto rotate = pose.rotation();
+    const bool center_has_nan =
+        std::isnan(center[0]) || std::isnan(center[1]) || std::isnan(center[2]);
+    const bool pos_has_nan =
+        std::isnan(pos[0]) || std::isnan(pos[1]) || std::isnan(pos[2]);
+    const bool rotate_has_nan =
+        (std::isnan(rotate(0, 0)) || std::isnan(rotate(0, 1)) ||
+         std::isnan(rotate(0, 2))) ||
+        (std::isnan(rotate(1, 0)) || std::isnan(rotate(1, 1)) ||
+         std::isnan(rotate(1, 2))) ||
+        (std::isnan(rotate(2, 0)) || std::isnan(rotate(2, 1)) ||
+         std::isnan(rotate(2, 2)));
+    if (center_has_nan || pos_has_nan || rotate_has_nan) {
+        return false;
+    }
+    return true;
+}
+
 MTransformationMatrix convert_openmvg_transform_to_maya_transform_matrix(
     openMVG::Vec3 openmvg_position, openMVG::Mat3 openmvg_rotation) {
     // Enable to print out 'MMSOLVER_VRB' results.
@@ -537,6 +558,12 @@ MTransformationMatrix convert_pose_to_maya_transform_matrix(
     MMSOLVER_VRB("pose center: " << pose_center);
     MMSOLVER_VRB("pose translation: " << pose_translation);
     MMSOLVER_VRB("pose rotation: " << pose_rotation);
+    if (!is_valid_pose(pose)) {
+        MMSOLVER_WRN(
+            "convert_pose_to_maya_transform_matrix: Pose is not valid!");
+        MTransformationMatrix transform;
+        return transform;
+    }
 
     return convert_openmvg_transform_to_maya_transform_matrix(pose_center,
                                                               pose_rotation);

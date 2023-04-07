@@ -90,10 +90,9 @@ class PrefWindow(BaseWindow):
         config = self._config
         option_keys = [
             pref_const.REG_EVNT_ADD_NEW_MKR_TO_KEY,
-            pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY,
-            pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY,
-            pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY,
+            pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY,
             pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
+            pref_const.MM_RENDERER_BACKGROUND_NODE_TYPES_KEY,
         ]
         for key in option_keys:
             value = pref_const.DEFAULT_VALUE_MAP[key]
@@ -111,20 +110,16 @@ class PrefWindow(BaseWindow):
                 self.subForm.getAddNewMarkersToConfigValue,
             ),
             (
-                pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY,
-                self.subForm.getSolverUIValidateOnOpenConfigValue,
-            ),
-            (
-                pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY,
-                self.subForm.getSolverUIShowValidateButtonConfigValue,
-            ),
-            (
-                pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY,
-                self.subForm.getSolverUIAllowObjectRelationsConfigValue,
+                pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY,
+                self.subForm.getAddNewLinesToConfigValue,
             ),
             (
                 pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
                 self.subForm.getSolverUIMinimalUIWhileSolvingConfigValue,
+            ),
+            (
+                pref_const.MM_RENDERER_BACKGROUND_NODE_TYPES_KEY,
+                self.subForm.getRendererBackgroundNodeTypesConfigValue,
             ),
         ]
         for key, func in options:

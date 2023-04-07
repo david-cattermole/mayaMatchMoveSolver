@@ -289,9 +289,19 @@ bool compute_relative_pose(
         ++i;
     }
 
-    MMSOLVER_VRB("- Center: " << pose_info.relativePose.center());
-    MMSOLVER_VRB("- Translation: " << pose_info.relativePose.translation());
-    MMSOLVER_VRB("- Rotation: " << pose_info.relativePose.rotation());
+    const auto center = pose_info.relativePose.center();
+    const auto pos = pose_info.relativePose.translation();
+    const auto rotate = pose_info.relativePose.rotation();
+    MMSOLVER_VRB("- Center: " << center);
+    MMSOLVER_VRB("- Translation: " << pos);
+    MMSOLVER_VRB("- Rotation: " << rotate);
+    if (!is_valid_pose(pose_info.relativePose)) {
+        MMSOLVER_ERR(
+            "Robust relative pose estimation failure: "
+            "NaN detected in pose values.");
+        return false;
+    }
+
     return true;
 }
 

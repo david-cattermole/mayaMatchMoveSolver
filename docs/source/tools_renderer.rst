@@ -143,7 +143,7 @@ Known Issues
 ~~~~~~~~~~~~
 
 `MM Renderer` is *beta* software and is currently only released in
-``v0.4.4.beta1``. There are numerous bugs and issues that are not yet
+``v0.4.4.beta*``. There are numerous bugs and issues that are not yet
 resolved and the viewport renderer is available as a preview only.
 
 .. note::
@@ -161,16 +161,6 @@ resolved and the viewport renderer is available as a preview only.
    Settings/Preferences > Preferences``, then click on the ``Display``
    category, and see the `Viewport 2.0` Rendering Engine option at the
    bottom of the Preferences window.
-
-Objects are Invisible By Default
-+++++++++++++++++++++++++++++++++
-
-The objects in the Display Layer "defaultLayer" are ignored.
-
-*Workaround:* You must create a new Display Layer and add the objects
-into it.
-
-This will be fixed in a later release.
 
 Attributes Missing From Display Layers
 ++++++++++++++++++++++++++++++++++++++
@@ -204,19 +194,6 @@ Wireframes Are Shown in "Edges"
 On `Maya 2022.0`, you may have some incorrect visuals.
 
 *Workaround:* Upgrade to at least Maya 2022.1+.
-
-Objects Are Incorrectly Depth Layered
-+++++++++++++++++++++++++++++++++++++
-
-"ZDepth" Layer Mode doesn't work.
-
-When you have multiple Display Layers in a scene the order of the
-layers matters. The objects in each layer are rendered and then
-composited "over" the previous layer - like a Photoshop layer. This is
-correct when the Layer mode is "Over", but is not currently working as
-expected with the "ZDepth" layer mode (which should not do that).
-
-This will be fixed in a later release.
 
 Python Function
 ~~~~~~~~~~~~~~~

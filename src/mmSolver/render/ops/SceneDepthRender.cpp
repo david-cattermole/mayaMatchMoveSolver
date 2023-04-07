@@ -19,7 +19,7 @@
  *
  */
 
-#include "SceneRender.h"
+#include "SceneDepthRender.h"
 
 // Maya
 #include <maya/MShaderManager.h>
@@ -29,14 +29,19 @@
 // MM Solver
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/render/ops/scene_utils.h"
+#include "mmSolver/render/shader/shader_utils.h"
 
 namespace mmsolver {
 namespace render {
 
-SceneRender::SceneRender(const MString &name)
-    : SceneRenderBase(name), m_shader_override(nullptr) {}
+const char kPARAMETER_DEPTH_OFFSET[] = "gDepthOffset";
 
-SceneRender::~SceneRender() {
+SceneDepthRender::SceneDepthRender(const MString &name)
+    : SceneRenderBase(name)
+    , m_shader_override(nullptr)
+    , m_depth_priority(0.0) {}
+
+SceneDepthRender::~SceneDepthRender() {
     m_targets = nullptr;
 
     if (m_shader_override) {
@@ -54,7 +59,32 @@ SceneRender::~SceneRender() {
     }
 }
 
-const MHWRender::MShaderInstance *SceneRender::shaderOverride() {
+const MHWRender::MShaderInstance *SceneDepthRender::shaderOverride() {
+    const bool verbose = false;
+
+    if (!m_shader_override) {
+        MMSOLVER_VRB("SceneDepthRender: Compile Depth Main shader...");
+        const MString file_name = "mmDepth";
+        const MString main_technique = "Main";
+        m_shader_override = compile_shader_file(file_name, main_technique);
+    }
+
+    if (m_shader_override) {
+        MMSOLVER_VRB("SceneDepthRender: Assign Depth shader parameters...");
+
+        // We assume the depth buffer has at least 24 bits for the depth
+        // value.
+        //
+        // Smaller Z-Depth values are nearer the camera, and larger values
+        // are farther away.
+        const float depth_value_range = 1048576.0f;  // (2 ^ 24) / 16
+        const float depth_value_step = 1.0f / depth_value_range;
+        const float depth_offset = depth_value_step * m_depth_priority;
+
+        CHECK_MSTATUS(m_shader_override->setParameter(kPARAMETER_DEPTH_OFFSET,
+                                                      depth_offset));
+    }
+
     return m_shader_override;
 }
 

@@ -30,33 +30,19 @@
 // MM Solver
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/render/data/constants.h"
+#include "mmSolver/render/ops/ClearOperation.h"
 #include "mmSolver/render/ops/QuadRenderBlend.h"
+#include "mmSolver/render/ops/QuadRenderCopy.h"
 #include "mmSolver/render/ops/QuadRenderEdgeDetect.h"
 #include "mmSolver/render/ops/QuadRenderLayerMerge.h"
+#include "mmSolver/render/ops/SceneDepthRender.h"
+#include "mmSolver/render/ops/SceneEdgeRender.h"
 #include "mmSolver/render/ops/SceneRender.h"
 #include "mmSolver/render/shader/shader_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
 namespace render {
-
-static MShaderInstance *create_depth_shader(const float depth_offset) {
-    const bool verbose = false;
-
-    MMSOLVER_VRB("create_depth_shader: Compile Depth Main shader...");
-    const MString file_name = "mmDepth";
-    const MString main_technique = "Main";
-    MHWRender::MShaderInstance *shader_instance =
-        compile_shader_file(file_name, main_technique);
-
-    if (shader_instance) {
-        MMSOLVER_VRB("create_depth_shader: Assign Depth shader parameters...");
-        CHECK_MSTATUS(
-            shader_instance->setParameter("gDepthOffset", depth_offset));
-    }
-
-    return shader_instance;
-}
 
 DisplayLayer::DisplayLayer()
     : m_name()
@@ -89,7 +75,8 @@ DisplayLayer::~DisplayLayer() {
     }
 }
 
-MStatus DisplayLayer::updateRenderOperations() {
+MStatus DisplayLayer::updateRenderOperations(
+    const MSelectionList *drawable_nodes) {
     const bool verbose = false;
     MMSOLVER_VRB("DisplayLayer::updateRenderOperations: " << m_name.asChar());
 
@@ -98,109 +85,138 @@ MStatus DisplayLayer::updateRenderOperations() {
         return MS::kSuccess;
     }
 
-    // Clear Masks
-    const auto clear_mask_none =
-        static_cast<uint32_t>(MHWRender::MClearOperation::kClearNone);
-    const auto clear_mask_all =
-        static_cast<uint32_t>(MHWRender::MClearOperation::kClearAll);
-    const auto clear_mask_depth =
-        static_cast<uint32_t>(MHWRender::MClearOperation::kClearDepth);
-    const auto clear_mask_color =
-        static_cast<uint32_t>(MHWRender::MClearOperation::kClearColor);
+    // Clear kLayerColorTarget and kLayerDepthTarget to defaults.
+    const MString clearLayerTargetOpName =
+        MString(kLayerClearLayerTargetOpName) + m_name;
+    auto clearLayerTargetOp = new ClearOperation(clearLayerTargetOpName);
+    clearLayerTargetOp->setMask(CLEAR_MASK_ALL);
+    m_ops[DisplayLayerPasses::kClearLayerTargetOp] = clearLayerTargetOp;
 
-    // Display modes
-    const auto display_mode_shaded =
-        static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kShaded);
-    const auto display_mode_shaded_textured =
-        static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kShaded |
-            MHWRender::MSceneRender::kTextured);
-    const auto display_mode_wireframe =
-        static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kWireFrame);
-    const auto display_mode_shaded_wireframe =
-        static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kShaded |
-            MHWRender::MSceneRender::kWireFrame);
-    const auto display_mode_shaded_wireframe_textured =
-        static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kShaded |
-            MHWRender::MSceneRender::kWireFrame |
-            MHWRender::MSceneRender::kTextured);
+    // Clear kTempColorTarget and kTempDepthTarget to defaults.
+    const MString clearTempTargetOpName =
+        MString(kLayerClearTempTargetOpName) + m_name;
+    auto clearTempTargetOp = new ClearOperation(clearTempTargetOpName);
+    clearTempTargetOp->setMask(CLEAR_MASK_ALL);
+    m_ops[DisplayLayerPasses::kClearTempTargetOp] = clearTempTargetOp;
 
-    // Draw these objects for transparency.
-    const auto wire_draw_object_types =
-        ~(MHWRender::MFrameContext::kExcludeMeshes |
-          MHWRender::MFrameContext::kExcludeNurbsCurves |
-          MHWRender::MFrameContext::kExcludeNurbsSurfaces |
-          MHWRender::MFrameContext::kExcludeSubdivSurfaces);
+    // Copy kMainDepthTarget to kTempDepthTarget.
+    const MString copyOpName = MString(kLayerCopyOpName) + m_name;
+    auto copyOp = new QuadRenderCopy(copyOpName);
+    copyOp->setClearMask(CLEAR_MASK_NONE);
+    copyOp->setUseColorTarget(false);
+    copyOp->setUseDepthTarget(true);
+    m_ops[DisplayLayerPasses::kCopyOp] = copyOp;
 
-    // Draw all non-geometry normally.
-    const auto non_wire_draw_object_types =
-        ((~wire_draw_object_types) |
-         MHWRender::MFrameContext::kExcludeImagePlane |
-         MHWRender::MFrameContext::kExcludePluginShapes);
-
-    // What objects types to draw for depth buffer?
-    const auto depth_draw_object_types =
-        wire_draw_object_types | MHWRender::MFrameContext::kExcludeImagePlane;
-
-    // Draw image planes in the background always.
-    const auto bg_draw_object_types =
-        ~(MHWRender::MFrameContext::kExcludeImagePlane |
-          MHWRender::MFrameContext::kExcludePluginShapes);
-
-    // We assume the depth buffer has at least 24 bits for the depth
-    // value.
+    // Render Depth Scene into kLayerColorTarget and kLayerDepthTarget.
     //
-    // Smaller Z-Depth values are nearer the camera, and larger values
-    // are farther away.
-    const float depthValueRange = 1048576.0f;  // (2 ^ 24) / 16
-    const float depthValueStep = 1.0f / depthValueRange;
-    const float depthOffset = depthValueStep * 4;
-    // Shader to push depth away from camera.
-    auto depthShader1 = create_depth_shader(-depthOffset);
-
+    // kLayerColorTarget will be rendered with normals, facing ratio
+    // and alpha values used for 2D edge detection.
     const MString depthSceneOpName = MString(kLayerDepthPassName) + m_name;
-    auto depthPassOp = new SceneRender(depthSceneOpName);
-    depthPassOp->setClearMask(clear_mask_all);
+    auto depthPassOp = new SceneDepthRender(depthSceneOpName);
+    depthPassOp->setClearMask(CLEAR_MASK_NONE);
     depthPassOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
     depthPassOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
-    depthPassOp->setExcludeTypes(depth_draw_object_types);
-    depthPassOp->setDisplayModeOverride(display_mode_shaded);
-    depthPassOp->setShaderOverride(depthShader1);
-    depthPassOp->setDrawObjects(DrawObjects::kOnlyNamedLayerObjects);
-    depthPassOp->setLayerName(m_name);
+    depthPassOp->setDisplayModeOverride(DISPLAY_MODE_SHADED);
+    depthPassOp->setDepthPriority(-4.0);  // push Z-depth away from camera.
+    depthPassOp->setObjectSetOverride(drawable_nodes);
     m_ops[DisplayLayerPasses::kSceneDepthPass] = depthPassOp;
 
-    // Apply edge detect.
+    // if EdgeDetectMode is k3dSilhouette:
+    //     Render Scene Depth to kTempDepthTarget (on top of
+    //     kMainDepthTarget);
+    //
+    // else:
+    //     Render Scene Color to kTempColorTarget (using
+    //     kMainDepthTarget for depth testing);
+    //
+    //     Render Scene Depth to kTempDepthTarget (on top of
+    //     kMainDepthTarget);
+    const MString depthSceneOpName2 = MString(kLayerDepthPassName) + m_name;
+    auto depthPassOp2 = new SceneDepthRender(depthSceneOpName2);
+    depthPassOp2->setClearMask(CLEAR_MASK_NONE);
+    depthPassOp2->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
+    depthPassOp2->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
+    depthPassOp2->setDisplayModeOverride(DISPLAY_MODE_SHADED);
+    depthPassOp2->setDepthPriority(-4.0);  // push Z-depth away from camera.
+    depthPassOp2->setObjectSetOverride(drawable_nodes);
+    m_ops[DisplayLayerPasses::kSceneDepthPass2] = depthPassOp2;
+
+    // if EdgeDetectMode is k3dSilhouette:
+    //     Copy kLayerDepthTarget to kTempDepthTarget.
+    // else:
+    //     Copy kLayerColorTarget to kTempColorTarget.
+    //     Copy kLayerDepthTarget to kTempDepthTarget.
+    const MString copyEdgeOpName = MString(kLayerCopyEdgeOpName) + m_name;
+    auto copyEdgeOp = new QuadRenderCopy(copyEdgeOpName);
+    copyEdgeOp->setClearMask(CLEAR_MASK_ALL);
+    m_ops[DisplayLayerPasses::kCopyEdgeOp] = copyEdgeOp;
+
+    // Render the scene 3D geometry as silhouette edges. Runs only if
+    // 3D silhouette edge is used (if EdgeDetectMode is
+    // k3dSilhouette).
+    //
+    // Render Scene into kTempColorTarget and kTempDepthTarget.
+    //
+    // The kTempColorTarget input will be empty/blank.
+    //
+    // The kTempDepthTarget input will contain the contents of
+    // kLayerDepthTarget, as rendered in the 'depthPassOp'.
+    const MString sceneEdgeOpName = MString(kLayerEdgePassOpName) + m_name;
+    auto sceneEdgeOp = new SceneEdgeRender(sceneEdgeOpName);
+    sceneEdgeOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
+    sceneEdgeOp->setClearMask(CLEAR_MASK_COLOR);
+    sceneEdgeOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
+    sceneEdgeOp->setCullingOverride(MHWRender::MSceneRender::kCullFrontFaces);
+    sceneEdgeOp->setDisplayModeOverride(DISPLAY_MODE_SHADED);
+    sceneEdgeOp->setObjectSetOverride(drawable_nodes);
+    m_ops[DisplayLayerPasses::kSceneEdgePass] = sceneEdgeOp;
+
+    // Apply edge detect. Runs only if 2D edge detection is used (if
+    // EdgeDetectMode is not k3dSilhouette).
+    //
+    // 1) Reads kLayerColorTarget and kLayerDepthTarget.
+    //
+    // 2) Performs 2D edge detection on kLayerColorTarget and
+    //    kLayerDepthTarget.
+    //
+    // 3) Outputs to kTempColorTarget and kTempDepthTarget.
     const MString edgeDetectOpName = MString(kLayerEdgeDetectOpName) + m_name;
     auto edgeDetectOp = new QuadRenderEdgeDetect(edgeDetectOpName);
-    edgeDetectOp->setClearMask(clear_mask_all);
-    edgeDetectOp->setThickness(m_edge_thickness);
-    edgeDetectOp->setThresholdColor(m_edge_threshold_color);
-    edgeDetectOp->setThresholdAlpha(m_edge_threshold_alpha);
-    edgeDetectOp->setThresholdDepth(m_edge_threshold_depth);
+    edgeDetectOp->setClearMask(CLEAR_MASK_ALL);
     m_ops[DisplayLayerPasses::kEdgeDetectOp] = edgeDetectOp;
 
-    // Scene Object Render pass.
+    // Scene Object Render pass, with whatever shading type is asked
+    // for by the user (via default viewport settings or the
+    // DisplayLayer override given).
+    //
+    // Renders the scene objects to kLayerColorTarget and
+    // kLayerDepthTarget.
     const MString scenePassOpName = MString(kLayerObjectPassName) + m_name;
     auto scenePassOp = new SceneRender(scenePassOpName);
     scenePassOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
-    scenePassOp->setClearMask(clear_mask_none);
-    scenePassOp->setExcludeTypes(wire_draw_object_types);
-    scenePassOp->setDrawObjects(DrawObjects::kOnlyNamedLayerObjects);
-    scenePassOp->setLayerName(m_name);
+    scenePassOp->setClearMask(CLEAR_MASK_NONE);
+    scenePassOp->setObjectSetOverride(drawable_nodes);
     m_ops[DisplayLayerPasses::kSceneRenderPass] = scenePassOp;
 
     // Merge the result into the main color and depth targets.
+    //
+    // 1) Reads all targets; kMain*Target, kLayer*Target and
+    //    kTemp*Target.
+    //
+    // - kMain*Target contains the previous layer's result.
+    // - kLayer*Target contains the current layer's result (except edges)
+    // - kTemp*Target contains the current layer's edges only.
+    //
+    // 2) Applies merge logic.
+    //
+    // 3) Outputs to kMainColorTarget and kMainDepthTarget.
+    //
+    // After this Operation, the iteration starts again at the top, or
+    // continues to the EndPasses.
     const MString layerMergeOpName = MString(kLayerMergeOpName) + m_name;
     auto layerMergeOp = new QuadRenderLayerMerge(layerMergeOpName);
-    layerMergeOp->setClearMask(clear_mask_none);
-    layerMergeOp->setLayerMode(m_layer_mode);
-    layerMergeOp->setLayerMix(m_layer_mix);
-    layerMergeOp->setAlphaA(m_object_alpha);
+    layerMergeOp->setClearMask(CLEAR_MASK_NONE);
+    layerMergeOp->setAlphaCurrentLayer(m_object_alpha);
     m_ops[DisplayLayerPasses::kLayerMergeOp] = layerMergeOp;
 
     return MS::kSuccess;
@@ -217,56 +233,65 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     // color and depth targets, but shaders may internally reference
     // specific render targets.
 
-    auto depthPassOp =
-        dynamic_cast<SceneRender *>(m_ops[DisplayLayerPasses::kSceneDepthPass]);
+    auto clearLayerTargetOp = dynamic_cast<ClearOperation *>(
+        m_ops[DisplayLayerPasses::kClearLayerTargetOp]);
+    auto clearTempTargetOp = dynamic_cast<ClearOperation *>(
+        m_ops[DisplayLayerPasses::kClearTempTargetOp]);
+    auto copyOp =
+        dynamic_cast<QuadRenderCopy *>(m_ops[DisplayLayerPasses::kCopyOp]);
+    auto depthPassOp = dynamic_cast<SceneDepthRender *>(
+        m_ops[DisplayLayerPasses::kSceneDepthPass]);
+    auto depthPassOp2 = dynamic_cast<SceneDepthRender *>(
+        m_ops[DisplayLayerPasses::kSceneDepthPass2]);
+    auto copyEdgeOp =
+        dynamic_cast<QuadRenderCopy *>(m_ops[DisplayLayerPasses::kCopyEdgeOp]);
     auto edgeDetectOp = dynamic_cast<QuadRenderEdgeDetect *>(
         m_ops[DisplayLayerPasses::kEdgeDetectOp]);
+    auto sceneEdgeOp = dynamic_cast<SceneEdgeRender *>(
+        m_ops[DisplayLayerPasses::kSceneEdgePass]);
     auto scenePassOp = dynamic_cast<SceneRender *>(
         m_ops[DisplayLayerPasses::kSceneRenderPass]);
     auto layerMergeOp = dynamic_cast<QuadRenderLayerMerge *>(
         m_ops[DisplayLayerPasses::kLayerMergeOp]);
 
-    if (!depthPassOp || !edgeDetectOp || !scenePassOp || !layerMergeOp) {
+    if (!clearLayerTargetOp || !clearTempTargetOp || !copyOp || !depthPassOp ||
+        !depthPassOp2 || !copyEdgeOp || !sceneEdgeOp || !edgeDetectOp ||
+        !scenePassOp || !layerMergeOp) {
         return MS::kFailure;
     }
 
-    // Clear Masks
-    const auto clear_mask_none =
-        static_cast<uint32_t>(MHWRender::MClearOperation::kClearNone);
-    const auto clear_mask_all =
-        static_cast<uint32_t>(MHWRender::MClearOperation::kClearAll);
-    const auto clear_mask_depth =
-        static_cast<uint32_t>(MHWRender::MClearOperation::kClearDepth);
-    const auto clear_mask_color =
-        static_cast<uint32_t>(MHWRender::MClearOperation::kClearColor);
+    clearLayerTargetOp->setRenderTargets(targets, kLayerColorTarget, 2);
+    clearTempTargetOp->setRenderTargets(targets, kTempColorTarget, 2);
 
-    // Display modes
-    const auto display_mode_shaded =
-        static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kShaded);
-    const auto display_mode_shaded_textured =
-        static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kShaded |
-            MHWRender::MSceneRender::kTextured);
-    const auto display_mode_wireframe =
-        static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kWireFrame);
-    const auto display_mode_shaded_wireframe =
-        static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kShaded |
-            MHWRender::MSceneRender::kWireFrame);
-    const auto display_mode_shaded_wireframe_textured =
-        static_cast<MHWRender::MSceneRender::MDisplayMode>(
-            MHWRender::MSceneRender::kShaded |
-            MHWRender::MSceneRender::kWireFrame |
-            MHWRender::MSceneRender::kTextured);
+    copyOp->setColorTarget(kMainColorTarget);
+    copyOp->setDepthTarget(kMainDepthTarget);
+    copyOp->setRenderTargets(targets, kTempColorTarget, 2);
 
-    depthPassOp->setClearMask(clear_mask_all);
     depthPassOp->setRenderTargets(targets, kLayerColorTarget, 2);
-    depthPassOp->setSceneFilter(MHWRender::MSceneRender::kRenderShadedItems);
 
-    const float edge_alpha = m_edge_alpha * static_cast<float>(m_edge_enable);
-    edgeDetectOp->setEnabled(true);
+    copyEdgeOp->setColorTarget(kLayerColorTarget);
+    copyEdgeOp->setDepthTarget(kLayerDepthTarget);
+
+    // Implement multi-pass silhouette rendering, adapted to Maya
+    // Viewport 2.0, using render targets, rather than OpenGL state.
+    //
+    // This implementation is also different from the slides, since I
+    // (David Cattermole - 2023-03-05) was unable to work out how to
+    // render the given shader as lines(wireframe) inside the Maya
+    // Viewport 2.0 API. Switching the draw mode to wireframe did not
+    // render the intended shader on the wireframe at all.
+    //
+    // Additionally, a limitation of modern OpenGL is the inability to
+    // adjust the line width, since that is deprecated in modern OpenGL.
+    //
+    // See "SIGGRAPH Asia 2008 Modern OpenGL", Page 97-98:
+    // https://www.slideshare.net/Mark_Kilgard/sigraph-asia-2008-modern-opengl-presentation
+    //
+    sceneEdgeOp->setRenderTargets(targets, kTempColorTarget, 2);
+    sceneEdgeOp->setEdgeThickness(m_edge_thickness);
+    sceneEdgeOp->setEdgeAlpha(m_edge_alpha);
+    sceneEdgeOp->setEdgeColor(m_edge_color.r, m_edge_color.g, m_edge_color.b);
+
     edgeDetectOp->setInputColorTarget(kLayerColorTarget);
     edgeDetectOp->setInputDepthTarget(kLayerDepthTarget);
     edgeDetectOp->setRenderTargets(targets, kTempColorTarget, 1);
@@ -274,85 +299,110 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     edgeDetectOp->setThresholdColor(m_edge_threshold_color);
     edgeDetectOp->setThresholdAlpha(m_edge_threshold_alpha);
     edgeDetectOp->setThresholdDepth(m_edge_threshold_depth);
-    edgeDetectOp->setEdgeAlpha(edge_alpha);
+    edgeDetectOp->setEdgeAlpha(m_edge_alpha);
     edgeDetectOp->setEdgeColor(m_edge_color.r, m_edge_color.g, m_edge_color.b);
     edgeDetectOp->setEdgeDetectMode(m_edge_detect_mode);
 
-    scenePassOp->setEnabled(true);
+    depthPassOp2->setRenderTargets(targets, kTempColorTarget, 2);
+    if (!m_edge_enable) {
+        copyEdgeOp->setEnabled(false);
+        depthPassOp2->setEnabled(false);
+        sceneEdgeOp->setEnabled(false);
+        edgeDetectOp->setEnabled(false);
+    } else {
+        copyEdgeOp->setEnabled(true);
+        depthPassOp2->setEnabled(true);
+
+        if (m_edge_detect_mode == EdgeDetectMode::k3dSilhouette) {
+            copyEdgeOp->setUseColorTarget(false);
+            copyEdgeOp->setUseDepthTarget(true);
+            depthPassOp2->setRenderTargets(targets, kTempDepthTarget, 1);
+            sceneEdgeOp->setEnabled(true);
+            edgeDetectOp->setEnabled(false);
+        } else {
+            copyEdgeOp->setUseColorTarget(true);
+            copyEdgeOp->setUseDepthTarget(true);
+            depthPassOp2->setRenderTargets(targets, kTempColorTarget, 2);
+            sceneEdgeOp->setEnabled(false);
+            edgeDetectOp->setEnabled(true);
+        }
+    }
+
     scenePassOp->setRenderTargets(targets, kLayerColorTarget, 2);
 
+    float object_alpha = m_object_alpha;
+    bool depthPassEnabled = true;
+    bool hold_out = false;
     if (m_object_display_style == DisplayStyle::kHiddenLine) {
-        depthPassOp->setEnabled(true);
-
-        scenePassOp->setClearMask(clear_mask_color);
-        scenePassOp->setDisplayModeOverride(display_mode_wireframe);
+        scenePassOp->setClearMask(CLEAR_MASK_COLOR);
+        scenePassOp->setDisplayModeOverride(DISPLAY_MODE_WIREFRAME);
         scenePassOp->setSceneFilter(
             MHWRender::MSceneRender::kRenderPostSceneUIItems);
 
-        layerMergeOp->setAlphaA(m_object_alpha);
     } else if (m_object_display_style == DisplayStyle::kShaded) {
-        depthPassOp->setEnabled(m_edge_enable);
-
-        scenePassOp->setClearMask(clear_mask_all);
+        scenePassOp->setClearMask(CLEAR_MASK_ALL);
         scenePassOp->setSceneFilter(
             static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
                 MHWRender::MSceneRender::kRenderShadedItems |
                 MHWRender::MSceneRender::kRenderPostSceneUIItems));
         if (!m_object_display_textures) {
-            scenePassOp->setDisplayModeOverride(display_mode_shaded);
+            scenePassOp->setDisplayModeOverride(DISPLAY_MODE_SHADED);
         } else {
-            scenePassOp->setDisplayModeOverride(display_mode_shaded_textured);
+            scenePassOp->setDisplayModeOverride(DISPLAY_MODE_SHADED_TEXTURED);
         }
     } else if (m_object_display_style == DisplayStyle::kHoldOut) {
-        depthPassOp->setEnabled(true);
-
-        scenePassOp->setClearMask(clear_mask_color);
-        scenePassOp->setDisplayModeOverride(display_mode_wireframe);
+        scenePassOp->setClearMask(CLEAR_MASK_NONE);
+        scenePassOp->setDisplayModeOverride(DISPLAY_MODE_SHADED);
         scenePassOp->setSceneFilter(
-            MHWRender::MSceneRender::kRenderShadedItems);
-
-        layerMergeOp->setAlphaA(0.0);
+            static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
+                MHWRender::MSceneRender::kRenderShadedItems));
+        hold_out = true;
     } else if (m_object_display_style == DisplayStyle::kWireframe) {
-        depthPassOp->setEnabled(m_edge_enable);
+        depthPassEnabled = false;
 
-        scenePassOp->setClearMask(clear_mask_all);
-        scenePassOp->setDisplayModeOverride(display_mode_wireframe);
+        scenePassOp->setClearMask(CLEAR_MASK_ALL);
+        scenePassOp->setDisplayModeOverride(DISPLAY_MODE_WIREFRAME);
         scenePassOp->setSceneFilter(
             MHWRender::MSceneRender::kRenderPostSceneUIItems);
-
-        layerMergeOp->setAlphaA(m_object_alpha);
     } else if (m_object_display_style == DisplayStyle::kWireframeOnShaded) {
-        depthPassOp->setEnabled(m_edge_enable);
-
-        scenePassOp->setClearMask(clear_mask_all);
+        scenePassOp->setClearMask(CLEAR_MASK_ALL);
         scenePassOp->setSceneFilter(
             static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
                 MHWRender::MSceneRender::kRenderShadedItems |
                 MHWRender::MSceneRender::kRenderPostSceneUIItems));
         if (!m_object_display_textures) {
-            scenePassOp->setDisplayModeOverride(display_mode_shaded_wireframe);
+            scenePassOp->setDisplayModeOverride(DISPLAY_MODE_SHADED_WIREFRAME);
         } else {
             scenePassOp->setDisplayModeOverride(
-                display_mode_shaded_wireframe_textured);
+                DISPLAY_MODE_SHADED_WIREFRAME_TEXTURED);
         }
-
-        layerMergeOp->setAlphaA(m_object_alpha);
     } else {
         MMSOLVER_ERR("DisplayLayer::updateRenderTargets: Display Layer \""
                      << m_name.asChar() << "\" has an invalid Display Style: "
                      << static_cast<short>(m_object_display_style));
     }
 
-    layerMergeOp->setEnabled(true);
-    layerMergeOp->setColorTargetA(kLayerColorTarget);
-    layerMergeOp->setDepthTargetA(kLayerDepthTarget);
-    layerMergeOp->setColorTargetB(kMainColorTarget);
-    layerMergeOp->setDepthTargetB(kMainDepthTarget);
-    layerMergeOp->setColorTargetC(kTempColorTarget);
-    layerMergeOp->setUseColorTargetC(m_edge_enable);
-    layerMergeOp->setRenderTargets(targets, kMainColorTarget, 1);
-    layerMergeOp->setLayerMode(m_layer_mode);
-    layerMergeOp->setLayerMix(m_layer_mix);
+    depthPassOp->setEnabled(depthPassEnabled);
+    layerMergeOp->setHoldOut(hold_out);
+
+    layerMergeOp->setColorTargetPreviousLayer(kMainColorTarget);
+    layerMergeOp->setDepthTargetPreviousLayer(kMainDepthTarget);
+    layerMergeOp->setAlphaPreviousLayer(1.0f);
+
+    layerMergeOp->setColorTargetCurrentLayer(kLayerColorTarget);
+    layerMergeOp->setDepthTargetCurrentLayer(kLayerDepthTarget);
+    layerMergeOp->setAlphaCurrentLayer(object_alpha);
+
+    layerMergeOp->setColorTargetEdges(kTempColorTarget);
+    layerMergeOp->setDepthTargetEdges(kTempDepthTarget);
+    layerMergeOp->setAlphaEdges(1.0f);
+    layerMergeOp->setUseColorTargetEdges(m_edge_enable);
+
+    layerMergeOp->setColorTargetBackground(kBackgroundColorTarget);
+    layerMergeOp->setDepthTargetBackground(kBackgroundDepthTarget);
+    layerMergeOp->setAlphaBackground(1.0f);
+
+    layerMergeOp->setRenderTargets(targets, kMainColorTarget, 2);
     layerMergeOp->setDebug(m_layer_draw_debug);
 
     return MS::kSuccess;
@@ -374,6 +424,9 @@ MStatus DisplayLayer::setPanelNames(const MString &name) {
 }
 
 MHWRender::MRenderOperation *DisplayLayer::getOperation(size_t &current_op) {
+    const bool verbose = false;
+    MMSOLVER_VRB("DisplayLayer::getOperation: "
+                 << m_name.asChar() << " current_op: " << current_op);
     const auto count = DisplayLayerPasses::kLayerPassesCount;
     if (current_op >= 0 && current_op < count) {
         return DisplayLayer::m_ops[current_op];

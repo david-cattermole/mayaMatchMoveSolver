@@ -1,0 +1,117 @@
+// Copyright (C) 2023 David Cattermole.
+//
+// This file is part of mmSolver.
+//
+// mmSolver is free software: you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// mmSolver is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+// --------------------------------------------------------------------
+//
+// Copies color and/or depth values from a (render target) texture to
+// another render target.
+
+// World-view-projection matrix.
+uniform mat4 gWVPXf : WorldViewProjection;
+
+// The size of the viewport.
+uniform vec2 gTargetSize : ViewportPixelSize;
+
+// Color texture input.  Expected to be a normal RGB(A)
+// channel image.
+uniform texture2D gColorTex : InputTexture
+<
+    string UIName = "Color Texture";
+>;
+uniform sampler2D gColorSampler = sampler_state {
+    Texture = <gColorTex>;
+};
+
+// Depth texture input.  Expected to be a single channel zero to
+// one image.
+uniform texture2D gDepthTex : InputTexture
+<
+    string UIName = "Depth Texture";
+>;
+uniform sampler2D gDepthSampler = sampler_state {
+    Texture = <gDepthTex>;
+};
+
+// Vertex Shader inputs.
+attribute VS_INPUT {
+    vec4 Pos : POSITION;
+    vec2 UV : TEXCOORD0;
+};
+
+attribute SHADER_DATA {
+    vec2 UV : TEXCOORD0;
+};
+
+// Vertex Shader
+GLSLShader VS_mmCopy {
+    void main() {
+        gl_Position = gWVPXf * Pos;
+        VS_OUTPUT.UV = UV;
+    }
+}
+
+// Pixel Shader Outputs
+attribute PIXEL_DATA {
+    vec4 colorOut : COLOR0;
+}
+
+GLSLShader PS_mmCopy_ColorAndDepth {
+    void main() {
+        vec2 uv = PS_INPUT.UV.xy;
+        colorOut = texture2D(gColorSampler, uv);
+        vec4 depth = texture2D(gDepthSampler, uv);
+        gl_FragDepth = depth.r;
+    }
+}
+
+GLSLShader PS_mmCopy_ColorOnly {
+    void main() {
+        vec2 uv = PS_INPUT.UV.xy;
+        colorOut = texture2D(gColorSampler, uv);
+    }
+}
+
+
+GLSLShader PS_mmCopy_DepthOnly {
+    void main() {
+        vec2 uv = PS_INPUT.UV.xy;
+        colorOut = vec4(0.0, 0.0, 0.0, 1.0);
+        vec4 depth = texture2D(gDepthSampler, uv);
+        gl_FragDepth = depth.r;
+    }
+}
+
+
+technique Main {
+    pass p0 {
+        VertexShader(in VS_INPUT, out SHADER_DATA VS_OUTPUT) = VS_mmCopy;
+        PixelShader(in SHADER_DATA PS_INPUT, out PIXEL_DATA) = PS_mmCopy_ColorAndDepth;
+    }
+}
+
+technique ColorOnly {
+    pass p0 {
+        VertexShader(in VS_INPUT, out SHADER_DATA VS_OUTPUT) = VS_mmCopy;
+        PixelShader(in SHADER_DATA PS_INPUT, out PIXEL_DATA) = PS_mmCopy_ColorOnly;
+    }
+}
+
+technique DepthOnly {
+    pass p0 {
+        VertexShader(in VS_INPUT, out SHADER_DATA VS_OUTPUT) = VS_mmCopy;
+        PixelShader(in SHADER_DATA PS_INPUT, out PIXEL_DATA) = PS_mmCopy_DepthOnly;
+    }
+}

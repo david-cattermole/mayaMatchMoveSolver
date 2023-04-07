@@ -19,44 +19,39 @@
  *
  */
 
-#include "SceneRender.h"
+#ifndef MM_SOLVER_RENDER_OPS_SCENE_DEPTH_RENDER_H
+#define MM_SOLVER_RENDER_OPS_SCENE_DEPTH_RENDER_H
 
 // Maya
-#include <maya/MShaderManager.h>
 #include <maya/MString.h>
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/render/data/constants.h"
+#include "mmSolver/render/ops/SceneRenderBase.h"
 #include "mmSolver/render/ops/scene_utils.h"
 
 namespace mmsolver {
 namespace render {
 
-SceneRender::SceneRender(const MString &name)
-    : SceneRenderBase(name), m_shader_override(nullptr) {}
+class SceneDepthRender : public SceneRenderBase {
+public:
+    SceneDepthRender(const MString &name);
+    ~SceneDepthRender() override;
 
-SceneRender::~SceneRender() {
-    m_targets = nullptr;
+    const MHWRender::MShaderInstance *shaderOverride() override;
 
-    if (m_shader_override) {
-        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-        if (!renderer) {
-            return;
-        }
-        const MHWRender::MShaderManager *shaderMgr =
-            renderer->getShaderManager();
-        if (!shaderMgr) {
-            return;
-        }
-        shaderMgr->releaseShader(m_shader_override);
-        m_shader_override = nullptr;
-    }
-}
+    const float depthPriority() const { return m_depth_priority; }
+    void setDepthPriority(const float value) { m_depth_priority = value; }
 
-const MHWRender::MShaderInstance *SceneRender::shaderOverride() {
-    return m_shader_override;
-}
+protected:
+    // Shader override for surfaces
+    MHWRender::MShaderInstance *m_shader_override;
+
+    float m_depth_priority;
+};
 
 }  // namespace render
 }  // namespace mmsolver
+
+#endif  // MM_SOLVER_RENDER_OPS_SCENE_DEPTH_RENDER_H

@@ -43,6 +43,9 @@ namespace render {
 enum TargetId {
     // Main render targets - where the final pixels will be
     // copied/blended and finally presented to the screen.
+    //
+    // This is also the previous layer's result, that the current layer is
+    // rendered on top of.
     kMainColorTarget = 0,
     kMainDepthTarget,
 
@@ -54,6 +57,11 @@ enum TargetId {
     // A temporary render target to render and then blend/copy into
     // other targets.
     kTempColorTarget,
+    kTempDepthTarget,
+
+    // The Maya background, and image planes.
+    kBackgroundColorTarget,
+    kBackgroundDepthTarget,
 
     // Always last field, used as 'number of items'.
     kTargetCount
@@ -65,9 +73,12 @@ enum TargetId {
 #define kLayerColorTargetName "__mmRenderer_LayerColorTarget2__"
 #define kLayerDepthTargetName "__mmRenderer_LayerDepthTarget2__"
 #define kTempColorTargetName "__mmRenderer_TempColorTarget3__"
+#define kTempDepthTargetName "__mmRenderer_TempDepthTarget3__"
+#define kBackgroundColorTargetName "__mmRenderer_BackgroundColorTarget4__"
+#define kBackgroundDepthTargetName "__mmRenderer_BackgroundDepthTarget4__"
 
 // Constant values
-const char kRendererUiName[] = "mmRenderer (beta)";
+const char kRendererUiName[] = "mmRenderer";
 const float kTransparentBlackColor[] = {0.0f, 0.0f, 0.0f, 0.0f};
 
 const MString kRenderGlobalsNodeName = "mmRenderGlobals";
@@ -100,7 +111,7 @@ const float kObjectAlphaDefault = 1.0f;
 const bool kEdgeEnableDefault = false;
 const float kEdgeColorDefault[] = {1.0f, 0.0f, 0.0f, 1.0f};
 const float kEdgeAlphaDefault = 1.0f;
-const EdgeDetectMode kEdgeDetectModeDefault = EdgeDetectMode::kFreiChen;
+const EdgeDetectMode kEdgeDetectModeDefault = EdgeDetectMode::k3dSilhouette;
 const float kEdgeThicknessDefault = 1.0f;
 const float kEdgeThresholdDefault = 1.0f;
 const float kEdgeThresholdColorDefault = 1.0f;
@@ -108,8 +119,17 @@ const float kEdgeThresholdAlphaDefault = 1.0f;
 const float kEdgeThresholdDepthDefault = 1.0f;
 
 // Render Operation Pass Names
+const MString kBeginClearMainTargetOpName = "mmRenderer_ClearMainTarget";
+const MString kBeginClearBackgroundTargetOpName =
+    "mmRenderer_ClearBackgroundTarget";
+const MString kLayerClearLayerTargetOpName =
+    "mmRenderer_Layer_ClearLayerTarget_";
+const MString kLayerClearTempTargetOpName = "mmRenderer_Layer_ClearTempTarget_";
+const MString kLayerCopyEdgeOpName = "mmRenderer_Layer_CopyEdge_";
+const MString kLayerCopyOpName = "mmRenderer_Layer_Copy_";
 const MString kLayerDepthPassName = "mmRenderer_Layer_DepthRender_";
 const MString kLayerEdgeDetectOpName = "mmRenderer_Layer_EdgeDetectOp_";
+const MString kLayerEdgePassOpName = "mmRenderer_Layer_EdgeRender_";
 const MString kLayerMergeOpName = "mmRenderer_Layer_Merge_";
 const MString kLayerObjectPassName = "mmRenderer_Layer_ObjectRender_";
 const MString kPresentOpName = "mmRenderer_PresentTarget";
@@ -137,6 +157,46 @@ const MString kAttrNameEdgeThreshold = "mmEdgeThreshold";
 const MString kAttrNameEdgeThresholdColor = "mmEdgeThresholdColor";
 const MString kAttrNameEdgeThresholdAlpha = "mmEdgeThresholdAlpha";
 const MString kAttrNameEdgeThresholdDepth = "mmEdgeThresholdDepth";
+
+// Clear Masks
+const auto CLEAR_MASK_NONE =
+    static_cast<uint32_t>(MHWRender::MClearOperation::kClearNone);
+const auto CLEAR_MASK_ALL =
+    static_cast<uint32_t>(MHWRender::MClearOperation::kClearAll);
+const auto CLEAR_MASK_DEPTH =
+    static_cast<uint32_t>(MHWRender::MClearOperation::kClearDepth);
+const auto CLEAR_MASK_COLOR =
+    static_cast<uint32_t>(MHWRender::MClearOperation::kClearColor);
+
+// Display modes
+const auto DISPLAY_MODE_SHADED =
+    static_cast<MHWRender::MSceneRender::MDisplayMode>(
+        MHWRender::MSceneRender::kShaded);
+const auto DISPLAY_MODE_SHADED_TEXTURED =
+    static_cast<MHWRender::MSceneRender::MDisplayMode>(
+        MHWRender::MSceneRender::kShaded | MHWRender::MSceneRender::kTextured);
+const auto DISPLAY_MODE_WIREFRAME =
+    static_cast<MHWRender::MSceneRender::MDisplayMode>(
+        MHWRender::MSceneRender::kWireFrame);
+const auto DISPLAY_MODE_SHADED_WIREFRAME =
+    static_cast<MHWRender::MSceneRender::MDisplayMode>(
+        MHWRender::MSceneRender::kShaded | MHWRender::MSceneRender::kWireFrame);
+const auto DISPLAY_MODE_SHADED_WIREFRAME_TEXTURED =
+    static_cast<MHWRender::MSceneRender::MDisplayMode>(
+        MHWRender::MSceneRender::kShaded | MHWRender::MSceneRender::kWireFrame |
+        MHWRender::MSceneRender::kTextured);
+
+// Draw these objects for transparency.
+const auto WIRE_DRAW_OBJECT_TYPES =
+    ~(MHWRender::MFrameContext::kExcludeMeshes |
+      MHWRender::MFrameContext::kExcludeNurbsCurves |
+      MHWRender::MFrameContext::kExcludeNurbsSurfaces |
+      MHWRender::MFrameContext::kExcludeSubdivSurfaces);
+
+// Draw all non-geometry normally.
+const auto NON_WIRE_DRAW_OBJECT_TYPES =
+    ((~WIRE_DRAW_OBJECT_TYPES) | MHWRender::MFrameContext::kExcludeImagePlane |
+     MHWRender::MFrameContext::kExcludePluginShapes);
 
 }  // namespace render
 }  // namespace mmsolver

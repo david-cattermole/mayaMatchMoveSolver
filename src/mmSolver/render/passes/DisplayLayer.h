@@ -29,7 +29,6 @@
 #include <maya/MBoundingBox.h>
 #include <maya/MColor.h>
 #include <maya/MDagMessage.h>
-#include <maya/MObjectHandle.h>
 #include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
 #include <maya/MUiMessage.h>
@@ -50,11 +49,23 @@ namespace render {
 // Enumerations to identify an operation within a list of
 // operations, used for each layer of the render override.
 enum DisplayLayerPasses {
+    // Reset auxiliary render targets to default values. (transparent
+    // black, with depth at far-clipping plane).
+    kClearLayerTargetOp = 0,
+    kClearTempTargetOp,
+
+    // Copy kMain*Target render targets to kTemp*Target.
+    kCopyOp,
+
     // Draw the scene (except image planes), but only write to the
     // depth channel.
-    kSceneDepthPass = 0,
+    kSceneDepthPass,
+    kSceneDepthPass2,
 
+    // Edge 3D rendering and 2D edge detection.
+    kCopyEdgeOp,
     kEdgeDetectOp,
+    kSceneEdgePass,
 
     // Hidden Line - Draw the scene as wireframe, but it will be cut
     // out from the depth pass.
@@ -72,7 +83,7 @@ public:
     DisplayLayer();
     ~DisplayLayer();
 
-    MStatus updateRenderOperations();
+    MStatus updateRenderOperations(const MSelectionList* drawable_nodes);
     MStatus updateRenderTargets(MHWRender::MRenderTarget** targets);
     MStatus setPanelNames(const MString& name);
     MRenderOperation* getOperation(size_t& current_op);
@@ -87,11 +98,20 @@ public:
     int32_t displayOrder() const { return m_display_order; }
     void setDisplayOrder(const int32_t value) { m_display_order = value; }
 
+    // The connected object set used to keep a list of all objects to
+    // be drawn by the display layer.
+    MObject objectSetNode() const { return m_object_set_node; }
+    void setObjectSetNode(const MObject& value) { m_object_set_node = value; }
+
     // How to composite the layer?
+    //
+    // TODO: Remove deprecated parameter.
     LayerMode layerMode() const { return m_layer_mode; }
     void setLayerMode(const LayerMode value) { m_layer_mode = value; }
 
     // How the layer blends into the layer stack.
+    //
+    // TODO: Remove deprecated parameter.
     float layerMix() const { return m_layer_mix; }
     void setLayerMix(const float value) { m_layer_mix = value; }
 
@@ -156,9 +176,13 @@ private:
     MString m_name;
     bool m_visibility;
     int32_t m_display_order;
+    bool m_layer_draw_debug;
+
+    // TODO: Remove deprecated parameters.
     LayerMode m_layer_mode;
     float m_layer_mix;
-    bool m_layer_draw_debug;
+
+    MObject m_object_set_node;
 
     // Object Pass appearance
     DisplayStyle m_object_display_style;

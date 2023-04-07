@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 David Cattermole.
+ * Copyright (C) 2023 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -17,11 +17,11 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * A full-screen quad render, with a shader applied.
+ * Explicitly clear render targets.
  */
 
-#ifndef MM_SOLVER_RENDER_OPS_QUAD_RENDER_BASE_H
-#define MM_SOLVER_RENDER_OPS_QUAD_RENDER_BASE_H
+#ifndef MM_SOLVER_RENDER_OPS_CLEAR_OPERATION_H
+#define MM_SOLVER_RENDER_OPS_CLEAR_OPERATION_H
 
 #include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
@@ -30,12 +30,10 @@
 namespace mmsolver {
 namespace render {
 
-class QuadRenderBase : public MHWRender::MQuadRender {
+class ClearOperation : public MHWRender::MClearOperation {
 public:
-    QuadRenderBase(const MString &name);
-    ~QuadRenderBase() override;
-
-    MHWRender::MClearOperation &clearOperation() override;
+    ClearOperation(const MString &name);
+    ~ClearOperation() override;
 
     void setRenderTargets(MHWRender::MRenderTarget **targets,
                           const uint32_t index, const uint32_t count) {
@@ -47,11 +45,8 @@ public:
     const MFloatPoint &viewRectangle() const { return m_view_rectangle; }
     void setViewRectangle(const MFloatPoint &rect) { m_view_rectangle = rect; }
 
-    float clearDepth() { return m_clear_depth; }
-    void setClearDepth(const float value) { m_clear_depth = value; }
-
-    uint32_t clearMask() { return m_clear_mask; }
-    void setClearMask(const uint32_t clear_mask) { m_clear_mask = clear_mask; }
+    MHWRender::MRenderTarget *const *targetOverrideList(
+        unsigned int &listSize) override;
 
 protected:
     // Targets used as input parameters to mShaderInstance;
@@ -64,13 +59,9 @@ protected:
 
     // View rectangle
     MFloatPoint m_view_rectangle;
-
-    // How the clear operation works?
-    float m_clear_depth;
-    uint32_t m_clear_mask;
 };
 
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MM_SOLVER_RENDER_OPS_QUAD_RENDER_BASE_H
+#endif  // MM_SOLVER_RENDER_OPS_CLEAR_OPERATION_H

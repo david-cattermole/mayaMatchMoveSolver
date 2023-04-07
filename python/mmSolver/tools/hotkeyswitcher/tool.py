@@ -19,9 +19,6 @@
 Tool for allowing the user to switch the hotkey set.
 """
 
-import datetime
-import uuid
-
 import maya.cmds
 
 import mmSolver.logger

@@ -118,13 +118,15 @@ class PrefWindow(BaseWindow):
             (
                 pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
                 self.subForm.getSolverUIMinimalUIWhileSolvingConfigValue,
-            )
+            ),
         ]
         if const.USE_MMRENDERER is True:
-            options.append(            (
-                pref_const.MM_RENDERER_BACKGROUND_NODE_TYPES_KEY,
-                self.subForm.getRendererBackgroundNodeTypesConfigValue,
-            ))
+            options.append(
+                (
+                    pref_const.MM_RENDERER_BACKGROUND_NODE_TYPES_KEY,
+                    self.subForm.getRendererBackgroundNodeTypesConfigValue,
+                )
+            )
 
         for key, func in options:
             value = func()

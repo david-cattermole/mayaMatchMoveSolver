@@ -350,6 +350,7 @@ def _expand_node_hierarchy(node_mobject, shapes):
         node_name = iterator.fullPathName()
         # LOG.debug('expand_node_hierarchy: fullName=%r', node_name)
         if node_name in shapes:
+            iterator.next()
             continue
 
         is_shape = obj.hasFn(OpenMaya2.MFn.kShape)

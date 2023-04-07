@@ -368,10 +368,14 @@ def _expand_node_hierarchy(node_mobject, shapes):
     return shapes
 
 
-def update_set_nodes(set_node, layer_node, processed_shape_nodes):
+def update_set_nodes(
+    set_node, layer_node, processed_shape_nodes, background_node_types
+):
     assert isinstance(set_node, pycompat.TEXT_TYPE)
     assert isinstance(layer_node, pycompat.TEXT_TYPE)
     assert isinstance(processed_shape_nodes, set)
+    assert isinstance(background_node_types, set)
+
     # LOG.debug('update_set_nodes: set_node=%r layer_node=%r', set_node, layer_node)
     member_nodes = (
         maya.cmds.editDisplayLayerMembers(layer_node, query=True, fullNames=True) or []
@@ -380,7 +384,6 @@ def update_set_nodes(set_node, layer_node, processed_shape_nodes):
 
     all_shape_nodes = set()
     if len(member_nodes) > 0:
-
         for member_node in member_nodes:
             # LOG.debug('member_node=%r', member_node)
             member_obj = node_utils.get_as_object_apitwo(member_node)
@@ -399,7 +402,7 @@ def update_set_nodes(set_node, layer_node, processed_shape_nodes):
             [
                 x
                 for x in all_shape_nodes
-                if maya.cmds.nodeType(x) not in const.EXCLUDE_DRAW_NODE_TYPES
+                if maya.cmds.nodeType(x) not in background_node_types
             ]
         )
         if len(all_shape_nodes) > 0:
@@ -408,8 +411,9 @@ def update_set_nodes(set_node, layer_node, processed_shape_nodes):
     return all_shape_nodes | processed_shape_nodes
 
 
-def add_attrs_to_layers(layer_nodes):
+def add_attrs_to_layers(layer_nodes, background_node_types):
     assert isinstance(layer_nodes, list)
+    assert isinstance(background_node_types, set)
 
     # DEFAULT_LAYER_NODE_NAME must be the last layer, so that shape
     # nodes from all other layers are not included in it.
@@ -423,6 +427,6 @@ def add_attrs_to_layers(layer_nodes):
         set_node = create_set_node(layer_node)
         connect_layer_attributes(src_node=layer_node, dst_node=set_node)
         all_member_shape_nodes = update_set_nodes(
-            set_node, layer_node, all_member_shape_nodes
+            set_node, layer_node, all_member_shape_nodes, background_node_types
         )
     return

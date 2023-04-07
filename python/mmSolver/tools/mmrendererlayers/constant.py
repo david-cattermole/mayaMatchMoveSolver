@@ -21,13 +21,6 @@ Values used for MM Renderer Layers
 
 DEFAULT_LAYER_NODE_NAME = 'defaultLayer'
 
-EXCLUDE_DRAW_NODE_TYPES = set(
-    [
-        'imagePlane',
-        'mmImagePlaneShape',
-    ]
-)
-
 LAYER_ATTR_LAYER_MODE = 'mmLayerMode'
 LAYER_ATTR_LAYER_MIX = 'mmLayerMix'
 LAYER_ATTR_LAYER_DRAW_DEBUG = 'mmLayerDrawDebug'

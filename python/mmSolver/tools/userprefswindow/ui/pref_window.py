@@ -91,9 +91,6 @@ class PrefWindow(BaseWindow):
         option_keys = [
             pref_const.REG_EVNT_ADD_NEW_MKR_TO_KEY,
             pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY,
-            pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY,
-            pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY,
-            pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY,
             pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
         ]
         for key in option_keys:
@@ -114,18 +111,6 @@ class PrefWindow(BaseWindow):
             (
                 pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY,
                 self.subForm.getAddNewLinesToConfigValue,
-            ),
-            (
-                pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY,
-                self.subForm.getSolverUIValidateOnOpenConfigValue,
-            ),
-            (
-                pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY,
-                self.subForm.getSolverUIShowValidateButtonConfigValue,
-            ),
-            (
-                pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY,
-                self.subForm.getSolverUIAllowObjectRelationsConfigValue,
             ),
             (
                 pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,

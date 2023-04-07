@@ -25,6 +25,7 @@
 // Maya
 #include <maya/MBoundingBox.h>
 #include <maya/MObject.h>
+#include <maya/MSelectionList.h>
 #include <maya/MShaderManager.h>
 #include <maya/MStreamUtils.h>
 #include <maya/MString.h>

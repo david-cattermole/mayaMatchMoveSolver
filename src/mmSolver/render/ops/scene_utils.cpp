@@ -131,7 +131,6 @@ MStatus add_all_image_planes(MSelectionList& out_selection_list) {
 
     if (verbose) {
         MStatus status = MS::kSuccess;
-        // MObject node;
         MDagPath dagPath;
         for (int i = 0; i < out_selection_list.length(); i++) {
             status = out_selection_list.getDagPath(i, dagPath);

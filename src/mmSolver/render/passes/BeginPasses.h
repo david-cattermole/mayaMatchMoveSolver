@@ -28,6 +28,7 @@
 #include <maya/MDagMessage.h>
 #include <maya/MObjectHandle.h>
 #include <maya/MRenderTargetManager.h>
+#include <maya/MSelectionList.h>
 #include <maya/MString.h>
 #include <maya/MUiMessage.h>
 #include <maya/MViewport2Renderer.h>

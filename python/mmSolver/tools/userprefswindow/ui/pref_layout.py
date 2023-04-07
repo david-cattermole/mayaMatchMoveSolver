@@ -35,6 +35,7 @@ import mmSolver.logger
 import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.userpreferences.lib as userprefs_lib
 import mmSolver.tools.userpreferences.constant as pref_const
+import mmSolver.tools.userprefswindow.constant as const
 import mmSolver.tools.userprefswindow.ui.ui_pref_layout as ui_pref_layout
 
 LOG = mmSolver.logger.get_logger()
@@ -49,6 +50,9 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         # Don't show the deprecated features. They are not used
         # anyway.
         self.deprecated_groupBox.setVisible(False)
+
+        # MM Renderer is not ready for production use, yet.
+        self.mmRenderer_groupBox.setVisible(const.USE_MMRENDERER)
         return
 
     def set_config(self, config):
@@ -60,7 +64,9 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         self.updateAddNewMarkersToWidget(config)
         self.updateAddNewLinesToWidget(config)
         self.updateSolverUIMinimalUIWhileSolvingWidget(config)
-        self.updateRendererBackgroundNodeTypesWidget(config)
+
+        if const.USE_MMRENDERER is True:
+            self.updateRendererBackgroundNodeTypesWidget(config)
 
         # Deprecated options, kept for backwards compatibility, but
         # they are hidden by default anyway.

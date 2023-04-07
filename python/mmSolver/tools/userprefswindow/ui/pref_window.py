@@ -90,6 +90,7 @@ class PrefWindow(BaseWindow):
         config = self._config
         option_keys = [
             pref_const.REG_EVNT_ADD_NEW_MKR_TO_KEY,
+            pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY,
             pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY,
             pref_const.SOLVER_UI_SHOW_VALIDATE_BTN_KEY,
             pref_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY,
@@ -109,6 +110,10 @@ class PrefWindow(BaseWindow):
             (
                 pref_const.REG_EVNT_ADD_NEW_MKR_TO_KEY,
                 self.subForm.getAddNewMarkersToConfigValue,
+            ),
+            (
+                pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY,
+                self.subForm.getAddNewLinesToConfigValue,
             ),
             (
                 pref_const.SOLVER_UI_VALIDATE_ON_OPEN_KEY,

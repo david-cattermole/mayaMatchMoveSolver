@@ -1,0 +1,132 @@
+# To create and run the docker container in PowerShell or BASH:
+#
+# $ docker build --file share/docker/Dockerfile_maya2024 -t mmsolver-linux-maya2024-build .
+# $ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-maya2024-build
+#
+#
+# Once the docker image is built and run, you can execute the
+# following...
+#
+#
+# Install Python and run tools:
+#
+# $ source ./scripts/python_venv_activate_maya2024.bash
+# $ ./scripts/python_linter_run_pylint.bash
+# $ ./scripts/python_linter_run_flake8.bash
+# $ ./scripts/python_linter_run_cpplint.bash
+# $ ./scripts/python_formatter_run_black_check.bash
+# $ deactivate
+#
+#
+# Build CMake project:
+#
+# $ ./scripts/build_mmSolver_linux_maya2024.bash
+# $ mayapy tests/runTests.py
+#
+
+FROM rockylinux:8
+
+# Maya documentation for installing on RHEL8 / Rocky8:
+# https://help.autodesk.com/view/MAYAUL/2024/ENU/?guid=GUID-D2B5433C-E0D2-421B-9BD8-24FED217FD7F
+#
+# And this forum post:
+# https://forums.autodesk.com/t5/maya-forum/install-maya-2023-update-3-on-rocky-linux-8-7-instructions/td-p/11735138
+
+RUN dnf install --assumeyes https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && dnf install --assumeyes epel-release && dnf makecache
+
+# General packages
+RUN dnf install --assumeyes \
+       glibc \
+       libSM \
+       libICE \
+       zlib \
+       openssl-libs \
+       nss \
+       libnsl \
+       dbus \
+       redhat-lsb-core \ 
+       pcre-utf16
+
+# Multimedia Packages
+RUN dnf install --assumeyes \
+       mesa-libGLU \
+       mesa-libGLw \
+       gamin \
+       audiofile-devel \
+       e2fsprogs-libs \
+       libcap \
+       libdrm \
+       libmng \
+       speech-dispatcher \
+       cups \
+       libpng15
+       # flite
+
+# X Window – Xcb – X11 Packages
+RUN dnf install --assumeyes \
+       libXau \
+       libXcomposite \
+       libXcursor \
+       libXext \
+       libXfixes \
+       libXi \
+       libXmu \
+       libXp \
+       libXrandr \
+       libXrender \
+       libXScrnSaver \
+       libxshmfence \
+       libXt \
+       libXtst \
+       libXinerama \
+       libxcb \
+       xcb-util \
+       xcb-util-wm \
+       xcb-util-image \
+       xcb-util-keysyms \
+       xcb-util-renderutil \
+       libxkbcommon \
+       libxkbcommon-x11 \
+       libX11
+
+# Install fonts needed by Maya.
+# This is probably only needed by the GUI (which we will not open),
+# but it's good to have everything needed, just in case.
+RUN dnf install --assumeyes \
+       fontconfig \
+       freetype \
+       xorg-x11-fonts-ISO8859-1-100dpi \
+       xorg-x11-fonts-ISO8859-1-75dpi \
+       liberation-mono-fonts \
+       liberation-fonts-common \
+       liberation-sans-fonts \
+       liberation-serif-fonts
+
+# Install latest stable Rust with 'rustup'.
+#
+# TODO: Define a minimum Rust version to install.
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y \
+    && source ${HOME}/.cargo/env
+
+# Development tools for Maya 2024.
+RUN dnf install --assumeyes \
+       git \
+       python3 \
+       cmake \
+       clang-tools-extra \
+       gcc-toolset-11
+
+# Install Maya from archive.
+ADD ./external/archives/Autodesk_Maya_2024_Linux_64bit.tgz /temp
+RUN rpm -Uvh --force /temp/Packages/Maya2024*.rpm && rm -r /temp
+ENV MAYA_LOCATION=/usr/autodesk/maya/
+ENV PATH=$MAYA_LOCATION/bin:$PATH
+
+# Workaround for Maya "Segmentation fault (core dumped)" issue.
+# See https://forums.autodesk.com/t5/maya-general/render-crash-on-linux/m-p/5608552/highlight/true
+ENV MAYA_DISABLE_CIP=1
+
+WORKDIR /mmSolver
+
+# Maya 2024 development environment.
+ENTRYPOINT [ "scl", "enable", "gcc-toolset-11", "bash" ]

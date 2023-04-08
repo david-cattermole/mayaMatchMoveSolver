@@ -138,7 +138,7 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y \
 # Development tools for Maya 2024.
 RUN dnf install --assumeyes \
        git \
-       python3 \
+       python39 \
        cmake \
        clang-tools-extra \
        gcc-toolset-11

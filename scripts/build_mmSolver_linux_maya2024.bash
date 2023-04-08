@@ -25,7 +25,7 @@ MAYA_VERSION=2024
 MAYA_LOCATION=/usr/autodesk/maya2024/
 
 # Executable names/paths used for build process.
-PYTHON_EXE=python3
+PYTHON_EXE=python3.9
 CMAKE_EXE=cmake3
 RUST_CARGO_EXE=cargo
 

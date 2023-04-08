@@ -48,7 +48,9 @@ RUN dnf install --assumeyes \
        libnsl \
        dbus \
        redhat-lsb-core \ 
-       pcre-utf16
+       pcre-utf16 \
+       pciutils \
+       libXdamage
 
 # Multimedia Packages
 RUN dnf install --assumeyes \

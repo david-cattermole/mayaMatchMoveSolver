@@ -34,7 +34,7 @@ FROM rockylinux:8
 
 RUN dnf install --assumeyes https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
        && dnf install --assumeyes epel-release \
-       && dnf update \
+       && dnf update --assumeyes \
        && dnf makecache
 
 # General packages

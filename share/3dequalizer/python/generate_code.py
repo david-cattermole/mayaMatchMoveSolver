@@ -235,10 +235,9 @@ def _filter_python_script(existing_import_lines, text_contents):
         elif _startswith_triple_quotes(line):
             if docs_block_begin_line is None:
                 docs_block_begin_line = i
-            else:
-                if docs_block_end_line is None:
-                    docs_block_end_line = i
-                    break
+            elif docs_block_end_line is None:
+                docs_block_end_line = i
+                break
 
     # print('license block: %r-%r' % (license_block_begin_line, license_block_end_line))
     # print('docs block: %r-%r' % (docs_block_begin_line, docs_block_end_line))

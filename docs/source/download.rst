@@ -154,6 +154,9 @@ The 3DEqualizer tools are for integration into workflows using 3DEqualizer.
    * - export_track_mmsolver.py
      - Export 2D Tracks (MM Solver)...
 
+   * - import_track_mmsolver.py
+     - Import 2D Tracks (MM Solver)...
+
    * - paste_camera_mmsolver.py
      - Paste Camera (MM Solver)...
 

@@ -65,14 +65,14 @@ ECHO Activating Python Virtual Environment "%PYTHON_VIRTUAL_ENV_DIR_NAME%"
 CALL %PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT%
 
 :: Install requirements
+SET MAYA_VERSION_REQUIRE_FILE=%PROJECT_ROOT%\share\requirements-dev-maya%MAYA_VERSION%.txt
 IF "%REQUIRE_PACKAGE_INSTALL%"=="1" (
     :: %PYTHON_EXE% -m pip install --upgrade pip
     %PYTHON_EXE% -m pip install -r "%PROJECT_ROOT%\share\requirements-dev.txt"
     %PYTHON_EXE% -m pip install -r "%PROJECT_ROOT%\share\requirements-doc.txt"
 
-    SET REQUIRE_DEV_MAYA_VERSION_FILE=%PROJECT_ROOT%\share\requirements-dev-maya${MAYA_VERSION}.txt
-    IF EXIST %REQUIRE_DEV_MAYA_VERSION_FILE% (
-        %PYTHON_EXE% -m pip install -r %REQUIRE_DEV_MAYA_VERSION_FILE%
+    IF EXIST %MAYA_VERSION_REQUIRE_FILE% (
+        %PYTHON_EXE% -m pip install -r %MAYA_VERSION_REQUIRE_FILE%
     )
 )
 

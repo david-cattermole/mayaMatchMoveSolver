@@ -32,7 +32,10 @@ FROM rockylinux:8
 # And this forum post:
 # https://forums.autodesk.com/t5/maya-forum/install-maya-2023-update-3-on-rocky-linux-8-7-instructions/td-p/11735138
 
-RUN dnf install --assumeyes https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && dnf install --assumeyes epel-release && dnf makecache
+RUN dnf install --assumeyes https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
+       && dnf install --assumeyes epel-release \
+       && dnf update \
+       && dnf makecache
 
 # General packages
 RUN dnf install --assumeyes \
@@ -49,6 +52,8 @@ RUN dnf install --assumeyes \
 
 # Multimedia Packages
 RUN dnf install --assumeyes \
+       mesa-libGL \
+       mesa-libGL-devel \
        mesa-libGLU \
        mesa-libGLw \
        gamin \
@@ -64,30 +69,33 @@ RUN dnf install --assumeyes \
 
 # X Window – Xcb – X11 Packages
 RUN dnf install --assumeyes \
+       libX11 \
+       libXScrnSaver \
        libXau \
        libXcomposite \
        libXcursor \
        libXext \
        libXfixes \
        libXi \
+       libXinerama \
        libXmu \
        libXp \
+       libXpm \
        libXrandr \
        libXrender \
-       libXScrnSaver \
-       libxshmfence \
        libXt \
        libXtst \
-       libXinerama \
        libxcb \
+       libxkbcommon \
+       libxkbcommon-x11 \
+       libxshmfence \
        xcb-util \
-       xcb-util-wm \
        xcb-util-image \
        xcb-util-keysyms \
        xcb-util-renderutil \
-       libxkbcommon \
-       libxkbcommon-x11 \
-       libX11
+       xcb-util-wm \
+       xorg-x11-server-Xorg \
+       xorg-x11-server-Xvfb
 
 # Install fonts needed by Maya.
 # This is probably only needed by the GUI (which we will not open),
@@ -101,6 +109,23 @@ RUN dnf install --assumeyes \
        liberation-fonts-common \
        liberation-sans-fonts \
        liberation-serif-fonts
+
+# OpenSource "mesa" OpenGL Driver.
+RUN dnf install --assumeyes \
+       mesa-libGLw \
+       mesa-libGLU \
+       mesa-libGL-devel \
+       mesa-libEGL-devel \
+       mesa-libGLES-devel \
+       mesa-libGLU-devel \
+       mesa-libGLw-devel \
+       libglvnd \
+       libglvnd-opengl \
+       libglvnd-egl \
+       libglvnd-glx \
+       libglvnd-gles \
+       libglvnd-core-devel \
+       libglvnd-devel
 
 # Install latest stable Rust with 'rustup'.
 #
@@ -118,6 +143,9 @@ RUN dnf install --assumeyes \
 
 # Install Maya from archive.
 ADD ./external/archives/Autodesk_Maya_2024_Linux_64bit.tgz /temp
+# 'rpm --force' is needed to override the dependency conflict of using
+# 'tcl' (which is required by 'gcc-toolset-11', because it's a
+# "software collection" using environment modules written in tcl).
 RUN rpm -Uvh --force /temp/Packages/Maya2024*.rpm && rm -r /temp
 ENV MAYA_LOCATION=/usr/autodesk/maya/
 ENV PATH=$MAYA_LOCATION/bin:$PATH

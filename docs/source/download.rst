@@ -29,6 +29,10 @@ Download the latest release **mmSolver v0.4.4**:
      - Maya 2023
      - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.4.4/mayaMatchMoveSolver-0.4.4-maya2023-linux.tar.gz>`_
 
+   * - Linux
+     - Maya 2024
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.4.4/mayaMatchMoveSolver-0.4.4-maya2024-linux.tar.gz>`_
+
    * - Windows
      - Maya 2018
      - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.4.4/mayaMatchMoveSolver-0.4.4-maya2018-win64.zip>`_

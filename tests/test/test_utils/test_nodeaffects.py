@@ -26,9 +26,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import time
 import unittest
-import pprint
 
 import maya.cmds
 
@@ -150,7 +148,7 @@ class TestNodeAffects(test_utils.UtilsTestCase):
             options='v=0',
         )
         tfm_node = 'null1'
-        plugs = nodeaffects.find_plugs_affecting_transform(tfm_node, None)
+        nodeaffects.find_plugs_affecting_transform(tfm_node, None)
         return
 
     def test_find_plugs_affecting_transform_simple_rivet(self):
@@ -169,7 +167,7 @@ class TestNodeAffects(test_utils.UtilsTestCase):
         )
 
         tfm_node = 'rivet1'
-        plugs = nodeaffects.find_plugs_affecting_transform(tfm_node, None)
+        nodeaffects.find_plugs_affecting_transform(tfm_node, None)
         return
 
     # def test_find_plugs_affecting_transform_rig_rivet(self):

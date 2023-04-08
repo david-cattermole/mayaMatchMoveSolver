@@ -23,9 +23,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
-import math
-import time
 import unittest
 
 try:
@@ -48,7 +45,6 @@ class TestLens2(solverUtils.SolverTestCase):
 
     def test_create_lens_deformer(self):
         tfm, creator = maya.cmds.polyPlane(axis=(0.0, 0.0, 1.0))
-        shp = maya.cmds.listRelatives(tfm, shapes=True)[0]
         lens_node = maya.cmds.createNode('mmLensModel3de')
         deform_node = maya.cmds.deformer(tfm, type='mmLensDeformer')[0]
 
@@ -73,7 +69,6 @@ class TestLens2(solverUtils.SolverTestCase):
 
     def test_create_lens_deformer_with_layers(self):
         tfm, creator = maya.cmds.polyPlane(axis=(0.0, 0.0, 1.0))
-        shp = maya.cmds.listRelatives(tfm, shapes=True)[0]
         lens_a_node = maya.cmds.createNode('mmLensModel3de')
         lens_b_node = maya.cmds.createNode('mmLensModel3de')
         deform_node = maya.cmds.deformer(tfm, type='mmLensDeformer')[0]

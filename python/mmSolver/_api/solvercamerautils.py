@@ -299,7 +299,6 @@ def _sub_bundle_adjustment(
             node_attrs.append(value)
 
     markers = []
-    new_mkr_bnd_list = []
     mkr_list = [marker.Marker(node=n) for n in mkr_nodes]
     for mkr in mkr_list:
         bnd = mkr.get_bundle()
@@ -592,7 +591,6 @@ def _solve_relative_poses(
     assert isinstance(accumulated_bnd_nodes, set)
     failed_frames = set()
 
-    new_possible_frames = []
     tmp_possible_frames = list(possible_frames)
     while len(tmp_possible_frames) > 0:
         if root_frame_a in tmp_possible_frames:
@@ -868,7 +866,6 @@ def _cache_position_marker_nodes(root_frames, enabled_marker_nodes):
     position_marker_nodes = {}
     for frame in root_frames:
         position_marker_nodes[frame] = {}
-        mkr_positions = {}
         mkr_nodes = enabled_marker_nodes[frame]
         for mkr_node in mkr_nodes:
             attr_tx = mkr_node + '.translateX'

@@ -24,18 +24,13 @@ from __future__ import division
 from __future__ import print_function
 
 import time
-import pprint
-import math
 import unittest
 
 import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.time as time_utils
-import mmSolver.utils.python_compat as pycompat
 import mmSolver.api as mmapi
-import mmSolver.tools.solver.lib.collection as lib_col
-import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
 import test.test_api.apiutils as test_api_utils
 
 

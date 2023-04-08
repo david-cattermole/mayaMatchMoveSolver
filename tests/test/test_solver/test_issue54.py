@@ -25,8 +25,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
-import math
 import time
 import unittest
 
@@ -38,7 +36,6 @@ except RuntimeError:
     pass
 import maya.cmds
 
-import mmSolver.api as mmapi
 import test.test_solver.solverutils as solverUtils
 
 

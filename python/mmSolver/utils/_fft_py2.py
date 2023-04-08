@@ -22,7 +22,6 @@
 #
 
 import cmath
-import sys
 
 
 # For python 2.

@@ -29,7 +29,6 @@ import maya.cmds
 
 import mmSolver.api as mmapi
 import mmSolver.logger
-import mmSolver.tools.centertwodee.lib as lib
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.reproject as reproject_utils
 

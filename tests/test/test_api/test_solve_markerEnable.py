@@ -23,7 +23,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import time
 import pprint
 import math
 import unittest
@@ -31,11 +30,7 @@ import unittest
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.utils.time as time_utils
-import mmSolver.utils.python_compat as pycompat
 import mmSolver.api as mmapi
-import mmSolver.tools.solver.lib.collection as lib_col
-import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
 import test.test_api.apiutils as test_api_utils
 
 
@@ -79,7 +74,6 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
         # calculate angle of view (AOV)
         f = maya.cmds.getAttr(cam_shp + '.focalLength')
         fbw = maya.cmds.getAttr(cam_shp + '.horizontalFilmAperture') * 25.4
-        fbh = maya.cmds.getAttr(cam_shp + '.verticalFilmAperture') * 25.4
         aov = math.degrees(2.0 * math.atan(fbw * (0.5 / f)))
 
         # Set Camera Anim
@@ -230,7 +224,7 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
         # Ensure the values are correct
         for res in results:
             success = res.get_success()
-            err = res.get_final_error()
+            res.get_final_error()
             print('error stats: ' + pprint.pformat(res.get_error_stats()))
             print('timer stats: ' + pprint.pformat(res.get_timer_stats()))
             print('solver stats: ' + pprint.pformat(res.get_solver_stats()))

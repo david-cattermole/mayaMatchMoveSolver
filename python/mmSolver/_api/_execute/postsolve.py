@@ -24,7 +24,6 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.viewport as viewport_utils
-import mmSolver.utils.node as node_utils
 import mmSolver._api.constant as const
 import mmSolver._api.state as api_state
 import mmSolver._api.solveresult as solveresult

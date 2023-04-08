@@ -23,8 +23,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import sys
-import os
 import unittest
 
 import maya.cmds
@@ -102,7 +100,6 @@ class TestMarker(test_api_utils.APITestCase):
         self.assertEqual(x.get_camera(), None)
 
         cam = self.create_camera('myCamera1')
-        cam_tfm = cam.get_transform_node()
         cam_shp = cam.get_shape_node()
 
         # Create marker linked to camera
@@ -156,7 +153,6 @@ class TestMarker(test_api_utils.APITestCase):
         Set colour of the marker.
         """
         red = (1.0, 0.0, 0.0)
-        green = (0.0, 1.0, 0.0)
         blue = (0.0, 0.0, 1.0)
 
         x = marker.Marker()

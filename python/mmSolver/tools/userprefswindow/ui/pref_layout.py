@@ -27,8 +27,6 @@ import mmSolver.ui.qtpyutils as qtpyutils
 
 qtpyutils.override_binding_order()
 
-import mmSolver.ui.Qt.QtCore as QtCore
-import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
@@ -197,6 +195,5 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         return
 
     def getRendererBackgroundNodeTypesConfigValue(self):
-        key = pref_const.MM_RENDERER_BACKGROUND_NODE_TYPES_KEY
         value = self.backgroundNodeTypesLineEdit.text()
         return value

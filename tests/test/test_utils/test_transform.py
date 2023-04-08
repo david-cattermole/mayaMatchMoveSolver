@@ -113,8 +113,6 @@ class TestTransform(test_utils.UtilsTestCase):
         return
 
     def test_detect_rotate_pivot_non_zero(self):
-        start_frame = 1001
-        end_frame = 1101
         tfm_node = maya.cmds.createNode('transform')
         tfm = mod.TransformNode(tfm_node)
         self.assertFalse(mod.detect_rotate_pivot_non_zero(tfm))
@@ -737,7 +735,6 @@ class TestTransform(test_utils.UtilsTestCase):
     def test_TransformNode_usage(self):
         start_frame = 1001
         end_frame = 1101
-        times = list(range(start_frame, end_frame))
         maya_node = maya.cmds.createNode('transform', name='myNode')
         tfm_node = mod.TransformNode(node=maya_node)
         node = tfm_node.get_node()
@@ -750,10 +747,9 @@ class TestTransform(test_utils.UtilsTestCase):
     def test_TransformMatrixCache_init(self):
         start_frame = 1001
         end_frame = 1101
-        times = list(range(start_frame, end_frame))
         node = maya.cmds.createNode('transform')
-        tfm_node = mod.TransformNode(node=node)
-        tfm_matrix_cache = mod.TransformMatrixCache()
+        mod.TransformNode(node=node)
+        mod.TransformMatrixCache()
         return
 
     def test_TransformMatrixCache_usage(self):

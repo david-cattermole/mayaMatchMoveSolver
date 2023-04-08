@@ -21,7 +21,6 @@ Functions for sub-dividing a line with more markers.
 
 import maya.cmds
 import mmSolver.logger
-import mmSolver.api as mmapi
 import mmSolver._api.line as line_api
 
 

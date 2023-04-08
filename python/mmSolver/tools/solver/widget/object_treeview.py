@@ -27,9 +27,6 @@ import mmSolver.ui.qtpyutils as qtpyutils
 
 qtpyutils.override_binding_order()
 
-import mmSolver.ui.Qt as Qt
-import mmSolver.ui.Qt.QtCore as QtCore
-import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils

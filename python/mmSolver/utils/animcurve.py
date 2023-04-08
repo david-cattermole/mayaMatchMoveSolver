@@ -92,7 +92,7 @@ def create_anim_curve_node_apione(
     # create anim curve
     animfn = OpenMayaAnim1.MFnAnimCurve()
     if node_attr is None:
-        animCurve = animfn.create(anim_type)
+        animfn.create(anim_type)
     else:
         # Get the plug to be animated.
         dst_plug = node_utils.get_as_plug(node_attr)

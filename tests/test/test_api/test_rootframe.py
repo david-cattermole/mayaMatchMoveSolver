@@ -26,9 +26,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import time
-import pprint
-import math
 import unittest
 
 import maya.cmds
@@ -60,7 +57,7 @@ class TestRootFrame(test_api_utils.APITestCase):
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         cam = mmapi.Camera(shape=cam_shp)
-        mkr_grp = mmapi.MarkerGroup().create_node(cam=cam)
+        mmapi.MarkerGroup().create_node(cam=cam)
 
         # Marker A
         mkr_a = mmapi.Marker().create_node()
@@ -91,7 +88,7 @@ class TestRootFrame(test_api_utils.APITestCase):
         cam_tfm = maya.cmds.createNode('transform', name='cam_tfm')
         cam_shp = maya.cmds.createNode('camera', name='cam_shp', parent=cam_tfm)
         cam = mmapi.Camera(shape=cam_shp)
-        mkr_grp = mmapi.MarkerGroup().create_node(cam=cam)
+        mmapi.MarkerGroup().create_node(cam=cam)
 
         # Marker A
         mkr_a = mmapi.Marker().create_node()

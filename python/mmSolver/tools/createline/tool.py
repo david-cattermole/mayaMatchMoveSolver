@@ -104,6 +104,5 @@ def main():
     mkr_list = line.get_marker_list()
     mkr_nodes = [mkr.get_node() for mkr in mkr_list]
 
-    line_node = line.get_node()
     maya.cmds.select(mkr_nodes, replace=True)
     return

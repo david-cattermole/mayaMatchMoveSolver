@@ -35,7 +35,6 @@ qtpyutils.override_binding_order()
 import mmSolver.ui.Qt.QtGui as QtGui
 
 import mmSolver.utils.time as time_utils
-import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.tools as tools_utils
 import mmSolver.tools.savemarkerfile.lib as lib
 import mmSolver.api as mmapi

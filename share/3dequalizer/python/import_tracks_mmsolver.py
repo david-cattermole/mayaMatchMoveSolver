@@ -40,30 +40,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import abc
-import collections
-import json
 import logging
-import math
-import sys
 import os
 import os.path
-import re
 
 import tde4
 
 import mmSolver.utils.python_compat as pycompat
 import mmSolver.utils.loadfile.excep as excep
-import mmSolver.utils.loadfile.loader as loader
-import mmSolver.utils.loadfile.floatutils as floatutils
-import mmSolver.utils.loadfile.keyframedata as keyframedata
-import mmSolver.utils.loadfile.formatmanager as fmtmgr
-import mmSolver.utils.loadmarker.fileinfo as fileinfo
 import mmSolver.utils.loadmarker.formatmanager as formatmanager
-import mmSolver.utils.loadmarker.formatmanager as fmtmgr
-import mmSolver.utils.loadmarker.markerdata as markerdata
-import mmSolver.tools.loadmarker.constant as const
-import mmSolver.logger
 
 LOG = logging.getLogger()
 

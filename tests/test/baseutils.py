@@ -25,7 +25,6 @@ from __future__ import print_function
 
 import pprint
 import os
-import math
 import time
 import unittest
 import cProfile as profile

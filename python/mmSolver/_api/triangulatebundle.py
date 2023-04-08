@@ -23,7 +23,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import collections
 import math
 
 import maya.cmds
@@ -34,12 +33,6 @@ import mmSolver.logger
 import mmSolver.utils.lineintersect as tri_utils
 import mmSolver.utils.camera as cam_utils
 import mmSolver._api.constant as const
-import mmSolver._api.utils as api_utils
-import mmSolver._api.bundle as bundle
-import mmSolver._api.frame as frame
-import mmSolver._api.solverbase as solverbase
-import mmSolver._api.attribute as attribute
-import mmSolver._api.action as api_action
 
 
 LOG = mmSolver.logger.get_logger()

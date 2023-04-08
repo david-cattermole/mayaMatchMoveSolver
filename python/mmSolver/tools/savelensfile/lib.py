@@ -28,7 +28,6 @@ import tempfile
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.loadlens.constant as const_load
 import mmSolver.tools.savelensfile.constant as const

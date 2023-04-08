@@ -22,7 +22,6 @@ Getting and setting colours for objects.
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.utils.time as time_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.api as mmapi
 

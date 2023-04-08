@@ -149,7 +149,6 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         path = self.get_data_path('scenes', name)
         maya.cmds.file(path, open=True, force=True)
 
-        base_node = 'group'
         node = 'node'
         ctrls = lib.create([node])
         ctrl = ctrls[0]
@@ -182,7 +181,6 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         path = self.get_data_path('scenes', name)
         maya.cmds.file(path, open=True, force=True)
 
-        base_node = 'group'
         node = 'node'
         ctrls = lib.create([node])
         ctrl = ctrls[0]
@@ -334,8 +332,8 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         maya.cmds.setKeyframe(tfm_b, attribute='translateZ', value=20.0, time=end)
         maya.cmds.setKeyframe(tfm_b, attribute='rotateY', value=-60.0, time=end)
 
-        child_a = maya.cmds.createNode('transform', parent=tfm_a)
-        child_b = maya.cmds.createNode('transform', parent=tfm_b)
+        maya.cmds.createNode('transform', parent=tfm_a)
+        maya.cmds.createNode('transform', parent=tfm_b)
         return tfm_a, tfm_b
 
     def test_create_four(self):
@@ -349,8 +347,8 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrls = lib.create([tfm_a, tfm_b])
         ctrl_a, ctrl_b = ctrls
 
-        child_a = maya.cmds.createNode('transform', parent=ctrl_a)
-        child_b = maya.cmds.createNode('transform', parent=ctrl_b)
+        maya.cmds.createNode('transform', parent=ctrl_a)
+        maya.cmds.createNode('transform', parent=ctrl_b)
 
         # save the output
         path = self.get_data_path('controller_create_hierarchy_after.ma')
@@ -373,8 +371,8 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrls = lib.create([tfm_a, tfm_b])
         ctrl_a, ctrl_b = ctrls
 
-        child_a = maya.cmds.createNode('transform', parent=ctrl_a)
-        child_b = maya.cmds.createNode('transform', parent=ctrl_b)
+        maya.cmds.createNode('transform', parent=ctrl_a)
+        maya.cmds.createNode('transform', parent=ctrl_b)
 
         lib.remove(ctrls)
 
@@ -401,8 +399,8 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         ctrls = lib.create([tfm_a, tfm_b])
         ctrl_a, ctrl_b = ctrls
 
-        child_a = maya.cmds.createNode('transform', parent=ctrl_a, name='childA')
-        child_b = maya.cmds.createNode('transform', parent=ctrl_b, name='childB')
+        maya.cmds.createNode('transform', parent=ctrl_a, name='childA')
+        maya.cmds.createNode('transform', parent=ctrl_b, name='childB')
 
         # save the output
         path = self.get_data_path('controller_remove_riggedCharacter_before.ma')

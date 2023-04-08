@@ -20,7 +20,6 @@
 import sys
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaUI as omui
-import maya.api.OpenMayaAnim as oma
 import maya.api.OpenMayaRender as omr
 
 

@@ -58,7 +58,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import time
 import maya.cmds
 
 import mmSolver.logger
@@ -426,9 +425,7 @@ def find_marker_attr_mapping_raw(mkr_list, attr_list):
         tmp = [False] * len(attr_list)
         mapping.append(tmp)
 
-        mkr_node = mkr[0]
         bnd_node = mkr[2]
-        cam_node = maya.cmds.listRelatives(mkr[1], parent=True)[0]
         mkr_plugs = []
         bnd_plugs = find_plugs_affecting_transform(bnd_node, None)
         plugs = list(set(mkr_plugs + bnd_plugs))

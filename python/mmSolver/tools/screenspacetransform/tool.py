@@ -84,21 +84,15 @@ def main():
 
         plug = loc_tfm + '.translateX'
         values_x = list(values[0:stop:step])
-        animfn_x = anim_utils.create_anim_curve_node_apione(
-            times, values_x, node_attr=plug
-        )
+        anim_utils.create_anim_curve_node_apione(times, values_x, node_attr=plug)
 
         plug = loc_tfm + '.translateY'
         values_y = list(values[1:stop:step])
-        animfn_y = anim_utils.create_anim_curve_node_apione(
-            times, values_y, node_attr=plug
-        )
+        anim_utils.create_anim_curve_node_apione(times, values_y, node_attr=plug)
 
         plug = depth_tfm + '.scaleX'
         values_z = values[2:stop:step]
-        animfn_z = anim_utils.create_anim_curve_node_apione(
-            times, values_z, node_attr=plug
-        )
+        anim_utils.create_anim_curve_node_apione(times, values_z, node_attr=plug)
 
     if len(created_loc_tfms) > 0:
         maya.cmds.select(created_loc_tfms, replace=True)

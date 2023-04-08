@@ -29,7 +29,6 @@ import unittest
 import maya.cmds
 
 import test.test_solver.solverutils as solverUtils
-import mmSolver.utils.node as node_utils
 
 
 # @unittest.skip
@@ -131,7 +130,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
 
         # Input transform
         in_tfm = maya.cmds.createNode('transform', name='INPUT')
-        in_shp = maya.cmds.createNode('locator', parent=in_tfm)
+        maya.cmds.createNode('locator', parent=in_tfm)
 
         maya.cmds.setAttr(in_tfm + '.translateX', -0.5)
         maya.cmds.setAttr(in_tfm + '.translateY', -0.27)
@@ -162,7 +161,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         out_coord_tfm = maya.cmds.createNode(
             'transform', name='outputCoord', parent=cam_tfm
         )
-        out_coord_shp = maya.cmds.createNode('locator', parent=out_coord_tfm)
+        maya.cmds.createNode('locator', parent=out_coord_tfm)
         maya.cmds.connectAttr(node + '.outCoordX', out_coord_tfm + '.translateX')
         maya.cmds.connectAttr(node + '.outCoordY', out_coord_tfm + '.translateY')
         maya.cmds.connectAttr(node + '.outInsideFrustum', out_coord_tfm + '.visibility')
@@ -172,7 +171,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         out_norm_coord_tfm = maya.cmds.createNode(
             'transform', name='outputNormCoord', parent=cam_tfm
         )
-        out_norm_coord_shp = maya.cmds.createNode('locator', parent=out_norm_coord_tfm)
+        maya.cmds.createNode('locator', parent=out_norm_coord_tfm)
         maya.cmds.connectAttr(
             node + '.outNormCoordX', out_norm_coord_tfm + '.translateX'
         )
@@ -188,7 +187,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         out_pixel_tfm = maya.cmds.createNode(
             'transform', name='outputPixel', parent=cam_tfm
         )
-        out_pixel_shp = maya.cmds.createNode('locator', parent=out_pixel_tfm)
+        maya.cmds.createNode('locator', parent=out_pixel_tfm)
         maya.cmds.connectAttr(node + '.outPixelX', out_pixel_tfm + '.translateX')
         maya.cmds.connectAttr(node + '.outPixelY', out_pixel_tfm + '.translateY')
         maya.cmds.connectAttr(node + '.outInsideFrustum', out_pixel_tfm + '.visibility')
@@ -198,7 +197,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         out_cam_matrix_tfm = maya.cmds.createNode(
             'transform', name='outputTransform_inCameraSpace', parent=cam_tfm
         )
-        out_cam_matrix_shp = maya.cmds.createNode('locator', parent=out_cam_matrix_tfm)
+        maya.cmds.createNode('locator', parent=out_cam_matrix_tfm)
         decompose = maya.cmds.createNode('decomposeMatrix')
         maya.cmds.connectAttr(node + '.outMatrix', decompose + '.inputMatrix')
         maya.cmds.connectAttr(
@@ -214,9 +213,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         out_world_matrix_tfm = maya.cmds.createNode(
             'transform', name='outputTransform_inWorldSpace'
         )
-        out_world_matrix_shp = maya.cmds.createNode(
-            'locator', parent=out_world_matrix_tfm
-        )
+        maya.cmds.createNode('locator', parent=out_world_matrix_tfm)
         decompose = maya.cmds.createNode('decomposeMatrix')
         maya.cmds.connectAttr(node + '.outWorldMatrix', decompose + '.inputMatrix')
         maya.cmds.connectAttr(
@@ -236,14 +233,14 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
         out_cam_pnt_tfm = maya.cmds.createNode(
             'transform', name='outputPoint_inCameraSpace', parent=cam_tfm
         )
-        out_cam_pnt_shp = maya.cmds.createNode('locator', parent=out_cam_pnt_tfm)
+        maya.cmds.createNode('locator', parent=out_cam_pnt_tfm)
         maya.cmds.connectAttr(node + '.outPoint', out_cam_pnt_tfm + '.translate')
 
         # Output world-space point
         out_world_pnt_tfm = maya.cmds.createNode(
             'transform', name='outputPoint_inWorldSpace'
         )
-        out_world_pnt_shp = maya.cmds.createNode('locator', parent=out_world_pnt_tfm)
+        maya.cmds.createNode('locator', parent=out_world_pnt_tfm)
         maya.cmds.connectAttr(node + '.outPoint', out_world_pnt_tfm + '.translate')
 
         # Query output

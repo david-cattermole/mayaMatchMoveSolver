@@ -217,7 +217,7 @@ class TestUtils(test_api_utils.APITestCase):
         Incrementing numbers at the end of a node name.
         """
         name1 = 'my_node_01'
-        node1 = maya.cmds.createNode('transform', name=name1)
+        maya.cmds.createNode('transform', name=name1)
 
         name2 = api_naming.find_valid_maya_node_name(name1)
         node2 = maya.cmds.createNode('transform', name=name2)
@@ -235,7 +235,7 @@ class TestUtils(test_api_utils.APITestCase):
         Incrementing numbers in the middle of a node name.
         """
         name1 = 'my_node_01_MKR'
-        node1 = maya.cmds.createNode('transform', name=name1)
+        maya.cmds.createNode('transform', name=name1)
 
         name2 = api_naming.find_valid_maya_node_name(name1)
         node2 = maya.cmds.createNode('transform', name=name2)
@@ -253,7 +253,7 @@ class TestUtils(test_api_utils.APITestCase):
         There are two numbers, only the last one should be incremented.
         """
         name1 = 'my_node_001_001'
-        node1 = maya.cmds.createNode('transform', name=name1)
+        maya.cmds.createNode('transform', name=name1)
 
         name2 = api_naming.find_valid_maya_node_name(name1)
         node2 = maya.cmds.createNode('transform', name=name2)

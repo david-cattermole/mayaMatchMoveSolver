@@ -26,7 +26,6 @@ from __future__ import print_function
 import os
 import unittest
 
-import maya.cmds
 
 import test.test_tools.toolsutils as test_tools_utils
 import mmSolver.tools.copypastecamera.lib as lib

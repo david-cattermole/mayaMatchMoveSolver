@@ -73,7 +73,7 @@ def create_image_plane_on_camera(cam, name=None):
     frame_expr = const.FRAME_EXPRESSION.format(node=mm_ip_shp)
     frame_expr = frame_expr.replace('{{', '{')
     frame_expr = frame_expr.replace('}}', '}')
-    frame_expr_node = maya.cmds.expression(string=frame_expr)
+    maya.cmds.expression(string=frame_expr)
 
     # Show the users the final frame number.
     shp_node_attr = mm_ip_shp + '.imageSequenceFrameOutput'

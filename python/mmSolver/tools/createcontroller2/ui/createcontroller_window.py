@@ -30,7 +30,6 @@ import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
-import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
@@ -41,7 +40,6 @@ import mmSolver.utils.tools as tools_utils
 import mmSolver.utils.constant as const_utils
 import mmSolver.tools.userpreferences.constant as userprefs_const
 import mmSolver.tools.userpreferences.lib as userprefs_lib
-import mmSolver.tools.createcontroller2.constant as const
 import mmSolver.tools.createcontroller2.ui.createcontroller_layout as createcontroller_layout
 
 LOG = mmSolver.logger.get_logger()

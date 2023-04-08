@@ -23,13 +23,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import math
 import unittest
 
 import maya.cmds
 
 import test.test_solver.solverutils as solverUtils
-import mmSolver.utils.node as node_utils
 
 
 # @unittest.skip
@@ -75,7 +73,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
 
         # Input transform
         in_tfm = maya.cmds.createNode('transform', name='INPUT')
-        in_shp = maya.cmds.createNode('locator', parent=in_tfm)
+        maya.cmds.createNode('locator', parent=in_tfm)
 
         pnt_x = -0.5
         pnt_y = 2.7
@@ -134,7 +132,7 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
             1005.0,
         )
         out_tfm = maya.cmds.createNode('transform', name='OUTPUT')
-        out_shp = maya.cmds.createNode('locator', parent=out_tfm)
+        maya.cmds.createNode('locator', parent=out_tfm)
         for i, time in enumerate(times):
             x = world_point_values[(i * 3) + 0]
             y = world_point_values[(i * 3) + 1]

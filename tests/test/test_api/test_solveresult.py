@@ -298,7 +298,6 @@ class TestSolveResult(test_api_utils.APITestCase):
         solres = solres_list[0]
         success = solres.get_success()
         err = solres.get_final_error()
-        frame_list = mmapi.merge_frame_list([solres])
         frame_error_list = mmapi.merge_frame_error_list([solres])
         avg_error = mmapi.get_average_frame_error_list(frame_error_list)
         max_frame_error = mmapi.get_max_frame_error(frame_error_list)

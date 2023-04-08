@@ -447,7 +447,6 @@ def get_solver_steps_from_collection(col):
 
 
 def set_solver_step_list_to_collection(col, step_list):
-    node = col.get_node()
     data_list = [s.get_data() for s in step_list]
     col_state.set_value_structure_on_node(
         col.get_node(),

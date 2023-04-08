@@ -23,21 +23,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
-from functools import partial
 
 import mmSolver.ui.qtpyutils as qtpyutils
 
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
-import mmSolver.ui.Qt.QtGui as QtGui
-import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
-import mmSolver.ui.helputils as helputils
-import mmSolver.utils.config as config_utils
 import mmSolver.tools.sysinfowindow.constant as const
 import mmSolver.tools.sysinfowindow.ui.sysinfo_layout as sysinfo_layout
 

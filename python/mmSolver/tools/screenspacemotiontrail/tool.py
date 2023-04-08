@@ -23,9 +23,6 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
-import mmSolver.utils.viewport as viewport_utils
-import mmSolver.utils.time as utils_time
-import mmSolver.utils.animcurve as anim_utils
 import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.viewport as utils_viewport
 import mmSolver.tools.screenspacemotiontrail.lib as lib

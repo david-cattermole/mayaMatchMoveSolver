@@ -35,7 +35,6 @@ import maya.cmds
 
 
 import test.test_solver.solverutils as solverUtils
-import mmSolver._api.utils as api_utils
 
 
 # @unittest.skip

@@ -28,14 +28,12 @@ import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
-import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.ui.commonmenus as commonmenus
-import mmSolver.utils.config as config_utils
 import mmSolver.tools.userpreferences.lib as userprefs_lib
 import mmSolver.tools.userpreferences.constant as pref_const
 import mmSolver.tools.userprefswindow.constant as const

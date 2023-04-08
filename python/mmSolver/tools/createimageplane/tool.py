@@ -149,7 +149,6 @@ def main():
 
         image_seq = prompt_user_for_image_sequence()
         if image_seq:
-            attr_name = 'imageSequenceMain'
             lib.set_image_sequence(mm_ip_tfm, image_seq)
 
         nodes.append(mm_ip_shp)

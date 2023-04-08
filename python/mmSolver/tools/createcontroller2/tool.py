@@ -27,7 +27,6 @@ import mmSolver.logger
 
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.tools as tools_utils
-import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.createcontroller2.constant as const
 import mmSolver.tools.createcontroller2.lib as lib
 

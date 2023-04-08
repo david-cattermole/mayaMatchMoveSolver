@@ -29,6 +29,11 @@ PYTHON_EXE=python3
 CMAKE_EXE=cmake3
 RUST_CARGO_EXE=cargo
 
+# Manually override OpenGL include headers, because CMake doesn't seem
+# to automatically find OpenGL headers on RockyLinux8 (which is used
+# in the Docker containers).
+OPENGL_INCLUDE_DIR=/usr/include/
+
 # C++ Standard to use.
 CXX_STANDARD=14
 

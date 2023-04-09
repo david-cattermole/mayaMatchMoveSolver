@@ -19,8 +19,6 @@ Solver` releases.
 `MM Renderer` is different from regular Viewport 2.0 because it has
 the following features:
 
-- 2D Composite objects in "layers" to force objects in front/behind
-  others.
 - Show silhouettes/edges for objects.
 - Supports `Hidden Line` rendering, without needing to enable `Hold
   Out` toggles or assign a ``useBackground`` shader.
@@ -142,9 +140,10 @@ specific modes, independent of the `Viewport 2.0` settings (such as
 Known Issues
 ~~~~~~~~~~~~
 
-`MM Renderer` is *beta* software and is currently only released in
-``v0.4.4.beta*``. There are numerous bugs and issues that are not yet
-resolved and the viewport renderer is available as a preview only.
+`MM Renderer` is *beta* software and is only released in ``beta``
+versions of `MM Solver`.  There are numerous bugs and issues that are
+not yet resolved and the viewport renderer is available as a preview
+only.
 
 .. note::
 

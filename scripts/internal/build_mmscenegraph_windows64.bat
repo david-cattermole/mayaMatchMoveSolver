@@ -57,7 +57,7 @@ ECHO Building mmSceneGraph... (%MMSCENEGRAPH_ROOT%)
 
 :: Install the needed 'cxxbridge.exe' command.
 ::
-:: NOTE: When chaging this version number, make sure to update the
+:: NOTE: When changing this version number, make sure to update the
 :: CXX version used in the C++ buildings, and all the build scripts
 :: using this value:
 :: './mmscenegraph/cppbind/Cargo.toml'

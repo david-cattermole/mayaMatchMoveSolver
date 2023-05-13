@@ -1,6 +1,6 @@
-==========================
+==============================
 mmSolver.tools.copypastemarker
-==========================
+==============================
 
 .. automodule:: mmSolver.tools.copypastemarker
    :members:

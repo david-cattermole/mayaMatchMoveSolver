@@ -98,13 +98,13 @@ inline int getStringArrayIndexOfValue(MStringArray &array, MString &value) {
  * Generate a 'dgdirty' MEL command listing all nodes that may be
  * changed by our solve function.
  */
-MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *ud) {
+MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *userData) {
     MString dgDirtyCmd = "dgdirty ";
     MStringArray dgDirtyNodeNames;
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
-        IndexPair markerPair = ud->errorToMarkerList[i];
+        IndexPair markerPair = userData->errorToMarkerList[i];
 
-        MarkerPtr marker = ud->markerList[markerPair.first];
+        MarkerPtr marker = userData->markerList[markerPair.first];
         MString markerName = marker->getNodeName();
         const int markerName_idx =
             getStringArrayIndexOfValue(dgDirtyNodeNames, markerName);
@@ -225,67 +225,335 @@ void determineMarkersToBeEvaluated(
 }
 
 // Add another 'normal function' evaluation to the count.
-void incrementNormalIteration(SolverData *ud) {
-    ++ud->funcEvalNum;
-    ++ud->iterNum;
-    if (ud->logLevel >= LogLevel::kVerbose) {
+void incrementNormalIteration(SolverData *userData) {
+    ++userData->funcEvalNum;
+    ++userData->iterNum;
+    if (userData->logLevel >= LogLevel::kVerbose) {
         MStreamUtils::stdErrorStream() << "Iteration ";
-        MStreamUtils::stdErrorStream()
-            << std::right << std::setfill('0') << std::setw(4) << ud->iterNum;
+        MStreamUtils::stdErrorStream() << std::right << std::setfill('0')
+                                       << std::setw(4) << userData->iterNum;
         MStreamUtils::stdErrorStream() << " | Eval ";
         MStreamUtils::stdErrorStream() << std::right << std::setfill('0')
-                                       << std::setw(4) << ud->funcEvalNum;
+                                       << std::setw(4) << userData->funcEvalNum;
     }
     return;
 }
 
 // Add another 'jacobian function' evaluation to the count.
-void incrementJacobianIteration(SolverData *ud) {
-    ++ud->funcEvalNum;
-    ++ud->jacIterNum;
-    if (ud->logLevel >= LogLevel::kDebug) {
+void incrementJacobianIteration(SolverData *userData) {
+    ++userData->funcEvalNum;
+    ++userData->jacIterNum;
+    if (userData->logLevel >= LogLevel::kDebug) {
         MStreamUtils::stdErrorStream() << "Jacobian  ";
         MStreamUtils::stdErrorStream() << std::right << std::setfill('0')
-                                       << std::setw(4) << ud->jacIterNum;
+                                       << std::setw(4) << userData->jacIterNum;
         MStreamUtils::stdErrorStream() << " | Eval ";
         MStreamUtils::stdErrorStream() << std::right << std::setfill('0')
-                                       << std::setw(4) << ud->funcEvalNum;
-        if (ud->doCalcJacobian) {
+                                       << std::setw(4) << userData->funcEvalNum;
+        if (userData->doCalcJacobian) {
             MStreamUtils::stdErrorStream() << "\n";
         }
     }
     return;
 }
 
+// A normal evaluation of the errors and parameters.
+int solveFunc_measureErrors(
+    const int numberOfMarkerErrors, const int numberOfAttrStiffnessErrors,
+    const int numberOfAttrSmoothnessErrors, const int numberOfMarkers,
+    const int frameListLength, const int profileCategory,
+    const double imageWidth, const int numberOfParameters,
+    const int numberOfErrors, const double *parameters, double *errors,
+    double *jacobian, SolverData *userData, SolverTimer &timer,
+    double &error_avg, double &error_max, double &error_min) {
+    std::vector<bool> evalMeasurements(numberOfMarkers, true);
+    std::vector<bool> frameIndexEnable(frameListLength, 1);
+
+    // Set Parameters
+    MStatus status;
+    {
+        timer.paramBenchTimer.start();
+        timer.paramBenchTicks.start();
+#ifdef MAYA_PROFILE
+        MProfilingScope setParamScope(profileCategory, MProfiler::kColorA_L2,
+                                      "set parameters");
+#endif
+        status = setParameters(numberOfParameters, parameters, userData);
+        timer.paramBenchTimer.stop();
+        timer.paramBenchTicks.stop();
+    }
+
+    // Measure Errors
+    {
+        timer.errorBenchTimer.start();
+        timer.errorBenchTicks.start();
+#ifdef MAYA_PROFILE
+        MProfilingScope setParamScope(profileCategory, MProfiler::kColorA_L1,
+                                      "measure errors");
+#endif
+        measureErrors(numberOfErrors, numberOfMarkerErrors,
+                      numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors,
+                      frameIndexEnable, evalMeasurements, imageWidth, errors,
+                      userData, error_avg, error_max, error_min, status);
+        timer.errorBenchTimer.stop();
+        timer.errorBenchTicks.stop();
+    }
+    return SOLVE_FUNC_SUCCESS;
+}
+
+int solveFunc_calculateJacobianMatrixForParameter(
+    const int i, const int progressMin, const int progressMax,
+    std::vector<double> &paramListA, std::vector<double> &errorListA,
+    std::vector<bool> &evalMeasurements, const int autoDiffType,
+    const int ldfjac, const int numberOfMarkerErrors,
+    const int numberOfAttrStiffnessErrors,
+    const int numberOfAttrSmoothnessErrors, const double imageWidth,
+    const int numberOfParameters, const int numberOfErrors,
+    const double *parameters, double *errors, double *jacobian,
+    SolverData *userData, SolverTimer &timer) {
+    MStatus status;
+
+    const double ratio = (double)i / (double)numberOfParameters;
+    int progressNum = progressMin + static_cast<int>(ratio * progressMax);
+    userData->computation->setProgress(progressNum);
+
+    if (userData->computation->isInterruptRequested()) {
+        MMSOLVER_WRN("User wants to cancel the evaluation!");
+        userData->userInterrupted = true;
+        return SOLVE_FUNC_FAILURE;
+    }
+
+    // Create a copy of the parameters and errors.
+    for (int j = 0; j < numberOfParameters; ++j) {
+        paramListA[j] = parameters[j];
+    }
+    for (int j = 0; j < numberOfErrors; ++j) {
+        errorListA[j] = errors[j];
+    }
+
+    // Calculate the relative delta for each parameter.
+    const double delta = userData->solverOptions->delta;
+    assert(delta > 0.0);
+
+    // 'analytically' calculate the deviation of markers as
+    //  will be affected by the new calculated delta value.
+    //  This will give us a jacobian matrix, without needing
+    //  to set attribute values and re-evaluate them in Maya's
+    //  DG.
+    IndexPair attrPair = userData->paramToAttrList[i];
+    AttrPtr attr = userData->attrList[attrPair.first];
+    // TODO: Get the camera that is best for the attribute,
+    //  not just index 0.
+    MarkerPtr mkr = userData->markerList[0];
+    CameraPtr cam = mkr->getCamera();
+
+    const double value = parameters[i];
+    const double deltaA = calculateParameterDelta(value, delta, 1, attr);
+
+    std::vector<bool> frameIndexEnabled = userData->paramFrameList[i];
+
+    incrementJacobianIteration(userData);
+    paramListA[i] = paramListA[i] + deltaA;
+    {
+        timer.paramBenchTimer.start();
+        timer.paramBenchTicks.start();
+#ifdef MAYA_PROFILE
+        MProfilingScope setParamScope(profileCategory, MProfiler::kColorA_L2,
+                                      "set parameters");
+#endif
+        status = setParameters(numberOfParameters, &paramListA[0], userData);
+        timer.paramBenchTimer.stop();
+        timer.paramBenchTicks.stop();
+    }
+
+    double error_avg_tmp = 0;
+    double error_max_tmp = 0;
+    double error_min_tmp = 0;
+    {
+        timer.errorBenchTimer.start();
+        timer.errorBenchTicks.start();
+#ifdef MAYA_PROFILE
+        MProfilingScope setParamScope(profileCategory, MProfiler::kColorA_L1,
+                                      "measure errors");
+#endif
+        // Based on only the changed attribute value only
+        // measure the markers that can modify the attribute -
+        // we do this using 'frameIndexEnabled' and
+        // 'evalMeasurements'.
+        measureErrors(numberOfErrors, numberOfMarkerErrors,
+                      numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors,
+                      frameIndexEnabled, evalMeasurements, imageWidth,
+                      &errorListA[0], userData, error_avg_tmp, error_max_tmp,
+                      error_min_tmp, status);
+        timer.errorBenchTimer.stop();
+        timer.errorBenchTicks.stop();
+    }
+
+    if (autoDiffType == AUTO_DIFF_TYPE_FORWARD) {
+        assert(userData->solverOptions->solverSupportsAutoDiffForward);
+        // Set the Jacobian matrix using the previously
+        // calculated errors (original and A).
+        const double inv_delta = 1.0 / deltaA;
+        for (size_t j = 0; j < errorListA.size(); ++j) {
+            const size_t num = (i * ldfjac) + j;
+            const double x = (errorListA[j] - errors[j]) * inv_delta;
+            userData->jacobianList[num] = x;
+            jacobian[num] = x;
+        }
+
+    } else if (autoDiffType == AUTO_DIFF_TYPE_CENTRAL) {
+        assert(userData->solverOptions->solverSupportsAutoDiffCentral);
+        // Create another copy of parameters and errors.
+        std::vector<double> paramListB(numberOfParameters, 0);
+        for (int j = 0; j < numberOfParameters; ++j) {
+            paramListB[j] = parameters[j];
+        }
+        std::vector<double> errorListB(numberOfErrors, 0);
+
+        // Get the new delta, from the oposite direction. If
+        // we don't calculate a different delta value, we
+        // something has gone wrong and a second evaluation is
+        // not needed.
+        const double deltaB = calculateParameterDelta(value, delta, -1, attr);
+        if (deltaA == deltaB) {
+            // Set the Jacobian matrix using the previously
+            // calculated errors (original and A).
+            const double inv_delta = 1.0 / deltaA;
+            for (size_t j = 0; j < errorListA.size(); ++j) {
+                const size_t num = (i * ldfjac) + j;
+                const double x = (errorListA[j] - errors[j]) * inv_delta;
+                userData->jacobianList[num] = x;
+                jacobian[num] = x;
+            }
+        } else {
+            incrementJacobianIteration(userData);
+            paramListB[i] = paramListB[i] + deltaB;
+            {
+                timer.paramBenchTimer.start();
+                timer.paramBenchTicks.start();
+#ifdef MAYA_PROFILE
+                MProfilingScope setParamScope(
+                    profileCategory, MProfiler::kColorA_L2, "set parameters");
+#endif
+                status =
+                    setParameters(numberOfParameters, &paramListB[0], userData);
+                timer.paramBenchTimer.stop();
+                timer.paramBenchTicks.stop();
+            }
+
+            error_avg_tmp = 0;
+            error_max_tmp = 0;
+            error_min_tmp = 0;
+            {
+                timer.errorBenchTimer.start();
+                timer.errorBenchTicks.start();
+#ifdef MAYA_PROFILE
+                MProfilingScope setParamScope(
+                    profileCategory, MProfiler::kColorA_L1, "measure errors");
+#endif
+                measureErrors(numberOfErrors, numberOfMarkerErrors,
+                              numberOfAttrStiffnessErrors,
+                              numberOfAttrSmoothnessErrors, frameIndexEnabled,
+                              evalMeasurements, imageWidth, &errorListB[0],
+                              userData, error_avg_tmp, error_max_tmp,
+                              error_min_tmp, status);
+                timer.errorBenchTimer.stop();
+                timer.errorBenchTicks.stop();
+            }
+
+            // Set the Jacobian matrix using the previously
+            // calculated errors (A and B).
+            assert(errorListA.size() == errorListB.size());
+            double inv_delta = 0.5 / (std::fabs(deltaA) + std::fabs(deltaB));
+            for (size_t j = 0; j < errorListA.size(); ++j) {
+                size_t num = (i * ldfjac) + j;
+                double x = (errorListA[j] - errorListB[j]) * inv_delta;
+                userData->jacobianList[num] = x;
+                jacobian[num] = x;
+            }
+        }
+    }
+
+    return SOLVE_FUNC_SUCCESS;
+}
+
+// Calculate Jacobian Matrix
+int solveFunc_calculateJacobianMatrix(
+    const int numberOfMarkerErrors, const int numberOfAttrStiffnessErrors,
+    const int numberOfAttrSmoothnessErrors, const int numberOfMarkers,
+    const int profileCategory, const double imageWidth,
+    const int numberOfParameters, const int numberOfErrors,
+    const double *parameters, double *errors, double *jacobian,
+    SolverData *userData, SolverTimer &timer) {
+    assert(userData->solverOptions->solverType == SOLVER_TYPE_CMINPACK_LMDER);
+    int autoDiffType = userData->solverOptions->autoDiffType;
+
+    // Get longest dimension for jacobian matrix
+    int ldfjac = numberOfErrors;
+    if (ldfjac < numberOfParameters) {
+        ldfjac = numberOfParameters;
+    }
+
+    const int progressMin = userData->computation->progressMin();
+    const int progressMax = userData->computation->progressMax();
+    userData->computation->setProgress(progressMin);
+
+    std::vector<bool> evalMeasurements(numberOfMarkers, false);
+    determineMarkersToBeEvaluated(numberOfParameters, numberOfMarkers,
+                                  userData->solverOptions->delta,
+                                  userData->previousParamList, parameters,
+                                  userData->errorToParamList, evalMeasurements);
+
+    // Calculate the jacobian matrix.
+    std::vector<double> paramListA(numberOfParameters, 0);
+    std::vector<double> errorListA(numberOfErrors, 0);
+    for (int i = 0; i < numberOfParameters; ++i) {
+        int result = solveFunc_calculateJacobianMatrixForParameter(
+            i, progressMin, progressMax, paramListA, errorListA,
+            evalMeasurements, autoDiffType, ldfjac,
+
+            numberOfMarkerErrors, numberOfAttrStiffnessErrors,
+            numberOfAttrSmoothnessErrors, imageWidth, numberOfParameters,
+            numberOfErrors, parameters, errors, jacobian, userData, timer);
+        if (result == SOLVE_FUNC_FAILURE) {
+            return result;
+        }
+    }
+
+    return SOLVE_FUNC_SUCCESS;
+}
+
 // Function run by cminpack algorithm to test the input parameters, p,
 // and compute the output errors, x.
 int solveFunc(const int numberOfParameters, const int numberOfErrors,
               const double *parameters, double *errors, double *jacobian,
-              void *userData) {
-    SolverData *ud = static_cast<SolverData *>(userData);
-    ud->timer.funcBenchTimer.start();
-    ud->timer.funcBenchTicks.start();
+              void *rawUserData) {
+    SolverData *userData = static_cast<SolverData *>(rawUserData);
+    userData->timer.funcBenchTimer.start();
+    userData->timer.funcBenchTicks.start();
 
-    auto imageWidth = ud->solverOptions->imageWidth;
+    auto imageWidth = userData->solverOptions->imageWidth;
 
-    auto frameCount = ud->frameList.length();
-    if (!ud->doCalcJacobian && frameCount > 1) {
-        ud->computation->setProgress(ud->iterNum);
+    const auto frameListLength = userData->frameList.length();
+    auto frameCount = frameListLength;
+    if (!userData->doCalcJacobian && frameCount > 1) {
+        userData->computation->setProgress(userData->iterNum);
     }
 
-    int numberOfMarkerErrors = ud->numberOfMarkerErrors;
-    int numberOfAttrStiffnessErrors = ud->numberOfAttrStiffnessErrors;
-    int numberOfAttrSmoothnessErrors = ud->numberOfAttrSmoothnessErrors;
+    int numberOfMarkerErrors = userData->numberOfMarkerErrors;
+    int numberOfAttrStiffnessErrors = userData->numberOfAttrStiffnessErrors;
+    int numberOfAttrSmoothnessErrors = userData->numberOfAttrSmoothnessErrors;
     int numberOfMarkers = numberOfMarkerErrors / ERRORS_PER_MARKER;
-    assert(ud->errorToParamList.size() == static_cast<size_t>(numberOfMarkers));
+    assert(userData->errorToParamList.size() ==
+           static_cast<size_t>(numberOfMarkers));
 
-    if (ud->isNormalCall) {
-        incrementNormalIteration(ud);
-    } else if (ud->isJacobianCall && !ud->doCalcJacobian) {
-        incrementJacobianIteration(ud);
+    if (userData->isNormalCall) {
+        incrementNormalIteration(userData);
+    } else if (userData->isJacobianCall && !userData->doCalcJacobian) {
+        incrementJacobianIteration(userData);
     }
 
-    if (ud->isPrintCall) {
+    if (userData->isPrintCall) {
         // insert print statements here when nprint is positive.
         //
         // if the nprint parameter to 'lmdif' or 'lmder' is positive,
@@ -295,24 +563,27 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
         return SOLVE_FUNC_SUCCESS;
     }
 
-    if (ud->computation->isInterruptRequested()) {
+    if (userData->computation->isInterruptRequested()) {
         MMSOLVER_WRN("User wants to cancel the evaluation!");
-        ud->userInterrupted = true;
+        userData->userInterrupted = true;
         return SOLVE_FUNC_FAILURE;
     }
 
 #ifdef MAYA_PROFILE
-    int profileCategory = MProfiler::getCategoryIndex("mmSolver");
+    const int profileCategory = MProfiler::getCategoryIndex("mmSolver");
     MProfilingScope iterScope(profileCategory, MProfiler::kColorC_L1,
                               "iteration");
+#else
+    const int profileCategory = 0;
 #endif
 
     const bool interactive =
-        ud->mayaSessionState == MGlobal::MMayaState::kInteractive;
+        userData->mayaSessionState == MGlobal::MMayaState::kInteractive;
     const bool sceneGraphIsMayaDAG =
-        ud->solverOptions->sceneGraphMode == SceneGraphMode::kMayaDag;
+        userData->solverOptions->sceneGraphMode == SceneGraphMode::kMayaDag;
     if (interactive && sceneGraphIsMayaDAG) {
-        MString dgDirtyCmd = generateDirtyCommand(numberOfMarkerErrors, ud);
+        MString dgDirtyCmd =
+            generateDirtyCommand(numberOfMarkerErrors, userData);
         MGlobal::executeCommand(dgDirtyCmd);
     }
 
@@ -320,251 +591,41 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
     double error_avg = 0;
     double error_max = 0;
     double error_min = 0;
-    if (ud->doCalcJacobian == false) {
-        // A normal evaluation of the errors and parameters.
-        std::vector<bool> evalMeasurements(numberOfMarkers, true);
-        std::vector<bool> frameIndexEnable(ud->frameList.length(), 1);
-
-        // Set Parameters
-        MStatus status;
-        {
-            ud->timer.paramBenchTimer.start();
-            ud->timer.paramBenchTicks.start();
-#ifdef MAYA_PROFILE
-            MProfilingScope setParamScope(
-                profileCategory, MProfiler::kColorA_L2, "set parameters");
-#endif
-            status = setParameters(numberOfParameters, parameters, ud);
-            ud->timer.paramBenchTimer.stop();
-            ud->timer.paramBenchTicks.stop();
-        }
-
-        // Measure Errors
-        {
-            ud->timer.errorBenchTimer.start();
-            ud->timer.errorBenchTicks.start();
-#ifdef MAYA_PROFILE
-            MProfilingScope setParamScope(
-                profileCategory, MProfiler::kColorA_L1, "measure errors");
-#endif
-            measureErrors(numberOfErrors, numberOfMarkerErrors,
-                          numberOfAttrStiffnessErrors,
-                          numberOfAttrSmoothnessErrors, frameIndexEnable,
-                          evalMeasurements, imageWidth, errors, ud, error_avg,
-                          error_max, error_min, status);
-            ud->timer.errorBenchTimer.stop();
-            ud->timer.errorBenchTicks.stop();
-        }
+    int calculation_status = SOLVE_FUNC_SUCCESS;
+    if (!userData->doCalcJacobian) {
+        calculation_status = solveFunc_measureErrors(
+            numberOfMarkerErrors, numberOfAttrStiffnessErrors,
+            numberOfAttrSmoothnessErrors, numberOfMarkers, frameListLength,
+            profileCategory, imageWidth, numberOfParameters, numberOfErrors,
+            parameters, errors, jacobian, userData, userData->timer, error_avg,
+            error_max, error_min);
     } else {
-        // Calculate Jacobian Matrix
-        MStatus status;
-        assert(ud->solverOptions->solverType == SOLVER_TYPE_CMINPACK_LMDER);
-        int autoDiffType = ud->solverOptions->autoDiffType;
-
-        // Get longest dimension for jacobian matrix
-        int ldfjac = numberOfErrors;
-        if (ldfjac < numberOfParameters) {
-            ldfjac = numberOfParameters;
-        }
-
-        int progressMin = ud->computation->progressMin();
-        int progressMax = ud->computation->progressMax();
-        ud->computation->setProgress(progressMin);
-
-        std::vector<bool> evalMeasurements(numberOfMarkers, false);
-        determineMarkersToBeEvaluated(numberOfParameters, numberOfMarkers,
-                                      ud->solverOptions->delta,
-                                      ud->previousParamList, parameters,
-                                      ud->errorToParamList, evalMeasurements);
-
-        // Calculate the jacobian matrix.
-        std::vector<double> paramListA(numberOfParameters, 0);
-        std::vector<double> errorListA(numberOfErrors, 0);
-        for (int i = 0; i < numberOfParameters; ++i) {
-            double ratio = (double)i / (double)numberOfParameters;
-            int progressNum =
-                progressMin + static_cast<int>(ratio * progressMax);
-            ud->computation->setProgress(progressNum);
-
-            if (ud->computation->isInterruptRequested()) {
-                MMSOLVER_WRN("User wants to cancel the evaluation!");
-                ud->userInterrupted = true;
-                return SOLVE_FUNC_FAILURE;
-            }
-
-            // Create a copy of the parameters and errors.
-            for (int j = 0; j < numberOfParameters; ++j) {
-                paramListA[j] = parameters[j];
-            }
-            for (int j = 0; j < numberOfErrors; ++j) {
-                errorListA[j] = errors[j];
-            }
-
-            // Calculate the relative delta for each parameter.
-            double delta = ud->solverOptions->delta;
-            assert(delta > 0.0);
-
-            // 'analytically' calculate the deviation of markers as
-            //  will be affected by the new calculated delta value.
-            //  This will give us a jacobian matrix, without needing
-            //  to set attribute values and re-evaluate them in Maya's
-            //  DG.
-            IndexPair attrPair = ud->paramToAttrList[i];
-            AttrPtr attr = ud->attrList[attrPair.first];
-            // TODO: Get the camera that is best for the attribute,
-            //  not just index 0.
-            MarkerPtr mkr = ud->markerList[0];
-            CameraPtr cam = mkr->getCamera();
-
-            double value = parameters[i];
-            double deltaA = calculateParameterDelta(value, delta, 1, attr);
-
-            std::vector<bool> frameIndexEnabled = ud->paramFrameList[i];
-
-            incrementJacobianIteration(ud);
-            paramListA[i] = paramListA[i] + deltaA;
-            {
-                ud->timer.paramBenchTimer.start();
-                ud->timer.paramBenchTicks.start();
-#ifdef MAYA_PROFILE
-                MProfilingScope setParamScope(
-                    profileCategory, MProfiler::kColorA_L2, "set parameters");
-#endif
-                status = setParameters(numberOfParameters, &paramListA[0], ud);
-                ud->timer.paramBenchTimer.stop();
-                ud->timer.paramBenchTicks.stop();
-            }
-
-            double error_avg_tmp = 0;
-            double error_max_tmp = 0;
-            double error_min_tmp = 0;
-            {
-                ud->timer.errorBenchTimer.start();
-                ud->timer.errorBenchTicks.start();
-#ifdef MAYA_PROFILE
-                MProfilingScope setParamScope(
-                    profileCategory, MProfiler::kColorA_L1, "measure errors");
-#endif
-                // Based on only the changed attribute value only
-                // measure the markers that can modify the attribute -
-                // we do this using 'frameIndexEnabled' and
-                // 'evalMeasurements'.
-                measureErrors(numberOfErrors, numberOfMarkerErrors,
-                              numberOfAttrStiffnessErrors,
-                              numberOfAttrSmoothnessErrors, frameIndexEnabled,
-                              evalMeasurements, imageWidth, &errorListA[0], ud,
-                              error_avg_tmp, error_max_tmp, error_min_tmp,
-                              status);
-                ud->timer.errorBenchTimer.stop();
-                ud->timer.errorBenchTicks.stop();
-            }
-
-            if (autoDiffType == AUTO_DIFF_TYPE_FORWARD) {
-                assert(ud->solverOptions->solverSupportsAutoDiffForward);
-                // Set the Jacobian matrix using the previously
-                // calculated errors (original and A).
-                double inv_delta = 1.0 / deltaA;
-                for (size_t j = 0; j < errorListA.size(); ++j) {
-                    size_t num = (i * ldfjac) + j;
-                    double x = (errorListA[j] - errors[j]) * inv_delta;
-                    ud->jacobianList[num] = x;
-                    jacobian[num] = x;
-                }
-
-            } else if (autoDiffType == AUTO_DIFF_TYPE_CENTRAL) {
-                assert(ud->solverOptions->solverSupportsAutoDiffCentral);
-                // Create another copy of parameters and errors.
-                std::vector<double> paramListB(numberOfParameters, 0);
-                for (int j = 0; j < numberOfParameters; ++j) {
-                    paramListB[j] = parameters[j];
-                }
-                std::vector<double> errorListB(numberOfErrors, 0);
-
-                // Get the new delta, from the oposite direction. If
-                // we don't calculate a different delta value, we
-                // something has gone wrong and a second evaluation is
-                // not needed.
-                double deltaB = calculateParameterDelta(value, delta, -1, attr);
-                if (deltaA == deltaB) {
-                    // Set the Jacobian matrix using the previously
-                    // calculated errors (original and A).
-                    double inv_delta = 1.0 / deltaA;
-                    for (size_t j = 0; j < errorListA.size(); ++j) {
-                        size_t num = (i * ldfjac) + j;
-                        double x = (errorListA[j] - errors[j]) * inv_delta;
-                        ud->jacobianList[num] = x;
-                        jacobian[num] = x;
-                    }
-                } else {
-                    incrementJacobianIteration(ud);
-                    paramListB[i] = paramListB[i] + deltaB;
-                    {
-                        ud->timer.paramBenchTimer.start();
-                        ud->timer.paramBenchTicks.start();
-#ifdef MAYA_PROFILE
-                        MProfilingScope setParamScope(profileCategory,
-                                                      MProfiler::kColorA_L2,
-                                                      "set parameters");
-#endif
-                        status = setParameters(numberOfParameters,
-                                               &paramListB[0], ud);
-                        ud->timer.paramBenchTimer.stop();
-                        ud->timer.paramBenchTicks.stop();
-                    }
-
-                    error_avg_tmp = 0;
-                    error_max_tmp = 0;
-                    error_min_tmp = 0;
-                    {
-                        ud->timer.errorBenchTimer.start();
-                        ud->timer.errorBenchTicks.start();
-#ifdef MAYA_PROFILE
-                        MProfilingScope setParamScope(profileCategory,
-                                                      MProfiler::kColorA_L1,
-                                                      "measure errors");
-#endif
-                        measureErrors(numberOfErrors, numberOfMarkerErrors,
-                                      numberOfAttrStiffnessErrors,
-                                      numberOfAttrSmoothnessErrors,
-                                      frameIndexEnabled, evalMeasurements,
-                                      imageWidth, &errorListB[0], ud,
-                                      error_avg_tmp, error_max_tmp,
-                                      error_min_tmp, status);
-                        ud->timer.errorBenchTimer.stop();
-                        ud->timer.errorBenchTicks.stop();
-                    }
-
-                    // Set the Jacobian matrix using the previously
-                    // calculated errors (A and B).
-                    assert(errorListA.size() == errorListB.size());
-                    double inv_delta =
-                        0.5 / (std::fabs(deltaA) + std::fabs(deltaB));
-                    for (size_t j = 0; j < errorListA.size(); ++j) {
-                        size_t num = (i * ldfjac) + j;
-                        double x = (errorListA[j] - errorListB[j]) * inv_delta;
-                        ud->jacobianList[num] = x;
-                        jacobian[num] = x;
-                    }
-                }
-            }
-        }
+        calculation_status = solveFunc_calculateJacobianMatrix(
+            numberOfMarkerErrors, numberOfAttrStiffnessErrors,
+            numberOfAttrSmoothnessErrors, numberOfMarkers, profileCategory,
+            imageWidth, numberOfParameters, numberOfErrors, parameters, errors,
+            jacobian, userData, userData->timer);
     }
-    ud->timer.funcBenchTimer.stop();
-    ud->timer.funcBenchTicks.stop();
+    userData->timer.funcBenchTimer.stop();
+    userData->timer.funcBenchTicks.stop();
+    if (calculation_status == SOLVE_FUNC_FAILURE) {
+        return calculation_status;
+    }
 
-    if (ud->isNormalCall) {
-        if (ud->logLevel >= LogLevel::kVerbose) {
+    if (userData->isNormalCall) {
+        if (userData->logLevel >= LogLevel::kVerbose) {
             char formatBuffer[128];
             sprintf(formatBuffer, " | error avg %8.4f   min %8.4f   max %8.4f",
                     error_avg, error_min, error_max);
             MStreamUtils::stdErrorStream() << std::string(formatBuffer) << "\n";
         }
     } else {
-        if (ud->logLevel >= LogLevel::kDebug) {
-            if (!ud->doCalcJacobian) {
+        if (userData->logLevel >= LogLevel::kDebug) {
+            if (!userData->doCalcJacobian) {
                 std::cerr << "\n";
             }
         }
     }
+
     return SOLVE_FUNC_SUCCESS;
 }

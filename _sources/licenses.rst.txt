@@ -182,7 +182,7 @@ provide the excellent features to MatchMove artists by default. ::
     CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 OpenMVG (open Multiple View Geometry)
--------
+-------------------------------------
 
 `OpenMVG homepage <https://openmvg.readthedocs.io/>`_
 `openMVG GitHub page <https://github.com/openMVG/openMVG>`_

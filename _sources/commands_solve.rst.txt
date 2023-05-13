@@ -119,6 +119,6 @@ Python Example:
 *To be written.*
 
 ``mmCameraPoseFromPoints`` Command
-+++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++
 
 *To be written.*

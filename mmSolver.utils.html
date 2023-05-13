@@ -340,7 +340,7 @@ all end in tears.</p>
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='139677875278352'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='139677875278416'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='139677875278736'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='140299041056720'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='140299049880656'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='140299036791824'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1091,12 +1091,12 @@ improve performance when operating on many arguments at once.</p>
 <span class="gp">...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">event_utils</span><span class="o">.</span><span class="n">add_function_to_event</span><span class="p">(</span><span class="s1">&#39;my_event&#39;</span><span class="p">,</span> <span class="n">my_function</span><span class="p">,</span> <span class="n">deferred</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">event_utils</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span><span class="s1">&#39;my_event&#39;</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="go">{&#39;number&#39;: 42}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="n">event_utils</span><span class="o">.</span><span class="n">trigger_event</span><span class="p">(</span><span class="s1">&#39;my_event&#39;</span><span class="p">,</span> <span class="n">number</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
 <span class="gp">...</span>
-<span class="go">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt;</span>
 <span class="go">{&#39;number&#39;: [0, 1, 2]}</span>
 </pre></div>
 </div>

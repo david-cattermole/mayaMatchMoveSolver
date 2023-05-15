@@ -340,123 +340,13 @@ Solver</cite> releases.</p>
 <p><cite>MM Renderer</cite> is different from regular Viewport 2.0 because it has
 the following features:</p>
 <ul class="simple">
-<li><p>Show silhouettes/edges for objects.</p></li>
-<li><p>Supports <cite>Hidden Line</cite> rendering, without needing to enable <cite>Hold
-Out</cite> toggles or assign a <code class="docutils literal notranslate"><span class="pre">useBackground</span></code> shader.</p></li>
+<li><p>Display of MM Image Plane nodes with native useBackground shaders.</p></li>
 </ul>
 <section id="getting-started">
 <h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h2>
-<ol class="arabic">
-<li><p>Load mmSolver plug-in.</p>
 <p>To use <cite>MM Renderer</cite>, simply load the <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> plug-in (for
 example open the Solver UI to ensure the plug-in is loaded), then
-use the Viewport’s “Renderer” menu to switch to <code class="docutils literal notranslate"><span class="pre">MM</span> <span class="pre">Renderer</span>
-<span class="pre">(beta)</span></code>.</p>
-</li>
-<li><p>Add objects into Display Layers.</p>
-<p>Initially you’ll likely find all objects are invisible(!), however
-that’s just a small-ish bug, and you’ll simply need to add your
-objects to a Maya Display Layer to see them.</p>
-</li>
-<li><p>Adjust Display Layer attributes.</p>
-<p>Once your objects are in a Display Layer you can use the Display
-Layer’s “Extra Attributes” in the Attribute Editor to control
-specific options for how the objects in each layer are displayed.</p>
-</li>
-</ol>
-</section>
-<section id="display-layers">
-<h2>Display Layers<a class="headerlink" href="#display-layers" title="Permalink to this heading">#</a></h2>
-<figure class="align-right">
-<a class="reference internal image-reference" href="_images/tools_renderer_display_layers.png"><img alt="MM Renderer Display Layers" src="_images/tools_renderer_display_layers.png" style="width: 306.0px; height: 414.59999999999997px;" /></a>
-</figure>
-<p>Display Layers can be used to add custom attributes (recognized only
-by <cite>MM Renderer</cite>) that can customize the display of the objects.</p>
-<p>Using these attributes you can:</p>
-<ul class="simple">
-<li><p>Control how different Display Layers are merged together - like in a
-layer-based composting software (eg Photoshop).</p></li>
-<li><p>For a specific display mode (Shaded, Wireframe, Hidden Line, etc)</p></li>
-<li><p>Toggle display of object edges.</p></li>
-<li><p>Control the alpha of different effects (Layer Mix mode, Objects and Edges)</p></li>
-</ul>
-<section id="display-layer-attributes">
-<h3>Display Layer Attributes<a class="headerlink" href="#display-layer-attributes" title="Permalink to this heading">#</a></h3>
-<p>Each Display Layer can have attributes that change how the display
-layer is rendered and composited by <cite>MM Renderer</cite>. These attributes
-are used to add extra functionality and lock Display Layers to
-specific modes, independent of the <cite>Viewport 2.0</cite> settings (such as
-<cite>Display Mode</cite> - Shaded, Wireframe, etc).</p>
-<div class="table-wrapper colwidths-auto docutils container" id="id2">
-<table class="docutils align-default" id="id2">
-<caption><span class="caption-text">Display Layer Attributes</span><a class="headerlink" href="#id2" title="Permalink to this table">#</a></caption>
-<thead>
-<tr class="row-odd"><th class="head"><p>Attribute</p></th>
-<th class="head"><p>Description</p></th>
-</tr>
-</thead>
-<tbody>
-<tr class="row-even"><td><p>Layer Mode</p></td>
-<td><p>How will the layer be merged with layers below it? Similar to
-Photoshop layer modes.</p></td>
-</tr>
-<tr class="row-odd"><td><p>Layer Mix</p></td>
-<td><p>Adjust the opacity of the layer - mixing between the layer
-below and this layer.</p></td>
-</tr>
-<tr class="row-even"><td><p>Object Display Style</p></td>
-<td><p>How will the object in the layer be displayed? Wireframe,
-Hidden Line, Shaded, etc?</p></td>
-</tr>
-<tr class="row-odd"><td><p>Object Alpha</p></td>
-<td><p>Fade the rendered objects as an image - this is <em>not</em> object
-transparency.</p></td>
-</tr>
-<tr class="row-even"><td><p>Edge Enable</p></td>
-<td><p>Toggle edge/silhouette rendering for the objects.</p></td>
-</tr>
-<tr class="row-odd"><td><p>Edge Color</p></td>
-<td><p>The color of the rendered edge?</p></td>
-</tr>
-<tr class="row-even"><td><p>Edge Alpha</p></td>
-<td><p>Fade the edges to control the bright and transparent they look.</p></td>
-</tr>
-<tr class="row-odd"><td><p>Edge Detect Mode</p></td>
-<td><p>Different algorithms of (2D) edge detection produce subtly
-different styles of lines. Use this option to control subtle
-details of the edge detection look.</p></td>
-</tr>
-<tr class="row-even"><td><p>Edge Thickness</p></td>
-<td><p>How thick will the edges be? Larger values produce thicker
-lines, but might take longer to render (lower FPS of
-viewport). Smaller thick values run the risk of missing edge
-details.</p></td>
-</tr>
-<tr class="row-odd"><td><p>Edge Threshold</p></td>
-<td><p>An overall control of the edge detection threshold, any
-detected over the threshold will be rendered with the Edge
-Color. This value multiplies the fine-grain edge threshold
-values.</p></td>
-</tr>
-<tr class="row-even"><td><p>Edge Threshold (Normals)</p></td>
-<td><p>Provides fine-grain control over the detection of edges,
-adjusting how much the object <cite>normals</cite> are used for detecting
-edges.</p></td>
-</tr>
-<tr class="row-odd"><td><p>Edge Threshold (Facing Ratio)</p></td>
-<td><p>Provides fine-grain control over the detection of edges,
-adjusting how much the object <cite>facing ratio</cite> is used for
-detecting edges.</p></td>
-</tr>
-<tr class="row-even"><td><p>Edge Threshold (Z-Depth)</p></td>
-<td><p>Provides fine-grain control over the detection of edges,
-adjusting how much the object <cite>Z-depth</cite> is used for
-detecting edges.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</section>
+use the Viewport’s “Renderer” menu to switch to <code class="docutils literal notranslate"><span class="pre">MM</span> <span class="pre">Renderer</span></code>.</p>
 </section>
 <section id="known-issues">
 <h2>Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this heading">#</a></h2>
@@ -464,59 +354,6 @@ detecting edges.</p></td>
 versions of <cite>MM Solver</cite>.  There are numerous bugs and issues that are
 not yet resolved and the viewport renderer is available as a preview
 only.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">OpenGL</span> <span class="pre">-</span> <span class="pre">Core</span> <span class="pre">Profile</span></code> is the only supported Rendering Engine -
-you will not see any viewport if you are not using a <code class="docutils literal notranslate"><span class="pre">OpenGL</span> <span class="pre">-</span>
-<span class="pre">Core</span> <span class="pre">Profile</span></code> mode. Other Rendering Engines, such as <code class="docutils literal notranslate"><span class="pre">OpenGL</span> <span class="pre">-</span>
-<span class="pre">Legacy</span></code> and <code class="docutils literal notranslate"><span class="pre">DirectX</span> <span class="pre">11</span></code> are not supported.</p>
-<p><code class="docutils literal notranslate"><span class="pre">OpenGL</span> <span class="pre">-</span> <span class="pre">Core</span> <span class="pre">Profile</span></code> is the default Rendering Engine in all
-(recent) versions of Maya.</p>
-<p>You can check, and change, your Rendering Engine in the Maya
-Preferences window, by going to the menu <code class="docutils literal notranslate"><span class="pre">Windows</span> <span class="pre">&gt;</span>
-<span class="pre">Settings/Preferences</span> <span class="pre">&gt;</span> <span class="pre">Preferences</span></code>, then click on the <code class="docutils literal notranslate"><span class="pre">Display</span></code>
-category, and see the <cite>Viewport 2.0</cite> Rendering Engine option at the
-bottom of the Preferences window.</p>
-</div>
-<section id="attributes-missing-from-display-layers">
-<h3>Attributes Missing From Display Layers<a class="headerlink" href="#attributes-missing-from-display-layers" title="Permalink to this heading">#</a></h3>
-<p>Display Layers may not have MM Renderer attributes added.</p>
-<p>In this beta release Display Layers will have attributes automatically
-added when the viewport renderer is toggled.</p>
-<p><em>Workaround:</em> Set your viewport renderer to Viewport 2.0, then back to
-“MM Renderer (beta)”.</p>
-<p>This will be fixed in a later release.</p>
-</section>
-<section id="the-maya-hud-is-not-displayed">
-<h3>The Maya HUD is not displayed<a class="headerlink" href="#the-maya-hud-is-not-displayed" title="Permalink to this heading">#</a></h3>
-<p>This will be fixed in a later release.</p>
-</section>
-<section id="slow-viewport-frame-rate">
-<h3>Slow Viewport Frame Rate<a class="headerlink" href="#slow-viewport-frame-rate" title="Permalink to this heading">#</a></h3>
-<p>Performance with many objects and/or Display Layers will reduce the
-speed of the viewport.</p>
-<p>This will be fixed in a later release.</p>
-</section>
-<section id="wireframes-are-shown-in-edges">
-<h3>Wireframes Are Shown in “Edges”<a class="headerlink" href="#wireframes-are-shown-in-edges" title="Permalink to this heading">#</a></h3>
-<p>On <cite>Maya 2022.0</cite>, you may have some incorrect visuals.</p>
-<p><em>Workaround:</em> Upgrade to at least Maya 2022.1+.</p>
-</section>
-</section>
-<section id="python-function">
-<h2>Python Function<a class="headerlink" href="#python-function" title="Permalink to this heading">#</a></h2>
-<p>The commands below are available for this tool, and allow hotkeys or
-custom buttons to be created.</p>
-<p>Add <cite>MM Renderer</cite> custom attributes to selected displayLayer nodes:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.mmrendererlayers.tool</span> <span class="k">as</span> <span class="nn">tool</span>
-<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
-</pre></div>
-</div>
-<p>Add <cite>MM Renderer</cite> custom attributes to all displayLayer nodes in the current Maya scene:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.mmrendererlayers.tool</span> <span class="k">as</span> <span class="nn">tool</span>
-<span class="n">setup_all_layers</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
-</pre></div>
-</div>
 </section>
 </section>
 
@@ -577,18 +414,7 @@ custom buttons to be created.</p>
             <ul>
 <li><a class="reference internal" href="#">MM Renderer</a><ul>
 <li><a class="reference internal" href="#getting-started">Getting Started</a></li>
-<li><a class="reference internal" href="#display-layers">Display Layers</a><ul>
-<li><a class="reference internal" href="#display-layer-attributes">Display Layer Attributes</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#known-issues">Known Issues</a><ul>
-<li><a class="reference internal" href="#attributes-missing-from-display-layers">Attributes Missing From Display Layers</a></li>
-<li><a class="reference internal" href="#the-maya-hud-is-not-displayed">The Maya HUD is not displayed</a></li>
-<li><a class="reference internal" href="#slow-viewport-frame-rate">Slow Viewport Frame Rate</a></li>
-<li><a class="reference internal" href="#wireframes-are-shown-in-edges">Wireframes Are Shown in “Edges”</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#python-function">Python Function</a></li>
+<li><a class="reference internal" href="#known-issues">Known Issues</a></li>
 </ul>
 </li>
 </ul>

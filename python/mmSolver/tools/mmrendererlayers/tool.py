@@ -23,12 +23,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import maya.cmds
-
 import mmSolver.logger
-import mmSolver.tools.userpreferences.lib as userpref_lib
-import mmSolver.tools.userpreferences.constant as userpref_const
-import mmSolver.tools.mmrendererlayers.lib as lib
 
 LOG = mmSolver.logger.get_logger()
 
@@ -37,29 +32,4 @@ def main():
     """
     Add MM Renderer attributes to the selected displayLayer nodes.
     """
-    nodes = maya.cmds.ls(selection=True, type='displayLayer') or []
-    if len(nodes) == 0:
-        LOG.warn('MM Renderer: No Display Layers are selected.')
-        return
-    lib.add_attrs_to_layers(nodes)
-
-
-def setup_all_layers():
-    """
-    Add MM Renderer attributes to the selected Display Layers
-    """
-    nodes = maya.cmds.ls(type='displayLayer') or []
-    if len(nodes) == 0:
-        msg = 'MM Renderer: No Display Layers in the scene to add attributes.'
-        LOG.info(msg)
-        return
-
-    config = userpref_lib.get_config()
-    bg_node_types_string = userpref_lib.get_value(
-        config, userpref_const.MM_RENDERER_BACKGROUND_NODE_TYPES_KEY
-    )
-    bg_node_types = bg_node_types_string.split(' ') or []
-    bg_node_types = [x.strip() for x in bg_node_types]
-    bg_node_types = set([x for x in bg_node_types if len(x) > 0])
-
-    return lib.add_attrs_to_layers(nodes, bg_node_types)
+    return

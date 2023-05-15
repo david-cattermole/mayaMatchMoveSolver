@@ -124,26 +124,11 @@ if (MMSOLVER_BUILD_RENDERER)
   set(SOURCE_FILES
     ${SOURCE_FILES}
     mmSolver/render/MMRendererCmd.cpp
-    mmSolver/render/RenderGlobalsNode.cpp
     mmSolver/render/RenderOverride.cpp
     mmSolver/render/ops/ClearOperation.cpp
-    mmSolver/render/ops/HudRender.cpp
-    mmSolver/render/ops/PresentTarget.cpp
-    mmSolver/render/ops/QuadRenderBase.cpp
-    mmSolver/render/ops/QuadRenderBlend.cpp
-    mmSolver/render/ops/QuadRenderCopy.cpp
-    mmSolver/render/ops/QuadRenderEdgeDetect.cpp
-    mmSolver/render/ops/QuadRenderInvert.cpp
-    mmSolver/render/ops/QuadRenderLayerMerge.cpp
-    mmSolver/render/ops/SceneDepthRender.cpp
-    mmSolver/render/ops/SceneEdgeRender.cpp
     mmSolver/render/ops/SceneRender.cpp
     mmSolver/render/ops/SceneRenderBase.cpp
     mmSolver/render/ops/scene_utils.cpp
-    mmSolver/render/passes/BeginPasses.cpp
-    mmSolver/render/passes/DisplayLayer.cpp
-    mmSolver/render/passes/DisplayLayerList.cpp
-    mmSolver/render/passes/EndPasses.cpp
     mmSolver/render/shader/shader_utils.cpp
   )
 

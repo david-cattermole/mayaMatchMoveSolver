@@ -125,6 +125,10 @@ $ cd ~/dev/mayaMatchMoveSolver_maya2022Deploy_windows64/; git fetch --all; git c
 # Maya 2023
 $ mkdir -p ~/dev/mayaMatchMoveSolver_maya2023Deploy_windows64 ; cd ~/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2023Deploy_windows64
 $ cd ~/dev/mayaMatchMoveSolver_maya2023Deploy_windows64/; git fetch --all; git checkout -f develop; git reset --hard HEAD ; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
+
+# Maya 2024
+$ mkdir -p ~/dev/mayaMatchMoveSolver_maya2024Deploy_windows64 ; cd ~/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2024Deploy_windows64
+$ cd ~/dev/mayaMatchMoveSolver_maya2024Deploy_windows64/; git fetch --all; git checkout -f develop; git reset --hard HEAD ; git pull ; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ;
 ```
 
 Run in the Windows Command Prompt:
@@ -149,6 +153,9 @@ REM Maya 2022 - Visual Studio 2019:
 
 REM Maya 2023 - Visual Studio 2019:
 > cd %userprofile%\dev\mayaMatchMoveSolver_maya2023Deploy_windows64 && scripts\build_mmSolver_windows64_maya2023.bat
+
+REM Maya 2024 - Visual Studio 2022:
+> cd %userprofile%\dev\mayaMatchMoveSolver_maya2024Deploy_windows64 && scripts\build_mmSolver_windows64_maya2024.bat
 ```
 
 NOTE: Starting in mmSolver v0.4.0, the Visual Studio compiler version

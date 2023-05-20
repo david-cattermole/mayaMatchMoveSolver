@@ -127,6 +127,11 @@ $ cd /media/dev/mayaMatchMoveSolver_maya2022Deploy_linux ; git fetch --all; git 
 $ source load_maya2023.sh  # Example script to set up development environment (not provided).
 $ mkdir -p /media/dev/mayaMatchMoveSolver_maya2023Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2023Deploy_linux
 $ cd /media/dev/mayaMatchMoveSolver_maya2023Deploy_linux ; git fetch --all; git checkout -f develop; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_mmSolver_linux_maya2023.bash
+
+# Maya 2024
+$ source load_maya2024.sh  # Example script to set up development environment (not provided).
+$ mkdir -p /media/dev/mayaMatchMoveSolver_maya2024Deploy_linux ; cd /media/dev/ ; git clone git@github.com:david-cattermole/mayaMatchMoveSolver.git mayaMatchMoveSolver_maya2024Deploy_linux
+$ cd /media/dev/mayaMatchMoveSolver_maya2024Deploy_linux ; git fetch --all; git checkout -f develop; git pull; rm -R --force build_* ; rm -R --force external/install/* ; rm -R --force external/working/*/ ; bash scripts/build_mmSolver_linux_maya2024.bash
 ```
 
 Package files can then be uploaded from the

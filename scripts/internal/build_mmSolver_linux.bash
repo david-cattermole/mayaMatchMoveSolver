@@ -87,7 +87,7 @@ source "${PROJECT_ROOT}/scripts/internal/python_venv_activate.bash"
 
 # Paths for dependencies.
 MMSCENEGRAPH_INSTALL_DIR="${BUILD_DIR_BASE}/build_mmscenegraph/install/maya${MAYA_VERSION}_linux/"
-MMSCENEGRAPH_CMAKE_CONFIG_DIR="${MMSCENEGRAPH_INSTALL_DIR}/lib/cmake/mmscenegraph"
+MMSCENEGRAPH_CMAKE_CONFIG_DIR="${MMSCENEGRAPH_INSTALL_DIR}/lib64/cmake/mmscenegraph"
 
 # We don't want to find system packages.
 CMAKE_IGNORE_PATH="/lib;/lib64;/usr;/usr/lib;/usr/lib64;/usr/local;/usr/local/lib;/usr/local/lib64;"

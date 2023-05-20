@@ -46,20 +46,32 @@ RUN yum install --assumeyes \
 
 # X11 utilities
 RUN yum install --assumeyes \
+       libX11 \
+       libXScrnSaver \
+       libXau \
+       libXcomposite \
+       libXcursor \
+       libXext \
+       libXfixes \
+       libXi \
+       libXinerama \
+       libXmu \
        libXp \
        libXpm \
-       libXmu \
+       libXrandr \
+       libXrender \
        libXt \
-       libXi \
-       libXext \
-       libX11 \
-       libXinerama \
-       libXau \
        libxcb \
-       libXcomposite \
-       libXtst \
+       libxkbcommon \
+       libxkbcommon-x11 \
+       libxshmfence \
+       xcb-util \
+       xcb-util-image \
+       xcb-util-keysyms \
+       xcb-util-renderutil \
+       xcb-util-wm \
        xorg-x11-server-Xorg \
-       xorg-x11-server-Xvfb \
+       xorg-x11-server-Xvfb
 
 # Install image libraries and setup fix for Maya to find libtiff.
 RUN yum install --assumeyes \

@@ -66,29 +66,12 @@ RenderOverride::RenderOverride(const MString &name)
     m_backgroundOp->setBackgroundStyle(BackgroundStyle::kMayaDefault);
     m_backgroundOp->setClearMask(CLEAR_MASK_ALL);
     m_backgroundOp->setExcludeTypes(MHWRender::MFrameContext::kExcludeNone);
-#if MAYA_API_VERSION != 20220000
-    m_backgroundOp->setSceneFilter(MHWRender::MSceneRender::kRenderAllItems);
-#else
-    // The behaviour of the MSceneRender::MSceneFilterOption was
-    // broken in Maya 2022.0, and was fixed in Maya 2022.1 and
-    // 2023. The weird behaviour appears to be absent in Maya 2020, so
-    // only Maya 2022.0 is affected.
-    //
-    // See fixed issues MAYA-111526 and MAYA-110627:
-    //
-    // "VP2: MSceneRender always rendering selection highlight even
-    // though it is not set in the MSceneFilterOption
-    // (kRenderPostSceneUIItems is disabled)"
-    //
-    // https://help.autodesk.com/view/MAYAUL/2023/ENU/?guid=Maya_ReleaseNotes_2023_release_notes_fixed_issues2023_html
-    // https://help.autodesk.com/view/MAYAUL/2022/ENU/?guid=Maya_ReleaseNotes_2022_1_release_notes_html
-    //
-    // This workaround provides roughly the same appearance, compared to above.
     m_backgroundOp->setSceneFilter(
         static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
             MHWRender::MSceneRender::kRenderPreSceneUIItems |
-            MHWRender::MSceneRender::kRenderShadedItems));
-#endif
+            MHWRender::MSceneRender::kRenderShadedItems |
+            MHWRender::MSceneRender::kRenderPostSceneUIItems));
+
     // By replacing the standard viewport background operation we are
     // able to "trick" the native Maya useBackground shader to
     // treating the output from our custom background as the

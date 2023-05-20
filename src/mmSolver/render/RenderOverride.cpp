@@ -103,8 +103,6 @@ RenderOverride::~RenderOverride() {
     RenderOverride::cleanup();
 }
 
-// What type of Draw APIs are supported? For now, only "OpenGL Core
-// Profile".
 MHWRender::DrawAPI RenderOverride::supportedDrawAPIs() const {
     return MHWRender::kAllDevices;
 }

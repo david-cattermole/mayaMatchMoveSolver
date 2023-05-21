@@ -523,8 +523,8 @@ int solveFunc_calculateJacobianMatrix(
     return SOLVE_FUNC_SUCCESS;
 }
 
-// Function run by cminpack algorithm to test the input parameters, p,
-// and compute the output errors, x.
+// Function run by cminpack algorithm to test the input parameters,
+// 'parameters', and compute the output errors, 'errors'.
 int solveFunc(const int numberOfParameters, const int numberOfErrors,
               const double *parameters, double *errors, double *jacobian,
               void *rawUserData) {

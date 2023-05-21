@@ -62,6 +62,8 @@ MMSCENEGRAPH_CPP_TARGET_DIR="${BUILD_DIR_BASE}/build_mmscenegraph/rust_linux_may
 MMSCENEGRAPH_LIB_DIR="${MMSCENEGRAPH_CPP_TARGET_DIR}/${BUILD_TYPE_DIR}"
 MMSCENEGRAPH_INCLUDE_DIR="${MMSCENEGRAPH_CPP_DIR}/include"
 
+MMSCENEGRAPH_BUILD_TESTS=0
+
 echo "Building mmSceneGraph... (${MMSCENEGRAPH_ROOT})"
 
 # Install the needed 'cxxbridge' command.

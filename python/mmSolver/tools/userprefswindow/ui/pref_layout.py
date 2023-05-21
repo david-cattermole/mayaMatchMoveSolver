@@ -48,9 +48,6 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         # Don't show the deprecated features. They are not used
         # anyway.
         self.deprecated_groupBox.setVisible(False)
-
-        # MM Renderer is not ready for production use, yet.
-        self.mmRenderer_groupBox.setVisible(const.USE_MMRENDERER)
         return
 
     def set_config(self, config):
@@ -62,9 +59,6 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         self.updateAddNewMarkersToWidget(config)
         self.updateAddNewLinesToWidget(config)
         self.updateSolverUIMinimalUIWhileSolvingWidget(config)
-
-        if const.USE_MMRENDERER is True:
-            self.updateRendererBackgroundNodeTypesWidget(config)
 
         # Deprecated options, kept for backwards compatibility, but
         # they are hidden by default anyway.
@@ -185,15 +179,4 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         key = pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY
         label = self.minimalUIWhileSolvingComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)
-        return value
-
-    def updateRendererBackgroundNodeTypesWidget(self, config):
-        key = pref_const.MM_RENDERER_BACKGROUND_NODE_TYPES_KEY
-        value = userprefs_lib.get_value(config, key)
-        assert isinstance(value, pycompat.TEXT_TYPE)
-        self.backgroundNodeTypesLineEdit.setText(value)
-        return
-
-    def getRendererBackgroundNodeTypesConfigValue(self):
-        value = self.backgroundNodeTypesLineEdit.text()
         return value

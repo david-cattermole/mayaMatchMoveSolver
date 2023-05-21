@@ -21,6 +21,3 @@ Contains constant data to be used by the User Preferences window.
 
 # Window Title Bar format.
 WINDOW_TITLE_BAR = 'User Preferences mmSolver'
-
-# MM Renderer is not ready for production use, yet.
-USE_MMRENDERER = False

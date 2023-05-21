@@ -87,7 +87,7 @@ def _collect_image_planes(node_categories):
 
 def _collect_display_nodes(node_categories):
     nodes_to_delete = set()
-    node_types_to_delete = ['mmSkyDomeShape', 'mmRenderGlobals']
+    node_types_to_delete = ['mmSkyDomeShape']
     other_nodes = node_categories.get('other', [])
     for node in other_nodes:
         if cmds.nodeType(node) in node_types_to_delete:

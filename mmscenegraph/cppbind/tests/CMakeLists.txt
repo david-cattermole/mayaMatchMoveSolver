@@ -19,4 +19,4 @@ target_include_directories(${target_test_exe_name}
   )
 
 # Install
-install_target_to_module(${target_test_exe_name} "${MODULE_FULL_NAME}")
+install(TARGETS ${target_test_exe_name})

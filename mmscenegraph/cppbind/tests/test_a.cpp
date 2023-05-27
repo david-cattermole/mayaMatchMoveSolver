@@ -95,6 +95,9 @@ int test_a() {
     mmsg::Real focal_length = 35.0f;
     mmsg::Real sensor_width = 36.0f;
     mmsg::Real sensor_height = 24.0f;
+    int32_t image_width = 3600;
+    int32_t image_height = 2400;
+    auto cam_film_fit = mmsg::FilmFit::kHorizontal;
     auto cam_tx_attr = attrdb.create_attr_static(tx);
     auto cam_ty_attr = attrdb.create_attr_static(ty);
     auto cam_tz_attr = attrdb.create_attr_static(tz);
@@ -104,6 +107,11 @@ int test_a() {
     auto cam_sensor_width_attr = attrdb.create_attr_static(sensor_width);
     auto cam_sensor_height_attr = attrdb.create_attr_static(sensor_height);
     auto cam_focal_length_attr = attrdb.create_attr_static(focal_length);
+    auto cam_lens_offset_x_attr = attrdb.create_attr_static(0.0);
+    auto cam_lens_offset_y_attr = attrdb.create_attr_static(0.0);
+    auto cam_near_clip_plane_attr = attrdb.create_attr_static(0.1);
+    auto cam_far_clip_plane_attr = attrdb.create_attr_static(10000.0);
+    auto cam_camera_scale_attr = attrdb.create_attr_static(1.0);
     auto cam_translate_attrs = mmsg::Translate3DAttrIds{
         cam_tx_attr,
         cam_ty_attr,
@@ -119,15 +127,27 @@ int test_a() {
         one_attr,
         one_attr,
     };
+    // Beware that initializing this struct (and others like it) will
+    // automatically initialize the attributes not given to the
+    // default value of the type. For 'CameraAttrIds' this means that
+    // if the last attribute is removed from the initalisation then it
+    // will default to an 'AttrId::AnimDense(0)' value which will at
+    // least cause incorrect results and at worse it will segfault the
+    // program.
     auto cam_attrs = mmsg::CameraAttrIds{
         cam_sensor_width_attr,
         cam_sensor_height_attr,
         cam_focal_length_attr,
+        cam_lens_offset_x_attr,
+        cam_lens_offset_y_attr,
+        cam_near_clip_plane_attr,
+        cam_far_clip_plane_attr,
+        cam_camera_scale_attr
     };
     auto cam_rotate_order = mmsg::RotateOrder::kZXY;
-    auto cam_node =
-        sg.create_camera_node(cam_translate_attrs, cam_rotate_attrs,
-                              cam_scale_attrs, cam_attrs, cam_rotate_order);
+    auto cam_node = sg.create_camera_node(
+        cam_translate_attrs, cam_rotate_attrs, cam_scale_attrs, cam_attrs,
+        cam_rotate_order, cam_film_fit, image_width, image_height);
 
     // Marker to be reprojected
     mmsg::Real mx = 0.0;
@@ -178,8 +198,8 @@ int test_a() {
     auto flat_scene = mmsg::bake_scene_graph(sg, eval_objects);
     std::cout << "FlatScene BEFORE num_points: " << flat_scene.num_points()
               << '\n';
-    std::cout << "FlatScene BEFORE num_deviations: "
-              << flat_scene.num_deviations() << '\n';
+    std::cout << "FlatScene BEFORE num_markers: "
+              << flat_scene.num_markers() << '\n';
 
     auto frames = std::vector<mmsg::FrameValue>();
     frames.push_back(1);
@@ -188,22 +208,22 @@ int test_a() {
     flat_scene.evaluate(attrdb, frames);
     std::cout << "FlatScene AFTER num_points: " << flat_scene.num_points()
               << '\n';
-    std::cout << "FlatScene AFTER num_deviations: "
-              << flat_scene.num_deviations() << '\n';
+    std::cout << "FlatScene AFTER num_markers: "
+              << flat_scene.num_markers() << '\n';
     auto num_points = flat_scene.num_points();
-    assert(num_points == flat_scene.num_deviations());
+    assert(num_points == flat_scene.num_markers());
 
-    auto out_deviation_list = flat_scene.deviations();
+    auto out_marker_list = flat_scene.markers();
     auto out_point_list = flat_scene.points();
-    assert(out_point_list.size() == out_deviation_list.size());
+    assert(out_point_list.size() == out_marker_list.size());
     for (uint32_t i = 0; i < num_points; ++i) {
         auto index = i * 2;
         auto point_x = out_point_list[index + 0];
         auto point_y = out_point_list[index + 1];
-        auto dev_x = out_deviation_list[index + 0];
-        auto dev_y = out_deviation_list[index + 1];
-        std::cout << "point: " << point_x << ", " << point_y << "dev: " << dev_x
-                  << ", " << dev_y << '\n';
+        auto marker_x = out_marker_list[index + 0];
+        auto marker_y = out_marker_list[index + 1];
+        std::cout << "point: " << point_x << ", " << point_y << " marker: " << marker_x
+                  << ", " << marker_y << '\n';
     }
 
     return 0;

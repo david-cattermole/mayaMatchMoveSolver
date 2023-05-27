@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (C) 2022 David Cattermole.
+# Copyright (C) 2022, 2023 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -18,7 +18,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# Builds the mmscenegraph library.
+# Builds a rust-based library.
 #
 # This script is assumed to be called with a number of variables
 # already set:
@@ -29,6 +29,9 @@
 # The -e flag causes the script to exit as soon as one command returns
 # a non-zero exit code.
 set -ev
+
+# Name of the rust library that will be built.
+PROJECT_NAME=$1
 
 # Store the current working directory, to return to.
 CWD=`pwd`
@@ -52,55 +55,57 @@ if [ ${BUILD_TYPE}=="Release" ]; then
     BUILD_TYPE_DIR="release"
 fi
 
-# Where to find the mmSceneGraph Rust libraries and headers.
-MMSCENEGRAPH_INSTALL_PATH="${BUILD_DIR_BASE}/build_mmscenegraph/install/maya${MAYA_VERSION}_linux/"
-MMSCENEGRAPH_ROOT="${PROJECT_ROOT}/mmscenegraph"
-MMSCENEGRAPH_RUST_DIR="${MMSCENEGRAPH_ROOT}/rust"
-MMSCENEGRAPH_CPP_DIR="${MMSCENEGRAPH_ROOT}/cppbind"
-MMSCENEGRAPH_RUST_TARGET_DIR="${BUILD_DIR_BASE}/build_mmscenegraph/rust_linux_maya${MAYA_VERSION}"
-MMSCENEGRAPH_CPP_TARGET_DIR="${BUILD_DIR_BASE}/build_mmscenegraph/rust_linux_maya${MAYA_VERSION}"
-MMSCENEGRAPH_LIB_DIR="${MMSCENEGRAPH_CPP_TARGET_DIR}/${BUILD_TYPE_DIR}"
-MMSCENEGRAPH_INCLUDE_DIR="${MMSCENEGRAPH_CPP_DIR}/include"
+# Where to find the ${PROJECT_NAME} Rust libraries and headers.
+MM_LIBRARY_INSTALL_PATH="${BUILD_DIR_BASE}/build_${PROJECT_NAME}/install/maya${MAYA_VERSION}_linux/"
+MM_LIBRARY_ROOT="${PROJECT_ROOT}/rust/cppbind/${PROJECT_NAME}"
+MM_LIBRARY_RUST_DIR="${MM_LIBRARY_ROOT}/rust/src/${PROJECT_NAME}"
+MM_LIBRARY_CPP_DIR="${MM_LIBRARY_ROOT}"
+MM_LIBRARY_RUST_TARGET_DIR="${BUILD_DIR_BASE}/build_${PROJECT_NAME}/rust_linux_maya${MAYA_VERSION}"
+MM_LIBRARY_CPP_TARGET_DIR="${BUILD_DIR_BASE}/build_${PROJECT_NAME}/rust_linux_maya${MAYA_VERSION}"
+MM_LIBRARY_LIB_DIR="${MM_LIBRARY_CPP_TARGET_DIR}/${BUILD_TYPE_DIR}"
+MM_LIBRARY_INCLUDE_DIR="${MM_LIBRARY_CPP_DIR}/include"
 
-MMSCENEGRAPH_BUILD_TESTS=0
+MM_LIBRARY_BUILD_TESTS=0
 
-echo "Building mmSceneGraph... (${MMSCENEGRAPH_ROOT})"
+echo "Building ${PROJECT_NAME}... (${MM_LIBRARY_ROOT})"
 
 # Install the needed 'cxxbridge' command.
 #
 # NOTE: When changing this version number, make sure to update the
 # CXX version used in the C++ buildings, and all the build scripts
 # using this value:
-# './mmscenegraph/cppbind/Cargo.toml'
-# './scripts/internal/build_mmscenegraph_windows64.bat'
+# './rust/cppbind/mmscenegraph/Cargo.toml'
+# './rust/cppbind/mmimage/Cargo.toml'
+# './scripts/internal/build_rust_library_windows64.bat'
 ${RUST_CARGO_EXE} install cxxbridge-cmd --version 1.0.75
+MM_LIBRARY_CXXBRIDGE_EXE="${HOME}\.cargo\bin\cxxbridge"
 
-echo "Building C++ Bindings... (${MMSCENEGRAPH_CPP_DIR})"
-cd "${MMSCENEGRAPH_CPP_DIR}"
+echo "Building C++ Bindings... (${MM_LIBRARY_CPP_DIR})"
+cd "${MM_LIBRARY_CPP_DIR}"
 # Assumes 'cxxbridge' (cxxbridge-cmd) is installed.
 echo "Generating C++ Headers..."
-cxxbridge --header --output "${MMSCENEGRAPH_CPP_DIR}/include/mmscenegraph/_cxx.h"
-${RUST_CARGO_EXE} build ${RELEASE_FLAG} --target-dir "${MMSCENEGRAPH_CPP_TARGET_DIR}"
+cxxbridge --header --output "${MM_LIBRARY_CPP_DIR}/include/${PROJECT_NAME}/_cxx.h"
+${RUST_CARGO_EXE} build ${RELEASE_FLAG} --target-dir "${MM_LIBRARY_CPP_TARGET_DIR}"
 
 # Build project
 cd ${BUILD_DIR_BASE}
 BUILD_DIR_NAME="cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}"
-BUILD_DIR="${BUILD_DIR_BASE}/build_mmscenegraph/${BUILD_DIR_NAME}"
+BUILD_DIR="${BUILD_DIR_BASE}/build_${PROJECT_NAME}/${BUILD_DIR_NAME}"
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
 export MAYA_VERSION=${MAYA_VERSION}
 ${CMAKE_EXE} \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
-    -DCMAKE_INSTALL_PREFIX=${MMSCENEGRAPH_INSTALL_PATH} \
+    -DCMAKE_INSTALL_PREFIX=${MM_LIBRARY_INSTALL_PATH} \
     -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
     -DCMAKE_CXX_STANDARD=${CXX_STANDARD} \
-    -DMMSCENEGRAPH_CXXBRIDGE_EXE=${MMSCENEGRAPH_CXXBRIDGE_EXE} \
-    -DMMSCENEGRAPH_BUILD_TESTS=${MMSCENEGRAPH_BUILD_TESTS} \
-    -DMMSCENEGRAPH_LIB_DIR=${MMSCENEGRAPH_LIB_DIR} \
-    -DMMSCENEGRAPH_INCLUDE_DIR=${MMSCENEGRAPH_INCLUDE_DIR} \
+    -DMM_LIBRARY_CXXBRIDGE_EXE=${MM_LIBRARY_CXXBRIDGE_EXE} \
+    -DMM_LIBRARY_BUILD_TESTS=${MM_LIBRARY_BUILD_TESTS} \
+    -DMM_LIBRARY_LIB_DIR=${MM_LIBRARY_LIB_DIR} \
+    -DMM_LIBRARY_INCLUDE_DIR=${MM_LIBRARY_INCLUDE_DIR} \
     -DBUILD_SHARED_LIBS=OFF \
-    ${MMSCENEGRAPH_ROOT}
+    ${MM_LIBRARY_ROOT}
 
 ${CMAKE_EXE} --build . --parallel
 ${CMAKE_EXE} --install .

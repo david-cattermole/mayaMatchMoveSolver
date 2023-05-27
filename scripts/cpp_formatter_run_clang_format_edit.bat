@@ -60,9 +60,9 @@ clang-format -i --style=file ^
        "%PROJECT_ROOT%\src\mmSolver\pluginMain.cpp" ^
        "%PROJECT_ROOT%\include\mmSolver\*.cpp" ^
        "%PROJECT_ROOT%\include\mmSolver\*.h" ^
-       "%PROJECT_ROOT%\mmscenegraph\cppbind\include\mmscenegraph\*.cpp" ^
-       "%PROJECT_ROOT%\mmscenegraph\cppbind\include\mmscenegraph\*.h" ^
-       "%PROJECT_ROOT%\mmscenegraph\cppbind\src\*.cpp" ^
-       "%PROJECT_ROOT%\mmscenegraph\cppbind\src\*.h" ^
-       "%PROJECT_ROOT%\mmscenegraph\cppbind\tests\*.cpp" ^
-       "%PROJECT_ROOT%\mmscenegraph\cppbind\tests\*.h"
+       "%PROJECT_ROOT%\rust\cppbind\mmscenegraph\include\mmscenegraph\*.cpp" ^
+       "%PROJECT_ROOT%\rust\cppbind\mmscenegraph\include\mmscenegraph\*.h" ^
+       "%PROJECT_ROOT%\rust\cppbind\mmscenegraph\src\*.cpp" ^
+       "%PROJECT_ROOT%\rust\cppbind\mmscenegraph\src\*.h" ^
+       "%PROJECT_ROOT%\rust\cppbind\mmscenegraph\tests\*.cpp" ^
+       "%PROJECT_ROOT%\rust\cppbind\mmscenegraph\tests\*.h"

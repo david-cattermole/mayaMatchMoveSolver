@@ -38,12 +38,9 @@ SET CXX_STANDARD=11
 
 :: TODO: Setup Compiler environment. Change for your install path as needed.
 
-:: This script defines the batch script variables 'MMSCENEGRAPH_LIB_DIR'
-:: and 'MMSCENEGRAPH_INCLUDE_DIR'.
-::
-:: The script assumes 'RUST_CARGO_EXE' has been set to the Rust
+:: These scripts assume 'RUST_CARGO_EXE' has been set to the Rust
 :: 'cargo' executable.
-CALL scripts\internal\build_mmscenegraph_windows64.bat
+CALL scripts\internal\build_rust_library_windows64.bat mmscenegraph
 if errorlevel 1 goto failed_to_build_mmscenegraph
 
 CALL scripts\internal\build_mmSolver_windows64.bat

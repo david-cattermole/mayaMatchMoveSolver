@@ -1,6 +1,6 @@
 @ECHO OFF
 ::
-:: Copyright (C) 2022 David Cattermole.
+:: Copyright (C) 2022, 2023 David Cattermole.
 ::
 :: This file is part of mmSolver.
 ::
@@ -26,6 +26,9 @@
 :: This file assumes the variables MAYA_VERSION and RUST_CARGO_EXE
 :: have been set.
 
+:: Name of the rust library that will be built.
+set PROJECT_NAME=%~1
+
 :: The root of this project.
 SET PROJECT_ROOT=%CD%
 ECHO Project Root: %PROJECT_ROOT%
@@ -43,38 +46,39 @@ IF "%BUILD_TYPE%"=="Release" (
     SET BUILD_TYPE_DIR=release
 )
 
-:: Where to find the mmSceneGraph Rust libraries and headers.
-SET MMSCENEGRAPH_INSTALL_PATH=%BUILD_DIR_BASE%\build_mmscenegraph\install\maya%MAYA_VERSION%_windows64\
-SET MMSCENEGRAPH_ROOT=%PROJECT_ROOT%\mmscenegraph
-SET MMSCENEGRAPH_RUST_DIR=%MMSCENEGRAPH_ROOT%\rust
-SET MMSCENEGRAPH_CPP_DIR=%MMSCENEGRAPH_ROOT%\cppbind
-SET MMSCENEGRAPH_RUST_TARGET_DIR="%BUILD_DIR_BASE%\build_mmscenegraph\rust_windows64_maya%MAYA_VERSION%"
-SET MMSCENEGRAPH_CPP_TARGET_DIR="%BUILD_DIR_BASE%\build_mmscenegraph\rust_windows64_maya%MAYA_VERSION%"
-SET MMSCENEGRAPH_LIB_DIR="%MMSCENEGRAPH_CPP_TARGET_DIR%\%BUILD_TYPE_DIR%"
-SET MMSCENEGRAPH_INCLUDE_DIR="%MMSCENEGRAPH_CPP_DIR%\include"
+:: Where to find the %PROJECT_NAME% Rust libraries and headers.
+SET MM_LIBRARY_INSTALL_PATH=%BUILD_DIR_BASE%\build_%PROJECT_NAME%\install\maya%MAYA_VERSION%_windows64\
+SET MM_LIBRARY_ROOT=%PROJECT_ROOT%\rust\cppbind\%PROJECT_NAME%
+SET MM_LIBRARY_RUST_DIR=%PROJECT_ROOT%\rust\src\%PROJECT_NAME%
+SET MM_LIBRARY_CPP_DIR=%MM_LIBRARY_ROOT%
+SET MM_LIBRARY_RUST_TARGET_DIR="%BUILD_DIR_BASE%\build_%PROJECT_NAME%\rust_windows64_maya%MAYA_VERSION%"
+SET MM_LIBRARY_CPP_TARGET_DIR="%BUILD_DIR_BASE%\build_%PROJECT_NAME%\rust_windows64_maya%MAYA_VERSION%"
+SET MM_LIBRARY_LIB_DIR="%MM_LIBRARY_CPP_TARGET_DIR%\%BUILD_TYPE_DIR%"
+SET MM_LIBRARY_INCLUDE_DIR="%MM_LIBRARY_CPP_DIR%\include"
 
-SET MMSCENEGRAPH_BUILD_TESTS=0
+SET MM_LIBRARY_BUILD_TESTS=0
 
-ECHO Building mmSceneGraph... (%MMSCENEGRAPH_ROOT%)
+ECHO Building %PROJECT_NAME%... (%MM_LIBRARY_ROOT%)
 
 :: Install the needed 'cxxbridge.exe' command.
 ::
 :: NOTE: When changing this version number, make sure to update the
 :: CXX version used in the C++ buildings, and all the build scripts
 :: using this value:
-:: './mmscenegraph/cppbind/Cargo.toml'
-:: './scripts/internal/build_mmscenegraph_linux.bash'
+:: './rust/cppbind/mmscenegraph/Cargo.toml'
+:: './rust/cppbind/mmimage/Cargo.toml'
+:: './scripts/internal/build_rust_library_linux.bash'
 %RUST_CARGO_EXE% install cxxbridge-cmd --version 1.0.75
-SET MMSCENEGRAPH_CXXBRIDGE_EXE="%USERPROFILE%\.cargo\bin\cxxbridge.exe"
+SET MM_LIBRARY_CXXBRIDGE_EXE="%USERPROFILE%\.cargo\bin\cxxbridge.exe"
 
-ECHO Building C++ Bindings... (%MMSCENEGRAPH_CPP_DIR%)
-CHDIR "%MMSCENEGRAPH_CPP_DIR%"
+ECHO Building C++ Bindings... (%MM_LIBRARY_CPP_DIR%)
+CHDIR "%MM_LIBRARY_CPP_DIR%"
 :: Assumes 'cxxbridge' (cxxbridge-cmd) is installed.
 ECHO Generating C++ Headers...
-cxxbridge --header --output "%MMSCENEGRAPH_CPP_DIR%\include\mmscenegraph\_cxx.h"
+cxxbridge --header --output "%MM_LIBRARY_CPP_DIR%\include\%PROJECT_NAME%\_cxx.h"
 if errorlevel 1 goto failed_to_generate_cpp_header
 
-%RUST_CARGO_EXE% build %RELEASE_FLAG% --target-dir "%MMSCENEGRAPH_CPP_TARGET_DIR%"
+%RUST_CARGO_EXE% build %RELEASE_FLAG% --target-dir "%MM_LIBRARY_CPP_TARGET_DIR%"
 if errorlevel 1 goto failed_to_build_rust
 
 :: MinGW is a common install for developers on Windows and
@@ -90,27 +94,27 @@ SET CMAKE_GENERATOR=Ninja
 
 :: Build project
 SET BUILD_DIR_NAME=cmake_win64_maya%MAYA_VERSION%_%BUILD_TYPE%
-SET BUILD_DIR=%BUILD_DIR_BASE%\build_mmscenegraph\%BUILD_DIR_NAME%
+SET BUILD_DIR=%BUILD_DIR_BASE%\build_%PROJECT_NAME%\%BUILD_DIR_NAME%
 ECHO BUILD_DIR_BASE: %BUILD_DIR_BASE%
 ECHO BUILD_DIR_NAME: %BUILD_DIR_NAME%
 ECHO BUILD_DIR: %BUILD_DIR%
 CHDIR "%BUILD_DIR_BASE%"
-MKDIR "build_mmscenegraph"
-CHDIR "%BUILD_DIR_BASE%\build_mmscenegraph\"
+MKDIR "build_%PROJECT_NAME%"
+CHDIR "%BUILD_DIR_BASE%\build_%PROJECT_NAME%\"
 MKDIR "%BUILD_DIR_NAME%"
 CHDIR "%BUILD_DIR%"
 
 %CMAKE_EXE% -G %CMAKE_GENERATOR% ^
     -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
-    -DCMAKE_INSTALL_PREFIX=%MMSCENEGRAPH_INSTALL_PATH% ^
+    -DCMAKE_INSTALL_PREFIX=%MM_LIBRARY_INSTALL_PATH% ^
     -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
     -DCMAKE_CXX_STANDARD=%CXX_STANDARD% ^
-    -DMMSCENEGRAPH_CXXBRIDGE_EXE=%MMSCENEGRAPH_CXXBRIDGE_EXE% ^
-    -DMMSCENEGRAPH_BUILD_TESTS=%MMSCENEGRAPH_BUILD_TESTS% ^
-    -DMMSCENEGRAPH_LIB_DIR=%MMSCENEGRAPH_LIB_DIR% ^
-    -DMMSCENEGRAPH_INCLUDE_DIR=%MMSCENEGRAPH_INCLUDE_DIR% ^
+    -DMM_LIBRARY_CXXBRIDGE_EXE=%MM_LIBRARY_CXXBRIDGE_EXE% ^
+    -DMM_LIBRARY_BUILD_TESTS=%MM_LIBRARY_BUILD_TESTS% ^
+    -DMM_LIBRARY_LIB_DIR=%MM_LIBRARY_LIB_DIR% ^
+    -DMM_LIBRARY_INCLUDE_DIR=%MM_LIBRARY_INCLUDE_DIR% ^
     -DBUILD_SHARED_LIBS=OFF ^
-    %MMSCENEGRAPH_ROOT%
+    %MM_LIBRARY_ROOT%
 if errorlevel 1 goto failed_to_generate_cpp
 
 %CMAKE_EXE% --build . --parallel

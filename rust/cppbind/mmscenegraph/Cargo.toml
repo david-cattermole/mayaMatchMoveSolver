@@ -19,7 +19,7 @@ crate_type = ["staticlib"]
 cxx = "=1.0.75"
 
 [dependencies.mmscenegraph_rust]
-path = "../rust"
+path = "../../src/mmscenegraph/"
 
 [profile.release]
 opt-level = 3

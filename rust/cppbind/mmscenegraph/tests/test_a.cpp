@@ -134,16 +134,11 @@ int test_a() {
     // will default to an 'AttrId::AnimDense(0)' value which will at
     // least cause incorrect results and at worse it will segfault the
     // program.
-    auto cam_attrs = mmsg::CameraAttrIds{
-        cam_sensor_width_attr,
-        cam_sensor_height_attr,
-        cam_focal_length_attr,
-        cam_lens_offset_x_attr,
-        cam_lens_offset_y_attr,
-        cam_near_clip_plane_attr,
-        cam_far_clip_plane_attr,
-        cam_camera_scale_attr
-    };
+    auto cam_attrs =
+        mmsg::CameraAttrIds{cam_sensor_width_attr,   cam_sensor_height_attr,
+                            cam_focal_length_attr,   cam_lens_offset_x_attr,
+                            cam_lens_offset_y_attr,  cam_near_clip_plane_attr,
+                            cam_far_clip_plane_attr, cam_camera_scale_attr};
     auto cam_rotate_order = mmsg::RotateOrder::kZXY;
     auto cam_node = sg.create_camera_node(
         cam_translate_attrs, cam_rotate_attrs, cam_scale_attrs, cam_attrs,
@@ -198,8 +193,8 @@ int test_a() {
     auto flat_scene = mmsg::bake_scene_graph(sg, eval_objects);
     std::cout << "FlatScene BEFORE num_points: " << flat_scene.num_points()
               << '\n';
-    std::cout << "FlatScene BEFORE num_markers: "
-              << flat_scene.num_markers() << '\n';
+    std::cout << "FlatScene BEFORE num_markers: " << flat_scene.num_markers()
+              << '\n';
 
     auto frames = std::vector<mmsg::FrameValue>();
     frames.push_back(1);
@@ -208,8 +203,8 @@ int test_a() {
     flat_scene.evaluate(attrdb, frames);
     std::cout << "FlatScene AFTER num_points: " << flat_scene.num_points()
               << '\n';
-    std::cout << "FlatScene AFTER num_markers: "
-              << flat_scene.num_markers() << '\n';
+    std::cout << "FlatScene AFTER num_markers: " << flat_scene.num_markers()
+              << '\n';
     auto num_points = flat_scene.num_points();
     assert(num_points == flat_scene.num_markers());
 
@@ -222,8 +217,8 @@ int test_a() {
         auto point_y = out_point_list[index + 1];
         auto marker_x = out_marker_list[index + 0];
         auto marker_y = out_marker_list[index + 1];
-        std::cout << "point: " << point_x << ", " << point_y << " marker: " << marker_x
-                  << ", " << marker_y << '\n';
+        std::cout << "point: " << point_x << ", " << point_y
+                  << " marker: " << marker_x << ", " << marker_y << '\n';
     }
 
     return 0;

@@ -1,7 +1,7 @@
 @ECHO OFF
 SETLOCAL
 ::
-:: Copyright (C) 2019 David Cattermole.
+:: Copyright (C) 2019, 2023 David Cattermole.
 ::
 :: This file is part of mmSolver.
 ::
@@ -39,12 +39,9 @@ SET CXX_STANDARD=14
 :: Setup Compiler environment. Change for your install path as needed.
 CALL "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
 
-:: This script defines the batch script variables 'MMSCENEGRAPH_LIB_DIR'
-:: and 'MMSCENEGRAPH_INCLUDE_DIR'.
-::
-:: The script assumes 'RUST_CARGO_EXE' has been set to the Rust
+:: These scripts assume 'RUST_CARGO_EXE' has been set to the Rust
 :: 'cargo' executable.
-CALL scripts\internal\build_mmscenegraph_windows64.bat
+CALL scripts\internal\build_rust_library_windows64.bat mmscenegraph
 if errorlevel 1 goto failed_to_build_mmscenegraph
 
 CALL scripts\internal\build_mmSolver_windows64.bat

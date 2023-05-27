@@ -29,9 +29,9 @@ PROJECT_ROOT=`pwd`
 find \
     ${PROJECT_ROOT}/src \
     ${PROJECT_ROOT}/include \
-    ${PROJECT_ROOT}/mmscenegraph/cppbind/src \
-    ${PROJECT_ROOT}/mmscenegraph/cppbind/include \
-    ${PROJECT_ROOT}/mmscenegraph/cppbind/tests \
+    ${PROJECT_ROOT}/rust/cppbind/mmscenegraph/src \
+    ${PROJECT_ROOT}/rust/cppbind/mmscenegraph/include \
+    ${PROJECT_ROOT}/rust/cppbind/mmscenegraph/tests \
     -not -iname *cxx* -iname *.h -or -not -iname *cxx* -iname *.cpp \
     | xargs clang-format --dry-run --style=file --Werror
 

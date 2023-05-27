@@ -1,4 +1,4 @@
-# Copyright (C) 2021 David Cattermole.
+# Copyright (C) 2020, 2021, 2023 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -34,34 +34,20 @@ set(PROJECT_COPYRIGHT "2020-2022, David Cattermole.")
 
 # Add custom modules to the module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
-        ${CMAKE_CURRENT_SOURCE_DIR}/../share/cmake/modules)
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../share/cmake/modules)
 
-add_subdirectory(cppbind)
+set(target_release_lib_name "mmscenegraph")
+set(rust_lib_name "mmscenegraph_rust")
 
-include(GNUInstallDirs)
+set(CMAKE_CXX_STANDARD 11)
 
-# Generate CMaka Targets file.
-install(EXPORT mmscenegraphTargets
-  FILE mmscenegraphTargets.cmake
-  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mmscenegraph"
-  NAMESPACE mmscenegraph::
-  )
+add_subdirectory(src)
+add_subdirectory(include)
 
-# Generate and install a CMake target config files.
-include(CMakePackageConfigHelpers)
-configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in
-  "${CMAKE_CURRENT_BINARY_DIR}/mmscenegraphConfig.cmake"
-  INSTALL_DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mmscenegraph"
-  )
-write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/mmscenegraphConfigVersion.cmake"
-  VERSION ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
-  COMPATIBILITY AnyNewerVersion
-  )
-install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/mmscenegraphConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/mmscenegraphConfigVersion.cmake"
-  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/mmscenegraph")
-export(EXPORT mmscenegraphTargets
-  FILE "${CMAKE_INSTALL_LIBDIR}/mmscenegraphTargets.cmake"
-  )
+option(MM_LIBRARY_BUILD_TESTS "Do you want to build the test files for mmscenegraph?" OFF)
+if (MM_LIBRARY_BUILD_TESTS)
+    add_subdirectory(tests)
+endif()
+
+include(MMCommonUtils)
+mm_common_add_install_target("mmscenegraph" ${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in)

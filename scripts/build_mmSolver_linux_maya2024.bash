@@ -43,12 +43,9 @@ set -ev
 
 CWD=`pwd`
 
-# This 'source' defines the bash variables
-# 'MMSCENEGRAPH_LIB_DIR' and 'MMSCENEGRAPH_INCLUDE_DIR'.
-#
-# The script assumes 'RUST_CARGO_EXE' has been set to the Rust
+# These scripts assume 'RUST_CARGO_EXE' has been set to the Rust
 # 'cargo' executable.
-source "${CWD}/scripts/internal/build_mmscenegraph_linux.bash"
+source "${CWD}/scripts/internal/build_rust_library_linux.bash" mmscenegraph
 
 source "${CWD}/scripts/internal/build_mmSolver_linux.bash"
 

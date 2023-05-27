@@ -18,5 +18,4 @@ target_include_directories(${target_test_exe_name}
   PUBLIC ${RUST_INCLUDE_DIR}
   )
 
-# Install
 install(TARGETS ${target_test_exe_name})

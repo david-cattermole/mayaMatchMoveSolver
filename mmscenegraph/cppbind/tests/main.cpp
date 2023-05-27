@@ -26,9 +26,6 @@
 // #include "test_c.h"
 
 int main() {
-    int x = 2 + 2;
-    std::cout << "2 + 2 = " << x << std::endl;
-
     // Run tests.
     test_a();
     // test_b();

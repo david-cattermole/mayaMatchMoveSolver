@@ -293,8 +293,8 @@ endfunction()
 # Install shared (dynamic) library.
 function(install_shared_library lib_file lib_file_dll install_dir)
   # message(STATUS "INSTALL FILE: ${lib_file}")
-  # message(STATUS "INSTALL DLL: ${lib_file_dll}")
-  # message(STATUS "INSTALL DIR: ${install_dir}")
+  # message(STATUS "INSTALL DLL : ${lib_file_dll}")
+  # message(STATUS "INSTALL DIR : ${install_dir}")
   if (WIN32)
     if (EXISTS ${lib_file_dll})
       install(FILES ${lib_file_dll}
@@ -326,8 +326,8 @@ endfunction()
 # Install many shared (dynamic) libraries.
 function(install_shared_libraries lib_files lib_files_dll install_dir)
   # message(STATUS "INSTALL FILES: ${lib_files}")
-  # message(STATUS "INSTALL DLLS: ${lib_files_dll}")
-  # message(STATUS "INSTALL DIR: ${install_dir}")
+  # message(STATUS "INSTALL DLLS : ${lib_files_dll}")
+  # message(STATUS "INSTALL DIR  : ${install_dir}")
 
   string(STRIP "${lib_files}" lib_files_strip)
   string(STRIP "${lib_files_dll}" lib_files_dll_strip)

@@ -196,9 +196,10 @@ required for building mmSolver.
 
 An overview of compiling is:
 
-1. Download and compile third-party projects.
-2. Compile mmSolver.
-3. Copy 3DEqualizer python scripts into `.3dequalizer` user directory.
+1. Download mayaMatchMoveSolver project from GitHub.
+2. Unzip the source code into a directory.
+3. Open a command line or terminal and navigate to the unzipped files.
+2. Run the provided build script to compile mmSolver.
 
 Below lists all the commands run in an example session, following the
 above sections.
@@ -208,20 +209,9 @@ On Linux:
 # Go to root of project directory.
 $ cd <project root>
 
-# Download and Build third-party projects automatically.
-$ bash scripts/build_thirdparty_linux_mayaXXXX.bash
-
 # Build mmSolver, compile UI files, compile Maya plug-in, build
 # documentation, create module and install to home directory.
 $ bash scripts/build_mmSolver_linux_mayaXXXX.bash
-
-# Run tests (optional but encouraged)
-$ cd build
-$ make test
-$ cd ..
-
-# Install 3DE scripts (or install via ScriptDB)
-$ cp ./share/3dequalizer/scriptdb/* ~/.3dequalizer/py_scripts
 ```
 
 On Windows:
@@ -229,38 +219,14 @@ On Windows:
 :: Go to root of project directory.
 > CD <project root>
 
-:: Download and Build third-party projects automatically.
-> scripts/build_thirdparty_windows64_mayaXXXX.bat
-
 :: Build mmSolver, compile UI files, compile Maya plug-in, build
 :: documentation, create module and install to home directory.
 > scripts/build_mmSolver_windows64_mayaXXXX.bat
-
-:: Run tests (optional but encouraged)
-> CD build
-> nmake test
-> CD ..
-
-:: Install 3DE scripts (or install via ScriptDB)
-> XCOPY share\3dequalizer\scriptdb\* "%AppData%\.3dequalizer\py_scripts" /Y
 ```
-
-# Building Dependencies
-
-To build dependencies we have pre-configured build scripts for Linux
-and Windows.
-
-| Build Script Name                       | Operating System |
-| ------------                            | -----------      |
-| build_thirdparty_linux_mayaXXXX.bash    | Linux            |
-| build_thirdparty_windows64_mayaXXXX.bat | Windows          |
-
-The build scripts are located in `<project root>/scripts/`.
-These scripts will automatically install into `<project root>/external/install`.
 
 # Building mmSolver
 
-To build the project we can use the build scripts provided.
+To build the project you can use the build scripts provided.
 
 | Build Script Name                     | Operating System |
 | ------------                          | -----------      |

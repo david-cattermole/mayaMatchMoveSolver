@@ -129,6 +129,11 @@ if (MMSOLVER_BUILD_QT_UI)
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/solver/widget/ui_solver_standard_widget.py
             )
 
+    compile_qt_ui_to_python_file("solver_solver_camera_widget"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/solver_camera_widget.ui
+            ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/solver/widget/ui_solver_camera_widget.py
+            )
+
     compile_qt_ui_to_python_file("solver_solverstate_widget"
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/solverstate_widget.ui
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/solver/widget/ui_solverstate_widget.py

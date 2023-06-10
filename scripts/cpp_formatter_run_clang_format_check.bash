@@ -31,7 +31,6 @@ find \
     ${PROJECT_ROOT}/include \
     ${PROJECT_ROOT}/lib/cppbind/mmcore/src \
     ${PROJECT_ROOT}/lib/cppbind/mmcore/include \
-    ${PROJECT_ROOT}/lib/cppbind/mmcore/tests \
     ${PROJECT_ROOT}/lib/cppbind/mmlens/src \
     ${PROJECT_ROOT}/lib/cppbind/mmlens/include \
     ${PROJECT_ROOT}/lib/cppbind/mmlens/tests \

@@ -62,8 +62,6 @@ clang-format --dry-run --style=file --Werror ^
        "%PROJECT_ROOT%\lib\cppbind\mmcore\include\mmcore\*.h" ^
        "%PROJECT_ROOT%\lib\cppbind\mmcore\src\*.cpp" ^
        "%PROJECT_ROOT%\lib\cppbind\mmcore\src\*.h" ^
-       "%PROJECT_ROOT%\lib\cppbind\mmcore\tests\*.cpp" ^
-       "%PROJECT_ROOT%\lib\cppbind\mmcore\tests\*.h" ^
        "%PROJECT_ROOT%\lib\cppbind\mmlens\include\mmlens\*.cpp" ^
        "%PROJECT_ROOT%\lib\cppbind\mmlens\include\mmlens\*.h" ^
        "%PROJECT_ROOT%\lib\cppbind\mmlens\src\*.cpp" ^

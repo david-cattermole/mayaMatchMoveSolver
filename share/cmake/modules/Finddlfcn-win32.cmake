@@ -182,7 +182,7 @@ if(NOT dlfcn-win32_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND dlfcn-win32_ALLO
     "The URL for the dlfcn-win32 git repository.")
 
   set(dlfcn-win32_GIT_TAG "v${dlfcn-win32_VERSION}" CACHE STRING
-    "The Git tag for the dlfcn-win32-solver git repository.")
+    "The Git tag for the dlfcn-win32 git repository.")
 
   set(dlfcn-win32_INSTALL_PATH ${_EXTERNAL_INSTALL_DIR}/dlfcn-win32)
   set(dlfcn-win32_PREFIX ${_EXTERNAL_BUILD_DIR}/dlfcn-win32)

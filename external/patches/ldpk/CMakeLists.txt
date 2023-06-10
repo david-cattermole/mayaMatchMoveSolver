@@ -25,7 +25,7 @@ cmake_minimum_required(VERSION 3.0)
 # Project configuration.
 project(ldpk)
 set(PROJECT_VERSION_MAJOR 2)
-set(PROJECT_VERSION_MINOR 7)
+set(PROJECT_VERSION_MINOR 8)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
 set(PROJECT_HOMEPAGE_URL "https://www.3dequalizer.com/?site=tech_docs")
 set(PROJECT_COPYRIGHT "Science-D-Visions, (c) 2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022.")

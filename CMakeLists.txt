@@ -57,6 +57,9 @@ set(CXX_EXTENSIONS OFF)
 # the new default is to use "_GLIBCXX_USE_CXX11_ABI=1".
 #
 # https://vfxplatform.com/#footnote-gcc9
+#
+# TODO: Add a flag for use in RHEL 8/9 and Rocky Linux, so we can
+# enable/disable.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")

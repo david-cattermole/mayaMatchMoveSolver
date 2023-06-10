@@ -145,6 +145,9 @@ function(set_global_maya_plugin_compile_options)
     # the new default is to use "_GLIBCXX_USE_CXX11_ABI=1".
     #
     # https://vfxplatform.com/#footnote-gcc9
+    #
+    # TODO: Expose this variable as a CMake option, so we can enable
+    # this for RHEL 8/9 and Rocky Linux 8.
     add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
 
     # Enable warnings.

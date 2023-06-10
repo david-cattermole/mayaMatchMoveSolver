@@ -400,13 +400,13 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     std::vector<double> verticalFilmApertureList;
     std::vector<double> horizontalFilmOffsetList;
     std::vector<double> verticalFilmOffsetList;
-    std::vector<std::shared_ptr<LensModel>> lensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> lensModelList;
 
     const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
 
     const bool needLensModels =
         m_distort_mode != ReprojectionDistortMode::kNone;
-    std::shared_ptr<LensModel> lensModel;
+    std::shared_ptr<mmlens::LensModel> lensModel;
     if (needLensModels) {
         status = mmsolver::getLensModelFromCamera(m_cameraPtr, lensModel);
         CHECK_MSTATUS(status);

@@ -35,10 +35,11 @@
 #include <cstdlib>
 
 // MM Solver
-#include "mmSolver/core/mmcamera.h"
-#include "mmSolver/core/mmcoord.h"
-#include "mmSolver/core/mmdata.h"
-#include "mmSolver/core/mmmath.h"
+#include <mmcore/mmcamera.h>
+#include <mmcore/mmcoord.h>
+#include <mmcore/mmdata.h>
+#include <mmcore/mmmath.h>
+
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace calibrate {

@@ -62,11 +62,13 @@
 // MM Scene Graph
 #include <mmscenegraph/mmscenegraph.h>
 
+// MM Core
+#include <mmcore/mmdata.h>
+#include <mmcore/mmmath.h>
+
 // MM Solver
 #include "adjust_base.h"
 #include "adjust_data.h"
-#include "mmSolver/core/mmdata.h"
-#include "mmSolver/core/mmmath.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_lens_model_utils.h"

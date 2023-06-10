@@ -74,31 +74,3 @@ find_package(Eigen3 3.4.0 REQUIRED)
 #
 # https://github.com/ceres-solver/ceres-solver
 find_package(Ceres 1.14.0 REQUIRED)
-
-# dlfcn-win32
-#
-# dlfcn is used as a replacement for the `dl` library on *NIX
-# operating systems, and is required by LDPK, so it can dynamically
-# load (`dl`) .so plug-ins. mmSolver does not currently use or allow
-# dynamically loading LDPK plug-ins, but unfortunately LDPK requires
-# it nonetheless.
-#
-# https://github.com/dlfcn-win32/dlfcn-win32
-if (WIN32 AND NOT UNIX)
-  # dlfcn is required for the LDPK on Windows only.
-  find_package(dlfcn-win32 1.3.1 REQUIRED)
-else()
-  # An empty target as a filler for dlfcn on Linux/MacOS where dl-fcn
-  # is not needed.
-  add_custom_target(dlfcn-win32)
-endif()
-
-# LDPK (Lens Distortion Plug-in Kit)
-#
-# Provides "industry standard" lens distortion models that mmSolver
-# uses directly internally.
-#
-# LDPK is not used by any other libraries (eg. OpenMVG or Ceres).
-#
-# https://www.3dequalizer.com
-find_package(ldpk 2.8 REQUIRED)

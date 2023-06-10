@@ -41,10 +41,11 @@
 #include <maya/MStreamUtils.h>
 
 // MM Solver
+#include <mmcore/mmcamera.h>
+#include <mmcore/mmdata.h>
+#include <mmcore/mmmath.h>
+
 #include "mmSolver/calibrate/calibrate_common.h"
-#include "mmSolver/core/mmcamera.h"
-#include "mmSolver/core/mmdata.h"
-#include "mmSolver/core/mmmath.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/utilities/debug_utils.h"

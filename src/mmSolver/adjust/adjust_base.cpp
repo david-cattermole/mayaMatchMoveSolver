@@ -1063,9 +1063,9 @@ MStatus solveFrames(
     }
 
 #if MMSOLVER_LENS_DISTORTION == 1
-    std::vector<std::shared_ptr<LensModel>> markerFrameToLensModelList;
-    std::vector<std::shared_ptr<LensModel>> attrFrameToLensModelList;
-    std::vector<std::shared_ptr<LensModel>> lensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> markerFrameToLensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> attrFrameToLensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> lensModelList;
 
     status = mmsolver::constructLensModelList(
         cameraList, usedMarkerList, usedAttrList, frameList,

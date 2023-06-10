@@ -42,8 +42,9 @@
 #include <mmscenegraph/mmscenegraph.h>
 
 // MM Solver
+#include <mmlens/lens_model.h>
+
 #include "adjust_defines.h"
-#include "mmSolver/lens/lens_model.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -192,9 +193,9 @@ struct SolverData {
     StiffAttrsPtrList stiffAttrsList;
 
     // Lens Distortion
-    std::vector<std::shared_ptr<LensModel>> markerFrameToLensModelList;
-    std::vector<std::shared_ptr<LensModel>> attrFrameToLensModelList;
-    std::vector<std::shared_ptr<LensModel>> lensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> markerFrameToLensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> attrFrameToLensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> lensModelList;
 
     // MM Scene Graph
     mmscenegraph::SceneGraph mmsgSceneGraph;

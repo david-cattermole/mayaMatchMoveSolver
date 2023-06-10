@@ -23,7 +23,8 @@
 #include "MMLensData.h"
 
 // MM Solver
-#include "mmSolver/lens/lens_model.h"
+#include <mmlens/lens_model.h>
+
 #include "mmSolver/nodeTypeIds.h"
 
 namespace mmsolver {
@@ -37,9 +38,13 @@ MMLensData::MMLensData() : m_value(nullptr), MPxData() {}
 
 MMLensData::~MMLensData() {}
 
-std::shared_ptr<LensModel> MMLensData::getValue() const { return m_value; }
+std::shared_ptr<mmlens::LensModel> MMLensData::getValue() const {
+    return m_value;
+}
 
-void MMLensData::setValue(std::shared_ptr<LensModel> value) { m_value = value; }
+void MMLensData::setValue(std::shared_ptr<mmlens::LensModel> value) {
+    m_value = value;
+}
 
 void MMLensData::copy(const MPxData& other) {
     m_value = ((const MMLensData&)other).m_value;

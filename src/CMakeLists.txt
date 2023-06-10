@@ -23,7 +23,6 @@
 # find binaries releative to the current binary.
 set(CMAKE_MACOSX_RPATH 1)
 
-
 # Source
 set(SOURCE_FILES
   mmSolver/adjust/adjust_base.cpp
@@ -64,17 +63,7 @@ set(SOURCE_FILES
   mmSolver/cmd/MMSolverSceneGraphCmd.cpp
   mmSolver/cmd/MMSolverTypeCmd.cpp
   mmSolver/cmd/MMTestCameraMatrixCmd.cpp
-  mmSolver/core/mmcamera.cpp
-  mmSolver/core/mmcoord.cpp
-  mmSolver/core/mmdata.cpp
-  mmSolver/core/mmhash.cpp
-  mmSolver/core/mmmath.cpp
   mmSolver/core/reprojection.cpp
-  mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.cpp
-  mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy_rescaled.cpp
-  mmSolver/lens/lens_model_3de_classic.cpp
-  mmSolver/lens/lens_model_3de_radial_decentered_deg_4_cylindric.cpp
-  mmSolver/lens/lens_model_passthrough.cpp
   mmSolver/mayahelper/maya_attr.cpp
   mmSolver/mayahelper/maya_bundle.cpp
   mmSolver/mayahelper/maya_camera.cpp
@@ -149,10 +138,11 @@ target_include_directories(mmSolver
 
   # For generated 'buildConstant.h' file.
   PRIVATE ${CMAKE_BINARY_DIR}/include
-  )
+)
+
 # On Linux the 'm' library is required.
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
-  target_link_libraries(mmSolver PUBLIC m)
+  target_link_libraries(mmSolver PRIVATE m)
 endif ()
 
 # Set global flags and options that need to apply to the Maya
@@ -160,19 +150,12 @@ endif ()
 set_global_treat_warnings_as_errors()
 set_global_maya_plugin_compile_options()
 
-
-find_package(mmscenegraph REQUIRED)
-if(NOT mmscenegraph_FOUND)
-  message(FATAL_ERROR "mmscenegraph Not Found! Make sure mmscenegraph is built before building mmSolver.")
-else()
-  message(STATUS "mmscenegraph found.")
-  target_link_libraries(mmSolver
-    PRIVATE
-    mmscenegraph::mmscenegraph
-    )
-  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_MMSCENEGRAPH)
-endif()
-
+# MM Solver standalone libraries.
+find_package(mmsolverlibs REQUIRED)
+target_link_libraries(mmSolver
+  PUBLIC
+  mmsolverlibs::mmsolverlibs
+)
 
 find_package(Maya REQUIRED)
 message(STATUS "Maya: Found=${MAYA_FOUND}")
@@ -205,32 +188,9 @@ target_link_libraries(mmSolver
   Eigen3::Eigen
   ceres
   openMVG
-  ldpk::ldpk
 )
 
-# Link to dlfcn on Windows only. Linux has a dynamic loading library
-# by default.
-if(WIN32)
-  target_link_libraries(mmSolver
-    PRIVATE
-    dlfcn-win32::dl
-    )
-endif()
-
 target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CMINPACK)
-target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_EIGEN)
-target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CERES)
 target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_OPENMVG)
-target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_LDPK)
-
-# Install dlfcn-win32 shared library into Maya module.
-if(WIN32)
-  if(NOT TARGET dlfcn-win32::dl)
-    message(FATAL_ERROR "Target dlfcn-win32::dl could not be found, but is required on Windows.")
-  endif()
-  get_target_property(dlfcn_win32_LIBRARY_DLL dlfcn-win32::dl IMPORTED_LOCATION)
-  install(FILES ${dlfcn_win32_LIBRARY_DLL}
-    DESTINATION "${MODULE_FULL_NAME}/lib/")
-endif()
 
 install_target_plugin_to_module(mmSolver "${MODULE_FULL_NAME}")

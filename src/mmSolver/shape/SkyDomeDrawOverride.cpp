@@ -40,7 +40,7 @@
 #include <maya/MUserData.h>
 
 // MM Solver
-#include "mmSolver/core/mmmath.h"
+#include <mmcore/mmmath.h>
 
 namespace mmsolver {
 

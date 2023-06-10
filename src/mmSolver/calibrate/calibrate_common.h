@@ -24,7 +24,7 @@
 #define MM_SOLVER_CORE_CALIBRATE_COMMON_H
 
 // MM Solver
-#include "mmSolver/core/mmdata.h"
+#include <mmcore/mmdata.h>
 
 namespace calibrate {
 

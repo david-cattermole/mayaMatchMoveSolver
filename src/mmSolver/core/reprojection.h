@@ -31,7 +31,7 @@
 #include <maya/MStatus.h>
 
 // MM Solver
-#include "mmSolver/lens/lens_model.h"
+#include <mmlens/lens_model.h>
 
 enum class ReprojectionDistortMode : short {
     // No change at all.
@@ -96,7 +96,7 @@ MStatus reprojection(
 
     // Lens Distortion
     const ReprojectionDistortMode distortMode,
-    std::shared_ptr<LensModel> lensModel,
+    std::shared_ptr<mmlens::LensModel> lensModel,
 
     // Manipulation
     //

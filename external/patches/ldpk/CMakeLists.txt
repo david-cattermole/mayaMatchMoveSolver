@@ -32,48 +32,13 @@ set(PROJECT_COPYRIGHT "Science-D-Visions, (c) 2011,2012,2013,2014,2015,2016,2017
 
 include(GNUInstallDirs)
 
-# Ensure we can find the installed dlfcn-win32 CMake module, so we can load
-# the package.
-set(CMAKE_PREFIX_PATH ${CMAKE_MODULE_PATH} ${dlfcn-win32_DIR})
-
-# Base LDPK Plug-in Loader
-set(LDPK_BASE_SOURCE_FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/ldpk_model_parser.C
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/ldpk_plugin_loader.C
-  ${CMAKE_CURRENT_SOURCE_DIR}/source/ldpk/ldpk_table_generator.C
-  )
-
-if (MSVC)
-    # Ensure the compilier knows we are on MS Windows, so that LDPK
-    # does not use pthreads and use native Windows threads instead.
-    add_compile_definitions(_WINDOWS)
-
-    # Under Windows we need to include the 'algorithm' header, because
-    # we need std::min and std::max.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FI \"algorithm\"")
-
-    # The file "ldpk_plugin_loader.h" does not include "dlfcn.h" on
-    # Windows (for some strange reason) even when it requires it for
-    # building. We therefore force the include without wanting to
-    # patch the file itself.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /FI \"dlfcn.h\"")
-endif ()
-
-# Load 'dlfcn-win32' library on Windows only.
-if (WIN32)
-  find_package(dlfcn-win32 REQUIRED)
-endif ()
-
-# Base LPDK Static library
-add_library(ldpk STATIC ${LDPK_BASE_SOURCE_FILES})
+# Base LPDK ("header-only") library
+add_library(ldpk INTERFACE)
 target_include_directories(ldpk
-  PRIVATE
+  INTERFACE
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include>"
   )
-if (WIN32)
-  target_link_libraries(ldpk dlfcn-win32::dl)
-endif()
 install(TARGETS ldpk
   EXPORT ldpk-targets
   RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"

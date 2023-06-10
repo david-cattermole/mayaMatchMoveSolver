@@ -35,8 +35,6 @@ clang-format -i --style=file ^
        "%PROJECT_ROOT%\src\mmSolver\cmd\*.cpp" ^
        "%PROJECT_ROOT%\src\mmSolver\core\*.cpp" ^
        "%PROJECT_ROOT%\src\mmSolver\core\*.h" ^
-       "%PROJECT_ROOT%\src\mmSolver\lens\*.cpp" ^
-       "%PROJECT_ROOT%\src\mmSolver\lens\*.h" ^
        "%PROJECT_ROOT%\src\mmSolver\mayahelper\*.cpp" ^
        "%PROJECT_ROOT%\src\mmSolver\mayahelper\*.h" ^
        "%PROJECT_ROOT%\src\mmSolver\node\*.cpp" ^
@@ -60,9 +58,27 @@ clang-format -i --style=file ^
        "%PROJECT_ROOT%\src\mmSolver\pluginMain.cpp" ^
        "%PROJECT_ROOT%\include\mmSolver\*.cpp" ^
        "%PROJECT_ROOT%\include\mmSolver\*.h" ^
-       "%PROJECT_ROOT%\rust\cppbind\mmscenegraph\include\mmscenegraph\*.cpp" ^
-       "%PROJECT_ROOT%\rust\cppbind\mmscenegraph\include\mmscenegraph\*.h" ^
-       "%PROJECT_ROOT%\rust\cppbind\mmscenegraph\src\*.cpp" ^
-       "%PROJECT_ROOT%\rust\cppbind\mmscenegraph\src\*.h" ^
-       "%PROJECT_ROOT%\rust\cppbind\mmscenegraph\tests\*.cpp" ^
-       "%PROJECT_ROOT%\rust\cppbind\mmscenegraph\tests\*.h"
+       "%PROJECT_ROOT%\lib\cppbind\mmcore\include\mmcore\*.cpp" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmcore\include\mmcore\*.h" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmcore\src\*.cpp" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmcore\src\*.h" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmcore\tests\*.cpp" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmcore\tests\*.h" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmlens\include\mmlens\*.cpp" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmlens\include\mmlens\*.h" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmlens\src\*.cpp" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmlens\src\*.h" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmlens\tests\*.cpp" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmlens\tests\*.h" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmimage\include\mmimage\*.cpp" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmimage\include\mmimage\*.h" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmimage\src\*.cpp" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmimage\src\*.h" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmimage\tests\*.cpp" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmimage\tests\*.h" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmscenegraph\include\mmscenegraph\*.cpp" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmscenegraph\include\mmscenegraph\*.h" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmscenegraph\src\*.cpp" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmscenegraph\src\*.h" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmscenegraph\tests\*.cpp" ^
+       "%PROJECT_ROOT%\lib\cppbind\mmscenegraph\tests\*.h"

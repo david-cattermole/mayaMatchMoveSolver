@@ -26,7 +26,6 @@ dependency.
 - [Ceres Solver](http://ceres-solver.org/)
   - [Google Log](https://github.com/google/glog)
 - [Lens Distortion Plug-in Kit (LDPK)](https://www.3dequalizer.com)
-  - [dlfcn-win32](https://github.com/dlfcn-win32/dlfcn-win32) (Windows only)
 - [Python](https://www.python.org/)
   - [Sphinx](http://www.sphinx-doc.org/en/master/index.html)
   - [Black](https://github.com/psf/black) - development requirement only.
@@ -162,9 +161,6 @@ creators of 3DEqualizer.
 
 The LDPK provides a standard set of lens distortion features and the
 ability to provide custom lens distortion plug-ins.
-
-When compiling the LDPK on Windows,
-[dlfcn-win32](https://github.com/dlfcn-win32/dlfcn-win32) is required.
 
 ## Python
 

@@ -23,15 +23,17 @@
 # Uses Variables:
 # - ldpk_ROOT_PATH - Directory for the ldpk install root.
 # - ldpk_INCLUDE_PATH - Directory for the header files.
-# - ldpk_LIB_PATH - Directory for shared libraries (.so and .dll).
 #
 # Defines Variables:
 # - ldpk_FOUND
-# - ldpk_LIBRARIES
 # - ldpk_INCLUDE_DIRS
 #
 
-function(find_ldpk_find_with_paths ldpk_root ldpk_include_path ldpk_lib_path)
+function(find_ldpk_find_with_paths
+    ldpk_root
+    ldpk_include_path
+    out_ldpk_dir
+    out_ldpk_include_dirs)
 
     find_path(ldpk_include_dir ldpk/ldpk.h
       HINTS
@@ -43,47 +45,35 @@ function(find_ldpk_find_with_paths ldpk_root ldpk_include_path ldpk_lib_path)
         include/
     )
 
-    find_library(ldpk_library
+    find_path(ldpk_dir
       NAMES
-        libldpk
-        ldpk
+        ldpkConfig.cmake
+        ldpkConfigVersion.cmake
       HINTS
-        ${ldpk_lib_path}
+        ${ldpk_include_path}/../share/ldpk/cmake
         ${ldpk_root}
-        /usr/lib
-        /usr/local/lib
-      PATH_SUFFIXES
-        bin/
-        lib/
-        lib64/
+        /usr/share
+        /usr/local/share
     )
 
-    if(ldpk_include_dir AND ldpk_library)
+    if(ldpk_include_dir AND ldpk_dir)
       set(${out_ldpk_include_dirs} ${ldpk_include_dir} PARENT_SCOPE)
-      set(${out_ldpk_libraries} ${ldpk_library} PARENT_SCOPE)
+      set(${out_ldpk_dir} ${ldpk_dir} PARENT_SCOPE)
     endif()
 
 endfunction()
 
 
 function(find_ldpk_create_target)
-  add_library(ldpk::ldpk UNKNOWN IMPORTED GLOBAL)
+  add_library(ldpk::ldpk INTERFACE IMPORTED GLOBAL)
 endfunction()
 
 
-function(find_ldpk_set_target ldpk_library ldpk_include_dir)
+function(find_ldpk_set_target ldpk_include_dir)
 
   set_target_properties(ldpk::ldpk PROPERTIES
-    IMPORTED_LOCATION ${ldpk_library}
-    IMPORTED_LINK_INTERFACE_LANGUAGES_RELEASE "CXX"
     INTERFACE_INCLUDE_DIRECTORIES ${ldpk_include_dir}
     )
-
-  if (WIN32)
-    set_target_properties(ldpk::ldpk PROPERTIES
-      INTERFACE_LINK_LIBRARIES "dlfcn-win32::dl"
-      )
-  endif ()
 
 endfunction()
 
@@ -106,23 +96,22 @@ if(NOT MMSOLVER_DOWNLOAD_DEPENDENCIES OR NOT ldpk_ALLOW_DOWNLOAD)
     find_ldpk_find_with_paths(
       ${ldpk_ROOT}
       ${ldpk_INCLUDE_PATH}
-      ${ldpk_LIB_PATH}
+      ldpk_DIR
       ldpk_INCLUDE_DIRS
-      ldpk_LIBRARIES
       )
   endif()
 
   include(FindPackageHandleStandardArgs)
   find_package_handle_standard_args(ldpk
     REQUIRED_VARS
-      ldpk_LIBRARIES
+      ldpk_DIR
       ldpk_INCLUDE_DIRS
   )
 
   if(ldpk_FOUND)
     message(STATUS "ldpk: Found=${ldpk_FOUND}")
+    message(STATUS "ldpk: Config=${ldpk_DIR}")
     message(STATUS "ldpk: Include=${ldpk_INCLUDE_DIRS}")
-    message(STATUS "ldpk: Library=${ldpk_LIBRARIES}")
   endif()
 
 endif()
@@ -132,7 +121,8 @@ endif()
 if(NOT TARGET ldpk::ldpk)
   find_ldpk_create_target()
   if(ldpk_FOUND)
-    find_ldpk_set_target(${ldpk_LIBRARY} ${ldpk_INCLUDE_DIR})
+    find_ldpk_set_target(# ${ldpk_LIBRARY}
+      ${ldpk_INCLUDE_DIR})
   else()
     set(_ldpk_TARGET_CREATE TRUE)
   endif()
@@ -152,11 +142,8 @@ if(NOT ldpk_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ldpk_ALLOW_DOWNLOAD)
   set(ldpk_FOUND TRUE)
   set(ldpk_VERSION ${ldpk_FIND_VERSION})
 
+  set(Ldpk_DIR "${_EXTERNAL_INSTALL_DIR}/ldpk/share/ldpk/cmake")
   set(ldpk_INCLUDE_DIR "${_EXTERNAL_INSTALL_DIR}/ldpk/${CMAKE_INSTALL_INCLUDEDIR}")
-  set(ldpk_LIBRARY_DIR "${_EXTERNAL_INSTALL_DIR}/ldpk/${CMAKE_INSTALL_LIBDIR}")
-
-  set(ldpk_LIBRARY_NAME "${CMAKE_STATIC_LIBRARY_PREFIX}ldpk${CMAKE_STATIC_LIBRARY_SUFFIX}")
-  set(ldpk_LIBRARY "${ldpk_LIBRARY_DIR}/${ldpk_LIBRARY_NAME}")
 
   set(ldpk_URL
     "https://www.3dequalizer.com/user_daten/sections/tech_docs/archives/ldpk-${ldpk_VERSION}.tgz"
@@ -168,7 +155,9 @@ if(NOT ldpk_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ldpk_ALLOW_DOWNLOAD)
   set(ldpk_SOURCE_DIR ${_EXTERNAL_BUILD_DIR}/ldpk/src/ldpk)
 
   # Patches
-  set(ldpk_PATCH_DIR ${CMAKE_SOURCE_DIR}/external/patches/ldpk)
+  #
+  # ${CMAKE_SOURCE_DIR} is expected to be '$PROJECT_ROOT/lib'.
+  set(ldpk_PATCH_DIR ${CMAKE_SOURCE_DIR}/../external/patches/ldpk)
   set(ldpk_PATCH_SRC_1 ${ldpk_PATCH_DIR}/CMakeLists.txt)
   set(ldpk_PATCH_SRC_2 ${ldpk_PATCH_DIR}/ldpk-config.cmake.in)
   set(ldpk_PATCH_DST_1 ${ldpk_SOURCE_DIR}/CMakeLists.txt)
@@ -189,21 +178,19 @@ if(NOT ldpk_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ldpk_ALLOW_DOWNLOAD)
     -DCMAKE_FIND_PACKAGE_NO_SYSTEM_PACKAGE_REGISTRY=1
     -DCMAKE_FIND_USE_PACKAGE_REGISTRY=0
 
-    -DBUILD_SHARED_LIBS=0
-    -Ddlfcn-win32_DIR=${dlfcn-win32_DIR}
+    -DINCLUDE_INSTALL_DIR=${ldpk_INCLUDE_DIR}
   )
 
   # Hack to let imported target be built from ExternalProject_Add
   file(MAKE_DIRECTORY ${ldpk_INCLUDE_DIR})
 
   ExternalProject_Add(ldpk
-    DEPENDS dlfcn-win32
     PREFIX ${ldpk_PREFIX}
     URL "${ldpk_URL}"
     INSTALL_DIR ${ldpk_INSTALL_PATH}
     PATCH_COMMAND ${CMAKE_COMMAND} -E copy ${ldpk_PATCH_SRC_1} ${ldpk_PATCH_DST_1}
     COMMAND       ${CMAKE_COMMAND} -E copy ${ldpk_PATCH_SRC_2} ${ldpk_PATCH_DST_2}
-    BUILD_BYPRODUCTS ${ldpk_LIBRARY}
+    BUILD_BYPRODUCTS "${ldpk_INCLUDE_DIR}/ldpk/ldpk_vec2d.h"
     CMAKE_ARGS ${ldpk_CMAKE_ARGS}
     EXCLUDE_FROM_ALL TRUE
     BUILD_COMMAND ""
@@ -212,8 +199,8 @@ if(NOT ldpk_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ldpk_ALLOW_DOWNLOAD)
 
   add_dependencies(ldpk::ldpk ldpk)
   message(STATUS "Installing ldpk (version \"${ldpk_VERSION}\")")
+  message(STATUS "ldpk: Config=${ldpk_DIR}")
   message(STATUS "ldpk: Include=${ldpk_INCLUDE_DIR}")
-  message(STATUS "ldpk: Library=${ldpk_LIBRARY}")
 
 else()
 
@@ -224,10 +211,10 @@ endif()
 
 
 if(_ldpk_TARGET_CREATE)
-  find_ldpk_set_target(${ldpk_LIBRARY} ${ldpk_INCLUDE_DIR})
+  find_ldpk_set_target(${ldpk_INCLUDE_DIR})
   mark_as_advanced(
+    ldpk_DIR
     ldpk_INCLUDE_DIR
-    ldpk_LIBRARY
     ldpk_VERSION
   )
 endif()

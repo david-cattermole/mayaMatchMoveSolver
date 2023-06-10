@@ -64,15 +64,16 @@
 #include <mmscenegraph/mmscenegraph.h>
 
 // MM Solver
+#include <mmcore/mmdata.h>
+#include <mmcore/mmmath.h>
+#include <mmlens/lens_model.h>
+#include <mmlens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.h>
+#include <mmlens/lens_model_3de_classic.h>
+#include <mmlens/lens_model_3de_radial_decentered_deg_4_cylindric.h>
+#include <mmlens/lens_model_passthrough.h>
+
 #include "mmSolver/adjust/adjust_base.h"
 #include "mmSolver/adjust/adjust_data.h"
-#include "mmSolver/core/mmdata.h"
-#include "mmSolver/core/mmmath.h"
-#include "mmSolver/lens/lens_model.h"
-#include "mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.h"
-#include "mmSolver/lens/lens_model_3de_classic.h"
-#include "mmSolver/lens/lens_model_3de_radial_decentered_deg_4_cylindric.h"
-#include "mmSolver/lens/lens_model_passthrough.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_utils.h"
@@ -83,14 +84,14 @@
 
 namespace mmsolver {
 
-MStatus setLensModelAttributeValue(std::shared_ptr<LensModel> &lensModel,
-                                   const AttrSolverType solverAttrType,
-                                   const double value) {
+MStatus setLensModelAttributeValue(
+    std::shared_ptr<mmlens::LensModel> &lensModel,
+    const AttrSolverType solverAttrType, const double value) {
     MStatus status = MS::kSuccess;
     if (!lensModel) {
         return status;
     }
-    LensModel *lensModelPtr = lensModel.get();
+    mmlens::LensModel *lensModelPtr = lensModel.get();
     if (!lensModelPtr) {
         status = MS::kFailure;
         return status;
@@ -155,7 +156,8 @@ MStatus setLensModelAttributeValue(std::shared_ptr<LensModel> &lensModel,
         solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4SqueezeY;
 
     if (is_model_3de_classic > 0) {
-        auto ptr = reinterpret_cast<LensModel3deClassic *>(lensModelPtr);
+        auto ptr =
+            reinterpret_cast<mmlens::LensModel3deClassic *>(lensModelPtr);
         if (solverAttrType == AttrSolverType::kLens3deClassicDistortion) {
             ptr->setDistortion(value);
         } else if (solverAttrType ==
@@ -172,9 +174,8 @@ MStatus setLensModelAttributeValue(std::shared_ptr<LensModel> &lensModel,
             ptr->setQuarticDistortion(value);
         }
     } else if (is_model_3de_radial_deg_4 > 0) {
-        auto ptr =
-            reinterpret_cast<LensModel3deRadialDecenteredDeg4Cylindric *>(
-                lensModelPtr);
+        auto ptr = reinterpret_cast<
+            mmlens::LensModel3deRadialDecenteredDeg4Cylindric *>(lensModelPtr);
         if (solverAttrType ==
             AttrSolverType::kLens3deRadialDeg4Degree2Distortion) {
             ptr->setDegree2Distortion(value);
@@ -201,9 +202,8 @@ MStatus setLensModelAttributeValue(std::shared_ptr<LensModel> &lensModel,
             ptr->setCylindricBending(value);
         }
     } else if (is_model_3de_anamorphic_deg_4 > 0) {
-        auto ptr =
-            reinterpret_cast<LensModel3deAnamorphicDeg4RotateSqueezeXY *>(
-                lensModelPtr);
+        auto ptr = reinterpret_cast<
+            mmlens::LensModel3deAnamorphicDeg4RotateSqueezeXY *>(lensModelPtr);
         if (solverAttrType ==
             AttrSolverType::kLens3deAnamorphicDeg4Degree2Cx02) {
             ptr->setDegree2Cx02(value);
@@ -281,8 +281,8 @@ MStatus getNodeEnabledState(const MObject &node, const MString &attrName,
     return status;
 }
 
-MStatus getLensModelFromPlug(const MPlug &plug,
-                             std::shared_ptr<LensModel> &out_lensModel) {
+MStatus getLensModelFromPlug(
+    const MPlug &plug, std::shared_ptr<mmlens::LensModel> &out_lensModel) {
     MStatus status = MS::kSuccess;
 
     MObject data_object = plug.asMObject(&status);
@@ -348,7 +348,7 @@ MStatus getLensesFromCameraList(
     std::unordered_map<std::string, int32_t> &out_cameraNodeNameToCameraIndex,
     std::vector<std::vector<MString>> &out_cameraLensNodeNames,
     std::vector<MString> &out_lensNodeNamesVec,
-    std::unordered_map<std::string, std::shared_ptr<LensModel>>
+    std::unordered_map<std::string, std::shared_ptr<mmlens::LensModel>>
         &out_lensNodeNameToLensModel) {
     MStatus status = MS::kSuccess;
 
@@ -438,7 +438,7 @@ MStatus getLensesFromCameraList(
                         continue;
                     }
 
-                    std::shared_ptr<LensModel> lensModel;
+                    std::shared_ptr<mmlens::LensModel> lensModel;
                     status = getLensModelFromPlug(outputPlug, lensModel);
                     if (status != MS::kSuccess) {
                         continue;
@@ -469,15 +469,16 @@ MStatus getLensesFromCameraList(
 
 // Get the 'top' Lens for each Camera, and make sure to store the
 // upstream lenses too.
-MStatus getLensModelFromCamera(const CameraPtr &camera,
-                               std::shared_ptr<LensModel> &out_lensModel) {
+MStatus getLensModelFromCamera(
+    const CameraPtr &camera,
+    std::shared_ptr<mmlens::LensModel> &out_lensModel) {
     CameraPtrList cameraList;
     cameraList.push_back(camera);
 
     std::unordered_map<std::string, int32_t> cameraNodeNameToCameraIndex;
     std::vector<std::vector<MString>> cameraLensNodeNames;
     std::vector<MString> lensNodeNamesVec;
-    std::unordered_map<std::string, std::shared_ptr<LensModel>>
+    std::unordered_map<std::string, std::shared_ptr<mmlens::LensModel>>
         lensNodeNameToLensModel;
     MStatus status = getLensesFromCameraList(
         cameraList, cameraNodeNameToCameraIndex, cameraLensNodeNames,
@@ -541,14 +542,14 @@ MStatus getAttrsFromLensNode(const MObject &node, const MString &nodeName,
         }
 
         short lensModelNum = lensModelEnumPlug.asShort();
-        auto lensModel = static_cast<LensModelType>(lensModelNum);
-        if (lensModel == LensModelType::k3deClassic) {
+        auto lensModel = static_cast<mmlens::LensModelType>(lensModelNum);
+        if (lensModel == mmlens::LensModelType::k3deClassic) {
             attrNames.append("tdeClassic_distortion");
             attrNames.append("tdeClassic_anamorphicSqueeze");
             attrNames.append("tdeClassic_curvatureX");
             attrNames.append("tdeClassic_curvatureY");
             attrNames.append("tdeClassic_quarticDistortion");
-        } else if (lensModel == LensModelType::k3deRadialStdDeg4) {
+        } else if (lensModel == mmlens::LensModelType::k3deRadialStdDeg4) {
             attrNames.append("tdeRadialStdDeg4_degree2_distortion");
             attrNames.append("tdeRadialStdDeg4_degree2_u");
             attrNames.append("tdeRadialStdDeg4_degree2_v");
@@ -557,7 +558,7 @@ MStatus getAttrsFromLensNode(const MObject &node, const MString &nodeName,
             attrNames.append("tdeRadialStdDeg4_degree4_v");
             attrNames.append("tdeRadialStdDeg4_cylindricDirection");
             attrNames.append("tdeRadialStdDeg4_cylindricBending");
-        } else if (lensModel == LensModelType::k3deAnamorphicStdDeg4) {
+        } else if (lensModel == mmlens::LensModelType::k3deAnamorphicStdDeg4) {
             attrNames.append("tdeAnamorphicStdDeg4_degree2_cx02");
             attrNames.append("tdeAnamorphicStdDeg4_degree2_cy02");
             attrNames.append("tdeAnamorphicStdDeg4_degree2_cx22");
@@ -571,7 +572,8 @@ MStatus getAttrsFromLensNode(const MObject &node, const MString &nodeName,
             attrNames.append("tdeAnamorphicStdDeg4_lensRotation");
             attrNames.append("tdeAnamorphicStdDeg4_squeeze_x");
             attrNames.append("tdeAnamorphicStdDeg4_squeeze_y");
-        } else if (lensModel == LensModelType::k3deAnamorphicStdDeg4Rescaled) {
+        } else if (lensModel ==
+                   mmlens::LensModelType::k3deAnamorphicStdDeg4Rescaled) {
             attrNames.append("tdeAnamorphicStdDeg4_degree2_cx02");
             attrNames.append("tdeAnamorphicStdDeg4_degree2_cy02");
             attrNames.append("tdeAnamorphicStdDeg4_degree2_cx22");
@@ -611,10 +613,10 @@ MStatus constructLenses(
     const std::vector<MString> &lensNodeNames, const CameraPtrList &cameraList,
     const MTimeArray &frameList,
     const std::vector<std::vector<MString>> &cameraLensNodeNames,
-    const std::unordered_map<std::string, std::shared_ptr<LensModel>>
+    const std::unordered_map<std::string, std::shared_ptr<mmlens::LensModel>>
         &lensNodeNameToLensModel,
     std::unordered_map<std::string, uint32_t> &out_lensNodeNameToLensModelIndex,
-    std::vector<std::shared_ptr<LensModel>> &out_lensModelList) {
+    std::vector<std::shared_ptr<mmlens::LensModel>> &out_lensModelList) {
     MStatus status = MS::kSuccess;
 
     auto num_cameras = cameraList.size();
@@ -646,14 +648,14 @@ MStatus constructLenses(
                             "not happen. ");
             continue;
         }
-        std::shared_ptr<LensModel> lensModel = search->second;
+        std::shared_ptr<mmlens::LensModel> lensModel = search->second;
 
         auto lensIndex = static_cast<int32_t>(out_lensModelList.size());
         out_lensNodeNameToLensModelIndex.insert({lensNodeNameStr, lensIndex});
 
         // Fill out_lensModelList.
         for (uint32_t j = 0; j < num_frames; j++) {
-            std::shared_ptr<LensModel> lensModelClone =
+            std::shared_ptr<mmlens::LensModel> lensModelClone =
                 lensModel->cloneAsSharedPtr();
             out_lensModelList.push_back(lensModelClone);
         }
@@ -667,7 +669,7 @@ MStatus constructLenses(
 
         for (uint32_t j = 0; j < num_frames; j++) {
             auto lensFrameIndex = lensIndex + j;
-            std::shared_ptr<LensModel> lensModel =
+            std::shared_ptr<mmlens::LensModel> lensModel =
                 out_lensModelList[lensFrameIndex];
             if (!lensModel) {
                 continue;
@@ -699,13 +701,13 @@ MStatus connectLensModels(
     const std::vector<std::vector<MString>> &cameraLensNodeNames,
     const std::unordered_map<std::string, uint32_t>
         &lensNodeNameToLensModelIndex,
-    std::vector<std::shared_ptr<LensModel>> &inout_lensModelList) {
+    std::vector<std::shared_ptr<mmlens::LensModel>> &inout_lensModelList) {
     MStatus status = MS::kSuccess;
 
     auto num_frames = frameList.length();
 
     for (uint32_t i = 0; i < cameraLensNodeNames.size(); ++i) {
-        std::vector<std::shared_ptr<LensModel>> previousLensModels;
+        std::vector<std::shared_ptr<mmlens::LensModel>> previousLensModels;
         previousLensModels.resize(num_frames);
 
         std::vector<MString> lensNodeNames = cameraLensNodeNames[i];
@@ -718,11 +720,11 @@ MStatus connectLensModels(
                 auto lensIndex = search->second;
 
                 for (uint32_t j = 0; j < num_frames; j++) {
-                    std::shared_ptr<LensModel> previousLensModel =
+                    std::shared_ptr<mmlens::LensModel> previousLensModel =
                         previousLensModels[j];
 
                     auto lensFrameIndex = lensIndex + j;
-                    std::shared_ptr<LensModel> lensModel =
+                    std::shared_ptr<mmlens::LensModel> lensModel =
                         inout_lensModelList[lensFrameIndex];
                     lensModel->setInputLensModel(previousLensModel);
 
@@ -742,8 +744,9 @@ MStatus constructMarkerToLensModelMap(
     const std::vector<std::vector<MString>> &cameraLensNodeNames,
     const std::unordered_map<std::string, uint32_t>
         &lensNodeNameToLensModelIndex,
-    const std::vector<std::shared_ptr<LensModel>> &lensModelList,
-    std::vector<std::shared_ptr<LensModel>> &out_markerFrameToLensModelList) {
+    const std::vector<std::shared_ptr<mmlens::LensModel>> &lensModelList,
+    std::vector<std::shared_ptr<mmlens::LensModel>>
+        &out_markerFrameToLensModelList) {
     MStatus status = MS::kSuccess;
 
     auto num_markers = markerList.size();
@@ -773,7 +776,7 @@ MStatus constructMarkerToLensModelMap(
         std::vector<MString> lensNodeNames = cameraLensNodeNames[cameraIndex];
         if (lensNodeNames.size() == 0) {
             // No Lens distortion.
-            std::shared_ptr<LensModel> lensModel;
+            std::shared_ptr<mmlens::LensModel> lensModel;
             for (uint32_t j = 0; j < num_frames; j++) {
                 auto markerFrameIndex = (i * num_frames) + j;
                 out_markerFrameToLensModelList[markerFrameIndex] = lensModel;
@@ -789,7 +792,7 @@ MStatus constructMarkerToLensModelMap(
                 for (uint32_t j = 0; j < num_frames; j++) {
                     auto markerFrameIndex = (i * num_frames) + j;
                     auto lensFrameIndex = lensIndex + j;
-                    std::shared_ptr<LensModel> lensModel =
+                    std::shared_ptr<mmlens::LensModel> lensModel =
                         lensModelList[lensFrameIndex];
                     out_markerFrameToLensModelList[markerFrameIndex] =
                         lensModel;
@@ -807,8 +810,9 @@ MStatus constructAttributeToLensModelMap(
     const AttrPtrList &attrList, const MTimeArray &frameList,
     const std::unordered_map<std::string, uint32_t>
         &lensNodeNameToLensModelIndex,
-    const std::vector<std::shared_ptr<LensModel>> &lensModelList,
-    std::vector<std::shared_ptr<LensModel>> &out_attrFrameToLensModelList) {
+    const std::vector<std::shared_ptr<mmlens::LensModel>> &lensModelList,
+    std::vector<std::shared_ptr<mmlens::LensModel>>
+        &out_attrFrameToLensModelList) {
     MStatus status = MS::kSuccess;
 
     auto num_attrs = attrList.size();
@@ -857,15 +861,17 @@ MStatus constructLensModelList(
     // pointer?
     //  If so, we must ensure out_lensList is not destroyed until we are
     //  finished solving.
-    std::vector<std::shared_ptr<LensModel>> &out_markerFrameToLensModelList,
-    std::vector<std::shared_ptr<LensModel>> &out_attrFrameToLensModelList,
-    std::vector<std::shared_ptr<LensModel>> &out_lensModelList) {
+    std::vector<std::shared_ptr<mmlens::LensModel>>
+        &out_markerFrameToLensModelList,
+    std::vector<std::shared_ptr<mmlens::LensModel>>
+        &out_attrFrameToLensModelList,
+    std::vector<std::shared_ptr<mmlens::LensModel>> &out_lensModelList) {
     MStatus status = MS::kSuccess;
 
     std::unordered_map<std::string, int32_t> cameraNodeNameToCameraIndex;
     std::vector<std::vector<MString>> cameraLensNodeNames;
     std::vector<MString> lensNodeNamesVec;
-    std::unordered_map<std::string, std::shared_ptr<LensModel>>
+    std::unordered_map<std::string, std::shared_ptr<mmlens::LensModel>>
         lensNodeNameToLensModel;
     status = getLensesFromCameraList(cameraList, cameraNodeNameToCameraIndex,
                                      cameraLensNodeNames, lensNodeNamesVec,

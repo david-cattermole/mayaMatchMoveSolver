@@ -31,7 +31,8 @@
 #include <maya/MTransformationMatrix.h>
 
 // MM Solver
-#include "mmSolver/core/mmmath.h"
+#include <mmcore/mmmath.h>
+
 #include "mmSolver/nodeTypeIds.h"
 
 namespace mmsolver {
@@ -44,11 +45,13 @@ MPxTransformationMatrix *MMMarkerTransformMatrix::creator() {
     return new MMMarkerTransformMatrix();
 }
 
-std::shared_ptr<LensModel> MMMarkerTransformMatrix::getLensModel() const {
+std::shared_ptr<mmlens::LensModel> MMMarkerTransformMatrix::getLensModel()
+    const {
     return m_value;
 }
 
-void MMMarkerTransformMatrix::setLensModel(std::shared_ptr<LensModel> value) {
+void MMMarkerTransformMatrix::setLensModel(
+    std::shared_ptr<mmlens::LensModel> value) {
     m_value = value;
 }
 
@@ -68,7 +71,7 @@ MMatrix MMMarkerTransformMatrix::asMatrix(double percent) const {
 
     // Calculate and add lens distortion to the translates of the
     // matrix.
-    std::shared_ptr<LensModel> lensModel = getLensModel();
+    std::shared_ptr<mmlens::LensModel> lensModel = getLensModel();
     if (lensModel != nullptr) {
         MVector translate = tm.getTranslation(MSpace::kTransform, &status);
         CHECK_MSTATUS(status);

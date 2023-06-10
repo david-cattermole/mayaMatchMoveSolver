@@ -44,13 +44,14 @@
 #include <maya/MTypeId.h>
 
 // MM Solver
+#include <mmlens/lens_model.h>
+#include <mmlens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.h>
+#include <mmlens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy_rescaled.h>
+#include <mmlens/lens_model_3de_classic.h>
+#include <mmlens/lens_model_3de_radial_decentered_deg_4_cylindric.h>
+#include <mmlens/lens_model_passthrough.h>
+
 #include "MMLensData.h"
-#include "mmSolver/lens/lens_model.h"
-#include "mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.h"
-#include "mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy_rescaled.h"
-#include "mmSolver/lens/lens_model_3de_classic.h"
-#include "mmSolver/lens/lens_model_3de_radial_decentered_deg_4_cylindric.h"
-#include "mmSolver/lens/lens_model_passthrough.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/utilities/debug_utils.h"
@@ -132,7 +133,8 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
 
         MDataHandle lensModelHandle = data.inputValue(a_lensModel, &status);
         const short lensModelNum = lensModelHandle.asShort();
-        const auto lensModelType = static_cast<LensModelType>(lensModelNum);
+        const auto lensModelType =
+            static_cast<mmlens::LensModelType>(lensModelNum);
 
         // Create initial plug-in data structure. We don't need to
         // 'new' the data type directly.
@@ -145,7 +147,7 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMLensData *inputLensData = (MMLensData *)inLensHandle.asPluginData();
-        std::shared_ptr<LensModel> inputLensModel;
+        std::shared_ptr<mmlens::LensModel> inputLensModel;
         if (inputLensData != nullptr) {
             inputLensModel = inputLensData->getValue();
         }
@@ -156,8 +158,8 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
         if (!enable) {
             // Create a lens distortion function to be passed to the
             // MMLensData.
-            auto newLensModel = std::shared_ptr<LensModelPassthrough>(
-                new LensModelPassthrough());
+            auto newLensModel = std::shared_ptr<mmlens::LensModelPassthrough>(
+                new mmlens::LensModelPassthrough());
 
             newLensModel->setInputLensModel(inputLensModel);
 
@@ -166,7 +168,7 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
             outLensHandle.setClean();
             status = MS::kSuccess;
 
-        } else if (lensModelType == LensModelType::k3deClassic) {
+        } else if (lensModelType == mmlens::LensModelType::k3deClassic) {
             MDataHandle k1Handle =
                 data.inputValue(a_tdeClassic_distortion, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -191,8 +193,8 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
 
             // Create a lens distortion function to be passed to the
             // MMLensData.
-            auto newLensModel =
-                std::shared_ptr<LensModel3deClassic>(new LensModel3deClassic());
+            auto newLensModel = std::shared_ptr<mmlens::LensModel3deClassic>(
+                new mmlens::LensModel3deClassic());
 
             // Connect the input lens to the newly created lens object.
             newLensModel->setInputLensModel(inputLensModel);
@@ -207,7 +209,7 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
             outLensHandle.setClean();
             status = MS::kSuccess;
 
-        } else if (lensModelType == LensModelType::k3deRadialStdDeg4) {
+        } else if (lensModelType == mmlens::LensModelType::k3deRadialStdDeg4) {
             MDataHandle deg2DistortionHandle =
                 data.inputValue(a_tdeRadialStdDeg4_degree2_distortion, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -246,9 +248,9 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
 
             // Create a lens distortion function to be passed to the
             // MMLensData.
-            auto newLensModel =
-                std::shared_ptr<LensModel3deRadialDecenteredDeg4Cylindric>(
-                    new LensModel3deRadialDecenteredDeg4Cylindric());
+            auto newLensModel = std::shared_ptr<
+                mmlens::LensModel3deRadialDecenteredDeg4Cylindric>(
+                new mmlens::LensModel3deRadialDecenteredDeg4Cylindric());
 
             // Connect the input lens to the newly created lens object.
             newLensModel->setInputLensModel(inputLensModel);
@@ -266,9 +268,10 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
             outLensHandle.setClean();
             status = MS::kSuccess;
 
-        } else if (lensModelType == LensModelType::k3deAnamorphicStdDeg4 ||
+        } else if (lensModelType ==
+                       mmlens::LensModelType::k3deAnamorphicStdDeg4 ||
                    lensModelType ==
-                       LensModelType::k3deAnamorphicStdDeg4Rescaled) {
+                       mmlens::LensModelType::k3deAnamorphicStdDeg4Rescaled) {
             MDataHandle deg2Cx02Handle =
                 data.inputValue(a_tdeAnamorphicStdDeg4_degree2_cx02, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -339,12 +342,12 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
 
             double rescale = rescaleHandle.asDouble();
 
-            if (lensModelType == LensModelType::k3deAnamorphicStdDeg4) {
+            if (lensModelType == mmlens::LensModelType::k3deAnamorphicStdDeg4) {
                 // Create a lens distortion function to be passed to the
                 // MMLensData.
-                auto newLensModel =
-                    std::shared_ptr<LensModel3deAnamorphicDeg4RotateSqueezeXY>(
-                        new LensModel3deAnamorphicDeg4RotateSqueezeXY());
+                auto newLensModel = std::shared_ptr<
+                    mmlens::LensModel3deAnamorphicDeg4RotateSqueezeXY>(
+                    new mmlens::LensModel3deAnamorphicDeg4RotateSqueezeXY());
 
                 // Connect the input lens to the newly created lens object.
                 newLensModel->setInputLensModel(inputLensModel);
@@ -369,12 +372,13 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
 
                 newLensData->setValue(newLensModel);
             } else if (lensModelType ==
-                       LensModelType::k3deAnamorphicStdDeg4Rescaled) {
+                       mmlens::LensModelType::k3deAnamorphicStdDeg4Rescaled) {
                 // Create a lens distortion function to be passed to the
                 // MMLensData.
                 auto newLensModel = std::shared_ptr<
-                    LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled>(
-                    new LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled());
+                    mmlens::LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled>(
+                    new mmlens::
+                        LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled());
 
                 // Connect the input lens to the newly created lens object.
                 newLensModel->setInputLensModel(inputLensModel);
@@ -408,15 +412,15 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
             status = MS::kSuccess;
 
         } else {
-            MMSOLVER_ERR("LensModelType value is invalid: nodeName="
+            MMSOLVER_ERR("mmlens::LensModelType value is invalid: nodeName="
                          << name().asChar() << " lensModelType="
                          << static_cast<int>(lensModelType));
             status = MS::kFailure;
 
             // Create a lens distortion function to be passed to the
             // MMLensData.
-            auto newLensModel = std::shared_ptr<LensModelPassthrough>(
-                new LensModelPassthrough());
+            auto newLensModel = std::shared_ptr<mmlens::LensModelPassthrough>(
+                new mmlens::LensModelPassthrough());
 
             newLensData->setValue(newLensModel);
         }
@@ -450,32 +454,33 @@ MStatus MMLensModel3deNode::initialize() {
     CHECK_MSTATUS(addAttribute(a_enable));
 
     // Lens Model
-    auto defaultLensModel =
-        static_cast<short>(LensModelType::k3deRadialStdDeg4);
+    auto defaultLensModels =
+        static_cast<short>(mmlens::LensModelType::k3deRadialStdDeg4);
     a_lensModel =
-        enumAttr.create("lensModel", "lnsmdl", defaultLensModel, &status);
+        enumAttr.create("lensModel", "lnsmdl", defaultLensModels, &status);
     CHECK_MSTATUS(status);
-    CHECK_MSTATUS(
-        enumAttr.addField("3DE Classic LD Model",
-                          static_cast<short>(LensModelType::k3deClassic)));
+    CHECK_MSTATUS(enumAttr.addField(
+        "3DE Classic LD Model",
+        static_cast<short>(mmlens::LensModelType::k3deClassic)));
     CHECK_MSTATUS(enumAttr.addField(
         "3DE4 Radial - Standard, Degree 4",
-        static_cast<short>(LensModelType::k3deRadialStdDeg4)));
+        static_cast<short>(mmlens::LensModelType::k3deRadialStdDeg4)));
     CHECK_MSTATUS(enumAttr.addField(
         "3DE4 Anamorphic - Standard, Degree 4",
-        static_cast<short>(LensModelType::k3deAnamorphicStdDeg4)));
+        static_cast<short>(mmlens::LensModelType::k3deAnamorphicStdDeg4)));
     CHECK_MSTATUS(enumAttr.addField(
         "3DE4 Anamorphic - Rescaled, Degree 4",
-        static_cast<short>(LensModelType::k3deAnamorphicStdDeg4Rescaled)));
+        static_cast<short>(
+            mmlens::LensModelType::k3deAnamorphicStdDeg4Rescaled)));
     // CHECK_MSTATUS(enumAttr.addField(
     //                   "3DE4 Anamorphic - Standard, Degree 6",
-    //                   static_cast<short>(LensModelType::k3deAnamorphicStdDeg6)));
+    //                   static_cast<short>(mmlens::LensModelType::k3deAnamorphicStdDeg6)));
     // CHECK_MSTATUS(enumAttr.addField(
     //                   "3DE4 Anamorphic - Rescaled, Degree 6",
-    //                   static_cast<short>(LensModelType::k3deAnamorphicStdDeg6Rescaled)));
+    //                   static_cast<short>(mmlens::LensModelType::k3deAnamorphicStdDeg6Rescaled)));
     //     CHECK_MSTATUS(enumAttr.addField(
     //             "3DE4 Anamorphic, Degree 6",
-    //             static_cast<short>(LensModelType::k3deAnamorphicDeg6)));
+    //             static_cast<short>(mmlens::LensModelType::k3deAnamorphicDeg6)));
     CHECK_MSTATUS(enumAttr.setStorable(true));
     CHECK_MSTATUS(enumAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(a_lensModel));

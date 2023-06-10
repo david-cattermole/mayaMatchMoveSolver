@@ -54,23 +54,25 @@ endfunction()
 
 
 # Generate CXX Bridge files.
-macro(mm_rust_generate_cxx_bridge_files name cpp_api_export_macro_name cxxbridge_exec)
+macro(mm_rust_generate_cxx_bridge_files_with_dirs name source_dir include_dir cpp_api_export_macro_name cxxbridge_exec)
   if(NOT EXISTS "${cxxbridge_exec}")
     message(STATUS "Finding cxxbridge executable...")
     find_program(cxxbridge_exec cxxbridge REQUIRED PATHS $ENV{HOME}/.cargo/bin)
   endif()
 
-  message(STATUS "Using cxxbridge executable: ${cxxbridge_exec}")
-  set(cxxbridge_in ${CMAKE_CURRENT_SOURCE_DIR}/cxxbridge.rs)
-  set(cxxbridge_source_out ${CMAKE_CURRENT_SOURCE_DIR}/_cxxbridge.cpp)
-  set(cxxbridge_header_out ${CMAKE_CURRENT_SOURCE_DIR}/../include/${name}/_cxxbridge.h)
+  message(STATUS "${name} using cxxbridge executable: ${cxxbridge_exec}")
+  set(cxxbridge_in ${source_dir}/cxxbridge.rs)
+  set(cxxbridge_source_out ${source_dir}/_cxxbridge.cpp)
+  set(cxxbridge_bridge_header_out ${include_dir}/${name}/_cxxbridge.h)
+  set(cxxbridge_cxx_header_out ${include_dir}/${name}/_cxx.h)
   set(cxxbridge_args "--cxx-impl-annotations" ${cpp_api_export_macro_name})
 
   add_custom_command(
-    OUTPUT ${cxxbridge_source_out} ${cxxbridge_header_out}
-    COMMAND ${cxxbridge_exec} ${cxxbridge_in} ${cxxbridge_args} --header --output ${cxxbridge_header_out}
+    OUTPUT ${cxxbridge_source_out} ${cxxbridge_bridge_header_out}
+    COMMAND ${cxxbridge_exec} --header --output ${cxxbridge_cxx_header_out}
+    COMMAND ${cxxbridge_exec} ${cxxbridge_in} ${cxxbridge_args} --header --output ${cxxbridge_bridge_header_out}
     COMMAND ${cxxbridge_exec} ${cxxbridge_in} ${cxxbridge_args} --output ${cxxbridge_source_out}
-    COMMENT "Generating CXX Bridge: ${cxxbridge_header_out} ${cxxbridge_source_out}"
+    COMMENT "Generating CXX Bridge: ${cxxbridge_cxx_header_out} ${cxxbridge_bridge_header_out} ${cxxbridge_source_out}"
     DEPENDS ${cxxbridge_in})
 endmacro()
 
@@ -81,7 +83,7 @@ function(mm_rust_get_depend_on_libraries depend_on_libraries)
   # https://cmake.org/cmake/help/latest/command/set.html#set-normal-variable
   if (MSVC)
     set(depend_on_libraries
-      ws2_32 userenv advapi32 shell32 msvcrt Bcrypt
+      ws2_32 userenv advapi32 shell32 msvcrt Bcrypt Ntdll
       PARENT_SCOPE
     )
   elseif (UNIX)
@@ -91,32 +93,3 @@ function(mm_rust_get_depend_on_libraries depend_on_libraries)
     )
   endif ()
 endfunction()
-
-
-# Add library as a C++ wrapper around the Rust library.
-macro(mm_rust_add_target_library target_release_lib_name lib_source_files depend_on_libraries rust_linktime_file)
-  message(STATUS "target_release_lib_name: ${target_release_lib_name}")
-  message(STATUS "lib_source_files: ${lib_source_files}")
-  message(STATUS "depend_on_libraries: ${depend_on_libraries}")
-  message(STATUS "rust_linktime_file: ${rust_linktime_file}")
-  
-  add_library(${target_release_lib_name} ${lib_source_files})
-  target_link_libraries(${target_release_lib_name}
-    ${depend_on_libraries}
-    ${rust_linktime_file}
-  )
-  target_include_directories(${target_release_lib_name}
-    INTERFACE
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
-    PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    PUBLIC $<INSTALL_INTERFACE:include/>
-  )
-endmacro()
-
-
-macro(mm_rust_install_target_library name target_release_lib_name)
-  include(GNUInstallDirs)
-  install(TARGETS ${target_release_lib_name}
-    EXPORT ${name}Targets
-  )
-endmacro()

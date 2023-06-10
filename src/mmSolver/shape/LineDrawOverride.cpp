@@ -44,9 +44,10 @@
 #include <maya/MUserData.h>
 
 // MM Solver
+#include <mmcore/mmdata.h>
+
 #include "LineConstants.h"
 #include "ShapeConstants.h"
-#include "mmSolver/core/mmdata.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/node/node_line_utils.h"
 #include "mmSolver/utilities/number_utils.h"

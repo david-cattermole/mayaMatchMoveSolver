@@ -82,9 +82,9 @@ SET PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_windows64_maya%MAYA_VERSION%
 :: environment variables are leaked into the calling environment.
 CALL %PROJECT_ROOT%\scripts\internal\python_venv_activate.bat
 
-:: Paths for dependencies.
-SET MMSCENEGRAPH_INSTALL_DIR="%BUILD_DIR_BASE%\build_mmscenegraph\install\maya%MAYA_VERSION%_windows64"
-SET MMSCENEGRAPH_CMAKE_CONFIG_DIR="%MMSCENEGRAPH_INSTALL_DIR%\lib\cmake\mmscenegraph"
+:: Paths for mmSolver library dependencies.
+SET MMSOLVERLIBS_INSTALL_DIR="%BUILD_DIR_BASE%\build_mmsolverlibs\install\maya%MAYA_VERSION%_windows64"
+SET MMSOLVERLIBS_CMAKE_CONFIG_DIR="%MMSOLVERLIBS_INSTALL_DIR%\lib\cmake\mmsolverlibs"
 
 :: MinGW is a common install for developers on Windows and
 :: if installed and used it will cause build conflicts and
@@ -93,13 +93,6 @@ SET IGNORE_INCLUDE_DIRECTORIES=""
 IF EXIST "C:\MinGW" (
     SET IGNORE_INCLUDE_DIRECTORIES="C:\MinGW\bin;C:\MinGW\include"
 )
-
-:: A local copy of LDPK to reduce the amount of downloads to the
-:: 3DEqualizer website (LDPK doesn't have a git repo to clone from).
-SET LDPK_URL="%PROJECT_ROOT%\external\archives\ldpk-2.8.tar"
-:: Convert back-slashes to forward-slashes.
-:: https://stackoverflow.com/questions/23542453/change-backslash-to-forward-slash-in-windows-batch-file
-SET "LDPK_URL=%LDPK_URL:\=/%"
 
 :: Optionally use "NMake Makefiles" as the build system generator.
 SET CMAKE_GENERATOR=Ninja
@@ -135,8 +128,7 @@ CHDIR "%BUILD_DIR%"
     -DMMSOLVER_BUILD_TESTS=%MMSOLVER_BUILD_TESTS% ^
     -DMAYA_LOCATION=%MAYA_LOCATION% ^
     -DMAYA_VERSION=%MAYA_VERSION% ^
-    -Dldpk_URL=%LDPK_URL% ^
-    -Dmmscenegraph_DIR=%MMSCENEGRAPH_CMAKE_CONFIG_DIR% ^
+    -Dmmsolverlibs_DIR=%MMSOLVERLIBS_CMAKE_CONFIG_DIR% ^
     %PROJECT_ROOT%
 if errorlevel 1 goto failed_to_generate
 

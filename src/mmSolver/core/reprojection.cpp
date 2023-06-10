@@ -31,7 +31,8 @@
 #include <maya/MMatrix.h>
 
 // MM Solver
-#include "mmSolver/lens/lens_model.h"
+#include <mmlens/lens_model.h>
+
 #include "mmSolver/mayahelper/maya_camera.h"  // getProjectionMatrix, computeFrustumCoordinates
 #include "mmSolver/utilities/debug_utils.h"
 
@@ -66,7 +67,7 @@ MStatus reprojection(
     MMatrix &outWorldCameraProjectionMatrix,
     MMatrix &outWorldInverseCameraProjectionMatrix, double &outHorizontalPan,
     double &outVerticalPan) {
-    std::shared_ptr<LensModel> lensModel;
+    std::shared_ptr<mmlens::LensModel> lensModel;
     const auto distortMode = ReprojectionDistortMode::kNone;
     return reprojection(
         tfmMatrix, camMatrix,
@@ -110,7 +111,7 @@ MStatus reprojection(
     const double imageWidth, const double imageHeight,
     // Lens Distortion
     const ReprojectionDistortMode distortMode,
-    std::shared_ptr<LensModel> lensModel,
+    std::shared_ptr<mmlens::LensModel> lensModel,
 
     // Manipulation
     const MMatrix applyMatrix, const bool overrideScreenX,

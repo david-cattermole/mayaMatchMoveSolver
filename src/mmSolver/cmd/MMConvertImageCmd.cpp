@@ -67,7 +67,8 @@
 #include <maya/MSyntax.h>
 
 // MM Solver
-#include "mmSolver/core/mmmath.h"
+#include <mmcore/mmmath.h>
+
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 

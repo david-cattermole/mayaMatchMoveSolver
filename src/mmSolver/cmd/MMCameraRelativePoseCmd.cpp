@@ -402,8 +402,8 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         marker_b->setBundle(bundle);
         marker_b->setCamera(m_camera_b);
 
-        std::shared_ptr<LensModel> lensModel_a;
-        std::shared_ptr<LensModel> lensModel_b;
+        std::shared_ptr<mmlens::LensModel> lensModel_a;
+        std::shared_ptr<mmlens::LensModel> lensModel_b;
         {
             MarkerPtrList markerList;
             markerList.push_back(marker_a);
@@ -419,9 +419,11 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
             frameList.append(m_time_a);
             frameList.append(m_time_b);
 
-            std::vector<std::shared_ptr<LensModel>> markerFrameToLensModelList;
-            std::vector<std::shared_ptr<LensModel>> attrFrameToLensModelList;
-            std::vector<std::shared_ptr<LensModel>> lensModelList;
+            std::vector<std::shared_ptr<mmlens::LensModel>>
+                markerFrameToLensModelList;
+            std::vector<std::shared_ptr<mmlens::LensModel>>
+                attrFrameToLensModelList;
+            std::vector<std::shared_ptr<mmlens::LensModel>> lensModelList;
 
             status = mmsolver::constructLensModelList(
                 cameraList, markerList, attrList, frameList,

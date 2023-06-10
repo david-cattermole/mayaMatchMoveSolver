@@ -302,7 +302,7 @@ MStatus MMCameraPoseFromPointsCmd::doIt(const MArgList &args) {
         BundlePtrList bundle_list;
         std::vector<std::pair<double, double>> marker_coords;
         std::vector<std::tuple<double, double, double>> bundle_coords;
-        std::shared_ptr<LensModel> lensModel;
+        std::shared_ptr<mmlens::LensModel> lensModel;
 
         for (auto j = 0; j < m_marker_list.size(); ++j) {
             auto marker = m_marker_list[j];

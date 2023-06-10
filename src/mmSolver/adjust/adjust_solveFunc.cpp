@@ -62,12 +62,13 @@
 #endif
 
 // MM Solver
+#include <mmcore/mmdata.h>
+#include <mmcore/mmmath.h>
+
 #include "adjust_base.h"
 #include "adjust_data.h"
 #include "adjust_measureErrors.h"
 #include "adjust_setParameters.h"
-#include "mmSolver/core/mmdata.h"
-#include "mmSolver/core/mmmath.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_lens_model_utils.h"

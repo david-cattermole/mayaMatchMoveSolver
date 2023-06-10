@@ -31,7 +31,7 @@
 #include <maya/MTypeId.h>
 
 // MM Solver
-#include "mmSolver/lens/lens_model.h"
+#include <mmlens/lens_model.h>
 
 namespace mmsolver {
 
@@ -49,8 +49,8 @@ public:
     MTypeId typeId() const;
     MString name() const;
 
-    std::shared_ptr<LensModel> getValue() const;
-    void setValue(std::shared_ptr<LensModel> value);
+    std::shared_ptr<mmlens::LensModel> getValue() const;
+    void setValue(std::shared_ptr<mmlens::LensModel> value);
 
     static MString typeName();
 
@@ -59,7 +59,7 @@ public:
     static void* creator();
 
 private:
-    std::shared_ptr<LensModel> m_value;
+    std::shared_ptr<mmlens::LensModel> m_value;
 };
 
 }  // namespace mmsolver

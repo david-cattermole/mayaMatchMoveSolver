@@ -25,6 +25,8 @@
 # - dlfcn-win32_INCLUDE_PATH - Directory for the header files.
 # - dlfcn-win32_LIB_PATH - Directory for shared libraries (.so and .dll).
 # - dlfcn-win32_IMPLIB_PATH - Directory for shared libraries (.lib).
+# - dlfcn-win32_ALLOW_DOWNLOAD - Allow downloading this dependency.
+# - MMSOLVER_DOWNLOAD_DEPENDENCIES - Global switch to enable/disable downloading.
 #
 # Defines Variables:
 # - dlfcn-win32_FOUND

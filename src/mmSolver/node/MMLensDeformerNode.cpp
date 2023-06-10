@@ -159,7 +159,7 @@ MStatus MMLensDeformerNode::deform(MDataBlock& data, MItGeometry& iter,
     }
 
     // Get the underlying lens model.
-    std::shared_ptr<LensModel> lensModel = inputLensData->getValue();
+    std::shared_ptr<mmlens::LensModel> lensModel = inputLensData->getValue();
     if (lensModel == nullptr) {
         return status;
     }

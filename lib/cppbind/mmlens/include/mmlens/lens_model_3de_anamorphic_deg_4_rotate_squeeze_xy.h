@@ -212,7 +212,7 @@ public:
     virtual mmhash::HashValue hashValue();
 
 private:
-    TdeAnamorphicDeg4RotateSqueezeXYParameters m_lens;
+    Parameters3deAnamorphicStdDeg4 m_lens;
 };
 
 }  // namespace mmlens

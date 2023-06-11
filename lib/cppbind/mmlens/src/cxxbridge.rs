@@ -95,7 +95,7 @@ pub mod ffi {
         TdeAnamorphicStdDeg4Rescaled = 5,
 
         // // "3DE4 Anamorphic - Standard, Degree 6"
-        // #[cxx_name = "k3deAnamorphicStdDeg4"]
+        // #[cxx_name = "k3deAnamorphicStdDeg6"]
         // TdeAnamorphicStdDeg4 = 6,
 
         // // "3DE4 Anamorphic - Rescaled, Degree 6"
@@ -129,7 +129,7 @@ pub mod ffi {
     }
 
     #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
-    pub(crate) struct TdeClassicParameters {
+    pub(crate) struct Parameters3deClassic {
         distortion: f64,         // Distortion
         anamorphic_squeeze: f64, // Anamorphic squeeze
         curvature_x: f64,        // Curvature X
@@ -138,7 +138,7 @@ pub mod ffi {
     }
 
     #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
-    pub(crate) struct TdeRadialDecenteredDeg4CylindricParameters {
+    pub(crate) struct Parameters3deRadialStdDeg4 {
         degree2_distortion: f64, // "Distortion - Degree 2"
         degree2_u: f64,          // "U - Degree 2"
         degree2_v: f64,          // "V - Degree 2"
@@ -152,7 +152,7 @@ pub mod ffi {
     }
 
     #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
-    pub(crate) struct TdeAnamorphicDeg4RotateSqueezeXYParameters {
+    pub(crate) struct Parameters3deAnamorphicStdDeg4 {
         degree2_cx02: f64, // "Cx02 - Degree 2"
         degree2_cy02: f64, // "Cy02 - Degree 2"
 
@@ -174,7 +174,7 @@ pub mod ffi {
     }
 
     #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
-    pub(crate) struct TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters {
+    pub(crate) struct Parameters3deAnamorphicStdDeg4Rescaled {
         degree2_cx02: f64, // "Cx02 - Degree 2"
         degree2_cy02: f64, // "Cy02 - Degree 2"
 

@@ -19,13 +19,23 @@
  *
  */
 
+#include "test_batch_3de_anamorphic_std_deg4.h"
+#include "test_batch_3de_anamorphic_std_deg4_rescaled.h"
 #include "test_batch_3de_classic.h"
+#include "test_batch_3de_radial_std_deg4.h"
+#include "test_once_3de_anamorphic_std_deg4.h"
+#include "test_once_3de_anamorphic_std_deg4_rescaled.h"
 #include "test_once_3de_classic.h"
-// #include "test_c.h"
+#include "test_once_3de_radial_std_deg4.h"
 
 int main() {
     test_batch_3de_classic();
+    test_batch_3de_radial_std_deg4();
+    test_batch_3de_anamorphic_std_deg4();
+    test_batch_3de_anamorphic_std_deg4_rescaled();
     test_once_3de_classic();
-    // test_c();
+    test_once_3de_radial_std_deg4();
+    test_once_3de_anamorphic_std_deg4();
+    test_once_3de_anamorphic_std_deg4_rescaled();
     return 0;
 }

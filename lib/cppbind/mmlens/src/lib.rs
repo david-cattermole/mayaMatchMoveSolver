@@ -23,7 +23,7 @@
 // use crate::cxxbridge::ffi::CameraParameters as BindCameraParameters;
 // use crate::cxxbridge::ffi::LensModelType as BindLensModelType;
 // use crate::cxxbridge::ffi::LensParameters as BindLensParameters;
-// use crate::cxxbridge::ffi::TdeClassicParameters as BindTdeClassicParameters;
+// use crate::cxxbridge::ffi::Parameters3deClassic as BindParameters3deClassic;
 
 // use rayon::prelude::*;
 
@@ -73,7 +73,7 @@ mod lens_parameters;
 //     image_height: usize,
 //     working_data: &mut [f64],
 //     camera_parameters: BindCameraParameters,
-//     lens_parameters: BindTdeClassicParameters,
+//     lens_parameters: BindParameters3deClassic,
 // ) -> bool {
 //     let mut ok = false;
 
@@ -149,7 +149,7 @@ mod lens_parameters;
 //     working_data: &mut [f64],
 //     pixel_data: &mut [f32],
 //     camera_parameters: BindCameraParameters,
-//     lens_parameters: BindTdeClassicParameters,
+//     lens_parameters: BindParameters3deClassic,
 // ) -> bool {
 //     true
 // }

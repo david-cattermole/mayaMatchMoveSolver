@@ -19,7 +19,7 @@
  *
  */
 
-#include "test_batch_3de_classic.h"
+#include "test_batch_3de_anamorphic_std_deg4.h"
 
 #include <mmlens/mmlens.h>
 
@@ -29,14 +29,16 @@
 
 #include "common.h"
 
-int test_batch_3de_classic() {
-    const auto test_name = "test_batch_3de_classic";
-    const auto identity_prefix = "test_batch_3de_classic: start";
-    const auto undistort_prefix = "test_batch_3de_classic: undistort";
+int test_batch_3de_anamorphic_std_deg4() {
+    const auto test_name = "test_batch_3de_anamorphic_std_deg4";
+    const auto identity_prefix = "test_batch_3de_anamorphic_std_deg4: start";
+    const auto undistort_prefix =
+        "test_batch_3de_anamorphic_std_deg4: undistort";
     const auto undistort_compare = " -> ";
-    const auto redistort_prefix = "test_batch_3de_classic: redistort";
+    const auto redistort_prefix =
+        "test_batch_3de_anamorphic_std_deg4: redistort";
     const auto redistort_compare = " -> ";
-    const auto print_prefix = "test_batch_3de_classic: output";
+    const auto print_prefix = "test_batch_3de_anamorphic_std_deg4: output";
     const auto print_compare = " == ";
     const bool do_print = true;
 
@@ -73,14 +75,22 @@ int test_batch_3de_classic() {
     const double film_back_radius_cm =
         mmlens::compute_diagonal_normalized_camera_factor(camera_parameters);
 
-    auto lens = mmlens::Parameters3deClassic();
-    lens.distortion = 0.1;
-    lens.anamorphic_squeeze = 1.0;
-    lens.curvature_x = 0.0;
-    lens.curvature_y = 0.0;
-    lens.quartic_distortion = 0.1;
+    auto lens = mmlens::Parameters3deAnamorphicStdDeg4();
+    lens.degree2_cx02 = 0.05;
+    lens.degree2_cy02 = 0.05;
+    lens.degree2_cx22 = -0.05;
+    lens.degree2_cy22 = -0.05;
+    lens.degree4_cx04 = 0.05;
+    lens.degree4_cy04 = 0.05;
+    lens.degree4_cx24 = -0.05;
+    lens.degree4_cy24 = -0.05;
+    lens.degree4_cx44 = 0.15;
+    lens.degree4_cy44 = 0.15;
+    lens.lens_rotation = 45.0;
+    lens.squeeze_x = 1.1;
+    lens.squeeze_y = 1.0;
 
-    mmlens::apply_undistort_3de_classic_f64_2d_to_f64_2d(
+    mmlens::apply_undistort_3de_anamorphic_std_deg4_f64_2d_to_f64_2d(
         in_data, in_data_size, temp_data, temp_data_size, camera_parameters,
         film_back_radius_cm, lens);
     if (do_print) {
@@ -89,7 +99,7 @@ int test_batch_3de_classic() {
                               in_data, temp_data);
     }
 
-    mmlens::apply_redistort_3de_classic_f64_2d_to_f32_4d(
+    mmlens::apply_redistort_3de_anamorphic_std_deg4_f64_2d_to_f32_4d(
         temp_data, temp_data_size, out_data, out_data_size, camera_parameters,
         film_back_radius_cm, lens);
     if (do_print) {

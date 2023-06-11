@@ -48,7 +48,7 @@ void LensModel3deRadialDecenteredDeg4Cylindric::applyModelUndistort(
         inputLensModel->applyModelUndistort(xdd, ydd, xdd, ydd);
     }
 
-    auto distortion = Distortion3deRadialDeg4();
+    auto distortion = Distortion3deRadialStdDeg4();
     distortion.set_parameter(0, m_lens.degree2_distortion);
     distortion.set_parameter(1, m_lens.degree2_u);
     distortion.set_parameter(2, m_lens.degree2_v);
@@ -64,7 +64,7 @@ void LensModel3deRadialDecenteredDeg4Cylindric::applyModelUndistort(
     // 'undistort' expects values 0.0 to 1.0, but our inputs are -0.5
     // to 0.5, therefore we must convert.
     auto out_xy = apply_lens_distortion_once<direction, double, double,
-                                             Distortion3deRadialDeg4>(
+                                             Distortion3deRadialStdDeg4>(
         xdd + 0.5, ydd + 0.5, m_camera, m_film_back_radius_cm, distortion);
 
     // Convert back to -0.5 to 0.5 coordinate space.
@@ -89,7 +89,7 @@ void LensModel3deRadialDecenteredDeg4Cylindric::applyModelDistort(
         inputLensModel->applyModelDistort(xdd, ydd, xdd, ydd);
     }
 
-    auto distortion = Distortion3deRadialDeg4();
+    auto distortion = Distortion3deRadialStdDeg4();
     distortion.set_parameter(0, m_lens.degree2_distortion);
     distortion.set_parameter(1, m_lens.degree2_u);
     distortion.set_parameter(2, m_lens.degree2_v);
@@ -105,7 +105,7 @@ void LensModel3deRadialDecenteredDeg4Cylindric::applyModelDistort(
     // 'undistort' expects values 0.0 to 1.0, but our inputs are -0.5
     // to 0.5, therefore we must convert.
     auto out_xy = apply_lens_distortion_once<direction, double, double,
-                                             Distortion3deRadialDeg4>(
+                                             Distortion3deRadialStdDeg4>(
         xdd + 0.5, ydd + 0.5, m_camera, m_film_back_radius_cm, distortion);
 
     // Convert back to -0.5 to 0.5 coordinate space.

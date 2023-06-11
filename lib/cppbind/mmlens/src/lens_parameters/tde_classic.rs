@@ -18,17 +18,17 @@
 // ====================================================================
 //
 
-use crate::cxxbridge::ffi::TdeClassicParameters as BindTdeClassicParameters;
+use crate::cxxbridge::ffi::Parameters3deClassic as BindParameters3deClassic;
 
-impl BindTdeClassicParameters {
+impl BindParameters3deClassic {
     pub fn new(
         distortion: f64,
         anamorphic_squeeze: f64,
         curvature_x: f64,
         curvature_y: f64,
         quartic_distortion: f64,
-    ) -> BindTdeClassicParameters {
-        BindTdeClassicParameters {
+    ) -> BindParameters3deClassic {
+        BindParameters3deClassic {
             distortion,
             anamorphic_squeeze,
             curvature_x,
@@ -37,8 +37,8 @@ impl BindTdeClassicParameters {
         }
     }
 
-    pub fn default() -> BindTdeClassicParameters {
-        BindTdeClassicParameters {
+    pub fn default() -> BindParameters3deClassic {
+        BindParameters3deClassic {
             distortion: 0.0,
             anamorphic_squeeze: 1.0,
             curvature_x: 0.0,

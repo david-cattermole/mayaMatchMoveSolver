@@ -121,7 +121,7 @@ public:
     virtual mmhash::HashValue hashValue();
 
 private:
-    TdeClassicParameters m_lens;
+    Parameters3deClassic m_lens;
 };
 
 }  // namespace mmlens

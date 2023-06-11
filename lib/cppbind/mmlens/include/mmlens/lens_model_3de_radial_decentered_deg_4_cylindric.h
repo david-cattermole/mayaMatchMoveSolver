@@ -155,7 +155,7 @@ public:
     virtual mmhash::HashValue hashValue();
 
 private:
-    TdeRadialDecenteredDeg4CylindricParameters m_lens;
+    Parameters3deRadialStdDeg4 m_lens;
 };
 
 }  // namespace mmlens

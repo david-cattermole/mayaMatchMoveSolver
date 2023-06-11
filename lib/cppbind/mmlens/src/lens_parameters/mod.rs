@@ -21,7 +21,7 @@
 use crate::constants::MAX_LENS_PARAMETER_COUNT;
 use crate::cxxbridge::ffi::LensModelType as BindLensModelType;
 use crate::cxxbridge::ffi::LensParameters as BindLensParameters;
-use crate::cxxbridge::ffi::TdeClassicParameters as BindTdeClassicParameters;
+use crate::cxxbridge::ffi::Parameters3deClassic as BindParameters3deClassic;
 
 mod tde_classic;
 
@@ -33,11 +33,11 @@ impl BindLensParameters {
         }
     }
 
-    pub fn as_tde_classic(&self) -> BindTdeClassicParameters {
+    pub fn as_tde_classic(&self) -> BindParameters3deClassic {
         if self.mode != BindLensModelType::TdeClassic {
-            BindTdeClassicParameters::default()
+            BindParameters3deClassic::default()
         } else {
-            BindTdeClassicParameters::new(
+            BindParameters3deClassic::new(
                 self.values[0],
                 self.values[1],
                 self.values[2],

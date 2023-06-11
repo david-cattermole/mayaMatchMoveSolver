@@ -105,9 +105,9 @@ private:
     ldpk::classic_3de_mixed_distortion<ldpk::vec2d, ldpk::mat2d> m_distortion;
 };
 
-class Distortion3deRadialDeg4 : public Distortion {
+class Distortion3deRadialStdDeg4 : public Distortion {
 public:
-    Distortion3deRadialDeg4() {}
+    Distortion3deRadialStdDeg4() {}
 
     void set_parameter(const int index, const double value) {
         if (index < 6) {
@@ -149,9 +149,9 @@ private:
     ldpk::cylindric_extender_2<ldpk::vec2d, ldpk::mat2d> m_cylindric;
 };
 
-class Distortion3deAnamorphicDeg4 : public Distortion {
+class Distortion3deAnamorphicStdDeg4 : public Distortion {
 public:
-    Distortion3deAnamorphicDeg4() {}
+    Distortion3deAnamorphicStdDeg4() {}
 
     void set_parameter(const int index, const double value) {
         if (index < 10) {
@@ -220,9 +220,9 @@ private:
     ldpk::linear_extender<ldpk::vec2d, ldpk::mat2d> m_pixel_aspect_and_rotation;
 };
 
-class Distortion3deAnamorphicDeg4Rescaled : public Distortion {
+class Distortion3deAnamorphicStdDeg4Rescaled : public Distortion {
 public:
-    Distortion3deAnamorphicDeg4Rescaled() {}
+    Distortion3deAnamorphicStdDeg4Rescaled() {}
 
     void set_parameter(const int index, const double value) {
         if (index < 10) {

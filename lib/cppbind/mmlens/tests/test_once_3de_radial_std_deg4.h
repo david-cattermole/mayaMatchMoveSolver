@@ -19,18 +19,6 @@
  *
  */
 
-#ifndef MM_LENS_MM_LENS_H
-#define MM_LENS_MM_LENS_H
+#pragma once
 
-#include "_cxx.h"
-#include "_cxxbridge.h"
-#include "_types.h"
-#include "lens_model.h"
-#include "lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.h"
-#include "lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy_rescaled.h"
-#include "lens_model_3de_classic.h"
-#include "lens_model_3de_radial_decentered_deg_4_cylindric.h"
-#include "lens_model_passthrough.h"
-#include "lib.h"
-
-#endif  // MM_LENS_MM_LENS_H
+int test_once_3de_radial_std_deg4();

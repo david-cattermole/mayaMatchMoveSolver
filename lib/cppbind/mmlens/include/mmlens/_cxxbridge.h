@@ -12,10 +12,10 @@ enum class LensModelState : ::std::uint8_t;
 enum class LensModelType : ::std::uint8_t;
 struct CameraParameters;
 struct LensParameters;
-struct TdeClassicParameters;
-struct TdeRadialDecenteredDeg4CylindricParameters;
-struct TdeAnamorphicDeg4RotateSqueezeXYParameters;
-struct TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters;
+struct Parameters3deClassic;
+struct Parameters3deRadialStdDeg4;
+struct Parameters3deAnamorphicStdDeg4;
+struct Parameters3deAnamorphicStdDeg4Rescaled;
 }  // namespace mmlens
 
 namespace mmlens {
@@ -81,28 +81,28 @@ struct LensParameters final {
 };
 #endif  // CXXBRIDGE1_STRUCT_mmlens$LensParameters
 
-#ifndef CXXBRIDGE1_STRUCT_mmlens$TdeClassicParameters
-#define CXXBRIDGE1_STRUCT_mmlens$TdeClassicParameters
-struct TdeClassicParameters final {
+#ifndef CXXBRIDGE1_STRUCT_mmlens$Parameters3deClassic
+#define CXXBRIDGE1_STRUCT_mmlens$Parameters3deClassic
+struct Parameters3deClassic final {
     double distortion;
     double anamorphic_squeeze;
     double curvature_x;
     double curvature_y;
     double quartic_distortion;
 
-    bool operator==(const TdeClassicParameters &) const noexcept;
-    bool operator!=(const TdeClassicParameters &) const noexcept;
-    bool operator<(const TdeClassicParameters &) const noexcept;
-    bool operator<=(const TdeClassicParameters &) const noexcept;
-    bool operator>(const TdeClassicParameters &) const noexcept;
-    bool operator>=(const TdeClassicParameters &) const noexcept;
+    bool operator==(const Parameters3deClassic &) const noexcept;
+    bool operator!=(const Parameters3deClassic &) const noexcept;
+    bool operator<(const Parameters3deClassic &) const noexcept;
+    bool operator<=(const Parameters3deClassic &) const noexcept;
+    bool operator>(const Parameters3deClassic &) const noexcept;
+    bool operator>=(const Parameters3deClassic &) const noexcept;
     using IsRelocatable = ::std::true_type;
 };
-#endif  // CXXBRIDGE1_STRUCT_mmlens$TdeClassicParameters
+#endif  // CXXBRIDGE1_STRUCT_mmlens$Parameters3deClassic
 
-#ifndef CXXBRIDGE1_STRUCT_mmlens$TdeRadialDecenteredDeg4CylindricParameters
-#define CXXBRIDGE1_STRUCT_mmlens$TdeRadialDecenteredDeg4CylindricParameters
-struct TdeRadialDecenteredDeg4CylindricParameters final {
+#ifndef CXXBRIDGE1_STRUCT_mmlens$Parameters3deRadialStdDeg4
+#define CXXBRIDGE1_STRUCT_mmlens$Parameters3deRadialStdDeg4
+struct Parameters3deRadialStdDeg4 final {
     double degree2_distortion;
     double degree2_u;
     double degree2_v;
@@ -112,25 +112,19 @@ struct TdeRadialDecenteredDeg4CylindricParameters final {
     double cylindric_direction;
     double cylindric_bending;
 
-    bool operator==(
-        const TdeRadialDecenteredDeg4CylindricParameters &) const noexcept;
-    bool operator!=(
-        const TdeRadialDecenteredDeg4CylindricParameters &) const noexcept;
-    bool operator<(
-        const TdeRadialDecenteredDeg4CylindricParameters &) const noexcept;
-    bool operator<=(
-        const TdeRadialDecenteredDeg4CylindricParameters &) const noexcept;
-    bool operator>(
-        const TdeRadialDecenteredDeg4CylindricParameters &) const noexcept;
-    bool operator>=(
-        const TdeRadialDecenteredDeg4CylindricParameters &) const noexcept;
+    bool operator==(const Parameters3deRadialStdDeg4 &) const noexcept;
+    bool operator!=(const Parameters3deRadialStdDeg4 &) const noexcept;
+    bool operator<(const Parameters3deRadialStdDeg4 &) const noexcept;
+    bool operator<=(const Parameters3deRadialStdDeg4 &) const noexcept;
+    bool operator>(const Parameters3deRadialStdDeg4 &) const noexcept;
+    bool operator>=(const Parameters3deRadialStdDeg4 &) const noexcept;
     using IsRelocatable = ::std::true_type;
 };
-#endif  // CXXBRIDGE1_STRUCT_mmlens$TdeRadialDecenteredDeg4CylindricParameters
+#endif  // CXXBRIDGE1_STRUCT_mmlens$Parameters3deRadialStdDeg4
 
-#ifndef CXXBRIDGE1_STRUCT_mmlens$TdeAnamorphicDeg4RotateSqueezeXYParameters
-#define CXXBRIDGE1_STRUCT_mmlens$TdeAnamorphicDeg4RotateSqueezeXYParameters
-struct TdeAnamorphicDeg4RotateSqueezeXYParameters final {
+#ifndef CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4
+#define CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4
+struct Parameters3deAnamorphicStdDeg4 final {
     double degree2_cx02;
     double degree2_cy02;
     double degree2_cx22;
@@ -145,25 +139,19 @@ struct TdeAnamorphicDeg4RotateSqueezeXYParameters final {
     double squeeze_x;
     double squeeze_y;
 
-    bool operator==(
-        const TdeAnamorphicDeg4RotateSqueezeXYParameters &) const noexcept;
-    bool operator!=(
-        const TdeAnamorphicDeg4RotateSqueezeXYParameters &) const noexcept;
-    bool operator<(
-        const TdeAnamorphicDeg4RotateSqueezeXYParameters &) const noexcept;
-    bool operator<=(
-        const TdeAnamorphicDeg4RotateSqueezeXYParameters &) const noexcept;
-    bool operator>(
-        const TdeAnamorphicDeg4RotateSqueezeXYParameters &) const noexcept;
-    bool operator>=(
-        const TdeAnamorphicDeg4RotateSqueezeXYParameters &) const noexcept;
+    bool operator==(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
+    bool operator!=(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
+    bool operator<(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
+    bool operator<=(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
+    bool operator>(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
+    bool operator>=(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
     using IsRelocatable = ::std::true_type;
 };
-#endif  // CXXBRIDGE1_STRUCT_mmlens$TdeAnamorphicDeg4RotateSqueezeXYParameters
+#endif  // CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4
 
-#ifndef CXXBRIDGE1_STRUCT_mmlens$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters
-#define CXXBRIDGE1_STRUCT_mmlens$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters
-struct TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters final {
+#ifndef CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4Rescaled
+#define CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4Rescaled
+struct Parameters3deAnamorphicStdDeg4Rescaled final {
     double degree2_cx02;
     double degree2_cy02;
     double degree2_cx22;
@@ -179,19 +167,19 @@ struct TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters final {
     double squeeze_y;
     double rescale;
 
-    bool operator==(const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &)
-        const noexcept;
-    bool operator!=(const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &)
-        const noexcept;
-    bool operator<(const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &)
-        const noexcept;
-    bool operator<=(const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &)
-        const noexcept;
-    bool operator>(const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &)
-        const noexcept;
-    bool operator>=(const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &)
-        const noexcept;
+    bool operator==(
+        const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
+    bool operator!=(
+        const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
+    bool operator<(
+        const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
+    bool operator<=(
+        const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
+    bool operator>(
+        const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
+    bool operator>=(
+        const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
     using IsRelocatable = ::std::true_type;
 };
-#endif  // CXXBRIDGE1_STRUCT_mmlens$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters
+#endif  // CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4Rescaled
 }  // namespace mmlens

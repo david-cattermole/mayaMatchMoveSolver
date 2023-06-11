@@ -23,48 +23,4 @@
 
 #include <iostream>
 
-namespace mmlens {
-
-// enum class LensModelState {
-//     kUninitialized = 0,
-//     kClean = 1,
-//     kDirty = 2,
-//     kNumLensModelState,
-// };
-
-// // Warning: Do not change the numbers assigned to the different
-// // types. These numbers are exposed to the user via the
-// // "mmLensModel3de" node, with attribute 'lensModel'.
-// enum class LensModelType {
-//     // The lens model type is uninitialized.
-//     kUninitialized = 0,
-
-//     // Does nothing but passes through to the next lens model (if
-//     // there is one).
-//     kPassthrough = 1,
-
-//     // "3DE Classic LD Model"
-//     k3deClassic = 2,
-
-//     // "3DE4 Radial - Standard, Degree 4"
-//     k3deRadialStdDeg4 = 3,
-
-//     // "3DE4 Anamorphic - Standard, Degree 4"
-//     k3deAnamorphicStdDeg4 = 4,
-
-//     // "3DE4 Anamorphic - Rescaled, Degree 4"
-//     k3deAnamorphicStdDeg4Rescaled = 5,
-
-//     // // "3DE4 Anamorphic - Standard, Degree 6"
-//     // k3deAnamorphicStdDeg4 = 6,
-
-//     // // "3DE4 Anamorphic - Rescaled, Degree 6"
-//     // k3deAnamorphicStdDeg4Rescaled = 7,
-
-//     // // "3DE4 Anamorphic, Degree 6"
-//     // k3deAnamorphicDeg6 = 8,
-
-//     kNumLensModelType,
-// };
-
-}  // namespace mmlens
+namespace mmlens {}  // namespace mmlens

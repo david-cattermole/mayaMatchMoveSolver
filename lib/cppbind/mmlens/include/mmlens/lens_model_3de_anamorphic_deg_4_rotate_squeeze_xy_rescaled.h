@@ -41,7 +41,7 @@ namespace mmlens {
 class LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled : public LensModel {
 public:
     LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled()
-        : LensModel{LensModelType::k3deAnamorphicStdDeg4}
+        : LensModel{LensModelType::k3deAnamorphicStdDeg4Rescaled}
         , m_lens{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                  0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0} {}
 
@@ -220,7 +220,7 @@ public:
     virtual mmhash::HashValue hashValue();
 
 private:
-    TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters m_lens;
+    Parameters3deAnamorphicStdDeg4Rescaled m_lens;
 };
 
 }  // namespace mmlens

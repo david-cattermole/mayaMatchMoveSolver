@@ -11,10 +11,10 @@ enum class LensModelState : ::std::uint8_t;
 enum class LensModelType : ::std::uint8_t;
 struct CameraParameters;
 struct LensParameters;
-struct TdeClassicParameters;
-struct TdeRadialDecenteredDeg4CylindricParameters;
-struct TdeAnamorphicDeg4RotateSqueezeXYParameters;
-struct TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters;
+struct Parameters3deClassic;
+struct Parameters3deRadialStdDeg4;
+struct Parameters3deAnamorphicStdDeg4;
+struct Parameters3deAnamorphicStdDeg4Rescaled;
 }  // namespace mmlens
 
 namespace mmlens {
@@ -80,28 +80,28 @@ struct LensParameters final {
 };
 #endif  // CXXBRIDGE1_STRUCT_mmlens$LensParameters
 
-#ifndef CXXBRIDGE1_STRUCT_mmlens$TdeClassicParameters
-#define CXXBRIDGE1_STRUCT_mmlens$TdeClassicParameters
-struct TdeClassicParameters final {
+#ifndef CXXBRIDGE1_STRUCT_mmlens$Parameters3deClassic
+#define CXXBRIDGE1_STRUCT_mmlens$Parameters3deClassic
+struct Parameters3deClassic final {
     double distortion;
     double anamorphic_squeeze;
     double curvature_x;
     double curvature_y;
     double quartic_distortion;
 
-    bool operator==(const TdeClassicParameters &) const noexcept;
-    bool operator!=(const TdeClassicParameters &) const noexcept;
-    bool operator<(const TdeClassicParameters &) const noexcept;
-    bool operator<=(const TdeClassicParameters &) const noexcept;
-    bool operator>(const TdeClassicParameters &) const noexcept;
-    bool operator>=(const TdeClassicParameters &) const noexcept;
+    bool operator==(const Parameters3deClassic &) const noexcept;
+    bool operator!=(const Parameters3deClassic &) const noexcept;
+    bool operator<(const Parameters3deClassic &) const noexcept;
+    bool operator<=(const Parameters3deClassic &) const noexcept;
+    bool operator>(const Parameters3deClassic &) const noexcept;
+    bool operator>=(const Parameters3deClassic &) const noexcept;
     using IsRelocatable = ::std::true_type;
 };
-#endif  // CXXBRIDGE1_STRUCT_mmlens$TdeClassicParameters
+#endif  // CXXBRIDGE1_STRUCT_mmlens$Parameters3deClassic
 
-#ifndef CXXBRIDGE1_STRUCT_mmlens$TdeRadialDecenteredDeg4CylindricParameters
-#define CXXBRIDGE1_STRUCT_mmlens$TdeRadialDecenteredDeg4CylindricParameters
-struct TdeRadialDecenteredDeg4CylindricParameters final {
+#ifndef CXXBRIDGE1_STRUCT_mmlens$Parameters3deRadialStdDeg4
+#define CXXBRIDGE1_STRUCT_mmlens$Parameters3deRadialStdDeg4
+struct Parameters3deRadialStdDeg4 final {
     double degree2_distortion;
     double degree2_u;
     double degree2_v;
@@ -111,25 +111,19 @@ struct TdeRadialDecenteredDeg4CylindricParameters final {
     double cylindric_direction;
     double cylindric_bending;
 
-    bool operator==(
-        const TdeRadialDecenteredDeg4CylindricParameters &) const noexcept;
-    bool operator!=(
-        const TdeRadialDecenteredDeg4CylindricParameters &) const noexcept;
-    bool operator<(
-        const TdeRadialDecenteredDeg4CylindricParameters &) const noexcept;
-    bool operator<=(
-        const TdeRadialDecenteredDeg4CylindricParameters &) const noexcept;
-    bool operator>(
-        const TdeRadialDecenteredDeg4CylindricParameters &) const noexcept;
-    bool operator>=(
-        const TdeRadialDecenteredDeg4CylindricParameters &) const noexcept;
+    bool operator==(const Parameters3deRadialStdDeg4 &) const noexcept;
+    bool operator!=(const Parameters3deRadialStdDeg4 &) const noexcept;
+    bool operator<(const Parameters3deRadialStdDeg4 &) const noexcept;
+    bool operator<=(const Parameters3deRadialStdDeg4 &) const noexcept;
+    bool operator>(const Parameters3deRadialStdDeg4 &) const noexcept;
+    bool operator>=(const Parameters3deRadialStdDeg4 &) const noexcept;
     using IsRelocatable = ::std::true_type;
 };
-#endif  // CXXBRIDGE1_STRUCT_mmlens$TdeRadialDecenteredDeg4CylindricParameters
+#endif  // CXXBRIDGE1_STRUCT_mmlens$Parameters3deRadialStdDeg4
 
-#ifndef CXXBRIDGE1_STRUCT_mmlens$TdeAnamorphicDeg4RotateSqueezeXYParameters
-#define CXXBRIDGE1_STRUCT_mmlens$TdeAnamorphicDeg4RotateSqueezeXYParameters
-struct TdeAnamorphicDeg4RotateSqueezeXYParameters final {
+#ifndef CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4
+#define CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4
+struct Parameters3deAnamorphicStdDeg4 final {
     double degree2_cx02;
     double degree2_cy02;
     double degree2_cx22;
@@ -144,25 +138,19 @@ struct TdeAnamorphicDeg4RotateSqueezeXYParameters final {
     double squeeze_x;
     double squeeze_y;
 
-    bool operator==(
-        const TdeAnamorphicDeg4RotateSqueezeXYParameters &) const noexcept;
-    bool operator!=(
-        const TdeAnamorphicDeg4RotateSqueezeXYParameters &) const noexcept;
-    bool operator<(
-        const TdeAnamorphicDeg4RotateSqueezeXYParameters &) const noexcept;
-    bool operator<=(
-        const TdeAnamorphicDeg4RotateSqueezeXYParameters &) const noexcept;
-    bool operator>(
-        const TdeAnamorphicDeg4RotateSqueezeXYParameters &) const noexcept;
-    bool operator>=(
-        const TdeAnamorphicDeg4RotateSqueezeXYParameters &) const noexcept;
+    bool operator==(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
+    bool operator!=(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
+    bool operator<(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
+    bool operator<=(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
+    bool operator>(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
+    bool operator>=(const Parameters3deAnamorphicStdDeg4 &) const noexcept;
     using IsRelocatable = ::std::true_type;
 };
-#endif  // CXXBRIDGE1_STRUCT_mmlens$TdeAnamorphicDeg4RotateSqueezeXYParameters
+#endif  // CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4
 
-#ifndef CXXBRIDGE1_STRUCT_mmlens$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters
-#define CXXBRIDGE1_STRUCT_mmlens$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters
-struct TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters final {
+#ifndef CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4Rescaled
+#define CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4Rescaled
+struct Parameters3deAnamorphicStdDeg4Rescaled final {
     double degree2_cx02;
     double degree2_cy02;
     double degree2_cx22;
@@ -178,21 +166,21 @@ struct TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters final {
     double squeeze_y;
     double rescale;
 
-    bool operator==(const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &)
-        const noexcept;
-    bool operator!=(const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &)
-        const noexcept;
-    bool operator<(const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &)
-        const noexcept;
-    bool operator<=(const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &)
-        const noexcept;
-    bool operator>(const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &)
-        const noexcept;
-    bool operator>=(const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &)
-        const noexcept;
+    bool operator==(
+        const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
+    bool operator!=(
+        const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
+    bool operator<(
+        const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
+    bool operator<=(
+        const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
+    bool operator>(
+        const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
+    bool operator>=(
+        const Parameters3deAnamorphicStdDeg4Rescaled &) const noexcept;
     using IsRelocatable = ::std::true_type;
 };
-#endif  // CXXBRIDGE1_STRUCT_mmlens$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters
+#endif  // CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4Rescaled
 
 extern "C" {
 bool mmlens$cxxbridge1$CameraParameters$operator$eq(
@@ -207,72 +195,72 @@ bool mmlens$cxxbridge1$CameraParameters$operator$gt(
     const CameraParameters &, const CameraParameters &) noexcept;
 bool mmlens$cxxbridge1$CameraParameters$operator$ge(
     const CameraParameters &, const CameraParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeClassicParameters$operator$eq(
-    const TdeClassicParameters &, const TdeClassicParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeClassicParameters$operator$ne(
-    const TdeClassicParameters &, const TdeClassicParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeClassicParameters$operator$lt(
-    const TdeClassicParameters &, const TdeClassicParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeClassicParameters$operator$le(
-    const TdeClassicParameters &, const TdeClassicParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeClassicParameters$operator$gt(
-    const TdeClassicParameters &, const TdeClassicParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeClassicParameters$operator$ge(
-    const TdeClassicParameters &, const TdeClassicParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeRadialDecenteredDeg4CylindricParameters$operator$eq(
-    const TdeRadialDecenteredDeg4CylindricParameters &,
-    const TdeRadialDecenteredDeg4CylindricParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeRadialDecenteredDeg4CylindricParameters$operator$ne(
-    const TdeRadialDecenteredDeg4CylindricParameters &,
-    const TdeRadialDecenteredDeg4CylindricParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeRadialDecenteredDeg4CylindricParameters$operator$lt(
-    const TdeRadialDecenteredDeg4CylindricParameters &,
-    const TdeRadialDecenteredDeg4CylindricParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeRadialDecenteredDeg4CylindricParameters$operator$le(
-    const TdeRadialDecenteredDeg4CylindricParameters &,
-    const TdeRadialDecenteredDeg4CylindricParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeRadialDecenteredDeg4CylindricParameters$operator$gt(
-    const TdeRadialDecenteredDeg4CylindricParameters &,
-    const TdeRadialDecenteredDeg4CylindricParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeRadialDecenteredDeg4CylindricParameters$operator$ge(
-    const TdeRadialDecenteredDeg4CylindricParameters &,
-    const TdeRadialDecenteredDeg4CylindricParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYParameters$operator$eq(
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &,
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYParameters$operator$ne(
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &,
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYParameters$operator$lt(
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &,
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYParameters$operator$le(
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &,
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYParameters$operator$gt(
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &,
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYParameters$operator$ge(
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &,
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters$operator$eq(
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &,
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters$operator$ne(
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &,
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters$operator$lt(
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &,
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters$operator$le(
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &,
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters$operator$gt(
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &,
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &) noexcept;
-bool mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters$operator$ge(
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &,
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deClassic$operator$eq(
+    const Parameters3deClassic &, const Parameters3deClassic &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deClassic$operator$ne(
+    const Parameters3deClassic &, const Parameters3deClassic &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deClassic$operator$lt(
+    const Parameters3deClassic &, const Parameters3deClassic &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deClassic$operator$le(
+    const Parameters3deClassic &, const Parameters3deClassic &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deClassic$operator$gt(
+    const Parameters3deClassic &, const Parameters3deClassic &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deClassic$operator$ge(
+    const Parameters3deClassic &, const Parameters3deClassic &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$eq(
+    const Parameters3deRadialStdDeg4 &,
+    const Parameters3deRadialStdDeg4 &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$ne(
+    const Parameters3deRadialStdDeg4 &,
+    const Parameters3deRadialStdDeg4 &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$lt(
+    const Parameters3deRadialStdDeg4 &,
+    const Parameters3deRadialStdDeg4 &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$le(
+    const Parameters3deRadialStdDeg4 &,
+    const Parameters3deRadialStdDeg4 &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$gt(
+    const Parameters3deRadialStdDeg4 &,
+    const Parameters3deRadialStdDeg4 &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$ge(
+    const Parameters3deRadialStdDeg4 &,
+    const Parameters3deRadialStdDeg4 &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$eq(
+    const Parameters3deAnamorphicStdDeg4 &,
+    const Parameters3deAnamorphicStdDeg4 &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$ne(
+    const Parameters3deAnamorphicStdDeg4 &,
+    const Parameters3deAnamorphicStdDeg4 &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$lt(
+    const Parameters3deAnamorphicStdDeg4 &,
+    const Parameters3deAnamorphicStdDeg4 &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$le(
+    const Parameters3deAnamorphicStdDeg4 &,
+    const Parameters3deAnamorphicStdDeg4 &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$gt(
+    const Parameters3deAnamorphicStdDeg4 &,
+    const Parameters3deAnamorphicStdDeg4 &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$ge(
+    const Parameters3deAnamorphicStdDeg4 &,
+    const Parameters3deAnamorphicStdDeg4 &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$eq(
+    const Parameters3deAnamorphicStdDeg4Rescaled &,
+    const Parameters3deAnamorphicStdDeg4Rescaled &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$ne(
+    const Parameters3deAnamorphicStdDeg4Rescaled &,
+    const Parameters3deAnamorphicStdDeg4Rescaled &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$lt(
+    const Parameters3deAnamorphicStdDeg4Rescaled &,
+    const Parameters3deAnamorphicStdDeg4Rescaled &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$le(
+    const Parameters3deAnamorphicStdDeg4Rescaled &,
+    const Parameters3deAnamorphicStdDeg4Rescaled &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$gt(
+    const Parameters3deAnamorphicStdDeg4Rescaled &,
+    const Parameters3deAnamorphicStdDeg4Rescaled &) noexcept;
+bool mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$ge(
+    const Parameters3deAnamorphicStdDeg4Rescaled &,
+    const Parameters3deAnamorphicStdDeg4Rescaled &) noexcept;
 }  // extern "C"
 
 bool CameraParameters::operator==(const CameraParameters &rhs) const noexcept {
@@ -299,147 +287,135 @@ bool CameraParameters::operator>=(const CameraParameters &rhs) const noexcept {
     return mmlens$cxxbridge1$CameraParameters$operator$ge(*this, rhs);
 }
 
-bool TdeClassicParameters::operator==(
-    const TdeClassicParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeClassicParameters$operator$eq(*this, rhs);
+bool Parameters3deClassic::operator==(
+    const Parameters3deClassic &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deClassic$operator$eq(*this, rhs);
 }
 
-bool TdeClassicParameters::operator!=(
-    const TdeClassicParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeClassicParameters$operator$ne(*this, rhs);
+bool Parameters3deClassic::operator!=(
+    const Parameters3deClassic &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deClassic$operator$ne(*this, rhs);
 }
 
-bool TdeClassicParameters::operator<(
-    const TdeClassicParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeClassicParameters$operator$lt(*this, rhs);
+bool Parameters3deClassic::operator<(
+    const Parameters3deClassic &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deClassic$operator$lt(*this, rhs);
 }
 
-bool TdeClassicParameters::operator<=(
-    const TdeClassicParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeClassicParameters$operator$le(*this, rhs);
+bool Parameters3deClassic::operator<=(
+    const Parameters3deClassic &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deClassic$operator$le(*this, rhs);
 }
 
-bool TdeClassicParameters::operator>(
-    const TdeClassicParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeClassicParameters$operator$gt(*this, rhs);
+bool Parameters3deClassic::operator>(
+    const Parameters3deClassic &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deClassic$operator$gt(*this, rhs);
 }
 
-bool TdeClassicParameters::operator>=(
-    const TdeClassicParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeClassicParameters$operator$ge(*this, rhs);
+bool Parameters3deClassic::operator>=(
+    const Parameters3deClassic &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deClassic$operator$ge(*this, rhs);
 }
 
-bool TdeRadialDecenteredDeg4CylindricParameters::operator==(
-    const TdeRadialDecenteredDeg4CylindricParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeRadialDecenteredDeg4CylindricParameters$operator$eq(
+bool Parameters3deRadialStdDeg4::operator==(
+    const Parameters3deRadialStdDeg4 &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$eq(*this, rhs);
+}
+
+bool Parameters3deRadialStdDeg4::operator!=(
+    const Parameters3deRadialStdDeg4 &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$ne(*this, rhs);
+}
+
+bool Parameters3deRadialStdDeg4::operator<(
+    const Parameters3deRadialStdDeg4 &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$lt(*this, rhs);
+}
+
+bool Parameters3deRadialStdDeg4::operator<=(
+    const Parameters3deRadialStdDeg4 &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$le(*this, rhs);
+}
+
+bool Parameters3deRadialStdDeg4::operator>(
+    const Parameters3deRadialStdDeg4 &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$gt(*this, rhs);
+}
+
+bool Parameters3deRadialStdDeg4::operator>=(
+    const Parameters3deRadialStdDeg4 &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deRadialStdDeg4$operator$ge(*this, rhs);
+}
+
+bool Parameters3deAnamorphicStdDeg4::operator==(
+    const Parameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$eq(*this,
+                                                                        rhs);
+}
+
+bool Parameters3deAnamorphicStdDeg4::operator!=(
+    const Parameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$ne(*this,
+                                                                        rhs);
+}
+
+bool Parameters3deAnamorphicStdDeg4::operator<(
+    const Parameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$lt(*this,
+                                                                        rhs);
+}
+
+bool Parameters3deAnamorphicStdDeg4::operator<=(
+    const Parameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$le(*this,
+                                                                        rhs);
+}
+
+bool Parameters3deAnamorphicStdDeg4::operator>(
+    const Parameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$gt(*this,
+                                                                        rhs);
+}
+
+bool Parameters3deAnamorphicStdDeg4::operator>=(
+    const Parameters3deAnamorphicStdDeg4 &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4$operator$ge(*this,
+                                                                        rhs);
+}
+
+bool Parameters3deAnamorphicStdDeg4Rescaled::operator==(
+    const Parameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$eq(
         *this, rhs);
 }
 
-bool TdeRadialDecenteredDeg4CylindricParameters::operator!=(
-    const TdeRadialDecenteredDeg4CylindricParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeRadialDecenteredDeg4CylindricParameters$operator$ne(
+bool Parameters3deAnamorphicStdDeg4Rescaled::operator!=(
+    const Parameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$ne(
         *this, rhs);
 }
 
-bool TdeRadialDecenteredDeg4CylindricParameters::operator<(
-    const TdeRadialDecenteredDeg4CylindricParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeRadialDecenteredDeg4CylindricParameters$operator$lt(
+bool Parameters3deAnamorphicStdDeg4Rescaled::operator<(
+    const Parameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$lt(
         *this, rhs);
 }
 
-bool TdeRadialDecenteredDeg4CylindricParameters::operator<=(
-    const TdeRadialDecenteredDeg4CylindricParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeRadialDecenteredDeg4CylindricParameters$operator$le(
+bool Parameters3deAnamorphicStdDeg4Rescaled::operator<=(
+    const Parameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$le(
         *this, rhs);
 }
 
-bool TdeRadialDecenteredDeg4CylindricParameters::operator>(
-    const TdeRadialDecenteredDeg4CylindricParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeRadialDecenteredDeg4CylindricParameters$operator$gt(
+bool Parameters3deAnamorphicStdDeg4Rescaled::operator>(
+    const Parameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$gt(
         *this, rhs);
 }
 
-bool TdeRadialDecenteredDeg4CylindricParameters::operator>=(
-    const TdeRadialDecenteredDeg4CylindricParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeRadialDecenteredDeg4CylindricParameters$operator$ge(
-        *this, rhs);
-}
-
-bool TdeAnamorphicDeg4RotateSqueezeXYParameters::operator==(
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYParameters$operator$eq(
-        *this, rhs);
-}
-
-bool TdeAnamorphicDeg4RotateSqueezeXYParameters::operator!=(
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYParameters$operator$ne(
-        *this, rhs);
-}
-
-bool TdeAnamorphicDeg4RotateSqueezeXYParameters::operator<(
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYParameters$operator$lt(
-        *this, rhs);
-}
-
-bool TdeAnamorphicDeg4RotateSqueezeXYParameters::operator<=(
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYParameters$operator$le(
-        *this, rhs);
-}
-
-bool TdeAnamorphicDeg4RotateSqueezeXYParameters::operator>(
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYParameters$operator$gt(
-        *this, rhs);
-}
-
-bool TdeAnamorphicDeg4RotateSqueezeXYParameters::operator>=(
-    const TdeAnamorphicDeg4RotateSqueezeXYParameters &rhs) const noexcept {
-    return mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYParameters$operator$ge(
-        *this, rhs);
-}
-
-bool TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters::operator==(
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &rhs)
-    const noexcept {
-    return mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters$operator$eq(
-        *this, rhs);
-}
-
-bool TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters::operator!=(
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &rhs)
-    const noexcept {
-    return mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters$operator$ne(
-        *this, rhs);
-}
-
-bool TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters::operator<(
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &rhs)
-    const noexcept {
-    return mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters$operator$lt(
-        *this, rhs);
-}
-
-bool TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters::operator<=(
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &rhs)
-    const noexcept {
-    return mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters$operator$le(
-        *this, rhs);
-}
-
-bool TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters::operator>(
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &rhs)
-    const noexcept {
-    return mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters$operator$gt(
-        *this, rhs);
-}
-
-bool TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters::operator>=(
-    const TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters &rhs)
-    const noexcept {
-    return mmlens$cxxbridge1$TdeAnamorphicDeg4RotateSqueezeXYRescaledParameters$operator$ge(
+bool Parameters3deAnamorphicStdDeg4Rescaled::operator>=(
+    const Parameters3deAnamorphicStdDeg4Rescaled &rhs) const noexcept {
+    return mmlens$cxxbridge1$Parameters3deAnamorphicStdDeg4Rescaled$operator$ge(
         *this, rhs);
 }
 }  // namespace mmlens

@@ -76,25 +76,109 @@ inline mmdata::Vector2D diagonal_normalized_to_unit(
     return mmdata::Vector2D(point_cm.x_ / w_fb_cm, point_cm.y_ / h_fb_cm);
 }
 
-void apply_undistort_3de_classic_f64__2d_to_f64_2d(
-    const double* in_data, const size_t in_data_size, double* out_data,
-    const size_t out_data_size, const CameraParameters camera_parameters,
-    const double film_back_radius_cm, TdeClassicParameters lens_parameters);
+//////////////////////////////////////////////////////////////////////
+// 3DE Classic
 
-void apply_redistort_3de_classic_f64__2d_to_f64_2d(
+void apply_undistort_3de_classic_f64_2d_to_f64_2d(
     const double* in_data, const size_t in_data_size, double* out_data,
     const size_t out_data_size, const CameraParameters camera_parameters,
-    const double film_back_radius_cm, TdeClassicParameters lens_parameters);
+    const double film_back_radius_cm, Parameters3deClassic lens_parameters);
+
+void apply_redistort_3de_classic_f64_2d_to_f64_2d(
+    const double* in_data, const size_t in_data_size, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm, Parameters3deClassic lens_parameters);
 
 void apply_undistort_3de_classic_f64_2d_to_f32_4d(
     const double* in_data, const size_t in_data_size, float* out_data,
     const size_t out_data_size, const CameraParameters camera_parameters,
-    const double film_back_radius_cm, TdeClassicParameters lens_parameters);
+    const double film_back_radius_cm, Parameters3deClassic lens_parameters);
 
 void apply_redistort_3de_classic_f64_2d_to_f32_4d(
     const double* in_data, const size_t in_data_size, float* out_data,
     const size_t out_data_size, const CameraParameters camera_parameters,
-    const double film_back_radius_cm, TdeClassicParameters lens_parameters);
+    const double film_back_radius_cm, Parameters3deClassic lens_parameters);
+
+//////////////////////////////////////////////////////////////////////
+// 3DE Radial Decentered Degree 4 Cylindric
+
+void apply_undistort_3de_radial_std_deg4_f64_2d_to_f64_2d(
+    const double* in_data, const size_t in_data_size, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deRadialStdDeg4 lens_parameters);
+
+void apply_redistort_3de_radial_std_deg4_f64_2d_to_f64_2d(
+    const double* in_data, const size_t in_data_size, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deRadialStdDeg4 lens_parameters);
+
+void apply_undistort_3de_radial_std_deg4_f64_2d_to_f32_4d(
+    const double* in_data, const size_t in_data_size, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deRadialStdDeg4 lens_parameters);
+
+void apply_redistort_3de_radial_std_deg4_f64_2d_to_f32_4d(
+    const double* in_data, const size_t in_data_size, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deRadialStdDeg4 lens_parameters);
+
+//////////////////////////////////////////////////////////////////////
+// 3DE Anamorphic Degree 4 Rotate Squeeze XY
+
+void apply_undistort_3de_anamorphic_std_deg4_f64_2d_to_f64_2d(
+    const double* in_data, const size_t in_data_size, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4 lens_parameters);
+
+void apply_redistort_3de_anamorphic_std_deg4_f64_2d_to_f64_2d(
+    const double* in_data, const size_t in_data_size, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4 lens_parameters);
+
+void apply_undistort_3de_anamorphic_std_deg4_f64_2d_to_f32_4d(
+    const double* in_data, const size_t in_data_size, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4 lens_parameters);
+
+void apply_redistort_3de_anamorphic_std_deg4_f64_2d_to_f32_4d(
+    const double* in_data, const size_t in_data_size, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4 lens_parameters);
+
+//////////////////////////////////////////////////////////////////////
+// 3DE Anamorphic Degree 4 Rotate Squeeze XY Rescaled
+
+void apply_undistort_3de_anamorphic_std_deg4_rescaled_f64_2d_to_f64_2d(
+    const double* in_data, const size_t in_data_size, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4Rescaled lens_parameters);
+
+void apply_redistort_3de_anamorphic_std_deg4_rescaled_f64_2d_to_f64_2d(
+    const double* in_data, const size_t in_data_size, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4Rescaled lens_parameters);
+
+void apply_undistort_3de_anamorphic_std_deg4_rescaled_f64_2d_to_f32_4d(
+    const double* in_data, const size_t in_data_size, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4Rescaled lens_parameters);
+
+void apply_redistort_3de_anamorphic_std_deg4_rescaled_f64_2d_to_f32_4d(
+    const double* in_data, const size_t in_data_size, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4Rescaled lens_parameters);
 
 }  // namespace mmlens
 

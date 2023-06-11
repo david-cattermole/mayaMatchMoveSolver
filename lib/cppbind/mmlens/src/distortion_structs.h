@@ -129,8 +129,8 @@ public:
     }
 
     mmdata::Vector2D map_inverse(const mmdata::Vector2D in_point_dn) const {
-        ldpk::vec2d out_point_dn = m_cylindric.eval(
-            m_radial.eval(ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)));
+        ldpk::vec2d out_point_dn = m_radial.map_inverse(
+            m_cylindric.eval_inv(ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)));
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 

@@ -62,11 +62,11 @@ void LensModel3deAnamorphicDeg4RotateSqueezeXY::applyModelUndistort(
     distortion.set_parameter(10, m_lens.lens_rotation);
     distortion.set_parameter(11, m_lens.squeeze_x);
     distortion.set_parameter(12, m_lens.squeeze_y);
-
-    const auto direction = DistortionDirection::kUndistort;
+    distortion.initialize_parameters(m_camera);
 
     // 'undistort' expects values 0.0 to 1.0, but our inputs are -0.5
     // to 0.5, therefore we must convert.
+    const auto direction = DistortionDirection::kUndistort;
     auto out_xy = apply_lens_distortion_once<direction, double, double,
                                              Distortion3deAnamorphicStdDeg4>(
         xdd + 0.5, ydd + 0.5, m_camera, m_film_back_radius_cm, distortion);
@@ -107,11 +107,11 @@ void LensModel3deAnamorphicDeg4RotateSqueezeXY::applyModelDistort(
     distortion.set_parameter(10, m_lens.lens_rotation);
     distortion.set_parameter(11, m_lens.squeeze_x);
     distortion.set_parameter(12, m_lens.squeeze_y);
-
-    const auto direction = DistortionDirection::kRedistort;
+    distortion.initialize_parameters(m_camera);
 
     // 'undistort' expects values 0.0 to 1.0, but our inputs are -0.5
     // to 0.5, therefore we must convert.
+    const auto direction = DistortionDirection::kRedistort;
     auto out_xy = apply_lens_distortion_once<direction, double, double,
                                              Distortion3deAnamorphicStdDeg4>(
         xdd + 0.5, ydd + 0.5, m_camera, m_film_back_radius_cm, distortion);

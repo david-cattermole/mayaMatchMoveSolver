@@ -19,7 +19,7 @@
  *
  */
 
-#include "test_batch_3de_classic.h"
+#include "test_both_3de_anamorphic_std_deg4_rescaled.h"
 
 #include <mmlens/mmlens.h>
 
@@ -29,27 +29,20 @@
 
 #include "common.h"
 
-int test_batch_3de_classic() {
-    const auto test_name = "test_batch_3de_classic";
-    const auto identity_prefix = "test_batch_3de_classic: start";
-    const auto undistort_prefix = "test_batch_3de_classic: undistort";
-    const auto redistort_prefix = "test_batch_3de_classic: redistort";
-    const auto redistort_compare = " -> ";
-    const auto print_prefix = "test_batch_3de_classic: output";
-    const auto print_compare = " == ";
-    const bool do_print = false;
+int test_both_3de_anamorphic_std_deg4_rescaled() {
+    const auto test_name = "test_both_3de_anamorphic_std_deg4_rescaled";
+    const auto print_prefix =
+        "test_both_3de_anamorphic_std_deg4_rescaled: undistort/redistort "
+        "output";
+    const auto print_compare = " -> ";
 
     const size_t width = 8;
     const size_t height = 8;
-    const size_t in_num_channels = 2;   // 2D data
     const size_t out_num_channels = 4;  // 4 channels - RGBA
 
-    std::vector<double> in_data_vec(width * height * in_num_channels);
     std::vector<float> out_data_vec(width * height * out_num_channels);
 
-    double* in_data = &in_data_vec[0];
     float* out_data = &out_data_vec[0];
-    const size_t in_data_size = width * height * in_num_channels;
     const size_t out_data_size = width * height * out_num_channels;
 
     const double focal_length_cm = 3.5;
@@ -65,31 +58,28 @@ int test_batch_3de_classic() {
     const double film_back_radius_cm =
         mmlens::compute_diagonal_normalized_camera_factor(camera_parameters);
 
-    auto lens = mmlens::Parameters3deClassic();
-    lens.distortion = 0.1;
-    lens.anamorphic_squeeze = 1.0;
-    lens.curvature_x = 0.0;
-    lens.curvature_y = 0.0;
-    lens.quartic_distortion = 0.1;
+    auto lens = mmlens::Parameters3deAnamorphicStdDeg4Rescaled();
+    lens.degree2_cx02 = 0.05;
+    lens.degree2_cy02 = 0.05;
+    lens.degree2_cx22 = -0.05;
+    lens.degree2_cy22 = -0.05;
+    lens.degree4_cx04 = 0.05;
+    lens.degree4_cy04 = 0.05;
+    lens.degree4_cx24 = -0.05;
+    lens.degree4_cy24 = -0.05;
+    lens.degree4_cx44 = 0.15;
+    lens.degree4_cy44 = 0.15;
+    lens.lens_rotation = 45.0;
+    lens.squeeze_x = 1.1;
+    lens.squeeze_y = 1.0;
+    lens.rescale = 2.0;
 
-    mmlens::apply_undistort_3de_classic_identity_to_f64_2d(
-        width, height, in_data, in_data_size, camera_parameters,
-        film_back_radius_cm, lens);
-    if (do_print) {
-        print_data_2d(undistort_prefix, width, height, in_num_channels,
-                      in_data);
-    }
+    mmlens::
+        apply_undistort_and_redistort_3de_anamorphic_std_deg4_rescaled_identity_to_f32_4d(
+            width, height, out_data, out_data_size, camera_parameters,
+            film_back_radius_cm, lens);
 
-    mmlens::apply_redistort_3de_classic_f64_2d_to_f32_4d(
-        in_data, in_data_size, out_data, out_data_size, camera_parameters,
-        film_back_radius_cm, lens);
-    if (do_print) {
-        print_data_2d_compare(redistort_prefix, redistort_compare, width,
-                              height, in_num_channels, out_num_channels,
-                              in_data, out_data);
-    }
-
-    print_data_2d_compare_identity_2d(print_prefix, print_compare, width,
+    print_data_2d_compare_identity_4d(print_prefix, print_compare, width,
                                       height, out_num_channels, out_data);
 
     return 0;

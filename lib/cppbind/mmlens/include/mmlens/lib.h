@@ -79,6 +79,31 @@ inline mmdata::Vector2D diagonal_normalized_to_unit(
 //////////////////////////////////////////////////////////////////////
 // 3DE Classic
 
+void apply_undistort_3de_classic_identity_to_f64_2d(
+    const size_t image_width, const size_t image_height, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm, Parameters3deClassic lens_parameters);
+
+void apply_redistort_3de_classic_identity_to_f64_2d(
+    const size_t image_width, const size_t image_height, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm, Parameters3deClassic lens_parameters);
+
+void apply_undistort_3de_classic_identity_to_f32_4d(
+    const size_t image_width, const size_t image_height, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm, Parameters3deClassic lens_parameters);
+
+void apply_redistort_3de_classic_identity_to_f32_4d(
+    const size_t image_width, const size_t image_height, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm, Parameters3deClassic lens_parameters);
+
+void apply_undistort_and_redistort_3de_classic_identity_to_f32_4d(
+    const size_t image_width, const size_t image_height, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm, Parameters3deClassic lens_parameters);
+
 void apply_undistort_3de_classic_f64_2d_to_f64_2d(
     const double* in_data, const size_t in_data_size, double* out_data,
     const size_t out_data_size, const CameraParameters camera_parameters,
@@ -101,6 +126,36 @@ void apply_redistort_3de_classic_f64_2d_to_f32_4d(
 
 //////////////////////////////////////////////////////////////////////
 // 3DE Radial Decentered Degree 4 Cylindric
+
+void apply_undistort_3de_radial_std_deg4_identity_to_f64_2d(
+    const size_t image_width, const size_t image_height, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deRadialStdDeg4 lens_parameters);
+
+void apply_redistort_3de_radial_std_deg4_identity_to_f64_2d(
+    const size_t image_width, const size_t image_height, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deRadialStdDeg4 lens_parameters);
+
+void apply_undistort_3de_radial_std_deg4_identity_to_f32_4d(
+    const size_t image_width, const size_t image_height, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deRadialStdDeg4 lens_parameters);
+
+void apply_redistort_3de_radial_std_deg4_identity_to_f32_4d(
+    const size_t image_width, const size_t image_height, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deRadialStdDeg4 lens_parameters);
+
+void apply_undistort_and_redistort_3de_radial_std_deg4_identity_to_f32_4d(
+    const size_t image_width, const size_t image_height, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deRadialStdDeg4 lens_parameters);
 
 void apply_undistort_3de_radial_std_deg4_f64_2d_to_f64_2d(
     const double* in_data, const size_t in_data_size, double* out_data,
@@ -129,6 +184,36 @@ void apply_redistort_3de_radial_std_deg4_f64_2d_to_f32_4d(
 //////////////////////////////////////////////////////////////////////
 // 3DE Anamorphic Degree 4 Rotate Squeeze XY
 
+void apply_undistort_3de_anamorphic_std_deg4_identity_to_f64_2d(
+    const size_t image_width, const size_t image_height, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4 lens_parameters);
+
+void apply_redistort_3de_anamorphic_std_deg4_identity_to_f64_2d(
+    const size_t image_width, const size_t image_height, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4 lens_parameters);
+
+void apply_undistort_3de_anamorphic_std_deg4_identity_to_f32_4d(
+    const size_t image_width, const size_t image_height, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4 lens_parameters);
+
+void apply_redistort_3de_anamorphic_std_deg4_identity_to_f32_4d(
+    const size_t image_width, const size_t image_height, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4 lens_parameters);
+
+void apply_undistort_and_redistort_3de_anamorphic_std_deg4_identity_to_f32_4d(
+    const size_t image_width, const size_t image_height, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4 lens_parameters);
+
 void apply_undistort_3de_anamorphic_std_deg4_f64_2d_to_f64_2d(
     const double* in_data, const size_t in_data_size, double* out_data,
     const size_t out_data_size, const CameraParameters camera_parameters,
@@ -155,6 +240,36 @@ void apply_redistort_3de_anamorphic_std_deg4_f64_2d_to_f32_4d(
 
 //////////////////////////////////////////////////////////////////////
 // 3DE Anamorphic Degree 4 Rotate Squeeze XY Rescaled
+
+void apply_undistort_3de_anamorphic_std_deg4_rescaled_identity_to_f64_2d(
+    const size_t image_width, const size_t image_height, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4Rescaled lens_parameters);
+
+void apply_redistort_3de_anamorphic_std_deg4_rescaled_identity_to_f64_2d(
+    const size_t image_width, const size_t image_height, double* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4Rescaled lens_parameters);
+
+void apply_undistort_3de_anamorphic_std_deg4_rescaled_identity_to_f32_4d(
+    const size_t image_width, const size_t image_height, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4Rescaled lens_parameters);
+
+void apply_redistort_3de_anamorphic_std_deg4_rescaled_identity_to_f32_4d(
+    const size_t image_width, const size_t image_height, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4Rescaled lens_parameters);
+
+void apply_undistort_and_redistort_3de_anamorphic_std_deg4_rescaled_identity_to_f32_4d(
+    const size_t image_width, const size_t image_height, float* out_data,
+    const size_t out_data_size, const CameraParameters camera_parameters,
+    const double film_back_radius_cm,
+    Parameters3deAnamorphicStdDeg4Rescaled lens_parameters);
 
 void apply_undistort_3de_anamorphic_std_deg4_rescaled_f64_2d_to_f64_2d(
     const double* in_data, const size_t in_data_size, double* out_data,

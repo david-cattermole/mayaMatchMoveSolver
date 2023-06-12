@@ -23,19 +23,35 @@
 #include "test_batch_3de_anamorphic_std_deg4_rescaled.h"
 #include "test_batch_3de_classic.h"
 #include "test_batch_3de_radial_std_deg4.h"
+#include "test_both_3de_anamorphic_std_deg4.h"
+#include "test_both_3de_anamorphic_std_deg4_rescaled.h"
+#include "test_both_3de_classic.h"
+#include "test_both_3de_radial_std_deg4.h"
 #include "test_once_3de_anamorphic_std_deg4.h"
 #include "test_once_3de_anamorphic_std_deg4_rescaled.h"
 #include "test_once_3de_classic.h"
 #include "test_once_3de_radial_std_deg4.h"
 
 int main() {
+    // Loop over all values in a buffer, evaluating all values in the
+    // buffer at once, in batch.
     test_batch_3de_classic();
     test_batch_3de_radial_std_deg4();
     test_batch_3de_anamorphic_std_deg4();
     test_batch_3de_anamorphic_std_deg4_rescaled();
+
+    // Loop over each coordinate and call the evaluation of each
+    // once. This achieves the same result as the "batch" approach but
+    // could be slower due to the number of (virtual?) function calls.
     test_once_3de_classic();
     test_once_3de_radial_std_deg4();
     test_once_3de_anamorphic_std_deg4();
     test_once_3de_anamorphic_std_deg4_rescaled();
+
+    // Calculates both undistortion and redistortion in the same loop.
+    test_both_3de_classic();
+    test_both_3de_radial_std_deg4();
+    test_both_3de_anamorphic_std_deg4();
+    test_both_3de_anamorphic_std_deg4_rescaled();
     return 0;
 }

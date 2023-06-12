@@ -80,25 +80,29 @@ std::vector<T> generate_st_map_identity(const char* prefix_text,
 
 // Undistort (or re-distort) the input buffer, and write the result to
 // the output buffer.
-template <typename T1, typename T2, typename LENS_TYPE, int DIRECTION>
+template <typename IN_TYPE, typename OUT_TYPE, typename LENS_TYPE,
+          int DIRECTION>
 void apply_distortion_loop(const size_t width, const size_t height,
-                           const size_t num_channels1,
-                           const size_t num_channels2, const T1* in_buffer_data,
-                           T2* out_buffer_data, LENS_TYPE& lens) {
+                           const size_t in_num_channels,
+                           const size_t out_num_channels,
+                           const IN_TYPE* in_buffer_data,
+                           OUT_TYPE* out_buffer_data, LENS_TYPE& lens) {
     for (auto row = 0; row < height; row++) {
         for (auto column = 0; column < width; column++) {
-            const size_t index1 =
-                (row * width * num_channels1) + (column * num_channels1);
-            const size_t index2 =
-                (row * width * num_channels2) + (column * num_channels2);
+            const size_t in_index =
+                (row * width * in_num_channels) + (column * in_num_channels);
+            const size_t out_index =
+                (row * width * out_num_channels) + (column * out_num_channels);
 
-            const size_t index1_x = index1 + 0;
-            const size_t index1_y = index1 + 1;
-            const size_t index2_x = index2 + 0;
-            const size_t index2_y = index2 + 1;
+            const size_t in_index_x = in_index + 0;
+            const size_t in_index_y = in_index + 1;
+            const size_t out_index_x = out_index + 0;
+            const size_t out_index_y = out_index + 1;
 
-            const double x = in_buffer_data[index1_x];
-            const double y = in_buffer_data[index1_y];
+            // The lens distortion calculations always use double
+            // float numbers.
+            const auto x = static_cast<double>(in_buffer_data[in_index_x]);
+            const auto y = static_cast<double>(in_buffer_data[in_index_y]);
 
             auto out_x = x;
             auto out_y = y;
@@ -108,8 +112,8 @@ void apply_distortion_loop(const size_t width, const size_t height,
                 lens.applyModelDistort(x, y, out_x, out_y);
             }
 
-            out_buffer_data[index2_x] = out_x;
-            out_buffer_data[index2_y] = out_y;
+            out_buffer_data[out_index_x] = out_x;
+            out_buffer_data[out_index_y] = out_y;
         }
     }
 }
@@ -166,6 +170,76 @@ void print_data_2d_compare(const char* prefix_text, const char* compare_text,
                       << " : " << x1 << compare_text << x2 << '\n'
                       << prefix_text << " Y : " << index1_y << '|' << index2_y
                       << " : " << y1 << compare_text << y2 << '\n';
+        }
+    }
+}
+
+template <typename T>
+void print_data_2d_compare_identity_2d(const char* prefix_text,
+                                       const char* compare_text,
+                                       const size_t width, const size_t height,
+                                       const size_t num_channels,
+                                       const T* buffer_data) {
+    for (auto row = 0; row < height; row++) {
+        for (auto column = 0; column < width; column++) {
+            const size_t index =
+                (row * width * num_channels) + (column * num_channels);
+
+            const size_t index_x = index + 0;
+            const size_t index_y = index + 1;
+
+            // 0.0 to 1.0 in X and Y.
+            T identity_x = static_cast<T>(column) / static_cast<T>(width - 1);
+            T identity_y = static_cast<T>(row) / static_cast<T>(height - 1);
+
+            T buffer_data_x = buffer_data[index_x];
+            T buffer_data_y = buffer_data[index_y];
+
+            // '\n' is used explicitly to avoid the std::flush that
+            // happens when std::endl is used.
+            std::cout << prefix_text << " X : " << index_x << " : "
+                      << identity_x << compare_text << buffer_data_x << '\n'
+                      << prefix_text << " Y : " << index_y << " : "
+                      << identity_y << compare_text << buffer_data_y << '\n';
+        }
+    }
+}
+
+template <typename T>
+void print_data_2d_compare_identity_4d(const char* prefix_text,
+                                       const char* compare_text,
+                                       const size_t width, const size_t height,
+                                       const size_t num_channels,
+                                       const T* buffer_data) {
+    for (auto row = 0; row < height; row++) {
+        for (auto column = 0; column < width; column++) {
+            const size_t index =
+                (row * width * num_channels) + (column * num_channels);
+
+            const size_t index_r = index + 0;
+            const size_t index_g = index + 1;
+            const size_t index_b = index + 2;
+            const size_t index_a = index + 3;
+
+            // 0.0 to 1.0 in X and Y.
+            T identity_x = static_cast<T>(column) / static_cast<T>(width - 1);
+            T identity_y = static_cast<T>(row) / static_cast<T>(height - 1);
+
+            T r = buffer_data[index_r];
+            T g = buffer_data[index_g];
+            T b = buffer_data[index_b];
+            T a = buffer_data[index_a];
+
+            // '\n' is used explicitly to avoid the std::flush that
+            // happens when std::endl is used.
+            std::cout << prefix_text << " R : " << index_r << " : "
+                      << identity_x << compare_text << r << '\n'
+                      << prefix_text << " G : " << index_g << " : "
+                      << identity_y << compare_text << g << '\n'
+                      << prefix_text << " B : " << index_b << " : "
+                      << identity_x << compare_text << b << '\n'
+                      << prefix_text << " A : " << index_a << " : "
+                      << identity_y << compare_text << a << '\n';
         }
     }
 }

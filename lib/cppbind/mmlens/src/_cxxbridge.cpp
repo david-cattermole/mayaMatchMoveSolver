@@ -23,7 +23,9 @@ namespace mmlens {
 enum class DistortionDirection : ::std::uint8_t {
     kUndistort = 0,
     kRedistort = 1,
-    kNumDistortionDirection = 2,
+    kUndistortAndRedistort = 2,
+    kRedistortAndUndistort = 3,
+    kNumDistortionDirection = 4,
 };
 #endif  // CXXBRIDGE1_ENUM_mmlens$DistortionDirection
 

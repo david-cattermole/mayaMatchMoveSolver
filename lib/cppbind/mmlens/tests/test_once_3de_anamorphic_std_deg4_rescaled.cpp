@@ -42,7 +42,7 @@ int test_once_3de_anamorphic_std_deg4_rescaled() {
     const auto print_prefix =
         "test_once_3de_anamorphic_std_deg4_rescaled: output";
     const auto print_compare = " == ";
-    const bool do_print = true;
+    const bool do_print = false;
 
     const size_t width = 8;
     const size_t height = 8;

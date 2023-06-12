@@ -18,14 +18,6 @@
 // ====================================================================
 //
 
-// use crate::imagemetadata::shim_create_image_meta_data_box;
-// use crate::imagemetadata::ShimImageMetaData;
-// use crate::imagepixeldata::shim_create_image_pixel_data_rgba_f32_box;
-// use crate::imagepixeldata::ShimImagePixelDataRgbaF32;
-// use crate::shim_image_read_metadata_exr;
-// use crate::shim_image_read_pixels_exr_rgba_f32;
-// use crate::shim_image_write_pixels_exr_rgba_f32;
-
 // use crate::constants::MAX_LENS_PARAMETER_COUNT;
 
 #[cxx::bridge(namespace = "mmlens")]
@@ -45,6 +37,16 @@ pub mod ffi {
 
         #[cxx_name = "kRedistort"]
         Redistort = 1,
+
+        // Indicates that both directions will be used, and the order
+        // is 'undistort' then 'redistort'.
+        #[cxx_name = "kUndistortAndRedistort"]
+        UndistortAndRedistort = 2,
+
+        // Indicates that both directions will be used, and the order
+        // is 'redistort' then 'undistort'.
+        #[cxx_name = "kRedistortAndUndistort"]
+        RedistortAndUndistort = 3,
 
         #[cxx_name = "kNumDistortionDirection"]
         NumDistortionDirection,
@@ -96,11 +98,11 @@ pub mod ffi {
 
         // // "3DE4 Anamorphic - Standard, Degree 6"
         // #[cxx_name = "k3deAnamorphicStdDeg6"]
-        // TdeAnamorphicStdDeg4 = 6,
+        // TdeAnamorphicStdDeg6 = 6,
 
         // // "3DE4 Anamorphic - Rescaled, Degree 6"
-        // #[cxx_name = "k3deAnamorphicStdDeg4Rescaled"]
-        // TdeAnamorphicStdDeg4Rescaled = 7,
+        // #[cxx_name = "k3deAnamorphicStdDeg6Rescaled"]
+        // TdeAnamorphicStdDeg6Rescaled = 7,
 
         // // "3DE4 Anamorphic, Degree 6"
         // #[cxx_name = "k3deAnamorphicDeg6"]
@@ -195,4 +197,18 @@ pub mod ffi {
         squeeze_y: f64,     // "Squeeze-Y"
         rescale: f64,       // "Rescale"
     }
+
+    // unsafe extern "C++" {
+    //     include!("mmlens/lib.h");
+
+    //     unsafe fn apply_undistort_3de_classic_f64_2d_to_f64_2d(
+    //         in_data: *const f64,
+    //         in_data_size: usize,
+    //         out_data: *mut f64,
+    //         out_data_size: usize,
+    //         camera_parameters: CameraParameters,
+    //         film_back_radius_cm: f64,
+    //         lens_parameters: Parameters3deClassic,
+    //     );
+    // }
 }

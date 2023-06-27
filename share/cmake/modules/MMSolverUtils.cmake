@@ -288,8 +288,8 @@ function(install_target_plugin_to_module target module_dir)
     ARCHIVE_OUTPUT_DIRECTORY "${module_dir}")
 
   install(TARGETS ${target}
-    RUNTIME DESTINATION "${MODULE_FULL_NAME}/plug-ins"
-    LIBRARY DESTINATION "${MODULE_FULL_NAME}/plug-ins")
+    RUNTIME DESTINATION "${module_dir}/plug-ins"
+    LIBRARY DESTINATION "${module_dir}/plug-ins")
 endfunction()
 
 

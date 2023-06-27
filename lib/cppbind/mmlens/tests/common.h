@@ -33,25 +33,6 @@ static std::string join_path(const char* arg1, const char* arg2) {
     return stream.str();
 }
 
-static std::string join_path(const char* arg1, const char* arg2,
-                             const char* arg3) {
-    std::stringstream stream;
-    stream << arg1;
-    stream << arg2;
-    stream << arg3;
-    return stream.str();
-}
-
-static std::string join_path(const char* arg1, const char* arg2,
-                             const char* arg3, const char* arg4) {
-    std::stringstream stream;
-    stream << arg1;
-    stream << arg2;
-    stream << arg3;
-    stream << arg4;
-    return stream.str();
-}
-
 const int kCoordinateSystemImage = 0;
 const int kCoordinateSystemNDC = 1;
 

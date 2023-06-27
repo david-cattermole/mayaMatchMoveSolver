@@ -44,6 +44,9 @@ set(rust_lib_name "mmsolverlibs_rust")
 
 set(CMAKE_CXX_STANDARD 11)
 
+include(MMSolverUtils)
+set_global_maya_plugin_compile_options()
+
 # Finds and builds external (third-party) LDPK dependencies.
 option(MMSOLVER_DOWNLOAD_DEPENDENCIES "Automatically download and build missing dependencies?" ON)
 include(FindAndBuildLdpkPackages)

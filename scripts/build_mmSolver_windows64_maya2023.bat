@@ -39,17 +39,17 @@ SET CXX_STANDARD=14
 :: Setup Compiler environment. Change for your install path as needed.
 CALL "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
 
-:: These scripts assume 'RUST_CARGO_EXE' has been set to the Rust
+:: This script assumes 'RUST_CARGO_EXE' has been set to the Rust
 :: 'cargo' executable.
-CALL scripts\internal\build_rust_library_windows64.bat mmscenegraph
-if errorlevel 1 goto failed_to_build_mmscenegraph
+CALL scripts\internal\build_mmSolverLibs_windows64.bat
+if errorlevel 1 goto failed_to_build_mmsolverlibs
 
 CALL scripts\internal\build_mmSolver_windows64.bat
 if errorlevel 1 goto failed_to_build_mmsolver
 exit /b 0
 
-:failed_to_build_mmscenegraph
-echo Failed to build MM Scene Graph.
+:failed_to_build_mmsolverlibs
+echo Failed to build MM Solver Library entry point.
 exit /b 1
 
 :failed_to_build_mmsolver

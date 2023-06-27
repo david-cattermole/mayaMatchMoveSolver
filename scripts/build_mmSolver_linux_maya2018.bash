@@ -40,8 +40,7 @@ CWD=`pwd`
 
 # These scripts assume 'RUST_CARGO_EXE' has been set to the Rust
 # 'cargo' executable.
-source "${CWD}/scripts/internal/build_rust_library_linux.bash" mmscenegraph
-
+source "${CWD}/scripts/internal/build_mmSolverLibs_linux.bash"
 source "${CWD}/scripts/internal/build_mmSolver_linux.bash"
 
 cd ${CWD}

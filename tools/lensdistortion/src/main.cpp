@@ -493,12 +493,16 @@ bool run(const Arguments& args) {
                           << std::endl;
             }
 
-            bool reread_result = true;
-            std::chrono::duration<float> reread_duration;
+            // Controls if the image will be double checked by reading the
+            // saved image file just after being written. This is a validation
+            // test that is not needed for anything other than testing.
+            const bool reread_image = false;
 
             // Re-read the file can be used for debugging only, but
             // not on by default.
-            if (false) {
+            bool reread_result = true;
+            std::chrono::duration<float> reread_duration;
+            if (reread_image) {
                 auto reread_start = std::chrono::high_resolution_clock::now();
                 reread_result = mmimage::image_read_pixels_exr_rgba_f32(
                     output_file_path, meta_data, pixel_data);

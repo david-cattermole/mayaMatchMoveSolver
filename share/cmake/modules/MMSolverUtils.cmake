@@ -38,8 +38,15 @@ function(set_global_maya_plugin_compile_options)
   if (MSVC)
     # For Visual Studio 11 2012
     set(CMAKE_CXX_FLAGS "")  # Zero out the C++ flags, we have complete control.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GS /Zc:wchar_t /Zi /fp:precise /Zc:forScope /GR /Gd /EHsc")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GS")          # Buffer Security Check
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:wchar_t")  # wchar_t Is Native Type
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")          # Separate .pdb debug info file.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:precise")  # Precise floating-point behavior
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:forScope") # Force Conformance in for Loop Scope
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GR")          # Enable Run-Time Type Information
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Gd")          # __cdecl Calling Convention
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")        # Handle standard C++ Exceptions.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")          # Warning Levels 1-4 enabled.
 
     add_compile_definitions(OSWin_)
     add_compile_definitions(WIN32)
@@ -60,12 +67,38 @@ function(set_global_maya_plugin_compile_options)
     add_compile_definitions(NT_PLUGIN)
     add_compile_definitions(USERDLL)
 
+    # Use multithread-specific Run-Time Library.
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} /MD")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Gy /Gm- /O2 /Ob1 /GF")
 
+    add_compile_options("/arch:AVX2")
+
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Gy")  # Enable Function-Level Linking
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GF")  # Eliminate Duplicate Strings
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2")  # Optimize for Maximize Speed
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi")  # Generate Intrinsic Functions
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")  # Whole program optimization
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /arch:AVX2")  # Use AVX2 instructions
+
+    # Link-time code generation.
+    #
+    # /LTGC and /GL work together and therefore are both enabled.
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
+    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG")
+    set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /LTCG")
+
+    # Use debug-specific Run-Time Library.
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} /MDd")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Gm /Od /RTC1")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Ob0 /GR /GL /Oi /Gy /Zi /EHsc")
+
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od")    # Optimize for Debug.
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /RTC1")  # Run-time error checks
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Ob0")   # Disables inline expansions.
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /GR")    # Enable Run-Time Type Information
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /GL")    # Whole program optimization
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Oi")    # Generate Intrinsic Functions
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Gy")    # Enable Function-Level Linking
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi")    # Debug Information Format
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc")  # Handle standard C++ Exceptions.
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /analyze")  # Code analysis
 
     # Ensure Google Logging does not use "ERROR" macro, because Windows
     # doesn't support it.
@@ -177,8 +210,19 @@ function(set_global_maya_plugin_compile_options)
     # the C++11 standard says 1024 is the default.
     add_definitions(-ftemplate-depth-900)
 
-    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -m64")
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0")  # No optmizations.
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")  # Include debug symbols
+
+    # Enable AddressSanitizer.
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address")
+
+    # Nicer stack traces in error messages
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer")
+
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")  # Optimize for maximum performance.
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -m64")  # Set 64-bit machine.
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=skylake")   # Use AVX2 instructions
+
   endif ()
 endfunction()
 

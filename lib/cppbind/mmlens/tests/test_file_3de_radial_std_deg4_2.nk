@@ -1,0 +1,26 @@
+# Created by Maya MatchMove Solver with the Save Lens File tool.
+#
+# Version: mayaMatchMoveSolver-0.4.6-maya2022-win64
+# Website: https://github.com/david-cattermole/mayaMatchMoveSolver
+LD_3DE4_Radial_Standard_Degree_4 {
+  tde4_focal_length_cm 3.5
+  tde4_custom_focus_distance_cm 5.0
+  tde4_filmback_width_cm 3.6000000000000005
+  tde4_filmback_height_cm 2.0250000000000004
+  tde4_lens_center_offset_x_cm 0.0
+  tde4_lens_center_offset_y_cm 0.0
+  Distortion_Degree_2 {{curve x1 0.100000 x2 0.068750 x3 0.000000 x4 -0.068750 x5 -0.100000 x6 -0.089600 x7 -0.064800 x8 -0.035200 x9 -0.010400 x10 0.000000 }}
+  U_Degree_2 {{curve x1 0.010000 x2 0.006875 x3 -0.000000 x4 -0.006875 x5 -0.010000 x6 -0.008960 x7 -0.006480 x8 -0.003520 x9 -0.001040 x10 0.000000 }}
+  V_Degree_2 {{curve x1 -0.010000 x2 -0.006875 x3 0.000000 x4 0.006875 x5 0.010000 x6 0.008960 x7 0.006480 x8 0.003520 x9 0.001040 x10 0.000000 }}
+  Quartic_Distortion_Degree_4 {{curve x1 0.050000 x2 0.034375 x3 0.000000 x4 -0.034375 x5 -0.050000 x6 -0.044800 x7 -0.032400 x8 -0.017600 x9 -0.005200 x10 0.000000 }}
+  U_Degree_4 {{curve x1 -0.020000 x2 -0.013750 x3 0.000000 x4 0.013750 x5 0.020000 x6 0.017920 x7 0.012960 x8 0.007040 x9 0.002080 x10 0.000000 }}
+  V_Degree_4 {{curve x1 0.020000 x2 0.013750 x3 -0.000000 x4 -0.013750 x5 -0.020000 x6 -0.017920 x7 -0.012960 x8 -0.007040 x9 -0.002080 x10 0.000000 }}
+  Phi_Cylindric_Direction {{curve x1 45.000000 x2 30.937500 x3 0.000000 x4 -30.937500 x5 -45.000000 x6 -40.320000 x7 -29.160000 x8 -15.840000 x9 -4.680000 x10 0.000000 }}
+  B_Cylindric_Bending {{curve x1 0.500000 x2 0.343750 x3 0.000000 x4 -0.343750 x5 -0.500000 x6 -0.448000 x7 -0.324000 x8 -0.176000 x9 -0.052000 x10 0.000000 }}
+  direction undistort
+  field_of_view_xa_unit 0.0
+  field_of_view_xb_unit 1.0
+  field_of_view_ya_unit 0.0
+  field_of_view_yb_unit 1.0
+  name lens1
+}

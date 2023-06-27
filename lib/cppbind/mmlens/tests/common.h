@@ -23,6 +23,34 @@
 
 #include <algorithm>
 #include <iostream>
+#include <sstream>
+#include <string>
+
+static std::string join_path(const char* arg1, const char* arg2) {
+    std::stringstream stream;
+    stream << arg1;
+    stream << arg2;
+    return stream.str();
+}
+
+static std::string join_path(const char* arg1, const char* arg2,
+                             const char* arg3) {
+    std::stringstream stream;
+    stream << arg1;
+    stream << arg2;
+    stream << arg3;
+    return stream.str();
+}
+
+static std::string join_path(const char* arg1, const char* arg2,
+                             const char* arg3, const char* arg4) {
+    std::stringstream stream;
+    stream << arg1;
+    stream << arg2;
+    stream << arg3;
+    stream << arg4;
+    return stream.str();
+}
 
 const int kCoordinateSystemImage = 0;
 const int kCoordinateSystemNDC = 1;
@@ -31,7 +59,7 @@ const int kDirectionUndistort = 0;
 const int kDirectionRedistort = 1;
 
 // Generate an "identity" ST-Map.
-template <int COORDINATE_SYSTEM, typename T, bool DO_PRINT>
+template <int COORDINATE_SYSTEM, typename T, int VERBOSITY>
 std::vector<T> generate_st_map_identity(const char* prefix_text,
                                         const size_t width, const size_t height,
                                         const size_t num_channels) {
@@ -64,7 +92,7 @@ std::vector<T> generate_st_map_identity(const char* prefix_text,
                 buffer_data[index_y] = y;
             }
 
-            if (DO_PRINT) {
+            if (VERBOSITY >= 2) {
                 // '\n' is used explicitly to avoid the std::flush that
                 // happens when std::endl is used.
                 std::cout << prefix_text << ' ' << coordinate_system_text
@@ -189,11 +217,13 @@ void print_data_2d_compare_identity_2d(const char* prefix_text,
             const size_t index_y = index + 1;
 
             // 0.0 to 1.0 in X and Y.
-            T identity_x = static_cast<T>(column) / static_cast<T>(width - 1);
-            T identity_y = static_cast<T>(row) / static_cast<T>(height - 1);
+            const T identity_x =
+                static_cast<T>(column) / static_cast<T>(width - 1);
+            const T identity_y =
+                (static_cast<T>(row) / static_cast<T>(height - 1) * -1.0) + 1.0;
 
-            T buffer_data_x = buffer_data[index_x];
-            T buffer_data_y = buffer_data[index_y];
+            const T buffer_data_x = buffer_data[index_x];
+            const T buffer_data_y = buffer_data[index_y];
 
             // '\n' is used explicitly to avoid the std::flush that
             // happens when std::endl is used.
@@ -241,5 +271,159 @@ void print_data_2d_compare_identity_4d(const char* prefix_text,
                       << prefix_text << " A : " << index_a << " : "
                       << identity_y << compare_text << a << '\n';
         }
+    }
+}
+
+template <typename IN_TYPE, typename OUT_TYPE, typename LENS_TYPE>
+void test_batch(const char* test_name_text, const char* undistort_prefix_text,
+                const char* redistort_prefix_text,
+                const char* print_prefix_text, const size_t width,
+                const size_t height, std::vector<IN_TYPE> in_data_vec,
+                const size_t in_data_stride, std::vector<OUT_TYPE> out_data_vec,
+                const size_t out_data_stride,
+                const mmlens::CameraParameters camera_parameters,
+                LENS_TYPE lens_parameters, const bool multithread,
+                const int verbosity) {
+    std::cout << test_name_text << ": width=" << width << " height=" << height
+              << " multithread=" << multithread << " verbosity=" << verbosity
+              << std::endl;
+
+    const double film_back_radius_cm =
+        mmlens::compute_diagonal_normalized_camera_factor(camera_parameters);
+
+    IN_TYPE* in_data = &in_data_vec[0];
+    OUT_TYPE* out_data = &out_data_vec[0];
+    const size_t in_data_size = width * height * in_data_stride;
+    const size_t out_data_size = width * height * out_data_stride;
+
+    if (multithread) {
+        mmlens::apply_identity_to_f64_multithread(
+            mmlens::DistortionDirection::kUndistort, width, height, in_data,
+            in_data_size, in_data_stride, camera_parameters,
+            film_back_radius_cm, lens_parameters);
+    } else {
+        mmlens::apply_identity_to_f64(
+            mmlens::DistortionDirection::kUndistort, width, height, 0, 0, width,
+            height, in_data, in_data_size, in_data_stride, camera_parameters,
+            film_back_radius_cm, lens_parameters);
+    }
+    if (verbosity >= 2) {
+        print_data_2d(undistort_prefix_text, width, height, in_data_stride,
+                      in_data);
+    }
+
+    if (multithread) {
+        mmlens::apply_f64_to_f32_multithread(
+            mmlens::DistortionDirection::kRedistort, in_data, in_data_size,
+            in_data_stride, out_data, out_data_size, out_data_stride,
+            camera_parameters, film_back_radius_cm, lens_parameters);
+    } else {
+        const size_t pixel_count = width * height;
+        mmlens::apply_f64_to_f32(mmlens::DistortionDirection::kRedistort, 0,
+                                 pixel_count, in_data, in_data_size,
+                                 in_data_stride, out_data, out_data_size,
+                                 out_data_stride, camera_parameters,
+                                 film_back_radius_cm, lens_parameters);
+    }
+
+    if (verbosity >= 2) {
+        const auto redistort_compare = " -> ";
+        print_data_2d_compare(redistort_prefix_text, redistort_compare, width,
+                              height, in_data_stride, out_data_stride, in_data,
+                              out_data);
+    }
+
+    if (verbosity >= 1) {
+        const auto print_compare = " == ";
+        print_data_2d_compare_identity_2d(print_prefix_text, print_compare,
+                                          width, height, out_data_stride,
+                                          out_data);
+    }
+}
+
+template <typename T, typename LENS_TYPE, size_t DATA_STRIDE>
+void test_once(const char* test_name_text, const char* undistort_prefix_text,
+               const char* redistort_prefix_text, const char* print_prefix_text,
+               const size_t width, const size_t height,
+               std::vector<T> in_data_vec, std::vector<T> temp_data_vec,
+               std::vector<T> out_data_vec, LENS_TYPE lens,
+               const int verbosity) {
+    std::cout << test_name_text << ": width=" << width << " height=" << height
+              << " verbosity=" << verbosity << std::endl;
+
+    T* in_data = &in_data_vec[0];
+    T* temp_data = &temp_data_vec[0];
+    T* out_data = &out_data_vec[0];
+    const size_t in_data_size = width * height * DATA_STRIDE;
+    const size_t temp_data_size = width * height * DATA_STRIDE;
+    const size_t out_data_size = width * height * DATA_STRIDE;
+
+    if (verbosity >= 2) {
+        std::cout << test_name_text << " hash : " << lens.hashValue()
+                  << std::endl;
+    }
+
+    // Undistort input data.
+    apply_distortion_loop<T, T, LENS_TYPE, kDirectionUndistort>(
+        width, height, DATA_STRIDE, DATA_STRIDE, in_data, temp_data, lens);
+    if (verbosity >= 2) {
+        const auto undistort_compare = " -> ";
+        print_data_2d_compare(undistort_prefix_text, undistort_compare, width,
+                              height, DATA_STRIDE, DATA_STRIDE, in_data,
+                              temp_data);
+    }
+
+    // Redistort input data.
+    apply_distortion_loop<T, T, LENS_TYPE, kDirectionRedistort>(
+        width, height, DATA_STRIDE, DATA_STRIDE, temp_data, out_data, lens);
+    if (verbosity >= 2) {
+        const auto redistort_compare = " -> ";
+        print_data_2d_compare(redistort_prefix_text, redistort_compare, width,
+                              height, DATA_STRIDE, DATA_STRIDE, temp_data,
+                              out_data);
+    }
+
+    if (verbosity >= 1) {
+        const auto print_compare = " == ";
+        print_data_2d_compare<T, T>(print_prefix_text, print_compare, width,
+                                    height, DATA_STRIDE, DATA_STRIDE, in_data,
+                                    out_data);
+    }
+}
+
+template <typename OUT_TYPE, typename LENS_TYPE>
+void test_both(const char* test_name_text, const char* print_prefix_text,
+               const size_t width, const size_t height,
+               std::vector<OUT_TYPE> out_data_vec, const size_t out_data_stride,
+               const mmlens::CameraParameters camera_parameters,
+               LENS_TYPE lens_parameters, const bool multithread,
+               const int verbosity) {
+    std::cout << test_name_text << ": width=" << width << " height=" << height
+              << " multithread=" << multithread << " verbosity=" << verbosity
+              << std::endl;
+
+    OUT_TYPE* out_data = &out_data_vec[0];
+    const size_t out_data_size = width * height * out_data_stride;
+
+    const double film_back_radius_cm =
+        mmlens::compute_diagonal_normalized_camera_factor(camera_parameters);
+
+    if (multithread) {
+        mmlens::apply_identity_to_f32_multithread(
+            mmlens::DistortionDirection::kUndistortAndRedistort, width, height,
+            out_data, out_data_size, out_data_stride, camera_parameters,
+            film_back_radius_cm, lens_parameters);
+    } else {
+        mmlens::apply_identity_to_f32(
+            mmlens::DistortionDirection::kUndistortAndRedistort, width, height,
+            0, 0, width, height, out_data, out_data_size, out_data_stride,
+            camera_parameters, film_back_radius_cm, lens_parameters);
+    }
+
+    if (verbosity >= 1) {
+        const auto print_compare = " -> ";
+        print_data_2d_compare_identity_4d(print_prefix_text, print_compare,
+                                          width, height, out_data_stride,
+                                          out_data);
     }
 }

@@ -42,6 +42,8 @@ set(lib_source_files
   ${mmcore_source_dir}/mmmath.cpp
 
   ${mmlens_source_dir}/_cxxbridge.cpp
+  ${mmlens_source_dir}/distortion_process.cpp
+  ${mmlens_source_dir}/distortion_layers.cpp
   ${mmlens_source_dir}/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.cpp
   ${mmlens_source_dir}/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy_rescaled.cpp
   ${mmlens_source_dir}/lens_model_3de_classic.cpp

@@ -21,7 +21,4 @@
 
 #pragma once
 
-#include <cstddef>
-
-int test_once_3de_classic(const size_t width, const size_t height,
-                          const int verbosity);
+int test_lens_file_load(const char* dir_path, const char* file_name);

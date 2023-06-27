@@ -21,4 +21,7 @@
 
 #pragma once
 
-int test_batch_3de_classic();
+#include <cstddef>
+
+int test_batch_3de_classic(const size_t width, const size_t height,
+                           const bool multithread, const int verbosity);

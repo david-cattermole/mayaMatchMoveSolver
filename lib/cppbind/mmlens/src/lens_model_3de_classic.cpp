@@ -34,9 +34,6 @@
 
 namespace mmlens {
 
-// using Distortion3deClassic =
-//     ldpk::classic_3de_mixed_distortion<ldpk::vec2d, ldpk::mat2d>;
-
 void LensModel3deClassic::applyModelUndistort(const double xd, const double yd,
                                               double &xu, double &yu) {
     if (m_state != LensModelState::kClean) {

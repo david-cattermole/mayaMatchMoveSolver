@@ -33,7 +33,12 @@
 
 mod constants;
 pub mod cxxbridge;
-mod lens_parameters;
+mod data;
+mod distortion_layers;
+mod distortion_process;
+mod hash_float;
+mod lens_io;
+mod option_lens_parameters;
 
 // fn multi_thread_sample_chunk_size(
 //     num_threads: usize,

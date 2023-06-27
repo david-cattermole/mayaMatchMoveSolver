@@ -21,4 +21,9 @@
 
 #pragma once
 
-int test_both_3de_anamorphic_std_deg4_rescaled();
+#include <cstddef>
+
+int test_both_3de_anamorphic_std_deg4_rescaled(const size_t width,
+                                               const size_t height,
+                                               const bool multithread,
+                                               const int verbosity);

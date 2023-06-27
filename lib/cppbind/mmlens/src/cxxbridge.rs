@@ -18,7 +18,30 @@
 // ====================================================================
 //
 
-// use crate::constants::MAX_LENS_PARAMETER_COUNT;
+use crate::distortion_layers::shim_create_distortion_layers_box;
+use crate::distortion_layers::ShimDistortionLayers;
+use crate::distortion_process::initialize_global_thread_pool;
+use crate::lens_io::shim_read_lens_file;
+
+use crate::distortion_process::apply_f64_to_f32_3de_classic_multithread;
+use crate::distortion_process::apply_f64_to_f64_3de_classic_multithread;
+use crate::distortion_process::apply_identity_to_f32_3de_classic_multithread;
+use crate::distortion_process::apply_identity_to_f64_3de_classic_multithread;
+
+use crate::distortion_process::apply_f64_to_f32_3de_radial_std_deg4_multithread;
+use crate::distortion_process::apply_f64_to_f64_3de_radial_std_deg4_multithread;
+use crate::distortion_process::apply_identity_to_f32_3de_radial_std_deg4_multithread;
+use crate::distortion_process::apply_identity_to_f64_3de_radial_std_deg4_multithread;
+
+use crate::distortion_process::apply_f64_to_f32_3de_anamorphic_std_deg4_multithread;
+use crate::distortion_process::apply_f64_to_f64_3de_anamorphic_std_deg4_multithread;
+use crate::distortion_process::apply_identity_to_f32_3de_anamorphic_std_deg4_multithread;
+use crate::distortion_process::apply_identity_to_f64_3de_anamorphic_std_deg4_multithread;
+
+use crate::distortion_process::apply_f64_to_f32_3de_anamorphic_std_deg4_rescaled_multithread;
+use crate::distortion_process::apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled_multithread;
+use crate::distortion_process::apply_identity_to_f32_3de_anamorphic_std_deg4_rescaled_multithread;
+use crate::distortion_process::apply_identity_to_f64_3de_anamorphic_std_deg4_rescaled_multithread;
 
 #[cxx::bridge(namespace = "mmlens")]
 pub mod ffi {
@@ -71,6 +94,8 @@ pub mod ffi {
     // Warning: Do not change the numbers assigned to the different
     // types. These numbers are exposed to the user via the
     // "mmLensModel3de" node, with attribute 'lensModel'.
+    #[repr(u8)]
+    #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
     pub(crate) enum LensModelType {
         #[cxx_name = "kUninitialized"]
         Uninitialized = 0,
@@ -114,7 +139,7 @@ pub mod ffi {
         NumLensModelType,
     }
 
-    #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
     pub(crate) struct CameraParameters {
         // cm = centimeter, the unit of the value.
         focal_length_cm: f64,
@@ -125,21 +150,16 @@ pub mod ffi {
         lens_center_offset_y_cm: f64,
     }
 
-    pub(crate) struct LensParameters {
-        mode: LensModelType,
-        values: [f64; 5], // MAX_LENS_PARAMETER_COUNT
-    }
-
-    #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
     pub(crate) struct Parameters3deClassic {
-        distortion: f64,         // Distortion
-        anamorphic_squeeze: f64, // Anamorphic squeeze
-        curvature_x: f64,        // Curvature X
-        curvature_y: f64,        // Curvature Y
-        quartic_distortion: f64, // Quartic Distortion
+        distortion: f64,         // "Distortion"
+        anamorphic_squeeze: f64, // "Anamorphic Squeeze"
+        curvature_x: f64,        // "Curvature X"
+        curvature_y: f64,        // "Curvature Y"
+        quartic_distortion: f64, // "Quartic Distortion"
     }
 
-    #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
     pub(crate) struct Parameters3deRadialStdDeg4 {
         degree2_distortion: f64, // "Distortion - Degree 2"
         degree2_u: f64,          // "U - Degree 2"
@@ -153,7 +173,7 @@ pub mod ffi {
         cylindric_bending: f64,   // "B - Cylindric Bending"
     }
 
-    #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
     pub(crate) struct Parameters3deAnamorphicStdDeg4 {
         degree2_cx02: f64, // "Cx02 - Degree 2"
         degree2_cy02: f64, // "Cy02 - Degree 2"
@@ -175,7 +195,7 @@ pub mod ffi {
         squeeze_y: f64,     // "Squeeze-Y"
     }
 
-    #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
     pub(crate) struct Parameters3deAnamorphicStdDeg4Rescaled {
         degree2_cx02: f64, // "Cx02 - Degree 2"
         degree2_cy02: f64, // "Cy02 - Degree 2"
@@ -198,17 +218,549 @@ pub mod ffi {
         rescale: f64,       // "Rescale"
     }
 
-    // unsafe extern "C++" {
-    //     include!("mmlens/lib.h");
+    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    struct OptionParameters3deClassic {
+        exists: bool,
+        value: Parameters3deClassic,
+    }
 
-    //     unsafe fn apply_undistort_3de_classic_f64_2d_to_f64_2d(
-    //         in_data: *const f64,
-    //         in_data_size: usize,
-    //         out_data: *mut f64,
-    //         out_data_size: usize,
-    //         camera_parameters: CameraParameters,
-    //         film_back_radius_cm: f64,
-    //         lens_parameters: Parameters3deClassic,
-    //     );
-    // }
+    extern "Rust" {
+        type ShimDistortionLayers;
+
+        fn is_static(&self) -> bool;
+        fn frame_range(
+            &self,
+            out_start_frame: &mut u16,
+            out_end_frame: &mut u16,
+        );
+        fn frame_count(&self) -> u16;
+        fn frame_hash(&self, frame: u16) -> u64;
+        fn camera_parameters(&self) -> CameraParameters;
+        fn get_layer_count(&self) -> u8;
+        fn layer_lens_model_type(&self, layer_num: u8) -> LensModelType;
+        fn layer_parameters_3de_classic(
+            &self,
+            layer_num: u8,
+            frame: u16,
+        ) -> OptionParameters3deClassic;
+        fn as_string(&self) -> String;
+
+        fn shim_create_distortion_layers_box() -> Box<ShimDistortionLayers>;
+
+        fn shim_read_lens_file(file_path: &str) -> Box<ShimDistortionLayers>;
+    }
+
+    unsafe extern "C++" {
+        include!("mmlens/distortion_process.h");
+
+        //////////////////////////////////////////////////////////////////////
+        // 3DE Classic
+
+        #[rust_name = "apply_identity_to_f64_3de_classic"]
+        unsafe fn apply_identity_to_f64(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            start_image_width: usize,
+            start_image_height: usize,
+            end_image_width: usize,
+            end_image_height: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deClassic,
+        );
+
+        #[rust_name = "apply_identity_to_f32_3de_classic"]
+        unsafe fn apply_identity_to_f32(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            start_image_width: usize,
+            start_image_height: usize,
+            end_image_width: usize,
+            end_image_height: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deClassic,
+        );
+
+        #[rust_name = "apply_f64_to_f64_3de_classic"]
+        unsafe fn apply_f64_to_f64(
+            direction: DistortionDirection,
+            data_chunk_start: usize,
+            data_chunk_end: usize,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deClassic,
+        );
+
+        #[rust_name = "apply_f64_to_f32_3de_classic"]
+        unsafe fn apply_f64_to_f32(
+            direction: DistortionDirection,
+            data_chunk_start: usize,
+            data_chunk_end: usize,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deClassic,
+        );
+
+        //////////////////////////////////////////////////////////////////////
+        // 3DE Radial Decentered Degree 4 Cylindric
+
+        #[rust_name = "apply_identity_to_f64_3de_radial_std_deg4"]
+        unsafe fn apply_identity_to_f64(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            start_image_width: usize,
+            start_image_height: usize,
+            end_image_width: usize,
+            end_image_height: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deRadialStdDeg4,
+        );
+
+        #[rust_name = "apply_identity_to_f32_3de_radial_std_deg4"]
+        unsafe fn apply_identity_to_f32(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            start_image_width: usize,
+            start_image_height: usize,
+            end_image_width: usize,
+            end_image_height: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deRadialStdDeg4,
+        );
+
+        #[rust_name = "apply_f64_to_f64_3de_radial_std_deg4"]
+        unsafe fn apply_f64_to_f64(
+            direction: DistortionDirection,
+            data_chunk_start: usize,
+            data_chunk_end: usize,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deRadialStdDeg4,
+        );
+
+        #[rust_name = "apply_f64_to_f32_3de_radial_std_deg4"]
+        unsafe fn apply_f64_to_f32(
+            direction: DistortionDirection,
+            data_chunk_start: usize,
+            data_chunk_end: usize,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deRadialStdDeg4,
+        );
+
+        //////////////////////////////////////////////////////////////////////
+        // 3DE Anamorphic Degree 4 Rotate Squeeze XY
+
+        #[rust_name = "apply_identity_to_f64_3de_anamorphic_std_deg4"]
+        unsafe fn apply_identity_to_f64(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            start_image_width: usize,
+            start_image_height: usize,
+            end_image_width: usize,
+            end_image_height: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4,
+        );
+
+        #[rust_name = "apply_identity_to_f32_3de_anamorphic_std_deg4"]
+        unsafe fn apply_identity_to_f32(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            start_image_width: usize,
+            start_image_height: usize,
+            end_image_width: usize,
+            end_image_height: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4,
+        );
+
+        #[rust_name = "apply_f64_to_f64_3de_anamorphic_std_deg4"]
+        unsafe fn apply_f64_to_f64(
+            direction: DistortionDirection,
+            data_chunk_start: usize,
+            data_chunk_end: usize,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4,
+        );
+
+        #[rust_name = "apply_f64_to_f32_3de_anamorphic_std_deg4"]
+        unsafe fn apply_f64_to_f32(
+            direction: DistortionDirection,
+            data_chunk_start: usize,
+            data_chunk_end: usize,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4,
+        );
+
+        //////////////////////////////////////////////////////////////////////
+        // 3DE Anamorphic Degree 4 Rotate Squeeze XY Rescaled
+
+        #[rust_name = "apply_identity_to_f64_3de_anamorphic_std_deg4_rescaled"]
+        unsafe fn apply_identity_to_f64(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            start_image_width: usize,
+            start_image_height: usize,
+            end_image_width: usize,
+            end_image_height: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4Rescaled,
+        );
+
+        #[rust_name = "apply_identity_to_f32_3de_anamorphic_std_deg4_rescaled"]
+        unsafe fn apply_identity_to_f32(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            start_image_width: usize,
+            start_image_height: usize,
+            end_image_width: usize,
+            end_image_height: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4Rescaled,
+        );
+
+        #[rust_name = "apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled"]
+        unsafe fn apply_f64_to_f64(
+            direction: DistortionDirection,
+            data_chunk_start: usize,
+            data_chunk_end: usize,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4Rescaled,
+        );
+
+        #[rust_name = "apply_f64_to_f32_3de_anamorphic_std_deg4_rescaled"]
+        unsafe fn apply_f64_to_f32(
+            direction: DistortionDirection,
+            data_chunk_start: usize,
+            data_chunk_end: usize,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4Rescaled,
+        );
+
+    }
+
+    extern "Rust" {
+        fn initialize_global_thread_pool(num_threads: i32) -> i32;
+
+        //////////////////////////////////////////////////////////////////////
+        // 3DE Classic
+
+        #[cxx_name = "apply_identity_to_f64_multithread"]
+        unsafe fn apply_identity_to_f64_3de_classic_multithread(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deClassic,
+        );
+
+        #[cxx_name = "apply_identity_to_f32_multithread"]
+        unsafe fn apply_identity_to_f32_3de_classic_multithread(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deClassic,
+        );
+
+        #[cxx_name = "apply_f64_to_f64_multithread"]
+        unsafe fn apply_f64_to_f64_3de_classic_multithread(
+            direction: DistortionDirection,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deClassic,
+        );
+
+        #[cxx_name = "apply_f64_to_f32_multithread"]
+        unsafe fn apply_f64_to_f32_3de_classic_multithread(
+            direction: DistortionDirection,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deClassic,
+        );
+
+        //////////////////////////////////////////////////////////////////////
+        // 3DE Radial Decentered Degree 4 Cylindric
+
+        #[cxx_name = "apply_identity_to_f64_multithread"]
+        unsafe fn apply_identity_to_f64_3de_radial_std_deg4_multithread(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deRadialStdDeg4,
+        );
+
+        #[cxx_name = "apply_identity_to_f32_multithread"]
+        unsafe fn apply_identity_to_f32_3de_radial_std_deg4_multithread(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deRadialStdDeg4,
+        );
+
+        #[cxx_name = "apply_f64_to_f64_multithread"]
+        unsafe fn apply_f64_to_f64_3de_radial_std_deg4_multithread(
+            direction: DistortionDirection,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deRadialStdDeg4,
+        );
+
+        #[cxx_name = "apply_f64_to_f32_multithread"]
+        unsafe fn apply_f64_to_f32_3de_radial_std_deg4_multithread(
+            direction: DistortionDirection,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deRadialStdDeg4,
+        );
+
+        //////////////////////////////////////////////////////////////////////
+        // 3DE Anamorphic Degree 4 Rotate Squeeze XY
+
+        #[cxx_name = "apply_identity_to_f64_multithread"]
+        unsafe fn apply_identity_to_f64_3de_anamorphic_std_deg4_multithread(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4,
+        );
+
+        #[cxx_name = "apply_identity_to_f32_multithread"]
+        unsafe fn apply_identity_to_f32_3de_anamorphic_std_deg4_multithread(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4,
+        );
+
+        #[cxx_name = "apply_f64_to_f64_multithread"]
+        unsafe fn apply_f64_to_f64_3de_anamorphic_std_deg4_multithread(
+            direction: DistortionDirection,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4,
+        );
+
+        #[cxx_name = "apply_f64_to_f32_multithread"]
+        unsafe fn apply_f64_to_f32_3de_anamorphic_std_deg4_multithread(
+            direction: DistortionDirection,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4,
+        );
+
+        //////////////////////////////////////////////////////////////////////
+        // 3DE Anamorphic Degree 4 Rotate Squeeze XY Rescaled
+
+        #[cxx_name = "apply_identity_to_f64_multithread"]
+        unsafe fn apply_identity_to_f64_3de_anamorphic_std_deg4_rescaled_multithread(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4Rescaled,
+        );
+
+        #[cxx_name = "apply_identity_to_f32_multithread"]
+        unsafe fn apply_identity_to_f32_3de_anamorphic_std_deg4_rescaled_multithread(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4Rescaled,
+        );
+
+        #[cxx_name = "apply_f64_to_f64_multithread"]
+        unsafe fn apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled_multithread(
+            direction: DistortionDirection,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4Rescaled,
+        );
+
+        #[cxx_name = "apply_f64_to_f32_multithread"]
+        unsafe fn apply_f64_to_f32_3de_anamorphic_std_deg4_rescaled_multithread(
+            direction: DistortionDirection,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg4Rescaled,
+        );
+
+    }
 }

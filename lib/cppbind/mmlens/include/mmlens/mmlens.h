@@ -25,6 +25,7 @@
 #include "_cxx.h"
 #include "_cxxbridge.h"
 #include "_types.h"
+#include "distortion_layers.h"
 #include "lens_model.h"
 #include "lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.h"
 #include "lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy_rescaled.h"

@@ -21,4 +21,7 @@
 
 #pragma once
 
-int test_once_3de_anamorphic_std_deg4();
+#include <cstddef>
+
+int test_once_3de_anamorphic_std_deg4(const size_t width, const size_t height,
+                                      const int verbosity);

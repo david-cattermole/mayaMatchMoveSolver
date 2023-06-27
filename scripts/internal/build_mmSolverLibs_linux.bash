@@ -82,6 +82,9 @@ then
 fi
 MMSOLVERLIBS_CXXBRIDGE_EXE="${HOME}\.cargo\bin\cxxbridge"
 
+cd ${MMSOLVERLIBS_RUST_ROOT}
+${RUST_CARGO_EXE} build ${RELEASE_FLAG} --target-dir ${MMSOLVERLIBS_CPP_TARGET_DIR}
+
 # A local copy of LDPK to reduce the amount of downloads to the
 # 3DEqualizer website (LDPK doesn't have a git repo to clone from).
 LDPK_URL="${PROJECT_ROOT}/external/archives/ldpk-2.8.tar"
@@ -102,7 +105,7 @@ ${CMAKE_EXE} \
     -DMMSOLVERLIBS_CXXBRIDGE_EXE=${MMSOLVERLIBS_CXXBRIDGE_EXE} \
     -DMMSOLVERLIBS_BUILD_TESTS=${MMSOLVERLIBS_BUILD_TESTS} \
     -DMMSOLVERLIBS_LIB_DIR=${MMSOLVERLIBS_LIB_DIR} \
-    -Dldpk_URL=${LDPK_URL} \    
+    -Dldpk_URL=${LDPK_URL} \
     -DBUILD_SHARED_LIBS=OFF \
     ${MMSOLVERLIBS_ROOT}
 

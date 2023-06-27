@@ -21,6 +21,18 @@
 
 #pragma once
 
-#include <iostream>
+#include <cstdint>
 
-namespace mmlens {}  // namespace mmlens
+namespace mmlens {
+
+using FrameNumber = uint16_t;
+using FrameSize = uint16_t;
+
+using LayerIndex = uint8_t;
+using LayerSize = uint8_t;
+
+using HashValue64 = uint64_t;
+
+const FrameNumber STATIC_FRAME_NUMBER = UINT16_MAX;
+
+}  // namespace mmlens

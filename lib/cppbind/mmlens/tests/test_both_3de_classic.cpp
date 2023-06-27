@@ -29,20 +29,14 @@
 
 #include "common.h"
 
-int test_both_3de_classic() {
+int test_both_3de_classic(const size_t width, const size_t height,
+                          const bool multithread, const int verbosity) {
     const auto test_name = "test_both_3de_classic";
     const auto print_prefix =
         "test_both_3de_classic: undistort/redistort output";
-    const auto print_compare = " -> ";
 
-    const size_t width = 8;
-    const size_t height = 8;
-    const size_t out_num_channels = 4;  // 4 channels - RGBA
-
-    std::vector<float> out_data_vec(width * height * out_num_channels);
-
-    float* out_data = &out_data_vec[0];
-    const size_t out_data_size = width * height * out_num_channels;
+    const size_t out_data_stride = 4;  // 4 channels - RGBA
+    std::vector<float> out_data_vec(width * height * out_data_stride);
 
     const double focal_length_cm = 3.5;
     const double film_back_width_cm = 3.6;
@@ -54,9 +48,6 @@ int test_both_3de_classic() {
         focal_length_cm, film_back_width_cm,      film_back_height_cm,
         pixel_aspect,    lens_center_offset_x_cm, lens_center_offset_y_cm};
 
-    const double film_back_radius_cm =
-        mmlens::compute_diagonal_normalized_camera_factor(camera_parameters);
-
     auto lens = mmlens::Parameters3deClassic();
     lens.distortion = 0.1;
     lens.anamorphic_squeeze = 1.0;
@@ -64,12 +55,9 @@ int test_both_3de_classic() {
     lens.curvature_y = 0.0;
     lens.quartic_distortion = 0.1;
 
-    mmlens::apply_undistort_and_redistort_3de_classic_identity_to_f32_4d(
-        width, height, out_data, out_data_size, camera_parameters,
-        film_back_radius_cm, lens);
-
-    print_data_2d_compare_identity_4d(print_prefix, print_compare, width,
-                                      height, out_num_channels, out_data);
+    test_both<float, mmlens::Parameters3deClassic>(
+        test_name, print_prefix, width, height, out_data_vec, out_data_stride,
+        camera_parameters, lens, multithread, verbosity);
 
     return 0;
 }

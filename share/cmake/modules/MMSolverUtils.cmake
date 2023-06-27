@@ -114,11 +114,6 @@ function(set_global_maya_plugin_compile_options)
     # https://docs.microsoft.com/en-us/previous-versions/ms235384(v=vs.100)
     add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
 
-    # # Must add the plug-in entry/exit points otherwise
-    # # the plug-in won't load.
-    # set(CMAKE_SHARED_LINKER_FLAGS
-    #   "${CMAKE_SHARED_LINKER_FLAGS} /export:initializePlugin /export:uninitializePlugin")
-
   elseif (APPLE)
 
     # For MacOS with Clang (which is the supported compiler for Maya

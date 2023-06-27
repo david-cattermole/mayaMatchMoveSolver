@@ -1,5 +1,7 @@
 [target.x86_64-pc-windows-msvc]
+# https://doc.rust-lang.org/reference/linkage.html
 rustflags = ["-C", "target-feature=-crt-static"]
 
 [target.x86_64-pc-windows-gnu]
+# https://doc.rust-lang.org/reference/linkage.html
 rustflags = ["-C", "target-feature=-crt-static"]

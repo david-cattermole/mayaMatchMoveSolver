@@ -25,6 +25,7 @@ PROJECT_ROOT=`pwd`
 find \
     ${PROJECT_ROOT}/src \
     ${PROJECT_ROOT}/include \
+    ${PROJECT_ROOT}/tools/lensdistortion/src \
     ${PROJECT_ROOT}/lib/cppbind/mmcore/src \
     ${PROJECT_ROOT}/lib/cppbind/mmcore/include \
     ${PROJECT_ROOT}/lib/cppbind/mmlens/src \

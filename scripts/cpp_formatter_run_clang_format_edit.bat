@@ -27,6 +27,7 @@ SETLOCAL
 SET PROJECT_ROOT=%CD%
 
 clang-format -i --style=file ^
+       "%PROJECT_ROOT%\tools\lensdistortion\src\*.cpp" ^
        "%PROJECT_ROOT%\src\mmSolver\calibrate\*.cpp" ^
        "%PROJECT_ROOT%\src\mmSolver\calibrate\*.h" ^
        "%PROJECT_ROOT%\src\mmSolver\adjust\*.cpp" ^

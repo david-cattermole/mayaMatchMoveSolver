@@ -332,6 +332,16 @@ function(install_target_plugin_to_module target module_dir)
 endfunction()
 
 
+# Install the Plug-In.
+function(install_target_executable_to_module target module_dir)
+  set_target_properties(${target} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${module_dir}")
+
+  install(TARGETS ${target}
+    RUNTIME DESTINATION "${module_dir}/bin")
+endfunction()
+
+
 # Install shared (dynamic) library.
 function(install_shared_library lib_file lib_file_dll install_dir)
   # message(STATUS "INSTALL FILE: ${lib_file}")

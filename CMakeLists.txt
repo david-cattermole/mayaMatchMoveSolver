@@ -94,6 +94,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 # only, we don't need to wait for the Maya Plug-In to compute each
 # time, so turn off the plugin.
 option(MMSOLVER_BUILD_PLUGIN "Build the Maya plug-in?" ON)
+option(MMSOLVER_BUILD_TOOLS "Build C++ tools?" ON)
 option(MMSOLVER_BUILD_PYTHON "Build and install the Python API and tools?" ON)
 option(MMSOLVER_BUILD_MEL "Build and install the MEL scripts and tools?" ON)
 option(MMSOLVER_BUILD_3DEQUALIZER "Build and install 3DEqualizer scripts?" ON)
@@ -130,13 +131,21 @@ include(MMSolverUtils)
 # Build features
 add_subdirectory(share)
 
+# C++ include files
+if (MMSOLVER_BUILD_PLUGIN OR MMSOLVER_BUILD_TOOLS)
+  add_subdirectory(include)
+endif ()
+
 if (MMSOLVER_BUILD_PLUGIN)
   # Finds and builds external (third-party) dependencies.
   include(FindAndBuildExternalPackages)
   add_subdirectory(external)
 
-  add_subdirectory(include)
   add_subdirectory(src)
+endif ()
+
+if (MMSOLVER_BUILD_TOOLS)
+  add_subdirectory(tools)
 endif ()
 
 if (MMSOLVER_BUILD_PYTHON)

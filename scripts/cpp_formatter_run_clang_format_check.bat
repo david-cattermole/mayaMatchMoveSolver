@@ -27,6 +27,7 @@ SETLOCAL
 SET PROJECT_ROOT=%CD%
 
 clang-format --dry-run --style=file --Werror ^
+       "%PROJECT_ROOT%\tools\lensdistortion\src\*.cpp" ^
        "%PROJECT_ROOT%\src\mmSolver\calibrate\*.cpp" ^
        "%PROJECT_ROOT%\src\mmSolver\calibrate\*.h" ^
        "%PROJECT_ROOT%\src\mmSolver\adjust\*.cpp" ^

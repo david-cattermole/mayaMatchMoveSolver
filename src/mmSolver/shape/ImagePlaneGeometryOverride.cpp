@@ -102,9 +102,9 @@ bool getUpstreamNodeFromConnection(const MObject &this_node,
         return false;
     }
     if (plug.isNull()) {
-        MMSOLVER_WRN("Could not get plug for \"" << mfn_depend_node.name()
-                                                 << "." << attr_name.asChar()
-                                                 << "\" node.");
+        MMSOLVER_WRN("Could not get plug for \""
+                     << mfn_depend_node.name().asChar() << "."
+                     << attr_name.asChar() << "\" node.");
         return false;
     }
 
@@ -118,15 +118,16 @@ bool getUpstreamNodeFromConnection(const MObject &this_node,
         return false;
     }
     if (out_connections.length() == 0) {
-        MMSOLVER_WRN("No connections to the \"" << mfn_depend_node.name() << "."
-                                                << attr_name.asChar()
-                                                << "\" attribute.");
+        MMSOLVER_WRN("No connections to the \""
+                     << mfn_depend_node.name().asChar() << "."
+                     << attr_name.asChar() << "\" attribute.");
         return false;
     }
     return true;
 }
 
 void ImagePlaneGeometryOverride::updateDG() {
+    const auto verbose = false;
     if (!m_geometry_node_path.isValid()) {
         MString attr_name = "geometryNode";
         MPlugArray connections;
@@ -142,11 +143,10 @@ void ImagePlaneGeometryOverride::updateDG() {
                     MDagPath::getAPathTo(node, path);
                     m_geometry_node_path = path;
                     m_geometry_node_type = path.apiType();
-                    // MMSOLVER_INFO(
-                    //     "Validated geometry node: "
-                    //     << " path=" <<
-                    //     m_geometry_node_path.fullPathName().asChar()
-                    //     << " type=" << node.apiTypeStr());
+                    MMSOLVER_VRB("Validated geometry node: "
+                                 << " path="
+                                 << m_geometry_node_path.fullPathName().asChar()
+                                 << " type=" << node.apiTypeStr());
                     break;
                 } else {
                     MMSOLVER_WRN("Geometry node is not correct type:"
@@ -175,10 +175,9 @@ void ImagePlaneGeometryOverride::updateDG() {
                     node.hasFn(MFn::kPluginHwShaderNode)) {
                     m_shader_node = node;
                     m_shader_node_type = node.apiType();
-                    // MMSOLVER_INFO(
-                    //     "Validated shader node:"
-                    //     << " name=" << mfn_depend_node.name().asChar()
-                    //     << " type=" << node.apiTypeStr());
+                    MMSOLVER_VRB("Validated shader node:"
+                                 << " name=" << mfn_depend_node.name().asChar()
+                                 << " type=" << node.apiTypeStr());
                     break;
                 } else {
                     MMSOLVER_WRN("Shader node is not correct type: "
@@ -204,11 +203,10 @@ void ImagePlaneGeometryOverride::updateDG() {
                     MDagPath::getAPathTo(node, path);
                     m_camera_node_path = path;
                     m_camera_node_type = path.apiType();
-                    // MMSOLVER_INFO(
-                    //     "Validated camera node: "
-                    //     << " path=" <<
-                    //     m_camera_node_path.fullPathName().asChar()
-                    //     << " type=" << node.apiTypeStr());
+                    MMSOLVER_VRB("Validated camera node: "
+                                 << " path="
+                                 << m_camera_node_path.fullPathName().asChar()
+                                 << " type=" << node.apiTypeStr());
                     break;
                 } else {
                     MMSOLVER_WRN("Camera node is not correct type:"
@@ -346,10 +344,10 @@ void ImagePlaneGeometryOverride::updateDG() {
 
 void ImagePlaneGeometryOverride::updateRenderItems(const MDagPath &path,
                                                    MRenderItemList &list) {
+    const bool verbose = false;
     if (!m_geometry_node_path.isValid()) {
-        // MMSOLVER_WRN(
-        //     "mmImagePlaneShape: "
-        //     << "Geometry node DAG path is not valid.");
+        MMSOLVER_VRB("mmImagePlaneShape: "
+                     << "Geometry node DAG path is not valid.");
         return;
     }
 
@@ -404,7 +402,7 @@ void ImagePlaneGeometryOverride::updateRenderItems(const MDagPath &path,
     if (index >= 0) {
         shadedItem = list.itemAt(index);
     } else {
-        // MMSOLVER_INFO("mmImagePlaneShape: Generate shaded MRenderItem...");
+        MMSOLVER_VRB("mmImagePlaneShape: Generate shaded MRenderItem...");
         shadedItem = MRenderItem::Create(renderItemName_imagePlaneShaded,
                                          MRenderItem::NonMaterialSceneItem,
                                          MGeometry::kTriangles);
@@ -462,9 +460,9 @@ void ImagePlaneGeometryOverride::updateRenderItems(const MDagPath &path,
 void ImagePlaneGeometryOverride::populateGeometry(
     const MGeometryRequirements &requirements,
     const MRenderItemList &renderItems, MGeometry &data) {
+    const bool verbose = false;
     if (!m_geometry_node_path.isValid()) {
-        // MMSOLVER_WRN("mmImagePlaneShape: Geometry node DAG path is not
-        // valid.");
+        MMSOLVER_VRB("mmImagePlaneShape: Geometry node DAG path is not valid.");
         return;
     }
 
@@ -572,21 +570,21 @@ void ImagePlaneGeometryOverride::cleanUp() {}
 
 #if MAYA_API_VERSION >= 20190000
 bool ImagePlaneGeometryOverride::requiresGeometryUpdate() const {
+    const bool verbose = false;
     if (m_geometry_node_path.isValid() && !m_shader_node.isNull()) {
-        // MMSOLVER_INFO("ImagePlaneGeometryOverride::requiresGeometryUpdate:
-        // false");
+        MMSOLVER_VRB(
+            "ImagePlaneGeometryOverride::requiresGeometryUpdate: false");
         return false;
     }
-    // MMSOLVER_INFO("ImagePlaneGeometryOverride::requiresGeometryUpdate:
-    // true");
+    MMSOLVER_VRB("ImagePlaneGeometryOverride::requiresGeometryUpdate: true");
     return true;
 }
 
 bool ImagePlaneGeometryOverride::requiresUpdateRenderItems(
     const MDagPath &path) const {
-    // MMSOLVER_INFO(
-    //     "ImagePlaneGeometryOverride::requiresUpdateRenderItems: true: "
-    //     << path.fullPathName());
+    const bool verbose = false;
+    MMSOLVER_VRB("ImagePlaneGeometryOverride::requiresUpdateRenderItems: true: "
+                 << path.fullPathName().asChar());
     return true;  // Always update the render items.
 }
 #endif

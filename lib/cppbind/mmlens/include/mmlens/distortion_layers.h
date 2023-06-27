@@ -62,14 +62,28 @@ public:
     CameraParameters camera_parameters() noexcept;
 
     MMLENS_API_EXPORT
-    LayerSize get_layer_count() const noexcept;
+    LayerSize layer_count() const noexcept;
 
     MMLENS_API_EXPORT
     LensModelType layer_lens_model_type(
         const LayerIndex layer_num) const noexcept;
 
     MMLENS_API_EXPORT
-    OptionParameters3deClassic layer_parameters_3de_classic(
+    OptionParameters3deClassic layer_lens_parameters_3de_classic(
+        const LayerIndex layer_num, const FrameNumber frame) const noexcept;
+
+    MMLENS_API_EXPORT
+    OptionParameters3deRadialStdDeg4 layer_lens_parameters_3de_radial_std_deg4(
+        const LayerIndex layer_num, const FrameNumber frame) const noexcept;
+
+    MMLENS_API_EXPORT
+    OptionParameters3deAnamorphicStdDeg4
+    layer_lens_parameters_3de_anamorphic_std_deg4(
+        const LayerIndex layer_num, const FrameNumber frame) const noexcept;
+
+    MMLENS_API_EXPORT
+    OptionParameters3deAnamorphicStdDeg4Rescaled
+    layer_lens_parameters_3de_anamorphic_std_deg4_rescaled(
         const LayerIndex layer_num, const FrameNumber frame) const noexcept;
 
     MMLENS_API_EXPORT

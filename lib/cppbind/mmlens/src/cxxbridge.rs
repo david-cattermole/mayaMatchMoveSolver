@@ -224,6 +224,23 @@ pub mod ffi {
         value: Parameters3deClassic,
     }
 
+    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    struct OptionParameters3deRadialStdDeg4 {
+        exists: bool,
+        value: Parameters3deRadialStdDeg4,
+    }
+
+    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    struct OptionParameters3deAnamorphicStdDeg4 {
+        exists: bool,
+        value: Parameters3deAnamorphicStdDeg4,
+    }
+
+    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    struct OptionParameters3deAnamorphicStdDeg4Rescaled {
+        exists: bool,
+        value: Parameters3deAnamorphicStdDeg4Rescaled,
+    }
     extern "Rust" {
         type ShimDistortionLayers;
 
@@ -236,13 +253,28 @@ pub mod ffi {
         fn frame_count(&self) -> u16;
         fn frame_hash(&self, frame: u16) -> u64;
         fn camera_parameters(&self) -> CameraParameters;
-        fn get_layer_count(&self) -> u8;
+        fn layer_count(&self) -> u8;
         fn layer_lens_model_type(&self, layer_num: u8) -> LensModelType;
-        fn layer_parameters_3de_classic(
+        fn layer_lens_parameters_3de_classic(
             &self,
             layer_num: u8,
             frame: u16,
         ) -> OptionParameters3deClassic;
+        fn layer_lens_parameters_3de_radial_std_deg4(
+            &self,
+            layer_num: u8,
+            frame: u16,
+        ) -> OptionParameters3deRadialStdDeg4;
+        fn layer_lens_parameters_3de_anamorphic_std_deg4(
+            &self,
+            layer_num: u8,
+            frame: u16,
+        ) -> OptionParameters3deAnamorphicStdDeg4;
+        fn layer_lens_parameters_3de_anamorphic_std_deg4_rescaled(
+            &self,
+            layer_num: u8,
+            frame: u16,
+        ) -> OptionParameters3deAnamorphicStdDeg4Rescaled;
         fn as_string(&self) -> String;
 
         fn shim_create_distortion_layers_box() -> Box<ShimDistortionLayers>;

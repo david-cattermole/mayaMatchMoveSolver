@@ -63,8 +63,8 @@ CameraParameters DistortionLayers::camera_parameters() noexcept {
     return inner_->camera_parameters();
 }
 
-LayerSize DistortionLayers::get_layer_count() const noexcept {
-    return inner_->get_layer_count();
+LayerSize DistortionLayers::layer_count() const noexcept {
+    return inner_->layer_count();
 }
 
 LensModelType DistortionLayers::layer_lens_model_type(
@@ -72,9 +72,29 @@ LensModelType DistortionLayers::layer_lens_model_type(
     return inner_->layer_lens_model_type(layer_num);
 }
 
-OptionParameters3deClassic DistortionLayers::layer_parameters_3de_classic(
+OptionParameters3deClassic DistortionLayers::layer_lens_parameters_3de_classic(
     const LayerIndex layer_num, const FrameNumber frame) const noexcept {
-    return inner_->layer_parameters_3de_classic(layer_num, frame);
+    return inner_->layer_lens_parameters_3de_classic(layer_num, frame);
+}
+
+OptionParameters3deRadialStdDeg4
+DistortionLayers::layer_lens_parameters_3de_radial_std_deg4(
+    const LayerIndex layer_num, const FrameNumber frame) const noexcept {
+    return inner_->layer_lens_parameters_3de_radial_std_deg4(layer_num, frame);
+}
+
+OptionParameters3deAnamorphicStdDeg4
+DistortionLayers::layer_lens_parameters_3de_anamorphic_std_deg4(
+    const LayerIndex layer_num, const FrameNumber frame) const noexcept {
+    return inner_->layer_lens_parameters_3de_anamorphic_std_deg4(layer_num,
+                                                                 frame);
+}
+
+OptionParameters3deAnamorphicStdDeg4Rescaled
+DistortionLayers::layer_lens_parameters_3de_anamorphic_std_deg4_rescaled(
+    const LayerIndex layer_num, const FrameNumber frame) const noexcept {
+    return inner_->layer_lens_parameters_3de_anamorphic_std_deg4_rescaled(
+        layer_num, frame);
 }
 
 rust::String DistortionLayers::as_string() noexcept {

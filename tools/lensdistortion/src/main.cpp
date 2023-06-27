@@ -145,7 +145,7 @@ struct Arguments {
 bool lens_layers_frame_is_valid(const mmlens::DistortionLayers& lens_layers,
                                 const mmlens::FrameNumber frame) {
     bool result = true;
-    const mmlens::LayerSize layer_count = lens_layers.get_layer_count();
+    const mmlens::LayerSize layer_count = lens_layers.layer_count();
     for (mmlens::LayerIndex layer_num = 0; layer_num < layer_count;
          layer_num++) {
         std::cout << "layer_num: " << static_cast<int>(layer_num) << std::endl;
@@ -162,7 +162,7 @@ bool lens_layers_frame_is_valid(const mmlens::DistortionLayers& lens_layers,
         }
 
         mmlens::OptionParameters3deClassic option =
-            lens_layers.layer_parameters_3de_classic(layer_num, frame);
+            lens_layers.layer_lens_parameters_3de_classic(layer_num, frame);
         std::cout << "option.exists: " << static_cast<int>(option.exists)
                   << std::endl;
 
@@ -173,6 +173,69 @@ bool lens_layers_frame_is_valid(const mmlens::DistortionLayers& lens_layers,
     }
     return result;
 }
+
+// // Compute the lens distortion.
+// //
+// // The function arguments are expected to be valid. You must do
+// // validity checking before calling this function.
+// void do_lens_distortion(const mmlens::DistortionLayers& lens_layers,
+//                         const mmlens::FrameNumber frame,
+//                         const mmlens::CameraParameters camera_parameters,
+//                         const double film_back_radius_cm) {
+//     const uint8_t layer_count = lens_layers.layer_count();
+
+//     for (uint8_t layer_num = 0; layer_num < layer_count; layer_num++) {
+//         const bool is_last_layer = (layer_num + 1) == layer_count;
+
+//         mmlens::OptionParameters3deClassic option =
+//             lens_layers.layer_lens_parameters_3de_classic(layer_num, frame);
+//         std::cout << "option.exists: " << static_cast<int>(option.exists)
+//                   << std::endl;
+
+//         const mmlens::Parameters3deClassic lens_parameters = option.value;
+
+//         if ((layer_num == 0) && is_last_layer) {
+//             // Use "identity" functions, outputting to f32.
+//             //
+//             // If this is the first and only layer, then we should
+//             // output directly to f32, otherwise we must output to f64
+//             // as an intermediate data type to store as much precision
+//             // as possible (f32 is not accurate enough).
+
+//         } else if ((layer_num == 0) && !is_last_layer) {
+//             // Use "identity" functions, outputting to f64.
+
+//         } else if (is_last_layer) {
+//             // Use "from buffer" functions, outputting to f32.
+//             //
+//             // We want to use the results from the last layer as
+//             // inputs in this layer.
+
+//         } else {
+//             // Use "from buffer" functions, outputting to f64.
+//             //
+//             // We want to use the results from the last layer as
+//             // inputs in this layer.
+
+//         }
+//     }
+
+//     // const size_t out_data_stride = 4;  // RGBA.
+//     // if (args.num_threads == 1) {
+//     //     mmlens::apply_identity_to_f32(distortion_direction, width, height,
+//     0,
+//     //     0,
+//     //                                   width, height, data_ptr, data_size,
+//     //                                   data_stride, camera_parameters,
+//     //                                   film_back_radius_cm,
+//     lens_parameters);
+//     // } else {
+//     //     mmlens::apply_identity_to_f32_multithread(
+//     //         distortion_direction, width, height, data_ptr, data_size,
+//     //         data_stride, camera_parameters, film_back_radius_cm,
+//     //         lens_parameters);
+//     // }
+// }
 
 bool run(const Arguments& args) {
     if (args.verbose) {
@@ -217,7 +280,7 @@ bool run(const Arguments& args) {
     std::cout << "read_lens_file: " << lens_layers.as_string().c_str()
               << std::endl;
 
-    const uint8_t layer_count = lens_layers.get_layer_count();
+    const uint8_t layer_count = lens_layers.layer_count();
     std::cout << "layer_count: " << static_cast<int>(layer_count) << std::endl;
 
     const mmlens::CameraParameters camera_parameters =
@@ -250,7 +313,7 @@ bool run(const Arguments& args) {
 
         for (uint8_t layer_num = 0; layer_num < layer_count; layer_num++) {
             mmlens::OptionParameters3deClassic option =
-                lens_layers.layer_parameters_3de_classic(layer_num, frame);
+                lens_layers.layer_lens_parameters_3de_classic(layer_num, frame);
             std::cout << "option.exists: " << static_cast<int>(option.exists)
                       << std::endl;
 

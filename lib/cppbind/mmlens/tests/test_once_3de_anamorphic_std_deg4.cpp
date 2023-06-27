@@ -90,9 +90,10 @@ int test_once_3de_anamorphic_std_deg4(const size_t width, const size_t height,
     lens.setSqueezeX(squeeze_x);
     lens.setSqueezeY(squeeze_y);
 
-    test_once<double, mmlens::LensModel3deAnamorphicDeg4RotateSqueezeXY, data_stride>(
-        test_name, undistort_prefix, redistort_prefix, print_prefix, width,
-        height, in_data_vec, temp_data_vec, out_data_vec, lens, verbosity);
+    test_once<double, mmlens::LensModel3deAnamorphicDeg4RotateSqueezeXY,
+              data_stride>(test_name, undistort_prefix, redistort_prefix,
+                           print_prefix, width, height, in_data_vec,
+                           temp_data_vec, out_data_vec, lens, verbosity);
 
     return 0;
 }

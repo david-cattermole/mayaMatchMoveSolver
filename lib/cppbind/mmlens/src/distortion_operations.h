@@ -129,7 +129,7 @@ void apply_lens_distortion_to_pixel(const IN_TYPE in_x, const IN_TYPE in_y,
         // It is a logical error if trying to calculate both
         // undistortion and redistortion and trying to output to less
         // than 4 values.
-      assert(OUT_DATA_STRIDE >= 4);
+        assert(OUT_DATA_STRIDE >= 4);
 
         // Calculate both directions, and pack into the output data.
         const auto out_undistort_xy =

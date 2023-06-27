@@ -433,20 +433,22 @@ bool run(const Arguments& args) {
             bool reread_result = true;
             std::chrono::duration<float> reread_duration;
 
-            // bool reread_result = false;
-            // std::chrono::duration<float> reread_duration;
-            // {
-            //     auto reread_start = std::chrono::high_resolution_clock::now();
-            //     reread_result = mmimage::image_read_pixels_exr_rgba_f32(
-            //         output_file_path, meta_data, pixel_data);
-            //     auto reread_end = std::chrono::high_resolution_clock::now();
-            //     reread_duration = reread_end - reread_start;
-            // }
-            // std::cout << "Re-read image file path: " << output_file_path << '\n'
-            //           << "        image read result: "
-            //           << static_cast<uint32_t>(reread_result) << '\n'
-            //           << "        image width x height: " << pixel_data.width()
-            //           << 'x' << pixel_data.height() << std::endl;
+            // Re-read the file can be used for debugging only, but
+            // not on by default.
+            if (false) {
+                auto reread_start = std::chrono::high_resolution_clock::now();
+                reread_result = mmimage::image_read_pixels_exr_rgba_f32(
+                    output_file_path, meta_data, pixel_data);
+                auto reread_end = std::chrono::high_resolution_clock::now();
+                reread_duration = reread_end - reread_start;
+                std::cout << "Re-read image file path: " << output_file_path
+                          << '\n'
+                          << "        image read result: "
+                          << static_cast<uint32_t>(reread_result) << '\n'
+                          << "        image width x height: "
+                          << pixel_data.width() << 'x' << pixel_data.height()
+                          << std::endl;
+            }
 
             if (args.verbose) {
                 std::cout << std::fixed << std::setprecision(3)

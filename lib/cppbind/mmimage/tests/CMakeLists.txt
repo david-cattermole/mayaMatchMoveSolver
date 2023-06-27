@@ -25,6 +25,7 @@ set(test_source_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test_a.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_b.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_c.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/test_d.cpp
 )
 
 # Add test executable using the C++ bindings.

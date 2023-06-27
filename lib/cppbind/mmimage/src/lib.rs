@@ -21,16 +21,37 @@
 use crate::cxxbridge::ffi::ImageExrEncoder as BindImageExrEncoder;
 use crate::encoder::bind_to_core_image_exr_encoder;
 use crate::imagemetadata::ShimImageMetaData;
+use crate::imagepixeldata::ShimImagePixelData2DF64;
 use crate::imagepixeldata::ShimImagePixelDataRgbaF32;
 
 pub mod cxxbridge;
-mod encoder;
-mod imagemetadata;
-mod imagepixeldata;
+pub mod encoder;
+pub mod imagemetadata;
+pub mod imagepixeldata;
 
+use mmimage_rust::create_image_2d_f64 as core_create_image_2d_f64;
+use mmimage_rust::create_image_rgba_f32 as core_create_image_rgba_f32;
 use mmimage_rust::image_read_metadata_exr as core_image_read_metadata_exr;
 use mmimage_rust::image_read_pixels_exr_rgba_f32 as core_image_read_pixels_exr_rgba_f32;
 use mmimage_rust::image_write_pixels_exr_rgba_f32 as core_image_write_pixels_exr_rgba_f32;
+
+pub fn shim_create_image_rgba_f32(
+    image_width: usize,
+    image_height: usize,
+    out_pixel_data: &mut Box<ShimImagePixelDataRgbaF32>,
+) {
+    let pixel_data = core_create_image_rgba_f32(image_width, image_height);
+    out_pixel_data.set_inner(pixel_data);
+}
+
+pub fn shim_create_image_2d_f64(
+    image_width: usize,
+    image_height: usize,
+    out_pixel_data: &mut Box<ShimImagePixelData2DF64>,
+) {
+    let pixel_data = core_create_image_2d_f64(image_width, image_height);
+    out_pixel_data.set_inner(pixel_data);
+}
 
 pub fn shim_image_read_metadata_exr(
     file_path: &str,

@@ -27,6 +27,9 @@
 
 namespace mmimage {
 
+//////////////////////////////////////////////////////////////////////
+// Image Pixel Data RGBA F32
+
 ImagePixelDataRgbaF32::ImagePixelDataRgbaF32() noexcept
     : inner_(shim_create_image_pixel_data_rgba_f32_box()) {}
 
@@ -50,6 +53,34 @@ const rust::Slice<const PixelRgbaF32> ImagePixelDataRgbaF32::data() noexcept {
 }
 
 rust::Slice<PixelRgbaF32> ImagePixelDataRgbaF32::data_mut() noexcept {
+    return inner_->data_mut();
+}
+
+//////////////////////////////////////////////////////////////////////
+// Image Pixel Data 2D F64
+
+ImagePixelData2DF64::ImagePixelData2DF64() noexcept
+    : inner_(shim_create_image_pixel_data_2d_f64_box()) {}
+
+rust::Box<ShimImagePixelData2DF64> ImagePixelData2DF64::get_inner() noexcept {
+    return std::move(inner_);
+}
+
+void ImagePixelData2DF64::set_inner(
+    rust::Box<ShimImagePixelData2DF64> &value) noexcept {
+    inner_ = std::move(value);
+    return;
+}
+
+size_t ImagePixelData2DF64::width() noexcept { return inner_->width(); }
+
+size_t ImagePixelData2DF64::height() noexcept { return inner_->height(); }
+
+const rust::Slice<const Pixel2DF64> ImagePixelData2DF64::data() noexcept {
+    return inner_->data();
+}
+
+rust::Slice<Pixel2DF64> ImagePixelData2DF64::data_mut() noexcept {
     return inner_->data_mut();
 }
 

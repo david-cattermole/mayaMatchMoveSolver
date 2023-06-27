@@ -50,3 +50,34 @@ impl GetPixel for ImagePixelDataRgbaF32 {
         // (0.0, 0.0, 0.0, 0.0)
     }
 }
+
+#[derive(Debug, Clone)]
+pub struct ImagePixelData2DF64 {
+    pub width: usize,
+    pub height: usize,
+    pub data: Vec<(f64, f64)>,
+}
+
+impl ImagePixelData2DF64 {
+    pub fn new() -> ImagePixelData2DF64 {
+        ImagePixelData2DF64 {
+            width: 0,
+            height: 0,
+            data: Vec::new(),
+        }
+    }
+}
+
+impl GetPixel for ImagePixelData2DF64 {
+    type Pixel = (f64, f64);
+
+    fn get_pixel(&self, position: Vec2<usize>) -> Self::Pixel {
+        let column = position.x();
+        let row = position.y();
+
+        let index = (row * self.width) + column;
+        let pixel: (f64, f64) = self.data[index];
+        pixel
+        // (0.0, 0.0)
+    }
+}

@@ -47,25 +47,49 @@ public:
     ImageRegionRectangle get_display_window() noexcept;
 
     MMIMAGE_API_EXPORT
+    void set_display_window(const ImageRegionRectangle value) noexcept;
+
+    MMIMAGE_API_EXPORT
     float get_pixel_aspect() noexcept;
+
+    MMIMAGE_API_EXPORT
+    void set_pixel_aspect(const float value) noexcept;
 
     MMIMAGE_API_EXPORT
     rust::Str get_layer_name() noexcept;
 
     MMIMAGE_API_EXPORT
+    void set_layer_name(rust::Str value) noexcept;
+
+    MMIMAGE_API_EXPORT
     Vec2I32 get_layer_position() noexcept;
+
+    MMIMAGE_API_EXPORT
+    void set_layer_position(const Vec2I32 value) noexcept;
 
     MMIMAGE_API_EXPORT
     Vec2F32 get_screen_window_center() noexcept;
 
     MMIMAGE_API_EXPORT
+    void set_screen_window_center(const Vec2F32 value) noexcept;
+
+    MMIMAGE_API_EXPORT
     float get_screen_window_width() noexcept;
+
+    MMIMAGE_API_EXPORT
+    void set_screen_window_width(const float value) noexcept;
 
     MMIMAGE_API_EXPORT
     rust::Str get_owner() noexcept;
 
     MMIMAGE_API_EXPORT
+    void set_owner(rust::Str value) noexcept;
+
+    MMIMAGE_API_EXPORT
     rust::Str get_comments() noexcept;
+
+    MMIMAGE_API_EXPORT
+    void set_comments(rust::Str value) noexcept;
 
     MMIMAGE_API_EXPORT
     rust::Str get_capture_date() noexcept;
@@ -96,6 +120,12 @@ public:
 
     MMIMAGE_API_EXPORT
     OptionF32 get_frames_per_second() noexcept;
+
+    MMIMAGE_API_EXPORT
+    rust::Str get_software_name() noexcept;
+
+    MMIMAGE_API_EXPORT
+    void set_software_name(rust::Str value) noexcept;
 
     MMIMAGE_API_EXPORT
     rust::Vec<rust::String> all_named_attribute_names() noexcept;

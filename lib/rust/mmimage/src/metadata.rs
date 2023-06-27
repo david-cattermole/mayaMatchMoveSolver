@@ -21,13 +21,68 @@
 use crate::datatype::ImageRegionRectangle;
 use crate::datatype::Vec2F32;
 use crate::datatype::Vec2I32;
+use num::Integer;
 use std::collections::HashMap;
 
-fn convert_text_to_string(value: &exr::meta::attribute::Text) -> String {
-    value.to_string()
+/// Converts a f32 number to a rational number compatible with the
+/// OpenEXR standard.
+//
+// Taken from (2023-06-13 June 13th):
+// https://rosettacode.org/wiki/Convert_decimal_number_to_rational#Rust
+fn f32_to_rational(mut n: f32) -> exr::meta::attribute::Rational {
+    // Based on Farey sequences
+    assert!(n.is_finite());
+    let flag_neg = n < 0.0;
+    if flag_neg {
+        n = n * (-1.0)
+    }
+    if n < std::f32::MIN_POSITIVE {
+        let dividend: i32 = 0;
+        let divisor: u32 = 1;
+        return (dividend, divisor);
+    }
+    if (n - n.round()).abs() < std::f32::EPSILON {
+        let dividend: i32 = n.round() as i32;
+        let divisor: u32 = 1;
+        return (dividend, divisor);
+    }
+
+    let mut a: isize = 0;
+    let mut b: isize = 1;
+    let mut c: isize = n.ceil() as isize;
+    let mut d: isize = 1;
+    let aux1 = isize::max_value() / 2;
+    while c < aux1 && d < aux1 {
+        let aux2: f32 = (a as f32 + c as f32) / (b as f32 + d as f32);
+        if (n - aux2).abs() < std::f32::EPSILON {
+            break;
+        }
+        if n > aux2 {
+            a = a + c;
+            b = b + d;
+        } else {
+            c = a + c;
+            d = b + d;
+        }
+    }
+
+    // Make sure that the fraction is irreducible.
+    //
+    // gcd is short for "Greatest Common Divisor".
+    let dividend: i32;
+    let divisor: u32;
+    let gcd = (a + c).gcd(&(b + d));
+    if flag_neg {
+        dividend = (-(a + c) / gcd) as i32;
+        divisor = ((b + d) / gcd) as u32;
+    } else {
+        dividend = ((a + c) / gcd) as i32;
+        divisor = ((b + d) / gcd) as u32;
+    }
+    (dividend, divisor)
 }
 
-fn convert_rational_to_f32(
+fn convert_rational_to_option_f32(
     value: &exr::meta::attribute::Rational,
 ) -> Option<f32> {
     let (dividend, divisor) = value;
@@ -38,20 +93,48 @@ fn convert_rational_to_f32(
     }
 }
 
-fn convert_option_text_to_string(
+fn convert_f32_to_option_rational(
+    value: f32,
+) -> Option<exr::meta::attribute::Rational> {
+    if !value.is_finite() || (value.abs() < std::f32::EPSILON) {
+        None
+    } else {
+        Some(f32_to_rational(value))
+    }
+}
+
+fn convert_option_text_to_option_string(
     value: &Option<exr::meta::attribute::Text>,
 ) -> Option<String> {
     match value {
-        Some(text) => Some(convert_text_to_string(text)),
+        Some(text) => Some(text.to_string()),
         None => None,
     }
 }
 
-fn convert_option_rational_to_f32(
+fn convert_option_string_to_option_text(
+    value: &Option<String>,
+) -> Option<exr::meta::attribute::Text> {
+    match value {
+        Some(string) => exr::meta::attribute::Text::new_or_none(string),
+        None => None,
+    }
+}
+
+fn convert_option_rational_to_option_f32(
     value: &Option<exr::meta::attribute::Rational>,
 ) -> Option<f32> {
     match value {
-        Some(v) => convert_rational_to_f32(v),
+        Some(v) => convert_rational_to_option_f32(v),
+        None => None,
+    }
+}
+
+fn convert_option_f32_to_option_rational(
+    value: &Option<f32>,
+) -> Option<exr::meta::attribute::Rational> {
+    match value {
+        Some(v) => convert_f32_to_option_rational(*v),
         None => None,
     }
 }
@@ -75,10 +158,10 @@ impl AttributeValue {
     ) -> AttributeValue {
         match exr_attr_value {
             exr::prelude::AttributeValue::Text(v) => {
-                AttributeValue::String(convert_text_to_string(v))
+                AttributeValue::String(v.to_string())
             }
             exr::prelude::AttributeValue::Rational(v) => {
-                let v = match convert_rational_to_f32(v) {
+                let v = match convert_rational_to_option_f32(v) {
                     Some(v) => v,
                     None => 0.0,
                 };
@@ -189,7 +272,7 @@ pub struct ImageMetaData {
     // original_data_window: Option<IntegerBounds>,
     // preview: Option<Preview>,
     // view_name: Option<String>,
-    // software_name: Option<String>,
+    pub software_name: Option<String>,
     // near_clip_plane: Option<f32>,
     // far_clip_plane: Option<f32>,
     // horizontal_field_of_view: Option<f32>,
@@ -219,6 +302,7 @@ impl ImageMetaData {
         let aperture = None;
         let iso_speed = None;
         let frames_per_second = None;
+        let software_name = None;
         let named_attributes = HashMap::new();
 
         ImageMetaData {
@@ -240,6 +324,7 @@ impl ImageMetaData {
             aperture,
             iso_speed,
             frames_per_second,
+            software_name,
             named_attributes,
         }
     }
@@ -259,7 +344,7 @@ impl ImageMetaData {
 
         // Layer Attribute
         let layer_name =
-            convert_option_text_to_string(&layer_attributes.layer_name);
+            convert_option_text_to_option_string(&layer_attributes.layer_name);
         let layer_position = Vec2I32::new(
             layer_attributes.layer_position.0,
             layer_attributes.layer_position.1,
@@ -269,11 +354,13 @@ impl ImageMetaData {
             layer_attributes.screen_window_center.1,
         );
         let screen_window_width = layer_attributes.screen_window_width;
-        let owner = convert_option_text_to_string(&layer_attributes.owner);
+        let owner =
+            convert_option_text_to_option_string(&layer_attributes.owner);
         let comments =
-            convert_option_text_to_string(&layer_attributes.comments);
-        let capture_date =
-            convert_option_text_to_string(&layer_attributes.capture_date);
+            convert_option_text_to_option_string(&layer_attributes.comments);
+        let capture_date = convert_option_text_to_option_string(
+            &layer_attributes.capture_date,
+        );
         let utc_offset = layer_attributes.utc_offset;
         let longitude = layer_attributes.longitude;
         let latitude = layer_attributes.latitude;
@@ -282,8 +369,12 @@ impl ImageMetaData {
         let exposure = layer_attributes.exposure;
         let aperture = layer_attributes.aperture;
         let iso_speed = layer_attributes.iso_speed;
-        let frames_per_second =
-            convert_option_rational_to_f32(&layer_attributes.frames_per_second);
+        let frames_per_second = convert_option_rational_to_option_f32(
+            &layer_attributes.frames_per_second,
+        );
+        let software_name = convert_option_text_to_option_string(
+            &layer_attributes.software_name,
+        );
 
         let named_attributes = generate_named_attributes(
             &image_attributes.other,
@@ -309,44 +400,60 @@ impl ImageMetaData {
             aperture,
             iso_speed,
             frames_per_second,
+            software_name,
             named_attributes,
         }
     }
 
     pub fn as_layer_attributes(&self) -> exr::meta::header::LayerAttributes {
         // TODO: Set LayerAttributes from ImageMetadata.
-        let mut layer_attributes = exr::meta::header::LayerAttributes::named(
-            "the layer_name of the layer",
-        )
-        .with_position(exr::math::Vec2(0, 0));
-        // 'layer_position' is the origin of the data-window. Note that
-        // may not be zero/origin.
-        layer_attributes.layer_position = exr::math::Vec2::<i32>(0, 0);
+        let layer_name = match &self.layer_name {
+            Some(value) => value.to_string(),
+            None => "rgba".to_string(),
+        };
 
-        // layer_attributes.screen_window_center: exr::math::Vec2<f32>,
-        // layer_attributes.screen_window_width: f32,
+        // 'layer_position' is the origin of the data-window. Note
+        // that the layer position may not be zero/origin, it is
+        // relative to the Display window.
+        let layer_position = exr::math::Vec2::<i32>(
+            self.layer_position.x,
+            self.layer_position.y,
+        );
 
-        layer_attributes.comments = Some(exr::meta::attribute::Text::from(
-            "This image was generated as part of an example",
-        ));
-        layer_attributes.owner =
-            Some(exr::meta::attribute::Text::from("The holy lambda function"));
-        layer_attributes.software_name = Some(
-            exr::meta::attribute::Text::from("mayaMatchMoveSolver mmSolver"),
+        let screen_window_center = exr::math::Vec2::<f32>(
+            self.screen_window_center.x,
+            self.screen_window_center.y,
         );
-        layer_attributes.exposure = Some(1.0);
-        layer_attributes.focus = Some(12.4);
-        layer_attributes.frames_per_second = Some((60, 1));
-        layer_attributes.other.insert(
-            exr::meta::attribute::Text::from(
-                "Layer Purpose (Custom Layer Attribute)",
-            ),
-            exr::meta::attribute::AttributeValue::Text(
-                exr::meta::attribute::Text::from(
-                    "This layer contains the rgb pixel data",
-                ),
-            ),
-        );
+
+        let comments = convert_option_string_to_option_text(&self.comments);
+        let owner = convert_option_string_to_option_text(&self.owner);
+        let software_name =
+            convert_option_string_to_option_text(&self.software_name);
+
+        let frames_per_second =
+            convert_option_f32_to_option_rational(&self.frames_per_second);
+
+        let mut layer_attributes =
+            exr::meta::header::LayerAttributes::named(&*layer_name);
+        layer_attributes.layer_position = layer_position;
+        layer_attributes.screen_window_center = screen_window_center;
+        layer_attributes.screen_window_width = self.screen_window_width;
+        layer_attributes.comments = comments;
+        layer_attributes.owner = owner;
+        layer_attributes.exposure = self.exposure;
+        layer_attributes.focus = self.focus;
+        layer_attributes.frames_per_second = frames_per_second;
+        layer_attributes.software_name = software_name;
+        // layer_attributes.other.insert(
+        //     exr::meta::attribute::Text::from(
+        //         "Layer Purpose (Custom Layer Attribute)",
+        //     ),
+        //     exr::meta::attribute::AttributeValue::Text(
+        //         exr::meta::attribute::Text::from(
+        //             "This layer contains the rgb pixel data",
+        //         ),
+        //     ),
+        // );
 
         layer_attributes
     }

@@ -18,10 +18,11 @@
 // ====================================================================
 //
 
-use crate::cxxbridge::ffi::ImageRegionRectangle;
-use crate::cxxbridge::ffi::OptionF32;
-use crate::cxxbridge::ffi::Vec2F32;
-use crate::cxxbridge::ffi::Vec2I32;
+use crate::cxxbridge::ffi::ImageRegionRectangle as BindImageRegionRectangle;
+use crate::cxxbridge::ffi::OptionF32 as BindOptionF32;
+use crate::cxxbridge::ffi::Vec2F32 as BindVec2F32;
+use crate::cxxbridge::ffi::Vec2I32 as BindVec2I32;
+
 use mmimage_rust::metadata::ImageMetaData as CoreImageMetaData;
 
 #[derive(Debug, Clone)]
@@ -29,20 +30,28 @@ pub struct ShimImageMetaData {
     inner: CoreImageMetaData,
 }
 
-fn convert_option_str(optional_value: &Option<String>) -> &str {
+fn convert_option_string(optional_value: &Option<String>) -> &str {
     match optional_value {
         Some(value) => &*value,
         None => "",
     }
 }
 
-fn convert_option_f32(optional_value: &Option<f32>) -> OptionF32 {
+fn convert_str_to_option_string(value: &str) -> Option<String> {
+    if value.len() > 0 {
+        Some(value.to_string())
+    } else {
+        None
+    }
+}
+
+fn convert_option_f32(optional_value: &Option<f32>) -> BindOptionF32 {
     match optional_value {
-        Some(value) => OptionF32 {
+        Some(value) => BindOptionF32 {
             exists: true,
             value: *value,
         },
-        None => OptionF32 {
+        None => BindOptionF32 {
             exists: false,
             value: f32::NAN,
         },
@@ -64,8 +73,8 @@ impl ShimImageMetaData {
         self.inner = pixel_data;
     }
 
-    pub fn get_display_window(&self) -> ImageRegionRectangle {
-        ImageRegionRectangle {
+    pub fn get_display_window(&self) -> BindImageRegionRectangle {
+        BindImageRegionRectangle {
             position_x: self.inner.display_window.position_x,
             position_y: self.inner.display_window.position_y,
             size_x: self.inner.display_window.size_x,
@@ -73,78 +82,123 @@ impl ShimImageMetaData {
         }
     }
 
+    pub fn set_display_window(&mut self, value: BindImageRegionRectangle) {
+        self.inner.display_window.position_x = value.position_x;
+        self.inner.display_window.position_y = value.position_y;
+        self.inner.display_window.size_x = value.size_x;
+        self.inner.display_window.size_y = value.size_y;
+    }
+
     pub fn get_pixel_aspect(&self) -> f32 {
         self.inner.pixel_aspect
     }
 
-    pub fn get_layer_name(&self) -> &str {
-        convert_option_str(&self.inner.layer_name)
+    pub fn set_pixel_aspect(&mut self, value: f32) {
+        self.inner.pixel_aspect = value;
     }
 
-    pub fn get_layer_position(&self) -> Vec2I32 {
-        Vec2I32 {
+    pub fn get_layer_name(&self) -> &str {
+        convert_option_string(&self.inner.layer_name)
+    }
+
+    pub fn set_layer_name(&mut self, value: &str) {
+        self.inner.layer_name = convert_str_to_option_string(value);
+    }
+
+    pub fn get_layer_position(&self) -> BindVec2I32 {
+        BindVec2I32 {
             x: self.inner.layer_position.x,
             y: self.inner.layer_position.y,
         }
     }
 
-    pub fn get_screen_window_center(&self) -> Vec2F32 {
-        Vec2F32 {
+    pub fn set_layer_position(&mut self, value: BindVec2I32) {
+        self.inner.layer_position.x = value.x;
+        self.inner.layer_position.y = value.y;
+    }
+
+    pub fn get_screen_window_center(&self) -> BindVec2F32 {
+        BindVec2F32 {
             x: self.inner.screen_window_center.x,
             y: self.inner.screen_window_center.y,
         }
+    }
+
+    pub fn set_screen_window_center(&mut self, value: BindVec2F32) {
+        self.inner.screen_window_center.x = value.x;
+        self.inner.screen_window_center.y = value.y;
     }
 
     pub fn get_screen_window_width(&self) -> f32 {
         self.inner.screen_window_width
     }
 
+    pub fn set_screen_window_width(&mut self, value: f32) {
+        self.inner.screen_window_width = value;
+    }
+
     pub fn get_owner(&self) -> &str {
-        convert_option_str(&self.inner.owner)
+        convert_option_string(&self.inner.owner)
+    }
+
+    pub fn set_owner(&mut self, value: &str) {
+        self.inner.owner = convert_str_to_option_string(value);
     }
 
     pub fn get_comments(&self) -> &str {
-        convert_option_str(&self.inner.comments)
+        convert_option_string(&self.inner.comments)
+    }
+
+    pub fn set_comments(&mut self, value: &str) {
+        self.inner.comments = convert_str_to_option_string(value);
     }
 
     pub fn get_capture_date(&self) -> &str {
-        convert_option_str(&self.inner.capture_date)
+        convert_option_string(&self.inner.capture_date)
     }
 
-    pub fn get_utc_offset(&self) -> OptionF32 {
+    pub fn get_utc_offset(&self) -> BindOptionF32 {
         convert_option_f32(&self.inner.utc_offset)
     }
 
-    pub fn get_longitude(&self) -> OptionF32 {
+    pub fn get_longitude(&self) -> BindOptionF32 {
         convert_option_f32(&self.inner.longitude)
     }
 
-    pub fn get_latitude(&self) -> OptionF32 {
+    pub fn get_latitude(&self) -> BindOptionF32 {
         convert_option_f32(&self.inner.latitude)
     }
 
-    pub fn get_altitude(&self) -> OptionF32 {
+    pub fn get_altitude(&self) -> BindOptionF32 {
         convert_option_f32(&self.inner.altitude)
     }
 
-    pub fn get_focus(&self) -> OptionF32 {
+    pub fn get_focus(&self) -> BindOptionF32 {
         convert_option_f32(&self.inner.focus)
     }
 
-    pub fn get_exposure(&self) -> OptionF32 {
+    pub fn get_exposure(&self) -> BindOptionF32 {
         convert_option_f32(&self.inner.exposure)
     }
 
-    pub fn get_aperture(&self) -> OptionF32 {
+    pub fn get_aperture(&self) -> BindOptionF32 {
         convert_option_f32(&self.inner.aperture)
     }
 
-    pub fn get_iso_speed(&self) -> OptionF32 {
+    pub fn get_iso_speed(&self) -> BindOptionF32 {
         convert_option_f32(&self.inner.iso_speed)
     }
 
-    pub fn get_frames_per_second(&self) -> OptionF32 {
+    pub fn get_frames_per_second(&self) -> BindOptionF32 {
         convert_option_f32(&self.inner.frames_per_second)
+    }
+
+    pub fn get_software_name(&self) -> &str {
+        convert_option_string(&self.inner.software_name)
+    }
+
+    pub fn set_software_name(&mut self, value: &str) {
+        self.inner.software_name = convert_str_to_option_string(value);
     }
 
     pub fn all_named_attribute_names(&self) -> Vec<String> {

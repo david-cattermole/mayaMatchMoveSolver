@@ -20,8 +20,12 @@
 
 use crate::imagemetadata::shim_create_image_meta_data_box;
 use crate::imagemetadata::ShimImageMetaData;
+use crate::imagepixeldata::shim_create_image_pixel_data_2d_f64_box;
 use crate::imagepixeldata::shim_create_image_pixel_data_rgba_f32_box;
+use crate::imagepixeldata::ShimImagePixelData2DF64;
 use crate::imagepixeldata::ShimImagePixelDataRgbaF32;
+use crate::shim_create_image_2d_f64;
+use crate::shim_create_image_rgba_f32;
 use crate::shim_image_read_metadata_exr;
 use crate::shim_image_read_pixels_exr_rgba_f32;
 use crate::shim_image_write_pixels_exr_rgba_f32;
@@ -176,6 +180,12 @@ pub mod ffi {
         a: f32,
     }
 
+    #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+    struct Pixel2DF64 {
+        x: f64,
+        y: f64,
+    }
+
     extern "Rust" {
         type ShimImagePixelDataRgbaF32;
 
@@ -190,17 +200,38 @@ pub mod ffi {
     }
 
     extern "Rust" {
+        type ShimImagePixelData2DF64;
+
+        pub fn width(&self) -> usize;
+        pub fn height(&self) -> usize;
+
+        pub fn data(&self) -> &[Pixel2DF64];
+        pub fn data_mut(&mut self) -> &mut [Pixel2DF64];
+
+        fn shim_create_image_pixel_data_2d_f64_box(
+        ) -> Box<ShimImagePixelData2DF64>;
+    }
+
+    extern "Rust" {
         type ShimImageMetaData;
 
         fn get_display_window(&self) -> ImageRegionRectangle;
+        fn set_display_window(&mut self, value: ImageRegionRectangle);
         fn get_pixel_aspect(&self) -> f32;
+        fn set_pixel_aspect(&mut self, value: f32);
 
         fn get_layer_name(&self) -> &str;
+        fn set_layer_name(&mut self, value: &str);
         fn get_layer_position(&self) -> Vec2I32;
+        fn set_layer_position(&mut self, value: Vec2I32);
         fn get_screen_window_center(&self) -> Vec2F32;
+        fn set_screen_window_center(&mut self, value: Vec2F32);
         fn get_screen_window_width(&self) -> f32;
+        fn set_screen_window_width(&mut self, value: f32);
         fn get_owner(&self) -> &str;
+        fn set_owner(&mut self, value: &str);
         fn get_comments(&self) -> &str;
+        fn set_comments(&mut self, value: &str);
         fn get_capture_date(&self) -> &str;
         fn get_utc_offset(&self) -> OptionF32;
         fn get_longitude(&self) -> OptionF32;
@@ -211,6 +242,8 @@ pub mod ffi {
         fn get_aperture(&self) -> OptionF32;
         fn get_iso_speed(&self) -> OptionF32;
         fn get_frames_per_second(&self) -> OptionF32;
+        fn get_software_name(&self) -> &str;
+        fn set_software_name(&mut self, value: &str);
 
         fn all_named_attribute_names(&self) -> Vec<String>;
         fn has_named_attribute(&self, attribute_name: &str) -> bool;
@@ -227,6 +260,18 @@ pub mod ffi {
     }
 
     extern "Rust" {
+        fn shim_create_image_rgba_f32(
+            image_width: usize,
+            image_height: usize,
+            out_pixel_data: &mut Box<ShimImagePixelDataRgbaF32>,
+        );
+
+        fn shim_create_image_2d_f64(
+            image_width: usize,
+            image_height: usize,
+            out_pixel_data: &mut Box<ShimImagePixelData2DF64>,
+        );
+
         fn shim_image_read_pixels_exr_rgba_f32(
             file_path: &str,
             out_meta_data: &mut Box<ShimImageMetaData>,

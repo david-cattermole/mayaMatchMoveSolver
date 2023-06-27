@@ -43,30 +43,63 @@ ImageRegionRectangle ImageMetaData::get_display_window() noexcept {
     return inner_->get_display_window();
 }
 
+void ImageMetaData::set_display_window(
+    const ImageRegionRectangle value) noexcept {
+    inner_->set_display_window(value);
+}
+
 float ImageMetaData::get_pixel_aspect() noexcept {
     return inner_->get_pixel_aspect();
+}
+
+void ImageMetaData::set_pixel_aspect(const float value) noexcept {
+    inner_->set_pixel_aspect(value);
 }
 
 rust::Str ImageMetaData::get_layer_name() noexcept {
     return inner_->get_layer_name();
 }
 
+void ImageMetaData::set_layer_name(rust::Str value) noexcept {
+    inner_->set_layer_name(value);
+}
+
 Vec2I32 ImageMetaData::get_layer_position() noexcept {
     return inner_->get_layer_position();
+}
+
+void ImageMetaData::set_layer_position(const Vec2I32 value) noexcept {
+    inner_->set_layer_position(value);
 }
 
 Vec2F32 ImageMetaData::get_screen_window_center() noexcept {
     return inner_->get_screen_window_center();
 }
 
+void ImageMetaData::set_screen_window_center(const Vec2F32 value) noexcept {
+    inner_->set_screen_window_center(value);
+}
+
 float ImageMetaData::get_screen_window_width() noexcept {
     return inner_->get_screen_window_width();
 }
 
+void ImageMetaData::set_screen_window_width(const float value) noexcept {
+    inner_->set_screen_window_width(value);
+}
+
 rust::Str ImageMetaData::get_owner() noexcept { return inner_->get_owner(); }
+
+void ImageMetaData::set_owner(rust::Str value) noexcept {
+    inner_->set_owner(value);
+}
 
 rust::Str ImageMetaData::get_comments() noexcept {
     return inner_->get_comments();
+}
+
+void ImageMetaData::set_comments(rust::Str value) noexcept {
+    inner_->set_comments(value);
 }
 
 rust::Str ImageMetaData::get_capture_date() noexcept {
@@ -105,6 +138,14 @@ OptionF32 ImageMetaData::get_iso_speed() noexcept {
 
 OptionF32 ImageMetaData::get_frames_per_second() noexcept {
     return inner_->get_frames_per_second();
+}
+
+rust::Str ImageMetaData::get_software_name() noexcept {
+    return inner_->get_software_name();
+}
+
+void ImageMetaData::set_software_name(rust::Str value) noexcept {
+    inner_->set_software_name(value);
 }
 
 rust::Vec<rust::String> ImageMetaData::all_named_attribute_names() noexcept {

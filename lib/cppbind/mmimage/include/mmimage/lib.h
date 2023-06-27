@@ -37,6 +37,12 @@ std::ostream& operator<<(std::ostream& os,
 
 namespace mmimage {
 
+void create_image_rgba_f32(const size_t image_width, const size_t image_height,
+                           ImagePixelDataRgbaF32& out_pixel_data);
+
+void create_image_2d_f64(const size_t image_width, const size_t image_height,
+                         ImagePixelData2DF64& out_pixel_data);
+
 bool image_read_metadata_exr(const rust::Str& file_path,
                              ImageMetaData& out_meta_data);
 

@@ -19,6 +19,7 @@
  *
  */
 
+#include <cstring>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -26,6 +27,7 @@
 #include "test_a.h"
 #include "test_b.h"
 #include "test_c.h"
+#include "test_d.h"
 
 void print_help(const char *exec_file) {
     std::cout
@@ -47,22 +49,33 @@ void print_help(const char *exec_file) {
 
 int main(int argc, char *argv[]) {
     for (int i = 0; i < argc; i++) {
-        if ((argv[i] == "-h") || (argv[i] == "-help") ||
-            (argv[i] == "--help")) {
+        const char *arg = argv[i];
+        const bool is_help_flag = (std::strcmp(arg, "-h") == 0) ||
+                                  (std::strcmp(arg, "-help") == 0) ||
+                                  (std::strcmp(arg, "--help") == 0);
+        if (is_help_flag) {
             print_help(argv[0]);
             return 0;
         }
     }
 
-    char *dir_path;
     if (argc <= 1) {
         print_help(argv[0]);
-    } else {
-        dir_path = argv[1];
+        return 0;
+    }
+    char *dir_path = argv[1];
 
-        test_a(dir_path);
-        test_b(dir_path);
-        test_c(dir_path);
+    if (!test_a(dir_path)) {
+        return 1;
+    }
+    if (!test_b(dir_path)) {
+        return 1;
+    }
+    if (!test_c(dir_path)) {
+        return 1;
+    }
+    if (!test_d(dir_path)) {
+        return 1;
     }
     return 0;
 }

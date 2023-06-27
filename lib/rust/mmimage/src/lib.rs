@@ -20,6 +20,7 @@
 
 use crate::encoder::ImageExrEncoder;
 use crate::metadata::ImageMetaData;
+use crate::pixeldata::ImagePixelData2DF64;
 use crate::pixeldata::ImagePixelDataRgbaF32;
 use anyhow::bail;
 use anyhow::Result;
@@ -29,6 +30,41 @@ pub mod datatype;
 pub mod encoder;
 pub mod metadata;
 pub mod pixeldata;
+
+pub fn create_image_rgba_f32(
+    image_width: usize,
+    image_height: usize,
+) -> ImagePixelDataRgbaF32 {
+    let pixel_count = image_width * image_height;
+    let default_pixel = (0.0, 0.0, 0.0, 0.0);
+    let pixel_data: Vec<(f32, f32, f32, f32)> =
+        vec![default_pixel; pixel_count];
+
+    let image_data = ImagePixelDataRgbaF32 {
+        width: image_width,
+        height: image_height,
+        data: pixel_data,
+    };
+
+    image_data
+}
+
+pub fn create_image_2d_f64(
+    image_width: usize,
+    image_height: usize,
+) -> ImagePixelData2DF64 {
+    let pixel_count = image_width * image_height;
+    let default_pixel = (0.0, 0.0);
+    let pixel_data: Vec<(f64, f64)> = vec![default_pixel; pixel_count];
+
+    let image_data = ImagePixelData2DF64 {
+        width: image_width,
+        height: image_height,
+        data: pixel_data,
+    };
+
+    image_data
+}
 
 /// Read the Metadata from an EXR image.
 //
@@ -135,9 +171,12 @@ pub fn image_write_pixels_exr_rgba_f32(
     meta_data: &ImageMetaData,
     pixel_data: &ImagePixelDataRgbaF32,
 ) -> Result<()> {
+    // TODO: How can we control the number of threads used for
+    // compression?
+
     let layer_attributes = meta_data.as_layer_attributes();
 
-    // this function can generate a color for any pixel
+    // This function can generate a color for any pixel
     let generate_pixels =
         |position: exr::math::Vec2<usize>| (pixel_data.get_pixel(position));
 
@@ -152,8 +191,17 @@ pub fn image_write_pixels_exr_rgba_f32(
     let mut image = exr::image::Image::from_layer(layer);
     image.attributes = meta_data.as_image_attributes();
 
-    // write it to a file with all cores in parallel
-    let ok = image.write().to_file(file_path);
+    // TODO: Set a specific number of threads to be used by the
+    // thread-pool.
+    let use_threads = true;
+    let ok = if use_threads {
+        // Write it to a file with all cores in parallel.
+        image.write().to_file(file_path)
+    } else {
+        // Sequencentially compress and write the images.
+        image.write().non_parallel().to_file(file_path)
+    };
+
     match ok {
         Ok(..) => Ok(()),
         Err(err) => bail!(err),

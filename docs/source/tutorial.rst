@@ -142,6 +142,8 @@ to stick to the same feature on the door, only the edge of the door.
 
     <iframe width="720" height="405" src="https://www.youtube.com/embed/u0cU7X1b7zE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+.. _tutorial-robot-arm-rigid-hierarchy-solving:
+
 Robot Arm - Rigid Hierarchy Solving
 -----------------------------------
 

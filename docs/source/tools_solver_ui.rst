@@ -235,6 +235,8 @@ value is disabled, all camera lens distortion attributes will be
 ignored. This option is helpful to quickly enable/disable lens
 distortion attributes in the solver.
 
+.. _solver-ui-evaluate-mesh-rivets-ref:
+
 Evaluate Mesh Rivets
 ++++++++++++++++++++
 

@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.aboutwindow" href="mmSolver.tools.aboutwindow.html" /><link rel="prev" title="Scripting" href="scripting.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Solver Design" href="solver_design.html" /><link rel="prev" title="Techniques" href="techniques.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>mmSolver.tools - mayaMatchMoveSolver master documentation</title>
+        <title>Solving Maya Rigs - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -134,7 +134,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -154,7 +154,7 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  <ul>
+  <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="tools.html">Tools</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -182,12 +182,12 @@
 <li class="toctree-l2"><a class="reference internal" href="tools_renderer.html">MM Renderer</a></li>
 </ul>
 </li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="techniques.html">Techniques</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="techniques_rigs.html">Solving Maya Rigs</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="techniques.html">Techniques</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Solving Maya Rigs</a></li>
 </ul>
 </li>
 </ul>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="nodes.html">Nodes</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="nodes_transforms.html">Transform Nodes</a></li>
@@ -205,8 +205,8 @@
 <li class="toctree-l2"><a class="reference internal" href="commands_display.html">Display Commands</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="scripting.html">Scripting</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children current-page"><a class="current reference internal" href="#">mmSolver.tools</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 has-children"><a class="reference internal" href="scripting.html">Scripting</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="mmSolver.tools.html">mmSolver.tools</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.aboutwindow.html">mmSolver.tools.aboutwindow</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.attachbundletocurve.html">mmSolver.tools.attachbundletocurve</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.attributebake.html">mmSolver.tools.attributebake</a></li>
@@ -323,85 +323,213 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main">
-          <section id="module-mmSolver.tools">
-<span id="mmsolver-tools"></span><h1>mmSolver.tools<a class="headerlink" href="#module-mmSolver.tools" title="Permalink to this heading">#</a></h1>
-<p>The tools with mmSolver.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.aboutwindow.html">mmSolver.tools.aboutwindow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.attachbundletocurve.html">mmSolver.tools.attachbundletocurve</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.attributebake.html">mmSolver.tools.attributebake</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.averagemarker.html">mmSolver.tools.averagemarker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.cameraaim.html">mmSolver.tools.cameraaim</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.cameracontextmenu.html">mmSolver.tools.cameracontextmenu</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.cameraobjectscaleadjust.html">mmSolver.tools.cameraobjectscaleadjust</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.cameraobjectscaleremove.html">mmSolver.tools.cameraobjectscaleremove</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.centertwodee.html">mmSolver.tools.centertwodee</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.channelsen.html">mmSolver.tools.channelsen</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.convertmarker.html">mmSolver.tools.convertmarker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.copypastecamera.html">mmSolver.tools.copypastecamera</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.copypastemarker.html">mmSolver.tools.copypastemarker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.createbundle.html">mmSolver.tools.createbundle</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.createcamera.html">mmSolver.tools.createcamera</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.createcontroller.html">mmSolver.tools.createcontroller</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.createcontroller2.html">mmSolver.tools.createcontroller2</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.createimageplane.html">mmSolver.tools.createimageplane</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.createlens.html">mmSolver.tools.createlens</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.createline.html">mmSolver.tools.createline</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.createmarker.html">mmSolver.tools.createmarker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.createskydome.html">mmSolver.tools.createskydome</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.deformmarker.html">mmSolver.tools.deformmarker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.duplicatemarker.html">mmSolver.tools.duplicatemarker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.editrootframes.html">mmSolver.tools.editrootframes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.hotkeyswitcher.html">mmSolver.tools.hotkeyswitcher</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.linkmarkerbundle.html">mmSolver.tools.linkmarkerbundle</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.loadlens.html">mmSolver.tools.loadlens</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.loadmarker.html">mmSolver.tools.loadmarker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.markerbundlerename.html">mmSolver.tools.markerbundlerename</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.markerbundlerenamewithmetadata.html">mmSolver.tools.markerbundlerenamewithmetadata</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.mmhotkeyset.html">mmSolver.tools.mmhotkeyset</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.mmmenu.html">mmSolver.tools.mmmenu</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.mmshelf.html">mmSolver.tools.mmshelf</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.navigaterootframes.html">mmSolver.tools.navigaterootframes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.placemarkermanip.html">mmSolver.tools.placemarkermanip</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.raycastmarker.html">mmSolver.tools.raycastmarker</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.removecontroller2.html">mmSolver.tools.removecontroller2</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.removesolvernodes.html">mmSolver.tools.removesolvernodes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.reparent.html">mmSolver.tools.reparent</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.reparent2.html">mmSolver.tools.reparent2</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.reprojectbundle.html">mmSolver.tools.reprojectbundle</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.savelensfile.html">mmSolver.tools.savelensfile</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.savemarkerfile.html">mmSolver.tools.savemarkerfile</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.screenspacemotiontrail.html">mmSolver.tools.screenspacemotiontrail</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.screenspacerigbake.html">mmSolver.tools.screenspacerigbake</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.screenspacetransform.html">mmSolver.tools.screenspacetransform</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.screenzmanipulator.html">mmSolver.tools.screenzmanipulator</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.selection.html">mmSolver.tools.selection</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.setattributedetails.html">mmSolver.tools.setattributedetails</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.setcameraoriginframe.html">mmSolver.tools.setcameraoriginframe</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.setobjectcolour.html">mmSolver.tools.setobjectcolour</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.showdeviationcurves.html">mmSolver.tools.showdeviationcurves</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.smoothkeyframes.html">mmSolver.tools.smoothkeyframes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.solver.html">mmSolver.tools.solver</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.sortoutlinernodes.html">mmSolver.tools.sortoutlinernodes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.subdivideline.html">mmSolver.tools.subdivideline</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.sysinfowindow.html">mmSolver.tools.sysinfowindow</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.togglebundlelock.html">mmSolver.tools.togglebundlelock</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.togglecameradistort.html">mmSolver.tools.togglecameradistort</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.togglelinelock.html">mmSolver.tools.togglelinelock</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.togglemarkerlock.html">mmSolver.tools.togglemarkerlock</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.triangulatebundle.html">mmSolver.tools.triangulatebundle</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.undoredoscene.html">mmSolver.tools.undoredoscene</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.userpreferences.html">mmSolver.tools.userpreferences</a></li>
-<li class="toctree-l1"><a class="reference internal" href="mmSolver.tools.userprefswindow.html">mmSolver.tools.userprefswindow</a></li>
+          <section id="solving-maya-rigs">
+<span id="techniques-rigs-solving-maya-rigs-ref"></span><h1>Solving Maya Rigs<a class="headerlink" href="#solving-maya-rigs" title="Permalink to this heading">#</a></h1>
+<p>MM Solver can be used to solve the controls of a Maya rig, for example
+a deforming biped or quadruped character, or rigid object, such as a
+vehicle or prop.</p>
+<p>To get started, you will need:</p>
+<ul class="simple">
+<li><p>3D Geometry representing a real-world object.</p></li>
+<li><p>A Maya Rig with Controls to deform or transform the 3D geometry.</p></li>
 </ul>
+<p>For very simple rigs, such as a rigid object, a rig may not be needed.</p>
+<section id="rigid-transformations">
+<h2>Rigid Transformations<a class="headerlink" href="#rigid-transformations" title="Permalink to this heading">#</a></h2>
+<p>Rigid transformations are the easiest and fastest to solve with MM
+Solver. Rigid transformations use the translation, rotation and scale
+XYZ values to move 3D geometry.</p>
+<p>If your target object is moving with rigid motion, always solve rigid
+transformations because these will provide the best quality, with the
+least number of 2D Markers and 3D Bundles. Even if an object is not
+perfectly rigid, solving rigidly may provide a good starting point to
+manually tweak or solve deformations.</p>
+<p>For an in-depth example of rigid solving (with a hierarchy) the
+<a class="reference internal" href="tutorial.html#tutorial-robot-arm-rigid-hierarchy-solving"><span class="std std-ref">Robot Arm - Rigid Hierarchy Solving</span></a> tutorial will
+provide details.</p>
+<p>To solve a rigid object:</p>
+<ol class="arabic simple">
+<li><p>Create 2D Markers for your object.</p></li>
+<li><p>Parent the 3D Bundles of your Markers under the object’s
+transform node.</p></li>
+<li><p>Move the 3D Bundles to the correct 3D position on the object, and
+lock the translation XYZ attributes.</p></li>
+<li><p>Open the <a class="reference internal" href="tools_solver_ui.html#solver-ui-ref"><span class="std std-ref">Solver UI</span></a>.</p></li>
+<li><p>Select and add the 2D Markers to the <em>Input Objects</em> section of the
+<em>Solver UI</em> (with the <em>+</em> button).</p></li>
+<li><p>Select your object’s transform node, in the Channel Box, select the
+attributes that you wish to solve.</p></li>
+<li><p>Add the selected attributes to the <em>Output Attributes</em> section
+(with the <em>+</em> button).</p></li>
+<li><p>Press <em>Solve</em> button in the <em>Solver UI</em>.</p></li>
+</ol>
+<section id="rigid-solving-tips">
+<h3>Rigid Solving Tips<a class="headerlink" href="#rigid-solving-tips" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Limit the number of attributes, needed for solving; lock all
+attributes that cannot move.</p>
+<ul>
+<li><p>e.g. If a vehicle is moving along the flat ground, place the car
+on the ground and lock the translation Y attribute.</p></li>
+<li><p>e.g. A door can only rotate from the pivot point of the hinges,
+create a transform node at the hinges, and parent your object
+under the transform node, then solve for the rotation of the door
+hinge - probably only a single attribute.</p></li>
+</ul>
+</li>
+<li><p>Avoid solving scale because the solver can quickly get confused.</p>
+<ul>
+<li><p>If you must solve an object’s scale, try to limit to a single
+attribute (X, Y or Z).</p></li>
+<li><p>If you need to solve the uniform scale of an object you must
+create connections from <em>Scale Y</em> to <em>Scale X</em> and <em>Scale Z</em>.
+This will allow you to solve only <em>Scale Y</em>, but both <em>Scale X</em>
+and <em>Scale Z</em> will have the exact same value. You can create these
+connections using Maya’s <em>Connection Editor</em> window.</p></li>
+</ul>
+</li>
+<li><p>Avoid large attribute values. MM Solver can get confused when an
+attribute is very large. Try to avoid using very large values for
+transformations (for example 10,000 units away from origin).</p></li>
+<li><p>When talking about rigid transforms, it’s easy to refer to
+translation attributes as TXYZ rather than “Translation X, Y and
+Z”. Same goes for Rotation (“RXYZ”), and Scale (“SXYZ”).</p></li>
+</ul>
+</section>
+</section>
+<section id="solving-rig-controls">
+<h2>Solving Rig Controls<a class="headerlink" href="#solving-rig-controls" title="Permalink to this heading">#</a></h2>
+<p>Maya Rigs will contain <em>Controls</em> that are used to move the rig in
+specific ways. For example Rig Controls may perform the following:</p>
+<ul class="simple">
+<li><p>Inverse Kinematics (IK) - e.g. a control for a hand or foot.</p></li>
+<li><p>Forward Kinematics (FK) - just regular rigid transformations in a
+hierarchy.</p></li>
+<li><p>Control Space Switching - controls moving <em>with</em> different parts of
+a character; head, hips, chest, etc.</p></li>
+<li><p>Special attributes controlling blend shapes, hand poses, doors
+opening, or anything else.</p></li>
+</ul>
+<p>MM Solver is (technically) able to solve any floating-point of
+attribute in the Maya scene. As a result any of the IK, FK or
+“Special” attributes can be solved with MM Solver, but there is a
+trick (see note below).</p>
+<p>It is <strong>highly recommended</strong> to avoid solving rig controls directly,
+if possible, because of the solver performance. As soon as a Rig
+control is added (even indirectly) into MM Solver, MM Solver <em>must</em>
+switch to a slower mode to evaluate Maya nodes. If only transforms,
+cameras, markers and bundles are used, MM Solver can use a highly
+optimized mode to speed up the solver performance. Transform
+hierarchies and direct Maya DG connections are also supported by this
+special mode.</p>
+<p>The fastest way to solve rig controls is to not solve rig controls
+directly, and instead use controller transforms, such as <em>locators</em>
+nodes, or use the <a class="reference internal" href="tools_generaltools.html#create-remove-controller-tool-ref"><span class="std std-ref">Create / Remove Controller</span></a> tool.</p>
+<p>For example, lets solve the head of a biped character:</p>
+<ol class="arabic">
+<li><p>Select the character’s head, and body controls, and use the
+<a class="reference internal" href="tools_generaltools.html#create-remove-controller-tool-ref"><span class="std std-ref">Create / Remove Controller</span></a> tool to create locators
+parent constrained back to the character’s body and head.</p>
+<p>This will allow our head to move using the controller locator,
+rather than the rig control.</p>
+</li>
+<li><p>Parent the body controller under the head controller.</p></li>
+<li><p>Create 2D Markers for the character’s head.</p></li>
+<li><p>Parent the 3D Bundles of your Markers under the head controller
+node.</p></li>
+<li><p>Move (snap) the 3D Bundles to the correct 3D position on the head,
+and lock the translation XYZ attributes.</p>
+<p>If you align your character’s head to the plate, you can use the
+<a class="reference internal" href="tools_markertools.html#project-marker-on-mesh-tool-ref"><span class="std std-ref">Project Marker on Mesh (Ray-Cast)</span></a> tool to position the bundles
+easily on the surface of the mesh.</p>
+</li>
+<li><p>Open the <a class="reference internal" href="tools_solver_ui.html#solver-ui-ref"><span class="std std-ref">Solver UI</span></a>.</p></li>
+<li><p>Select and add the 2D Markers to the <em>Input Objects</em> section of the
+<em>Solver UI</em> (with the <em>+</em> button).</p></li>
+<li><p>Select the head controller node, in the Channel Box, select the
+attributes that you wish to solve.</p></li>
+<li><p>Add the selected attributes to the <em>Output Attributes</em> section
+(with the <em>+</em> button).</p></li>
+<li><p>Press <em>Solve</em> button in the <em>Solver UI</em>.</p></li>
+</ol>
+<p>This approach treats the character rig as a rigid transformation, and
+avoids using the character rig directly in the solver. Sometimes this
+is not possible, and you must evaluate and solve the Maya Rig’s 3D
+geometry in the solver, to do this you can <a class="reference internal" href="#techniques-rigs-solving-rivets-ref"><span class="std std-ref">Solve Rivets</span></a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>In Maya 2020+ you may experience <strong>incorrect solves</strong> when
+solving Maya rig controls directly. If you do experience MM
+Solver evaluating/solving incorrectly, the workaround is to
+enable the <a class="reference internal" href="tools_solver_ui.html#solver-ui-evaluate-mesh-rivets-ref"><span class="std std-ref">Evaluate Mesh Rivets</span></a>
+check-box in the <em>Solver UI</em>. This will slow down the solver
+performance but will ensure correct evaluation of the Maya
+nodes. This is a known issue and is trying to be improved.</p>
 </div>
+</section>
+<section id="solving-rivets">
+<span id="techniques-rigs-solving-rivets-ref"></span><h2>Solving Rivets<a class="headerlink" href="#solving-rivets" title="Permalink to this heading">#</a></h2>
+<p>Sometimes it is very important to solve a Maya rig deforming, for a
+“skin-tight” MatchMove. Common examples are for deformations of faces,
+jaws, arms or chest of a character.</p>
+<p>When solving deformations, we must evaluate the Maya rig geometry at
+specific positions on the surface. For example, we could track a 2D
+Marker for a character’s eye lid. We must then find the 3D surface
+position and “rivet” the 3D Bundle to the surface, so that it locks
+and moves along the surface of the character’s geometry.</p>
+<p>Unfortunately, solving rivets can be <strong>very slow</strong> in MM Solver, so it
+is always recommended to use rigid solving approaches first, before
+solving Rivets.</p>
+<p>MM Solver does not contain Riveting tools (yet), however the “classic”
+<a class="reference external" href="https://www.highend3d.com/maya/script/rivet-button-for-maya">rivet.mel</a> script has been tested with MM Solver and is known to
+work. Other riveting scripts and tools (such as the new Maya 2020
+Rivet tool) may work, but are untested.</p>
+<p>To make sure that MM Solver can evaluate the Maya Rivet nodes, it is
+critical to <strong>enable</strong> the <a class="reference internal" href="tools_solver_ui.html#solver-ui-evaluate-mesh-rivets-ref"><span class="std std-ref">Evaluate Mesh Rivets</span></a>
+check-box in the Solver UI before solving.</p>
+<p>Therefore the rough steps for solving rivets are:</p>
+<ol class="arabic">
+<li><p>Track 2D Markers for deforming surfaces (such as human skin).</p></li>
+<li><p>Unlock the Maya Rig’s geometry to make it selectable (this is
+dependent on the rig).</p></li>
+<li><p>Create Rivets for the 3D positions on the character’s geometry.</p>
+<ul class="simple">
+<li><p>After <a class="reference external" href="https://www.highend3d.com/maya/script/rivet-button-for-maya">rivet.mel</a> script is installed, select 2 adjacent Mesh
+edges and type “rivet” in the Maya MEL Command Line, then press
+enter; a new locator node named “rivet1” will be created.</p></li>
+</ul>
+</li>
+<li><p>Parent your 3D Bundle under the “rivet” locator, position the
+Bundle and lock the translation XYZ attributes.</p>
+<p>If you align your character’s head to the plate, you can use the
+<a class="reference internal" href="tools_markertools.html#project-marker-on-mesh-tool-ref"><span class="std std-ref">Project Marker on Mesh (Ray-Cast)</span></a> tool to position the bundles
+easily on the surface of the mesh.</p>
+</li>
+<li><p>Open the <a class="reference internal" href="tools_solver_ui.html#solver-ui-ref"><span class="std std-ref">Solver UI</span></a>.</p></li>
+<li><p>Select and add the 2D Markers to the <em>Input Objects</em> section of the
+<em>Solver UI</em> (with the <em>+</em> button).</p></li>
+<li><p>Select your object’s transform node, in the Channel Box, select the
+attributes (such as the character’s head and jaw control) that you
+wish to solve.</p></li>
+<li><p>Add the selected attributes to the <em>Output Attributes</em> section
+(with the <em>+</em> button).</p></li>
+<li><p>It is <strong>important</strong> to enable
+<a class="reference internal" href="tools_solver_ui.html#solver-ui-evaluate-mesh-rivets-ref"><span class="std std-ref">Evaluate Mesh Rivets</span></a> in the <em>Solver UI</em> to
+correctly evaluate and solve the rivet positions.</p></li>
+<li><p>Press <em>Solve</em> button in the <em>Solver UI</em>.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>MM Solver is <em>not</em> a facial animation tool, and has not been
+designed for that purpose.</p>
+</div>
+</section>
 </section>
 
         </article>
@@ -409,23 +537,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="mmSolver.tools.aboutwindow.html">
+          <a class="next-page" href="solver_design.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">mmSolver.tools.aboutwindow</div>
+                <div class="title">Solver Design</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="scripting.html">
+          <a class="prev-page" href="techniques.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Scripting</div>
+                <div class="title">Techniques</div>
                 
               </div>
             </a>
@@ -447,8 +575,32 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Solving Maya Rigs</a><ul>
+<li><a class="reference internal" href="#rigid-transformations">Rigid Transformations</a><ul>
+<li><a class="reference internal" href="#rigid-solving-tips">Rigid Solving Tips</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#solving-rig-controls">Solving Rig Controls</a></li>
+<li><a class="reference internal" href="#solving-rivets">Solving Rivets</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

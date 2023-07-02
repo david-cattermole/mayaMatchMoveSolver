@@ -215,5 +215,10 @@ int main(int argc, char* argv[]) {
     test_lens_file_load(dir_path, "test_file_3de_anamorphic_std_deg4_2.nk");
     test_lens_file_load(dir_path,
                         "test_file_3de_anamorphic_std_deg4_rescaled_2.nk");
+    test_lens_file_load(dir_path, "test_file_3de_classic_3.nk");
+    test_lens_file_load(dir_path, "test_file_3de_radial_std_deg4_3.nk");
+    test_lens_file_load(dir_path, "test_file_3de_anamorphic_std_deg4_3.nk");
+    test_lens_file_load(dir_path,
+                        "test_file_3de_anamorphic_std_deg4_rescaled_3.nk");
     return 0;
 }

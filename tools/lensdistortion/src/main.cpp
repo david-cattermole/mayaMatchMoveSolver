@@ -21,9 +21,14 @@
  */
 
 #include <mmimage/mmimage.h>
+#include <mmsolverlibs/assert.h>
+#include <mmsolverlibs/debug.h>
 
 #include <chrono>
+#include <cmath>
 #include <iomanip>
+#include <iostream>
+#include <limits>
 
 #include "apply.h"
 #include "arguments.h"
@@ -135,6 +140,9 @@ bool run(const Arguments& args) {
             film_back_radius_cm, args.num_threads);
 
         for (uint8_t layer_num = 0; layer_num < layer_count; layer_num++) {
+            std::cout << "layer_num: " << static_cast<int>(layer_num)
+                      << std::endl;
+
             mmlens::OptionParameters3deClassic option =
                 lens_layers.layer_lens_parameters_3de_classic(layer_num, frame);
             std::cout << "option.exists: " << static_cast<int>(option.exists)
@@ -168,8 +176,8 @@ bool run(const Arguments& args) {
                 mmimage::Vec2F32{std::numeric_limits<float>::max(),
                                  std::numeric_limits<float>::max()};
             auto point_max =
-                mmimage::Vec2F32{std::numeric_limits<float>::min(),
-                                 std::numeric_limits<float>::min()};
+                mmimage::Vec2F32{std::numeric_limits<float>::lowest(),
+                                 std::numeric_limits<float>::lowest()};
             {
                 auto bbox_start = std::chrono::high_resolution_clock::now();
 
@@ -195,15 +203,15 @@ bool run(const Arguments& args) {
 
                 for (int i = 0; i < out_bounding_coords.size(); i++) {
                     mmimage::PixelF32x4 rgba_pixel = out_bounding_coords[i];
-                    point_min.x = std::min(point_min.x, rgba_pixel.r);
-                    point_min.y = std::min(point_min.y, rgba_pixel.g);
-                    point_min.x = std::min(point_min.x, rgba_pixel.b);
-                    point_min.y = std::min(point_min.y, rgba_pixel.a);
+                    point_min.x = std::min<float>(point_min.x, rgba_pixel.r);
+                    point_min.y = std::min<float>(point_min.y, rgba_pixel.g);
+                    point_min.x = std::min<float>(point_min.x, rgba_pixel.b);
+                    point_min.y = std::min<float>(point_min.y, rgba_pixel.a);
 
-                    point_max.x = std::max(point_max.x, rgba_pixel.r);
-                    point_max.y = std::max(point_max.y, rgba_pixel.g);
-                    point_max.x = std::max(point_max.x, rgba_pixel.b);
-                    point_max.y = std::max(point_max.y, rgba_pixel.a);
+                    point_max.x = std::max<float>(point_max.x, rgba_pixel.r);
+                    point_max.y = std::max<float>(point_max.y, rgba_pixel.g);
+                    point_max.x = std::max<float>(point_max.x, rgba_pixel.b);
+                    point_max.y = std::max<float>(point_max.y, rgba_pixel.a);
                 }
 
                 auto bbox_end = std::chrono::high_resolution_clock::now();
@@ -220,6 +228,18 @@ bool run(const Arguments& args) {
             // TODO: Check for invalid min/max values. Infinite or NaN
             // values may be returned and we must gracefully error in
             // that case.
+            if (!std::isfinite(point_min.x) || !std::isfinite(point_min.y) ||
+                !std::isfinite(point_max.x) || !std::isfinite(point_max.y)) {
+                MMSOLVER_CORE_ERR(
+                    std::cerr,
+                    "Bounding box must have a finite size, skipping frame "
+                        << frame << ".");
+                MMSOLVER_PANIC("Bounding box must have a finite size, got "
+                               << "min: " << point_min.x << ", " << point_min.y
+                               << " max: " << point_max.y << ", "
+                               << point_max.y);
+                continue;
+            }
 
             auto display_window =
                 mmimage::ImageRegionRectangle{0, 0, image_width, image_height};

@@ -378,7 +378,7 @@ int main(const int argc, const char* argv[]) {
     args.end_frame = 1;
     args.direction = Direction::kBoth;
     args.exr_compression = ExrCompressionMode::kZIP16;
-    args.num_threads = false;
+    args.num_threads = 0;
     args.verbose = false;
 
     const bool parse_succeeded = parse_arguments(argc, argv, args);

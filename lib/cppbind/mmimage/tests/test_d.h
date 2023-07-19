@@ -21,4 +21,4 @@
 
 #pragma once
 
-int test_d(const char *dir_path);
+int test_d(const char *test_name, const char *dir_path);

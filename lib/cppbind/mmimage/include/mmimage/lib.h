@@ -30,6 +30,7 @@
 #include "_symbol_export.h"
 #include "_types.h"
 #include "imagemetadata.h"
+#include "imagepixelbuffer.h"
 #include "imagepixeldata.h"
 
 std::ostream& operator<<(std::ostream& os,
@@ -37,23 +38,17 @@ std::ostream& operator<<(std::ostream& os,
 
 namespace mmimage {
 
-void create_image_rgba_f32(const size_t image_width, const size_t image_height,
-                           ImagePixelDataRgbaF32& out_pixel_data);
-
-void create_image_2d_f64(const size_t image_width, const size_t image_height,
-                         ImagePixelData2DF64& out_pixel_data);
-
 bool image_read_metadata_exr(const rust::Str& file_path,
                              ImageMetaData& out_meta_data);
 
-bool image_read_pixels_exr_rgba_f32(const rust::Str& file_path,
+bool image_read_pixels_exr_f32x4(const rust::Str& file_path,
                                     ImageMetaData& out_meta_data,
-                                    ImagePixelDataRgbaF32& out_pixel_data);
+                                    ImagePixelBuffer& out_pixel_data);
 
-bool image_write_pixels_exr_rgba_f32(const rust::Str& file_path,
+bool image_write_pixels_exr_f32x4(const rust::Str& file_path,
                                      ImageExrEncoder exr_encoder,
                                      ImageMetaData& in_meta_data,
-                                     ImagePixelDataRgbaF32& in_pixel_data);
+                                     ImagePixelBuffer& in_pixel_data);
 
 }  // namespace mmimage
 

@@ -20,222 +20,15 @@
  * This tool is used to generate lens distortion ST-Maps.
  */
 
-#include <mmSolver/buildConstant.h>
 #include <mmimage/mmimage.h>
-#include <mmlens/mmlens.h>
 
-#include <algorithm>
-#include <cassert>
 #include <chrono>
-#include <cstring>
 #include <iomanip>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
 
-const char* TOOL_EXECUTABLE_NAME = "mmsolver-lensdistortion";
-const char* TOOL_DESCRIPTION = "Create lens distortion ST-Maps.";
-const char* EXR_METADATA_SOFTWARE_NAME = "mayaMatchMoveSolver (mmSolver)";
-
-// The coordinates around the edges of an image bounding box. These
-// coordinates are used to sample the lens distortion at the edges to
-// find the maximum/minimum extent of the distorted bounding box.
-const size_t BOUNDING_BOX_COORD_COUNT = 32;
-const double BOUNDING_BOX_IDENTITY_COORDS[BOUNDING_BOX_COORD_COUNT * 2] = {
-    // Bottom Edge
-    -0.5, -0.5,    //
-    -0.375, -0.5,  //
-    -0.25, -0.5,   //
-    -0.125, -0.5,  //
-    0.0, -0.5,     //
-    0.125, -0.5,   //
-    0.25, -0.5,    //
-    0.375, -0.5,   //
-    0.5, -0.5,     //
-
-    // Left Edge
-    -0.5, -0.375,  //
-    -0.5, -0.25,   //
-    -0.5, -0.125,  //
-    -0.5, 0.0,     //
-    -0.5, 0.125,   //
-    -0.5, 0.25,    //
-    -0.5, 0.375,   //
-    -0.5, 0.5,     //
-
-    // Right Edge
-    -0.375, 0.5,  //
-    -0.25, 0.5,   //
-    -0.125, 0.5,  //
-    0.0, 0.5,     //
-    0.125, 0.5,   //
-    0.25, 0.5,    //
-    0.375, 0.5,   //
-
-    // Top Edge   //
-    0.5, -0.375,  //
-    0.5, -0.25,   //
-    0.5, -0.125,  //
-    0.5, 0.0,     //
-    0.5, 0.125,   //
-    0.5, 0.25,    //
-    0.5, 0.375,   //
-    0.5, 0.5,     //
-};
-
-enum class ExrCompressionMode : ::std::uint8_t {
-    kUncompressed = 0,
-    kRLE = 1,
-    kZIP1 = 2,
-    kZIP16 = 3,
-    kPIZ = 4,
-};
-
-mmimage::ExrCompression convert_exr_compression(ExrCompressionMode value) {
-    if (value == ExrCompressionMode::kZIP1) {
-        return mmimage::ExrCompression::kZIP1;
-    } else if (value == ExrCompressionMode::kZIP16) {
-        return mmimage::ExrCompression::kZIP16;
-    } else if (value == ExrCompressionMode::kRLE) {
-        return mmimage::ExrCompression::kRLE;
-    } else if (value == ExrCompressionMode::kPIZ) {
-        return mmimage::ExrCompression::kPIZ;
-    } else {
-        // Other compression methods are not currently considered
-        // important for this tool. B44 may be added to this list.
-        return mmimage::ExrCompression::kZIP16;
-    }
-}
-
-enum class Direction : ::std::uint8_t {
-    kUndistort = 0,
-    kRedistort = 1,
-    kBoth = 2,
-};
-
-mmlens::DistortionDirection convert_distortion_direction(Direction value) {
-    if (value == Direction::kUndistort) {
-        return mmlens::DistortionDirection::kUndistort;
-    } else if (value == Direction::kRedistort) {
-        return mmlens::DistortionDirection::kRedistort;
-    } else {
-        return mmlens::DistortionDirection::kUndistortAndRedistort;
-    }
-}
-
-std::string query_software_name() {
-    std::stringstream software_name_join;
-    software_name_join << EXR_METADATA_SOFTWARE_NAME << " v" << PROJECT_VERSION;
-    return software_name_join.str();
-}
-
-struct Arguments {
-    std::string lens_file_path;
-    std::string input_file_path;
-    std::string output_file_path;
-    mmlens::FrameNumber start_frame;
-    mmlens::FrameNumber end_frame;
-    ExrCompressionMode exr_compression;
-    Direction direction;
-    int32_t num_threads;
-    bool verbose;
-};
-
-bool lens_layers_frame_is_valid(const mmlens::DistortionLayers& lens_layers,
-                                const mmlens::FrameNumber frame) {
-    bool result = true;
-    const mmlens::LayerSize layer_count = lens_layers.layer_count();
-    for (mmlens::LayerIndex layer_num = 0; layer_num < layer_count;
-         layer_num++) {
-        std::cout << "layer_num: " << static_cast<int>(layer_num) << std::endl;
-
-        mmlens::LensModelType lens_model_type =
-            lens_layers.layer_lens_model_type(layer_num);
-        std::cout << "lens_model_type: " << static_cast<int>(lens_model_type)
-                  << std::endl;
-        if (lens_model_type == mmlens::LensModelType::kUninitialized) {
-            std::cerr << "Warning: Invalid lens model type on " << frame << '.'
-                      << std::endl;
-            result = false;
-            break;
-        }
-
-        mmlens::OptionParameters3deClassic option =
-            lens_layers.layer_lens_parameters_3de_classic(layer_num, frame);
-        std::cout << "option.exists: " << static_cast<int>(option.exists)
-                  << std::endl;
-
-        if (!option.exists) {
-            result = false;
-            break;
-        }
-    }
-    return result;
-}
-
-// // Compute the lens distortion.
-// //
-// // The function arguments are expected to be valid. You must do
-// // validity checking before calling this function.
-// void do_lens_distortion(const mmlens::DistortionLayers& lens_layers,
-//                         const mmlens::FrameNumber frame,
-//                         const mmlens::CameraParameters camera_parameters,
-//                         const double film_back_radius_cm) {
-//     const uint8_t layer_count = lens_layers.layer_count();
-
-//     for (uint8_t layer_num = 0; layer_num < layer_count; layer_num++) {
-//         const bool is_last_layer = (layer_num + 1) == layer_count;
-
-//         mmlens::OptionParameters3deClassic option =
-//             lens_layers.layer_lens_parameters_3de_classic(layer_num, frame);
-//         std::cout << "option.exists: " << static_cast<int>(option.exists)
-//                   << std::endl;
-
-//         const mmlens::Parameters3deClassic lens_parameters = option.value;
-
-//         if ((layer_num == 0) && is_last_layer) {
-//             // Use "identity" functions, outputting to f32.
-//             //
-//             // If this is the first and only layer, then we should
-//             // output directly to f32, otherwise we must output to f64
-//             // as an intermediate data type to store as much precision
-//             // as possible (f32 is not accurate enough).
-
-//         } else if ((layer_num == 0) && !is_last_layer) {
-//             // Use "identity" functions, outputting to f64.
-
-//         } else if (is_last_layer) {
-//             // Use "from buffer" functions, outputting to f32.
-//             //
-//             // We want to use the results from the last layer as
-//             // inputs in this layer.
-
-//         } else {
-//             // Use "from buffer" functions, outputting to f64.
-//             //
-//             // We want to use the results from the last layer as
-//             // inputs in this layer.
-
-//         }
-//     }
-
-//     // const size_t out_data_stride = 4;  // RGBA.
-//     // if (args.num_threads == 1) {
-//     //     mmlens::apply_identity_to_f32(distortion_direction, width, height,
-//     0,
-//     //     0,
-//     //                                   width, height, data_ptr, data_size,
-//     //                                   data_stride, camera_parameters,
-//     //                                   film_back_radius_cm,
-//     lens_parameters);
-//     // } else {
-//     //     mmlens::apply_identity_to_f32_multithread(
-//     //         distortion_direction, width, height, data_ptr, data_size,
-//     //         data_stride, camera_parameters, film_back_radius_cm,
-//     //         lens_parameters);
-//     // }
-// }
+#include "apply.h"
+#include "arguments.h"
+#include "buffer.h"
+#include "constants.h"
 
 bool run(const Arguments& args) {
     if (args.verbose) {
@@ -262,8 +55,8 @@ bool run(const Arguments& args) {
     // 1) Read input image dimensions.
     //
     // ... or fall back to the given resolution (via command line arguments)
-    const size_t width = 3600;
-    const size_t height = 2400;
+    const size_t image_width = 3600;
+    const size_t image_height = 2400;
     const size_t num_channels = 4;  // 4 channels - RGBA
     const auto input_file_path = rust::Str(args.input_file_path);
 
@@ -292,6 +85,30 @@ bool run(const Arguments& args) {
     const mmlens::DistortionDirection distortion_direction =
         convert_distortion_direction(args.direction);
 
+    const size_t pixel_count = image_width * image_height;
+    auto intermediate_buffer = mmimage::ImagePixelBuffer();
+    auto out_buffer = mmimage::ImagePixelBuffer();
+
+    const InputMode image_input_mode = InputMode::kIdentity;
+    const OutputMode image_output_mode = OutputMode::kF32x4;
+    allocate_buffer_memory(distortion_direction, layer_count, image_width,
+                           image_height, image_input_mode, image_output_mode,
+                           intermediate_buffer, out_buffer);
+
+    // The input buffer is purposefully empty of all data, because the
+    // input coordinates will be identity, and therefore it's not
+    // needed.
+    auto in_buffer_slice = BufferSlice();
+
+    BufferSlice intermediate_buffer_slice = BufferSlice(
+        intermediate_buffer.data_type(), intermediate_buffer.image_width(),
+        intermediate_buffer.image_height(), intermediate_buffer.num_channels(),
+        intermediate_buffer.as_slice_f32x4_mut().data());
+    BufferSlice out_buffer_slice =
+        BufferSlice(out_buffer.data_type(), out_buffer.image_width(),
+                    out_buffer.image_height(), out_buffer.num_channels(),
+                    out_buffer.as_slice_f32x4_mut().data());
+
     mmlens::HashValue64 last_frame_hash = 0;
     const mmlens::FrameNumber start_frame = args.start_frame;
     const mmlens::FrameNumber end_frame = args.end_frame;
@@ -310,6 +127,12 @@ bool run(const Arguments& args) {
                       << " is invalid." << std::endl;
             continue;
         }
+
+        calculate_lens_layers_distortion(
+            distortion_direction, lens_layers, frame, image_width, image_height,
+            image_input_mode, image_output_mode, in_buffer_slice,
+            intermediate_buffer_slice, out_buffer_slice, camera_parameters,
+            film_back_radius_cm, args.num_threads);
 
         for (uint8_t layer_num = 0; layer_num < layer_count; layer_num++) {
             mmlens::OptionParameters3deClassic option =
@@ -333,6 +156,13 @@ bool run(const Arguments& args) {
             // image, then we get the minimum and maximum values. Finally we
             // add a small offset number, for padding, to ensure we
             // definitely have *just* enough pixels.
+            //
+            // TODO: It would be handy to pre-compute the bounding box
+            // for all frames. This would allow us find the frame with
+            // the largest required pixel count and then pre-allocate
+            // the maximum amount of memory required for the largest
+            // image and therefore always be sure that we are not
+            // exceeding the memory.
             std::chrono::duration<float> bbox_duration;
             auto point_min =
                 mmimage::Vec2F32{std::numeric_limits<float>::max(),
@@ -343,7 +173,7 @@ bool run(const Arguments& args) {
             {
                 auto bbox_start = std::chrono::high_resolution_clock::now();
 
-                std::vector<mmimage::PixelRgbaF32> out_bounding_coords(
+                std::vector<mmimage::PixelF32x4> out_bounding_coords(
                     BOUNDING_BOX_COORD_COUNT);
 
                 const size_t in_data_stride = 2;
@@ -364,7 +194,7 @@ bool run(const Arguments& args) {
                     lens_parameters);
 
                 for (int i = 0; i < out_bounding_coords.size(); i++) {
-                    mmimage::PixelRgbaF32 rgba_pixel = out_bounding_coords[i];
+                    mmimage::PixelF32x4 rgba_pixel = out_bounding_coords[i];
                     point_min.x = std::min(point_min.x, rgba_pixel.r);
                     point_min.y = std::min(point_min.y, rgba_pixel.g);
                     point_min.x = std::min(point_min.x, rgba_pixel.b);
@@ -392,7 +222,7 @@ bool run(const Arguments& args) {
             // that case.
 
             auto display_window =
-                mmimage::ImageRegionRectangle{0, 0, width, height};
+                mmimage::ImageRegionRectangle{0, 0, image_width, image_height};
             auto layer_position = mmimage::Vec2I32{0, 0};
 
             // Create image pixel data.
@@ -402,16 +232,18 @@ bool run(const Arguments& args) {
             // runs.
             std::chrono::duration<float> create_duration;
             auto meta_data = mmimage::ImageMetaData();
-            auto pixel_data = mmimage::ImagePixelDataRgbaF32();
+            auto pixel_buffer = mmimage::ImagePixelBuffer();
             {
                 auto create_start = std::chrono::high_resolution_clock::now();
-                mmimage::create_image_rgba_f32(width, height, pixel_data);
+                const size_t num_channels = 4;
+                pixel_buffer.resize(mmimage::BufferDataType::kF32, image_width,
+                                    image_height, num_channels);
                 auto create_end = std::chrono::high_resolution_clock::now();
                 create_duration = create_end - create_start;
             }
-            rust::Slice<mmimage::PixelRgbaF32> data_slice_mut =
-                pixel_data.data_mut();
-            const size_t data_size = width * height * num_channels;
+            rust::Slice<mmimage::PixelF32x4> data_slice_mut =
+                pixel_buffer.as_slice_f32x4_mut();
+            const size_t data_size = image_width * image_height * num_channels;
             float* data_ptr = reinterpret_cast<float*>(data_slice_mut.data());
 
             // Compute the lens distortion.
@@ -422,14 +254,14 @@ bool run(const Arguments& args) {
                 const size_t data_stride = 4;  // RGBA.
                 if (args.num_threads == 1) {
                     mmlens::apply_identity_to_f32(
-                        distortion_direction, width, height, 0, 0, width,
-                        height, data_ptr, data_size, data_stride,
-                        camera_parameters, film_back_radius_cm,
+                        distortion_direction, image_width, image_height, 0, 0,
+                        image_width, image_height, data_ptr, data_size,
+                        data_stride, camera_parameters, film_back_radius_cm,
                         lens_parameters);
                 } else {
                     mmlens::apply_identity_to_f32_multithread(
-                        distortion_direction, width, height, data_ptr,
-                        data_size, data_stride, camera_parameters,
+                        distortion_direction, image_width, image_height,
+                        data_ptr, data_size, data_stride, camera_parameters,
                         film_back_radius_cm, lens_parameters);
                 }
                 auto process_end = std::chrono::high_resolution_clock::now();
@@ -477,8 +309,8 @@ bool run(const Arguments& args) {
             bool result = false;
             {
                 auto write_start = std::chrono::high_resolution_clock::now();
-                result = mmimage::image_write_pixels_exr_rgba_f32(
-                    output_file_path, exr_encoder, meta_data, pixel_data);
+                result = mmimage::image_write_pixels_exr_f32x4(
+                    output_file_path, exr_encoder, meta_data, pixel_buffer);
                 auto write_end = std::chrono::high_resolution_clock::now();
                 write_duration = write_end - write_start;
             }
@@ -504,8 +336,8 @@ bool run(const Arguments& args) {
             std::chrono::duration<float> reread_duration;
             if (reread_image) {
                 auto reread_start = std::chrono::high_resolution_clock::now();
-                reread_result = mmimage::image_read_pixels_exr_rgba_f32(
-                    output_file_path, meta_data, pixel_data);
+                reread_result = mmimage::image_read_pixels_exr_f32x4(
+                    output_file_path, meta_data, pixel_buffer);
                 auto reread_end = std::chrono::high_resolution_clock::now();
                 reread_duration = reread_end - reread_start;
                 std::cout << "Re-read image file path: " << output_file_path
@@ -513,8 +345,8 @@ bool run(const Arguments& args) {
                           << "        image read result: "
                           << static_cast<uint32_t>(reread_result) << '\n'
                           << "        image width x height: "
-                          << pixel_data.width() << 'x' << pixel_data.height()
-                          << std::endl;
+                          << pixel_buffer.image_width() << 'x'
+                          << pixel_buffer.image_height() << std::endl;
             }
 
             if (args.verbose) {
@@ -534,183 +366,6 @@ bool run(const Arguments& args) {
             if (!result) {
                 return false;
             }
-        }
-    }
-
-    return true;
-}
-
-void print_version() {
-    std::cout << TOOL_EXECUTABLE_NAME << " v" << PROJECT_VERSION << std::endl;
-}
-
-void print_description(const char* this_executable_file) {
-    std::cout << this_executable_file << '\n'
-              << TOOL_DESCRIPTION << '\n'
-              << '\n'
-              << "This tool is part of " << PROJECT_NAME << ".\n"
-              << PROJECT_NAME << " is copyright " << PROJECT_COPYRIGHT << '\n'
-              << PROJECT_HOMEPAGE_URL << '\n'
-              << std::endl;
-}
-
-void print_flags() {
-    std::cout
-        << "Flags:\n"
-        << "  -h  --help           Print this help message.\n"
-        << "  -v  --version        Print the software version.\n"
-        << '\n'
-        << "  -o  --output         Output file path.\n"
-        << "  -i  --input          TODO: Input file path.\n"
-        << "      --lens           Lens distortion file path.\n"
-        << "      --frame-range    First and last frame to output.\n"
-        << "      --stmap          TODO: Generate an ST-Map.\n"
-        << "      --padding        TODO: Extra padding added to the ST-Map.\n"
-        << "      --direction      The direction of the ST-Map.\n"
-        << "                       'undistort', 'redistort', 'both'\n"
-        << "                       (default is 'both')\n"
-        << "      --exr-compress   OpenEXR compression method;\n"
-        << "                       ZIP1, ZIP16, RLE, or PIZ\n"
-        << "                       (default is ZIP16)\n"
-        << "      --verbose        Print detailed information.\n"
-        << "      --num-threads    Number of threads;\n"
-        << "                       -1=physical, 0=logical, 1=single\n"
-        << "                       (default is 0, logical CPU count).\n"
-        << std::endl;
-}
-
-void print_help(const char* this_executable_file) {
-    print_version();
-    print_description(this_executable_file);
-    print_flags();
-}
-
-// This is a copy of the "stringToNumber" function in
-// "./src/mmSolver/utilities/string_utils.h".
-//
-// TODO: Make "string_utils.h" available in this tool, so we can
-// delete this function.
-template <typename NUM_TYPE>
-NUM_TYPE convert_string_to_number(const std::string& text) {
-    std::stringstream ss(text);
-    NUM_TYPE result;
-    ss >> result;
-    if (!result) {
-        result = 0;
-    }
-    return result;
-}
-
-bool parse_arguments(const int argc, const char* argv[], Arguments& args) {
-    assert(argc > 0);
-    if (argc == 1) {
-        print_help(argv[0]);
-        return false;
-    }
-
-    for (int i = 1; i < argc; i++) {
-        const char* arg = argv[i];
-
-        const int next_index1 = i + 1;
-        const int next_index2 = i + 2;
-        std::string next_arg1 = "";
-        std::string next_arg2 = "";
-        if (next_index1 < argc) {
-            next_arg1 = std::string(argv[next_index1]);
-        }
-        if (next_index2 < argc) {
-            next_arg2 = std::string(argv[next_index2]);
-        }
-
-        const bool is_help_flag = (std::strcmp(arg, "-h") == 0) ||
-                                  (std::strcmp(arg, "-help") == 0) ||
-                                  (std::strcmp(arg, "--help") == 0);
-        const bool is_version_flag = (std::strcmp(arg, "-v") == 0) ||
-                                     (std::strcmp(arg, "--version") == 0);
-        const bool is_input_flag =
-            (std::strcmp(arg, "-i") == 0) || (std::strcmp(arg, "--input") == 0);
-        const bool is_lens_flag = std::strcmp(arg, "--lens") == 0;
-        const bool is_output_flag = (std::strcmp(arg, "-o") == 0) ||
-                                    (std::strcmp(arg, "--output") == 0);
-        const bool is_frame_range_flag = std::strcmp(arg, "--frame-range") == 0;
-        const bool is_direction_flag = std::strcmp(arg, "--direction") == 0;
-        const bool is_num_threads_flag = std::strcmp(arg, "--num-threads") == 0;
-        const bool is_verbose_flag = std::strcmp(arg, "--verbose") == 0;
-
-        if (is_help_flag) {
-            print_help(argv[0]);
-            return false;
-        } else if (is_version_flag) {
-            print_version();
-            return false;
-        } else if (is_verbose_flag) {
-            args.verbose = true;
-        } else if (is_frame_range_flag) {
-            if ((next_arg1.size() == 0) || (next_arg2.size() == 0)) {
-                print_help(argv[0]);
-                return false;
-            }
-            args.start_frame = convert_string_to_number<mmlens::FrameNumber>(
-                std::string(next_arg1));
-            args.end_frame = convert_string_to_number<mmlens::FrameNumber>(
-                std::string(next_arg2));
-            i += 2;
-        } else if (is_direction_flag) {
-            if (next_arg1.size() == 0) {
-                print_help(argv[0]);
-                return false;
-            }
-
-            const bool is_undistort =
-                std::strcmp(next_arg1.c_str(), "undistort") == 0;
-            const bool is_redistort =
-                std::strcmp(next_arg1.c_str(), "redistort") == 0;
-            const bool is_both = std::strcmp(next_arg1.c_str(), "both") == 0;
-            if (is_undistort) {
-                args.direction = Direction::kUndistort;
-            } else if (is_redistort) {
-                args.direction = Direction::kRedistort;
-            } else {
-                args.direction = Direction::kBoth;
-            }
-
-            i++;
-        } else if (is_num_threads_flag) {
-            if (next_arg1.size() == 0) {
-                print_help(argv[0]);
-                return false;
-            }
-            const int32_t given_value =
-                convert_string_to_number<int32_t>(std::string(next_arg1));
-            // Negative numbers below -1 are technically invalid
-            // values and so we force all negative numbers to '-1'
-            // logic.
-            args.num_threads = std::max(-1, given_value);
-            i++;
-        } else if (is_input_flag) {
-            if (next_arg1.size() == 0) {
-                print_help(argv[0]);
-                return false;
-            }
-            args.input_file_path = std::string(next_arg1);
-            i++;
-        } else if (is_lens_flag) {
-            if (next_arg1.size() == 0) {
-                print_help(argv[0]);
-                return false;
-            }
-            args.lens_file_path = std::string(next_arg1);
-            i++;
-        } else if (is_output_flag) {
-            if (next_arg1.size() == 0) {
-                print_help(argv[0]);
-                return false;
-            }
-            args.output_file_path = std::string(next_arg1);
-            i++;
-        } else {
-            std::cout << "Invalid flag: " << arg << '\n';
-            return false;
         }
     }
 

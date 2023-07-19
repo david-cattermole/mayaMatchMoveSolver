@@ -57,17 +57,14 @@ bool test_b_load_file_metadata(const char *test_name, rust::Str file_path) {
     return result;
 }
 
-int test_b(const char *dir_path) {
-    const auto test_name = "test_b:";
-
+int test_b(const char *test_name, const char *dir_path) {
     auto path_string1 =
         join_path(dir_path, "/Beachball/singlepart.0001", ".exr");
     auto path_string2 = join_path(dir_path, "/ScanLines/Tree", ".exr");
     const auto file_path1 = rust::Str(path_string1);
     const auto file_path2 = rust::Str(path_string2);
 
-    bool ok = false;
-    ok = test_b_load_file_metadata(test_name, file_path1);
+    bool ok = test_b_load_file_metadata(test_name, file_path1);
     if (!ok) {
         return 1;
     }

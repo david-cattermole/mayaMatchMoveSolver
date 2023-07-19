@@ -20,15 +20,11 @@
 
 use crate::imagemetadata::shim_create_image_meta_data_box;
 use crate::imagemetadata::ShimImageMetaData;
-use crate::imagepixeldata::shim_create_image_pixel_data_2d_f64_box;
-use crate::imagepixeldata::shim_create_image_pixel_data_rgba_f32_box;
-use crate::imagepixeldata::ShimImagePixelData2DF64;
-use crate::imagepixeldata::ShimImagePixelDataRgbaF32;
-use crate::shim_create_image_2d_f64;
-use crate::shim_create_image_rgba_f32;
+use crate::imagepixelbuffer::shim_create_image_pixel_buffer_box;
+use crate::imagepixelbuffer::ShimImagePixelBuffer;
 use crate::shim_image_read_metadata_exr;
-use crate::shim_image_read_pixels_exr_rgba_f32;
-use crate::shim_image_write_pixels_exr_rgba_f32;
+use crate::shim_image_read_pixels_exr_f32x4;
+use crate::shim_image_write_pixels_exr_f32x4;
 
 #[cxx::bridge(namespace = "mmimage")]
 pub mod ffi {
@@ -173,7 +169,7 @@ pub mod ffi {
     }
 
     #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
-    struct PixelRgbaF32 {
+    struct PixelF32x4 {
         r: f32,
         g: f32,
         b: f32,
@@ -181,35 +177,47 @@ pub mod ffi {
     }
 
     #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
-    struct Pixel2DF64 {
+    struct PixelF64x2 {
         x: f64,
         y: f64,
     }
 
-    extern "Rust" {
-        type ShimImagePixelDataRgbaF32;
+    #[repr(u8)]
+    #[derive(Debug, Copy, Clone)]
+    pub(crate) enum BufferDataType {
+        #[cxx_name = "kNone"]
+        None = 0,
 
-        pub fn width(&self) -> usize;
-        pub fn height(&self) -> usize;
+        #[cxx_name = "kF32"]
+        F32 = 1,
 
-        pub fn data(&self) -> &[PixelRgbaF32];
-        pub fn data_mut(&mut self) -> &mut [PixelRgbaF32];
-
-        fn shim_create_image_pixel_data_rgba_f32_box(
-        ) -> Box<ShimImagePixelDataRgbaF32>;
+        #[cxx_name = "kF64"]
+        F64 = 2,
     }
 
     extern "Rust" {
-        type ShimImagePixelData2DF64;
+        type ShimImagePixelBuffer;
 
-        pub fn width(&self) -> usize;
-        pub fn height(&self) -> usize;
+        pub fn data_type(&self) -> BufferDataType;
+        pub fn image_width(&self) -> usize;
+        pub fn image_height(&self) -> usize;
+        pub fn num_channels(&self) -> usize;
 
-        pub fn data(&self) -> &[Pixel2DF64];
-        pub fn data_mut(&mut self) -> &mut [Pixel2DF64];
+        pub fn pixel_count(&self) -> usize;
+        pub fn element_count(&self) -> usize;
 
-        fn shim_create_image_pixel_data_2d_f64_box(
-        ) -> Box<ShimImagePixelData2DF64>;
+        pub fn as_slice_f32x4(&self) -> &[PixelF32x4];
+        pub fn as_slice_f32x4_mut(&mut self) -> &mut [PixelF32x4];
+
+        pub fn resize(
+            &mut self,
+            data_type: BufferDataType,
+            image_width: usize,
+            image_height: usize,
+            num_channels: usize,
+        );
+
+        fn shim_create_image_pixel_buffer_box() -> Box<ShimImagePixelBuffer>;
     }
 
     extern "Rust" {
@@ -260,22 +268,10 @@ pub mod ffi {
     }
 
     extern "Rust" {
-        fn shim_create_image_rgba_f32(
-            image_width: usize,
-            image_height: usize,
-            out_pixel_data: &mut Box<ShimImagePixelDataRgbaF32>,
-        );
-
-        fn shim_create_image_2d_f64(
-            image_width: usize,
-            image_height: usize,
-            out_pixel_data: &mut Box<ShimImagePixelData2DF64>,
-        );
-
-        fn shim_image_read_pixels_exr_rgba_f32(
+        fn shim_image_read_pixels_exr_f32x4(
             file_path: &str,
             out_meta_data: &mut Box<ShimImageMetaData>,
-            out_pixel_data: &mut Box<ShimImagePixelDataRgbaF32>,
+            out_pixel_buffer: &mut Box<ShimImagePixelBuffer>,
         ) -> bool;
 
         fn shim_image_read_metadata_exr(
@@ -283,11 +279,11 @@ pub mod ffi {
             out_meta_data: &mut Box<ShimImageMetaData>,
         ) -> bool;
 
-        fn shim_image_write_pixels_exr_rgba_f32(
+        fn shim_image_write_pixels_exr_f32x4(
             file_path: &str,
             exr_encoder: ImageExrEncoder,
             in_meta_data: &Box<ShimImageMetaData>,
-            in_pixel_data: &Box<ShimImagePixelDataRgbaF32>,
+            in_pixel_buffer: &Box<ShimImagePixelBuffer>,
         ) -> bool;
     }
 }

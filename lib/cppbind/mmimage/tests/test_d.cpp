@@ -39,12 +39,16 @@ bool test_d_image_write(const char *test_name, const size_t image_width,
         mmimg::ExrLineOrder::kIncreasing,
     };
 
-    auto pixel_data = mmimg::ImagePixelDataRgbaF32();
-    mmimg::create_image_rgba_f32(image_width, image_height, pixel_data);
+    // Initialize pixel buffer with enough memory.
+    const auto num_channels = 4;
+    auto pixel_buffer = mmimg::ImagePixelBuffer();
+    pixel_buffer.resize(mmimg::BufferDataType::kF32, image_width, image_height,
+                        num_channels);
 
-    rust::Slice<mmimg::PixelRgbaF32> raw_data_mut = pixel_data.data_mut();
-    const auto width = pixel_data.width();
-    const auto height = pixel_data.height();
+    rust::Slice<mmimg::PixelF32x4> raw_data_mut =
+        pixel_buffer.as_slice_f32x4_mut();
+    const auto width = pixel_buffer.image_width();
+    const auto height = pixel_buffer.image_height();
     for (auto row = 0; row < height; row++) {
         for (auto column = 0; column < width; column++) {
             const size_t index = (row * width) + column;
@@ -54,27 +58,27 @@ bool test_d_image_write(const char *test_name, const size_t image_width,
             const float y =
                 static_cast<float>(row) / static_cast<float>(height - 1);
 
-            mmimg::PixelRgbaF32 pixel{x, y, 0.0f, 0.0f};
+            mmimg::PixelF32x4 pixel{x, y, 0.0f, 0.0f};
             raw_data_mut[index] = pixel;
         }
     }
 
     std::cout << test_name << " output file path: " << output_file_path
               << std::endl;
-    bool result = mmimg::image_write_pixels_exr_rgba_f32(
-        output_file_path, exr_encoder, meta_data, pixel_data);
+    bool result = mmimg::image_write_pixels_exr_f32x4(
+        output_file_path, exr_encoder, meta_data, pixel_buffer);
     std::cout << test_name << " written result: " << result << std::endl;
     if (!result) {
         return false;
     }
 
-    bool reread_result = mmimg::image_read_pixels_exr_rgba_f32(
-        output_file_path, meta_data, pixel_data);
+    bool reread_result = mmimg::image_read_pixels_exr_f32x4(
+        output_file_path, meta_data, pixel_buffer);
     std::cout << test_name << " image file path: " << output_file_path
               << " image read result: " << static_cast<uint32_t>(reread_result)
               << std::endl
-              << test_name << " image width: " << pixel_data.width()
-              << " image height: " << pixel_data.height() << std::endl;
+              << test_name << " image width: " << pixel_buffer.image_width()
+              << " image height: " << pixel_buffer.image_height() << std::endl;
 
     test_print_metadata_named_attributes(test_name, meta_data);
     test_print_metadata_fields(test_name, meta_data);
@@ -86,9 +90,7 @@ bool test_d_image_write(const char *test_name, const size_t image_width,
     return result;
 }
 
-int test_d(const char *dir_path) {
-    const auto test_name = "test_d:";
-
+int test_d(const char *test_name, const char *dir_path) {
     auto out_path = join_path(dir_path, "test_identity_st_map.0001.out.exr");
     const auto out_file_path = rust::Str(out_path);
 

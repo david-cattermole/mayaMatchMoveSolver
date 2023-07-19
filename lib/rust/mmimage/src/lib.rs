@@ -20,8 +20,9 @@
 
 use crate::encoder::ImageExrEncoder;
 use crate::metadata::ImageMetaData;
-use crate::pixeldata::ImagePixelData2DF64;
-use crate::pixeldata::ImagePixelDataRgbaF32;
+use crate::pixelbuffer::BufferDataType;
+use crate::pixelbuffer::ImagePixelBuffer;
+use crate::pixeldata::ImagePixelDataF32x4;
 use anyhow::bail;
 use anyhow::Result;
 use exr::prelude::traits::*;
@@ -29,42 +30,8 @@ use exr::prelude::traits::*;
 pub mod datatype;
 pub mod encoder;
 pub mod metadata;
+pub mod pixelbuffer;
 pub mod pixeldata;
-
-pub fn create_image_rgba_f32(
-    image_width: usize,
-    image_height: usize,
-) -> ImagePixelDataRgbaF32 {
-    let pixel_count = image_width * image_height;
-    let default_pixel = (0.0, 0.0, 0.0, 0.0);
-    let pixel_data: Vec<(f32, f32, f32, f32)> =
-        vec![default_pixel; pixel_count];
-
-    let image_data = ImagePixelDataRgbaF32 {
-        width: image_width,
-        height: image_height,
-        data: pixel_data,
-    };
-
-    image_data
-}
-
-pub fn create_image_2d_f64(
-    image_width: usize,
-    image_height: usize,
-) -> ImagePixelData2DF64 {
-    let pixel_count = image_width * image_height;
-    let default_pixel = (0.0, 0.0);
-    let pixel_data: Vec<(f64, f64)> = vec![default_pixel; pixel_count];
-
-    let image_data = ImagePixelData2DF64 {
-        width: image_width,
-        height: image_height,
-        data: pixel_data,
-    };
-
-    image_data
-}
 
 /// Read the Metadata from an EXR image.
 //
@@ -94,9 +61,9 @@ pub fn image_read_metadata_exr(file_path: &str) -> Result<ImageMetaData> {
 //
 // https://github.com/johannesvollmer/exrs/blob/master/GUIDE.md
 // https://github.com/johannesvollmer/exrs/blob/master/examples/0c_read_rgba.rs
-pub fn image_read_pixels_exr_rgba_f32(
+pub fn image_read_pixels_exr_f32x4(
     file_path: &str,
-) -> Result<(ImageMetaData, ImagePixelDataRgbaF32)> {
+) -> Result<(ImageMetaData, ImagePixelBuffer)> {
     let image = exr::image::read::read()
         .no_deep_data()
         .largest_resolution_level()
@@ -134,10 +101,14 @@ pub fn image_read_pixels_exr_rgba_f32(
     // println!("Data Window: {:?}", data_window);
 
     let pixel_count = image_width * image_height;
-    let default_pixel = (0.0, 0.0, 0.0, 0.0);
-    let mut pixel_data: Vec<(f32, f32, f32, f32)> =
-        vec![default_pixel; pixel_count];
-    let pixel_data_slice = pixel_data.as_mut_slice();
+    let default_pixel = 0.0;
+    let mut pixel_data: Vec<f64> = vec![default_pixel; pixel_count * 2];
+    let pixel_data_slice = unsafe {
+        std::mem::transmute::<&mut [f64], &mut [(f32, f32, f32, f32)]>(
+            pixel_data.as_mut_slice(),
+        )
+    };
+
     for y in 0..image_height {
         for x in 0..image_width {
             let position = exr::math::Vec2(x, y);
@@ -148,11 +119,14 @@ pub fn image_read_pixels_exr_rgba_f32(
         }
     }
 
-    let image_data = ImagePixelDataRgbaF32 {
-        width: image_width,
-        height: image_height,
-        data: pixel_data,
-    };
+    let num_channels = 4;
+    let image_data = ImagePixelBuffer::from_data(
+        BufferDataType::F32,
+        image_width,
+        image_height,
+        num_channels,
+        pixel_data,
+    );
 
     let image_metadata =
         ImageMetaData::with_attributes(&image.attributes, &layer_attributes);
@@ -165,24 +139,24 @@ pub fn image_read_pixels_exr_rgba_f32(
 // https://github.com/johannesvollmer/exrs/blob/master/examples/0a_write_rgba.rs
 // https://github.com/johannesvollmer/exrs/blob/master/examples/1a_write_rgba_with_metadata.rs
 // https://github.com/johannesvollmer/exrs/blob/master/examples/7_write_raw_blocks.rs
-pub fn image_write_pixels_exr_rgba_f32(
+pub fn image_write_pixels_exr_f32x4(
     file_path: &str,
     encoder: ImageExrEncoder,
     meta_data: &ImageMetaData,
-    pixel_data: &ImagePixelDataRgbaF32,
+    pixel_buffer: &ImagePixelBuffer,
 ) -> Result<()> {
     // TODO: How can we control the number of threads used for
     // compression?
 
     let layer_attributes = meta_data.as_layer_attributes();
 
-    // This function can generate a color for any pixel
+    let pixel_data = ImagePixelDataF32x4::from_buffer(pixel_buffer);
     let generate_pixels =
         |position: exr::math::Vec2<usize>| (pixel_data.get_pixel(position));
 
     let encoding = ImageExrEncoder::as_exr_encoding(encoder);
     let layer = exr::image::Layer::new(
-        (pixel_data.width, pixel_data.height),
+        (pixel_buffer.image_width(), pixel_buffer.image_height()),
         layer_attributes,
         encoding,
         exr::image::SpecificChannels::rgba(generate_pixels),
@@ -198,7 +172,8 @@ pub fn image_write_pixels_exr_rgba_f32(
         // Write it to a file with all cores in parallel.
         image.write().to_file(file_path)
     } else {
-        // Sequencentially compress and write the images.
+        // Sequentially compress and write the images (in a single
+        // thread).
         image.write().non_parallel().to_file(file_path)
     };
 

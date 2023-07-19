@@ -33,7 +33,7 @@ namespace mmimg = mmimage;
 bool test_c_image_write(const char *test_name, rust::Str input_file_path,
                         rust::Str output_file_path) {
     auto meta_data = mmimg::ImageMetaData();
-    auto pixel_data = mmimg::ImagePixelDataRgbaF32();
+    auto pixel_buffer = mmimg::ImagePixelBuffer();
     auto exr_encoder = mmimg::ImageExrEncoder{
         mmimg::ExrCompression::kZIP1,
         mmimg::ExrPixelLayout{mmimg::ExrPixelLayoutMode::kScanLines, 0, 0},
@@ -41,13 +41,13 @@ bool test_c_image_write(const char *test_name, rust::Str input_file_path,
     };
 
     // TODO: Get the EXR Encoding when reading the file.
-    bool result = mmimg::image_read_pixels_exr_rgba_f32(input_file_path,
-                                                        meta_data, pixel_data);
+    bool result = mmimg::image_read_pixels_exr_f32x4(
+        input_file_path, meta_data, pixel_buffer);
     std::cout << test_name << " image file path: " << input_file_path
               << " image read result: " << static_cast<uint32_t>(result)
               << std::endl
-              << test_name << " image width: " << pixel_data.width()
-              << " image height: " << pixel_data.height() << std::endl;
+              << test_name << " image width: " << pixel_buffer.image_width()
+              << " image height: " << pixel_buffer.image_height() << std::endl;
     if (!result) {
         return result;
     }
@@ -56,13 +56,16 @@ bool test_c_image_write(const char *test_name, rust::Str input_file_path,
     std::cout << test_name << " debug_string: " << debug_string.c_str()
               << std::endl;
 
-    rust::Slice<mmimg::PixelRgbaF32> raw_data_mut = pixel_data.data_mut();
-    const rust::Slice<const mmimg::PixelRgbaF32> raw_data = pixel_data.data();
-    for (int32_t row = 0; row < pixel_data.height(); row++) {
-        for (int32_t column = 0; column < pixel_data.width(); column++) {
-            size_t index = (row * pixel_data.width()) + column;
+    rust::Slice<mmimg::PixelF32x4> raw_data_mut =
+        pixel_buffer.as_slice_f32x4_mut();
+    const rust::Slice<const mmimg::PixelF32x4> raw_data =
+        pixel_buffer.as_slice_f32x4();
+    for (int32_t row = 0; row < pixel_buffer.image_height(); row++) {
+        for (int32_t column = 0; column < pixel_buffer.image_width();
+             column++) {
+            size_t index = (row * pixel_buffer.image_width()) + column;
 
-            mmimg::PixelRgbaF32 pixel = raw_data[index];
+            mmimg::PixelF32x4 pixel = raw_data[index];
             pixel.r *= 2.0f;
             pixel.g *= 2.0f;
             pixel.b *= 2.0f;
@@ -75,16 +78,16 @@ bool test_c_image_write(const char *test_name, rust::Str input_file_path,
 
     std::cout << test_name << " output file path: " << output_file_path
               << std::endl;
-    result = mmimg::image_write_pixels_exr_rgba_f32(
-        output_file_path, exr_encoder, meta_data, pixel_data);
+    result = mmimg::image_write_pixels_exr_f32x4(
+        output_file_path, exr_encoder, meta_data, pixel_buffer);
 
-    bool reread_result = mmimg::image_read_pixels_exr_rgba_f32(
-        output_file_path, meta_data, pixel_data);
+    bool reread_result = mmimg::image_read_pixels_exr_f32x4(
+        output_file_path, meta_data, pixel_buffer);
     std::cout << test_name << " image file path: " << output_file_path
               << " image read result: " << static_cast<uint32_t>(reread_result)
               << std::endl
-              << test_name << " image width: " << pixel_data.width()
-              << " image height: " << pixel_data.height() << std::endl;
+              << test_name << " image width: " << pixel_buffer.image_width()
+              << " image height: " << pixel_buffer.image_height() << std::endl;
 
     test_print_metadata_named_attributes(test_name, meta_data);
     test_print_metadata_fields(test_name, meta_data);
@@ -96,9 +99,7 @@ bool test_c_image_write(const char *test_name, rust::Str input_file_path,
     return result;
 }
 
-int test_c(const char *dir_path) {
-    const auto test_name = "test_c:";
-
+int test_c(const char *test_name, const char *dir_path) {
     auto path_string1 =
         join_path(dir_path, "/Beachball/singlepart.0001", ".exr");
     auto path_string2 = join_path(dir_path, "/ScanLines/Tree", ".exr");
@@ -110,8 +111,7 @@ int test_c(const char *dir_path) {
     const auto file_path_out1 = rust::Str(path_out_string1);
     const auto file_path_out2 = rust::Str(path_out_string2);
 
-    bool ok = false;
-    ok = test_c_image_write(test_name, file_path1, file_path_out1);
+    bool ok = test_c_image_write(test_name, file_path1, file_path_out1);
     if (!ok) {
         return 1;
     }

@@ -23,6 +23,7 @@ set(MMSOLVERLIBS_LIB_DIR "/path/to/rust/build/directory/" CACHE PATH
 set(MMSOLVERLIBS_CXXBRIDGE_EXE "/path/to/cxxbridge/executable/cxxbridge" CACHE PATH
   "The path to the cxxbridge executable file.")
 
+set(main_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 set(mmcore_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcore/include)
 set(mmcore_source_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcore/src)
 set(mmimage_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmimage/include)
@@ -53,7 +54,7 @@ set(lib_source_files
 
   ${mmimage_source_dir}/_cxxbridge.cpp
   ${mmimage_source_dir}/imagemetadata.cpp
-  ${mmimage_source_dir}/imagepixeldata.cpp
+  ${mmimage_source_dir}/imagepixelbuffer.cpp
   ${mmimage_source_dir}/lib.cpp
 
   ${mmscenegraph_source_dir}/_cxxbridge.cpp
@@ -111,6 +112,7 @@ add_dependencies(${target_release_lib_name} ldpk::ldpk)
 
 target_include_directories(${target_release_lib_name}
   INTERFACE
+  PUBLIC $<BUILD_INTERFACE:${main_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmcore_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmlens_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmimage_include_dir}>
@@ -129,5 +131,6 @@ install(DIRECTORY
   "${mmimage_include_dir}/"
   "${mmlens_include_dir}/"
   "${mmscenegraph_include_dir}/"
+  "${main_include_dir}/"
   DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}"
   FILES_MATCHING PATTERN "*.h")

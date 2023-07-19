@@ -65,16 +65,16 @@ int main(int argc, char *argv[]) {
     }
     char *dir_path = argv[1];
 
-    if (!test_a(dir_path)) {
+    if (!test_a("mmimage_test_a:", dir_path)) {
         return 1;
     }
-    if (!test_b(dir_path)) {
+    if (!test_b("mmimage_test_b:", dir_path)) {
         return 1;
     }
-    if (!test_c(dir_path)) {
+    if (!test_c("mmimage_test_c:", dir_path)) {
         return 1;
     }
-    if (!test_d(dir_path)) {
+    if (!test_d("mmimage_test_d:", dir_path)) {
         return 1;
     }
     return 0;

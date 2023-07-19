@@ -46,7 +46,7 @@ use std::hash::Hash;
 use std::hash::Hasher;
 
 impl BindLensModelType {
-    fn parameter_size(&self) -> ParameterSize {
+    fn parameters_size(&self) -> ParameterSize {
         match *self {
             BindLensModelType::TdeClassic => PARAMETER_COUNT_3DE_CLASSIC,
             BindLensModelType::TdeRadialStdDeg4 => {
@@ -63,6 +63,10 @@ impl BindLensModelType {
     }
 }
 
+/// Get the parameters values in a block of output values.
+///
+/// output_values is assumed to be pre-allocated with at least enough
+/// memory to old enough values for the lens_model_type given.
 fn set_parameter_block_values(
     layer_num: LayerIndex,
     frame_number: FrameNumber,
@@ -130,7 +134,8 @@ fn set_parameter_block_values(
     };
 }
 
-fn lens_frame_count(
+/// Count how many frames are in the layer.
+fn count_lens_layer_frame_count(
     layer_num: LayerIndex,
     layer_frame_range: &SmallVec<[(FrameNumber, FrameNumber); 4]>,
 ) -> FrameSize {
@@ -146,25 +151,50 @@ fn lens_frame_count(
     frame_count
 }
 
-fn count_parameters(
+/// Count up all the parameters that will be used for a set of layers.
+fn total_parameter_count(
     layer_count: LayerSize,
     layer_frame_range: &SmallVec<[(FrameNumber, FrameNumber); 4]>,
     layer_lens_model_types: &SmallVec<[BindLensModelType; 4]>,
 ) -> (usize, usize) {
-    // Count up all the parameters that will be used.
-    let mut total_parameter_count: usize = 0;
-    let mut total_parameter_value_count: usize = 0;
+    let mut parameter_count: usize = 0;
+    let mut parameter_value_count: usize = 0;
     for layer_num in 0..layer_count {
-        let frame_count = lens_frame_count(layer_num, &layer_frame_range);
+        let frame_count =
+            count_lens_layer_frame_count(layer_num, &layer_frame_range);
 
         let lens_model_type = layer_lens_model_types[layer_num as usize];
-        let parameter_size = lens_model_type.parameter_size();
+        let parameters_size = lens_model_type.parameters_size();
 
-        total_parameter_count += frame_count as usize;
-        total_parameter_value_count +=
-            parameter_size as usize * frame_count as usize;
+        parameter_count += frame_count as usize;
+        parameter_value_count +=
+            parameters_size as usize * frame_count as usize;
     }
-    (total_parameter_count, total_parameter_value_count)
+
+    (parameter_count, parameter_value_count)
+}
+
+/// Sum all parameter counts for the layer number up to
+/// 'up_to_layer_num'.
+///
+/// To find the index into the parameter data block of the parameter
+/// values needed.
+fn sum_parameter_count(
+    up_to_layer_num: LayerIndex,
+    layer_frame_range: &SmallVec<[(FrameNumber, FrameNumber); 4]>,
+) -> usize {
+    if up_to_layer_num == 0 {
+        return 0;
+    }
+
+    let mut parameter_count: usize = 0;
+    for layer_num in 0..up_to_layer_num {
+        let frame_count =
+            count_lens_layer_frame_count(layer_num, &layer_frame_range);
+        parameter_count += frame_count as usize;
+    }
+
+    parameter_count
 }
 
 /// When a 'frame' outside the frame range is requested, the
@@ -179,22 +209,17 @@ pub fn construct_lens_parameters<'a>(
     parameter_block: &'a Vec<f64>,
     parameter_indices: &Vec<(ParameterIndex, ParameterSize)>,
 ) -> Option<&'a [f64]> {
-    println!(
-        "construct_lens_parameters: layer_num={} frame={}",
-        layer_num, frame
-    );
     if layer_num >= layer_count {
-        println!("construct_lens_parameters: 1");
         return None;
     }
     let index = layer_num as usize;
     if layer_lens_model_types[index] != lens_model_type {
-        println!("construct_lens_parameters: 2");
         return None;
     }
 
     let (start_frame, _end_frame) = layer_frame_range[layer_num as usize];
-    let frame_count = lens_frame_count(layer_num, &layer_frame_range);
+    let frame_count =
+        count_lens_layer_frame_count(layer_num, &layer_frame_range);
 
     let mut frame_index: i32 = 0;
     if frame_count > 1 {
@@ -203,31 +228,13 @@ pub fn construct_lens_parameters<'a>(
     frame_index = std::cmp::max(frame_index, 0);
     frame_index = std::cmp::min(frame_index, (frame_count - 1) as i32);
 
-    let (_, parameter_value_count) = count_parameters(
-        layer_num,
-        &layer_frame_range,
-        &layer_lens_model_types,
-    );
-    println!(
-        "construct_lens_parameters: parameter_value_count: {}",
-        parameter_value_count
-    );
+    let parameter_count = sum_parameter_count(layer_num, &layer_frame_range);
+    let index: usize = parameter_count + frame_index as usize;
 
-    let index: usize = parameter_value_count + frame_index as usize;
-    println!("construct_lens_parameters: index: {}", index);
-
-    let (parameter_index, parameter_size) = parameter_indices[index];
-    println!(
-        "construct_lens_parameters: parameter_index: {}",
-        parameter_index
-    );
-    println!(
-        "construct_lens_parameters: parameter_size: {}",
-        parameter_size
-    );
+    let (parameter_index, parameters_size) = parameter_indices[index];
 
     let index_start = parameter_index as usize;
-    let index_end = parameter_index as usize + parameter_size as usize;
+    let index_end = parameter_index as usize + parameters_size as usize;
     let values = &parameter_block[index_start..index_end];
 
     Some(values)
@@ -317,33 +324,29 @@ impl ShimDistortionLayers {
         }
 
         // Count up all the parameters that will be used.
-        let (total_parameter_count, total_parameter_value_count) =
-            count_parameters(
-                layer_count,
-                &layer_frame_range,
-                &layer_lens_model_types,
-            );
-
-        let mut parameter_block = vec![0.0 as f64; total_parameter_value_count];
+        let (parameter_count, parameter_value_count) = total_parameter_count(
+            layer_count,
+            &layer_frame_range,
+            &layer_lens_model_types,
+        );
+        let mut parameter_block = vec![0.0 as f64; parameter_value_count];
         let mut parameter_indices =
-            vec![
-                (0 as ParameterIndex, 0 as ParameterSize);
-                total_parameter_count
-            ];
+            vec![(0 as ParameterIndex, 0 as ParameterSize); parameter_count];
 
         let mut parameter_num: usize = 0;
         let mut layer_parameter_index: usize = 0;
         for layer_num in 0..layer_count {
-            let frame_count = lens_frame_count(layer_num, &layer_frame_range);
+            let frame_count =
+                count_lens_layer_frame_count(layer_num, &layer_frame_range);
             let is_static = frame_count == 1;
 
             let lens_model_type = layer_lens_model_types[layer_num as usize];
-            let parameter_size = lens_model_type.parameter_size();
+            let parameters_size = lens_model_type.parameters_size();
 
             let mut index_end: usize = 0;
             if is_static {
                 let index_start: usize = layer_parameter_index;
-                index_end = index_start + parameter_size as usize;
+                index_end = index_start + parameters_size as usize;
 
                 let frame_number = STATIC_FRAME_NUMBER;
                 let (_, output_values) =
@@ -358,7 +361,7 @@ impl ShimDistortionLayers {
 
                 parameter_indices[parameter_num] = (
                     index_start.try_into().unwrap(),
-                    parameter_size.try_into().unwrap(),
+                    parameters_size.try_into().unwrap(),
                 );
                 parameter_num += 1;
             } else {
@@ -367,8 +370,8 @@ impl ShimDistortionLayers {
                     layer_frame_range[layer_num as usize];
                 for frame_number in start_frame..=end_frame {
                     let index_start: usize = layer_parameter_index
-                        + (parameter_size as usize * frame_index as usize);
-                    index_end = index_start + parameter_size as usize;
+                        + (parameters_size as usize * frame_index as usize);
+                    index_end = index_start + parameters_size as usize;
 
                     let (_, output_values) =
                         parameter_block.split_at_mut(index_start);
@@ -382,7 +385,7 @@ impl ShimDistortionLayers {
 
                     parameter_indices[parameter_num] = (
                         index_start.try_into().unwrap(),
-                        parameter_size.try_into().unwrap(),
+                        parameters_size.try_into().unwrap(),
                     );
                     parameter_num += 1;
                     frame_index += 1;
@@ -404,8 +407,10 @@ impl ShimDistortionLayers {
 
     pub fn is_static(&self) -> bool {
         for layer_num in 0..self.layer_count {
-            let frame_count =
-                lens_frame_count(layer_num, &self.layer_frame_range);
+            let frame_count = count_lens_layer_frame_count(
+                layer_num,
+                &self.layer_frame_range,
+            );
             if frame_count != 1 {
                 return false;
             }

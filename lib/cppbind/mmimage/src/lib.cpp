@@ -31,24 +31,6 @@ std::ostream& operator<<(std::ostream& os,
 
 namespace mmimage {
 
-void create_image_rgba_f32(const size_t image_width, const size_t image_height,
-                           ImagePixelDataRgbaF32& out_pixel_data) {
-    auto pixel_data = out_pixel_data.get_inner();
-
-    shim_create_image_rgba_f32(image_width, image_height, pixel_data);
-
-    out_pixel_data.set_inner(pixel_data);
-}
-
-void create_image_2d_f64(const size_t image_width, const size_t image_height,
-                         ImagePixelData2DF64& out_pixel_data) {
-    auto pixel_data = out_pixel_data.get_inner();
-
-    shim_create_image_2d_f64(image_width, image_height, pixel_data);
-
-    out_pixel_data.set_inner(pixel_data);
-}
-
 bool image_read_metadata_exr(const rust::Str& file_path,
                              ImageMetaData& out_meta_data) {
     auto meta_data = out_meta_data.get_inner();
@@ -59,28 +41,28 @@ bool image_read_metadata_exr(const rust::Str& file_path,
     return result;
 }
 
-bool image_read_pixels_exr_rgba_f32(const rust::Str& file_path,
+bool image_read_pixels_exr_f32x4(const rust::Str& file_path,
                                     ImageMetaData& out_meta_data,
-                                    ImagePixelDataRgbaF32& out_pixel_data) {
+                                    ImagePixelBuffer& out_pixel_data) {
     auto pixel_data = out_pixel_data.get_inner();
     auto meta_data = out_meta_data.get_inner();
 
     bool result =
-        shim_image_read_pixels_exr_rgba_f32(file_path, meta_data, pixel_data);
+        shim_image_read_pixels_exr_f32x4(file_path, meta_data, pixel_data);
 
     out_pixel_data.set_inner(pixel_data);
     out_meta_data.set_inner(meta_data);
     return result;
 }
 
-bool image_write_pixels_exr_rgba_f32(const rust::Str& file_path,
+bool image_write_pixels_exr_f32x4(const rust::Str& file_path,
                                      ImageExrEncoder exr_encoder,
                                      ImageMetaData& in_meta_data,
-                                     ImagePixelDataRgbaF32& in_pixel_data) {
+                                     ImagePixelBuffer& in_pixel_data) {
     auto inner_pixel_data = in_pixel_data.get_inner();
     auto inner_meta_data = in_meta_data.get_inner();
 
-    bool result = shim_image_write_pixels_exr_rgba_f32(
+    bool result = shim_image_write_pixels_exr_f32x4(
         file_path, exr_encoder, inner_meta_data, inner_pixel_data);
 
     in_pixel_data.set_inner(inner_pixel_data);

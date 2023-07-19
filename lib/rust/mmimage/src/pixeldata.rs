@@ -18,49 +18,44 @@
 // ====================================================================
 //
 
+use crate::pixelbuffer::ImagePixelBuffer;
 use exr::prelude::*;
 
 #[derive(Debug, Clone)]
-pub struct ImagePixelDataRgbaF32 {
-    pub width: usize,
-    pub height: usize,
-    pub data: Vec<(f32, f32, f32, f32)>,
+pub struct ImagePixelDataF32x4<'a> {
+    buffer_ref: &'a ImagePixelBuffer,
 }
 
-impl ImagePixelDataRgbaF32 {
-    pub fn new() -> ImagePixelDataRgbaF32 {
-        ImagePixelDataRgbaF32 {
-            width: 0,
-            height: 0,
-            data: Vec::new(),
-        }
+impl ImagePixelDataF32x4<'_> {
+    pub fn from_buffer(buffer_ref: &ImagePixelBuffer) -> ImagePixelDataF32x4 {
+        ImagePixelDataF32x4 { buffer_ref }
     }
 }
 
-impl GetPixel for ImagePixelDataRgbaF32 {
+impl GetPixel for ImagePixelDataF32x4<'_> {
     type Pixel = (f32, f32, f32, f32);
 
     fn get_pixel(&self, position: Vec2<usize>) -> Self::Pixel {
         let column = position.x();
         let row = position.y();
 
-        let index = (row * self.width) + column;
-        let pixel: (f32, f32, f32, f32) = self.data[index];
+        let index = (row * self.buffer_ref.image_width()) + column;
+        let slice = self.buffer_ref.as_slice_f32x4();
+        let pixel: (f32, f32, f32, f32) = slice[index];
         pixel
-        // (0.0, 0.0, 0.0, 0.0)
     }
 }
 
 #[derive(Debug, Clone)]
-pub struct ImagePixelData2DF64 {
+pub struct ImagePixelDataF64x2 {
     pub width: usize,
     pub height: usize,
     pub data: Vec<(f64, f64)>,
 }
 
-impl ImagePixelData2DF64 {
-    pub fn new() -> ImagePixelData2DF64 {
-        ImagePixelData2DF64 {
+impl ImagePixelDataF64x2 {
+    pub fn new() -> ImagePixelDataF64x2 {
+        ImagePixelDataF64x2 {
             width: 0,
             height: 0,
             data: Vec::new(),
@@ -68,7 +63,7 @@ impl ImagePixelData2DF64 {
     }
 }
 
-impl GetPixel for ImagePixelData2DF64 {
+impl GetPixel for ImagePixelDataF64x2 {
     type Pixel = (f64, f64);
 
     fn get_pixel(&self, position: Vec2<usize>) -> Self::Pixel {
@@ -78,6 +73,5 @@ impl GetPixel for ImagePixelData2DF64 {
         let index = (row * self.width) + column;
         let pixel: (f64, f64) = self.data[index];
         pixel
-        // (0.0, 0.0)
     }
 }

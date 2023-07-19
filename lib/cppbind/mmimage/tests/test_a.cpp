@@ -32,25 +32,27 @@ namespace mmimg = mmimage;
 
 bool test_a_image_read(const char *test_name, rust::Str file_path) {
     auto meta_data = mmimg::ImageMetaData();
-    auto pixel_data = mmimg::ImagePixelDataRgbaF32();
+    auto pixel_buffer = mmimg::ImagePixelBuffer();
 
-    bool result =
-        mmimg::image_read_pixels_exr_rgba_f32(file_path, meta_data, pixel_data);
+    bool result = mmimg::image_read_pixels_exr_f32x4(file_path, meta_data,
+                                                        pixel_buffer);
     std::cout << test_name << " image file path: " << file_path
               << " image read result: " << static_cast<uint32_t>(result)
               << std::endl
-              << test_name << " image width: " << pixel_data.width()
-              << " image height: " << pixel_data.height() << std::endl;
+              << test_name << " image width: " << pixel_buffer.image_width()
+              << " image height: " << pixel_buffer.image_height() << std::endl;
 
-    rust::Slice<mmimg::PixelRgbaF32> raw_data_mut = pixel_data.data_mut();
-    const rust::Slice<const mmimg::PixelRgbaF32> raw_data = pixel_data.data();
-    auto max_rows = std::min<size_t>(pixel_data.height(), 1);
-    auto max_columns = std::min<size_t>(pixel_data.width(), 8);
+    rust::Slice<mmimg::PixelF32x4> raw_data_mut =
+        pixel_buffer.as_slice_f32x4_mut();
+    const rust::Slice<const mmimg::PixelF32x4> raw_data =
+        pixel_buffer.as_slice_f32x4();
+    const auto max_rows = std::min<size_t>(pixel_buffer.image_height(), 1);
+    const auto max_columns = std::min<size_t>(pixel_buffer.image_width(), 8);
     for (int32_t row = 0; row < max_rows; row++) {
         for (int32_t column = 0; column < max_columns; column++) {
-            size_t index = (row * pixel_data.width()) + column;
+            size_t index = (row * pixel_buffer.image_width()) + column;
 
-            mmimg::PixelRgbaF32 pixel = raw_data[index];
+            mmimg::PixelF32x4 pixel = raw_data[index];
             pixel.r *= 2.0f;
             pixel.g *= 2.0f;
             pixel.b *= 2.0f;
@@ -84,17 +86,14 @@ bool test_a_image_read(const char *test_name, rust::Str file_path) {
     return result;
 }
 
-int test_a(const char *dir_path) {
-    const auto test_name = "test_a:";
-
+int test_a(const char *test_name, const char *dir_path) {
     auto path_string1 =
         join_path(dir_path, "/Beachball/singlepart.0001", ".exr");
     auto path_string2 = join_path(dir_path, "/ScanLines/Tree", ".exr");
     const auto file_path1 = rust::Str(path_string1);
     const auto file_path2 = rust::Str(path_string2);
 
-    bool ok = false;
-    ok = test_a_image_read(test_name, file_path1);
+    bool ok = test_a_image_read(test_name, file_path1);
     if (!ok) {
         return 1;
     }

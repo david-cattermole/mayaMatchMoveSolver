@@ -32,60 +32,6 @@
 
 namespace mmimage {
 
-class ImagePixelDataRgbaF32 {
-public:
-    MMIMAGE_API_EXPORT
-    ImagePixelDataRgbaF32() noexcept;
-
-    MMIMAGE_API_EXPORT
-    rust::Box<ShimImagePixelDataRgbaF32> get_inner() noexcept;
-
-    MMIMAGE_API_EXPORT
-    void set_inner(rust::Box<ShimImagePixelDataRgbaF32> &value) noexcept;
-
-    MMIMAGE_API_EXPORT
-    size_t width() noexcept;
-
-    MMIMAGE_API_EXPORT
-    size_t height() noexcept;
-
-    MMIMAGE_API_EXPORT
-    const rust::Slice<const PixelRgbaF32> data() noexcept;
-
-    MMIMAGE_API_EXPORT
-    rust::Slice<PixelRgbaF32> data_mut() noexcept;
-
-private:
-    rust::Box<ShimImagePixelDataRgbaF32> inner_;
-};
-
-class ImagePixelData2DF64 {
-public:
-    MMIMAGE_API_EXPORT
-    ImagePixelData2DF64() noexcept;
-
-    MMIMAGE_API_EXPORT
-    rust::Box<ShimImagePixelData2DF64> get_inner() noexcept;
-
-    MMIMAGE_API_EXPORT
-    void set_inner(rust::Box<ShimImagePixelData2DF64> &value) noexcept;
-
-    MMIMAGE_API_EXPORT
-    size_t width() noexcept;
-
-    MMIMAGE_API_EXPORT
-    size_t height() noexcept;
-
-    MMIMAGE_API_EXPORT
-    const rust::Slice<const Pixel2DF64> data() noexcept;
-
-    MMIMAGE_API_EXPORT
-    rust::Slice<Pixel2DF64> data_mut() noexcept;
-
-private:
-    rust::Box<ShimImagePixelData2DF64> inner_;
-};
-
 }  // namespace mmimage
 
 #endif  // MM_IMAGE_IMAGE_PIXEL_DATA_H

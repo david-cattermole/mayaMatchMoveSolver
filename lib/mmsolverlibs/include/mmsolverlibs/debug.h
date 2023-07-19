@@ -45,7 +45,7 @@
 
 // Debug defines...
 #ifdef _WIN32  // Windows MSVC
-#define MMSOLVER_CORE_DBG(std::ostream &stream, x)                      \
+#define MMSOLVER_CORE_DBG(stream, x)                                    \
     __pragma(warning(push)) __pragma(warning(disable : 4127)) do {      \
         stream << __FILE__ << ':' << __LINE__ << ' ' << x << std::endl; \
     }                                                                   \
@@ -53,14 +53,14 @@
         ;                                                               \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define MMSOLVER_CORE_DBG(std::ostream &stream, x)                      \
+#define MMSOLVER_CORE_DBG(stream, x)                                    \
     do {                                                                \
         stream << __FILE__ << ':' << __LINE__ << ' ' << x << std::endl; \
     } while (0)
 #endif
 
 #ifdef _WIN32  // Windows MSVC
-#define MMSOLVER_CORE_VRB(std::ostream &stream, x)                 \
+#define MMSOLVER_CORE_VRB(stream, x)                               \
     __pragma(warning(push)) __pragma(warning(disable : 4127)) do { \
         if (verbose) {                                             \
             stream << x << std::endl;                              \
@@ -70,16 +70,16 @@
         ;                                                          \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define MMSOLVER_CORE_VRB(std::ostream &stream, x) \
-    do {                                           \
-        if (verbose) {                             \
-            stream << x << std::endl;              \
-        }                                          \
+#define MMSOLVER_CORE_VRB(stream, x)  \
+    do {                              \
+        if (verbose) {                \
+            stream << x << std::endl; \
+        }                             \
     } while (0)
 #endif
 
 #ifdef _WIN32  // Windows MSVC
-#define MMSOLVER_CORE_ERR(std::ostream &stream, x)                 \
+#define MMSOLVER_CORE_ERR(stream, x)                               \
     __pragma(warning(push)) __pragma(warning(disable : 4127)) do { \
         stream << "ERROR: " << x << std::endl;                     \
     }                                                              \
@@ -87,14 +87,14 @@
         ;                                                          \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define MMSOLVER_CORE_ERR(std::ostream &stream, x) \
-    do {                                           \
-        stream << "ERROR: " << x << std::endl;     \
+#define MMSOLVER_CORE_ERR(stream, x)           \
+    do {                                       \
+        stream << "ERROR: " << x << std::endl; \
     } while (0)
 #endif
 
 #ifdef _WIN32  // Windows MSVC
-#define MMSOLVER_CORE_WRN(std::ostream &stream, x)                 \
+#define MMSOLVER_CORE_WRN(stream, x)                               \
     __pragma(warning(push)) __pragma(warning(disable : 4127)) do { \
         stream << "WARNING: " << x << std::endl;                   \
     }                                                              \
@@ -102,14 +102,14 @@
         ;                                                          \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define MMSOLVER_CORE_WRN(std::ostream &stream, x) \
-    do {                                           \
-        stream << "WARNING: " << x << std::endl;   \
+#define MMSOLVER_CORE_WRN(stream, x)             \
+    do {                                         \
+        stream << "WARNING: " << x << std::endl; \
     } while (0)
 #endif
 
 #ifdef _WIN32  // Windows MSVC
-#define MMSOLVER_CORE_INFO(std::ostream &stream, x)                \
+#define MMSOLVER_CORE_INFO(stream, x)                              \
     __pragma(warning(push)) __pragma(warning(disable : 4127)) do { \
         stream << x << std::endl;                                  \
     }                                                              \
@@ -117,9 +117,9 @@
         ;                                                          \
     __pragma(warning(pop))
 #else  // Linux and MacOS
-#define MMSOLVER_CORE_INFO(std::ostream &stream, x) \
-    do {                                            \
-        stream << x << std::endl;                   \
+#define MMSOLVER_CORE_INFO(stream, x) \
+    do {                              \
+        stream << x << std::endl;     \
     } while (0)
 #endif
 

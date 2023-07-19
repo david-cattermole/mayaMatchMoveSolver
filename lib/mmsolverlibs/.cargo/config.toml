@@ -1,7 +1,23 @@
-[target.x86_64-pc-windows-msvc]
+# The "crt-static" target feature is disabled, so that the dynamic C
+# RunTime (CRT) library is used.
 # https://doc.rust-lang.org/reference/linkage.html
-rustflags = ["-C", "target-feature=-crt-static"]
+
+# SSE4.2 and AVX2 instructions are enabled.
+# "fma" (three-operand fused multiple-add) is enabled too.
+# https://rust-lang.github.io/packed_simd/perf-guide/target-feature/rustflags.html
+#
+# NOTE: Using "fma" may cause slight differences (but more accurate
+# *with* FMA) in floating point calculations. This may cause some
+# drift from the same calculation performed in C++.
+
+[target.x86_64-unknown-linux-gnu]
+rustflags = ["-C", "target-feature=+sse4.2,+avx2,+fma"]
+
+[target.x86_64-unknown-linux-musl]
+rustflags = ["-C", "target-feature=+sse4.2,+avx2,+fma"]
+
+[target.x86_64-pc-windows-msvc]
+rustflags = ["-C", "target-feature=-crt-static,+sse4.2,+avx2,+fma"]
 
 [target.x86_64-pc-windows-gnu]
-# https://doc.rust-lang.org/reference/linkage.html
-rustflags = ["-C", "target-feature=-crt-static"]
+rustflags = ["-C", "target-feature=-crt-static,+sse4.2,+avx2,+fma"]

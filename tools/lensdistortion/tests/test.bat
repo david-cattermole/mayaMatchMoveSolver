@@ -21,15 +21,26 @@ SETLOCAL
 ::
 :: Tests the Lens Distortion tool.
 
-SET MAIN_BINARY="C:\Users\catte\Documents\maya\2022\modules\mayaMatchMoveSolver-0.4.6-maya2022-win64\bin\mmsolver-lensdistortion.exe"
-SET LENS_FILE="c:\Users\catte\dev\mayaMatchMoveSolver_linux\lib\cppbind\mmlens\tests\test_file_3de_classic_3.nk"
-SET OUTPUT_FILE_PATTERN="c:/Users/catte/Desktop/out."
+:: The root of this project.
+SET PROJECT_ROOT=%CD%
+ECHO Project Root: %PROJECT_ROOT%
+
+SET MAYA_VERSION=2022
+SET MMSOLVER_VERSION=0.4.6
+SET INSTALL_MODULE_DIR=%USERPROFILE%\Documents\maya\%MAYA_VERSION%\modules
+
+SET MAIN_BINARY=%INSTALL_MODULE_DIR%\mayaMatchMoveSolver-%MMSOLVER_VERSION%-maya%MAYA_VERSION%-win64\bin\mmsolver-lensdistortion.exe
+SET LENS_FILE=%PROJECT_ROOT%\lib\cppbind\mmlens\tests\test_file_3de_classic_3.nk
+SET OUTPUT_FILE_PATTERN=%PROJECT_ROOT%\tools\lensdistortion\tests\test_output/out
+ECHO main binary: %MAIN_BINARY%
+ECHO lens file: %LENS_FILE%
+ECHO output file pattern: %OUTPUT_FILE_PATTERN%
 
 SET NUM_THREADS=0
 SET FRAME_START=0
 SET FRAME_END=12
 
-CALL %MAIN_BINARY% --num-threads %NUM_THREADS% --frame-range %FRAME_START% %FRAME_END% --lens %LENS_FILE% --output %OUTPUT_FILE_PATTERN%
+CALL %MAIN_BINARY% --verbose --num-threads %NUM_THREADS% --frame-range %FRAME_START% %FRAME_END% --lens %LENS_FILE% --output %OUTPUT_FILE_PATTERN%
 if errorlevel 1 goto failed_to_run
 
 :failed_to_run

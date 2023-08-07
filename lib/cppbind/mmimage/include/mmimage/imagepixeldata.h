@@ -30,8 +30,6 @@
 #include "_symbol_export.h"
 #include "_types.h"
 
-namespace mmimage {
-
-}  // namespace mmimage
+namespace mmimage {}  // namespace mmimage
 
 #endif  // MM_IMAGE_IMAGE_PIXEL_DATA_H

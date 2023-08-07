@@ -41,8 +41,8 @@ bool test_c_image_write(const char *test_name, rust::Str input_file_path,
     };
 
     // TODO: Get the EXR Encoding when reading the file.
-    bool result = mmimg::image_read_pixels_exr_f32x4(
-        input_file_path, meta_data, pixel_buffer);
+    bool result = mmimg::image_read_pixels_exr_f32x4(input_file_path, meta_data,
+                                                     pixel_buffer);
     std::cout << test_name << " image file path: " << input_file_path
               << " image read result: " << static_cast<uint32_t>(result)
               << std::endl
@@ -78,8 +78,8 @@ bool test_c_image_write(const char *test_name, rust::Str input_file_path,
 
     std::cout << test_name << " output file path: " << output_file_path
               << std::endl;
-    result = mmimg::image_write_pixels_exr_f32x4(
-        output_file_path, exr_encoder, meta_data, pixel_buffer);
+    result = mmimg::image_write_pixels_exr_f32x4(output_file_path, exr_encoder,
+                                                 meta_data, pixel_buffer);
 
     bool reread_result = mmimg::image_read_pixels_exr_f32x4(
         output_file_path, meta_data, pixel_buffer);

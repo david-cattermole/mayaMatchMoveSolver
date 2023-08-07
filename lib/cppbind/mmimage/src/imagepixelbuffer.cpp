@@ -44,9 +44,13 @@ BufferDataType ImagePixelBuffer::data_type() noexcept {
     return inner_->data_type();
 }
 
-size_t ImagePixelBuffer::image_width() noexcept { return inner_->image_width(); }
+size_t ImagePixelBuffer::image_width() noexcept {
+    return inner_->image_width();
+}
 
-size_t ImagePixelBuffer::image_height() noexcept { return inner_->image_height(); }
+size_t ImagePixelBuffer::image_height() noexcept {
+    return inner_->image_height();
+}
 
 size_t ImagePixelBuffer::num_channels() noexcept {
     return inner_->num_channels();

@@ -42,8 +42,8 @@ bool image_read_metadata_exr(const rust::Str& file_path,
 }
 
 bool image_read_pixels_exr_f32x4(const rust::Str& file_path,
-                                    ImageMetaData& out_meta_data,
-                                    ImagePixelBuffer& out_pixel_data) {
+                                 ImageMetaData& out_meta_data,
+                                 ImagePixelBuffer& out_pixel_data) {
     auto pixel_data = out_pixel_data.get_inner();
     auto meta_data = out_meta_data.get_inner();
 
@@ -56,9 +56,9 @@ bool image_read_pixels_exr_f32x4(const rust::Str& file_path,
 }
 
 bool image_write_pixels_exr_f32x4(const rust::Str& file_path,
-                                     ImageExrEncoder exr_encoder,
-                                     ImageMetaData& in_meta_data,
-                                     ImagePixelBuffer& in_pixel_data) {
+                                  ImageExrEncoder exr_encoder,
+                                  ImageMetaData& in_meta_data,
+                                  ImagePixelBuffer& in_pixel_data) {
     auto inner_pixel_data = in_pixel_data.get_inner();
     auto inner_meta_data = in_meta_data.get_inner();
 

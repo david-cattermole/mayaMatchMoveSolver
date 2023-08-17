@@ -127,9 +127,6 @@
 
 #define MM_IMAGE_PLANE_SHAPE_TYPE_ID 0x0012F187
 #define MM_IMAGE_PLANE_SHAPE_TYPE_NAME "mmImagePlaneShape"
-#define MM_IMAGE_PLANE_SHAPE_NODE_CLASSIFY                                  \
-    "auxiliary/camera:geometry/camera:imageplane:drawdb/geometry/mmSolver/" \
-    "imagePlane"
 #define MM_IMAGE_PLANE_SHAPE_DRAW_CLASSIFY "drawdb/geometry/mmSolver/imagePlane"
 #define MM_IMAGE_PLANE_SHAPE_DRAW_REGISTRANT_ID "mmImagePlaneShape"
 #define MM_IMAGE_PLANE_SHAPE_SELECTION_TYPE_NAME "mmImagePlaneShapeSelection"

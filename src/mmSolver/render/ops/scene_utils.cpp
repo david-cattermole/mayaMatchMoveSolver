@@ -67,7 +67,7 @@ bool node_classification_is_geometry(const MString& node_type_classification) {
 
 bool node_classification_is_image_plane(
     const MString& node_type_classification) {
-    const MString accepted_token("imageplane");
+    const MString accepted_token("drawdb/geometry/mmSolver/imagePlane");
     int32_t result = node_type_classification.indexW(accepted_token);
     return result != -1;
 }

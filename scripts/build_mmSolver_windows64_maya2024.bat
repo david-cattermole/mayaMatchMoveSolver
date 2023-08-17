@@ -37,7 +37,7 @@ SET RUST_CARGO_EXE=cargo
 SET CXX_STANDARD=14
 
 :: Setup Compiler environment. Change for your install path as needed.
-CALL "C:\Program Files (x86)\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
+CALL "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
 
 :: These scripts assume 'RUST_CARGO_EXE' has been set to the Rust
 :: 'cargo' executable.

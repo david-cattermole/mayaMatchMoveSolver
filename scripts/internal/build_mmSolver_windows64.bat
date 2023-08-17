@@ -98,6 +98,12 @@ IF EXIST "C:\MinGW" (
 :: Optionally use "NMake Makefiles" as the build system generator.
 SET CMAKE_GENERATOR=Ninja
 
+:: Force the compilier to be MSVC's cl.exe, so that if other
+:: compiliers are installed, CMake doesn't get confused and try to use
+:: it (such as clang).
+SET CMAKE_C_COMPILER=cl
+SET CMAKE_CXX_COMPILER=cl
+
 :: Build project
 SET BUILD_DIR_NAME=cmake_win64_maya%MAYA_VERSION%_%BUILD_TYPE%
 SET BUILD_DIR=%BUILD_DIR_BASE%\build_mmsolver\%BUILD_DIR_NAME%
@@ -115,6 +121,8 @@ CHDIR "%BUILD_DIR%"
     -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
     -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
     -DCMAKE_CXX_STANDARD=%CXX_STANDARD% ^
+    -DCMAKE_C_COMPILER=%CMAKE_C_COMPILER% ^
+    -DCMAKE_CXX_COMPILER=%CMAKE_CXX_COMPILER% ^
     -DMMSOLVER_BUILD_PLUGIN=%MMSOLVER_BUILD_PLUGIN% ^
     -DMMSOLVER_BUILD_TOOLS=%MMSOLVER_BUILD_TOOLS% ^
     -DMMSOLVER_BUILD_PYTHON=%MMSOLVER_BUILD_PYTHON% ^

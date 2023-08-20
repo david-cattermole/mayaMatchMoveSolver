@@ -42,11 +42,16 @@
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
 
+// MM Solver Libs
+#include <mmsolverlibs/debug.h>
+
 // MM Solver
 #include "adjust_data.h"
 #include "adjust_defines.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
+
+using Ticks = mmsolver::debug::Ticks;
 
 struct SolverResult {
     typedef SolverResult Self;
@@ -162,11 +167,11 @@ struct TimerResult {
     double timer_jacobian;
     double timer_parameter;
     double timer_error;
-    debug::Ticks ticks_solve;
-    debug::Ticks ticks_function;
-    debug::Ticks ticks_jacobian;
-    debug::Ticks ticks_parameter;
-    debug::Ticks ticks_error;
+    Ticks ticks_solve;
+    Ticks ticks_function;
+    Ticks ticks_jacobian;
+    Ticks ticks_parameter;
+    Ticks ticks_error;
 
     TimerResult()
         : count(1)
@@ -255,23 +260,23 @@ struct TimerResult {
         str = "timer_error=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<debug::Ticks>(Self::ticks_solve);
+        value = mmstring::numberToString<Ticks>(Self::ticks_solve);
         str = "ticks_solve=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<debug::Ticks>(Self::ticks_function);
+        value = mmstring::numberToString<Ticks>(Self::ticks_function);
         str = "ticks_function=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<debug::Ticks>(Self::ticks_jacobian);
+        value = mmstring::numberToString<Ticks>(Self::ticks_jacobian);
         str = "ticks_jacobian=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<debug::Ticks>(Self::ticks_parameter);
+        value = mmstring::numberToString<Ticks>(Self::ticks_parameter);
         str = "ticks_parameter=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<debug::Ticks>(Self::ticks_error);
+        value = mmstring::numberToString<Ticks>(Self::ticks_error);
         str = "ticks_error=" + value;
         result.append(MString(str.c_str()));
     }

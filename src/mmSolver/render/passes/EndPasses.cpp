@@ -65,8 +65,8 @@ bool EndPasses::startOperationIterator() {
 MHWRender::MRenderOperation *EndPasses::getOperationFromList(
     size_t &current_op, MRenderOperation **ops, const size_t count) {
     const bool verbose = false;
-    MMSOLVER_VRB("EndPasses::getOperationFromList: current_op: "
-                 << current_op << " count: " << count);
+    MMSOLVER_MAYA_VRB("EndPasses::getOperationFromList: current_op: "
+                      << current_op << " count: " << count);
     if (current_op >= 0 && current_op < count) {
         while (!ops[current_op] || !ops[current_op]->enabled()) {
             current_op++;
@@ -105,7 +105,7 @@ bool EndPasses::nextRenderOperation() {
 
 MStatus EndPasses::updateRenderOperations() {
     const bool verbose = false;
-    MMSOLVER_VRB("EndPasses::updateRenderOperations: ");
+    MMSOLVER_MAYA_VRB("EndPasses::updateRenderOperations: ");
 
     if (m_ops[EndPass::kPresentOp] != nullptr) {
         // render operations are already up-to-date.
@@ -142,7 +142,7 @@ MStatus EndPasses::updateRenderOperations() {
 MStatus EndPasses::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     MStatus status = MS::kSuccess;
     const bool verbose = false;
-    MMSOLVER_VRB("EndPasses::updateRenderTargets");
+    MMSOLVER_MAYA_VRB("EndPasses::updateRenderTargets");
 
     // Update the render targets on the individual operations.
     //
@@ -174,7 +174,7 @@ MStatus EndPasses::updateRenderTargets(MHWRender::MRenderTarget **targets) {
 
 MStatus EndPasses::setPanelNames(const MString &name) {
     const bool verbose = false;
-    MMSOLVER_VRB("EndPasses::setPanelNames: " << name.asChar());
+    MMSOLVER_MAYA_VRB("EndPasses::setPanelNames: " << name.asChar());
 
     // Set the name of the panel on operations which may use the panel
     // name to find out the associated M3dView.

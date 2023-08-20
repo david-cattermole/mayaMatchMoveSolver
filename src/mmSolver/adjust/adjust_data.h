@@ -38,6 +38,9 @@
 #include <maya/MPoint.h>
 #include <maya/MStringArray.h>
 
+// MM Solver Libs
+#include <mmsolverlibs/debug.h>
+
 // MM Scene Graph
 #include <mmscenegraph/mmscenegraph.h>
 
@@ -53,19 +56,19 @@
 
 // Group all the benchmark timers together.
 struct SolverTimer {
-    debug::Timestamp startTimestamp;
+    mmsolver::debug::Timestamp startTimestamp;
 
-    debug::TimestampBenchmark solveBenchTimer;
-    debug::TimestampBenchmark jacBenchTimer;
-    debug::TimestampBenchmark funcBenchTimer;
-    debug::TimestampBenchmark errorBenchTimer;
-    debug::TimestampBenchmark paramBenchTimer;
+    mmsolver::debug::TimestampBenchmark solveBenchTimer;
+    mmsolver::debug::TimestampBenchmark jacBenchTimer;
+    mmsolver::debug::TimestampBenchmark funcBenchTimer;
+    mmsolver::debug::TimestampBenchmark errorBenchTimer;
+    mmsolver::debug::TimestampBenchmark paramBenchTimer;
 
-    debug::CPUBenchmark solveBenchTicks;
-    debug::CPUBenchmark jacBenchTicks;
-    debug::CPUBenchmark funcBenchTicks;
-    debug::CPUBenchmark errorBenchTicks;
-    debug::CPUBenchmark paramBenchTicks;
+    mmsolver::debug::CPUBenchmark solveBenchTicks;
+    mmsolver::debug::CPUBenchmark jacBenchTicks;
+    mmsolver::debug::CPUBenchmark funcBenchTicks;
+    mmsolver::debug::CPUBenchmark errorBenchTicks;
+    mmsolver::debug::CPUBenchmark paramBenchTicks;
 };
 
 enum class FrameSolveMode {

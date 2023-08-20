@@ -51,7 +51,7 @@ RenderOverride::RenderOverride(const MString &name)
     : MRenderOverride(name), m_ui_name(kRendererUiName) {
     MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
     if (!renderer) {
-        MMSOLVER_ERR(
+        MMSOLVER_MAYA_ERR(
             "MM Renderer RenderOverride: "
             "Failed to get renderer.");
     }
@@ -93,21 +93,21 @@ MHWRender::DrawAPI RenderOverride::supportedDrawAPIs() const {
 // Perform any setup required before render operations are to be executed.
 MStatus RenderOverride::setup(const MString &destination) {
     const bool verbose = false;
-    MMSOLVER_VRB("RenderOverride::setup: start " << destination.asChar());
+    MMSOLVER_MAYA_VRB("RenderOverride::setup: start " << destination.asChar());
 
     MStatus status = MS::kSuccess;
 
     if (m_backgroundOp) {
         m_image_plane_nodes.clear();
         status = add_all_image_planes(m_image_plane_nodes);
-        MMSOLVER_VRB("RenderOverride::setup: m_image_plane_nodes.length()="
-                     << m_image_plane_nodes.length());
+        MMSOLVER_MAYA_VRB("RenderOverride::setup: m_image_plane_nodes.length()="
+                          << m_image_plane_nodes.length());
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         m_backgroundOp->setObjectSetOverride(&m_image_plane_nodes);
     }
 
-    MMSOLVER_VRB("RenderOverride::setup: end " << destination.asChar());
+    MMSOLVER_MAYA_VRB("RenderOverride::setup: end " << destination.asChar());
     return MRenderOverride::setup(destination);
 }
 
@@ -117,7 +117,7 @@ MStatus RenderOverride::setup(const MString &destination) {
 // change from frame to frame (render target, output panel name etc).
 MStatus RenderOverride::cleanup() {
     const bool verbose = false;
-    MMSOLVER_VRB("RenderOverride::cleanup: ");
+    MMSOLVER_MAYA_VRB("RenderOverride::cleanup: ");
 
     return MRenderOverride::cleanup();
 }

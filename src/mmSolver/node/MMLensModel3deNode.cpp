@@ -412,9 +412,10 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
             status = MS::kSuccess;
 
         } else {
-            MMSOLVER_ERR("mmlens::LensModelType value is invalid: nodeName="
-                         << name().asChar() << " lensModelType="
-                         << static_cast<int>(lensModelType));
+            MMSOLVER_MAYA_ERR(
+                "mmlens::LensModelType value is invalid: nodeName="
+                << name().asChar()
+                << " lensModelType=" << static_cast<int>(lensModelType));
             status = MS::kFailure;
 
             // Create a lens distortion function to be passed to the

@@ -90,7 +90,7 @@ const MHWRender::MShaderInstance *QuadRenderBlend::shader() {
             return nullptr;
         }
 
-        MMSOLVER_VRB("QuadRenderBlend: Compile shader...");
+        MMSOLVER_MAYA_VRB("QuadRenderBlend: Compile shader...");
         MString file_name = "Blend";
         MString shader_technique = "Main";
         m_shader_instance = shaderMgr->getEffectsFileShader(
@@ -99,12 +99,13 @@ const MHWRender::MShaderInstance *QuadRenderBlend::shader() {
 
     // Set default parameters
     if (m_shader_instance) {
-        MMSOLVER_VRB("QuadRenderBlend: Assign shader parameters...");
+        MMSOLVER_MAYA_VRB("QuadRenderBlend: Assign shader parameters...");
         if (m_targets) {
             MHWRender::MRenderTarget *target1 =
                 m_targets[m_target_index_input1];
             if (target1) {
-                MMSOLVER_VRB("QuadRenderBlend: Assign texture1 to shader...");
+                MMSOLVER_MAYA_VRB(
+                    "QuadRenderBlend: Assign texture1 to shader...");
                 MHWRender::MRenderTargetAssignment assignment1{};
                 assignment1.target = target1;
                 CHECK_MSTATUS(
@@ -114,7 +115,8 @@ const MHWRender::MShaderInstance *QuadRenderBlend::shader() {
             MHWRender::MRenderTarget *target2 =
                 m_targets[m_target_index_input2];
             if (target2) {
-                MMSOLVER_VRB("QuadRenderBlend: Assign texture2 to shader...");
+                MMSOLVER_MAYA_VRB(
+                    "QuadRenderBlend: Assign texture2 to shader...");
                 MHWRender::MRenderTargetAssignment assignment2{};
                 assignment2.target = target2;
                 CHECK_MSTATUS(m_shader_instance->setParameter("gSourceTex2",

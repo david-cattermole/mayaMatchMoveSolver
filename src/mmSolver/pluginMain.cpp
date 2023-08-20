@@ -199,7 +199,7 @@ MStatus initializePlugin(MObject obj) {
     MFnPlugin plugin(obj, PLUGIN_COMPANY, PLUGIN_VERSION, "Any");
     bool verbose = false;
 
-    MMSOLVER_VRB("Loading " << MODULE_FULL_NAME);
+    MMSOLVER_MAYA_VRB("Loading " << MODULE_FULL_NAME);
 
     // Register data types first, so the nodes and commands below can
     // reference them.
@@ -414,7 +414,7 @@ MStatus initializePlugin(MObject obj) {
                 "mmSolver: Shader Manager is unavailable, cannot load Viewport "
                 "Renderer.");
             MGlobal::displayWarning(warning_message);
-            MMSOLVER_WRN(warning_message.asChar());
+            MMSOLVER_MAYA_WRN(warning_message.asChar());
         } else {
             MString shader_location;
             MString cmd =
@@ -519,7 +519,7 @@ MStatus initializePlugin(MObject obj) {
     status = MGlobal::executeCommand(startup_cmd, displayEnabled, undoEnabled);
     CHECK_MSTATUS(status);
 
-    MMSOLVER_INFO("Loaded " << MODULE_FULL_NAME);
+    MMSOLVER_MAYA_INFO("Loaded " << MODULE_FULL_NAME);
 
     return status;
 }
@@ -530,7 +530,7 @@ MStatus uninitializePlugin(MObject obj) {
     MFnPlugin plugin(obj);
     bool verbose = false;
 
-    MMSOLVER_VRB("Uninitializing " << MODULE_FULL_NAME);
+    MMSOLVER_MAYA_VRB("Uninitializing " << MODULE_FULL_NAME);
 
 #if MMSOLVER_BUILD_RENDERER == 1
     MHWRender::MRenderer* renderer = MHWRender::MRenderer::theRenderer();
@@ -638,7 +638,7 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_DATA(plugin, mmsolver::MMLensData::typeName(),
                     mmsolver::MMLensData::m_id, status);
 
-    MMSOLVER_INFO(MODULE_FULL_NAME << " Unloaded");
+    MMSOLVER_MAYA_INFO(MODULE_FULL_NAME << " Unloaded");
 
     return status;
 }

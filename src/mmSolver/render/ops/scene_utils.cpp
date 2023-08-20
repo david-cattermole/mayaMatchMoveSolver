@@ -48,7 +48,7 @@ MString get_dependency_node_classification(MFnDependencyNode& depend_fn) {
     MStatus status = MS::kSuccess;
     MString node_type_name = depend_fn.typeName(&status);
     if (status != MS::kSuccess) {
-        MMSOLVER_VRB(
+        MMSOLVER_MAYA_VRB(
             "NodeManager::dependency_node_is_geometry: failed to get type "
             "name for node \""
             << depend_fn.absoluteName().asChar() << "\".");
@@ -135,7 +135,7 @@ MStatus add_all_image_planes(MSelectionList& out_selection_list) {
         for (int i = 0; i < out_selection_list.length(); i++) {
             status = out_selection_list.getDagPath(i, dagPath);
             if (status == MS::kSuccess) {
-                MMSOLVER_VRB(
+                MMSOLVER_MAYA_VRB(
                     "add_all_image_planes: "
                     "i="
                     << i << " node=\"" << dagPath.fullPathName().asChar()
@@ -154,8 +154,8 @@ MStatus only_named_layer_objects(MObject& layer_node,
 
     MFnDependencyNode layer_depends_fn(layer_node, &status);
     CHECK_MSTATUS(status);
-    MMSOLVER_VRB("only_named_layer_objects: layer: "
-                 << layer_depends_fn.name().asChar());
+    MMSOLVER_MAYA_VRB("only_named_layer_objects: layer: "
+                      << layer_depends_fn.name().asChar());
 
     const bool want_networked_plug = true;
 
@@ -171,7 +171,7 @@ MStatus only_named_layer_objects(MObject& layer_node,
 
     MPlugArray destination_plugs;
     draw_info_plug.destinations(destination_plugs, &status);
-    MMSOLVER_VRB(
+    MMSOLVER_MAYA_VRB(
         "only_named_layer_objects: count: " << destination_plugs.length());
 
     MDagPath dag_path;
@@ -190,16 +190,16 @@ MStatus only_named_layer_objects(MObject& layer_node,
             !destination_node.hasFn(MFn::kPluginShape)) {
             if (verbose) {
                 MFnDependencyNode depend_fn(destination_node);
-                MMSOLVER_VRB("only_named_layer_objects: discard node: i = "
-                             << i << " - "
-                             << depend_fn.absoluteName().asChar());
+                MMSOLVER_MAYA_VRB("only_named_layer_objects: discard node: i = "
+                                  << i << " - "
+                                  << depend_fn.absoluteName().asChar());
             }
             continue;
         }
 
         MFnDependencyNode depend_fn(destination_node);
-        MMSOLVER_VRB("only_named_layer_objects: accept node: i = "
-                     << i << " - " << depend_fn.absoluteName().asChar());
+        MMSOLVER_MAYA_VRB("only_named_layer_objects: accept node: i = "
+                          << i << " - " << depend_fn.absoluteName().asChar());
 
         const MString node_classification =
             get_dependency_node_classification(depend_fn);
@@ -220,9 +220,9 @@ MStatus only_named_layer_objects(MObject& layer_node,
                 MDagPath shape_path(dag_path);
                 shape_path.extendToShapeDirectlyBelow(j);
 
-                MMSOLVER_VRB("only_named_layer_objects: shape_node: i="
-                             << i << " j=" << j << " - "
-                             << shape_path.fullPathName().asChar());
+                MMSOLVER_MAYA_VRB("only_named_layer_objects: shape_node: i="
+                                  << i << " j=" << j << " - "
+                                  << shape_path.fullPathName().asChar());
 
                 out_selection_list.add(shape_path);
             }
@@ -249,7 +249,7 @@ const MSelectionList* find_draw_objects(const DrawObjects draw_objects,
 
         MFnDependencyNode layer_depends_fn(layer_node, &status);
         CHECK_MSTATUS(status);
-        MMSOLVER_VRB(
+        MMSOLVER_MAYA_VRB(
             "find_draw_objects::layer: " << layer_depends_fn.name().asChar());
 
         const bool want_networked_plug = true;
@@ -262,7 +262,7 @@ const MSelectionList* find_draw_objects(const DrawObjects draw_objects,
         if (status == MStatus::kSuccess && !draw_info_plug.isNull()) {
             MPlugArray destination_plugs;
             draw_info_plug.destinations(destination_plugs, &status);
-            MMSOLVER_VRB(
+            MMSOLVER_MAYA_VRB(
                 "find_draw_objects::count: " << destination_plugs.length());
 
             for (auto i = 0; i < destination_plugs.length(); ++i) {
@@ -277,9 +277,9 @@ const MSelectionList* find_draw_objects(const DrawObjects draw_objects,
                     if ((dag_path.apiType() == MFn::kShape) ||
                         (dag_path.apiType() == MFn::kPluginLocatorNode) ||
                         (dag_path.apiType() == MFn::kPluginShape)) {
-                        MMSOLVER_VRB("find_draw_objects::node: i = "
-                                     << i << " - "
-                                     << dag_path.fullPathName().asChar());
+                        MMSOLVER_MAYA_VRB("find_draw_objects::node: i = "
+                                          << i << " - "
+                                          << dag_path.fullPathName().asChar());
                         out_selection_list.add(dag_path);
                     }
 
@@ -289,9 +289,10 @@ const MSelectionList* find_draw_objects(const DrawObjects draw_objects,
                         MDagPath shape_path(dag_path);
                         shape_path.extendToShapeDirectlyBelow(j);
 
-                        MMSOLVER_VRB("find_draw_objects::shape_node: i="
-                                     << i << " j=" << j << " - "
-                                     << shape_path.fullPathName().asChar());
+                        MMSOLVER_MAYA_VRB(
+                            "find_draw_objects::shape_node: i="
+                            << i << " j=" << j << " - "
+                            << shape_path.fullPathName().asChar());
 
                         out_selection_list.add(shape_path);
                     }
@@ -371,7 +372,7 @@ bool set_background_clear_operation(
         out_clear_operation.setClearStencil(0);
         out_clear_operation.setClearDepth(1.0f);
     } else {
-        MMSOLVER_ERR(
+        MMSOLVER_MAYA_ERR(
             "set_background_clear_operation: Background style is invalid: "
             << static_cast<short>(background_style));
     }

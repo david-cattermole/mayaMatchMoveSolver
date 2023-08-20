@@ -329,7 +329,7 @@ int countUpNumberOfUnknownParameters(
             }
         } else {
             const char *attrName = attr->getName().asChar();
-            MMSOLVER_ERR("attr is not animated or free: " << attrName);
+            MMSOLVER_MAYA_ERR("attr is not animated or free: " << attrName);
         }
         i++;
     }
@@ -403,7 +403,7 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
         cmd += "\"";
         cmd += bundleName;
         cmd += "\", None);";
-        // MMSOLVER_WRN("Running: " + cmd);
+        // MMSOLVER_MAYA_WRN("Running: " + cmd);
         out_status = MGlobal::executePythonCommand(cmd, bundleAffectsResult,
                                                    display, undoable);
         CHECK_MSTATUS(out_status);
@@ -419,7 +419,7 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
         cmd += camName;
         cmd += "\"";
         cmd += ");";
-        // MMSOLVER_WRN("Running: " + cmd);
+        // MMSOLVER_MAYA_WRN("Running: " + cmd);
         out_status = MGlobal::executePythonCommand(cmd, markerAffectsResult,
                                                    display, undoable);
         CHECK_MSTATUS(out_status);

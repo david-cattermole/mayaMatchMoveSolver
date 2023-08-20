@@ -38,14 +38,14 @@ namespace render {
 const MHWRender::MShaderManager *get_shader_manager() {
     MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
     if (!renderer) {
-        MMSOLVER_ERR("MM Renderer: failed to get renderer.");
+        MMSOLVER_MAYA_ERR("MM Renderer: failed to get renderer.");
         return nullptr;
     }
 
     const MHWRender::MShaderManager *shader_manager =
         renderer->getShaderManager();
     if (!shader_manager) {
-        MMSOLVER_ERR("MM Renderer failed get shader manager.");
+        MMSOLVER_MAYA_ERR("MM Renderer failed get shader manager.");
         return nullptr;
     }
 
@@ -62,7 +62,7 @@ const MHWRender::MShaderManager *get_shader_manager() {
         MStatus status = MS::kSuccess;
         M3dView view = M3dView::active3dView(&status);
         if (status != MStatus::kSuccess) {
-            MMSOLVER_ERR("MM Renderer: Could not set active view.");
+            MMSOLVER_MAYA_ERR("MM Renderer: Could not set active view.");
             return nullptr;
         }
         view.makeSharedContextCurrent();
@@ -75,7 +75,7 @@ MHWRender::MShaderInstance *compile_shader_file(const MString &shader_file_name,
     const bool verbose = false;
     MStatus status = MS::kSuccess;
 
-    MMSOLVER_VRB("MM Renderer compiling shader file...");
+    MMSOLVER_MAYA_VRB("MM Renderer compiling shader file...");
 
     const MHWRender::MShaderManager *shader_manager = get_shader_manager();
     if (!shader_manager) {
@@ -88,22 +88,22 @@ MHWRender::MShaderInstance *compile_shader_file(const MString &shader_file_name,
     bool use_effect_cache = true;
 
     // Get Techniques.
-    MMSOLVER_VRB("MM Renderer: Get techniques...");
+    MMSOLVER_MAYA_VRB("MM Renderer: Get techniques...");
     MStringArray technique_names;
     shader_manager->getEffectsTechniques(shader_file_name, technique_names,
                                          macros, number_of_macros,
                                          use_effect_cache);
     for (uint32_t i = 0; i < technique_names.length(); ++i) {
-        MMSOLVER_VRB("MM Renderer: technique" << i << ": "
-                                              << technique_names[i].asChar());
+        MMSOLVER_MAYA_VRB("MM Renderer: technique"
+                          << i << ": " << technique_names[i].asChar());
     }
     if (technique_names.length() == 0) {
-        MMSOLVER_ERR("MM Renderer: shader contains no techniques.");
+        MMSOLVER_MAYA_ERR("MM Renderer: shader contains no techniques.");
         return nullptr;
     }
 
     // Compile shader.
-    MMSOLVER_VRB("MM Renderer: Compiling shader...");
+    MMSOLVER_MAYA_VRB("MM Renderer: Compiling shader...");
     MHWRender::MShaderInstance *shader_instance =
         shader_manager->getEffectsFileShader(shader_file_name, technique_name,
                                              macros, number_of_macros,
@@ -118,19 +118,19 @@ MHWRender::MShaderInstance *compile_shader_file(const MString &shader_file_name,
         MGlobal::displayError(MHWRender::MShaderManager::getLastError());
         MGlobal::displayError(MHWRender::MShaderManager::getLastErrorSource(
             display_line_number, filter_source, num_lines));
-        MMSOLVER_ERR("MM Renderer failed to compile shader.");
-        MMSOLVER_ERR(MHWRender::MShaderManager::getLastError().asChar());
-        MMSOLVER_ERR(MHWRender::MShaderManager::getLastErrorSource(
-                         display_line_number, filter_source, num_lines)
-                         .asChar());
+        MMSOLVER_MAYA_ERR("MM Renderer failed to compile shader.");
+        MMSOLVER_MAYA_ERR(MHWRender::MShaderManager::getLastError().asChar());
+        MMSOLVER_MAYA_ERR(MHWRender::MShaderManager::getLastErrorSource(
+                              display_line_number, filter_source, num_lines)
+                              .asChar());
         return nullptr;
     }
 
     MStringArray parameter_list;
     shader_instance->parameterList(parameter_list);
     for (uint32_t i = 0; i < parameter_list.length(); ++i) {
-        MMSOLVER_VRB("MM Renderer: param " << i << ": "
-                                           << parameter_list[i].asChar());
+        MMSOLVER_MAYA_VRB("MM Renderer: param " << i << ": "
+                                                << parameter_list[i].asChar());
     }
 
     return shader_instance;

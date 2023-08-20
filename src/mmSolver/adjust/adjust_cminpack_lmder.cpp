@@ -51,6 +51,9 @@
 // CMinpack
 #include <cminpack.h>
 
+// MM Solver Libs
+#include <mmsolverlibs/debug.h>
+
 // MM Solver
 #include "adjust_cminpack_base.h"
 #include "adjust_solveFunc.h"
@@ -222,7 +225,7 @@ int solveFunc_cminpack_lmder(void *data, int m, int n, const double *x,
                              double *fvec, double *fjac, int ldfjac,
                              int iflag) {
     assert(ldfjac == n ? m <= n : m);
-    UNUSED(ldfjac);
+    MMSOLVER_CORE_UNUSED(ldfjac);
 
     SolverData *ud = static_cast<SolverData *>(data);
     ud->isPrintCall = iflag == 0;

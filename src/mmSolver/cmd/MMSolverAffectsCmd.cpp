@@ -217,7 +217,7 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
     // Read all the flag arguments.
     status = MMSolverAffectsCmd::parseArgs(args);
     if (status != MStatus::kSuccess) {
-        MMSOLVER_ERR("Error parsing mmSolverAffects command arguments.");
+        MMSOLVER_MAYA_ERR("Error parsing mmSolverAffects command arguments.");
         return status;
     }
 
@@ -240,7 +240,7 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
         affectsResult.appendToMStringArray(outResult);
         MMSolverAffectsCmd::setResult(outResult);
     } else {
-        MMSOLVER_ERR("Mode value is invalid: mode=" << m_mode << "\n");
+        MMSOLVER_MAYA_ERR("Mode value is invalid: mode=" << m_mode << "\n");
     }
     return status;
 }

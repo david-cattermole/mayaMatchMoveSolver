@@ -319,7 +319,7 @@ int solveFunc_calculateJacobianMatrixForParameter(
     userData->computation->setProgress(progressNum);
 
     if (userData->computation->isInterruptRequested()) {
-        MMSOLVER_WRN("User wants to cancel the evaluation!");
+        MMSOLVER_MAYA_WRN("User wants to cancel the evaluation!");
         userData->userInterrupted = true;
         return SOLVE_FUNC_FAILURE;
     }
@@ -565,7 +565,7 @@ int solveFunc(const int numberOfParameters, const int numberOfErrors,
     }
 
     if (userData->computation->isInterruptRequested()) {
-        MMSOLVER_WRN("User wants to cancel the evaluation!");
+        MMSOLVER_MAYA_WRN("User wants to cancel the evaluation!");
         userData->userInterrupted = true;
         return SOLVE_FUNC_FAILURE;
     }

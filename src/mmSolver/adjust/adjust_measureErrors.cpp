@@ -59,6 +59,9 @@
 #include <maya/MDGContextGuard.h>
 #endif
 
+// MM Solver Libs
+#include <mmsolverlibs/debug.h>
+
 // MM Scene Graph
 #include <mmscenegraph/mmscenegraph.h>
 
@@ -121,7 +124,7 @@ void measureErrors_mayaDag(const int numberOfErrors,
                            const double imageWidth, double *errors,
                            SolverData *ud, double &error_avg, double &error_max,
                            double &error_min, MStatus &status) {
-    UNUSED(numberOfErrors);
+    MMSOLVER_CORE_UNUSED(numberOfErrors);
 
     // Trigger an DG Evaluation at a different time, to help Maya
     // evaluate at the correct frame.
@@ -260,7 +263,7 @@ void measureErrors_mayaDag(const int numberOfErrors,
         bool behind_camera = false;
         double behind_camera_error_factor = 1.0;
         double cam_dot_bnd = cam_dir * bnd_dir;
-        // MMSOLVER_WRN("Camera DOT Bundle: " << cam_dot_bnd);
+        // MMSOLVER_MAYA_WRN("Camera DOT Bundle: " << cam_dot_bnd);
         if (cam_dot_bnd < 0.0) {
             behind_camera = true;
             behind_camera_error_factor = 1e+6;
@@ -300,7 +303,7 @@ void measureErrors_mayaDag(const int numberOfErrors,
         error_max = 0.0;
         error_min = 0.0;
         error_avg = 0.0;
-        MMSOLVER_ERR("No Marker measurements were taken.");
+        MMSOLVER_MAYA_ERR("No Marker measurements were taken.");
     } else {
         error_avg *= 1.0 / numberOfErrorsMeasured;
     }
@@ -396,10 +399,10 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
                                 SolverData *ud, double &error_avg,
                                 double &error_max, double &error_min,
                                 MStatus &status) {
-    UNUSED(numberOfErrors);
-    UNUSED(numberOfAttrStiffnessErrors);
-    UNUSED(numberOfAttrSmoothnessErrors);
-    UNUSED(status);
+    MMSOLVER_CORE_UNUSED(numberOfErrors);
+    MMSOLVER_CORE_UNUSED(numberOfAttrStiffnessErrors);
+    MMSOLVER_CORE_UNUSED(numberOfAttrSmoothnessErrors);
+    MMSOLVER_CORE_UNUSED(status);
 
     // Evaluate Scene.
     ud->mmsgFlatScene.evaluate(ud->mmsgAttrDataBlock, ud->mmsgFrameList);
@@ -408,8 +411,8 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
     auto num_markers = ud->mmsgFlatScene.num_markers();
     auto num_frames = ud->mmsgFrameList.size();
     auto num_marker_lens_models = ud->lensModelList.size();
-    UNUSED(num_points);
-    UNUSED(num_markers);
+    MMSOLVER_CORE_UNUSED(num_points);
+    MMSOLVER_CORE_UNUSED(num_markers);
     assert(num_points == num_markers);
 
     auto out_point_list = ud->mmsgFlatScene.points();
@@ -507,7 +510,7 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
         error_max = 0.0;
         error_min = 0.0;
         error_avg = 0.0;
-        MMSOLVER_ERR("No Marker measurements were taken.");
+        MMSOLVER_MAYA_ERR("No Marker measurements were taken.");
     } else {
         error_avg *= 1.0 / numberOfErrorsMeasured;
     }

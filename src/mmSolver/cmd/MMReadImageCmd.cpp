@@ -132,14 +132,15 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
     if (!path_exists) {
         MString resolved_file_path = file_object.resolvedFullName();
         status = MS::kFailure;
-        MMSOLVER_WRN("mmReadImage: Could not find file path "
-                     << "\"" << m_file_path.asChar() << "\", resolved path "
-                     << "\"" << resolved_file_path.asChar() << "\".");
+        MMSOLVER_MAYA_WRN("mmReadImage: Could not find file path "
+                          << "\"" << m_file_path.asChar()
+                          << "\", resolved path "
+                          << "\"" << resolved_file_path.asChar() << "\".");
         return status;
     }
     MString resolved_file_path = file_object.resolvedFullName();
     if (resolved_file_path.length() > 0) {
-        // MMSOLVER_INFO(
+        // MMSOLVER_MAYA_INFO(
         //     "mmReadImage: resolved file path "
         //     << "\"" << resolved_file_path.asChar() << "\".");
         m_file_path = file_object.resolvedFullName();
@@ -155,9 +156,9 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
         );
         if (status != MS::kSuccess) {
             status = MS::kSuccess;
-            MMSOLVER_WRN("mmReadImage: "
-                         << "Image file path could not be read: "
-                         << m_file_path.asChar());
+            MMSOLVER_MAYA_WRN("mmReadImage: "
+                              << "Image file path could not be read: "
+                              << m_file_path.asChar());
             return status;
         }
 

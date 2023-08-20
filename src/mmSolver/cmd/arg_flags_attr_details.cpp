@@ -68,7 +68,7 @@ MStatus parseAttributeDetailsArguments(
         status = argData.getFlagArgumentList(STIFFNESS_FLAG, i, stiffnessArgs);
         if (status == MStatus::kSuccess) {
             if (stiffnessArgs.length() != 4) {
-                MMSOLVER_ERR(
+                MMSOLVER_MAYA_ERR(
                     "Attribute Stiffness argument list must have 4 argument; "
                     << "\"node.attribute\", "
                     << "\"node.attributeStiffWeight\", "
@@ -91,7 +91,7 @@ MStatus parseAttributeDetailsArguments(
                 foundIndex++;
             }
             if (foundAttr->getName() == ".") {
-                MMSOLVER_ERR(
+                MMSOLVER_MAYA_ERR(
                     "Attribute Stiffness name is not a declared attribute; "
                     << nodeAttrName);
                 continue;
@@ -126,7 +126,7 @@ MStatus parseAttributeDetailsArguments(
             argData.getFlagArgumentList(SMOOTHNESS_FLAG, i, smoothnessArgs);
         if (status == MStatus::kSuccess) {
             if (smoothnessArgs.length() != 4) {
-                MMSOLVER_ERR(
+                MMSOLVER_MAYA_ERR(
                     "Attribute Smoothness argument list must have 4 argument; "
                     << "\"node.attribute\", "
                     << "\"node.attributeSmoothWeight\", "
@@ -149,7 +149,7 @@ MStatus parseAttributeDetailsArguments(
                 foundIndex++;
             }
             if (foundAttr->getName() == ".") {
-                MMSOLVER_ERR(
+                MMSOLVER_MAYA_ERR(
                     "Attribute Smoothness name is not a declared attribute; "
                     << nodeAttrName);
                 continue;

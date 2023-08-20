@@ -220,11 +220,11 @@ MStatus parseCameraSelectionList(
     double &sensor_width_mm, double &sensor_height_mm) {
     MStatus status = MStatus::kSuccess;
 
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     if (selection_list.length() == 0) {
-        MMSOLVER_ERR("No camera given.");
+        MMSOLVER_MAYA_ERR("No camera given.");
         status = MS::kFailure;
     }
 
@@ -237,7 +237,7 @@ MStatus parseCameraSelectionList(
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MString transform_node_name = nodeDagPath.fullPathName();
-    MMSOLVER_VRB("Camera name: " << transform_node_name.asChar());
+    MMSOLVER_MAYA_VRB("Camera name: " << transform_node_name.asChar());
 
     auto object_type = computeObjectType(node_obj, nodeDagPath);
     if (object_type == ObjectType::kCamera) {
@@ -268,8 +268,8 @@ MStatus parseCameraSelectionList(
                                    sensor_height_mm);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
-        MMSOLVER_ERR("Given node is not a valid camera: "
-                     << transform_node_name.asChar());
+        MMSOLVER_MAYA_ERR("Given node is not a valid camera: "
+                          << transform_node_name.asChar());
         status = MS::kFailure;
         return status;
     }
@@ -284,7 +284,7 @@ MStatus parse_camera_argument(const MSelectionList &selection_list,
                               Attr &camera_rz_attr) {
     MStatus status = MStatus::kSuccess;
 
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     MDagPath nodeDagPath;
@@ -297,7 +297,7 @@ MStatus parse_camera_argument(const MSelectionList &selection_list,
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         MString transform_node_name = nodeDagPath.fullPathName();
-        MMSOLVER_VRB("Camera name: " << transform_node_name.asChar());
+        MMSOLVER_MAYA_VRB("Camera name: " << transform_node_name.asChar());
 
         auto object_type = computeObjectType(node_obj, nodeDagPath);
         if (object_type == ObjectType::kCamera) {
@@ -323,8 +323,8 @@ MStatus parse_camera_argument(const MSelectionList &selection_list,
             camera_ry_attr.setAttrName(MString("rotateY"));
             camera_rz_attr.setAttrName(MString("rotateZ"));
         } else {
-            MMSOLVER_ERR("Given node is not a valid camera: "
-                         << transform_node_name.asChar());
+            MMSOLVER_MAYA_ERR("Given node is not a valid camera: "
+                              << transform_node_name.asChar());
             status = MS::kFailure;
             return status;
         }
@@ -482,7 +482,7 @@ bool is_valid_pose(openMVG::geometry::Pose3 &pose) {
 
 MTransformationMatrix convert_openmvg_transform_to_maya_transform_matrix(
     openMVG::Vec3 openmvg_position, openMVG::Mat3 openmvg_rotation) {
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     // OpenMVG and Maya have different conventions for the camera Z axis:
@@ -535,11 +535,12 @@ MTransformationMatrix convert_openmvg_transform_to_maya_transform_matrix(
     double rotate_radians[3] = {-euler_rotation.x, -euler_rotation.y,
                                 euler_rotation.z};
 
-    MMSOLVER_VRB("pose maya translation: " << maya_translate_vector.x << ","
-                                           << maya_translate_vector.y << ","
-                                           << maya_translate_vector.z);
-    MMSOLVER_VRB("pose maya euler rotation (ZXY): " << rx << "," << ry << ","
-                                                    << rz);
+    MMSOLVER_MAYA_VRB("pose maya translation: "
+                      << maya_translate_vector.x << ","
+                      << maya_translate_vector.y << ","
+                      << maya_translate_vector.z);
+    MMSOLVER_MAYA_VRB("pose maya euler rotation (ZXY): " << rx << "," << ry
+                                                         << "," << rz);
 
     // Convert back into matrix.
     MTransformationMatrix transform;
@@ -551,17 +552,17 @@ MTransformationMatrix convert_openmvg_transform_to_maya_transform_matrix(
 
 MTransformationMatrix convert_pose_to_maya_transform_matrix(
     openMVG::geometry::Pose3 &pose) {
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     auto pose_center = pose.center();
     auto pose_translation = pose.translation();
     auto pose_rotation = pose.rotation();
-    MMSOLVER_VRB("pose center: " << pose_center);
-    MMSOLVER_VRB("pose translation: " << pose_translation);
-    MMSOLVER_VRB("pose rotation: " << pose_rotation);
+    MMSOLVER_MAYA_VRB("pose center: " << pose_center);
+    MMSOLVER_MAYA_VRB("pose translation: " << pose_translation);
+    MMSOLVER_MAYA_VRB("pose rotation: " << pose_rotation);
     if (!is_valid_pose(pose)) {
-        MMSOLVER_WRN(
+        MMSOLVER_MAYA_WRN(
             "convert_pose_to_maya_transform_matrix: Pose is not valid!");
         MTransformationMatrix transform;
         return transform;

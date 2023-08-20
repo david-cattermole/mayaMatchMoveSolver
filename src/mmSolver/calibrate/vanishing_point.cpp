@@ -131,7 +131,7 @@ bool twoVanishingPoints(double focalLength_mm, double filmBackWidth_mm,
     auto ok = calcFocalLength(vanishingPointA, vanishingPointB, principalPoint,
                               focalLengthRatio);
     if (!ok) {
-        MMSOLVER_ERR("Failed to calculate focal length.");
+        MMSOLVER_MAYA_ERR("Failed to calculate focal length.");
         return false;
     }
 

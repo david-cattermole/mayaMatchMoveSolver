@@ -155,7 +155,7 @@ MSyntax MMCameraSolveCmd::newSyntax() {
 MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     MArgDatabase argData(syntax(), args, &status);
@@ -201,12 +201,12 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto node_name = nodeDagPath.fullPathName();
-        // MMSOLVER_VRB("Node name: " << node_name.asChar());
+        // MMSOLVER_MAYA_VRB("Node name: " << node_name.asChar());
 
         auto object_type = computeObjectType(node_obj, nodeDagPath);
         if (object_type == ObjectType::kCamera) {
             // Add Cameras
-            MMSOLVER_VRB("Camera name: " << node_name.asChar());
+            MMSOLVER_MAYA_VRB("Camera name: " << node_name.asChar());
             MString transform_node_name = nodeDagPath.fullPathName();
 
             status = nodeDagPath.extendToShapeDirectlyBelow(0);
@@ -223,8 +223,10 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
                 m_endFrame, uiUnit, cam, m_image_width_b, m_image_height_b);
         }
     }
-    MMSOLVER_VRB("image A: " << m_image_width_a << "x" << m_image_height_a);
-    MMSOLVER_VRB("image B: " << m_image_width_b << "x" << m_image_height_b);
+    MMSOLVER_MAYA_VRB("image A: " << m_image_width_a << "x"
+                                  << m_image_height_a);
+    MMSOLVER_MAYA_VRB("image B: " << m_image_width_b << "x"
+                                  << m_image_height_b);
 
     // Parse objects into Camera intrinsics and Tracking Markers.
     MItSelectionList iter2(objects);
@@ -238,12 +240,12 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         auto node_name = nodeDagPath.fullPathName();
-        MMSOLVER_VRB("Node name: " << node_name.asChar());
+        MMSOLVER_MAYA_VRB("Node name: " << node_name.asChar());
 
         auto object_type = computeObjectType(node_obj, nodeDagPath);
         if (object_type == ObjectType::kMarker) {
             // Add Markers
-            MMSOLVER_VRB("Marker name: " << node_name.asChar());
+            MMSOLVER_MAYA_VRB("Marker name: " << node_name.asChar());
             MarkerPtr marker = MarkerPtr(new Marker());
             marker->setNodeName(node_name);
 

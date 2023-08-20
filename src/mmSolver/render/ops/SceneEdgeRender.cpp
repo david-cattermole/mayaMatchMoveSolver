@@ -68,14 +68,14 @@ const MHWRender::MShaderInstance *SceneEdgeRender::shaderOverride() {
     const bool verbose = false;
 
     if (!m_shader_override) {
-        MMSOLVER_VRB("SceneEdgeRender: Compile Edge Main shader...");
+        MMSOLVER_MAYA_VRB("SceneEdgeRender: Compile Edge Main shader...");
         const MString file_name = "mmEdge";
         const MString main_technique = "Main";
         m_shader_override = compile_shader_file(file_name, main_technique);
     }
 
     if (m_shader_override) {
-        MMSOLVER_VRB("SceneEdgeRender: Assign Edge shader parameters...");
+        MMSOLVER_MAYA_VRB("SceneEdgeRender: Assign Edge shader parameters...");
 
         // This value is intended to bring an m_edge_thickness of 1.0
         // into an acceptable look for the edge rendering.

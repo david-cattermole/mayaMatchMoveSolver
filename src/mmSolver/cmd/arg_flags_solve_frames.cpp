@@ -56,7 +56,7 @@ MStatus parseSolveFramesArguments(const MArgDatabase &argData,
         status = argData.getFlagArgumentList(FRAME_FLAG, i, frameArgs);
         if (status == MStatus::kSuccess) {
             if (frameArgs.length() != 1) {
-                MMSOLVER_ERR(
+                MMSOLVER_MAYA_ERR(
                     "Attribute argument list must have 1 argument; \"frame\".");
                 continue;
             }

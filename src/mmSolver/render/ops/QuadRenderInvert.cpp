@@ -86,7 +86,7 @@ const MHWRender::MShaderInstance *QuadRenderInvert::shader() {
             return nullptr;
         }
 
-        MMSOLVER_VRB("QuadRenderInvert: Compile shader...");
+        MMSOLVER_MAYA_VRB("QuadRenderInvert: Compile shader...");
         MString file_name = "Invert";
         MString shader_technique = "";
         m_shader_instance = shaderMgr->getEffectsFileShader(
@@ -95,12 +95,13 @@ const MHWRender::MShaderInstance *QuadRenderInvert::shader() {
 
     // Set default parameters
     if (m_shader_instance) {
-        MMSOLVER_VRB("QuadRenderInvert: Assign shader parameters...");
+        MMSOLVER_MAYA_VRB("QuadRenderInvert: Assign shader parameters...");
 
         if (m_targets) {
             MHWRender::MRenderTarget *target1 = m_targets[m_target_index_input];
             if (target1) {
-                MMSOLVER_VRB("QuadRenderInvert: Assign texture1 to shader...");
+                MMSOLVER_MAYA_VRB(
+                    "QuadRenderInvert: Assign texture1 to shader...");
                 MHWRender::MRenderTargetAssignment assignment1;
                 assignment1.target = target1;
                 CHECK_MSTATUS(

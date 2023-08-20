@@ -117,7 +117,7 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (!m_cameraPtr) {
-        MMSOLVER_ERR(
+        MMSOLVER_MAYA_ERR(
             "mmReprojection command: Camera is not defined, this should not "
             "happen.");
         return MStatus::kFailure;
@@ -321,7 +321,7 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     }
 
     if (!m_cameraPtr) {
-        MMSOLVER_ERR(
+        MMSOLVER_MAYA_ERR(
             "mmReprojection command: Camera is not defined, this should not "
             "happen.");
         return MStatus::kFailure;

@@ -78,7 +78,8 @@ DisplayLayer::~DisplayLayer() {
 MStatus DisplayLayer::updateRenderOperations(
     const MSelectionList *drawable_nodes) {
     const bool verbose = false;
-    MMSOLVER_VRB("DisplayLayer::updateRenderOperations: " << m_name.asChar());
+    MMSOLVER_MAYA_VRB(
+        "DisplayLayer::updateRenderOperations: " << m_name.asChar());
 
     if (m_ops[DisplayLayerPasses::kSceneRenderPass] != nullptr) {
         // render operations are already up-to-date.
@@ -224,7 +225,7 @@ MStatus DisplayLayer::updateRenderOperations(
 
 MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     const bool verbose = false;
-    MMSOLVER_VRB("DisplayLayer::updateRenderTargets: " << m_name.asChar());
+    MMSOLVER_MAYA_VRB("DisplayLayer::updateRenderTargets: " << m_name.asChar());
 
     // Update the render targets on the individual operations.
     //
@@ -377,9 +378,10 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
                 DISPLAY_MODE_SHADED_WIREFRAME_TEXTURED);
         }
     } else {
-        MMSOLVER_ERR("DisplayLayer::updateRenderTargets: Display Layer \""
-                     << m_name.asChar() << "\" has an invalid Display Style: "
-                     << static_cast<short>(m_object_display_style));
+        MMSOLVER_MAYA_ERR("DisplayLayer::updateRenderTargets: Display Layer \""
+                          << m_name.asChar()
+                          << "\" has an invalid Display Style: "
+                          << static_cast<short>(m_object_display_style));
     }
 
     depthPassOp->setEnabled(depthPassEnabled);
@@ -410,8 +412,8 @@ MStatus DisplayLayer::updateRenderTargets(MHWRender::MRenderTarget **targets) {
 
 MStatus DisplayLayer::setPanelNames(const MString &name) {
     const bool verbose = false;
-    MMSOLVER_VRB("DisplayLayer::setPanelNames: "
-                 << m_name.asChar() << " panelName: " << name.asChar());
+    MMSOLVER_MAYA_VRB("DisplayLayer::setPanelNames: "
+                      << m_name.asChar() << " panelName: " << name.asChar());
 
     MHWRender::MRenderOperation *base_op =
         m_ops[DisplayLayerPasses::kSceneRenderPass];
@@ -425,8 +427,8 @@ MStatus DisplayLayer::setPanelNames(const MString &name) {
 
 MHWRender::MRenderOperation *DisplayLayer::getOperation(size_t &current_op) {
     const bool verbose = false;
-    MMSOLVER_VRB("DisplayLayer::getOperation: "
-                 << m_name.asChar() << " current_op: " << current_op);
+    MMSOLVER_MAYA_VRB("DisplayLayer::getOperation: "
+                      << m_name.asChar() << " current_op: " << current_op);
     const auto count = DisplayLayerPasses::kLayerPassesCount;
     if (current_op >= 0 && current_op < count) {
         return DisplayLayer::m_ops[current_op];

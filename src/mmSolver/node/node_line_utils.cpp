@@ -77,8 +77,10 @@ MStatus query_line_point_data(const MMatrix parentInverseMatrix,
                 uint32_t element_index =
                     transformArrayHandle.elementIndex(&status);
                 CHECK_MSTATUS(status);
-                MMSOLVER_VRB("Point X: " << element_index << " : " << point.x);
-                MMSOLVER_VRB("Point Y: " << element_index << " : " << point.y);
+                MMSOLVER_MAYA_VRB("Point X: " << element_index << " : "
+                                              << point.x);
+                MMSOLVER_MAYA_VRB("Point Y: " << element_index << " : "
+                                              << point.y);
             }
 
             out_point_data_x.push_back(point.x);
@@ -87,8 +89,8 @@ MStatus query_line_point_data(const MMatrix parentInverseMatrix,
         } while (transformArrayHandle.next() == MStatus::kSuccess);
     }
 
-    MMSOLVER_VRB("out_point_data_x.size(): " << out_point_data_x.size());
-    MMSOLVER_VRB("out_point_data_y.size(): " << out_point_data_y.size());
+    MMSOLVER_MAYA_VRB("out_point_data_x.size(): " << out_point_data_x.size());
+    MMSOLVER_MAYA_VRB("out_point_data_y.size(): " << out_point_data_y.size());
     assert((out_point_data_x.size() == out_point_data_y.size()));
 
     return status;
@@ -123,7 +125,7 @@ MStatus fit_line_to_points(const mmsg::Real line_length,
             line_dir_y);
 
         if (!ok) {
-            MMSOLVER_WRN(
+            MMSOLVER_MAYA_WRN(
                 "Line Node Utils: Failed to fit a line to data points.");
             status = MS::kFailure;
             return status;
@@ -157,12 +159,12 @@ MStatus fit_line_to_points(const mmsg::Real line_length,
     out_line_point_b.y_ =
         out_line_center.y_ - (std::cos(-line_angle_radian) * line_length);
 
-    MMSOLVER_VRB("Line Node Utils: Center X: " << out_line_center.x_);
-    MMSOLVER_VRB("Line Node Utils: Center Y: " << out_line_center.y_);
-    MMSOLVER_VRB("Line Node Utils: Dir X   : " << line_dir_x);
-    MMSOLVER_VRB("Line Node Utils: Dir Y   : " << line_dir_y);
-    MMSOLVER_VRB("Line Node Utils: Slope   : " << out_line_slope);
-    MMSOLVER_VRB("Line Node Utils: Angle   : " << out_line_angle);
+    MMSOLVER_MAYA_VRB("Line Node Utils: Center X: " << out_line_center.x_);
+    MMSOLVER_MAYA_VRB("Line Node Utils: Center Y: " << out_line_center.y_);
+    MMSOLVER_MAYA_VRB("Line Node Utils: Dir X   : " << line_dir_x);
+    MMSOLVER_MAYA_VRB("Line Node Utils: Dir Y   : " << line_dir_y);
+    MMSOLVER_MAYA_VRB("Line Node Utils: Slope   : " << out_line_slope);
+    MMSOLVER_MAYA_VRB("Line Node Utils: Angle   : " << out_line_angle);
 
     return status;
 }

@@ -159,10 +159,10 @@ using Timestamp = unsigned long long;
 #ifdef _WIN32
 //  Windows
 #pragma intrinsic(__rdtsc)
-DWORD64 rdtsc() { return __rdtsc(); }
+static DWORD64 current_cpu_cycle_count() { return __rdtsc(); }
 #else
 //  Linux/GCC
-uint64_t rdtsc() {
+static uint64_t current_cpu_cycle_count() {
     uint32_t lo, hi;
     __asm__ __volatile__("rdtsc" : "=a"(lo), "=d"(hi));
     return ((uint64_t)hi << 32) | lo;
@@ -172,7 +172,7 @@ uint64_t rdtsc() {
 // Get the current time - used for profiling and debug.
 //
 // Returns the amount of milliseconds elapsed since the UNIX epoch.
-Timestamp get_timestamp() {
+static Timestamp get_timestamp() {
 #ifdef _WIN32
     // Windows
     FILETIME ft;
@@ -208,7 +208,7 @@ Timestamp get_timestamp() {
 #endif
 }
 
-double timestamp_as_seconds(const Timestamp timestamp) {
+static double timestamp_as_seconds(const Timestamp timestamp) {
     return static_cast<double>(timestamp) / 1000.0;
 }
 
@@ -240,8 +240,10 @@ public:
     Ticks ticktime;
     Ticks ticktimeTotal;
 
-    void start() { ticktime = rdtsc(); };
-    Ticks stop() { return ticktimeTotal += rdtsc() - ticktime; };
+    void start() { ticktime = current_cpu_cycle_count(); };
+    Ticks stop() {
+        return ticktimeTotal += current_cpu_cycle_count() - ticktime;
+    };
     Ticks get_ticks(const uint32_t loopNums = 0) const {
         Ticks total = ticktimeTotal;
         if (loopNums > 0) {

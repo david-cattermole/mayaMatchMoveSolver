@@ -107,8 +107,8 @@ MStatus Attr::setName(MString value) {
     MStringArray values;
     status = value.split('.', values);
     if (status != MStatus::kSuccess) {
-        MMSOLVER_ERR("Attr::setName: Error splitting name: "
-                     << "\"" << value.asChar() << "\"");
+        MMSOLVER_MAYA_ERR("Attr::setName: Error splitting name: "
+                          << "\"" << value.asChar() << "\"");
         return MS::kFailure;
     }
     if (values.length() == 2) {
@@ -119,7 +119,7 @@ MStatus Attr::setName(MString value) {
         auto solverAttrType = computeSolverAttrType(object_type, values[1]);
         Attr::setSolverAttrType(solverAttrType);
     } else {
-        MMSOLVER_ERR(
+        MMSOLVER_MAYA_ERR(
             "Attr::setName: Value given has more than one dot character: "
             << "\"" << value.asChar() << "\"");
         return MS::kFailure;
@@ -180,7 +180,7 @@ MPlug Attr::getPlug() {
             dependsNode.findPlug(attrName, /*wantNetworkedPlug=*/true, &status);
         if (status != MStatus::kSuccess) {
             // MString name = Attr::getName();
-            // MMSOLVER_WRN("Attribute cannot be found; " << name);
+            // MMSOLVER_MAYA_WRN("Attribute cannot be found; " << name);
             return m_plug;
         }
 
@@ -197,7 +197,7 @@ MPlug Attr::getPlug() {
             if (num > 0) {
                 plug = plug.elementByPhysicalIndex(0, &status);
                 if (status != MStatus::kSuccess) {
-                    MMSOLVER_ERR("Could not get first plug element.");
+                    MMSOLVER_MAYA_ERR("Could not get first plug element.");
                     return m_plug;
                 }
             }
@@ -289,7 +289,7 @@ bool Attr::isAnimated() {
 
         if (status != MS::kSuccess) {
             MString name = Attr::getName();
-            MMSOLVER_ERR("Attr::isAnimated failed; " << name);
+            MMSOLVER_MAYA_ERR("Attr::isAnimated failed; " << name);
             animated = false;  // lets assume that if it failed, the
                                // plug cannot be animated.
         }
@@ -570,9 +570,9 @@ MStatus Attr::setValue(double value, const MTime &time, MDGModifier &dgmod,
         status = MS::kFailure;
         MString name = Attr::getName();
         MString plugName = plug.name(&status);
-        MMSOLVER_ERR("Set attribute with non-finite value;"
-                     << " name=" << name << " plug=" << plugName
-                     << " value=" << value << " time=" << time.value());
+        MMSOLVER_MAYA_ERR("Set attribute with non-finite value;"
+                          << " name=" << name << " plug=" << plugName
+                          << " value=" << value << " time=" << time.value());
         return status;
     }
 
@@ -603,9 +603,10 @@ MStatus Attr::setValue(double value, const MTime &time, MDGModifier &dgmod,
         // TODO: What do we do??? Just error?
         MString name = Attr::getName();
         MString plugName = plug.name(&status);
-        MMSOLVER_ERR("Dynamic attributes that aren't animated cannot be set; "
-                     << "name=" << name << " "
-                     << "plug=" << plugName);
+        MMSOLVER_MAYA_ERR(
+            "Dynamic attributes that aren't animated cannot be set; "
+            << "name=" << name << " "
+            << "plug=" << plugName);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
         dgmod.newPlugValueDouble(plug, value);
@@ -664,8 +665,8 @@ MString Attr::getLongNodeName() {
         nodeName = dependFn.name();
     } else {
         nodeName = Attr::getNodeName();
-        MMSOLVER_ERR("Attr::getLongNodeName: Invalid object: "
-                     << "\"" << nodeName.asChar() << "\"");
+        MMSOLVER_MAYA_ERR("Attr::getLongNodeName: Invalid object: "
+                          << "\"" << nodeName.asChar() << "\"");
     }
 
     return nodeName;

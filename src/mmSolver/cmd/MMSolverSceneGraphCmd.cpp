@@ -120,8 +120,8 @@ MStatus MMSolverSceneGraphCmd::parseArgs(const MArgList &args) {
         if (string == MODE_VALUE_DEBUG_CONSTRUCT) {
             m_commandMode = CommandMode::kDebugConstruct;
         } else {
-            MMSOLVER_ERR("Mode value is invalid: "
-                         << "mode=" << string.asChar());
+            MMSOLVER_MAYA_ERR("Mode value is invalid: "
+                              << "mode=" << string.asChar());
         }
     }
 
@@ -147,14 +147,15 @@ MStatus MMSolverSceneGraphCmd::doIt(const MArgList &args) {
     // Read all the flag arguments.
     status = parseArgs(args);
     if (status != MStatus::kSuccess) {
-        MMSOLVER_ERR("Error parsing mmSolverSceneGraph command arguments.");
+        MMSOLVER_MAYA_ERR(
+            "Error parsing mmSolverSceneGraph command arguments.");
         return status;
     }
 
     // kDebugConstruct is the only command mode that is supported, for now.
     if (m_commandMode != CommandMode::kDebugConstruct) {
-        MMSOLVER_ERR("Mode value is invalid: m_commandMode="
-                     << static_cast<int>(m_commandMode));
+        MMSOLVER_MAYA_ERR("Mode value is invalid: m_commandMode="
+                          << static_cast<int>(m_commandMode));
         status = MStatus::kFailure;
         return status;
     }
@@ -194,8 +195,8 @@ MStatus MMSolverSceneGraphCmd::doIt(const MArgList &args) {
         }
         MMSolverSceneGraphCmd::setResult(outResult);
     } else {
-        MMSOLVER_ERR("Scene Graph Mode value is invalid: value="
-                     << static_cast<int>(m_sceneGraphMode));
+        MMSOLVER_MAYA_ERR("Scene Graph Mode value is invalid: value="
+                          << static_cast<int>(m_sceneGraphMode));
         status = MS::kFailure;
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }

@@ -245,8 +245,8 @@ MStatus setLensModelAttributeValue(
             ptr->setSqueezeY(value);
         }
     } else {
-        MMSOLVER_ERR("Unknown lens attribute: solverAttrType="
-                     << static_cast<int>(solverAttrType));
+        MMSOLVER_MAYA_ERR("Unknown lens attribute: solverAttrType="
+                          << static_cast<int>(solverAttrType));
     }
 
     return status;
@@ -501,10 +501,10 @@ MStatus getLensModelFromCamera(
 
     auto search = lensNodeNameToLensModel.find(lensNodeNameStr);
     if (search == lensNodeNameToLensModel.end()) {
-        MMSOLVER_ERR("Lens node name "
-                     << "\"" << lensNodeNameStr << "\""
-                     << " does not have a LensModel object, this should "
-                        "not happen. ");
+        MMSOLVER_MAYA_ERR("Lens node name "
+                          << "\"" << lensNodeNameStr << "\""
+                          << " does not have a LensModel object, this should "
+                             "not happen. ");
         return MS::kFailure;
     }
     out_lensModel = search->second;
@@ -589,7 +589,7 @@ MStatus getAttrsFromLensNode(const MObject &node, const MString &nodeName,
             attrNames.append("tdeAnamorphicStdDeg4_squeeze_y");
             attrNames.append("tdeAnamorphicStdDeg4_rescale");
         } else {
-            MMSOLVER_ERR(
+            MMSOLVER_MAYA_ERR(
                 "Invalid lens model type value from 'lensModel' attribute: "
                 << "value" << lensModelNum);
         }
@@ -633,19 +633,20 @@ MStatus constructLenses(
         status = getAsObject(lensNodeName, node);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         if (node.isNull()) {
-            MMSOLVER_ERR("Node name "
-                         << "\"" << lensNodeNameStr
-                         << "\""
-                            " is not valid, skipping.");
+            MMSOLVER_MAYA_ERR("Node name "
+                              << "\"" << lensNodeNameStr
+                              << "\""
+                                 " is not valid, skipping.");
             continue;
         }
 
         auto search = lensNodeNameToLensModel.find(lensNodeNameStr);
         if (search == lensNodeNameToLensModel.end()) {
-            MMSOLVER_ERR("Lens node name "
-                         << "\"" << lensNodeNameStr << "\""
-                         << " does not have a LensModel object, this should "
-                            "not happen. ");
+            MMSOLVER_MAYA_ERR(
+                "Lens node name "
+                << "\"" << lensNodeNameStr << "\""
+                << " does not have a LensModel object, this should "
+                   "not happen. ");
             continue;
         }
         std::shared_ptr<mmlens::LensModel> lensModel = search->second;
@@ -764,7 +765,7 @@ MStatus constructMarkerToLensModelMap(
         if (search == cameraNodeNameToCameraIndex.end()) {
             // This should not happen as long as the cameras all have
             // shape node names (which is expected to always be true).
-            MMSOLVER_ERR(
+            MMSOLVER_MAYA_ERR(
                 "Camera node name \""
                 << cameraShapeName
                 << "\" not found in camera names lookup map, cannot continue!");
@@ -833,10 +834,11 @@ MStatus constructAttributeToLensModelMap(
 
         auto search = lensNodeNameToLensModelIndex.find(nodeNameStr);
         if (search == lensNodeNameToLensModelIndex.end()) {
-            MMSOLVER_WRN("Lens node name \""
-                         << nodeName
-                         << "\" not found in lens names lookup map, lens node "
-                            "will be ignored!");
+            MMSOLVER_MAYA_WRN(
+                "Lens node name \""
+                << nodeName
+                << "\" not found in lens names lookup map, lens node "
+                   "will be ignored!");
             continue;
         }
         auto lensIndex = search->second;

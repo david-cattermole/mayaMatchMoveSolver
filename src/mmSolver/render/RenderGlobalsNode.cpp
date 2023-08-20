@@ -81,7 +81,7 @@ void RenderGlobalsNode::attr_change_func(MNodeMessage::AttributeMessage msg,
 
     MStatus status = MS::kFailure;
     if (msg & MNodeMessage::kAttributeSet) {
-        MMSOLVER_VRB("Attribute value set on: " << plug.info());
+        MMSOLVER_MAYA_VRB("Attribute value set on: " << plug.info());
     } else {
         return;
     }

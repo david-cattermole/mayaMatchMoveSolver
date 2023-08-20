@@ -135,7 +135,7 @@ MStatus LineShapeNode::compute(const MPlug &plug, MDataBlock &data) {
         MDagPath dag_path;
         MDagPath::getAPathTo(this_node, dag_path);
         MMatrix parentInverseMatrix = dag_path.exclusiveMatrixInverse();
-        MMSOLVER_VRB("parentInverseMatrix: " << parentInverseMatrix);
+        MMSOLVER_MAYA_VRB("parentInverseMatrix: " << parentInverseMatrix);
 
         MArrayDataHandle transformArrayHandle =
             data.inputArrayValue(m_transform_matrix, &status);

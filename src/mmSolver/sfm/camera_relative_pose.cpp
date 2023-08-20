@@ -98,22 +98,22 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
                           const std::pair<size_t, size_t> &size_ima1,
                           const std::pair<size_t, size_t> &size_ima2,
                           const size_t max_iteration_count) {
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
-    MMSOLVER_VRB("robust_relative_pose: intrinsics1: " << intrinsics1);
-    MMSOLVER_VRB("robust_relative_pose: intrinsics2: " << intrinsics2);
-    MMSOLVER_VRB("robust_relative_pose: x1.cols(): " << x1.cols());
-    MMSOLVER_VRB("robust_relative_pose: x2.cols(): " << x2.cols());
-    MMSOLVER_VRB("robust_relative_pose: x1.rows(): " << x1.rows());
-    MMSOLVER_VRB("robust_relative_pose: x2.rows(): " << x2.rows());
-    MMSOLVER_VRB("robust_relative_pose: x1: " << x1);
-    MMSOLVER_VRB("robust_relative_pose: x2: " << x2);
-    MMSOLVER_VRB("robust_relative_pose: size_ima1: " << size_ima1.first << ", "
-                                                     << size_ima1.second);
-    MMSOLVER_VRB("robust_relative_pose: size_ima2: " << size_ima2.first << ", "
-                                                     << size_ima2.second);
-    MMSOLVER_VRB(
+    MMSOLVER_MAYA_VRB("robust_relative_pose: intrinsics1: " << intrinsics1);
+    MMSOLVER_MAYA_VRB("robust_relative_pose: intrinsics2: " << intrinsics2);
+    MMSOLVER_MAYA_VRB("robust_relative_pose: x1.cols(): " << x1.cols());
+    MMSOLVER_MAYA_VRB("robust_relative_pose: x2.cols(): " << x2.cols());
+    MMSOLVER_MAYA_VRB("robust_relative_pose: x1.rows(): " << x1.rows());
+    MMSOLVER_MAYA_VRB("robust_relative_pose: x2.rows(): " << x2.rows());
+    MMSOLVER_MAYA_VRB("robust_relative_pose: x1: " << x1);
+    MMSOLVER_MAYA_VRB("robust_relative_pose: x2: " << x2);
+    MMSOLVER_MAYA_VRB("robust_relative_pose: size_ima1: "
+                      << size_ima1.first << ", " << size_ima1.second);
+    MMSOLVER_MAYA_VRB("robust_relative_pose: size_ima2: "
+                      << size_ima2.first << ", " << size_ima2.second);
+    MMSOLVER_MAYA_VRB(
         "robust_relative_pose: max_iteration_count: " << max_iteration_count);
 
     if (!intrinsics1 || !intrinsics2) {
@@ -146,7 +146,7 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
 
         // Robustly estimate the Essential matrix with A Contrario
         // (AC) RANSAC
-        MMSOLVER_VRB("robust_relative_pose: openMVG::robust::ACRANSAC()");
+        MMSOLVER_MAYA_VRB("robust_relative_pose: openMVG::robust::ACRANSAC()");
         const auto ac_ransac_output = openMVG::robust::ACRANSAC(
             kernel, relativePose_info.vec_inliers, max_iteration_count,
             &relativePose_info.essential_matrix,
@@ -157,10 +157,10 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
             openMVG::R2D(threshold);  // R2D = Radian to Degrees
 
         auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES;
-        MMSOLVER_VRB(
+        MMSOLVER_MAYA_VRB(
             "robust_relative_pose: minimum_samples: " << minimum_samples);
-        MMSOLVER_VRB("robust_relative_pose: samples: "
-                     << relativePose_info.vec_inliers.size());
+        MMSOLVER_MAYA_VRB("robust_relative_pose: samples: "
+                          << relativePose_info.vec_inliers.size());
         if (relativePose_info.vec_inliers.size() < minimum_samples) {
             // no sufficient coverage (the model does not support enough
             // samples)
@@ -194,8 +194,8 @@ bool robust_relative_pose(const openMVG::cameras::IntrinsicBase *intrinsics1,
         relativePose_info.found_residual_precision = ac_ransac_output.first;
 
         auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES;
-        MMSOLVER_VRB("minimum_samples: " << minimum_samples);
-        MMSOLVER_VRB("samples: " << relativePose_info.vec_inliers.size());
+        MMSOLVER_MAYA_VRB("minimum_samples: " << minimum_samples);
+        MMSOLVER_MAYA_VRB("samples: " << relativePose_info.vec_inliers.size());
         if (relativePose_info.vec_inliers.size() < minimum_samples) {
             // no sufficient coverage (the model does not support
             // enough samples)
@@ -225,7 +225,7 @@ bool compute_relative_pose(
     const std::vector<std::pair<double, double>> &marker_coords_b,
     const MarkerPtrList &marker_list_a, const MarkerPtrList &marker_list_b,
     openMVG::sfm::RelativePose_Info &pose_info) {
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     const openMVG::cameras::Pinhole_Intrinsic cam_a(
@@ -253,27 +253,27 @@ bool compute_relative_pose(
         &cam_a, &cam_b, marker_coords_matrix_a, marker_coords_matrix_b,
         pose_info, image_size_a, image_size_b, num_max_iter);
     if (!robust_pose_ok) {
-        MMSOLVER_ERR("Robust relative pose estimation failure.");
+        MMSOLVER_MAYA_ERR("Robust relative pose estimation failure.");
         return false;
     }
-    MMSOLVER_VRB("Found an Essential matrix:");
-    MMSOLVER_VRB("- precision: " << pose_info.found_residual_precision
-                                 << " pixels");
+    MMSOLVER_MAYA_VRB("Found an Essential matrix:");
+    MMSOLVER_MAYA_VRB("- precision: " << pose_info.found_residual_precision
+                                      << " pixels");
 
-    MMSOLVER_VRB("- #matches: " << marker_coords_matrix_a.size());
+    MMSOLVER_MAYA_VRB("- #matches: " << marker_coords_matrix_a.size());
     for (auto i = 0; i < marker_coords_matrix_a.size(); i++) {
         auto coord_x_a = marker_coords_matrix_a.col(i)[0];
         auto coord_y_a = marker_coords_matrix_a.col(i)[1];
         auto coord_x_b = marker_coords_matrix_b.col(i)[0];
         auto coord_y_b = marker_coords_matrix_b.col(i)[1];
-        MMSOLVER_VRB("  - #match: " << i << " = " << coord_x_a << ","
-                                    << coord_y_a << " <-> " << coord_x_b << ","
-                                    << coord_y_b);
+        MMSOLVER_MAYA_VRB("  - #match: " << i << " = " << coord_x_a << ","
+                                         << coord_y_a << " <-> " << coord_x_b
+                                         << "," << coord_y_b);
     }
 
-    MMSOLVER_VRB("- marker_list_a size: " << marker_list_a.size());
-    MMSOLVER_VRB("- marker_list_b size: " << marker_list_b.size());
-    MMSOLVER_VRB("- #inliers: " << pose_info.vec_inliers.size());
+    MMSOLVER_MAYA_VRB("- marker_list_a size: " << marker_list_a.size());
+    MMSOLVER_MAYA_VRB("- marker_list_b size: " << marker_list_b.size());
+    MMSOLVER_MAYA_VRB("- #inliers: " << pose_info.vec_inliers.size());
     auto i = 0;
     for (auto inlier : pose_info.vec_inliers) {
         if (inlier < marker_list_a.size()) {
@@ -281,10 +281,12 @@ bool compute_relative_pose(
             auto mkr_b = marker_list_b[inlier];
             auto mkr_name_a = mkr_a->getNodeName();
             auto mkr_name_b = mkr_b->getNodeName();
-            MMSOLVER_VRB("  - #inlier A: " << i << " = " << inlier
-                                           << " mkr: " << mkr_name_a.asChar());
-            MMSOLVER_VRB("  - #inlier B: " << i << " = " << inlier
-                                           << " mkr: " << mkr_name_b.asChar());
+            MMSOLVER_MAYA_VRB("  - #inlier A: " << i << " = " << inlier
+                                                << " mkr: "
+                                                << mkr_name_a.asChar());
+            MMSOLVER_MAYA_VRB("  - #inlier B: " << i << " = " << inlier
+                                                << " mkr: "
+                                                << mkr_name_b.asChar());
         }
         ++i;
     }
@@ -292,11 +294,11 @@ bool compute_relative_pose(
     const auto center = pose_info.relativePose.center();
     const auto pos = pose_info.relativePose.translation();
     const auto rotate = pose_info.relativePose.rotation();
-    MMSOLVER_VRB("- Center: " << center);
-    MMSOLVER_VRB("- Translation: " << pos);
-    MMSOLVER_VRB("- Rotation: " << rotate);
+    MMSOLVER_MAYA_VRB("- Center: " << center);
+    MMSOLVER_MAYA_VRB("- Translation: " << pos);
+    MMSOLVER_MAYA_VRB("- Rotation: " << rotate);
     if (!is_valid_pose(pose_info.relativePose)) {
-        MMSOLVER_ERR(
+        MMSOLVER_MAYA_ERR(
             "Robust relative pose estimation failure: "
             "NaN detected in pose values.");
         return false;
@@ -354,7 +356,7 @@ bool triangulate_relative_pose(
     const std::vector<uint32_t> &vec_inliers,
     const MarkerPtrList &marker_list_a, const MarkerPtrList &marker_list_b,
     BundlePtrList &bundle_list, openMVG::sfm::SfM_Data &scene) {
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     auto num = 0;
@@ -403,9 +405,11 @@ bool triangulate_relative_pose(
                 auto mkr_name_a = mkr_a->getNodeName();
                 auto mkr_name_b = mkr_b->getNodeName();
                 auto bnd_name = bnd->getNodeName();
-                MMSOLVER_VRB("triangulated Marker A: " << mkr_name_a.asChar());
-                MMSOLVER_VRB("triangulated Marker B: " << mkr_name_b.asChar());
-                MMSOLVER_VRB("triangulated bundle: " << bnd_name.asChar());
+                MMSOLVER_MAYA_VRB(
+                    "triangulated Marker A: " << mkr_name_a.asChar());
+                MMSOLVER_MAYA_VRB(
+                    "triangulated Marker B: " << mkr_name_b.asChar());
+                MMSOLVER_MAYA_VRB("triangulated bundle: " << bnd_name.asChar());
             }
             num++;
         }
@@ -414,7 +418,7 @@ bool triangulate_relative_pose(
 }
 
 bool bundle_adjustment(openMVG::sfm::SfM_Data &scene) {
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     // Perform Bundle Adjustment of the scene.
@@ -441,17 +445,18 @@ bool bundle_adjustment(openMVG::sfm::SfM_Data &scene) {
     ceres_options.sparse_linear_algebra_library_type_ =
         static_cast<int>(ceres::NO_SPARSE);
 
-    MMSOLVER_VRB(
+    MMSOLVER_MAYA_VRB(
         "ceres_options.bCeres_summary_: " << ceres_options.bCeres_summary_);
-    MMSOLVER_VRB("ceres_options.nb_threads_: " << ceres_options.nb_threads_);
-    MMSOLVER_VRB("ceres_options.linear_solver_type_: "
-                 << ceres_options.linear_solver_type_);
-    MMSOLVER_VRB("ceres_options.preconditioner_type_: "
-                 << ceres_options.preconditioner_type_);
-    MMSOLVER_VRB("ceres_options.sparse_linear_algebra_library_type_: "
-                 << ceres_options.sparse_linear_algebra_library_type_);
-    MMSOLVER_VRB("ceres_options.bUse_loss_function_: "
-                 << ceres_options.bUse_loss_function_);
+    MMSOLVER_MAYA_VRB(
+        "ceres_options.nb_threads_: " << ceres_options.nb_threads_);
+    MMSOLVER_MAYA_VRB("ceres_options.linear_solver_type_: "
+                      << ceres_options.linear_solver_type_);
+    MMSOLVER_MAYA_VRB("ceres_options.preconditioner_type_: "
+                      << ceres_options.preconditioner_type_);
+    MMSOLVER_MAYA_VRB("ceres_options.sparse_linear_algebra_library_type_: "
+                      << ceres_options.sparse_linear_algebra_library_type_);
+    MMSOLVER_MAYA_VRB("ceres_options.bUse_loss_function_: "
+                      << ceres_options.bUse_loss_function_);
 
     openMVG::sfm::Bundle_Adjustment_Ceres bundle_adjustment(ceres_options);
     return bundle_adjustment.Adjust(scene, optimize_options);

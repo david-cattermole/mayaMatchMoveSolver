@@ -77,6 +77,32 @@ def get_user_prefs_add_marker_to_collection():
     return value != userprefs_const.REG_EVNT_ADD_NEW_MKR_TO_NONE_VALUE
 
 
+def get_user_prefs_distortion_mode_default():
+    config = userprefs_lib.get_config()    
+    key = userprefs_const.LOAD_MARKER_UI_DISTORTION_MODE_DEFAULT_KEY
+    value = userprefs_lib.get_value(config, key)
+    result = None
+    if value == userprefs_const.LOAD_MARKER_UI_DISTORTION_MODE_DEFAULT_UNDISTORT_VALUE:
+        result = userprefs_const.LOAD_MARKER_UI_DISTORTION_MODE_DEFAULT_UNDISTORT_LABEL
+    elif value == userprefs_const.LOAD_MARKER_UI_DISTORTION_MODE_DEFAULT_DISTORT_VALUE:
+        result = userprefs_const.LOAD_MARKER_UI_DISTORTION_MODE_DEFAULT_DISTORT_LABEL
+    return result
+
+
+def get_user_prefs_use_overscan_default():
+    config = userprefs_lib.get_config()    
+    key = userprefs_const.LOAD_MARKER_UI_USE_OVERSCAN_DEFAULT_KEY
+    value = userprefs_lib.get_value(config, key)
+    return value == userprefs_const.LOAD_MARKER_UI_USE_OVERSCAN_DEFAULT_TRUE_VALUE
+
+
+def get_user_prefs_load_bundle_positions_default():
+    config = userprefs_lib.get_config()    
+    key = userprefs_const.LOAD_MARKER_UI_LOAD_BUNDLE_POSITIONS_DEFAULT_KEY
+    value = userprefs_lib.get_value(config, key)
+    return value == userprefs_const.LOAD_MARKER_UI_LOAD_BUNDLE_POSITIONS_DEFAULT_TRUE_VALUE
+
+
 class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
     def __init__(self, parent=None, *args, **kwargs):
         super(LoadMarkerLayout, self).__init__(*args, **kwargs)
@@ -143,9 +169,8 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
 
         self.fileInfo_plainTextEdit.setReadOnly(True)
 
-        value = get_config_value(
-            config, 'data/load_bundle_position', const.LOAD_BUNDLE_POS_DEFAULT_VALUE
-        )
+        default_value = get_user_prefs_load_bundle_positions_default()
+        value = get_config_value(config, 'data/load_bundle_position', default_value)
         self.loadBndPositions_checkBox.setChecked(value)
 
         # Get the file path from the clipboard.
@@ -197,16 +222,19 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         index = self.loadMode_model.stringList().index(value)
         self.loadMode_comboBox.setCurrentIndex(index)
 
-        value = get_config_value(
-            config, "data/distortion_mode", const.DISTORTION_MODE_DEFAULT_VALUE
-        )
+        default_value = get_user_prefs_distortion_mode_default()
+        value = get_config_value(config, "data/distortion_mode", default_value)
         self.populateDistortionModeModel(self.distortionMode_model)
         index = self.distortionMode_model.stringList().index(value)
         self.distortionMode_comboBox.setCurrentIndex(index)
 
-        value = get_config_value(
-            config, 'data/use_overscan', const.USE_OVERSCAN_DEFAULT_VALUE
-        )
+        default_value = get_user_prefs_use_overscan_default()
+        value = get_config_value(config, 'data/use_overscan', default_value)
+        self.overscan_checkBox.setChecked(value)
+        self.updateOverscanValues()
+
+        default_value = get_user_prefs_load_bundle_positions_default()
+        value = get_config_value(config, 'data/load_bundle_positions', default_value)
         self.overscan_checkBox.setChecked(value)
         self.updateOverscanValues()
         return

@@ -120,7 +120,7 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         label = self.distortionModeDefaultComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)
         return value
-    
+
     def updateLoadMarkerUIUseOverscanDefaultWidget(self, config):
         key = pref_const.LOAD_MARKER_UI_USE_OVERSCAN_DEFAULT_KEY
         value = userprefs_lib.get_value(config, key)
@@ -154,7 +154,7 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         label = self.loadBundlePositionsDefaultComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)
         return value
-    
+
     def updateSolverUIValidateOnOpenWidget(self, config):
         # This feature is deprecated and is no longer allowed.
         return

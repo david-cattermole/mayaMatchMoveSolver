@@ -78,7 +78,7 @@ def get_user_prefs_add_marker_to_collection():
 
 
 def get_user_prefs_distortion_mode_default():
-    config = userprefs_lib.get_config()    
+    config = userprefs_lib.get_config()
     key = userprefs_const.LOAD_MARKER_UI_DISTORTION_MODE_DEFAULT_KEY
     value = userprefs_lib.get_value(config, key)
     result = None
@@ -90,17 +90,19 @@ def get_user_prefs_distortion_mode_default():
 
 
 def get_user_prefs_use_overscan_default():
-    config = userprefs_lib.get_config()    
+    config = userprefs_lib.get_config()
     key = userprefs_const.LOAD_MARKER_UI_USE_OVERSCAN_DEFAULT_KEY
     value = userprefs_lib.get_value(config, key)
     return value == userprefs_const.LOAD_MARKER_UI_USE_OVERSCAN_DEFAULT_TRUE_VALUE
 
 
 def get_user_prefs_load_bundle_positions_default():
-    config = userprefs_lib.get_config()    
+    config = userprefs_lib.get_config()
     key = userprefs_const.LOAD_MARKER_UI_LOAD_BUNDLE_POSITIONS_DEFAULT_KEY
     value = userprefs_lib.get_value(config, key)
-    return value == userprefs_const.LOAD_MARKER_UI_LOAD_BUNDLE_POSITIONS_DEFAULT_TRUE_VALUE
+    return (
+        value == userprefs_const.LOAD_MARKER_UI_LOAD_BUNDLE_POSITIONS_DEFAULT_TRUE_VALUE
+    )
 
 
 class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):

@@ -8,6 +8,45 @@ matchmoving tasks inside Autodesk Maya. This tool is not intended as a
 one-click-solution - this tool is for advanced techniques that are
 encountered on a daily-basis in the Film and TV industry.
 
+## Documentation
+
+For all tutorials, documentation of Tools, Python API and Maya Plug-In
+features, take a look at the
+[Documentation Home Page](https://david-cattermole.github.io/mayaMatchMoveSolver/).
+
+The official YouTube channel is
+[mmSolver](https://www.youtube.com/channel/UCndLPvFXd9Os7m9sc2Bbbsw),
+it contains video tutorials for mmSolver on a range of topics.
+
+A copy of the documentation is also installed with *Maya MatchMove
+Solver*, you can find it by pressing the *help* button in the Solver
+UI, or in the module install directory, for example this path:
+
+(On Windows)
+```
+C:/Users/<user name>/My Documents/maya/2017/modules/mayaMatchMoveSolver-0.1.0-maya2018-win64/docs/html/index.html
+```
+
+## Community
+
+Do you have a question about mmSolver?
+The mailing list is the perfect place to ask!
+
+There is a Google Group mailing list:
+[maya-matchmove-solver](https://groups.google.com/forum/#!forum/maya-matchmove-solver).
+
+The mailing list is a place for user questions and discussions, and
+will have release announcements of new versions.
+
+If you find a bug, please report it on the GitHub project
+[issues page](https://github.com/david-cattermole/mayaMatchMoveSolver/issues).
+
+## Installation
+
+If you have a 'mayaMatchMoveSolver' archive package and need to
+install it, follow the instructions in
+[INSTALL.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL.md).
+
 ## Releases
 
 The following releases are below. The latest bug-fix version should
@@ -47,45 +86,6 @@ changes.
 | [v0.2.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.2.0)   | Improved solver and tools                          |
 | [v0.1.1](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.1.1)   | Bug fix release                                    |
 | [v0.1.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.1.0)   | Initial release                                    |
-
-## Documentation
-
-For all tutorials, documentation of Tools, Python API and Maya Plug-In
-features, take a look at the
-[Documentation Home Page](https://david-cattermole.github.io/mayaMatchMoveSolver/).
-
-The official YouTube channel is 
-[mmSolver](https://www.youtube.com/channel/UCndLPvFXd9Os7m9sc2Bbbsw), 
-it contains video tutorials for mmSolver on a range of topics. 
-
-A copy of the documentation is also installed with *Maya MatchMove
-Solver*, you can find it by pressing the *help* button in the Solver
-UI, or in the module install directory, for example this path:
-
-(On Windows)
-```
-C:/Users/<user name>/My Documents/maya/2017/modules/mayaMatchMoveSolver-0.1.0-maya2018-win64/docs/html/index.html
-```
-
-## Community
-
-Do you have a question about mmSolver?
-The mailing list is the perfect place to ask!
-
-There is a Google Group mailing list:
-[maya-matchmove-solver](https://groups.google.com/forum/#!forum/maya-matchmove-solver).
-
-The mailing list is a place for user questions and discussions, and
-will have release announcements of new versions.
-
-If you find a bug, please report it on the GitHub project
-[issues page](https://github.com/david-cattermole/mayaMatchMoveSolver/issues).
-
-## Installation
-
-If you have a 'mayaMatchMoveSolver' archive package and need to
-install it, follow the instructions in
-[INSTALL.md](https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL.md).
 
 ## Building
 

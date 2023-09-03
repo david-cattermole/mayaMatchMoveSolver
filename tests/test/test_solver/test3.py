@@ -117,8 +117,11 @@ class TestSolver3(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         rx = maya.cmds.getAttr(cam_tfm + '.rx')
         ry = maya.cmds.getAttr(cam_tfm + '.ry')
-        assert self.approx_equal(rx, 7.44014, eps=0.001)
-        assert self.approx_equal(ry, -32.3891, eps=0.001)
+        print('rx =', rx)
+        print('ry =', ry)
+
+        self.assertApproxEqual(rx, 7.44014, eps=0.001)
+        self.assertApproxEqual(ry, -32.3891, eps=0.001)
 
     def test_init_ceres_maya_dag(self):
         self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)

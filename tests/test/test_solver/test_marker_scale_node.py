@@ -57,26 +57,26 @@ class TestMarkerScaleNode(solverUtils.SolverTestCase):
         maya.cmds.setAttr(node + '.overscan', 1.0)
 
         scale = maya.cmds.getAttr(node + '.outScale')
-        assert self.approx_equal(scale[0][0], 1.0285714285714285)
-        assert self.approx_equal(scale[0][1], 0.6857129142857141)
-        assert self.approx_equal(scale[0][2], 1.0)
+        self.assertApproxEqual(scale[0][0], 1.0285714285714285)
+        self.assertApproxEqual(scale[0][1], 0.6857129142857141)
+        self.assertApproxEqual(scale[0][2], 1.0)
 
         translate = maya.cmds.getAttr(node + '.outTranslate')
-        assert self.approx_equal(translate[0][0], 0.0)
-        assert self.approx_equal(translate[0][1], 0.0)
-        assert self.approx_equal(translate[0][2], 0.0)
+        self.assertApproxEqual(translate[0][0], 0.0)
+        self.assertApproxEqual(translate[0][1], 0.0)
+        self.assertApproxEqual(translate[0][2], 0.0)
 
         # Test with 10% overscan value.
         maya.cmds.setAttr(node + '.overscan', 1.1)
         scale = maya.cmds.getAttr(node + '.outScale')
-        assert self.approx_equal(scale[0][0], 1.0285714285714285 * 1.1)
-        assert self.approx_equal(scale[0][1], 0.6857129142857141 * 1.1)
-        assert self.approx_equal(scale[0][2], 1.0)
+        self.assertApproxEqual(scale[0][0], 1.0285714285714285 * 1.1)
+        self.assertApproxEqual(scale[0][1], 0.6857129142857141 * 1.1)
+        self.assertApproxEqual(scale[0][2], 1.0)
 
         translate = maya.cmds.getAttr(node + '.outTranslate')
-        assert self.approx_equal(translate[0][0], 0.0)
-        assert self.approx_equal(translate[0][1], 0.0)
-        assert self.approx_equal(translate[0][2], 0.0)
+        self.assertApproxEqual(translate[0][0], 0.0)
+        self.assertApproxEqual(translate[0][1], 0.0)
+        self.assertApproxEqual(translate[0][2], 0.0)
         return
 
     def test_marker_scale_node_with_translate(self):
@@ -93,26 +93,26 @@ class TestMarkerScaleNode(solverUtils.SolverTestCase):
         maya.cmds.setAttr(node + '.depth', 1.0)
 
         scale = maya.cmds.getAttr(node + '.outScale')
-        assert self.approx_equal(scale[0][0], 1.0285714285714285)
-        assert self.approx_equal(scale[0][1], 0.6857129142857141)
-        assert self.approx_equal(scale[0][2], 1.0)
+        self.assertApproxEqual(scale[0][0], 1.0285714285714285)
+        self.assertApproxEqual(scale[0][1], 0.6857129142857141)
+        self.assertApproxEqual(scale[0][2], 1.0)
 
         translate = maya.cmds.getAttr(node + '.outTranslate')
-        assert self.approx_equal(translate[0][0], 1.0285714285714285 * 0.5)
-        assert self.approx_equal(translate[0][1], 0.6857129142857141 * 0.5)
-        assert self.approx_equal(translate[0][2], 0.0)
+        self.assertApproxEqual(translate[0][0], 1.0285714285714285 * 0.5)
+        self.assertApproxEqual(translate[0][1], 0.6857129142857141 * 0.5)
+        self.assertApproxEqual(translate[0][2], 0.0)
 
         # Test with 10% overscan value.
         maya.cmds.setAttr(node + '.overscan', 1.1)
         scale = maya.cmds.getAttr(node + '.outScale')
-        assert self.approx_equal(scale[0][0], 1.0285714285714285 * 1.1)
-        assert self.approx_equal(scale[0][1], 0.6857129142857141 * 1.1)
-        assert self.approx_equal(scale[0][2], 1.0)
+        self.assertApproxEqual(scale[0][0], 1.0285714285714285 * 1.1)
+        self.assertApproxEqual(scale[0][1], 0.6857129142857141 * 1.1)
+        self.assertApproxEqual(scale[0][2], 1.0)
 
         translate = maya.cmds.getAttr(node + '.outTranslate')
-        assert self.approx_equal(translate[0][0], 1.0285714285714285 * 0.5 * 1.1)
-        assert self.approx_equal(translate[0][1], 0.6857129142857141 * 0.5 * 1.1)
-        assert self.approx_equal(translate[0][2], 0.0)
+        self.assertApproxEqual(translate[0][0], 1.0285714285714285 * 0.5 * 1.1)
+        self.assertApproxEqual(translate[0][1], 0.6857129142857141 * 0.5 * 1.1)
+        self.assertApproxEqual(translate[0][2], 0.0)
         return
 
 

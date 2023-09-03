@@ -118,8 +118,8 @@ class TestSolver1(solverUtils.SolverTestCase):
         ty = maya.cmds.getAttr(bundle_tfm + '.ty')
         print('tx:', tx)
         print('ty:', ty)
-        assert self.approx_equal(tx, -6.0)
-        assert self.approx_equal(ty, 3.6)
+        self.assertApproxEqual(tx, -6.0)
+        self.assertApproxEqual(ty, 3.6)
 
     def test_init_ceres_maya_dag(self):
         self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)

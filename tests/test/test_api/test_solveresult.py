@@ -149,15 +149,15 @@ class TestSolveResult(test_api_utils.APITestCase):
     def test_get_average_frame_error_list(self):
         frame_error_list = {1: 0, 2: 0.5, 3: 1.0}
         v = mmapi.get_average_frame_error_list(frame_error_list)
-        assert self.approx_equal(v, 0.5)
+        self.assertApproxEqual(v, 0.5)
 
         frame_error_list = {1: 1.0}
         v = mmapi.get_average_frame_error_list(frame_error_list)
-        assert self.approx_equal(v, 1.0)
+        self.assertApproxEqual(v, 1.0)
 
         frame_error_list = {}
         v = mmapi.get_average_frame_error_list(frame_error_list)
-        assert self.approx_equal(v, 0.0)
+        self.assertApproxEqual(v, 0.0)
 
         col = create_example_solve_scene()
         results = col.execute()
@@ -174,18 +174,20 @@ class TestSolveResult(test_api_utils.APITestCase):
     def test_get_max_frame_error(self):
         frame_error_list = {1: 0, 2: 0.5, 3: 1.0}
         frm, val = mmapi.get_max_frame_error(frame_error_list)
-        assert self.approx_equal(frm, 3) and isinstance(frm, int)
-        assert self.approx_equal(val, 1.0)
+        assert isinstance(frm, int)
+        self.assertApproxEqual(frm, 3)
+        self.assertApproxEqual(val, 1.0)
 
         frame_error_list = {1: 1.0}
         frm, val = mmapi.get_max_frame_error(frame_error_list)
-        assert self.approx_equal(frm, 1) and isinstance(frm, int)
-        assert self.approx_equal(val, 1.0)
+        assert isinstance(frm, int)
+        self.assertApproxEqual(frm, 1)
+        self.assertApproxEqual(val, 1.0)
 
         frame_error_list = {}
         frm, val = mmapi.get_max_frame_error(frame_error_list)
         assert frm is None
-        assert self.approx_equal(val, -0.0)
+        self.assertApproxEqual(val, -0.0)
 
         col = create_example_solve_scene()
         results = col.execute()

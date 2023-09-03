@@ -479,13 +479,8 @@ MStatus logResultsObjectCounts(const int numberOfParameters,
                                const int numberOfAttrSmoothnessErrors,
                                SolverObjectCountResult &out_result) {
     MStatus status = MStatus::kSuccess;
-
-    out_result.parameter_count = numberOfParameters;
-    out_result.error_count = numberOfErrors;
-    out_result.marker_error_count = numberOfMarkerErrors;
-    out_result.attr_stiffness_error_count = numberOfAttrStiffnessErrors;
-    out_result.attr_smoothness_error_count = numberOfAttrSmoothnessErrors;
-
+    out_result.fill(numberOfParameters, numberOfErrors, numberOfMarkerErrors,
+                    numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors);
     return status;
 }
 
@@ -500,52 +495,7 @@ MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList &markerList,
                                          const BoolList2D &markerToAttrList,
                                          AffectsResult &out_result) {
     MStatus status = MStatus::kSuccess;
-    std::string resultStr;
-
-    std::vector<bool>::const_iterator cit_inner;
-    BoolList2D::const_iterator cit_outer;
-    int markerIndex = 0;
-    for (cit_outer = markerToAttrList.cbegin();
-         cit_outer != markerToAttrList.cend(); ++cit_outer) {
-        int attrIndex = 0;
-        std::vector<bool> inner = *cit_outer;
-        for (cit_inner = inner.cbegin(); cit_inner != inner.cend();
-             ++cit_inner) {
-            MarkerPtr marker = markerList[markerIndex];
-            AttrPtr attr = attrList[attrIndex];
-
-            // Get node names.
-            const char *markerName = marker->getNodeName().asChar();
-
-            // Get attribute full path.
-            MPlug plug = attr->getPlug();
-            MObject attrNode = plug.node();
-            MFnDagNode attrFnDagNode(attrNode);
-            MString attrNodeName = attrFnDagNode.fullPathName();
-
-            const bool includeNodeName = false;
-            const bool includeNonMandatoryIndices = true;
-            const bool includeInstancedIndices = true;
-            const bool useAlias = false;
-            const bool useFullAttributePath = false;
-            const bool useLongNames = true;
-            MString attrAttrName =
-                plug.partialName(includeNodeName, includeNonMandatoryIndices,
-                                 includeInstancedIndices, useAlias,
-                                 useFullAttributePath, useLongNames);
-
-            MString attrNameString = attrNodeName + "." + attrAttrName;
-            const char *attrName = attrNameString.asChar();
-
-            auto key = MarkerAttrNamePair(markerName, attrName);
-            bool value = *cit_inner;
-            out_result.marker_affects_attribute.insert({key, value});
-
-            ++attrIndex;
-        }
-
-        ++markerIndex;
-    }
+    out_result.fill(markerList, attrList, markerToAttrList);
     return status;
 }
 
@@ -559,35 +509,8 @@ MStatus logResultsSolveObjectUsage(MarkerPtrList &usedMarkerList,
                                    AttrPtrList &unusedAttrList,
                                    SolverObjectUsageResult &out_result) {
     MStatus status = MStatus::kSuccess;
-
-    for (MarkerPtrListCIt mit = usedMarkerList.cbegin();
-         mit != usedMarkerList.cend(); ++mit) {
-        MarkerPtr marker = *mit;
-        auto marker_name_char = marker->getLongNodeName().asChar();
-        out_result.markers_used.insert(marker_name_char);
-    }
-
-    for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
-         mit != unusedMarkerList.cend(); ++mit) {
-        MarkerPtr marker = *mit;
-        auto marker_name_char = marker->getLongNodeName().asChar();
-        out_result.markers_unused.insert(marker_name_char);
-    }
-
-    for (AttrPtrListCIt ait = usedAttrList.cbegin(); ait != usedAttrList.cend();
-         ++ait) {
-        AttrPtr attr = *ait;
-        auto attr_name_char = attr->getLongName().asChar();
-        out_result.attributes_used.insert(attr_name_char);
-    }
-
-    for (AttrPtrListCIt ait = unusedAttrList.cbegin();
-         ait != unusedAttrList.cend(); ++ait) {
-        AttrPtr attr = *ait;
-        auto attr_name_char = attr->getLongName().asChar();
-        out_result.attributes_unused.insert(attr_name_char);
-    }
-
+    out_result.fill(usedMarkerList, unusedMarkerList, usedAttrList,
+                    unusedAttrList);
     return status;
 }
 

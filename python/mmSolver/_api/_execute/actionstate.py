@@ -77,10 +77,10 @@ def run_validate_action(vaction):
     :type vaction: Action
 
     :return:
-        A tuple of 3 parts; First, did the validation succeed (as
-        boolean)? Second, the user message we present for the state.
-        Third, metrics about the solve (number of parameters, number
-        of errors, and number of frames to solve)
+        An ActionState object containing, if the validation succeeded,
+        the user message we present for the state, metrics about the
+        solve (number of parameters, number of errors, and number of
+        frames to solve)
     :rtype: ActionState
     """
     if not isinstance(vaction, api_action.Action):

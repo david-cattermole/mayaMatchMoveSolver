@@ -172,6 +172,9 @@ MStatus add_attribute(Attr &mayaAttr, const MString &attr_name,
                       mmsg::AttrDataBlock &out_attrDataBlock,
                       mmsg::AttrId &out_attrId,
                       StringToAttrIdMap &out_attrNameToAttrIdMap) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("add_attribute");
+
     MMSOLVER_CORE_UNUSED(frameList);
     MStatus status = MS::kSuccess;
     mayaAttr.setAttrName(attr_name);
@@ -349,6 +352,9 @@ MStatus get_camera_attrs(
     mmsg::CameraAttrIds &out_attrIds, mmsg::FilmFit &out_film_fit,
     int32_t &out_render_image_width, int32_t &out_render_image_height,
     StringToAttrIdMap &out_attrNameToAttrIdMap) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("get_camera_attrs");
+
     MStatus status = MS::kSuccess;
     double scaleFactor = 1.0;  // No conversion.
     double inch_to_mm = 25.4;
@@ -513,6 +519,9 @@ MStatus get_marker_attrs(Attr &mayaAttr, const MTimeArray &frameList,
                          mmsg::AttrDataBlock &out_attrDataBlock,
                          mmsg::MarkerAttrIds &out_attrIds,
                          StringToAttrIdMap &out_attrNameToAttrIdMap) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("get_marker_attrs");
+
     MStatus status = MS::kSuccess;
     double scaleFactor = 1.0;  // No conversion.
 
@@ -560,6 +569,9 @@ MStatus get_marker_attrs(Attr &mayaAttr, const MTimeArray &frameList,
 // If a node has any of these, the transform node is not supported and
 // we must bail out of using the MM Scene Graph as an acceleration.
 MStatus check_transform_node(MDagPath &dag_path) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("check_transform_node");
+
     MStatus status = MS::kSuccess;
 
     auto path_valid = dag_path.isValid(&status);
@@ -737,6 +749,8 @@ MStatus add_transforms(const mmsg::NodeId parent_node_id, MDagPath &dag_path,
                        mmsg::AttrDataBlock &out_attrDataBlock,
                        StringToNodeIdMap &out_nodeNameToNodeIdMap,
                        StringToAttrIdMap &out_attrNameToAttrIdMap) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("add_transforms");
     MStatus status = MS::kSuccess;
 
     // Create a single attribute that will be re-used.
@@ -804,6 +818,8 @@ MStatus add_cameras(const CameraPtrList &cameraList,
                     mmsg::AttrDataBlock &out_attrDataBlock,
                     StringToNodeIdMap &out_nodeNameToNodeIdMap,
                     StringToAttrIdMap &out_attrNameToAttrIdMap) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("add_cameras");
     MStatus status = MS::kSuccess;
 
     // Create a single attribute that will be re-used.
@@ -886,6 +902,8 @@ MStatus add_bundles(const BundlePtrList &bundleList,
                     mmsg::AttrDataBlock &out_attrDataBlock,
                     StringToNodeIdMap &out_nodeNameToNodeIdMap,
                     StringToAttrIdMap &out_attrNameToAttrIdMap) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("add_bundles");
     MStatus status = MS::kSuccess;
 
     // Create a single attribute that will be re-used.
@@ -948,6 +966,9 @@ MStatus add_markers(
     mmsg::EvaluationObjects &out_evalObjects, mmsg::SceneGraph &out_sceneGraph,
     mmsg::AttrDataBlock &out_attrDataBlock,
     StringToAttrIdMap &out_attrNameToAttrIdMap) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("add_markers");
+
     MStatus status = MS::kSuccess;
     assert(cameraList.size() == cameraNodes.size());
     assert(bundleList.size() == bundleNodes.size());
@@ -1048,6 +1069,9 @@ MStatus add_markers(
 MStatus convert_attributes_to_attr_ids(
     const AttrPtrList &attrList, const StringToAttrIdMap &attrNameToAttrIdMap,
     std::vector<mmsg::AttrId> &out_attrIdList) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("convert_attributes_to_attr_ids");
+
     MStatus status = MS::kSuccess;
 
     out_attrIdList.clear();
@@ -1100,8 +1124,9 @@ MStatus construct_scene_graph(CameraPtrList &cameraList,
                               std::vector<mmsg::BundleNode> &out_bundleNodes,
                               std::vector<mmsg::MarkerNode> &out_markerNodes,
                               std::vector<mmsg::AttrId> &out_attrIdList) {
-    // MMSOLVER_INFO("construct_scene_graph
-    // -----------------------------------");
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB(
+        "construct_scene_graph -----------------------------------");
     MStatus status = MS::kSuccess;
 
     auto evalObjects = mmsg::EvaluationObjects();
@@ -1109,7 +1134,7 @@ MStatus construct_scene_graph(CameraPtrList &cameraList,
     auto nodeNameToNodeIdMap = StringToNodeIdMap();
 
     // Frames
-    // MMSOLVER_INFO("FrameList length: " << frameList.length());
+    MMSOLVER_MAYA_VRB("FrameList length: " << frameList.length());
     assert(frameList.length() > 0);
     auto uiUnit = MTime::uiUnit();
     auto start_frame = std::numeric_limits<mmsg::FrameValue>::max();
@@ -1117,17 +1142,17 @@ MStatus construct_scene_graph(CameraPtrList &cameraList,
     for (uint32_t i = 0; i < frameList.length(); ++i) {
         MTime frame = frameList[i];
         auto frame_num = static_cast<mmsg::FrameValue>(frame.as(uiUnit));
-        // MMSOLVER_INFO("frameList i=" << i << " frame_num=" << frame_num);
+        MMSOLVER_MAYA_VRB("frameList i=" << i << " frame_num=" << frame_num);
         start_frame = std::min(start_frame, frame_num);
         end_frame = std::max(end_frame, frame_num);
         out_frameList.push_back(frame_num);
     }
     auto total_frame_count = (end_frame - start_frame) + 1;
     MMSOLVER_CORE_UNUSED(total_frame_count);
-    // MMSOLVER_INFO("Frames start_frame: " << start_frame);
-    // MMSOLVER_INFO("Frames end_frame: " << end_frame);
-    // MMSOLVER_INFO("Frames frame_count: " << total_frame_count);
-    // MMSOLVER_INFO("Frames count: " << out_frameList.size());
+    MMSOLVER_MAYA_VRB("Frames start_frame: " << start_frame);
+    MMSOLVER_MAYA_VRB("Frames end_frame: " << end_frame);
+    MMSOLVER_MAYA_VRB("Frames frame_count: " << total_frame_count);
+    MMSOLVER_MAYA_VRB("Frames count: " << out_frameList.size());
     assert(out_frameList.size() == frameList.length());
 
     status = add_cameras(cameraList, frameList, start_frame, end_frame,
@@ -1153,23 +1178,23 @@ MStatus construct_scene_graph(CameraPtrList &cameraList,
                                             out_attrIdList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // // Print number of nodes in the evaluation objects.
-    // MMSOLVER_INFO("EvaluationObjects num_bundles: "
-    //      << evalObjects.num_bundles());
-    // MMSOLVER_INFO("EvaluationObjects num_cameras: "
-    //      << evalObjects.num_cameras());
-    // MMSOLVER_INFO("EvaluationObjects num_markers: "
-    //      << evalObjects.num_markers());
+    // Print number of nodes in the evaluation objects.
+    MMSOLVER_MAYA_VRB(
+        "EvaluationObjects num_bundles: " << evalObjects.num_bundles());
+    MMSOLVER_MAYA_VRB(
+        "EvaluationObjects num_cameras: " << evalObjects.num_cameras());
+    MMSOLVER_MAYA_VRB(
+        "EvaluationObjects num_markers: " << evalObjects.num_markers());
 
-    // // Print number of nodes in the scene graph.
-    // MMSOLVER_INFO("SceneGraph num_transform_nodes: "
-    //      << out_sceneGraph.num_transform_nodes());
-    // MMSOLVER_INFO("SceneGraph num_bundle_nodes: "
-    //      << out_sceneGraph.num_bundle_nodes());
-    // MMSOLVER_INFO("SceneGraph num_camera_nodes: "
-    //      << out_sceneGraph.num_camera_nodes());
-    // MMSOLVER_INFO("SceneGraph num_marker_nodes: "
-    //      << out_sceneGraph.num_marker_nodes());
+    // Print number of nodes in the scene graph.
+    MMSOLVER_MAYA_VRB("SceneGraph num_transform_nodes: "
+                      << out_sceneGraph.num_transform_nodes());
+    MMSOLVER_MAYA_VRB(
+        "SceneGraph num_bundle_nodes: " << out_sceneGraph.num_bundle_nodes());
+    MMSOLVER_MAYA_VRB(
+        "SceneGraph num_camera_nodes: " << out_sceneGraph.num_camera_nodes());
+    MMSOLVER_MAYA_VRB(
+        "SceneGraph num_marker_nodes: " << out_sceneGraph.num_marker_nodes());
 
     // Bake down SceneGraph into FlatScene for fast evaluation.
     out_flatScene = mmsg::bake_scene_graph(out_sceneGraph, evalObjects);

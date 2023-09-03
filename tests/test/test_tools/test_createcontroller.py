@@ -164,16 +164,16 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         tx = maya.cmds.getAttr(ctrl + '.translateX')
         ty = maya.cmds.getAttr(ctrl + '.translateY')
         tz = maya.cmds.getAttr(ctrl + '.translateZ')
-        self.assertTrue(self.approx_equal(tx, 15.67139279))
-        self.assertTrue(self.approx_equal(ty, 143.5280034))
-        self.assertTrue(self.approx_equal(tz, 0.43112753))
+        self.assertApproxEqual(tx, 15.67139279)
+        self.assertApproxEqual(ty, 143.5280034)
+        self.assertApproxEqual(tz, 0.43112753)
 
         rx = maya.cmds.getAttr(ctrl + '.rotateX')
         ry = maya.cmds.getAttr(ctrl + '.rotateY')
         rz = maya.cmds.getAttr(ctrl + '.rotateZ')
-        self.assertTrue(self.approx_equal(rx, 0.0))
-        self.assertTrue(self.approx_equal(ry, 0.0))
-        self.assertTrue(self.approx_equal(rz, 45.0))
+        self.assertApproxEqual(rx, 0.0)
+        self.assertApproxEqual(ry, 0.0)
+        self.assertApproxEqual(rz, 45.0)
         return
 
     def test_remove_hierarchy_with_pivot(self):
@@ -199,16 +199,16 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         tx = maya.cmds.getAttr(node + '.translateX')
         ty = maya.cmds.getAttr(node + '.translateY')
         tz = maya.cmds.getAttr(node + '.translateZ')
-        self.assertTrue(self.approx_equal(tx, 0))
-        self.assertTrue(self.approx_equal(ty, 0))
-        self.assertTrue(self.approx_equal(tz, 0))
+        self.assertApproxEqual(tx, 0)
+        self.assertApproxEqual(ty, 0)
+        self.assertApproxEqual(tz, 0)
 
         rx = maya.cmds.getAttr(node + '.rotateX')
         ry = maya.cmds.getAttr(node + '.rotateY')
         rz = maya.cmds.getAttr(node + '.rotateZ')
-        self.assertTrue(self.approx_equal(rx, 0.0))
-        self.assertTrue(self.approx_equal(ry, 0.0))
-        self.assertTrue(self.approx_equal(rz, 45.0))
+        self.assertApproxEqual(rx, 0.0)
+        self.assertApproxEqual(ry, 0.0)
+        self.assertApproxEqual(rz, 45.0)
         return
 
     def create_one_keyframe_scene(self):
@@ -303,7 +303,7 @@ class TestCreateController(test_tools_utils.ToolsTestCase):
         self.assertEqual(maya.cmds.getAttr(ctrl + '.translateX', time=mid), 20.0)
         self.assertEqual(maya.cmds.getAttr(ctrl + '.translateY', time=mid), 30.0)
         self.assertEqual(maya.cmds.getAttr(ctrl + '.translateZ', time=mid), 10.0)
-        self.approx_equal(
+        self.assertApproxEqual(
             maya.cmds.getAttr(ctrl + '.rotateY', time=mid), 19.545454545454547
         )
         return

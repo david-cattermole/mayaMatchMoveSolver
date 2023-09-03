@@ -102,8 +102,8 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Ensure the values are correct
         self.checkSolveResults(results)
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
+        # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
+        # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
         return
 
     def do_solve_init_solverstandard(
@@ -186,8 +186,8 @@ class TestSolve(test_api_utils.APITestCase):
         self.checkSolveResults(
             results, allow_max_avg_error=0.001, allow_max_error=0.001
         )
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
+        # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
+        # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
         return
 
     # def test_init_solverstandard_ceres_maya_dag(self):

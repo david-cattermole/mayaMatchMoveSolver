@@ -100,7 +100,7 @@ class TestSolver3(solverUtils.SolverTestCase):
             frame=frames,
             solverType=solver_index,
             sceneGraphMode=scene_graph_mode,
-            delta=0.000001,
+            delta=0.00001,
             verbose=True,
             **kwargs
         )

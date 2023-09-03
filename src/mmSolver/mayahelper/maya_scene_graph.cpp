@@ -92,6 +92,9 @@ bool attribute_source_plug(MFnDependencyNode &depend_node, const MString &name,
 
 bool attribute_has_complex_connection(MFnDependencyNode &depend_node,
                                       const MString &name) {
+    const bool verbose = false;
+    MMSOLVER_VRB("attribute_has_complex_connection");
+
     MStatus status = MS::kSuccess;
     MPlug source_plug;
     bool ok = attribute_source_plug(depend_node, name, source_plug);

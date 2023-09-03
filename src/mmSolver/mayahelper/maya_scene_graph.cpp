@@ -95,57 +95,71 @@ bool attribute_source_plug(MFnDependencyNode &depend_node, const MString &name,
 
 bool attribute_has_complex_connection(MFnDependencyNode &depend_node,
                                       const MString &name) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("attribute_has_complex_connection");
+
     MStatus status = MS::kSuccess;
     MPlug source_plug;
     bool ok = attribute_source_plug(depend_node, name, source_plug);
-    if (ok) {
-        // Input connections can be to an animation curve only.
-        MObject source_node_mobject = source_plug.node();
-        auto has_anim_curve = source_node_mobject.hasFn(MFn::kAnimCurve);
-        if (has_anim_curve) {
-            return false;
-        }
-
-        MObject source_attr = source_plug.attribute(&status);
-        if (status != MS::kSuccess) {
-            MMSOLVER_MAYA_WRN(
-                "MM Scene Graph attribute_has_complex_connection: "
-                "Failed to get source attribute.");
-            return true;
-        }
-
-        MFnAttribute source_attr_fn(source_attr, &status);
-        if (status != MS::kSuccess) {
-            MMSOLVER_MAYA_WRN(
-                "MM Scene Graph attribute_has_complex_connection: "
-                "Failed to get source attribute function set.");
-            return true;
-        }
-
-        MFnDependencyNode source_node_fn(source_node_mobject, &status);
-        if (status != MS::kSuccess) {
-            MMSOLVER_MAYA_WRN(
-                "MM Scene Graph attribute_has_complex_connection: "
-                "Failed to get source node dependency function set.");
-            return true;
-        }
-
-        bool is_readable = source_attr_fn.isReadable();
-        bool is_writable = source_attr_fn.isWritable();
-        if (is_readable && !is_writable) {
-            // This means the attribute is an 'output attribute'.
-            MMSOLVER_MAYA_WRN(
-                "MM Scene Graph: Complex attribute connection detected from "
-                << "\"" << source_node_fn.name().asChar() << "."
-                << source_attr_fn.name().asChar() << "\""
-                << " to "
-                << "\"" << depend_node.name().asChar() << "." << name.asChar()
-                << "\": "
-                << " attr_is_readable=" << is_readable
-                << " attr_is_writable=" << is_writable);
-            return true;
-        }
+    if (!ok) {
+        return false;
     }
+    // Input connections can be to an animation curve only.
+    MObject source_node_mobject = source_plug.node();
+    auto has_anim_curve = source_node_mobject.hasFn(MFn::kAnimCurve);
+    if (has_anim_curve) {
+        return false;
+    }
+
+    MObject source_attr = source_plug.attribute(&status);
+    if (status != MS::kSuccess) {
+        MMSOLVER_MAYA_WRN(
+            "MM Scene Graph attribute_has_complex_connection: "
+            "Failed to get source attribute.");
+        return true;
+    }
+
+    MFnAttribute source_attr_fn(source_attr, &status);
+    if (status != MS::kSuccess) {
+        MMSOLVER_MAYA_WRN(
+            "MM Scene Graph attribute_has_complex_connection: "
+            "Failed to get source attribute function set.");
+        return true;
+    }
+
+    MFnDependencyNode source_node_fn(source_node_mobject, &status);
+    if (status != MS::kSuccess) {
+        MMSOLVER_MAYA_WRN(
+            "MM Scene Graph attribute_has_complex_connection: "
+            "Failed to get source node dependency function set.");
+        return true;
+    }
+
+    bool is_readable = source_attr_fn.isReadable();
+    bool is_writable = source_attr_fn.isWritable();
+    if (is_readable && !is_writable) {
+        // This means the attribute is an 'output attribute'.
+        MMSOLVER_MAYA_WRN(
+            "MM Scene Graph: Complex attribute connection detected from "
+            << "\"" << source_node_fn.name().asChar() << "."
+            << source_attr_fn.name().asChar() << "\""
+            << " to "
+            << "\"" << depend_node.name().asChar() << "." << name.asChar()
+            << "\": "
+            << " attr_is_readable=" << is_readable
+            << " attr_is_writable=" << is_writable);
+        return true;
+    }
+
+    // This means the attribute is an 'output attribute'.
+    MMSOLVER_MAYA_VRB(
+        "MM Scene Graph: No complex attribute connection detected from "
+        << "\"" << source_node_fn.name().asChar() << "."
+        << source_attr_fn.name().asChar() << "\""
+        << " to "
+        << "\"" << depend_node.name().asChar() << "." << name.asChar() << "\": "
+        << " attr_is_readable=" << is_readable
+        << " attr_is_writable=" << is_writable);
 
     return false;
 }

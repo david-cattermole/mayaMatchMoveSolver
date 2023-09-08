@@ -774,6 +774,20 @@ def execute_collection(
         msg = 'log_level value is invalid; value=%r'
         raise ValueError(msg % log_level)
 
+    # TODO: Check common issues in the scene before solving to avoid
+    # errors and warn the user.
+    #
+    # - When using CameraSolver:
+    #
+    #   - Make sure bundles and camera share the same parent
+    #     world-space matrix.
+    #
+    #   - All bundle values are unlocked and are static (not
+    #     animated).
+    #
+    # TODO: For any bundle, if the connected Marker is not an input
+    #       object, the Bundle will be skipped.
+
     # Execute the solve.
     s = time.time()
     solres_list = mmapi.execute(

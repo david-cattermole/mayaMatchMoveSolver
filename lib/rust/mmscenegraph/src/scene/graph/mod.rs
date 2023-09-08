@@ -74,6 +74,8 @@ impl SceneGraph {
         translate_attrs: (AttrId, AttrId, AttrId),
         rotate_attrs: (AttrId, AttrId, AttrId),
         scale_attrs: (AttrId, AttrId, AttrId),
+        // scale_pivot_attrs: (AttrId, AttrId, AttrId),
+        // rotate_pivot_attrs: (AttrId, AttrId, AttrId),
         rotate_order: RotateOrder,
     ) -> TransformNode {
         let mut node = TransformNode::default();
@@ -105,6 +107,8 @@ impl SceneGraph {
         translate_attrs: (AttrId, AttrId, AttrId),
         rotate_attrs: (AttrId, AttrId, AttrId),
         scale_attrs: (AttrId, AttrId, AttrId),
+        // scale_pivot_attrs: (AttrId, AttrId, AttrId),
+        // rotate_pivot_attrs: (AttrId, AttrId, AttrId),
         rotate_order: RotateOrder,
     ) -> BundleNode {
         let mut node = BundleNode::default();
@@ -136,6 +140,8 @@ impl SceneGraph {
         translate_attrs: (AttrId, AttrId, AttrId),
         rotate_attrs: (AttrId, AttrId, AttrId),
         scale_attrs: (AttrId, AttrId, AttrId),
+        // scale_pivot_attrs: (AttrId, AttrId, AttrId),
+        // rotate_pivot_attrs: (AttrId, AttrId, AttrId),
         sensor_width_attr: AttrId,
         sensor_height_attr: AttrId,
         focal_length_attr: AttrId,

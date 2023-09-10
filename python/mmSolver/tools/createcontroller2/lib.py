@@ -138,6 +138,7 @@ def _set_keyframes_at_source_node_key_times(src_node, dst_node, start_frame, end
 
 def _set_lod_visibility(node, visibility=False):
     """Sets shape node LOD visibility on/off."""
+    assert isinstance(node, pycompat.TEXT_TYPE)
     assert isinstance(visibility, bool)
     shape = maya.cmds.listRelatives(node, shapes=True) or []
     if len(shape) > 0:
@@ -149,57 +150,89 @@ def _set_lod_visibility(node, visibility=False):
 
 
 def _world_bake(
-    pivot, main, loc_grp, start, end, smart_bake=False, dynamic_pivot=False
+    pivot_node,
+    main_node,
+    loc_grp_node,
+    start_frame,
+    end_frame,
+    smart_bake=False,
+    dynamic_pivot=False,
 ):
+    assert isinstance(pivot_node, pycompat.TEXT_TYPE)
+    assert isinstance(main_node, pycompat.TEXT_TYPE)
+    assert isinstance(loc_grp_node, pycompat.TEXT_TYPE)
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
     assert isinstance(smart_bake, bool)
     assert isinstance(dynamic_pivot, bool)
 
     attrs = []
-    if 'vtx' in pivot:
+    if 'vtx' in pivot_node:
         current_time = maya.cmds.currentTime(query=True)
-        for frame in range(start, end + 1):
+        for frame in range(start_frame, end_frame + 1):
             maya.cmds.currentTime(frame, edit=True)
-            point_pos = maya.cmds.pointPosition(pivot, world=True)
-            maya.cmds.xform(loc_grp, worldSpace=True, translation=point_pos)
-            maya.cmds.setKeyframe(loc_grp)
+            point_pos = maya.cmds.pointPosition(pivot_node, world=True)
+            maya.cmds.xform(loc_grp_node, worldSpace=True, translation=point_pos)
+            maya.cmds.setKeyframe(loc_grp_node)
         maya.cmds.currentTime(current_time, edit=True)
     else:
-        # point constraint, parent is pivot and child is loc_grp
+        # point constraint, parent is pivot_node and child is loc_grp_node
         if dynamic_pivot is True:
-            con = maya.cmds.pointConstraint(pivot, loc_grp, maintainOffset=False)
+            con = maya.cmds.pointConstraint(
+                pivot_node, loc_grp_node, maintainOffset=False
+            )
         else:
-            point_con = maya.cmds.pointConstraint(pivot, loc_grp, maintainOffset=False)
-            orient_con = maya.cmds.orientConstraint(main, loc_grp, maintainOffset=False)
+            point_con = maya.cmds.pointConstraint(
+                pivot_node, loc_grp_node, maintainOffset=False
+            )
+            orient_con = maya.cmds.orientConstraint(
+                main_node, loc_grp_node, maintainOffset=False
+            )
             maya.cmds.delete(point_con, orient_con)
-            con = maya.cmds.parentConstraint(main, loc_grp, maintainOffset=True)
-        fastbake_lib.bake_attributes(loc_grp, attrs, start, end, smart_bake=smart_bake)
+            con = maya.cmds.parentConstraint(
+                main_node, loc_grp_node, maintainOffset=True
+            )
+        fastbake_lib.bake_attributes(
+            [loc_grp_node], attrs, start_frame, end_frame, smart_bake=smart_bake
+        )
         maya.cmds.delete(con)
 
-    # orient constraint, parent is main and child is loc_grp
-    orient_con = maya.cmds.orientConstraint(main, loc_grp, maintainOffset=False)
+    # orient constraint, parent is main_node and child is loc_grp_node
+    orient_con = maya.cmds.orientConstraint(
+        main_node, loc_grp_node, maintainOffset=False
+    )
 
-    fastbake_lib.bake_attributes(loc_grp, attrs, start, end, smart_bake)
+    fastbake_lib.bake_attributes(
+        [loc_grp_node], attrs, start_frame, end_frame, smart_bake
+    )
     maya.cmds.delete(orient_con)
-    return loc_grp
+    return loc_grp_node
 
 
-def _create_main_driver(parent, main):
-    start, end = time_utils.get_maya_timeline_range_inner()
-    main_driver_loc = maya.cmds.duplicate(parent)
-    maya.cmds.setAttr(main_driver_loc[0] + '.visibility', 0)
-    maya.cmds.parent(main_driver_loc, parent)
-    parent_con = maya.cmds.parentConstraint(main, main_driver_loc)
+def _create_main_driver(parent_node, main_node):
+    assert isinstance(parent_node, pycompat.TEXT_TYPE)
+    assert isinstance(main_node, pycompat.TEXT_TYPE)
+
+    start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
+    main_driver_loc_node = maya.cmds.duplicate(parent_node)[0]
+    maya.cmds.setAttr(main_driver_loc_node + '.visibility', 0)
+    maya.cmds.parent(main_driver_loc_node, parent_node)
+    parent_con = maya.cmds.parentConstraint(main_node, main_driver_loc_node)
 
     # bake attributes
     attrs = []
-    fastbake_lib.bake_attributes(main_driver_loc, attrs, start, end, smart_bake=False)
+    fastbake_lib.bake_attributes(
+        [main_driver_loc_node], attrs, start_frame, end_frame, smart_bake=False
+    )
     maya.cmds.delete(parent_con)
 
-    maya.cmds.setAttr(main_driver_loc[0] + '.hiddenInOutliner', 1)
-    return main_driver_loc
+    maya.cmds.setAttr(main_driver_loc_node + '.hiddenInOutliner', 1)
+    return main_driver_loc_node
 
 
 def _find_constraints_from_node(node):
+    assert isinstance(node, pycompat.TEXT_TYPE)
+
     constraints = (
         maya.cmds.listConnections(
             node + '.parentMatrix[0]', destination=True, source=False, type='constraint'
@@ -232,7 +265,14 @@ def _create_controller_world_space(
     current_frame,
     dynamic_pivot=False,
 ):
+    assert isinstance(pivot_node, pycompat.TEXT_TYPE)
+    assert isinstance(main_node, pycompat.TEXT_TYPE)
+    assert isinstance(loc_grp_node, pycompat.TEXT_TYPE)
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
+    assert isinstance(current_frame, bool)
     assert isinstance(dynamic_pivot, bool)
+
     skip_translate_attr = _skip_translate_attributes(main_node)
     skip_rotate_attr = _skip_rotate_attributes(main_node)
 
@@ -246,10 +286,10 @@ def _create_controller_world_space(
         dynamic_pivot=dynamic_pivot,
     )
 
-    main_driver_loc = _create_main_driver(loc_grp_node, main_node)
+    main_driver_loc_node = _create_main_driver(loc_grp_node, main_node)
 
     maya.cmds.parentConstraint(
-        main_driver_loc,
+        main_driver_loc_node,
         main_node,
         maintainOffset=True,
         skipTranslate=skip_translate_attr,
@@ -259,14 +299,16 @@ def _create_controller_world_space(
     if current_frame is True:
         maya.cmds.cutKey(loc_grp_node, time=(end_frame, end_frame))
         inner_start_frame, inner_end_frame = time_utils.get_maya_timeline_range_inner()
-        maya.cmds.cutKey(main_driver_loc, time=(inner_start_frame, inner_end_frame))
-        maya.cmds.setKeyframe(main_driver_loc)
+        maya.cmds.cutKey(
+            main_driver_loc_node, time=(inner_start_frame, inner_end_frame)
+        )
+        maya.cmds.setKeyframe(main_driver_loc_node)
 
     # LOD visibility
     _set_lod_visibility(loc_grp_node, True)
-    _set_lod_visibility(main_driver_loc, False)
+    _set_lod_visibility(main_driver_loc_node, False)
 
-    maya.cmds.rename(main_driver_loc, str(name) + MAIN_DRIVER_SUFFIX_NAME)
+    maya.cmds.rename(main_driver_loc_node, str(name) + MAIN_DRIVER_SUFFIX_NAME)
     return loc_grp_node
 
 
@@ -281,8 +323,15 @@ def _create_controller_object_space(
     current_frame,
     dynamic_pivot=False,
 ):
+    assert isinstance(pivot_node, pycompat.TEXT_TYPE)
+    assert isinstance(main_node, pycompat.TEXT_TYPE)
+    assert isinstance(loc_grp_node, pycompat.TEXT_TYPE)
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
     assert isinstance(smart_bake, bool)
+    assert isinstance(current_frame, bool)
     assert isinstance(dynamic_pivot, bool)
+
     skip_translate_attr = _skip_translate_attributes(main_node)
     skip_rotate_attr = _skip_rotate_attributes(main_node)
 
@@ -296,32 +345,34 @@ def _create_controller_object_space(
         smart_bake=False,
         dynamic_pivot=dynamic_pivot,
     )
-    zero_loc = maya.cmds.duplicate(loc_grp_node)[0]
-    maya.cmds.parent(zero_loc, loc_grp_node)
+    zero_loc_node = maya.cmds.duplicate(loc_grp_node)[0]
+    maya.cmds.parent(zero_loc_node, loc_grp_node)
     maya.cmds.xform(
-        zero_loc,
+        zero_loc_node,
         translation=(0.0, 0.0, 0.0),
         rotation=(0.0, 0.0, 0.0),
         objectSpace=True,
     )
 
-    main_driver_loc = _create_main_driver(zero_loc, main_node)
+    main_driver_loc_node = _create_main_driver(zero_loc_node, main_node)
 
     # Smart bake
     if smart_bake is True:
         _set_keyframes_at_source_node_key_times(
-            main_node, zero_loc, start_frame, end_frame
+            main_node, zero_loc_node, start_frame, end_frame
         )
 
     # Current frame
     if current_frame is True:
-        maya.cmds.setKeyframe(zero_loc, time=(start_frame, start_frame))
-        maya.cmds.cutKey(loc_grp_node, zero_loc, time=(end_frame, end_frame))
+        maya.cmds.setKeyframe(zero_loc_node, time=(start_frame, start_frame))
+        maya.cmds.cutKey(loc_grp_node, zero_loc_node, time=(end_frame, end_frame))
         inner_start_frame, inner_end_frame = time_utils.get_maya_timeline_range_inner()
-        maya.cmds.cutKey(main_driver_loc, time=(inner_start_frame, inner_end_frame))
-        maya.cmds.setKeyframe(main_driver_loc)
+        maya.cmds.cutKey(
+            main_driver_loc_node, time=(inner_start_frame, inner_end_frame)
+        )
+        maya.cmds.setKeyframe(main_driver_loc_node)
     maya.cmds.parentConstraint(
-        main_driver_loc,
+        main_driver_loc_node,
         main_node,
         maintainOffset=True,
         skipTranslate=skip_translate_attr,
@@ -330,12 +381,12 @@ def _create_controller_object_space(
 
     # LOD visibility
     _set_lod_visibility(loc_grp_node, False)
-    _set_lod_visibility(zero_loc, True)
-    _set_lod_visibility(main_driver_loc, False)
+    _set_lod_visibility(zero_loc_node, True)
+    _set_lod_visibility(main_driver_loc_node, False)
 
     # Rename
-    maya.cmds.rename(zero_loc, str(name) + OBJECT_SPACE_RIG_ZERO_SUFFIX)
-    maya.cmds.rename(main_driver_loc, str(name) + MAIN_DRIVER_SUFFIX_NAME)
+    maya.cmds.rename(zero_loc_node, str(name) + OBJECT_SPACE_RIG_ZERO_SUFFIX)
+    maya.cmds.rename(main_driver_loc_node, str(name) + MAIN_DRIVER_SUFFIX_NAME)
     return loc_grp_node
 
 
@@ -348,9 +399,18 @@ def _create_controller_screen_space(
     end_frame,
     smart_bake,
     current_frame,
-    camera,
+    camera_node,
     dynamic_pivot=False,
 ):
+    assert isinstance(pivot_node, pycompat.TEXT_TYPE)
+    assert isinstance(main_node, pycompat.TEXT_TYPE)
+    assert isinstance(loc_grp_node, pycompat.TEXT_TYPE)
+    assert isinstance(camera_node, pycompat.TEXT_TYPE)
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
+    assert isinstance(smart_bake, bool)
+    assert isinstance(dynamic_pivot, bool)
+
     skip_translate_attr = _skip_translate_attributes(main_node)
     if len(skip_translate_attr) != 0:
         LOG.error(
@@ -370,10 +430,10 @@ def _create_controller_screen_space(
         smart_bake=False,
         dynamic_pivot=dynamic_pivot,
     )
-    screen_loc = maya.cmds.duplicate(loc_grp_node)
-    maya.cmds.parent(screen_loc, loc_grp_node)
+    screen_loc_node = maya.cmds.duplicate(loc_grp_node)[0]
+    maya.cmds.parent(screen_loc_node, loc_grp_node)
     maya.cmds.xform(
-        screen_loc,
+        screen_loc_node,
         translation=(0.0, 0.0, 0.0),
         rotation=(0.0, 0.0, 0.0),
         objectSpace=True,
@@ -382,54 +442,60 @@ def _create_controller_screen_space(
     # Bake attributes
     attrs = []
     fastbake_lib.bake_attributes(
-        screen_loc, attrs, start_frame, end_frame, smart_bake=False
+        [screen_loc_node], attrs, start_frame, end_frame, smart_bake=False
     )
-    aim_con = maya.cmds.aimConstraint(camera, screen_loc, aimVector=(0.0, 0.0, 1.0))
+    aim_con = maya.cmds.aimConstraint(
+        camera_node, screen_loc_node, aimVector=(0.0, 0.0, 1.0)
+    )
 
     # Bake attributes
     fastbake_lib.bake_attributes(
-        screen_loc, attrs, start_frame, end_frame, smart_bake=False
+        [screen_loc_node], attrs, start_frame, end_frame, smart_bake=False
     )
     maya.cmds.delete(aim_con)
-    zero_loc = maya.cmds.duplicate(screen_loc)
-    maya.cmds.parent(zero_loc, screen_loc)
+    zero_loc_node = maya.cmds.duplicate(screen_loc_node)[0]
+    maya.cmds.parent(zero_loc_node, screen_loc_node)
     maya.cmds.xform(
-        zero_loc,
+        zero_loc_node,
         translation=(0.0, 0.0, 0.0),
         rotation=(0.0, 0.0, 0.0),
         objectSpace=True,
     )
 
-    main_driver_loc = _create_main_driver(zero_loc, main_node)
+    main_driver_loc_node = _create_main_driver(zero_loc_node, main_node)
 
     # Smart bake
     if smart_bake is True:
         _set_keyframes_at_source_node_key_times(
-            main_node, zero_loc, start_frame, end_frame
+            main_node, zero_loc_node, start_frame, end_frame
         )
 
     # Current frame
     if current_frame is True:
-        maya.cmds.setKeyframe(screen_loc, zero_loc, time=(start_frame, start_frame))
+        maya.cmds.setKeyframe(
+            screen_loc_node, zero_loc_node, time=(start_frame, start_frame)
+        )
         maya.cmds.cutKey(
-            loc_grp_node, screen_loc, zero_loc, time=(end_frame, end_frame)
+            loc_grp_node, screen_loc_node, zero_loc_node, time=(end_frame, end_frame)
         )
         inner_start_frame, inner_end_frame = time_utils.get_maya_timeline_range_inner()
-        maya.cmds.cutKey(main_driver_loc, time=(inner_start_frame, inner_end_frame))
-        maya.cmds.setKeyframe(main_driver_loc)
+        maya.cmds.cutKey(
+            main_driver_loc_node, time=(inner_start_frame, inner_end_frame)
+        )
+        maya.cmds.setKeyframe(main_driver_loc_node)
 
-    maya.cmds.pointConstraint(main_driver_loc, main_node, maintainOffset=True)
+    maya.cmds.pointConstraint(main_driver_loc_node, main_node, maintainOffset=True)
 
     # LOD visibility
     _set_lod_visibility(loc_grp_node, False)
-    _set_lod_visibility(screen_loc, False)
-    _set_lod_visibility(zero_loc, True)
-    _set_lod_visibility(main_driver_loc, False)
+    _set_lod_visibility(screen_loc_node, False)
+    _set_lod_visibility(zero_loc_node, True)
+    _set_lod_visibility(main_driver_loc_node, False)
 
     # Rename
-    maya.cmds.rename(screen_loc, name + SCREEN_SPACE_RIG_SUFFIX)
-    maya.cmds.rename(zero_loc, name + SCREEN_SPACE_RIG_ZERO_SUFFIX)
-    maya.cmds.rename(main_driver_loc, str(name) + MAIN_DRIVER_SUFFIX_NAME)
+    maya.cmds.rename(screen_loc_node, name + SCREEN_SPACE_RIG_SUFFIX)
+    maya.cmds.rename(zero_loc_node, name + SCREEN_SPACE_RIG_ZERO_SUFFIX)
+    maya.cmds.rename(main_driver_loc_node, str(name) + MAIN_DRIVER_SUFFIX_NAME)
     return loc_grp_node
 
 
@@ -437,10 +503,10 @@ def create_controller(
     name,
     pivot_node,
     main_node,
-    loc_grp_node,
+    loc_grp_nodes,
     start_frame,
     end_frame,
-    controller_type,
+    controller_space,
     smart_bake=False,
     camera=None,
     dynamic_pivot=False,
@@ -459,11 +525,11 @@ def create_controller(
     :param main_node: The node to be controlled
     :type main_node: str
 
-    :param loc_grp_node: The nodes for the Locator or Group node that
+    :param loc_grp_nodes: The nodes for the Locator or Group node that
         will be used to create rig. If a Locator is used, a list of
         both transform and shape nodes should be provided. If a Group
         is provided, just use a list with the transform node.
-    :type loc_grp_node: [str]
+    :type loc_grp_nodes: [str]
 
     :param start_frame: bake range start frame
     :type start_frame: int
@@ -471,8 +537,8 @@ def create_controller(
     :param end_frame: bake range end frame
     :type end_frame: int
 
-    :param controller_type: In which space rig to be created? A value in
-        mmSolver.tools.createcontroller2.constant.CONTROLLER_TYPE_LIST.
+    :param controller_space: In which space rig to be created? A value in
+        mmSolver.tools.createcontroller2.constant.CONTROLLER_SPACE_LIST.
     :type: str
 
     :param smart_bake: Enable or disable baking only "smart" keyframe times.
@@ -485,8 +551,8 @@ def create_controller(
     :type: bool
 
     :returns: The controller node locator/group created. This should
-        be the same as 'loc_grp_node' given to the function.
-    :rtype: [str, ..]
+        be the same as 'loc_grp_nodes' given to the function.
+    :rtype: [str]
     """
     current_frame = False
     if start_frame == end_frame:
@@ -496,20 +562,21 @@ def create_controller(
     assert isinstance(end_frame, int)
     assert isinstance(dynamic_pivot, bool)
     assert isinstance(smart_bake, bool)
-    assert len(loc_grp_node) == 1
+    assert len(loc_grp_nodes) == 1
+    loc_grp_node = loc_grp_nodes[0]
 
     # Add custom identify attribute
     maya.cmds.addAttr(
-        loc_grp_node[0], longName=IDENTIFIER_ATTR_NAME, dataType='string', keyable=False
+        loc_grp_node, longName=IDENTIFIER_ATTR_NAME, dataType='string', keyable=False
     )
     maya.cmds.setAttr(
-        str(loc_grp_node[0]) + '.' + IDENTIFIER_ATTR_NAME,
-        str(loc_grp_node[0] + str(random.randint(1, 100000000))),
+        str(loc_grp_node) + '.' + IDENTIFIER_ATTR_NAME,
+        str(loc_grp_node + str(random.randint(1, 100000000))),
         type='string',
         lock=True,
     )
 
-    if controller_type == const.CONTROLLER_SPACE_WORLD:
+    if controller_space == const.CONTROLLER_SPACE_WORLD:
         loc_grp_node = _create_controller_world_space(
             name,
             pivot_node,
@@ -521,8 +588,9 @@ def create_controller(
             current_frame,
             dynamic_pivot,
         )
+        assert isinstance(loc_grp_node, pycompat.TEXT_TYPE)
 
-    elif controller_type == const.CONTROLLER_SPACE_OBJECT:
+    elif controller_space == const.CONTROLLER_SPACE_OBJECT:
         loc_grp_node = _create_controller_object_space(
             name,
             pivot_node,
@@ -534,8 +602,12 @@ def create_controller(
             current_frame,
             dynamic_pivot,
         )
+        assert isinstance(loc_grp_node, pycompat.TEXT_TYPE)
 
-    elif controller_type == const.CONTROLLER_SPACE_SCREEN:
+    elif controller_space == const.CONTROLLER_SPACE_SCREEN:
+        if camera is None:
+            LOG.error("Camera is not valid: %r", camera)
+            return loc_grp_node
         loc_grp_node = _create_controller_screen_space(
             name,
             pivot_node,
@@ -548,25 +620,26 @@ def create_controller(
             camera,
             dynamic_pivot,
         )
+        assert isinstance(loc_grp_node, pycompat.TEXT_TYPE)
 
     else:
         LOG.error('Invalid space.')
 
-    return loc_grp_node
+    return [loc_grp_node]
 
 
-def remove_controller(controller_node, frame_start, frame_end, attrs=None):
+def remove_controller(controller_node, start_frame, end_frame, attrs=None):
     """
     Bake the affects of the controller node, and delete the controller.
 
     :param controller_node: The controller node.
     :type controller_node: str
 
-    :param frame_start: First frame to bake.
-    :type frame_start: int
+    :param start_frame: First frame to bake.
+    :type start_frame: int
 
-    :param frame_end: Last frame to bake.
-    :type frame_end: int
+    :param end_frame: Last frame to bake.
+    :type end_frame: int
 
     :param attrs: List of attributes to bake. If None, all transform,
         rotate and scale attributes are baked.
@@ -578,8 +651,8 @@ def remove_controller(controller_node, frame_start, frame_end, attrs=None):
     """
     assert isinstance(controller_node, pycompat.TEXT_TYPE)
     assert maya.cmds.objExists(controller_node)
-    assert isinstance(frame_start, int)
-    assert isinstance(frame_end, int)
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
     if attrs is None:
         attrs = TRANSFORM_ATTRS
     assert isinstance(attrs, list)
@@ -640,11 +713,11 @@ def remove_controller(controller_node, frame_start, frame_end, attrs=None):
             # baked", then set keys on all the same frames, therefore
             # re-creating the original keyframe times.
             _set_keyframes_at_source_node_key_times(
-                controller_node, driven_node, frame_start, frame_end
+                controller_node, driven_node, start_frame, end_frame
             )
     else:
         fastbake_lib.bake_attributes(
-            driven_nodes, attrs, frame_start, frame_end, smart_bake=True
+            driven_nodes, attrs, start_frame, end_frame, smart_bake=True
         )
 
     # Delete nodes and clean up.

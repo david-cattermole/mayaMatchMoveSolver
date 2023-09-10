@@ -296,7 +296,7 @@ def _create_controller_object_space(
         smart_bake=False,
         dynamic_pivot=dynamic_pivot,
     )
-    zero_loc = maya.cmds.duplicate(loc_grp_node)
+    zero_loc = maya.cmds.duplicate(loc_grp_node)[0]
     maya.cmds.parent(zero_loc, loc_grp_node)
     maya.cmds.xform(
         zero_loc,

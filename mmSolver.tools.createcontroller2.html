@@ -373,7 +373,7 @@ whatever is needed to transform and re-parent the controllers.</p>
 <span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.createcontroller2.lib" title="Permalink to this heading">#</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.createcontroller2.lib.create_controller">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.createcontroller2.lib.</span></span><span class="sig-name descname"><span class="pre">create_controller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pivot_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc_grp_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smart_bake</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic_pivot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createcontroller2.lib.create_controller" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.createcontroller2.lib.</span></span><span class="sig-name descname"><span class="pre">create_controller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pivot_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">main_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc_grp_nodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">controller_space</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smart_bake</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">camera</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dynamic_pivot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createcontroller2.lib.create_controller" title="Permalink to this definition">#</a></dt>
 <dd><p>Create Controller of a node.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -382,14 +382,14 @@ whatever is needed to transform and re-parent the controllers.</p>
 <li><p><strong>pivot_node</strong> (<em>str</em>) – The controller uses the pivot node’s transform as the parent
 of the controller.</p></li>
 <li><p><strong>main_node</strong> (<em>str</em>) – The node to be controlled</p></li>
-<li><p><strong>loc_grp_node</strong> (<em>[</em><em>str</em><em>]</em>) – The nodes for the Locator or Group node that
+<li><p><strong>loc_grp_nodes</strong> (<em>[</em><em>str</em><em>]</em>) – The nodes for the Locator or Group node that
 will be used to create rig. If a Locator is used, a list of
 both transform and shape nodes should be provided. If a Group
 is provided, just use a list with the transform node.</p></li>
 <li><p><strong>start_frame</strong> (<em>int</em>) – bake range start frame</p></li>
 <li><p><strong>end_frame</strong> (<em>int</em>) – bake range end frame</p></li>
-<li><p><strong>controller_type</strong> – In which space rig to be created? A value in
-mmSolver.tools.createcontroller2.constant.CONTROLLER_TYPE_LIST.</p></li>
+<li><p><strong>controller_space</strong> – In which space rig to be created? A value in
+mmSolver.tools.createcontroller2.constant.CONTROLLER_SPACE_LIST.</p></li>
 <li><p><strong>smart_bake</strong> – Enable or disable baking only “smart” keyframe times.</p></li>
 <li><p><strong>camera</strong> – Camera transform node for screen space rig</p></li>
 <li><p><strong>dynamic_pivot</strong> – When True, the pivot_node is considered animated.</p></li>
@@ -409,24 +409,24 @@ mmSolver.tools.createcontroller2.constant.CONTROLLER_TYPE_LIST.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The controller node locator/group created. This should
-be the same as ‘loc_grp_node’ given to the function.</p>
+be the same as ‘loc_grp_nodes’ given to the function.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>[str, ..]</p>
+<dd class="field-odd"><p>[str]</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.tools.createcontroller2.lib.remove_controller">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.createcontroller2.lib.</span></span><span class="sig-name descname"><span class="pre">remove_controller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">controller_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_end</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createcontroller2.lib.remove_controller" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.createcontroller2.lib.</span></span><span class="sig-name descname"><span class="pre">remove_controller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">controller_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createcontroller2.lib.remove_controller" title="Permalink to this definition">#</a></dt>
 <dd><p>Bake the affects of the controller node, and delete the controller.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>controller_node</strong> (<em>str</em>) – The controller node.</p></li>
-<li><p><strong>frame_start</strong> (<em>int</em>) – First frame to bake.</p></li>
-<li><p><strong>frame_end</strong> (<em>int</em>) – Last frame to bake.</p></li>
+<li><p><strong>start_frame</strong> (<em>int</em>) – First frame to bake.</p></li>
+<li><p><strong>end_frame</strong> (<em>int</em>) – Last frame to bake.</p></li>
 <li><p><strong>attrs</strong> (<em>[</em><em>str</em><em>, </em><em>..</em><em>] or </em><em>None</em>) – List of attributes to bake. If None, all transform,
 rotate and scale attributes are baked.</p></li>
 </ul>

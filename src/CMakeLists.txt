@@ -113,8 +113,10 @@ if (MMSOLVER_BUILD_RENDERER)
   set(SOURCE_FILES
     ${SOURCE_FILES}
     mmSolver/render/MMRendererCmd.cpp
+    mmSolver/render/RenderGlobalsNode.cpp
     mmSolver/render/RenderOverride.cpp
     mmSolver/render/ops/ClearOperation.cpp
+    mmSolver/render/ops/SilhouetteRender.cpp
     mmSolver/render/ops/SceneRender.cpp
     mmSolver/render/ops/SceneRenderBase.cpp
     mmSolver/render/ops/scene_utils.cpp

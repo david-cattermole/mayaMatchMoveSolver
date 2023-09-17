@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 David Cattermole.
+ * Copyright (C) 2021, 2023 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -48,7 +48,11 @@ namespace render {
 MTypeId RenderGlobalsNode::m_id(MM_RENDER_GLOBALS_TYPE_ID);
 
 // Input Attributes
-MObject RenderGlobalsNode::a_renderColorFormat;
+MObject RenderGlobalsNode::a_silhouetteEnable;
+MObject RenderGlobalsNode::a_silhouetteDepthOffset;
+MObject RenderGlobalsNode::a_silhouetteWidth;
+MObject RenderGlobalsNode::a_silhouetteColor;
+MObject RenderGlobalsNode::a_silhouetteAlpha;
 
 RenderGlobalsNode::RenderGlobalsNode() : m_attr_change_callback(0) {}
 
@@ -128,26 +132,73 @@ void *RenderGlobalsNode::creator() { return (new RenderGlobalsNode()); }
 
 MStatus RenderGlobalsNode::initialize() {
     MStatus status;
-    MFnNumericAttribute nAttr;
-    MFnEnumAttribute eAttr;
+    MFnNumericAttribute numeric_attribute;
+    MFnEnumAttribute enum_attribute;
 
-    // Render Color Format; 0=8-bit float, 1=16-bit float, 2=32-bit float
-    a_renderColorFormat =
-        eAttr.create("renderColorFormat", "rndcolfmt",
-                     static_cast<short>(kRenderColorFormatDefault), &status);
-    CHECK_MSTATUS(status);
-    CHECK_MSTATUS(
-        eAttr.addField("RGBA 8-Bit (integer)",
-                       static_cast<short>(RenderColorFormat::kRGBA8BitInt)));
-    CHECK_MSTATUS(
-        eAttr.addField("RGBA 16-Bit (float)",
-                       static_cast<short>(RenderColorFormat::kRGBA16BitFloat)));
-    CHECK_MSTATUS(
-        eAttr.addField("RGBA 32-Bit (float)",
-                       static_cast<short>(RenderColorFormat::kRGBA32BitFloat)));
-    CHECK_MSTATUS(eAttr.setStorable(true));
-    CHECK_MSTATUS(eAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(a_renderColorFormat));
+    // Silhouette Enable
+    {
+        a_silhouetteEnable = numeric_attribute.create(
+            kAttrNameSilhouetteEnable, "slhttenbl", MFnNumericData::kBoolean,
+            static_cast<int>(kSilhouetteEnableDefault));
+        CHECK_MSTATUS(numeric_attribute.setStorable(true));
+        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
+        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
+        CHECK_MSTATUS(addAttribute(a_silhouetteEnable));
+    }
+
+    // Silhouette Depth Offset
+    {
+        auto depth_offset_max = 0.0;
+        a_silhouetteDepthOffset = numeric_attribute.create(
+            kAttrNameSilhouetteDepthOffset, "slhttdpthoffst",
+            MFnNumericData::kDouble, kSilhouetteDepthOffsetDefault);
+        CHECK_MSTATUS(numeric_attribute.setStorable(true));
+        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
+        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
+        CHECK_MSTATUS(numeric_attribute.setMax(depth_offset_max));
+        CHECK_MSTATUS(addAttribute(a_silhouetteDepthOffset));
+    }
+
+    // Silhouette Width
+    {
+        auto width_min = 0.0;
+        a_silhouetteWidth = numeric_attribute.create(
+            kAttrNameSilhouetteWidth, "slhttwdth", MFnNumericData::kDouble,
+            kSilhouetteWidthDefault);
+        CHECK_MSTATUS(numeric_attribute.setStorable(true));
+        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
+        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
+        CHECK_MSTATUS(numeric_attribute.setMin(width_min));
+        CHECK_MSTATUS(addAttribute(a_silhouetteWidth));
+    }
+
+    // Silhouette Color (RGB)
+    {
+        a_silhouetteColor =
+            numeric_attribute.createColor(kAttrNameSilhouetteColor, "slhttclr");
+        CHECK_MSTATUS(numeric_attribute.setStorable(true));
+        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
+        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
+        CHECK_MSTATUS(numeric_attribute.setDefault(kSilhouetteColorDefault[0],
+                                                   kSilhouetteColorDefault[1],
+                                                   kSilhouetteColorDefault[2]));
+        CHECK_MSTATUS(addAttribute(a_silhouetteColor));
+    }
+
+    // Silhouette Alpha
+    {
+        auto alpha_min = 0.0;
+        auto alpha_max = 1.0;
+        a_silhouetteAlpha = numeric_attribute.create(
+            kAttrNameSilhouetteAlpha, "slhttalp", MFnNumericData::kDouble,
+            kSilhouetteAlphaDefault);
+        CHECK_MSTATUS(numeric_attribute.setStorable(true));
+        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
+        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
+        CHECK_MSTATUS(numeric_attribute.setMin(alpha_min));
+        CHECK_MSTATUS(numeric_attribute.setMax(alpha_max));
+        CHECK_MSTATUS(addAttribute(a_silhouetteAlpha));
+    }
 
     return MS::kSuccess;
 }

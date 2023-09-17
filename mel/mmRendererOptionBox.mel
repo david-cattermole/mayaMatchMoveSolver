@@ -33,11 +33,9 @@
 
 global proc mmRendererOptionBox() {
     print("mmRendererOptionBox");
-    if (`objExists "mmRenderGlobals1"`) {
-        select -r "mmRenderGlobals1";
-    } else {
-        createNode -n "mmRenderGlobals1" "mmRenderGlobals";
-        select -r "mmRenderGlobals1";
+    if (!`objExists "mmRenderGlobals"`) {
+        createNode -n "mmRenderGlobals" "mmRenderGlobals";
     }
+    select -r "mmRenderGlobals";
     return;
 }

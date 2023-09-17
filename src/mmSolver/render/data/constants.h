@@ -118,6 +118,12 @@ const float kEdgeThresholdColorDefault = 1.0f;
 const float kEdgeThresholdAlphaDefault = 1.0f;
 const float kEdgeThresholdDepthDefault = 1.0f;
 
+const bool kSilhouetteEnableDefault = false;
+const float kSilhouetteDepthOffsetDefault = -1.0f;
+const float kSilhouetteWidthDefault = 2.0f;
+const float kSilhouetteColorDefault[] = {0.0f, 1.0f, 0.0f};
+const float kSilhouetteAlphaDefault = 1.0f;
+
 // Render Operation Pass Names
 const MString kBeginClearMainTargetOpName = "mmRenderer_ClearMainTarget";
 const MString kBeginClearBackgroundTargetOpName =
@@ -157,6 +163,15 @@ const MString kAttrNameEdgeThreshold = "mmEdgeThreshold";
 const MString kAttrNameEdgeThresholdColor = "mmEdgeThresholdColor";
 const MString kAttrNameEdgeThresholdAlpha = "mmEdgeThresholdAlpha";
 const MString kAttrNameEdgeThresholdDepth = "mmEdgeThresholdDepth";
+
+const MString kAttrNameSilhouetteEnable = "silhouetteEnable";
+const MString kAttrNameSilhouetteDepthOffset = "silhouetteDepthOffset";
+const MString kAttrNameSilhouetteWidth = "silhouetteWidth";
+const MString kAttrNameSilhouetteColor = "silhouetteColor";
+const MString kAttrNameSilhouetteColorR = "silhouetteColorR";
+const MString kAttrNameSilhouetteColorG = "silhouetteColorG";
+const MString kAttrNameSilhouetteColorB = "silhouetteColorB";
+const MString kAttrNameSilhouetteAlpha = "silhouetteAlpha";
 
 // Clear Masks
 const auto CLEAR_MASK_NONE =

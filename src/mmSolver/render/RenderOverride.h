@@ -41,6 +41,7 @@
 #include "mmSolver/render/data/RenderMode.h"
 #include "mmSolver/render/data/constants.h"
 #include "mmSolver/render/ops/SceneRender.h"
+#include "mmSolver/render/ops/SilhouetteRender.h"
 
 namespace mmsolver {
 namespace render {
@@ -59,18 +60,38 @@ public:
     MString uiName() const override { return m_ui_name; }
 
 protected:
-    MStatus updateParameters();
-
     // UI name
     MString m_ui_name;
+
+    // Callback IDs for tracking viewport changes
+    MCallbackId m_renderer_change_callback;
+    MCallbackId m_render_override_change_callback;
+    static void renderer_change_func(const MString& panel_name,
+                                     const MString& old_renderer,
+                                     const MString& new_renderer,
+                                     void* client_data);
+    static void render_override_change_func(const MString& panel_name,
+                                            const MString& old_renderer,
+                                            const MString& new_renderer,
+                                            void* client_data);
 
     // Allow the command to access this class.
     friend class MMRendererCmd;
 
 private:
     SceneRender* m_backgroundOp;
+    SilhouetteRender* m_silhouetteOp;
+
+    // A handle to the 'mmRenderGlobals' node.
+    MObjectHandle m_globals_node;
 
     MSelectionList m_image_plane_nodes;
+
+    bool m_silhouette_enable;
+    float m_silhouette_depth_offset;
+    float m_silhouette_width;
+    float m_silhouette_color[3];
+    float m_silhouette_alpha;
 };
 
 }  // namespace render

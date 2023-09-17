@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 David Cattermole.
+ * Copyright (C) 2021, 2023 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -53,7 +53,11 @@ public:
     static MTypeId m_id;
 
     // Input Attributes
-    static MObject a_renderColorFormat;
+    static MObject a_silhouetteEnable;
+    static MObject a_silhouetteDepthOffset;
+    static MObject a_silhouetteWidth;
+    static MObject a_silhouetteColor;
+    static MObject a_silhouetteAlpha;
 
 private:
     // Callback IDs for tracking viewport changes.

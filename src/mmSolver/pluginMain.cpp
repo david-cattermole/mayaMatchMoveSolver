@@ -79,6 +79,7 @@
 // MM Renderer
 #if MMSOLVER_BUILD_RENDERER == 1
 #include "mmSolver/render/MMRendererCmd.h"
+#include "mmSolver/render/RenderGlobalsNode.h"
 #include "mmSolver/render/RenderOverride.h"
 #endif
 
@@ -395,6 +396,11 @@ MStatus initializePlugin(MObject obj) {
     REGISTER_COMMAND(plugin, mmsolver::render::MMRendererCmd::cmdName(),
                      mmsolver::render::MMRendererCmd::creator,
                      mmsolver::render::MMRendererCmd::newSyntax, status);
+
+    REGISTER_NODE(plugin, mmsolver::render::RenderGlobalsNode::nodeName(),
+                  mmsolver::render::RenderGlobalsNode::m_id,
+                  mmsolver::render::RenderGlobalsNode::creator,
+                  mmsolver::render::RenderGlobalsNode::initialize, status);
 
     // Register MM Solver Viewport Renderer.
     //

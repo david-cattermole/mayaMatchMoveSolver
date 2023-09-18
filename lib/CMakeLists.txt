@@ -35,6 +35,9 @@ set(PROJECT_DESCRIPTION "mmSolver libraries.")
 set(PROJECT_AUTHOR "David Cattermole")
 set(PROJECT_COPYRIGHT "2023, David Cattermole.")
 
+set(MMSOLVERLIBS_LIB_DIR "/path/to/rust/build/directory/" CACHE PATH
+  "The path to the directory containing the compiled library.")
+
 # Add custom modules to the module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
   ${CMAKE_CURRENT_SOURCE_DIR}/../share/cmake/modules)
@@ -46,6 +49,18 @@ set(CMAKE_CXX_STANDARD 11)
 
 include(MMSolverUtils)
 set_global_maya_plugin_compile_options()
+
+include(MMRustUtils)
+set(rust_linktime_file "NOT-FOUND")
+mm_rust_find_rust_library(${rust_lib_name} ${MMSOLVERLIBS_LIB_DIR} rust_linktime_file)
+message(STATUS "Rust Linktime Library: ${rust_linktime_file}")
+if(NOT EXISTS "${rust_linktime_file}")
+  message(FATAL_ERROR "mmsolverlibs rust linktime library was not found.")
+endif()
+
+set(rust_depend_on_libraries "NOT-FOUND")
+mm_rust_get_depend_on_libraries(rust_depend_on_libraries)
+message(STATUS "Rust Depend On Libraries: ${rust_depend_on_libraries}")
 
 # Finds and builds external (third-party) LDPK dependencies.
 option(MMSOLVER_DOWNLOAD_DEPENDENCIES "Automatically download and build missing dependencies?" ON)

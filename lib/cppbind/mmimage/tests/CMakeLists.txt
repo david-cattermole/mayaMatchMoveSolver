@@ -33,7 +33,11 @@ message(STATUS "target_test_exe_name: ${target_test_exe_name}")
 message(STATUS "test_source_files: ${test_source_files}")
 message(STATUS "target_release_lib_name: ${target_release_lib_name}")
 add_executable(${target_test_exe_name} ${test_source_files})
-target_link_libraries(${target_test_exe_name} ${target_release_lib_name})
+target_link_libraries(${target_test_exe_name}
+  PRIVATE ${target_release_lib_name}
+  PRIVATE ${rust_linktime_file}
+  PRIVATE ${rust_depend_on_libraries}
+  )
 target_include_directories(${target_test_exe_name}
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include
   PUBLIC ${RUST_INCLUDE_DIR}

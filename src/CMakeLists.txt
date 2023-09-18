@@ -116,9 +116,9 @@ if (MMSOLVER_BUILD_RENDERER)
     mmSolver/render/RenderGlobalsNode.cpp
     mmSolver/render/RenderOverride.cpp
     mmSolver/render/ops/ClearOperation.cpp
-    mmSolver/render/ops/SilhouetteRender.cpp
     mmSolver/render/ops/SceneRender.cpp
     mmSolver/render/ops/SceneRenderBase.cpp
+    mmSolver/render/ops/SilhouetteRender.cpp
     mmSolver/render/ops/scene_utils.cpp
     mmSolver/render/shader/shader_utils.cpp
   )

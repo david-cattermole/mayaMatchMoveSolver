@@ -49,26 +49,6 @@ macro(mm_common_set_rpath_to_cwd target)
 endmacro()
 
 
-# Add library as a C++ wrapper around the Rust library.
-macro(mm_common_add_target_library target_release_lib_name lib_source_files depend_on_libraries)
-  message(STATUS "target_release_lib_name: ${target_release_lib_name}")
-  message(STATUS "lib_source_files: ${lib_source_files}")
-  message(STATUS "depend_on_libraries: ${depend_on_libraries}")
-
-  add_library(${target_release_lib_name} ${lib_source_files})
-  target_link_libraries(${target_release_lib_name}
-    PRIVATE
-    ${depend_on_libraries}
-  )
-  target_include_directories(${target_release_lib_name}
-    INTERFACE
-    PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
-    PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-    PUBLIC $<INSTALL_INTERFACE:include/>
-  )
-endmacro()
-
-
 function(mm_common_add_target_link_library_names target names)
   string(STRIP ${names} names_strip)
   string(REPLACE " " ";" names_list ${names_strip})

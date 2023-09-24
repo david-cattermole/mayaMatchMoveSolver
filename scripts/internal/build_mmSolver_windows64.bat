@@ -85,7 +85,7 @@ CALL %PROJECT_ROOT%\scripts\internal\python_venv_activate.bat
 
 :: Paths for mmSolver library dependencies.
 SET MMSOLVERLIBS_INSTALL_DIR="%BUILD_DIR_BASE%\build_mmsolverlibs\install\maya%MAYA_VERSION%_windows64"
-SET MMSOLVERLIBS_CMAKE_CONFIG_DIR="%MMSOLVERLIBS_INSTALL_DIR%\lib\cmake\mmsolverlibs"
+SET MMSOLVERLIBS_CMAKE_CONFIG_DIR="%MMSOLVERLIBS_INSTALL_DIR%\lib\cmake\mmsolverlibs_cpp"
 SET MMSOLVERLIBS_RUST_DIR="%BUILD_DIR_BASE%\build_mmsolverlibs\rust_windows64_maya%MAYA_VERSION%\%BUILD_TYPE_DIR%"
 
 :: MinGW is a common install for developers on Windows and
@@ -140,7 +140,7 @@ CHDIR "%BUILD_DIR%"
     -DMAYA_LOCATION=%MAYA_LOCATION% ^
     -DMAYA_VERSION=%MAYA_VERSION% ^
     -Dmmsolverlibs_rust_DIR=%MMSOLVERLIBS_RUST_DIR% ^
-    -Dmmsolverlibs_DIR=%MMSOLVERLIBS_CMAKE_CONFIG_DIR% ^
+    -Dmmsolverlibs_cpp_DIR=%MMSOLVERLIBS_CMAKE_CONFIG_DIR% ^
     %PROJECT_ROOT%
 if errorlevel 1 goto failed_to_generate
 

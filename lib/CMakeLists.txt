@@ -42,7 +42,7 @@ set(MMSOLVERLIBS_LIB_DIR "/path/to/rust/build/directory/" CACHE PATH
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
   ${CMAKE_CURRENT_SOURCE_DIR}/../share/cmake/modules)
 
-set(target_release_lib_name "mmsolverlibs")
+set(target_release_lib_name "mmsolverlibs_cpp")
 set(rust_lib_name "mmsolverlibs_rust")
 
 set(CMAKE_CXX_STANDARD 11)
@@ -76,4 +76,4 @@ if (MMSOLVERLIBS_BUILD_TESTS)
 endif()
 
 include(MMCommonUtils)
-mm_common_add_install_target("mmsolverlibs" ${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in)
+mm_common_add_install_target("mmsolverlibs_cpp" ${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in)

@@ -153,14 +153,14 @@ set_global_treat_warnings_as_errors()
 set_global_maya_plugin_compile_options()
 
 # MM Solver standalone libraries.
-find_package(mmsolverlibs REQUIRED)
+find_package(mmsolverlibs_cpp REQUIRED)
 find_package(mmsolverlibs_rust REQUIRED)
 
 target_link_libraries(mmSolver
-  # The order of these libraries ('mmsolverlibs' and
+  # The order of these libraries ('mmsolverlibs_cpp' and
   # 'mmsolverlibs_rust') matters when linking GCC on Linux.
   #
-  # 'mmsolverlibs' and 'mmsolverlibs_rust' both use functions from
+  # 'mmsolverlibs_cpp' and 'mmsolverlibs_rust' both use functions from
   # each other and so there is a cyclic dependency. On Windows the
   # order doesn't matter because the linker is "dumb", however the GCC
   # linker is "smart" and automatically discards symbols that are not
@@ -170,7 +170,7 @@ target_link_libraries(mmSolver
   # See more information:
   # https://stackoverflow.com/questions/45135/why-does-the-order-in-which-libraries-are-linked-sometimes-cause-errors-in-gcc
   PUBLIC mmsolverlibs_rust::mmsolverlibs_rust
-  PUBLIC mmsolverlibs::mmsolverlibs
+  PUBLIC mmsolverlibs_cpp::mmsolverlibs_cpp
 )
 
 find_package(Maya REQUIRED)

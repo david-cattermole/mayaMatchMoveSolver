@@ -29,9 +29,9 @@ set(source_files
 add_executable(${target_exe_name} ${source_files})
 
 # MM Solver standalone libraries.
-find_package(mmsolverlibs REQUIRED)
+find_package(mmsolverlibs_cpp REQUIRED)
 target_link_libraries(${target_exe_name}
-  PRIVATE mmsolverlibs::mmsolverlibs
+  PRIVATE mmsolverlibs_cpp::mmsolverlibs_cpp
 )
 
 target_include_directories(${target_exe_name}

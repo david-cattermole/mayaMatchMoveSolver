@@ -86,7 +86,7 @@ mm_rust_generate_cxx_bridge_files_with_dirs(mmscenegraph
   ${MMSOLVERLIBS_CXXBRIDGE_EXE}
 )
 
-# Add 'mmsolverlibs' library as a C++ wrapper around the Rust library.
+# Add 'mmsolverlibs_cpp' library as a C++ wrapper around the Rust library.
 add_library(${target_release_lib_name} ${lib_source_files})
 target_link_libraries(${target_release_lib_name}
   PUBLIC "${rust_depend_on_libraries}"
@@ -108,7 +108,7 @@ target_include_directories(${target_release_lib_name}
   PUBLIC $<INSTALL_INTERFACE:include/>
 )
 
-mm_common_install_target_library("mmsolverlibs" ${target_release_lib_name})
+mm_common_install_target_library("mmsolverlibs_cpp" ${target_release_lib_name})
 
 # Install public headers
 include(GNUInstallDirs)

@@ -167,8 +167,8 @@ MStatus calculate_model_view_projection_matrix(
 MStatus draw_buffers(
     MGLFunctionTable* gGLFT, const MGLfloat silhouette_color[3],
     const MGLfloat silhouette_alpha, const MGLfloat silhouette_width,
-    const MGLfloat silhouette_depth_offset, const MMatrix& mvp_matrix,
-    const MGLuint* vertex_buffer_handle,
+    const MGLfloat silhouette_depth_offset, const MGLfloat default_line_width,
+    const MMatrix& mvp_matrix, const MGLuint* vertex_buffer_handle,
     const MGLuint* edge_index_buffer_handle,
     const MGLuint* triangles_index_buffer_handle,
     const MIndexBuffer& edge_index_buffer,
@@ -250,7 +250,7 @@ MStatus draw_buffers(
         gGLFT->glDisable(MGL_DEPTH_TEST);
         gGLFT->glDisable(MGL_POLYGON_OFFSET_FILL);
 
-        gGLFT->glLineWidth(1.0f);
+        gGLFT->glLineWidth(default_line_width);
     }
 
     return MS::kSuccess;
@@ -321,6 +321,8 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
     if (m_shader_program == 0) {
         m_shader_program = build_shader_program(gGLFT);
     }
+
+    const float default_line_width = drawContext.getGlobalLineWidth();
 
     // Extract OpenGL buffers from Maya mesh nodes, then render the
     // buffers using our own OpenGL pipeline.
@@ -426,10 +428,10 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
             static_cast<MGLuint*>(triangles_index_buffer_handle_ptr);
         draw_buffers(gGLFT, m_silhouette_color, m_silhouette_alpha,
                      m_silhouette_width, m_silhouette_depth_offset,
-                     model_view_projection, vertex_buffer_handle,
-                     edge_index_buffer_handle, triangles_index_buffer_handle,
-                     edge_index_buffer, triangles_index_buffer,
-                     m_shader_program);
+                     default_line_width, model_view_projection,
+                     vertex_buffer_handle, edge_index_buffer_handle,
+                     triangles_index_buffer_handle, edge_index_buffer,
+                     triangles_index_buffer, m_shader_program);
     }
 
     return MS::kSuccess;

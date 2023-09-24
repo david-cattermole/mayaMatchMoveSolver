@@ -89,8 +89,8 @@ mm_rust_generate_cxx_bridge_files_with_dirs(mmscenegraph
 # Add 'mmsolverlibs' library as a C++ wrapper around the Rust library.
 add_library(${target_release_lib_name} ${lib_source_files})
 target_link_libraries(${target_release_lib_name}
-  PRIVATE ${rust_depend_on_libraries}
-  PRIVATE ${rust_linktime_file}
+  PUBLIC "${rust_depend_on_libraries}"
+  PUBLIC "${rust_linktime_file}"
 )
 
 # We must force this target ('target_release_lib_name') to wait for

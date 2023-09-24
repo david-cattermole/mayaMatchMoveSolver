@@ -17,12 +17,14 @@
 # ---------------------------------------------------------------------
 #
 # - mmsolverlibs_rust finder module
-# This module will look for mmsolverlibs_rust, using the predefined variable
-# mmsolverlibs_rust_ROOT.
+#
+# This module will look for mmsolverlibs_rust, using the predefined
+# variable mmsolverlibs_rust_DIR (or mmsolverlibs_rust_ROOT).
 #
 # Uses Variables:
-# - mmsolverlibs_rust_ROOT_PATH - Directory for the mmsolverlibs_rust install root.
-# - mmsolverlibs_rust_LIBRARY_PATH - Directory for the library files.
+# - mmsolverlibs_rust_DIR - Directory for the mmsolverlibs_rust install root.
+# - mmsolverlibs_rust_ROOT - Aliased name for 'mmsolverlibs_rust_DIR',
+#                            kept for legacy reasons.
 #
 # Defines Variables:
 # - mmsolverlibs_rust_FOUND
@@ -31,8 +33,10 @@
 
 include(MMRustUtils)
 
+
 function(find_mmsolverlibs_rust_find_with_paths
     mmsolverlibs_rust_staticlib_path
+    out_mmsolverlibs_rust_found
     out_mmsolverlibs_rust_libraries)
 
     set(mmsolverlibs_rust_staticlib_file "NOT-FOUND")
@@ -44,6 +48,7 @@ function(find_mmsolverlibs_rust_find_with_paths
 
     if(mmsolverlibs_rust_staticlib_file)
       set(${out_mmsolverlibs_rust_libraries} ${mmsolverlibs_rust_staticlib_file} PARENT_SCOPE)
+      set(${out_mmsolverlibs_rust_found} 1 PARENT_SCOPE)
     endif()
 endfunction()
 
@@ -62,9 +67,8 @@ endfunction()
 
 
 find_mmsolverlibs_rust_find_with_paths(
-  ${mmsolverlibs_rust_ROOT}
-  ${mmsolverlibs_rust_LIBRARY_PATH}
-  mmsolverlibs_rust_DIR
+  ${mmsolverlibs_rust_DIR}
+  mmsolverlibs_rust_FOUND
   mmsolverlibs_rust_LIBRARIES
   )
 

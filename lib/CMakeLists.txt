@@ -42,7 +42,7 @@ set(MMSOLVERLIBS_LIB_DIR "/path/to/rust/build/directory/" CACHE PATH
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
   ${CMAKE_CURRENT_SOURCE_DIR}/../share/cmake/modules)
 
-set(target_release_lib_name "mmsolverlibs_cpp")
+set(cpp_lib_name "mmsolverlibs_cpp")
 set(rust_lib_name "mmsolverlibs_rust")
 
 set(CMAKE_CXX_STANDARD 11)

@@ -43,7 +43,7 @@ target_link_libraries(${target_test_exe_name}
   # The order of these libraries matters. See similar
   # 'target_link_libraries()' in '${PROJECT_ROOT}/src/CMakeLists.txt'.
   PRIVATE ${rust_linktime_file}
-  PRIVATE ${target_release_lib_name}
+  PRIVATE ${cpp_lib_name}
 
   PRIVATE ${rust_depend_on_libraries}
 )

@@ -87,17 +87,17 @@ mm_rust_generate_cxx_bridge_files_with_dirs(mmscenegraph
 )
 
 # Add 'mmsolverlibs_cpp' library as a C++ wrapper around the Rust library.
-add_library(${target_release_lib_name} ${lib_source_files})
-target_link_libraries(${target_release_lib_name}
+add_library(${cpp_lib_name} ${lib_source_files})
+target_link_libraries(${cpp_lib_name}
   PUBLIC "${rust_depend_on_libraries}"
   PUBLIC "${rust_linktime_file}"
 )
 
-# We must force this target ('target_release_lib_name') to wait for
+# We must force this target ('cpp_lib_name') to wait for
 # ldpk to be installed so we have the 'ldpk_INCLUDE_DIR' variable.
-add_dependencies(${target_release_lib_name} ldpk::ldpk)
+add_dependencies(${cpp_lib_name} ldpk::ldpk)
 
-target_include_directories(${target_release_lib_name}
+target_include_directories(${cpp_lib_name}
   PUBLIC $<BUILD_INTERFACE:${main_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmcore_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmlens_include_dir}>
@@ -108,7 +108,7 @@ target_include_directories(${target_release_lib_name}
   PUBLIC $<INSTALL_INTERFACE:include/>
 )
 
-mm_common_install_target_library("mmsolverlibs_cpp" ${target_release_lib_name})
+mm_common_install_target_library("mmsolverlibs_cpp" ${cpp_lib_name})
 
 # Install public headers
 include(GNUInstallDirs)

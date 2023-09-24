@@ -261,6 +261,13 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
     const bool verbose = false;
     MMSOLVER_MAYA_VRB("MM Renderer SilhouetteRender: execute.");
 
+    MUint64 object_type_exclusions = drawContext.objectTypeExclusions();
+    if (object_type_exclusions & MHWRender::MFrameContext::kExcludeMeshes) {
+        // There is no need to draw the silhouette since all meshes
+        // are meant to be hidden.
+        return MS::kSuccess;
+    }
+
     MMSOLVER_MAYA_VRB(
         "MM Renderer SilhouetteRender: m_silhouette_depth_offset: "
         << m_silhouette_depth_offset);

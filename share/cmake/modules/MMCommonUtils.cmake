@@ -58,10 +58,10 @@ function(mm_common_add_target_link_library_names target names)
 endfunction()
 
 
-macro(mm_common_install_target_library name target_release_lib_name)
+macro(mm_common_install_target_library target_name target_release_lib_name)
   include(GNUInstallDirs)
   install(TARGETS ${target_release_lib_name}
-    EXPORT ${name}Targets
+    EXPORT ${target_name}Targets
   )
 endmacro()
 

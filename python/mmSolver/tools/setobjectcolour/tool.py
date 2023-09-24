@@ -72,7 +72,7 @@ def open_window(mini_ui=None):
 
     maya.cmds.colorEditor(rgbValue=rgb, alpha=alpha, **kwargs)
     if not maya.cmds.colorEditor(query=True, result=True):
-        LOG.warn('Color editor cancelled.')
+        LOG.warn('Color editor canceled.')
         return
 
     rgb = maya.cmds.colorEditor(query=True, rgbValue=True)

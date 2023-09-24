@@ -111,11 +111,12 @@ RenderOverride::RenderOverride(const MString &name)
             "Failed to get renderer.");
     }
 
-    // Create a new set of operations as required
-    MHWRender::MRenderer::theRenderer()->getStandardViewportOperations(
-        mOperations);
+    const MString backgroundOpName = MString("mmRenderer_backgroundPass");
+    const MString sceneOpName = MString("mmRenderer_scenePass");
+    const MString selectOpName = MString("mmRenderer_selectPass");
+    const MString silhouetteOpName = MString("mmRenderer_silhouettePass");
+    const MString wireframeOpName = MString("mmRenderer_wireframePass");
 
-    const MString backgroundOpName = MString("mmRenderer_sceneBackground");
     m_backgroundOp = new SceneRender(backgroundOpName);
     m_backgroundOp->setEnabled(true);
     m_backgroundOp->setBackgroundStyle(BackgroundStyle::kMayaDefault);
@@ -123,28 +124,61 @@ RenderOverride::RenderOverride(const MString &name)
     m_backgroundOp->setExcludeTypes(MHWRender::MFrameContext::kExcludeNone);
     m_backgroundOp->setSceneFilter(
         static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
-            MHWRender::MSceneRender::kRenderPreSceneUIItems |
-            MHWRender::MSceneRender::kRenderShadedItems |
-            MHWRender::MSceneRender::kRenderPostSceneUIItems));
+            MHWRender::MSceneRender::kRenderShadedItems));
 
-    // By replacing the standard viewport background operation we are
-    // able to "trick" the native Maya useBackground shader to
-    // treating the output from our custom background as the
-    // background for the assigned objects.
-    MHWRender::MRenderOverride::mOperations.replace(
-        MHWRender::MRenderOperation::kStandardBackgroundName, m_backgroundOp);
+    m_sceneOp = new SceneRender(sceneOpName);
+    m_sceneOp->setEnabled(true);
+    m_sceneOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
+    m_sceneOp->setClearMask(CLEAR_MASK_DEPTH);
+    m_sceneOp->setExcludeTypes(MHWRender::MFrameContext::kExcludeImagePlane);
+    m_sceneOp->setSceneFilter(
+        static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
+            MHWRender::MSceneRender::kRenderShadedItems));
 
-    const MString silhouetteOpName = MString("mmRenderer_silhouettePass");
+    m_selectOp = new SceneRender(selectOpName);
+    m_selectOp->setEnabled(true);
+    m_selectOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
+    m_selectOp->setClearMask(CLEAR_MASK_NONE);
+    m_selectOp->setSceneFilter(
+        static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
+            MHWRender::MSceneRender::kRenderShadedItems));
+
     m_silhouetteOp = new SilhouetteRender(silhouetteOpName);
     m_silhouetteOp->setEnabled(false);
 
-    MHWRender::MRenderOverride::mOperations.insertBefore(
-        MHWRender::MRenderOperation::kStandardHUDName, m_silhouetteOp);
+    m_wireframeOp = new SceneRender(wireframeOpName);
+    m_wireframeOp->setEnabled(true);
+    m_wireframeOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
+    m_wireframeOp->setClearMask(CLEAR_MASK_NONE);
+    m_wireframeOp->setSceneFilter(
+        static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
+            MHWRender::MSceneRender::kRenderUIItems));
+
+    // Get the default set of operations.
+    MHWRender::MRenderer::theRenderer()->getStandardViewportOperations(
+        mOperations);
+
+    // Clear the unneeded standard operations and place the new render
+    // operations in a specific order.
+    MHWRender::MRenderOverride::mOperations.replace(
+        MHWRender::MRenderOperation::kStandardBackgroundName, m_backgroundOp);
+    MHWRender::MRenderOverride::mOperations.replace(
+        MHWRender::MRenderOperation::kStandardSceneName, m_sceneOp);
+
+    MHWRender::MRenderOverride::mOperations.insertAfter(sceneOpName,
+                                                        m_selectOp);
+    MHWRender::MRenderOverride::mOperations.insertAfter(selectOpName,
+                                                        m_silhouetteOp);
+    MHWRender::MRenderOverride::mOperations.insertAfter(silhouetteOpName,
+                                                        m_wireframeOp);
 }
 
 RenderOverride::~RenderOverride() {
     m_backgroundOp = nullptr;
+    m_sceneOp = nullptr;
+    m_selectOp = nullptr;
     m_silhouetteOp = nullptr;
+    m_wireframeOp = nullptr;
 
     RenderOverride::cleanup();
 
@@ -327,6 +361,9 @@ MStatus RenderOverride::setup(const MString &destination) {
         m_backgroundOp->setObjectSetOverride(&m_image_plane_nodes);
     }
 
+    MMSOLVER_MAYA_VRB("RenderOverride::setup: m_sceneOp=" << m_sceneOp);
+    MMSOLVER_MAYA_VRB("RenderOverride::setup: m_selectOp=" << m_selectOp);
+
     MMSOLVER_MAYA_VRB(
         "RenderOverride::setup: m_silhouetteOp=" << m_silhouetteOp);
     if (m_silhouetteOp) {
@@ -340,6 +377,8 @@ MStatus RenderOverride::setup(const MString &destination) {
                                            m_silhouette_color[2]);
         m_silhouetteOp->setSilhouetteAlpha(m_silhouette_alpha);
     }
+
+    MMSOLVER_MAYA_VRB("RenderOverride::setup: m_wireframeOp=" << m_wireframeOp);
 
     MMSOLVER_MAYA_VRB("RenderOverride::setup: end " << destination.asChar());
     return MRenderOverride::setup(destination);

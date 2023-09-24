@@ -80,7 +80,10 @@ protected:
 
 private:
     SceneRender* m_backgroundOp;
+    SceneRender* m_sceneOp;
+    SceneRender* m_selectOp;
     SilhouetteRender* m_silhouetteOp;
+    SceneRender* m_wireframeOp;
 
     // A handle to the 'mmRenderGlobals' node.
     MObjectHandle m_globals_node;

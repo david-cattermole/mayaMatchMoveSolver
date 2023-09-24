@@ -149,6 +149,8 @@ MStatus RenderGlobalsNode::initialize() {
     // Silhouette Depth Offset
     {
         auto depth_offset_max = 0.0;
+        auto depth_offset_soft_min = -10.0;
+        auto depth_offset_soft_max = -0.1;
         a_silhouetteDepthOffset = numeric_attribute.create(
             kAttrNameSilhouetteDepthOffset, "slhttdpthoffst",
             MFnNumericData::kDouble, kSilhouetteDepthOffsetDefault);
@@ -156,12 +158,16 @@ MStatus RenderGlobalsNode::initialize() {
         CHECK_MSTATUS(numeric_attribute.setConnectable(true));
         CHECK_MSTATUS(numeric_attribute.setKeyable(true));
         CHECK_MSTATUS(numeric_attribute.setMax(depth_offset_max));
+        CHECK_MSTATUS(numeric_attribute.setSoftMin(depth_offset_soft_min));
+        CHECK_MSTATUS(numeric_attribute.setSoftMax(depth_offset_soft_max));
         CHECK_MSTATUS(addAttribute(a_silhouetteDepthOffset));
     }
 
     // Silhouette Width
     {
         auto width_min = 0.0;
+        auto width_soft_min = 1.0;
+        auto width_soft_max = 10.0;
         a_silhouetteWidth = numeric_attribute.create(
             kAttrNameSilhouetteWidth, "slhttwdth", MFnNumericData::kDouble,
             kSilhouetteWidthDefault);
@@ -169,6 +175,8 @@ MStatus RenderGlobalsNode::initialize() {
         CHECK_MSTATUS(numeric_attribute.setConnectable(true));
         CHECK_MSTATUS(numeric_attribute.setKeyable(true));
         CHECK_MSTATUS(numeric_attribute.setMin(width_min));
+        CHECK_MSTATUS(numeric_attribute.setSoftMin(width_soft_min));
+        CHECK_MSTATUS(numeric_attribute.setSoftMax(width_soft_max));
         CHECK_MSTATUS(addAttribute(a_silhouetteWidth));
     }
 

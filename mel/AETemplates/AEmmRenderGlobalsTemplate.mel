@@ -6,12 +6,28 @@ global proc AEmmRenderGlobalsTemplate(string $name) {
         editorTemplate -beginNoOptimize;
 
             editorTemplate
-                -beginLayout (uiRes("m_AEmmRenderGlobalsTemplate.kDisplayOptions"))
+                -beginLayout (uiRes("m_AEmmRenderGlobalsTemplate.kSilhouetteOptions"))
                 -collapse false;
 
                 editorTemplate
-                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kRenderColorFormat"))
-                    -addControl "renderColorFormat";
+                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kSilhouetteEnable"))
+                    -addControl "silhouetteEnable";
+
+                editorTemplate
+                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kSilhouetteDepthOffset"))
+                    -addControl "silhouetteDepthOffset";
+
+                editorTemplate
+                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kSilhouetteWidth"))
+                    -addControl "silhouetteWidth";
+
+                editorTemplate
+                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kSilhouetteColor"))
+                    -addControl "silhouetteColor";
+
+                editorTemplate
+                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kSilhouetteAlpha"))
+                    -addControl "silhouetteAlpha";
 
             editorTemplate -endLayout;
 

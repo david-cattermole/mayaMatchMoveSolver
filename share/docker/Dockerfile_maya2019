@@ -61,6 +61,7 @@ RUN yum install --assumeyes \
        libXrandr \
        libXrender \
        libXt \
+       libXtst \
        libxcb \
        libxkbcommon \
        libxkbcommon-x11 \

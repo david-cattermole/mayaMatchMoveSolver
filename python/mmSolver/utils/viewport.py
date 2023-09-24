@@ -376,6 +376,38 @@ def set_isolated_nodes(model_panel, nodes, enable):
     return
 
 
+def get_selection_highlight(model_panel):
+    """
+    Query the display of selection highlighting.
+
+    :param model_panel: Model panel name to set visibility.
+    :type model_panel: str
+
+    :return: True, if the selection highlighting is enable in the model
+             panel/editor.
+    :rtype: bool
+    """
+    model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
+    value = maya.cmds.modelEditor(model_editor, query=True, selectionHiliteDisplay=True)
+    return value
+
+
+def set_selection_highlight(model_panel, value):
+    """
+    Query the display of selection highlighting.
+
+    :param model_panel: Model panel name to set visibility.
+    :type model_panel: str
+
+    :param value: Enable or disable selection highlighting?
+    :type value: bool
+    """
+    assert isinstance(value, bool)
+    model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
+    maya.cmds.modelEditor(model_editor, edit=True, selectionHiliteDisplay=value)
+    return
+
+
 def _get_node_type_visibility(model_panel, node_type):
     """
     Query the image plane visibility.

@@ -344,7 +344,7 @@ all end in tears.</p>
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='140299273845840'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='140299273846032'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='140299273846480'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='140486849464656'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='140486849464720'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='140486849463376'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -3875,6 +3875,38 @@ isolate object list.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.viewport.get_selection_highlight">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.viewport.</span></span><span class="sig-name descname"><span class="pre">get_selection_highlight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_panel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_selection_highlight" title="Permalink to this definition">#</a></dt>
+<dd><p>Query the display of selection highlighting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_panel</strong> (<em>str</em>) – Model panel name to set visibility.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True, if the selection highlighting is enable in the model
+panel/editor.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.viewport.set_selection_highlight">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.viewport.</span></span><span class="sig-name descname"><span class="pre">set_selection_highlight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_panel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.set_selection_highlight" title="Permalink to this definition">#</a></dt>
+<dd><p>Query the display of selection highlighting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_panel</strong> (<em>str</em>) – Model panel name to set visibility.</p></li>
+<li><p><strong>value</strong> (<em>bool</em>) – Enable or disable selection highlighting?</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.viewport.get_grid_visibility">
 <span class="sig-prename descclassname"><span class="pre">mmSolver.utils.viewport.</span></span><span class="sig-name descname"><span class="pre">get_grid_visibility</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_panel</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.viewport.get_grid_visibility" title="Permalink to this definition">#</a></dt>
 <dd><p>Query the grids visibility in given model panel.</p>
@@ -4659,6 +4691,8 @@ isolate object list.</p>
 <li><a class="reference internal" href="#mmSolver.utils.viewport.get_currently_using_viewport2"><code class="docutils literal notranslate"><span class="pre">get_currently_using_viewport2()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.viewport.get_isolated_nodes"><code class="docutils literal notranslate"><span class="pre">get_isolated_nodes()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.viewport.set_isolated_nodes"><code class="docutils literal notranslate"><span class="pre">set_isolated_nodes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.viewport.get_selection_highlight"><code class="docutils literal notranslate"><span class="pre">get_selection_highlight()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.viewport.set_selection_highlight"><code class="docutils literal notranslate"><span class="pre">set_selection_highlight()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.viewport.get_grid_visibility"><code class="docutils literal notranslate"><span class="pre">get_grid_visibility()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.viewport.set_grid_visibility"><code class="docutils literal notranslate"><span class="pre">set_grid_visibility()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.viewport.get_image_plane_visibility"><code class="docutils literal notranslate"><span class="pre">get_image_plane_visibility()</span></code></a></li>

@@ -98,7 +98,6 @@ target_link_libraries(${target_release_lib_name}
 add_dependencies(${target_release_lib_name} ldpk::ldpk)
 
 target_include_directories(${target_release_lib_name}
-  INTERFACE
   PUBLIC $<BUILD_INTERFACE:${main_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmcore_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmlens_include_dir}>

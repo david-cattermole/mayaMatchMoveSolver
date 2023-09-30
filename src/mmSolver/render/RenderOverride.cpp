@@ -130,7 +130,6 @@ RenderOverride::RenderOverride(const MString &name)
     m_sceneOp->setEnabled(true);
     m_sceneOp->setBackgroundStyle(BackgroundStyle::kTransparentBlack);
     m_sceneOp->setClearMask(CLEAR_MASK_DEPTH);
-    m_sceneOp->setExcludeTypes(MHWRender::MFrameContext::kExcludeImagePlane);
     m_sceneOp->setSceneFilter(
         static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
             MHWRender::MSceneRender::kRenderShadedItems));

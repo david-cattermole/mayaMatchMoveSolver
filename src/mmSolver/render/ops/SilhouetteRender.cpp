@@ -216,6 +216,7 @@ MStatus draw_buffers(
         gGLFT->glEnable(MGL_MULTISAMPLE);
         gGLFT->glHint(MGL_LINE_SMOOTH_HINT, GL_NICEST);
 
+        gGLFT->glEnable(MGL_CULL_FACE);
         gGLFT->glEnable(MGL_DEPTH_TEST);
         gGLFT->glEnable(MGL_POLYGON_OFFSET_FILL);
 
@@ -232,7 +233,6 @@ MStatus draw_buffers(
     gGLFT->glDrawElements(MGL_TRIANGLES, triangles_index_buffer.size(),
                           MGL_UNSIGNED_INT, nullptr);
 
-    gGLFT->glEnable(MGL_CULL_FACE);
     gGLFT->glCullFace(MGL_FRONT);
 
     // Draw Edges as Silhouettes into the color buffer.
@@ -249,6 +249,7 @@ MStatus draw_buffers(
         gGLFT->glDisable(MGL_LINE_SMOOTH);
         gGLFT->glDisable(MGL_MULTISAMPLE);
 
+        gGLFT->glDisable(MGL_CULL_FACE);
         gGLFT->glDisable(MGL_DEPTH_TEST);
         gGLFT->glDisable(MGL_POLYGON_OFFSET_FILL);
 

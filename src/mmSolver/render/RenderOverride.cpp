@@ -49,9 +49,11 @@ namespace mmsolver {
 namespace render {
 
 static MStatus create_render_globals_node() {
-    const MString command =
-        "createNode \"" + MString(MM_RENDER_GLOBALS_TYPE_NAME) + "\" -name \"" +
-        MString(kRenderGlobalsNodeName) + "\" -shared -skipSelect;";
+    const MString command = "string $mm_render_globals_node = `createNode \"" +
+                            MString(MM_RENDER_GLOBALS_TYPE_NAME) +
+                            "\" -name \"" + MString(kRenderGlobalsNodeName) +
+                            "\" -shared -skipSelect`;\n" +
+                            "lockNode -lock on $mm_render_globals_node;";
     return MGlobal::executeCommand(command,
                                    /*displayEnabled*/ true,
                                    /*undoEnabled*/ true);

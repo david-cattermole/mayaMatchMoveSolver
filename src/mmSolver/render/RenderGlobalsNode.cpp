@@ -72,10 +72,6 @@ void RenderGlobalsNode::postConstructor() {
         m_attr_change_callback =
             MNodeMessage::addAttributeChangedCallback(obj, attr_change_func);
     }
-
-    // TODO: When the node is created for the first time, it should
-    // query the RenderOverride's values and set the attributes on the
-    // node.
 }
 
 void RenderGlobalsNode::attr_change_func(MNodeMessage::AttributeMessage msg,

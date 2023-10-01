@@ -225,8 +225,7 @@ MStatus draw_buffers(
     // Draw Triangles into the depth buffer, with a depth
     // "polygon" offset.
     gGLFT->glColorMask(MGL_FALSE, MGL_FALSE, MGL_FALSE, MGL_FALSE);
-    gGLFT->glPolygonOffset(silhouette_depth_offset,
-                           silhouette_depth_offset * 2.0);
+    gGLFT->glPolygonOffset(silhouette_width * silhouette_depth_offset, -1.0);
     gGLFT->glPolygonMode(MGL_FRONT_AND_BACK, MGL_FILL);
     gGLFT->glBindBufferARB(MGL_ELEMENT_ARRAY_BUFFER_ARB,
                            *triangles_index_buffer_handle);

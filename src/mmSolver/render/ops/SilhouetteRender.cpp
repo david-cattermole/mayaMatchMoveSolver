@@ -232,6 +232,9 @@ MStatus draw_buffers(
     gGLFT->glDrawElements(MGL_TRIANGLES, triangles_index_buffer.size(),
                           MGL_UNSIGNED_INT, nullptr);
 
+    gGLFT->glEnable(MGL_CULL_FACE);
+    gGLFT->glCullFace(MGL_FRONT);
+
     // Draw Edges as Silhouettes into the color buffer.
     gGLFT->glColorMask(MGL_TRUE, MGL_TRUE, MGL_TRUE, MGL_TRUE);
     gGLFT->glPolygonMode(MGL_FRONT_AND_BACK, MGL_LINE);

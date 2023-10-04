@@ -1,6 +1,0 @@
-displayString -replace -value "Silhouette" m_AEmmRenderGlobalsTemplate.kSilhouetteOptions;
-displayString -replace -value "Enable" m_AEmmRenderGlobalsTemplate.kSilhouetteEnable;
-displayString -replace -value "Depth Offset" m_AEmmRenderGlobalsTemplate.kSilhouetteDepthOffset;
-displayString -replace -value "Width" m_AEmmRenderGlobalsTemplate.kSilhouetteWidth;
-displayString -replace -value "Color" m_AEmmRenderGlobalsTemplate.kSilhouetteColor;
-displayString -replace -value "Alpha" m_AEmmRenderGlobalsTemplate.kSilhouetteAlpha;

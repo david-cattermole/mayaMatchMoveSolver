@@ -31,11 +31,14 @@
 //
 //
 
-global proc mmRendererOptionBox() {
-    print("mmRendererOptionBox");
-    if (!`objExists "mmRenderGlobals"`) {
-        createNode -n "mmRenderGlobals" "mmRenderGlobals";
+global proc mmSilhouetteRendererOptionBox() {
+    print("mmSilhouetteRendererOptionBox");
+    if (!`objExists "mmSilhouetteRenderGlobals"`) {
+        string $node = `createNode "mmSilhouetteRenderGlobals"
+            -name "mmSilhouetteRenderGlobals"
+            -shared -skipSelect`;
+        lockNode -lock on $node;
     }
-    select -r "mmRenderGlobals";
+    select -r "mmSilhouetteRenderGlobals";
     return;
 }

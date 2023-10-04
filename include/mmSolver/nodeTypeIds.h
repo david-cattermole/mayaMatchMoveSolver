@@ -86,9 +86,13 @@
 #define MM_MARKER_GROUP_TRANSFORM_TYPE_NAME "mmMarkerGroupTransform"
 #define MM_MARKER_GROUP_DRAW_CLASSIFY "drawdb/geometry/transform"
 
-#define MM_RENDERER_NAME "mmRenderer"
-#define MM_RENDER_GLOBALS_TYPE_ID 0x0012F194
-#define MM_RENDER_GLOBALS_TYPE_NAME "mmRenderGlobals"
+#define MM_DEFAULT_RENDERER_NAME "mmDefaultRenderer"
+#define MM_DEFAULT_RENDER_GLOBALS_TYPE_ID 0x0012F194
+#define MM_DEFAULT_RENDER_GLOBALS_TYPE_NAME "mmDefaultRenderGlobals"
+
+#define MM_SILHOUETTE_RENDERER_NAME "mmSilhouetteRenderer"
+#define MM_SILHOUETTE_RENDER_GLOBALS_TYPE_ID 0x0012F18E
+#define MM_SILHOUETTE_RENDER_GLOBALS_TYPE_NAME "mmSilhouetteRenderGlobals"
 
 #define MM_SKY_DOME_SHAPE_TYPE_ID 0x0012F195
 #define MM_SKY_DOME_SHAPE_TYPE_NAME "mmSkyDomeShape"

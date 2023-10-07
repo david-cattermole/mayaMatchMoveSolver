@@ -88,28 +88,29 @@ const BackgroundStyle kBackgroundStyleDefault = BackgroundStyle::kMayaDefault;
 const RenderColorFormat kRenderColorFormatDefault =
     RenderColorFormat::kRGBA16BitFloat;
 
-// Silhouette Constants
-const MString kDefaultRenderGlobalsNodeName = "mmDefaultRenderGlobals";
-const MString kDefaultRendererCmdName = "mmDefaultRenderer";
-const MString kSilhouetteRenderGlobalsNodeName = "mmSilhouetteRenderGlobals";
-const MString kSilhouetteRendererCmdName = "mmSilhouetteRenderer";
-const char kDefaultRendererName[] = "mmDefaultRenderer";
-const char kDefaultRendererUiName[] = "mmRenderer (default)";
-const char kSilhouetteRendererName[] = "mmSilhouetteRenderer";
-const char kSilhouetteRendererUiName[] = "mmRenderer (silhouette)";
+// Basic Constants
+const MString kRenderGlobalsBasicNodeName = "mmRenderGlobals";
+const MString kRendererBasicCmdName = "mmRenderer";
+const char kRendererBasicName[] = "mmRenderer";
+const char kRendererBasicUiName[] = "mmRenderer";
+const MString kRendererBasicCreateNodeCommand =
+    "string $mm_globals_node = `createNode \"" +
+    MString(MM_RENDER_GLOBALS_BASIC_TYPE_NAME) + "\" -name \"" +
+    MString(kRenderGlobalsBasicNodeName) + "\" -shared -skipSelect`;\n" +
+    "if (size($mm_globals_node) > 0) {\n" +
+    "    lockNode -lock on $mm_globals_node;\n" + "}\n";
 
-const MString kDefaultCreateCommand =
-    "string $mm_default_globals_node = `createNode \"" +
-    MString(MM_DEFAULT_RENDER_GLOBALS_TYPE_NAME) + "\" -name \"" +
-    MString(kDefaultRenderGlobalsNodeName) + "\" -shared -skipSelect`;\n" +
-    "if (size($mm_default_globals_node) > 0) {\n" +
-    "    lockNode -lock on $mm_default_globals_node;\n" + "}\n";
-const MString kSilhouetteCreateCommand =
-    "string $mm_silhouette_globals_node = `createNode \"" +
-    MString(MM_SILHOUETTE_RENDER_GLOBALS_TYPE_NAME) + "\" -name \"" +
-    MString(kSilhouetteRenderGlobalsNodeName) + "\" -shared -skipSelect`;\n" +
-    "if (size($mm_silhouette_globals_node) > 0) {\n" +
-    "    lockNode -lock on $mm_silhouette_globals_node;\n" + "}\n";
+// Silhouette Constants
+const MString kRenderGlobalsSilhouetteNodeName = "mmRenderGlobalsSilhouette";
+const MString kRendererSilhouetteCmdName = "mmRendererSilhouette";
+const char kRendererSilhouetteName[] = "mmRendererSilhouette";
+const char kRendererSilhouetteUiName[] = "mmRenderer (silhouette)";
+const MString kRendererSilhouetteCreateNodeCommand =
+    "string $mm_globals_node = `createNode \"" +
+    MString(MM_RENDER_GLOBALS_SILHOUETTE_TYPE_NAME) + "\" -name \"" +
+    MString(kRenderGlobalsSilhouetteNodeName) + "\" -shared -skipSelect`;\n" +
+    "if (size($mm_globals_node) > 0) {\n" +
+    "    lockNode -lock on $mm_globals_node;\n" + "}\n";
 
 // Silhouette Attribute Names
 const MString kAttrNameSilhouetteEnable = "enable";

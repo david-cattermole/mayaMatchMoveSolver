@@ -112,12 +112,12 @@ set(SOURCE_FILES
 if (MMSOLVER_BUILD_RENDERER)
   set(SOURCE_FILES
     ${SOURCE_FILES}
-    mmSolver/render/DefaultRenderGlobalsNode.cpp
-    mmSolver/render/DefaultRenderOverride.cpp
-    mmSolver/render/MMDefaultRendererCmd.cpp
-    mmSolver/render/MMSilhouetteRendererCmd.cpp
-    mmSolver/render/SilhouetteRenderGlobalsNode.cpp
-    mmSolver/render/SilhouetteRenderOverride.cpp
+    mmSolver/render/MMRendererBasicCmd.cpp
+    mmSolver/render/MMRendererSilhouetteCmd.cpp
+    mmSolver/render/RenderOverrideBasic.cpp
+    mmSolver/render/RenderGlobalsBasicNode.cpp
+    mmSolver/render/RenderGlobalsSilhouetteNode.cpp
+    mmSolver/render/RenderOverrideSilhouette.cpp
     mmSolver/render/ops/ClearOperation.cpp
     mmSolver/render/ops/SceneRender.cpp
     mmSolver/render/ops/SceneRenderBase.cpp

@@ -78,12 +78,12 @@
 
 // MM Renderer
 #if MMSOLVER_BUILD_RENDERER == 1
-#include "mmSolver/render/DefaultRenderGlobalsNode.h"
-#include "mmSolver/render/DefaultRenderOverride.h"
-#include "mmSolver/render/MMDefaultRendererCmd.h"
-#include "mmSolver/render/MMSilhouetteRendererCmd.h"
-#include "mmSolver/render/SilhouetteRenderGlobalsNode.h"
-#include "mmSolver/render/SilhouetteRenderOverride.h"
+#include "mmSolver/render/MMRendererBasicCmd.h"
+#include "mmSolver/render/MMRendererSilhouetteCmd.h"
+#include "mmSolver/render/RenderGlobalsBasicNode.h"
+#include "mmSolver/render/RenderGlobalsSilhouetteNode.h"
+#include "mmSolver/render/RenderOverrideBasic.h"
+#include "mmSolver/render/RenderOverrideSilhouette.h"
 #endif
 
 #define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
@@ -396,24 +396,23 @@ MStatus initializePlugin(MObject obj) {
                        markerTfmClassification, status);
 
 #if MMSOLVER_BUILD_RENDERER == 1
-    REGISTER_COMMAND(plugin, mmsolver::render::MMDefaultRendererCmd::cmdName(),
-                     mmsolver::render::MMDefaultRendererCmd::creator,
-                     mmsolver::render::MMDefaultRendererCmd::newSyntax, status);
+    REGISTER_COMMAND(plugin, mmsolver::render::MMRendererBasicCmd::cmdName(),
+                     mmsolver::render::MMRendererBasicCmd::creator,
+                     mmsolver::render::MMRendererBasicCmd::newSyntax, status);
     REGISTER_COMMAND(
-        plugin, mmsolver::render::MMSilhouetteRendererCmd::cmdName(),
-        mmsolver::render::MMSilhouetteRendererCmd::creator,
-        mmsolver::render::MMSilhouetteRendererCmd::newSyntax, status);
+        plugin, mmsolver::render::MMRendererSilhouetteCmd::cmdName(),
+        mmsolver::render::MMRendererSilhouetteCmd::creator,
+        mmsolver::render::MMRendererSilhouetteCmd::newSyntax, status);
 
+    REGISTER_NODE(plugin, mmsolver::render::RenderGlobalsBasicNode::nodeName(),
+                  mmsolver::render::RenderGlobalsBasicNode::m_id,
+                  mmsolver::render::RenderGlobalsBasicNode::creator,
+                  mmsolver::render::RenderGlobalsBasicNode::initialize, status);
     REGISTER_NODE(
-        plugin, mmsolver::render::DefaultRenderGlobalsNode::nodeName(),
-        mmsolver::render::DefaultRenderGlobalsNode::m_id,
-        mmsolver::render::DefaultRenderGlobalsNode::creator,
-        mmsolver::render::DefaultRenderGlobalsNode::initialize, status);
-    REGISTER_NODE(
-        plugin, mmsolver::render::SilhouetteRenderGlobalsNode::nodeName(),
-        mmsolver::render::SilhouetteRenderGlobalsNode::m_id,
-        mmsolver::render::SilhouetteRenderGlobalsNode::creator,
-        mmsolver::render::SilhouetteRenderGlobalsNode::initialize, status);
+        plugin, mmsolver::render::RenderGlobalsSilhouetteNode::nodeName(),
+        mmsolver::render::RenderGlobalsSilhouetteNode::m_id,
+        mmsolver::render::RenderGlobalsSilhouetteNode::creator,
+        mmsolver::render::RenderGlobalsSilhouetteNode::initialize, status);
 
     // Register MM Solver Viewport Renderer.
     //
@@ -447,15 +446,15 @@ MStatus initializePlugin(MObject obj) {
             shader_location += MString("/shader");
             shader_manager->addShaderPath(shader_location);
 
-            mmsolver::render::DefaultRenderOverride* default_renderer_ptr =
-                new mmsolver::render::DefaultRenderOverride(
-                    MM_DEFAULT_RENDERER_NAME);
+            mmsolver::render::RenderOverrideBasic* default_renderer_ptr =
+                new mmsolver::render::RenderOverrideBasic(
+                    MM_RENDERER_BASIC_NAME);
             renderer->registerOverride(default_renderer_ptr);
 
-            mmsolver::render::SilhouetteRenderOverride*
+            mmsolver::render::RenderOverrideSilhouette*
                 silhouette_renderer_ptr =
-                    new mmsolver::render::SilhouetteRenderOverride(
-                        MM_SILHOUETTE_RENDERER_NAME);
+                    new mmsolver::render::RenderOverrideSilhouette(
+                        MM_RENDERER_SILHOUETTE_NAME);
             renderer->registerOverride(silhouette_renderer_ptr);
         }
     }
@@ -563,31 +562,31 @@ MStatus uninitializePlugin(MObject obj) {
     if (renderer) {
         // Find override with the given name and deregister
         const MHWRender::MRenderOverride* default_renderer_ptr =
-            renderer->findRenderOverride(MM_DEFAULT_RENDERER_NAME);
+            renderer->findRenderOverride(MM_RENDERER_BASIC_NAME);
         if (default_renderer_ptr) {
             renderer->deregisterOverride(default_renderer_ptr);
             delete default_renderer_ptr;
         }
 
         const MHWRender::MRenderOverride* silhouette_renderer_ptr =
-            renderer->findRenderOverride(MM_SILHOUETTE_RENDERER_NAME);
+            renderer->findRenderOverride(MM_RENDERER_SILHOUETTE_NAME);
         if (silhouette_renderer_ptr) {
             renderer->deregisterOverride(silhouette_renderer_ptr);
             delete silhouette_renderer_ptr;
         }
     }
 
+    DEREGISTER_COMMAND(plugin, mmsolver::render::MMRendererBasicCmd::cmdName(),
+                       status);
     DEREGISTER_COMMAND(
-        plugin, mmsolver::render::MMDefaultRendererCmd::cmdName(), status);
-    DEREGISTER_COMMAND(
-        plugin, mmsolver::render::MMSilhouetteRendererCmd::cmdName(), status);
+        plugin, mmsolver::render::MMRendererSilhouetteCmd::cmdName(), status);
 
     DEREGISTER_NODE(plugin,
-                    mmsolver::render::DefaultRenderGlobalsNode::nodeName(),
-                    mmsolver::render::DefaultRenderGlobalsNode::m_id, status);
+                    mmsolver::render::RenderGlobalsBasicNode::nodeName(),
+                    mmsolver::render::RenderGlobalsBasicNode::m_id, status);
     DEREGISTER_NODE(
-        plugin, mmsolver::render::SilhouetteRenderGlobalsNode::nodeName(),
-        mmsolver::render::SilhouetteRenderGlobalsNode::m_id, status);
+        plugin, mmsolver::render::RenderGlobalsSilhouetteNode::nodeName(),
+        mmsolver::render::RenderGlobalsSilhouetteNode::m_id, status);
 #endif
 
     DEREGISTER_COMMAND(plugin, mmsolver::MMSolverCmd::cmdName(), status);

@@ -53,11 +53,11 @@ public:
     static MTypeId m_id;
 
     // Input Attributes
-    static MObject a_silhouetteEnable;
-    static MObject a_silhouetteDepthOffset;
-    static MObject a_silhouetteWidth;
-    static MObject a_silhouetteColor;
-    static MObject a_silhouetteAlpha;
+    static MObject a_enable;
+    static MObject a_depthOffset;
+    static MObject a_width;
+    static MObject a_color;
+    static MObject a_alpha;
 
 private:
     // Callback IDs for tracking viewport changes.

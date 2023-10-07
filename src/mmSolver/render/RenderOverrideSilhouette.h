@@ -90,11 +90,11 @@ private:
 
     MSelectionList m_image_plane_nodes;
 
-    bool m_silhouette_enable;
-    float m_silhouette_depth_offset;
-    float m_silhouette_width;
-    float m_silhouette_color[3];
-    float m_silhouette_alpha;
+    bool m_enable;
+    float m_depth_offset;
+    float m_width;
+    float m_color[3];
+    float m_alpha;
 };
 
 }  // namespace render

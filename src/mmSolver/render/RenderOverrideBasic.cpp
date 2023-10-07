@@ -97,12 +97,12 @@ RenderOverrideBasic::RenderOverrideBasic(const MString &name)
     MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
     if (!renderer) {
         MMSOLVER_MAYA_ERR(
-            "MM Renderer Default Render Override: "
+            "MM Renderer Basic Render Override: "
             "Failed to get renderer.");
     }
 
     const MString kBackgroundOpName =
-        MString("mmDefaultRenderer_backgroundPass");
+        MString("mmRendererBasic_backgroundPass");
 
     m_backgroundOp = new SceneRender(kBackgroundOpName);
     m_backgroundOp->setEnabled(true);

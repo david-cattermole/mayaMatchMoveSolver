@@ -94,12 +94,12 @@ RenderOverrideSilhouette::RenderOverrideSilhouette(const MString &name)
     , m_renderer_change_callback(0)
     , m_render_override_change_callback(0)
     , m_globals_node()
-    , m_silhouette_enable(kSilhouetteEnableDefault)
-    , m_silhouette_depth_offset(kSilhouetteDepthOffsetDefault)
-    , m_silhouette_width(kSilhouetteWidthDefault)
-    , m_silhouette_color{kSilhouetteColorDefault[0], kSilhouetteColorDefault[1],
-                         kSilhouetteColorDefault[2]}
-    , m_silhouette_alpha(kSilhouetteAlphaDefault) {
+    , m_enable(kSilhouetteEnableDefault)
+    , m_depth_offset(kSilhouetteDepthOffsetDefault)
+    , m_width(kSilhouetteWidthDefault)
+    , m_color{kSilhouetteColorDefault[0], kSilhouetteColorDefault[1],
+              kSilhouetteColorDefault[2]}
+    , m_alpha(kSilhouetteAlphaDefault) {
     MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
     if (!renderer) {
         MMSOLVER_MAYA_ERR(
@@ -345,10 +345,9 @@ MStatus RenderOverrideSilhouette::setup(const MString &destination) {
     }
 
     // Get override values.
-    status = update_parameters(m_globals_node, m_silhouette_enable,
-                               m_silhouette_depth_offset, m_silhouette_width,
-                               m_silhouette_color[0], m_silhouette_color[1],
-                               m_silhouette_color[2], m_silhouette_alpha);
+    status =
+        update_parameters(m_globals_node, m_enable, m_depth_offset, m_width,
+                          m_color[0], m_color[1], m_color[2], m_alpha);
     CHECK_MSTATUS(status);
 
     MMSOLVER_MAYA_VRB(
@@ -374,24 +373,12 @@ MStatus RenderOverrideSilhouette::setup(const MString &destination) {
     if (m_silhouetteOp) {
         m_silhouetteOp->setPanelName(destination);
 
-        m_silhouetteOp->setEnabled(m_silhouette_enable);
-        m_silhouetteOp->setSilhouetteDepthOffset(m_silhouette_depth_offset);
-        m_silhouetteOp->setSilhouetteWidth(m_silhouette_width);
-        m_silhouetteOp->setSilhouetteColor(m_silhouette_color[0],
-                                           m_silhouette_color[1],
-                                           m_silhouette_color[2]);
-        m_silhouetteOp->setSilhouetteAlpha(m_silhouette_alpha);
+        m_silhouetteOp->setEnabled(m_enable);
+        m_silhouetteOp->setSilhouetteDepthOffset(m_depth_offset);
+        m_silhouetteOp->setSilhouetteWidth(m_width);
+        m_silhouetteOp->setSilhouetteColor(m_color[0], m_color[1], m_color[2]);
+        m_silhouetteOp->setSilhouetteAlpha(m_alpha);
     }
-
-    // if (m_wireframeOp) {
-    //     if (m_silhouette_enable) {
-    //         m_wireframeOp->setDisplayModeOverride(
-    //             MHWRender::MSceneRender::kNoDisplayModeOverride);
-    //     } else {
-    //         m_wireframeOp->setDisplayModeOverride(
-    //             MHWRender::MSceneRender::kWireFrame);
-    //     }
-    // }
 
     MMSOLVER_MAYA_VRB(
         "RenderOverrideSilhouette::setup: m_wireframeOp=" << m_wireframeOp);

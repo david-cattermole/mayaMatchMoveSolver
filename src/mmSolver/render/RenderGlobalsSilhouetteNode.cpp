@@ -48,11 +48,11 @@ namespace render {
 MTypeId RenderGlobalsSilhouetteNode::m_id(MM_RENDER_GLOBALS_SILHOUETTE_TYPE_ID);
 
 // Input Attributes
-MObject RenderGlobalsSilhouetteNode::a_silhouetteEnable;
-MObject RenderGlobalsSilhouetteNode::a_silhouetteDepthOffset;
-MObject RenderGlobalsSilhouetteNode::a_silhouetteWidth;
-MObject RenderGlobalsSilhouetteNode::a_silhouetteColor;
-MObject RenderGlobalsSilhouetteNode::a_silhouetteAlpha;
+MObject RenderGlobalsSilhouetteNode::a_enable;
+MObject RenderGlobalsSilhouetteNode::a_depthOffset;
+MObject RenderGlobalsSilhouetteNode::a_width;
+MObject RenderGlobalsSilhouetteNode::a_color;
+MObject RenderGlobalsSilhouetteNode::a_alpha;
 
 RenderGlobalsSilhouetteNode::RenderGlobalsSilhouetteNode()
     : m_attr_change_callback(0) {}
@@ -138,13 +138,13 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
 
     // Silhouette Enable
     {
-        a_silhouetteEnable = numeric_attribute.create(
-            kAttrNameSilhouetteEnable, "slhttenbl", MFnNumericData::kBoolean,
+        a_enable = numeric_attribute.create(
+            kAttrNameSilhouetteEnable, "enbl", MFnNumericData::kBoolean,
             static_cast<int>(kSilhouetteEnableDefault));
         CHECK_MSTATUS(numeric_attribute.setStorable(true));
         CHECK_MSTATUS(numeric_attribute.setConnectable(true));
         CHECK_MSTATUS(numeric_attribute.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_silhouetteEnable));
+        CHECK_MSTATUS(addAttribute(a_enable));
     }
 
     // Silhouette Depth Offset
@@ -152,8 +152,8 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
         auto depth_offset_max = 0.0;
         auto depth_offset_soft_min = -10.0;
         auto depth_offset_soft_max = -0.1;
-        a_silhouetteDepthOffset = numeric_attribute.create(
-            kAttrNameSilhouetteDepthOffset, "slhttdpthoffst",
+        a_depthOffset = numeric_attribute.create(
+            kAttrNameSilhouetteDepthOffset, "dpthoffst",
             MFnNumericData::kDouble, kSilhouetteDepthOffsetDefault);
         CHECK_MSTATUS(numeric_attribute.setStorable(true));
         CHECK_MSTATUS(numeric_attribute.setConnectable(true));
@@ -161,7 +161,7 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
         CHECK_MSTATUS(numeric_attribute.setMax(depth_offset_max));
         CHECK_MSTATUS(numeric_attribute.setSoftMin(depth_offset_soft_min));
         CHECK_MSTATUS(numeric_attribute.setSoftMax(depth_offset_soft_max));
-        CHECK_MSTATUS(addAttribute(a_silhouetteDepthOffset));
+        CHECK_MSTATUS(addAttribute(a_depthOffset));
     }
 
     // Silhouette Width
@@ -169,8 +169,8 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
         auto width_min = 0.0;
         auto width_soft_min = 1.0;
         auto width_soft_max = 10.0;
-        a_silhouetteWidth = numeric_attribute.create(
-            kAttrNameSilhouetteWidth, "slhttwdth", MFnNumericData::kDouble,
+        a_width = numeric_attribute.create(
+            kAttrNameSilhouetteWidth, "wdth", MFnNumericData::kDouble,
             kSilhouetteWidthDefault);
         CHECK_MSTATUS(numeric_attribute.setStorable(true));
         CHECK_MSTATUS(numeric_attribute.setConnectable(true));
@@ -178,35 +178,35 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
         CHECK_MSTATUS(numeric_attribute.setMin(width_min));
         CHECK_MSTATUS(numeric_attribute.setSoftMin(width_soft_min));
         CHECK_MSTATUS(numeric_attribute.setSoftMax(width_soft_max));
-        CHECK_MSTATUS(addAttribute(a_silhouetteWidth));
+        CHECK_MSTATUS(addAttribute(a_width));
     }
 
     // Silhouette Color (RGB)
     {
-        a_silhouetteColor =
-            numeric_attribute.createColor(kAttrNameSilhouetteColor, "slhttclr");
+        a_color =
+            numeric_attribute.createColor(kAttrNameSilhouetteColor, "clr");
         CHECK_MSTATUS(numeric_attribute.setStorable(true));
         CHECK_MSTATUS(numeric_attribute.setConnectable(true));
         CHECK_MSTATUS(numeric_attribute.setKeyable(true));
         CHECK_MSTATUS(numeric_attribute.setDefault(kSilhouetteColorDefault[0],
                                                    kSilhouetteColorDefault[1],
                                                    kSilhouetteColorDefault[2]));
-        CHECK_MSTATUS(addAttribute(a_silhouetteColor));
+        CHECK_MSTATUS(addAttribute(a_color));
     }
 
     // Silhouette Alpha
     {
         auto alpha_min = 0.0;
         auto alpha_max = 1.0;
-        a_silhouetteAlpha = numeric_attribute.create(
-            kAttrNameSilhouetteAlpha, "slhttalp", MFnNumericData::kDouble,
+        a_alpha = numeric_attribute.create(
+            kAttrNameSilhouetteAlpha, "alp", MFnNumericData::kDouble,
             kSilhouetteAlphaDefault);
         CHECK_MSTATUS(numeric_attribute.setStorable(true));
         CHECK_MSTATUS(numeric_attribute.setConnectable(true));
         CHECK_MSTATUS(numeric_attribute.setKeyable(true));
         CHECK_MSTATUS(numeric_attribute.setMin(alpha_min));
         CHECK_MSTATUS(numeric_attribute.setMax(alpha_max));
-        CHECK_MSTATUS(addAttribute(a_silhouetteAlpha));
+        CHECK_MSTATUS(addAttribute(a_alpha));
     }
 
     return MS::kSuccess;

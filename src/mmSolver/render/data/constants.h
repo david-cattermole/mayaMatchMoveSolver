@@ -123,7 +123,7 @@ const MString kAttrNameSilhouetteColorB = "colorB";
 const MString kAttrNameSilhouetteAlpha = "alpha";
 
 // Silhouette Renderer Attribute Default Values
-const bool kSilhouetteEnableDefault = false;
+const bool kSilhouetteEnableDefault = true;
 const float kSilhouetteDepthOffsetDefault = -1.0f;
 const float kSilhouetteWidthDefault = 2.0f;
 const float kSilhouetteColorDefault[] = {0.0f, 1.0f, 0.0f};

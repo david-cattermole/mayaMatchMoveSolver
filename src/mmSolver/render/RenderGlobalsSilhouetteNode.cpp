@@ -169,9 +169,9 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
         auto width_min = 0.0;
         auto width_soft_min = 1.0;
         auto width_soft_max = 10.0;
-        a_width = numeric_attribute.create(
-            kAttrNameSilhouetteWidth, "wdth", MFnNumericData::kDouble,
-            kSilhouetteWidthDefault);
+        a_width = numeric_attribute.create(kAttrNameSilhouetteWidth, "wdth",
+                                           MFnNumericData::kDouble,
+                                           kSilhouetteWidthDefault);
         CHECK_MSTATUS(numeric_attribute.setStorable(true));
         CHECK_MSTATUS(numeric_attribute.setConnectable(true));
         CHECK_MSTATUS(numeric_attribute.setKeyable(true));
@@ -198,9 +198,9 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
     {
         auto alpha_min = 0.0;
         auto alpha_max = 1.0;
-        a_alpha = numeric_attribute.create(
-            kAttrNameSilhouetteAlpha, "alp", MFnNumericData::kDouble,
-            kSilhouetteAlphaDefault);
+        a_alpha = numeric_attribute.create(kAttrNameSilhouetteAlpha, "alp",
+                                           MFnNumericData::kDouble,
+                                           kSilhouetteAlphaDefault);
         CHECK_MSTATUS(numeric_attribute.setStorable(true));
         CHECK_MSTATUS(numeric_attribute.setConnectable(true));
         CHECK_MSTATUS(numeric_attribute.setKeyable(true));

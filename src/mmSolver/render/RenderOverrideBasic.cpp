@@ -101,8 +101,7 @@ RenderOverrideBasic::RenderOverrideBasic(const MString &name)
             "Failed to get renderer.");
     }
 
-    const MString kBackgroundOpName =
-        MString("mmRendererBasic_backgroundPass");
+    const MString kBackgroundOpName = MString("mmRendererBasic_backgroundPass");
 
     m_backgroundOp = new SceneRender(kBackgroundOpName);
     m_backgroundOp->setEnabled(true);

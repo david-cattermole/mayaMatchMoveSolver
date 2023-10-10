@@ -388,6 +388,19 @@ general functions behave, by default.
        UI solving has finished. If *No*, the :ref:`Solver UI <solver-ui-ref>`
        will not be adjusted.
 
+   * - Distortion Mode Default
+     - *Undistorted* or *Distorted*
+     - Controls the default value shown in the Load Marker UI.
+
+   * - Use Embedded Overscan Default
+     - *Yes* or *No*
+     - Controls the default value shown in the Load Marker UI.
+
+   * - Load Bundle Positions Default
+     - *Yes* or *No*
+     - Controls the default value shown in the Load Marker UI.
+
+
 Usage:
 
 1) Open 'User Preferences' window.

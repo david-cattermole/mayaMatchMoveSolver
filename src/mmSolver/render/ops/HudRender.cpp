@@ -52,38 +52,5 @@ MHWRender::MRenderTarget *const *HudRender::targetOverrideList(
     return nullptr;
 }
 
-bool HudRender::hasUIDrawables() const /*override*/ { return true; }
-
-void HudRender::addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
-                               const MHWRender::MFrameContext &frameContext) {
-    // Start draw UI
-    drawManager2D.beginDrawable();
-    // Set font color
-    drawManager2D.setColor(MColor(1.0f, 0.0f, 0.0f));
-    // Set font size
-    drawManager2D.setFontSize(MHWRender::MUIDrawManager::kDefaultFontSize);
-
-    // Draw renderer name
-    int x = 0, y = 0, w = 0, h = 0;
-    frameContext.getViewportDimensions(x, y, w, h);
-    drawManager2D.text(MPoint(w * 0.5f, h * 0.91f), MString("mmRenderer"),
-                       MHWRender::MUIDrawManager::kCenter);
-
-    // Draw viewport information
-    MString viewportInfoText("Viewport information: x= ");
-    viewportInfoText += x;
-    viewportInfoText += ", y= ";
-    viewportInfoText += y;
-    viewportInfoText += ", w= ";
-    viewportInfoText += w;
-    viewportInfoText += ", h= ";
-    viewportInfoText += h;
-    drawManager2D.text(MPoint(w * 0.5f, h * 0.885f), viewportInfoText,
-                       MHWRender::MUIDrawManager::kCenter);
-
-    // End draw UI
-    drawManager2D.endDrawable();
-}
-
 }  // namespace render
 }  // namespace mmsolver

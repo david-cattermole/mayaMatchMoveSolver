@@ -38,10 +38,6 @@ public:
     MHWRender::MRenderTarget *const *targetOverrideList(
         unsigned int &listSize) override;
 
-    bool hasUIDrawables() const override;
-    void addUIDrawables(MHWRender::MUIDrawManager &drawManager2D,
-                        const MHWRender::MFrameContext &frameContext) override;
-
     void setRenderTargets(MHWRender::MRenderTarget **targets,
                           const uint32_t index, const uint32_t count) {
         m_targets = targets;

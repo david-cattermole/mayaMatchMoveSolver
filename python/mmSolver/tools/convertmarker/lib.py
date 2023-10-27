@@ -44,7 +44,7 @@ def convert_nodes_to_marker_data_list(cam_tfm, cam_shp, nodes, start_frame, end_
 
     cur_time = maya.cmds.currentTime(query=True)
     mkr_data_list = []
-    frames = range(start_frame, end_frame + 1)
+    frames = list(range(start_frame, end_frame + 1))
     for node in nodes:
         # TODO: If a camera has 'camera scale' attribute set other than
         # 1.0, the reprojected values will not be correct.

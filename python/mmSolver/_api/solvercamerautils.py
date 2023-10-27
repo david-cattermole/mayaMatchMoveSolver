@@ -748,7 +748,7 @@ def _set_camera_origin_frame(
 
     previous_rotation = None
     cam_tfm_values = []
-    frames = range(start_frame, end_frame + 1)
+    frames = list(range(start_frame, end_frame + 1))
     for frame in frames:
         ctx = tfm_utils.create_dg_context_apitwo(frame)
         matrix = tfm_utils.get_matrix_from_plug_apitwo(cam_matrix_plug, ctx)

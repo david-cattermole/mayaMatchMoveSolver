@@ -91,7 +91,9 @@ class ConvertMarkerLayout(QtWidgets.QWidget, ui_convertmarker_layout.Ui_Form):
         frame_end = configmaya.get_scene_option(
             const.CONFIG_FRAME_END_KEY, default=const.DEFAULT_FRAME_END
         )
-        time_utils.get_frame_range(value, start_frame=frame_start, end_frame=frame_end)
+        frame_start, frame_end = time_utils.get_frame_range(
+            value, start_frame=frame_start, end_frame=frame_end
+        )
         self.frameRangeStartSpinBox.setValue(frame_start)
         self.frameRangeEndSpinBox.setValue(frame_end)
 

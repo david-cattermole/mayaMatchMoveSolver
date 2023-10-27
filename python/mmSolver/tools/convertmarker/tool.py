@@ -100,7 +100,7 @@ def main(
         delete_static_anim_curves = value
 
     # Frame range
-    time_utils.get_frame_range(
+    start_frame, end_frame = time_utils.get_frame_range(
         frame_range_mode, start_frame=start_frame, end_frame=end_frame
     )
 

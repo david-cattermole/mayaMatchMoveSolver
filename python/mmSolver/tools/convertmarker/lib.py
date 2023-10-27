@@ -39,6 +39,8 @@ LOG = mmSolver.logger.get_logger()
 
 
 def convert_nodes_to_marker_data_list(cam_tfm, cam_shp, nodes, start_frame, end_frame):
+    assert maya.cmds.objExists(cam_tfm)
+    assert maya.cmds.objExists(cam_shp)
     # Ensure the plug-in is loaded, to use mmReprojection command.
     mmapi.load_plugin()
 

@@ -46,7 +46,7 @@
             "marker_tools/marker_popup/raycast_marker",
             "marker_tools/marker_popup/---Create Marker",
             "marker_tools/marker_popup/create_marker",
-            "marker_tools/marker_popup/convert_to_marker_ui",
+            "marker_tools/marker_popup/convert_to_marker",
             "marker_tools/marker_popup/duplicate_marker",
             "marker_tools/marker_popup/average_markers",
             "marker_tools/marker_popup/---Deform Marker",

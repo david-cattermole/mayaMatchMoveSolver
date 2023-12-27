@@ -281,6 +281,150 @@ pub fn shim_create_distortion_layers_box() -> Box<ShimDistortionLayers> {
     Box::new(ShimDistortionLayers::new())
 }
 
+fn hash_lens_layer_params(
+    lens_layers: &ShimDistortionLayers,
+    layer_num: LayerIndex,
+    frame: FrameNumber,
+    state: &mut FxHasher,
+) {
+    let lens_model_type = lens_layers.layer_lens_model_type(layer_num);
+    match lens_model_type {
+        BindLensModelType::Uninitialized => {
+            // This lens model is a no-op, nothing is done.
+            ()
+        }
+        BindLensModelType::TdeClassic => {
+            let option_parameters =
+                lens_layers.layer_lens_parameters_3de_classic(layer_num, frame);
+            assert!(option_parameters.exists == true);
+            let parameters = option_parameters.value;
+
+            let distortion = HashableF64::new(parameters.distortion);
+            let anamorphic_squeeze =
+                HashableF64::new(parameters.anamorphic_squeeze);
+            let curvature_x = HashableF64::new(parameters.curvature_x);
+            let curvature_y = HashableF64::new(parameters.curvature_y);
+            let quartic_distortion =
+                HashableF64::new(parameters.quartic_distortion);
+
+            lens_model_type.hash(state);
+            distortion.hash(state);
+            anamorphic_squeeze.hash(state);
+            curvature_x.hash(state);
+            curvature_y.hash(state);
+            quartic_distortion.hash(state);
+        }
+        BindLensModelType::TdeRadialStdDeg4 => {
+            let option_parameters = lens_layers
+                .layer_lens_parameters_3de_radial_std_deg4(layer_num, frame);
+            assert!(option_parameters.exists == true);
+            let parameters = option_parameters.value;
+
+            let degree2_distortion =
+                HashableF64::new(parameters.degree2_distortion);
+            let degree2_u = HashableF64::new(parameters.degree2_u);
+            let degree2_v = HashableF64::new(parameters.degree2_v);
+            let degree4_distortion =
+                HashableF64::new(parameters.degree4_distortion);
+            let degree4_u = HashableF64::new(parameters.degree4_u);
+            let degree4_v = HashableF64::new(parameters.degree4_v);
+            let cylindric_direction =
+                HashableF64::new(parameters.cylindric_direction);
+            let cylindric_bending =
+                HashableF64::new(parameters.cylindric_bending);
+
+            lens_model_type.hash(state);
+            degree2_distortion.hash(state);
+            degree2_u.hash(state);
+            degree2_v.hash(state);
+            degree4_distortion.hash(state);
+            degree4_u.hash(state);
+            degree4_v.hash(state);
+            cylindric_direction.hash(state);
+            cylindric_bending.hash(state);
+        }
+        BindLensModelType::TdeAnamorphicStdDeg4 => {
+            let option_parameters = lens_layers
+                .layer_lens_parameters_3de_anamorphic_std_deg4(
+                    layer_num, frame,
+                );
+            assert!(option_parameters.exists == true);
+            let parameters = option_parameters.value;
+
+            let degree2_cx02 = HashableF64::new(parameters.degree2_cx02);
+            let degree2_cy02 = HashableF64::new(parameters.degree2_cy02);
+            let degree2_cx22 = HashableF64::new(parameters.degree2_cx22);
+            let degree2_cy22 = HashableF64::new(parameters.degree2_cy22);
+            let degree4_cx04 = HashableF64::new(parameters.degree4_cx04);
+            let degree4_cy04 = HashableF64::new(parameters.degree4_cy04);
+            let degree4_cx24 = HashableF64::new(parameters.degree4_cx24);
+            let degree4_cy24 = HashableF64::new(parameters.degree4_cy24);
+            let degree4_cx44 = HashableF64::new(parameters.degree4_cx44);
+            let degree4_cy44 = HashableF64::new(parameters.degree4_cy44);
+            let lens_rotation = HashableF64::new(parameters.lens_rotation);
+            let squeeze_x = HashableF64::new(parameters.squeeze_x);
+            let squeeze_y = HashableF64::new(parameters.squeeze_y);
+
+            lens_model_type.hash(state);
+            degree2_cx02.hash(state);
+            degree2_cy02.hash(state);
+            degree2_cx22.hash(state);
+            degree2_cy22.hash(state);
+            degree4_cx04.hash(state);
+            degree4_cy04.hash(state);
+            degree4_cx24.hash(state);
+            degree4_cy24.hash(state);
+            degree4_cx44.hash(state);
+            degree4_cy44.hash(state);
+            lens_rotation.hash(state);
+            squeeze_x.hash(state);
+            squeeze_y.hash(state);
+        }
+        BindLensModelType::TdeAnamorphicStdDeg4Rescaled => {
+            let option_parameters = lens_layers
+                .layer_lens_parameters_3de_anamorphic_std_deg4_rescaled(
+                    layer_num, frame,
+                );
+            assert!(option_parameters.exists == true);
+            let parameters = option_parameters.value;
+
+            let degree2_cx02 = HashableF64::new(parameters.degree2_cx02);
+            let degree2_cy02 = HashableF64::new(parameters.degree2_cy02);
+            let degree2_cx22 = HashableF64::new(parameters.degree2_cx22);
+            let degree2_cy22 = HashableF64::new(parameters.degree2_cy22);
+            let degree4_cx04 = HashableF64::new(parameters.degree4_cx04);
+            let degree4_cy04 = HashableF64::new(parameters.degree4_cy04);
+            let degree4_cx24 = HashableF64::new(parameters.degree4_cx24);
+            let degree4_cy24 = HashableF64::new(parameters.degree4_cy24);
+            let degree4_cx44 = HashableF64::new(parameters.degree4_cx44);
+            let degree4_cy44 = HashableF64::new(parameters.degree4_cy44);
+            let lens_rotation = HashableF64::new(parameters.lens_rotation);
+            let squeeze_x = HashableF64::new(parameters.squeeze_x);
+            let squeeze_y = HashableF64::new(parameters.squeeze_y);
+            let rescale = HashableF64::new(parameters.rescale);
+
+            lens_model_type.hash(state);
+            degree2_cx02.hash(state);
+            degree2_cy02.hash(state);
+            degree2_cx22.hash(state);
+            degree2_cy22.hash(state);
+            degree4_cx04.hash(state);
+            degree4_cy04.hash(state);
+            degree4_cx24.hash(state);
+            degree4_cy24.hash(state);
+            degree4_cx44.hash(state);
+            degree4_cy44.hash(state);
+            lens_rotation.hash(state);
+            squeeze_x.hash(state);
+            squeeze_y.hash(state);
+            rescale.hash(state);
+        }
+        _ => {
+            panic!("Unsupported Lens Model Type: {:?}", lens_model_type)
+        }
+    }
+}
+
 impl ShimDistortionLayers {
     pub fn new() -> ShimDistortionLayers {
         return ShimDistortionLayers {
@@ -477,37 +621,7 @@ impl ShimDistortionLayers {
         // Lens parameters.
         let layer_count = self.layer_count();
         for layer_num in 0..layer_count {
-            let lens_model_type = self.layer_lens_model_type(layer_num);
-            match lens_model_type {
-                BindLensModelType::Uninitialized => {
-                    // This lens model is a no-op, nothing is done.
-                    ()
-                }
-                BindLensModelType::TdeClassic => {
-                    let option_parameters = self
-                        .layer_lens_parameters_3de_classic(layer_num, frame);
-                    assert!(option_parameters.exists == true);
-                    let parameters = option_parameters.value;
-
-                    let distortion = HashableF64::new(parameters.distortion);
-                    let anamorphic_squeeze =
-                        HashableF64::new(parameters.anamorphic_squeeze);
-                    let curvature_x = HashableF64::new(parameters.curvature_x);
-                    let curvature_y = HashableF64::new(parameters.curvature_y);
-                    let quartic_distortion =
-                        HashableF64::new(parameters.quartic_distortion);
-
-                    lens_model_type.hash(&mut s);
-                    distortion.hash(&mut s);
-                    anamorphic_squeeze.hash(&mut s);
-                    curvature_x.hash(&mut s);
-                    curvature_y.hash(&mut s);
-                    quartic_distortion.hash(&mut s);
-                }
-                _ => {
-                    panic!("Unsupported Lens Model Type: {:?}", lens_model_type)
-                }
-            }
+            hash_lens_layer_params(self, layer_num, frame, &mut s);
         }
 
         s.finish()

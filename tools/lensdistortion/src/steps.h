@@ -137,27 +137,56 @@ mmimage::Box2F32 calculate_bbox_region(
     mmimage::Box2F32 box_region = mmimage::Box2F32{0.0, 0.0, 0.0, 0.0};
 
     if (lens_model_type == mmlens::LensModelType::k3deClassic) {
-        mmlens::OptionParameters3deClassic option =
+        const auto option =
             lens_layers.layer_lens_parameters_3de_classic(layer_num, frame);
-        std::cout << "calculate_bbox_region option.exists: "
-                  << static_cast<int>(option.exists) << std::endl;
-        if (option.exists) {
-            const mmlens::Parameters3deClassic lens_parameters = option.value;
-            box_region = calculate_bbox_region_function(
-                frame, camera_parameters, film_back_radius_cm, lens_parameters,
-                bbox_duration, verbose);
-        }
+        MMSOLVER_ASSERT(
+            option.exists,
+            "LensParameters are expected to exist for matching LensModelType.");
+
+        const auto lens_parameters = option.value;
+        box_region = calculate_bbox_region_function(
+            frame, camera_parameters, film_back_radius_cm, lens_parameters,
+            bbox_duration, verbose);
+
     } else if (lens_model_type == mmlens::LensModelType::k3deRadialStdDeg4) {
-        MMSOLVER_PANIC("calculate_bbox_region: Unsupported lens_model_type: "
-                       << static_cast<int>(lens_model_type));
+        const auto option =
+            lens_layers.layer_lens_parameters_3de_radial_std_deg4(layer_num,
+                                                                  frame);
+        MMSOLVER_ASSERT(
+            option.exists,
+            "LensParameters are expected to exist for matching LensModelType.");
+
+        const auto lens_parameters = option.value;
+        box_region = calculate_bbox_region_function(
+            frame, camera_parameters, film_back_radius_cm, lens_parameters,
+            bbox_duration, verbose);
     } else if (lens_model_type ==
                mmlens::LensModelType::k3deAnamorphicStdDeg4) {
-        MMSOLVER_PANIC("calculate_bbox_region: Unsupported lens_model_type: "
-                       << static_cast<int>(lens_model_type));
+        const auto option =
+            lens_layers.layer_lens_parameters_3de_anamorphic_std_deg4(layer_num,
+                                                                      frame);
+        MMSOLVER_ASSERT(
+            option.exists,
+            "LensParameters are expected to exist for matching LensModelType.");
+
+        const auto lens_parameters = option.value;
+        box_region = calculate_bbox_region_function(
+            frame, camera_parameters, film_back_radius_cm, lens_parameters,
+            bbox_duration, verbose);
     } else if (lens_model_type ==
                mmlens::LensModelType::k3deAnamorphicStdDeg4Rescaled) {
-        MMSOLVER_PANIC("calculate_bbox_region: Unsupported lens_model_type: "
-                       << static_cast<int>(lens_model_type));
+        const auto option =
+            lens_layers.layer_lens_parameters_3de_anamorphic_std_deg4_rescaled(
+                layer_num, frame);
+        MMSOLVER_ASSERT(
+            option.exists,
+            "LensParameters are expected to exist for matching LensModelType.");
+
+        const auto lens_parameters = option.value;
+        box_region = calculate_bbox_region_function(
+            frame, camera_parameters, film_back_radius_cm, lens_parameters,
+            bbox_duration, verbose);
+
     } else {
         MMSOLVER_PANIC("calculate_bbox_region: Unsupported lens_model_type: "
                        << static_cast<int>(lens_model_type));
@@ -181,10 +210,17 @@ void calculate_image(const mmlens::DistortionDirection distortion_direction,
                      const size_t num_channels,
                      mmimage::ImagePixelBuffer& out_pixel_buffer,
 
-                     //
                      const int num_threads,
                      std::chrono::duration<float>& create_duration,
                      std::chrono::duration<float>& process_duration) {
+    auto intermediate_buffer = mmimage::ImagePixelBuffer();
+
+    const InputMode image_input_mode = InputMode::kIdentity;
+    const OutputMode image_output_mode = OutputMode::kF32x4;
+
+    // A switch to use the old or new code.
+    const bool use_new_code = true;
+
     // Create image pixel data.
     //
     // TODO: Save processing time by re-using the last frame's
@@ -192,65 +228,96 @@ void calculate_image(const mmlens::DistortionDirection distortion_direction,
     // runs.
     {
         auto create_start = std::chrono::high_resolution_clock::now();
-        const size_t num_channels = 4;
-        out_pixel_buffer.resize(mmimage::BufferDataType::kF32, image_width,
-                                image_height, num_channels);
+
+        if (use_new_code) {
+            const size_t pixel_count = image_width * image_height;
+            const uint8_t layer_count = lens_layers.layer_count();
+            allocate_buffer_memory(distortion_direction, layer_count,
+                                   image_width, image_height, image_input_mode,
+                                   image_output_mode, intermediate_buffer,
+                                   out_pixel_buffer);
+        } else {
+            const size_t num_channels = 4;
+            out_pixel_buffer.resize(mmimage::BufferDataType::kF32, image_width,
+                                    image_height, num_channels);
+        }
+
         auto create_end = std::chrono::high_resolution_clock::now();
         create_duration = create_end - create_start;
     }
-    rust::Slice<mmimage::PixelF32x4> data_slice_mut =
-        out_pixel_buffer.as_slice_f32x4_mut();
-    const size_t data_size = image_width * image_height * num_channels;
-    float* data_ptr = reinterpret_cast<float*>(data_slice_mut.data());
 
     // Compute the lens distortion on the image.
     {
         auto process_start = std::chrono::high_resolution_clock::now();
 
-        // calculate_lens_layers_distortion(
-        //     distortion_direction, lens_layers, frame, image_width,
-        //     image_height, image_input_mode, image_output_mode,
-        //     in_buffer_slice, intermediate_buffer_slice,
-        //     out_buffer_slice, camera_parameters, film_back_radius_cm,
-        //     num_threads);
+        if (use_new_code) {
+            // The input buffer is empty of all data, because the input
+            // coordinates will be identity.
+            auto in_buffer_slice = BufferSlice();
 
-        const size_t data_stride = 4;  // RGBA.
-        if (lens_model_type == mmlens::LensModelType::k3deClassic) {
-            mmlens::OptionParameters3deClassic option =
-                lens_layers.layer_lens_parameters_3de_classic(layer_num, frame);
-            std::cout << "calculate_image: option.exists: "
-                      << static_cast<int>(option.exists) << std::endl;
-            if (option.exists) {
-                const mmlens::Parameters3deClassic lens_parameters =
-                    option.value;
-                if (num_threads == 1) {
-                    mmlens::apply_identity_to_f32(
-                        distortion_direction, image_width, image_height, 0, 0,
-                        image_width, image_height, data_ptr, data_size,
-                        data_stride, camera_parameters, film_back_radius_cm,
-                        lens_parameters);
-                } else {
-                    mmlens::apply_identity_to_f32_multithread(
-                        distortion_direction, image_width, image_height,
-                        data_ptr, data_size, data_stride, camera_parameters,
-                        film_back_radius_cm, lens_parameters);
-                }
-            }
-        } else if (lens_model_type ==
-                   mmlens::LensModelType::k3deRadialStdDeg4) {
-            MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
-                           << static_cast<int>(lens_model_type));
-        } else if (lens_model_type ==
-                   mmlens::LensModelType::k3deAnamorphicStdDeg4) {
-            MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
-                           << static_cast<int>(lens_model_type));
-        } else if (lens_model_type ==
-                   mmlens::LensModelType::k3deAnamorphicStdDeg4Rescaled) {
-            MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
-                           << static_cast<int>(lens_model_type));
+            BufferSlice intermediate_buffer_slice =
+                BufferSlice(intermediate_buffer.data_type(),
+                            intermediate_buffer.image_width(),
+                            intermediate_buffer.image_height(),
+                            intermediate_buffer.num_channels(),
+                            intermediate_buffer.as_slice_f32x4_mut().data());
+            BufferSlice out_pixel_buffer_slice = BufferSlice(
+                out_pixel_buffer.data_type(), out_pixel_buffer.image_width(),
+                out_pixel_buffer.image_height(),
+                out_pixel_buffer.num_channels(),
+                out_pixel_buffer.as_slice_f32x4_mut().data());
+
+            calculate_lens_layers_distortion(
+                distortion_direction, lens_layers, frame, image_width,
+                image_height, image_input_mode, image_output_mode,
+                in_buffer_slice, intermediate_buffer_slice,
+                out_pixel_buffer_slice, camera_parameters, film_back_radius_cm,
+                num_threads);
         } else {
-            MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
-                           << static_cast<int>(lens_model_type));
+            rust::Slice<mmimage::PixelF32x4> data_slice_mut =
+                out_pixel_buffer.as_slice_f32x4_mut();
+            const size_t data_size = image_width * image_height * num_channels;
+            float* data_ptr = reinterpret_cast<float*>(data_slice_mut.data());
+
+            const size_t data_stride = 4;  // RGBA.
+            if (lens_model_type == mmlens::LensModelType::k3deClassic) {
+                mmlens::OptionParameters3deClassic option =
+                    lens_layers.layer_lens_parameters_3de_classic(layer_num,
+                                                                  frame);
+                std::cout << "calculate_image: option.exists: "
+                          << static_cast<int>(option.exists) << std::endl;
+                if (option.exists) {
+                    const mmlens::Parameters3deClassic lens_parameters =
+                        option.value;
+                    if (num_threads == 1) {
+                        mmlens::apply_identity_to_f32(
+                            distortion_direction, image_width, image_height, 0,
+                            0, image_width, image_height, data_ptr, data_size,
+                            data_stride, camera_parameters, film_back_radius_cm,
+                            lens_parameters);
+                    } else {
+                        mmlens::apply_identity_to_f32_multithread(
+                            distortion_direction, image_width, image_height,
+                            data_ptr, data_size, data_stride, camera_parameters,
+                            film_back_radius_cm, lens_parameters);
+                    }
+                }
+            } else if (lens_model_type ==
+                       mmlens::LensModelType::k3deRadialStdDeg4) {
+                MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
+                               << static_cast<int>(lens_model_type));
+            } else if (lens_model_type ==
+                       mmlens::LensModelType::k3deAnamorphicStdDeg4) {
+                MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
+                               << static_cast<int>(lens_model_type));
+            } else if (lens_model_type ==
+                       mmlens::LensModelType::k3deAnamorphicStdDeg4Rescaled) {
+                MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
+                               << static_cast<int>(lens_model_type));
+            } else {
+                MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
+                               << static_cast<int>(lens_model_type));
+            }
         }
 
         auto process_end = std::chrono::high_resolution_clock::now();

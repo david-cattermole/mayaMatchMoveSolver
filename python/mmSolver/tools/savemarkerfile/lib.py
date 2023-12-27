@@ -157,7 +157,7 @@ def generate(mkr_list, frame_range):
     :returns: List of Markers
     :rtype: [Marker]
     """
-    frames = range(frame_range.start, frame_range.end + 1)
+    frames = list(range(frame_range.start, frame_range.end + 1))
     assert len(frames) > 0
 
     cameras_map = {}

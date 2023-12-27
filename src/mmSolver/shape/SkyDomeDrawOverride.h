@@ -158,7 +158,7 @@ public:
 
     void handleTraceMessage(const MString &message) const override {
         MGlobal::displayInfo("SkyDomeDrawOverride: " + message);
-        MMSOLVER_INFO("SkyDomeDrawOverride: " << message.asChar());
+        MMSOLVER_MAYA_INFO("SkyDomeDrawOverride: " << message.asChar());
     }
 
 private:

@@ -22,12 +22,12 @@
  * This command is used to query and edit values for the mmSolver
  * Renderer.
  *
- * Create a 'mmRenderer' node used to store the attributes for the
+ * Create a 'mmSilhouetteRenderer' node used to store the attributes for the
  * renderer in the scene.
  */
 
-#ifndef MM_SOLVER_RENDER_MM_RENDERER_CMD_H
-#define MM_SOLVER_RENDER_MM_RENDERER_CMD_H
+#ifndef MM_SOLVER_RENDER_MM_SILHOUETTE_RENDERER_CMD_H
+#define MM_SOLVER_RENDER_MM_SILHOUETTE_RENDERER_CMD_H
 
 #include <maya/MPxCommand.h>
 
@@ -35,22 +35,13 @@ namespace mmsolver {
 namespace render {
 
 /*
- * Command arguments and command name
+ * MM Silhouette Renderer command.
  */
-#define MM_RENDERER_SWIRL_FLAG "-s"
-#define MM_RENDERER_SWIRL_FLAG_LONG "-swirl"
-
-#define MM_RENDERER_FISH_EYE_FLAG "-fe"
-#define MM_RENDERER_FISH_EYE_FLAG_LONG "-fishEye"
-
-/*
- * MM Renderer command.
- */
-class MMRendererCmd : public MPxCommand {
+class MMRendererSilhouetteCmd : public MPxCommand {
 public:
-    MMRendererCmd();
+    MMRendererSilhouetteCmd();
 
-    ~MMRendererCmd() override;
+    ~MMRendererSilhouetteCmd() override;
 
     MStatus doIt(const MArgList &args) override;
 
@@ -59,13 +50,9 @@ public:
     static void *creator();
 
     static MString cmdName();
-
-private:
-    bool m_fishEye;
-    bool m_swirl;
 };
 
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MAYA_MM_SOLVER_RENDER_MM_RENDERER_CMD_H
+#endif  // MAYA_MM_SOLVER_RENDER_MM_SILHOUETTE_RENDERER_CMD_H

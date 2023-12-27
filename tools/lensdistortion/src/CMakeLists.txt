@@ -19,26 +19,33 @@
 
 include(MMSolverUtils)
 
-set(target_exe_name "mmsolver-lensdistortion")
+set(lensdistortion_exe_name "mmsolver-lensdistortion")
 
 set(source_files
   ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 )
 
 # Add test executable using the C++ bindings.
-add_executable(${target_exe_name} ${source_files})
+add_executable(${lensdistortion_exe_name} ${source_files})
 
 # MM Solver standalone libraries.
-find_package(mmsolverlibs REQUIRED)
-target_link_libraries(${target_exe_name}
-  PRIVATE mmsolverlibs::mmsolverlibs
+find_package(mmsolverlibs_cpp REQUIRED)
+find_package(mmsolverlibs_rust REQUIRED)
+
+target_link_libraries(${lensdistortion_exe_name}
+  # The order of these libraries matters. See similar
+  # 'target_link_libraries()' in '${PROJECT_ROOT}/src/CMakeLists.txt'.
+  PUBLIC mmsolverlibs_rust::mmsolverlibs_rust
+  PUBLIC mmsolverlibs_cpp::mmsolverlibs_cpp
+
+  PRIVATE ${rust_depend_on_libraries}
 )
 
-target_include_directories(${target_exe_name}
+target_include_directories(${lensdistortion_exe_name}
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
 
   # For generated 'buildConstant.h' file.
   PRIVATE ${CMAKE_BINARY_DIR}/include
 )
 
-install_target_executable_to_module(${target_exe_name} "${MODULE_FULL_NAME}")
+install_target_executable_to_module(${lensdistortion_exe_name} "${MODULE_FULL_NAME}")

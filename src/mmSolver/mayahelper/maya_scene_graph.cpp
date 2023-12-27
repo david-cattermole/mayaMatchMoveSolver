@@ -38,6 +38,9 @@
 #include <maya/MTimeArray.h>
 #include <maya/MTypes.h>
 
+// MM Solver Libs
+#include <mmsolverlibs/debug.h>
+
 // MM SceneGraph
 #include <mmscenegraph/mmscenegraph.h>
 
@@ -92,57 +95,71 @@ bool attribute_source_plug(MFnDependencyNode &depend_node, const MString &name,
 
 bool attribute_has_complex_connection(MFnDependencyNode &depend_node,
                                       const MString &name) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("attribute_has_complex_connection");
+
     MStatus status = MS::kSuccess;
     MPlug source_plug;
     bool ok = attribute_source_plug(depend_node, name, source_plug);
-    if (ok) {
-        // Input connections can be to an animation curve only.
-        MObject source_node_mobject = source_plug.node();
-        auto has_anim_curve = source_node_mobject.hasFn(MFn::kAnimCurve);
-        if (has_anim_curve) {
-            return false;
-        }
-
-        MObject source_attr = source_plug.attribute(&status);
-        if (status != MS::kSuccess) {
-            MMSOLVER_WRN(
-                "MM Scene Graph attribute_has_complex_connection: "
-                "Failed to get source attribute.");
-            return true;
-        }
-
-        MFnAttribute source_attr_fn(source_attr, &status);
-        if (status != MS::kSuccess) {
-            MMSOLVER_WRN(
-                "MM Scene Graph attribute_has_complex_connection: "
-                "Failed to get source attribute function set.");
-            return true;
-        }
-
-        MFnDependencyNode source_node_fn(source_node_mobject, &status);
-        if (status != MS::kSuccess) {
-            MMSOLVER_WRN(
-                "MM Scene Graph attribute_has_complex_connection: "
-                "Failed to get source node dependency function set.");
-            return true;
-        }
-
-        bool is_readable = source_attr_fn.isReadable();
-        bool is_writable = source_attr_fn.isWritable();
-        if (is_readable && !is_writable) {
-            // This means the attribute is an 'output attribute'.
-            MMSOLVER_WRN(
-                "MM Scene Graph: Complex attribute connection detected from "
-                << "\"" << source_node_fn.name().asChar() << "."
-                << source_attr_fn.name().asChar() << "\""
-                << " to "
-                << "\"" << depend_node.name().asChar() << "." << name.asChar()
-                << "\": "
-                << " attr_is_readable=" << is_readable
-                << " attr_is_writable=" << is_writable);
-            return true;
-        }
+    if (!ok) {
+        return false;
     }
+    // Input connections can be to an animation curve only.
+    MObject source_node_mobject = source_plug.node();
+    auto has_anim_curve = source_node_mobject.hasFn(MFn::kAnimCurve);
+    if (has_anim_curve) {
+        return false;
+    }
+
+    MObject source_attr = source_plug.attribute(&status);
+    if (status != MS::kSuccess) {
+        MMSOLVER_MAYA_WRN(
+            "MM Scene Graph attribute_has_complex_connection: "
+            "Failed to get source attribute.");
+        return true;
+    }
+
+    MFnAttribute source_attr_fn(source_attr, &status);
+    if (status != MS::kSuccess) {
+        MMSOLVER_MAYA_WRN(
+            "MM Scene Graph attribute_has_complex_connection: "
+            "Failed to get source attribute function set.");
+        return true;
+    }
+
+    MFnDependencyNode source_node_fn(source_node_mobject, &status);
+    if (status != MS::kSuccess) {
+        MMSOLVER_MAYA_WRN(
+            "MM Scene Graph attribute_has_complex_connection: "
+            "Failed to get source node dependency function set.");
+        return true;
+    }
+
+    bool is_readable = source_attr_fn.isReadable();
+    bool is_writable = source_attr_fn.isWritable();
+    if (is_readable && !is_writable) {
+        // This means the attribute is an 'output attribute'.
+        MMSOLVER_MAYA_WRN(
+            "MM Scene Graph: Complex attribute connection detected from "
+            << "\"" << source_node_fn.name().asChar() << "."
+            << source_attr_fn.name().asChar() << "\""
+            << " to "
+            << "\"" << depend_node.name().asChar() << "." << name.asChar()
+            << "\": "
+            << " attr_is_readable=" << is_readable
+            << " attr_is_writable=" << is_writable);
+        return true;
+    }
+
+    // This means the attribute is an 'output attribute'.
+    MMSOLVER_MAYA_VRB(
+        "MM Scene Graph: No complex attribute connection detected from "
+        << "\"" << source_node_fn.name().asChar() << "."
+        << source_attr_fn.name().asChar() << "\""
+        << " to "
+        << "\"" << depend_node.name().asChar() << "." << name.asChar() << "\": "
+        << " attr_is_readable=" << is_readable
+        << " attr_is_writable=" << is_writable);
 
     return false;
 }
@@ -155,7 +172,10 @@ MStatus add_attribute(Attr &mayaAttr, const MString &attr_name,
                       mmsg::AttrDataBlock &out_attrDataBlock,
                       mmsg::AttrId &out_attrId,
                       StringToAttrIdMap &out_attrNameToAttrIdMap) {
-    UNUSED(frameList);
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("add_attribute");
+
+    MMSOLVER_CORE_UNUSED(frameList);
     MStatus status = MS::kSuccess;
     mayaAttr.setAttrName(attr_name);
 
@@ -332,6 +352,9 @@ MStatus get_camera_attrs(
     mmsg::CameraAttrIds &out_attrIds, mmsg::FilmFit &out_film_fit,
     int32_t &out_render_image_width, int32_t &out_render_image_height,
     StringToAttrIdMap &out_attrNameToAttrIdMap) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("get_camera_attrs");
+
     MStatus status = MS::kSuccess;
     double scaleFactor = 1.0;  // No conversion.
     double inch_to_mm = 25.4;
@@ -496,6 +519,9 @@ MStatus get_marker_attrs(Attr &mayaAttr, const MTimeArray &frameList,
                          mmsg::AttrDataBlock &out_attrDataBlock,
                          mmsg::MarkerAttrIds &out_attrIds,
                          StringToAttrIdMap &out_attrNameToAttrIdMap) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("get_marker_attrs");
+
     MStatus status = MS::kSuccess;
     double scaleFactor = 1.0;  // No conversion.
 
@@ -543,14 +569,17 @@ MStatus get_marker_attrs(Attr &mayaAttr, const MTimeArray &frameList,
 // If a node has any of these, the transform node is not supported and
 // we must bail out of using the MM Scene Graph as an acceleration.
 MStatus check_transform_node(MDagPath &dag_path) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("check_transform_node");
+
     MStatus status = MS::kSuccess;
 
     auto path_valid = dag_path.isValid(&status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     if (!path_valid) {
         status = MS::kFailure;
-        MMSOLVER_WRN("MM Scene Graph: Invalid DAG path: "
-                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        MMSOLVER_MAYA_WRN("MM Scene Graph: Invalid DAG path: "
+                          << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -558,8 +587,8 @@ MStatus check_transform_node(MDagPath &dag_path) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
     if (is_instanced) {
         status = MS::kFailure;
-        MMSOLVER_WRN("MM Scene Graph: No support for instanced nodes: "
-                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        MMSOLVER_MAYA_WRN("MM Scene Graph: No support for instanced nodes: "
+                          << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -567,8 +596,8 @@ MStatus check_transform_node(MDagPath &dag_path) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
     if (node_mobject.isNull()) {
         status = MS::kFailure;
-        MMSOLVER_WRN("MM Scene Graph: Invalid node MObject: "
-                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        MMSOLVER_MAYA_WRN("MM Scene Graph: Invalid node MObject: "
+                          << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -578,8 +607,9 @@ MStatus check_transform_node(MDagPath &dag_path) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
     if (!is_zero(scale_pivot)) {
         status = MS::kFailure;
-        MMSOLVER_WRN("MM Scene Graph: No support for non-zero scale pivot: "
-                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        MMSOLVER_MAYA_WRN(
+            "MM Scene Graph: No support for non-zero scale pivot: "
+            << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -588,7 +618,7 @@ MStatus check_transform_node(MDagPath &dag_path) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
     if (!is_zero(scale_pivot_translation)) {
         status = MS::kFailure;
-        MMSOLVER_WRN(
+        MMSOLVER_MAYA_WRN(
             "MM Scene Graph: No support for non-zero scale pivot translation: "
             << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -599,8 +629,9 @@ MStatus check_transform_node(MDagPath &dag_path) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
     if (!is_zero(rotate_pivot)) {
         status = MS::kFailure;
-        MMSOLVER_WRN("MM Scene Graph: No support for non-zero rotate pivot: "
-                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        MMSOLVER_MAYA_WRN(
+            "MM Scene Graph: No support for non-zero rotate pivot: "
+            << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -609,7 +640,7 @@ MStatus check_transform_node(MDagPath &dag_path) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
     if (!is_zero(rotate_pivot_translation)) {
         status = MS::kFailure;
-        MMSOLVER_WRN(
+        MMSOLVER_MAYA_WRN(
             "MM Scene Graph: No support for non-zero rotate pivot "
             "translation\": "
             << "\"" << dag_path.fullPathName().asChar() << "\"");
@@ -621,9 +652,9 @@ MStatus check_transform_node(MDagPath &dag_path) {
     auto tx_has_conn = attribute_has_complex_connection(dg_node, tx_attr_name);
     if (tx_has_conn) {
         status = MS::kFailure;
-        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"" << tx_attr_name.asChar() << "\": "
-                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
+                          << "\"" << tx_attr_name.asChar() << "\": "
+                          << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -631,9 +662,9 @@ MStatus check_transform_node(MDagPath &dag_path) {
     auto ty_has_conn = attribute_has_complex_connection(dg_node, ty_attr_name);
     if (ty_has_conn) {
         status = MS::kFailure;
-        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"" << ty_attr_name.asChar() << "\": "
-                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
+                          << "\"" << ty_attr_name.asChar() << "\": "
+                          << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -641,9 +672,9 @@ MStatus check_transform_node(MDagPath &dag_path) {
     auto tz_has_conn = attribute_has_complex_connection(dg_node, tz_attr_name);
     if (tz_has_conn) {
         status = MS::kFailure;
-        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"" << tz_attr_name.asChar() << "\": "
-                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
+                          << "\"" << tz_attr_name.asChar() << "\": "
+                          << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -651,9 +682,9 @@ MStatus check_transform_node(MDagPath &dag_path) {
     auto rx_has_conn = attribute_has_complex_connection(dg_node, rx_attr_name);
     if (rx_has_conn) {
         status = MS::kFailure;
-        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"" << rx_attr_name.asChar() << "\": "
-                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
+                          << "\"" << rx_attr_name.asChar() << "\": "
+                          << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -661,9 +692,9 @@ MStatus check_transform_node(MDagPath &dag_path) {
     auto ry_has_conn = attribute_has_complex_connection(dg_node, ry_attr_name);
     if (ry_has_conn) {
         status = MS::kFailure;
-        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"" << ry_attr_name.asChar() << "\": "
-                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
+                          << "\"" << ry_attr_name.asChar() << "\": "
+                          << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -671,9 +702,9 @@ MStatus check_transform_node(MDagPath &dag_path) {
     auto rz_has_conn = attribute_has_complex_connection(dg_node, rz_attr_name);
     if (rz_has_conn) {
         status = MS::kFailure;
-        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"" << rz_attr_name.asChar() << "\": "
-                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
+                          << "\"" << rz_attr_name.asChar() << "\": "
+                          << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -681,9 +712,9 @@ MStatus check_transform_node(MDagPath &dag_path) {
     auto sx_has_conn = attribute_has_complex_connection(dg_node, sx_attr_name);
     if (sx_has_conn) {
         status = MS::kFailure;
-        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"" << sx_attr_name.asChar() << "\": "
-                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
+                          << "\"" << sx_attr_name.asChar() << "\": "
+                          << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -691,9 +722,9 @@ MStatus check_transform_node(MDagPath &dag_path) {
     auto sy_has_conn = attribute_has_complex_connection(dg_node, sy_attr_name);
     if (sy_has_conn) {
         status = MS::kFailure;
-        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"" << sy_attr_name.asChar() << "\": "
-                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
+                          << "\"" << sy_attr_name.asChar() << "\": "
+                          << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -701,9 +732,9 @@ MStatus check_transform_node(MDagPath &dag_path) {
     auto sz_has_conn = attribute_has_complex_connection(dg_node, sz_attr_name);
     if (sz_has_conn) {
         status = MS::kFailure;
-        MMSOLVER_WRN("MM Scene Graph: Unsupported attribute connection on "
-                     << "\"" << sz_attr_name.asChar() << "\": "
-                     << "\"" << dag_path.fullPathName().asChar() << "\"");
+        MMSOLVER_MAYA_WRN("MM Scene Graph: Unsupported attribute connection on "
+                          << "\"" << sz_attr_name.asChar() << "\": "
+                          << "\"" << dag_path.fullPathName().asChar() << "\"");
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -718,6 +749,8 @@ MStatus add_transforms(const mmsg::NodeId parent_node_id, MDagPath &dag_path,
                        mmsg::AttrDataBlock &out_attrDataBlock,
                        StringToNodeIdMap &out_nodeNameToNodeIdMap,
                        StringToAttrIdMap &out_attrNameToAttrIdMap) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("add_transforms");
     MStatus status = MS::kSuccess;
 
     // Create a single attribute that will be re-used.
@@ -765,7 +798,7 @@ MStatus add_transforms(const mmsg::NodeId parent_node_id, MDagPath &dag_path,
         }
         auto parent_ok =
             out_sceneGraph.set_node_parent(previous_node_id, tfm_node_id);
-        UNUSED(parent_ok);
+        MMSOLVER_CORE_UNUSED(parent_ok);
         previous_node_id = tfm_node_id;
 
         status = dag_path.pop();
@@ -785,6 +818,8 @@ MStatus add_cameras(const CameraPtrList &cameraList,
                     mmsg::AttrDataBlock &out_attrDataBlock,
                     StringToNodeIdMap &out_nodeNameToNodeIdMap,
                     StringToAttrIdMap &out_attrNameToAttrIdMap) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("add_cameras");
     MStatus status = MS::kSuccess;
 
     // Create a single attribute that will be re-used.
@@ -867,6 +902,8 @@ MStatus add_bundles(const BundlePtrList &bundleList,
                     mmsg::AttrDataBlock &out_attrDataBlock,
                     StringToNodeIdMap &out_nodeNameToNodeIdMap,
                     StringToAttrIdMap &out_attrNameToAttrIdMap) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("add_bundles");
     MStatus status = MS::kSuccess;
 
     // Create a single attribute that will be re-used.
@@ -929,6 +966,9 @@ MStatus add_markers(
     mmsg::EvaluationObjects &out_evalObjects, mmsg::SceneGraph &out_sceneGraph,
     mmsg::AttrDataBlock &out_attrDataBlock,
     StringToAttrIdMap &out_attrNameToAttrIdMap) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("add_markers");
+
     MStatus status = MS::kSuccess;
     assert(cameraList.size() == cameraNodes.size());
     assert(bundleList.size() == bundleNodes.size());
@@ -1006,9 +1046,9 @@ MStatus add_markers(
         auto link_camera_ok =
             out_sceneGraph.link_marker_to_camera(mkr_node.id, cam_node_id);
         if (!link_camera_ok) {
-            MMSOLVER_WRN("add_markers: Cannot link marker to camera; "
-                         << " mkr=" << mkr_node.id.index
-                         << " cam=" << cam_node_id.index);
+            MMSOLVER_MAYA_WRN("add_markers: Cannot link marker to camera; "
+                              << " mkr=" << mkr_node.id.index
+                              << " cam=" << cam_node_id.index);
             status = MS::kFailure;
         }
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -1016,9 +1056,9 @@ MStatus add_markers(
         auto link_bundle_ok =
             out_sceneGraph.link_marker_to_bundle(mkr_node.id, bnd_node_id);
         if (!link_bundle_ok) {
-            MMSOLVER_WRN("add_markers: Cannot link marker to bundle; "
-                         << " mkr=" << mkr_node.id.index
-                         << " bnd=" << bnd_node_id.index);
+            MMSOLVER_MAYA_WRN("add_markers: Cannot link marker to bundle; "
+                              << " mkr=" << mkr_node.id.index
+                              << " bnd=" << bnd_node_id.index);
             status = MS::kFailure;
         }
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -1029,6 +1069,9 @@ MStatus add_markers(
 MStatus convert_attributes_to_attr_ids(
     const AttrPtrList &attrList, const StringToAttrIdMap &attrNameToAttrIdMap,
     std::vector<mmsg::AttrId> &out_attrIdList) {
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB("convert_attributes_to_attr_ids");
+
     MStatus status = MS::kSuccess;
 
     out_attrIdList.clear();
@@ -1058,9 +1101,9 @@ MStatus convert_attributes_to_attr_ids(
         if (search != attrNameToAttrIdMap.end()) {
             out_attrIdList.push_back(search->second);
         } else {
-            MMSOLVER_WRN("MM Scene Graph: Attribute name was not found: "
-                         << key << " object_type="
-                         << static_cast<uint32_t>(object_type));
+            MMSOLVER_MAYA_WRN("MM Scene Graph: Attribute name was not found: "
+                              << key << " object_type="
+                              << static_cast<uint32_t>(object_type));
             return MS::kFailure;
         }
     }
@@ -1081,8 +1124,9 @@ MStatus construct_scene_graph(CameraPtrList &cameraList,
                               std::vector<mmsg::BundleNode> &out_bundleNodes,
                               std::vector<mmsg::MarkerNode> &out_markerNodes,
                               std::vector<mmsg::AttrId> &out_attrIdList) {
-    // MMSOLVER_INFO("construct_scene_graph
-    // -----------------------------------");
+    const bool verbose = false;
+    MMSOLVER_MAYA_VRB(
+        "construct_scene_graph -----------------------------------");
     MStatus status = MS::kSuccess;
 
     auto evalObjects = mmsg::EvaluationObjects();
@@ -1090,7 +1134,7 @@ MStatus construct_scene_graph(CameraPtrList &cameraList,
     auto nodeNameToNodeIdMap = StringToNodeIdMap();
 
     // Frames
-    // MMSOLVER_INFO("FrameList length: " << frameList.length());
+    MMSOLVER_MAYA_VRB("FrameList length: " << frameList.length());
     assert(frameList.length() > 0);
     auto uiUnit = MTime::uiUnit();
     auto start_frame = std::numeric_limits<mmsg::FrameValue>::max();
@@ -1098,17 +1142,17 @@ MStatus construct_scene_graph(CameraPtrList &cameraList,
     for (uint32_t i = 0; i < frameList.length(); ++i) {
         MTime frame = frameList[i];
         auto frame_num = static_cast<mmsg::FrameValue>(frame.as(uiUnit));
-        // MMSOLVER_INFO("frameList i=" << i << " frame_num=" << frame_num);
+        MMSOLVER_MAYA_VRB("frameList i=" << i << " frame_num=" << frame_num);
         start_frame = std::min(start_frame, frame_num);
         end_frame = std::max(end_frame, frame_num);
         out_frameList.push_back(frame_num);
     }
     auto total_frame_count = (end_frame - start_frame) + 1;
-    UNUSED(total_frame_count);
-    // MMSOLVER_INFO("Frames start_frame: " << start_frame);
-    // MMSOLVER_INFO("Frames end_frame: " << end_frame);
-    // MMSOLVER_INFO("Frames frame_count: " << total_frame_count);
-    // MMSOLVER_INFO("Frames count: " << out_frameList.size());
+    MMSOLVER_CORE_UNUSED(total_frame_count);
+    MMSOLVER_MAYA_VRB("Frames start_frame: " << start_frame);
+    MMSOLVER_MAYA_VRB("Frames end_frame: " << end_frame);
+    MMSOLVER_MAYA_VRB("Frames frame_count: " << total_frame_count);
+    MMSOLVER_MAYA_VRB("Frames count: " << out_frameList.size());
     assert(out_frameList.size() == frameList.length());
 
     status = add_cameras(cameraList, frameList, start_frame, end_frame,
@@ -1134,23 +1178,23 @@ MStatus construct_scene_graph(CameraPtrList &cameraList,
                                             out_attrIdList);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // // Print number of nodes in the evaluation objects.
-    // MMSOLVER_INFO("EvaluationObjects num_bundles: "
-    //      << evalObjects.num_bundles());
-    // MMSOLVER_INFO("EvaluationObjects num_cameras: "
-    //      << evalObjects.num_cameras());
-    // MMSOLVER_INFO("EvaluationObjects num_markers: "
-    //      << evalObjects.num_markers());
+    // Print number of nodes in the evaluation objects.
+    MMSOLVER_MAYA_VRB(
+        "EvaluationObjects num_bundles: " << evalObjects.num_bundles());
+    MMSOLVER_MAYA_VRB(
+        "EvaluationObjects num_cameras: " << evalObjects.num_cameras());
+    MMSOLVER_MAYA_VRB(
+        "EvaluationObjects num_markers: " << evalObjects.num_markers());
 
-    // // Print number of nodes in the scene graph.
-    // MMSOLVER_INFO("SceneGraph num_transform_nodes: "
-    //      << out_sceneGraph.num_transform_nodes());
-    // MMSOLVER_INFO("SceneGraph num_bundle_nodes: "
-    //      << out_sceneGraph.num_bundle_nodes());
-    // MMSOLVER_INFO("SceneGraph num_camera_nodes: "
-    //      << out_sceneGraph.num_camera_nodes());
-    // MMSOLVER_INFO("SceneGraph num_marker_nodes: "
-    //      << out_sceneGraph.num_marker_nodes());
+    // Print number of nodes in the scene graph.
+    MMSOLVER_MAYA_VRB("SceneGraph num_transform_nodes: "
+                      << out_sceneGraph.num_transform_nodes());
+    MMSOLVER_MAYA_VRB(
+        "SceneGraph num_bundle_nodes: " << out_sceneGraph.num_bundle_nodes());
+    MMSOLVER_MAYA_VRB(
+        "SceneGraph num_camera_nodes: " << out_sceneGraph.num_camera_nodes());
+    MMSOLVER_MAYA_VRB(
+        "SceneGraph num_marker_nodes: " << out_sceneGraph.num_marker_nodes());
 
     // Bake down SceneGraph into FlatScene for fast evaluation.
     out_flatScene = mmsg::bake_scene_graph(out_sceneGraph, evalObjects);

@@ -85,7 +85,8 @@ CALL %PROJECT_ROOT%\scripts\internal\python_venv_activate.bat
 
 :: Paths for mmSolver library dependencies.
 SET MMSOLVERLIBS_INSTALL_DIR="%BUILD_DIR_BASE%\build_mmsolverlibs\install\maya%MAYA_VERSION%_windows64"
-SET MMSOLVERLIBS_CMAKE_CONFIG_DIR="%MMSOLVERLIBS_INSTALL_DIR%\lib\cmake\mmsolverlibs"
+SET MMSOLVERLIBS_CMAKE_CONFIG_DIR="%MMSOLVERLIBS_INSTALL_DIR%\lib\cmake\mmsolverlibs_cpp"
+SET MMSOLVERLIBS_RUST_DIR="%BUILD_DIR_BASE%\build_mmsolverlibs\rust_windows64_maya%MAYA_VERSION%\%BUILD_TYPE_DIR%"
 
 :: MinGW is a common install for developers on Windows and
 :: if installed and used it will cause build conflicts and
@@ -97,6 +98,12 @@ IF EXIST "C:\MinGW" (
 
 :: Optionally use "NMake Makefiles" as the build system generator.
 SET CMAKE_GENERATOR=Ninja
+
+:: Force the compilier to be MSVC's cl.exe, so that if other
+:: compiliers are installed, CMake doesn't get confused and try to use
+:: it (such as clang).
+SET CMAKE_C_COMPILER=cl
+SET CMAKE_CXX_COMPILER=cl
 
 :: Build project
 SET BUILD_DIR_NAME=cmake_win64_maya%MAYA_VERSION%_%BUILD_TYPE%
@@ -115,6 +122,8 @@ CHDIR "%BUILD_DIR%"
     -DCMAKE_INSTALL_PREFIX=%INSTALL_MODULE_DIR% ^
     -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
     -DCMAKE_CXX_STANDARD=%CXX_STANDARD% ^
+    -DCMAKE_C_COMPILER=%CMAKE_C_COMPILER% ^
+    -DCMAKE_CXX_COMPILER=%CMAKE_CXX_COMPILER% ^
     -DMMSOLVER_BUILD_PLUGIN=%MMSOLVER_BUILD_PLUGIN% ^
     -DMMSOLVER_BUILD_TOOLS=%MMSOLVER_BUILD_TOOLS% ^
     -DMMSOLVER_BUILD_PYTHON=%MMSOLVER_BUILD_PYTHON% ^
@@ -130,7 +139,8 @@ CHDIR "%BUILD_DIR%"
     -DMMSOLVER_BUILD_TESTS=%MMSOLVER_BUILD_TESTS% ^
     -DMAYA_LOCATION=%MAYA_LOCATION% ^
     -DMAYA_VERSION=%MAYA_VERSION% ^
-    -Dmmsolverlibs_DIR=%MMSOLVERLIBS_CMAKE_CONFIG_DIR% ^
+    -Dmmsolverlibs_rust_DIR=%MMSOLVERLIBS_RUST_DIR% ^
+    -Dmmsolverlibs_cpp_DIR=%MMSOLVERLIBS_CMAKE_CONFIG_DIR% ^
     %PROJECT_ROOT%
 if errorlevel 1 goto failed_to_generate
 

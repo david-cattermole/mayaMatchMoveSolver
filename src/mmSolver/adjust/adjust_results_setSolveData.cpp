@@ -480,7 +480,7 @@ MStatus setErrorMetricsResultDataOnNode(ErrorMetricsResult &results,
         const auto marker_name = get_short_node_name(kv.first);
         const auto map = kv.second;
 
-        // MMSOLVER_WRN("results marker name: " << marker_name);
+        // MMSOLVER_MAYA_WRN("results marker name: " << marker_name);
         std::stringstream deviation_ss;
         std::stringstream deviation_avg_ss;
         std::stringstream deviation_max_ss;

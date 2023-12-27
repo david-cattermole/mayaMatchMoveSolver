@@ -82,12 +82,12 @@ function(mm_rust_get_depend_on_libraries depend_on_libraries)
   # (function) that called this function.
   # https://cmake.org/cmake/help/latest/command/set.html#set-normal-variable
   if (MSVC)
-    set(depend_on_libraries
+    set(${depend_on_libraries}
       ws2_32 userenv advapi32 shell32 msvcrt Bcrypt Ntdll
       PARENT_SCOPE
     )
   elseif (UNIX)
-    set(depend_on_libraries
+    set(${depend_on_libraries}
       pthread m dl
       PARENT_SCOPE
     )

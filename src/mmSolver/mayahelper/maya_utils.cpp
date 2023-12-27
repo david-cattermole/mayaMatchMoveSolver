@@ -87,7 +87,7 @@ MStatus nodeExistsAndIsType(const MString &nodeName, const MFn::Type nodeType) {
 
     status = getAsSelectionList(nodeName, selList);
     if (status != MS::kSuccess) {
-        MMSOLVER_ERR("Node does not exist; " << nodeName);
+        MMSOLVER_MAYA_ERR("Node does not exist; " << nodeName);
     }
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -96,8 +96,8 @@ MStatus nodeExistsAndIsType(const MString &nodeName, const MFn::Type nodeType) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (nodeObj.apiType() != nodeType) {
-        MMSOLVER_ERR("Node type is not correct;"
-                     << " node=" << nodeName << " type=" << nodeType);
+        MMSOLVER_MAYA_ERR("Node type is not correct;"
+                          << " node=" << nodeName << " type=" << nodeType);
         status = MS::kFailure;
         status.perror("Node Type is not correct");
         return status;
@@ -275,7 +275,8 @@ ObjectType computeObjectType(
     ObjectType objectType = ObjectType::kUnknown;
 
     if (node_obj.isNull() || !nodeDagPath.isValid()) {
-        MMSOLVER_ERR("computeObjectType: Given node is null or not valid!");
+        MMSOLVER_MAYA_ERR(
+            "computeObjectType: Given node is null or not valid!");
         return objectType;
     }
 
@@ -284,7 +285,7 @@ ObjectType computeObjectType(
     } else if (node_obj.hasFn(MFn::kDependencyNode)) {
         objectType = computeDgObjectType(node_obj);
     } else {
-        MMSOLVER_ERR(
+        MMSOLVER_MAYA_ERR(
             "computeObjectType: node_obj is not a DG or DAG compatible "
             "object.");
     }
@@ -296,7 +297,7 @@ ObjectType computeObjectType(const MObject &node_obj) {
     ObjectType objectType = ObjectType::kUnknown;
 
     if (node_obj.isNull()) {
-        MMSOLVER_ERR("computeObjectType: Given node is null!");
+        MMSOLVER_MAYA_ERR("computeObjectType: Given node is null!");
         return objectType;
     }
 
@@ -304,7 +305,7 @@ ObjectType computeObjectType(const MObject &node_obj) {
         MDagPath nodeDagPath;
         MStatus status = MDagPath::getAPathTo(node_obj, nodeDagPath);
         if (status != MS::kSuccess) {
-            MMSOLVER_ERR(
+            MMSOLVER_MAYA_ERR(
                 "computeObjectType: node_obj is not a DAG compatible object.");
             return objectType;
         }
@@ -312,7 +313,7 @@ ObjectType computeObjectType(const MObject &node_obj) {
     } else if (node_obj.hasFn(MFn::kDependencyNode)) {
         objectType = computeDgObjectType(node_obj);
     } else {
-        MMSOLVER_ERR(
+        MMSOLVER_MAYA_ERR(
             "computeObjectType: node_obj is not a DG or DAG compatible "
             "object.");
     }

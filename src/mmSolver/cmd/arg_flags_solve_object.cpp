@@ -83,7 +83,7 @@ MStatus createMarkerGroupFromMarkerNodeName(const MString &markerName,
         }
     }
     if (!out_markerGroup) {
-        MMSOLVER_VRB(
+        MMSOLVER_MAYA_VRB(
             "createMarkerGroupFromMarkerNodeName: No MarkerGroup node found "
             "for \""
             << markerName.asChar() << "\".");
@@ -111,8 +111,8 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
         status = argData.getFlagArgumentList(CAMERA_FLAG, i, cameraArgs);
         if (status == MStatus::kSuccess) {
             if (cameraArgs.length() != 2) {
-                MMSOLVER_ERR("Camera argument list must have 2 arguments; "
-                             << "\"cameraTransform\", \"cameraShape\".");
+                MMSOLVER_MAYA_ERR("Camera argument list must have 2 arguments; "
+                                  << "\"cameraTransform\", \"cameraShape\".");
                 continue;
             }
 
@@ -148,8 +148,9 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
         status = argData.getFlagArgumentList(MARKER_FLAG, i, markerArgs);
         if (status == MStatus::kSuccess) {
             if (markerArgs.length() != 3) {
-                MMSOLVER_ERR("Marker argument list must have 3 arguments; "
-                             << "\"marker\", \"cameraShape\",  \"bundle\".");
+                MMSOLVER_MAYA_ERR(
+                    "Marker argument list must have 3 arguments; "
+                    << "\"marker\", \"cameraShape\",  \"bundle\".");
                 continue;
             }
 
@@ -161,8 +162,8 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             CHECK_MSTATUS_AND_RETURN_IT(status);
             objectType = computeObjectType(markerObject, dagPath);
             if (objectType != ObjectType::kMarker) {
-                MMSOLVER_ERR("Given marker node is not a Marker; "
-                             << markerName.asChar());
+                MMSOLVER_MAYA_ERR("Given marker node is not a Marker; "
+                                  << markerName.asChar());
                 continue;
             }
 
@@ -174,8 +175,8 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             CHECK_MSTATUS_AND_RETURN_IT(status);
             objectType = computeObjectType(cameraObject, dagPath);
             if (objectType != ObjectType::kCamera) {
-                MMSOLVER_ERR("Given camera node is not a Camera; "
-                             << cameraName.asChar());
+                MMSOLVER_MAYA_ERR("Given camera node is not a Camera; "
+                                  << cameraName.asChar());
                 continue;
             }
 
@@ -187,8 +188,8 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             CHECK_MSTATUS_AND_RETURN_IT(status);
             objectType = computeObjectType(bundleObject, dagPath);
             if (objectType != ObjectType::kBundle) {
-                MMSOLVER_ERR("Given bundle node is not a Bundle; "
-                             << bundleName.asChar());
+                MMSOLVER_MAYA_ERR("Given bundle node is not a Bundle; "
+                                  << bundleName.asChar());
                 continue;
             }
 
@@ -201,10 +202,11 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
                 }
             }
             if (camera->getShapeNodeName() == "") {
-                MMSOLVER_ERR("Camera shape name was not given with marker. "
-                             << "marker=" << markerName << " "
-                             << "camera=" << cameraName << " "
-                             << "bundle=" << bundleName);
+                MMSOLVER_MAYA_ERR(
+                    "Camera shape name was not given with marker. "
+                    << "marker=" << markerName << " "
+                    << "camera=" << cameraName << " "
+                    << "bundle=" << bundleName);
             }
             // TODO: Print warnings if any of the following attributes
             // on the camera are animated/connected:
@@ -231,7 +233,7 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
             // Marker
             for (unsigned int j = 0; j < out_markerList.size(); ++j) {
                 if (out_markerList[j]->getNodeName() == markerName) {
-                    MMSOLVER_ERR(
+                    MMSOLVER_MAYA_ERR(
                         "Marker name cannot be specified more than once. "
                         << "markerName=" << markerName);
                 }
@@ -262,10 +264,11 @@ MStatus parseSolveObjectArguments(const MArgDatabase &argData,
         status = argData.getFlagArgumentList(ATTR_FLAG, i, attrArgs);
         if (status == MStatus::kSuccess) {
             if (attrArgs.length() != 5) {
-                MMSOLVER_ERR("Attribute argument list must have 5 argument; "
-                             << "\"node.attribute\", "
-                             << "\"min\", \"max\", "
-                             << "\"offset\", \"scale\".");
+                MMSOLVER_MAYA_ERR(
+                    "Attribute argument list must have 5 argument; "
+                    << "\"node.attribute\", "
+                    << "\"min\", \"max\", "
+                    << "\"offset\", \"scale\".");
                 continue;
             }
 

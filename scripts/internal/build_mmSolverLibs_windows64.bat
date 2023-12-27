@@ -102,6 +102,12 @@ SET "LDPK_URL=%LDPK_URL:\=/%"
 :: Optionally use "NMake Makefiles" as the build system generator.
 SET CMAKE_GENERATOR=Ninja
 
+:: Force the compilier to be MSVC's cl.exe, so that if other
+:: compiliers are installed, CMake doesn't get confused and try to use
+:: it (such as clang).
+SET CMAKE_C_COMPILER=cl
+SET CMAKE_CXX_COMPILER=cl
+
 :: Build project
 SET BUILD_DIR_NAME=cmake_win64_maya%MAYA_VERSION%_%BUILD_TYPE%
 SET BUILD_DIR=%BUILD_DIR_BASE%\build_mmsolverlibs\%BUILD_DIR_NAME%
@@ -119,6 +125,8 @@ CHDIR "%BUILD_DIR%"
     -DCMAKE_INSTALL_PREFIX=%MMSOLVERLIBS_INSTALL_PATH% ^
     -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
     -DCMAKE_CXX_STANDARD=%CXX_STANDARD% ^
+    -DCMAKE_C_COMPILER=%CMAKE_C_COMPILER% ^
+    -DCMAKE_CXX_COMPILER=%CMAKE_CXX_COMPILER% ^
     -DMMSOLVERLIBS_CXXBRIDGE_EXE=%MMSOLVERLIBS_CXXBRIDGE_EXE% ^
     -DMMSOLVERLIBS_BUILD_TESTS=%MMSOLVERLIBS_BUILD_TESTS% ^
     -DMMSOLVERLIBS_LIB_DIR=%MMSOLVERLIBS_LIB_DIR% ^

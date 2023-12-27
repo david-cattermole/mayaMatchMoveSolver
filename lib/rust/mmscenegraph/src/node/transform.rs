@@ -30,15 +30,31 @@ use crate::node::NodeId;
 #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
 pub struct TransformNode {
     id: NodeId,
+
+    // Translation
     attr_tx: AttrId,
     attr_ty: AttrId,
     attr_tz: AttrId,
+
+    // Rotation (Euler Angles)
     attr_rx: AttrId,
     attr_ry: AttrId,
     attr_rz: AttrId,
+
+    // Scale
     attr_sx: AttrId,
     attr_sy: AttrId,
     attr_sz: AttrId,
+
+    // // Rotate Pivot
+    // attr_rpx: AttrId,
+    // attr_rpy: AttrId,
+    // attr_rpz: AttrId,
+
+    // // Scale Pivot
+    // attr_spx: AttrId,
+    // attr_spy: AttrId,
+    // attr_spz: AttrId,
     rotate_order: RotateOrder,
 }
 

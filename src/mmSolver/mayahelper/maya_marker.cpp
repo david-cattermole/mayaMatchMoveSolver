@@ -189,8 +189,9 @@ MStatus Marker::getPosXY(double &out_x, double &out_y, const MTime &time,
             overscan_x = 1.0 / overscan_x;
             overscan_y = 1.0 / overscan_y;
         } else {
-            MMSOLVER_VRB("Marker::getPosXY: MarkerGroup node not found for \""
-                         << m_nodeName.asChar() << "\".");
+            MMSOLVER_MAYA_VRB(
+                "Marker::getPosXY: MarkerGroup node not found for \""
+                << m_nodeName.asChar() << "\".");
         }
     }
 

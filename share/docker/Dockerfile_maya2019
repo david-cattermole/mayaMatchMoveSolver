@@ -1,7 +1,7 @@
 # To create and run the docker container in PowerShell or BASH:
 #
 # $ docker build --file share/docker/Dockerfile_maya2019 -t mmsolver-linux-maya2019-build .
-# $ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-maya2019-build
+# $ docker run --rm --interactive --volume "${PWD}:/mmSolver" --tty mmsolver-linux-maya2019-build
 #
 #
 # Once the docker image is built and run, you can execute the
@@ -61,6 +61,7 @@ RUN yum install --assumeyes \
        libXrandr \
        libXrender \
        libXt \
+       libXtst \
        libxcb \
        libxkbcommon \
        libxkbcommon-x11 \

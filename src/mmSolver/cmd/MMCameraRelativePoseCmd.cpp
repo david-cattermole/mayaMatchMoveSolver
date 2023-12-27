@@ -211,7 +211,7 @@ MSyntax MMCameraRelativePoseCmd::newSyntax() {
 MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     MArgDatabase argData(syntax(), args, &status);
@@ -295,14 +295,16 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
                                    timeEvalMode);
     }
 
-    MMSOLVER_VRB("image A: " << m_image_width_a << "x" << m_image_height_a);
-    MMSOLVER_VRB("image B: " << m_image_width_b << "x" << m_image_height_b);
-    MMSOLVER_VRB("sensor (mm) A: " << m_sensor_width_mm_a << "x"
-                                   << m_sensor_height_mm_a);
-    MMSOLVER_VRB("sensor (mm) B: " << m_sensor_width_mm_b << "x"
-                                   << m_sensor_height_mm_b);
-    MMSOLVER_VRB("focal (mm) A: " << m_focal_length_mm_a);
-    MMSOLVER_VRB("focal (mm) B: " << m_focal_length_mm_b);
+    MMSOLVER_MAYA_VRB("image A: " << m_image_width_a << "x"
+                                  << m_image_height_a);
+    MMSOLVER_MAYA_VRB("image B: " << m_image_width_b << "x"
+                                  << m_image_height_b);
+    MMSOLVER_MAYA_VRB("sensor (mm) A: " << m_sensor_width_mm_a << "x"
+                                        << m_sensor_height_mm_a);
+    MMSOLVER_MAYA_VRB("sensor (mm) B: " << m_sensor_width_mm_b << "x"
+                                        << m_sensor_height_mm_b);
+    MMSOLVER_MAYA_VRB("focal (mm) A: " << m_focal_length_mm_a);
+    MMSOLVER_MAYA_VRB("focal (mm) B: " << m_focal_length_mm_b);
 
     // The camera A matrix that will be used to offset the relative
     // pose result.
@@ -342,8 +344,9 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         if (markerBundleArgs.length() != 3) {
-            MMSOLVER_ERR("Marker Bundle argument list must have 3 arguments; "
-                         << "\"markerA\", \"markerB\",  \"bundle\".");
+            MMSOLVER_MAYA_ERR(
+                "Marker Bundle argument list must have 3 arguments; "
+                << "\"markerA\", \"markerB\",  \"bundle\".");
             continue;
         }
 
@@ -355,11 +358,11 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         objectType = computeObjectType(markerObject, dagPath);
         if (objectType != ObjectType::kMarker) {
-            MMSOLVER_ERR("Given marker node is not a Marker; "
-                         << markerNameA.asChar());
+            MMSOLVER_MAYA_ERR("Given marker node is not a Marker; "
+                              << markerNameA.asChar());
             continue;
         }
-        MMSOLVER_VRB("Got markerNameA: " << markerNameA.asChar());
+        MMSOLVER_MAYA_VRB("Got markerNameA: " << markerNameA.asChar());
 
         markerNameB = markerBundleArgs.asString(1, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -369,11 +372,11 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         objectType = computeObjectType(markerObject, dagPath);
         if (objectType != ObjectType::kMarker) {
-            MMSOLVER_ERR("Given marker node is not a Marker; "
-                         << markerNameB.asChar());
+            MMSOLVER_MAYA_ERR("Given marker node is not a Marker; "
+                              << markerNameB.asChar());
             continue;
         }
-        MMSOLVER_VRB("Got markerNameB: " << markerNameB.asChar());
+        MMSOLVER_MAYA_VRB("Got markerNameB: " << markerNameB.asChar());
 
         bundleName = markerBundleArgs.asString(2, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -383,11 +386,11 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         objectType = computeObjectType(bundleObject, dagPath);
         if (objectType != ObjectType::kBundle) {
-            MMSOLVER_ERR("Given bundle node is not a Bundle; "
-                         << bundleName.asChar());
+            MMSOLVER_MAYA_ERR("Given bundle node is not a Bundle; "
+                              << bundleName.asChar());
             continue;
         }
-        MMSOLVER_VRB("Got bundleName: " << bundleName.asChar());
+        MMSOLVER_MAYA_VRB("Got bundleName: " << bundleName.asChar());
 
         BundlePtr bundle = BundlePtr(new Bundle());
         bundle->setNodeName(bundleName);
@@ -446,9 +449,9 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
         }
     }
 
-    MMSOLVER_VRB("parse m_marker_list_a size: " << m_marker_list_a.size());
-    MMSOLVER_VRB("parse m_marker_list_b size: " << m_marker_list_b.size());
-    MMSOLVER_VRB("parse m_bundle_list size: " << m_bundle_list.size());
+    MMSOLVER_MAYA_VRB("parse m_marker_list_a size: " << m_marker_list_a.size());
+    MMSOLVER_MAYA_VRB("parse m_marker_list_b size: " << m_marker_list_b.size());
+    MMSOLVER_MAYA_VRB("parse m_bundle_list size: " << m_bundle_list.size());
     assert(m_marker_list_a.size() == m_marker_list_b.size());
     assert(m_marker_list_a.size() == m_bundle_list.size());
 
@@ -458,7 +461,7 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
 MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     // Read all the flag arguments.
@@ -494,7 +497,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         ppy_pix_b, m_marker_coords_a, m_marker_coords_b, m_marker_list_a,
         m_marker_list_b, pose_info);
     if (!relative_pose_ok) {
-        MMSOLVER_ERR("Compute Relative pose failed.");
+        MMSOLVER_MAYA_ERR("Compute Relative pose failed.");
         MMCameraRelativePoseCmd::setResult(emptyResult);
         return status;
     }
@@ -505,7 +508,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         focal_length_pix_a, focal_length_pix_b, ppx_pix_a, ppx_pix_b, ppy_pix_a,
         ppy_pix_b, pose_info, scene);
     if (!sfm_data_ok) {
-        MMSOLVER_ERR("Failed to construct two camera SfM scene.");
+        MMSOLVER_MAYA_ERR("Failed to construct two camera SfM scene.");
         MMCameraRelativePoseCmd::setResult(emptyResult);
         return status;
     }
@@ -518,7 +521,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         m_marker_coords_a, m_marker_coords_b, pose_info.vec_inliers,
         m_marker_list_a, m_marker_list_b, m_bundle_list, scene);
     if (!triangulate_ok) {
-        MMSOLVER_ERR("Triangulate relative pose points failed.");
+        MMSOLVER_MAYA_ERR("Triangulate relative pose points failed.");
         MMCameraRelativePoseCmd::setResult(emptyResult);
         return status;
     }
@@ -529,7 +532,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
     // very far from camera, which caused the solve to fail miserably.
     auto adjust_ok = ::mmsolver::sfm::bundle_adjustment(scene);
     if (!adjust_ok) {
-        MMSOLVER_ERR("Bundle Adjustment failed.");
+        MMSOLVER_MAYA_ERR("Bundle Adjustment failed.");
         status = MS::kFailure;
         MMCameraRelativePoseCmd::setResult(emptyResult);
         return status;
@@ -548,7 +551,7 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         auto key = it.first;
         auto view = *it.second;
         auto pose_id = view.id_pose;
-        MMSOLVER_VRB("view: " << key << "=" << pose_id);
+        MMSOLVER_MAYA_VRB("view: " << key << "=" << pose_id);
 
         // Per-camera values
         auto attr_tx = m_camera_tx_attr_b;
@@ -633,17 +636,18 @@ MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
         MPoint maya_translate(tx, ty, tz);
 
         if (i >= m_bundle_list.size()) {
-            MMSOLVER_ERR("Bundle index \""
-                         << i << "\" is outside bounds, camera pose failed.");
+            MMSOLVER_MAYA_ERR("Bundle index \""
+                              << i
+                              << "\" is outside bounds, camera pose failed.");
             MMCameraRelativePoseCmd::setResult(emptyResult);
             return status;
         }
 
         auto bnd = m_bundle_list[i];
         auto bnd_name = bnd->getNodeName();
-        MMSOLVER_VRB("landmark bnd: " << bnd_name.asChar() << " | " << key
-                                      << " x=" << tx << " y=" << ty
-                                      << " z=" << tz);
+        MMSOLVER_MAYA_VRB("landmark bnd: " << bnd_name.asChar() << " | " << key
+                                           << " x=" << tx << " y=" << ty
+                                           << " z=" << tz);
 
         maya_translate *= m_camera_transform_matrix;
         outResult.append(static_cast<double>(i));

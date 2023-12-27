@@ -39,14 +39,22 @@
 #include <vector>
 
 // Maya
+#include <maya/MFnDagNode.h>
+#include <maya/MObject.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
+
+// MM Solver Libs
+#include <mmsolverlibs/debug.h>
 
 // MM Solver
 #include "adjust_data.h"
 #include "adjust_defines.h"
+#include "adjust_relationships.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
+
+using Ticks = mmsolver::debug::Ticks;
 
 struct SolverResult {
     typedef SolverResult Self;
@@ -76,7 +84,7 @@ struct SolverResult {
         , functionEvals(0)
         , jacobianEvals(0)
         , user_interrupted(false)
-        , count(1) {}
+        , count(0) {}
 
     void add(const Self &other) {
         Self::success = std::min(Self::success, other.success);
@@ -162,14 +170,14 @@ struct TimerResult {
     double timer_jacobian;
     double timer_parameter;
     double timer_error;
-    debug::Ticks ticks_solve;
-    debug::Ticks ticks_function;
-    debug::Ticks ticks_jacobian;
-    debug::Ticks ticks_parameter;
-    debug::Ticks ticks_error;
+    Ticks ticks_solve;
+    Ticks ticks_function;
+    Ticks ticks_jacobian;
+    Ticks ticks_parameter;
+    Ticks ticks_error;
 
     TimerResult()
-        : count(1)
+        : count(0)
         , timer_solve(0.0)
         , timer_function(0.0)
         , timer_jacobian(0.0)
@@ -182,6 +190,8 @@ struct TimerResult {
         , ticks_error(0) {}
 
     void fill(const SolverTimer &timer) {
+        Self::count = 1;
+
         Self::timer_solve = timer.solveBenchTimer.get_seconds();
         Self::timer_function = timer.funcBenchTimer.get_seconds();
         Self::timer_jacobian = timer.jacBenchTimer.get_seconds();
@@ -255,23 +265,23 @@ struct TimerResult {
         str = "timer_error=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<debug::Ticks>(Self::ticks_solve);
+        value = mmstring::numberToString<Ticks>(Self::ticks_solve);
         str = "ticks_solve=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<debug::Ticks>(Self::ticks_function);
+        value = mmstring::numberToString<Ticks>(Self::ticks_function);
         str = "ticks_function=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<debug::Ticks>(Self::ticks_jacobian);
+        value = mmstring::numberToString<Ticks>(Self::ticks_jacobian);
         str = "ticks_jacobian=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<debug::Ticks>(Self::ticks_parameter);
+        value = mmstring::numberToString<Ticks>(Self::ticks_parameter);
         str = "ticks_parameter=" + value;
         result.append(MString(str.c_str()));
 
-        value = mmstring::numberToString<debug::Ticks>(Self::ticks_error);
+        value = mmstring::numberToString<Ticks>(Self::ticks_error);
         str = "ticks_error=" + value;
         result.append(MString(str.c_str()));
     }
@@ -284,7 +294,7 @@ struct SolveValuesResult {
     std::vector<double> solve_parameter_list;
     std::vector<double> solve_error_list;
 
-    SolveValuesResult() : count(1) {}
+    SolveValuesResult() : count(0) {}
 
     void fill(const int numberOfParameters, const int numberOfErrors,
               const std::vector<double> &paramList,
@@ -298,23 +308,35 @@ struct SolveValuesResult {
             const double err_value = errorList[i];
             Self::solve_error_list.push_back(err_value);
         }
+
+        Self::count = 1;
     }
 
     void add(const Self &other) {
-        auto solve_parameter_count =
-            std::min(Self::solve_parameter_list.size(),
-                     other.solve_parameter_list.size());
-        for (auto i = 0; i < solve_parameter_count; ++i) {
-            Self::solve_parameter_list[i] += other.solve_parameter_list[i];
+        if (other.count == 0) {
+            return;
         }
 
-        auto solve_error_count = std::min(Self::solve_error_list.size(),
-                                          other.solve_error_list.size());
-        for (auto i = 0; i < solve_error_count; ++i) {
-            Self::solve_error_list[i] += other.solve_error_list[i];
-        }
+        if (Self::count == 0) {
+            Self::solve_parameter_list = other.solve_parameter_list;
+            Self::solve_error_list = other.solve_error_list;
+            Self::count = other.count;
+        } else {
+            auto solve_parameter_count =
+                std::min(Self::solve_parameter_list.size(),
+                         other.solve_parameter_list.size());
+            for (auto i = 0; i < solve_parameter_count; ++i) {
+                Self::solve_parameter_list[i] += other.solve_parameter_list[i];
+            }
 
-        Self::count += other.count;
+            auto solve_error_count = std::min(Self::solve_error_list.size(),
+                                              other.solve_error_list.size());
+            for (auto i = 0; i < solve_error_count; ++i) {
+                Self::solve_error_list[i] += other.solve_error_list[i];
+            }
+
+            Self::count += other.count;
+        }
     }
 
     void divide() {
@@ -579,6 +601,56 @@ struct AffectsResult {
 
     AffectsResult() = default;
 
+    void fill(const MarkerPtrList &markerList, const AttrPtrList &attrList,
+              const BoolList2D &markerToAttrList) {
+        std::string resultStr;
+
+        std::vector<bool>::const_iterator cit_inner;
+        BoolList2D::const_iterator cit_outer;
+        int markerIndex = 0;
+        for (cit_outer = markerToAttrList.cbegin();
+             cit_outer != markerToAttrList.cend(); ++cit_outer) {
+            int attrIndex = 0;
+            std::vector<bool> inner = *cit_outer;
+            for (cit_inner = inner.cbegin(); cit_inner != inner.cend();
+                 ++cit_inner) {
+                MarkerPtr marker = markerList[markerIndex];
+                AttrPtr attr = attrList[attrIndex];
+
+                // Get node names.
+                const char *markerName = marker->getNodeName().asChar();
+
+                // Get attribute full path.
+                MPlug plug = attr->getPlug();
+                MObject attrNode = plug.node();
+                MFnDagNode attrFnDagNode(attrNode);
+                MString attrNodeName = attrFnDagNode.fullPathName();
+
+                const bool includeNodeName = false;
+                const bool includeNonMandatoryIndices = true;
+                const bool includeInstancedIndices = true;
+                const bool useAlias = false;
+                const bool useFullAttributePath = false;
+                const bool useLongNames = true;
+                MString attrAttrName = plug.partialName(
+                    includeNodeName, includeNonMandatoryIndices,
+                    includeInstancedIndices, useAlias, useFullAttributePath,
+                    useLongNames);
+
+                MString attrNameString = attrNodeName + "." + attrAttrName;
+                const char *attrName = attrNameString.asChar();
+
+                auto key = MarkerAttrNamePair(markerName, attrName);
+                bool value = *cit_inner;
+                Self::marker_affects_attribute.insert({key, value});
+
+                ++attrIndex;
+            }
+
+            ++markerIndex;
+        }
+    }
+
     void add(const Self &other) {
         for (const auto &kv : other.marker_affects_attribute) {
             auto search = Self::marker_affects_attribute.find(kv.first);
@@ -617,6 +689,37 @@ struct SolverObjectUsageResult {
     std::unordered_set<std::string> attributes_unused;
 
     SolverObjectUsageResult() = default;
+
+    void fill(MarkerPtrList &usedMarkerList, MarkerPtrList &unusedMarkerList,
+              AttrPtrList &usedAttrList, AttrPtrList &unusedAttrList) {
+        for (MarkerPtrListCIt mit = usedMarkerList.cbegin();
+             mit != usedMarkerList.cend(); ++mit) {
+            MarkerPtr marker = *mit;
+            auto marker_name_char = marker->getLongNodeName().asChar();
+            Self::markers_used.insert(marker_name_char);
+        }
+
+        for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
+             mit != unusedMarkerList.cend(); ++mit) {
+            MarkerPtr marker = *mit;
+            auto marker_name_char = marker->getLongNodeName().asChar();
+            Self::markers_unused.insert(marker_name_char);
+        }
+
+        for (AttrPtrListCIt ait = usedAttrList.cbegin();
+             ait != usedAttrList.cend(); ++ait) {
+            AttrPtr attr = *ait;
+            auto attr_name_char = attr->getLongName().asChar();
+            Self::attributes_used.insert(attr_name_char);
+        }
+
+        for (AttrPtrListCIt ait = unusedAttrList.cbegin();
+             ait != unusedAttrList.cend(); ++ait) {
+            AttrPtr attr = *ait;
+            auto attr_name_char = attr->getLongName().asChar();
+            Self::attributes_unused.insert(attr_name_char);
+        }
+    }
 
     void add(const Self &other) {
         for (const auto &value : other.markers_used) {
@@ -700,12 +803,24 @@ struct SolverObjectCountResult {
     int attr_smoothness_error_count;
 
     SolverObjectCountResult()
-        : count(1)
+        : count(0)
         , parameter_count(0)
         , error_count(0)
         , marker_error_count(0)
         , attr_stiffness_error_count(0)
         , attr_smoothness_error_count(0) {}
+
+    void fill(const int numberOfParameters, const int numberOfErrors,
+              const int numberOfMarkerErrors,
+              const int numberOfAttrStiffnessErrors,
+              const int numberOfAttrSmoothnessErrors) {
+        Self::count = 1;
+        Self::parameter_count = numberOfParameters;
+        Self::error_count = numberOfErrors;
+        Self::marker_error_count = numberOfMarkerErrors;
+        Self::attr_stiffness_error_count = numberOfAttrStiffnessErrors;
+        Self::attr_smoothness_error_count = numberOfAttrSmoothnessErrors;
+    }
 
     void add(const Self &other) {
         Self::parameter_count += other.parameter_count;

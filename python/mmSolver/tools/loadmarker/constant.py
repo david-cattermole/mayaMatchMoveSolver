@@ -19,6 +19,9 @@
 Contains constant values for the Load Marker tool.
 """
 
+import mmSolver.tools.userpreferences.constant as userprefs_const
+
+
 CONFIG_FILE_NAME = "tools_loadmarker.json"
 
 WINDOW_TITLE = 'Load Markers - mmSolver'
@@ -52,12 +55,13 @@ NEW_CAMERA_VALUE = '<Create New>'
 NEW_MARKER_GROUP_VALUE = '<Create New>'
 NEW_COLLECTION_VALUE = '<Create New>'
 
-DISTORTION_MODE_VALUE = 'Distorted'
-UNDISTORTION_MODE_VALUE = 'Undistorted'
+DISTORTION_MODE_VALUE = (
+    userprefs_const.LOAD_MARKER_UI_DISTORTION_MODE_DEFAULT_DISTORT_LABEL
+)
+UNDISTORTION_MODE_VALUE = (
+    userprefs_const.LOAD_MARKER_UI_DISTORTION_MODE_DEFAULT_UNDISTORT_LABEL
+)
 
 
 # Default values
 LOAD_MODE_DEFAULT_VALUE = LOAD_MODE_NEW_VALUE
-DISTORTION_MODE_DEFAULT_VALUE = UNDISTORTION_MODE_VALUE
-LOAD_BUNDLE_POS_DEFAULT_VALUE = True
-USE_OVERSCAN_DEFAULT_VALUE = True

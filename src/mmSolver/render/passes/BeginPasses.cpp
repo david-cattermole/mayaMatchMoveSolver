@@ -68,8 +68,8 @@ bool BeginPasses::startOperationIterator() {
 MHWRender::MRenderOperation *BeginPasses::getOperationFromList(
     size_t &current_op, MRenderOperation **ops, const size_t count) {
     const bool verbose = false;
-    MMSOLVER_VRB("BeginPasses::getOperationFromList: current_op: "
-                 << current_op << " count: " << count);
+    MMSOLVER_MAYA_VRB("BeginPasses::getOperationFromList: current_op: "
+                      << current_op << " count: " << count);
     if (current_op >= 0 && current_op < count) {
         while (!ops[current_op] || !ops[current_op]->enabled()) {
             current_op++;
@@ -108,7 +108,7 @@ bool BeginPasses::nextRenderOperation() {
 
 MStatus BeginPasses::updateRenderOperations() {
     const bool verbose = false;
-    MMSOLVER_VRB("BeginPasses::updateRenderOperations: ");
+    MMSOLVER_MAYA_VRB("BeginPasses::updateRenderOperations: ");
 
     if (m_ops[BeginPass::kSceneBackgroundPass] != nullptr) {
         // render operations are already up-to-date.
@@ -161,7 +161,7 @@ MStatus BeginPasses::updateRenderOperations() {
     MStatus status = MS::kSuccess;
     m_image_plane_nodes.clear();
     status = add_all_image_planes(m_image_plane_nodes);
-    MMSOLVER_VRB(
+    MMSOLVER_MAYA_VRB(
         "BeginPasses::updateRenderOperations: "
         "m_image_plane_nodes.length()="
         << m_image_plane_nodes.length());
@@ -182,7 +182,7 @@ MStatus BeginPasses::updateRenderTargets(MHWRender::MRenderTarget **targets) {
     MStatus status = MS::kSuccess;
 
     const bool verbose = false;
-    MMSOLVER_VRB("BeginPasses::updateRenderTargets");
+    MMSOLVER_MAYA_VRB("BeginPasses::updateRenderTargets");
 
     // Update the render targets on the individual operations.
     //
@@ -216,7 +216,7 @@ MStatus BeginPasses::updateRenderTargets(MHWRender::MRenderTarget **targets) {
 
 MStatus BeginPasses::setPanelNames(const MString &name) {
     const bool verbose = false;
-    MMSOLVER_VRB("BeginPasses::setPanelNames: " << name.asChar());
+    MMSOLVER_MAYA_VRB("BeginPasses::setPanelNames: " << name.asChar());
 
     if (m_ops[BeginPass::kSceneBackgroundPass]) {
         auto op =

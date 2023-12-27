@@ -111,10 +111,11 @@ const MHWRender::MShaderInstance *QuadRenderCopy::shader() {
     const MString color_only_technique = "ColorOnly";
     const MString depth_only_technique = "DepthOnly";
 
-    MMSOLVER_VRB("QuadRenderCopy: Assign shader parameters...");
+    MMSOLVER_MAYA_VRB("QuadRenderCopy: Assign shader parameters...");
     if (m_use_color_target && m_use_depth_target) {
         if (!m_shader_color_and_depth) {
-            MMSOLVER_VRB("QuadRenderCopy: Compile Color and Depth shader...");
+            MMSOLVER_MAYA_VRB(
+                "QuadRenderCopy: Compile Color and Depth shader...");
             m_shader_color_and_depth = shaderMgr->getEffectsFileShader(
                 file_name.asChar(), color_and_depth_technique.asChar());
         }
@@ -127,7 +128,7 @@ const MHWRender::MShaderInstance *QuadRenderCopy::shader() {
                     m_targets[m_target_index_depth_input];
 
                 if (color_target) {
-                    MMSOLVER_VRB(
+                    MMSOLVER_MAYA_VRB(
                         "QuadRenderCopy: Assign Color texture to shader...");
                     MHWRender::MRenderTargetAssignment assignment;
                     assignment.target = color_target;
@@ -136,7 +137,7 @@ const MHWRender::MShaderInstance *QuadRenderCopy::shader() {
                 }
 
                 if (depth_target) {
-                    MMSOLVER_VRB(
+                    MMSOLVER_MAYA_VRB(
                         "QuadRenderCopy: Assign Depth texture to shader...");
                     MHWRender::MRenderTargetAssignment assignment;
                     assignment.target = depth_target;
@@ -148,7 +149,7 @@ const MHWRender::MShaderInstance *QuadRenderCopy::shader() {
         }
     } else if (m_use_color_target && !m_use_depth_target) {
         if (!m_shader_color_only) {
-            MMSOLVER_VRB("QuadRenderCopy: Compile Color Only shader...");
+            MMSOLVER_MAYA_VRB("QuadRenderCopy: Compile Color Only shader...");
             m_shader_color_only = shaderMgr->getEffectsFileShader(
                 file_name.asChar(), color_only_technique.asChar());
         }
@@ -158,7 +159,7 @@ const MHWRender::MShaderInstance *QuadRenderCopy::shader() {
                 MHWRender::MRenderTarget *color_target =
                     m_targets[m_target_index_color_input];
                 if (color_target) {
-                    MMSOLVER_VRB(
+                    MMSOLVER_MAYA_VRB(
                         "QuadRenderCopy: Assign Color texture to shader...");
                     MHWRender::MRenderTargetAssignment assignment;
                     assignment.target = color_target;
@@ -170,7 +171,7 @@ const MHWRender::MShaderInstance *QuadRenderCopy::shader() {
         }
     } else if (!m_use_color_target && m_use_depth_target) {
         if (!m_shader_depth_only) {
-            MMSOLVER_VRB("QuadRenderCopy: Compile Depth Only shader...");
+            MMSOLVER_MAYA_VRB("QuadRenderCopy: Compile Depth Only shader...");
             m_shader_depth_only = shaderMgr->getEffectsFileShader(
                 file_name.asChar(), depth_only_technique.asChar());
         }
@@ -180,7 +181,7 @@ const MHWRender::MShaderInstance *QuadRenderCopy::shader() {
                 MHWRender::MRenderTarget *depth_target =
                     m_targets[m_target_index_depth_input];
                 if (depth_target) {
-                    MMSOLVER_VRB(
+                    MMSOLVER_MAYA_VRB(
                         "QuadRenderCopy: Assign Depth texture to shader...");
                     MHWRender::MRenderTargetAssignment assignment;
                     assignment.target = depth_target;

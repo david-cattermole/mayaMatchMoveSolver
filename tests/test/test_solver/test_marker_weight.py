@@ -142,8 +142,8 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         tx = maya.cmds.getAttr(grp + '.tx')
         ty = maya.cmds.getAttr(grp + '.ty')
         self.assertEqual(result[0], 'success=1')
-        assert self.approx_equal(tx, -2.2252424)
-        assert self.approx_equal(ty, 1.65000000)
+        self.assertApproxEqual(tx, -2.2252424)
+        self.assertApproxEqual(ty, 1.65000000)
 
     def test_single_frame_low_weight(self):
         """
@@ -202,8 +202,8 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         tx = maya.cmds.getAttr(grp + '.tx')
         ty = maya.cmds.getAttr(grp + '.ty')
         self.assertEqual(result[0], 'success=1')
-        assert self.approx_equal(tx, -2.2252424)
-        assert self.approx_equal(ty, 1.65000000)
+        self.assertApproxEqual(tx, -2.2252424)
+        self.assertApproxEqual(ty, 1.65000000)
 
     def test_single_frame_ratio_weight(self):
         """
@@ -270,8 +270,8 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         tx = maya.cmds.getAttr(grp + '.tx')
         ty = maya.cmds.getAttr(grp + '.ty')
         self.assertEqual(result[0], 'success=1')
-        assert self.approx_equal(tx, -0.333333333333)
-        assert self.approx_equal(ty, 1.300000000000)
+        self.assertApproxEqual(tx, -0.333333333333)
+        self.assertApproxEqual(ty, 1.300000000000)
 
     def test_single_frame_same_weight(self):
         """
@@ -332,8 +332,8 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         tx = maya.cmds.getAttr(grp + '.tx')
         ty = maya.cmds.getAttr(grp + '.ty')
         self.assertEqual(result[0], 'success=1')
-        assert self.approx_equal(tx, -1.00000134)
-        assert self.approx_equal(ty, 1.65000055)
+        self.assertApproxEqual(tx, -1.00000134)
+        self.assertApproxEqual(ty, 1.65000055)
 
     def test_single_frame_no_weight(self):
         """
@@ -394,8 +394,8 @@ class TestSolverMarkerWeight(solverUtils.SolverTestCase):
         tx = maya.cmds.getAttr(grp + '.tx')
         ty = maya.cmds.getAttr(grp + '.ty')
         self.assertEqual(result[0], 'success=1')
-        assert self.approx_equal(tx, -2.25, eps=0.001)
-        assert self.approx_equal(ty, 1.65, eps=0.001)
+        self.assertApproxEqual(tx, -2.25, eps=0.001)
+        self.assertApproxEqual(ty, 1.65, eps=0.001)
 
 
 if __name__ == '__main__':

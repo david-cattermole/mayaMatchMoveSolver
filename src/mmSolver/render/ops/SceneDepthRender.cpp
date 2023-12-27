@@ -63,14 +63,15 @@ const MHWRender::MShaderInstance *SceneDepthRender::shaderOverride() {
     const bool verbose = false;
 
     if (!m_shader_override) {
-        MMSOLVER_VRB("SceneDepthRender: Compile Depth Main shader...");
+        MMSOLVER_MAYA_VRB("SceneDepthRender: Compile Depth Main shader...");
         const MString file_name = "mmDepth";
         const MString main_technique = "Main";
         m_shader_override = compile_shader_file(file_name, main_technique);
     }
 
     if (m_shader_override) {
-        MMSOLVER_VRB("SceneDepthRender: Assign Depth shader parameters...");
+        MMSOLVER_MAYA_VRB(
+            "SceneDepthRender: Assign Depth shader parameters...");
 
         // We assume the depth buffer has at least 24 bits for the depth
         // value.

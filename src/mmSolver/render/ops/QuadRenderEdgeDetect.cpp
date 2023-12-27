@@ -115,21 +115,21 @@ const MHWRender::MShaderInstance *QuadRenderEdgeDetect::shader() {
 
     // Compile Sobel shader
     if (!m_shader_instance_sobel) {
-        MMSOLVER_VRB("QuardRenderEdgeDetect: Compile Sobel shader...");
+        MMSOLVER_MAYA_VRB("QuardRenderEdgeDetect: Compile Sobel shader...");
         m_shader_instance_sobel = shader_manager->getEffectsFileShader(
             file_name.asChar(), sobel_technique.asChar());
     }
 
     // Compile Frei-Chen shader
     if (!m_shader_instance_frei_chen) {
-        MMSOLVER_VRB("QuardRenderEdgeDetect: Compile Frei-Chen shader...");
+        MMSOLVER_MAYA_VRB("QuardRenderEdgeDetect: Compile Frei-Chen shader...");
         m_shader_instance_frei_chen = shader_manager->getEffectsFileShader(
             file_name.asChar(), frei_chen_technique.asChar());
     }
 
     // Set default parameters
     if (m_shader_instance_sobel && m_shader_instance_frei_chen) {
-        MMSOLVER_VRB("QuardRenderEdgeDetect: Assign shader parameters...");
+        MMSOLVER_MAYA_VRB("QuardRenderEdgeDetect: Assign shader parameters...");
 
         if (m_targets) {
             MHWRender::MRenderTarget *depth_target =
@@ -137,7 +137,7 @@ const MHWRender::MShaderInstance *QuadRenderEdgeDetect::shader() {
             MHWRender::MRenderTarget *color_target =
                 m_targets[m_target_index_color];
             if (depth_target) {
-                MMSOLVER_VRB(
+                MMSOLVER_MAYA_VRB(
                     "QuardRenderEdgeDetect: Assign depth texture to shader...");
                 MHWRender::MRenderTargetAssignment assignment;
                 assignment.target = depth_target;
@@ -147,7 +147,7 @@ const MHWRender::MShaderInstance *QuadRenderEdgeDetect::shader() {
                     kPARAMETER_DEPTH_TEX, assignment));
             }
             if (color_target) {
-                MMSOLVER_VRB(
+                MMSOLVER_MAYA_VRB(
                     "QuardRenderEdgeDetect: Assign color texture to shader...");
                 MHWRender::MRenderTargetAssignment assignment;
                 assignment.target = color_target;

@@ -145,9 +145,9 @@ class TestReprojectionNode(solverUtils.SolverTestCase):
             x = world_point_values[(i * 3) + 0]
             y = world_point_values[(i * 3) + 1]
             z = world_point_values[(i * 3) + 2]
-            assert self.approx_equal(x, pnt_x), 'X a=%r b=%r' % (x, pnt_x)
-            assert self.approx_equal(y, pnt_y), 'Y a=%r b=%r' % (y, pnt_y)
-            assert self.approx_equal(z, pnt_z), 'Z a=%r b=%r' % (z, pnt_z)
+            self.assertApproxEqual(x, pnt_x), 'X a=%r b=%r' % (x, pnt_x)
+            self.assertApproxEqual(y, pnt_y), 'Y a=%r b=%r' % (y, pnt_y)
+            self.assertApproxEqual(z, pnt_z), 'Z a=%r b=%r' % (z, pnt_z)
 
         # save the output
         path = self.get_data_path('reprojection_cmd_test_after.ma')

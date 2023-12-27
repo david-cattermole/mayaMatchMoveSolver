@@ -132,18 +132,14 @@ class TestSolverDeviationCalculation(solverUtils.SolverTestCase):
         print('mkr_middleTop_values:', mkr_middleTop_values)
         print('mkr_middleLeft_values:', mkr_middleLeft_values)
         eps = 0.00001
-        self.assertTrue(self.approx_equal(mkr_topRight_values[0], 2048.0, eps=eps))
-        self.assertTrue(
-            self.approx_equal(mkr_topRight_values[1], 1258.6666666, eps=eps)
-        )
-        self.assertTrue(self.approx_equal(mkr_topLeft_values[0], 0.0, eps=eps))
-        self.assertTrue(self.approx_equal(mkr_topLeft_values[1], 1258.6666666, eps=eps))
-        self.assertTrue(self.approx_equal(mkr_middleTop_values[0], 1024.0, eps=eps))
-        self.assertTrue(
-            self.approx_equal(mkr_middleTop_values[1], 1258.6666666, eps=eps)
-        )
-        self.assertTrue(self.approx_equal(mkr_middleLeft_values[0], 0.0, eps=eps))
-        self.assertTrue(self.approx_equal(mkr_middleLeft_values[1], 576.0, eps=eps))
+        self.assertApproxEqual(mkr_topRight_values[0], 2048.0, eps=eps)
+        self.assertApproxEqual(mkr_topRight_values[1], 1258.6666666, eps=eps)
+        self.assertApproxEqual(mkr_topLeft_values[0], 0.0, eps=eps)
+        self.assertApproxEqual(mkr_topLeft_values[1], 1258.6666666, eps=eps)
+        self.assertApproxEqual(mkr_middleTop_values[0], 1024.0, eps=eps)
+        self.assertApproxEqual(mkr_middleTop_values[1], 1258.6666666, eps=eps)
+        self.assertApproxEqual(mkr_middleLeft_values[0], 0.0, eps=eps)
+        self.assertApproxEqual(mkr_middleLeft_values[1], 576.0, eps=eps)
         return
 
     def test_init_ceres(self):

@@ -6,7 +6,7 @@ edition = "2018"
 publish = false
 
 [lib]
-name = "mmsolverlibs"
+name = "mmsolverlibs_rust"
 path = "./src/lib.rs"
 # NOTE: 'lib' is used to link with Rust crates, 'staticlib' is used to
 # link with C++.

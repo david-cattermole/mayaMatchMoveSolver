@@ -111,7 +111,7 @@ public:
 
     void handleTraceMessage(const MString &message) const override {
         MGlobal::displayInfo("MarkerDrawOverride: " + message);
-        MMSOLVER_INFO("MarkerDrawOverride: " << message.asChar());
+        MMSOLVER_MAYA_INFO("MarkerDrawOverride: " << message.asChar());
     }
 
 private:

@@ -80,6 +80,13 @@ class TestBase(unittest.TestCase):
     def approx_equal(self, x, y, eps=0.0001):
         return x == y or (x < (y + eps) and x > (y - eps))
 
+    def assertApproxEqual(self, x, y, eps=0.0001):
+        if self.approx_equal(x, y, eps=eps) is False:
+            raise AssertionError(
+                '{x} != {y} (epsilon is {eps})'.format(x=x, y=y, eps=eps)
+            )
+        return
+
     def get_data_root(self):
         path = os.path.join(os.path.dirname(__file__), '..', 'data')
         path = os.path.abspath(path)

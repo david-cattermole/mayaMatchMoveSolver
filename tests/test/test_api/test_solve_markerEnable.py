@@ -238,8 +238,8 @@ class TestSolveMarkerEnable(test_api_utils.APITestCase):
 
             self.assertTrue(success)
             # self.assertGreater(0.001, err)
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
+        # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
+        # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
 
         # Set Deviation
         mmapi.update_deviation_on_markers([mkr], results)

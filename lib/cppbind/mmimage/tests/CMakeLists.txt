@@ -31,9 +31,16 @@ set(test_source_files
 # Add test executable using the C++ bindings.
 message(STATUS "target_test_exe_name: ${target_test_exe_name}")
 message(STATUS "test_source_files: ${test_source_files}")
-message(STATUS "target_release_lib_name: ${target_release_lib_name}")
+message(STATUS "cpp_lib_name: ${cpp_lib_name}")
 add_executable(${target_test_exe_name} ${test_source_files})
-target_link_libraries(${target_test_exe_name} ${target_release_lib_name})
+target_link_libraries(${target_test_exe_name}
+  # The order of these libraries matters. See similar
+  # 'target_link_libraries()' in '${PROJECT_ROOT}/src/CMakeLists.txt'.
+  PRIVATE ${rust_linktime_file}
+  PRIVATE ${cpp_lib_name}
+
+  PRIVATE ${rust_depend_on_libraries}
+)
 target_include_directories(${target_test_exe_name}
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include
   PUBLIC ${RUST_INCLUDE_DIR}

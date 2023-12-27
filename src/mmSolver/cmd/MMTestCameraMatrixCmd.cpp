@@ -80,7 +80,7 @@ MSyntax MMTestCameraMatrixCmd::newSyntax() {
  * Parse command line arguments
  */
 MStatus MMTestCameraMatrixCmd::parseArgs(const MArgList &args) {
-    // MMSOLVER_DBG("MMTestCameraMatrixCmd::parseArgs()");
+    // MMSOLVER_MAYA_DBG("MMTestCameraMatrixCmd::parseArgs()");
     MStatus status = MStatus::kSuccess;
 
     MArgDatabase argData(syntax(), args, &status);
@@ -107,9 +107,9 @@ MStatus MMTestCameraMatrixCmd::parseArgs(const MArgList &args) {
     m_camera->setTransformNodeName(cameraTransform);
     m_camera->setShapeNodeName(cameraShape);
 
-    // MMSOLVER_DBG("Camera:");
-    // MMSOLVER_DBG("  Transform = " << m_camera->getTransformNodeName());
-    // MMSOLVER_DBG("  Shape = " << m_camera->getShapeNodeName());
+    // MMSOLVER_MAYA_DBG("Camera:");
+    // MMSOLVER_MAYA_DBG("  Transform = " << m_camera->getTransformNodeName());
+    // MMSOLVER_MAYA_DBG("  Shape = " << m_camera->getShapeNodeName());
 
     return status;
 }
@@ -130,7 +130,7 @@ MStatus MMTestCameraMatrixCmd::doIt(const MArgList &args) {
     //
     MStatus status = MStatus::kSuccess;
     const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
-    // MMSOLVER_DBG("MMTestCameraMatrixCmd::doIt()");
+    // MMSOLVER_MAYA_DBG("MMTestCameraMatrixCmd::doIt()");
 
     // Read all the arguments.
     status = parseArgs(args);
@@ -165,11 +165,11 @@ MStatus MMTestCameraMatrixCmd::doIt(const MArgList &args) {
     if (!matches) {
         for (unsigned int i = 0; i < 4; ++i) {
             for (unsigned int j = 0; j < 4; ++j) {
-                MMSOLVER_INFO("["
-                              << i << "][" << j << "] " << value(i, j)
-                              << " == " << value_maya(i, j) << " | "
-                              << number::isApproxEqual<double>(
-                                     value(i, j), value_maya(i, j), tolerance));
+                MMSOLVER_MAYA_INFO(
+                    "[" << i << "][" << j << "] " << value(i, j)
+                        << " == " << value_maya(i, j) << " | "
+                        << number::isApproxEqual<double>(
+                               value(i, j), value_maya(i, j), tolerance));
             }
         }
     }

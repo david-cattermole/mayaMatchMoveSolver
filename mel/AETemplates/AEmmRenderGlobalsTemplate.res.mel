@@ -1,2 +1,0 @@
-displayString -replace -value "Display" m_AEmmRenderGlobalsTemplate.kDisplayOptions;
-displayString -replace -value "Render Color Format" m_AEmmRenderGlobalsTemplate.kRenderColorFormat;

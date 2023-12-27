@@ -111,6 +111,18 @@ class PrefWindow(BaseWindow):
                 self.subForm.getAddNewLinesToConfigValue,
             ),
             (
+                pref_const.LOAD_MARKER_UI_DISTORTION_MODE_DEFAULT_KEY,
+                self.subForm.getLoadMarkerUIDistortionModeDefaultConfigValue,
+            ),
+            (
+                pref_const.LOAD_MARKER_UI_USE_OVERSCAN_DEFAULT_KEY,
+                self.subForm.getLoadMarkerUIUseOverscanDefaultConfigValue,
+            ),
+            (
+                pref_const.LOAD_MARKER_UI_LOAD_BUNDLE_POSITIONS_DEFAULT_KEY,
+                self.subForm.getLoadMarkerUILoadBundlePositionsDefaultConfigValue,
+            ),
+            (
                 pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
                 self.subForm.getSolverUIMinimalUIWhileSolvingConfigValue,
             ),

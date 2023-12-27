@@ -35,128 +35,13 @@
 #include "LayerMode.h"
 #include "RenderColorFormat.h"
 #include "RenderMode.h"
+#include "mmSolver/nodeTypeIds.h"
 
 namespace mmsolver {
 namespace render {
 
-// Enumerate the target indexing
-enum TargetId {
-    // Main render targets - where the final pixels will be
-    // copied/blended and finally presented to the screen.
-    //
-    // This is also the previous layer's result, that the current layer is
-    // rendered on top of.
-    kMainColorTarget = 0,
-    kMainDepthTarget,
-
-    // Layer render target buffers - where layers will be rendered
-    // before being merged into the main render targets.
-    kLayerColorTarget,
-    kLayerDepthTarget,
-
-    // A temporary render target to render and then blend/copy into
-    // other targets.
-    kTempColorTarget,
-    kTempDepthTarget,
-
-    // The Maya background, and image planes.
-    kBackgroundColorTarget,
-    kBackgroundDepthTarget,
-
-    // Always last field, used as 'number of items'.
-    kTargetCount
-};
-
-// Renderer Target names.
-#define kMainColorTargetName "__mmRenderer_MainColorTarget1__"
-#define kMainDepthTargetName "__mmRenderer_MainDepthTarget1__"
-#define kLayerColorTargetName "__mmRenderer_LayerColorTarget2__"
-#define kLayerDepthTargetName "__mmRenderer_LayerDepthTarget2__"
-#define kTempColorTargetName "__mmRenderer_TempColorTarget3__"
-#define kTempDepthTargetName "__mmRenderer_TempDepthTarget3__"
-#define kBackgroundColorTargetName "__mmRenderer_BackgroundColorTarget4__"
-#define kBackgroundDepthTargetName "__mmRenderer_BackgroundDepthTarget4__"
-
 // Constant values
-const char kRendererUiName[] = "mmRenderer";
 const float kTransparentBlackColor[] = {0.0f, 0.0f, 0.0f, 0.0f};
-
-const MString kRenderGlobalsNodeName = "mmRenderGlobals";
-
-// The node Maya uses to store all attributes that define how the
-// hardware renderer works - such as formats/bit-depths and
-// anti-aliasing options.
-const MString kHardwareRenderGlobalsNodeName = "hardwareRenderingGlobals";
-
-// The node that all Maya display layers are connected to - this node
-// "manages" all display layers.
-const MString kDisplayLayerManagerNodeName = "layerManager";
-
-// Default parameters
-const BackgroundStyle kBackgroundStyleDefault = BackgroundStyle::kMayaDefault;
-const RenderColorFormat kRenderColorFormatDefault =
-    RenderColorFormat::kRGBA16BitFloat;
-
-const bool kLayerVisibilityDefault = true;
-const int32_t kLayerDisplayOrderDefault = -1;
-const LayerMode kLayerModeDefault = LayerMode::kZDepth;
-const float kLayerMixDefault = 1.0f;
-const bool kLayerDrawDebugDefault = false;
-
-const DisplayStyle kObjectDisplayStyleDefault =
-    DisplayStyle::kNoDisplayStyleOverride;
-const bool kObjectDisplayTexturesDefault = false;
-const float kObjectAlphaDefault = 1.0f;
-
-const bool kEdgeEnableDefault = false;
-const float kEdgeColorDefault[] = {1.0f, 0.0f, 0.0f, 1.0f};
-const float kEdgeAlphaDefault = 1.0f;
-const EdgeDetectMode kEdgeDetectModeDefault = EdgeDetectMode::k3dSilhouette;
-const float kEdgeThicknessDefault = 1.0f;
-const float kEdgeThresholdDefault = 1.0f;
-const float kEdgeThresholdColorDefault = 1.0f;
-const float kEdgeThresholdAlphaDefault = 1.0f;
-const float kEdgeThresholdDepthDefault = 1.0f;
-
-// Render Operation Pass Names
-const MString kBeginClearMainTargetOpName = "mmRenderer_ClearMainTarget";
-const MString kBeginClearBackgroundTargetOpName =
-    "mmRenderer_ClearBackgroundTarget";
-const MString kLayerClearLayerTargetOpName =
-    "mmRenderer_Layer_ClearLayerTarget_";
-const MString kLayerClearTempTargetOpName = "mmRenderer_Layer_ClearTempTarget_";
-const MString kLayerCopyEdgeOpName = "mmRenderer_Layer_CopyEdge_";
-const MString kLayerCopyOpName = "mmRenderer_Layer_Copy_";
-const MString kLayerDepthPassName = "mmRenderer_Layer_DepthRender_";
-const MString kLayerEdgeDetectOpName = "mmRenderer_Layer_EdgeDetectOp_";
-const MString kLayerEdgePassOpName = "mmRenderer_Layer_EdgeRender_";
-const MString kLayerMergeOpName = "mmRenderer_Layer_Merge_";
-const MString kLayerObjectPassName = "mmRenderer_Layer_ObjectRender_";
-const MString kPresentOpName = "mmRenderer_PresentTarget";
-const MString kSceneBackgroundPassName = "mmRenderer_SceneRender_Background";
-const MString kSceneManipulatorPassName = "mmRenderer_SceneRender_Manipulator";
-
-// Attribute Names
-const MString kAttrNameLayerVisibility = "visibility";
-const MString kAttrNameLayerDisplayOrder = "displayOrder";
-const MString kAttrNameLayerMode = "mmLayerMode";
-const MString kAttrNameLayerMix = "mmLayerMix";
-const MString kAttrNameLayerDrawDebug = "mmLayerDrawDebug";
-
-const MString kAttrNameObjectDisplayStyle = "mmObjectDisplayStyle";
-const MString kAttrNameObjectAlpha = "mmObjectAlpha";
-
-const MString kAttrNameEdgeEnable = "mmEdgeEnable";
-const MString kAttrNameEdgeColorR = "mmEdgeColorR";
-const MString kAttrNameEdgeColorG = "mmEdgeColorG";
-const MString kAttrNameEdgeColorB = "mmEdgeColorB";
-const MString kAttrNameEdgeAlpha = "mmEdgeAlpha";
-const MString kAttrNameEdgeDetectMode = "mmEdgeDetectMode";
-const MString kAttrNameEdgeThickness = "mmEdgeThickness";
-const MString kAttrNameEdgeThreshold = "mmEdgeThreshold";
-const MString kAttrNameEdgeThresholdColor = "mmEdgeThresholdColor";
-const MString kAttrNameEdgeThresholdAlpha = "mmEdgeThresholdAlpha";
-const MString kAttrNameEdgeThresholdDepth = "mmEdgeThresholdDepth";
 
 // Clear Masks
 const auto CLEAR_MASK_NONE =
@@ -197,6 +82,52 @@ const auto WIRE_DRAW_OBJECT_TYPES =
 const auto NON_WIRE_DRAW_OBJECT_TYPES =
     ((~WIRE_DRAW_OBJECT_TYPES) | MHWRender::MFrameContext::kExcludeImagePlane |
      MHWRender::MFrameContext::kExcludePluginShapes);
+
+// Default parameters
+const BackgroundStyle kBackgroundStyleDefault = BackgroundStyle::kMayaDefault;
+const RenderColorFormat kRenderColorFormatDefault =
+    RenderColorFormat::kRGBA16BitFloat;
+
+// Basic Constants
+const MString kRenderGlobalsBasicNodeName = "mmRenderGlobals";
+const MString kRendererBasicCmdName = "mmRenderer";
+const char kRendererBasicName[] = "mmRenderer";
+const char kRendererBasicUiName[] = "mmRenderer";
+const MString kRendererBasicCreateNodeCommand =
+    "string $mm_globals_node = `createNode \"" +
+    MString(MM_RENDER_GLOBALS_BASIC_TYPE_NAME) + "\" -name \"" +
+    MString(kRenderGlobalsBasicNodeName) + "\" -shared -skipSelect`;\n" +
+    "if (size($mm_globals_node) > 0) {\n" +
+    "    lockNode -lock on $mm_globals_node;\n" + "}\n";
+
+// Silhouette Constants
+const MString kRenderGlobalsSilhouetteNodeName = "mmRenderGlobalsSilhouette";
+const MString kRendererSilhouetteCmdName = "mmRendererSilhouette";
+const char kRendererSilhouetteName[] = "mmRendererSilhouette";
+const char kRendererSilhouetteUiName[] = "mmRenderer (silhouette)";
+const MString kRendererSilhouetteCreateNodeCommand =
+    "string $mm_globals_node = `createNode \"" +
+    MString(MM_RENDER_GLOBALS_SILHOUETTE_TYPE_NAME) + "\" -name \"" +
+    MString(kRenderGlobalsSilhouetteNodeName) + "\" -shared -skipSelect`;\n" +
+    "if (size($mm_globals_node) > 0) {\n" +
+    "    lockNode -lock on $mm_globals_node;\n" + "}\n";
+
+// Silhouette Attribute Names
+const MString kAttrNameSilhouetteEnable = "enable";
+const MString kAttrNameSilhouetteDepthOffset = "depthOffset";
+const MString kAttrNameSilhouetteWidth = "width";
+const MString kAttrNameSilhouetteColor = "color";
+const MString kAttrNameSilhouetteColorR = "colorR";
+const MString kAttrNameSilhouetteColorG = "colorG";
+const MString kAttrNameSilhouetteColorB = "colorB";
+const MString kAttrNameSilhouetteAlpha = "alpha";
+
+// Silhouette Renderer Attribute Default Values
+const bool kSilhouetteEnableDefault = true;
+const float kSilhouetteDepthOffsetDefault = -1.0f;
+const float kSilhouetteWidthDefault = 2.0f;
+const float kSilhouetteColorDefault[] = {0.0f, 1.0f, 0.0f};
+const float kSilhouetteAlphaDefault = 1.0f;
 
 }  // namespace render
 }  // namespace mmsolver

@@ -154,8 +154,8 @@ class TestSolver12(solverUtils.SolverTestCase):
         ty = maya.cmds.getAttr(bundle_tfm + '.ty', time=start_frame)
         print('tx:', tx)
         print('ty:', ty)
-        assert self.approx_equal(tx, -6.0)
-        assert self.approx_equal(ty, 3.6)
+        self.assertApproxEqual(tx, -6.0)
+        self.assertApproxEqual(ty, 3.6)
 
     def test_init_ceres_maya_dag_single_frame(self):
         single_frame = True

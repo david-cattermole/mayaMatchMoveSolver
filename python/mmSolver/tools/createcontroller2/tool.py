@@ -85,7 +85,7 @@ def create_world_controllers():
             name_tfm = '{}_CTRL'.format(node.rpartition('|')[-1])
 
             # This node is used as the controller.
-            loc_grp_node = maya.cmds.spaceLocator(name=name_tfm)
+            loc_grp_nodes = maya.cmds.spaceLocator(name=name_tfm)
 
             pivot_node = node
             main_node = node
@@ -93,7 +93,7 @@ def create_world_controllers():
                 name_tfm,
                 pivot_node,
                 main_node,
-                loc_grp_node,
+                loc_grp_nodes,
                 start_frame,
                 end_frame,
                 controller_type,

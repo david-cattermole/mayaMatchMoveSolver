@@ -106,7 +106,7 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
             return nullptr;
         }
 
-        MMSOLVER_VRB("QuadRenderLayerMerge: Compile shader...");
+        MMSOLVER_MAYA_VRB("QuadRenderLayerMerge: Compile shader...");
         MString file_name = "mmLayerMerge";
         MString shader_technique = "Main";
         m_shader_instance = shaderMgr->getEffectsFileShader(
@@ -115,7 +115,7 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
 
     // Set default parameters
     if (m_shader_instance) {
-        MMSOLVER_VRB("QuadRenderLayerMerge: Assign shader parameters...");
+        MMSOLVER_MAYA_VRB("QuadRenderLayerMerge: Assign shader parameters...");
         if (m_targets) {
             MHWRender::MRenderTarget *target_color_current_layer =
                 m_targets[m_target_index_color_current_layer];
@@ -131,7 +131,7 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
                 m_targets[m_target_index_depth_background];
 
             if (target_color_current_layer) {
-                MMSOLVER_VRB(
+                MMSOLVER_MAYA_VRB(
                     "QuadRenderLayerMerge: "
                     "Assign Current Layer Color to shader...");
                 MHWRender::MRenderTargetAssignment assignment{};
@@ -141,7 +141,7 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
             }
 
             if (target_depth_current_layer) {
-                MMSOLVER_VRB(
+                MMSOLVER_MAYA_VRB(
                     "QuadRenderLayerMerge: "
                     "Assign Current Layer Depth to shader...");
                 MHWRender::MRenderTargetAssignment assignment{};
@@ -151,7 +151,7 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
             }
 
             if (target_color_previous_layer) {
-                MMSOLVER_VRB(
+                MMSOLVER_MAYA_VRB(
                     "QuadRenderLayerMerge: "
                     "Assign Previous Layer Color to shader...");
                 MHWRender::MRenderTargetAssignment assignment{};
@@ -161,7 +161,7 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
             }
 
             if (target_depth_previous_layer) {
-                MMSOLVER_VRB(
+                MMSOLVER_MAYA_VRB(
                     "QuadRenderLayerMerge: "
                     "Assign Previous Layer Depth to shader...");
                 MHWRender::MRenderTargetAssignment assignment{};
@@ -177,7 +177,7 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
                     m_targets[m_target_index_depth_edges];
 
                 if (target_color_edges) {
-                    MMSOLVER_VRB(
+                    MMSOLVER_MAYA_VRB(
                         "QuadRenderLayerMerge: "
                         "Assign Edges Color to shader...");
                     MHWRender::MRenderTargetAssignment assignment{};
@@ -187,7 +187,7 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
                 }
 
                 if (target_depth_edges) {
-                    MMSOLVER_VRB(
+                    MMSOLVER_MAYA_VRB(
                         "QuadRenderLayerMerge: "
                         "Assign Edges Depth to shader...");
                     MHWRender::MRenderTargetAssignment assignment{};
@@ -198,7 +198,7 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
             }
 
             if (target_color_d) {
-                MMSOLVER_VRB(
+                MMSOLVER_MAYA_VRB(
                     "QuadRenderLayerMerge: "
                     "Assign Color Background to shader...");
                 MHWRender::MRenderTargetAssignment assignment{};
@@ -208,7 +208,7 @@ const MHWRender::MShaderInstance *QuadRenderLayerMerge::shader() {
             }
 
             if (target_depth_d) {
-                MMSOLVER_VRB(
+                MMSOLVER_MAYA_VRB(
                     "QuadRenderLayerMerge: "
                     "Assign Depth Background to shader...");
                 MHWRender::MRenderTargetAssignment assignment{};

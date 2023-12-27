@@ -35,17 +35,32 @@ set(PROJECT_DESCRIPTION "mmSolver libraries.")
 set(PROJECT_AUTHOR "David Cattermole")
 set(PROJECT_COPYRIGHT "2023, David Cattermole.")
 
+set(MMSOLVERLIBS_LIB_DIR "/path/to/rust/build/directory/" CACHE PATH
+  "The path to the directory containing the compiled library.")
+
 # Add custom modules to the module path
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
   ${CMAKE_CURRENT_SOURCE_DIR}/../share/cmake/modules)
 
-set(target_release_lib_name "mmsolverlibs")
+set(cpp_lib_name "mmsolverlibs_cpp")
 set(rust_lib_name "mmsolverlibs_rust")
 
 set(CMAKE_CXX_STANDARD 11)
 
 include(MMSolverUtils)
 set_global_maya_plugin_compile_options()
+
+include(MMRustUtils)
+set(rust_linktime_file "NOT-FOUND")
+mm_rust_find_rust_library(${rust_lib_name} ${MMSOLVERLIBS_LIB_DIR} rust_linktime_file)
+message(STATUS "Rust Linktime Library: ${rust_linktime_file}")
+if(NOT EXISTS "${rust_linktime_file}")
+  message(FATAL_ERROR "mmsolverlibs rust linktime library was not found.")
+endif()
+
+set(rust_depend_on_libraries "NOT-FOUND")
+mm_rust_get_depend_on_libraries(rust_depend_on_libraries)
+message(STATUS "Rust Depend On Libraries: ${rust_depend_on_libraries}")
 
 # Finds and builds external (third-party) LDPK dependencies.
 option(MMSOLVER_DOWNLOAD_DEPENDENCIES "Automatically download and build missing dependencies?" ON)
@@ -56,9 +71,11 @@ add_subdirectory(mmsolverlibs/src)
 option(MMSOLVERLIBS_BUILD_TESTS "Do you want to build the test files for mmsolverlibs?" OFF)
 if (MMSOLVERLIBS_BUILD_TESTS)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmlens/tests)
-  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmimage/tests)
+  # # TODO: This does not work on Maya 2024. I suspect this is because
+  # # of the std::string ABI has changed in CentOS 8.x/9.x.
+  # add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmimage/tests)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmscenegraph/tests)
 endif()
 
 include(MMCommonUtils)
-mm_common_add_install_target("mmsolverlibs" ${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in)
+mm_common_add_install_target("mmsolverlibs_cpp" ${CMAKE_CURRENT_SOURCE_DIR}/Config.cmake.in)

@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef MM_SOLVER_RENDER_RENDER_OVERRIDE_H
-#define MM_SOLVER_RENDER_RENDER_OVERRIDE_H
+#ifndef MM_SOLVER_RENDER_BASIC_RENDER_OVERRIDE_H
+#define MM_SOLVER_RENDER_BASIC_RENDER_OVERRIDE_H
 
 // STL
 #include <vector>
@@ -37,18 +37,19 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "RenderGlobalsNode.h"
+#include "RenderGlobalsBasicNode.h"
 #include "mmSolver/render/data/RenderMode.h"
 #include "mmSolver/render/data/constants.h"
 #include "mmSolver/render/ops/SceneRender.h"
+#include "mmSolver/render/ops/SilhouetteRender.h"
 
 namespace mmsolver {
 namespace render {
 
-class RenderOverride : public MHWRender::MRenderOverride {
+class RenderOverrideBasic : public MHWRender::MRenderOverride {
 public:
-    RenderOverride(const MString& name);
-    ~RenderOverride() override;
+    RenderOverrideBasic(const MString& name);
+    ~RenderOverrideBasic() override;
 
     MHWRender::DrawAPI supportedDrawAPIs() const override;
 
@@ -59,10 +60,20 @@ public:
     MString uiName() const override { return m_ui_name; }
 
 protected:
-    MStatus updateParameters();
-
     // UI name
     MString m_ui_name;
+
+    // Callback IDs for tracking viewport changes
+    MCallbackId m_renderer_change_callback;
+    MCallbackId m_render_override_change_callback;
+    static void renderer_change_func(const MString& panel_name,
+                                     const MString& old_renderer,
+                                     const MString& new_renderer,
+                                     void* client_data);
+    static void render_override_change_func(const MString& panel_name,
+                                            const MString& old_renderer,
+                                            const MString& new_renderer,
+                                            void* client_data);
 
     // Allow the command to access this class.
     friend class MMRendererCmd;
@@ -70,10 +81,13 @@ protected:
 private:
     SceneRender* m_backgroundOp;
 
+    // A handle to the 'mmRenderGlobals' node.
+    MObjectHandle m_globals_node;
+
     MSelectionList m_image_plane_nodes;
 };
 
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MAYA_MM_SOLVER_RENDER_RENDER_OVERRIDE_H
+#endif  // MAYA_MM_SOLVER_RENDER_BASIC_RENDER_OVERRIDE_H

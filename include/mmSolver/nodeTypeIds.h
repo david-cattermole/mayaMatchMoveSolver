@@ -86,9 +86,13 @@
 #define MM_MARKER_GROUP_TRANSFORM_TYPE_NAME "mmMarkerGroupTransform"
 #define MM_MARKER_GROUP_DRAW_CLASSIFY "drawdb/geometry/transform"
 
-#define MM_RENDERER_NAME "mmRenderer"
-#define MM_RENDER_GLOBALS_TYPE_ID 0x0012F194
-#define MM_RENDER_GLOBALS_TYPE_NAME "mmRenderGlobals"
+#define MM_RENDERER_BASIC_NAME "mmRenderer"
+#define MM_RENDER_GLOBALS_BASIC_TYPE_ID 0x0012F194
+#define MM_RENDER_GLOBALS_BASIC_TYPE_NAME "mmRenderGlobals"
+
+#define MM_RENDERER_SILHOUETTE_NAME "mmRendererSilhouette"
+#define MM_RENDER_GLOBALS_SILHOUETTE_TYPE_ID 0x0012F18E
+#define MM_RENDER_GLOBALS_SILHOUETTE_TYPE_NAME "mmRenderGlobalsSilhouette"
 
 #define MM_SKY_DOME_SHAPE_TYPE_ID 0x0012F195
 #define MM_SKY_DOME_SHAPE_TYPE_NAME "mmSkyDomeShape"
@@ -127,9 +131,6 @@
 
 #define MM_IMAGE_PLANE_SHAPE_TYPE_ID 0x0012F187
 #define MM_IMAGE_PLANE_SHAPE_TYPE_NAME "mmImagePlaneShape"
-#define MM_IMAGE_PLANE_SHAPE_NODE_CLASSIFY                                  \
-    "auxiliary/camera:geometry/camera:imageplane:drawdb/geometry/mmSolver/" \
-    "imagePlane"
 #define MM_IMAGE_PLANE_SHAPE_DRAW_CLASSIFY "drawdb/geometry/mmSolver/imagePlane"
 #define MM_IMAGE_PLANE_SHAPE_DRAW_REGISTRANT_ID "mmImagePlaneShape"
 #define MM_IMAGE_PLANE_SHAPE_SELECTION_TYPE_NAME "mmImagePlaneShapeSelection"

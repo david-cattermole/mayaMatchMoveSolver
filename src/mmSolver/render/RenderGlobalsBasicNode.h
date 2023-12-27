@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 David Cattermole.
+ * Copyright (C) 2021, 2023 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -20,8 +20,8 @@
  * Stores global values for the mmSolver viewport renderer.
  */
 
-#ifndef MM_SOLVER_RENDER_RENDER_GLOBALS_NODE_H
-#define MM_SOLVER_RENDER_RENDER_GLOBALS_NODE_H
+#ifndef MM_SOLVER_RENDER_RENDER_GLOBALS_BASIC_NODE_H
+#define MM_SOLVER_RENDER_RENDER_GLOBALS_BASIC_NODE_H
 
 // Maya
 #include <maya/MFnDependencyNode.h>
@@ -34,11 +34,11 @@
 namespace mmsolver {
 namespace render {
 
-class RenderGlobalsNode : public MPxNode {
+class RenderGlobalsBasicNode : public MPxNode {
 public:
-    RenderGlobalsNode();
+    RenderGlobalsBasicNode();
 
-    ~RenderGlobalsNode() override;
+    ~RenderGlobalsBasicNode() override;
 
     MStatus compute(const MPlug &plug, MDataBlock &data) override;
 
@@ -53,7 +53,11 @@ public:
     static MTypeId m_id;
 
     // Input Attributes
-    static MObject a_renderColorFormat;
+    static MObject a_silhouetteEnable;
+    static MObject a_silhouetteDepthOffset;
+    static MObject a_silhouetteWidth;
+    static MObject a_silhouetteColor;
+    static MObject a_silhouetteAlpha;
 
 private:
     // Callback IDs for tracking viewport changes.
@@ -66,4 +70,4 @@ private:
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MM_SOLVER_RENDER_RENDER_GLOBALS_NODE_H
+#endif  // MM_SOLVER_RENDER_RENDER_GLOBALS_BASIC_NODE_H

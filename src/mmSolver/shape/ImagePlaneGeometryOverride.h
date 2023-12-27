@@ -81,7 +81,7 @@ public:
 
     void handleTraceMessage(const MString &message) const override {
         MGlobal::displayInfo("ImagePlaneGeometryOverride: " + message);
-        MMSOLVER_INFO("ImagePlaneGeometryOverride: " << message.asChar());
+        MMSOLVER_MAYA_INFO("ImagePlaneGeometryOverride: " << message.asChar());
     }
 
 protected:

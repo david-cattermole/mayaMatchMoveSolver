@@ -88,7 +88,8 @@ source "${PROJECT_ROOT}/scripts/internal/python_venv_activate.bash"
 
 # Paths for dependencies.
 MMSOLVERLIBS_INSTALL_DIR="${BUILD_DIR_BASE}/build_mmsolverlibs/install/maya${MAYA_VERSION}_linux/"
-MMSOLVERLIBS_CMAKE_CONFIG_DIR="${MMSOLVERLIBS_INSTALL_DIR}/lib64/cmake/mmsolverlibs"
+MMSOLVERLIBS_CMAKE_CONFIG_DIR="${MMSOLVERLIBS_INSTALL_DIR}/lib64/cmake/mmsolverlibs_cpp"
+MMSOLVERLIBS_RUST_DIR="${BUILD_DIR_BASE}/build_mmsolverlibs/rust_linux_maya${MAYA_VERSION}/${BUILD_TYPE_DIR}"
 
 # We don't want to find system packages.
 CMAKE_IGNORE_PATH="/lib;/lib64;/usr;/usr/lib;/usr/lib64;/usr/local;/usr/local/lib;/usr/local/lib64;"
@@ -123,7 +124,8 @@ ${CMAKE_EXE} \
     -DMMSOLVER_BUILD_TESTS=${MMSOLVER_BUILD_TESTS} \
     -DMAYA_LOCATION=${MAYA_LOCATION} \
     -DMAYA_VERSION=${MAYA_VERSION} \
-    -Dmmsolverlibs_DIR=${MMSOLVERLIBS_CMAKE_CONFIG_DIR} \
+    -Dmmsolverlibs_rust_DIR=${MMSOLVERLIBS_RUST_DIR} \
+    -Dmmsolverlibs_cpp_DIR=${MMSOLVERLIBS_CMAKE_CONFIG_DIR} \
     ${PROJECT_ROOT}
 
 ${CMAKE_EXE} --build . --parallel

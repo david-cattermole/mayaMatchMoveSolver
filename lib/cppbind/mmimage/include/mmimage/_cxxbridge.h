@@ -931,6 +931,7 @@ namespace mmimage {
   struct OptionF32;
   struct Vec2F32;
   struct Vec2I32;
+  struct Box2F32;
   struct ImageRegionRectangle;
   struct PixelF32x4;
   struct PixelF64x2;
@@ -952,6 +953,7 @@ enum class AttributeValueType : ::std::uint8_t {
   kVec2I32 = 6,
   kVec3F32 = 7,
   kVec3I32 = 8,
+  kBox2F32 = 9,
   kUnknown = 255,
 };
 #endif // CXXBRIDGE1_ENUM_mmimage$AttributeValueType
@@ -1071,6 +1073,24 @@ struct Vec2I32 final {
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$Vec2I32
+
+#ifndef CXXBRIDGE1_STRUCT_mmimage$Box2F32
+#define CXXBRIDGE1_STRUCT_mmimage$Box2F32
+struct Box2F32 final {
+  float min_x;
+  float min_y;
+  float max_x;
+  float max_y;
+
+  bool operator==(const Box2F32 &) const noexcept;
+  bool operator!=(const Box2F32 &) const noexcept;
+  bool operator<(const Box2F32 &) const noexcept;
+  bool operator<=(const Box2F32 &) const noexcept;
+  bool operator>(const Box2F32 &) const noexcept;
+  bool operator>=(const Box2F32 &) const noexcept;
+  using IsRelocatable = ::std::true_type;
+};
+#endif // CXXBRIDGE1_STRUCT_mmimage$Box2F32
 
 #ifndef CXXBRIDGE1_STRUCT_mmimage$ImageRegionRectangle
 #define CXXBRIDGE1_STRUCT_mmimage$ImageRegionRectangle

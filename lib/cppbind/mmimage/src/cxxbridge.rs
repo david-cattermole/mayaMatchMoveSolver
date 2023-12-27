@@ -64,6 +64,9 @@ pub mod ffi {
         #[cxx_name = "kVec3I32"]
         Vec3I32 = 8,
 
+        #[cxx_name = "kBox2F32"]
+        Box2F32 = 9,
+
         #[cxx_name = "kUnknown"]
         Unknown = 255,
     }
@@ -158,6 +161,14 @@ pub mod ffi {
     struct Vec2I32 {
         x: i32,
         y: i32,
+    }
+
+    #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
+    struct Box2F32 {
+        min_x: f32,
+        min_y: f32,
+        max_x: f32,
+        max_y: f32,
     }
 
     #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]

@@ -985,6 +985,7 @@ namespace mmimage {
   struct OptionF32;
   struct Vec2F32;
   struct Vec2I32;
+  struct Box2F32;
   struct ImageRegionRectangle;
   struct PixelF32x4;
   struct PixelF64x2;
@@ -1006,6 +1007,7 @@ enum class AttributeValueType : ::std::uint8_t {
   kVec2I32 = 6,
   kVec3F32 = 7,
   kVec3I32 = 8,
+  kBox2F32 = 9,
   kUnknown = 255,
 };
 #endif // CXXBRIDGE1_ENUM_mmimage$AttributeValueType
@@ -1125,6 +1127,24 @@ struct Vec2I32 final {
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$Vec2I32
+
+#ifndef CXXBRIDGE1_STRUCT_mmimage$Box2F32
+#define CXXBRIDGE1_STRUCT_mmimage$Box2F32
+struct Box2F32 final {
+  float min_x;
+  float min_y;
+  float max_x;
+  float max_y;
+
+  bool operator==(const Box2F32 &) const noexcept;
+  bool operator!=(const Box2F32 &) const noexcept;
+  bool operator<(const Box2F32 &) const noexcept;
+  bool operator<=(const Box2F32 &) const noexcept;
+  bool operator>(const Box2F32 &) const noexcept;
+  bool operator>=(const Box2F32 &) const noexcept;
+  using IsRelocatable = ::std::true_type;
+};
+#endif // CXXBRIDGE1_STRUCT_mmimage$Box2F32
 
 #ifndef CXXBRIDGE1_STRUCT_mmimage$ImageRegionRectangle
 #define CXXBRIDGE1_STRUCT_mmimage$ImageRegionRectangle
@@ -1289,6 +1309,12 @@ bool mmimage$cxxbridge1$Vec2I32$operator$eq(const Vec2I32 &, const Vec2I32 &) no
 bool mmimage$cxxbridge1$Vec2I32$operator$lt(const Vec2I32 &, const Vec2I32 &) noexcept;
 bool mmimage$cxxbridge1$Vec2I32$operator$le(const Vec2I32 &, const Vec2I32 &) noexcept;
 ::std::size_t mmimage$cxxbridge1$Vec2I32$operator$hash(const Vec2I32 &) noexcept;
+bool mmimage$cxxbridge1$Box2F32$operator$eq(const Box2F32 &, const Box2F32 &) noexcept;
+bool mmimage$cxxbridge1$Box2F32$operator$ne(const Box2F32 &, const Box2F32 &) noexcept;
+bool mmimage$cxxbridge1$Box2F32$operator$lt(const Box2F32 &, const Box2F32 &) noexcept;
+bool mmimage$cxxbridge1$Box2F32$operator$le(const Box2F32 &, const Box2F32 &) noexcept;
+bool mmimage$cxxbridge1$Box2F32$operator$gt(const Box2F32 &, const Box2F32 &) noexcept;
+bool mmimage$cxxbridge1$Box2F32$operator$ge(const Box2F32 &, const Box2F32 &) noexcept;
 bool mmimage$cxxbridge1$ImageRegionRectangle$operator$eq(const ImageRegionRectangle &, const ImageRegionRectangle &) noexcept;
 bool mmimage$cxxbridge1$ImageRegionRectangle$operator$lt(const ImageRegionRectangle &, const ImageRegionRectangle &) noexcept;
 bool mmimage$cxxbridge1$ImageRegionRectangle$operator$le(const ImageRegionRectangle &, const ImageRegionRectangle &) noexcept;
@@ -1545,6 +1571,30 @@ bool Vec2I32::operator>(const Vec2I32 &rhs) const noexcept {
 
 bool Vec2I32::operator>=(const Vec2I32 &rhs) const noexcept {
   return !(*this < rhs);
+}
+
+bool Box2F32::operator==(const Box2F32 &rhs) const noexcept {
+  return mmimage$cxxbridge1$Box2F32$operator$eq(*this, rhs);
+}
+
+bool Box2F32::operator!=(const Box2F32 &rhs) const noexcept {
+  return mmimage$cxxbridge1$Box2F32$operator$ne(*this, rhs);
+}
+
+bool Box2F32::operator<(const Box2F32 &rhs) const noexcept {
+  return mmimage$cxxbridge1$Box2F32$operator$lt(*this, rhs);
+}
+
+bool Box2F32::operator<=(const Box2F32 &rhs) const noexcept {
+  return mmimage$cxxbridge1$Box2F32$operator$le(*this, rhs);
+}
+
+bool Box2F32::operator>(const Box2F32 &rhs) const noexcept {
+  return mmimage$cxxbridge1$Box2F32$operator$gt(*this, rhs);
+}
+
+bool Box2F32::operator>=(const Box2F32 &rhs) const noexcept {
+  return mmimage$cxxbridge1$Box2F32$operator$ge(*this, rhs);
 }
 
 bool ImageRegionRectangle::operator==(const ImageRegionRectangle &rhs) const noexcept {

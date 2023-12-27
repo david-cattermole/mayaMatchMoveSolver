@@ -91,3 +91,32 @@ impl Vec2I32 {
         Vec2I32 { x: 0, y: 0 }
     }
 }
+
+/// Define a 2D Box region, with f32 numbers.
+#[derive(Debug, Clone)]
+pub struct Box2F32 {
+    pub min_x: f32,
+    pub min_y: f32,
+    pub max_x: f32,
+    pub max_y: f32,
+}
+
+impl Box2F32 {
+    pub fn new(min_x: f32, min_y: f32, max_x: f32, max_y: f32) -> Box2F32 {
+        Box2F32 {
+            min_x,
+            min_y,
+            max_x,
+            max_y,
+        }
+    }
+
+    pub fn default() -> Box2F32 {
+        Box2F32 {
+            min_x: 0.0,
+            min_y: 0.0,
+            max_x: 0.0,
+            max_y: 0.0,
+        }
+    }
+}

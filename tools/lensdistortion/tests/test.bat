@@ -25,12 +25,12 @@ SETLOCAL
 SET PROJECT_ROOT=%CD%
 ECHO Project Root: %PROJECT_ROOT%
 
-SET MAYA_VERSION=2022
+SET MAYA_VERSION=2020
 SET MMSOLVER_VERSION=0.4.6
 SET INSTALL_MODULE_DIR=%USERPROFILE%\Documents\maya\%MAYA_VERSION%\modules
 
 SET MAIN_BINARY=%INSTALL_MODULE_DIR%\mayaMatchMoveSolver-%MMSOLVER_VERSION%-maya%MAYA_VERSION%-win64\bin\mmsolver-lensdistortion.exe
-SET LENS_FILE=%PROJECT_ROOT%\lib\cppbind\mmlens\tests\test_file_3de_classic_3.nk
+SET LENS_FILE=%PROJECT_ROOT%\lib\cppbind\mmlens\tests\test_file_3de_classic_1.nk
 SET OUTPUT_FILE_PATTERN=%PROJECT_ROOT%\tools\lensdistortion\tests\test_output/out
 ECHO main binary: %MAIN_BINARY%
 ECHO lens file: %LENS_FILE%

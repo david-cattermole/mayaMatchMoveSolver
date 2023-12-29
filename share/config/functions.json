@@ -717,6 +717,15 @@
                 "mmSolver.tools.removecontroller2.tool.main();"
             ]
         },
+        "create_rivet": {
+            "name": "Create Rivet",
+            "name_shelf": "Rivet",
+            "tooltip": "Create a new Rivet on the selected mesh components.",
+            "command": [
+                "import mmSolver.tools.createrivet.tool;",
+                "mmSolver.tools.createrivet.tool.main();"
+            ]
+        },
         "camera_object_scale_adjust": {
             "name": "Adjust Camera/Object Scale...",
             "name_shelf": "CrSclRig",

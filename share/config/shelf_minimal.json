@@ -110,6 +110,8 @@
             "general_tools/gen_tools_popup/create_world_controllers2",
             "general_tools/gen_tools_popup/create_controller2",
             "general_tools/gen_tools_popup/remove_controller2",
+            "general_tools/gen_tools_popup/---Rivets",
+            "general_tools/gen_tools_popup/create_rivet",
             "general_tools/gen_tools_popup/---ML Tools",
             "general_tools/gen_tools_popup/ml_convert_rotation_order",
             "general_tools/gen_tools_popup/---Naming & Organisation",

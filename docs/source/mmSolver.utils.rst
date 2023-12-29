@@ -89,7 +89,6 @@ Load File
     :members:
     :undoc-members:
 
-
 Load Marker
 +++++++++++
 
@@ -131,7 +130,7 @@ Formats
 .. automodule:: mmSolver.utils.loadmarker.formats.uvtrack
     :members:
     :undoc-members:
-              
+
 Node
 ++++
 
@@ -164,6 +163,28 @@ Re-Project
 ++++++++++
 
 .. automodule:: mmSolver.utils.reproject
+    :members:
+    :undoc-members:
+
+Rivet
++++++
+
+.. automodule:: mmSolver.utils.rivet.meshtwoedge
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.rivet.nearestpointonmesh
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.rivet.pointonpoly
+    :members:
+    :undoc-members:
+
+Selection
++++++++++
+
+.. automodule:: mmSolver.utils.selection
     :members:
     :undoc-members:
 

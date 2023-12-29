@@ -228,6 +228,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createlens.html">mmSolver.tools.createlens</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createline.html">mmSolver.tools.createline</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createmarker.html">mmSolver.tools.createmarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createrivet.html">mmSolver.tools.createrivet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createskydome.html">mmSolver.tools.createskydome</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.deformmarker.html">mmSolver.tools.deformmarker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.duplicatemarker.html">mmSolver.tools.duplicatemarker</a></li>
@@ -344,7 +345,7 @@ all end in tears.</p>
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='140079116027920'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='140079116027984'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='140079116028112'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='139845852079888'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='139845810633680'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='139845810633104'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -2890,6 +2891,234 @@ point and normal, or (None, None), if no point was found.</p>
 </dd></dl>
 
 </section>
+<section id="module-mmSolver.utils.rivet.meshtwoedge">
+<span id="rivet"></span><h2>Rivet<a class="headerlink" href="#module-mmSolver.utils.rivet.meshtwoedge" title="Permalink to this heading">#</a></h2>
+<p>The ‘rivet.mel technique’ for creating rivets.</p>
+<p>‘rivet.mel’ was written by Michael Bazhutkin in 2001.
+<a class="reference external" href="https://www.highend3d.com/maya/script/rivet-button-for-maya">https://www.highend3d.com/maya/script/rivet-button-for-maya</a></p>
+<p>This method uses polygon edges converted into NURBS curves, then
+placing a point at the average of two different NURBS curves.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.utils.rivet.meshtwoedge.</span></span><span class="sig-name descname"><span class="pre">RivetMeshTwoEdge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rivet_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rivet_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constraint_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loft_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_on_surface_info_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curve_from_mesh_edge_a_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">curve_from_mesh_edge_b_node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.constraint_node">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">constraint_node</span></span><a class="headerlink" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.constraint_node" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.curve_from_mesh_edge_a_node">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">curve_from_mesh_edge_a_node</span></span><a class="headerlink" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.curve_from_mesh_edge_a_node" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.curve_from_mesh_edge_b_node">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">curve_from_mesh_edge_b_node</span></span><a class="headerlink" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.curve_from_mesh_edge_b_node" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 6</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.loft_node">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loft_node</span></span><a class="headerlink" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.loft_node" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.point_on_surface_info_node">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">point_on_surface_info_node</span></span><a class="headerlink" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.point_on_surface_info_node" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.rivet_shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rivet_shape</span></span><a class="headerlink" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.rivet_shape" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.rivet_transform">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rivet_transform</span></span><a class="headerlink" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.rivet_transform" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.meshtwoedge.create">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.rivet.meshtwoedge.</span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.rivet.meshtwoedge.create" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a Rivet position between two edges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mesh_shape</strong> (<em>str</em>) – Mesh shape node.</p></li>
+<li><p><strong>edge_a</strong> (<em>str</em>) – First edge component path.</p></li>
+<li><p><strong>edge_b</strong> (<em>str</em>) – Second edge component path.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A rivet object containing names to all the nodes.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge" title="mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge">RivetMeshTwoEdge</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<span class="target" id="module-mmSolver.utils.rivet.nearestpointonmesh"></span><p>Query the Nearest Point On a Mesh surface.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.nearestpointonmesh.NearestPointData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.utils.rivet.nearestpointonmesh.</span></span><span class="sig-name descname"><span class="pre">NearestPointData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normal</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">face_index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.coords">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coords</span></span><a class="headerlink" href="#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.coords" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.face_index">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">face_index</span></span><a class="headerlink" href="#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.face_index" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.normal">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">normal</span></span><a class="headerlink" href="#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.normal" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.position">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">position</span></span><a class="headerlink" href="#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.position" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.nearestpointonmesh.get_nearest_point_on_mesh">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.rivet.nearestpointonmesh.</span></span><span class="sig-name descname"><span class="pre">get_nearest_point_on_mesh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_position</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.rivet.nearestpointonmesh.get_nearest_point_on_mesh" title="Permalink to this definition">#</a></dt>
+<dd><p>Get data on the mesh surface, for the nearest position to
+‘in_position’.</p>
+</dd></dl>
+
+<span class="target" id="module-mmSolver.utils.rivet.pointonpoly"></span><p>Create a Rivet using a Point-On-Poly Constraint.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.utils.rivet.pointonpoly.</span></span><span class="sig-name descname"><span class="pre">PointOnPolyConstraintNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_node">
+<span class="sig-name descname"><span class="pre">get_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_node" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_attr_name_target_u">
+<span class="sig-name descname"><span class="pre">get_attr_name_target_u</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_attr_name_target_u" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_attr_name_target_v">
+<span class="sig-name descname"><span class="pre">get_attr_name_target_v</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_attr_name_target_v" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_attr_name_target_weight">
+<span class="sig-name descname"><span class="pre">get_attr_name_target_weight</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_attr_name_target_weight" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.utils.rivet.pointonpoly.</span></span><span class="sig-name descname"><span class="pre">RivetPointOnPoly</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rivet_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rivet_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_on_poly_constraint</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly.point_on_poly_constraint">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">point_on_poly_constraint</span></span><a class="headerlink" href="#mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly.point_on_poly_constraint" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly.rivet_shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rivet_shape</span></span><a class="headerlink" href="#mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly.rivet_shape" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly.rivet_transform">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">rivet_transform</span></span><a class="headerlink" href="#mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly.rivet_transform" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.rivet.pointonpoly.create">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.rivet.pointonpoly.</span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_uv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.rivet.pointonpoly.create" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a Point-on-Poly Rivet.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>None</em><em> or </em><em>str</em>) – Name of the Rivet to create.</p></li>
+<li><p><strong>parent</strong> (<em>None</em><em> or </em><em>str</em>) – The parent node of the newly created Rivet.</p></li>
+<li><p><strong>coordinate_uv</strong> (<em>None</em><em> or </em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – The default UV Coordinate of the newly created Rivet.</p></li>
+<li><p><strong>in_position</strong> (<em>None</em><em> or </em><em>(</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em>) – The world-space position of the created Rivet,
+if None, fall back to the default coordinate_uv.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Rivet data structure containing all nodes for rivet.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly" title="mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly">RivetPointOnPoly</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-mmSolver.utils.selection">
+<span id="selection"></span><h2>Selection<a class="headerlink" href="#module-mmSolver.utils.selection" title="Permalink to this heading">#</a></h2>
+<p>Selection utilities.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.selection.filter_mesh_vertex_selection">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.selection.</span></span><span class="sig-name descname"><span class="pre">filter_mesh_vertex_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selection</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.selection.filter_mesh_vertex_selection" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.selection.filter_mesh_edge_selection">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.selection.</span></span><span class="sig-name descname"><span class="pre">filter_mesh_edge_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selection</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.selection.filter_mesh_edge_selection" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.selection.filter_mesh_face_selection">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.selection.</span></span><span class="sig-name descname"><span class="pre">filter_mesh_face_selection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">selection</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.selection.filter_mesh_face_selection" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.selection.get_mesh_vertex_selection">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.selection.</span></span><span class="sig-name descname"><span class="pre">get_mesh_vertex_selection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.selection.get_mesh_vertex_selection" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.selection.get_mesh_edge_selection">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.selection.</span></span><span class="sig-name descname"><span class="pre">get_mesh_edge_selection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.selection.get_mesh_edge_selection" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.selection.get_mesh_face_selection">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.selection.</span></span><span class="sig-name descname"><span class="pre">get_mesh_face_selection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.selection.get_mesh_face_selection" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.utils.selection.get_soft_selection_weights">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.selection.</span></span><span class="sig-name descname"><span class="pre">get_soft_selection_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">only_node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.selection.get_soft_selection_weights" title="Permalink to this definition">#</a></dt>
+<dd><p>Get the currently ‘soft’ selected components.</p>
+<p>Soft selection may return a list for multiple different nodes.</p>
+<p>If ‘only_node’ is given, then soft selections on only that node
+will be returned, all else will be ignored.</p>
+</dd></dl>
+
+</section>
 <section id="module-mmSolver.utils.smooth">
 <span id="smooth"></span><h2>Smooth<a class="headerlink" href="#module-mmSolver.utils.smooth" title="Permalink to this heading">#</a></h2>
 <p>Generic data smoothing.</p>
@@ -4606,6 +4835,52 @@ panel/editor.</p>
 <li><a class="reference internal" href="#mmSolver.utils.reproject.remove_reprojection_from_camera"><code class="docutils literal notranslate"><span class="pre">remove_reprojection_from_camera()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.reproject.reset_pan_zoom"><code class="docutils literal notranslate"><span class="pre">reset_pan_zoom()</span></code></a></li>
 <li><a class="reference internal" href="#mmSolver.utils.reproject.connect_transform_to_reprojection"><code class="docutils literal notranslate"><span class="pre">connect_transform_to_reprojection()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.utils.rivet.meshtwoedge">Rivet</a><ul>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge"><code class="docutils literal notranslate"><span class="pre">RivetMeshTwoEdge</span></code></a><ul>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.constraint_node"><code class="docutils literal notranslate"><span class="pre">RivetMeshTwoEdge.constraint_node</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.curve_from_mesh_edge_a_node"><code class="docutils literal notranslate"><span class="pre">RivetMeshTwoEdge.curve_from_mesh_edge_a_node</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.curve_from_mesh_edge_b_node"><code class="docutils literal notranslate"><span class="pre">RivetMeshTwoEdge.curve_from_mesh_edge_b_node</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.loft_node"><code class="docutils literal notranslate"><span class="pre">RivetMeshTwoEdge.loft_node</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.point_on_surface_info_node"><code class="docutils literal notranslate"><span class="pre">RivetMeshTwoEdge.point_on_surface_info_node</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.rivet_shape"><code class="docutils literal notranslate"><span class="pre">RivetMeshTwoEdge.rivet_shape</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.rivet_transform"><code class="docutils literal notranslate"><span class="pre">RivetMeshTwoEdge.rivet_transform</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.meshtwoedge.create"><code class="docutils literal notranslate"><span class="pre">create()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData"><code class="docutils literal notranslate"><span class="pre">NearestPointData</span></code></a><ul>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.coords"><code class="docutils literal notranslate"><span class="pre">NearestPointData.coords</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.face_index"><code class="docutils literal notranslate"><span class="pre">NearestPointData.face_index</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.normal"><code class="docutils literal notranslate"><span class="pre">NearestPointData.normal</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.position"><code class="docutils literal notranslate"><span class="pre">NearestPointData.position</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.nearestpointonmesh.get_nearest_point_on_mesh"><code class="docutils literal notranslate"><span class="pre">get_nearest_point_on_mesh()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode"><code class="docutils literal notranslate"><span class="pre">PointOnPolyConstraintNode</span></code></a><ul>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_node"><code class="docutils literal notranslate"><span class="pre">PointOnPolyConstraintNode.get_node()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_attr_name_target_u"><code class="docutils literal notranslate"><span class="pre">PointOnPolyConstraintNode.get_attr_name_target_u()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_attr_name_target_v"><code class="docutils literal notranslate"><span class="pre">PointOnPolyConstraintNode.get_attr_name_target_v()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_attr_name_target_weight"><code class="docutils literal notranslate"><span class="pre">PointOnPolyConstraintNode.get_attr_name_target_weight()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly"><code class="docutils literal notranslate"><span class="pre">RivetPointOnPoly</span></code></a><ul>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly.point_on_poly_constraint"><code class="docutils literal notranslate"><span class="pre">RivetPointOnPoly.point_on_poly_constraint</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly.rivet_shape"><code class="docutils literal notranslate"><span class="pre">RivetPointOnPoly.rivet_shape</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly.rivet_transform"><code class="docutils literal notranslate"><span class="pre">RivetPointOnPoly.rivet_transform</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmSolver.utils.rivet.pointonpoly.create"><code class="docutils literal notranslate"><span class="pre">create()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.utils.selection">Selection</a><ul>
+<li><a class="reference internal" href="#mmSolver.utils.selection.filter_mesh_vertex_selection"><code class="docutils literal notranslate"><span class="pre">filter_mesh_vertex_selection()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.selection.filter_mesh_edge_selection"><code class="docutils literal notranslate"><span class="pre">filter_mesh_edge_selection()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.selection.filter_mesh_face_selection"><code class="docutils literal notranslate"><span class="pre">filter_mesh_face_selection()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.selection.get_mesh_vertex_selection"><code class="docutils literal notranslate"><span class="pre">get_mesh_vertex_selection()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.selection.get_mesh_edge_selection"><code class="docutils literal notranslate"><span class="pre">get_mesh_edge_selection()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.selection.get_mesh_face_selection"><code class="docutils literal notranslate"><span class="pre">get_mesh_face_selection()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.utils.selection.get_soft_selection_weights"><code class="docutils literal notranslate"><span class="pre">get_soft_selection_weights()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-mmSolver.utils.smooth">Smooth</a><ul>

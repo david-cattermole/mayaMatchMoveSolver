@@ -228,6 +228,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createlens.html">mmSolver.tools.createlens</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createline.html">mmSolver.tools.createline</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createmarker.html">mmSolver.tools.createmarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createrivet.html">mmSolver.tools.createrivet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createskydome.html">mmSolver.tools.createskydome</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.deformmarker.html">mmSolver.tools.deformmarker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.duplicatemarker.html">mmSolver.tools.duplicatemarker</a></li>
@@ -525,6 +526,48 @@ version 1, use this python code to run it.</p>
 </pre></div>
 </div>
 </section>
+<section id="create-rivet">
+<span id="create-rivet-tool-ref"></span><h2>Create Rivet<a class="headerlink" href="#create-rivet" title="Permalink to this heading">#</a></h2>
+<p>Create a transform locator node that follows the surface of a Mesh, i.e. the
+transform is ‘riveted’ to the mesh.</p>
+<p>There are two types of rivet types currently supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Mesh Two Edges</strong> rivets are created from 2 Mesh shape edge
+components, the same as using the classic <a class="reference external" href="https://www.highend3d.com/maya/script/rivet-button-for-maya">rivet.mel</a> script. If
+the topology of the underlying mesh changes, the rivet will move
+across the surface.</p></li>
+<li><p><strong>Point On Poly Constraint</strong> rivets are created at selected
+vertices and can be moved along the surface with the UV
+coordinates. If the UV coordinates of the underlying mesh changes,
+the rivet may move. This rivet-style will not work with UV
+coordinates outside the regular 0.0 to 1.0 UV space as is commonly
+used with texture UDIMs.</p></li>
+</ul>
+</div></blockquote>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select a Maya Mesh components.</p>
+<ul class="simple">
+<li><p>Select Mesh Vertices to create <strong>Point On Poly Constraint</strong>
+rivets.</p></li>
+<li><p>Select 2 Mesh Edges to create a single <strong>Mesh Two Edges</strong> rivet.</p></li>
+</ul>
+</li>
+<li><p>Run tool.</p>
+<ul class="simple">
+<li><p>A rivet locator will be created.</p></li>
+<li><p>For a <strong>Point On Poly Constraint</strong> rivet, you can adjust the <cite>U</cite>
+and <cite>V</cite> coordinates from the rivet locator, if needed.</p></li>
+</ul>
+</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createrivet.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
 <section id="marker-bundle-rename">
 <span id="marker-bundle-rename-tool-ref"></span><h2>Marker Bundle Rename<a class="headerlink" href="#marker-bundle-rename" title="Permalink to this heading">#</a></h2>
 <p>Renames selected markers and bundles connected, takes the input name
@@ -744,6 +787,7 @@ will not be adjusted.</p></td>
 <li><a class="reference internal" href="#unparent-to-world">Unparent to World</a></li>
 <li><a class="reference internal" href="#reparent-ui">Reparent UI</a></li>
 <li><a class="reference internal" href="#create-remove-controller">Create / Remove Controller</a></li>
+<li><a class="reference internal" href="#create-rivet">Create Rivet</a></li>
 <li><a class="reference internal" href="#marker-bundle-rename">Marker Bundle Rename</a></li>
 <li><a class="reference internal" href="#marker-bundle-rename-with-metadata">Marker Bundle Rename (with Metadata)</a></li>
 <li><a class="reference internal" href="#sort-selected-nodes-in-outliner">Sort Selected Nodes In Outliner</a></li>

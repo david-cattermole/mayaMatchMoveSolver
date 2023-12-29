@@ -228,6 +228,54 @@ version 1, use this python code to run it.
     # Remove selected Controller
     tool.remove()
 
+.. _create-rivet-tool-ref:
+
+Create Rivet
+------------
+
+Create a transform locator node that follows the surface of a Mesh, i.e. the
+transform is 'riveted' to the mesh.
+
+There are two types of rivet types currently supported:
+
+ - **Mesh Two Edges** rivets are created from 2 Mesh shape edge
+   components, the same as using the classic `rivet.mel`_ script. If
+   the topology of the underlying mesh changes, the rivet will move
+   across the surface.
+
+ - **Point On Poly Constraint** rivets are created at selected
+   vertices and can be moved along the surface with the UV
+   coordinates. If the UV coordinates of the underlying mesh changes,
+   the rivet may move. This rivet-style will not work with UV
+   coordinates outside the regular 0.0 to 1.0 UV space as is commonly
+   used with texture UDIMs.
+
+Usage:
+
+1) Select a Maya Mesh components.
+
+   - Select Mesh Vertices to create **Point On Poly Constraint**
+     rivets.
+
+   - Select 2 Mesh Edges to create a single **Mesh Two Edges** rivet.
+
+2) Run tool.
+
+   - A rivet locator will be created.
+
+   - For a **Point On Poly Constraint** rivet, you can adjust the `U`
+     and `V` coordinates from the rivet locator, if needed.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.createrivet.tool as tool
+    tool.main()
+
+.. _rivet.mel:
+   https://www.highend3d.com/maya/script/rivet-button-for-maya
+
 .. _marker-bundle-rename-tool-ref:
 
 Marker Bundle Rename

@@ -28,6 +28,7 @@ mmSolver.tools
    mmSolver.tools.createlens
    mmSolver.tools.createline
    mmSolver.tools.createmarker
+   mmSolver.tools.createrivet
    mmSolver.tools.createskydome
    mmSolver.tools.deformmarker
    mmSolver.tools.duplicatemarker

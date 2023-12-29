@@ -226,6 +226,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createlens.html">mmSolver.tools.createlens</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createline.html">mmSolver.tools.createline</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createmarker.html">mmSolver.tools.createmarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createrivet.html">mmSolver.tools.createrivet</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createskydome.html">mmSolver.tools.createskydome</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.deformmarker.html">mmSolver.tools.deformmarker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.duplicatemarker.html">mmSolver.tools.duplicatemarker</a></li>
@@ -779,12 +780,14 @@
 </li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.reproject.connect_transform_to_reprojection">connect_transform_to_reprojection() (in module mmSolver.utils.reproject)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.constraint_node">constraint_node (mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge property)</a>
+</li>
         <li><a href="mmSolver.tools.setattributedetails.html#mmSolver.tools.setattributedetails.lib.convert_attributes_to_detail_values">convert_attributes_to_detail_values() (in module mmSolver.tools.setattributedetails.lib)</a>
 </li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.time.convert_frame_range_to_frame_list">convert_frame_range_to_frame_list() (in module mmSolver.utils.time)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="mmSolver.tools.createimageplane.html#mmSolver.tools.createimageplane.lib.convert_image_planes_on_camera">convert_image_planes_on_camera() (in module mmSolver.tools.createimageplane.lib)</a>
 </li>
         <li><a href="mmSolver.tools.convertmarker.html#mmSolver.tools.convertmarker.lib.convert_nodes_to_marker_data_list">convert_nodes_to_marker_data_list() (in module mmSolver.tools.convertmarker.lib)</a>
@@ -793,10 +796,16 @@
 </li>
         <li><a href="mmSolver.tools.solver.html#mmSolver.tools.solver.lib.uiquery.convert_ui_nodes_to_nodes">convert_ui_nodes_to_nodes() (in module mmSolver.tools.solver.lib.uiquery)</a>
 </li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.coords">coords (mmSolver.utils.rivet.nearestpointonmesh.NearestPointData property)</a>
+</li>
         <li><a href="mmSolver.tools.createcontroller.html#mmSolver.tools.createcontroller.lib.create">create() (in module mmSolver.tools.createcontroller.lib)</a>
 
         <ul>
           <li><a href="mmSolver.tools.createcontroller.html#mmSolver.tools.createcontroller.tool.create">(in module mmSolver.tools.createcontroller.tool)</a>
+</li>
+          <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.meshtwoedge.create">(in module mmSolver.utils.rivet.meshtwoedge)</a>
+</li>
+          <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.pointonpoly.create">(in module mmSolver.utils.rivet.pointonpoly)</a>
 </li>
         </ul></li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.animcurve.create_anim_curve_node">create_anim_curve_node() (in module mmSolver.utils.animcurve)</a>
@@ -916,6 +925,10 @@
         <li><a href="mmSolver.ui.uimodels.html#id63">createEditor() (mmSolver.ui.uimodels.ComboBoxDelegate method)</a>, <a href="mmSolver.ui.uimodels.html#mmSolver.ui.uimodels.ComboBoxDelegate.createEditor">[1]</a>
 </li>
         <li><a href="mmSolver.tools.setattributedetails.html#mmSolver.tools.setattributedetails.lib.AttrDetail.curve_frame_variance">curve_frame_variance (mmSolver.tools.setattributedetails.lib.AttrDetail property)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.curve_from_mesh_edge_a_node">curve_from_mesh_edge_a_node (mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge property)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.curve_from_mesh_edge_b_node">curve_from_mesh_edge_b_node (mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge property)</a>
 </li>
         <li><a href="mmSolver.tools.setattributedetails.html#mmSolver.tools.setattributedetails.lib.AttrDetail.curve_max">curve_max (mmSolver.tools.setattributedetails.lib.AttrDetail property)</a>
 </li>
@@ -1055,6 +1068,8 @@
   <h2>F</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.face_index">face_index (mmSolver.utils.rivet.nearestpointonmesh.NearestPointData property)</a>
+</li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.loadfile.loader.LoaderBase.file_exts">file_exts (mmSolver.utils.loadfile.loader.LoaderBase attribute)</a>
 
         <ul>
@@ -1087,18 +1102,24 @@
 </li>
         <li><a href="mmSolver.api.html#mmSolver.api.filter_marker_nodes">filter_marker_nodes() (in module mmSolver.api)</a>
 </li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.selection.filter_mesh_edge_selection">filter_mesh_edge_selection() (in module mmSolver.utils.selection)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.selection.filter_mesh_face_selection">filter_mesh_face_selection() (in module mmSolver.utils.selection)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.selection.filter_mesh_vertex_selection">filter_mesh_vertex_selection() (in module mmSolver.utils.selection)</a>
+</li>
         <li><a href="mmSolver.api.html#mmSolver.api.filter_nodes_into_categories">filter_nodes_into_categories() (in module mmSolver.api)</a>
 </li>
         <li><a href="mmSolver.tools.deformmarker.html#mmSolver.tools.deformmarker.lib.find_animlayer">find_animlayer() (in module mmSolver.tools.deformmarker.lib)</a>
 </li>
         <li><a href="mmSolver.api.html#mmSolver.api.find_marker_attr_mapping">find_marker_attr_mapping() (in module mmSolver.api)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="mmSolver.utils.html#mmSolver.utils.nodeaffects.find_marker_attr_mapping_raw">find_marker_attr_mapping_raw() (in module mmSolver.utils.nodeaffects)</a>
 </li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.config.find_path">find_path() (in module mmSolver.utils.config)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="mmSolver.utils.html#mmSolver.utils.nodeaffects.find_plugs_affecting_transform">find_plugs_affecting_transform() (in module mmSolver.utils.nodeaffects)</a>
 </li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.reproject.find_reprojection_nodes">find_reprojection_nodes() (in module mmSolver.utils.reproject)</a>
@@ -1222,6 +1243,12 @@
         <li><a href="mmSolver.api.html#mmSolver.api.Attribute.get_attr">get_attr() (mmSolver.api.Attribute method)</a>
 </li>
         <li><a href="mmSolver.tools.deformmarker.html#mmSolver.tools.deformmarker.lib.get_attr_blend_plugs">get_attr_blend_plugs() (in module mmSolver.tools.deformmarker.lib)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_attr_name_target_u">get_attr_name_target_u() (mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode method)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_attr_name_target_v">get_attr_name_target_v() (mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode method)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_attr_name_target_weight">get_attr_name_target_weight() (mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode method)</a>
 </li>
         <li><a href="mmSolver.api.html#mmSolver.api.Attribute.get_attr_nice_name">get_attr_nice_name() (mmSolver.api.Attribute method)</a>
 </li>
@@ -1677,12 +1704,12 @@
 </li>
         <li><a href="mmSolver.tools.solver.html#mmSolver.tools.solver.lib.maya_utils.get_markers_from_selection">get_markers_from_selection() (in module mmSolver.tools.solver.lib.maya_utils)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="mmSolver.api.html#mmSolver.api.get_markers_start_end_frames">get_markers_start_end_frames() (in module mmSolver.api)</a>
 </li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.transform.get_matrix_from_plug_apitwo">get_matrix_from_plug_apitwo() (in module mmSolver.utils.transform)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="mmSolver.api.html#mmSolver.api.get_max_frame_error">get_max_frame_error() (in module mmSolver.api)</a>
 </li>
         <li><a href="mmSolver.api.html#mmSolver.api.SolverStep.get_max_iterations">get_max_iterations() (mmSolver.api.SolverStep method)</a>
@@ -1698,6 +1725,12 @@
         <li><a href="mmSolver.utils.html#mmSolver.utils.time.get_maya_timeline_range_inner">get_maya_timeline_range_inner() (in module mmSolver.utils.time)</a>
 </li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.time.get_maya_timeline_range_outer">get_maya_timeline_range_outer() (in module mmSolver.utils.time)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.selection.get_mesh_edge_selection">get_mesh_edge_selection() (in module mmSolver.utils.selection)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.selection.get_mesh_face_selection">get_mesh_face_selection() (in module mmSolver.utils.selection)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.selection.get_mesh_vertex_selection">get_mesh_vertex_selection() (in module mmSolver.utils.selection)</a>
 </li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.viewport.get_mesh_visibility">get_mesh_visibility() (in module mmSolver.utils.viewport)</a>
 </li>
@@ -1723,6 +1756,8 @@
 </li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.viewport.get_ncloth_visibility">get_ncloth_visibility() (in module mmSolver.utils.viewport)</a>
 </li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.nearestpointonmesh.get_nearest_point_on_mesh">get_nearest_point_on_mesh() (in module mmSolver.utils.rivet.nearestpointonmesh)</a>
+</li>
         <li><a href="mmSolver.api.html#mmSolver.api.get_new_bundle_name">get_new_bundle_name() (in module mmSolver.api)</a>
 </li>
         <li><a href="mmSolver.api.html#mmSolver.api.get_new_line_name">get_new_line_name() (in module mmSolver.api)</a>
@@ -1745,6 +1780,8 @@
           <li><a href="mmSolver.api.html#mmSolver.api.Marker.get_node">(mmSolver.api.Marker method)</a>
 </li>
           <li><a href="mmSolver.api.html#mmSolver.api.MarkerGroup.get_node">(mmSolver.api.MarkerGroup method)</a>
+</li>
+          <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode.get_node">(mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode method)</a>
 </li>
           <li><a href="mmSolver.utils.html#mmSolver.utils.transform.TransformNode.get_node">(mmSolver.utils.transform.TransformNode method)</a>
 </li>
@@ -1937,6 +1974,8 @@
           <li><a href="mmSolver.api.html#mmSolver.api.SolverStandard.get_single_frame">(mmSolver.api.SolverStandard method)</a>
 </li>
         </ul></li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.selection.get_soft_selection_weights">get_soft_selection_weights() (in module mmSolver.utils.selection)</a>
+</li>
         <li><a href="mmSolver.api.html#mmSolver.api.SolverBasic.get_solve_focal_length">get_solve_focal_length() (mmSolver.api.SolverBasic method)</a>
 
         <ul>
@@ -2409,6 +2448,8 @@
 </li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.loadmarker.formats.uvtrack.LoaderUVTrack">LoaderUVTrack (class in mmSolver.utils.loadmarker.formats.uvtrack)</a>
 </li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.loft_node">loft_node (mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge property)</a>
+</li>
         <li><a href="mmSolver.tools.solver.html#mmSolver.tools.solver.lib.collection.log_solve_results">log_solve_results() (in module mmSolver.tools.solver.lib.collection)</a>
 </li>
         <li><a href="mmSolver.tools.mmshelf.html#mmSolver.tools.mmshelf.lib.lookup_value">lookup_value() (in module mmSolver.tools.mmshelf.lib)</a>
@@ -2453,6 +2494,8 @@
           <li><a href="mmSolver.tools.createline.html#mmSolver.tools.createline.tool.main">(in module mmSolver.tools.createline.tool)</a>
 </li>
           <li><a href="mmSolver.tools.createmarker.html#mmSolver.tools.createmarker.tool.main">(in module mmSolver.tools.createmarker.tool)</a>
+</li>
+          <li><a href="mmSolver.tools.createrivet.html#mmSolver.tools.createrivet.tool.main">(in module mmSolver.tools.createrivet.tool)</a>
 </li>
           <li><a href="mmSolver.tools.createskydome.html#mmSolver.tools.createskydome.tool.main">(in module mmSolver.tools.createskydome.tool)</a>
 </li>
@@ -3148,6 +3191,20 @@
 
         <ul>
           <li><a href="mmSolver.tools.createmarker.html#module-mmSolver.tools.createmarker.tool">module</a>
+</li>
+        </ul></li>
+        <li>
+    mmSolver.tools.createrivet
+
+        <ul>
+          <li><a href="mmSolver.tools.createrivet.html#module-mmSolver.tools.createrivet">module</a>
+</li>
+        </ul></li>
+        <li>
+    mmSolver.tools.createrivet.tool
+
+        <ul>
+          <li><a href="mmSolver.tools.createrivet.html#module-mmSolver.tools.createrivet.tool">module</a>
 </li>
         </ul></li>
         <li>
@@ -3927,8 +3984,6 @@
           <li><a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.constant">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     mmSolver.tools.solver.lib.collection
 
@@ -3950,6 +4005,8 @@
           <li><a href="mmSolver.tools.solver.html#module-mmSolver.tools.solver.lib.marker">module</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     mmSolver.tools.solver.lib.maya_utils
 
@@ -4511,6 +4568,34 @@
 </li>
         </ul></li>
         <li>
+    mmSolver.utils.rivet.meshtwoedge
+
+        <ul>
+          <li><a href="mmSolver.utils.html#module-mmSolver.utils.rivet.meshtwoedge">module</a>
+</li>
+        </ul></li>
+        <li>
+    mmSolver.utils.rivet.nearestpointonmesh
+
+        <ul>
+          <li><a href="mmSolver.utils.html#module-mmSolver.utils.rivet.nearestpointonmesh">module</a>
+</li>
+        </ul></li>
+        <li>
+    mmSolver.utils.rivet.pointonpoly
+
+        <ul>
+          <li><a href="mmSolver.utils.html#module-mmSolver.utils.rivet.pointonpoly">module</a>
+</li>
+        </ul></li>
+        <li>
+    mmSolver.utils.selection
+
+        <ul>
+          <li><a href="mmSolver.utils.html#module-mmSolver.utils.selection">module</a>
+</li>
+        </ul></li>
+        <li>
     mmSolver.utils.smooth
 
         <ul>
@@ -4720,6 +4805,10 @@
           <li><a href="mmSolver.tools.createmarker.html#module-mmSolver.tools.createmarker.constant">mmSolver.tools.createmarker.constant</a>
 </li>
           <li><a href="mmSolver.tools.createmarker.html#module-mmSolver.tools.createmarker.tool">mmSolver.tools.createmarker.tool</a>
+</li>
+          <li><a href="mmSolver.tools.createrivet.html#module-mmSolver.tools.createrivet">mmSolver.tools.createrivet</a>
+</li>
+          <li><a href="mmSolver.tools.createrivet.html#module-mmSolver.tools.createrivet.tool">mmSolver.tools.createrivet.tool</a>
 </li>
           <li><a href="mmSolver.tools.createskydome.html#module-mmSolver.tools.createskydome">mmSolver.tools.createskydome</a>
 </li>
@@ -5109,6 +5198,14 @@
 </li>
           <li><a href="mmSolver.utils.html#module-mmSolver.utils.reproject">mmSolver.utils.reproject</a>
 </li>
+          <li><a href="mmSolver.utils.html#module-mmSolver.utils.rivet.meshtwoedge">mmSolver.utils.rivet.meshtwoedge</a>
+</li>
+          <li><a href="mmSolver.utils.html#module-mmSolver.utils.rivet.nearestpointonmesh">mmSolver.utils.rivet.nearestpointonmesh</a>
+</li>
+          <li><a href="mmSolver.utils.html#module-mmSolver.utils.rivet.pointonpoly">mmSolver.utils.rivet.pointonpoly</a>
+</li>
+          <li><a href="mmSolver.utils.html#module-mmSolver.utils.selection">mmSolver.utils.selection</a>
+</li>
           <li><a href="mmSolver.utils.html#module-mmSolver.utils.smooth">mmSolver.utils.smooth</a>
 </li>
           <li><a href="mmSolver.utils.html#module-mmSolver.utils.sort">mmSolver.utils.sort</a>
@@ -5150,6 +5247,8 @@
         </ul></li>
         <li><a href="mmSolver.ui.nodes.html#mmSolver.ui.nodes.Node.name">name() (mmSolver.ui.nodes.Node method)</a>
 </li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData">NearestPointData (class in mmSolver.utils.rivet.nearestpointonmesh)</a>
+</li>
         <li><a href="mmSolver.ui.nodes.html#mmSolver.ui.nodes.Node.neverHasChildren">neverHasChildren() (mmSolver.ui.nodes.Node method)</a>
 </li>
         <li><a href="mmSolver.tools.solver.html#mmSolver.tools.solver.maya_callbacks.new_scene_func">new_scene_func() (in module mmSolver.tools.solver.maya_callbacks)</a>
@@ -5171,6 +5270,8 @@
         <li><a href="mmSolver.ui.uimodels.html#id45">nodeList() (mmSolver.ui.uimodels.TableModel method)</a>, <a href="mmSolver.ui.uimodels.html#mmSolver.ui.uimodels.TableModel.nodeList">[1]</a>
 </li>
         <li><a href="mmSolver.tools.reparent2.html#mmSolver.tools.reparent2.lib.nodes_attrs_settable">nodes_attrs_settable() (in module mmSolver.tools.reparent2.lib)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.normal">normal (mmSolver.utils.rivet.nearestpointonmesh.NearestPointData property)</a>
 </li>
         <li><a href="mmSolver.api.html#mmSolver.api.NotEnoughMarkers">NotEnoughMarkers (class in mmSolver.api)</a>
 </li>
@@ -5298,12 +5399,12 @@
 </li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.loadmarker.formats.uvtrack.parse_v2">parse_v2() (in module mmSolver.utils.loadmarker.formats.uvtrack)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="mmSolver.utils.html#mmSolver.utils.loadmarker.formats.uvtrack.parse_v3">parse_v3() (in module mmSolver.utils.loadmarker.formats.uvtrack)</a>
 </li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.loadmarker.formats.uvtrack.parse_v4">parse_v4() (in module mmSolver.utils.loadmarker.formats.uvtrack)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="mmSolver.utils.html#mmSolver.utils.loadfile.excep.ParserError">ParserError</a>
 </li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.loadfile.excep.ParserWarning">ParserWarning</a>
@@ -5311,6 +5412,14 @@
         <li><a href="mmSolver.tools.placemarkermanip.html#mmSolver.tools.placemarkermanip.tool.place_marker">place_marker() (in module mmSolver.tools.placemarkermanip.tool)</a>
 </li>
         <li><a href="mmSolver.tools.solver.html#mmSolver.tools.solver.ui.attr_nodes.PlugNode">PlugNode (class in mmSolver.tools.solver.ui.attr_nodes)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly.point_on_poly_constraint">point_on_poly_constraint (mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly property)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.point_on_surface_info_node">point_on_surface_info_node (mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge property)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.pointonpoly.PointOnPolyConstraintNode">PointOnPolyConstraintNode (class in mmSolver.utils.rivet.pointonpoly)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.nearestpointonmesh.NearestPointData.position">position (mmSolver.utils.rivet.nearestpointonmesh.NearestPointData property)</a>
 </li>
         <li><a href="mmSolver.api.html#mmSolver.api.ExecuteOptions.pre_solve_force_eval">pre_solve_force_eval (mmSolver.api.ExecuteOptions property)</a>
 </li>
@@ -5454,14 +5563,14 @@
         </ul></li>
         <li><a href="mmSolver.tools.cameraobjectscaleadjust.html#mmSolver.tools.cameraobjectscaleadjust.lib.remove_scale_rig">remove_scale_rig() (in module mmSolver.tools.cameraobjectscaleadjust.lib)</a>
 </li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="mmSolver.tools.solver.html#mmSolver.tools.solver.lib.maya_utils.remove_scene_selection">remove_scene_selection() (in module mmSolver.tools.solver.lib.maya_utils)</a>
 </li>
         <li><a href="mmSolver.api.html#mmSolver.api.Collection.remove_solver">remove_solver() (mmSolver.api.Collection method)</a>
 </li>
         <li><a href="mmSolver.tools.solver.html#mmSolver.tools.solver.lib.solver.remove_solver_from_collection">remove_solver_from_collection() (in module mmSolver.tools.solver.lib.solver)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="mmSolver.api.html#mmSolver.api.Collection.remove_solver_list">remove_solver_list() (mmSolver.api.Collection method)</a>
 </li>
         <li><a href="mmSolver.tools.solver.html#mmSolver.tools.solver.lib.collection.remove_solver_step_from_collection">remove_solver_step_from_collection() (in module mmSolver.tools.solver.lib.collection)</a>
@@ -5509,6 +5618,22 @@
         <li><a href="mmSolver.tools.setobjectcolour.html#mmSolver.tools.setobjectcolour.lib.reset_nodes_colour">reset_nodes_colour() (in module mmSolver.tools.setobjectcolour.lib)</a>
 </li>
         <li><a href="mmSolver.utils.html#mmSolver.utils.reproject.reset_pan_zoom">reset_pan_zoom() (in module mmSolver.utils.reproject)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.rivet_shape">rivet_shape (mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge property)</a>
+
+        <ul>
+          <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly.rivet_shape">(mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly property)</a>
+</li>
+        </ul></li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge.rivet_transform">rivet_transform (mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge property)</a>
+
+        <ul>
+          <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly.rivet_transform">(mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly property)</a>
+</li>
+        </ul></li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.meshtwoedge.RivetMeshTwoEdge">RivetMeshTwoEdge (class in mmSolver.utils.rivet.meshtwoedge)</a>
+</li>
+        <li><a href="mmSolver.utils.html#mmSolver.utils.rivet.pointonpoly.RivetPointOnPoly">RivetPointOnPoly (class in mmSolver.utils.rivet.pointonpoly)</a>
 </li>
         <li><a href="mmSolver.api.html#mmSolver.api.root_frames_list_combine">root_frames_list_combine() (in module mmSolver.api)</a>
 </li>

@@ -91,34 +91,37 @@ def get_mesh_face_selection():
     return filter_mesh_face_selection(selection)
 
 
-def get_soft_selection_weights(only_node=None):
+def get_soft_selection_weights(only_shape_node=None):
     """
     Get the currently 'soft' selected components.
 
     Soft selection may return a list for multiple different nodes.
 
-    If 'only_node' is given, then soft selections on only that node
+    If 'only_shape_node' is given, then soft selections on only that node
     will be returned, all else will be ignored.
-    """
-    all_weights = []
 
+    :returns: List of object mappings of soft selection vertex index
+        to weights, or an empty list.
+    :rtype: [] or [{int: float}, ..]
+    """
     soft_select_enabled = maya.cmds.softSelect(query=True, softSelectEnabled=True)
     if not soft_select_enabled:
-        return all_weights
+        return []
 
     rich_selection = OpenMaya.MRichSelection()
     try:
-        # get currently active soft selection
+        # Get currently active soft selection
         OpenMaya.MGlobal.getRichSelection(rich_selection)
     except RuntimeError as e:
         LOG.error(str(e))
         LOG.error('Error getting soft selection.')
-        return all_weights
+        return []
 
     rich_selection_list = OpenMaya.MSelectionList()
     rich_selection.getSelection(rich_selection_list)
     selection_count = rich_selection_list.length()
 
+    all_weights = []
     for i in range(selection_count):
         shape_dag_path = OpenMaya.MDagPath()
         shape_component = OpenMaya.MObject()
@@ -127,8 +130,8 @@ def get_soft_selection_weights(only_node=None):
         except RuntimeError:
             continue
 
-        if only_node is not None:
-            if shape_dag_path.fullPathName() != only_node:
+        if only_shape_node is not None:
+            if shape_dag_path.fullPathName() != only_shape_node:
                 continue
 
         # Get weight value.

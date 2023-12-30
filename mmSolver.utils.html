@@ -265,6 +265,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.solver.html">mmSolver.tools.solver</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.sortoutlinernodes.html">mmSolver.tools.sortoutlinernodes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.subdivideline.html">mmSolver.tools.subdivideline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.surfacecluster.html">mmSolver.tools.surfacecluster</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.sysinfowindow.html">mmSolver.tools.sysinfowindow</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.togglebundlelock.html">mmSolver.tools.togglebundlelock</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.togglecameradistort.html">mmSolver.tools.togglecameradistort</a></li>
@@ -345,7 +346,7 @@ all end in tears.</p>
 </div>
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.animcurve.create_anim_curve_node_apione">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='139845852079888'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='139845810633680'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='139845810633104'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.animcurve.</span></span><span class="sig-name descname"><span class="pre">create_anim_curve_node_apione</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_in_type=&lt;MyCustomMock</span> <span class="pre">id='140091862264848'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent_out_type=&lt;MyCustomMock</span> <span class="pre">id='140091862264272'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">anim_type=&lt;MyCustomMock</span> <span class="pre">id='140091868075280'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">undo_cache=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.animcurve.create_anim_curve_node_apione" title="Permalink to this definition">#</a></dt>
 <dd><p>Create an animCurve using Maya API (one).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -3054,16 +3055,18 @@ placing a point at the average of two different NURBS curves.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.rivet.pointonpoly.create">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.rivet.pointonpoly.</span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coordinate_uv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.rivet.pointonpoly.create" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.rivet.pointonpoly.</span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mesh_transform</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_locator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uv_coordinate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">in_position</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.rivet.pointonpoly.create" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a Point-on-Poly Rivet.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>None</em><em> or </em><em>str</em>) – Name of the Rivet to create.</p></li>
 <li><p><strong>parent</strong> (<em>None</em><em> or </em><em>str</em>) – The parent node of the newly created Rivet.</p></li>
-<li><p><strong>coordinate_uv</strong> (<em>None</em><em> or </em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – The default UV Coordinate of the newly created Rivet.</p></li>
+<li><p><strong>as_locator</strong> (<em>bool</em>) – Should the Point-on-Poly Rivet be created as a
+locator, or just a transform? By default it a locator.</p></li>
+<li><p><strong>uv_coordinate</strong> (<em>None</em><em> or </em><em>(</em><em>float</em><em>, </em><em>float</em><em>)</em>) – The default UV Coordinate of the newly created Rivet.</p></li>
 <li><p><strong>in_position</strong> (<em>None</em><em> or </em><em>(</em><em>float</em><em>, </em><em>float</em><em>, </em><em>float</em><em>)</em>) – The world-space position of the created Rivet,
-if None, fall back to the default coordinate_uv.</p></li>
+if None, fall back to the default uv_coordinate.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -3111,11 +3114,20 @@ if None, fall back to the default coordinate_uv.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="mmSolver.utils.selection.get_soft_selection_weights">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.selection.</span></span><span class="sig-name descname"><span class="pre">get_soft_selection_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">only_node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.selection.get_soft_selection_weights" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">mmSolver.utils.selection.</span></span><span class="sig-name descname"><span class="pre">get_soft_selection_weights</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">only_shape_node</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.utils.selection.get_soft_selection_weights" title="Permalink to this definition">#</a></dt>
 <dd><p>Get the currently ‘soft’ selected components.</p>
 <p>Soft selection may return a list for multiple different nodes.</p>
-<p>If ‘only_node’ is given, then soft selections on only that node
+<p>If ‘only_shape_node’ is given, then soft selections on only that node
 will be returned, all else will be ignored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of object mappings of soft selection vertex index
+to weights, or an empty list.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>[] or [{int: float}, ..]</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

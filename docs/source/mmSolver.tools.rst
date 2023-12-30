@@ -65,6 +65,7 @@ mmSolver.tools
    mmSolver.tools.solver
    mmSolver.tools.sortoutlinernodes
    mmSolver.tools.subdivideline
+   mmSolver.tools.surfacecluster
    mmSolver.tools.sysinfowindow
    mmSolver.tools.togglebundlelock
    mmSolver.tools.togglecameradistort

@@ -35,6 +35,7 @@ import collections
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 
 
 LOG = mmSolver.logger.get_logger()
@@ -75,7 +76,7 @@ def create(mesh_shape, edge_a, edge_b, name=None):
     assert maya.cmds.objExists(edge_b)
     if name is None:
         name = 'mmRivetMeshTwoEdge1'
-    assert isinstance(name, str)
+    assert isinstance(name, pycompat.TEXT_TYPE)
 
     edge_index_a = edge_a.split('[')[-1]
     edge_index_b = edge_b.split('[')[-1]

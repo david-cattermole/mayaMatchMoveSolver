@@ -30,8 +30,16 @@ import maya.cmds
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.rivet.nearestpointonmesh as nearestpointonmesh_utils
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 
 LOG = mmSolver.logger.get_logger()
+
+
+def _create_transform(name=None, parent=None):
+    assert isinstance(name, pycompat.TEXT_TYPE)
+    node = maya.cmds.createNode("transform", name=name, parent=parent)
+    node = node_utils.get_long_name(node)
+    return node
 
 
 def _create_locator(name, parent=None):
@@ -147,7 +155,8 @@ def create(
     mesh_shape,
     name=None,
     parent=None,
-    coordinate_uv=None,
+    as_locator=None,
+    uv_coordinate=None,
     in_position=None,
 ):
     """
@@ -159,11 +168,15 @@ def create(
     :param parent: The parent node of the newly created Rivet.
     :type parent: None or str
 
-    :param coordinate_uv: The default UV Coordinate of the newly created Rivet.
-    :type coordinate_uv: None or (float, float)
+    :param as_locator: Should the Point-on-Poly Rivet be created as a
+        locator, or just a transform? By default it a locator.
+    :type as_locator: bool
+
+    :param uv_coordinate: The default UV Coordinate of the newly created Rivet.
+    :type uv_coordinate: None or (float, float)
 
     :param in_position: The world-space position of the created Rivet,
-        if None, fall back to the default coordinate_uv.
+        if None, fall back to the default uv_coordinate.
     :type in_position: None or (float, float, float)
 
     :returns: Rivet data structure containing all nodes for rivet.
@@ -171,22 +184,29 @@ def create(
     """
     if name is None:
         name = 'mmRivetPointOnPoly1'
-    assert isinstance(name, str)
+    if as_locator is None:
+        as_locator = True
+    assert isinstance(name, pycompat.TEXT_TYPE)
+    assert isinstance(as_locator, bool)
     assert parent is None or maya.cmds.objExists(parent)
     assert in_position is None or (
         isinstance(in_position, (tuple, list)) and len(in_position) == 3
     )
-    if coordinate_uv is None:
-        coordinate_uv = (0.5, 0.5)
-    assert isinstance(in_position, (tuple, list)) and len(coordinate_uv) == 2
+    if uv_coordinate is None:
+        uv_coordinate = (0.5, 0.5)
+    assert isinstance(uv_coordinate, (tuple, list)) and len(uv_coordinate) == 2
 
-    rivet_tfm, rivet_shp = _create_locator(name, parent=parent)
+    if as_locator is True:
+        rivet_tfm, rivet_shp = _create_locator(name, parent=parent)
+    else:
+        rivet_tfm = _create_transform(name, parent=parent)
+        rivet_shp = None
 
     point_on_poly = _create_point_on_poly_constraint(mesh_transform, rivet_tfm)
     assert point_on_poly is not None
 
-    coordinate_u = coordinate_uv[0]
-    coordinate_v = coordinate_uv[1]
+    coordinate_u = uv_coordinate[0]
+    coordinate_v = uv_coordinate[1]
     if in_position is not None:
         nearest_point_data = nearestpointonmesh_utils.get_nearest_point_on_mesh(
             mesh_shape, in_position
@@ -197,6 +217,7 @@ def create(
     # Add attributes and create connections for locator control.
     coord_u_attr_name = 'coordinateU'
     coord_v_attr_name = 'coordinateV'
+    coord_w_attr_name = 'coordinateWeight'
     maya.cmds.addAttr(
         rivet_tfm,
         longName=coord_u_attr_name,
@@ -215,14 +236,27 @@ def create(
         defaultValue=coordinate_v,
         keyable=True,
     )
+    maya.cmds.addAttr(
+        rivet_tfm,
+        longName=coord_w_attr_name,
+        shortName='crdwgt',
+        at='double',
+        defaultValue=1.0,
+        keyable=True,
+    )
     rivet_attr_name_u = point_on_poly.get_attr_name_target_u()
     rivet_attr_name_v = point_on_poly.get_attr_name_target_v()
+    rivet_attr_name_w = point_on_poly.get_attr_name_target_weight()
     rivet_tfm_coord_u_attr = '{}.{}'.format(rivet_tfm, coord_u_attr_name)
     rivet_tfm_coord_v_attr = '{}.{}'.format(rivet_tfm, coord_v_attr_name)
+    rivet_tfm_coord_w_attr = '{}.{}'.format(rivet_tfm, coord_w_attr_name)
     maya.cmds.connectAttr(rivet_tfm_coord_u_attr, rivet_attr_name_u)
     maya.cmds.connectAttr(rivet_tfm_coord_v_attr, rivet_attr_name_v)
+    maya.cmds.connectAttr(rivet_tfm_coord_w_attr, rivet_attr_name_w)
     _lock_node_attrs(
-        point_on_poly.get_node(), [rivet_attr_name_u, rivet_attr_name_v], lock=True
+        point_on_poly.get_node(),
+        [rivet_attr_name_u, rivet_attr_name_v, rivet_attr_name_w],
+        lock=True,
     )
 
     rivet = RivetPointOnPoly(

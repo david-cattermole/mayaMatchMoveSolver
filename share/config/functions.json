@@ -726,6 +726,38 @@
                 "mmSolver.tools.createrivet.tool.main();"
             ]
         },
+        "create_surface_cluster": {
+            "name": "Create Surface Cluster",
+            "name_shelf": "SrfClst",
+            "tooltip": "Create a new Surface Cluster on the selected mesh components.",
+            "command": [
+                "import mmSolver.tools.surfacecluster.tool;",
+                "mmSolver.tools.surfacecluster.tool.main();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.surfacecluster.tool;",
+                "mmSolver.tools.surfacecluster.tool.open_window();"
+            ]
+        },
+        "update_surface_cluster_weights_with_soft_selection": {
+            "name": "Update Surface Cluster Weights with Soft-Selection",
+            "name_shelf": "UpdWgts",
+            "tooltip": "",
+            "command": [
+                "import mmSolver.tools.surfacecluster.tool;",
+                "mmSolver.tools.surfacecluster.tool.update_weights_with_soft_selection();"
+            ]
+        },
+        "open_surface_cluster_paint_weights_tool": {
+            "name": "Open Cluster Paint Weights Tool...",
+            "name_shelf": "PntWgts",
+            "tooltip": "",
+            "command": [
+                "import mmSolver.tools.surfacecluster.tool;",
+                "mmSolver.tools.surfacecluster.tool.open_paint_weights_tool();"
+            ]
+        },
         "camera_object_scale_adjust": {
             "name": "Adjust Camera/Object Scale...",
             "name_shelf": "CrSclRig",

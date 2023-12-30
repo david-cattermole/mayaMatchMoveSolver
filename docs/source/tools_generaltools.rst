@@ -276,6 +276,124 @@ To run the tool, use this Python command:
 .. _rivet.mel:
    https://www.highend3d.com/maya/script/rivet-button-for-maya
 
+.. _create-rivet-tool-ref:
+
+Surface Cluster
+---------------
+
+A Surface Cluster is a "cluster" deformer that will be riveted to the
+surface of a mesh object. All movement of the underlying surface is
+inherited by the Surface Cluster, so the cluster "sits on" the
+surface, even if the underlying surface is animated/deformed.
+
+Surface Clusters can be very helpful for subtly adjusting the
+silhouette of an object, or adding a bulge, especially when the change
+needs to be animated.
+
+.. note:: This old `Surface Cluster YouTube Video`_ shows the general
+          usage of the tool, however the tool has been re-written and
+          improved with features for editing the deforming weights.
+
+.. _Surface Cluster YouTube Video:
+   https://youtu.be/7SFP4TgVbEI
+
+Create Single Surface Cluster
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create a Surface Cluster on the selected Mesh component.
+
+Usage:
+
+1) Select 1 or more components (vertices, edges, faces, etc).
+
+2) Run this tool.
+
+   - create a single surface cluster at the average position of all selected
+     components.
+
+   - (Optionally) Use current Soft Selection as default weighting - the
+     same as the "update_weights_with_soft_selection" tool.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.surfacecluster.tool as tool
+    tool.create_single_surface_cluster()
+
+    # Open the UI window change settings before creation.
+    tool.open_window()
+
+Create Multiple Surface Cluster
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create multiple surface clusters, one for each component selected.
+
+Usage:
+
+1) Select 1 or more components (vertices, edges, faces, etc).
+
+2) Run this tool.
+
+   - For each component, create a surface cluster is created.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.surfacecluster.tool as tool
+    tool.create_multiple_surface_clusters()
+
+    # Open the UI window change settings before creation.
+    tool.open_window()
+
+Update Weights With Soft-Selection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Update the cluster deformer weights using the current component
+soft-selection.
+
+
+Usage:
+1) Enable Soft Selection ('b' hotkey)
+
+2) Select 1 or more components (vertices, edges, faces, etc).
+
+3) Select surface cluster control.
+
+4) Run this tool.
+
+   - The weights of the surface cluster are updated with the soft
+     selection.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.surfacecluster.tool as tool
+    tool.update_weights_with_soft_selection()
+
+Open Surface Cluster Paint Weights
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Open the paint weights tool for the selected surface cluster Control.
+
+Usage:
+1) Select a surface cluster control.
+
+2) Run tool.
+
+   - The paint weights tool is opened.
+
+3) User paints weights.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.surfacecluster.tool as tool
+    tool.open_paint_weights_tool()
+
 .. _marker-bundle-rename-tool-ref:
 
 Marker Bundle Rename

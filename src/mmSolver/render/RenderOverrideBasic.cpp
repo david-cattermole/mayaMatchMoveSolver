@@ -107,10 +107,31 @@ RenderOverrideBasic::RenderOverrideBasic(const MString &name)
     m_backgroundOp->setEnabled(true);
     m_backgroundOp->setBackgroundStyle(BackgroundStyle::kMayaDefault);
     m_backgroundOp->setClearMask(CLEAR_MASK_ALL);
-    m_backgroundOp->setExcludeTypes(MHWRender::MFrameContext::kExcludeNone);
-    m_backgroundOp->setSceneFilter(
+
+    // Only draw imagePlane and plugin shapes.
+    const auto draw_only_image_plane_object_types =
+        static_cast<MUint64>(~(MHWRender::MFrameContext::kExcludeImagePlane |
+                               MHWRender::MFrameContext::kExcludePluginShapes));
+    m_backgroundOp->setExcludeTypes(draw_only_image_plane_object_types);
+
+    // - kRenderPreSceneUIItems - Grid or user added pre-scene UI items.
+    // - kRenderShadedItems - all shaded items.
+    // - kRenderPostSceneUIItems - Wireframe and components for
+    //                             surfaces as well as non-surface
+    //                             objects. kRenderUIItems - both
+    //                             pre/post scene UI items.
+    // - kRenderAllItems - ALL the items.
+    //
+    // kRenderShadedItems is needed to render normal objects (meshes,
+    // NURBS curves, etc).
+    //
+    // kRenderPostSceneUIItems is needed to render the
+    // 'mmImagePlaneShape'.
+    const auto mesh_and_image_plane_scene_filter =
         static_cast<MHWRender::MSceneRender::MSceneFilterOption>(
-            MHWRender::MSceneRender::kRenderShadedItems));
+            MHWRender::MSceneRender::kRenderShadedItems |
+            MHWRender::MSceneRender::kRenderPostSceneUIItems);
+    m_backgroundOp->setSceneFilter(mesh_and_image_plane_scene_filter);
 
     // Get the default set of operations.
     MHWRender::MRenderer::theRenderer()->getStandardViewportOperations(

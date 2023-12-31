@@ -29,6 +29,7 @@
 #ifndef MM_SOLVER_RENDER_MM_RENDERER_BASIC_CMD_H
 #define MM_SOLVER_RENDER_MM_RENDERER_BASIC_CMD_H
 
+// Maya
 #include <maya/MPxCommand.h>
 
 namespace mmsolver {

@@ -22,6 +22,9 @@
 
 #include "RenderGlobalsSilhouetteNode.h"
 
+// STL
+#include <cstdint>
+
 // Maya
 #include <maya/M3dView.h>
 #include <maya/MDataBlock.h>
@@ -53,6 +56,7 @@ MObject RenderGlobalsSilhouetteNode::a_depthOffset;
 MObject RenderGlobalsSilhouetteNode::a_width;
 MObject RenderGlobalsSilhouetteNode::a_color;
 MObject RenderGlobalsSilhouetteNode::a_alpha;
+MObject RenderGlobalsSilhouetteNode::a_operationNum;
 
 RenderGlobalsSilhouetteNode::RenderGlobalsSilhouetteNode()
     : m_attr_change_callback(0) {}
@@ -207,6 +211,25 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
         CHECK_MSTATUS(numeric_attribute.setMin(alpha_min));
         CHECK_MSTATUS(numeric_attribute.setMax(alpha_max));
         CHECK_MSTATUS(addAttribute(a_alpha));
+    }
+
+    // Silhouette Operation Number
+    //
+    // This value determines which rendering operations will be
+    // enabled. The lower the value, the fewer operations are enabled,
+    // and the operations increase linearly.
+    {
+        auto num_min = 0;
+        auto num_max = UINT8_MAX;
+        a_operationNum = numeric_attribute.create(
+            kAttrNameSilhouetteOperationNum, "opNm", MFnNumericData::kInt,
+            kSilhouetteOperationNumDefault);
+        CHECK_MSTATUS(numeric_attribute.setStorable(true));
+        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
+        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
+        CHECK_MSTATUS(numeric_attribute.setMin(num_min));
+        CHECK_MSTATUS(numeric_attribute.setMax(num_max));
+        CHECK_MSTATUS(addAttribute(a_operationNum));
     }
 
     return MS::kSuccess;

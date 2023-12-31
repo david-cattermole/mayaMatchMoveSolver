@@ -58,6 +58,7 @@ public:
     static MObject a_width;
     static MObject a_color;
     static MObject a_alpha;
+    static MObject a_operationNum;
 
 private:
     // Callback IDs for tracking viewport changes.

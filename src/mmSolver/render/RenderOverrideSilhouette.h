@@ -40,11 +40,23 @@
 #include "RenderGlobalsBasicNode.h"
 #include "mmSolver/render/data/RenderMode.h"
 #include "mmSolver/render/data/constants.h"
+#include "mmSolver/render/ops/ClearOperation.h"
+#include "mmSolver/render/ops/HudRender.h"
+#include "mmSolver/render/ops/PresentTarget.h"
 #include "mmSolver/render/ops/SceneRender.h"
 #include "mmSolver/render/ops/SilhouetteRender.h"
 
 namespace mmsolver {
 namespace render {
+
+// Helper to enumerate the target indexing
+enum SilhouetteTargetId {
+    kColorTarget = 0,
+    kDepthTarget = 1,
+
+    // Last item contains the number of enum entries.
+    kTargetCount
+};
 
 class RenderOverrideSilhouette : public MHWRender::MRenderOverride {
 public:
@@ -62,6 +74,12 @@ public:
 protected:
     // UI name
     MString m_ui_name;
+
+    // Shared render target list
+    MString m_target_override_names[SilhouetteTargetId::kTargetCount];
+    MHWRender::MRenderTargetDescription*
+        m_target_descriptions[SilhouetteTargetId::kTargetCount];
+    MHWRender::MRenderTarget* m_targets[SilhouetteTargetId::kTargetCount];
 
     // Callback IDs for tracking viewport changes
     MCallbackId m_renderer_change_callback;
@@ -84,6 +102,8 @@ private:
     SceneRender* m_selectOp;
     SilhouetteRender* m_silhouetteOp;
     SceneRender* m_wireframeOp;
+    HudRender* m_hudOp;
+    PresentTarget* m_presentOp;
 
     // A handle to the 'mmRenderGlobals' node.
     MObjectHandle m_globals_node;
@@ -95,6 +115,7 @@ private:
     float m_width;
     float m_color[3];
     float m_alpha;
+    uint8_t m_operation_num;
 };
 
 }  // namespace render

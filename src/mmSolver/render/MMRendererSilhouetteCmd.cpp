@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 David Cattermole.
+ * Copyright (C) 2021, 2023 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -21,6 +21,7 @@
 
 #include "MMRendererSilhouetteCmd.h"
 
+// Maya
 #include <maya/M3dView.h>
 #include <maya/MArgDatabase.h>
 #include <maya/MGlobal.h>

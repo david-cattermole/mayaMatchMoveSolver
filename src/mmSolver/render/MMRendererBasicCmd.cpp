@@ -21,6 +21,7 @@
 
 #include "MMRendererBasicCmd.h"
 
+// Maya
 #include <maya/M3dView.h>
 #include <maya/MArgDatabase.h>
 #include <maya/MGlobal.h>

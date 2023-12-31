@@ -23,6 +23,9 @@
 #ifndef MM_SOLVER_RENDER_DATA_CONSTANTS_H
 #define MM_SOLVER_RENDER_DATA_CONSTANTS_H
 
+// STL
+#include <cstdint>
+
 // Maya
 #include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
@@ -121,6 +124,7 @@ const MString kAttrNameSilhouetteColorR = "colorR";
 const MString kAttrNameSilhouetteColorG = "colorG";
 const MString kAttrNameSilhouetteColorB = "colorB";
 const MString kAttrNameSilhouetteAlpha = "alpha";
+const MString kAttrNameSilhouetteOperationNum = "operationNum";
 
 // Silhouette Renderer Attribute Default Values
 const bool kSilhouetteEnableDefault = true;
@@ -128,6 +132,7 @@ const float kSilhouetteDepthOffsetDefault = -1.0f;
 const float kSilhouetteWidthDefault = 2.0f;
 const float kSilhouetteColorDefault[] = {0.0f, 1.0f, 0.0f};
 const float kSilhouetteAlphaDefault = 1.0f;
+const uint8_t kSilhouetteOperationNumDefault = UINT8_MAX;
 
 }  // namespace render
 }  // namespace mmsolver

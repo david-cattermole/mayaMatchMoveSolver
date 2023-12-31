@@ -77,6 +77,7 @@ MStatus add_all_image_planes(MSelectionList& out_selection_list) {
     const bool verbose = false;
 
     MIntArray filterTypes;
+    filterTypes.append(static_cast<int32_t>(MFn::kCamera));
     filterTypes.append(static_cast<int32_t>(MFn::kImagePlane));
     filterTypes.append(static_cast<int32_t>(MFn::kPluginShape));
     filterTypes.append(static_cast<int32_t>(MFn::kPluginLocatorNode));
@@ -86,6 +87,8 @@ MStatus add_all_image_planes(MSelectionList& out_selection_list) {
     infoObject.setObjectType(MIteratorType::kMObject);
     infoObject.setFilterList(filterTypes, &status);
 
+    // NOTE: MItDag does not seem to support 'underworld' DAG paths
+    // such as Maya imagePlane nodes.
     MObject node;
     MDagPath dagPath;
     MItDag it(infoObject);
@@ -99,33 +102,43 @@ MStatus add_all_image_planes(MSelectionList& out_selection_list) {
             continue;
         }
 
-        // By definition these must be image planes, so we don't need
-        // to check any further.
-        bool ok = false;
-        if (dagPath.hasFn(MFn::kImagePlane) ||
-            dagPath.hasFn(MFn::kPluginImagePlaneNode)) {
-            ok = true;
-        }
+        MMSOLVER_MAYA_VRB(
+            "add_all_image_planes: "
+            "node=\""
+            << dagPath.fullPathName().asChar() << "\" is being considered.");
 
-        node = dagPath.node();
-        MFnDependencyNode depend_fn(node);
-        const MString node_classification =
-            get_dependency_node_classification(depend_fn);
-        if (node_classification_is_image_plane(node_classification)) {
+        bool ok = false;
+        if (dagPath.hasFn(MFn::kCamera) || dagPath.hasFn(MFn::kImagePlane) ||
+            dagPath.hasFn(MFn::kPluginImagePlaneNode)) {
+            // By definition these must be image planes, so we don't need
+            // to check any further.
+            MMSOLVER_MAYA_VRB(
+                "add_all_image_planes: "
+                "node=\""
+                << dagPath.fullPathName().asChar()
+                << "\" has MFn::kCamera, MFn::kImagePlane or "
+                   "MFn::kPluginImagePlaneNode.");
             ok = true;
+        } else {
+            // Check to see if the DAG path has a "magic string" node
+            // classification so we treat it as an image plane.
+            node = dagPath.node();
+            MFnDependencyNode depend_fn(node);
+            const MString node_classification =
+                get_dependency_node_classification(depend_fn);
+            if (node_classification_is_image_plane(node_classification)) {
+                MMSOLVER_MAYA_VRB(
+                    "add_all_image_planes: "
+                    "node=\""
+                    << dagPath.fullPathName().asChar()
+                    << "\" has draw classification.");
+                ok = true;
+            }
         }
 
         if (ok) {
-            out_selection_list.add(dagPath);
-            while (dagPath.isValid() && (dagPath.pathCount() >= 1)) {
-                status = dagPath.pop();
-                if (status == MS::kSuccess) {
-                    node = dagPath.node();
-                    out_selection_list.add(node);
-                } else {
-                    break;
-                }
-            }
+            MDagPath shapeDagPath(dagPath);
+            out_selection_list.add(shapeDagPath);
         }
     }
 

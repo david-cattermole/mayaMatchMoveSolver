@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 David Cattermole.
+ * Copyright (C) 2021, 2023 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -29,6 +29,7 @@
 #ifndef MM_SOLVER_RENDER_MM_SILHOUETTE_RENDERER_CMD_H
 #define MM_SOLVER_RENDER_MM_SILHOUETTE_RENDERER_CMD_H
 
+// Maya
 #include <maya/MPxCommand.h>
 
 namespace mmsolver {

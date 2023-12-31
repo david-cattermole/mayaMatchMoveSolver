@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021, 2023 David Cattermole.
+ * Copyright (C) 2021, 2023, 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -46,13 +46,6 @@ namespace mmsolver {
 namespace render {
 
 MTypeId RenderGlobalsBasicNode::m_id(MM_RENDER_GLOBALS_BASIC_TYPE_ID);
-
-// Input Attributes
-MObject RenderGlobalsBasicNode::a_silhouetteEnable;
-MObject RenderGlobalsBasicNode::a_silhouetteDepthOffset;
-MObject RenderGlobalsBasicNode::a_silhouetteWidth;
-MObject RenderGlobalsBasicNode::a_silhouetteColor;
-MObject RenderGlobalsBasicNode::a_silhouetteAlpha;
 
 RenderGlobalsBasicNode::RenderGlobalsBasicNode() : m_attr_change_callback(0) {}
 
@@ -129,86 +122,7 @@ void *RenderGlobalsBasicNode::creator() {
     return (new RenderGlobalsBasicNode());
 }
 
-MStatus RenderGlobalsBasicNode::initialize() {
-    MStatus status;
-    MFnNumericAttribute numeric_attribute;
-    MFnEnumAttribute enum_attribute;
-
-    // Silhouette Enable
-    {
-        a_silhouetteEnable = numeric_attribute.create(
-            kAttrNameSilhouetteEnable, "slhttenbl", MFnNumericData::kBoolean,
-            static_cast<int>(kSilhouetteEnableDefault));
-        CHECK_MSTATUS(numeric_attribute.setStorable(true));
-        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
-        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
-        CHECK_MSTATUS(addAttribute(a_silhouetteEnable));
-    }
-
-    // Silhouette Depth Offset
-    {
-        auto depth_offset_max = 0.0;
-        auto depth_offset_soft_min = -10.0;
-        auto depth_offset_soft_max = -0.1;
-        a_silhouetteDepthOffset = numeric_attribute.create(
-            kAttrNameSilhouetteDepthOffset, "slhttdpthoffst",
-            MFnNumericData::kDouble, kSilhouetteDepthOffsetDefault);
-        CHECK_MSTATUS(numeric_attribute.setStorable(true));
-        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
-        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
-        CHECK_MSTATUS(numeric_attribute.setMax(depth_offset_max));
-        CHECK_MSTATUS(numeric_attribute.setSoftMin(depth_offset_soft_min));
-        CHECK_MSTATUS(numeric_attribute.setSoftMax(depth_offset_soft_max));
-        CHECK_MSTATUS(addAttribute(a_silhouetteDepthOffset));
-    }
-
-    // Silhouette Width
-    {
-        auto width_min = 0.0;
-        auto width_soft_min = 1.0;
-        auto width_soft_max = 10.0;
-        a_silhouetteWidth = numeric_attribute.create(
-            kAttrNameSilhouetteWidth, "slhttwdth", MFnNumericData::kDouble,
-            kSilhouetteWidthDefault);
-        CHECK_MSTATUS(numeric_attribute.setStorable(true));
-        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
-        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
-        CHECK_MSTATUS(numeric_attribute.setMin(width_min));
-        CHECK_MSTATUS(numeric_attribute.setSoftMin(width_soft_min));
-        CHECK_MSTATUS(numeric_attribute.setSoftMax(width_soft_max));
-        CHECK_MSTATUS(addAttribute(a_silhouetteWidth));
-    }
-
-    // Silhouette Color (RGB)
-    {
-        a_silhouetteColor =
-            numeric_attribute.createColor(kAttrNameSilhouetteColor, "slhttclr");
-        CHECK_MSTATUS(numeric_attribute.setStorable(true));
-        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
-        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
-        CHECK_MSTATUS(numeric_attribute.setDefault(kSilhouetteColorDefault[0],
-                                                   kSilhouetteColorDefault[1],
-                                                   kSilhouetteColorDefault[2]));
-        CHECK_MSTATUS(addAttribute(a_silhouetteColor));
-    }
-
-    // Silhouette Alpha
-    {
-        auto alpha_min = 0.0;
-        auto alpha_max = 1.0;
-        a_silhouetteAlpha = numeric_attribute.create(
-            kAttrNameSilhouetteAlpha, "slhttalp", MFnNumericData::kDouble,
-            kSilhouetteAlphaDefault);
-        CHECK_MSTATUS(numeric_attribute.setStorable(true));
-        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
-        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
-        CHECK_MSTATUS(numeric_attribute.setMin(alpha_min));
-        CHECK_MSTATUS(numeric_attribute.setMax(alpha_max));
-        CHECK_MSTATUS(addAttribute(a_silhouetteAlpha));
-    }
-
-    return MS::kSuccess;
-}
+MStatus RenderGlobalsBasicNode::initialize() { return MS::kSuccess; }
 
 }  // namespace render
 }  // namespace mmsolver

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021, 2023 David Cattermole.
+ * Copyright (C) 2021, 2023, 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -42,7 +42,7 @@
 // MM Solver
 #include "RenderOverrideSilhouette.h"
 #include "mmSolver/nodeTypeIds.h"
-#include "mmSolver/render/data/RenderColorFormat.h"
+#include "mmSolver/render/data/CullFace.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
@@ -56,6 +56,7 @@ MObject RenderGlobalsSilhouetteNode::a_depthOffset;
 MObject RenderGlobalsSilhouetteNode::a_width;
 MObject RenderGlobalsSilhouetteNode::a_color;
 MObject RenderGlobalsSilhouetteNode::a_alpha;
+MObject RenderGlobalsSilhouetteNode::a_cullFace;
 MObject RenderGlobalsSilhouetteNode::a_operationNum;
 
 RenderGlobalsSilhouetteNode::RenderGlobalsSilhouetteNode()
@@ -211,6 +212,25 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
         CHECK_MSTATUS(numeric_attribute.setMin(alpha_min));
         CHECK_MSTATUS(numeric_attribute.setMax(alpha_max));
         CHECK_MSTATUS(addAttribute(a_alpha));
+    }
+
+    // Silhouette Cull Face
+    {
+        // Maya uses 'short' for storing all enums.
+        const auto front_value = static_cast<short>(CullFace::kFront);
+        const auto back_value = static_cast<short>(CullFace::kBack);
+        const auto front_and_back_value =
+            static_cast<short>(CullFace::kFrontAndBack);
+        a_cullFace =
+            enum_attribute.create("cullFace", "cllfc", back_value, &status);
+        CHECK_MSTATUS(status);
+        CHECK_MSTATUS(enum_attribute.addField("Front", front_value));
+        CHECK_MSTATUS(enum_attribute.addField("Back", back_value));
+        CHECK_MSTATUS(
+            enum_attribute.addField("FrontAndBack", front_and_back_value));
+        CHECK_MSTATUS(enum_attribute.setStorable(true));
+        CHECK_MSTATUS(enum_attribute.setKeyable(true));
+        CHECK_MSTATUS(addAttribute(a_cullFace));
     }
 
     // Silhouette Operation Number

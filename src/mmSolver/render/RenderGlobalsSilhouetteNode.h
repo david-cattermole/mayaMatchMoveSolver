@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021, 2023 David Cattermole.
+ * Copyright (C) 2021, 2023, 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -58,6 +58,7 @@ public:
     static MObject a_width;
     static MObject a_color;
     static MObject a_alpha;
+    static MObject a_cullFace;
     static MObject a_operationNum;
 
 private:

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2023 Patcha Saheb Binginapalli.
- * Copyright (C) 2023 David Cattermole.
+ * Copyright (C) 2023, 2024 David Cattermole.
  *
  * Patcha Saheb Binginapalli Python code was ported to C++ by David
  * Cattermole (2023-09-13 YYYY-MM-DD).
@@ -56,6 +56,7 @@ SilhouetteRender::SilhouetteRender(const MString& name)
     : MUserRenderOperation(name)
     , m_shader_program(0)
     , m_output_targets(nullptr)
+    , m_silhouette_cull_face(GL_BACK)
     , gGLFT(nullptr) {}
 
 SilhouetteRender::~SilhouetteRender() {
@@ -167,8 +168,9 @@ MStatus calculate_model_view_projection_matrix(
 MStatus draw_buffers(
     MGLFunctionTable* gGLFT, const MGLfloat silhouette_color[3],
     const MGLfloat silhouette_alpha, const MGLfloat silhouette_width,
-    const MGLfloat silhouette_depth_offset, const MGLfloat default_line_width,
-    const MMatrix& mvp_matrix, const MGLuint* vertex_buffer_handle,
+    const MGLfloat silhouette_depth_offset, const MGLenum silhouette_cull_face,
+    const MGLfloat default_line_width, const MMatrix& mvp_matrix,
+    const MGLuint* vertex_buffer_handle,
     const MGLuint* edge_index_buffer_handle,
     const MGLuint* triangles_index_buffer_handle,
     const MIndexBuffer& edge_index_buffer,
@@ -233,7 +235,7 @@ MStatus draw_buffers(
     gGLFT->glDrawElements(MGL_TRIANGLES, triangles_index_buffer.size(),
                           MGL_UNSIGNED_INT, nullptr);
 
-    gGLFT->glCullFace(MGL_FRONT);
+    gGLFT->glCullFace(silhouette_cull_face);
 
     // Draw Edges as Silhouettes into the color buffer.
     gGLFT->glColorMask(MGL_TRUE, MGL_TRUE, MGL_TRUE, MGL_TRUE);
@@ -284,6 +286,8 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
                       << m_silhouette_color[2]);
     MMSOLVER_MAYA_VRB("MM Renderer SilhouetteRender: m_silhouette_alpha: "
                       << m_silhouette_alpha);
+    MMSOLVER_MAYA_VRB("MM Renderer SilhouetteRender: m_silhouette_cull_face: "
+                      << static_cast<int>(m_silhouette_cull_face));
 
     MHardwareRenderer* hardware_renderer_ptr = MHardwareRenderer::theRenderer();
     if (!gGLFT && hardware_renderer_ptr) {
@@ -429,12 +433,12 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
             static_cast<MGLuint*>(edge_index_buffer_handle_ptr);
         const MGLuint* triangles_index_buffer_handle =
             static_cast<MGLuint*>(triangles_index_buffer_handle_ptr);
-        draw_buffers(gGLFT, m_silhouette_color, m_silhouette_alpha,
-                     m_silhouette_width, m_silhouette_depth_offset,
-                     default_line_width, model_view_projection,
-                     vertex_buffer_handle, edge_index_buffer_handle,
-                     triangles_index_buffer_handle, edge_index_buffer,
-                     triangles_index_buffer, m_shader_program);
+        draw_buffers(
+            gGLFT, m_silhouette_color, m_silhouette_alpha, m_silhouette_width,
+            m_silhouette_depth_offset, m_silhouette_cull_face,
+            default_line_width, model_view_projection, vertex_buffer_handle,
+            edge_index_buffer_handle, triangles_index_buffer_handle,
+            edge_index_buffer, triangles_index_buffer, m_shader_program);
     }
 
     return MS::kSuccess;

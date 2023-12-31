@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021, 2023 David Cattermole.
+ * Copyright (C) 2021, 2023, 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -113,6 +113,7 @@ RenderOverrideSilhouette::RenderOverrideSilhouette(const MString &name)
     , m_color{kSilhouetteColorDefault[0], kSilhouetteColorDefault[1],
               kSilhouetteColorDefault[2]}
     , m_alpha(kSilhouetteAlphaDefault)
+    , m_cull_face(kSilhouetteCullFaceDefault)
     , m_operation_num(255) {
     MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
     if (!renderer) {
@@ -321,7 +322,7 @@ MStatus update_parameters_silhouette(
     float &out_silhouette_depth_offset, float &out_silhouette_width,
     float &out_silhouette_color_r, float &out_silhouette_color_g,
     float &out_silhouette_color_b, float &out_silhouette_alpha,
-    uint8_t &out_operation_num) {
+    CullFace &out_silhouette_cull_face, uint8_t &out_operation_num) {
     const bool verbose = false;
     MStatus status = MS::kSuccess;
     MMSOLVER_MAYA_VRB("RenderOverrideSilhouette::update_parameters_silhouette");
@@ -438,6 +439,19 @@ MStatus update_parameters_silhouette(
     MMSOLVER_MAYA_VRB(
         "RenderOverrideSilhouette Silhouette Alpha: " << out_silhouette_alpha);
 
+    // Silhouette Cull Face - Which faces to cull? 'Back', 'Front' or
+    // 'Back and Front'?
+    out_silhouette_cull_face = kSilhouetteCullFaceDefault;
+    MPlug silhouette_cull_face_plug = depends_node.findPlug(
+        kAttrNameSilhouetteCullFace, want_networked_plug, &status);
+    if (status == MStatus::kSuccess) {
+        const auto value =
+            static_cast<CullFace>(silhouette_cull_face_plug.asShort());
+        out_silhouette_cull_face = value;
+    }
+    MMSOLVER_MAYA_VRB("RenderOverrideSilhouette Silhouette Cull Face: "
+                      << static_cast<int>(out_silhouette_cull_face));
+
     // Operation Number.
     out_operation_num = kSilhouetteOperationNumDefault;
     MPlug operation_num_plug = depends_node.findPlug(
@@ -549,7 +563,7 @@ MStatus RenderOverrideSilhouette::setup(const MString &destination) {
     // Get override values.
     status = update_parameters_silhouette(
         m_globals_node, m_enable, m_depth_offset, m_width, m_color[0],
-        m_color[1], m_color[2], m_alpha, m_operation_num);
+        m_color[1], m_color[2], m_alpha, m_cull_face, m_operation_num);
     CHECK_MSTATUS(status);
 
     MMSOLVER_MAYA_VRB(
@@ -577,6 +591,7 @@ MStatus RenderOverrideSilhouette::setup(const MString &destination) {
     m_silhouetteOp->setSilhouetteWidth(m_width);
     m_silhouetteOp->setSilhouetteColor(m_color[0], m_color[1], m_color[2]);
     m_silhouetteOp->setSilhouetteAlpha(m_alpha);
+    m_silhouetteOp->setSilhouetteCullFace(m_cull_face);
 
     MMSOLVER_MAYA_VRB(
         "RenderOverrideSilhouette::setup: m_wireframeOp=" << m_wireframeOp);

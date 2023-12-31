@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 David Cattermole.
+ * Copyright (C) 2021, 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -33,6 +33,7 @@
 
 // MM Solver
 #include "BackgroundStyle.h"
+#include "CullFace.h"
 #include "DisplayStyle.h"
 #include "EdgeDetectMode.h"
 #include "LayerMode.h"
@@ -124,6 +125,7 @@ const MString kAttrNameSilhouetteColorR = "colorR";
 const MString kAttrNameSilhouetteColorG = "colorG";
 const MString kAttrNameSilhouetteColorB = "colorB";
 const MString kAttrNameSilhouetteAlpha = "alpha";
+const MString kAttrNameSilhouetteCullFace = "cullFace";
 const MString kAttrNameSilhouetteOperationNum = "operationNum";
 
 // Silhouette Renderer Attribute Default Values
@@ -132,6 +134,7 @@ const float kSilhouetteDepthOffsetDefault = -1.0f;
 const float kSilhouetteWidthDefault = 2.0f;
 const float kSilhouetteColorDefault[] = {0.0f, 1.0f, 0.0f};
 const float kSilhouetteAlphaDefault = 1.0f;
+const CullFace kSilhouetteCullFaceDefault = CullFace::kBack;
 const uint8_t kSilhouetteOperationNumDefault = UINT8_MAX;
 
 }  // namespace render

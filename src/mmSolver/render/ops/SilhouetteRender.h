@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2023 Patcha Saheb Binginapalli.
- * Copyright (C) 2023 David Cattermole.
+ * Copyright (C) 2023, 2024 David Cattermole.
  *
  * Patcha Saheb Binginapalli Python code was ported to C++ by David
  * Cattermole (2023-09-13 YYYY-MM-DD).
@@ -36,6 +36,7 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
+#include "mmSolver/render/data/CullFace.h"
 #include "mmSolver/render/data/constants.h"
 #include "mmSolver/render/ops/scene_utils.h"
 
@@ -71,6 +72,23 @@ public:
         m_silhouette_color[2] = b;
     }
     void setSilhouetteAlpha(const float value) { m_silhouette_alpha = value; }
+    void setSilhouetteCullFace(const CullFace value) {
+        if (value == CullFace::kBack) {
+            m_silhouette_cull_face = GL_BACK;
+
+        } else if (value == CullFace::kFront) {
+            m_silhouette_cull_face = GL_FRONT;
+
+        } else if (value == CullFace::kFrontAndBack) {
+            m_silhouette_cull_face = GL_FRONT_AND_BACK;
+        } else {
+            MMSOLVER_MAYA_ERR("MM Renderer SilhouetteRender: "
+                              << "setSilhouetteCullFace failed, CullFace enum "
+                                 "value is invalid: "
+                              << static_cast<int>(value));
+            // Error.
+        }
+    }
 
 protected:
     MSelectionList *mLightList;
@@ -84,6 +102,7 @@ protected:
     float m_silhouette_width;
     float m_silhouette_color[3];
     float m_silhouette_alpha;
+    GLenum m_silhouette_cull_face;
 };
 
 }  // namespace render

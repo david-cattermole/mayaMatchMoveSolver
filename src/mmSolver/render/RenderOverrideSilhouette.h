@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021 David Cattermole.
+ * Copyright (C) 2021, 2023, 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -115,6 +115,7 @@ private:
     float m_width;
     float m_color[3];
     float m_alpha;
+    CullFace m_cull_face;
     uint8_t m_operation_num;
 };
 

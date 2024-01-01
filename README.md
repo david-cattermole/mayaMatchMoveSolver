@@ -57,6 +57,7 @@ changes.
 
 | Releases                                                                                | Description                                        |
 | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| [v0.4.7](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.7)   | Bug fix for "Convert to Marker" tool.              |
 | [v0.4.6](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.6)   | Bug fix for solver and minor features.             |
 | [v0.4.5](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.5)   | Introduction of MM Renderer and Maya 2024 support. |
 | [v0.4.4](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.4)   | Solver, 2D Reprojection and Blender-to-3DE fixes.  |

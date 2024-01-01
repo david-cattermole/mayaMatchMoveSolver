@@ -82,7 +82,7 @@ set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolve
 set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodesk Maya.")
 set(PROJECT_AUTHOR "David Cattermole and others (see AUTHORS.txt file)")
 set(PROJECT_COPYRIGHT
-  "2018-2023, David Cattermole, Anil Reddy, Kazuma Tonegawa, Patcha Saheb Binginapalli.")
+  "2018-2024, David Cattermole, Anil Reddy, Kazuma Tonegawa, Patcha Saheb Binginapalli.")
 enable_testing()
 
 

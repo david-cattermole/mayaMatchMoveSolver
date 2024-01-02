@@ -139,6 +139,7 @@ bool run_frame(mmlens::FrameNumber frame,
             return false;
         }
     }
+    return true;
 }
 
 bool run(const Arguments& args) {

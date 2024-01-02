@@ -467,7 +467,7 @@ MStatus update_parameters_silhouette(
 
 // Perform any setup required before render operations are to be executed.
 MStatus RenderOverrideSilhouette::setup(const MString &destination) {
-    const bool verbose = true;
+    const bool verbose = false;
     MMSOLVER_MAYA_VRB("RenderOverrideSilhouette::setup: start "
                       << destination.asChar());
 

@@ -34,7 +34,6 @@
 #include <maya/MDataHandle.h>
 #include <maya/MDistance.h>
 #include <maya/MFnCompoundAttribute.h>
-#include <maya/MFnEnumAttribute.h>
 #include <maya/MFnMatrixAttribute.h>
 #include <maya/MFnMatrixData.h>
 #include <maya/MFnMessageAttribute.h>
@@ -270,7 +269,6 @@ MStatus LineShapeNode::initialize() {
     MStatus status;
     MFnUnitAttribute uAttr;
     MFnNumericAttribute nAttr;
-    MFnEnumAttribute eAttr;
     MFnMessageAttribute msgAttr;
     MFnCompoundAttribute compoundAttr;
     MFnMatrixAttribute matrixAttr;

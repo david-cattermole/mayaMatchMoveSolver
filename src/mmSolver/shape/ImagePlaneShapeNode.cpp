@@ -30,6 +30,8 @@
 #include <maya/MFnMessageAttribute.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnNumericData.h>
+#include <maya/MFnStringData.h>
+#include <maya/MFnTypedAttribute.h>
 #include <maya/MFnUnitAttribute.h>
 #include <maya/MPlug.h>
 #include <maya/MPxLocatorNode.h>
@@ -77,6 +79,21 @@ MObject ImagePlaneShapeNode::m_lens_hash_previous;
 MObject ImagePlaneShapeNode::m_geometry_node;
 MObject ImagePlaneShapeNode::m_shader_node;
 MObject ImagePlaneShapeNode::m_camera_node;
+
+MObject ImagePlaneShapeNode::m_use_shader_node;
+MObject ImagePlaneShapeNode::m_use_image_read;
+MObject ImagePlaneShapeNode::m_use_color_bars;
+
+// Shader Attributes
+MObject ImagePlaneShapeNode::m_image_display_channel;
+MObject ImagePlaneShapeNode::m_color_gain;
+MObject ImagePlaneShapeNode::m_alpha_gain;
+MObject ImagePlaneShapeNode::m_ignore_alpha;
+MObject ImagePlaneShapeNode::m_flip;
+MObject ImagePlaneShapeNode::m_flop;
+MObject ImagePlaneShapeNode::m_is_transparent;
+MObject ImagePlaneShapeNode::m_file_path;
+MObject ImagePlaneShapeNode::m_color;
 
 ImagePlaneShapeNode::ImagePlaneShapeNode() {}
 
@@ -153,6 +170,8 @@ void *ImagePlaneShapeNode::creator() { return new ImagePlaneShapeNode(); }
 MStatus ImagePlaneShapeNode::initialize() {
     MStatus status;
     MFnNumericAttribute nAttr;
+    MFnTypedAttribute tAttr;
+    MFnEnumAttribute eAttr;
     MFnMessageAttribute msgAttr;
 
     m_visible_to_camera_only = nAttr.create("visibleToCameraOnly", "viscamony",
@@ -254,6 +273,116 @@ MStatus ImagePlaneShapeNode::initialize() {
     CHECK_MSTATUS(msgAttr.setConnectable(true));
     CHECK_MSTATUS(msgAttr.setKeyable(false));
     CHECK_MSTATUS(addAttribute(m_camera_node));
+
+    m_use_shader_node = nAttr.create("useShaderNode", "useshdnd",
+                                     MFnNumericData::kBoolean, true);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setConnectable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(m_use_shader_node));
+
+    m_use_image_read = nAttr.create("useImageRead", "useimgrd",
+                                    MFnNumericData::kBoolean, true);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setConnectable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(m_use_image_read));
+
+    m_use_color_bars = nAttr.create("useColorBars", "usecolrbrs",
+                                    MFnNumericData::kBoolean, false);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setConnectable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(m_use_color_bars));
+
+    // Which channel of the image should be displayed?
+    short value_all = static_cast<short>(ImageDisplayChannel::kAll);
+    short value_red = static_cast<short>(ImageDisplayChannel::kRed);
+    short value_green = static_cast<short>(ImageDisplayChannel::kGreen);
+    short value_blue = static_cast<short>(ImageDisplayChannel::kBlue);
+    short value_alpha = static_cast<short>(ImageDisplayChannel::kAlpha);
+    m_image_display_channel = eAttr.create("shaderImageDisplayChannel",
+                                           "shdimgdspchan", value_all, &status);
+    CHECK_MSTATUS(status);
+    CHECK_MSTATUS(eAttr.addField("RGBA", value_all));
+    CHECK_MSTATUS(eAttr.addField("Red", value_red));
+    CHECK_MSTATUS(eAttr.addField("Green", value_green));
+    CHECK_MSTATUS(eAttr.addField("Blue", value_blue));
+    CHECK_MSTATUS(eAttr.addField("Alpha", value_alpha));
+    CHECK_MSTATUS(eAttr.setStorable(true));
+    CHECK_MSTATUS(eAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(m_image_display_channel));
+
+    m_color_gain = nAttr.create("shaderColorGain", "shdclgn",
+                                MFnNumericData::kDouble, 1.0);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setConnectable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(false));
+    CHECK_MSTATUS(nAttr.setMin(0.0));
+    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Color Gain (Shader)")));
+    CHECK_MSTATUS(addAttribute(m_color_gain));
+
+    m_alpha_gain = nAttr.create("shaderAlphaGain", "shdalpgn",
+                                MFnNumericData::kDouble, 1.0);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setConnectable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(false));
+    CHECK_MSTATUS(nAttr.setMin(0.0));
+    CHECK_MSTATUS(nAttr.setMax(1.0));
+    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Alpha Gain (Shader)")));
+    CHECK_MSTATUS(addAttribute(m_alpha_gain));
+
+    m_ignore_alpha = nAttr.create("shaderIgnoreAlpha", "shdignalp",
+                                  MFnNumericData::kBoolean, false);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setConnectable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Ignore Alpha (Shader)")));
+    CHECK_MSTATUS(addAttribute(m_ignore_alpha));
+
+    m_flip =
+        nAttr.create("shaderFlip", "shdflip", MFnNumericData::kBoolean, false);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setConnectable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Flip (Shader)")));
+    CHECK_MSTATUS(addAttribute(m_flip));
+
+    m_flop =
+        nAttr.create("shaderFlop", "shdflop", MFnNumericData::kBoolean, false);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setConnectable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Flop (Shader)")));
+    CHECK_MSTATUS(addAttribute(m_flop));
+
+    m_is_transparent = nAttr.create("shaderIsTransparent", "shdistrnsp",
+                                    MFnNumericData::kBoolean, false);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setConnectable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(
+        nAttr.setNiceNameOverride(MString("Is Transparent (Shader)")));
+    CHECK_MSTATUS(addAttribute(m_is_transparent));
+
+    // Create empty string data to be used as attribute default
+    // (string) value.
+    MFnStringData empty_string_data;
+    MObject empty_string_data_obj = empty_string_data.create("");
+
+    m_file_path = tAttr.create("shaderFilePath", "shdflpth", MFnData::kString,
+                               empty_string_data_obj);
+    CHECK_MSTATUS(tAttr.setStorable(true));
+    CHECK_MSTATUS(tAttr.setUsedAsFilename(true));
+    CHECK_MSTATUS(addAttribute(m_file_path));
+
+    m_color = nAttr.createColor("shaderColor", "shdcl");
+    CHECK_MSTATUS(nAttr.setDefault(0.0f, 0.58824f, 0.644f));
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setConnectable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(false));
+    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Color (Shader)")));
+    CHECK_MSTATUS(addAttribute(m_color));
 
     return MS::kSuccess;
 }

@@ -33,7 +33,6 @@
 #include <maya/MDataBlock.h>
 #include <maya/MDataHandle.h>
 #include <maya/MDistance.h>
-#include <maya/MFnEnumAttribute.h>
 #include <maya/MFnNumericAttribute.h>
 #include <maya/MFnNumericData.h>
 #include <maya/MFnUnitAttribute.h>
@@ -147,7 +146,6 @@ MStatus MarkerShapeNode::initialize() {
     MStatus status;
     MFnUnitAttribute uAttr;
     MFnNumericAttribute nAttr;
-    MFnEnumAttribute eAttr;
 
     // Color
     m_color = nAttr.createColor("color", "clr");

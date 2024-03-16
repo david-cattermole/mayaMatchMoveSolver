@@ -75,7 +75,9 @@ MHWRender::MShaderInstance *compile_shader_file(const MString &shader_file_name,
     const bool verbose = false;
     MStatus status = MS::kSuccess;
 
-    MMSOLVER_MAYA_VRB("MM Renderer compiling shader file...");
+    MMSOLVER_MAYA_VRB("MM Renderer compiling shader file..."
+                      << " shader_file_name=" << shader_file_name.asChar()
+                      << " technique_name=" << technique_name.asChar());
 
     const MHWRender::MShaderManager *shader_manager = get_shader_manager();
     if (!shader_manager) {

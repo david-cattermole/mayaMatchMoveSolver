@@ -44,6 +44,8 @@
 
 namespace mmsolver {
 
+enum class ImageDisplayChannel { kAll = 0, kRed, kGreen, kBlue, kAlpha };
+
 class ImagePlaneShapeNode : public MPxLocatorNode {
 public:
     ImagePlaneShapeNode();
@@ -99,6 +101,22 @@ public:
     static MObject m_geometry_node;
     static MObject m_shader_node;
     static MObject m_camera_node;
+
+    // "Use" Attributes
+    static MObject m_use_shader_node;
+    static MObject m_use_image_read;
+    static MObject m_use_color_bars;
+
+    // Shader Attributes
+    static MObject m_image_display_channel;
+    static MObject m_color_gain;
+    static MObject m_alpha_gain;
+    static MObject m_ignore_alpha;
+    static MObject m_flip;
+    static MObject m_flop;
+    static MObject m_is_transparent;
+    static MObject m_file_path;
+    static MObject m_color;
 };
 
 }  // namespace mmsolver

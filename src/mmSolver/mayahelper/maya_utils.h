@@ -105,9 +105,22 @@ MStatus constructAttrAffectsName(const MString &attrName,
 
 namespace mmsolver {
 
+static inline MStatus getNodeAttrPlug(const MDagPath &objPath,
+                                      const MObject &attr, MPlug &out_plug) {
+    MStatus status = MS::kSuccess;
+    MObject node = objPath.node(&status);
+    if (status) {
+        out_plug = MPlug(node, attr);
+        if (out_plug.isNull()) {
+            return MS::kFailure;
+        }
+    }
+    return status;
+}
+
 static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
                                   MDistance &value) {
-    MStatus status;
+    MStatus status = MS::kSuccess;
     MObject node = objPath.node(&status);
     if (status) {
         MPlug plug(node, attr);
@@ -121,7 +134,7 @@ static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
 
 static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
                                   bool &value) {
-    MStatus status;
+    MStatus status = MS::kSuccess;
     MObject node = objPath.node(&status);
     if (status) {
         MPlug plug(node, attr);
@@ -135,7 +148,7 @@ static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
 
 static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
                                   int32_t &value) {
-    MStatus status;
+    MStatus status = MS::kSuccess;
     MObject node = objPath.node(&status);
     if (status) {
         MPlug plug(node, attr);
@@ -149,7 +162,7 @@ static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
 
 static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
                                   uint32_t &value) {
-    MStatus status;
+    MStatus status = MS::kSuccess;
     MObject node = objPath.node(&status);
     if (status) {
         MPlug plug(node, attr);
@@ -163,7 +176,7 @@ static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
 
 static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
                                   short &value) {
-    MStatus status;
+    MStatus status = MS::kSuccess;
     MObject node = objPath.node(&status);
     if (status) {
         MPlug plug(node, attr);
@@ -177,7 +190,7 @@ static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
 
 static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
                                   float &value) {
-    MStatus status;
+    MStatus status = MS::kSuccess;
     MObject node = objPath.node(&status);
     if (status) {
         MPlug plug(node, attr);
@@ -191,7 +204,7 @@ static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
 
 static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
                                   double &value) {
-    MStatus status;
+    MStatus status = MS::kSuccess;
     MObject node = objPath.node(&status);
     if (status) {
         MPlug plug(node, attr);
@@ -205,7 +218,7 @@ static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
 
 static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
                                   MColor &value) {
-    MStatus status;
+    MStatus status = MS::kSuccess;
     MObject node = objPath.node(&status);
     if (status) {
         MPlug plug(node, attr);
@@ -224,7 +237,7 @@ static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
 
 static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
                                   MMatrix &value) {
-    MStatus status;
+    MStatus status = MS::kSuccess;
     MObject node = objPath.node(&status);
     if (status) {
         MPlug plug(node, attr);
@@ -240,7 +253,7 @@ static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
 
 static inline MStatus getNodeAttr(const MDagPath &objPath, const MObject &attr,
                                   MString &value) {
-    MStatus status;
+    MStatus status = MS::kSuccess;
     MObject node = objPath.node(&status);
     if (status) {
         MPlug plug(node, attr);

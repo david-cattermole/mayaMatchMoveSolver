@@ -35,10 +35,11 @@
 #include <cstdlib>
 
 // MM Solver
-#include "mmSolver/core/mmcamera.h"
-#include "mmSolver/core/mmcoord.h"
-#include "mmSolver/core/mmdata.h"
-#include "mmSolver/core/mmmath.h"
+#include <mmcore/mmcamera.h>
+#include <mmcore/mmcoord.h>
+#include <mmcore/mmdata.h>
+#include <mmcore/mmmath.h>
+
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace calibrate {
@@ -61,7 +62,7 @@ bool calcVanishingPointFromLinePair(mmdata::LinePair2D linePair,
     if (success) {
         outPoint = vanishingPoint;
     } else {
-        MMSOLVER_INFO("ERROR: Failed to calculate vanishing point.");
+        MMSOLVER_MAYA_INFO("ERROR: Failed to calculate vanishing point.");
     }
     return success;
 }
@@ -213,8 +214,8 @@ mmdata::Matrix4x4 createOrientationMatrix(OrientationPlane orientPlane,
         forward = mmdata::Vector3D(0, -1, 0);
         side = mmdata::Vector3D(-1, 0, 0);
     } else {
-        MMSOLVER_INFO("ERROR: Invalid OrientationPlane: "
-                      << static_cast<int>(orientPlane));
+        MMSOLVER_MAYA_INFO("ERROR: Invalid OrientationPlane: "
+                           << static_cast<int>(orientPlane));
         return mmdata::Matrix4x4();
         ;
     }
@@ -298,8 +299,8 @@ bool applySceneScale(mmdata::Matrix4x4 cameraTransform,
         translation.y_ *= scaleFactor;
         translation.z_ *= scaleFactor;
     } else {
-        MMSOLVER_INFO("ERROR: Invalid SceneScaleMode: "
-                      << static_cast<int>(sceneScaleMode));
+        MMSOLVER_MAYA_INFO("ERROR: Invalid SceneScaleMode: "
+                           << static_cast<int>(sceneScaleMode));
         return false;
     }
     outCameraTransform = mmdata::Matrix4x4(cameraTransform);
@@ -322,7 +323,7 @@ bool calcCameraParameters(
                                        principalPoint, focalLengthFactor,
                                        transformInverse);
     if (ok) {
-        MMSOLVER_INFO("ERROR: Camera Rotation calculation is invalid. ");
+        MMSOLVER_MAYA_INFO("ERROR: Camera Rotation calculation is invalid. ");
         return false;
     }
 
@@ -332,7 +333,7 @@ bool calcCameraParameters(
     ok = calcTranslationVector(originPoint, principalPoint, angleOfView_radians,
                                translation);
     if (!ok) {
-        MMSOLVER_INFO("ERROR: Invalid translation vector.");
+        MMSOLVER_MAYA_INFO("ERROR: Invalid translation vector.");
         return false;
     }
 
@@ -359,9 +360,10 @@ bool calcCameraParameters(
     ok = applySceneScale(transform, sceneScaleMode, sceneScaleDistance_cm,
                          transformScaled);
     if (!ok) {
-        MMSOLVER_INFO("ERROR: Invalid scene scale. "
-                      << "sceneScaleDistance_cm=" << sceneScaleDistance_cm
-                      << "sceneScaleMode" << static_cast<int>(sceneScaleMode));
+        MMSOLVER_MAYA_INFO("ERROR: Invalid scene scale. "
+                           << "sceneScaleDistance_cm=" << sceneScaleDistance_cm
+                           << "sceneScaleMode"
+                           << static_cast<int>(sceneScaleMode));
         return false;
     }
 

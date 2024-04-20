@@ -23,12 +23,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import sys
-import os
 import unittest
 
-import maya.cmds
-import maya.OpenMaya as OpenMaya
 
 import test.test_api.apiutils as test_api_utils
 import mmSolver._api.frame as frame

@@ -28,9 +28,38 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.python_compat as pycompat
 
 
 LOG = mmSolver.logger.get_logger()
+
+
+def get_camera_direction_to_world_position(camera_node, world_position):
+    """
+    Get the direction of the camera toward a given world space position.
+
+    The direction vector is normalised.
+
+    The camera position is evaluated at the current frame only.
+
+    :param camera_node: Camera transform node.
+    :type camera_node: str
+
+    :param world_position: World position; X, Y and Z values.
+    :type world_position: (float, float, float)
+
+    :return: Direction from camera to point.
+    :rtype: (float, float, float)
+    """
+    assert len(world_position) == 3
+    cam = maya.cmds.xform(camera_node, query=True, worldSpace=True, translation=True)
+    cam_vec = maya.OpenMaya.MVector(*cam)
+    obj_vec = maya.OpenMaya.MVector(*world_position)
+    distance = obj_vec - cam_vec
+    length = maya.OpenMaya.MVector(distance).length()
+    direction = distance / length
+    x, y, z = direction.x, direction.y, direction.z
+    return x, y, z
 
 
 def get_camera_direction_to_point(camera_node, point_node):
@@ -38,6 +67,8 @@ def get_camera_direction_to_point(camera_node, point_node):
     Get the direction of the camera toward a given point.
 
     The direction vector is normalised.
+
+    The camera position is evaluated at the current frame only.
 
     :param camera_node: Camera transform node.
     :type camera_node: str
@@ -48,15 +79,12 @@ def get_camera_direction_to_point(camera_node, point_node):
     :return: Direction from camera to point.
     :rtype: (float, float, float)
     """
-    obj = maya.cmds.xform(point_node, query=True, worldSpace=True, translation=True)
-    cam = maya.cmds.xform(camera_node, query=True, worldSpace=True, translation=True)
-    cam_vec = maya.OpenMaya.MVector(*cam)
-    obj_vec = maya.OpenMaya.MVector(*obj)
-    distance = obj_vec - cam_vec
-    length = maya.OpenMaya.MVector(distance).length()
-    direction = distance / length
-    x, y, z = direction.x, direction.y, direction.z
-    return x, y, z
+    assert isinstance(camera_node, pycompat.TEXT_TYPE)
+    assert isinstance(point_node, pycompat.TEXT_TYPE)
+    world_position = maya.cmds.xform(
+        point_node, query=True, worldSpace=True, translation=True
+    )
+    return get_camera_direction_to_world_position(camera_node, world_position)
 
 
 def create_reprojection_on_camera(cam_tfm, cam_shp):

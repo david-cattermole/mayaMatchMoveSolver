@@ -30,6 +30,7 @@ import mmSolver.utils.raytrace as raytrace_utils
 import mmSolver.utils.reproject as reproject_utils
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.transform as tfm_utils
+import mmSolver.api as mmapi
 
 import mmSolver.tools.raycastmarker.constant as const
 
@@ -81,6 +82,9 @@ def _get_nodes_to_raycast(mkr_list):
     node_list = []
     for mkr in mkr_list:
         mkr_node = mkr.get_node()
+        if mkr_node is None:
+            LOG.warn("Cannot ray-cast; Marker %r is not valid.", mkr_node)
+            continue
         bnd = mkr.get_bundle()
         if bnd is None:
             LOG.warn("Cannot ray-cast; Marker %r has no Bundle.", mkr_node)
@@ -91,7 +95,9 @@ def _get_nodes_to_raycast(mkr_list):
             LOG.warn("Cannot ray-cast; Marker %r has no Camera.", mkr_node)
             continue
         cam_tfm = cam.get_transform_node()
-        node_list.append((mkr_node, bnd_node, cam_tfm))
+        cam_shp = cam.get_shape_node()
+        has_lens = node_utils.attribute_exists('outLens', cam_shp)
+        node_list.append((mkr_node, bnd_node, cam_tfm, cam_shp, has_lens))
     return node_list
 
 
@@ -109,7 +115,7 @@ def _get_bundle_modify_attributes(bundle_rotate_mode):
 def _unlock_bundle_attrs(node_list, bundle_rotate_mode):
     plug_lock_state = {}
     attrs = _get_bundle_modify_attributes(bundle_rotate_mode)
-    for mkr_node, bnd_node, cam_tfm in node_list:
+    for _, bnd_node, _, _, _ in node_list:
         for attr in attrs:
             plug_name = '{0}.{1}'.format(bnd_node, attr)
             value = maya.cmds.getAttr(plug_name, lock=True)
@@ -120,7 +126,7 @@ def _unlock_bundle_attrs(node_list, bundle_rotate_mode):
 
 def _relock_bundle_attrs(node_list, plug_lock_state, bundle_rotate_mode):
     attrs = _get_bundle_modify_attributes(bundle_rotate_mode)
-    for mkr_node, bnd_node, cam_tfm in node_list:
+    for _, bnd_node, _, _, _ in node_list:
         for attr in attrs:
             plug_name = '{0}.{1}'.format(bnd_node, attr)
             value = plug_lock_state.get(plug_name)
@@ -150,7 +156,12 @@ def _create_look_at_matrix(dir_x, dir_y, dir_z):
 
 
 def _do_raycast(
-    node_list, mesh_nodes, frame_range, max_dist, use_smooth_mesh, bundle_rotate_mode
+    node_list,
+    mesh_nodes,
+    frame_range,
+    max_dist,
+    use_smooth_mesh,
+    bundle_rotate_mode,
 ):
     bnd_nodes = set()
     cur_frame = maya.cmds.currentTime(query=True)
@@ -161,13 +172,24 @@ def _do_raycast(
     keyable_attrs = _get_bundle_modify_attributes(bundle_rotate_mode)
     for frame in frames:
         maya.cmds.currentTime(frame, edit=True, update=True)
-        for mkr_node, bnd_node, cam_tfm in node_list:
+        for mkr_node, bnd_node, cam_tfm, cam_shp, has_lens in node_list:
+            assert mkr_node is not None
             assert bnd_node is not None
             assert cam_tfm is not None
+            assert cam_shp is not None
+            assert isinstance(has_lens, bool)
 
-            direction = reproject_utils.get_camera_direction_to_point(cam_tfm, mkr_node)
-            origin_point = maya.cmds.xform(
-                mkr_node, query=True, translation=True, worldSpace=True
+            origin_point = maya.cmds.mmReprojection(
+                mkr_node,
+                camera=(cam_tfm, cam_shp),
+                time=(frame,),
+                distortMode=utils_const.DISTORT_MODE_UNDISTORT,
+                asWorldPoint=True,
+            )
+
+            direction = reproject_utils.get_camera_direction_to_world_position(
+                cam_tfm,
+                origin_point,
             )
             hit_point, hit_normal = raytrace_utils.closest_intersect_with_normal(
                 origin_point,
@@ -258,6 +280,9 @@ def raycast_markers_onto_meshes(
     plug_lock_state = {}
     if unlock_bnd_attrs is True:
         plug_lock_state = _unlock_bundle_attrs(node_list, bundle_rotate_mode)
+
+    # Ensure the plug-in is loaded, to use mmReprojection command.
+    mmapi.load_plugin()
 
     # Do the ray-casting...
     bnd_nodes = _do_raycast(

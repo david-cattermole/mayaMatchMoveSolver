@@ -25,11 +25,14 @@
 
 // STL
 #include <cmath>
+#include <memory>
 
 // Maya
 #include <maya/MMatrix.h>
 
 // MM Solver
+#include <mmlens/lens_model.h>
+
 #include "mmSolver/mayahelper/maya_camera.h"  // getProjectionMatrix, computeFrustumCoordinates
 #include "mmSolver/utilities/debug_utils.h"
 
@@ -45,6 +48,70 @@ MStatus reprojection(
 
     // Image
     const double imageWidth, const double imageHeight,
+
+    // Manipulation
+    const MMatrix applyMatrix, const bool overrideScreenX,
+    const bool overrideScreenY, const bool overrideScreenZ,
+    const double screenX, const double screenY, const double screenZ,
+    const double depthScale,
+
+    // Outputs
+    double &outCoordX, double &outCoordY, double &outNormCoordX,
+    double &outNormCoordY, double &outMarkerCoordX, double &outMarkerCoordY,
+    double &outMarkerCoordZ, double &outPixelX, double &outPixelY,
+    bool &outInsideFrustum, double &outPointX, double &outPointY,
+    double &outPointZ, double &outWorldPointX, double &outWorldPointY,
+    double &outWorldPointZ, MMatrix &outMatrix, MMatrix &outWorldMatrix,
+    MMatrix &outCameraProjectionMatrix,
+    MMatrix &outInverseCameraProjectionMatrix,
+    MMatrix &outWorldCameraProjectionMatrix,
+    MMatrix &outWorldInverseCameraProjectionMatrix, double &outHorizontalPan,
+    double &outVerticalPan) {
+    std::shared_ptr<mmlens::LensModel> lensModel;
+    const auto distortMode = ReprojectionDistortMode::kNone;
+    return reprojection(
+        tfmMatrix, camMatrix,
+
+        // Camera
+        focalLength, horizontalFilmAperture, verticalFilmAperture,
+        horizontalFilmOffset, verticalFilmOffset, filmFit, nearClipPlane,
+        farClipPlane, cameraScale,
+
+        // Image
+        imageWidth, imageHeight,
+
+        // Lens Distortion
+        distortMode, lensModel,
+
+        // Manipulation
+        applyMatrix, overrideScreenX, overrideScreenY, overrideScreenZ, screenX,
+        screenY, screenZ, depthScale,
+
+        // Outputs
+        outCoordX, outCoordY, outNormCoordX, outNormCoordY, outMarkerCoordX,
+        outMarkerCoordY, outMarkerCoordZ, outPixelX, outPixelY,
+        outInsideFrustum, outPointX, outPointY, outPointZ, outWorldPointX,
+        outWorldPointY, outWorldPointZ, outMatrix, outWorldMatrix,
+        outCameraProjectionMatrix, outInverseCameraProjectionMatrix,
+        outWorldCameraProjectionMatrix, outWorldInverseCameraProjectionMatrix,
+        outHorizontalPan, outVerticalPan);
+}
+
+MStatus reprojection(
+    const MMatrix tfmMatrix, const MMatrix camMatrix,
+
+    // Camera
+    const double focalLength, const double horizontalFilmAperture,
+    const double verticalFilmAperture, const double horizontalFilmOffset,
+    const double verticalFilmOffset, const short filmFit,
+    const double nearClipPlane, const double farClipPlane,
+    const double cameraScale,
+
+    // Image
+    const double imageWidth, const double imageHeight,
+    // Lens Distortion
+    const ReprojectionDistortMode distortMode,
+    std::shared_ptr<mmlens::LensModel> lensModel,
 
     // Manipulation
     const MMatrix applyMatrix, const bool overrideScreenX,
@@ -100,8 +167,84 @@ MStatus reprojection(
     // Get (screen-space) point. Screen-space is also called NDC
     // (normalised device coordinates) space.
     MPoint posScreen(matrix[3][0], matrix[3][1], matrix[3][2], matrix[3][3]);
-    posScreen.cartesianize();
-    MPoint coord(posScreen.x, posScreen.y, 0.0, 1.0);
+
+    // Correct the screen position to remove the embedded scaling that
+    // comes from the 'getProjectionMatrix' function.
+    const double filmBackAspect = horizontalFilmAperture / verticalFilmAperture;
+    const double imageAspect =
+        static_cast<double>(imageWidth) / static_cast<double>(imageHeight);
+    applyFilmFitCorrectionScaleForward(filmFit, filmBackAspect, imageAspect,
+                                       posScreen.x, posScreen.y);
+
+    // Distort the input transform's screen-space position.
+    MPoint coord(0.0, 0.0, 0.0, 1.0);
+    if (!lensModel || distortMode == ReprojectionDistortMode::kNone) {
+        // Convert from 'P(W*x, W*y, W*z, W)' to 'P(x, y, z, 1)'.
+        posScreen.cartesianize();
+        coord.x = posScreen.x;
+        coord.y = posScreen.y;
+    } else {
+        // Convert from 'P(W*x, W*y, W*z, W)' to 'P(x, y, z, W)'.
+        posScreen.rationalize();
+
+        double input_x = posScreen.x * 0.5;
+        double input_y = posScreen.y * 0.5;
+
+        double output_x = input_x;
+        double output_y = input_y;
+        // Applying Lens distortion can result in NaN or infinite
+        // values, so we avoid applying such values if they are
+        // computed.
+        if (distortMode == ReprojectionDistortMode::kUndistort) {
+            double temp_x = input_x;
+            double temp_y = input_y;
+            lensModel->applyModelUndistort(input_x, input_y, temp_x, temp_y);
+            if (std::isfinite(temp_x)) {
+                output_x = temp_x;
+            }
+            if (std::isfinite(temp_y)) {
+                output_y = temp_y;
+            }
+        } else if (distortMode == ReprojectionDistortMode::kRedistort) {
+            double temp_x = input_x;
+            double temp_y = input_y;
+            lensModel->applyModelDistort(input_x, input_y, temp_x, temp_y);
+            if (std::isfinite(temp_x)) {
+                output_x = temp_x;
+            }
+            if (std::isfinite(temp_y)) {
+                output_y = temp_y;
+            }
+        }
+
+        output_x *= 2.0;
+        output_y *= 2.0;
+
+        coord.x = output_x;
+        coord.y = output_y;
+        posScreen.x = output_x;
+        posScreen.y = output_y;
+
+        // Reverse the screen position to add the scaling that comes
+        // from the 'getProjectionMatrix' function, to put these back
+        // to how they were.
+        applyFilmFitCorrectionScaleBackward(
+            filmFit, filmBackAspect, imageAspect, posScreen.x, posScreen.y);
+
+        // Reverses the '.rationalize()', so we can maintain the same
+        // space for 'matrix' as it was.
+        //
+        // Convert from 'P(x, y, z, W)' to 'P(W*x, W*y, W*z, W)'.
+        posScreen.homogenize();
+
+        matrix[3][0] = posScreen.x;
+        matrix[3][1] = posScreen.y;
+        matrix[3][2] = posScreen.z;
+        matrix[3][3] = posScreen.w;
+
+        // Convert from 'P(W*x, W*y, W*z, W)' to 'P(x, y, z, 1)'.
+        posScreen.cartesianize();
+    }
 
     // Is the point inside the frustum of the camera?
     bool insideFrustum = true;
@@ -119,7 +262,7 @@ MStatus reprojection(
     MMatrix cameraTfmMatrix = worldTfmMatrix * camMatrix.inverse();
     MPoint posCamera(cameraTfmMatrix[3][0], cameraTfmMatrix[3][1],
                      cameraTfmMatrix[3][2], cameraTfmMatrix[3][3]);
-    posCamera.cartesianize();
+    posCamera.rationalize();
 
     // Output Coordinates (-1.0 to 1.0; lower-left corner is -1.0, -1.0)
     outCoordX = coord.x;

@@ -23,9 +23,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
-import math
-import time
 import unittest
 
 try:
@@ -48,9 +45,9 @@ class TestLens1(solverUtils.SolverTestCase):
 
     def test_create_lens_evaluate(self):
         tfm_a = maya.cmds.createNode('transform')
-        shp_a = maya.cmds.createNode('locator', parent=tfm_a)
+        maya.cmds.createNode('locator', parent=tfm_a)
         tfm_b = maya.cmds.createNode('transform')
-        shp_b = maya.cmds.createNode('locator', parent=tfm_b)
+        maya.cmds.createNode('locator', parent=tfm_b)
         lens_node = maya.cmds.createNode('mmLensModel3de')
         eval_node = maya.cmds.createNode('mmLensEvaluate')
 
@@ -94,9 +91,9 @@ class TestLens1(solverUtils.SolverTestCase):
 
     def test_layered_lens_distortion_evaluation(self):
         tfm_a = maya.cmds.createNode('transform')
-        shp_a = maya.cmds.createNode('locator', parent=tfm_a)
+        maya.cmds.createNode('locator', parent=tfm_a)
         tfm_b = maya.cmds.createNode('transform')
-        shp_b = maya.cmds.createNode('locator', parent=tfm_b)
+        maya.cmds.createNode('locator', parent=tfm_b)
         lens_a_node = maya.cmds.createNode('mmLensModel3de')
         lens_b_node = maya.cmds.createNode('mmLensModel3de')
         eval_node = maya.cmds.createNode('mmLensEvaluate')

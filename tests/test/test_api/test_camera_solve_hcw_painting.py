@@ -23,10 +23,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import math
 import time
 import unittest
-import pprint
 
 try:
     import maya.standalone
@@ -35,20 +33,13 @@ try:
 except RuntimeError:
     pass
 import maya.cmds
-import maya.api.OpenMaya as OpenMaya2
 
 import test.test_api.apiutils as test_api_utils
 
 import mmSolver.api as mmapi
-import mmSolver._api.solvercamerautils as solvercamerautils
 import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
 import mmSolver.tools.loadmarker.lib.utils as lib_utils
-import mmSolver.tools.triangulatebundle.lib as lib_triangulate
 import mmSolver.tools.createlens.lib as createlens_lib
-import mmSolver.tools.solver.lib.collection as lib_col
-import mmSolver.utils.animcurve as animcurve_utils
-import mmSolver.utils.transform as tfm_utils
-import mmSolver.utils.node as node_utils
 
 
 # @unittest.skip
@@ -229,7 +220,7 @@ class TestCameraSolveHcwPainting(test_api_utils.APITestCase):
         # Run solver!
         assert 'mmSolver' in dir(maya.cmds)
         s = time.time()
-        results = mmapi.execute(col)
+        mmapi.execute(col)
         e = time.time()
         print('total time:', e - s)
 

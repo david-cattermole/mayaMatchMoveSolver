@@ -51,7 +51,8 @@
 #include <maya/MTimeArray.h>
 
 // Maya helpers
-#include "mmSolver/lens/lens_model.h"
+#include <mmlens/lens_model.h>
+
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -108,15 +109,16 @@ MStatus parse_camera_argument(const MSelectionList &selection_list,
 
 bool add_marker_at_frame(const MTime &time, const int32_t image_width,
                          const int32_t image_height,
-                         const std::shared_ptr<LensModel> &lensModel,
+                         const std::shared_ptr<mmlens::LensModel> &lensModel,
                          MarkerPtr &marker,
                          std::vector<std::pair<double, double>> &marker_coords);
 
 bool add_marker_pair_at_frame(
     const MTime &time_a, const MTime &time_b, const int32_t image_width_a,
     const int32_t image_width_b, const int32_t image_height_a,
-    const int32_t image_height_b, const std::shared_ptr<LensModel> &lensModel_a,
-    const std::shared_ptr<LensModel> &lensModel_b, MarkerPtr &marker_a,
+    const int32_t image_height_b,
+    const std::shared_ptr<mmlens::LensModel> &lensModel_a,
+    const std::shared_ptr<mmlens::LensModel> &lensModel_b, MarkerPtr &marker_a,
     MarkerPtr &marker_b,
     std::vector<std::pair<double, double>> &marker_coords_a,
     std::vector<std::pair<double, double>> &marker_coords_b);
@@ -124,6 +126,8 @@ bool add_marker_pair_at_frame(
 bool add_bundle_at_frame(
     const MTime &time, BundlePtr &bundle,
     std::vector<std::tuple<double, double, double>> &bundle_coords);
+
+bool is_valid_pose(openMVG::geometry::Pose3 &pose);
 
 MTransformationMatrix convert_pose_to_maya_transform_matrix(
     openMVG::geometry::Pose3 &pose);

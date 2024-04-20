@@ -157,8 +157,6 @@ def create_default_markers(line_shp, mkr_grp):
 
     mkr_node_a = mkr_a.get_node()
     mkr_node_b = mkr_b.get_node()
-    bnd_node_a = bnd_a.get_node()
-    bnd_node_b = bnd_b.get_node()
 
     maya.cmds.setAttr(mkr_node_a + '.tx', -0.25)
     maya.cmds.setAttr(mkr_node_b + '.tx', 0.25)
@@ -169,8 +167,6 @@ def create_default_markers(line_shp, mkr_grp):
 
 
 def create_new_line_marker(line_shp, mkr_grp):
-    line_tfm = maya.cmds.listRelatives(line_shp, parent=True, type='transform')[0]
-
     mkr_new_name = naming.get_new_marker_name(DEFAULT_MARKER_NAME)
     bnd_new_name = naming.get_new_bundle_name(DEFAULT_BUNDLE_NAME)
     bnd_new = bundle.Bundle().create_node(name=bnd_new_name)

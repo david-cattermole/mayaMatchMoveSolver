@@ -31,3 +31,4 @@ Pages dedicated to specific tools:
     tools_generaltools
     tools_inputoutput
     tools_hotkeys
+    tools_renderer

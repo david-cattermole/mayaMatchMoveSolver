@@ -1,0 +1,26 @@
+# Created by Maya MatchMove Solver with the Save Lens File tool.
+#
+# Version: mayaMatchMoveSolver-0.4.6-maya2022-win64
+# Website: https://github.com/david-cattermole/mayaMatchMoveSolver
+LD_3DE4_Radial_Standard_Degree_4 {
+  tde4_focal_length_cm 3.5
+  tde4_custom_focus_distance_cm 5.0
+  tde4_filmback_width_cm 3.6000000000000005
+  tde4_filmback_height_cm 2.0250000000000004
+  tde4_lens_center_offset_x_cm 0.0
+  tde4_lens_center_offset_y_cm 0.0
+  Distortion_Degree_2 0.1
+  U_Degree_2 0.01
+  V_Degree_2 -0.01
+  Quartic_Distortion_Degree_4 0.05
+  U_Degree_4 -0.02
+  V_Degree_4 0.02
+  Phi_Cylindric_Direction 45.0
+  B_Cylindric_Bending 0.5
+  direction undistort
+  field_of_view_xa_unit 0.0
+  field_of_view_xb_unit 1.0
+  field_of_view_ya_unit 0.0
+  field_of_view_yb_unit 1.0
+  name lens1
+}

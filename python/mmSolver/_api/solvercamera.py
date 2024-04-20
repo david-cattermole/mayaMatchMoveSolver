@@ -23,6 +23,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import maya.cmds
+
 import mmSolver.logger
 
 import mmSolver.utils.python_compat as pycompat
@@ -105,6 +107,23 @@ def _compile_camera_solve(
     cam_tfm = cam.get_transform_node()
     cam_shp = cam.get_shape_node()
 
+    # Otherwise the camera transform attributes may not be animated
+    # and the solver will get very confused and fail to solve
+    # correctly.
+    cam_tfm_node_attrs = [
+        attribute.Attribute(node=cam_tfm, attr='translateX'),
+        attribute.Attribute(node=cam_tfm, attr='translateY'),
+        attribute.Attribute(node=cam_tfm, attr='translateZ'),
+        attribute.Attribute(node=cam_tfm, attr='rotateX'),
+        attribute.Attribute(node=cam_tfm, attr='rotateY'),
+        attribute.Attribute(node=cam_tfm, attr='rotateZ'),
+    ]
+    for attr in cam_tfm_node_attrs:
+        if attr.is_animated() is False:
+            attr_name = attr.get_attr()
+            maya.cmds.setKeyframe(cam_tfm, attribute=attr_name, time=start_frame)
+        assert attr.get_state() == const.ATTR_STATE_ANIMATED
+
     cam_shp_node_attrs = [x.get_name() for x in attr_list if x.get_node() == cam_shp]
     lens_node_attrs = [x.get_name() for x in attr_list if x.get_node() in lens_nodes]
 
@@ -131,8 +150,11 @@ def _compile_camera_solve(
         assert y.get_state() == const.ATTR_STATE_STATIC
         assert z.get_state() == const.ATTR_STATE_STATIC
 
+    col_node = col.get_node()
+
     func = 'mmSolver._api.solvercamerautils.camera_solve'
     args = [
+        col_node,
         cam_tfm,
         cam_shp,
         mkr_nodes,

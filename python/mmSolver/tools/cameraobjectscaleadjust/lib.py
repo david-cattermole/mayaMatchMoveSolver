@@ -26,7 +26,6 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.transform as tfm_utils
-import mmSolver.utils.time as time_utils
 import mmSolver.tools.cameraobjectscaleadjust.constant as const
 import mmSolver.tools.attributebake.lib as fastbake_lib
 import mmSolver.tools.createcontroller2.lib as createcontroller_lib
@@ -35,13 +34,6 @@ import mmSolver.tools.reparent2.constant as reparent_const
 import mmSolver.tools.reparent2.lib as reparent_lib
 
 LOG = mmSolver.logger.get_logger()
-
-# Should be upper-case, if used like this.
-suffix = const.SCALE_RIG_SUFFIX
-main_grp_suffix = const.SCALE_RIG_MAIN_GRP_SUFFIX
-
-# TODO: Make these arguments.
-frame_start, frame_end = time_utils.get_maya_timeline_range_inner()
 
 
 def _is_rig_node(node):
@@ -119,7 +111,9 @@ def _break_scale_attributes(tfm_nodes):
             maya.mel.eval(cmd.format(node_attr))
 
 
-def create_scale_rig(name, camera, scene, object_track_controls, scale_rig_type):
+def create_scale_rig(
+    name, camera, scene, object_track_controls, framerange, scale_rig_type
+):
     """
     Create a camera track scale rig.
 
@@ -139,22 +133,28 @@ def create_scale_rig(name, camera, scene, object_track_controls, scale_rig_type)
         mmSolver.tools.cameraobjectscaleadjust.constant.SCALE_RIG_LIST.
     :type: str
 
+    :param framerange: The start/end frame range to operate on.
+    :type: (int, int)
+
     :rtype: [str]
     """
     # Create camera witness
     attrs = ['tx', 'ty', 'tz', 'rx', 'ry', 'rz']
-    controller_type = createcontroller_const.CONTROLLER_TYPE_WORLD_SPACE
+    controller_type = createcontroller_const.CONTROLLER_SPACE_WORLD
     camera_witness = None
     if scale_rig_type == const.SCALE_RIG_TYPE_OBJECT_TRACK:
         camera_witness = _create_scale_rig_main_grp(
-            name + suffix + main_grp_suffix,
+            name + const.SCALE_RIG_SUFFIX + const.SCALE_RIG_MAIN_GRP_SUFFIX,
             str(scene),
             object_track_controls,
             const.SCALE_RIG_TYPE_OBJECT_TRACK,
         )
     if scale_rig_type == const.SCALE_RIG_TYPE_CAMERA_TRACK:
-        camera_witness = maya.cmds.group(name=name + suffix, empty=True)
+        camera_witness = maya.cmds.group(name=name + const.SCALE_RIG_SUFFIX, empty=True)
     assert camera_witness is not None
+
+    assert len(framerange) == 2
+    frame_start, frame_end = framerange
 
     parent_con = maya.cmds.parentConstraint(
         camera, camera_witness, maintainOffset=False
@@ -173,7 +173,7 @@ def create_scale_rig(name, camera, scene, object_track_controls, scale_rig_type)
             name,
             control,
             control,
-            null_node,
+            [null_node],
             frame_start,
             frame_end,
             controller_type,
@@ -216,7 +216,7 @@ def create_scale_rig(name, camera, scene, object_track_controls, scale_rig_type)
     # Camera track scale rig
     if scale_rig_type == const.SCALE_RIG_TYPE_CAMERA_TRACK:
         grand_parent = _create_scale_rig_main_grp(
-            name + suffix + main_grp_suffix,
+            name + const.SCALE_RIG_SUFFIX + const.SCALE_RIG_MAIN_GRP_SUFFIX,
             str(scene),
             object_track_controls,
             const.SCALE_RIG_TYPE_CAMERA_TRACK,
@@ -268,13 +268,21 @@ def create_scale_rig(name, camera, scene, object_track_controls, scale_rig_type)
     return
 
 
-def remove_scale_rig(rigs_list):
+def remove_scale_rig(rigs_list, framerange):
     """
     Bake and remove scale rig(s).
 
     :param rigs_list: Scale rig(s).
     :type rigs_list: list
+
+    :param framerange: The start/end frame range to operate on.
+    :type: (int, int)
+
+    :rtype: None
     """
+    assert len(framerange) == 2
+    frame_start, frame_end = framerange
+
     attrs = ['tx', 'ty', 'tz', 'rx', 'ry', 'rz', 'sx', 'sy', 'sz']
     for node in rigs_list:
         object_track_attr_value = _get_rig_node_identifier(

@@ -30,7 +30,6 @@ import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
-import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
@@ -48,7 +47,7 @@ baseModule, BaseWindow = uiutils.getBaseWindow()
 
 def _open_help():
     src = helputils.get_help_source()
-    page = 'tools_generaltools.html#smooth-keyframes'
+    page = 'tools_attributetools.html#smooth-keyframes'
     helputils.open_help_in_browser(page=page, help_source=src)
     return
 

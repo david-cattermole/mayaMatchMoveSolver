@@ -30,6 +30,7 @@ import maya.mel
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.utils.constant as utils_const
 import mmSolver.utils.loadmarker.markerdata as markerdata
 import mmSolver.tools.convertmarker.constant as const
 import mmSolver.tools.loadmarker.lib.mayareadfile as mayareadfile
@@ -38,21 +39,22 @@ LOG = mmSolver.logger.get_logger()
 
 
 def convert_nodes_to_marker_data_list(cam_tfm, cam_shp, nodes, start_frame, end_frame):
+    assert maya.cmds.objExists(cam_tfm)
+    assert maya.cmds.objExists(cam_shp)
+    # Ensure the plug-in is loaded, to use mmReprojection command.
+    mmapi.load_plugin()
+
     cur_time = maya.cmds.currentTime(query=True)
     mkr_data_list = []
-    frames = range(start_frame, end_frame + 1)
+    frames = list(range(start_frame, end_frame + 1))
     for node in nodes:
-        image_width = maya.cmds.getAttr(cam_shp + '.horizontalFilmAperture')
-        image_height = maya.cmds.getAttr(cam_shp + '.verticalFilmAperture')
-        image_width *= 1000.0
-        image_height *= 1000.0
-        # BUG: If a camera has 'camera scale' attribute set other than
+        # TODO: If a camera has 'camera scale' attribute set other than
         # 1.0, the reprojected values will not be correct.
         values = maya.cmds.mmReprojection(
             node,
             time=frames,
-            imageResolution=(image_width, image_height),
             camera=(cam_tfm, cam_shp),
+            distortMode=utils_const.DISTORT_MODE_REDISTORT,
             asNormalizedCoordinate=True,
         )
         assert (len(frames) * 3) == len(values)

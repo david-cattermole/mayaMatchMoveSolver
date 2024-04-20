@@ -36,6 +36,8 @@ class Camera;
 
 class Bundle;
 
+class MarkerGroup;
+
 class Marker {
 public:
     Marker();
@@ -46,9 +48,11 @@ public:
 
     std::shared_ptr<Camera> getCamera();
     std::shared_ptr<Bundle> getBundle();
+    std::shared_ptr<MarkerGroup> getMarkerGroup();
 
     MStatus setCamera(std::shared_ptr<Camera> &value);
     MStatus setBundle(std::shared_ptr<Bundle> &value);
+    MStatus setMarkerGroup(std::shared_ptr<MarkerGroup> &value);
 
     Attr &getMatrixAttr();
     Attr &getPosXAttr();
@@ -66,9 +70,10 @@ public:
     MStatus getPos(double &x, double &y, double &z, const int timeEvalMode);
     MStatus getPos(MPoint &point, const int timeEvalMode);
 
-    MStatus getPosXY(double &x, double &y, const MTime &time,
-                     const int timeEvalMode);
-    MStatus getPosXY(double &x, double &y, const int timeEvalMode);
+    MStatus getPosXY(double &out_x, double &out_y, const MTime &time,
+                     const int timeEvalMode, const bool applyOverscan = true);
+    MStatus getPosXY(double &out_x, double &out_y, const int timeEvalMode,
+                     const bool applyOverscan = true);
 
     MStatus getEnable(bool &value, const MTime &time, const int timeEvalMode);
     MStatus getWeight(double &value, const MTime &time, const int timeEvalMode);
@@ -81,6 +86,7 @@ private:
 
     std::shared_ptr<Camera> m_camera;
     std::shared_ptr<Bundle> m_bundle;
+    std::shared_ptr<MarkerGroup> m_markerGroup;
 
     Attr m_matrix;
     Attr m_px;

@@ -43,9 +43,10 @@
 #include <cstring>
 
 // MM Solver
+#include <mmcore/mmcamera.h>
+#include <mmcore/mmcoord.h>
+
 #include "mmSolver/calibrate/vanishing_point.h"
-#include "mmSolver/core/mmcamera.h"
-#include "mmSolver/core/mmcoord.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/utilities/debug_utils.h"

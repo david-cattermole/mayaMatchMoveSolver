@@ -218,7 +218,6 @@ def create(nodes, current_frame=None, eval_mode=None):
     if current_frame is None:
         current_frame = maya.cmds.currentTime(query=True)
     assert current_frame is not None
-    sparse = False
 
     tfm_nodes = [tfm_utils.TransformNode(node=n) for n in nodes]
 
@@ -236,7 +235,6 @@ def create(nodes, current_frame=None, eval_mode=None):
     for node in nodes:
         keytime_obj.add_node_attrs(node, const.TFM_ATTRS, start_frame, end_frame)
     fallback_frame_range = keytime_obj.sum_frame_range_for_nodes(nodes)
-    fallback_times = list(range(fallback_frame_range[0], fallback_frame_range[1] + 1))
     key_times_map = time_utils.get_keyframe_times_for_node_attrs(nodes, const.TFM_ATTRS)
 
     # Query the transform matrix for the nodes
@@ -358,7 +356,6 @@ def remove(nodes, current_frame=None, eval_mode=None):
     if current_frame is None:
         current_frame = maya.cmds.currentTime(query=True)
     assert current_frame is not None
-    sparse = False
 
     nodes = _sort_by_hierarchy(nodes, children_first=True)
     tfm_nodes = [tfm_utils.TransformNode(node=n) for n in nodes]
@@ -380,7 +377,6 @@ def remove(nodes, current_frame=None, eval_mode=None):
     for node in nodes:
         keytime_obj.add_node_attrs(node, const.TFM_ATTRS, start_frame, end_frame)
     fallback_frame_range = keytime_obj.sum_frame_range_for_nodes(nodes)
-    fallback_times = list(range(fallback_frame_range[0], fallback_frame_range[1] + 1))
 
     # Query keyframe times on each node attribute
     key_times_map = time_utils.get_keyframe_times_for_node_attrs(nodes, const.TFM_ATTRS)

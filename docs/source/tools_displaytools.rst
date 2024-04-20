@@ -1,4 +1,4 @@
-General Tools
+Display Tools
 =============
 
 The tools on this page are not specific to Markers, Cameras or
@@ -55,6 +55,140 @@ To run the tool, use this Python command:
 
     # Remove Centering from active camera
     tool.remove()
+
+
+.. _create-sky-dome-tool-ref:
+
+Create Horizon / Axis Dome / Sky Dome
+--------------------------------------
+
+`MM Solver` includes a flexible `Sky Dome` node that can be used to
+visualize the rotations of a camera with lines.
+
+Simply create the `Sky Dome`, `Axis Dome` or `Horizon` to create a
+``mmSkyDomeShape`` node, then you can edit the attributes in the
+Attribute Editor.
+
+- Set the `Draw Mode` and `Radius` attributes to control how the depth
+  of Sky Dome.
+
+- Set the `Alpha` and `Line Width` attributes to easily adjust the
+  brightness of the lines.
+
+- Enable Anti-Aliasing in Maya Viewport 2.0 to see the lines with
+  better quality.
+
+- By default the centre of the Sky Dome will always be positioned to
+  your visible camera - it will "dynamically attach" to your camera in
+  each viewport.
+
+- The `Sky Dome` is not renderable in software renders (like Arnold),
+  it only supports Viewport 2.0.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.createskydome.tool
+    import mmSolver.tools.createskydome.constant as const
+
+    # Create Sky Dome
+    mmSolver.tools.createskydome.tool.main(preset_name=const.PRESET_SKY_DOME_NAME)
+
+    # Create Axis Dome
+    mmSolver.tools.createskydome.tool.main(preset_name=const.PRESET_AXIS_DOME_NAME)
+
+    # Create Horizon Line
+    mmSolver.tools.createskydome.tool.main(preset_name=const.PRESET_HORIZON_LINE_NAME)
+
+.. _set-object-colour-tool-ref:
+
+Set Object Colour / Reset Object Colour
+---------------------------------------
+
+The `Set Object Colour` tools can be used to override the wireframe
+colour of the selected objects.
+
+Likewise to remove the colour overrides, use the `Reset Object Colour`
+to reset selected objects.
+
+This tool works on common Maya shape nodes, such as `Meshes`, `NURBS
+Surfaces`, and `NURBS Curves`, as well as MM Solver shape nodes, like
+`Markers`, `Bundles` and `Lines`.
+
+.. figure:: images/tools_set_object_colour_ui.png
+    :alt: Set Object Colour UI
+    :align: center
+    :width: 60%
+
+.. note:: Starting with Maya 2023 the Set Object Colour UI contains an
+    Alpha channel value, allowing the wireframe to be transparent.
+
+
+Usage - *Set Colour*:
+
+1) Select object(s).
+
+2) Run tool.
+
+   - Choose colour.
+
+   - Move mouse away from window to set and close the colour.
+
+
+Usage - *Reset Colour*:
+
+1) Select object(s).
+
+2) Run tool.
+
+   - All selected objects have colour overrides removed back to
+     default colours.
+
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.setobjectcolour.tool as tool
+    tool.open_mini_window()
+
+    # Or run with the larger window.
+    tool.open_window()
+
+    # Or reset the colour on selected objects.
+    tool.reset_colour()
+
+
+.. _toggle-object-motion-trail-tool-ref:
+
+Toggle Object Motion Trail
+--------------------------
+
+The `Object Motion Trail` can be used to view the position of a 3D
+transform (or object) for a series of frames, using a line. This tool
+can be used to toggle the `Motion Trail` to easily create and view.
+
+
+Usage:
+
+1) Select Object transform node(s).
+
+2) Run tool.
+
+   - If the object has no motion trail, the motion trail will be
+     created or unhidden.
+
+   - If the object has a motion trail it will be hidden.
+
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.toggleobjectmotiontrail.tool as tool
+    tool.main()
+
 
 .. _create-screen-space-motion-trail-tool-ref:
 

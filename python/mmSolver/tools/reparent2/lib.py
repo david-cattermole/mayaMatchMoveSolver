@@ -126,6 +126,32 @@ def nodes_attrs_settable(node_list, attr_list):
     return settable_map, settable_count, non_settable_count
 
 
+def _constrain_objects(
+    target, node, translate_skip=None, rotate_skip=None, scale_skip=None
+):
+    if translate_skip is None:
+        translate_skip = SKIP_NONE
+    if rotate_skip is None:
+        rotate_skip = SKIP_NONE
+    if scale_skip is None:
+        scale_skip = SKIP_NONE
+
+    constraints = set()
+    if translate_skip != SKIP_ALL:
+        nodes = maya.cmds.pointConstraint(target, node, skip=translate_skip) or []
+        constraints |= set(nodes)
+
+    if rotate_skip != SKIP_ALL:
+        nodes = maya.cmds.orientConstraint(target, node, skip=rotate_skip) or []
+        constraints |= set(nodes)
+
+    if scale_skip != SKIP_ALL:
+        nodes = maya.cmds.scaleConstraint(target, node, skip=scale_skip) or []
+        constraints |= set(nodes)
+
+    return constraints
+
+
 def reparent(
     children_nodes,
     parent_node,
@@ -236,6 +262,7 @@ def reparent(
     children_nodes = [tfm_utils.TransformNode(node=n) for n in children]
 
     loc_tfms = []
+    constraints = set()
     for i, child in enumerate(children):
         tfm_name = 'dummy' + str(i + 1)
         shp_name = 'dummy' + str(i + 1) + 'Shape'
@@ -244,16 +271,16 @@ def reparent(
 
         # Constrain the locator to the child, in translate, rotate and
         # scale.
-        maya.cmds.pointConstraint(child, loc_tfm)
-        maya.cmds.orientConstraint(child, loc_tfm)
-        maya.cmds.scaleConstraint(child, loc_tfm)
+        constraints |= _constrain_objects(child, loc_tfm)
 
         loc_tfms.append(loc_tfm)
 
     # Bake the locator results
     _bake_nodes(loc_tfms, frame_range, smart_bake=smart_bake)
-    maya.cmds.delete(loc_tfms, constraints=True)
+    if len(constraints) > 0:
+        maya.cmds.delete(constraints)
 
+    constraints = set()
     for child, child_node, loc_tfm in zip(children, children_nodes, loc_tfms):
         # Find which attributes are partially locked, so we can avoid
         # modifying the attributes.
@@ -303,13 +330,15 @@ def reparent(
             # delete the history, and parent the child under
             # the parent.
             parent = parent_node.get_node()
-            if translate_skip != SKIP_ALL:
-                maya.cmds.pointConstraint(parent, child, skip=translate_skip)
-            if rotate_skip != SKIP_ALL:
-                maya.cmds.orientConstraint(parent, child, skip=rotate_skip)
-            if scale_skip != SKIP_ALL:
-                maya.cmds.scaleConstraint(parent, child, skip=scale_skip)
-            maya.cmds.delete(child, constraints=True)
+            temp_constraints = _constrain_objects(
+                parent,
+                child,
+                translate_skip=translate_skip,
+                rotate_skip=rotate_skip,
+                scale_skip=scale_skip,
+            )
+            if len(temp_constraints) > 0:
+                maya.cmds.delete(temp_constraints)
 
             maya.cmds.parent(child, parent)
         child = child_node.get_node()
@@ -324,17 +353,19 @@ def reparent(
                 LOG.warn('Cannot change rotate order: %r', child)
 
         # Constrain the child to match the locator.
-        if translate_skip != SKIP_ALL:
-            maya.cmds.pointConstraint(loc_tfm, child, skip=translate_skip)
-        if rotate_skip != SKIP_ALL:
-            maya.cmds.orientConstraint(loc_tfm, child, skip=rotate_skip)
-        if scale_skip != SKIP_ALL:
-            maya.cmds.scaleConstraint(loc_tfm, child, skip=scale_skip)
+        constraints |= _constrain_objects(
+            loc_tfm,
+            child,
+            translate_skip=translate_skip,
+            rotate_skip=rotate_skip,
+            scale_skip=scale_skip,
+        )
 
     # Bake the children's results.
     children = [tn.get_node() for tn in children_nodes]
     _bake_nodes(children, frame_range, smart_bake=smart_bake)
-    maya.cmds.delete(children, constraints=True)
+    if len(constraints) > 0:
+        maya.cmds.delete(constraints)
     maya.cmds.filterCurve(children)
     if delete_static_anim_curves is True:
         maya.cmds.delete(children, staticChannels=True)

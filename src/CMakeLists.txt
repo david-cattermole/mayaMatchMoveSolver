@@ -23,7 +23,6 @@
 # find binaries releative to the current binary.
 set(CMAKE_MACOSX_RPATH 1)
 
-
 # Source
 set(SOURCE_FILES
   mmSolver/adjust/adjust_base.cpp
@@ -31,12 +30,26 @@ set(SOURCE_FILES
   mmSolver/adjust/adjust_cminpack_lmder.cpp
   mmSolver/adjust/adjust_cminpack_lmdif.cpp
   mmSolver/adjust/adjust_relationships.cpp
+  mmSolver/adjust/adjust_results_helpers.cpp
+  mmSolver/adjust/adjust_results_setMarkerData.cpp
+  mmSolver/adjust/adjust_results_setSolveData.cpp
   mmSolver/adjust/adjust_setParameters.cpp
   mmSolver/adjust/adjust_measureErrors.cpp
   mmSolver/adjust/adjust_solveFunc.cpp
   mmSolver/calibrate/calibrate_common.cpp
   mmSolver/calibrate/vanishing_point.cpp
-  mmSolver/cmd/common_arg_flags.cpp
+  mmSolver/cmd/arg_flags_attr_details.cpp
+  mmSolver/cmd/arg_flags_attr_details.h
+  mmSolver/cmd/arg_flags_solve_frames.cpp
+  mmSolver/cmd/arg_flags_solve_frames.h
+  mmSolver/cmd/arg_flags_solve_info.cpp
+  mmSolver/cmd/arg_flags_solve_info.h
+  mmSolver/cmd/arg_flags_solve_log.cpp
+  mmSolver/cmd/arg_flags_solve_log.h
+  mmSolver/cmd/arg_flags_solve_object.cpp
+  mmSolver/cmd/arg_flags_solve_object.h
+  mmSolver/cmd/arg_flags_solve_scene_graph.cpp
+  mmSolver/cmd/arg_flags_solve_scene_graph.h
   mmSolver/cmd/MMCameraPoseFromPointsCmd.cpp
   mmSolver/cmd/MMCameraRelativePoseCmd.cpp
   mmSolver/cmd/MMCameraSolveCmd.cpp
@@ -46,25 +59,17 @@ set(SOURCE_FILES
   mmSolver/cmd/MMReprojectionCmd.cpp
   mmSolver/cmd/MMSolverAffectsCmd.cpp
   mmSolver/cmd/MMSolverCmd.cpp
+  mmSolver/cmd/MMSolver2Cmd.cpp
   mmSolver/cmd/MMSolverSceneGraphCmd.cpp
   mmSolver/cmd/MMSolverTypeCmd.cpp
   mmSolver/cmd/MMTestCameraMatrixCmd.cpp
-  mmSolver/core/mmcamera.cpp
-  mmSolver/core/mmcoord.cpp
-  mmSolver/core/mmdata.cpp
-  mmSolver/core/mmhash.cpp
-  mmSolver/core/mmmath.cpp
   mmSolver/core/reprojection.cpp
-  mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.cpp
-  mmSolver/lens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy_rescaled.cpp
-  mmSolver/lens/lens_model_3de_classic.cpp
-  mmSolver/lens/lens_model_3de_radial_decentered_deg_4_cylindric.cpp
-  mmSolver/lens/lens_model_passthrough.cpp
   mmSolver/mayahelper/maya_attr.cpp
   mmSolver/mayahelper/maya_bundle.cpp
   mmSolver/mayahelper/maya_camera.cpp
   mmSolver/mayahelper/maya_lens_model_utils.cpp
   mmSolver/mayahelper/maya_marker.cpp
+  mmSolver/mayahelper/maya_marker_group.cpp
   mmSolver/mayahelper/maya_scene_graph.cpp
   mmSolver/mayahelper/maya_utils.cpp
   mmSolver/node/MMCameraCalibrateNode.cpp
@@ -107,17 +112,20 @@ set(SOURCE_FILES
 if (MMSOLVER_BUILD_RENDERER)
   set(SOURCE_FILES
     ${SOURCE_FILES}
-    mmSolver/render/HudRender.cpp
-    mmSolver/render/MMRendererCmd.cpp
-    mmSolver/render/PresentTarget.cpp
-    mmSolver/render/QuadRenderBase.cpp
-    mmSolver/render/QuadRenderBlend.cpp
-    mmSolver/render/QuadRenderCopy.cpp
-    mmSolver/render/QuadRenderEdgeDetect.cpp
-    mmSolver/render/QuadRenderInvert.cpp
-    mmSolver/render/RenderGlobalsNode.cpp
-    mmSolver/render/RenderOverride.cpp
-    mmSolver/render/SceneRender.cpp
+    mmSolver/render/MMRendererBasicCmd.cpp
+    mmSolver/render/MMRendererSilhouetteCmd.cpp
+    mmSolver/render/RenderOverrideBasic.cpp
+    mmSolver/render/RenderGlobalsBasicNode.cpp
+    mmSolver/render/RenderGlobalsSilhouetteNode.cpp
+    mmSolver/render/RenderOverrideSilhouette.cpp
+    mmSolver/render/ops/ClearOperation.cpp
+    mmSolver/render/ops/HudRender.cpp
+    mmSolver/render/ops/PresentTarget.cpp
+    mmSolver/render/ops/SceneRender.cpp
+    mmSolver/render/ops/SceneRenderBase.cpp
+    mmSolver/render/ops/SilhouetteRender.cpp
+    mmSolver/render/ops/scene_utils.cpp
+    mmSolver/render/shader/shader_utils.cpp
   )
 
   # Allow C++ source code to query the defined 'WITH_MM_RENDERER'
@@ -137,10 +145,11 @@ target_include_directories(mmSolver
 
   # For generated 'buildConstant.h' file.
   PRIVATE ${CMAKE_BINARY_DIR}/include
-  )
+)
+
 # On Linux the 'm' library is required.
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
-  target_link_libraries(mmSolver PUBLIC m)
+  target_link_libraries(mmSolver PRIVATE m)
 endif ()
 
 # Set global flags and options that need to apply to the Maya
@@ -148,19 +157,26 @@ endif ()
 set_global_treat_warnings_as_errors()
 set_global_maya_plugin_compile_options()
 
+# MM Solver standalone libraries.
+find_package(mmsolverlibs_cpp REQUIRED)
+find_package(mmsolverlibs_rust REQUIRED)
 
-find_package(mmscenegraph REQUIRED)
-if(NOT mmscenegraph_FOUND)
-  message(FATAL_ERROR "mmscenegraph Not Found! Make sure mmscenegraph is built before building mmSolver.")
-else()
-  message(STATUS "mmscenegraph found.")
-  target_link_libraries(mmSolver
-    PRIVATE
-    mmscenegraph::mmscenegraph
-    )
-  target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_MMSCENEGRAPH)
-endif()
-
+target_link_libraries(mmSolver
+  # The order of these libraries ('mmsolverlibs_cpp' and
+  # 'mmsolverlibs_rust') matters when linking GCC on Linux.
+  #
+  # 'mmsolverlibs_cpp' and 'mmsolverlibs_rust' both use functions from
+  # each other and so there is a cyclic dependency. On Windows the
+  # order doesn't matter because the linker is "dumb", however the GCC
+  # linker is "smart" and automatically discards symbols that are not
+  # used from preceeding libraries. This causes the issue, and so we
+  # must control the linking order:
+  #
+  # See more information:
+  # https://stackoverflow.com/questions/45135/why-does-the-order-in-which-libraries-are-linked-sometimes-cause-errors-in-gcc
+  PUBLIC mmsolverlibs_rust::mmsolverlibs_rust
+  PUBLIC mmsolverlibs_cpp::mmsolverlibs_cpp
+)
 
 find_package(Maya REQUIRED)
 message(STATUS "Maya: Found=${MAYA_FOUND}")
@@ -193,32 +209,9 @@ target_link_libraries(mmSolver
   Eigen3::Eigen
   ceres
   openMVG
-  ldpk::ldpk
 )
 
-# Link to dlfcn on Windows only. Linux has a dynamic loading library
-# by default.
-if(WIN32)
-  target_link_libraries(mmSolver
-    PRIVATE
-    dlfcn-win32::dl
-    )
-endif()
-
 target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CMINPACK)
-target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_EIGEN)
-target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CERES)
 target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_OPENMVG)
-target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_LDPK)
-
-# Install dlfcn-win32 shared library into Maya module.
-if(WIN32)
-  if(NOT TARGET dlfcn-win32::dl)
-    message(FATAL_ERROR "Target dlfcn-win32::dl could not be found, but is required on Windows.")
-  endif()
-  get_target_property(dlfcn_win32_LIBRARY_DLL dlfcn-win32::dl IMPORTED_LOCATION)
-  install(FILES ${dlfcn_win32_LIBRARY_DLL}
-    DESTINATION "${MODULE_FULL_NAME}/lib/")
-endif()
 
 install_target_plugin_to_module(mmSolver "${MODULE_FULL_NAME}")

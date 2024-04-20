@@ -63,13 +63,14 @@ BUILD_TYPE=Release
 # Build options, to allow faster compilation times. (not to be used by
 # users wanting to build this project.)
 MMSOLVER_BUILD_PLUGIN=1
+MMSOLVER_BUILD_TOOLS=1
 MMSOLVER_BUILD_PYTHON=1
 MMSOLVER_BUILD_MEL=1
 MMSOLVER_BUILD_3DEQUALIZER=1
 MMSOLVER_BUILD_SYNTHEYES=1
 MMSOLVER_BUILD_BLENDER=1
 MMSOLVER_BUILD_QT_UI=1
-MMSOLVER_BUILD_RENDERER=0
+MMSOLVER_BUILD_RENDERER=1
 MMSOLVER_BUILD_DOCS=1
 MMSOLVER_BUILD_ICONS=1
 MMSOLVER_BUILD_CONFIG=1
@@ -86,15 +87,12 @@ PYTHON_VIRTUAL_ENV_DIR_NAME="python_venv_linux_maya${MAYA_VERSION}"
 source "${PROJECT_ROOT}/scripts/internal/python_venv_activate.bash"
 
 # Paths for dependencies.
-MMSCENEGRAPH_INSTALL_DIR="${BUILD_DIR_BASE}/build_mmscenegraph/install/maya${MAYA_VERSION}_linux/"
-MMSCENEGRAPH_CMAKE_CONFIG_DIR="${MMSCENEGRAPH_INSTALL_DIR}/lib/cmake/mmscenegraph"
+MMSOLVERLIBS_INSTALL_DIR="${BUILD_DIR_BASE}/build_mmsolverlibs/install/maya${MAYA_VERSION}_linux/"
+MMSOLVERLIBS_CMAKE_CONFIG_DIR="${MMSOLVERLIBS_INSTALL_DIR}/lib64/cmake/mmsolverlibs_cpp"
+MMSOLVERLIBS_RUST_DIR="${BUILD_DIR_BASE}/build_mmsolverlibs/rust_linux_maya${MAYA_VERSION}/${BUILD_TYPE_DIR}"
 
 # We don't want to find system packages.
 CMAKE_IGNORE_PATH="/lib;/lib64;/usr;/usr/lib;/usr/lib64;/usr/local;/usr/local/lib;/usr/local/lib64;"
-
-# A local copy of LDPK to reduce the amount of downloads to the
-# 3DEqualizer website (LDPK doesn't have a git repo to clone from).
-LDPK_URL="${PROJECT_ROOT}/external/archives/ldpk-2.8.tar"
 
 # Build mmSolver project
 cd ${BUILD_DIR_BASE}
@@ -110,7 +108,9 @@ ${CMAKE_EXE} \
     -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH} \
     -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
     -DCMAKE_CXX_STANDARD=${CXX_STANDARD} \
+    -DOPENGL_INCLUDE_DIR=${OPENGL_INCLUDE_DIR} \
     -DMMSOLVER_BUILD_PLUGIN=${MMSOLVER_BUILD_PLUGIN} \
+    -DMMSOLVER_BUILD_TOOLS=${MMSOLVER_BUILD_TOOLS} \
     -DMMSOLVER_BUILD_PYTHON=${MMSOLVER_BUILD_PYTHON} \
     -DMMSOLVER_BUILD_MEL=${MMSOLVER_BUILD_MEL} \
     -DMMSOLVER_BUILD_3DEQUALIZER=${MMSOLVER_BUILD_3DEQUALIZER} \
@@ -124,8 +124,8 @@ ${CMAKE_EXE} \
     -DMMSOLVER_BUILD_TESTS=${MMSOLVER_BUILD_TESTS} \
     -DMAYA_LOCATION=${MAYA_LOCATION} \
     -DMAYA_VERSION=${MAYA_VERSION} \
-    -Dldpk_URL=${LDPK_URL} \
-    -Dmmscenegraph_DIR=${MMSCENEGRAPH_CMAKE_CONFIG_DIR} \
+    -Dmmsolverlibs_rust_DIR=${MMSOLVERLIBS_RUST_DIR} \
+    -Dmmsolverlibs_cpp_DIR=${MMSOLVERLIBS_CMAKE_CONFIG_DIR} \
     ${PROJECT_ROOT}
 
 ${CMAKE_EXE} --build . --parallel

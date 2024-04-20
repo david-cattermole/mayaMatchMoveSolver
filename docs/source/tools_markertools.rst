@@ -19,6 +19,7 @@ Usage:
 1) Select marker nodes.
 
 2) Run tool.
+
    - The selected marker node attributes will be toggled between locked and unlocked.
 
 Run this Python command:
@@ -106,6 +107,35 @@ Run this Python command:
     import mmSolver.tools.averagemarker.tool
     mmSolver.tools.averagemarker.tool.main()
 
+.. _convert-to-marker-ref:
+
+Convert to Marker
+-----------------
+
+Converts the selected transform nodes into screen-space Markers, as
+viewed though the active viewport camera.
+
+The created markers are named based on the selected transform nodes, and
+are parented under the active viewport camera.
+
+Usage:
+
+1) Click into an active 3D viewport.
+
+2) Select one or more Maya transform nodes.
+
+3) Run tool.
+
+   - A Marker will be created for each Maya transform node selected,
+     across the current timeline's frame range.
+
+Run this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.convertmarker.tool as tool
+    tool.main()
+
 .. _project-marker-on-mesh-tool-ref:
 
 Project Marker on Mesh (Ray-Cast)
@@ -113,6 +143,11 @@ Project Marker on Mesh (Ray-Cast)
 
 Ray-casts each bundle connected to the selected markers on to the mesh
 from the associated camera.
+
+.. figure:: images/tools_project_markers_on_mesh_ui.png
+    :alt: Project Markers on Mesh UI
+    :align: center
+    :width: 60%
 
 Select markers and mesh objects to ray-cast on to, if no mesh objects
 are selected the tool will ray-cast on to all visible mesh objects.
@@ -153,9 +188,11 @@ Usage:
 
 3) Run tool.
 
+   - (Optional) Open the UI to adjust options and press `Apply`.
+
    - The Bundles connected to the selected Markers will be projected
      from the currently active viewport camera onto the mesh in the
-     scene
+     scene.
 
 Run this Python command:
 

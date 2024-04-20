@@ -113,12 +113,12 @@ Python Example:
 
 *To be written.*
 
-``mmCameraSolve`` Command
-+++++++++++++++++++++++++
+``mmCameraRelativePose`` Command
+++++++++++++++++++++++++++++++++
 
 *To be written.*
 
-``mmCameraRelativePose`` Command
-++++++++++++++++++++++++++++++++
+``mmCameraPoseFromPoints`` Command
+++++++++++++++++++++++++++++++++++
 
 *To be written.*

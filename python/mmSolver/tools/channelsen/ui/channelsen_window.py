@@ -30,8 +30,6 @@ import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
-import mmSolver.ui.Qt.QtGui as QtGui
-import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
@@ -68,7 +66,7 @@ class ChannelSenWindow(BaseWindow):
 
     def help(self):
         src = helputils.get_help_source()
-        page = 'tools.html#channel-sensitivity'
+        page = 'tools_attributetools.html#channel-sensitivity'
         helputils.open_help_in_browser(page=page, help_source=src)
         return
 

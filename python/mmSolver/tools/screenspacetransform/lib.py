@@ -59,7 +59,6 @@ def create_screen_space_locator(cam, name=None):
     maya.cmds.setAttr(depth_tfm + '.scaleY', lock=True)
     maya.cmds.setAttr(depth_tfm + '.scaleZ', lock=True)
 
-    loc_name = 'point'
     loc_tfm = maya.cmds.createNode('transform', name=name, parent=depth_tfm)
     loc_tfm = node_utils.get_long_name(loc_tfm)
     loc_shp = maya.cmds.createNode('locator', parent=loc_tfm)

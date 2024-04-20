@@ -23,8 +23,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
-import math
 import time
 import unittest
 
@@ -143,7 +141,7 @@ class TestLens3(solverUtils.SolverTestCase):
 
         # Run solver!
         s = time.time()
-        result = maya.cmds.mmSolver(
+        maya.cmds.mmSolver(
             camera=cameras,
             marker=markers,
             attr=node_attrs,

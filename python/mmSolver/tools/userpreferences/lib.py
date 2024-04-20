@@ -27,6 +27,7 @@ import os
 
 import mmSolver.logger
 import mmSolver.utils.config as config_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.userpreferences.constant as const
 
 
@@ -67,9 +68,33 @@ def get_value(config, key):
 def set_value(config, key, value):
     assert isinstance(config, config_utils.Config)
     assert key in const.VALID_KEYS
-    assert value in const.VALUES_MAP.get(key, [])
-    value = config.set_value(key, value)
-    return value
+    assert key in const.VALUE_TYPE_MAP
+    expected_value_type = const.VALUE_TYPE_MAP[key]
+    if expected_value_type == const.TYPE_ENUMERATION_INT:
+        assert value in const.VALUES_MAP[key]
+    elif expected_value_type == const.TYPE_STRING:
+        assert isinstance(value, pycompat.TEXT_TYPE)
+    else:
+        msg = (
+            'The type ({value_type}) of the value given ({value})'
+            'does not match the expected type ({expected_type}) '
+            'for the user preference key {key}.'
+        )
+        msg = msg.format(
+            key=key,
+            value=repr(value),
+            value_type=repr(type(value)),
+            expected_type=repr(expected_value_type),
+        )
+        raise ValueError(msg)
+    return config.set_value(key, value)
+
+
+def get_value_type(config, key):
+    assert isinstance(config, config_utils.Config)
+    assert key in const.VALID_KEYS
+    expected_value_type = const.VALUE_TYPE_MAP[key]
+    return expected_value_type
 
 
 def get_label_from_value(key, value):

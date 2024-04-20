@@ -22,6 +22,8 @@ This file is used to automatically load all formats so the user
 doesn't need to import each format individually.
 """
 
+# Do not remove these imports, they are used to automatically load and
+# add the different file formats to the FormatManager.
 import mmSolver.utils.loadmarker.formats.pftrack2dt
 import mmSolver.utils.loadmarker.formats.rz2
 import mmSolver.utils.loadmarker.formats.tdetxt

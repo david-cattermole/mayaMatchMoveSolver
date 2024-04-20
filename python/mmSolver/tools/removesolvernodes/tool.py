@@ -24,9 +24,6 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.logger
-import mmSolver.utils.python_compat as pycompat
-import mmSolver.api as mmapi
-import maya.cmds as cmds
 
 
 LOG = mmSolver.logger.get_logger()

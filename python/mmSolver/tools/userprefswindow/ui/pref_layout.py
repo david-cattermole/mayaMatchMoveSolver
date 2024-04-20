@@ -27,14 +27,13 @@ import mmSolver.ui.qtpyutils as qtpyutils
 
 qtpyutils.override_binding_order()
 
-import mmSolver.ui.Qt.QtCore as QtCore
-import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.userpreferences.lib as userprefs_lib
 import mmSolver.tools.userpreferences.constant as pref_const
+import mmSolver.tools.userprefswindow.constant as const
 import mmSolver.tools.userprefswindow.ui.ui_pref_layout as ui_pref_layout
 
 LOG = mmSolver.logger.get_logger()
@@ -59,10 +58,16 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
     def populateUI(self, config):
         self.updateAddNewMarkersToWidget(config)
         self.updateAddNewLinesToWidget(config)
+        self.updateSolverUIMinimalUIWhileSolvingWidget(config)
+        self.updateLoadMarkerUIDistortionModeDefaultWidget(config)
+        self.updateLoadMarkerUIUseOverscanDefaultWidget(config)
+        self.updateLoadMarkerUILoadBundlePositionsDefaultWidget(config)
+
+        # Deprecated options, kept for backwards compatibility, but
+        # they are hidden by default anyway.
         self.updateSolverUIValidateOnOpenWidget(config)
         self.updateSolverUIShowValidateButtonWidget(config)
         self.updateSolverUIAllowObjectRelationsWidget(config)
-        self.updateSolverUIMinimalUIWhileSolvingWidget(config)
         return
 
     def updateAddNewMarkersToWidget(self, config):
@@ -96,6 +101,57 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
     def getAddNewLinesToConfigValue(self):
         key = pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY
         label = self.addNewLinesToComboBox.currentText()
+        value = userprefs_lib.get_value_from_label(key, label)
+        return value
+
+    def updateLoadMarkerUIDistortionModeDefaultWidget(self, config):
+        key = pref_const.LOAD_MARKER_UI_DISTORTION_MODE_DEFAULT_KEY
+        value = userprefs_lib.get_value(config, key)
+        label = userprefs_lib.get_label_from_value(key, value)
+        assert isinstance(label, pycompat.TEXT_TYPE)
+        labels = userprefs_lib.get_labels(key)
+        self.distortionModeDefaultComboBox.clear()
+        self.distortionModeDefaultComboBox.addItems(labels)
+        self.distortionModeDefaultComboBox.setCurrentText(label)
+        return
+
+    def getLoadMarkerUIDistortionModeDefaultConfigValue(self):
+        key = pref_const.LOAD_MARKER_UI_DISTORTION_MODE_DEFAULT_KEY
+        label = self.distortionModeDefaultComboBox.currentText()
+        value = userprefs_lib.get_value_from_label(key, label)
+        return value
+
+    def updateLoadMarkerUIUseOverscanDefaultWidget(self, config):
+        key = pref_const.LOAD_MARKER_UI_USE_OVERSCAN_DEFAULT_KEY
+        value = userprefs_lib.get_value(config, key)
+        label = userprefs_lib.get_label_from_value(key, value)
+        assert isinstance(label, pycompat.TEXT_TYPE)
+        labels = userprefs_lib.get_labels(key)
+        self.useOverscanDefaultComboBox.clear()
+        self.useOverscanDefaultComboBox.addItems(labels)
+        self.useOverscanDefaultComboBox.setCurrentText(label)
+        return
+
+    def getLoadMarkerUIUseOverscanDefaultConfigValue(self):
+        key = pref_const.LOAD_MARKER_UI_USE_OVERSCAN_DEFAULT_KEY
+        label = self.useOverscanDefaultComboBox.currentText()
+        value = userprefs_lib.get_value_from_label(key, label)
+        return value
+
+    def updateLoadMarkerUILoadBundlePositionsDefaultWidget(self, config):
+        key = pref_const.LOAD_MARKER_UI_LOAD_BUNDLE_POSITIONS_DEFAULT_KEY
+        value = userprefs_lib.get_value(config, key)
+        label = userprefs_lib.get_label_from_value(key, value)
+        assert isinstance(label, pycompat.TEXT_TYPE)
+        labels = userprefs_lib.get_labels(key)
+        self.loadBundlePositionsDefaultComboBox.clear()
+        self.loadBundlePositionsDefaultComboBox.addItems(labels)
+        self.loadBundlePositionsDefaultComboBox.setCurrentText(label)
+        return
+
+    def getLoadMarkerUILoadBundlePositionsDefaultConfigValue(self):
+        key = pref_const.LOAD_MARKER_UI_LOAD_BUNDLE_POSITIONS_DEFAULT_KEY
+        label = self.loadBundlePositionsDefaultComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)
         return value
 

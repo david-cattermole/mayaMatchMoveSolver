@@ -1,6 +1,6 @@
 # -*- mode: python-mode; python-indent-offset: 4 -*-
 #
-# Copyright (C) 2021, 2022 David Cattermole.
+# Copyright (C) 2018, 2021, 2022 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -20,40 +20,50 @@
 #
 # 3DE4.script.name:    Import 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version: v1.1
+# 3DE4.script.version: v1.4
 #
 # 3DE4.script.gui:     Main Window::3DE4::File::Import
 # 3DE4.script.gui:     Object Browser::Context Menu Point
 # 3DE4.script.gui:     Object Browser::Context Menu Points
 # 3DE4.script.gui:     Object Browser::Context Menu PGroup
 #
-#
-# 3DE4.script.comment: Imports 2D tracking curves from a .uv file.
+# 3DE4.script.comment: Imports 2D tracking points from a file.
+# 3DE4.script.comment:
+# 3DE4.script.comment: The supported file formats are:
+# 3DE4.script.comment: - MM Solver (.uv)
+# 3DE4.script.comment: - 3DEqualizer (.txt)
+# 3DE4.script.comment: - MatchMover (.rz2)
+# 3DE4.script.comment: - PFTrack/PFMatchIt (.2dt / .txt)
 #
 
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
-import re
-import sys
 import abc
 import collections
-import math
 import json
+import logging
+import math
+import sys
+import os
+import os.path
+import re
 
 import tde4
 
+LOG = logging.getLogger()
 
-IS_PYTHON_2 = sys.version_info[0] == 2
-if IS_PYTHON_2 is True:
-    TEXT_TYPE = basestring  # noqa: F821
-    INT_TYPES = (int, long)  # noqa: F821
-else:
-    TEXT_TYPE = str
-    INT_TYPES = (int,)
+WINDOW_TITLE = 'Import 2D Tracks (MM Solver)...'
+SUPPORT_POINT_SURVEY_XYZ_ENABLED = 'setPointSurveyXYZEnabledFlags' in dir(tde4)
+HELP_TEXT = """Import 2D Tracks from:
+- MM Solver (.uv files)
+- 3DEqualizer (.txt files) *
+- MatchMover (.rz2 files)
+- PFTrack/PFMatchIt (.2dt / .txt files) *
 
+* Note: Some file formats embed the image resolution.
+The resolution must match in order to align to the image correctly."""
 
 # UV Track format
 # Keep this in-sync with the 3DEqualizer exporter 'uvtrack_format.py'
@@ -75,9 +85,17 @@ UV_TRACK_HEADER_VERSION_4 = {
     'version': UV_TRACK_FORMAT_VERSION_4,
 }
 
-WINDOW_TITLE = 'Import 2D Tracks (MM Solver)...'
-SUPPORT_FRAME_OFFSET = 'getCameraFrameOffset' in dir(tde4)
-SUPPORT_POINT_SURVEY_XYZ_ENABLED = 'setPointSurveyXYZEnabledFlags' in dir(tde4)
+
+IS_PYTHON_2 = sys.version_info[0] == 2
+IS_PYTHON_3 = sys.version_info[0] == 3
+if IS_PYTHON_2 is True:
+    TEXT_TYPE = basestring  # noqa: F821
+    INT_TYPES = (int, long)  # noqa: F821
+    LONG_TYPE = long  # noqa: F821
+else:
+    TEXT_TYPE = str
+    INT_TYPES = (int,)
+    LONG_TYPE = int
 
 
 class ParserWarning(Warning):
@@ -160,6 +178,23 @@ def get_closest_frame(frame, value):
     return closest_frame
 
 
+class FormatManager(object):
+    def __init__(self):
+        self.__formats = {}
+
+    def register_format(self, class_obj):
+        if str(class_obj) not in self.__formats:
+            self.__formats[str(class_obj)] = class_obj
+        return True
+
+    def get_formats(self):
+        format_list = []
+        for key in self.__formats:
+            fmt = self.__formats[key]
+            format_list.append(fmt)
+        return format_list
+
+
 class KeyframeData(object):
     """
     Keyframe data, used to store animated or static data.
@@ -225,9 +260,8 @@ class KeyframeData(object):
         key_values = list()
 
         # Sort keys, based on int values, not string.
-        keys = self._data.keys()
         int_keys = list()
-        for key in self._data.iterkeys():
+        for key in self._data.keys():
             int_keys.append(int(key))
         keys = sorted(int_keys)
 
@@ -262,7 +296,7 @@ class KeyframeData(object):
 
     def get_times_and_values(self):
         """
-        Get both times and values, as tuple.
+        Get all times, should be first half of get_keyframe_values.
         """
         times = list()
         values = list()
@@ -291,7 +325,7 @@ class KeyframeData(object):
         initial = None
         total = float()  # assume it's a float?
         total_num = int()
-        for key in iter(self._data):
+        for key in self._data.keys():
             if initial is None:
                 initial = self._data[key]
             total = total + float(self._data[key])
@@ -302,14 +336,259 @@ class KeyframeData(object):
         return True
 
 
+class LoaderBase(object):
+    """
+    Base class for all format loaders.
+    """
+
+    __metaclass__ = abc.ABCMeta
+
+    name = None
+    file_exts = None
+
+    # optional arguments and default values.
+    args = None
+
+    @abc.abstractmethod
+    def parse(self, file_path, **kwargs):
+        """
+        Parse the given file path.
+
+        Inherit from LoaderBase and override this method.
+
+        :raise ParserError:
+            When the parser encounters an error related to parsing.
+
+        :raise OSError:
+            When there is a problem with reading or accessing the
+            given file.
+
+        :return: Tuple of FileInfo and List of MarkerData.
+        :rtype: (FileInfo, [MarkerData, ...])
+        """
+        return
+
+
+FileInfo = collections.namedtuple(
+    'FileInfo',
+    [
+        'marker_distorted',
+        'marker_undistorted',
+        'bundle_positions',
+        'camera_field_of_view',
+    ],
+)
+
+
+def create_file_info(
+    marker_distorted=None,
+    marker_undistorted=None,
+    bundle_positions=None,
+    camera_field_of_view=None,
+):
+    """
+    Create the type of contents available in the file format.
+    """
+    if marker_distorted is None:
+        marker_distorted = False
+    if marker_undistorted is None:
+        marker_undistorted = False
+    if bundle_positions is None:
+        bundle_positions = False
+    if camera_field_of_view is None:
+        camera_field_of_view = []
+    file_info = FileInfo(
+        marker_distorted=marker_distorted,
+        marker_undistorted=marker_undistorted,
+        bundle_positions=bundle_positions,
+        camera_field_of_view=camera_field_of_view,
+    )
+    return file_info
+
+
+def _get_file_path_formats(text):
+    """
+    Look up the possible Formats for the file path.
+
+    :param text: File path text.
+
+    :returns: List of formats for the file path.
+    :rtype: [Format, ..]
+    """
+    formats = []
+    if isinstance(text, TEXT_TYPE) is False:
+        return formats
+    if os.path.isfile(text) is False:
+        return formats
+    fmt_mgr = get_format_manager()
+    fmts = fmt_mgr.get_formats()
+    ext_to_fmt = {}
+    for fmt in fmts:
+        for ext in fmt.file_exts:
+            ext_to_fmt[ext] = fmt
+    for ext, fmt in ext_to_fmt.items():
+        if text.endswith(ext):
+            formats.append(fmt)
+            break
+    return formats
+
+
+def get_file_path_format(text, read_func):
+    """
+    Look up the Format from the file path.
+
+    :param text: File path text.
+
+    :returns: Format for the file path, or None if not found.
+    :rtype: None or Format
+    """
+    format_ = None
+    formats = _get_file_path_formats(text)
+    for fmt in formats:
+        file_info, _ = read_func(text)
+        if file_info is not None:
+            format_ = fmt
+            break
+    return format_
+
+
+def is_valid_file_path(text, read_func):
+    """
+    Is the given text a file path we can load as a marker?
+
+    :param text: A possible file path string.
+    :type text: str
+
+    :returns: File path validity.
+    :rtype: bool
+    """
+    assert isinstance(text, TEXT_TYPE)
+    fmt = get_file_path_format(text, read_func)
+    valid = fmt is not None
+    return valid
+
+
+def get_file_info(file_path, read_func):
+    """
+    Get the file path information.
+
+    :param file_path: The marker file path to get info for.
+    :type file_path: str
+
+    :return: The file info.
+    :rtype: FileInfo
+    """
+    file_info, _ = read_func(file_path)
+    return file_info
+
+
+def get_file_info_strings(file_path, read_func):
+    """
+    Get the file path information, as user-readable strings.
+
+    :param file_path: The marker file path to get info for.
+    :type file_path: str
+
+    :return: Dictionary of various information about the given file path.
+    :rtype: dict
+    """
+    info = {
+        'num_points': '?',
+        'point_names': '?',
+        'frame_range': '?-?',
+        'start_frame': '?',
+        'end_frame': '?',
+        'lens_dist': '?',
+        'lens_undist': '?',
+        'positions': '?',
+        'has_camera_fov': '?',
+    }
+    file_info, mkr_data_list = read_func(file_path)
+    if isinstance(mkr_data_list, list) is False:
+        return info
+
+    fmt = get_file_path_format(file_path, read_func)
+    info['fmt'] = fmt
+    info['fmt_name'] = str(fmt.name)
+
+    info['num_points'] = str(len(mkr_data_list))
+    start_frame = int(999999)
+    end_frame = int(-999999)
+    point_names = []
+    for mkr_data in mkr_data_list:
+        name = mkr_data.get_name()
+        point_names.append(name)
+
+        # Get start / end frame.
+        # We assume that there are X and Y keyframes on each frame,
+        # therefore we do not test Y.
+        x_keys = mkr_data.get_x()
+        x_start = x_keys.get_start_frame()
+        x_end = x_keys.get_end_frame()
+        if x_start < start_frame:
+            start_frame = x_start
+        if x_end > end_frame:
+            end_frame = x_end
+
+    info['point_names'] = ' '.join(point_names)
+    info['start_frame'] = start_frame
+    info['end_frame'] = end_frame
+    info['frame_range'] = '{0}-{1}'.format(start_frame, end_frame)
+    info['lens_dist'] = file_info.marker_distorted
+    info['lens_undist'] = file_info.marker_undistorted
+    info['positions'] = file_info.bundle_positions
+    info['has_camera_fov'] = bool(file_info.camera_field_of_view)
+    return info
+
+
+def get_file_filter():
+    """
+    Construct a string to be given to QFileDialog as a file filter.
+
+    :return: String of file filters, separated by ';;' characters.
+    :rtype: str
+    """
+    file_fmt_names = []
+    file_exts = []
+    fmt_mgr = get_format_manager()
+    fmts = fmt_mgr.get_formats()
+    for fmt in fmts:
+        file_fmt_names.append(fmt.name)
+        file_exts += fmt.file_exts
+    file_fmt_names = sorted(file_fmt_names)
+    file_exts = sorted(file_exts)
+
+    extensions_str = ''
+    for file_ext in file_exts:
+        extensions_str += '*' + file_ext + ' '
+
+    file_filter = 'Marker Files (%s);;' % extensions_str
+    for name in file_fmt_names:
+        name = name + ';;'
+        file_filter += name
+    file_filter += 'All Files (*.*);;'
+    return file_filter
+
+
+# module level manager, stores an instance of 'FormatManager'.
+__format_manager = None
+
+
+def get_format_manager():
+    global __format_manager
+    if __format_manager is None:
+        __format_manager = FormatManager()
+    return __format_manager
+
+
 class MarkerData(object):
     def __init__(self):
-        self._name = None  # None or str
-        self._group_name = None  # None or str
+        self._name = None  # None or str or unicode
+        self._group_name = None  # None or str or unicode
         self._id = None  # None or int
         self._color = None  # the colour of the point
-        self._x = KeyframeData()
-        self._y = KeyframeData()
+        self._x = KeyframeData()  # 0.0 is left, 1.0 is right.
+        self._y = KeyframeData()  # 0.0 is bottom, 1.0 is top.
         self._enable = KeyframeData()
         self._weight = KeyframeData()
         self._bnd_x = None
@@ -419,234 +698,166 @@ class MarkerData(object):
     bundle_lock_z = property(get_bundle_lock_z, set_bundle_lock_z)
 
 
-FileInfo = collections.namedtuple(
-    'FileInfo',
-    [
-        'marker_distorted',
-        'marker_undistorted',
-        'bundle_positions',
-        'camera_field_of_view',
-    ],
-)
+def _parse_int_or_none(value):
+    try:
+        return int(value)
+    except ValueError:
+        return None
 
 
-def create_file_info(
-    marker_distorted=None,
-    marker_undistorted=None,
-    bundle_positions=None,
-    camera_field_of_view=None,
-):
-    if marker_distorted is None:
-        marker_distorted = False
-    if marker_undistorted is None:
-        marker_undistorted = False
-    if bundle_positions is None:
-        bundle_positions = False
-    if camera_field_of_view is None:
-        camera_field_of_view = []
-    file_info = FileInfo(
-        marker_distorted=marker_distorted,
-        marker_undistorted=marker_undistorted,
-        bundle_positions=bundle_positions,
-        camera_field_of_view=camera_field_of_view,
-    )
-    return file_info
+def _parse_float_or_none(value):
+    try:
+        return float(value)
+    except ValueError:
+        return None
 
 
-def get_file_path_format(text):
-    """
-    Look up the Format from the file path.
-
-    :param text: File path text.
-
-    :returns: Format for the file path, or None if not found.
-    :rtype: None or Format
-    """
-    format_ = None
-    if isinstance(text, TEXT_TYPE) is False:
-        return format_
-    if os.path.isfile(text) is False:
-        return format_
-    fmt_mgr = get_format_manager()
-    fmts = fmt_mgr.get_formats()
-    ext_to_fmt = {}
-    for fmt in fmts:
-        for ext in fmt.file_exts:
-            ext_to_fmt[ext] = fmt
-    for ext, fmt in ext_to_fmt.items():
-        if text.endswith(ext):
-            format_ = fmt
-            break
-    return format_
+def _remove_comments_from_lines(lines):
+    clean_lines = []
+    for line in lines:
+        line = line.strip()
+        if line.startswith('#'):
+            continue
+        line = line.partition('#')[0]
+        clean_lines.append(line)
+    return clean_lines
 
 
-def is_valid_file_path(text):
-    """
-    Is the given text a file path we can load as a marker?
+class LoaderPFTrack2DT(LoaderBase):
 
-    :param text: A possible file path string.
-    :type text: str
+    name = 'PFTrack 2D Tracks (*.2dt / *.txt)'
+    file_exts = ['.2dt', '.txt']
+    args = [
+        ('image_width', None),
+        ('image_height', None),
+    ]
 
-    :returns: File path validity.
-    :rtype: bool
-    """
-    assert isinstance(text, TEXT_TYPE)
-    fmt = get_file_path_format(text)
-    valid = fmt is not None
-    return valid
-
-
-def get_file_info(file_path):
-    """
-    Get the file path information.
-
-    :param file_path: The marker file path to get info for.
-    :type file_path: str
-
-    :return: The file info.
-    :rtype: FileInfo
-    """
-    file_info, _ = read(file_path)
-    return file_info
-
-
-def get_file_info_strings(file_path):
-    """
-    Get the file path information, as user-readable strings.
-
-    :param file_path: The marker file path to get info for.
-    :type file_path: str
-
-    :return: Dictionary of various information about the given file path.
-    :rtype: dict
-    """
-    info = {
-        'num_points': '?',
-        'point_names': '?',
-        'frame_range': '?-?',
-        'start_frame': '?',
-        'end_frame': '?',
-        'lens_dist': '?',
-        'lens_undist': '?',
-        'positions': '?',
-        'has_camera_fov': '?',
-    }
-    file_info, mkr_data_list = read(file_path)
-    if isinstance(mkr_data_list, list) is False:
-        return info
-
-    fmt = get_file_path_format(file_path)
-    info['fmt'] = fmt
-    info['fmt_name'] = str(fmt.name)
-
-    info['num_points'] = str(len(mkr_data_list))
-    start_frame = int(999999)
-    end_frame = int(-999999)
-    point_names = []
-    for mkr_data in mkr_data_list:
-        name = mkr_data.get_name()
-        point_names.append(name)
-
-        # Get start / end frame.
-        # We assume that there are X and Y keyframes on each frame,
-        # therefore we do not test Y.
-        x_keys = mkr_data.get_x()
-        x_start = x_keys.get_start_frame()
-        x_end = x_keys.get_end_frame()
-        if x_start < start_frame:
-            start_frame = x_start
-        if x_end > end_frame:
-            end_frame = x_end
-
-    info['point_names'] = ' '.join(point_names)
-    info['start_frame'] = start_frame
-    info['end_frame'] = end_frame
-    info['frame_range'] = '{0}-{1}'.format(start_frame, end_frame)
-    info['lens_dist'] = file_info.marker_distorted
-    info['lens_undist'] = file_info.marker_undistorted
-    info['positions'] = file_info.bundle_positions
-    info['has_camera_fov'] = bool(file_info.camera_field_of_view)
-    return info
-
-
-def get_file_filter():
-    """
-    Construct a string to be given to QFileDialog as a file filter.
-
-    :return: String of file filters, separated by ';;' characters.
-    :rtype: str
-    """
-    file_fmt_names = []
-    file_exts = []
-    fmt_mgr = get_format_manager()
-    fmts = fmt_mgr.get_formats()
-    for fmt in fmts:
-        file_fmt_names.append(fmt.name)
-        file_exts += fmt.file_exts
-    file_fmt_names = sorted(file_fmt_names)
-    file_exts = sorted(file_exts)
-
-    extensions_str = ''
-    for file_ext in file_exts:
-        extensions_str += '*' + file_ext + ' '
-
-    file_filter = 'Marker Files (%s);;' % extensions_str
-    for name in file_fmt_names:
-        name = name + ';;'
-        file_filter += name
-    file_filter += 'All Files (*.*);;'
-    return file_filter
-
-
-class LoaderBase(object):
-    """
-    Base class for all format loaders.
-    """
-
-    __metaclass__ = abc.ABCMeta
-
-    name = None
-    file_exts = None
-
-    # optional arguments and default values.
-    args = None
-
-    @abc.abstractmethod
     def parse(self, file_path, **kwargs):
         """
-        Parse the given file path.
+        Parse the file path as a PFTrack .2dt/.txt file.
 
-        Inherit from LoaderBase and override this method.
+        :param file_path: File path to parse.
+        :type file_path: str
+
+        :param kwargs: expected to contain 'image_width' and 'image_height'.
+
+        :return: List of MarkerData.
         """
-        return
+        # If the image width/height is not given we raise an error immediately.
+        image_width = kwargs.get('image_width')
+        image_height = kwargs.get('image_height')
+        if image_width is None:
+            image_width = 1.0
+        if image_height is None:
+            image_height = 1.0
+        inv_image_width = 1.0 / image_width
+        inv_image_height = 1.0 / image_height
 
+        lines = []
+        with open(file_path, 'r') as f:
+            lines = f.readlines()
+        if len(lines) == 0:
+            raise OSError('No contents in the file: %s' % file_path)
+        mkr_data_list = []
 
-# module level manager, stores an instance of 'FormatManager'.
-__format_manager = None
+        i = 0
+        lines = _remove_comments_from_lines(lines)
+        while i < len(lines):
+            line = lines[i]
+            mkr_name = None
+            # Tracker Name
+            if line.startswith('"') and line.endswith('"'):
+                mkr_name = line[1:-1]
+                i += 1
+            else:
+                i += 1
+                continue
 
+            # Clip number or Camera name.
+            #
+            # PFTrack 5 used a camera name, but future versions of
+            # PFTrack use clip numbers.
+            #
+            # Either way, this value is parsed by never used by the
+            # importer because I don't know how the clip number or
+            # camera name should be used in mmSolver.
+            cam_name = None
+            line = lines[i]
+            clip_number = _parse_int_or_none(line)
+            if clip_number is not None:
+                i += 1
+            elif line.startswith('"') and line.endswith('"'):
+                cam_name = line[1:-1]
+                i += 1
+            else:
+                msg = 'File invalid, ' 'expecting a camera name (string) in line: %r'
+                raise ParserError(msg % line)
 
-class FormatManager(object):
-    def __init__(self):
-        self.__formats = {}
+            # Create marker
+            mkr_data = MarkerData()
+            mkr_data.set_name(mkr_name)
 
-    def register_format(self, class_obj):
-        if str(class_obj) not in self.__formats:
-            self.__formats[str(class_obj)] = class_obj
-        return True
+            # Number of frames.
+            line = lines[i]
+            number_of_frames = _parse_int_or_none(line)
+            if number_of_frames is None:
+                msg = (
+                    'File invalid, '
+                    'expecting a number of frames (integer) in line: %r'
+                )
+                raise ParserError(msg % line)
+            i += 1
 
-    def get_formats(self):
-        format_list = []
-        for key in self.__formats:
-            fmt = self.__formats[key]
-            format_list.append(fmt)
-        return format_list
+            # Parse per-frame data.
+            frames = []
+            for frame_index in range(number_of_frames):
+                line = lines[i]
+                line_split = line.split(' ')
+                frame = None
+                mkr_u = 0.0
+                mkr_v = 0.0
+                residual = None
+                zdepth = None
+                if len(line_split) not in [4, 5]:
+                    msg = 'File invalid, ' 'there must be 4 or 5 numbers in line: %r'
+                    raise ParserError(msg % line)
 
+                frame = _parse_int_or_none(line_split[0])
+                pos_x = _parse_float_or_none(line_split[1])
+                pos_y = _parse_float_or_none(line_split[2])
+                if frame is None or pos_x is None or pos_y is None:
+                    raise ParserError('Invalid file format.')
 
-def get_format_manager():
-    global __format_manager
-    if __format_manager is None:
-        __format_manager = FormatManager()
-    return __format_manager
+                # PFTrack treats the center of the pixel as "0.0",
+                # which is different from other matchmove
+                # software.
+                mkr_u = (pos_x + 0.5) * inv_image_width
+                mkr_v = (pos_y + 0.5) * inv_image_height
+
+                # # There is no need for residual or the Z-depth for now.
+                # residual = _parse_float_or_none(line_split[3])
+                # if len(line_split) == 5:
+                #     zdepth = _parse_float_or_none(line_split[4])
+
+                mkr_weight = 1.0
+                mkr_data.weight.set_value(frame, mkr_weight)
+                mkr_data.x.set_value(frame, mkr_u)
+                mkr_data.y.set_value(frame, mkr_v)
+                frames.append(frame)
+                i += 1
+
+            # Fill in occluded frames
+            all_frames = list(range(min(frames), max(frames) + 1))
+            for frame in all_frames:
+                mkr_enable = int(frame in frames)
+                mkr_data.enable.set_value(frame, mkr_enable)
+                if mkr_enable is False:
+                    mkr_data.weight.set_value(frame, 0.0)
+
+            mkr_data_list.append(mkr_data)
+
+        file_info = create_file_info()
+        return file_info, mkr_data_list
 
 
 class LoaderRZ2(LoaderBase):
@@ -703,7 +914,7 @@ class LoaderRZ2(LoaderBase):
         start_frame = int(range_grps[0])
         end_frame = int(range_grps[1])
         by_frame = int(range_grps[2])
-        frames = range(start_frame, end_frame, by_frame)
+        frames = range(start_frame, end_frame + 1, by_frame)
 
         idx = end_idx
         while True:
@@ -756,11 +967,6 @@ class LoaderRZ2(LoaderBase):
         return file_info, mkr_data_list
 
 
-# Register the File Format
-mgr = get_format_manager()
-mgr.register_format(LoaderRZ2)
-
-
 class Loader3DETXT(LoaderBase):
 
     name = '3DEqualizer Track Points (*.txt)'
@@ -784,10 +990,6 @@ class Loader3DETXT(LoaderBase):
         # If the image width/height is not given we raise an error immediately.
         image_width = kwargs.get('image_width')
         image_height = kwargs.get('image_height')
-        if isinstance(image_width, (int, float)):
-            ValueError('image_width must be float or int.')
-        if isinstance(image_height, (int, float)):
-            ValueError('image_height must be float or int.')
         if image_width is None:
             image_width = 1.0
         if image_height is None:
@@ -802,9 +1004,13 @@ class Loader3DETXT(LoaderBase):
             raise OSError('No contents in the file: %s' % file_path)
         mkr_data_list = []
 
+        lines = _remove_comments_from_lines(lines)
+
         line = lines[0]
         line = line.strip()
-        num_points = int(line)
+        num_points = _parse_int_or_none(line)
+        if num_points is None:
+            raise ParserError('Invalid file format.')
         if num_points < 1:
             raise ParserError('No points exist.')
 
@@ -821,17 +1027,21 @@ class Loader3DETXT(LoaderBase):
             idx += 1
             line = lines[idx]
             line = line.strip()
-            mkr_color = int(line)
+            mkr_color = _parse_int_or_none(line)
+            if mkr_color is None:
+                raise ParserError('Invalid file format.')
             mkr_data.set_color(mkr_color)
 
             idx += 1
             line = lines[idx]
             line = line.strip()
-            num_frames = int(line)
+            num_frames = _parse_int_or_none(line)
+            if num_frames is None:
+                raise ParserError('Invalid file format.')
             if num_frames <= 0:
                 idx += 1
                 msg = 'point has no data: %r'
-                print(msg % mkr_name)
+                LOG.warning(msg, mkr_name)
                 continue
 
             # Frame data parsing
@@ -850,9 +1060,13 @@ class Loader3DETXT(LoaderBase):
                     # We should not get here
                     msg = 'File invalid, there must be 3 numbers in line: %r'
                     raise ParserError(msg % line)
-                frame = int(split[0])
-                mkr_u = float(split[1]) * inv_image_width
-                mkr_v = float(split[2]) * inv_image_height
+                frame = _parse_int_or_none(split[0])
+                pos_x = _parse_float_or_none(split[1])
+                pos_y = _parse_float_or_none(split[2])
+                if frame is None or pos_x is None or pos_y is None:
+                    raise ParserError('Invalid file format.')
+                mkr_u = pos_x * inv_image_width
+                mkr_v = pos_y * inv_image_height
                 mkr_weight = 1.0
 
                 mkr_data.weight.set_value(frame, mkr_weight)
@@ -863,8 +1077,8 @@ class Loader3DETXT(LoaderBase):
             # Fill in occluded point frames
             all_frames = list(range(min(frames), max(frames) + 1))
             for frame in all_frames:
-                mkr_enable = int(frame in frames)
-                mkr_data.enable.set_value(frame, mkr_enable)
+                mkr_enable = bool(frame in frames)
+                mkr_data.enable.set_value(frame, int(mkr_enable))
                 if mkr_enable is False:
                     mkr_data.weight.set_value(frame, 0.0)
 
@@ -875,17 +1089,12 @@ class Loader3DETXT(LoaderBase):
         return file_info, mkr_data_list
 
 
-# Register the File Format
-mgr = get_format_manager()
-mgr.register_format(Loader3DETXT)
-
-
 def determine_format_version(file_path):
     """
     Work out the format version by reading the 'file_path'.
 
     returns: The format version, must be one of
-        constants.UV_TRACK_FORMAT_VERSION_LIST.
+        constants.UV_TRACK_FORMAT_VERSION_LIST
     """
     with open(file_path) as f:
         try:
@@ -965,7 +1174,6 @@ def _parse_per_frame_v2_v3_v4(mkr_data, per_frame_data, pos_key=None):
     Get the MarkerData per-frame, including X, Y, weight and enabled
     values.
 
-    :param mkr_data:
     :type mkr_data: MarkerData
 
     :param per_frame_data: List of per-frame data structures.
@@ -1068,7 +1276,7 @@ def _parse_v2_and_v3(file_path, undistorted=None, with_3d_pos=None):
         per_frame = point_data.get('per_frame', [])
         if len(per_frame) == 0:
             name = mkr_data.get_name()
-            print(msg % name)
+            LOG.warning(msg, name)
             continue
 
         # Create marker per-frame data
@@ -1151,7 +1359,7 @@ def parse_v1(file_path, **kwargs):
         if num_frames <= 0:
             idx += 1
             msg = 'Point has no data: mkr_name=%r line_num=%r'
-            print(msg % (mkr_name, idx))
+            LOG.warning(msg, mkr_name, idx)
             continue
 
         # Frame data parsing
@@ -1222,7 +1430,12 @@ def parse_v3(file_path, **kwargs):
     :return: List of MarkerData objects.
     """
     # Should we choose the undistorted or distorted marker data?
-    undistorted = kwargs.get('undistorted', None)  # bool or None
+    undistorted = kwargs.get('undistorted', None)
+    assert undistorted is None or isinstance(undistorted, bool)
+
+    with_3d_pos = kwargs.get('with_3d_pos', True)
+    assert isinstance(with_3d_pos, bool)
+
     file_info = create_file_info(
         marker_distorted=True,
         marker_undistorted=True,
@@ -1231,7 +1444,7 @@ def parse_v3(file_path, **kwargs):
     mkr_data_list = _parse_v2_and_v3(
         file_path,
         undistorted=undistorted,
-        with_3d_pos=True,
+        with_3d_pos=with_3d_pos,
     )
     return file_info, mkr_data_list
 
@@ -1248,7 +1461,12 @@ def parse_v4(file_path, **kwargs):
     :return: List of MarkerData objects.
     """
     # Should we choose the undistorted or distorted marker data?
-    undistorted = kwargs.get('undistorted', None)  # bool or None
+    undistorted = kwargs.get('undistorted', None)
+    assert undistorted is None or isinstance(undistorted, bool)
+
+    with_3d_pos = kwargs.get('with_3d_pos', True)
+    assert isinstance(with_3d_pos, bool)
+
     cam_fov_list = _parse_camera_fov_v4(
         file_path,
     )
@@ -1261,7 +1479,7 @@ def parse_v4(file_path, **kwargs):
     mkr_data_list = _parse_v2_and_v3(
         file_path,
         undistorted=undistorted,
-        with_3d_pos=True,
+        with_3d_pos=with_3d_pos,
     )
     return file_info, mkr_data_list
 
@@ -1270,7 +1488,7 @@ class LoaderUVTrack(LoaderBase):
 
     name = 'UV Track Points (*.uv)'
     file_exts = ['.uv']
-    args = []
+    args = ['undistorted', 'with_3d_pos']
 
     def parse(self, file_path, **kwargs):
         """
@@ -1280,7 +1498,8 @@ class LoaderUVTrack(LoaderBase):
         :type file_path: str
 
         :param kwargs: The keyword 'undistorted' is used by
-                       UV_TRACK_FORMAT_VERSION_3 formats.
+            UV_TRACK_FORMAT_VERSION_3 formats. 'with_3d_pos' can be
+            used to use the (3D) bundle positions or not.
 
         :return: List of MarkerData
         """
@@ -1299,9 +1518,12 @@ class LoaderUVTrack(LoaderBase):
         return file_info, mkr_data_list
 
 
-# Register the File Format
+# Register the File Formats
 mgr = get_format_manager()
 mgr.register_format(LoaderUVTrack)
+mgr.register_format(Loader3DETXT)
+mgr.register_format(LoaderRZ2)
+mgr.register_format(LoaderPFTrack2DT)
 
 
 def read(file_path, **kwargs):
@@ -1315,7 +1537,7 @@ def read(file_path, **kwargs):
         msg = 'file path does not exist; %r'
         raise OSError(msg % file_path)
 
-    file_format_class = None
+    file_format_classes = []
     mgr = get_format_manager()
     for fmt in mgr.get_formats():
         attr = getattr(fmt, 'file_exts', None)
@@ -1325,15 +1547,54 @@ def read(file_path, **kwargs):
             continue
         for ext in fmt.file_exts:
             if file_path.endswith(ext):
-                file_format_class = fmt
-                break
-    if file_format_class is None:
+                file_format_classes.append(fmt)
+    if len(file_format_classes) == 0:
         msg = 'No file formats found for file path: %r'
         raise RuntimeError(msg % file_path)
 
-    file_format_obj = file_format_class()
-    file_info, mkr_data_list = file_format_obj.parse(file_path, **kwargs)
+    file_info = None
+    mkr_data_list = []
+    for file_format_class in file_format_classes:
+        file_format_obj = file_format_class()
+        try:
+            contents = file_format_obj.parse(file_path, **kwargs)
+        except (ParserError, OSError):
+            contents = (None, [])
+
+        file_info, mkr_data_list = contents
+        if file_info and (isinstance(mkr_data_list, list) and len(mkr_data_list) > 0):
+            break
+
     return file_info, mkr_data_list
+
+
+def _set_3d_point(pg, p, mkr_data):
+    bundle_pos = [mkr_data.bundle_x, mkr_data.bundle_y, mkr_data.bundle_z]
+    bundle_pos_are_float = [isinstance(x, float) for x in bundle_pos]
+    if all(bundle_pos_are_float) is False:
+        return False
+
+    tde4.setPointCalculated3D(pg, p, 1)
+    tde4.setPointSurveyPosition3D(pg, p, bundle_pos)
+    tde4.setPointSurveyMode(pg, p, 'SURVEY_EXACT')
+
+    if SUPPORT_POINT_SURVEY_XYZ_ENABLED is False:
+        return True
+
+    bundle_lock = [
+        int(mkr_data.bundle_lock_x or 0),
+        int(mkr_data.bundle_lock_y or 0),
+        int(mkr_data.bundle_lock_z or 0),
+    ]
+    if any(bundle_lock) is True:
+        tde4.setPointSurveyXYZEnabledFlags(
+            pg,
+            p,
+            bundle_lock[0],
+            bundle_lock[1],
+            bundle_lock[2],
+        )
+    return True
 
 
 def create_markers(c, pg, start_frame, file_info, mkr_data_list):
@@ -1343,17 +1604,17 @@ def create_markers(c, pg, start_frame, file_info, mkr_data_list):
 
     point_list = []
     for mkr_data in mkr_data_list:
-        curve = []
-        enabled_times = mkr_data.enable.get_times()
+        curve = [[-1.0, -1.0]] * (frames + 1)
+        enable_times = mkr_data.enable.get_times()
         for frame in range(frames):
-            real_frame = start_frame + frame
-            enable = real_frame in enabled_times
             pos_x = -1.0
             pos_y = -1.0
-            if enable:
+            real_frame = start_frame + frame
+            enable = mkr_data.enable.get_value(real_frame)
+            if (real_frame in enable_times) and enable:
                 pos_x = mkr_data.x.get_value(real_frame)
                 pos_y = mkr_data.y.get_value(real_frame)
-            curve.append([pos_x, pos_y])
+            curve[frame] = [pos_x, pos_y]
 
         weight = mkr_data.weight.get_value(1)
 
@@ -1364,19 +1625,7 @@ def create_markers(c, pg, start_frame, file_info, mkr_data_list):
         tde4.setPointPosition2DBlock(pg, p, c, tde_start_frame, curve)
         point_list.append(p)
 
-        bundle_pos = [mkr_data.bundle_x, mkr_data.bundle_y, mkr_data.bundle_z]
-        tde4.setPointCalculated3D(pg, p, 1)
-        tde4.setPointSurveyPosition3D(pg, p, bundle_pos)
-        tde4.setPointSurveyMode(pg, p, 'SURVEY_EXACT')
-
-        if SUPPORT_POINT_SURVEY_XYZ_ENABLED is True:
-            tde4.setPointSurveyXYZEnabledFlags(
-                pg,
-                p,
-                mkr_data.bundle_x_lock,
-                mkr_data.bundle_y_lock,
-                mkr_data.bundle_z_lock,
-            )
+        _set_3d_point(pg, p, mkr_data)
 
     return point_list
 
@@ -1386,18 +1635,37 @@ c = tde4.getCurrentCamera()
 pg = tde4.getCurrentPGroup()
 if c is not None and pg is not None:
     req = tde4.createCustomRequester()
-    tde4.addFileWidget(req, 'file_browser', 'File Name...', '*.uv')
+    tde4.addTextAreaWidget(req, 'help_text', 'Help', 170, 0)
+    tde4.addSeparatorWidget(req, 'separator1')
+    tde4.addFileWidget(req, 'file_browser', 'File Name...', '*')
+    tde4.addOptionMenuWidget(
+        req, 'distortion_mode', 'Distortion Mode', 'Distorted', 'Undistorted'
+    )
+    tde4.addToggleWidget(req, 'with_3d_position', 'Use Survey Position', 0)
 
-    ret = tde4.postCustomRequester(req, WINDOW_TITLE, 500, 120, 'Ok', 'Cancel')
+    tde4.appendTextAreaWidgetString(req, 'help_text', HELP_TEXT)
+
+    ret = tde4.postCustomRequester(req, WINDOW_TITLE, 800, 340, 'Ok', 'Cancel')
     if ret == 1:
         file_path = tde4.getWidgetValue(req, 'file_browser')
         if file_path is not None and os.path.isfile(file_path):
-            file_info, mkr_data_list = read(file_path)
+            distortion_mode = tde4.getWidgetValue(req, 'distortion_mode')
+            undistorted = distortion_mode == 2
+
+            with_3d_pos = tde4.getWidgetValue(req, 'with_3d_position') == 1
+
+            image_width = tde4.getCameraImageWidth(c)
+            image_height = tde4.getCameraImageHeight(c)
+            file_info, mkr_data_list = read(
+                file_path,
+                image_width=image_width,
+                image_height=image_height,
+                undistorted=undistorted,
+                with_3d_pos=with_3d_pos,
+            )
 
             start, end, step = tde4.getCameraSequenceAttr(c)
             start_frame = start
-            if SUPPORT_FRAME_OFFSET is True:
-                start_frame = tde4.getCameraFrameOffset(c)
 
             create_markers(c, pg, start_frame, file_info, mkr_data_list)
 else:

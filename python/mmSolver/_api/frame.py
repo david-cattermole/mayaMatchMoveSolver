@@ -30,9 +30,6 @@ from __future__ import division
 from __future__ import print_function
 
 
-import maya.cmds
-import maya.OpenMaya as OpenMaya
-import mmSolver._api.utils as api_utils
 import mmSolver._api.excep as excep
 
 

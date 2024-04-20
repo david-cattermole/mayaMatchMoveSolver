@@ -23,7 +23,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import warnings
 
 import maya.OpenMaya as OpenMaya
 import maya.OpenMayaAnim as OpenMayaAnim
@@ -830,8 +829,7 @@ class Marker(object):
         anim_curve_fn = self.get_deviation_anim_curve_fn()
 
         if anim_curve_fn is None:
-            enable_times = range(frame_range_start, frame_range_end + 1)
-            enable_times = list(enable_times)
+            enable_times = list(range(frame_range_start, frame_range_end + 1))
         else:
             num_keys = anim_curve_fn.numKeys()
             enable_times = [None] * num_keys
@@ -839,8 +837,7 @@ class Marker(object):
                 mtime = anim_curve_fn.time(i)
                 enable_times[i] = int(mtime.value())
             if num_keys == 0:
-                enable_times = range(frame_range_start, frame_range_end + 1)
-                enable_times = list(enable_times)
+                enable_times = list(range(frame_range_start, frame_range_end + 1))
 
         start_frame = int(min(enable_times))
         end_frame = int(max(enable_times))
@@ -896,7 +893,6 @@ class Marker(object):
         anim_curve_fn = self.get_deviation_anim_curve_fn()
 
         dev_list = [None] * len(frames)
-        unit = OpenMaya.MTime.uiUnit()
         if anim_curve_fn is not None:
             # Evaluate Curve
             unit = OpenMaya.MTime.uiUnit()

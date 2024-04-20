@@ -19,7 +19,6 @@
 Library functions to perform 'Link / Unlink Marker Bundle' tool functions.
 """
 
-import maya.cmds
 import mmSolver.api as mmapi
 import mmSolver.logger
 

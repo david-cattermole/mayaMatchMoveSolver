@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, 2019 David Cattermole.
+ * Copyright (C) 2018, 2019, 2022 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -29,9 +29,6 @@
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
-#include <ctime>
-#include <fstream>
-#include <iostream>
 #include <limits>
 #include <map>
 #include <string>
@@ -40,39 +37,37 @@
 // Maya
 #include <maya/MAnimCurveChange.h>
 #include <maya/MComputation.h>
-#include <maya/MDagPath.h>
 #include <maya/MFloatMatrix.h>
 #include <maya/MFnAnimCurve.h>
-#include <maya/MFnAttribute.h>
 #include <maya/MFnCamera.h>
-#include <maya/MFnDependencyNode.h>
 #include <maya/MGlobal.h>
 #include <maya/MItDependencyGraph.h>
-#include <maya/MMatrix.h>
 #include <maya/MObject.h>
 #include <maya/MPoint.h>
-#include <maya/MProfiler.h>
-#include <maya/MSelectionList.h>
 #include <maya/MStreamUtils.h>
 #include <maya/MString.h>
 #include <maya/MStringArray.h>
-#include <maya/MVector.h>
+
+#ifdef MAYA_PROFILE
+#include <maya/MProfiler.h>
+#endif
+
+// MM Solver Libs
+#include <mmsolverlibs/debug.h>
 
 // MM Solver
-#include "adjust_cminpack_base.h"
 #include "adjust_cminpack_lmder.h"
 #include "adjust_cminpack_lmdif.h"
 #include "adjust_measureErrors.h"
 #include "adjust_relationships.h"
+#include "adjust_results.h"
 #include "adjust_solveFunc.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_lens_model_utils.h"
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/mayahelper/maya_scene_graph.h"
-#include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 #include "mmscenegraph/mmscenegraph.h"
 
@@ -120,8 +115,8 @@ SolverTypePair getSolverTypeDefault() {
                 solverTypeName = name;
             }
         }
-        if (solverTypeName == "") {
-            MMSOLVER_ERR(
+        if (solverTypeName.empty()) {
+            MMSOLVER_MAYA_ERR(
                 "MMSOLVER_DEFAULT_SOLVER environment variable is invalid. "
                 << "Value may be "
                 << "\"cminpack_lm\", "
@@ -175,7 +170,8 @@ void applyLossFunctionToErrors(const int numberOfErrors, double *f,
         } else if (loss_type == ROBUST_LOSS_TYPE_CAUCHY) {
             lossFunctionCauchy(z, rho0, rho1, rho2);
         } else {
-            MMSOLVER_DBG("Invalid Robust Loss Type given; value=" << loss_type);
+            MMSOLVER_MAYA_DBG(
+                "Invalid Robust Loss Type given; value=" << loss_type);
         }
         rho0 *= std::pow(loss_scale, 2.0);
         rho2 /= std::pow(loss_scale, 2.0);
@@ -188,7 +184,6 @@ void applyLossFunctionToErrors(const int numberOfErrors, double *f,
         J_scale = std::pow(J_scale, 0.5);
         f[i] *= rho1 / J_scale;
     }
-    return;
 }
 
 // Convert an unbounded parameter value (that has already run through
@@ -266,8 +261,7 @@ bool get_initial_parameters(
     const int numberOfParameters, std::vector<double> &paramList,
     const std::vector<std::pair<int, int>> &paramToAttrList,
     AttrPtrList &attrList, const MTimeArray &frameList,
-    MStringArray &outResult) {
-    std::string resultStr;
+    SolverResult &out_solverResult) {
     MStatus status = MS::kSuccess;
     const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     MTime currentFrame = MAnimControl::currentTime();
@@ -285,8 +279,7 @@ bool get_initial_parameters(
         status = attr->getValue(value, frame, timeEvalMode);
         CHECK_MSTATUS(status);
         if (status != MS::kSuccess) {
-            resultStr = "success=0";
-            outResult.append(MString(resultStr.c_str()));
+            out_solverResult.success = false;
             return false;
         }
 
@@ -334,7 +327,7 @@ bool set_maya_attribute_values(
             MString attr_name = attr->getName();
             auto attr_name_char = attr_name.asChar();
 
-            MMSOLVER_ERR(
+            MMSOLVER_MAYA_ERR(
                 "set_maya_attribute_values was given an invalid value to set:"
                 << " frame=" << frame << " attr name=" << attr_name_char
                 << " solver value=" << solver_value
@@ -357,10 +350,12 @@ bool compute_error_stats(const int numberOfMarkerErrors,
     out_errorAvg = 0;
     out_errorMin = std::numeric_limits<double>::max();
     out_errorMax = -0.0;
-    for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
+    const auto marker_error_count = numberOfMarkerErrors / ERRORS_PER_MARKER;
+    for (int i = 0; i < marker_error_count; ++i) {
         const double err = errorDistanceList[i];
         if (!std::isfinite(err)) {
-            MMSOLVER_ERR("Error distance value is invalid, skipping: " << err);
+            MMSOLVER_MAYA_ERR(
+                "Error distance value is invalid, skipping: " << err);
             continue;
         }
         out_errorAvg += err;
@@ -372,45 +367,62 @@ bool compute_error_stats(const int numberOfMarkerErrors,
         }
     }
     assert(numberOfMarkerErrors > 0);
-    out_errorAvg /= (double)(numberOfMarkerErrors / ERRORS_PER_MARKER);
+    out_errorAvg /= marker_error_count;
     return true;
 }
 
-void logResultsSolveDetails(SolverResult &solverResult, SolverData &userData,
-                            SolverTimer &timer, const int numberOfParameters,
-                            const int numberOfMarkerErrors,
-                            const int numberOfAttrStiffnessErrors,
-                            const int numberOfAttrSmoothnessErrors,
-                            const LogLevel &logLevel,
-                            std::vector<double> &paramList,
-                            MStringArray &outResult) {
+void logResultsTimer(SolverTimer &timer, TimerResult &outTimerResult) {
+    outTimerResult.fill(timer);
+}
+
+void logResultsSolveValues(const int numberOfParameters,
+                           const int numberOfErrors,
+                           const std::vector<double> &paramList,
+                           const std::vector<double> &errorList,
+                           SolveValuesResult &outSolveValuesResult) {
+    outSolveValuesResult.fill(numberOfParameters, numberOfErrors, paramList,
+                              errorList);
+}
+
+void logResultsErrorMetrics(const int numberOfMarkerErrors,
+                            MarkerPtrList &markerList,
+                            const MTimeArray &frameList,
+                            const std::vector<IndexPair> &errorToMarkerList,
+                            const std::vector<double> &errorDistanceList,
+                            ErrorMetricsResult &outErrorMetricsResult) {
+    outErrorMetricsResult.fill(numberOfMarkerErrors, markerList, frameList,
+                               errorToMarkerList, errorDistanceList);
+}
+
+void printSolveDetails(const SolverResult &solverResult, SolverData &userData,
+                       SolverTimer &timer, const int numberOfParameters,
+                       const int numberOfMarkerErrors,
+                       const int numberOfAttrStiffnessErrors,
+                       const int numberOfAttrSmoothnessErrors,
+                       const LogLevel &logLevel,
+                       const std::vector<double> &paramList) {
     const bool verbose = logLevel >= LogLevel::kDebug;
 
-    int numberOfErrors = numberOfMarkerErrors;
-    numberOfErrors += numberOfAttrStiffnessErrors;
-    numberOfErrors += numberOfAttrSmoothnessErrors;
-
-    MMSOLVER_VRB("Results:");
+    MMSOLVER_MAYA_VRB("Results:");
     if (solverResult.success) {
-        MMSOLVER_VRB("Solver returned SUCCESS in " << solverResult.iterations
-                                                   << " iterations");
+        MMSOLVER_MAYA_VRB("Solver returned SUCCESS in "
+                          << solverResult.iterations << " iterations");
     } else {
-        MMSOLVER_VRB("Solver returned FAILURE in " << solverResult.iterations
-                                                   << " iterations");
+        MMSOLVER_MAYA_VRB("Solver returned FAILURE in "
+                          << solverResult.iterations << " iterations");
     }
 
-    int reasonNum = solverResult.reason_number;
-    MMSOLVER_VRB("Reason: " << solverResult.reason);
-    MMSOLVER_VRB("Reason number: " << solverResult.reason_number);
+    MMSOLVER_MAYA_VRB("Reason: " << solverResult.reason);
+    MMSOLVER_MAYA_VRB("Reason number: " << solverResult.reason_number);
 
-    MMSOLVER_VRB(std::endl << "Solve Information:");
-    MMSOLVER_VRB("Maximum Error: " << solverResult.errorMax);
-    MMSOLVER_VRB("Average Error: " << solverResult.errorAvg);
-    MMSOLVER_VRB("Minimum Error: " << solverResult.errorMin);
+    MMSOLVER_MAYA_VRB(std::endl << "Solve Information:");
+    MMSOLVER_MAYA_VRB("Maximum Error: " << solverResult.errorMax);
+    MMSOLVER_MAYA_VRB("Average Error: " << solverResult.errorAvg);
+    MMSOLVER_MAYA_VRB("Minimum Error: " << solverResult.errorMin);
 
-    MMSOLVER_VRB("Iterations: " << solverResult.iterations);
-    MMSOLVER_VRB("Function Evaluations: " << solverResult.functionEvals);
-    MMSOLVER_VRB("Jacobian Evaluations: " << solverResult.jacobianEvals);
+    MMSOLVER_MAYA_VRB("Iterations: " << solverResult.iterations);
+    MMSOLVER_MAYA_VRB("Function Evaluations: " << solverResult.functionEvals);
+    MMSOLVER_MAYA_VRB("Jacobian Evaluations: " << solverResult.jacobianEvals);
 
     if (logLevel >= LogLevel::kInfo) {
         if (solverResult.success) {
@@ -419,10 +431,10 @@ void logResultsSolveDetails(SolverResult &solverResult, SolverData &userData,
             MStreamUtils::stdErrorStream() << "Solver returned FAILURE    | ";
         }
 
-        double seconds = debug::timestamp_as_seconds(debug::get_timestamp() -
-                                                     timer.startTimestamp);
+        double seconds = mmsolver::debug::timestamp_as_seconds(
+            mmsolver::debug::get_timestamp() - timer.startTimestamp);
         seconds = std::max(1e-9, seconds);
-        size_t evals_per_sec = static_cast<size_t>(
+        auto evals_per_sec = static_cast<size_t>(
             static_cast<double>(solverResult.functionEvals) / seconds);
         std::string evals_per_sec_string =
             mmstring::numberToStringWithCommas(evals_per_sec);
@@ -437,214 +449,26 @@ void logResultsSolveDetails(SolverResult &solverResult, SolverData &userData,
                       &evals_per_sec_string[0]);
         // Note: We use std::endl to flush the stream, and ensure an
         //  update for the user.
-        MMSOLVER_INFO(std::string(formatBuffer));
+        MMSOLVER_MAYA_INFO(std::string(formatBuffer));
     }
-
-    // Add all the data into the output string from the Maya command.
-    std::string resultStr;
-    std::string value = mmstring::numberToString<int>(solverResult.success);
-    resultStr = "success=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    // resultStr = "reason_string=" + levmarReasons[reasonNum];
-    // outResult.append(MString(resultStr.c_str()));
-
-    value = mmstring::numberToString<int>(reasonNum);
-    resultStr = "reason_num=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    //    value = mmstring::numberToString<double>(solverResult.errorInitial);
-    //    resultStr = "error_initial=" + value;
-    //    outResult.append(MString(resultStr.c_str()));
-
-    value = mmstring::numberToString<double>(solverResult.errorFinal);
-    resultStr = "error_final=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    value = mmstring::numberToString<double>(solverResult.errorAvg);
-    resultStr = "error_final_average=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    value = mmstring::numberToString<double>(solverResult.errorMax);
-    resultStr = "error_final_maximum=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    value = mmstring::numberToString<double>(solverResult.errorMin);
-    resultStr = "error_final_minimum=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    //    value = mmstring::numberToString<double>(solverResult.errorJt);
-    //    resultStr = "error_jt=" + value;
-    //    outResult.append(MString(resultStr.c_str()));
-
-    //    value = mmstring::numberToString<double>(solverResult.errorDp);
-    //    resultStr = "error_dp=" + value;
-    //    outResult.append(MString(resultStr.c_str()));
-
-    //    value = mmstring::numberToString<double>(solverResult.errorMaximum);
-    //    resultStr = "error_maximum=" + value;
-    //    outResult.append(MString(resultStr.c_str()));
-
-    value = mmstring::numberToString<int>(solverResult.iterations);
-    resultStr = "iteration_num=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    value = mmstring::numberToString<int>(solverResult.functionEvals);
-    resultStr = "iteration_function_num=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    value = mmstring::numberToString<int>(solverResult.jacobianEvals);
-    resultStr = "iteration_jacobian_num=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    //    value = mmstring::numberToString<int>(solverResult.iterationAttempts);
-    //    resultStr = "iteration_attempt_num=" + value;
-    //    outResult.append(MString(resultStr.c_str()));
-
-    value = mmstring::numberToString<int>((bool)userData.userInterrupted);
-    resultStr = "user_interrupted=" + value;
-    outResult.append(MString(resultStr.c_str()));
 
     if (logLevel >= LogLevel::kDebug) {
         unsigned int total_num = userData.iterNum + userData.jacIterNum;
         assert(total_num > 0);
-        timer.solveBenchTimer.print("Solve Time", 1);
-        timer.funcBenchTimer.print("Func Time", 1);
-        timer.jacBenchTimer.print("Jacobian Time", 1);
-        timer.paramBenchTimer.print("Param Time", total_num);
-        timer.errorBenchTimer.print("Error Time", total_num);
-        timer.funcBenchTimer.print("Func Time", total_num);
+        static std::ostream &stream = MStreamUtils::stdErrorStream();
+        timer.solveBenchTimer.print(stream, "Solve Time", 1);
+        timer.funcBenchTimer.print(stream, "Func Time", 1);
+        timer.jacBenchTimer.print(stream, "Jacobian Time", 1);
+        timer.paramBenchTimer.print(stream, "Param Time", total_num);
+        timer.errorBenchTimer.print(stream, "Error Time", total_num);
+        timer.funcBenchTimer.print(stream, "Func Time", total_num);
 
-        timer.solveBenchTicks.print("Solve Ticks", 1);
-        timer.funcBenchTicks.print("Func Ticks", 1);
-        timer.jacBenchTicks.print("Jacobian Ticks", 1);
-        timer.paramBenchTicks.print("Param Ticks", total_num);
-        timer.errorBenchTicks.print("Error Ticks", total_num);
-        timer.funcBenchTicks.print("Func Ticks", total_num);
-    }
-
-    value =
-        mmstring::numberToString<double>(timer.solveBenchTimer.get_seconds());
-    resultStr = "timer_solve=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    value =
-        mmstring::numberToString<double>(timer.funcBenchTimer.get_seconds());
-    resultStr = "timer_function=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    value = mmstring::numberToString<double>(timer.jacBenchTimer.get_seconds());
-    resultStr = "timer_jacobian=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    value =
-        mmstring::numberToString<double>(timer.paramBenchTimer.get_seconds());
-    resultStr = "timer_parameter=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    value =
-        mmstring::numberToString<double>(timer.paramBenchTimer.get_seconds());
-    resultStr = "timer_error=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    value = mmstring::numberToString<debug::Ticks>(
-        timer.solveBenchTicks.get_ticks());
-    resultStr = "ticks_solve=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    value = mmstring::numberToString<debug::Ticks>(
-        timer.funcBenchTicks.get_ticks());
-    resultStr = "ticks_function=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    value =
-        mmstring::numberToString<debug::Ticks>(timer.jacBenchTicks.get_ticks());
-    resultStr = "ticks_jacobian=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    value = mmstring::numberToString<debug::Ticks>(
-        timer.paramBenchTicks.get_ticks());
-    resultStr = "ticks_parameter=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    value = mmstring::numberToString<debug::Ticks>(
-        timer.paramBenchTicks.get_ticks());
-    resultStr = "ticks_error=" + value;
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "solve_parameter_list=";
-    for (int i = 0; i < numberOfParameters; ++i) {
-        resultStr += mmstring::numberToString<double>(paramList[i]);
-        resultStr += CMD_RESULT_SPLIT_CHAR;
-    }
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "solve_error_list=";
-    for (int i = 0; i < numberOfErrors; ++i) {
-        double err = userData.errorList[i];
-        resultStr += mmstring::numberToString<double>(err);
-        resultStr += CMD_RESULT_SPLIT_CHAR;
-    }
-    outResult.append(MString(resultStr.c_str()));
-
-    // Marker-Frame-Error relationship
-    typedef std::pair<int, double> ErrorPair;
-    typedef std::map<int, ErrorPair> TimeErrorMapping;
-    typedef TimeErrorMapping::iterator TimeErrorMappingIt;
-    TimeErrorMapping frameErrorMapping;
-    TimeErrorMappingIt ait;
-    for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
-        IndexPair markerPair = userData.errorToMarkerList[i];
-        MarkerPtr marker = userData.markerList[markerPair.first];
-        MTime frame = userData.frameList[markerPair.second];
-        const char *markerName = marker->getNodeName().asChar();
-        const double d = userData.errorDistanceList[i];
-
-        ait = frameErrorMapping.find(markerPair.second);
-        ErrorPair pair;
-        if (ait != frameErrorMapping.end()) {
-            pair = ait->second;
-            pair.first += 1;
-            pair.second += d;
-            frameErrorMapping.erase(ait);
-        } else {
-            pair.first = 1;
-            pair.second = d;
-        }
-        frameErrorMapping.insert(
-            std::pair<int, ErrorPair>(markerPair.second, pair));
-
-        resultStr = "error_per_marker_per_frame=";
-        resultStr += markerName;
-        resultStr += CMD_RESULT_SPLIT_CHAR;
-        resultStr +=
-            mmstring::numberToString<double>(frame.asUnits(MTime::uiUnit()));
-        resultStr += CMD_RESULT_SPLIT_CHAR;
-        resultStr += mmstring::numberToString<double>(d);
-        outResult.append(MString(resultStr.c_str()));
-    }
-
-    for (TimeErrorMappingIt mit = frameErrorMapping.begin();
-         mit != frameErrorMapping.end(); ++mit) {
-        int frameIndex = mit->first;
-        MTime frame = userData.frameList[frameIndex];
-        ait = frameErrorMapping.find(frameIndex);
-        double num = 0;
-        double d = 0;
-        if (ait != frameErrorMapping.end()) {
-            ErrorPair pair = ait->second;
-            num = pair.first;
-            d = pair.second;
-        } else {
-            continue;
-        }
-
-        resultStr = "error_per_frame=";
-        resultStr +=
-            mmstring::numberToString<double>(frame.asUnits(MTime::uiUnit()));
-        resultStr += CMD_RESULT_SPLIT_CHAR;
-        resultStr += mmstring::numberToString<double>(d / num);
-        outResult.append(MString(resultStr.c_str()));
+        timer.solveBenchTicks.print(stream, "Solve Ticks", 1);
+        timer.funcBenchTicks.print(stream, "Func Ticks", 1);
+        timer.jacBenchTicks.print(stream, "Jacobian Ticks", 1);
+        timer.paramBenchTicks.print(stream, "Param Ticks", total_num);
+        timer.errorBenchTicks.print(stream, "Error Ticks", total_num);
+        timer.funcBenchTicks.print(stream, "Func Ticks", total_num);
     }
 }
 
@@ -653,32 +477,10 @@ MStatus logResultsObjectCounts(const int numberOfParameters,
                                const int numberOfMarkerErrors,
                                const int numberOfAttrStiffnessErrors,
                                const int numberOfAttrSmoothnessErrors,
-                               MStringArray &outResult) {
+                               SolverObjectCountResult &out_result) {
     MStatus status = MStatus::kSuccess;
-
-    std::string resultStr;
-    resultStr = "numberOfParameters=";
-    resultStr += mmstring::numberToString<int>(numberOfParameters);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "numberOfErrors=";
-    resultStr += mmstring::numberToString<int>(numberOfErrors);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "numberOfMarkerErrors=";
-    resultStr += mmstring::numberToString<int>(numberOfMarkerErrors);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "numberOfAttrStiffnessErrors=";
-    resultStr += mmstring::numberToString<int>(numberOfAttrStiffnessErrors);
-    outResult.append(MString(resultStr.c_str()));
-
-    resultStr = "numberOfAttrSmoothnessErrors=";
-    resultStr += mmstring::numberToString<int>(numberOfAttrSmoothnessErrors);
-    outResult.append(MString(resultStr.c_str()));
-
-    // TODO: List all the frame numbers that are valid for solving,
-    //  and invalid for solving.
+    out_result.fill(numberOfParameters, numberOfErrors, numberOfMarkerErrors,
+                    numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors);
     return status;
 }
 
@@ -688,52 +490,12 @@ MStatus logResultsObjectCounts(const int numberOfParameters,
  * markerToAttrList is expected to be pre-computed from the function
  * 'getMarkerToAttributeRelationship'.
  */
-MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList markerList,
-                                         const AttrPtrList attrList,
-                                         const BoolList2D markerToAttrList,
-                                         MStringArray &outResult) {
+MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList &markerList,
+                                         const AttrPtrList &attrList,
+                                         const BoolList2D &markerToAttrList,
+                                         AffectsResult &out_result) {
     MStatus status = MStatus::kSuccess;
-    std::string resultStr;
-
-    std::vector<bool>::const_iterator cit_inner;
-    BoolList2D::const_iterator cit_outer;
-    int markerIndex = 0;
-    for (cit_outer = markerToAttrList.cbegin();
-         cit_outer != markerToAttrList.cend(); ++cit_outer) {
-        int attrIndex = 0;
-        std::vector<bool> inner = *cit_outer;
-        for (cit_inner = inner.cbegin(); cit_inner != inner.cend();
-             ++cit_inner) {
-            MarkerPtr marker = markerList[markerIndex];
-            AttrPtr attr = attrList[attrIndex];
-
-            // Get node names.
-            const char *markerName = marker->getNodeName().asChar();
-
-            // Get attribute full path.
-            MPlug plug = attr->getPlug();
-            MObject attrNode = plug.node();
-            MFnDagNode attrFnDagNode(attrNode);
-            MString attrNodeName = attrFnDagNode.fullPathName();
-            MString attrAttrName =
-                plug.partialName(false, true, true, false, false, true);
-            MString attrNameString = attrNodeName + "." + attrAttrName;
-            const char *attrName = attrNameString.asChar();
-
-            int value = *cit_inner;
-            resultStr = "marker_affects_attribute=";
-            resultStr += markerName;
-            resultStr += CMD_RESULT_SPLIT_CHAR;
-            resultStr += attrName;
-            resultStr += CMD_RESULT_SPLIT_CHAR;
-            resultStr += mmstring::numberToString<int>(value);
-            outResult.append(MString(resultStr.c_str()));
-
-            ++attrIndex;
-        }
-
-        ++markerIndex;
-    }
+    out_result.fill(markerList, attrList, markerToAttrList);
     return status;
 }
 
@@ -741,61 +503,14 @@ MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList markerList,
  * Print out if objects added to the solve (such as markers and
  * attributes) are being used, or are unused.
  */
-MStatus logResultsSolveObjectUsage(const MarkerPtrList usedMarkerList,
-                                   const MarkerPtrList unusedMarkerList,
-                                   const AttrPtrList usedAttrList,
-                                   const AttrPtrList unusedAttrList,
-                                   MStringArray &outResult) {
+MStatus logResultsSolveObjectUsage(MarkerPtrList &usedMarkerList,
+                                   MarkerPtrList &unusedMarkerList,
+                                   AttrPtrList &usedAttrList,
+                                   AttrPtrList &unusedAttrList,
+                                   SolverObjectUsageResult &out_result) {
     MStatus status = MStatus::kSuccess;
-
-    // Append a string with all the *used* marker names.
-    if (usedMarkerList.size() > 0) {
-        MString markerUsedStr = "markers_used=";
-        for (MarkerPtrListCIt mit = usedMarkerList.cbegin();
-             mit != usedMarkerList.cend(); ++mit) {
-            MarkerPtr marker = *mit;
-            markerUsedStr += marker->getLongNodeName();
-            markerUsedStr += CMD_RESULT_SPLIT_CHAR;
-        }
-        outResult.append(markerUsedStr);
-    }
-
-    // Append a string with all the *unused* marker names.
-    if (unusedMarkerList.size() > 0) {
-        MString markerUnusedStr = "markers_unused=";
-        for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
-             mit != unusedMarkerList.cend(); ++mit) {
-            MarkerPtr marker = *mit;
-            markerUnusedStr += marker->getLongNodeName();
-            markerUnusedStr += CMD_RESULT_SPLIT_CHAR;
-        }
-        outResult.append(markerUnusedStr);
-    }
-
-    // Append a string with all the *used* attribute names.
-    if (usedAttrList.size() > 0) {
-        MString attrUsedStr = "attributes_used=";
-        for (AttrPtrListCIt ait = usedAttrList.cbegin();
-             ait != usedAttrList.cend(); ++ait) {
-            AttrPtr attr = *ait;
-            attrUsedStr += attr->getLongName();
-            attrUsedStr += CMD_RESULT_SPLIT_CHAR;
-        }
-        outResult.append(attrUsedStr);
-    }
-
-    // Append a string with all the *unused* attribute names.
-    if (unusedAttrList.size() > 0) {
-        MString attrUnusedStr = "attributes_unused=";
-        for (AttrPtrListCIt ait = unusedAttrList.cbegin();
-             ait != unusedAttrList.cend(); ++ait) {
-            AttrPtr attr = *ait;
-            attrUnusedStr += attr->getLongName();
-            attrUnusedStr += CMD_RESULT_SPLIT_CHAR;
-        }
-        outResult.append(attrUnusedStr);
-    }
-
+    out_result.fill(usedMarkerList, unusedMarkerList, usedAttrList,
+                    unusedAttrList);
     return status;
 }
 
@@ -824,13 +539,12 @@ void _splitIntoUsedAndUnusedLists(_T inputList, IndexCountMap indexCountMap,
                 used = true;
             }
         }
-        if (used == true) {
+        if (used) {
             usedList.push_back(object);
         } else {
             unusedList.push_back(object);
         }
     }
-    return;
 }
 
 /*
@@ -857,9 +571,9 @@ IndexCountMap _incrementMapIndex(const size_t key,
  * Split the given Markers and Attributes into both used and unused
  * objects.
  */
-MStatus splitUsedMarkersAndAttributes(const MarkerPtrList markerList,
-                                      const AttrPtrList attrList,
-                                      const BoolList2D markerToAttrList,
+MStatus splitUsedMarkersAndAttributes(const MarkerPtrList &markerList,
+                                      const AttrPtrList &attrList,
+                                      const BoolList2D &markerToAttrList,
                                       MarkerPtrList &out_usedMarkerList,
                                       MarkerPtrList &out_unusedMarkerList,
                                       AttrPtrList &out_usedAttrList,
@@ -902,28 +616,29 @@ MStatus splitUsedMarkersAndAttributes(const MarkerPtrList markerList,
 }
 
 PrintStatOptions constructPrintStats(const MStringArray &printStatsList) {
-    auto printStats = PrintStatOptions{
-        false,  // enable
-        false,  // input;
-        false,  // affects;
-        false,  // usedSolveObjects;
-        false   // deviation;
-    };
+    auto printStats = PrintStatOptions();
+    printStats.doNotSolve = false;
+    printStats.input = false;
+    printStats.affects = false;
+    printStats.usedSolveObjects = false;
+    printStats.deviation = false;
+
     if (printStatsList.length() == 0) {
         return printStats;
     }
+
     for (uint32_t i = 0; i < printStatsList.length(); ++i) {
         if (printStatsList[i] == PRINT_STATS_MODE_INPUTS) {
-            printStats.enable = true;
+            printStats.doNotSolve = true;
             printStats.input = true;
         } else if (printStatsList[i] == PRINT_STATS_MODE_AFFECTS) {
-            printStats.enable = true;
+            printStats.doNotSolve = true;
             printStats.affects = true;
         } else if (printStatsList[i] == PRINT_STATS_MODE_USED_SOLVE_OBJECTS) {
-            printStats.enable = true;
+            printStats.doNotSolve = true;
             printStats.usedSolveObjects = true;
         } else if (printStatsList[i] == PRINT_STATS_MODE_DEVIATION) {
-            printStats.enable = true;
+            printStats.doNotSolve = true;
             printStats.deviation = true;
         }
     }
@@ -1003,23 +718,19 @@ MStatus solveFrames(
     SmoothAttrsPtrList &smoothAttrsList, const BoolList2D &markerToAttrList,
     SolverOptions &solverOptions,
     //
-    const PrintStatOptions &printStats,
-    const MGlobal::MMayaState &mayaSessionState, const double &imageWidth,
+    const MGlobal::MMayaState &mayaSessionState, MDGModifier &out_dgmod,
+    MAnimCurveChange &out_curveChange, MComputation &out_computation,
     //
-    MDGModifier &out_dgmod, MAnimCurveChange &out_curveChange,
-    //
-    MComputation &out_computation, const LogLevel &logLevel,
-    //
-    IndexPairList &out_paramToAttrList, IndexPairList &out_errorToMarkerList,
+    std::vector<double> &out_jacobianList, IndexPairList &out_paramToAttrList,
+    IndexPairList &out_errorToMarkerList,
     std::vector<MPoint> &out_markerPosList,
     std::vector<double> &out_markerWeightList,
     std::vector<double> &out_errorList, std::vector<double> &out_paramList,
     std::vector<double> &out_previousParamList,
-    std::vector<double> &out_jacobianList,
     //
-    MStringArray &outResult, SolverResult &out_solveResult) {
+    const LogLevel &logLevel, CommandResult &out_cmdResult) {
     MStatus status = MS::kSuccess;
-    std::string resultStr;
+    out_cmdResult.solverResult.success = true;
 
     const bool verbose = logLevel >= LogLevel::kDebug;
 
@@ -1086,85 +797,86 @@ MStatus solveFrames(
                                      errorToParamList, status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    if (printStats.input == true) {
-        assert(printStats.enable == true);
+    if (out_cmdResult.printStats.input) {
+        assert(out_cmdResult.printStats.doNotSolve);
         status = logResultsObjectCounts(
             numberOfParameters, numberOfErrors, numberOfMarkerErrors,
             numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors,
-            outResult);
+            out_cmdResult.solverObjectCountResult);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    if (printStats.usedSolveObjects == true) {
-        assert(printStats.enable == true);
-        status =
-            logResultsSolveObjectUsage(usedMarkerList, unusedMarkerList,
-                                       usedAttrList, unusedAttrList, outResult);
+    if (out_cmdResult.printStats.usedSolveObjects) {
+        assert(out_cmdResult.printStats.doNotSolve);
+        status = logResultsSolveObjectUsage(
+            usedMarkerList, unusedMarkerList, usedAttrList, unusedAttrList,
+            out_cmdResult.solverObjectUsageResult);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    if (printStats.affects == true) {
-        assert(printStats.enable == true);
+    if (out_cmdResult.printStats.affects) {
+        assert(out_cmdResult.printStats.doNotSolve);
         status = logResultsMarkerAffectsAttribute(usedMarkerList, usedAttrList,
-                                                  markerToAttrList, outResult);
+                                                  markerToAttrList,
+                                                  out_cmdResult.affectsResult);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     if (logLevel >= LogLevel::kDebug) {
-        MMSOLVER_INFO("Number of Markers; used=" << usedMarkerList.size()
-                                                 << " | unused="
-                                                 << unusedMarkerList.size());
-        MMSOLVER_INFO("Number of Attributes; used=" << usedAttrList.size()
-                                                    << " | unused="
-                                                    << unusedAttrList.size());
-        MMSOLVER_INFO("Number of Parameters; " << numberOfParameters);
-        MMSOLVER_INFO("Number of Frames; " << frameList.length());
-        MMSOLVER_INFO("Number of Marker Errors; " << numberOfMarkerErrors);
-        MMSOLVER_INFO("Number of Attribute Stiffness Errors; "
-                      << numberOfAttrStiffnessErrors);
-        MMSOLVER_INFO("Number of Attribute Smoothness Errors; "
-                      << numberOfAttrSmoothnessErrors);
-        MMSOLVER_INFO("Number of Total Errors; " << numberOfErrors);
+        MMSOLVER_MAYA_INFO("Number of Markers; used="
+                           << usedMarkerList.size()
+                           << " | unused=" << unusedMarkerList.size());
+        MMSOLVER_MAYA_INFO("Number of Attributes; used="
+                           << usedAttrList.size()
+                           << " | unused=" << unusedAttrList.size());
+        MMSOLVER_MAYA_INFO("Number of Parameters; " << numberOfParameters);
+        MMSOLVER_MAYA_INFO("Number of Frames; " << frameList.length());
+        MMSOLVER_MAYA_INFO("Number of Marker Errors; " << numberOfMarkerErrors);
+        MMSOLVER_MAYA_INFO("Number of Attribute Stiffness Errors; "
+                           << numberOfAttrStiffnessErrors);
+        MMSOLVER_MAYA_INFO("Number of Attribute Smoothness Errors; "
+                           << numberOfAttrSmoothnessErrors);
+        MMSOLVER_MAYA_INFO("Number of Total Errors; " << numberOfErrors);
     }
 
     // Bail out of solve if we don't have enough used markers or
     // attributes.
-    if ((usedMarkerList.size() == 0) || (usedAttrList.size() == 0)) {
-        if (printStats.enable == true) {
+    if ((usedMarkerList.empty()) || (usedAttrList.empty())) {
+        if (out_cmdResult.printStats.doNotSolve) {
             // If the user is asking to print statistics, then we have
             // successfully achieved that goal and we cannot continue
-            // to generate statistics, because not enought markers or
+            // to generate statistics, because not enough markers or
             // attributes were used.
+            out_cmdResult.solverResult.success = true;
             status = MS::kSuccess;
             return status;
         }
-        MMSOLVER_ERR(
+        MMSOLVER_MAYA_ERR(
             "Solver failure; not enough markers or attributes are not used by "
             "solver "
             << "used markers=" << usedMarkerList.size() << " "
             << "used attributes=" << usedAttrList.size());
-        resultStr = "success=0";
-        outResult.append(MString(resultStr.c_str()));
+        out_cmdResult.solverResult.success = false;
         status = MS::kFailure;
         return status;
     }
 
     if (numberOfParameters > numberOfErrors) {
-        if (printStats.enable == true) {
+        if (out_cmdResult.printStats.doNotSolve) {
             // If the user is asking to print statistics, then we have
             // successfully achieved that goal and we cannot continue
             // to generate statistics, because of an invalid number of
             // parameters/errors.
+            out_cmdResult.solverResult.success = true;
             status = MS::kSuccess;
             return status;
         }
-        MMSOLVER_ERR(
+        MMSOLVER_MAYA_ERR(
             "Solver failure; cannot solve for more attributes (\"parameters\") "
             << "than number of markers (\"errors\"). "
             << "parameters=" << numberOfParameters << " "
             << "errors=" << numberOfErrors);
-        resultStr = "success=0";
-        outResult.append(MString(resultStr.c_str()));
+        out_cmdResult.solverResult.success = false;
         status = MS::kFailure;
         return status;
     }
@@ -1183,43 +895,46 @@ MStatus solveFrames(
 
     auto frameCount = frameList.length();
     if (logLevel >= LogLevel::kDebug) {
-        MMSOLVER_INFO(
+        MMSOLVER_MAYA_INFO(
             "------------------------------------------------------------------"
             "-------------");
-        MMSOLVER_INFO("Solving...");
-        MMSOLVER_INFO("Solver Type=" << solverOptions.solverType);
-        MMSOLVER_INFO("Maximum Iterations=" << solverOptions.iterMax);
-        MMSOLVER_INFO("Tau=" << solverOptions.tau);
-        MMSOLVER_INFO("Epsilon1=" << solverOptions.eps1);
-        MMSOLVER_INFO("Epsilon2=" << solverOptions.eps2);
-        MMSOLVER_INFO("Epsilon3=" << solverOptions.eps3);
-        MMSOLVER_INFO("Delta=" << fabs(solverOptions.delta));
-        MMSOLVER_INFO("Auto Differencing Type=" << solverOptions.autoDiffType);
-        MMSOLVER_INFO("Time Evaluation Mode=" << solverOptions.timeEvalMode);
-        MMSOLVER_INFO("Marker count: " << usedMarkerList.size());
-        MMSOLVER_INFO("Attribute count: " << usedAttrList.size());
-        MMSOLVER_INFO("Frame count: " << frameCount);
+        MMSOLVER_MAYA_INFO("Solving...");
+        MMSOLVER_MAYA_INFO("Solver Type=" << solverOptions.solverType);
+        MMSOLVER_MAYA_INFO("Maximum Iterations=" << solverOptions.iterMax);
+        MMSOLVER_MAYA_INFO("Tau=" << solverOptions.tau);
+        MMSOLVER_MAYA_INFO("Epsilon1=" << solverOptions.eps1);
+        MMSOLVER_MAYA_INFO("Epsilon2=" << solverOptions.eps2);
+        MMSOLVER_MAYA_INFO("Epsilon3=" << solverOptions.eps3);
+        MMSOLVER_MAYA_INFO("Delta=" << fabs(solverOptions.delta));
+        MMSOLVER_MAYA_INFO(
+            "Auto Differencing Type=" << solverOptions.autoDiffType);
+        MMSOLVER_MAYA_INFO(
+            "Time Evaluation Mode=" << solverOptions.timeEvalMode);
+        MMSOLVER_MAYA_INFO("Marker count: " << usedMarkerList.size());
+        MMSOLVER_MAYA_INFO("Attribute count: " << usedAttrList.size());
+        MMSOLVER_MAYA_INFO("Frame count: " << frameCount);
 
         std::stringstream ss;
         addFrameListToStringStream(frameList, ss);
-        MMSOLVER_INFO("Frames:" << ss.str());
-    } else if (printStats.enable == false && logLevel >= LogLevel::kVerbose) {
-        MMSOLVER_INFO(
+        MMSOLVER_MAYA_INFO("Frames:" << ss.str());
+    } else if (!out_cmdResult.printStats.doNotSolve &&
+               (logLevel >= LogLevel::kVerbose)) {
+        MMSOLVER_MAYA_INFO(
             "------------------------------------------------------------------"
             "-------------");
-        MMSOLVER_INFO("Solving...");
-        MMSOLVER_INFO("Marker count: " << usedMarkerList.size());
-        MMSOLVER_INFO("Attribute count: " << usedAttrList.size());
-        MMSOLVER_INFO("Frame count: " << frameCount);
+        MMSOLVER_MAYA_INFO("Solving...");
+        MMSOLVER_MAYA_INFO("Marker count: " << usedMarkerList.size());
+        MMSOLVER_MAYA_INFO("Attribute count: " << usedAttrList.size());
+        MMSOLVER_MAYA_INFO("Frame count: " << frameCount);
 
         std::stringstream ss;
         addFrameListToStringStream(frameList, ss);
-        MMSOLVER_INFO("Frames:" << ss.str());
+        MMSOLVER_MAYA_INFO("Frames:" << ss.str());
     }
 
     // MComputation helper.
-    if (printStats.enable == false && logLevel >= LogLevel::kInfo &&
-        frameCount > 1) {
+    if (!out_cmdResult.printStats.doNotSolve && (logLevel >= LogLevel::kInfo) &&
+        (frameCount > 1)) {
         const bool showProgressBar = true;
         const bool isInterruptable = true;
         const bool useWaitCursor = true;
@@ -1230,8 +945,8 @@ MStatus solveFrames(
 
     // Start Solving
     SolverTimer timer;
-    timer.startTimestamp = debug::get_timestamp();
-    if (printStats.enable == false) {
+    timer.startTimestamp = mmsolver::debug::get_timestamp();
+    if (!out_cmdResult.printStats.doNotSolve) {
         timer.solveBenchTimer.start();
         timer.solveBenchTicks.start();
     }
@@ -1264,22 +979,25 @@ MStatus solveFrames(
             // the use of the 'FrameSolveMode' enum type for more
             // details.
             CHECK_MSTATUS(status);
-            MMSOLVER_ERR("Maya DAG is invalid for use with MM Scene Graph, "
-                         << "please switch to Maya DAG and solve again.");
+            MMSOLVER_MAYA_ERR(
+                "Maya DAG is invalid for use with MM Scene Graph, "
+                << "please switch to Maya DAG and solve again.");
+            out_cmdResult.solverResult.success = false;
             return status;
         }
     } else if (solverOptions.sceneGraphMode == SceneGraphMode::kMayaDag) {
         // Nothing to do.
     } else {
-        MMSOLVER_ERR("Invalid Scene Graph mode!");
+        MMSOLVER_MAYA_ERR("Invalid Scene Graph mode!");
+        out_cmdResult.solverResult.success = false;
         status = MS::kFailure;
         return status;
     }
 
 #if MMSOLVER_LENS_DISTORTION == 1
-    std::vector<std::shared_ptr<LensModel>> markerFrameToLensModelList;
-    std::vector<std::shared_ptr<LensModel>> attrFrameToLensModelList;
-    std::vector<std::shared_ptr<LensModel>> lensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> markerFrameToLensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> attrFrameToLensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> lensModelList;
 
     status = mmsolver::constructLensModelList(
         cameraList, usedMarkerList, usedAttrList, frameList,
@@ -1330,7 +1048,6 @@ MStatus solveFrames(
     userData.funcEvalNum = 0;  // number of function evaluations.
     userData.iterNum = 0;
     userData.jacIterNum = 0;
-    userData.imageWidth = imageWidth;
     userData.numberOfMarkerErrors = numberOfMarkerErrors;
     userData.numberOfAttrStiffnessErrors = numberOfAttrStiffnessErrors;
     userData.numberOfAttrSmoothnessErrors = numberOfAttrSmoothnessErrors;
@@ -1357,57 +1074,79 @@ MStatus solveFrames(
     userData.logLevel = logLevel;
 
     // Calculate initial errors.
-    double initialErrorAvg = 0;
-    double initialErrorMin = 0;
-    double initialErrorMax = 0;
-    if (solverOptions.acceptOnlyBetter || printStats.deviation) {
+    double initialErrorAvg = 0.0;
+    double initialErrorMin = std::numeric_limits<double>::max();
+    double initialErrorMax = -0.0;
+    if (solverOptions.acceptOnlyBetter || out_cmdResult.printStats.deviation) {
         std::vector<bool> frameIndexEnable(frameList.length(), 1);
         std::vector<bool> skipErrorMeasurements(numberOfErrors, 1);
         measureErrors(numberOfErrors, numberOfMarkerErrors,
                       numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors,
                       frameIndexEnable, skipErrorMeasurements,
-                      &out_errorList[0], &userData, initialErrorAvg,
-                      initialErrorMax, initialErrorMin, status);
+                      solverOptions.imageWidth, &out_errorList[0], &userData,
+                      initialErrorAvg, initialErrorMax, initialErrorMin,
+                      status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         initialErrorAvg = 0;
         initialErrorMin = 0;
         initialErrorMax = 0;
-        compute_error_stats(numberOfMarkerErrors, userData.errorDistanceList,
-                            initialErrorAvg, initialErrorMin, initialErrorMax);
+        const bool error_stats_ok = compute_error_stats(
+            numberOfMarkerErrors, userData.errorDistanceList, initialErrorAvg,
+            initialErrorMin, initialErrorMax);
+        if (!error_stats_ok) {
+            MMSOLVER_MAYA_ERR("Failed to compute initial error stats.");
+            out_cmdResult.solverResult.success = false;
+            status = MS::kFailure;
+            return status;
+        }
     }
 
-    if (printStats.deviation == true) {
-        out_solveResult.success = true;
-        out_solveResult.reason_number = 0;
-        out_solveResult.reason = "";
-        out_solveResult.iterations = 0;
-        out_solveResult.functionEvals = 0;
-        out_solveResult.jacobianEvals = 0;
-        out_solveResult.errorFinal = 0.0;
-        out_solveResult.errorAvg = initialErrorAvg;
-        out_solveResult.errorMin = initialErrorMin;
-        out_solveResult.errorMax = initialErrorMax;
+    // Fill in default values, with initial error values.
+    out_cmdResult.solverResult.success = true;
+    out_cmdResult.solverResult.reason_number = 0;
+    out_cmdResult.solverResult.reason = "";
+    out_cmdResult.solverResult.iterations = 0;
+    out_cmdResult.solverResult.functionEvals = 0;
+    out_cmdResult.solverResult.jacobianEvals = 0;
+    out_cmdResult.solverResult.errorFinal = 0.0;
+    out_cmdResult.solverResult.errorAvg = initialErrorAvg;
+    out_cmdResult.solverResult.errorMin = initialErrorMin;
+    out_cmdResult.solverResult.errorMax = initialErrorMax;
 
-        logResultsSolveDetails(
-            out_solveResult, userData, timer, numberOfParameters,
-            numberOfMarkerErrors, numberOfAttrStiffnessErrors,
-            numberOfAttrSmoothnessErrors, logLevel, out_paramList, outResult);
-    }
-    if (printStats.enable == true) {
+    if (out_cmdResult.printStats.doNotSolve) {
+        logResultsErrorMetrics(numberOfMarkerErrors, userData.markerList,
+                               userData.frameList, userData.errorToMarkerList,
+                               userData.errorDistanceList,
+                               out_cmdResult.errorMetricsResult);
+        logResultsTimer(timer, out_cmdResult.timerResult);
+        out_cmdResult.solverResult.user_interrupted = userData.userInterrupted;
+        logResultsSolveValues(
+            numberOfParameters,
+            numberOfMarkerErrors + numberOfAttrStiffnessErrors +
+                numberOfAttrSmoothnessErrors,
+            out_paramList, userData.errorList, out_cmdResult.solveValuesResult);
+
         // There is no more printing to do, we must solve now if we
         // want to solve.
         status = MS::kSuccess;
+        out_cmdResult.solverResult.success = true;
         return status;
     }
 
     // Set Initial parameters
-    MMSOLVER_VRB("Get Initial parameters...");
-    get_initial_parameters(numberOfParameters, out_paramList,
-                           out_paramToAttrList, usedAttrList, frameList,
-                           outResult);
+    MMSOLVER_MAYA_VRB("Get Initial parameters...");
+    const bool initial_ok = get_initial_parameters(
+        numberOfParameters, out_paramList, out_paramToAttrList, usedAttrList,
+        frameList, out_cmdResult.solverResult);
+    if (!initial_ok) {
+        MMSOLVER_MAYA_ERR("Failed to get initial parameters.");
+        out_cmdResult.solverResult.success = false;
+        status = MS::kFailure;
+        return status;
+    }
 
-    MMSOLVER_VRB("Initial Parameters: ");
+    MMSOLVER_MAYA_VRB("Initial Parameters: ");
     for (int i = 0; i < numberOfParameters; ++i) {
         // Copy parameter values into the 'previous' parameter list.
         out_previousParamList[i] = out_paramList[i];
@@ -1420,45 +1159,51 @@ MStatus solveFrames(
             MString attr_name = attr->getName();
             auto attr_name_char = attr_name.asChar();
 
-            MMSOLVER_VRB("-> " << out_paramList[i] << " | " << attr_name_char);
+            MMSOLVER_MAYA_VRB("-> " << out_paramList[i] << " | "
+                                    << attr_name_char);
         }
     }
 
     if (solverOptions.solverType == SOLVER_TYPE_LEVMAR) {
-        MMSOLVER_ERR("Solver Type is not supported by this compiled plug-in. "
-                     << "solverType=" << solverOptions.solverType);
-        resultStr = "success=0";
-        outResult.append(MString(resultStr.c_str()));
+        MMSOLVER_MAYA_ERR(
+            "Solver Type is not supported by this compiled plug-in. "
+            << "solverType=" << solverOptions.solverType);
+        out_cmdResult.solverResult.success = false;
         status = MS::kFailure;
         return status;
-
     } else if (solverOptions.solverType == SOLVER_TYPE_CMINPACK_LMDIF) {
         solve_3d_cminpack_lmdif(solverOptions, numberOfParameters,
                                 numberOfErrors, out_paramList, out_errorList,
-                                paramWeightList, userData, out_solveResult);
-
+                                paramWeightList, userData,
+                                out_cmdResult.solverResult);
     } else if (solverOptions.solverType == SOLVER_TYPE_CMINPACK_LMDER) {
         solve_3d_cminpack_lmder(solverOptions, numberOfParameters,
                                 numberOfErrors, out_paramList, out_errorList,
-                                paramWeightList, userData, out_solveResult);
-
+                                paramWeightList, userData,
+                                out_cmdResult.solverResult);
     } else {
-        MMSOLVER_ERR(
+        MMSOLVER_MAYA_ERR(
             "Solver Type is invalid. solverType=" << solverOptions.solverType);
-        resultStr = "success=0";
-        outResult.append(MString(resultStr.c_str()));
+        out_cmdResult.solverResult.success = false;
         status = MS::kFailure;
         return status;
     }
 
-    if (printStats.enable == false) {
+    if (!out_cmdResult.printStats.doNotSolve) {
         timer.solveBenchTicks.stop();
         timer.solveBenchTimer.stop();
     }
-    if (printStats.enable == false && logLevel >= LogLevel::kInfo &&
-        frameCount > 1) {
+    if (!out_cmdResult.printStats.doNotSolve && (logLevel >= LogLevel::kInfo) &&
+        (frameCount > 1)) {
         out_computation.endComputation();
     }
+
+    logResultsErrorMetrics(numberOfMarkerErrors, userData.markerList,
+                           userData.frameList, userData.errorToMarkerList,
+                           userData.errorDistanceList,
+                           out_cmdResult.errorMetricsResult);
+    logResultsTimer(timer, out_cmdResult.timerResult);
+    out_cmdResult.solverResult.user_interrupted = userData.userInterrupted;
 
     // Solve Finished, re-calculate error, and only set parameters if
     // the average error is lower.
@@ -1466,30 +1211,46 @@ MStatus solveFrames(
     double errorAvg = 0;
     double errorMin = 0;
     double errorMax = 0;
-    compute_error_stats(numberOfMarkerErrors, userData.errorDistanceList,
-                        errorAvg, errorMin, errorMax);
-    out_solveResult.errorAvg = errorAvg;
-    out_solveResult.errorMin = errorMin;
-    out_solveResult.errorMax = errorMax;
+    const bool error_stats_ok =
+        compute_error_stats(numberOfMarkerErrors, userData.errorDistanceList,
+                            errorAvg, errorMin, errorMax);
+    if (!error_stats_ok) {
+        MMSOLVER_MAYA_ERR("Failed to compute error stats.");
+        out_cmdResult.solverResult.success = false;
+        status = MS::kFailure;
+        return status;
+    }
+
+    out_cmdResult.solverResult.errorAvg = errorAvg;
+    out_cmdResult.solverResult.errorMin = errorMin;
+    out_cmdResult.solverResult.errorMax = errorMax;
     if (solverOptions.acceptOnlyBetter) {
         errorIsBetter = errorAvg <= initialErrorAvg;
     }
 
     // Set the solved parameters
+    bool set_attrs_ok = false;
     if (errorIsBetter) {
-        MMSOLVER_VRB("Setting Solved Parameters...");
-        set_maya_attribute_values(numberOfParameters, out_paramToAttrList,
-                                  usedAttrList, out_paramList, frameList,
-                                  out_dgmod, out_curveChange);
+        MMSOLVER_MAYA_VRB("Setting Solved Parameters...");
+        set_attrs_ok = set_maya_attribute_values(
+            numberOfParameters, out_paramToAttrList, usedAttrList,
+            out_paramList, frameList, out_dgmod, out_curveChange);
     } else {
         // Set the initial parameter values.
-        MMSOLVER_VRB("Setting Initial Parameters...");
-        set_maya_attribute_values(numberOfParameters, out_paramToAttrList,
-                                  usedAttrList, out_previousParamList,
-                                  frameList, out_dgmod, out_curveChange);
+        MMSOLVER_MAYA_VRB("Setting Initial Parameters...");
+        set_attrs_ok = set_maya_attribute_values(
+            numberOfParameters, out_paramToAttrList, usedAttrList,
+            out_previousParamList, frameList, out_dgmod, out_curveChange);
     }
+    if (!set_attrs_ok) {
+        MMSOLVER_MAYA_ERR("Failed to set solved parameters.");
+        out_cmdResult.solverResult.success = false;
+        status = MS::kFailure;
+        return status;
+    }
+
     if (logLevel >= LogLevel::kDebug) {
-        MMSOLVER_VRB("Solved Parameters:");
+        MMSOLVER_MAYA_VRB("Solved Parameters:");
         for (int i = 0; i < numberOfParameters; ++i) {
             IndexPair attrPair = out_paramToAttrList[i];
             AttrPtr attr = usedAttrList[attrPair.first];
@@ -1506,14 +1267,21 @@ MStatus solveFrames(
             const double real_value = parameterBoundFromInternalToExternal(
                 solver_value, xmin, xmax, offset, scale);
 
-            MMSOLVER_VRB("-> " << real_value << " | " << attr_name_char);
+            MMSOLVER_MAYA_VRB("-> " << real_value << " | " << attr_name_char);
         }
     }
 
-    logResultsSolveDetails(out_solveResult, userData, timer, numberOfParameters,
-                           numberOfMarkerErrors, numberOfAttrStiffnessErrors,
-                           numberOfAttrSmoothnessErrors, logLevel,
-                           out_paramList, outResult);
+    logResultsSolveValues(numberOfParameters,
+                          numberOfMarkerErrors + numberOfAttrStiffnessErrors +
+                              numberOfAttrSmoothnessErrors,
+                          out_paramList, userData.errorList,
+                          out_cmdResult.solveValuesResult);
+    printSolveDetails(out_cmdResult.solverResult, userData, timer,
+                      numberOfParameters, numberOfMarkerErrors,
+                      numberOfAttrStiffnessErrors, numberOfAttrSmoothnessErrors,
+                      logLevel, out_paramList);
+
+    CHECK_MSTATUS(status);
 
     return status;
 }
@@ -1526,19 +1294,21 @@ MStatus solveFrames(
  * in the outResult string.
  *
  */
-bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
-           MarkerPtrList &markerList, BundlePtrList &bundleList,
-           AttrPtrList &attrList, const MTimeArray &frameList,
-           StiffAttrsPtrList &stiffAttrsList,
-           SmoothAttrsPtrList &smoothAttrsList, MDGModifier &dgmod,
-           MAnimCurveChange &curveChange, MComputation &computation,
-           const double &imageWidth, MStringArray &printStatsList,
-           const LogLevel &logLevel, MStringArray &outResult) {
+bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
+              MarkerPtrList &markerList, BundlePtrList &bundleList,
+              AttrPtrList &attrList, const MTimeArray &frameList,
+              StiffAttrsPtrList &stiffAttrsList,
+              SmoothAttrsPtrList &smoothAttrsList, MDGModifier &dgmod,
+              MAnimCurveChange &curveChange, MComputation &computation,
+              MStringArray &printStatsList, const LogLevel logLevel,
+              MStringArray &outResult) {
     MStatus status = MS::kSuccess;
 
+    CommandResult cmdResult;
+
     bool verbose = logLevel >= LogLevel::kDebug;
-    auto printStats = constructPrintStats(printStatsList);
-    if (printStats.enable == true) {
+    cmdResult.printStats = constructPrintStats(printStatsList);
+    if (cmdResult.printStats.doNotSolve) {
         // When printing statistics, turn off verbosity.
         verbose = false;
     }
@@ -1585,25 +1355,25 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
                                       usedAttrList, unusedAttrList);
 
         // Print warnings about unused solve objects.
-        if ((unusedMarkerList.size() > 0) &&
+        if ((!unusedMarkerList.empty()) &&
             (solverOptions.removeUnusedMarkers)) {
-            MMSOLVER_WRN("Unused Markers detected and ignored:");
+            MMSOLVER_MAYA_WRN("Unused Markers detected and ignored:");
             for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
                  mit != unusedMarkerList.cend(); ++mit) {
                 MarkerPtr marker = *mit;
                 const char *markerName = marker->getLongNodeName().asChar();
-                MMSOLVER_WRN("-> " << markerName);
+                MMSOLVER_MAYA_WRN("-> " << markerName);
             }
         }
 
-        if ((unusedAttrList.size() > 0) &&
+        if ((!unusedAttrList.empty()) &&
             (solverOptions.removeUnusedAttributes)) {
-            MMSOLVER_WRN("Unused Attributes detected and ignored:");
+            MMSOLVER_MAYA_WRN("Unused Attributes detected and ignored:");
             for (AttrPtrListCIt ait = unusedAttrList.cbegin();
                  ait != unusedAttrList.cend(); ++ait) {
                 AttrPtr attr = *ait;
                 const char *attrName = attr->getLongName().asChar();
-                MMSOLVER_WRN("-> " << attrName);
+                MMSOLVER_MAYA_WRN("-> " << attrName);
             }
         }
 
@@ -1622,7 +1392,7 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
             usedAttrList = attrList;
         }
 
-        if (usedObjectsChanged == true) {
+        if (usedObjectsChanged) {
             getMarkerToAttributeRelationship(usedMarkerList, usedAttrList,
                                              markerToAttrList, status);
             CHECK_MSTATUS(status);
@@ -1642,29 +1412,25 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
     MGlobal::MMayaState mayaSessionState = MGlobal::mayaState(&status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    SolverResult solveResult;
     auto frameSolveMode = solverOptions.frameSolveMode;
-    MMSOLVER_VRB("frameSolveMode: " << static_cast<uint32_t>(frameSolveMode));
+    MMSOLVER_MAYA_VRB(
+        "frameSolveMode: " << static_cast<uint32_t>(frameSolveMode));
     if (frameSolveMode == FrameSolveMode::kAllFrameAtOnce) {
         status = solveFrames(
             cameraList, bundleList, frameList, usedMarkerList, unusedMarkerList,
             usedAttrList, unusedAttrList, stiffAttrsList, smoothAttrsList,
             markerToAttrList, solverOptions,
             //
-            printStats, mayaSessionState, imageWidth,
+            mayaSessionState, dgmod, curveChange, computation,
             //
-            dgmod, curveChange,
+            jacobianList, paramToAttrList, errorToMarkerList, markerPosList,
+            markerWeightList, errorList, paramList, previousParamList,
             //
-            computation, logLevel,
-            //
-            paramToAttrList, errorToMarkerList, markerPosList, markerWeightList,
-            errorList, paramList, previousParamList, jacobianList,
-            //
-            outResult, solveResult);
+            logLevel, cmdResult);
     } else if (frameSolveMode == FrameSolveMode::kPerFrame) {
         auto frameCount = frameList.length();
 
-        if (printStats.enable == false) {
+        if (!cmdResult.printStats.doNotSolve) {
             const bool showProgressBar = true;
             const bool isInterruptable = true;
             const bool useWaitCursor = true;
@@ -1682,64 +1448,232 @@ bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
             perFrameLogLevel = LogLevel::kInfo;
         }
 
-        SolverResult perFrameSolveResult;
-        solveResult.errorAvg = 0.0;
-        solveResult.errorMin = std::numeric_limits<double>::max();
-        solveResult.errorMax = -0.0;
-        solveResult.errorFinal = 0.0;
+        for (auto i = 0; i < frameCount; ++i) {
+            computation.setProgress(i);
 
-        auto solvedCount = 0;
-        for (solvedCount = 0; solvedCount < frameCount; ++solvedCount) {
-            computation.setProgress(solvedCount);
+            CommandResult perFrameCmdResult;
+            perFrameCmdResult.printStats = cmdResult.printStats;
 
-            auto frames = MTimeArray(1, frameList[solvedCount]);
-            status = solveFrames(cameraList, bundleList, frames, usedMarkerList,
-                                 unusedMarkerList, usedAttrList, unusedAttrList,
-                                 stiffAttrsList, smoothAttrsList,
-                                 markerToAttrList, solverOptions,
-                                 //
-                                 printStats, mayaSessionState, imageWidth,
-                                 //
-                                 dgmod, curveChange,
-                                 //
-                                 computation, perFrameLogLevel,
-                                 //
-                                 paramToAttrList, errorToMarkerList,
-                                 markerPosList, markerWeightList, errorList,
-                                 paramList, previousParamList, jacobianList,
-                                 //
-                                 outResult, perFrameSolveResult);
+            auto frames = MTimeArray(1, frameList[i]);
+            status = solveFrames(
+                cameraList, bundleList, frames, usedMarkerList,
+                unusedMarkerList, usedAttrList, unusedAttrList, stiffAttrsList,
+                smoothAttrsList, markerToAttrList, solverOptions,
+                //
+                mayaSessionState, dgmod, curveChange, computation,
+                //
+                jacobianList, paramToAttrList, errorToMarkerList, markerPosList,
+                markerWeightList, errorList, paramList, previousParamList,
+                //
+                perFrameLogLevel, perFrameCmdResult);
 
-            // Combine solveResult from each iteration.
-            solveResult.errorAvg += perFrameSolveResult.errorAvg;
-            solveResult.errorMin =
-                std::min(solveResult.errorMin, perFrameSolveResult.errorMin);
-            solveResult.errorMax =
-                std::max(solveResult.errorMax, perFrameSolveResult.errorMax);
-
-            solveResult.iterations += perFrameSolveResult.iterations;
-            solveResult.functionEvals += perFrameSolveResult.functionEvals;
-            solveResult.jacobianEvals += perFrameSolveResult.jacobianEvals;
-            solveResult.errorFinal += perFrameSolveResult.errorFinal;
+            // Combine results from each iteration.
+            cmdResult.add(perFrameCmdResult);
 
             if (status != MS::kSuccess) {
+                auto frame = frameList[i].asUnits(MTime::uiUnit());
+                MMSOLVER_MAYA_ERR("Failed to solve frame "
+                                  << frame << ", stopping solve.");
                 break;
             }
         }
 
-        solveResult.success = perFrameSolveResult.success;
-        solveResult.reason_number = perFrameSolveResult.reason_number;
-        solveResult.reason = perFrameSolveResult.reason;
-
-        double solvedCountInverse = 0.0;
-        if (solvedCount > 0) {
-            solvedCountInverse = 1.0 / static_cast<double>(solvedCount);
-        }
-        solveResult.errorAvg = solveResult.errorAvg * solvedCountInverse;
-        solveResult.errorFinal = solveResult.errorFinal * solvedCountInverse;
+        cmdResult.divide();
 
         computation.endComputation();
     }
 
-    return solveResult.success;
+    cmdResult.appendToMStringArray(outResult);
+    return cmdResult.solverResult.success;
+}
+
+bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
+              MarkerPtrList &markerList, BundlePtrList &bundleList,
+              AttrPtrList &attrList, const MTimeArray &frameList,
+              MDGModifier &dgmod, MAnimCurveChange &curveChange,
+              MComputation &computation, MStringArray &printStatsList,
+              const LogLevel logLevel, CommandResult &out_cmdResult) {
+    MStatus status = MS::kSuccess;
+
+    bool verbose = logLevel >= LogLevel::kDebug;
+    out_cmdResult.printStats = constructPrintStats(printStatsList);
+    if (out_cmdResult.printStats.doNotSolve) {
+        // When printing statistics, turn off verbosity.
+        verbose = false;
+    }
+
+#ifdef MAYA_PROFILE
+    int profileCategory = MProfiler::getCategoryIndex("mmSolver");
+    MProfilingScope profilingScope(profileCategory, MProfiler::kColorC_L3,
+                                   "solve");
+#endif
+
+    // Split the used and unused markers and attributes.
+    MarkerPtrList usedMarkerList;
+    MarkerPtrList unusedMarkerList;
+    AttrPtrList usedAttrList;
+    AttrPtrList unusedAttrList;
+
+    StiffAttrsPtrList stiffAttrsList;
+    SmoothAttrsPtrList smoothAttrsList;
+
+    auto markerToAttrList = BoolList2D();
+    if (!solverOptions.removeUnusedMarkers &&
+        !solverOptions.removeUnusedAttributes) {
+        // All 'object relationships' will be ignored.
+
+        // All Markers and Attributes are assumed to be used.
+        usedMarkerList = markerList;
+        usedAttrList = attrList;
+
+        // Initialise 'markerToAttrList' to assume all markers affect
+        // all attributes. This is the default assumption.
+        markerToAttrList.resize(markerList.size());
+        auto defaultValue = true;
+        for (size_t i = 0; i < markerList.size(); ++i) {
+            markerToAttrList[i].resize(attrList.size(), defaultValue);
+        }
+    } else {
+        // Query the relationship by pre-computed attributes on the
+        // Markers. If the attributes do not exist, we assume all markers
+        // affect all attributes (and therefore suffer a performance
+        // problem).
+        getMarkerToAttributeRelationship(markerList, attrList, markerToAttrList,
+                                         status);
+        CHECK_MSTATUS(status);
+
+        splitUsedMarkersAndAttributes(markerList, attrList, markerToAttrList,
+                                      usedMarkerList, unusedMarkerList,
+                                      usedAttrList, unusedAttrList);
+
+        // Print warnings about unused solve objects.
+        if ((!unusedMarkerList.empty()) &&
+            (solverOptions.removeUnusedMarkers)) {
+            MMSOLVER_MAYA_WRN("Unused Markers detected and ignored:");
+            for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
+                 mit != unusedMarkerList.cend(); ++mit) {
+                MarkerPtr marker = *mit;
+                const char *markerName = marker->getLongNodeName().asChar();
+                MMSOLVER_MAYA_WRN("-> " << markerName);
+            }
+        }
+
+        if ((!unusedAttrList.empty()) &&
+            (solverOptions.removeUnusedAttributes)) {
+            MMSOLVER_MAYA_WRN("Unused Attributes detected and ignored:");
+            for (AttrPtrListCIt ait = unusedAttrList.cbegin();
+                 ait != unusedAttrList.cend(); ++ait) {
+                AttrPtr attr = *ait;
+                const char *attrName = attr->getLongName().asChar();
+                MMSOLVER_MAYA_WRN("-> " << attrName);
+            }
+        }
+
+        // Change the list of Markers and Attributes to filter out unused
+        // objects.
+        bool usedObjectsChanged = false;
+        if (solverOptions.removeUnusedMarkers) {
+            usedObjectsChanged = true;
+        } else {
+            usedMarkerList = markerList;
+        }
+
+        if (solverOptions.removeUnusedAttributes) {
+            usedObjectsChanged = true;
+        } else {
+            usedAttrList = attrList;
+        }
+
+        if (usedObjectsChanged) {
+            getMarkerToAttributeRelationship(usedMarkerList, usedAttrList,
+                                             markerToAttrList, status);
+            CHECK_MSTATUS(status);
+        }
+    }
+
+    // Allocate shared memory.
+    auto paramToAttrList = IndexPairList();
+    auto errorToMarkerList = IndexPairList();
+    auto markerPosList = std::vector<MPoint>();
+    auto markerWeightList = std::vector<double>();
+    auto errorList = std::vector<double>();
+    auto paramList = std::vector<double>();
+    auto previousParamList = std::vector<double>();
+    auto jacobianList = std::vector<double>();
+
+    MGlobal::MMayaState mayaSessionState = MGlobal::mayaState(&status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    auto frameSolveMode = solverOptions.frameSolveMode;
+    MMSOLVER_MAYA_VRB(
+        "frameSolveMode: " << static_cast<uint32_t>(frameSolveMode));
+    if (frameSolveMode == FrameSolveMode::kAllFrameAtOnce) {
+        status = solveFrames(
+            cameraList, bundleList, frameList, usedMarkerList, unusedMarkerList,
+            usedAttrList, unusedAttrList, stiffAttrsList, smoothAttrsList,
+            markerToAttrList, solverOptions,
+            //
+            mayaSessionState, dgmod, curveChange, computation,
+            //
+            jacobianList, paramToAttrList, errorToMarkerList, markerPosList,
+            markerWeightList, errorList, paramList, previousParamList,
+            //
+            logLevel, out_cmdResult);
+    } else if (frameSolveMode == FrameSolveMode::kPerFrame) {
+        auto frameCount = frameList.length();
+
+        if (!out_cmdResult.printStats.doNotSolve) {
+            const bool showProgressBar = true;
+            const bool isInterruptable = true;
+            const bool useWaitCursor = true;
+            computation.setProgressRange(0, frameCount);
+            computation.beginComputation(showProgressBar, isInterruptable,
+                                         useWaitCursor);
+        }
+
+        // We assume that the per-frame solve will be (relatively)
+        // fast, and so we don't need as much logging per-frame
+        // otherwise the solve will slow down due to so much text
+        // being printed out.
+        auto perFrameLogLevel = logLevel;
+        if (logLevel == LogLevel::kVerbose) {
+            perFrameLogLevel = LogLevel::kInfo;
+        }
+
+        for (auto i = 0; i < frameCount; ++i) {
+            computation.setProgress(i);
+
+            CommandResult perFrameCmdResult;
+            perFrameCmdResult.printStats = out_cmdResult.printStats;
+
+            auto frames = MTimeArray(1, frameList[i]);
+            status = solveFrames(
+                cameraList, bundleList, frames, usedMarkerList,
+                unusedMarkerList, usedAttrList, unusedAttrList, stiffAttrsList,
+                smoothAttrsList, markerToAttrList, solverOptions,
+                //
+                mayaSessionState, dgmod, curveChange, computation, jacobianList,
+                //
+                paramToAttrList, errorToMarkerList, markerPosList,
+                markerWeightList, errorList, paramList, previousParamList,
+                //
+                perFrameLogLevel, perFrameCmdResult);
+
+            // Combine results from each iteration.
+            out_cmdResult.add(perFrameCmdResult);
+
+            if (status != MS::kSuccess) {
+                auto frame = frameList[i].asUnits(MTime::uiUnit());
+                MMSOLVER_MAYA_ERR("Failed to solve frame "
+                                  << frame << ", stopping solve.");
+                break;
+            }
+        }
+
+        out_cmdResult.divide();
+
+        computation.endComputation();
+    }
+
+    return out_cmdResult.solverResult.success;
 }

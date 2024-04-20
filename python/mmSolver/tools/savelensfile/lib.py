@@ -28,7 +28,6 @@ import tempfile
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.loadlens.constant as const_load
 import mmSolver.tools.savelensfile.constant as const
@@ -88,7 +87,7 @@ def generate(cam, lens, frame_range):
     assert isinstance(cam, mmapi.Camera)
     assert isinstance(lens, mmapi.Lens)
 
-    frames = range(frame_range.start, frame_range.end + 1)
+    frames = list(range(frame_range.start, frame_range.end + 1))
     assert len(frames) > 0
 
     lens_node = lens.get_node()

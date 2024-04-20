@@ -38,8 +38,15 @@ function(set_global_maya_plugin_compile_options)
   if (MSVC)
     # For Visual Studio 11 2012
     set(CMAKE_CXX_FLAGS "")  # Zero out the C++ flags, we have complete control.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GS /Zc:wchar_t /Zi /fp:precise /Zc:forScope /GR /Gd /EHsc")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GS")          # Buffer Security Check
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:wchar_t")  # wchar_t Is Native Type
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")          # Separate .pdb debug info file.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:precise")  # Precise floating-point behavior
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:forScope") # Force Conformance in for Loop Scope
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GR")          # Enable Run-Time Type Information
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Gd")          # __cdecl Calling Convention
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")        # Handle standard C++ Exceptions.
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")          # Warning Levels 1-4 enabled.
 
     add_compile_definitions(OSWin_)
     add_compile_definitions(WIN32)
@@ -60,12 +67,38 @@ function(set_global_maya_plugin_compile_options)
     add_compile_definitions(NT_PLUGIN)
     add_compile_definitions(USERDLL)
 
+    # Use multithread-specific Run-Time Library.
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} /MD")
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Gy /Gm- /O2 /Ob1 /GF")
 
+    add_compile_options("/arch:AVX2")
+
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Gy")  # Enable Function-Level Linking
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GF")  # Eliminate Duplicate Strings
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2")  # Optimize for Maximize Speed
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi")  # Generate Intrinsic Functions
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")  # Whole program optimization
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /arch:AVX2")  # Use AVX2 instructions
+
+    # Link-time code generation.
+    #
+    # /LTGC and /GL work together and therefore are both enabled.
+    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
+    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG")
+    set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /LTCG")
+
+    # Use debug-specific Run-Time Library.
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} /MDd")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Gm /Od /RTC1")
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Ob0 /GR /GL /Oi /Gy /Zi /EHsc")
+
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od")    # Optimize for Debug.
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /RTC1")  # Run-time error checks
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Ob0")   # Disables inline expansions.
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /GR")    # Enable Run-Time Type Information
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /GL")    # Whole program optimization
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Oi")    # Generate Intrinsic Functions
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Gy")    # Enable Function-Level Linking
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi")    # Debug Information Format
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc")  # Handle standard C++ Exceptions.
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /analyze")  # Code analysis
 
     # Ensure Google Logging does not use "ERROR" macro, because Windows
     # doesn't support it.
@@ -80,11 +113,6 @@ function(set_global_maya_plugin_compile_options)
     #
     # https://docs.microsoft.com/en-us/previous-versions/ms235384(v=vs.100)
     add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
-
-    # # Must add the plug-in entry/exit points otherwise
-    # # the plug-in won't load.
-    # set(CMAKE_SHARED_LINKER_FLAGS
-    #   "${CMAKE_SHARED_LINKER_FLAGS} /export:initializePlugin /export:uninitializePlugin")
 
   elseif (APPLE)
 
@@ -145,6 +173,9 @@ function(set_global_maya_plugin_compile_options)
     # the new default is to use "_GLIBCXX_USE_CXX11_ABI=1".
     #
     # https://vfxplatform.com/#footnote-gcc9
+    #
+    # TODO: Expose this variable as a CMake option, so we can enable
+    # this for RHEL 8/9 and Rocky Linux 8.
     add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
 
     # Enable warnings.
@@ -174,8 +205,19 @@ function(set_global_maya_plugin_compile_options)
     # the C++11 standard says 1024 is the default.
     add_definitions(-ftemplate-depth-900)
 
-    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -m64")
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0")  # No optmizations.
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")  # Include debug symbols
+
+    # Enable AddressSanitizer.
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address")
+
+    # Nicer stack traces in error messages
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer")
+
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")  # Optimize for maximum performance.
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -m64")  # Set 64-bit machine.
+    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=skylake")   # Use AVX2 instructions
+
   endif ()
 endfunction()
 
@@ -195,15 +237,6 @@ function(add_library_maya_plugin target source_files)
   else ()
     add_library(${target} SHARED "${source_files}")
   endif ()
-endfunction()
-
-
-function(add_target_link_library_names target names)
-    string(STRIP ${names} names_strip)
-    string(REPLACE " " ";" names_list ${names_strip})
-    foreach (name IN LISTS names_list)
-        target_link_libraries(${target} ${name})
-    endforeach ()
 endfunction()
 
 
@@ -294,16 +327,26 @@ function(install_target_plugin_to_module target module_dir)
     ARCHIVE_OUTPUT_DIRECTORY "${module_dir}")
 
   install(TARGETS ${target}
-    RUNTIME DESTINATION "${MODULE_FULL_NAME}/plug-ins"
-    LIBRARY DESTINATION "${MODULE_FULL_NAME}/plug-ins")
+    RUNTIME DESTINATION "${module_dir}/plug-ins"
+    LIBRARY DESTINATION "${module_dir}/plug-ins")
+endfunction()
+
+
+# Install the Plug-In.
+function(install_target_executable_to_module target module_dir)
+  set_target_properties(${target} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY "${module_dir}")
+
+  install(TARGETS ${target}
+    RUNTIME DESTINATION "${module_dir}/bin")
 endfunction()
 
 
 # Install shared (dynamic) library.
 function(install_shared_library lib_file lib_file_dll install_dir)
   # message(STATUS "INSTALL FILE: ${lib_file}")
-  # message(STATUS "INSTALL DLL: ${lib_file_dll}")
-  # message(STATUS "INSTALL DIR: ${install_dir}")
+  # message(STATUS "INSTALL DLL : ${lib_file_dll}")
+  # message(STATUS "INSTALL DIR : ${install_dir}")
   if (WIN32)
     if (EXISTS ${lib_file_dll})
       install(FILES ${lib_file_dll}
@@ -335,8 +378,8 @@ endfunction()
 # Install many shared (dynamic) libraries.
 function(install_shared_libraries lib_files lib_files_dll install_dir)
   # message(STATUS "INSTALL FILES: ${lib_files}")
-  # message(STATUS "INSTALL DLLS: ${lib_files_dll}")
-  # message(STATUS "INSTALL DIR: ${install_dir}")
+  # message(STATUS "INSTALL DLLS : ${lib_files_dll}")
+  # message(STATUS "INSTALL DIR  : ${install_dir}")
 
   string(STRIP "${lib_files}" lib_files_strip)
   string(STRIP "${lib_files_dll}" lib_files_dll_strip)

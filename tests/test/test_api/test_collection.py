@@ -26,15 +26,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import sys
-import os
 import unittest
 
 import maya.cmds
 
 import test.test_api.apiutils as test_api_utils
 import mmSolver.utils.python_compat as pycompat
-import mmSolver._api.utils as api_utils
 import mmSolver._api.solverstep as solver
 import mmSolver._api.frame as frame
 import mmSolver._api.camera as camera
@@ -42,7 +39,6 @@ import mmSolver._api.marker as marker
 import mmSolver._api.bundle as bundle
 import mmSolver._api.attribute as attribute
 import mmSolver._api.collection as collection
-import mmSolver._api.excep as excep
 
 
 # @unittest.skip
@@ -525,7 +521,7 @@ class TestCollection(test_api_utils.APITestCase):
         self.assertFalse(x.is_valid())
 
         # Marker / Bundle
-        cam_tfm = maya.cmds.createNode('transform', name='camera1')
+        maya.cmds.createNode('transform', name='camera1')
         cam_shp = maya.cmds.createNode('camera', name='cameraShape1')
         cam = camera.Camera(shape=cam_shp)
         bnd = bundle.Bundle().create_node()

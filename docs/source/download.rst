@@ -3,7 +3,7 @@
 Download
 ========
 
-Download the latest release **mmSolver v0.3.16**:
+Download the latest release **mmSolver v0.4.9**:
 
 .. list-table:: Downloads
    :widths: auto
@@ -14,82 +14,68 @@ Download the latest release **mmSolver v0.3.16**:
      - Link
 
    * - Linux
-     - Maya 2016
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2016-linux.tar.gz>`_
-
-   * - Linux
-     - Maya 2017
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2017-linux.tar.gz>`_
-
-   * - Linux
-     - Maya 2018
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2018-linux.tar.gz>`_
-
-   * - Linux
      - Maya 2019
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2019-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.4.9/mayaMatchMoveSolver-0.4.8-maya2019-linux.tar.gz>`_
 
    * - Linux
      - Maya 2020
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2020-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.4.9/mayaMatchMoveSolver-0.4.8-maya2020-linux.tar.gz>`_
 
    * - Linux
      - Maya 2022
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2022-linux.tar.gz>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.4.9/mayaMatchMoveSolver-0.4.8-maya2022-linux.tar.gz>`_
 
-   * - Windows
-     - Maya 2016
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2016-win64.zip>`_
+   * - Linux
+     - Maya 2023
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.4.9/mayaMatchMoveSolver-0.4.8-maya2023-linux.tar.gz>`_
 
-   * - Windows
-     - Maya 2017
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2017-win64.zip>`_
+   * - Linux
+     - Maya 2024
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.4.9/mayaMatchMoveSolver-0.4.8-maya2024-linux.tar.gz>`_
 
    * - Windows
      - Maya 2018
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2018-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.4.9/mayaMatchMoveSolver-0.4.8-maya2018-win64.zip>`_
 
    * - Windows
      - Maya 2019
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2019-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.4.9/mayaMatchMoveSolver-0.4.8-maya2019-win64.zip>`_
 
    * - Windows
      - Maya 2020
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2020-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.4.9/mayaMatchMoveSolver-0.4.8-maya2020-win64.zip>`_
 
    * - Windows
      - Maya 2022
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.16/mayaMatchMoveSolver-0.3.16-maya2022-win64.zip>`_
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.4.9/mayaMatchMoveSolver-0.4.8-maya2022-win64.zip>`_
 
-   * - MacOS
-     - Maya 2018 (v0.3.15)
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2018-mac.tar.gz>`_
+   * - Windows
+     - Maya 2023
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.4.9/mayaMatchMoveSolver-0.4.8-maya2023-win64.zip>`_
 
-   * - MacOS
-     - Maya 2019 (v0.3.15)
-     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.3.15/mayaMatchMoveSolver-0.3.15-maya2019-mac.tar.gz>`_
+   * - Windows
+     - Maya 2024
+     - `link <https://github.com/david-cattermole/mayaMatchMoveSolver/releases/download/v0.4.9/mayaMatchMoveSolver-0.4.8-maya2024-win64.zip>`_
 
 Older versions and full release notes can be found on the GitHub releases_ page.
-
-Note: MacOS is only supported until v0.3.15.
 
 Installation
 ============
 
-To install **mmSolver** on your personal computer,
-follow the install instructions below.
+To install **mmSolver** on your personal computer, follow the install
+instructions below.
 
 Alternatively to install in a large company environment needing
-configuration options make sure to follow the
-`INSTALL.md <https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL.md>`_
+configuration options make sure to follow the `INSTALL.md
+<https://github.com/david-cattermole/mayaMatchMoveSolver/blob/master/INSTALL.md>`_
 file.
 
 Install Maya Module
 -------------------
 
-**mmSolver** can be installed by un-zipping the archive
-(`.zip` or `.tar.gz`) file, and copying the contents into the
-following directory on your computer:
+**mmSolver** can be installed by un-zipping the archive (`.zip` or
+`.tar.gz`) file, and copying the contents into the following directory
+on your computer:
 
 On Windows::
 
@@ -172,6 +158,9 @@ The 3DEqualizer tools are for integration into workflows using 3DEqualizer.
    * - export_track_mmsolver.py
      - Export 2D Tracks (MM Solver)...
 
+   * - import_track_mmsolver.py
+     - Import 2D Tracks (MM Solver)...
+
    * - paste_camera_mmsolver.py
      - Paste Camera (MM Solver)...
 
@@ -229,7 +218,7 @@ Install Blender Add-On
 Starting with mmSolver v0.3.15 a Blender Add-On (.zip file) is
 included in the 'blender' directory of mmSolver.
 
-If you wish to use Blender's 2D tracking featurs along with mmSolver
+If you wish to use Blender's 2D tracking features along with mmSolver
 please see the documentation for :ref:`installation and usage tips <copy-blender-2d-tracks-ref>`.
 
 .. _releases:

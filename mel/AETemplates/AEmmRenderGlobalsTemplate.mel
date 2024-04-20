@@ -1,3 +1,25 @@
+//
+// Copyright (C) 2023 David Cattermole.
+//
+// This file is part of mmSolver.
+//
+// mmSolver is free software: you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// mmSolver is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+// ---------------------------------------------------------------------
+//
+// mmRenderer Render Globals AE Template
+//
+
 global proc AEmmRenderGlobalsTemplate(string $name) {
     string $parent = `setParent -q`;
 
@@ -6,22 +28,8 @@ global proc AEmmRenderGlobalsTemplate(string $name) {
         editorTemplate -beginNoOptimize;
 
             editorTemplate
-                -beginLayout (uiRes("m_AEmmRenderGlobalsTemplate.kDisplayOptions"))
+                -beginLayout "Attributes"
                 -collapse false;
-
-                editorTemplate -addControl "mode";
-                editorTemplate -addControl "renderFormat";
-                editorTemplate -addControl "multiSampleCount";
-
-                editorTemplate
-                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kWireframeAlpha"))
-                    -addControl "wireframeAlpha";
-                editorTemplate
-                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kEdgeThickness"))
-                    -addControl "edgeThickness";
-                editorTemplate
-                    -label (uiRes("m_AEmmRenderGlobalsTemplate.kEdgeThreshold"))
-                    -addControl "edgeThreshold";
 
             editorTemplate -endLayout;
 

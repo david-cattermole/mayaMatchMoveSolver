@@ -124,9 +124,9 @@ def get_frame_range(frame_range_mode, start_frame=None, end_frame=None):
     assert frame_range_mode in const.FRAME_RANGE_MODE_VALUES
 
     if frame_range_mode == const.FRAME_RANGE_MODE_TIMELINE_INNER_VALUE:
-        start_frame, end_frame = get_maya_timeline_range_outer()
-    elif frame_range_mode == const.FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE:
         start_frame, end_frame = get_maya_timeline_range_inner()
+    elif frame_range_mode == const.FRAME_RANGE_MODE_TIMELINE_OUTER_VALUE:
+        start_frame, end_frame = get_maya_timeline_range_outer()
     elif frame_range_mode == const.FRAME_RANGE_MODE_CUSTOM_VALUE:
         assert start_frame is not None
         assert end_frame is not None
@@ -148,5 +148,5 @@ def convert_frame_range_to_frame_list(frame_range):
     :rtype: [int, ...] or []
     """
     start_frame, end_frame = frame_range
-    frames = range(int(start_frame), int(end_frame) + 1)
+    frames = list(range(int(start_frame), int(end_frame) + 1))
     return frames

@@ -30,7 +30,6 @@ import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
-import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
@@ -65,7 +64,7 @@ def get_config():
 def _open_help():
     src = helputils.get_help_source()
     helputils.open_help_in_browser(
-        page='tools_createnode.html#load-markers', help_source=src
+        page='tools_inputoutput.html#load-markers', help_source=src
     )
     return
 

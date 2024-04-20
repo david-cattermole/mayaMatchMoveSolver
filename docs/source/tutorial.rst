@@ -14,7 +14,7 @@ Usage Guide
 These videos explain the use of the Solver UI, and mmSolver shelf. Many
 features are explored and show examples for how the tools can be used.
 
-These video uses mmSolver v0.2.0 (beta).
+These videos use mmSolver v0.2.0 (beta).
 
 *Part 1*
 
@@ -40,7 +40,7 @@ For more information, see the
 <https://david-cattermole.github.io/mayaMatchMoveSolver/tools_createnode.html#copy-2d-tracks-from-3dequalizer>`_
 and
 `Copy Camera to Clipboard tool
-<https://david-cattermole.github.io/mayaMatchMoveSolver/tools_generaltools.html#copy-camera-to-clipboard>`_
+<https://david-cattermole.github.io/mayaMatchMoveSolver/tools_inputoutput.html#copy-camera-to-clipboard>`_
 documentation.
 
 This video uses mmSolver v0.3.6.
@@ -141,6 +141,8 @@ to stick to the same feature on the door, only the edge of the door.
 .. raw:: html
 
     <iframe width="720" height="405" src="https://www.youtube.com/embed/u0cU7X1b7zE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+.. _tutorial-robot-arm-rigid-hierarchy-solving:
 
 Robot Arm - Rigid Hierarchy Solving
 -----------------------------------

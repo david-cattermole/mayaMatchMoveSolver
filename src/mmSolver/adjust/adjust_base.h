@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, 2019 David Cattermole.
+ * Copyright (C) 2018, 2019, 2022 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -42,6 +42,7 @@
 // MM Solver
 #include "adjust_data.h"
 #include "adjust_defines.h"
+#include "adjust_results.h"
 #include "adjust_solveFunc.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
@@ -89,7 +90,7 @@ bool get_initial_parameters(const int numberOfParameters,
                             std::vector<double> &paramList,
                             std::vector<std::pair<int, int> > &paramToAttrList,
                             AttrPtrList &attrList, MTimeArray &frameList,
-                            MStringArray &outResult);
+                            SolverResult &out_solverResult);
 
 bool set_maya_attribute_values(
     const int numberOfParameters,
@@ -102,34 +103,25 @@ bool compute_error_stats(const int numberOfMarkerErrors,
                          double &out_errorAvg, double &out_errorMin,
                          double &out_errorMax);
 
-void logResultsSolveDetails(SolverResult &solverResult, SolverData &userData,
-                            SolverTimer &timer, int numberOfParameters,
-                            const int numberOfMarkerErrors,
-                            const int numberOfAttrStiffnessErrors,
-                            const int numberOfAttrSmoothnessErrors,
-                            const LogLevel &logLevel,
-                            std::vector<double> &paramList,
-                            MStringArray &outResult);
+MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList &markerList,
+                                         const AttrPtrList &attrList,
+                                         const BoolList2D &markerToAttrList,
+                                         AffectsResult &out_result);
 
-MStatus logResultsObjectCounts(const int numberOfParameters,
-                               const int numberOfErrors,
-                               const int numberOfMarkerErrors,
-                               const int numberOfAttrStiffnessErrors,
-                               const int numberOfAttrSmoothnessErrors,
-                               MStringArray &outResult);
+bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
+              MarkerPtrList &markerList, BundlePtrList &bundleList,
+              AttrPtrList &attrList, const MTimeArray &frameList,
+              StiffAttrsPtrList &stiffAttrsList,
+              SmoothAttrsPtrList &smoothAttrsList, MDGModifier &dgmod,
+              MAnimCurveChange &curveChange, MComputation &computation,
+              MStringArray &printStatsList, const LogLevel logLevel,
+              MStringArray &outResult);
 
-MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList markerList,
-                                         const AttrPtrList attrList,
-                                         const BoolList2D markerToAttrList,
-                                         MStringArray &outResult);
-
-bool solve(SolverOptions &solverOptions, CameraPtrList &cameraList,
-           MarkerPtrList &markerList, BundlePtrList &bundleList,
-           AttrPtrList &attrList, const MTimeArray &frameList,
-           StiffAttrsPtrList &stiffAttrsList,
-           SmoothAttrsPtrList &smoothAttrsList, MDGModifier &dgmod,
-           MAnimCurveChange &curveChange, MComputation &computation,
-           const double &imageWidth, MStringArray &printStatsList,
-           const LogLevel &logLevel, MStringArray &outResult);
+bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
+              MarkerPtrList &markerList, BundlePtrList &bundleList,
+              AttrPtrList &attrList, const MTimeArray &frameList,
+              MDGModifier &dgmod, MAnimCurveChange &curveChange,
+              MComputation &computation, MStringArray &printStatsList,
+              const LogLevel logLevel, CommandResult &out_cmdResult);
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H

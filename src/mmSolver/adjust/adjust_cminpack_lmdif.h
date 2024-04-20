@@ -34,6 +34,7 @@
 
 // MM Solver
 #include "adjust_data.h"
+#include "adjust_results.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"

@@ -33,7 +33,6 @@ import mmSolver.ui.qtpyutils as qtpyutils
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtCore as QtCore
-import mmSolver.ui.Qt.QtGui as QtGui
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
@@ -49,8 +48,7 @@ baseModule, BaseWindow = uiutils.getBaseWindow()
 
 def _open_help():
     src = helputils.get_help_source()
-    # TODO: Add correct URL.
-    page = 'tools_attributetools.html#attribute-bake'
+    page = 'tools_zdepthtools.html#adjust-camera-object-scale'
     helputils.open_help_in_browser(page=page, help_source=src)
     return
 

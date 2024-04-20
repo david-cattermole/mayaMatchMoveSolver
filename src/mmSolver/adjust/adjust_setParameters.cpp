@@ -64,10 +64,11 @@
 #include <mmscenegraph/mmscenegraph.h>
 
 // MM Solver
+#include <mmcore/mmdata.h>
+#include <mmcore/mmmath.h>
+
 #include "adjust_base.h"
 #include "adjust_data.h"
-#include "mmSolver/core/mmdata.h"
-#include "mmSolver/core/mmmath.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_lens_model_utils.h"
@@ -141,7 +142,7 @@ MStatus setParameters_mayaDag(const int numberOfParameters,
             MString attr_name = attr->getName();
             auto attr_name_char = attr_name.asChar();
 
-            MMSOLVER_ERR(
+            MMSOLVER_MAYA_ERR(
                 "setParameters (Maya DAG) was given an invalid value to set:"
                 << " frame=" << frame << " attr name=" << attr_name_char
                 << " solver value=" << solver_value
@@ -235,7 +236,7 @@ MStatus setParameters_mmSceneGraph(const int numberOfParameters,
             MString attr_name = attr->getName();
             auto attr_name_char = attr_name.asChar();
 
-            MMSOLVER_ERR(
+            MMSOLVER_MAYA_ERR(
                 "setParameters (MMSG) was given an invalid value to set:"
                 << " attr name=" << attr_name_char
                 << " solver value=" << solver_value
@@ -259,8 +260,8 @@ MStatus setParameters(const int numberOfParameters, const double *parameters,
     } else if (sceneGraphMode == SceneGraphMode::kMMSceneGraph) {
         status = setParameters_mmSceneGraph(numberOfParameters, parameters, ud);
     } else {
-        MMSOLVER_ERR("setParameters failed, invalid SceneGraphMode: "
-                     << static_cast<int>(sceneGraphMode));
+        MMSOLVER_MAYA_ERR("setParameters failed, invalid SceneGraphMode: "
+                          << static_cast<int>(sceneGraphMode));
         status = MS::kFailure;
     }
 

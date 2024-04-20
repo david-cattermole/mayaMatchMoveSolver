@@ -67,7 +67,8 @@
 #include <maya/MSyntax.h>
 
 // MM Solver
-#include "mmSolver/core/mmmath.h"
+#include <mmcore/mmmath.h>
+
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
@@ -139,9 +140,10 @@ MStatus find_existing_file_path(MFileObject &file_object,
     if (!path_exists) {
         MString resolved_file_path = file_object.resolvedFullName();
         status = MS::kFailure;
-        MMSOLVER_WRN("mmConvertImage: Could not find file path "
-                     << "\"" << in_file_path.asChar() << "\", resolved path "
-                     << "\"" << resolved_file_path.asChar() << "\".");
+        MMSOLVER_MAYA_WRN("mmConvertImage: Could not find file path "
+                          << "\"" << in_file_path.asChar()
+                          << "\", resolved path "
+                          << "\"" << resolved_file_path.asChar() << "\".");
         return status;
     }
 
@@ -188,7 +190,7 @@ MStatus resize_image(MImage &image, const double resize_scale) {
 
     MImage::MPixelType pixel_type = image.pixelType();
     if (pixel_type != MImage::kByte) {
-        MMSOLVER_WRN(
+        MMSOLVER_MAYA_WRN(
             "mmConvertImage: "
             << "Maya does not support resizing floating-point pixels.");
     }
@@ -234,9 +236,9 @@ MStatus convert_image(const MString &src_file_path,
 
     if (src_file_path == dst_file_path) {
         status = MS::kFailure;
-        MMSOLVER_ERR("mmConvertImage: "
-                     << "Cannot have source and destination as same path: "
-                     << src_file_path.asChar());
+        MMSOLVER_MAYA_ERR("mmConvertImage: "
+                          << "Cannot have source and destination as same path: "
+                          << src_file_path.asChar());
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
@@ -248,9 +250,9 @@ MStatus convert_image(const MString &src_file_path,
         src_pixel_type  // The desired pixel format is unknown.
     );
     if (status != MS::kSuccess) {
-        MMSOLVER_ERR("mmConvertImage: "
-                     << "Image file path could not be read: "
-                     << src_file_path.asChar());
+        MMSOLVER_MAYA_ERR("mmConvertImage: "
+                          << "Image file path could not be read: "
+                          << src_file_path.asChar());
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
     src_pixel_type = image.pixelType();
@@ -269,11 +271,12 @@ MStatus convert_image(const MString &src_file_path,
     status = guess_file_path_pixel_type(dst_file_path, dst_pixel_type);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     if (format_pixel_type != dst_pixel_type) {
-        MMSOLVER_WRN("mmConvertImage: "
-                     << "The destination file extension and output format seem "
-                        "to contradict each other. file path: "
-                     << dst_file_path.asChar() << " output format: \""
-                     << dst_output_format.asChar() << "\"");
+        MMSOLVER_MAYA_WRN(
+            "mmConvertImage: "
+            << "The destination file extension and output format seem "
+               "to contradict each other. file path: "
+            << dst_file_path.asChar() << " output format: \""
+            << dst_output_format.asChar() << "\"");
     }
 
     if (src_pixel_type == dst_pixel_type) {
@@ -282,9 +285,9 @@ MStatus convert_image(const MString &src_file_path,
         if (src_pixel_type == MImage::kByte) {
             status = resize_image(image, resize_scale);
             if (status != MS::kSuccess) {
-                MMSOLVER_ERR("mmConvertImage: "
-                             << "Failed to resize image file: "
-                             << src_file_path.asChar());
+                MMSOLVER_MAYA_ERR("mmConvertImage: "
+                                  << "Failed to resize image file: "
+                                  << src_file_path.asChar());
                 return status;
             }
         }
@@ -293,10 +296,10 @@ MStatus convert_image(const MString &src_file_path,
         // directly.
         status = image.writeToFile(dst_file_path, dst_output_format);
         if (status != MS::kSuccess) {
-            MMSOLVER_ERR("mmConvertImage: "
-                         << "Failed to write image file: "
-                         << dst_file_path.asChar() << " output format: \""
-                         << dst_output_format.asChar() << "\"");
+            MMSOLVER_MAYA_ERR("mmConvertImage: "
+                              << "Failed to write image file: "
+                              << dst_file_path.asChar() << " output format: \""
+                              << dst_output_format.asChar() << "\"");
             CHECK_MSTATUS_AND_RETURN_IT(status);
         }
     } else {
@@ -304,10 +307,10 @@ MStatus convert_image(const MString &src_file_path,
         // has not been resized yet.
         if (image.pixelType() == MImage::kByte) {
             status = MS::kFailure;
-            MMSOLVER_ERR("mmConvertImage: "
-                         << "Failed to write image file: "
-                         << dst_file_path.asChar() << " output format: \""
-                         << dst_output_format.asChar() << "\"");
+            MMSOLVER_MAYA_ERR("mmConvertImage: "
+                              << "Failed to write image file: "
+                              << dst_file_path.asChar() << " output format: \""
+                              << dst_output_format.asChar() << "\"");
             return status;
         }
 
@@ -337,9 +340,9 @@ MStatus convert_image(const MString &src_file_path,
             // already read and operated on the pixels, so it seems
             // very wrong that the data wouldn't be valid.
             status = MS::kFailure;
-            MMSOLVER_ERR("mmConvertImage: "
-                         << "Failed to get floating point pixel data: "
-                         << src_file_path.asChar());
+            MMSOLVER_MAYA_ERR("mmConvertImage: "
+                              << "Failed to get floating point pixel data: "
+                              << src_file_path.asChar());
             return status;
         }
 
@@ -374,18 +377,18 @@ MStatus convert_image(const MString &src_file_path,
         // limited with the pixel types it can resize.
         status = resize_image(out_image, resize_scale);
         if (status != MS::kSuccess) {
-            MMSOLVER_ERR("mmConvertImage: "
-                         << "Failed to resize image file: "
-                         << src_file_path.asChar());
+            MMSOLVER_MAYA_ERR("mmConvertImage: "
+                              << "Failed to resize image file: "
+                              << src_file_path.asChar());
             return status;
         }
 
         status = out_image.writeToFile(dst_file_path, dst_output_format);
         if (status != MS::kSuccess) {
-            MMSOLVER_ERR("mmConvertImage: "
-                         << "Failed to write image file: "
-                         << dst_file_path.asChar() << " output format: \""
-                         << dst_output_format.asChar() << "\"");
+            MMSOLVER_MAYA_ERR("mmConvertImage: "
+                              << "Failed to write image file: "
+                              << dst_file_path.asChar() << " output format: \""
+                              << dst_output_format.asChar() << "\"");
             CHECK_MSTATUS_AND_RETURN_IT(status);
         }
     }
@@ -452,15 +455,15 @@ MStatus MMConvertImageCmd::parseArgs(const MArgList &args) {
 
     status = argData.getFlagArgument(SRC_FILE_PATH_FLAG, 0, m_src_file_path);
     if (status != MStatus::kSuccess) {
-        MMSOLVER_ERR("Required source file path argument (\""
-                     << SRC_FILE_PATH_FLAG_LONG << "\" flag) is missing.");
+        MMSOLVER_MAYA_ERR("Required source file path argument (\""
+                          << SRC_FILE_PATH_FLAG_LONG << "\" flag) is missing.");
         return status;
     }
 
     status = argData.getFlagArgument(DST_FILE_PATH_FLAG, 0, m_dst_file_path);
     if (status != MStatus::kSuccess) {
-        MMSOLVER_ERR("Required destination file path argument (\""
-                     << DST_FILE_PATH_FLAG_LONG << "\" flag) is missing.");
+        MMSOLVER_MAYA_ERR("Required destination file path argument (\""
+                          << DST_FILE_PATH_FLAG_LONG << "\" flag) is missing.");
         return status;
     }
 
@@ -495,9 +498,10 @@ MStatus MMConvertImageCmd::parseArgs(const MArgList &args) {
                                          m_dst_output_format);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         if (m_dst_output_format.length() == 0) {
-            MMSOLVER_WRN("Destination output format argument (\""
-                         << DST_OUTPUT_FORMAT_FLAG_LONG
-                         << "\" flag) is not valid, defaulting to \"iff\".");
+            MMSOLVER_MAYA_WRN(
+                "Destination output format argument (\""
+                << DST_OUTPUT_FORMAT_FLAG_LONG
+                << "\" flag) is not valid, defaulting to \"iff\".");
             m_dst_output_format = "iff";
         }
     }
@@ -573,9 +577,9 @@ MStatus MMConvertImageCmd::doIt(const MArgList &args) {
         status = find_existing_file_path(src_file_object, src_file_path,
                                          src_file_path);
         if (status != MS::kSuccess) {
-            MMSOLVER_WRN("mmConvertImage: "
-                         << "Failed to resolve source file path: "
-                         << "\"" << src_file_path.asChar() << "\"");
+            MMSOLVER_MAYA_WRN("mmConvertImage: "
+                              << "Failed to resolve source file path: "
+                              << "\"" << src_file_path.asChar() << "\"");
             fail_count += 1;
             continue;
         }
@@ -584,17 +588,17 @@ MStatus MMConvertImageCmd::doIt(const MArgList &args) {
         dst_file_object.setResolveMethod(MFileObject::kNone);
         status = find_file_path(dst_file_object, dst_file_path);
         if (status != MS::kSuccess) {
-            MMSOLVER_WRN("mmConvertImage: "
-                         << "Failed to resolve destination file path: "
-                         << "\"" << dst_file_path.asChar() << "\"");
+            MMSOLVER_MAYA_WRN("mmConvertImage: "
+                              << "Failed to resolve destination file path: "
+                              << "\"" << dst_file_path.asChar() << "\"");
             fail_count += 1;
             continue;
         }
 
         if ((src_file_path.length() == 0) || (dst_file_path.length() == 0)) {
-            MMSOLVER_WRN("mmConvertImage: Failed to resolve file paths "
-                         << "\"" << src_file_path.asChar() << "\" to \""
-                         << dst_file_path.asChar() << "\".");
+            MMSOLVER_MAYA_WRN("mmConvertImage: Failed to resolve file paths "
+                              << "\"" << src_file_path.asChar() << "\" to \""
+                              << dst_file_path.asChar() << "\".");
             fail_count += 1;
             continue;
         }
@@ -602,18 +606,18 @@ MStatus MMConvertImageCmd::doIt(const MArgList &args) {
         status = convert_image(src_file_path, dst_file_path,
                                m_dst_output_format, m_resize_scale);
         if (status != MS::kSuccess) {
-            MMSOLVER_WRN("mmConvertImage: "
-                         << "Failed to convert image: "
-                         << "\"" << src_file_path.asChar() << "\" to \""
-                         << dst_file_path.asChar() << "\".");
+            MMSOLVER_MAYA_WRN("mmConvertImage: "
+                              << "Failed to convert image: "
+                              << "\"" << src_file_path.asChar() << "\" to \""
+                              << dst_file_path.asChar() << "\".");
             fail_count += 1;
             continue;
         }
 
-        MMSOLVER_INFO("mmConvertImage: "
-                      << "Converted "
-                      << "\"" << src_file_path.asChar() << "\" to \""
-                      << dst_file_path.asChar() << "\".");
+        MMSOLVER_MAYA_INFO("mmConvertImage: "
+                           << "Converted "
+                           << "\"" << src_file_path.asChar() << "\" to \""
+                           << dst_file_path.asChar() << "\".");
         succeeded_count += 1;
     }
 
@@ -621,16 +625,16 @@ MStatus MMConvertImageCmd::doIt(const MArgList &args) {
     if ((total_count == fail_count) && (succeeded_count == 0)) {
         // All of the tasks failed.
         MMConvertImageCmd::setResult(false);
-        MMSOLVER_ERR("mmConvertImage: "
-                     << "All images failed to convert image:"
-                     << " failed=" << fail_count);
+        MMSOLVER_MAYA_ERR("mmConvertImage: "
+                          << "All images failed to convert image:"
+                          << " failed=" << fail_count);
     } else if (fail_count > 0) {
         // Some of the tasks failed.
         MMConvertImageCmd::setResult(false);
-        MMSOLVER_WRN("mmConvertImage: "
-                     << "Some images failed to convert image:"
-                     << " total=" << total_count << " succeeded="
-                     << succeeded_count << " failed=" << fail_count);
+        MMSOLVER_MAYA_WRN("mmConvertImage: "
+                          << "Some images failed to convert image:"
+                          << " total=" << total_count << " succeeded="
+                          << succeeded_count << " failed=" << fail_count);
     }
 
     return status;

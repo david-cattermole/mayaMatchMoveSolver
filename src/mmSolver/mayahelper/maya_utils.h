@@ -74,15 +74,19 @@ enum class ObjectType {
 };
 
 MStatus getAsSelectionList(const MStringArray &nodeNames,
-                           MSelectionList &selList);
+                           MSelectionList &selList, bool quiet = false);
 
-MStatus getAsSelectionList(const MString nodeName, MSelectionList &selList);
+MStatus getAsSelectionList(const MString &nodeName, MSelectionList &selList,
+                           bool quiet = false);
 
 MStatus nodeExistsAndIsType(const MString &nodeName, const MFn::Type nodeType);
 
-MStatus getAsObject(const MString &nodeName, MObject &object);
+MStatus getAsObject(const MString &nodeName, MObject &object,
+                    bool quiet = false);
 
 MStatus getAsDagPath(const MString &nodeName, MDagPath &nodeDagPath);
+
+MStatus getUniqueNodeName(MObject &node, MString &out_uniqueNodeName);
 
 bool hasAttrName(MFnDependencyNode &dependFn, const MString &attrName);
 
@@ -95,8 +99,8 @@ ObjectType computeObjectType(const MObject &node_obj);
 
 // Generate attribute name used to set and look up 'attribute affects'
 // on nodes.
-MStatus constructAttrAffectsName(const MString attrName,
-                                 const MString attrUuidStr,
+MStatus constructAttrAffectsName(const MString &attrName,
+                                 const MString &attrUuidStr,
                                  MString &outAttrName);
 
 namespace mmsolver {

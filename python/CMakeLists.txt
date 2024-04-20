@@ -21,7 +21,7 @@
 
 # Create Python file with some build options baked in.
 configure_file(
-  ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/constant.py.in
+  ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/constant.py
   ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/constant.py
   @ONLY)
 
@@ -33,7 +33,8 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/constant.py
 install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/"
         DESTINATION "${MODULE_FULL_NAME}/python"
         FILES_MATCHING PATTERN "*.py"
-        PATTERN "__pycache__" EXCLUDE)
+        PATTERN "__pycache__" EXCLUDE
+        PATTERN "*mmSolver/constant.py" EXCLUDE)
 
 
 if (MMSOLVER_BUILD_QT_UI)
@@ -128,6 +129,11 @@ if (MMSOLVER_BUILD_QT_UI)
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/solver/widget/ui_solver_standard_widget.py
             )
 
+    compile_qt_ui_to_python_file("solver_solver_camera_widget"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/solver_camera_widget.ui
+            ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/solver/widget/ui_solver_camera_widget.py
+            )
+
     compile_qt_ui_to_python_file("solver_solverstate_widget"
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/solverstate_widget.ui
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/solver/widget/ui_solverstate_widget.py
@@ -181,6 +187,11 @@ if (MMSOLVER_BUILD_QT_UI)
     compile_qt_ui_to_python_file("screenspacerigbake"
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/screenspacerigbake/ui/screenspacerigbake_layout.ui
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/screenspacerigbake/ui/ui_screenspacerigbake_layout.py
+            )
+
+    compile_qt_ui_to_python_file("surfacecluster"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/surfacecluster/ui/surfacecluster_layout.ui
+            ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/surfacecluster/ui/ui_surfacecluster_layout.py
             )
 
     # Install generated Python UI files

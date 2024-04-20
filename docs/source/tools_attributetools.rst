@@ -10,7 +10,7 @@ Set Attribute Details
 .. figure:: images/tools_set_attribute_details_ui.png
     :alt: Set Attribute Details UI
     :align: center
-    :scale: 50%
+    :scale: 100%
 
 The Attribute Details tool is used to add details (properties) to an
 individual Attribute. Details are stored per-collection, therefore a
@@ -84,7 +84,7 @@ while preserving other parts and avoiding bumps at the boundry.
 
 Usage:
 
-1) Use the menu ``mmSolver > General Tools > Smooth Keyframes UI``.
+1) Use the menu ``mmSolver > Attribute Tools > Smooth Keyframes UI``.
 
 2) Edit the options in the UI.
 
@@ -196,7 +196,7 @@ useful for manually adjusting or matching parameters interactively.
 .. figure:: images/tools_channel_box_sensitivity_ui.png
     :alt: Adjust the Maya Channel Box Sensitivity with a UI
     :align: center
-    :width: 40%
+    :width: 80%
 
 Usage:
 
@@ -223,13 +223,13 @@ Bake Attributes
 .. figure:: images/tools_bake_attributes_ui.png
     :alt: Bake Attributes UI
     :align: center
-    :scale: 50%
+    :scale: 100%
 
 Bake Attributes will bake the values of an attribute on each frame and
 replace the connection with an animation curve.
 
-This tool is almost identical to the default Maya `Edit > Keys > Bake
-Simulation` tool, but has additional features.
+This tool is almost identical to the default Maya ``Edit > Keys > Bake
+Simulation`` tool, but has additional features.
 
 - The viewport is always disabled while baking.
 
@@ -256,7 +256,7 @@ Usage:
 .. note:: In Maya scenes that rely on legacy viewport update for
           correct evaluation, this tool may produce incorrect results
           (because the viewport is disabled). If this happens, please
-          use Maya's default `Edit > Keys > Bake Simulation` tool. In
+          use Maya's default ``Edit > Keys > Bake Simulation`` tool. In
           the experience of the tool authors, this has never happened
           and this tool is a faster baking tool.
 

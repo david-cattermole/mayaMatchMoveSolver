@@ -159,7 +159,7 @@ MStatus MMLensDeformerNode::deform(MDataBlock& data, MItGeometry& iter,
     }
 
     // Get the underlying lens model.
-    std::shared_ptr<LensModel> lensModel = inputLensData->getValue();
+    std::shared_ptr<mmlens::LensModel> lensModel = inputLensData->getValue();
     if (lensModel == nullptr) {
         return status;
     }
@@ -187,7 +187,7 @@ MStatus MMLensDeformerNode::deform(MDataBlock& data, MItGeometry& iter,
     double pixelAspect = pixelAspectHandle.asDouble();
     double lensCenterOffsetX = horizontalFilmOffsetHandle.asDouble();
     double lensCenterOffsetY = verticalFilmOffsetHandle.asDouble();
-    focalLength *= MM_TO_INCH;
+    focalLength *= MM_TO_CM;
     filmBackWidth *= INCH_TO_CM;
     filmBackHeight *= INCH_TO_CM;
     lensCenterOffsetX *= INCH_TO_CM;

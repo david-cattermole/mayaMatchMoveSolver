@@ -31,8 +31,9 @@
 #include <maya/MTypeId.h>
 
 // MM Solver
+#include <mmlens/lens_model.h>
+
 #include "MMLensData.h"
-#include "mmSolver/lens/lens_model.h"
 #include "mmSolver/nodeTypeIds.h"
 
 namespace mmsolver {
@@ -131,7 +132,7 @@ MStatus MMMarkerTransformNode::validateAndSetValue(const MPlug &plug,
 
         // Get Input Lens
         MMLensData *inputLensData = (MMLensData *)dataHandle.asPluginData();
-        std::shared_ptr<LensModel> inputLensModel;
+        std::shared_ptr<mmlens::LensModel> inputLensModel;
         if (inputLensData != nullptr) {
             inputLensModel = inputLensData->getValue();
         }

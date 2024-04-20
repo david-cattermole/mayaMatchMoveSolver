@@ -44,7 +44,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import collections
 import json
 import os
 import platform
@@ -252,7 +251,7 @@ def _recursive_update(d, u):
     :rtype: dict
     """
     for k, v in u.items():
-        if isinstance(v, collections.Mapping):
+        if isinstance(v, pycompat.COLLECTIONS_ABC_MAPPING):
             d[k] = _recursive_update(d.get(k, {}), v)
         else:
             d[k] = v

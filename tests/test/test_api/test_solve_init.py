@@ -23,19 +23,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import time
-import pprint
-import math
 import unittest
 
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.utils.time as time_utils
-import mmSolver.utils.python_compat as pycompat
 import mmSolver.api as mmapi
-import mmSolver.tools.solver.lib.collection as lib_col
-import mmSolver.tools.loadmarker.lib.mayareadfile as marker_read
 import test.test_api.apiutils as test_api_utils
 
 
@@ -109,8 +102,8 @@ class TestSolve(test_api_utils.APITestCase):
 
         # Ensure the values are correct
         self.checkSolveResults(results)
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
+        # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
+        # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
         return
 
     def do_solve_init_solverstandard(
@@ -122,7 +115,6 @@ class TestSolve(test_api_utils.APITestCase):
         if self.haveSolverType(name=solver_name) is False:
             msg = '%r solver is not available!' % solver_name
             raise unittest.SkipTest(msg)
-        scene_graph_name = mmapi.SCENE_GRAPH_MODE_NAME_LIST[scene_graph_mode]
         scene_graph_label = mmapi.SCENE_GRAPH_MODE_LABEL_LIST[scene_graph_mode]
         print('Scene Graph:', scene_graph_label)
 
@@ -194,8 +186,8 @@ class TestSolve(test_api_utils.APITestCase):
         self.checkSolveResults(
             results, allow_max_avg_error=0.001, allow_max_error=0.001
         )
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
-        # assert self.approx_equal(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
+        # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.tx'), -6.0)
+        # self.assertApproxEqual(maya.cmds.getAttr(bundle_tfm+'.ty'), 3.6)
         return
 
     # def test_init_solverstandard_ceres_maya_dag(self):

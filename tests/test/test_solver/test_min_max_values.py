@@ -95,8 +95,8 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         tx = maya.cmds.getAttr(bundle_01_tfm + '.tx')
         ty = maya.cmds.getAttr(bundle_01_tfm + '.ty')
-        assert self.approx_equal(tx, -5.0)
-        assert self.approx_equal(ty, 2.3)
+        self.assertApproxEqual(tx, -5.0)
+        self.assertApproxEqual(ty, 2.3)
 
     def test_single_frame_lower_bound_only(self):
         """
@@ -157,8 +157,8 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         tx = maya.cmds.getAttr(bundle_01_tfm + '.tx')
         ty = maya.cmds.getAttr(bundle_01_tfm + '.ty')
-        assert self.approx_equal(tx, -5.0)
-        assert self.approx_equal(ty, 2.3)
+        self.assertApproxEqual(tx, -5.0)
+        self.assertApproxEqual(ty, 2.3)
 
     def test_single_frame_upper_bound_only(self):
         """
@@ -216,8 +216,8 @@ class TestSolverMinMaxValues(solverUtils.SolverTestCase):
         self.assertEqual(result[0], 'success=1')
         tx = maya.cmds.getAttr(bundle_01_tfm + '.tx')
         ty = maya.cmds.getAttr(bundle_01_tfm + '.ty')
-        assert self.approx_equal(tx, -6.0)
-        assert self.approx_equal(ty, 2.3)
+        self.assertApproxEqual(tx, -6.0)
+        self.assertApproxEqual(ty, 2.3)
 
 
 if __name__ == '__main__':

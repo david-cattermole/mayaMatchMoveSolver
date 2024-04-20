@@ -42,40 +42,40 @@
             ]
         },
         "navigate_root_frame_next": {
-            "name": "Next Root Frame",
+            "name": "Next User Frame",
             "name_shelf": "",
             "icon_shelf": "keyFrameNext_32x32.png",
-            "tooltip": "Jump to the next root frame.",
+            "tooltip": "Jump to the next user frame.",
             "command": [
                 "import mmSolver.tools.navigaterootframes.tool as tool;",
                 "tool.main_next_frame();"
             ]
         },
         "navigate_root_frame_prev": {
-            "name": "Previous Root Frame",
+            "name": "Previous User Frame",
             "name_shelf": "",
             "icon_shelf": "keyFramePrevious_32x32.png",
-            "tooltip": "Jump to the previous root frame.",
+            "tooltip": "Jump to the previous user frame.",
             "command": [
                 "import mmSolver.tools.navigaterootframes.tool as tool;",
                 "tool.main_prev_frame();"
             ]
         },
         "edit_root_frame_add": {
-            "name": "Add Root Frame",
+            "name": "Add User Frame",
             "name_shelf": "",
             "icon_shelf": "keyFrameAdd_32x32.png",
-            "tooltip": "Add the current frame to the root frame list.",
+            "tooltip": "Add the current frame to the user frame list.",
             "command": [
                 "import mmSolver.tools.editrootframes.tool as tool;",
                 "tool.main_add_frame();"
             ]
         },
         "edit_root_frame_remove": {
-            "name": "Remove Root Frame",
+            "name": "Remove User Frame",
             "name_shelf": "",
             "icon_shelf": "keyFrameRemove_32x32.png",
-            "tooltip": "Remove the current frame from the root frame list.",
+            "tooltip": "Remove the current frame from the user frame list.",
             "command": [
                 "import mmSolver.tools.editrootframes.tool as tool;",
                 "tool.main_remove_frame();"
@@ -715,6 +715,47 @@
             "command": [
                 "import mmSolver.tools.removecontroller2.tool;",
                 "mmSolver.tools.removecontroller2.tool.main();"
+            ]
+        },
+        "create_rivet": {
+            "name": "Create Rivet",
+            "name_shelf": "Rivet",
+            "tooltip": "Create a new Rivet on the selected mesh components.",
+            "command": [
+                "import mmSolver.tools.createrivet.tool;",
+                "mmSolver.tools.createrivet.tool.main();"
+            ]
+        },
+        "create_surface_cluster": {
+            "name": "Create Surface Cluster",
+            "name_shelf": "SrfClst",
+            "tooltip": "Create a new Surface Cluster on the selected mesh components.",
+            "command": [
+                "import mmSolver.tools.surfacecluster.tool;",
+                "mmSolver.tools.surfacecluster.tool.main();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.surfacecluster.tool;",
+                "mmSolver.tools.surfacecluster.tool.open_window();"
+            ]
+        },
+        "update_surface_cluster_weights_with_soft_selection": {
+            "name": "Update Surface Cluster Weights with Soft-Selection",
+            "name_shelf": "UpdWgts",
+            "tooltip": "",
+            "command": [
+                "import mmSolver.tools.surfacecluster.tool;",
+                "mmSolver.tools.surfacecluster.tool.update_weights_with_soft_selection();"
+            ]
+        },
+        "open_surface_cluster_paint_weights_tool": {
+            "name": "Open Cluster Paint Weights Tool...",
+            "name_shelf": "PntWgts",
+            "tooltip": "",
+            "command": [
+                "import mmSolver.tools.surfacecluster.tool;",
+                "mmSolver.tools.surfacecluster.tool.open_paint_weights_tool();"
             ]
         },
         "camera_object_scale_adjust": {

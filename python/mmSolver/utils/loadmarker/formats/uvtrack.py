@@ -239,7 +239,6 @@ def _parse_per_frame_v2_v3_v4(mkr_data, per_frame_data, pos_key=None):
     Get the MarkerData per-frame, including X, Y, weight and enabled
     values.
 
-    :param mkr_data:
     :type mkr_data: MarkerData
 
     :param per_frame_data: List of per-frame data structures.

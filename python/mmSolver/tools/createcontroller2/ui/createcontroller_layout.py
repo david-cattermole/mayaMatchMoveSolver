@@ -31,6 +31,8 @@ import maya.cmds as cmds
 import mmSolver.logger
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.viewport as viewport_utils
+import mmSolver.tools.userpreferences.constant as userprefs_const
+import mmSolver.tools.userpreferences.lib as userprefs_lib
 import mmSolver.tools.createcontroller2.constant as const
 import mmSolver.tools.createcontroller2.ui.ui_createcontroller_layout as ui_layout
 import mmSolver.tools.createcontroller2.lib as lib
@@ -59,65 +61,6 @@ def _get_viewport_camera():
     return cam_tfm
 
 
-def _is_world_space_node(node, start_frame, end_frame):
-    """
-    Find out if a node is effectively in world-space or not.
-
-    :returns:
-        True if object is in global space, or False if object is in
-        local space.
-    :rtype: bool
-    """
-    if len(node) == 0 or not cmds.objExists(node):
-        return False
-
-    # Create node network to check if object is in world space.
-    cmds.loadPlugin('matrixNodes', quiet=True)
-    worldspace_check_matrix_node = None
-    result_decomp_node = None
-    worldspace_check_matrix_node = cmds.createNode('multMatrix', skipSelect=True)
-    result_decomp_node = cmds.createNode('decomposeMatrix', skipSelect=True)
-    cmds.connectAttr(
-        node + '.parentMatrix[0]',
-        worldspace_check_matrix_node + '.matrixIn[1]',
-        force=True,
-    )
-    cmds.connectAttr(
-        node + '.xformMatrix', worldspace_check_matrix_node + '.matrixIn[2]', force=True
-    )
-    cmds.connectAttr(
-        worldspace_check_matrix_node + '.matrixSum',
-        result_decomp_node + '.inputMatrix',
-        force=True,
-    )
-
-    # Get single frame pos and rotation sum
-    pos = cmds.getAttr(result_decomp_node + '.outputTranslate', time=int(start_frame))[
-        0
-    ]
-    rot = cmds.getAttr(result_decomp_node + '.outputRotate', time=int(end_frame))[0]
-    stored_sum = sum(pos) + sum(rot)
-
-    # Check stored sum in all frames.
-    #
-    # True = object is in global space
-    # False = object is in local space
-    world_space_state = True
-    for frame in range(start_frame, end_frame + 1):
-        pos = cmds.getAttr(result_decomp_node + '.outputTranslate', time=frame)[0]
-        rot = cmds.getAttr(result_decomp_node + '.outputRotate', time=frame)[0]
-        pos_rot_sum = sum(pos) + sum(rot)
-        if not pos_rot_sum == stored_sum:
-            world_space_state = False
-            break
-    if worldspace_check_matrix_node and cmds.objExists(worldspace_check_matrix_node):
-        cmds.delete(worldspace_check_matrix_node)
-    if result_decomp_node and cmds.objExists(result_decomp_node):
-        cmds.delete(result_decomp_node)
-
-    return world_space_state
-
-
 class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
     def __init__(self, parent=None, *args, **kwargs):
         super(CreateControllerLayout, self).__init__(*args, **kwargs)
@@ -125,9 +68,9 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
         # Create Button Groups (because we get compile errors if
         # trying to create these in the .ui file).
-        self.node_type_btnGrp = QtWidgets.QButtonGroup()
-        self.node_type_btnGrp.addButton(self.group_rdo_btn)
-        self.node_type_btnGrp.addButton(self.locator_rdo_btn)
+        self.pivot_type_btnGrp = QtWidgets.QButtonGroup()
+        self.pivot_type_btnGrp.addButton(self.pivot_static_rdo_btn)
+        self.pivot_type_btnGrp.addButton(self.pivot_dynamic_rdo_btn)
 
         self.bake_mode_btnGrp = QtWidgets.QButtonGroup()
         self.bake_mode_btnGrp.addButton(self.full_bake_rdo_btn)
@@ -187,20 +130,32 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             LOG.warn('Could not find main object: %r', main_text)
             return
 
-        loc_grp_node = None
         loc_grp_name = str(self.locator_group_text.text())
         if not loc_grp_name:
             LOG.warn('Please type controller name.')
             return
-        if self.group_rdo_btn.isChecked():
-            loc_grp_node = cmds.group(empty=True, name=loc_grp_name)
-        else:
+
+        # The user preferences are used so that the user only has to
+        # change this value once, for all Maya scenes. It is assumed
+        # that users won't often want to change this value.
+        config = userprefs_lib.get_config()
+        key = userprefs_const.CREATE_CONTROLLER_SHAPE_KEY
+        ctrl_type = userprefs_lib.get_value(config, key)
+        if ctrl_type == userprefs_const.CREATE_CONTROLLER_SHAPE_LOCATOR_VALUE:
             loc_grp_node = cmds.spaceLocator(name=loc_grp_name)
+        elif ctrl_type == userprefs_const.CREATE_CONTROLLER_SHAPE_GROUP_VALUE:
+            loc_grp_node = cmds.group(empty=True, name=loc_grp_name)
+            loc_grp_node = [loc_grp_node]
+        else:
+            raise NotImplementedError
 
         return loc_grp_node
 
     def create_controller_button_clicked(self):
         loc_grp_node = self.create_locator_group()
+        if loc_grp_node is None or len(loc_grp_node) == 0:
+            LOG.warn('Locator Group node is invalid, exiting: %r', loc_grp_node)
+            return
 
         # Set time
         start_frame, end_frame = time_utils.get_maya_timeline_range_inner()
@@ -212,27 +167,31 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         controller_name = self.locator_group_text.text()
         pivot_node = self.pivot_object_text.text()
         main_node = self.main_object_text.text()
-        camera = _get_viewport_camera()
-        space = None
-        if self.world_space_rdo_btn.isChecked():
-            space = const.CONTROLLER_TYPE_WORLD_SPACE
-        elif self.object_space_rdo_btn.isChecked():
-            space = const.CONTROLLER_TYPE_OBJECT_SPACE
-        elif self.screen_space_rdo_btn.isChecked():
-            space = const.CONTROLLER_TYPE_SCREEN_SPACE
-        else:
-            LOG.error('Invalid space.')
-            return
-        smart_bake = self.smart_bake_rdo_btn.isChecked()
         if not controller_name or not pivot_node or not main_node:
+            LOG.error(
+                'Invalid nodes given: controller_name=%r pivot_node=%r main_node=%r',
+                controller_name,
+                pivot_node,
+                main_node,
+            )
+            cmds.delete(loc_grp_node)
             return
-        if not cmds.listRelatives(loc_grp_node, shapes=True):
-            loc_grp_node = [loc_grp_node]
+        camera = _get_viewport_camera()
+        smart_bake = self.smart_bake_rdo_btn.isChecked() is True
+        dynamic_pivot = self.pivot_dynamic_rdo_btn.isChecked() is True
+        if self.world_space_rdo_btn.isChecked():
+            space = const.CONTROLLER_SPACE_WORLD
+        elif self.object_space_rdo_btn.isChecked():
+            space = const.CONTROLLER_SPACE_OBJECT
+        elif self.screen_space_rdo_btn.isChecked():
+            space = const.CONTROLLER_SPACE_SCREEN
+        else:
+            LOG.error('Create Controller: Invalid space value.')
+            return
         if self.screen_space_rdo_btn.isChecked():
             if not camera:
                 LOG.warn('Please select camera viewport.')
-                if cmds.objExists(loc_grp_node[0]):
-                    cmds.delete(loc_grp_node[0])
+                cmds.delete(loc_grp_node)
                 return
 
         # Check if main node has constraints already
@@ -252,15 +211,15 @@ class CreateControllerLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             space,
             smart_bake,
             camera,
+            dynamic_pivot,
         )
         cmds.select(controller_nodes, replace=True)
-        LOG.warn('Success: Create Controllers.')
 
     def reset_options(self):
         # reset widgets to default
         self.pivot_object_text.clear()
         self.main_object_text.clear()
-        self.locator_rdo_btn.setChecked(True)
+        self.pivot_static_rdo_btn.setChecked(True)
         self.full_bake_rdo_btn.setChecked(True)
         self.world_space_rdo_btn.setEnabled(True)
         self.object_space_rdo_btn.setChecked(True)

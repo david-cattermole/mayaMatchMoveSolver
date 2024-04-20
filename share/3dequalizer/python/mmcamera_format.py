@@ -530,7 +530,7 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
         file_end = int(file_end_frame)
         chosen_start = int(chosen_start_frame)
         chosen_end = int(chosen_end_frame)
-        focal_length_set = _set_camera_focal_length(
+        _set_camera_focal_length(
             cam_id,
             lens_id,
             focalLengthSamples,

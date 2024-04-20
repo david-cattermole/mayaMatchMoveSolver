@@ -27,7 +27,6 @@ import mmSolver.logger
 
 import mmSolver.utils.time as time_utils
 import mmSolver.utils.tools as tools_utils
-import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.createcontroller2.constant as const
 import mmSolver.tools.createcontroller2.lib as lib
 
@@ -67,7 +66,7 @@ def create_world_controllers():
         return
 
     start_frame, end_frame = time_utils.get_maya_timeline_range_outer()
-    controller_type = const.CONTROLLER_TYPE_WORLD_SPACE
+    controller_type = const.CONTROLLER_SPACE_WORLD
     smart_bake = False
     dynamic_pivot = False
     camera = None
@@ -86,7 +85,7 @@ def create_world_controllers():
             name_tfm = '{}_CTRL'.format(node.rpartition('|')[-1])
 
             # This node is used as the controller.
-            loc_grp_node = maya.cmds.spaceLocator(name=name_tfm)
+            loc_grp_nodes = maya.cmds.spaceLocator(name=name_tfm)
 
             pivot_node = node
             main_node = node
@@ -94,7 +93,7 @@ def create_world_controllers():
                 name_tfm,
                 pivot_node,
                 main_node,
-                loc_grp_node,
+                loc_grp_nodes,
                 start_frame,
                 end_frame,
                 controller_type,

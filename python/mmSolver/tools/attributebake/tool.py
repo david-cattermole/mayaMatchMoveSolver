@@ -90,7 +90,7 @@ def main():
             lib.bake_attributes(
                 nodes, attrs, frame_range.start, frame_range.end, smart_bake_state
             )
-        except Exception as e:
+        except Exception:
             LOG.exception('Bake attributes failed.')
         finally:
             e = time.time()

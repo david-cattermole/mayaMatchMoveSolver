@@ -107,7 +107,7 @@ public:
 
     void handleTraceMessage(const MString &message) const override {
         MGlobal::displayInfo("BundleDrawOverride: " + message);
-        MMSOLVER_INFO("BundleDrawOverride: " << message.asChar());
+        MMSOLVER_MAYA_INFO("BundleDrawOverride: " << message.asChar());
     }
 
 private:

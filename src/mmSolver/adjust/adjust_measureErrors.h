@@ -29,8 +29,9 @@ void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
                    const int numberOfAttrStiffnessErrors,
                    const int numberOfAttrSmoothnessErrors,
                    const std::vector<bool> &frameIndexEnable,
-                   const std::vector<bool> &errorMeasurements, double *errors,
-                   SolverData *ud, double &error_avg, double &error_max,
-                   double &error_min, MStatus &status);
+                   const std::vector<bool> &errorMeasurements,
+                   const double imageWidth, double *errors, SolverData *ud,
+                   double &error_avg, double &error_max, double &error_min,
+                   MStatus &status);
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_MEASURE_ERRORS_H

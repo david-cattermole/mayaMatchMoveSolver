@@ -91,7 +91,7 @@
       <item>
        <widget class="QCheckBox" name="displayNodes_checkBox">
         <property name="text">
-         <string>Display Nodes (Sky Dome, MM Renderer, etc)</string>
+         <string>Display Nodes (Sky Dome, etc)</string>
         </property>
        </widget>
       </item>

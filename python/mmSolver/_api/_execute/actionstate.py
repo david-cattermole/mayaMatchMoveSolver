@@ -77,10 +77,10 @@ def run_validate_action(vaction):
     :type vaction: Action
 
     :return:
-        A tuple of 3 parts; First, did the validation succeed (as
-        boolean)? Second, the user message we present for the state.
-        Third, metrics about the solve (number of parameters, number
-        of errors, and number of frames to solve)
+        An ActionState object containing, if the validation succeeded,
+        the user message we present for the state, metrics about the
+        solve (number of parameters, number of errors, and number of
+        frames to solve)
     :rtype: ActionState
     """
     if not isinstance(vaction, api_action.Action):
@@ -89,14 +89,17 @@ def run_validate_action(vaction):
         )
         return state
     vfunc, vargs, vkwargs = api_action.action_to_components(vaction)
-    vfunc_is_mmsolver = api_action.action_func_is_mmSolver(vaction)
+    vfunc_is_mmsolver_v1 = api_action.action_func_is_mmSolver_v1(vaction)
+    vfunc_is_mmsolver_v2 = api_action.action_func_is_mmSolver_v2(vaction)
+    vfunc_is_camera_solve = api_action.action_func_is_camera_solve(vaction)
+    vfunc_is_mmsolver = any((vfunc_is_mmsolver_v1, vfunc_is_mmsolver_v2))
 
     num_param = 0
     num_err = 0
     frames = list(sorted(vkwargs.get('frame', [])))
     num_frames = len(frames)
     if num_frames == 0 and vfunc_is_mmsolver is True:
-        msg = 'Failed to validate number of frames: ' 'param=%r errors=%r frames=%r'
+        msg = 'Failed to validate number of frames: param=%r errors=%r frames=%r'
         message = msg % (num_param, num_err, num_frames)
         state = create_action_state(
             status=const.ACTION_STATUS_FAILED,
@@ -112,7 +115,7 @@ def run_validate_action(vaction):
     solve_data = vfunc(*vargs, **vkwargs)
 
     if vfunc_is_mmsolver is False:
-        msg = 'Validated parameters, errors and frames: ' 'param=%r errors=%r frames=%r'
+        msg = 'Validated parameters, errors and frames: param=%r errors=%r frames=%r'
         message = msg % (num_param, num_err, num_frames)
         state = create_action_state(
             status=const.ACTION_STATUS_SUCCESS,
@@ -124,13 +127,24 @@ def run_validate_action(vaction):
         )
         return state
 
+    if vfunc_is_mmsolver_v2 is True:
+        solve_data = vkwargs['resultsNode']
+    if vfunc_is_camera_solve is True:
+        if const.SOLVER_VERSION_DEFAULT == const.SOLVER_VERSION_TWO:
+            # Get the collection node given to the camera solve.
+            solve_data = vargs[0]
+
     solres = solveresult.SolveResult(solve_data)
+
     print_stats = solres.get_print_stats()
     num_param = print_stats.get('number_of_parameters', 0)
     num_err = print_stats.get('number_of_errors', 0)
     if num_param == 0 or num_err == 0 or num_param > num_err:
-        msg = 'Invalid parameters and errors, skipping solve: %r'
-        message = msg % list(sorted(frames))
+        msg = (
+            'Invalid parameters and errors (param=%r errors=%r frames=%r), '
+            'skipping solve: %r'
+        )
+        message = msg % (num_param, num_err, num_frames, list(sorted(frames)))
         state = create_action_state(
             status=const.ACTION_STATUS_FAILED,
             message=message,
@@ -141,7 +155,7 @@ def run_validate_action(vaction):
         )
         return state
 
-    msg = 'Validated parameters, errors and frames: ' 'param=%r errors=%r frames=%r'
+    msg = 'Validated parameters, errors and frames: param=%r errors=%r frames=%r'
     message = msg % (num_param, num_err, num_frames)
     state = create_action_state(
         status=const.ACTION_STATUS_SUCCESS,

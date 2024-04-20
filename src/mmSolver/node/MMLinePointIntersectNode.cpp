@@ -41,8 +41,9 @@
 #include <maya/MStreamUtils.h>
 
 // MM Solver
-#include "mmSolver/core/mmdata.h"
-#include "mmSolver/core/mmmath.h"
+#include <mmcore/mmdata.h>
+#include <mmcore/mmmath.h>
+
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/node/node_line_utils.h"
 #include "mmSolver/nodeTypeIds.h"
@@ -108,8 +109,8 @@ MStatus MMLinePointIntersectNode::compute(const MPlug &plug, MDataBlock &data) {
         double in_pointY = in_pointYHandle.asDouble();
         double in_pointZ = in_pointZHandle.asDouble();
         mmsg::Point3 in_point{in_pointX, in_pointY, in_pointZ};
-        MMSOLVER_VRB("Point: " << in_point.x << ", " << in_point.y << ", "
-                               << in_point.z);
+        MMSOLVER_MAYA_VRB("Point: " << in_point.x << ", " << in_point.y << ", "
+                                    << in_point.z);
 
         // Line Point A
         MDataHandle linePointAXHandle = data.inputValue(m_linePointAX, &status);
@@ -122,8 +123,8 @@ MStatus MMLinePointIntersectNode::compute(const MPlug &plug, MDataBlock &data) {
         double linePointAY = linePointAYHandle.asDouble();
         double linePointAZ = linePointAZHandle.asDouble();
         mmsg::Point3 line_a{linePointAX, linePointAY, linePointAZ};
-        MMSOLVER_VRB("Line Point A: " << line_a.x << ", " << line_a.y << ", "
-                                      << line_a.z);
+        MMSOLVER_MAYA_VRB("Line Point A: " << line_a.x << ", " << line_a.y
+                                           << ", " << line_a.z);
 
         // Line Point B
         MDataHandle linePointBXHandle = data.inputValue(m_linePointBX, &status);
@@ -136,8 +137,8 @@ MStatus MMLinePointIntersectNode::compute(const MPlug &plug, MDataBlock &data) {
         double linePointBY = linePointBYHandle.asDouble();
         double linePointBZ = linePointBZHandle.asDouble();
         mmsg::Point3 line_b{linePointBX, linePointBY, linePointBZ};
-        MMSOLVER_VRB("Line Point B: " << line_b.x << ", " << line_b.y << ", "
-                                      << line_b.z);
+        MMSOLVER_MAYA_VRB("Line Point B: " << line_b.x << ", " << line_b.y
+                                           << ", " << line_b.z);
 
         mmdata::Point2D line_point_start(line_a.x, line_a.y, line_a.z);
         mmdata::Point2D line_point_end(line_b.x, line_b.y, line_b.z);
@@ -148,7 +149,7 @@ MStatus MMLinePointIntersectNode::compute(const MPlug &plug, MDataBlock &data) {
         if (line_distance > 0) {
             auto ok =
                 line_point_intersection(in_point, line_a, line_b, out_point);
-            MMSOLVER_VRB("MMLinePointIntersectNode ok: " << ok);
+            MMSOLVER_MAYA_VRB("MMLinePointIntersectNode ok: " << ok);
             if (ok) {
                 mmdata::Point2D start_point(in_point.x, in_point.y, in_point.z);
                 mmdata::Point2D end_point(out_point.x, out_point.y,
@@ -156,9 +157,9 @@ MStatus MMLinePointIntersectNode::compute(const MPlug &plug, MDataBlock &data) {
                 out_distance = mmmath::distance(start_point, end_point);
             }
         }
-        MMSOLVER_VRB("Out Point: " << out_point.x << ", " << out_point.y << ", "
-                                   << out_point.z);
-        MMSOLVER_VRB("Out Distance: " << out_distance);
+        MMSOLVER_MAYA_VRB("Out Point: " << out_point.x << ", " << out_point.y
+                                        << ", " << out_point.z);
+        MMSOLVER_MAYA_VRB("Out Distance: " << out_distance);
 
         // Output Points
         MDataHandle outPointXHandle = data.outputValue(m_outPointX);

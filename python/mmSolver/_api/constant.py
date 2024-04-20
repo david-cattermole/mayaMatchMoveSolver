@@ -202,6 +202,17 @@ FRAME_SOLVE_MODE_LIST = [
 ]
 
 
+# The solver command version to use.
+SOLVER_VERSION_ONE = 1
+SOLVER_VERSION_TWO = 2
+# This solver version is by default, unless overridden.
+SOLVER_VERSION_DEFAULT = SOLVER_VERSION_ONE
+SOLVER_VERSION_LIST = [
+    SOLVER_VERSION_ONE,
+    SOLVER_VERSION_TWO,
+]
+
+
 # Attribute States
 ATTR_STATE_INVALID = 0
 ATTR_STATE_STATIC = 1
@@ -277,6 +288,64 @@ LINE_ATTR_LONG_NAME_ENABLE = 'enable'
 LINE_ATTR_LONG_NAME_WEIGHT = 'weight'
 
 
+# Attribute names used to store results on Marker nodes.
+MARKER_RESULTS_STORE_ATTR_NAMES = [
+    MARKER_ATTR_LONG_NAME_DEVIATION,
+    MARKER_ATTR_LONG_NAME_AVG_DEVIATION,
+    MARKER_ATTR_LONG_NAME_MAX_DEVIATION,
+    MARKER_ATTR_LONG_NAME_MAX_DEV_FRAME,
+]
+
+# Attribute names used to store results on Collection nodes.
+COLLECTION_RESULTS_STORE_ATTR_NAMES = [
+    # Existing Attributes
+    COLLECTION_ATTR_LONG_NAME_SOLVE_TIMESTAMP,
+    COLLECTION_ATTR_LONG_NAME_SOLVE_DURATION,
+    #
+    # SolverResult
+    'success',
+    'reason_num',
+    'reason_string',
+    'error_final',
+    'error_final_average',
+    'error_final_maximum',
+    'error_final_minimum',
+    'iteration_num',
+    'iteration_function_num',
+    'iteration_jacobian_num',
+    'user_interrupted',
+    #
+    # SolverObjectCountResult
+    'numberOfParameters',
+    'numberOfErrors',
+    'numberOfMarkerErrors',
+    'numberOfAttrStiffnessErrors',
+    'numberOfattrSmoothnessErrors',
+    #
+    # ErrorMetricsResult
+    COLLECTION_ATTR_LONG_NAME_DEVIATION,  # Same as "error_per_frame".
+    'average_deviation',
+    'maximum_deviation',
+    'maximum_deviation_frame',
+    'error_per_marker_per_frame',
+    #
+    # SolveValuesResult
+    'solve_parameter_list',
+    'solve_error_list',
+    #
+    # TimerResult
+    'timer_solve',
+    'timer_function',
+    'timer_jacobian',
+    'timer_parameter',
+    'timer_error',
+    'ticks_solve',
+    'ticks_function',
+    'ticks_jacobian',
+    'ticks_parameter',
+    'ticks_error',
+]
+
 # Default plate fallback values.
 DEFAULT_PLATE_WIDTH = 2048
 DEFAULT_PLATE_HEIGHT = 1556
@@ -309,7 +378,7 @@ ROBUST_LOSS_TYPE_VALUE_LIST = [
     ROBUST_LOSS_TYPE_CAUCHY_VALUE,
 ]
 
-ROBUST_LOSS_TYPE_DEFAULT_VALUE = ROBUST_LOSS_TYPE_CAUCHY_VALUE
+ROBUST_LOSS_TYPE_DEFAULT_VALUE = ROBUST_LOSS_TYPE_TRIVIAL_VALUE
 
 
 # Standard Solver Default Values
@@ -318,7 +387,7 @@ SOLVER_STD_SINGLE_FRAME_DEFAULT_VALUE = None
 SOLVER_STD_ONLY_ROOT_FRAMES_DEFAULT_VALUE = False
 SOLVER_STD_GLOBAL_SOLVE_DEFAULT_VALUE = False
 SOLVER_STD_TRIANGULATE_BUNDLES_DEFAULT_VALUE = False
-SOLVER_STD_USE_ATTR_BLOCKS_DEFAULT_VALUE = True
+SOLVER_STD_USE_ATTR_BLOCKS_DEFAULT_VALUE = False
 SOLVER_STD_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE = False
 SOLVER_STD_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE = False
 SOLVER_STD_SOLVER_TYPE_DEFAULT_VALUE = SOLVER_TYPE_DEFAULT

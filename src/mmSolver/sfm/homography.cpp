@@ -97,7 +97,7 @@ bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
                        const std::pair<size_t, size_t> &size_ima1,
                        const std::pair<size_t, size_t> &size_ima2,
                        const size_t max_iteration_count) {
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     // Upper bound pixel tolerance for residual errors.
@@ -106,13 +106,13 @@ bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
     // The amount of pixel error that is computed.
     double out_error_max = std::numeric_limits<double>::infinity();
 
-    MMSOLVER_VRB("robust_homography: x1: " << x1);
-    MMSOLVER_VRB("robust_homography: x2: " << x2);
-    MMSOLVER_VRB("robust_homography: size_ima1: " << size_ima1.first << ", "
-                                                  << size_ima1.second);
-    MMSOLVER_VRB("robust_homography: size_ima2: " << size_ima2.first << ", "
-                                                  << size_ima2.second);
-    MMSOLVER_VRB(
+    MMSOLVER_MAYA_VRB("robust_homography: x1: " << x1);
+    MMSOLVER_MAYA_VRB("robust_homography: x2: " << x2);
+    MMSOLVER_MAYA_VRB("robust_homography: size_ima1: "
+                      << size_ima1.first << ", " << size_ima1.second);
+    MMSOLVER_MAYA_VRB("robust_homography: size_ima2: "
+                      << size_ima2.first << ", " << size_ima2.second);
+    MMSOLVER_MAYA_VRB(
         "robust_homography: max_iteration_count: " << max_iteration_count);
 
     double error_upper_bound = std::numeric_limits<double>::infinity();
@@ -135,8 +135,9 @@ bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
     out_error_max = ac_ransac_output.first;
 
     auto minimum_samples = KernelType::Solver::MINIMUM_SAMPLES;
-    MMSOLVER_VRB("robust_homography: minimum_samples: " << minimum_samples);
-    MMSOLVER_VRB("robust_homography: samples: " << vec_inliers.size());
+    MMSOLVER_MAYA_VRB(
+        "robust_homography: minimum_samples: " << minimum_samples);
+    MMSOLVER_MAYA_VRB("robust_homography: samples: " << vec_inliers.size());
     if (vec_inliers.size() < minimum_samples) {
         // no sufficient coverage (not enough 2D points given that
         // match)
@@ -152,21 +153,21 @@ bool robust_homography(const openMVG::Mat &x1, const openMVG::Mat &x2,
     homography_matrix.row(1)[2] =
         homography_matrix.row(0)[2] / size_ima2.second;
 
-    MMSOLVER_VRB("Found a Homography matrix:");
-    MMSOLVER_VRB("- matrix: " << homography_matrix);
-    MMSOLVER_VRB("- error: " << out_error_max << " pixels");
+    MMSOLVER_MAYA_VRB("Found a Homography matrix:");
+    MMSOLVER_MAYA_VRB("- matrix: " << homography_matrix);
+    MMSOLVER_MAYA_VRB("- error: " << out_error_max << " pixels");
 
-    MMSOLVER_VRB("- #matches: " << x1.size());
+    MMSOLVER_MAYA_VRB("- #matches: " << x1.size());
     for (auto i = 0; i < x1.size(); i++) {
         auto coord_x_a = x1.col(i)[0];
         auto coord_y_a = x1.col(i)[1];
         auto coord_x_b = x2.col(i)[0];
         auto coord_y_b = x2.col(i)[1];
-        MMSOLVER_VRB("  - #match: " << i << " = " << coord_x_a << ","
-                                    << coord_y_a << " <-> " << coord_x_b << ","
-                                    << coord_y_b);
+        MMSOLVER_MAYA_VRB("  - #match: " << i << " = " << coord_x_a << ","
+                                         << coord_y_a << " <-> " << coord_x_b
+                                         << "," << coord_y_b);
     }
-    MMSOLVER_VRB("- #inliers: " << vec_inliers.size());
+    MMSOLVER_MAYA_VRB("- #inliers: " << vec_inliers.size());
 
     return true;
 }
@@ -195,7 +196,7 @@ bool compute_homography(
         marker_coords_matrix_a, marker_coords_matrix_b, homography_matrix,
         image_size_a, image_size_b, num_max_iter);
     if (!robust_pose_ok) {
-        MMSOLVER_ERR("Robust homography estimation failure.");
+        MMSOLVER_MAYA_ERR("Robust homography estimation failure.");
         return false;
     }
     return true;

@@ -1,0 +1,23 @@
+# Created by Maya MatchMove Solver with the Save Lens File tool.
+#
+# Version: mayaMatchMoveSolver-0.4.6-maya2022-win64
+# Website: https://github.com/david-cattermole/mayaMatchMoveSolver
+LD_3DE_Classic_LD_Model {
+  tde4_focal_length_cm 3.5
+  tde4_custom_focus_distance_cm 5.0
+  tde4_filmback_width_cm 3.6000000000000005
+  tde4_filmback_height_cm 2.0250000000000004
+  tde4_lens_center_offset_x_cm 0.0
+  tde4_lens_center_offset_y_cm 0.0
+  Distortion 0.1
+  Anamorphic_Squeeze 1.0
+  Curvature_X 0.0
+  Curvature_Y 0.0
+  Quartic_Distortion 0.1
+  direction undistort
+  field_of_view_xa_unit 0.0
+  field_of_view_xb_unit 1.0
+  field_of_view_ya_unit 0.0
+  field_of_view_yb_unit 1.0
+  name lens1
+}

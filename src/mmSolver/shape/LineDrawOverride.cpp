@@ -44,9 +44,10 @@
 #include <maya/MUserData.h>
 
 // MM Solver
+#include <mmcore/mmdata.h>
+
 #include "LineConstants.h"
 #include "ShapeConstants.h"
-#include "mmSolver/core/mmdata.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/node/node_line_utils.h"
 #include "mmSolver/utilities/number_utils.h"
@@ -274,17 +275,17 @@ MUserData *LineDrawOverride::prepareForDraw(
                     data->m_point_data_x.push_back(point.x);
                     data->m_point_data_y.push_back(point.y);
 
-                    MMSOLVER_VRB("Point X: " << data->m_point_data_x.size()
-                                             << " : " << point.x);
-                    MMSOLVER_VRB("Point Y: " << data->m_point_data_y.size()
-                                             << " : " << point.y);
+                    MMSOLVER_MAYA_VRB("Point X: " << data->m_point_data_x.size()
+                                                  << " : " << point.x);
+                    MMSOLVER_MAYA_VRB("Point Y: " << data->m_point_data_y.size()
+                                                  << " : " << point.y);
                 }
             }
         }
     }
-    MMSOLVER_VRB(
+    MMSOLVER_MAYA_VRB(
         "data->m_point_data_x.size(): " << data->m_point_data_x.size());
-    MMSOLVER_VRB(
+    MMSOLVER_MAYA_VRB(
         "data->m_point_data_y.size(): " << data->m_point_data_y.size());
 
     auto numberOfPoints = data->m_point_list.length();

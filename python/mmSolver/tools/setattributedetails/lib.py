@@ -38,7 +38,6 @@ import mmSolver.utils.animcurve as animcurve_utils
 import mmSolver.tools.solver.constant as solver_const
 import mmSolver.tools.solver.lib.scene_data as scene_data
 
-import mmSolver.tools.setattributedetails.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
@@ -405,7 +404,6 @@ def get_curve_statistics(attr):
     end_time = animfn.time(num_keys - 1)
     start_frame = int(start_time.asUnits(ui_unit))
     end_frame = int(end_time.asUnits(ui_unit))
-    frame_nums = end_frame - start_frame
 
     values = []
     curve_min_value = 999999999.0

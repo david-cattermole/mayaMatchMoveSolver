@@ -1,4 +1,4 @@
-// Copyright (C) 2021 David Cattermole.
+// Copyright (C) 2021, 2023 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -32,15 +32,28 @@ uniform sampler2D gDepthSampler = sampler_state {
     Texture = <gDepthTex>;
 };
 
-// Colours
-uniform vec4 gLineColor : DIFFUSE = {1, 0, 0, 1};
-uniform vec4 gBackgroundColor : DIFFUSE = {0, 0, 0, 0};
+// Color texture.
+// Expected to be a normal RGB three channel image.
+uniform texture2D gColorTex : InputTexture
+<
+    string UIName = "Color Texture";
+>;
+uniform sampler2D gColorSampler = sampler_state {
+    Texture = <gColorTex>;
+};
+
+// Colors
+uniform vec4 gEdgeColor : DIFFUSE = {1, 0, 0, 1};
+uniform float gEdgeAlpha = 1.0f;
 
 // Distance in pixels to detect an edge.
-uniform float gThickness = 2.0f;
+uniform float gThickness = 1.0f;
 
 // The edge detection 'distance' threshold.
-uniform float gThreshold = 0.1;
+uniform float gThresholdColor = 1.0;
+uniform float gThresholdAlpha = 1.0;
+uniform float gThresholdDepth = 1.0;
+
 
 // Vertex Shader inputs.
 attribute VS_INPUT {
@@ -48,21 +61,20 @@ attribute VS_INPUT {
     vec2 UV : TEXCOORD0;
 };
 
-// Vertex Shader outputs.
-attribute VS_TO_PS {
-    vec2 VSUV : TEXCOORD0;
+attribute SHADER_DATA {
+    vec2 UV : TEXCOORD0;
 };
 
 // Vertex Shader
 GLSLShader VS_Silhouette {
     void main() {
-        gl_Position = gWVPXf*Pos;
-        VSUV = UV;
+        gl_Position = gWVPXf * Pos;
+        VS_OUTPUT.UV = UV;
     }
 }
 
 // Pixel Shader Outputs
-attribute pixelOut {
+attribute PIXEL_DATA {
     vec4 colorOut: COLOR0;
 }
 
@@ -70,33 +82,9 @@ attribute pixelOut {
 //
 // https://rastergrid.com/blog/2011/01/frei-chen-edge-detector/
 GLSLShader PS_SilhouetteSobel {
-    void main() {
 
-        vec2 ox = vec2(gThickness / gTargetSize.x, 0.0);
-        vec2 oy = vec2(0.0, gThickness / gTargetSize.y);
-        vec2 uv = VSUV;
-        vec2 PP = uv - oy;
-        vec4 CC = texture2D(gDepthSampler, PP-ox);
-        float g00 = CC.r;
-        CC = texture2D(gDepthSampler, PP);
-        float g01 = CC.r;
-        CC = texture2D(gDepthSampler, PP+ox);
-        float g02 = CC.r;
-        PP = uv;
-        CC = texture2D(gDepthSampler, PP-ox);
-        float g10 = CC.r;
-        CC = texture2D(gDepthSampler, PP);
-        float g11 = CC.r;
-        CC = texture2D(gDepthSampler, PP+ox);
-        float g12 = CC.r;
-        PP = uv + oy;
-        CC = texture2D(gDepthSampler, PP-ox);
-        float g20 = CC.r;
-        CC = texture2D(gDepthSampler, PP);
-        float g21 = CC.r;
-        CC = texture2D(gDepthSampler, PP+ox);
-        float g22 = CC.r;
-
+    vec2 sobel_weight(vec3 g0, vec3 g1, vec3 g2)
+    {
         float K00 = -1;
         float K01 = -2;
         float K02 = -1;
@@ -109,30 +97,243 @@ GLSLShader PS_SilhouetteSobel {
 
         float sx = 0;
         float sy = 0;
-        sx += g00 * K00;
-        sx += g01 * K01;
-        sx += g02 * K02;
-        sx += g10 * K10;
-        sx += g11 * K11;
-        sx += g12 * K12;
-        sx += g20 * K20;
-        sx += g21 * K21;
-        sx += g22 * K22;
-        sy += g00 * K00;
-        sy += g01 * K10;
-        sy += g02 * K20;
-        sy += g10 * K01;
-        sy += g11 * K11;
-        sy += g12 * K21;
-        sy += g20 * K02;
-        sy += g21 * K12;
-        sy += g22 * K22;
+        sx += g0.x * K00;
+        sx += g0.y * K01;
+        sx += g0.z * K02;
+        sx += g1.x * K10;
+        sx += g1.y * K11;
+        sx += g1.z * K12;
+        sx += g2.x * K20;
+        sx += g2.y * K21;
+        sx += g2.z * K22;
+        sy += g0.x * K00;
+        sy += g0.y * K10;
+        sy += g0.z * K20;
+        sy += g1.x * K01;
+        sy += g1.y * K11;
+        sy += g1.z * K21;
+        sy += g2.x * K02;
+        sy += g2.y * K12;
+        sy += g2.z * K22;
 
-        float dist = sqrt(sx*sx+sy*sy);
-        if (dist > gThreshold) {
-            colorOut = gLineColor;
-        } else {
-            colorOut = gBackgroundColor;
+        return vec2(sx, sy);
+    }
+
+    void main() {
+        float thickness = gThickness;
+        vec2 ox = vec2(thickness / gTargetSize.x, 0.0);
+        vec2 oy = vec2(0.0, thickness / gTargetSize.y);
+
+        vec2 uv = PS_INPUT.UV;
+
+        // Color - Lower Row
+        vec2 PP = uv - oy;
+        vec4 x00 = texture2D(gColorSampler, PP - ox);
+        vec4 x01 = texture2D(gColorSampler, PP);
+        vec4 x02 = texture2D(gColorSampler, PP + ox);
+
+        // Color - Middle Row
+        PP = uv;
+        vec4 x10 = texture2D(gColorSampler, PP - ox);
+        vec4 x11 = texture2D(gColorSampler, PP);
+        vec4 x12 = texture2D(gColorSampler, PP + ox);
+
+        // Color - Upper Row
+        PP = uv + oy;
+        vec4 x20 = texture2D(gColorSampler, PP - ox);
+        vec4 x21 = texture2D(gColorSampler, PP);
+        vec4 x22 = texture2D(gColorSampler, PP + ox);
+
+        // Depth - Lower Row
+        PP = uv - oy;
+        vec4 z00 = texture2D(gDepthSampler, PP - ox);
+        vec4 z01 = texture2D(gDepthSampler, PP);
+        vec4 z02 = texture2D(gDepthSampler, PP + ox);
+
+        // Depth - Middle Row
+        PP = uv;
+        vec4 z10 = texture2D(gDepthSampler, PP - ox);
+        vec4 z11 = texture2D(gDepthSampler, PP);
+        vec4 z12 = texture2D(gDepthSampler, PP + ox);
+
+        // Depth - Upper Row
+        PP = uv + oy;
+        vec4 z20 = texture2D(gDepthSampler, PP - ox);
+        vec4 z21 = texture2D(gDepthSampler, PP);
+        vec4 z22 = texture2D(gDepthSampler, PP + ox);
+
+        vec3 r0 = vec3(x00.r, x01.r, x02.r);
+        vec3 r1 = vec3(x10.r, x11.r, x12.r);
+        vec3 r2 = vec3(x20.r, x21.r, x22.r);
+
+        vec3 g0 = vec3(x00.g, x01.g, x02.g);
+        vec3 g1 = vec3(x10.g, x11.g, x12.g);
+        vec3 g2 = vec3(x20.g, x21.g, x22.g);
+
+        vec3 b0 = vec3(x00.b, x01.b, x02.b);
+        vec3 b1 = vec3(x10.b, x11.b, x12.b);
+        vec3 b2 = vec3(x20.b, x21.b, x22.b);
+
+        vec3 a0 = vec3(x00.a, x01.a, x02.a);
+        vec3 a1 = vec3(x10.a, x11.a, x12.a);
+        vec3 a2 = vec3(x20.a, x21.a, x22.a);
+
+        vec3 z0 = vec3(z00.r, z01.r, z02.r);
+        vec3 z1 = vec3(z10.r, z11.r, z12.r);
+        vec3 z2 = vec3(z20.r, z21.r, z22.r);
+
+        vec2 dist_r = sobel_weight(r0, r1, r2);
+        vec2 dist_g = sobel_weight(g0, g1, g2);
+        vec2 dist_b = sobel_weight(b0, b1, b2);
+        vec2 dist_a = sobel_weight(a0, a1, a2);
+        vec2 dist_z = sobel_weight(z0, z1, z2);
+
+        // The Z-Depth buffer has much smaller differences than the
+        // Color buffer, so these (arbitrary) numbers are used to
+        // artificially increase the effect of differences in each
+        // component.
+        float factor = 1.0;
+        float color_factor = factor * 1.0;
+        float alpha_factor = factor * 2.0;
+        float depth_factor = factor * 100.0;
+
+        vec2 dist_color_sum = (dist_r + dist_g + dist_b) * color_factor;
+        vec2 dist_alpha_sum = dist_a * alpha_factor;
+        vec2 dist_depth_sum = dist_z * depth_factor;
+
+        float dist_color = sqrt(dist_color_sum.x * dist_color_sum.x + dist_color_sum.y * dist_color_sum.y);
+        float dist_alpha = sqrt(dist_alpha_sum.x * dist_alpha_sum.x + dist_alpha_sum.y * dist_alpha_sum.y);
+        float dist_depth = sqrt(dist_depth_sum.x * dist_depth_sum.x + dist_depth_sum.y * dist_depth_sum.y);
+
+        colorOut = vec4(0.0, 0.0, 0.0, 0.0);
+        if ((dist_color > gThresholdColor) ||
+            (dist_alpha > gThresholdAlpha) ||
+            (dist_depth > gThresholdDepth)) {
+            colorOut = gEdgeColor * gEdgeAlpha;
+        }
+    }
+}
+
+// Frei-Chen Edge Detection
+//
+// https://rastergrid.com/blog/2011/01/frei-chen-edge-detector/
+GLSLShader PS_SilhouetteFreiChen {
+    vec2 frei_chen_weight(mat3 I)
+    {
+        // The weighting matrices.
+        mat3 G0 = 1.0 / (2.0 * sqrt(2.0)) * mat3(1.0, sqrt(2.0), 1.0, 0.0, 0.0, 0.0, -1.0, -sqrt(2.0), -1.0);
+        mat3 G1 = 1.0 / (2.0 * sqrt(2.0)) * mat3(1.0, 0.0, -1.0, sqrt(2.0), 0.0, -sqrt(2.0), 1.0, 0.0, -1.0);
+        mat3 G2 = 1.0 / (2.0 * sqrt(2.0)) * mat3(0.0, -1.0, sqrt(2.0), 1.0, 0.0, -1.0, -sqrt(2.0), 1.0, 0.0);
+        mat3 G3 = 1.0 / (2.0 * sqrt(2.0)) * mat3(sqrt(2.0), -1.0, 0.0, -1.0, 0.0, 1.0, 0.0, 1.0, -sqrt(2.0));
+        mat3 G4 = 1.0 / 2.0 * mat3(0.0, 1.0, 0.0, -1.0, 0.0, -1.0, 0.0, 1.0, 0.0);
+        mat3 G5 = 1.0 / 2.0 * mat3(-1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, -1.0);
+        mat3 G6 = 1.0 / 6.0 * mat3(1.0, -2.0, 1.0, -2.0, 4.0, -2.0, 1.0, -2.0, 1.0);
+        mat3 G7 = 1.0 / 6.0 * mat3(-2.0, 1.0, -2.0, 1.0, 4.0, 1.0, -2.0, 1.0, -2.0);
+        mat3 G8 = 1.0 / 3.0 * mat3(1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0);
+
+        float convolve0_dp3 = dot(G0[0], I[0]) + dot(G0[1], I[1]) + dot(G0[2], I[2]);
+        float convolve1_dp3 = dot(G1[0], I[0]) + dot(G1[1], I[1]) + dot(G1[2], I[2]);
+        float convolve2_dp3 = dot(G2[0], I[0]) + dot(G2[1], I[1]) + dot(G2[2], I[2]);
+        float convolve3_dp3 = dot(G3[0], I[0]) + dot(G3[1], I[1]) + dot(G3[2], I[2]);
+        float convolve4_dp3 = dot(G4[0], I[0]) + dot(G4[1], I[1]) + dot(G4[2], I[2]);
+        float convolve5_dp3 = dot(G5[0], I[0]) + dot(G5[1], I[1]) + dot(G5[2], I[2]);
+        float convolve6_dp3 = dot(G6[0], I[0]) + dot(G6[1], I[1]) + dot(G6[2], I[2]);
+        float convolve7_dp3 = dot(G7[0], I[0]) + dot(G7[1], I[1]) + dot(G7[2], I[2]);
+        float convolve8_dp3 = dot(G8[0], I[0]) + dot(G8[1], I[1]) + dot(G8[2], I[2]);
+
+        float convolve0 = convolve0_dp3 * convolve0_dp3;
+        float convolve1 = convolve1_dp3 * convolve1_dp3;
+        float convolve2 = convolve2_dp3 * convolve2_dp3;
+        float convolve3 = convolve3_dp3 * convolve3_dp3;
+        float convolve4 = convolve4_dp3 * convolve4_dp3;
+        float convolve5 = convolve5_dp3 * convolve5_dp3;
+        float convolve6 = convolve6_dp3 * convolve6_dp3;
+        float convolve7 = convolve7_dp3 * convolve7_dp3;
+        float convolve8 = convolve8_dp3 * convolve8_dp3;
+
+        float m = convolve0 + convolve1 + convolve2 + convolve3;
+        float s = convolve4 + convolve5 + convolve6 + convolve7 + convolve8 + m;
+        return vec2(m, s);
+    }
+
+    void main() {
+        float thickness = gThickness * 0.25;
+        vec2 ox = vec2(thickness / gTargetSize.x, 0.0);
+        vec2 oy = vec2(0.0, thickness / gTargetSize.y);
+
+        vec2 uv = PS_INPUT.UV;
+
+        // Color - Lower Row
+        vec2 PP = uv - oy;
+        vec4 x00 = texture2D(gColorSampler, PP - ox);
+        vec4 x01 = texture2D(gColorSampler, PP);
+        vec4 x02 = texture2D(gColorSampler, PP + ox);
+
+        // Color - Middle Row
+        PP = uv;
+        vec4 x10 = texture2D(gColorSampler, PP - ox);
+        vec4 x11 = texture2D(gColorSampler, PP);
+        vec4 x12 = texture2D(gColorSampler, PP + ox);
+
+        // Color - Upper Row
+        PP = uv + oy;
+        vec4 x20 = texture2D(gColorSampler, PP - ox);
+        vec4 x21 = texture2D(gColorSampler, PP);
+        vec4 x22 = texture2D(gColorSampler, PP + ox);
+
+        // Depth - Lower Row
+        PP = uv - oy;
+        vec4 z00 = texture2D(gDepthSampler, PP - ox);
+        vec4 z01 = texture2D(gDepthSampler, PP);
+        vec4 z02 = texture2D(gDepthSampler, PP + ox);
+
+        // Depth - Middle Row
+        PP = uv;
+        vec4 z10 = texture2D(gDepthSampler, PP - ox);
+        vec4 z11 = texture2D(gDepthSampler, PP);
+        vec4 z12 = texture2D(gDepthSampler, PP + ox);
+
+        // Depth - Upper Row
+        PP = uv + oy;
+        vec4 z20 = texture2D(gDepthSampler, PP - ox);
+        vec4 z21 = texture2D(gDepthSampler, PP);
+        vec4 z22 = texture2D(gDepthSampler, PP + ox);
+
+        // Pixel intensity matrices.
+        mat3 I_r = mat3(x00.r, x01.r, x02.r, x10.r, x11.r, x12.r, x20.r, x21.r, x22.r);
+        mat3 I_g = mat3(x00.g, x01.g, x02.g, x10.g, x11.g, x12.g, x20.g, x21.g, x22.g);
+        mat3 I_b = mat3(x00.b, x01.b, x02.b, x10.b, x11.b, x12.b, x20.b, x21.b, x22.b);
+        mat3 I_a = mat3(x00.a, x01.a, x02.a, x10.a, x11.a, x12.a, x20.a, x21.a, x22.a);
+        mat3 I_z = mat3(z00.r, z01.r, z02.r, z10.r, z11.r, z12.r, z20.r, z21.r, z22.r);
+
+        vec2 dist_r = frei_chen_weight(I_r);
+        vec2 dist_g = frei_chen_weight(I_g);
+        vec2 dist_b = frei_chen_weight(I_b);
+        vec2 dist_a = frei_chen_weight(I_a);
+        vec2 dist_z = frei_chen_weight(I_z);
+
+        // The Z-Depth buffer has much smaller differences than the
+        // Color buffer, so these (arbitrary) numbers are used to
+        // artificially increase the effect of differences in each
+        // component.
+        float factor = 10.0;
+        float color_factor = factor * 1.0;
+        float alpha_factor = factor * 2.0;
+        float depth_factor = factor * 100.0;
+
+        vec2 dist_color_sum = (dist_r + dist_g + dist_b);
+        vec2 dist_alpha_sum = dist_a;
+        vec2 dist_depth_sum = dist_z;
+
+        float dist_color = sqrt(dist_color_sum.x / dist_color_sum.y) * color_factor;
+        float dist_alpha = sqrt(dist_alpha_sum.x / dist_alpha_sum.y) * alpha_factor;
+        float dist_depth = sqrt(dist_depth_sum.x / dist_depth_sum.y) * depth_factor;
+
+        colorOut = vec4(0.0, 0.0, 0.0, 0.0);
+        if ((dist_color > gThresholdColor) ||
+            (dist_alpha > gThresholdAlpha) ||
+            (dist_depth > gThresholdDepth)) {
+            colorOut = gEdgeColor * gEdgeAlpha;
         }
     }
 }
@@ -142,7 +343,18 @@ technique Sobel
 {
     pass p0
     {
-        VertexShader (in VS_INPUT, out VS_TO_PS) = VS_Silhouette;
-        PixelShader (in VS_TO_PS, out pixelOut) = PS_SilhouetteSobel;
+        VertexShader (in VS_INPUT, out SHADER_DATA VS_OUTPUT) = VS_Silhouette;
+        PixelShader (in SHADER_DATA PS_INPUT, out PIXEL_DATA) = PS_SilhouetteSobel;
+    }
+}
+
+
+// The 'FreiChen' technique, using the Frei-Chen algorithm.
+technique FreiChen
+{
+    pass p0
+    {
+        VertexShader (in VS_INPUT, out SHADER_DATA VS_OUTPUT) = VS_Silhouette;
+        PixelShader (in SHADER_DATA PS_INPUT, out PIXEL_DATA) = PS_SilhouetteFreiChen;
     }
 }

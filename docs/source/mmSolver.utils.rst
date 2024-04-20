@@ -66,6 +66,71 @@ Line Intersect
     :members:
     :undoc-members:
 
+Load File
++++++++++
+
+.. automodule:: mmSolver.utils.loadfile.excep
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadfile.floatutils
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadfile.formatmanager
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadfile.keyframedata
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadfile.loader
+    :members:
+    :undoc-members:
+
+Load Marker
++++++++++++
+
+.. automodule:: mmSolver.utils.loadmarker.fileinfo
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadmarker.fileutils
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadmarker.formatmanager
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadmarker.markerdata
+    :members:
+    :undoc-members:
+
+Formats
+-------
+
+.. automodule:: mmSolver.utils.loadmarker.formats
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadmarker.formats.pftrack2dt
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadmarker.formats.rz2
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadmarker.formats.tdetxt
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.loadmarker.formats.uvtrack
+    :members:
+    :undoc-members:
+
 Node
 ++++
 
@@ -98,6 +163,28 @@ Re-Project
 ++++++++++
 
 .. automodule:: mmSolver.utils.reproject
+    :members:
+    :undoc-members:
+
+Rivet
++++++
+
+.. automodule:: mmSolver.utils.rivet.meshtwoedge
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.rivet.nearestpointonmesh
+    :members:
+    :undoc-members:
+
+.. automodule:: mmSolver.utils.rivet.pointonpoly
+    :members:
+    :undoc-members:
+
+Selection
++++++++++
+
+.. automodule:: mmSolver.utils.selection
     :members:
     :undoc-members:
 

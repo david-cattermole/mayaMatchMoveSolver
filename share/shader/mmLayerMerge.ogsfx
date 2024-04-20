@@ -1,0 +1,240 @@
+// Copyright (C) 2021, 2023 David Cattermole.
+//
+// This file is part of mmSolver.
+//
+// mmSolver is free software: you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// mmSolver is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+// --------------------------------------------------------------------
+//
+// This shader is intended to be similar to "merge" nodes in VFX
+// compositing software (e.g. Natron,
+// https://natrongithub.github.io/), where the use can merge two input
+// streams together.
+//
+// Layers can also be used as an analogy, such as in Photoshop/GNU
+// Image Manipulation Program (GIMP). In the layer methodology, the
+// 'A' input is the top layer, and 'B' is the bottom, therefore "A
+// over B" means to place source input A over the source input B to
+// create an output image.
+//
+// Unlike real layer merging or VFX compositing, this shader assumes
+// the textures given are the same resolution/format. There is no
+// handling of different aspect ratios or image position offsets.
+
+// World-view-projection matrix.
+uniform mat4 gWVPXf : WorldViewProjection;
+
+// The size of the viewport.
+uniform vec2 gTargetSize : ViewportPixelSize;
+
+// All gColorTex* parameters are expected to be a normal RGB three channel image.
+// All gDepthTex* parameters are expected to be a single channel zero to one image.
+uniform texture2D gColorTexBackground : InputTexture
+<
+    string UIName = "Background - Color Texture";
+>;
+uniform texture2D gDepthTexBackground : InputTexture
+<
+    string UIName = "Background - Depth Texture";
+>;
+uniform texture2D gColorTexPreviousLayer : InputTexture
+<
+    string UIName = "Previous Layer - Color Texture";
+>;
+uniform texture2D gDepthTexPreviousLayer : InputTexture
+<
+    string UIName = "Previous Layer - Depth Texture";
+>;
+uniform texture2D gColorTexCurrentLayer : InputTexture
+<
+    string UIName = "Current Layer - Color Texture";
+>;
+uniform texture2D gDepthTexCurrentLayer : InputTexture
+<
+    string UIName = "Current Layer - Depth Texture";
+>;
+uniform texture2D gColorTexEdges : InputTexture
+<
+    string UIName = "Edges - Color Texture";
+>;
+uniform texture2D gDepthTexEdges : InputTexture
+<
+    string UIName = "Edges - Depth Texture";
+>;
+
+uniform sampler2D gColorSamplerBackground = sampler_state { Texture = <gColorTexBackground>; };
+uniform sampler2D gDepthSamplerBackground = sampler_state { Texture = <gDepthTexBackground>; };
+uniform sampler2D gColorSamplerPreviousLayer = sampler_state { Texture = <gColorTexPreviousLayer>; };
+uniform sampler2D gDepthSamplerPreviousLayer = sampler_state { Texture = <gDepthTexPreviousLayer>; };
+uniform sampler2D gColorSamplerCurrentLayer = sampler_state { Texture = <gColorTexCurrentLayer>; };
+uniform sampler2D gDepthSamplerCurrentLayer = sampler_state { Texture = <gDepthTexCurrentLayer>; };
+uniform sampler2D gColorSamplerEdges = sampler_state { Texture = <gColorTexEdges>; };
+uniform sampler2D gDepthSamplerEdges = sampler_state { Texture = <gDepthTexEdges>; };
+
+uniform int gUseColorEdges = 0;
+
+// Factors to pre-multiply the input colors with. This allows
+// controlling how much of each input is used.
+uniform float gAlphaBackground = 1.0;
+uniform float gAlphaPreviousLayer = 1.0;
+uniform float gAlphaCurrentLayer = 1.0;
+uniform float gAlphaEdges = 1.0;
+
+// Controls if the input A is treated as a 'hold out', and therefore
+// the color of the input is ignored, but the alpha is used.
+uniform int gHoldOut = 0;
+
+// Display for debugging.
+#define kDEBUG_MODE_OFF 0
+#define kDEBUG_MODE_ON 1
+uniform int gDebugMode = 0;
+
+// Vertex Shader inputs.
+attribute VS_INPUT {
+    vec4 Pos : POSITION;
+    vec2 UV : TEXCOORD0;
+};
+
+attribute SHADER_DATA {
+    vec2 UV : TEXCOORD0;
+};
+
+// Vertex Shader
+GLSLShader VS_mmLayerMerge {
+    void main() {
+        gl_Position = gWVPXf * Pos;
+        VS_OUTPUT.UV = UV;
+    }
+}
+
+// Pixel Shader Outputs
+attribute PIXEL_DATA {
+    vec4 colorOut : COLOR0;
+}
+
+GLSLShader PS_mmLayerMerge_Main {
+    void main() {
+        vec2 uv = PS_INPUT.UV.xy;
+
+        vec4 result = vec4(0.0, 0.0, 0.0, 1.0);
+
+        vec4 backgroundColor = texture2D(gColorSamplerBackground, uv) * gAlphaBackground;
+        vec4 backgroundDepth = texture2D(gDepthSamplerBackground, uv);
+
+        vec4 previousLayerColor = texture2D(gColorSamplerPreviousLayer, uv) * gAlphaPreviousLayer;
+        vec4 previousLayerDepth = texture2D(gDepthSamplerPreviousLayer, uv);
+
+        vec4 currentLayerColor = texture2D(gColorSamplerCurrentLayer, uv) * gAlphaCurrentLayer;
+        vec4 currentLayerDepth = texture2D(gDepthSamplerCurrentLayer, uv);
+
+        vec4 edgesColor = vec4(0.0, 0.0, 0.0, 0.0);
+        vec4 edgesDepth = vec4(1.0, 1.0, 1.0, 1.0);  // Defaults to far-clip plane.
+
+        if (gUseColorEdges > 0) {
+            edgesColor = texture2D(gColorSamplerEdges, uv) * gAlphaEdges;
+            edgesDepth = texture2D(gDepthSamplerEdges, uv);
+
+            if (edgesColor.a > 0.0) {
+                if (edgesDepth.r <= currentLayerDepth.r) {
+                    currentLayerDepth = edgesDepth;
+                }
+            }
+        }
+
+        if (gHoldOut == 1) {
+            // The interior of objects should be the
+            // 'backgroundColor', when the object is in "hold out"
+            // mode.
+            currentLayerColor = vec4(backgroundColor.r * currentLayerColor.a,
+                                     backgroundColor.g * currentLayerColor.a,
+                                     backgroundColor.b * currentLayerColor.a,
+                                     currentLayerColor.a);
+        }
+
+        // Z-Depth Testing.
+        result = backgroundColor;
+        result.a = 1.0;
+        float depth = backgroundDepth.r;
+        if ((previousLayerColor.a > 0.0) && (previousLayerDepth.r <= backgroundDepth.r)) {
+            result = previousLayerColor;
+            depth = previousLayerDepth.r;
+            if ((currentLayerColor.a > 0.0) && (currentLayerDepth.r <= previousLayerDepth.r)) {
+                depth = currentLayerDepth.r;
+                result = currentLayerColor + (previousLayerColor * (1.0 - currentLayerColor.a));
+            }
+        }
+
+        // The edge effect that must go on top of all other colors.
+        result = edgesColor + (result * (1.0 - edgesColor.a));
+
+        if (gDebugMode == kDEBUG_MODE_ON) {
+            float HORIZONTAL_FACTOR_BACKGROUND = 0.2;
+            float HORIZONTAL_FACTOR_PREVIOUS_LAYER = 0.4;
+            float HORIZONTAL_FACTOR_CURRENT_LAYER = 0.6;
+            float HORIZONTAL_FACTOR_EDGES = 0.8;
+
+            float VERTICAL_FACTOR_COLOR = 0.25;
+            float VERTICAL_FACTOR_DEPTH = 0.5;
+            float VERTICAL_FACTOR_ALPHA = 0.75;
+
+            if (PS_INPUT.UV.x <= HORIZONTAL_FACTOR_BACKGROUND) {
+                if (PS_INPUT.UV.y < VERTICAL_FACTOR_COLOR) {
+                    result = backgroundColor;
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_ALPHA) {
+                    result = vec4(backgroundColor.a, backgroundColor.a, backgroundColor.a, 1.0);
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_DEPTH) {
+                    result = vec4(backgroundDepth.r, backgroundDepth.r, backgroundDepth.r, 1.0);
+                }
+
+            } else if (PS_INPUT.UV.x <= HORIZONTAL_FACTOR_PREVIOUS_LAYER) {
+                if (PS_INPUT.UV.y < VERTICAL_FACTOR_COLOR) {
+                    result = previousLayerColor;
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_ALPHA) {
+                    result = vec4(previousLayerColor.a, previousLayerColor.a, previousLayerColor.a, 1.0);
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_DEPTH) {
+                    result = vec4(previousLayerDepth.r, previousLayerDepth.r, previousLayerDepth.r, 1.0);
+                }
+
+            } else if (PS_INPUT.UV.x <= HORIZONTAL_FACTOR_CURRENT_LAYER) {
+                if (PS_INPUT.UV.y < VERTICAL_FACTOR_COLOR) {
+                    result = currentLayerColor;
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_ALPHA) {
+                    result = vec4(currentLayerColor.a, currentLayerColor.a, currentLayerColor.a, 1.0);
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_DEPTH) {
+                    result = vec4(currentLayerDepth.r, currentLayerDepth.r, currentLayerDepth.r, 1.0);
+                }
+
+            } else if (PS_INPUT.UV.x <= HORIZONTAL_FACTOR_EDGES) {
+                if (PS_INPUT.UV.y < VERTICAL_FACTOR_COLOR) {
+                    result = edgesColor;
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_ALPHA) {
+                    result = vec4(edgesColor.a, edgesColor.a, edgesColor.a, 1.0);
+                } else if (PS_INPUT.UV.y < VERTICAL_FACTOR_DEPTH) {
+                    result = vec4(edgesDepth.r, edgesDepth.r, edgesDepth.r, 1.0);
+                }
+            }
+
+        }
+
+        colorOut = result;
+        gl_FragDepth = depth;
+    }
+}
+
+// The technique, used to merge textures together.
+technique Main {
+    pass p0 {
+        VertexShader(in VS_INPUT, out SHADER_DATA VS_OUTPUT) = VS_mmLayerMerge;
+        PixelShader(in SHADER_DATA PS_INPUT, out PIXEL_DATA) = PS_mmLayerMerge_Main;
+    }
+}

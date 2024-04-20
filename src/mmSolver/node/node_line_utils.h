@@ -30,7 +30,7 @@
 #include <maya/MString.h>
 
 // MM Solver
-#include "mmSolver/core/mmdata.h"
+#include <mmcore/mmdata.h>
 
 // MM SceneGraph
 #include <mmscenegraph/mmscenegraph.h>

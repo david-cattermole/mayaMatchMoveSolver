@@ -62,6 +62,7 @@
 #include "mmSolver/adjust/adjust_data.h"
 #include "mmSolver/adjust/adjust_defines.h"
 #include "mmSolver/adjust/adjust_relationships.h"
+#include "mmSolver/adjust/adjust_results.h"
 #include "mmSolver/cmd/common_arg_flags.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
@@ -213,13 +214,10 @@ MStatus setAttrsOnMarkers(MarkerPtrList markerList, AttrPtrList attrList,
 MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
-    // Command Outputs
-    MStringArray outResult;
-
     // Read all the flag arguments.
     status = MMSolverAffectsCmd::parseArgs(args);
     if (status != MStatus::kSuccess) {
-        MMSOLVER_ERR("Error parsing mmSolverAffects command arguments.");
+        MMSOLVER_MAYA_ERR("Error parsing mmSolverAffects command arguments.");
         return status;
     }
 
@@ -233,12 +231,16 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
                                    m_addAttr_dgmod, m_setAttr_dgmod);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else if (m_mode == MODE_VALUE_RETURN_STRING) {
-        status = logResultsMarkerAffectsAttribute(m_markerList, m_attrList,
-                                                  markerToAttrList, outResult);
+        AffectsResult affectsResult;
+        status = logResultsMarkerAffectsAttribute(
+            m_markerList, m_attrList, markerToAttrList, affectsResult);
         CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        MStringArray outResult;
+        affectsResult.appendToMStringArray(outResult);
         MMSolverAffectsCmd::setResult(outResult);
     } else {
-        MMSOLVER_ERR("Mode value is invalid: mode=" << m_mode << "\n");
+        MMSOLVER_MAYA_ERR("Mode value is invalid: mode=" << m_mode << "\n");
     }
     return status;
 }

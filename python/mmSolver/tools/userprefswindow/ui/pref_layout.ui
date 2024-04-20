@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>436</width>
-    <height>362</height>
+    <width>1144</width>
+    <height>826</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -64,6 +64,49 @@
         </item>
         <item row="0" column="1">
          <widget class="QComboBox" name="minimalUIWhileSolvingComboBox"/>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="loadMarkerUI_groupBox">
+     <property name="title">
+      <string>Load Marker UI Preferences</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <item>
+       <layout class="QFormLayout" name="loadMarkerUI_formLayout">
+        <item row="1" column="0">
+         <widget class="QLabel" name="useOverscanDefaultLabel">
+          <property name="text">
+           <string>Use Embedded Overscan Default:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="useOverscanDefaultComboBox"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="loadBundlePositionsDefaultLabel">
+          <property name="text">
+           <string>Load Bundle Positions Default:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QComboBox" name="loadBundlePositionsDefaultComboBox"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="distortionModeDefaultLabel">
+          <property name="text">
+           <string>Distortion Mode Default:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="distortionModeDefaultComboBox"/>
         </item>
        </layout>
       </item>

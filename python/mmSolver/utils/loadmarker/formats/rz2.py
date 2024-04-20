@@ -88,7 +88,7 @@ class LoaderRZ2(loader.LoaderBase):
         start_frame = int(range_grps[0])
         end_frame = int(range_grps[1])
         by_frame = int(range_grps[2])
-        frames = range(start_frame, end_frame, by_frame)
+        frames = range(start_frame, end_frame + 1, by_frame)
 
         idx = end_idx
         while True:

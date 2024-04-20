@@ -5,11 +5,10 @@ platforms and can be downloaded from the
 [Releases](https://github.com/david-cattermole/mayaMatchMoveSolver/releases)
 page on the GitHub [project page](https://github.com/david-cattermole/mayaMatchMoveSolver).
 
-| Operating System  | Maya Version(s)                         |
-| ----------------- | --------------------------------------- |
-| Linux             | Maya 2016, 2017, 2018, 2019, 2020, 2022 |
-| Windows           | Maya 2016, 2017, 2018, 2019, 2020, 2022 |
-| Mac OS X          | Maya 2018, 2019                         |
+| Operating System | Maya Version(s)                   |
+|------------------|-----------------------------------|
+| Linux            | Maya 2019, 2020, 2022, 2023, 2024 |
+| Windows          | Maya 2019, 2020, 2022, 2023, 2024 |
 
 Download the archive format (`.zip` or `.tar.gz`) for your Maya
 version and operating system.
@@ -18,11 +17,11 @@ For a simple installation, **do not** install from the
 `Source code (zip)` or `Source code (tar.gz)` archives. These archives
 are for developers only.
 
-# Install Qt.py
-
-In *Maya MatchMove Solver* v0.3.14 and above the
-[Qt.py](https://github.com/mottosso/Qt.py) project is now included
-inside mmSolver, there is no need to install it at all.
+*NOTE:* The pre-built binaries provided have been statically built
+with special care for ABI compatibility and the recommended Linux
+(CentOS), Windows, Maya API and VFX Platforms versions. If there are
+any build or ABI issues, PRs are welcome or please file an
+[issue](https://github.com/david-cattermole/mayaMatchMoveSolver/issues).
 
 # Install Maya Module
 
@@ -39,16 +38,6 @@ On Linux:
 ```
 ~/maya/<Maya Version>/modules
 ```
-
-On MacOS:
-```
-~/Library/Preferences/Autodesk/maya/<Maya Version>/modules
-```
-
-Note: The MacOS Finder App hides the "Library" folder. To open the
-Maya preferences folder, open Finder, and use the menu `Go > Go to
-Folder...`, then type `~/Library/Preferences/Autodesk/maya` and press
-"Go".
 
 You may need to create the *modules* directory manually, as it is not
 created default by Maya.
@@ -139,11 +128,12 @@ but may work with older versions.
 
 There are currently three 3DEqualizer tools available:
 
-| File Name                | Tool Name                       |
-| ------------------------ | ------------------------------- |
-| copy_track_mmsolver.py   | Copy 2D Tracks (MM Solver)      |
-| export_track_mmsolver.py | Export 2D Tracks (MM Solver)... |
-| paste_camera_mmsolver.py | Paste Camera (MM Solver)...     |
+| File Name                 | Tool Name                       |
+| ------------------------- | ------------------------------- |
+| copy_track_mmsolver.py    | Copy 2D Tracks (MM Solver)      |
+| export_track_mmsolver.py  | Export 2D Tracks (MM Solver)... |
+| import_tracks_mmsolver.py | Import 2D Tracks (MM Solver)... |
+| paste_camera_mmsolver.py  | Paste Camera (MM Solver)...     |
 
 ## Script Database
 
@@ -201,4 +191,4 @@ included in the 'blender' directory.
 
 If you wish to use Blender's 2D tracking featurs along with mmSolver
 please see the documentation for installation and usage tips:
-https://david-cattermole.github.io/mayaMatchMoveSolver/tools_createnode.html#copy-2d-tracks-from-blender
+https://david-cattermole.github.io/mayaMatchMoveSolver/tools_inputoutput.html#copy-2d-tracks-from-blender

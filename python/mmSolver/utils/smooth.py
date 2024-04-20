@@ -43,7 +43,6 @@ from __future__ import division
 from __future__ import print_function
 
 import math
-import sys
 
 import mmSolver.utils.python_compat as pycompat
 

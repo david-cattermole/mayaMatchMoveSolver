@@ -158,7 +158,8 @@
 #define LEVMAR_SUPPORT_PARAMETER_BOUNDS_VALUE true
 #define LEVMAR_SUPPORT_ROBUST_LOSS_VALUE false
 
-// Allow mmSolver to compute lens distortion during the solve.
+// Allow mmSolver to compute lens distortion during the solve. These
+// are compile time flags for debugging.
 //
 // Note: If 'MMSOLVER_LENS_DISTORTION' is disabled both
 // 'MMSOLVER_LENS_DISTORTION_MAYA_DAG' and

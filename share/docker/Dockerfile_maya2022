@@ -1,7 +1,7 @@
 # To create and run the docker container in PowerShell or BASH:
 #
 # $ docker build --file share/docker/Dockerfile_maya2022 -t mmsolver-linux-maya2022-build .
-# $ docker run --rm --interactive --volume "${pwd}:/mmSolver" --tty mmsolver-linux-maya2022-build
+# $ docker run --rm --interactive --volume "${PWD}:/mmSolver" --tty mmsolver-linux-maya2022-build
 #
 #
 # Once the docker image is built and run, you can execute the
@@ -46,34 +46,30 @@ RUN yum install --assumeyes \
 
 # X11 utilities
 RUN yum install --assumeyes \
-       libXp \
-       libXpm \
-       libXmu \
-       libXt \
-       libXi \
-       libXext \
        libX11 \
-       libXinerama \
+       libXScrnSaver \
        libXau \
-       libxcb \
        libXcomposite \
        libXcursor \
        libXext \
        libXfixes \
        libXi \
+       libXinerama \
+       libXmu \
+       libXp \
+       libXpm \
        libXrandr \
        libXrender \
-       libXScrnSaver \
+       libXt \
+       libxcb \
+       libxkbcommon \
+       libxkbcommon-x11 \
        libxshmfence \
        xcb-util \
-       xcb-util-wm \
        xcb-util-image \
        xcb-util-keysyms \
        xcb-util-renderutil \
-       libxkbcommon \
-       libxkbcommon-x11 \
-       libX11 \
-       libxkbcommon-x11 \
+       xcb-util-wm \
        xorg-x11-server-Xorg \
        xorg-x11-server-Xvfb
 

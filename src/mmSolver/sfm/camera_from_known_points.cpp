@@ -99,7 +99,7 @@ bool robust_camera_pose_from_known_points(
     const std::pair<size_t, size_t> &image_size, const double focal_length_pix,
     const double ppx_pix, const double ppy_pix,
     const size_t max_iteration_count, openMVG::Mat34 &out_projection_matrix) {
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     // Upper bound pixel tolerance for residual errors.
@@ -141,11 +141,12 @@ bool robust_camera_pose_from_known_points(
     if (samples < minimum_samples) {
         // no sufficient coverage (not enough matching data points
         // given)
-        MMSOLVER_WRN("Camera Pose could not be found with at least 3 points."
-                     << " error=" << out_error_max << " pixels"
-                     << ", number of false alarms=" << out_min_nfa
-                     << ", minimum samples required=" << minimum_samples
-                     << ", valid samples=" << samples);
+        MMSOLVER_MAYA_WRN(
+            "Camera Pose could not be found with at least 3 points."
+            << " error=" << out_error_max << " pixels"
+            << ", number of false alarms=" << out_min_nfa
+            << ", minimum samples required=" << minimum_samples
+            << ", valid samples=" << samples);
     } else {
         solution_found = true;
     }
@@ -154,29 +155,29 @@ bool robust_camera_pose_from_known_points(
         return false;
     }
 
-    MMSOLVER_VRB("Found a Camera matrix from known points:");
-    MMSOLVER_VRB("- matrix: " << out_projection_matrix);
-    MMSOLVER_VRB("- error: " << out_error_max << " pixels");
-    MMSOLVER_VRB("- number of false alarms: " << out_min_nfa);
+    MMSOLVER_MAYA_VRB("Found a Camera matrix from known points:");
+    MMSOLVER_MAYA_VRB("- matrix: " << out_projection_matrix);
+    MMSOLVER_MAYA_VRB("- error: " << out_error_max << " pixels");
+    MMSOLVER_MAYA_VRB("- number of false alarms: " << out_min_nfa);
 
-    MMSOLVER_VRB("- #points 3D: " << points_3d.cols());
+    MMSOLVER_MAYA_VRB("- #points 3D: " << points_3d.cols());
     for (auto i = 0; i < points_3d.cols(); i++) {
         auto point_3d_x = points_3d.col(i)[0];
         auto point_3d_y = points_3d.col(i)[1];
         auto point_3d_z = points_3d.col(i)[2];
-        MMSOLVER_VRB("  - #point 3D: " << i << " = " << point_3d_x << ","
-                                       << point_3d_y << "," << point_3d_z);
+        MMSOLVER_MAYA_VRB("  - #point 3D: " << i << " = " << point_3d_x << ","
+                                            << point_3d_y << "," << point_3d_z);
     }
 
-    MMSOLVER_VRB("- #points 2D: " << points_2d.cols());
+    MMSOLVER_MAYA_VRB("- #points 2D: " << points_2d.cols());
     for (auto i = 0; i < points_2d.cols(); i++) {
         auto point_2d_x = points_2d.col(i)[0];
         auto point_2d_y = points_2d.col(i)[1];
-        MMSOLVER_VRB("  - #point 2D: " << i << " = " << point_2d_x << ","
-                                       << point_2d_y);
+        MMSOLVER_MAYA_VRB("  - #point 2D: " << i << " = " << point_2d_x << ","
+                                            << point_2d_y);
     }
 
-    MMSOLVER_VRB("- #inliers: " << samples);
+    MMSOLVER_MAYA_VRB("- #inliers: " << samples);
 
     return true;
 }
@@ -202,7 +203,7 @@ bool compute_camera_pose_from_known_points(
         marker_coords_matrix, bundle_coords_matrix, image_size,
         focal_length_pix, ppx_pix, ppy_pix, num_max_iter, projection_matrix);
     if (!ok) {
-        MMSOLVER_ERR(
+        MMSOLVER_MAYA_ERR(
             "Robust camera pose from known points estimation failure.");
         return false;
     }

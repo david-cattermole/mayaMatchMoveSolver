@@ -152,7 +152,7 @@ def _parse_data(file_path):
     assert len(file_path) > 0
     try:
         file_data = mmcamera_format.parse(file_path)
-    except Exception as e:
+    except Exception:
         file_data = None
     return file_data
 

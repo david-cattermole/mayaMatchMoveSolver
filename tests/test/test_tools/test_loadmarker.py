@@ -46,14 +46,14 @@ class TestLoadMarker(test_tools_utils.ToolsTestCase):
         cameras_a = lib_utils.get_cameras()
         assert len(cameras_a) == 0
         tfm = maya.cmds.createNode('transform')
-        shp = maya.cmds.createNode('camera', parent=tfm)
+        maya.cmds.createNode('camera', parent=tfm)
         cameras_b = lib_utils.get_cameras()
         assert len(cameras_b) == 1
         return
 
     def test_get_selected_cameras(self):
         tfm = maya.cmds.createNode('transform')
-        shp = maya.cmds.createNode('camera', parent=tfm)
+        maya.cmds.createNode('camera', parent=tfm)
         maya.cmds.select(tfm, replace=True)
         cameras = lib_utils.get_selected_cameras()
         assert len(cameras) == 1

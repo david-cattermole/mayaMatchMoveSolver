@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Export 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version:  v1.9
+# 3DE4.script.version:  v1.11
 #
 # 3DE4.script.gui:      Main Window::3DE4::File::Export
 # 3DE4.script.gui:      Object Browser::Context Menu Point
@@ -79,9 +79,6 @@ def main():
     # widget default values
     start, end, step = tde4.getCameraSequenceAttr(camera)
     start_frame = start
-    # Backwards compatibility with 3DE4 Release 2.
-    if uvtrack_format.SUPPORT_CAMERA_FRAME_OFFSET is True:
-        start_frame = tde4.getCameraFrameOffset(camera)
     pattern = '*' + EXT
 
     rs_enabled = False

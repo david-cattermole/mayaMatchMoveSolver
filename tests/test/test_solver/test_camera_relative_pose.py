@@ -51,8 +51,6 @@ def deconstruct_result(command_kwargs, result):
 
     cam_tfm_a = command_kwargs['cameraA']
     cam_tfm_b = command_kwargs['cameraB']
-    cam_a = mmapi.Camera(transform=cam_tfm_a)
-    cam_b = mmapi.Camera(transform=cam_tfm_b)
 
     mkr_bnd_list = command_kwargs['markerBundle']
 

@@ -25,7 +25,6 @@ import collections
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.api as mmapi
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.animcurve as anim_utils
 import mmSolver.tools.loadlens.constant as const
@@ -73,7 +72,6 @@ def parse_file(file_path):
             name = None
             times = None  # None means a static parameter.
             values = None
-            param_anim_type = None
             if len(split) > 1 and '{{curve' in split[1] and '}}' in split[-1]:
                 name = split[0]
 

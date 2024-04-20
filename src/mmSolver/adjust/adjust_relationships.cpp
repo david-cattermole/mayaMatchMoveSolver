@@ -147,10 +147,14 @@ int countUpNumberOfErrors(
                 }
                 weightMaxPerFrame.insert(std::pair<int, double>(j, weight_max));
 
-                // Get Marker Position.
+                // Get 'distorted' Marker positions, just the
+                // translate X/Y values, with any overscan factors on
+                // the MarkerGroup taken into account.
                 double px = 0.0;
                 double py = 0.0;
-                status = marker->getPosXY(px, py, frame, timeEvalMode);
+                bool applyOverscan = true;
+                status = marker->getPosXY(px, py, frame, timeEvalMode,
+                                          applyOverscan);
                 CHECK_MSTATUS(status);
                 MPoint marker_pos(px, py, 0.0);
                 out_markerPosList.push_back(marker_pos);
@@ -325,7 +329,7 @@ int countUpNumberOfUnknownParameters(
             }
         } else {
             const char *attrName = attr->getName().asChar();
-            MMSOLVER_ERR("attr is not animated or free: " << attrName);
+            MMSOLVER_MAYA_ERR("attr is not animated or free: " << attrName);
         }
         i++;
     }
@@ -399,7 +403,7 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
         cmd += "\"";
         cmd += bundleName;
         cmd += "\", None);";
-        // MMSOLVER_WRN("Running: " + cmd);
+        // MMSOLVER_MAYA_WRN("Running: " + cmd);
         out_status = MGlobal::executePythonCommand(cmd, bundleAffectsResult,
                                                    display, undoable);
         CHECK_MSTATUS(out_status);
@@ -415,7 +419,7 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
         cmd += camName;
         cmd += "\"";
         cmd += ");";
-        // MMSOLVER_WRN("Running: " + cmd);
+        // MMSOLVER_MAYA_WRN("Running: " + cmd);
         out_status = MGlobal::executePythonCommand(cmd, markerAffectsResult,
                                                    display, undoable);
         CHECK_MSTATUS(out_status);

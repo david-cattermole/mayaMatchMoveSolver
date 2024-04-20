@@ -95,3 +95,17 @@ IMAGE_SEQ_FORMAT_STYLE_MAYA = 'maya'
 IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED = 'hash_padded'
 IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME = 'first_frame'
 IMAGE_SEQ_FORMAT_STYLE_PRINTF = 'printf'
+
+
+# What type of lens distortion mode is used?
+#
+# These values are the same as the C++ enum class
+# 'ReprojectionDistortMode'.
+DISTORT_MODE_NONE = 0
+DISTORT_MODE_UNDISTORT = 1
+DISTORT_MODE_REDISTORT = 2
+DISTORT_MODE_VALUE_LIST = (
+    DISTORT_MODE_NONE,
+    DISTORT_MODE_UNDISTORT,
+    DISTORT_MODE_REDISTORT,
+)

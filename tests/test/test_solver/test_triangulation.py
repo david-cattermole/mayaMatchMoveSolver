@@ -24,13 +24,11 @@ from __future__ import division
 from __future__ import print_function
 
 import time
-import math
 import unittest
 
 import maya.cmds
 
 import test.test_solver.solverutils as solverUtils
-import mmSolver.utils.node as node_utils
 
 
 # @unittest.skip

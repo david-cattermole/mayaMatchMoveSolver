@@ -1,0 +1,42 @@
+# Created by Maya MatchMove Solver with the Save Lens File tool.
+#
+# Version: mayaMatchMoveSolver-0.4.6-maya2022-win64
+# Website: https://github.com/david-cattermole/mayaMatchMoveSolver
+LD_3DE_Classic_LD_Model {
+  tde4_focal_length_cm 3.5
+  tde4_custom_focus_distance_cm 5.0
+  tde4_filmback_width_cm 3.6000000000000005
+  tde4_filmback_height_cm 2.0250000000000004
+  tde4_lens_center_offset_x_cm 0.0
+  tde4_lens_center_offset_y_cm 0.0
+  Distortion {{curve x1 -0.100000 x2 -0.053125 x3 0.050000 x4 0.153125 x5 0.200000 x6 0.179200 x7 0.129600 x8 0.070400 x9 0.020800 x10 0.000000 }}
+  Anamorphic_Squeeze {{curve x1 1.000000 x2 1.000000 x3 1.000000 x4 1.000000 x5 1.000000 x6 1.000000 x7 1.000000 x8 1.000000 x9 1.000000 x10 1.000000 }}
+  Curvature_X {{curve x1 0.090000 x2 0.075938 x3 0.045000 x4 0.014063 x5 0.000000 x6 0.000000 x7 0.000000 x8 0.000000 x9 0.000000 x10 0.000000 }}
+  Curvature_Y {{curve x1 0.090000 x2 0.075938 x3 0.045000 x4 0.014063 x5 0.000000 x6 0.000000 x7 0.000000 x8 0.000000 x9 0.000000 x10 0.000000 }}
+  Quartic_Distortion {{curve x1 0.000000 x2 0.031250 x3 0.100000 x4 0.168750 x5 0.200000 x6 0.179200 x7 0.129600 x8 0.070400 x9 0.020800 x10 0.000000 }}
+  direction undistort
+  field_of_view_xa_unit 0.0
+  field_of_view_xb_unit 1.0
+  field_of_view_ya_unit 0.0
+  field_of_view_yb_unit 1.0
+  name lens2
+}
+LD_3DE_Classic_LD_Model {
+  tde4_focal_length_cm 3.5
+  tde4_custom_focus_distance_cm 5.0
+  tde4_filmback_width_cm 3.6000000000000005
+  tde4_filmback_height_cm 2.0250000000000004
+  tde4_lens_center_offset_x_cm 0.0
+  tde4_lens_center_offset_y_cm 0.0
+  Distortion {{curve x1 0.100000 x2 0.068750 x3 0.000000 x4 -0.068750 x5 -0.100000 x6 -0.089600 x7 -0.064800 x8 -0.035200 x9 -0.010400 x10 0.000000 }}
+  Anamorphic_Squeeze {{curve x1 1.000000 x2 1.000000 x3 1.000000 x4 1.000000 x5 1.000000 x6 1.000000 x7 1.000000 x8 1.000000 x9 1.000000 x10 1.000000 }}
+  Curvature_X {{curve x1 0.000000 x2 0.000000 x3 0.000000 x4 0.000000 x5 0.000000 x6 0.000000 x7 0.000000 x8 0.000000 x9 0.000000 x10 0.000000 }}
+  Curvature_Y {{curve x1 0.000000 x2 0.000000 x3 0.000000 x4 0.000000 x5 0.000000 x6 0.000000 x7 0.000000 x8 0.000000 x9 0.000000 x10 0.000000 }}
+  Quartic_Distortion {{curve x1 0.100000 x2 0.068750 x3 0.000000 x4 -0.068750 x5 -0.100000 x6 -0.089600 x7 -0.064800 x8 -0.035200 x9 -0.010400 x10 0.000000 }}
+  direction undistort
+  field_of_view_xa_unit 0.0
+  field_of_view_xb_unit 1.0
+  field_of_view_ya_unit 0.0
+  field_of_view_yb_unit 1.0
+  name lens1
+}

@@ -19,6 +19,7 @@
 Collection and solving functions.
 """
 
+import logging
 import pprint
 import time
 import uuid
@@ -36,7 +37,6 @@ import mmSolver.tools.userpreferences.constant as userprefs_const
 import mmSolver.tools.userpreferences.lib as userprefs_lib
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as col_state
-import mmSolver.tools.solver.lib.solver as solver_utils
 import mmSolver.tools.solver.lib.solver_step as solver_step
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const
@@ -254,7 +254,7 @@ def log_solve_results(
                       number (as returned by 'time.time()').
     :type timestamp: None or float
 
-    :param total_time: The duration of the solve to log.
+    :param total_time: The duration of the solve to log, in seconds.
     :type total_time: None or float
 
     :param status_fn: Function to set the status text.
@@ -271,6 +271,9 @@ def log_solve_results(
         status_str += stamp + ' | '
         long_status_str += stamp + ' | '
 
+    frame_list = mmapi.merge_frame_list(solres_list)
+    num_frames = len(frame_list)
+
     # Get Solver success.
     success = True
     for solres in solres_list:
@@ -279,20 +282,19 @@ def log_solve_results(
             success = False
             break
     if success is True:
-        status_str += 'Solved | '
-        long_status_str += 'Solved | '
+        status_str += 'Solved %s frames | ' % num_frames
+        long_status_str += 'Solved %s frames | ' % num_frames
     else:
-        status_str += 'Failed | '
-        long_status_str += 'Failed | '
+        status_str += 'Failed %s frames | ' % num_frames
+        long_status_str += 'Failed %s frames | ' % num_frames
 
     frame_error_list = mmapi.merge_frame_error_list(solres_list)
-    frame_error_txt = pprint.pformat(dict(frame_error_list))
-    if log:
+    if log and (log.level > logging.DEBUG):
+        frame_error_txt = pprint.pformat(dict(frame_error_list))
         log.debug('Per-Frame Errors:\n%s', frame_error_txt)
 
-    timer_stats = mmapi.combine_timer_stats(solres_list)
-    timer_stats_txt = pprint.pformat(dict(timer_stats))
-    if log:
+        timer_stats = mmapi.combine_timer_stats(solres_list)
+        timer_stats_txt = pprint.pformat(dict(timer_stats))
         log.debug('Timer Statistics:\n%s', timer_stats_txt)
 
     avg_error = mmapi.get_average_frame_error_list(frame_error_list)
@@ -300,14 +302,25 @@ def log_solve_results(
     long_status_str += 'Average Deviation %.2fpx' % avg_error
 
     max_frame, max_error = mmapi.get_max_frame_error(frame_error_list)
-    status_str += ' | max deviation %.2fpx at %s' % (max_error, max_frame)
-    long_status_str += ' | Max Deviation %.2fpx at %s' % (max_error, max_frame)
+    status_str += ' | max deviation %.2fpx at f%s' % (max_error, max_frame)
+    long_status_str += ' | Max Deviation %.2fpx at f%s' % (max_error, max_frame)
 
     if total_time is not None:
+        minutes_in_hour = 60
+        seconds_in_minute = 60
+        seconds_in_hour = minutes_in_hour * seconds_in_minute
+        hours, remainder = divmod(total_time, seconds_in_hour)
+        minutes, seconds = divmod(remainder, seconds_in_minute)
+        minutes += hours * minutes_in_hour
+        time_str = "{}:{:.2f}s".format(int(minutes), seconds)
+
+        frames_per_second = float(num_frames) / total_time
+        fps_str = ' (%.2f fps)' % frames_per_second
+
         if log:
-            log.info('Total Time: %.3f seconds', total_time)
-        status_str += ' | time %.3fsec' % total_time
-        long_status_str += ' | Time %.3fsec' % total_time
+            log.info('Total Time: %s %s', time_str, fps_str)
+        status_str += ' | time ' + time_str + fps_str
+        long_status_str += ' | Time ' + time_str + fps_str
 
     if log:
         log.info('Max Frame Deviation: %.2f pixels at frame %s', max_error, max_frame)
@@ -434,7 +447,6 @@ def get_solver_steps_from_collection(col):
 
 
 def set_solver_step_list_to_collection(col, step_list):
-    node = col.get_node()
     data_list = [s.get_data() for s in step_list]
     col_state.set_value_structure_on_node(
         col.get_node(),
@@ -761,6 +773,20 @@ def execute_collection(
     else:
         msg = 'log_level value is invalid; value=%r'
         raise ValueError(msg % log_level)
+
+    # TODO: Check common issues in the scene before solving to avoid
+    # errors and warn the user.
+    #
+    # - When using CameraSolver:
+    #
+    #   - Make sure bundles and camera share the same parent
+    #     world-space matrix.
+    #
+    #   - All bundle values are unlocked and are static (not
+    #     animated).
+    #
+    # TODO: For any bundle, if the connected Marker is not an input
+    #       object, the Bundle will be skipped.
 
     # Execute the solve.
     s = time.time()

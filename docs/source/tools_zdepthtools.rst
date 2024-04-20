@@ -1,4 +1,4 @@
-General Tools
+Z-Depth Tools
 =============
 
 The tools on this page are not specific to Markers, Cameras or
@@ -98,9 +98,14 @@ components.
 
 The tool can be use to:
 
- - Smooth a bumpy Z-depth curve.
+- Smooth a bumpy Z-depth curve.
 
- - Freeze a transform to a static Z-depth.
+- Freeze a transform to a static Z-depth.
+
+.. figure:: images/tools_screen_space_rig_bake_ui.png
+    :alt: Screen-Space Rig Bake UI
+    :align: center
+    :width: 80%
 
 Usage:
 
@@ -133,3 +138,90 @@ To run the tool, use this Python command:
 
     import mmSolver.tools.screenspacerigbake.tool as tool
     tool.open_window()
+
+.. _adjust-camera-object-scale-tool-ref:
+
+Adjust Camera/Object Scale
+--------------------------
+
+The `Adjust Camera/Object Scale` tool is used to change the scale of a
+camera matchmove while maintaining the matchmove of a object, or vice
+versa.
+
+This tool is very helpful for correcting the scale/depth of a camera
+or object. When the camera scale is known (because LiDAR geometry was
+used during camera solving), the object scale can be adjusted. If an
+object with a known scale is visible in a camera, the camera scale can
+be adjusted to match the object.
+
+.. figure:: images/tools_camera_object_scale_adjust_ui.png
+    :alt: Adjust the scale of a Camera/Object
+    :align: center
+    :width: 80%
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.cameraobjectscaleadjust.tool as tool
+    tool.open_window()
+
+Scale a Camera
+++++++++++++++
+
+In this example, the object will stay same scale, and the camera will be scaled.
+
+Usage:
+
+1) Set your current frame to the frame you want to scale/pivot from.
+
+2) Open the `Adjust Camera/Object Scale` UI.
+
+   - Type a unique name for `Scale Rig Name`.
+
+   - Choose `Adjust Camera Scale` mode.
+
+   - Select the top level `Scene` node that contains all 3D
+     transforms/bundles.
+
+   - Select the `Camera` that will adjust scale.
+
+   - Select the `Objects` that will `not` change scale.
+
+3) Press `Create` button.
+
+4) Move your current frame to a frame where parallax can be seen in
+   the camera, and use the Maya Scale manipulator tool to scale newly
+   created Scale Rig until the desired scale is found.
+
+5) When desired scale is found, select the created `Scale Rig` and use
+   the `Remove Camera/Object Scale` tool.
+
+Scale an Object
++++++++++++++++
+
+In this example camera will stay the same scale, and the object will
+be scaled.
+
+Usage:
+
+1) Set your current frame to the frame you want to scale/pivot from.
+
+2) Open the `Adjust Camera/Object Scale` UI.
+
+   - Type a unique name for `Scale Rig Name`.
+
+   - Choose `Adjust Object Scale` mode.
+
+   - Select the `Camera` that will `not` change scale.
+
+   - Select the `Objects` that will adjust scale.
+
+3) Press `Create` button.
+
+4) Move your current frame to a frame where parallax can be seen in
+   the camera, and use the Maya Scale manipulator tool to scale newly
+   created Scale Rig until the desired scale is found.
+
+5) When desired scale is found, select the created `Scale Rig` and use
+   the `Remove Camera/Object Scale` tool.

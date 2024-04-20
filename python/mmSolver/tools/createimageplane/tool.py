@@ -40,9 +40,13 @@ LOG = mmSolver.logger.get_logger()
 
 def _get_start_directory():
     workspace_path = maya.cmds.workspace(query=True, fullName=True)
+    if workspace_path is None:
+        return os.getcwd()
     workspace_path = os.path.abspath(workspace_path)
 
     file_rules = maya.cmds.workspace(query=True, fileRule=True)
+    if file_rules is None:
+        return os.getcwd()
     file_rule_names = file_rules[0::2]
     file_rule_values = file_rules[1::2]
 
@@ -145,7 +149,6 @@ def main():
 
         image_seq = prompt_user_for_image_sequence()
         if image_seq:
-            attr_name = 'imageSequenceMain'
             lib.set_image_sequence(mm_ip_tfm, image_seq)
 
         nodes.append(mm_ip_shp)

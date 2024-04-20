@@ -625,7 +625,7 @@ def apply_to_camera(pgroup_id, cam_id, lens_id, options, file_data):
         file_end = int(file_end_frame)
         chosen_start = int(chosen_start_frame)
         chosen_end = int(chosen_end_frame)
-        focal_length_set = _set_camera_focal_length(
+        _set_camera_focal_length(
             cam_id,
             lens_id,
             focalLengthSamples,
@@ -710,7 +710,7 @@ def _parse_data(file_path):
     assert len(file_path) > 0
     try:
         file_data = parse(file_path)
-    except Exception as e:
+    except Exception:
         file_data = None
     return file_data
 

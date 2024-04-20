@@ -57,6 +57,9 @@ set(CXX_EXTENSIONS OFF)
 # the new default is to use "_GLIBCXX_USE_CXX11_ABI=1".
 #
 # https://vfxplatform.com/#footnote-gcc9
+#
+# TODO: Add a flag for use in RHEL 8/9 and Rocky Linux, so we can
+# enable/disable.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
@@ -71,15 +74,15 @@ endif()
 # Project configuration.
 project(mayaMatchMoveSolver)
 set(PROJECT_VERSION_MAJOR 0)
-set(PROJECT_VERSION_MINOR 4)
+set(PROJECT_VERSION_MINOR 5)
 set(PROJECT_VERSION_PATCH 0)
-set(PROJECT_VERSION_TWEAK beta1)
+set(PROJECT_VERSION_TWEAK beta4)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}.${PROJECT_VERSION_TWEAK}")
 set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
 set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodesk Maya.")
 set(PROJECT_AUTHOR "David Cattermole and others (see AUTHORS.txt file)")
 set(PROJECT_COPYRIGHT
-  "2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, Patcha Saheb Binginapalli.")
+  "2018-2024, David Cattermole, Anil Reddy, Kazuma Tonegawa, Patcha Saheb Binginapalli.")
 enable_testing()
 
 
@@ -92,6 +95,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 # only, we don't need to wait for the Maya Plug-In to compute each
 # time, so turn off the plugin.
 option(MMSOLVER_BUILD_PLUGIN "Build the Maya plug-in?" ON)
+option(MMSOLVER_BUILD_TOOLS "Build C++ tools?" ON)
 option(MMSOLVER_BUILD_PYTHON "Build and install the Python API and tools?" ON)
 option(MMSOLVER_BUILD_MEL "Build and install the MEL scripts and tools?" ON)
 option(MMSOLVER_BUILD_3DEQUALIZER "Build and install 3DEqualizer scripts?" ON)
@@ -128,13 +132,21 @@ include(MMSolverUtils)
 # Build features
 add_subdirectory(share)
 
+# C++ include files
+if (MMSOLVER_BUILD_PLUGIN OR MMSOLVER_BUILD_TOOLS)
+  add_subdirectory(include)
+endif ()
+
 if (MMSOLVER_BUILD_PLUGIN)
   # Finds and builds external (third-party) dependencies.
   include(FindAndBuildExternalPackages)
   add_subdirectory(external)
 
-  add_subdirectory(include)
   add_subdirectory(src)
+endif ()
+
+if (MMSOLVER_BUILD_TOOLS)
+  add_subdirectory(tools)
 endif ()
 
 if (MMSOLVER_BUILD_PYTHON)
@@ -174,7 +186,6 @@ set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
 set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
 set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
-set(CPACK_PACKAGE_VERSION_TWEAK "${PROJECT_VERSION_TWEAK}")
 set(CPACK_PACKAGE_FILE_NAME "${MODULE_FULL_NAME}")
 set(CPACK_INCLUDE_TOPLEVEL_DIRECTORY 1)
 # Put the packages into the source directory, so that when we run

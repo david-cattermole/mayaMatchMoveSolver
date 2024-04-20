@@ -193,7 +193,6 @@ def smooth_animcurve(
 
     all_keys_selected = original_range_length == sel_range_length
 
-    plug = animcurve + '.output'
     animCurve_obj = node_utils.get_as_object_apione(animcurve)
     animCurve_fn = OpenMayaAnim1.MFnAnimCurve(animCurve_obj)
     animCurve_type = animCurve_fn.animCurveType()
@@ -212,7 +211,6 @@ def smooth_animcurve(
     if all_keys_selected:
         initial_weight = 1.0
 
-    values = []
     weight_array = [initial_weight] * len(all_times)
     value_array = [None] * len(all_times)
     for i, t in enumerate(all_times):

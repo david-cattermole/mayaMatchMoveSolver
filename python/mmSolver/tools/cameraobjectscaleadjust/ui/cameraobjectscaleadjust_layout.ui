@@ -39,6 +39,35 @@
     </layout>
    </item>
    <item>
+    <widget class="QGroupBox" name="mode_groupBox">
+     <property name="title">
+      <string>Mode</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <widget class="QRadioButton" name="cameraTrackScaleRadioButton">
+        <property name="text">
+         <string>Adjust Camera Scale</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="bodyTrackScaleRadioButton">
+        <property name="text">
+         <string>Adjust Object Scale</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="formGroupBox">
      <property name="title">
       <string>Nodes</string>
@@ -148,35 +177,6 @@
          </widget>
         </item>
        </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="mode_groupBox">
-     <property name="title">
-      <string>Mode</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="QRadioButton" name="cameraTrackScaleRadioButton">
-        <property name="text">
-         <string>Adjust Camera Scale</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="bodyTrackScaleRadioButton">
-        <property name="text">
-         <string>Adjust Object Scale</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
       </item>
      </layout>
     </widget>

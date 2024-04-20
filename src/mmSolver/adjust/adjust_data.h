@@ -38,12 +38,16 @@
 #include <maya/MPoint.h>
 #include <maya/MStringArray.h>
 
+// MM Solver Libs
+#include <mmsolverlibs/debug.h>
+
 // MM Scene Graph
 #include <mmscenegraph/mmscenegraph.h>
 
 // MM Solver
+#include <mmlens/lens_model.h>
+
 #include "adjust_defines.h"
-#include "mmSolver/lens/lens_model.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -52,19 +56,19 @@
 
 // Group all the benchmark timers together.
 struct SolverTimer {
-    debug::Timestamp startTimestamp;
+    mmsolver::debug::Timestamp startTimestamp;
 
-    debug::TimestampBenchmark solveBenchTimer;
-    debug::TimestampBenchmark jacBenchTimer;
-    debug::TimestampBenchmark funcBenchTimer;
-    debug::TimestampBenchmark errorBenchTimer;
-    debug::TimestampBenchmark paramBenchTimer;
+    mmsolver::debug::TimestampBenchmark solveBenchTimer;
+    mmsolver::debug::TimestampBenchmark jacBenchTimer;
+    mmsolver::debug::TimestampBenchmark funcBenchTimer;
+    mmsolver::debug::TimestampBenchmark errorBenchTimer;
+    mmsolver::debug::TimestampBenchmark paramBenchTimer;
 
-    debug::CPUBenchmark solveBenchTicks;
-    debug::CPUBenchmark jacBenchTicks;
-    debug::CPUBenchmark funcBenchTicks;
-    debug::CPUBenchmark errorBenchTicks;
-    debug::CPUBenchmark paramBenchTicks;
+    mmsolver::debug::CPUBenchmark solveBenchTicks;
+    mmsolver::debug::CPUBenchmark jacBenchTicks;
+    mmsolver::debug::CPUBenchmark funcBenchTicks;
+    mmsolver::debug::CPUBenchmark errorBenchTicks;
+    mmsolver::debug::CPUBenchmark paramBenchTicks;
 };
 
 enum class FrameSolveMode {
@@ -96,11 +100,34 @@ enum class LogLevel {
 };
 
 struct PrintStatOptions {
-    bool enable;
+    // Do not actually solve anything, just stop after preparing to
+    // solve, because we have already calculated all the data needed
+    // to print statistics.
+    bool doNotSolve;
+
+    // Prints details about how many object counts are used; number of
+    // paramters, number of errors, number of marker errors, and
+    // smoothness/stiffness error counts.
     bool input;
+
+    // Prints a 2D matrix of Markers and Attributes, which markers
+    // affect which attributes?
     bool affects;
+
+    // If true, prints solve object usage. For example, which markers
+    // are used or unused, and which attributes are used or unused.
     bool usedSolveObjects;
+
+    // Print deviation details; the individual error values reported
+    // from the solver, per-frame and per-marker-per-frame.
     bool deviation;
+
+    PrintStatOptions()
+        : doNotSolve(false)
+        , input(false)
+        , affects(false)
+        , usedSolveObjects(false)
+        , deviation(false) {}
 };
 
 struct SolverOptions {
@@ -118,6 +145,7 @@ struct SolverOptions {
     int solverType;
     int timeEvalMode;
     bool acceptOnlyBetter;
+    double imageWidth;
     FrameSolveMode frameSolveMode;
 
     // Auto-adjust the input solve objects before solving?
@@ -130,6 +158,30 @@ struct SolverOptions {
     bool solverSupportsAutoDiffCentral;
     bool solverSupportsParameterBounds;
     bool solverSupportsRobustLoss;
+
+    SolverOptions()
+        : iterMax(0)
+        , tau(0.0)
+        , eps1(0.0)
+        , eps2(0.0)
+        , eps3(0.0)
+        , delta(0.0)
+        , autoDiffType(AUTO_DIFF_TYPE_FORWARD)
+        , autoParamScale(0)
+        , robustLossType(ROBUST_LOSS_TYPE_TRIVIAL)
+        , robustLossScale(1.0)
+        , sceneGraphMode(SceneGraphMode::kMayaDag)
+        , solverType(SOLVER_TYPE_DEFAULT_VALUE)
+        , timeEvalMode(TIME_EVAL_MODE_DG_CONTEXT)
+        , acceptOnlyBetter(false)
+        , imageWidth(1.0)
+        , frameSolveMode(FrameSolveMode::kAllFrameAtOnce)
+        , removeUnusedMarkers(false)
+        , removeUnusedAttributes(false)
+        , solverSupportsAutoDiffForward(false)
+        , solverSupportsAutoDiffCentral(false)
+        , solverSupportsParameterBounds(false)
+        , solverSupportsRobustLoss(false) {}
 };
 
 // The user data given to the solve function.
@@ -144,9 +196,9 @@ struct SolverData {
     StiffAttrsPtrList stiffAttrsList;
 
     // Lens Distortion
-    std::vector<std::shared_ptr<LensModel>> markerFrameToLensModelList;
-    std::vector<std::shared_ptr<LensModel>> attrFrameToLensModelList;
-    std::vector<std::shared_ptr<LensModel>> lensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> markerFrameToLensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> attrFrameToLensModelList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> lensModelList;
 
     // MM Scene Graph
     mmscenegraph::SceneGraph mmsgSceneGraph;
@@ -176,7 +228,6 @@ struct SolverData {
     int iterNum;
     int jacIterNum;
     int solverType;
-    double imageWidth;
     int numberOfMarkerErrors;
     int numberOfAttrStiffnessErrors;
     int numberOfAttrSmoothnessErrors;
@@ -205,19 +256,8 @@ struct SolverData {
     MGlobal::MMayaState mayaSessionState;
 
     LogLevel logLevel;
-};
 
-struct SolverResult {
-    bool success;
-    double errorAvg;
-    double errorMin;
-    double errorMax;
-    int reason_number;
-    std::string reason;
-    int iterations;
-    int functionEvals;
-    int jacobianEvals;
-    double errorFinal;
+    SolverData() = default;
 };
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H

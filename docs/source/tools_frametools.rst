@@ -6,14 +6,14 @@ Frame Tools
 .. figure:: images/tools_shelf_icons_frames.png
     :alt: Node Frame Shelf Icons
     :align: center
-    :width: 30%
+    :width: 60%
 
-.. _next-root-frame-tool-ref:
+.. _next-user-frame-tool-ref:
 
-Next Root Frame
+Next User Frame
 ---------------
 
-Move the current Maya frame to the **next** root frame, for the currently
+Move the current Maya frame to the **next** user frame, for the currently
 active Collection.
 
 Run this Python command:
@@ -23,12 +23,12 @@ Run this Python command:
     import mmSolver.tools.navigaterootframes.tool as tool
     tool.main_next_frame()
 
-.. _previous-root-frame-tool-ref:
+.. _previous-user-frame-tool-ref:
 
-Previous Root Frame
+Previous User Frame
 -------------------
 
-Move the current Maya frame to the **previous** root frame, for the currently
+Move the current Maya frame to the **previous** user frame, for the currently
 active Collection.
 
 Run this Python command:
@@ -38,13 +38,13 @@ Run this Python command:
     import mmSolver.tools.navigaterootframes.tool as tool
     tool.main_prev_frame()
 
-.. _add-root-frame-tool-ref:
+.. _add-user-frame-tool-ref:
 
-Add Root Frame
+Add User Frame
 --------------
 
 Adds the current Maya frame into the currently active Collection's
-root frame list. The Solver UI will update automatically with the new frames.
+user frame list. The Solver UI will update automatically with the new frames.
 
 Run this Python command:
 
@@ -53,13 +53,13 @@ Run this Python command:
     import mmSolver.tools.editrootframes.tool as tool
     tool.main_add_frame()
 
-.. _remove-root-frame-tool-ref:
+.. _remove-user-frame-tool-ref:
 
-Remove Root Frame
+Remove User Frame
 -----------------
 
 Removes the current Maya frame from the currently active Collection's
-root frame list. The Solver UI will update automatically with the
+user frame list. The Solver UI will update automatically with the
 current frame removed.
 
 Run this Python command:

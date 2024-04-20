@@ -416,8 +416,7 @@ def _compile_multi_inbetween_frames(
             sol.set_use_stiffness(use_smooth_stiff)
             sol.set_solver_type(solver_type)
             sol.set_scene_graph_mode(scene_graph_mode)
-            frame_solve_mode = const.FRAME_SOLVE_MODE_PER_FRAME
-            sol.set_frame_solve_mode(frame_solve_mode)
+            sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_PER_FRAME)
             sol.set_remove_unused_markers(remove_unused_objects)
             sol.set_remove_unused_attributes(remove_unused_objects)
             sol.set_precomputed_data(precomputed_data)
@@ -603,8 +602,6 @@ def compile_multi_frame(
         # yield action, vaction
         LOG.warn("Not enough Markers given for root frames.")
         return
-
-    # if use_attr_blocks is True:
 
     attr_blocks = solverutils.create_attr_blocks(use_attr_blocks, attr_list)
 

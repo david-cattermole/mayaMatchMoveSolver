@@ -20,7 +20,7 @@
 #
 # 3DE4.script.name:     Export 2D Tracks (MM Solver)...
 #
-# 3DE4.script.version:  v1.9
+# 3DE4.script.version:  v1.11
 #
 # 3DE4.script.gui:      Main Window::3DE4::File::Export
 # 3DE4.script.gui:      Object Browser::Context Menu Point
@@ -89,7 +89,6 @@ UV_TRACK_FORMAT_VERSION_PREFERRED = UV_TRACK_FORMAT_VERSION_4
 
 # Do we have support for new features of 3DE tde4 module?
 SUPPORT_PERSISTENT_ID = 'getPointPersistentID' in dir(tde4)
-SUPPORT_CAMERA_FRAME_OFFSET = 'getCameraFrameOffset' in dir(tde4)
 SUPPORT_POINT_WEIGHT_BY_FRAME = 'getPointWeightByFrame' in dir(tde4)
 SUPPORT_CLIPBOARD = 'setClipboardString' in dir(tde4)
 SUPPORT_POINT_VALID_MODE = 'getPointValidMode' in dir(tde4)
@@ -131,9 +130,6 @@ def main():
     # widget default values
     start, end, step = tde4.getCameraSequenceAttr(camera)
     start_frame = start
-    # Backwards compatibility with 3DE4 Release 2.
-    if SUPPORT_CAMERA_FRAME_OFFSET is True:
-        start_frame = tde4.getCameraFrameOffset(camera)
     pattern = '*' + EXT
 
     rs_enabled = False
@@ -298,8 +294,11 @@ def _apply_rs_correction(dt, q_minus, q_center, q_plus):
     :return: 2D point blended.
     """
     a = q_center
-    b = (q_plus - q_minus) / 2.0
-    c = -q_center + (q_plus + q_minus) / 2.0
+    b = q_plus - q_minus
+    b = vl_sdv.vec3d(b[0] / 2.0, b[1] / 2.0, b[2] / 2.0)
+    c = q_plus + q_minus
+    c = vl_sdv.vec3d(c[0] / 2.0, c[1] / 2.0, c[2] / 2.0)
+    c = -q_center + c
     return a + dt * b + dt * dt * c
 
 
@@ -329,7 +328,7 @@ def _convert_2d_to_3d_point_undistort(
     p3d = vl_sdv.vec3d(tde4.getPGroupPosition3D(point_group, camera, frame))
     left, right, bottom, top = camera_fov
 
-    p2d = [0, 0]
+    p2d = [0.0, 0.0]
     p2d[0] = (pos[0] - left) / (right - left)
     p2d[1] = (pos[1] - bottom) / (top - bottom)
     p2d = tde4.removeDistortion2D(camera, frame, p2d)
@@ -370,7 +369,7 @@ def _remove_rs_from_2d_point(point_group, camera, frame, input_2d, depth):
     rs_value = rs_time_shift * camera_fps
 
     # Sample at previous frame
-    prev_pos = vl_sdv.vec3d(0, 0, 0)
+    prev_pos = vl_sdv.vec3d(0.0, 0.0, 0.0)
     prev_frame = frame - 1
     if frame > 1:
         prev_pos = _convert_2d_to_3d_point_undistort(
@@ -387,7 +386,7 @@ def _remove_rs_from_2d_point(point_group, camera, frame, input_2d, depth):
         )
 
     # Sample at next frame
-    next_pos = vl_sdv.vec3d(0, 0, 0)
+    next_pos = vl_sdv.vec3d(0.0, 0.0, 0.0)
     next_frame = frame + 1
     if frame < num_frames:
         next_pos = _convert_2d_to_3d_point_undistort(

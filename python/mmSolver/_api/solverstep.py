@@ -486,6 +486,27 @@ class SolverStep(solverbase.SolverBase):
 
     ##########################################
 
+    def get_solver_version(self):
+        """
+        :rtype: int or None
+        """
+        return self._data.get('solver_version', const.SOLVER_VERSION_DEFAULT)
+
+    def set_solver_version(self, value):
+        """
+        :param value: May be SOLVER_VERSION_ONE or SOLVER_VERSION_TWO.
+        """
+        if isinstance(value, int) is False:
+            raise TypeError('Expected int value type, got %r.' % type(value))
+        if value not in const.SOLVER_VERSION_LIST:
+            raise TypeError(
+                'Expected value in list %r, got %r.'
+                % (const.SOLVER_VERSION_LIST, value)
+            )
+        self._data['solver_version'] = value
+
+    ##########################################
+
     def compile(self, col, mkr_list, attr_list, withtest=False):
         """
         Compiles data given into flags for a single run of 'mmSolver'.
@@ -513,7 +534,18 @@ class SolverStep(solverbase.SolverBase):
         assert isinstance(attr_list, list)
         assert self.get_frame_list_length() > 0
 
-        func = 'maya.cmds.mmSolver'
+        solver_version = self.get_solver_version()
+        is_solver_v1 = solver_version == 1
+        is_solver_v2 = solver_version == 2
+        if is_solver_v1 is True:
+            func = 'maya.cmds.mmSolver'
+        elif is_solver_v2 is True:
+            func = 'maya.cmds.mmSolver_v2'
+        else:
+            raise NotImplementedError(
+                'solver_version has invalid value: %r' % solver_version
+            )
+
         args = []
         kwargs = dict()
         kwargs['camera'] = []
@@ -525,12 +557,13 @@ class SolverStep(solverbase.SolverBase):
         precomputed_data = self.get_precomputed_data()
         mkr_state_values = precomputed_data.get(solverbase.MARKER_STATIC_VALUES_KEY)
         attr_state_values = precomputed_data.get(solverbase.ATTR_STATIC_VALUES_KEY)
-        attr_stiff_state_values = precomputed_data.get(
-            solverbase.ATTR_STIFFNESS_STATIC_VALUES_KEY
-        )
-        attr_smooth_state_values = precomputed_data.get(
-            solverbase.ATTR_SMOOTHNESS_STATIC_VALUES_KEY
-        )
+        if is_solver_v1 is True:
+            attr_stiff_state_values = precomputed_data.get(
+                solverbase.ATTR_STIFFNESS_STATIC_VALUES_KEY
+            )
+            attr_smooth_state_values = precomputed_data.get(
+                solverbase.ATTR_SMOOTHNESS_STATIC_VALUES_KEY
+            )
 
         # Get Markers and Cameras
         markers, cameras = api_compile.markersAndCameras_compile_flags(
@@ -562,25 +595,27 @@ class SolverStep(solverbase.SolverBase):
 
         # Stiffness Attribute Flags
         stiff_flags = None
-        use_stiffness = self.get_use_stiffness()
-        if use_stiffness is True:
-            stiff_flags = api_compile.attr_stiffness_compile_flags(
-                col,
-                attr_list,
-                attr_static_values=attr_state_values,
-                attr_stiff_static_values=attr_stiff_state_values,
-            )
+        if is_solver_v1 is True:
+            use_stiffness = self.get_use_stiffness()
+            if use_stiffness is True:
+                stiff_flags = api_compile.attr_stiffness_compile_flags(
+                    col,
+                    attr_list,
+                    attr_static_values=attr_state_values,
+                    attr_stiff_static_values=attr_stiff_state_values,
+                )
 
         # Smoothness Attribute Flags
         smooth_flags = None
-        use_smoothness = self.get_use_smoothness()
-        if use_smoothness is True:
-            smooth_flags = api_compile.attr_smoothness_compile_flags(
-                col,
-                attr_list,
-                attr_static_values=attr_state_values,
-                attr_smooth_static_values=attr_smooth_state_values,
-            )
+        if is_solver_v1 is True:
+            use_smoothness = self.get_use_smoothness()
+            if use_smoothness is True:
+                smooth_flags = api_compile.attr_smoothness_compile_flags(
+                    col,
+                    attr_list,
+                    attr_static_values=attr_state_values,
+                    attr_smooth_static_values=attr_smooth_state_values,
+                )
 
         # Get Frames
         frm_list = self.get_frame_list()
@@ -605,12 +640,20 @@ class SolverStep(solverbase.SolverBase):
             kwargs['solverType'] = solver_type
 
         scene_graph_mode = self.get_scene_graph_mode()
+        frame_solve_mode = self.get_frame_solve_mode()
         if scene_graph_mode is not None:
-            scene_graph_mode = min(const.SCENE_GRAPH_MODE_MAYA_DAG, scene_graph_mode)
+            # Otherwise the 'auto' scene graph will be passed to
+            # mmSolver and mmSolver command does not support 'auto'
+            # mode.
+            scene_graph_mode = max(const.SCENE_GRAPH_MODE_MAYA_DAG, scene_graph_mode)
+
+            if scene_graph_mode == const.SCENE_GRAPH_MODE_MAYA_DAG:
+                assert frame_solve_mode == const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE
             kwargs['sceneGraphMode'] = scene_graph_mode
 
-        frame_solve_mode = self.get_frame_solve_mode()
         if frame_solve_mode is not None:
+            if frame_solve_mode == const.FRAME_SOLVE_MODE_PER_FRAME:
+                assert scene_graph_mode == const.SCENE_GRAPH_MODE_MM_SCENE_GRAPH
             kwargs['frameSolveMode'] = frame_solve_mode
 
         iterations = self.get_max_iterations()
@@ -659,20 +702,29 @@ class SolverStep(solverbase.SolverBase):
 
         kwargs['timeEvalMode'] = self.get_time_eval_mode()
 
-        value = self.get_remove_unused_markers()
-        if value is not None:
-            kwargs['removeUnusedMarkers'] = value
+        if is_solver_v1 is True:
+            value = self.get_remove_unused_markers()
+            if value is not None:
+                kwargs['removeUnusedMarkers'] = value
 
-        value = self.get_remove_unused_attributes()
-        if value is not None:
-            kwargs['removeUnusedAttributes'] = value
+            value = self.get_remove_unused_attributes()
+            if value is not None:
+                kwargs['removeUnusedAttributes'] = value
+
+        if is_solver_v2 is True:
+            key = 'verbose'
+            if key in kwargs:
+                del kwargs[key]
 
         action = api_action.Action(func=func, args=args, kwargs=kwargs)
 
         # Check the inputs and outputs are valid.
         vaction = None
         if withtest is True:
-            assert api_action.action_func_is_mmSolver(action) is True
+            is_mmsolver_v1 = api_action.action_func_is_mmSolver_v1(action)
+            is_mmsolver_v2 = api_action.action_func_is_mmSolver_v2(action)
+            assert any((is_mmsolver_v1, is_mmsolver_v2))
+
             vfunc = func
             vargs = list(args)
             vkwargs = kwargs.copy()
@@ -686,4 +738,5 @@ class SolverStep(solverbase.SolverBase):
         yield action, vaction
 
 
+# For backwards compatibility.
 Solver = SolverStep

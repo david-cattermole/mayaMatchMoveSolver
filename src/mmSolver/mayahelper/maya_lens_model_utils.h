@@ -31,23 +31,29 @@
 #include <maya/MTimeArray.h>
 
 // MM Solver
-#include "mmSolver/lens/lens_model.h"
+#include <mmlens/lens_model.h>
+
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
 
 namespace mmsolver {
 
-MStatus setLensModelAttributeValue(std::shared_ptr<LensModel> &lensModel,
-                                   const AttrSolverType attrType,
-                                   const double value);
+MStatus getLensModelFromCamera(
+    const CameraPtr &camera, std::shared_ptr<mmlens::LensModel> &out_lensModel);
+
+MStatus setLensModelAttributeValue(
+    std::shared_ptr<mmlens::LensModel> &lensModel,
+    const AttrSolverType attrType, const double value);
 
 MStatus constructLensModelList(
     const CameraPtrList &cameraList, const MarkerPtrList &markerList,
     const AttrPtrList &attrList, const MTimeArray &frameList,
-    std::vector<std::shared_ptr<LensModel>> &out_markerFrameToLensModelList,
-    std::vector<std::shared_ptr<LensModel>> &out_attrFrameToLensModelList,
-    std::vector<std::shared_ptr<LensModel>> &out_lensModelList);
+    std::vector<std::shared_ptr<mmlens::LensModel>>
+        &out_markerFrameToLensModelList,
+    std::vector<std::shared_ptr<mmlens::LensModel>>
+        &out_attrFrameToLensModelList,
+    std::vector<std::shared_ptr<mmlens::LensModel>> &out_lensModelList);
 
 }  // namespace mmsolver
 

@@ -47,6 +47,7 @@
 #include "mmSolver/adjust/adjust_defines.h"
 #include "mmSolver/core/reprojection.h"
 #include "mmSolver/mayahelper/maya_camera.h"
+#include "mmSolver/mayahelper/maya_lens_model_utils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
@@ -98,6 +99,8 @@ MSyntax MMReprojectionCmd::newSyntax() {
                    MSyntax::kBoolean);
     syntax.addFlag(WITH_CAMERA_DIR_RATIO_FLAG, WITH_CAMERA_DIR_RATIO_FLAG_LONG,
                    MSyntax::kBoolean);
+    syntax.addFlag(DISTORT_MODE_FLAG, DISTORT_MODE_FLAG_LONG,
+                   MSyntax::kUnsigned);
 
     syntax.makeFlagMultiUse(TIME_FLAG);
 
@@ -112,6 +115,13 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
 
     MArgDatabase argData(syntax(), args, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    if (!m_cameraPtr) {
+        MMSOLVER_MAYA_ERR(
+            "mmReprojection command: Camera is not defined, this should not "
+            "happen.");
+        return MStatus::kFailure;
+    }
 
     // Get Camera Point flag
     m_asCameraPoint = false;
@@ -185,6 +195,16 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
         status = argData.getFlagArgument(WITH_CAMERA_DIR_RATIO_FLAG, 0,
                                          m_withCameraDirRatio);
         CHECK_MSTATUS_AND_RETURN_IT(status);
+    }
+
+    // Get 'Distort Mode' flag
+    m_distort_mode = ReprojectionDistortMode::kNone;
+    bool distortModeFlagIsSet = argData.isFlagSet(DISTORT_MODE_FLAG, &status);
+    if (distortModeFlagIsSet == true) {
+        uint32_t value = 0;
+        status = argData.getFlagArgument(DISTORT_MODE_FLAG, 0, value);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        m_distort_mode = static_cast<ReprojectionDistortMode>(value);
     }
 
     // Get World Flag flag or Get Transforms
@@ -263,13 +283,13 @@ MStatus MMReprojectionCmd::parseArgs(const MArgList &args) {
     CHECK_MSTATUS_AND_RETURN_IT(status);
     nodeExistsAndIsType(cameraTransform, MFn::Type::kTransform);
     CHECK_MSTATUS_AND_RETURN_IT(status);
-    m_camera.setTransformNodeName(cameraTransform);
+    m_cameraPtr->setTransformNodeName(cameraTransform);
 
     cameraShape = cameraArgs.asString(1, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     nodeExistsAndIsType(cameraShape, MFn::Type::kCamera);
     CHECK_MSTATUS_AND_RETURN_IT(status);
-    m_camera.setShapeNodeName(cameraShape);
+    m_cameraPtr->setShapeNodeName(cameraShape);
 
     return status;
 }
@@ -300,11 +320,18 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
         return status;
     }
 
+    if (!m_cameraPtr) {
+        MMSOLVER_MAYA_ERR(
+            "mmReprojection command: Camera is not defined, this should not "
+            "happen.");
+        return MStatus::kFailure;
+    }
+
     // Flush the query cache for the camera.
-    m_camera.clearAuxilaryAttrsCache();
-    m_camera.clearProjMatrixCache();
-    m_camera.clearWorldProjMatrixCache();
-    m_camera.clearAttrValueCache();
+    m_cameraPtr->clearAuxilaryAttrsCache();
+    m_cameraPtr->clearProjMatrixCache();
+    m_cameraPtr->clearWorldProjMatrixCache();
+    m_cameraPtr->clearAttrValueCache();
 
     // Camera
     double focalLength = 35;
@@ -357,12 +384,12 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     double outHorizontalPan;
     double outVerticalPan;
 
-    Attr cameraMatrixAttr = m_camera.getMatrixAttr();
+    Attr cameraMatrixAttr = m_cameraPtr->getMatrixAttr();
 
     // Assumed to *not* be animated.
-    farClipPlane = m_camera.getFarClipPlaneValue();
-    cameraScale = m_camera.getCameraScaleValue();
-    filmFit = m_camera.getFilmFitValue();
+    farClipPlane = m_cameraPtr->getFarClipPlaneValue();
+    cameraScale = m_cameraPtr->getCameraScaleValue();
+    filmFit = m_cameraPtr->getFilmFitValue();
 
     // Lists of values to collect, then loop over and batch compute.
     MMatrixArray tfmMatrixList;
@@ -373,17 +400,25 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     std::vector<double> verticalFilmApertureList;
     std::vector<double> horizontalFilmOffsetList;
     std::vector<double> verticalFilmOffsetList;
+    std::vector<std::shared_ptr<mmlens::LensModel>> lensModelList;
 
     const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
 
+    const bool needLensModels =
+        m_distort_mode != ReprojectionDistortMode::kNone;
+    std::shared_ptr<mmlens::LensModel> lensModel;
+    if (needLensModels) {
+        status = mmsolver::getLensModelFromCamera(m_cameraPtr, lensModel);
+        CHECK_MSTATUS(status);
+    }
+
     // Query all the input data at once.
     if (m_nodeList.length() == 0 && m_givenWorldPoint == true) {
-        // We use the user given world space point argument, rather
-        // than the list of transform nodes as input.
         MMatrix tfmMatrix;
         tfmMatrix[3][0] = m_worldPoint.x;
         tfmMatrix[3][1] = m_worldPoint.y;
         tfmMatrix[3][2] = m_worldPoint.z;
+
         for (unsigned int j = 0; j < m_timeList.length(); ++j) {
             MTime time = m_timeList[j];
             timeList.append(time);
@@ -393,16 +428,17 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
             camMatrixList.append(camMatrix);
             tfmMatrixList.append(tfmMatrix);
 
-            // Possibly Animated
-            focalLength = m_camera.getFocalLengthValue(time, timeEvalMode);
+            // These camera attributes could be Animated, so we sample
+            // them at each time value.
+            focalLength = m_cameraPtr->getFocalLengthValue(time, timeEvalMode);
             horizontalFilmAperture =
-                m_camera.getFilmbackWidthValue(time, timeEvalMode);
+                m_cameraPtr->getFilmbackWidthValue(time, timeEvalMode);
             verticalFilmAperture =
-                m_camera.getFilmbackHeightValue(time, timeEvalMode);
+                m_cameraPtr->getFilmbackHeightValue(time, timeEvalMode);
             horizontalFilmOffset =
-                m_camera.getFilmbackOffsetXValue(time, timeEvalMode);
+                m_cameraPtr->getFilmbackOffsetXValue(time, timeEvalMode);
             verticalFilmOffset =
-                m_camera.getFilmbackOffsetYValue(time, timeEvalMode);
+                m_cameraPtr->getFilmbackOffsetYValue(time, timeEvalMode);
 
             focalLengthList.push_back(focalLength);
             horizontalFilmApertureList.push_back(horizontalFilmAperture);
@@ -411,7 +447,6 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
             verticalFilmOffsetList.push_back(verticalFilmOffset);
         }
     } else {
-        // Reproject the list of transform nodes given to the command.
         for (unsigned int i = 0; i < m_nodeList.length(); ++i) {
             MDagPath dagPath;
             status = m_nodeList.getDagPath(i, dagPath);
@@ -434,16 +469,18 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
                 camMatrixList.append(camMatrix);
                 tfmMatrixList.append(tfmMatrix);
 
-                // Possibly Animated
-                focalLength = m_camera.getFocalLengthValue(time, timeEvalMode);
+                // These camera attributes could be Animated, so we
+                // sample them at each time value.
+                focalLength =
+                    m_cameraPtr->getFocalLengthValue(time, timeEvalMode);
                 horizontalFilmAperture =
-                    m_camera.getFilmbackWidthValue(time, timeEvalMode);
+                    m_cameraPtr->getFilmbackWidthValue(time, timeEvalMode);
                 verticalFilmAperture =
-                    m_camera.getFilmbackHeightValue(time, timeEvalMode);
+                    m_cameraPtr->getFilmbackHeightValue(time, timeEvalMode);
                 horizontalFilmOffset =
-                    m_camera.getFilmbackOffsetXValue(time, timeEvalMode);
+                    m_cameraPtr->getFilmbackOffsetXValue(time, timeEvalMode);
                 verticalFilmOffset =
-                    m_camera.getFilmbackOffsetYValue(time, timeEvalMode);
+                    m_cameraPtr->getFilmbackOffsetYValue(time, timeEvalMode);
 
                 focalLengthList.push_back(focalLength);
                 horizontalFilmApertureList.push_back(horizontalFilmAperture);
@@ -461,7 +498,6 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
         MMatrix camMatrix = camMatrixList[i];
         MMatrix tfmMatrix = tfmMatrixList[i];
 
-        // Possibly Animated
         focalLength = focalLengthList[i];
         horizontalFilmAperture = horizontalFilmApertureList[i];
         verticalFilmAperture = verticalFilmApertureList[i];
@@ -479,6 +515,9 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
 
             // Image
             imageWidth, imageHeight,
+
+            // Lens Distortion
+            m_distort_mode, lensModel,
 
             // Manipulation
             applyMatrix, overrideScreenX, overrideScreenY, overrideScreenZ,

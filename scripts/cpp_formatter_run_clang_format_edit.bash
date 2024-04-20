@@ -25,9 +25,18 @@ PROJECT_ROOT=`pwd`
 find \
     ${PROJECT_ROOT}/src \
     ${PROJECT_ROOT}/include \
-    ${PROJECT_ROOT}/mmscenegraph/cppbind/src \
-    ${PROJECT_ROOT}/mmscenegraph/cppbind/include \
-    ${PROJECT_ROOT}/mmscenegraph/cppbind/tests \
+    ${PROJECT_ROOT}/tools/lensdistortion/src \
+    ${PROJECT_ROOT}/lib/cppbind/mmcore/src \
+    ${PROJECT_ROOT}/lib/cppbind/mmcore/include \
+    ${PROJECT_ROOT}/lib/cppbind/mmlens/src \
+    ${PROJECT_ROOT}/lib/cppbind/mmlens/include \
+    ${PROJECT_ROOT}/lib/cppbind/mmlens/tests \
+    ${PROJECT_ROOT}/lib/cppbind/mmimage/src \
+    ${PROJECT_ROOT}/lib/cppbind/mmimage/include \
+    ${PROJECT_ROOT}/lib/cppbind/mmimage/tests \
+    ${PROJECT_ROOT}/lib/cppbind/mmscenegraph/src \
+    ${PROJECT_ROOT}/lib/cppbind/mmscenegraph/include \
+    ${PROJECT_ROOT}/lib/cppbind/mmscenegraph/tests \
     -not -iname *cxx* -iname *.h -or -not -iname *cxx* -iname *.cpp \
     | xargs clang-format -i --style=file
 

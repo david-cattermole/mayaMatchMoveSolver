@@ -59,14 +59,19 @@
 #include <maya/MDGContextGuard.h>
 #endif
 
+// MM Solver Libs
+#include <mmsolverlibs/debug.h>
+
 // MM Scene Graph
 #include <mmscenegraph/mmscenegraph.h>
+
+// MM Core
+#include <mmcore/mmdata.h>
+#include <mmcore/mmmath.h>
 
 // MM Solver
 #include "adjust_base.h"
 #include "adjust_data.h"
-#include "mmSolver/core/mmdata.h"
-#include "mmSolver/core/mmmath.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_lens_model_utils.h"
@@ -84,7 +89,10 @@ namespace mmsg = mmscenegraph;
 // the matrix of a marker node. It doesn't matter which marker node,
 // however it does matter that it's a marker node, if the eval is
 // performed with a bundle node the error continues to happen.
-#define FORCE_TRIGGER_EVAL 1
+//
+// 2023-02-06 (YYYY-MM-DD): Disabling this toggle. It doesn't seem to
+// make any difference in real-world tests.
+#define FORCE_TRIGGER_EVAL 0
 
 // Pre-processor-level on/off switch for re-use of the Marker
 // positions. This is an optimisation to avoid re-evaluating the
@@ -113,10 +121,10 @@ void measureErrors_mayaDag(const int numberOfErrors,
                            const int numberOfAttrSmoothnessErrors,
                            const std::vector<bool> &frameIndexEnable,
                            const std::vector<bool> &errorMeasurements,
-                           double *errors, SolverData *ud, double &error_avg,
-                           double &error_max, double &error_min,
-                           MStatus &status) {
-    UNUSED(numberOfErrors);
+                           const double imageWidth, double *errors,
+                           SolverData *ud, double &error_avg, double &error_max,
+                           double &error_min, MStatus &status) {
+    MMSOLVER_CORE_UNUSED(numberOfErrors);
 
     // Trigger an DG Evaluation at a different time, to help Maya
     // evaluate at the correct frame.
@@ -184,23 +192,34 @@ void measureErrors_mayaDag(const int numberOfErrors,
         mkr_x = mkr_mpos.x;
         mkr_y = mkr_mpos.y;
 #else
-        status = marker->getPosXY(mkr_x, mkr_y, frame, timeEvalMode);
+        bool applyOverscan = true;
+        status =
+            marker->getPosXY(mkr_x, mkr_y, frame, timeEvalMode, applyOverscan);
         CHECK_MSTATUS(status);
 #endif
-        // Scale marker Y.
-        {
-            double filmBackWidth =
-                camera->getFilmbackWidthValue(frame, timeEvalMode);
-            double filmBackHeight =
-                camera->getFilmbackHeightValue(frame, timeEvalMode);
-            int32_t renderWidth = camera->getRenderWidthValue();
-            int32_t renderHeight = camera->getRenderHeightValue();
-            double filmBackAspect = filmBackWidth / filmBackHeight;
-            double renderAspect = static_cast<double>(renderWidth) /
-                                  static_cast<double>(renderHeight);
-            double aspect = renderAspect / filmBackAspect;
-            mkr_y *= aspect;
-        }
+
+        const short filmFit = camera->getFilmFitValue();
+        const double filmBackWidth =
+            camera->getFilmbackWidthValue(frame, timeEvalMode);
+        const double filmBackHeight =
+            camera->getFilmbackHeightValue(frame, timeEvalMode);
+        const int32_t renderWidth = camera->getRenderWidthValue();
+        const int32_t renderHeight = camera->getRenderHeightValue();
+
+        const double filmBackAspect = filmBackWidth / filmBackHeight;
+        const double renderAspect = static_cast<double>(renderWidth) /
+                                    static_cast<double>(renderHeight);
+
+        // The Marker position must be scaled slightly based on the
+        // Camera's FilmFit attribute, because the camera projection
+        // matrix already has the same scale factors embedded in the
+        // matrix.
+        //
+        // This is only needed for the 'Maya DAG' mode, because the
+        // 'MM SceneGraph' (Rust) code already accounts for this
+        // change.
+        applyFilmFitCorrectionScaleBackward(filmFit, filmBackAspect,
+                                            renderAspect, mkr_x, mkr_y);
 
         double mkr_weight = ud->markerWeightList[i];
         assert(mkr_weight >
@@ -244,7 +263,7 @@ void measureErrors_mayaDag(const int numberOfErrors,
         bool behind_camera = false;
         double behind_camera_error_factor = 1.0;
         double cam_dot_bnd = cam_dir * bnd_dir;
-        // MMSOLVER_WRN("Camera DOT Bundle: " << cam_dot_bnd);
+        // MMSOLVER_MAYA_WRN("Camera DOT Bundle: " << cam_dot_bnd);
         if (cam_dot_bnd < 0.0) {
             behind_camera = true;
             behind_camera_error_factor = 1e+6;
@@ -255,8 +274,8 @@ void measureErrors_mayaDag(const int numberOfErrors,
         // bad idea as it will introduce non-linearities, we are
         // better off using something like 'x*x - y*y'. It would
         // be best to test this detail.
-        const double dx = std::fabs(mkr_x - point_x) * ud->imageWidth;
-        const double dy = std::fabs(mkr_y - point_y) * ud->imageWidth;
+        const double dx = std::fabs(mkr_x - point_x) * imageWidth;
+        const double dy = std::fabs(mkr_y - point_y) * imageWidth;
 
         auto errorIndex_x = i * ERRORS_PER_MARKER;
         auto errorIndex_y = errorIndex_x + 1;
@@ -269,7 +288,7 @@ void measureErrors_mayaDag(const int numberOfErrors,
         ud->errorList[errorIndex_y] = dy * behind_camera_error_factor;
 
         const double d =
-            distance_2d(mkr_x, mkr_y, point_x, point_y) * ud->imageWidth;
+            distance_2d(mkr_x, mkr_y, point_x, point_y) * imageWidth;
         ud->errorDistanceList[i] = d;
         error_avg += d;
         if (d > error_max) {
@@ -284,7 +303,7 @@ void measureErrors_mayaDag(const int numberOfErrors,
         error_max = 0.0;
         error_min = 0.0;
         error_avg = 0.0;
-        MMSOLVER_ERR("No Marker measurements were taken.");
+        MMSOLVER_MAYA_ERR("No Marker measurements were taken.");
     } else {
         error_avg *= 1.0 / numberOfErrorsMeasured;
     }
@@ -376,13 +395,14 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
                                 const int numberOfAttrSmoothnessErrors,
                                 const std::vector<bool> &frameIndexEnable,
                                 const std::vector<bool> &errorMeasurements,
-                                double *errors, SolverData *ud,
-                                double &error_avg, double &error_max,
-                                double &error_min, MStatus &status) {
-    UNUSED(numberOfErrors);
-    UNUSED(numberOfAttrStiffnessErrors);
-    UNUSED(numberOfAttrSmoothnessErrors);
-    UNUSED(status);
+                                const double imageWidth, double *errors,
+                                SolverData *ud, double &error_avg,
+                                double &error_max, double &error_min,
+                                MStatus &status) {
+    MMSOLVER_CORE_UNUSED(numberOfErrors);
+    MMSOLVER_CORE_UNUSED(numberOfAttrStiffnessErrors);
+    MMSOLVER_CORE_UNUSED(numberOfAttrSmoothnessErrors);
+    MMSOLVER_CORE_UNUSED(status);
 
     // Evaluate Scene.
     ud->mmsgFlatScene.evaluate(ud->mmsgAttrDataBlock, ud->mmsgFrameList);
@@ -391,8 +411,8 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
     auto num_markers = ud->mmsgFlatScene.num_markers();
     auto num_frames = ud->mmsgFrameList.size();
     auto num_marker_lens_models = ud->lensModelList.size();
-    UNUSED(num_points);
-    UNUSED(num_markers);
+    MMSOLVER_CORE_UNUSED(num_points);
+    MMSOLVER_CORE_UNUSED(num_markers);
     assert(num_points == num_markers);
 
     auto out_point_list = ud->mmsgFlatScene.points();
@@ -460,8 +480,8 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
 
         auto dx = std::fabs(mkr_x - point_x);
         auto dy = std::fabs(mkr_y - point_y);
-        auto dx_pixels = dx * ud->imageWidth;
-        auto dy_pixels = dy * ud->imageWidth;
+        auto dx_pixels = dx * imageWidth;
+        auto dy_pixels = dy * imageWidth;
 
         auto errorIndex_x = i * ERRORS_PER_MARKER;
         auto errorIndex_y = errorIndex_x + 1;
@@ -475,7 +495,7 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
         ud->errorList[errorIndex_x] = dx_pixels * behind_camera_error_factor;
         ud->errorList[errorIndex_y] = dy_pixels * behind_camera_error_factor;
 
-        const double d = std::sqrt((dx * dx) + (dy * dy)) * ud->imageWidth;
+        const double d = std::sqrt((dx * dx) + (dy * dy)) * imageWidth;
         ud->errorDistanceList[i] = d;
         error_avg += d;
         if (d > error_max) {
@@ -490,7 +510,7 @@ void measureErrors_mmSceneGraph(const int numberOfErrors,
         error_max = 0.0;
         error_min = 0.0;
         error_avg = 0.0;
-        MMSOLVER_ERR("No Marker measurements were taken.");
+        MMSOLVER_MAYA_ERR("No Marker measurements were taken.");
     } else {
         error_avg *= 1.0 / numberOfErrorsMeasured;
     }
@@ -504,9 +524,10 @@ void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
                    const int numberOfAttrStiffnessErrors,
                    const int numberOfAttrSmoothnessErrors,
                    const std::vector<bool> &frameIndexEnable,
-                   const std::vector<bool> &errorMeasurements, double *errors,
-                   SolverData *ud, double &error_avg, double &error_max,
-                   double &error_min, MStatus &status) {
+                   const std::vector<bool> &errorMeasurements,
+                   const double imageWidth, double *errors, SolverData *ud,
+                   double &error_avg, double &error_max, double &error_min,
+                   MStatus &status) {
     error_avg = 0.0;
     error_max = -0.0;
     error_min = std::numeric_limits<double>::max();
@@ -519,12 +540,12 @@ void measureErrors(const int numberOfErrors, const int numberOfMarkerErrors,
         measureErrors_mayaDag(
             numberOfErrors, numberOfMarkerErrors, numberOfAttrStiffnessErrors,
             numberOfAttrSmoothnessErrors, frameIndexEnable, errorMeasurements,
-            errors, ud, error_avg, error_max, error_min, status);
+            imageWidth, errors, ud, error_avg, error_max, error_min, status);
     } else if (sceneGraphMode == SceneGraphMode::kMMSceneGraph) {
         measureErrors_mmSceneGraph(
             numberOfErrors, numberOfMarkerErrors, numberOfAttrStiffnessErrors,
             numberOfAttrSmoothnessErrors, frameIndexEnable, errorMeasurements,
-            errors, ud, error_avg, error_max, error_min, status);
+            imageWidth, errors, ud, error_avg, error_max, error_min, status);
     }
 
     // Changes the errors to be scaled by the loss function.

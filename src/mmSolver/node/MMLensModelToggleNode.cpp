@@ -38,8 +38,9 @@
 #include <maya/MTypeId.h>
 
 // MM Solver
+#include <mmlens/lens_model.h>
+
 #include "MMLensData.h"
-#include "mmSolver/lens/lens_model.h"
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/number_utils.h"
@@ -83,7 +84,7 @@ MStatus MMLensModelToggleNode::compute(const MPlug &plug, MDataBlock &data) {
         MDataHandle inLensHandle = data.inputValue(a_inLens, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
         MMLensData *inputLensData = (MMLensData *)inLensHandle.asPluginData();
-        std::shared_ptr<LensModel> inputLensModel;
+        std::shared_ptr<mmlens::LensModel> inputLensModel;
         if (inputLensData != nullptr) {
             inputLensModel = inputLensData->getValue();
         }

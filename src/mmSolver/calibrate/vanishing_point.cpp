@@ -25,11 +25,12 @@
 #include <cmath>
 
 // MM Solver
+#include <mmcore/mmcamera.h>
+#include <mmcore/mmcoord.h>
+#include <mmcore/mmdata.h>
+#include <mmcore/mmmath.h>
+
 #include "mmSolver/calibrate/calibrate_common.h"
-#include "mmSolver/core/mmcamera.h"
-#include "mmSolver/core/mmcoord.h"
-#include "mmSolver/core/mmdata.h"
-#include "mmSolver/core/mmmath.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace calibrate {
@@ -130,7 +131,7 @@ bool twoVanishingPoints(double focalLength_mm, double filmBackWidth_mm,
     auto ok = calcFocalLength(vanishingPointA, vanishingPointB, principalPoint,
                               focalLengthRatio);
     if (!ok) {
-        MMSOLVER_ERR("Failed to calculate focal length.");
+        MMSOLVER_MAYA_ERR("Failed to calculate focal length.");
         return false;
     }
 

@@ -23,8 +23,9 @@
 #define MM_SOLVER_CORE_CALIBRATE_VANISHING_POINT_H
 
 // MM Solver
+#include <mmcore/mmdata.h>
+
 #include "mmSolver/calibrate/calibrate_common.h"
-#include "mmSolver/core/mmdata.h"
 
 namespace calibrate {
 

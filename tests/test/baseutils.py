@@ -23,8 +23,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import pprint
 import os
-import math
 import time
 import unittest
 import cProfile as profile
@@ -79,6 +79,13 @@ class TestBase(unittest.TestCase):
 
     def approx_equal(self, x, y, eps=0.0001):
         return x == y or (x < (y + eps) and x > (y - eps))
+
+    def assertApproxEqual(self, x, y, eps=0.0001):
+        if self.approx_equal(x, y, eps=eps) is False:
+            raise AssertionError(
+                '{x} != {y} (epsilon is {eps})'.format(x=x, y=y, eps=eps)
+            )
+        return
 
     def get_data_root(self):
         path = os.path.join(os.path.dirname(__file__), '..', 'data')
@@ -138,6 +145,7 @@ class TestBase(unittest.TestCase):
 
         # Check the final error values
         frm_err_list = mmapi.merge_frame_error_list(solres_list)
+        print('frame error list', pprint.pformat(dict(frm_err_list)))
 
         avg_err = mmapi.get_average_frame_error_list(frm_err_list)
         print('avg error', avg_err)

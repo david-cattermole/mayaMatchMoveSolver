@@ -25,8 +25,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
-import math
 import time
 import unittest
 
@@ -38,7 +36,6 @@ except RuntimeError:
     pass
 import maya.cmds
 
-import mmSolver.api as mmapi
 import test.test_solver.solverutils as solverUtils
 
 
@@ -130,8 +127,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         ry = maya.cmds.getAttr(cam_tfm + '.ry')
         print('rx', rx)
         print('ry', ry)
-        assert self.approx_equal(rx, -2.85, eps=0.1)
-        assert self.approx_equal(ry, -2.86, eps=0.1)
+        self.assertApproxEqual(rx, -2.85, eps=0.1)
+        self.assertApproxEqual(ry, -2.86, eps=0.1)
 
     def do_solve_with_initial_value_twenty(self, solver_name, solver_index):
         if self.haveSolverType(name=solver_name) is False:
@@ -182,8 +179,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         ry = maya.cmds.getAttr(cam_tfm + '.ry')
         print('rx', rx)
         print('ry', ry)
-        assert self.approx_equal(rx, 0.0, eps=0.01)
-        assert self.approx_equal(ry, 0.0, eps=0.01)
+        self.assertApproxEqual(rx, 0.0, eps=0.01)
+        self.assertApproxEqual(ry, 0.0, eps=0.01)
 
     def do_solve_with_initial_value_threeSixty(self, solver_name, solver_index):
         if self.haveSolverType(name=solver_name) is False:
@@ -234,8 +231,8 @@ class TestSolverIssue54(solverUtils.SolverTestCase):
         ry = maya.cmds.getAttr(cam_tfm + '.ry')
         print('rx', rx)
         print('ry', ry)
-        assert self.approx_equal(rx, 360.0, eps=0.01)
-        assert self.approx_equal(ry, 360.0, eps=0.01)
+        self.assertApproxEqual(rx, 360.0, eps=0.01)
+        self.assertApproxEqual(ry, 360.0, eps=0.01)
 
     def test_init_ceres(self):
         """

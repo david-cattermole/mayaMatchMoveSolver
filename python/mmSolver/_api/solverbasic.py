@@ -456,6 +456,10 @@ class SolverBasic(solverbase.SolverBase):
             for action, vaction in generator:
                 yield action, vaction
 
+        time_eval_mode = const.TIME_EVAL_MODE_DEFAULT
+        if eval_complex_graphs is True:
+            time_eval_mode = const.TIME_EVAL_MODE_SET_TIME
+
         if use_single_frame is True:
             # Single frame solve
             sol = solverstep.SolverStep()
@@ -468,6 +472,7 @@ class SolverBasic(solverbase.SolverBase):
             sol.set_use_stiffness(False)
             sol.set_solver_type(solver_type)
             sol.set_scene_graph_mode(scene_graph_mode)
+            sol.set_time_eval_mode(time_eval_mode)
             sol.set_frame_solve_mode(const.FRAME_SOLVE_MODE_ALL_FRAMES_AT_ONCE)
             sol.set_remove_unused_markers(remove_unused_objects)
             sol.set_remove_unused_attributes(remove_unused_objects)
@@ -480,10 +485,6 @@ class SolverBasic(solverbase.SolverBase):
             for action, vaction in generator:
                 yield action, vaction
         else:
-            time_eval_mode = const.TIME_EVAL_MODE_DEFAULT
-            if eval_complex_graphs is True:
-                time_eval_mode = const.TIME_EVAL_MODE_SET_TIME
-
             if scene_graph_mode == const.SCENE_GRAPH_MODE_MAYA_DAG:
                 # Multiple frame solve, per-frame
                 cache = api_compile.create_compile_solver_cache()

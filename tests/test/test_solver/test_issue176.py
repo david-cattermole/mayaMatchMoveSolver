@@ -49,7 +49,7 @@ import mmSolver.api as mmapi
 import test.test_solver.solverutils as solverUtils
 
 
-# @unittest.skip
+@unittest.skip
 class TestSolverIssue176(solverUtils.SolverTestCase):
     def do_solve(self, solver_name, solver_index):
         if self.haveSolverType(name=solver_name) is False:

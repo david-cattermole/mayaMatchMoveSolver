@@ -27,7 +27,6 @@ from . import uvtrack_format_blender as uv_fmt
 def get_selected_clip_objects(context):
     # The context must be a clip editor only, otherwise we cannot get
     # the movieclip.
-    print('context.area.type', context.area.type)
     if context.area.type == 'CLIP_EDITOR':
         clip = context.edit_movieclip
     else:

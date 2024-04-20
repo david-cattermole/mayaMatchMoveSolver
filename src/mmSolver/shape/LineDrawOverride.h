@@ -120,7 +120,7 @@ public:
 
     void handleTraceMessage(const MString &message) const override {
         MGlobal::displayInfo("LineDrawOverride: " + message);
-        MMSOLVER_INFO("LineDrawOverride: " << message.asChar());
+        MMSOLVER_MAYA_INFO("LineDrawOverride: " << message.asChar());
     }
 
 private:

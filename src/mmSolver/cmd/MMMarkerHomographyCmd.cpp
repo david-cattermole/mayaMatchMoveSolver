@@ -187,7 +187,7 @@ MSyntax MMMarkerHomographyCmd::newSyntax() {
 MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     MArgDatabase argData(syntax(), args, &status);
@@ -251,8 +251,10 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
         return status;
     }
 
-    MMSOLVER_VRB("image A: " << m_image_width_a << "x" << m_image_height_a);
-    MMSOLVER_VRB("image B: " << m_image_width_b << "x" << m_image_height_b);
+    MMSOLVER_MAYA_VRB("image A: " << m_image_width_a << "x"
+                                  << m_image_height_a);
+    MMSOLVER_MAYA_VRB("image B: " << m_image_width_b << "x"
+                                  << m_image_height_b);
 
     // Parse objects into Camera intrinsics and Tracking Markers.
     uint32_t numberOfMarkerFlags =
@@ -269,8 +271,8 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         if (markerArgs.length() != 2) {
-            MMSOLVER_ERR("Marker argument list must have 2 arguments; "
-                         << "\"markerA\", \"markerB\".");
+            MMSOLVER_MAYA_ERR("Marker argument list must have 2 arguments; "
+                              << "\"markerA\", \"markerB\".");
             continue;
         }
 
@@ -282,11 +284,11 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         objectType = computeObjectType(markerObject, dagPath);
         if (objectType != ObjectType::kMarker) {
-            MMSOLVER_ERR("Given marker node is not a Marker; "
-                         << markerNameA.asChar());
+            MMSOLVER_MAYA_ERR("Given marker node is not a Marker; "
+                              << markerNameA.asChar());
             continue;
         }
-        MMSOLVER_VRB("Got markerNameA: " << markerNameA.asChar());
+        MMSOLVER_MAYA_VRB("Got markerNameA: " << markerNameA.asChar());
 
         markerNameB = markerArgs.asString(1, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -296,11 +298,11 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         objectType = computeObjectType(markerObject, dagPath);
         if (objectType != ObjectType::kMarker) {
-            MMSOLVER_ERR("Given marker node is not a Marker; "
-                         << markerNameB.asChar());
+            MMSOLVER_MAYA_ERR("Given marker node is not a Marker; "
+                              << markerNameB.asChar());
             continue;
         }
-        MMSOLVER_VRB("Got markerNameB: " << markerNameB.asChar());
+        MMSOLVER_MAYA_VRB("Got markerNameB: " << markerNameB.asChar());
 
         MarkerPtr marker_a = MarkerPtr(new Marker());
         marker_a->setNodeName(markerNameA);
@@ -310,8 +312,8 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
         marker_b->setNodeName(markerNameB);
         marker_b->setCamera(m_camera_b);
 
-        std::shared_ptr<LensModel> lensModel_a;
-        std::shared_ptr<LensModel> lensModel_b;
+        std::shared_ptr<mmlens::LensModel> lensModel_a;
+        std::shared_ptr<mmlens::LensModel> lensModel_b;
         {
             MarkerPtrList markerList;
             markerList.push_back(marker_a);
@@ -327,9 +329,11 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
             frameList.append(m_time_a);
             frameList.append(m_time_b);
 
-            std::vector<std::shared_ptr<LensModel>> markerFrameToLensModelList;
-            std::vector<std::shared_ptr<LensModel>> attrFrameToLensModelList;
-            std::vector<std::shared_ptr<LensModel>> lensModelList;
+            std::vector<std::shared_ptr<mmlens::LensModel>>
+                markerFrameToLensModelList;
+            std::vector<std::shared_ptr<mmlens::LensModel>>
+                attrFrameToLensModelList;
+            std::vector<std::shared_ptr<mmlens::LensModel>> lensModelList;
 
             status = mmsolver::constructLensModelList(
                 cameraList, markerList, attrList, frameList,
@@ -351,8 +355,8 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
         }
     }
 
-    MMSOLVER_VRB("parse m_marker_list_a size: " << m_marker_list_a.size());
-    MMSOLVER_VRB("parse m_marker_list_b size: " << m_marker_list_b.size());
+    MMSOLVER_MAYA_VRB("parse m_marker_list_a size: " << m_marker_list_a.size());
+    MMSOLVER_MAYA_VRB("parse m_marker_list_b size: " << m_marker_list_b.size());
     assert(m_marker_list_a.size() == m_marker_list_b.size());
 
     return status;
@@ -361,7 +365,7 @@ MStatus MMMarkerHomographyCmd::parseArgs(const MArgList &args) {
 MStatus MMMarkerHomographyCmd::doIt(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
 
-    // Enable to print out 'MMSOLVER_VRB' results.
+    // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     // Read all the flag arguments.
@@ -382,7 +386,7 @@ MStatus MMMarkerHomographyCmd::doIt(const MArgList &args) {
         m_marker_coords_a, m_marker_coords_b, m_marker_list_a, m_marker_list_b,
         homography_matrix);
     if (!relative_pose_ok) {
-        MMSOLVER_ERR("Compute Relative pose failed.");
+        MMSOLVER_MAYA_ERR("Compute Relative pose failed.");
         MMMarkerHomographyCmd::setResult(emptyResult);
         return status;
     }

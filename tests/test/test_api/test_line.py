@@ -23,8 +23,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import sys
-import os
 import unittest
 
 import maya.cmds
@@ -33,7 +31,6 @@ import maya.cmds
 import test.test_api.apiutils as test_api_utils
 import mmSolver.utils.python_compat as pycompat
 import mmSolver.utils.node as node_utils
-import mmSolver._api.bundle as bundle
 import mmSolver._api.camera as camera
 import mmSolver._api.markergroup as markergroup
 import mmSolver._api.marker as marker
@@ -103,7 +100,6 @@ class TestLine(test_api_utils.APITestCase):
         self.assertEqual(x.get_camera(), None)
 
         cam = self.create_camera('myCamera1')
-        cam_tfm = cam.get_transform_node()
         cam_shp = cam.get_shape_node()
 
         # Create line linked to camera
@@ -137,8 +133,6 @@ class TestLine(test_api_utils.APITestCase):
         Set colour of the line.
         """
         magenta = (1.0, 0.0, 1.0)
-        red = (1.0, 0.0, 0.0)
-        green = (0.0, 1.0, 0.0)
         blue = (0.0, 0.0, 1.0)
 
         x = line.Line()

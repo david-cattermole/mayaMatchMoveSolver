@@ -24,8 +24,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
-import math
 import time
 import unittest
 
@@ -63,7 +61,6 @@ class TestSolver11(solverUtils.SolverTestCase):
         )
 
         # Get cameras
-        cameras = []
         camTfm = '|Scene|stA_1_1'
         camShape = '|Scene|stA_1_1|stA_1_1Shape1'
         film_fit = 1  # 3=Overscan, 1=Horizontal

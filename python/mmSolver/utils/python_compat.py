@@ -28,6 +28,7 @@ from __future__ import print_function
 # standard library. This module is used in many places in mmSolver,
 # and we do not want a circular import dependency.
 import sys
+import collections
 
 
 IS_PYTHON_2 = sys.version_info[0] == 2
@@ -36,7 +37,9 @@ if IS_PYTHON_2 is True:
     TEXT_TYPE = basestring  # noqa: F821
     INT_TYPES = (int, long)  # noqa: F821
     LONG_TYPE = long  # noqa: F821
+    COLLECTIONS_ABC_MAPPING = collections.Mapping
 else:
     TEXT_TYPE = str
     INT_TYPES = (int,)
     LONG_TYPE = int
+    COLLECTIONS_ABC_MAPPING = collections.abc.Mapping

@@ -27,7 +27,7 @@
 #include <maya/MPxTransformationMatrix.h>
 
 // MM Solver
-#include "mmSolver/lens/lens_model.h"
+#include <mmlens/lens_model.h>
 
 namespace mmsolver {
 
@@ -39,15 +39,15 @@ public:
     virtual MMatrix asMatrix() const;
     virtual MMatrix asMatrix(double percent) const;
 
-    std::shared_ptr<LensModel> getLensModel() const;
-    void setLensModel(std::shared_ptr<LensModel> value);
+    std::shared_ptr<mmlens::LensModel> getLensModel() const;
+    void setLensModel(std::shared_ptr<mmlens::LensModel> value);
 
     static MTypeId m_id;
 
 protected:
     typedef MPxTransformationMatrix ParentClass;
 
-    std::shared_ptr<LensModel> m_value;
+    std::shared_ptr<mmlens::LensModel> m_value;
 };
 
 }  // namespace mmsolver

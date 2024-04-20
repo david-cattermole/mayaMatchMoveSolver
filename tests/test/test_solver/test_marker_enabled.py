@@ -23,8 +23,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os
-import math
 import time
 import unittest
 
@@ -110,8 +108,8 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
 
         # Ensure the values are correct
         self.assertEqual(result[0], 'success=1')
-        assert self.approx_equal(maya.cmds.getAttr(grp + '.tx'), -2.24999755)
-        assert self.approx_equal(maya.cmds.getAttr(grp + '.ty'), 1.65000644)
+        self.assertApproxEqual(maya.cmds.getAttr(grp + '.tx'), -2.24999755)
+        self.assertApproxEqual(maya.cmds.getAttr(grp + '.ty'), 1.65000644)
 
     def test_multi_frame(self):
         """
@@ -231,12 +229,12 @@ class TestSolverMarkerEnabled(solverUtils.SolverTestCase):
         ty_start = maya.cmds.getAttr(grp + '.ty', time=start)
         ty_mid = maya.cmds.getAttr(grp + '.ty', time=mid)
         ty_end = maya.cmds.getAttr(grp + '.ty', time=end)
-        assert self.approx_equal(tx_start, -0.51855463, eps=0.001)
-        assert self.approx_equal(tx_mid, -2.266493967, eps=0.001)
-        assert self.approx_equal(tx_end, -1.48144697, eps=0.001)
-        assert self.approx_equal(ty_start, 1.30993172, eps=0.001)
-        assert self.approx_equal(ty_mid, 1.631927621, eps=0.001)
-        assert self.approx_equal(ty_end, 2.10503952, eps=0.001)
+        self.assertApproxEqual(tx_start, -0.51855463, eps=0.001)
+        self.assertApproxEqual(tx_mid, -2.266493967, eps=0.001)
+        self.assertApproxEqual(tx_end, -1.48144697, eps=0.001)
+        self.assertApproxEqual(ty_start, 1.30993172, eps=0.001)
+        self.assertApproxEqual(ty_mid, 1.631927621, eps=0.001)
+        self.assertApproxEqual(ty_end, 2.10503952, eps=0.001)
 
 
 if __name__ == '__main__':

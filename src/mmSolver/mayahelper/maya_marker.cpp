@@ -22,6 +22,10 @@
 
 #include "maya_marker.h"
 
+// STL
+#include <memory>
+
+// Maya
 #include <maya/MDagPath.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MFnMatrixData.h>
@@ -30,15 +34,17 @@
 #include <maya/MPlug.h>
 #include <maya/MPoint.h>
 
-#include <memory>
-
+// MM Solver
 #include "maya_attr.h"
 #include "maya_bundle.h"
 #include "maya_camera.h"
+#include "maya_marker_group.h"
 #include "maya_utils.h"
 #include "mmSolver/adjust/adjust_defines.h"
+#include "mmSolver/utilities/debug_utils.h"
 
-Marker::Marker() : m_nodeName(""), m_object(), m_camera(), m_bundle() {
+Marker::Marker()
+    : m_nodeName(""), m_object(), m_camera(), m_bundle(), m_markerGroup() {
     m_matrix.setAttrName("worldMatrix");
     m_px.setAttrName("translateX");
     m_py.setAttrName("translateY");
@@ -94,6 +100,13 @@ BundlePtr Marker::getBundle() { return m_bundle; }
 
 MStatus Marker::setBundle(BundlePtr &value) {
     m_bundle = value;
+    return MS::kSuccess;
+}
+
+MarkerGroupPtr Marker::getMarkerGroup() { return m_markerGroup; }
+
+MStatus Marker::setMarkerGroup(MarkerGroupPtr &value) {
+    m_markerGroup = value;
     return MS::kSuccess;
 }
 
@@ -155,21 +168,48 @@ MStatus Marker::getPos(MPoint &point, const int timeEvalMode) {
     return status;
 }
 
-MStatus Marker::getPosXY(double &x, double &y, const MTime &time,
-                         const int timeEvalMode) {
+MStatus Marker::getPosXY(double &out_x, double &out_y, const MTime &time,
+                         const int timeEvalMode, const bool applyOverscan) {
     MStatus status;
+    const bool verbose = false;
+
     auto attr_pos_x = Marker::getPosXAttr();
     auto attr_pos_y = Marker::getPosYAttr();
-    status = attr_pos_x.getValue(x, time, timeEvalMode);
+
+    double overscan_x = 1.0;
+    double overscan_y = 1.0;
+    if (applyOverscan) {
+        if (m_markerGroup) {
+            // Take into account the MarkerGroup's 'overscan'
+            // attributes. The Marker X/Y values should be multiplied by
+            // the inverse of the overscan X/Y values.
+            status = m_markerGroup->getOverscanXY(overscan_x, overscan_y, time,
+                                                  timeEvalMode);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            overscan_x = 1.0 / overscan_x;
+            overscan_y = 1.0 / overscan_y;
+        } else {
+            MMSOLVER_MAYA_VRB(
+                "Marker::getPosXY: MarkerGroup node not found for \""
+                << m_nodeName.asChar() << "\".");
+        }
+    }
+
+    status = attr_pos_x.getValue(out_x, time, timeEvalMode);
     CHECK_MSTATUS_AND_RETURN_IT(status);
-    status = attr_pos_y.getValue(y, time, timeEvalMode);
+    status = attr_pos_y.getValue(out_y, time, timeEvalMode);
     CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    out_x *= overscan_x;
+    out_y *= overscan_y;
     return status;
 }
 
-MStatus Marker::getPosXY(double &x, double &y, const int timeEvalMode) {
+MStatus Marker::getPosXY(double &out_x, double &out_y, const int timeEvalMode,
+                         const bool applyOverscan) {
     MTime time = MAnimControl::currentTime();
-    MStatus status = Marker::getPosXY(x, y, time, timeEvalMode);
+    MStatus status =
+        Marker::getPosXY(out_x, out_y, time, timeEvalMode, applyOverscan);
     return status;
 }
 

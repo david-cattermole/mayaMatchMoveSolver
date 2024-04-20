@@ -149,15 +149,15 @@ class TestSolveResult(test_api_utils.APITestCase):
     def test_get_average_frame_error_list(self):
         frame_error_list = {1: 0, 2: 0.5, 3: 1.0}
         v = mmapi.get_average_frame_error_list(frame_error_list)
-        assert self.approx_equal(v, 0.5)
+        self.assertApproxEqual(v, 0.5)
 
         frame_error_list = {1: 1.0}
         v = mmapi.get_average_frame_error_list(frame_error_list)
-        assert self.approx_equal(v, 1.0)
+        self.assertApproxEqual(v, 1.0)
 
         frame_error_list = {}
         v = mmapi.get_average_frame_error_list(frame_error_list)
-        assert self.approx_equal(v, 0.0)
+        self.assertApproxEqual(v, 0.0)
 
         col = create_example_solve_scene()
         results = col.execute()
@@ -174,18 +174,20 @@ class TestSolveResult(test_api_utils.APITestCase):
     def test_get_max_frame_error(self):
         frame_error_list = {1: 0, 2: 0.5, 3: 1.0}
         frm, val = mmapi.get_max_frame_error(frame_error_list)
-        assert self.approx_equal(frm, 3) and isinstance(frm, int)
-        assert self.approx_equal(val, 1.0)
+        assert isinstance(frm, int)
+        self.assertApproxEqual(frm, 3)
+        self.assertApproxEqual(val, 1.0)
 
         frame_error_list = {1: 1.0}
         frm, val = mmapi.get_max_frame_error(frame_error_list)
-        assert self.approx_equal(frm, 1) and isinstance(frm, int)
-        assert self.approx_equal(val, 1.0)
+        assert isinstance(frm, int)
+        self.assertApproxEqual(frm, 1)
+        self.assertApproxEqual(val, 1.0)
 
         frame_error_list = {}
         frm, val = mmapi.get_max_frame_error(frame_error_list)
         assert frm is None
-        assert self.approx_equal(val, -0.0)
+        self.assertApproxEqual(val, -0.0)
 
         col = create_example_solve_scene()
         results = col.execute()
@@ -223,25 +225,74 @@ class TestSolveResult(test_api_utils.APITestCase):
         assert isinstance(nodes, list)
         assert len(nodes) > 0
 
-    def test_perfect_solve(self):
+    def do_solve(self, solver_name, solver_type_index, scene_graph_mode):
         """
         Open a file and trigger a solve to get perfect results.
         Make sure solver results doesn't fail in this case.
         """
+        if self.haveSolverType(name=solver_name) is False:
+            msg = '%r solver is not available!' % solver_name
+            raise unittest.SkipTest(msg)
+        scene_graph_name = mmapi.SCENE_GRAPH_MODE_NAME_LIST[scene_graph_mode]
+        scene_graph_label = mmapi.SCENE_GRAPH_MODE_LABEL_LIST[scene_graph_mode]
+        print('Scene Graph:', scene_graph_label)
+
+        start_frame = 1
+        end_frame = 120
+
         # Open the Maya file
         file_name = 'mmSolverBasicSolveA_triggerMaxFrameErrorTraceback.ma'
         path = self.get_data_path('scenes', file_name)
         maya.cmds.file(path, open=True, force=True)
 
+        # Collection.
+        col = mmapi.Collection(node='collection1')
+
+        # Frames
+        root_frm_list = [
+            mmapi.Frame(1),
+            mmapi.Frame(30),
+            mmapi.Frame(60),
+            mmapi.Frame(90),
+            mmapi.Frame(120),
+        ]
+        not_root_frm_list = []
+        for f in range(start_frame, end_frame + 1):
+            frm = mmapi.Frame(f)
+            not_root_frm_list.append(frm)
+
+        # Solvers
+        sol_list = []
+        sol = mmapi.SolverStandard()
+        sol.set_root_frame_list(root_frm_list)
+        sol.set_frame_list(not_root_frm_list)
+        sol.set_only_root_frames(False)
+        sol.set_global_solve(False)
+        sol.set_use_single_frame(False)
+        sol.set_solver_type(solver_type_index)
+        sol.set_scene_graph_mode(scene_graph_mode)
+        sol_list.append(sol)
+        col.set_solver_list(sol_list)
+
+        # save the output
+        file_name = 'solveresult_testPerfectSolve_{}_{}_before.ma'.format(
+            solver_name, scene_graph_name
+        )
+        path = self.get_data_path(file_name)
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
         # Run solver!
         s = time.time()
-        col = mmapi.Collection(node='collection1')
         solres_list = mmapi.execute(col)
         e = time.time()
         print('total time:', e - s)
 
         # save the output
-        path = self.get_data_path('solveresult_testPerfectSolve_after.ma')
+        file_name = 'solveresult_testPerfectSolve_{}_{}_after.ma'.format(
+            solver_name, scene_graph_name
+        )
+        path = self.get_data_path(file_name)
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
 
@@ -249,7 +300,6 @@ class TestSolveResult(test_api_utils.APITestCase):
         solres = solres_list[0]
         success = solres.get_success()
         err = solres.get_final_error()
-        frame_list = mmapi.merge_frame_list([solres])
         frame_error_list = mmapi.merge_frame_error_list([solres])
         avg_error = mmapi.get_average_frame_error_list(frame_error_list)
         max_frame_error = mmapi.get_max_frame_error(frame_error_list)
@@ -260,6 +310,42 @@ class TestSolveResult(test_api_utils.APITestCase):
         self.assertLess(avg_error, 1.0)
         self.assertGreater(err, 0.0)
         return
+
+    # def test_ceres_maya_dag(self):
+    #     self.do_solve('ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_MAYA_DAG)
+
+    # def test_ceres_mmscenegraph(self):
+    #     self.do_solve(
+    #         'ceres', mmapi.SOLVER_TYPE_CERES, mmapi.SCENE_GRAPH_MODE_AUTO
+    #     )
+
+    # def test_cminpack_lmdif_maya_dag(self):
+    #     self.do_solve(
+    #         'cminpack_lmdif',
+    #         mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+    #         mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+    #     )
+
+    # def test_cminpack_lmdif_mmscenegraph(self):
+    #     self.do_solve(
+    #         'cminpack_lmdif',
+    #         mmapi.SOLVER_TYPE_CMINPACK_LMDIF,
+    #         mmapi.SCENE_GRAPH_MODE_AUTO,
+    #     )
+
+    def test_cminpack_lmder_maya_dag(self):
+        self.do_solve(
+            'cminpack_lmder',
+            mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+            mmapi.SCENE_GRAPH_MODE_MAYA_DAG,
+        )
+
+    # def test_cminpack_lmder_mmscenegraph(self):
+    #     self.do_solve(
+    #         'cminpack_lmder',
+    #         mmapi.SOLVER_TYPE_CMINPACK_LMDER,
+    #         mmapi.SCENE_GRAPH_MODE_AUTO,
+    #     )
 
 
 if __name__ == '__main__':

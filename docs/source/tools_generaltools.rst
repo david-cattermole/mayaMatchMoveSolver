@@ -141,41 +141,55 @@ The UI for this tool can be used control the baking method, and the
 'space' of the created controller. These features create a very
 powerful workflow for editing, and solving characters and objects.
 
+.. figure:: images/tools_create_controller_ui.png
+    :alt: Create Controller UI
+    :align: center
+    :width: 60%
+
+.. note:: For a simple, straight-forward tool to create a world-space
+    controller for each selected object, use the `Create (World-Space)
+    Controllers` tool.
+
 Usage:
 
 1) Select a Maya transform node.
 
 2) Open 'Create Controller' tool UI.
 
-3) Type a name for the controller
+3) Type a name for the controller.
 
-4) Select your 'pivot object' and press 'Pick Selection'.
+4) Select your `pivot object` and press `Pick Selection`.
 
-5) Select your 'main object' and press 'Pick Selection'.
+5) Select your `main object` and press `Pick Selection`.
 
-6) Select your options for 'Type', 'Bake' mode, and 'Space'.
+6) Select your options for `Type`, `Pivot`, `Bake` mode, and `Space`.
 
-   - 'Type' changes the node types created for the controller. Choose
-     "Group" if you do not like to see locators in your viewport.
+   - Use the `Controller Type` menu to change the node types created
+     for the controller. Choose "Group" if you do not like to see
+     locators in your viewport.
 
-   - 'Bake' changes the method used to bake keyframe times. Choose
-     'Full Bake' to bake every frame, and choose 'Smart Bake' to bake
+   - `Pivot` changes how the pivot object is baked; `Static` assumes
+     the pivot object does not animate or is baked on the current
+     frame. `Dynamic` uses an animated pivot.
+
+   - `Bake` changes the method used to bake keyframe times. Choose
+     `Full Bake` to bake every frame, and choose `Smart Bake` to bake
      some frames.
 
-   - 'Space' changes the heirachy and orientation of the Controller
-     nodes. Using 'Screen Space' allows you to move an object in
+   - `Space` changes the heirachy and orientation of the Controller
+     nodes. Using `Screen Space` allows you to move an object in
      screen-space, with X and Y the position on the screen, and Z the
      depth into the screen. This can be very helpful for smoothing
      Z-bumps and depth problems.
 
-7) Press 'Create Controller' button.
+7) Press `Create Controller` button.
 
-   - A new 'Controller' node is created at the same position as the
-     'pick object'.
+   - A new `Controller` node is created at the same position as the
+     `pick object`.
 
 8) Select and move the created Controller as you wish.
 
-9) Select the Controller, run 'Remove Controller' tool.
+9) Select the Controller, run `Remove Controller` tool.
 
    - The source node is baked and the Controller node is deleted.
 
@@ -185,6 +199,14 @@ To run the tool, use this Python command:
 
     import mmSolver.tools.createcontroller2.tool as tool
     tool.open_window()
+
+To create world-space controllers for the current selection, without
+using any of the UI options, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.createcontroller2.tool as tool
+    tool.create_world_controllers()
 
 To remove a controller, use this Python command:
 
@@ -205,6 +227,172 @@ version 1, use this python code to run it.
 
     # Remove selected Controller
     tool.remove()
+
+.. _create-rivet-tool-ref:
+
+Create Rivet
+------------
+
+Create a transform locator node that follows the surface of a Mesh, i.e. the
+transform is 'riveted' to the mesh.
+
+There are two types of rivet types currently supported:
+
+ - **Mesh Two Edges** rivets are created from 2 Mesh shape edge
+   components, the same as using the classic `rivet.mel`_ script. If
+   the topology of the underlying mesh changes, the rivet will move
+   across the surface.
+
+ - **Point On Poly Constraint** rivets are created at selected
+   vertices and can be moved along the surface with the UV
+   coordinates. If the UV coordinates of the underlying mesh changes,
+   the rivet may move. This rivet-style will not work with UV
+   coordinates outside the regular 0.0 to 1.0 UV space as is commonly
+   used with texture UDIMs.
+
+Usage:
+
+1) Select a Maya Mesh components.
+
+   - Select Mesh Vertices to create **Point On Poly Constraint**
+     rivets.
+
+   - Select 2 Mesh Edges to create a single **Mesh Two Edges** rivet.
+
+2) Run tool.
+
+   - A rivet locator will be created.
+
+   - For a **Point On Poly Constraint** rivet, you can adjust the `U`
+     and `V` coordinates from the rivet locator, if needed.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.createrivet.tool as tool
+    tool.main()
+
+.. _rivet.mel:
+   https://www.highend3d.com/maya/script/rivet-button-for-maya
+
+.. _create-rivet-tool-ref:
+
+Surface Cluster
+---------------
+
+A Surface Cluster is a "cluster" deformer that will be riveted to the
+surface of a mesh object. All movement of the underlying surface is
+inherited by the Surface Cluster, so the cluster "sits on" the
+surface, even if the underlying surface is animated/deformed.
+
+Surface Clusters can be very helpful for subtly adjusting the
+silhouette of an object, or adding a bulge, especially when the change
+needs to be animated.
+
+.. note:: This old `Surface Cluster YouTube Video`_ shows the general
+          usage of the tool, however the tool has been re-written and
+          improved with features for editing the deforming weights.
+
+.. _Surface Cluster YouTube Video:
+   https://youtu.be/7SFP4TgVbEI
+
+Create Single Surface Cluster
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create a Surface Cluster on the selected Mesh component.
+
+Usage:
+
+1) Select 1 or more components (vertices, edges, faces, etc).
+
+2) Run this tool.
+
+   - create a single surface cluster at the average position of all selected
+     components.
+
+   - (Optionally) Use current Soft Selection as default weighting - the
+     same as the "update_weights_with_soft_selection" tool.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.surfacecluster.tool as tool
+    tool.create_single_surface_cluster()
+
+    # Open the UI window change settings before creation.
+    tool.open_window()
+
+Create Multiple Surface Cluster
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Create multiple surface clusters, one for each component selected.
+
+Usage:
+
+1) Select 1 or more components (vertices, edges, faces, etc).
+
+2) Run this tool.
+
+   - For each component, create a surface cluster is created.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.surfacecluster.tool as tool
+    tool.create_multiple_surface_clusters()
+
+    # Open the UI window change settings before creation.
+    tool.open_window()
+
+Update Weights With Soft-Selection
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Update the cluster deformer weights using the current component
+soft-selection.
+
+
+Usage:
+1) Enable Soft Selection ('b' hotkey)
+
+2) Select 1 or more components (vertices, edges, faces, etc).
+
+3) Select surface cluster control.
+
+4) Run this tool.
+
+   - The weights of the surface cluster are updated with the soft
+     selection.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.surfacecluster.tool as tool
+    tool.update_weights_with_soft_selection()
+
+Open Surface Cluster Paint Weights
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Open the paint weights tool for the selected surface cluster Control.
+
+Usage:
+1) Select a surface cluster control.
+
+2) Run tool.
+
+   - The paint weights tool is opened.
+
+3) User paints weights.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.surfacecluster.tool as tool
+    tool.open_paint_weights_tool()
 
 .. _marker-bundle-rename-tool-ref:
 
@@ -365,6 +553,19 @@ general functions behave, by default.
        the progress bar while solving, and then switch back to the full
        UI solving has finished. If *No*, the :ref:`Solver UI <solver-ui-ref>`
        will not be adjusted.
+
+   * - Distortion Mode Default
+     - *Undistorted* or *Distorted*
+     - Controls the default value shown in the Load Marker UI.
+
+   * - Use Embedded Overscan Default
+     - *Yes* or *No*
+     - Controls the default value shown in the Load Marker UI.
+
+   * - Load Bundle Positions Default
+     - *Yes* or *No*
+     - Controls the default value shown in the Load Marker UI.
+
 
 Usage:
 

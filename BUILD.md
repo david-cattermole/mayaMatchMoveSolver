@@ -19,7 +19,6 @@ dependency.
 - C++ Compilier
   - [GCC](https://gcc.gnu.org/) (Linux)
   - [Visual Studio (MSVC)](https://visualstudio.microsoft.com/downloads/) (Windows)
-  - [Xcode annd clang](https://developer.apple.com/download) (MacOS)
 - [Rust](https://www.rust-lang.org/)
   - [cxx-bridge](https://cxx.rs/)
 - [CMinpack](https://github.com/devernay/cminpack)
@@ -27,7 +26,6 @@ dependency.
 - [Ceres Solver](http://ceres-solver.org/)
   - [Google Log](https://github.com/google/glog)
 - [Lens Distortion Plug-in Kit (LDPK)](https://www.3dequalizer.com)
-  - [dlfcn-win32](https://github.com/dlfcn-win32/dlfcn-win32) (Windows only)
 - [Python](https://www.python.org/)
   - [Sphinx](http://www.sphinx-doc.org/en/master/index.html)
   - [Black](https://github.com/psf/black) - development requirement only.
@@ -57,7 +55,7 @@ may fail to generate.
 ### Ninja
 
 As of mmSolver v0.4.0, the [Ninja build system](https://ninja-build.org/)
-is used in the default Windows Batch scripts - Linux (and MacOS) build
+is used in the default Windows Batch scripts - Linux build
 scripts are not affected. Alternate build systems will likely work
 (such as NMake or Visual Studio projects) but are not tested.
 
@@ -81,14 +79,15 @@ mmSolver v0.4.0 a C++ compiler with at least C++11 is required.
   - [GCC 9.3.1](https://gcc.gnu.org/) (Maya 2022 and 2023)
     - Red Hat [DST 9.1](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/9/html/9.1_release_notes/index)
     - `yum install devtoolset-9` on RHEL 7 / CentOS 7
+  - [GCC 11.2.1](https://gcc.gnu.org/) (Maya 2024)
+    - Red Hat [DST 11](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/11/html/11.0_release_notes/dts11.0_release)
+    - `dnf install devtoolset-11` on RHEL 8 / Rocky Linux 8
 - Windows
   - [Visual Studio 2012 update 5 (MSVC 11.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2016 and 2017)
   - [Visual Studio 2015 update 3 (MSVC 14.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2018 and 2019)
   - [Visual Studio 2017 (MSVC 15.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2020)
   - [Visual Studio 2019 (MSVC 16.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2022 and 2023)
-- MacOS
-  - [Xcode 7.3.1 with SDK 10.11, clang with libc++](https://developer.apple.com/download) (Maya 2018)
-  - [Xcode version 7.3.1 and CMake are required](https://developer.apple.com/download) (Maya 2019)
+  - [Visual Studio 2019 (MSVC 19.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2024)
 
 ## Rust
 
@@ -96,7 +95,7 @@ mmSolver v0.4.0 a C++ compiler with at least C++11 is required.
 Graph`` features inside mmSolver.
 
 Rust is a modern programming language comparable to C or C++ in terms
-of speed, and is highly performant and provides safety and stability
+of speed, is highly performant and provides safety and stability
 guarantees for software written in Rust.
 
 Both the Rust compiler (``rustc``) and the Rust package manager
@@ -115,7 +114,9 @@ Scene Graph`` features.
 
 ## Eigen
 
-[Eigen](https://eigen.tuxfamily.org/) is a requirement of mmSolver.
+[Eigen](https://eigen.tuxfamily.org/) is a requirement of mmSolver and
+is used to store 3D vectors, matrices, perform linear algebra, and is
+also required for `OpenMVG` (see below).
 
 ## CMinpack
 
@@ -136,6 +137,8 @@ the speed of the library depends on the underlying sparse matrix
 libraries and functions. Feel free to compile and use whatever
 underlying dependencies provides the best performance for you -
 however make sure that sparse matrix solving is available.
+
+Ceres Solver is not optional, and is required for `OpenMVG` features.
 
 In a future version of mmSolver Ceres may replace CMinpack as the
 default and recommended solving engine.
@@ -158,9 +161,6 @@ creators of 3DEqualizer.
 
 The LDPK provides a standard set of lens distortion features and the
 ability to provide custom lens distortion plug-ins.
-
-When compiling the LDPK on Windows,
-[dlfcn-win32](https://github.com/dlfcn-win32/dlfcn-win32) is required.
 
 ## Python
 
@@ -196,9 +196,10 @@ required for building mmSolver.
 
 An overview of compiling is:
 
-1. Download and compile third-party projects.
-2. Compile mmSolver.
-3. Copy 3DEqualizer python scripts into `.3dequalizer` user directory.
+1. Download mayaMatchMoveSolver project from GitHub.
+2. Unzip the source code into a directory.
+3. Open a command line or terminal and navigate to the unzipped files.
+2. Run the provided build script to compile mmSolver.
 
 Below lists all the commands run in an example session, following the
 above sections.
@@ -208,20 +209,9 @@ On Linux:
 # Go to root of project directory.
 $ cd <project root>
 
-# Download and Build third-party projects automatically.
-$ bash scripts/build_thirdparty_linux_mayaXXXX.bash
-
 # Build mmSolver, compile UI files, compile Maya plug-in, build
 # documentation, create module and install to home directory.
 $ bash scripts/build_mmSolver_linux_mayaXXXX.bash
-
-# Run tests (optional but encouraged)
-$ cd build
-$ make test
-$ cd ..
-
-# Install 3DE scripts (or install via ScriptDB)
-$ cp ./share/3dequalizer/scriptdb/* ~/.3dequalizer/py_scripts
 ```
 
 On Windows:
@@ -229,38 +219,14 @@ On Windows:
 :: Go to root of project directory.
 > CD <project root>
 
-:: Download and Build third-party projects automatically.
-> scripts/build_thirdparty_windows64_mayaXXXX.bat
-
 :: Build mmSolver, compile UI files, compile Maya plug-in, build
 :: documentation, create module and install to home directory.
 > scripts/build_mmSolver_windows64_mayaXXXX.bat
-
-:: Run tests (optional but encouraged)
-> CD build
-> nmake test
-> CD ..
-
-:: Install 3DE scripts (or install via ScriptDB)
-> XCOPY share\3dequalizer\scriptdb\* "%AppData%\.3dequalizer\py_scripts" /Y
 ```
-
-# Building Dependencies
-
-To build dependencies we have pre-configured build scripts for Linux
-and Windows.
-
-| Build Script Name                       | Operating System |
-| ------------                            | -----------      |
-| build_thirdparty_linux_mayaXXXX.bash    | Linux            |
-| build_thirdparty_windows64_mayaXXXX.bat | Windows          |
-
-The build scripts are located in `<project root>/scripts/`.
-These scripts will automatically install into `<project root>/external/install`.
 
 # Building mmSolver
 
-To build the project we can use the build scripts provided.
+To build the project you can use the build scripts provided.
 
 | Build Script Name                     | Operating System |
 | ------------                          | -----------      |

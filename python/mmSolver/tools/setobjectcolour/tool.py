@@ -23,16 +23,12 @@ import mmSolver.ui.qtpyutils as qtpyutils
 
 qtpyutils.override_binding_order()
 
-import mmSolver.ui.Qt.QtCore as QtCore
 import mmSolver.ui.Qt.QtGui as QtGui
-import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import maya.cmds
 
 import mmSolver.logger
-import mmSolver.utils.node as node_utils
 import mmSolver.tools.setobjectcolour.lib as lib
-import mmSolver.api as mmapi
 
 LOG = mmSolver.logger.get_logger()
 
@@ -76,7 +72,7 @@ def open_window(mini_ui=None):
 
     maya.cmds.colorEditor(rgbValue=rgb, alpha=alpha, **kwargs)
     if not maya.cmds.colorEditor(query=True, result=True):
-        LOG.warn('Color editor cancelled.')
+        LOG.warn('Color editor canceled.')
         return
 
     rgb = maya.cmds.colorEditor(query=True, rgbValue=True)

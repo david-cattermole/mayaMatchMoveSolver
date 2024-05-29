@@ -80,11 +80,8 @@ MObject ImagePlaneShapeNode::m_geometry_node;
 MObject ImagePlaneShapeNode::m_shader_node;
 MObject ImagePlaneShapeNode::m_camera_node;
 
-MObject ImagePlaneShapeNode::m_use_shader_node;
-MObject ImagePlaneShapeNode::m_use_image_read;
-MObject ImagePlaneShapeNode::m_use_color_bars;
-
 // Shader Attributes
+MObject ImagePlaneShapeNode::m_use_color_plug;
 MObject ImagePlaneShapeNode::m_image_display_channel;
 MObject ImagePlaneShapeNode::m_color_gain;
 MObject ImagePlaneShapeNode::m_alpha_gain;
@@ -92,7 +89,10 @@ MObject ImagePlaneShapeNode::m_ignore_alpha;
 MObject ImagePlaneShapeNode::m_flip;
 MObject ImagePlaneShapeNode::m_flop;
 MObject ImagePlaneShapeNode::m_is_transparent;
+MObject ImagePlaneShapeNode::m_frame_number;
 MObject ImagePlaneShapeNode::m_file_path;
+MObject ImagePlaneShapeNode::m_input_color_space;
+MObject ImagePlaneShapeNode::m_output_color_space;
 MObject ImagePlaneShapeNode::m_color;
 
 ImagePlaneShapeNode::ImagePlaneShapeNode() {}
@@ -274,26 +274,12 @@ MStatus ImagePlaneShapeNode::initialize() {
     CHECK_MSTATUS(msgAttr.setKeyable(false));
     CHECK_MSTATUS(addAttribute(m_camera_node));
 
-    m_use_shader_node = nAttr.create("useShaderNode", "useshdnd",
-                                     MFnNumericData::kBoolean, true);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setConnectable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(m_use_shader_node));
-
-    m_use_image_read = nAttr.create("useImageRead", "useimgrd",
+    m_use_color_plug = nAttr.create("useColorPlug", "useclrplg",
                                     MFnNumericData::kBoolean, true);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setConnectable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(m_use_image_read));
-
-    m_use_color_bars = nAttr.create("useColorBars", "usecolrbrs",
-                                    MFnNumericData::kBoolean, false);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setConnectable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(m_use_color_bars));
+    CHECK_MSTATUS(addAttribute(m_use_color_plug));
 
     // Which channel of the image should be displayed?
     short value_all = static_cast<short>(ImageDisplayChannel::kAll);
@@ -365,6 +351,12 @@ MStatus ImagePlaneShapeNode::initialize() {
         nAttr.setNiceNameOverride(MString("Is Transparent (Shader)")));
     CHECK_MSTATUS(addAttribute(m_is_transparent));
 
+    m_frame_number =
+        nAttr.create("frameNumber", "frmnmb", MFnNumericData::kInt, 1);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(addAttribute(m_frame_number));
+
     // Create empty string data to be used as attribute default
     // (string) value.
     MFnStringData empty_string_data;
@@ -375,6 +367,19 @@ MStatus ImagePlaneShapeNode::initialize() {
     CHECK_MSTATUS(tAttr.setStorable(true));
     CHECK_MSTATUS(tAttr.setUsedAsFilename(true));
     CHECK_MSTATUS(addAttribute(m_file_path));
+
+    m_input_color_space = tAttr.create("inputColorSpace", "incolspc",
+                                       MFnData::kString, empty_string_data_obj);
+    CHECK_MSTATUS(tAttr.setStorable(true));
+    CHECK_MSTATUS(tAttr.setUsedAsFilename(false));
+    CHECK_MSTATUS(addAttribute(m_input_color_space));
+
+    m_output_color_space =
+        tAttr.create("outputColorSpace", "outcolspc", MFnData::kString,
+                     empty_string_data_obj);
+    CHECK_MSTATUS(tAttr.setStorable(true));
+    CHECK_MSTATUS(tAttr.setUsedAsFilename(false));
+    CHECK_MSTATUS(addAttribute(m_output_color_space));
 
     m_color = nAttr.createColor("shaderColor", "shdcl");
     CHECK_MSTATUS(nAttr.setDefault(0.0f, 0.58824f, 0.644f));

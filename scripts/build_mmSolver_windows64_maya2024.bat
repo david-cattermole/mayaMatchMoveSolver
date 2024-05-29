@@ -1,7 +1,7 @@
 @ECHO OFF
 SETLOCAL
 ::
-:: Copyright (C) 2019 David Cattermole.
+:: Copyright (C) 2019, 2024 David Cattermole.
 ::
 :: This file is part of mmSolver.
 ::
@@ -33,11 +33,19 @@ SET PYTHON_EXE=python
 SET CMAKE_EXE=cmake
 SET RUST_CARGO_EXE=cargo
 
+:: OpenColorIO specific options.
+SET OPENCOLORIO_TARBALL_NAME=OpenColorIO-2.2.1.tar.gz
+SET OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME=OpenColorIO-2.2.1
+SET EXPAT_VERSION=2.4.1
+
 :: C++ Standard to use.
 SET CXX_STANDARD=14
 
 :: Setup Compiler environment. Change for your install path as needed.
 CALL "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
+
+CALL scripts\internal\build_opencolorio_windows64.bat
+if errorlevel 1 goto failed_to_build_opencolorio
 
 :: This script assumes 'RUST_CARGO_EXE' has been set to the Rust
 :: 'cargo' executable.
@@ -47,6 +55,10 @@ if errorlevel 1 goto failed_to_build_mmsolverlibs
 CALL scripts\internal\build_mmSolver_windows64.bat
 if errorlevel 1 goto failed_to_build_mmsolver
 exit /b 0
+
+:failed_to_build_opencolorio
+echo Failed to build OpenColorIO dependency.
+exit /b 1
 
 :failed_to_build_mmsolverlibs
 echo Failed to build MM Solver Library entry point.

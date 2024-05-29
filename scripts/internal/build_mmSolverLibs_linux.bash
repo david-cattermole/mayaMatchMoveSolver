@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (C) 2022, 2023 David Cattermole.
+# Copyright (C) 2022, 2023, 2024 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -60,6 +60,19 @@ MMSOLVERLIBS_CPP_TARGET_DIR="${BUILD_DIR_BASE}/build_mmsolverlibs/rust_linux_may
 MMSOLVERLIBS_LIB_DIR="${MMSOLVERLIBS_CPP_TARGET_DIR}/${BUILD_TYPE_DIR}"
 MMSOLVERLIBS_INCLUDE_DIR="${MMSOLVERLIBS_ROOT}/include"
 
+# Paths for dependencies.
+EXTERNAL_BUILD_DIR="${BUILD_DIR_BASE}/build_opencolorio/cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}/ext/dist"
+OPENCOLORIO_INSTALL_DIR="${BUILD_DIR_BASE}/build_opencolorio/install/maya${MAYA_VERSION}_linux/"
+OPENCOLORIO_CMAKE_CONFIG_DIR="${OPENCOLORIO_INSTALL_DIR}/lib64/cmake/OpenColorIO/"
+ZLIB_LIBRARY="${EXTERNAL_BUILD_DIR}/lib/libz.a"
+ZLIB_INCLUDE_DIR="${EXTERNAL_BUILD_DIR}/include/"
+expat_DIR="${EXTERNAL_BUILD_DIR}/lib64/cmake/expat-${EXPAT_VERSION}"
+Imath_DIR="${EXTERNAL_BUILD_DIR}/lib64/cmake/Imath"
+minizip_DIR="${EXTERNAL_BUILD_DIR}/lib64/cmake/minizip-ng"
+yaml_DIR="${EXTERNAL_BUILD_DIR}/share/cmake/yaml-cpp"
+pystring_LIBRARY="${EXTERNAL_BUILD_DIR}/lib64/libpystring.a"
+pystring_INCLUDE_DIR="${EXTERNAL_BUILD_DIR}/include"
+
 MMSOLVERLIBS_BUILD_TESTS=1
 
 echo "Building mmsolverlibs... (${MMSOLVERLIBS_ROOT})"
@@ -83,7 +96,7 @@ then
     # './scripts/internal/build_mmSolverLibs_windows64.bat'
     ${RUST_CARGO_EXE} install cxxbridge-cmd --version 1.0.75
 fi
-MMSOLVERLIBS_CXXBRIDGE_EXE="${HOME}\.cargo\bin\cxxbridge"
+MMSOLVERLIBS_CXXBRIDGE_EXE="${HOME}/.cargo/bin/cxxbridge"
 
 cd ${MMSOLVERLIBS_RUST_ROOT}
 ${RUST_CARGO_EXE} build ${RELEASE_FLAG} --target-dir ${MMSOLVERLIBS_CPP_TARGET_DIR}
@@ -101,6 +114,7 @@ cd ${BUILD_DIR}
 
 export MAYA_VERSION=${MAYA_VERSION}
 ${CMAKE_EXE} \
+    -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DCMAKE_INSTALL_PREFIX=${MMSOLVERLIBS_INSTALL_PATH} \
     -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
@@ -109,7 +123,17 @@ ${CMAKE_EXE} \
     -DMMSOLVERLIBS_BUILD_TESTS=${MMSOLVERLIBS_BUILD_TESTS} \
     -DMMSOLVERLIBS_LIB_DIR=${MMSOLVERLIBS_LIB_DIR} \
     -Dldpk_URL=${LDPK_URL} \
-    -DBUILD_SHARED_LIBS=OFF \
+    -DOpenColorIO_DIR=${OPENCOLORIO_CMAKE_CONFIG_DIR} \
+    -DOCIO_INSTALL_EXT_PACKAGES=NONE \
+    -DZLIB_LIBRARY=${ZLIB_LIBRARY} \
+    -DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR} \
+    -DZLIB_STATIC_LIBRARY=ON \
+    -Dexpat_DIR=${expat_DIR} \
+    -DImath_DIR=${Imath_DIR} \
+    -Dminizip-ng_DIR=${minizip_DIR} \
+    -Dpystring_LIBRARY=${pystring_LIBRARY} \
+    -Dpystring_INCLUDE_DIR=${pystring_INCLUDE_DIR} \
+    -Dyaml-cpp_DIR=${yaml_DIR} \
     ${MMSOLVERLIBS_ROOT}
 
 ${CMAKE_EXE} --build . --parallel

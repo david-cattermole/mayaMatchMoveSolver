@@ -1,6 +1,6 @@
 @ECHO OFF
 ::
-:: Copyright (C) 2022, 2023 David Cattermole.
+:: Copyright (C) 2022, 2023, 2024 David Cattermole.
 ::
 :: This file is part of mmSolver.
 ::
@@ -18,7 +18,7 @@
 :: along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 :: ---------------------------------------------------------------------
 ::
-:: Build the mmscenegraph library.
+:: Build the mmSolverLibs library.
 ::
 :: NOTE: Do not call this script directly! This file should be called by
 :: the build_mmSolver_windows64_mayaXXXX.bat files.
@@ -47,11 +47,24 @@ IF "%BUILD_TYPE%"=="Release" (
 SET MMSOLVERLIBS_INSTALL_PATH=%BUILD_DIR_BASE%\build_mmsolverlibs\install\maya%MAYA_VERSION%_windows64\
 SET MMSOLVERLIBS_ROOT=%PROJECT_ROOT%\lib
 SET MMSOLVERLIBS_RUST_ROOT=%MMSOLVERLIBS_ROOT%\mmsolverlibs
-SET MMSOLVERLIBS_CPP_TARGET_DIR="%BUILD_DIR_BASE%\build_mmsolverlibs\rust_windows64_maya%MAYA_VERSION%"
-SET MMSOLVERLIBS_LIB_DIR="%MMSOLVERLIBS_CPP_TARGET_DIR%\%BUILD_TYPE_DIR%"
-SET MMSOLVERLIBS_INCLUDE_DIR="%MMSOLVERLIBS_ROOT%\include"
+SET MMSOLVERLIBS_CPP_TARGET_DIR=%BUILD_DIR_BASE%\build_mmsolverlibs\rust_windows64_maya%MAYA_VERSION%
+SET MMSOLVERLIBS_LIB_DIR=%MMSOLVERLIBS_CPP_TARGET_DIR%\%BUILD_TYPE_DIR%
+SET MMSOLVERLIBS_INCLUDE_DIR=%MMSOLVERLIBS_ROOT%\include
 
 SET MMSOLVERLIBS_BUILD_TESTS=1
+
+:: Paths for dependencies.
+SET EXTERNAL_BUILD_DIR=%BUILD_DIR_BASE%\build_opencolorio\cmake_win64_maya%MAYA_VERSION%_%BUILD_TYPE%\ext\dist
+SET OPENCOLORIO_INSTALL_DIR=%BUILD_DIR_BASE%\build_opencolorio\install\maya%MAYA_VERSION%_windows64\
+SET OPENCOLORIO_CMAKE_CONFIG_DIR=%OPENCOLORIO_INSTALL_DIR%\lib\cmake\OpenColorIO\
+SET Imath_DIR=%EXTERNAL_BUILD_DIR%\lib\cmake\Imath
+SET ZLIB_INCLUDE_DIR=%EXTERNAL_BUILD_DIR%\include\
+SET ZLIB_LIBRARY=%EXTERNAL_BUILD_DIR%\lib\zlibstatic.lib
+SET expat_DIR=%EXTERNAL_BUILD_DIR%\lib\cmake\expat-%EXPAT_VERSION%
+SET minizip_DIR=%EXTERNAL_BUILD_DIR%\lib\cmake\minizip-ng
+SET pystring_INCLUDE_DIR=%EXTERNAL_BUILD_DIR%\include
+SET pystring_LIBRARY=%EXTERNAL_BUILD_DIR%\lib\pystring.lib
+SET yaml_DIR=%EXTERNAL_BUILD_DIR%\share\cmake\yaml-cpp
 
 ECHO Building mmsolverlibs... (%MMSOLVERLIBS_ROOT%)
 
@@ -121,6 +134,7 @@ MKDIR "%BUILD_DIR_NAME%"
 CHDIR "%BUILD_DIR%"
 
 %CMAKE_EXE% -G %CMAKE_GENERATOR% ^
+    -DBUILD_SHARED_LIBS=OFF ^
     -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
     -DCMAKE_INSTALL_PREFIX=%MMSOLVERLIBS_INSTALL_PATH% ^
     -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
@@ -131,7 +145,17 @@ CHDIR "%BUILD_DIR%"
     -DMMSOLVERLIBS_BUILD_TESTS=%MMSOLVERLIBS_BUILD_TESTS% ^
     -DMMSOLVERLIBS_LIB_DIR=%MMSOLVERLIBS_LIB_DIR% ^
     -Dldpk_URL=%LDPK_URL% ^
-    -DBUILD_SHARED_LIBS=OFF ^
+    -DOpenColorIO_DIR=%OPENCOLORIO_CMAKE_CONFIG_DIR% ^
+    -DOCIO_INSTALL_EXT_PACKAGES=NONE ^
+    -DZLIB_LIBRARY=%ZLIB_LIBRARY% ^
+    -DZLIB_INCLUDE_DIR=%ZLIB_INCLUDE_DIR% ^
+    -DZLIB_STATIC_LIBRARY=ON ^
+    -Dexpat_DIR=%expat_DIR% ^
+    -DImath_DIR=%Imath_DIR% ^
+    -Dminizip-ng_DIR=%minizip_DIR% ^
+    -Dpystring_LIBRARY=%pystring_LIBRARY% ^
+    -Dpystring_INCLUDE_DIR=%pystring_INCLUDE_DIR% ^
+    -Dyaml-cpp_DIR=%yaml_DIR% ^
     %MMSOLVERLIBS_ROOT%
 if errorlevel 1 goto failed_to_generate_cpp
 

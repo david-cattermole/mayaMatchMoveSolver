@@ -19,27 +19,37 @@
  *
  */
 
-#ifndef MM_CORE_LIB_H
-#define MM_CORE_LIB_H
+#ifndef MM_COLOR_IO_LIB_H
+#define MM_COLOR_IO_LIB_H
 
+// STD
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "_cxx.h"
-#include "_cxxbridge.h"
 #include "_symbol_export.h"
 #include "_types.h"
-#include "mmcamera.h"
-#include "mmcoord.h"
-#include "mmcore.h"
-#include "mmdata.h"
-#include "mmhash.h"
-#include "mmmath.h"
 
-namespace mmcore {
+namespace mmcolorio {
 
-rust::String expand_file_path_string(const rust::Str& value, FrameValue frame);
+const char *get_config_name();
+const char *get_config_description();
+const char *get_config_search_path();
+const char *get_config_working_directory();
 
-}  // namespace mmcore
+bool color_space_name_exists(const char *color_space_name);
 
-#endif  // MM_CORE_LIB_H
+const char *guess_color_space_name_from_file_path(const char *file_path);
+
+const char *get_role_color_space_name(const ColorSpaceRole value);
+
+std::vector<std::string> get_color_space_names(
+    const ColorSpaceVisibility visibility);
+
+void generate_shader_text(const char *input_color_space_name,
+                          const char *output_color_space_name,
+                          std::string &out_shader_text);
+
+}  // namespace mmcolorio
+
+#endif  // MM_COLOR_IO_LIB_H

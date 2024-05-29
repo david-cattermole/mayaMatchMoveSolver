@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020, 2021, 2023, 2024 David Cattermole.
+ * Copyright (C) 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -23,8 +23,41 @@
 
 #include <iostream>
 
-namespace mmcore {
+namespace mmcolorio {
 
-using FrameValue = int32_t;
+enum class ColorSpaceVisibility : uint8_t {
+    kActive = 0,
+    kInactive,
+    kAll,
 
-}  // namespace mmcore
+    // Must be second to last entry. Used to calculate the full list
+    // of entries.
+    kCount,
+
+    // Must be last entry.
+    kUnknown = 255,
+};
+
+enum class ColorSpaceRole : uint8_t {
+    kDefault = 0,
+    kReference,
+    kData,
+    kColorPicking,
+    kSceneLinear,
+    kCompositingLog,
+    kColorTiming,
+    kTexturePaint,
+    kMattePaint,
+    kRendering,
+    kInterchangeScene,
+    kInterchangeDisplay,
+
+    // Must be second to last entry. Used to calculate the full list
+    // of entries.
+    kCount,
+
+    // Must be last entry.
+    kUnknown = 255,
+};
+
+}  // namespace mmcolorio

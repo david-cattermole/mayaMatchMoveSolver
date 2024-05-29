@@ -29,6 +29,11 @@ PYTHON_EXE=python3.9
 CMAKE_EXE=cmake3
 RUST_CARGO_EXE=cargo
 
+# OpenColorIO specific options.
+OPENCOLORIO_TARBALL_NAME="OpenColorIO-2.2.1.tar.gz"
+OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME="OpenColorIO-2.2.1"
+EXPAT_VERSION=2.4.1
+
 # Manually override OpenGL include headers, because CMake doesn't seem
 # to automatically find OpenGL headers on RockyLinux8 (which is used
 # in the Docker containers).
@@ -45,6 +50,7 @@ CWD=`pwd`
 
 # These scripts assume 'RUST_CARGO_EXE' has been set to the Rust
 # 'cargo' executable.
+source "${CWD}/scripts/internal/build_openColorIO_linux.bash"
 source "${CWD}/scripts/internal/build_mmSolverLibs_linux.bash"
 source "${CWD}/scripts/internal/build_mmSolver_linux.bash"
 

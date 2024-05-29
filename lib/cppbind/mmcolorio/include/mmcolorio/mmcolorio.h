@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020, 2021, 2023, 2024 David Cattermole.
+ * Copyright (C) 2023, 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -19,12 +19,10 @@
  *
  */
 
-#pragma once
+#ifndef MM_COLOR_IO_MM_COLOR_IO_H
+#define MM_COLOR_IO_MM_COLOR_IO_H
 
-#include <iostream>
+#include "_types.h"
+#include "lib.h"
 
-namespace mmcore {
-
-using FrameValue = int32_t;
-
-}  // namespace mmcore
+#endif  // MM_COLOR_IO_MM_COLOR_IO_H

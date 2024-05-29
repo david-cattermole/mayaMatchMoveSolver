@@ -272,11 +272,11 @@ public:
     Timestamp timestamp;
     Timestamp timestampTotal;
 
-    void start() { timestamp = get_timestamp(); };
-    Timestamp stop() { return timestampTotal += get_timestamp() - timestamp; };
+    void start() { TimestampBenchmark::timestamp = get_timestamp(); };
+    Timestamp stop() { return TimestampBenchmark::timestampTotal += get_timestamp() - TimestampBenchmark::timestamp; };
 
     double get_seconds(const uint32_t loopNums = 0) const {
-        double secs = timestamp_as_seconds(timestampTotal);
+        double secs = timestamp_as_seconds(TimestampBenchmark::timestampTotal);
         if (loopNums > 0) {
             secs /= loopNums;
         }

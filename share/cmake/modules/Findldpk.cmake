@@ -142,7 +142,7 @@ if(NOT ldpk_FOUND AND MMSOLVER_DOWNLOAD_DEPENDENCIES AND ldpk_ALLOW_DOWNLOAD)
   set(ldpk_FOUND TRUE)
   set(ldpk_VERSION ${ldpk_FIND_VERSION})
 
-  set(Ldpk_DIR "${_EXTERNAL_INSTALL_DIR}/ldpk/share/ldpk/cmake")
+  set(ldpk_DIR "${_EXTERNAL_INSTALL_DIR}/ldpk/share/ldpk/cmake")
   set(ldpk_INCLUDE_DIR "${_EXTERNAL_INSTALL_DIR}/ldpk/${CMAKE_INSTALL_INCLUDEDIR}")
 
   set(ldpk_URL

@@ -5,6 +5,7 @@
 #*
 *~
 *.bak
+*.orig
 *.pyc
 *cppcheck-build-*
 cmake-build-*

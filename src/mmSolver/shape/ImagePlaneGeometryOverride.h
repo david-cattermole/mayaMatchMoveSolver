@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 David Cattermole.
+ * Copyright (C) 2022, 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -39,6 +39,9 @@
 #include <maya/MUserData.h>
 
 // MM Solver
+#include <mmcore/lib.h>
+
+#include "ImageCache.h"
 #include "ImagePlaneShapeNode.h"
 #include "mmSolver/utilities/debug_utils.h"
 
@@ -110,21 +113,24 @@ protected:
         bool &out_visible_to_camera_only, bool &out_is_under_camera,
         bool &out_draw_hud, bool &out_draw_image_size, MString &out_image_size,
         bool &out_draw_camera_size, MString &out_camera_size,
-        bool &out_use_shader_node, bool &out_use_image_read,
-        bool &out_use_color_bars,
+        bool &out_use_color_plug,
         ImageDisplayChannel &out_image_display_channel, float &out_color_gain,
         float &out_alpha_gain, bool &out_ignore_alpha, bool &out_flip,
-        bool &out_flop, bool &out_is_transparent, MString &out_file_path,
-        MPlug &out_color_plug);
+        bool &out_flop, bool &out_is_transparent, mmcore::FrameValue &out_frame,
+        MString &out_file_path, MString &out_input_color_space_name,
+        MString &out_output_color_space_name, MPlug &out_color_plug);
 
     void set_shader_instance_parameters(
         MShaderInstance *shader, MHWRender::MTextureManager *textureManager,
         const float color_gain, const float alpha_gain, const bool ignore_alpha,
         const bool flip, const bool flop, const bool is_transparent,
         const ImageDisplayChannel image_display_channel,
-        const MString file_path, MHWRender::MTexture *out_color_texture,
+        const mmcore::FrameValue frame, const MString &file_path,
+        const MString &input_color_space_name,
+        const MString &output_color_space_name,
+        MHWRender::MTexture *out_color_texture,
         const MHWRender::MSamplerState *out_texture_sampler,
-        MPlug &out_color_plug);
+        const bool use_color_plug, MPlug &out_color_plug);
 
     MObject m_this_node;
     MDagPath m_geometry_node_path;
@@ -140,13 +146,12 @@ protected:
     bool m_draw_hud;
     bool m_draw_image_size;
     bool m_draw_camera_size;
+    bool m_update_shader;
     MString m_image_size;
     MString m_camera_size;
     MCallbackId m_model_editor_changed_callback_id;
 
-    bool m_use_shader_node;
-    bool m_use_image_read;
-    bool m_use_color_bars;
+    bool m_use_color_plug;
 
     // Shader attributes.
     MShaderInstance *m_shader;
@@ -157,11 +162,14 @@ protected:
     bool m_flip;
     bool m_flop;
     bool m_is_transparent;
+    mmcore::FrameValue m_frame;
     MString m_file_path;
+    MString m_input_color_space_name;
+    MString m_output_color_space_name;
     MPlug m_color_plug;
 
     // Texture caching
-    MImage m_image;
+    MImage m_temp_image;
     MHWRender::MTexture *m_color_texture;
     const MHWRender::MSamplerState *m_texture_sampler;
 

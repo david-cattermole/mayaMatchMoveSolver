@@ -29,15 +29,29 @@ set(SOURCE_FILES
   mmSolver/adjust/adjust_cminpack_base.cpp
   mmSolver/adjust/adjust_cminpack_lmder.cpp
   mmSolver/adjust/adjust_cminpack_lmdif.cpp
+  mmSolver/adjust/adjust_measureErrors.cpp
   mmSolver/adjust/adjust_relationships.cpp
   mmSolver/adjust/adjust_results_helpers.cpp
   mmSolver/adjust/adjust_results_setMarkerData.cpp
   mmSolver/adjust/adjust_results_setSolveData.cpp
   mmSolver/adjust/adjust_setParameters.cpp
-  mmSolver/adjust/adjust_measureErrors.cpp
   mmSolver/adjust/adjust_solveFunc.cpp
   mmSolver/calibrate/calibrate_common.cpp
   mmSolver/calibrate/vanishing_point.cpp
+  mmSolver/cmd/MMCameraPoseFromPointsCmd.cpp
+  mmSolver/cmd/MMCameraRelativePoseCmd.cpp
+  mmSolver/cmd/MMCameraSolveCmd.cpp
+  mmSolver/cmd/MMColorIOCmd.cpp
+  mmSolver/cmd/MMConvertImageCmd.cpp
+  mmSolver/cmd/MMMarkerHomographyCmd.cpp
+  mmSolver/cmd/MMReadImageCmd.cpp
+  mmSolver/cmd/MMReprojectionCmd.cpp
+  mmSolver/cmd/MMSolver2Cmd.cpp
+  mmSolver/cmd/MMSolverAffectsCmd.cpp
+  mmSolver/cmd/MMSolverCmd.cpp
+  mmSolver/cmd/MMSolverSceneGraphCmd.cpp
+  mmSolver/cmd/MMSolverTypeCmd.cpp
+  mmSolver/cmd/MMTestCameraMatrixCmd.cpp
   mmSolver/cmd/arg_flags_attr_details.cpp
   mmSolver/cmd/arg_flags_attr_details.h
   mmSolver/cmd/arg_flags_solve_frames.cpp
@@ -50,19 +64,6 @@ set(SOURCE_FILES
   mmSolver/cmd/arg_flags_solve_object.h
   mmSolver/cmd/arg_flags_solve_scene_graph.cpp
   mmSolver/cmd/arg_flags_solve_scene_graph.h
-  mmSolver/cmd/MMCameraPoseFromPointsCmd.cpp
-  mmSolver/cmd/MMCameraRelativePoseCmd.cpp
-  mmSolver/cmd/MMCameraSolveCmd.cpp
-  mmSolver/cmd/MMConvertImageCmd.cpp
-  mmSolver/cmd/MMMarkerHomographyCmd.cpp
-  mmSolver/cmd/MMReadImageCmd.cpp
-  mmSolver/cmd/MMReprojectionCmd.cpp
-  mmSolver/cmd/MMSolverAffectsCmd.cpp
-  mmSolver/cmd/MMSolverCmd.cpp
-  mmSolver/cmd/MMSolver2Cmd.cpp
-  mmSolver/cmd/MMSolverSceneGraphCmd.cpp
-  mmSolver/cmd/MMSolverTypeCmd.cpp
-  mmSolver/cmd/MMTestCameraMatrixCmd.cpp
   mmSolver/core/reprojection.cpp
   mmSolver/mayahelper/maya_attr.cpp
   mmSolver/mayahelper/maya_bundle.cpp
@@ -88,25 +89,27 @@ set(SOURCE_FILES
   mmSolver/node/MMMarkerTransformNode.cpp
   mmSolver/node/MMReprojectionNode.cpp
   mmSolver/node/node_line_utils.cpp
-  mmSolver/sfm/camera_relative_pose.cpp
+  mmSolver/pluginMain.cpp
   mmSolver/sfm/camera_from_known_points.cpp
+  mmSolver/sfm/camera_relative_pose.cpp
   mmSolver/sfm/homography.cpp
   mmSolver/sfm/sfm_utils.cpp
-  mmSolver/shape/ShapeDrawUtils.cpp
-  mmSolver/shape/MarkerShapeNode.cpp
-  mmSolver/shape/MarkerDrawOverride.cpp
-  mmSolver/shape/BundleShapeNode.cpp
   mmSolver/shape/BundleDrawOverride.cpp
-  mmSolver/shape/ImagePlaneShapeNode.cpp
+  mmSolver/shape/BundleShapeNode.cpp
+  mmSolver/shape/ImageCache.cpp
   mmSolver/shape/ImagePlaneGeometryOverride.cpp
-  mmSolver/shape/LineShapeNode.cpp
+  mmSolver/shape/ImagePlaneShapeNode.cpp
   mmSolver/shape/LineDrawOverride.cpp
-  mmSolver/shape/SkyDomeShapeNode.cpp
+  mmSolver/shape/LineShapeNode.cpp
+  mmSolver/shape/MarkerDrawOverride.cpp
+  mmSolver/shape/MarkerShapeNode.cpp
+  mmSolver/shape/ShapeDrawUtils.cpp
   mmSolver/shape/SkyDomeDrawOverride.cpp
+  mmSolver/shape/SkyDomeShapeNode.cpp
   mmSolver/utilities/debug_utils.cpp
   mmSolver/utilities/number_utils.cpp
+  mmSolver/utilities/path_utils.cpp
   mmSolver/utilities/string_utils.cpp
-  mmSolver/pluginMain.cpp
 )
 
 if (MMSOLVER_BUILD_RENDERER)
@@ -200,16 +203,38 @@ if(MAYA_FOUND)
     )
 endif()
 
+find_package(ZLIB REQUIRED)
 
 # Link all libraries.
 target_link_libraries(mmSolver
-  PRIVATE
-  cminpack::cminpack
-  glog::glog
-  Eigen3::Eigen
-  ceres
-  openMVG
+  PRIVATE ZLIB::ZLIB
+  PRIVATE cminpack::cminpack
+  PRIVATE glog::glog
+  PRIVATE Eigen3::Eigen
+  PRIVATE ceres
+  PRIVATE openMVG
 )
+
+# OpenColorIO
+find_package(OpenColorIO REQUIRED)
+
+get_target_property(OpenColorIO_INTERFACE_INCLUDE_DIRECTORIES OpenColorIO::OpenColorIO INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(OpenColorIO_IMPORTED_LOCATION_RELEASE OpenColorIO::OpenColorIO IMPORTED_LOCATION_RELEASE)
+get_target_property(OpenColorIO_INTERFACE_LINK_LIBRARIES OpenColorIO::OpenColorIO INTERFACE_LINK_LIBRARIES)
+
+message(STATUS "OpenColorIO_INTERFACE_INCLUDE_DIRECTORIES: ${OpenColorIO_INTERFACE_INCLUDE_DIRECTORIES}")
+message(STATUS "OpenColorIO_IMPORTED_LOCATION_RELEASE: ${OpenColorIO_IMPORTED_LOCATION_RELEASE}")
+message(STATUS "OpenColorIO_INTERFACE_LINK_LIBRARIES: ${OpenColorIO_INTERFACE_LINK_LIBRARIES}")
+
+if (MSVC)
+  target_link_libraries(mmSolver
+    PRIVATE ${OpenColorIO_IMPORTED_LOCATION_RELEASE}
+  )
+else()
+  target_link_libraries(mmSolver
+    PRIVATE ${OpenColorIO_IMPORTED_LOCATION_RELEASE}
+    )
+endif()
 
 target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CMINPACK)
 target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_OPENMVG)

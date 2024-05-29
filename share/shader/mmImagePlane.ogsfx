@@ -1,3 +1,4 @@
+#version 400
 // Copyright (C) 2021, 2023, 2024 David Cattermole.
 //
 // This file is part of mmSolver.
@@ -93,8 +94,13 @@ attribute PIXEL_DATA {
 }
 
 GLSLShader PS_mmImagePlane_Main {
+
+    // The OCIO function will be replaced and injected at runtime into
+    // this line. This function is used as a stand-in.
+    vec4 OCIODisplay(vec4 passthrough) { return passthrough; }
+
     void main() {
-        vec4 texture_color = texture2D(gImageTextureSampler, PS_INPUT.UV);
+        vec4 texture_color = OCIODisplay(texture2D(gImageTextureSampler, PS_INPUT.UV));
         if (gIgnoreAlpha) {
             texture_color.a = 1.0f;
         }

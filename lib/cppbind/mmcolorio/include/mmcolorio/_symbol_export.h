@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020, 2021, 2023, 2024 David Cattermole.
+ * Copyright (C) 2020, 2021, 2023 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -18,13 +18,13 @@
  * ====================================================================
  *
  */
-
 #pragma once
 
-#include <iostream>
-
-namespace mmcore {
-
-using FrameValue = int32_t;
-
-}  // namespace mmcore
+// Cross-platform symbol visibility macro.
+#if defined(_MSC_VER)
+#define MMCOLORIO_API_EXPORT __declspec(dllexport)
+#elif defined(__GNUC__)
+#define MMCOLORIO_API_EXPORT __attribute__((visibility("default")))
+#else
+#define MMCOLORIO_API_EXPORT
+#endif

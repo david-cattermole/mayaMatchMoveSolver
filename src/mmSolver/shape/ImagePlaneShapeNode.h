@@ -102,12 +102,8 @@ public:
     static MObject m_shader_node;
     static MObject m_camera_node;
 
-    // "Use" Attributes
-    static MObject m_use_shader_node;
-    static MObject m_use_image_read;
-    static MObject m_use_color_bars;
-
     // Shader Attributes
+    static MObject m_use_color_plug;
     static MObject m_image_display_channel;
     static MObject m_color_gain;
     static MObject m_alpha_gain;
@@ -115,7 +111,10 @@ public:
     static MObject m_flip;
     static MObject m_flop;
     static MObject m_is_transparent;
+    static MObject m_frame_number;
     static MObject m_file_path;
+    static MObject m_input_color_space;
+    static MObject m_output_color_space;
     static MObject m_color;
 };
 

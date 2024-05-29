@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020, 2021, 2023, 2024 David Cattermole.
+ * Copyright (C) 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -17,14 +17,26 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
+ * Generic path helper functions.
  */
 
-#pragma once
+#ifndef PATH_UTILS_H
+#define PATH_UTILS_H
 
+// STL
+#include <cmath>  // fabs
 #include <iostream>
+#include <sstream>  // stringstream
+#include <string>
 
-namespace mmcore {
+// Maya
+#include <maya/MStatus.h>
+#include <maya/MString.h>
 
-using FrameValue = int32_t;
+namespace mmpath {
 
-}  // namespace mmcore
+MStatus resolve_input_file_path(MString &file_path);
+
+}  // namespace mmpath
+
+#endif  // PATH_UTILS_H

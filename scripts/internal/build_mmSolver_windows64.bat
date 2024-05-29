@@ -1,7 +1,7 @@
 @ECHO OFF
 SETLOCAL
 ::
-:: Copyright (C) 2019 David Cattermole.
+:: Copyright (C) 2019, 2024 David Cattermole.
 ::
 :: This file is part of mmSolver.
 ::
@@ -52,7 +52,7 @@ SET INSTALL_MODULE_DIR="%USERPROFILE%\My Documents\maya\%MAYA_VERSION%\modules"
 
 :: Build ZIP Package.
 :: For developer use. Make ZIP packages ready to distribute to others.
-SET BUILD_PACKAGE=1
+SET BUILD_PACKAGE=0
 
 :: Do not edit below, unless you know what you're doing.
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
@@ -87,6 +87,18 @@ CALL %PROJECT_ROOT%\scripts\internal\python_venv_activate.bat
 SET MMSOLVERLIBS_INSTALL_DIR="%BUILD_DIR_BASE%\build_mmsolverlibs\install\maya%MAYA_VERSION%_windows64"
 SET MMSOLVERLIBS_CMAKE_CONFIG_DIR="%MMSOLVERLIBS_INSTALL_DIR%\lib\cmake\mmsolverlibs_cpp"
 SET MMSOLVERLIBS_RUST_DIR="%BUILD_DIR_BASE%\build_mmsolverlibs\rust_windows64_maya%MAYA_VERSION%\%BUILD_TYPE_DIR%"
+
+SET EXTERNAL_BUILD_DIR=%BUILD_DIR_BASE%\build_opencolorio\cmake_win64_maya%MAYA_VERSION%_%BUILD_TYPE%\ext\dist
+SET OPENCOLORIO_INSTALL_DIR=%BUILD_DIR_BASE%\build_opencolorio\install\maya%MAYA_VERSION%_windows64\
+SET OPENCOLORIO_CMAKE_CONFIG_DIR=%OPENCOLORIO_INSTALL_DIR%\lib\cmake\OpenColorIO\
+SET Imath_DIR=%EXTERNAL_BUILD_DIR%\lib\cmake\Imath
+SET ZLIB_INCLUDE_DIR=%EXTERNAL_BUILD_DIR%\include\
+SET ZLIB_LIBRARY=%EXTERNAL_BUILD_DIR%\lib\zlibstatic.lib
+SET expat_DIR=%EXTERNAL_BUILD_DIR%\lib\cmake\expat-%EXPAT_VERSION%
+SET minizip_DIR=%EXTERNAL_BUILD_DIR%\lib\cmake\minizip-ng
+SET pystring_INCLUDE_DIR=%EXTERNAL_BUILD_DIR%\include
+SET pystring_LIBRARY=%EXTERNAL_BUILD_DIR%\lib\pystring.lib
+SET yaml_DIR=%EXTERNAL_BUILD_DIR%\share\cmake\yaml-cpp
 
 :: MinGW is a common install for developers on Windows and
 :: if installed and used it will cause build conflicts and
@@ -141,6 +153,17 @@ CHDIR "%BUILD_DIR%"
     -DMAYA_VERSION=%MAYA_VERSION% ^
     -Dmmsolverlibs_rust_DIR=%MMSOLVERLIBS_RUST_DIR% ^
     -Dmmsolverlibs_cpp_DIR=%MMSOLVERLIBS_CMAKE_CONFIG_DIR% ^
+    -DOpenColorIO_DIR=%OPENCOLORIO_CMAKE_CONFIG_DIR% ^
+    -DOCIO_INSTALL_EXT_PACKAGES=NONE ^
+    -DZLIB_LIBRARY=%ZLIB_LIBRARY% ^
+    -DZLIB_INCLUDE_DIR=%ZLIB_INCLUDE_DIR% ^
+    -DZLIB_STATIC_LIBRARY=ON ^
+    -Dexpat_DIR=%expat_DIR% ^
+    -DImath_DIR=%Imath_DIR% ^
+    -Dminizip-ng_DIR=%minizip_DIR% ^
+    -Dpystring_LIBRARY=%pystring_LIBRARY% ^
+    -Dpystring_INCLUDE_DIR=%pystring_INCLUDE_DIR% ^
+    -Dyaml-cpp_DIR=%yaml_DIR% ^
     %PROJECT_ROOT%
 if errorlevel 1 goto failed_to_generate
 

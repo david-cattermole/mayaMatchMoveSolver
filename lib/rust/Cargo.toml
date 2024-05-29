@@ -1,6 +1,7 @@
 [workspace]
 
 members = [
+    "mmcore",
     "mmimage",
     "mmscenegraph",
 ]

@@ -22,6 +22,8 @@ set(MMSOLVERLIBS_CXXBRIDGE_EXE "/path/to/cxxbridge/executable/cxxbridge" CACHE P
   "The path to the cxxbridge executable file.")
 
 set(main_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+set(mmcolorio_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcolorio/include)
+set(mmcolorio_source_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcolorio/src)
 set(mmcore_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcore/include)
 set(mmcore_source_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcore/src)
 set(mmimage_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmimage/include)
@@ -33,6 +35,9 @@ set(mmscenegraph_source_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmscenegra
 
 # C++ Source Code
 set(lib_source_files
+  ${mmcolorio_source_dir}/lib.cpp
+
+  ${mmcore_source_dir}/_cxxbridge.cpp
   ${mmcore_source_dir}/lib.cpp
   ${mmcore_source_dir}/mmcamera.cpp
   ${mmcore_source_dir}/mmcoord.cpp
@@ -41,8 +46,8 @@ set(lib_source_files
   ${mmcore_source_dir}/mmmath.cpp
 
   ${mmlens_source_dir}/_cxxbridge.cpp
-  ${mmlens_source_dir}/distortion_process.cpp
   ${mmlens_source_dir}/distortion_layers.cpp
+  ${mmlens_source_dir}/distortion_process.cpp
   ${mmlens_source_dir}/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.cpp
   ${mmlens_source_dir}/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy_rescaled.cpp
   ${mmlens_source_dir}/lens_model_3de_classic.cpp
@@ -57,11 +62,11 @@ set(lib_source_files
 
   ${mmscenegraph_source_dir}/_cxxbridge.cpp
   ${mmscenegraph_source_dir}/attrdatablock.cpp
+  ${mmscenegraph_source_dir}/evaluationobjects.cpp
   ${mmscenegraph_source_dir}/flatscene.cpp
   ${mmscenegraph_source_dir}/line.cpp
   ${mmscenegraph_source_dir}/scenebake.cpp
   ${mmscenegraph_source_dir}/scenegraph.cpp
-  ${mmscenegraph_source_dir}/evaluationobjects.cpp
 )
 
 include(MMCommonUtils)
@@ -97,8 +102,71 @@ target_link_libraries(${cpp_lib_name}
 # ldpk to be installed so we have the 'ldpk_INCLUDE_DIR' variable.
 add_dependencies(${cpp_lib_name} ldpk::ldpk)
 
+
+# OpenColorIO
+message(STATUS "OpenColorIO_DIR: ${OpenColorIO_DIR}")
+find_package(OpenColorIO REQUIRED)
+
+get_target_property(OpenColorIO_INTERFACE_INCLUDE_DIRECTORIES OpenColorIO::OpenColorIO INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(OpenColorIO_IMPORTED_LOCATION_RELEASE OpenColorIO::OpenColorIO IMPORTED_LOCATION_RELEASE)
+get_target_property(OpenColorIO_INTERFACE_LINK_LIBRARIES OpenColorIO::OpenColorIO INTERFACE_LINK_LIBRARIES)
+
+message(STATUS "OpenColorIO_INTERFACE_INCLUDE_DIRECTORIES: ${OpenColorIO_INTERFACE_INCLUDE_DIRECTORIES}")
+message(STATUS "OpenColorIO_IMPORTED_LOCATION_RELEASE: ${OpenColorIO_IMPORTED_LOCATION_RELEASE}")
+message(STATUS "OpenColorIO_INTERFACE_LINK_LIBRARIES: ${OpenColorIO_INTERFACE_LINK_LIBRARIES}")
+
+target_include_directories(${cpp_lib_name}
+  PRIVATE ${OpenColorIO_INTERFACE_INCLUDE_DIRECTORIES}
+)
+
+find_package(ZLIB REQUIRED)
+message(STATUS "ZLIB: Found: ${ZLIB_FOUND}")
+message(STATUS "ZLIB: Version: ${ZLIB_VERSION}")
+message(STATUS "ZLIB: Libraries: ${ZLIB_LIBRARIES}")
+message(STATUS "ZLIB: Include Dirs: ${ZLIB_INCLUDE_DIRS}")
+
+find_package(pystring REQUIRED)
+message(STATUS "pystring: Found: ${pystring_FOUND}")
+message(STATUS "pystring: Libraries: ${pystring_LIBRARY}")
+message(STATUS "pystring: Include Dir: ${pystring_INCLUDE_DIR}")
+
+find_package(Imath REQUIRED)
+message(STATUS "Imath: Found: ${Imath_FOUND}")
+message(STATUS "Imath: Version: ${Imath_VERSION}")
+message(STATUS "Imath: Libraries: ${Imath_LIBRARY}")
+message(STATUS "Imath: Include Dir: ${Imath_INCLUDE_DIR}")
+
+find_package(expat REQUIRED)
+message(STATUS "expat: Found: ${expat_FOUND}")
+message(STATUS "expat: Version: ${expat_VERSION}")
+message(STATUS "expat: Libraries: ${expat_LIBRARY}")
+message(STATUS "expat: Include Dir: ${expat_INCLUDE_DIR}")
+
+find_package(minizip-ng REQUIRED)
+message(STATUS "minizip-ng: Found: ${minizip-ng_FOUND}")
+message(STATUS "minizip-ng: Version: ${minizip-ng_VERSION}")
+message(STATUS "minizip-ng: Libraries: ${minizip-ng_LIBRARY}")
+message(STATUS "minizip-ng: Include Dir: ${minizip-ng_INCLUDE_DIR}")
+
+find_package(yaml-cpp REQUIRED)
+message(STATUS "yaml-cpp: Found: ${yaml-cpp_FOUND}")
+message(STATUS "yaml-cpp: Version: ${yaml-cpp_VERSION}")
+message(STATUS "yaml-cpp: Libraries: ${yaml-cpp_LIBRARY}")
+message(STATUS "yaml-cpp: Include Dir: ${yaml-cpp_INCLUDE_DIR}")
+
+target_link_libraries(${cpp_lib_name}
+  PRIVATE OpenColorIO::OpenColorIO
+  PRIVATE ZLIB::ZLIB
+  PRIVATE expat::expat
+  PRIVATE Imath::Imath
+  PRIVATE pystring::pystring
+  PRIVATE yaml-cpp
+  PRIVATE MINIZIP::minizip-ng
+  )
+
 target_include_directories(${cpp_lib_name}
   PUBLIC $<BUILD_INTERFACE:${main_include_dir}>
+  PUBLIC $<BUILD_INTERFACE:${mmcolorio_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmcore_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmlens_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmimage_include_dir}>
@@ -106,13 +174,14 @@ target_include_directories(${cpp_lib_name}
   PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   PRIVATE $<BUILD_INTERFACE:${ldpk_INCLUDE_DIR}>
   PUBLIC $<INSTALL_INTERFACE:include/>
-)
+  )
 
 mm_common_install_target_library("mmsolverlibs_cpp" ${cpp_lib_name})
 
 # Install public headers
 include(GNUInstallDirs)
 install(DIRECTORY
+  "${mmcolorio_include_dir}/"
   "${mmcore_include_dir}/"
   "${mmimage_include_dir}/"
   "${mmlens_include_dir}/"

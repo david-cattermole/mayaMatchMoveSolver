@@ -126,7 +126,6 @@ class TestCameraPoseResection(solverUtils.SolverTestCase):
         # Run solver!
         assert 'mmCameraPoseFromPoints' in dir(maya.cmds)
         s = time.time()
-        # for frame in frames:
         result = maya.cmds.mmCameraPoseFromPoints(**kwargs)
         print('result:', pprint.pformat(result))
         e = time.time()

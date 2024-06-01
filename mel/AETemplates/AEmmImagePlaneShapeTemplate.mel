@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2022 David Cattermole.
+// Copyright (C) 2022, 2024 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -97,11 +97,14 @@ global proc AEmmImagePlaneShape_browser(
     string $cmd = "";
     $cmd = $cmd + "import mmSolver.tools.createimageplane.tool as tool;\n";
     $cmd = $cmd + "import mmSolver.tools.createimageplane.lib as lib;\n";
+    $cmd = $cmd + "\n";
     $cmd = $cmd + "image_seq = tool.prompt_user_for_image_sequence();\n";
+    $cmd = $cmd + "\n";
+    $cmd = $cmd + "mm_ip_shp = \"" + $image_plane_shp + "\";\n";
+    $cmd = $cmd + "attr_name = \"" + $attr_name + "\";\n";
+    $cmd = $cmd + "current_slot_attr = \"" + $slot_attr_name + "\";\n";
+    $cmd = $cmd + "\n";
     $cmd = $cmd + "if image_seq:\n";
-    $cmd = $cmd + "    mm_ip_shp = \"" + $image_plane_shp + "\";\n";
-    $cmd = $cmd + "    attr_name = \"" + $attr_name + "\";\n";
-    $cmd = $cmd + "    current_slot_attr = \"" + $slot_attr_name + "\";\n";
     $cmd = $cmd + "    if attr_name == current_slot_attr:\n";
     $cmd = $cmd + "        lib.set_image_sequence(\n";
     $cmd = $cmd + "            mm_ip_shp,\n";
@@ -132,16 +135,18 @@ global proc AEmmImagePlaneShape_sequenceSlotChanged(
     AEmmImagePlaneShape_setSlotValue($image_plane_shp, $slot_attr_value);
 
     string $cmd = "";
-    $cmd = $cmd + "import os.path;\n";
     $cmd = $cmd + "import mmSolver.tools.createimageplane.tool as tool;\n";
     $cmd = $cmd + "import mmSolver.tools.createimageplane.lib as lib;\n";
+    $cmd = $cmd + "\n";
     $cmd = $cmd + "mm_ip_shp = \"" + $image_plane_shp + "\";\n";
     $cmd = $cmd + "attr_name = \"" + $attr_name + "\";\n";
     $cmd = $cmd + "current_slot_attr = \"" + $slot_attr_name + "\";\n";
+    $cmd = $cmd + "\n";
     $cmd = $cmd + "image_seq = maya.cmds.getAttr(\n";
     $cmd = $cmd + "    mm_ip_shp + '.' + current_slot_attr) or ''\n";
-    $cmd = $cmd + "if len(image_seq) == 0 or not os.path.isfile(image_seq):\n";
+    $cmd = $cmd + "if len(image_seq) == 0:\n";
     $cmd = $cmd + "    image_seq = lib.get_default_image_path();\n";
+    $cmd = $cmd + "\n";
     $cmd = $cmd + "lib.set_image_sequence(\n";
     $cmd = $cmd + "    mm_ip_shp,\n";
     $cmd = $cmd + "    image_seq,\n";
@@ -233,12 +238,15 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     editorTemplate -beginLayout "Display" -collapse 0;
     editorTemplate -addControl "visibleToCameraOnly";
     editorTemplate -addSeparator;
-    editorTemplate -addControl "exposure";
-    editorTemplate -addControl "gamma";
     editorTemplate -addControl "colorGain";
+    editorTemplate -addControl "colorExposure";
+    editorTemplate -addControl "colorGamma";
+    editorTemplate -addControl "colorSaturation";
+    editorTemplate -addControl "colorSoftClip";
     editorTemplate -addControl "alphaGain";
-    // editorTemplate -addSeparator;
-    // editorTemplate -addControl "colorSpace";  // Might not be possible.
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "imageIgnoreAlpha";
+    editorTemplate -addControl "displayChannel";
     editorTemplate -endLayout;
 
     editorTemplate -beginLayout "Image Sequence" -collapse 0;
@@ -270,6 +278,18 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
         "AEmmImagePlaneShape_imageSequenceReplace"
         "imageSequenceAlternate3";
 
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "imageWidth";
+    editorTemplate -addControl "imageHeight";
+    editorTemplate -addControl "imagePixelAspect";
+    editorTemplate -addSeparator;
+    editorTemplate -addControl "imageSequenceStartFrame";
+    editorTemplate -addControl "imageSequenceEndFrame";
+    editorTemplate -addSeparator;
+    // TODO: Use mmColorIO results to allow users to manually give the
+    // inputColorSpace.
+    editorTemplate -addControl "inputColorSpace";
+    editorTemplate -addSeparator;
     // TODO: Add radio button to choose what will connect to the
     // 'imageSequenceFrame' value? Options are:
     //  - Scene Time (time1)
@@ -279,15 +299,8 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     editorTemplate -addControl "imageSequenceFirstFrame";
     editorTemplate -addControl "imageSequenceFrameOutput";
     editorTemplate -addSeparator;
-    editorTemplate -addControl "imageLoadEnable";
-    editorTemplate -addControl "imageUseAlphaChannel";
-    editorTemplate -addSeparator;
-    editorTemplate -addControl "imageWidth";
-    editorTemplate -addControl "imageHeight";
-    editorTemplate -addControl "imagePixelAspect";
-    editorTemplate -addSeparator;
-    editorTemplate -addControl "imageSequenceStartFrame";
-    editorTemplate -addControl "imageSequenceEndFrame";
+    editorTemplate -addControl "imageFlip";
+    editorTemplate -addControl "imageFlop";
     editorTemplate -endLayout;
 
     editorTemplate -beginLayout "HUD" -collapse 0;
@@ -298,24 +311,31 @@ global proc AEmmImagePlaneShapeTemplate(string $nodeName)
     // TODO: Add 'hudTextColor' - control the HUD text color.
     editorTemplate -endLayout;
 
+    // editorTemplate -beginLayout "Image Cache" -collapse 1;
+    // // TODO: Add controls to view and edit the image cache.
+    // editorTemplate -endLayout;
+
     editorTemplate -beginLayout "Miscellaneous" -collapse 1;
     editorTemplate -addControl "meshResolution";
     editorTemplate -addControl "imageDefaultColor";  // Cannot be textured.
+    editorTemplate -addControl "shaderIsTransparent";
     editorTemplate -endLayout;
 
     editorTemplate -beginLayout "Nodes" -collapse 1;
-    editorTemplate -addControl "shaderNode";
-    editorTemplate -addControl "shaderFileNode";
     editorTemplate -addControl "geometryNode";
     editorTemplate -addControl "cameraNode";
     editorTemplate -addControl "imagePlaneShapeNode";
     editorTemplate -endLayout;
 
-    editorTemplate -suppress "imageSequencePadding";
-    editorTemplate -suppress "cameraWidthInch";
-    editorTemplate -suppress "cameraHeightInch";
-    editorTemplate -suppress "lensHashCurrent";
-    editorTemplate -suppress "lensHashPrevious";
+    // // Internals that we don't want the user to see.
+    // editorTemplate -suppress "imageSequencePadding";
+    // editorTemplate -suppress "cameraWidthInch";
+    // editorTemplate -suppress "cameraHeightInch";
+    // editorTemplate -suppress "lensHashCurrent";
+    // editorTemplate -suppress "lensHashPrevious";
+    // editorTemplate -suppress "imageFilePath";
+    // editorTemplate -suppress "inputColorSpace";
+    // editorTemplate -suppress "outputColorSpace";
 
     AEmmNodeShapeTemplateCommonEnd($nodeName);
 }

@@ -1,4 +1,4 @@
-# Copyright (C) 2020, 2022 David Cattermole.
+# Copyright (C) 2020, 2022, 2024 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -25,12 +25,13 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.camera as camera_utils
+import mmSolver.utils.constant as const_utils
+import mmSolver.utils.imageseq as imageseq_utils
 import mmSolver.utils.python_compat as pycompat
 
 import mmSolver.tools.createimageplane.constant as const
 import mmSolver.tools.createimageplane._lib.constant as lib_const
 import mmSolver.tools.createimageplane._lib.utilities as lib_utils
-import mmSolver.tools.createimageplane._lib.shader as lib_shader
 import mmSolver.tools.createimageplane._lib.mmimageplane as lib_mmimageplane
 import mmSolver.tools.createimageplane._lib.polyplane as lib_polyplane
 import mmSolver.tools.createimageplane._lib.nativeimageplane as lib_nativeimageplane
@@ -56,20 +57,18 @@ def create_image_plane_on_camera(cam, name=None):
         poly_plane_name, mm_ip_tfm, cam_shp
     )
 
-    name_shade = name + 'Shader'
-    shader_network = lib_shader.create_network(name_shade, mm_ip_tfm)
-
     name_img_shp = name + 'Shape'
     mm_ip_shp = lib_mmimageplane.create_shape_node(
-        name_img_shp, mm_ip_tfm, cam_shp, poly_plane_network, shader_network
-    )
-
-    # Shortcut connections to nodes.
-    lib_utils.force_connect_attr(
-        shader_network.file_node + '.message', mm_ip_tfm + '.shaderFileNode'
+        name_img_shp,
+        mm_ip_tfm,
+        cam_shp,
+        poly_plane_network,
     )
 
     # Logic to calculate the frame number.
+    #
+    # TODO: Move this expression into a Maya node, because expressions
+    # are buggy and not flexible.
     frame_expr = const.FRAME_EXPRESSION.format(node=mm_ip_shp)
     frame_expr = frame_expr.replace('{{', '{')
     frame_expr = frame_expr.replace('}}', '}')
@@ -78,17 +77,6 @@ def create_image_plane_on_camera(cam, name=None):
     # Show the users the final frame number.
     shp_node_attr = mm_ip_shp + '.imageSequenceFrameOutput'
     maya.cmds.setAttr(shp_node_attr, lock=True)
-
-    # Set useFrameExtension temporarily. Setting useFrameExtension to
-    # False causes frameOffset to be locked (but we need to edit it).
-    is_seq = maya.cmds.getAttr(shader_network.file_node + '.useFrameExtension')
-    maya.cmds.setAttr(shader_network.file_node + '.useFrameExtension', True)
-
-    file_node_attr = shader_network.file_node + '.frameExtension'
-    lib_utils.force_connect_attr(shp_node_attr, file_node_attr)
-    maya.cmds.setAttr(file_node_attr, lock=True)
-
-    maya.cmds.setAttr(shader_network.file_node + '.useFrameExtension', is_seq)
 
     # Image sequence.
     image_sequence_path = lib_utils.get_default_image_path()
@@ -120,12 +108,12 @@ def convert_image_planes_on_camera(cam):
 
         lib_nativeimageplane.copy_depth_value(mm_ip_tfm, native_ip_shp)
 
-        name_shader = name + 'Shader'
-        shader_network = lib_shader.create_network(name_shader, mm_ip_tfm)
-
         name_img_shp = name + 'Shape'
         mm_ip_shp = lib_mmimageplane.create_shape_node(
-            name_img_shp, mm_ip_tfm, cam_shp, poly_plane_network, shader_network
+            name_img_shp,
+            mm_ip_tfm,
+            cam_shp,
+            poly_plane_network,
         )
 
         # Disable/hide the Maya image plane.
@@ -138,20 +126,65 @@ def convert_image_planes_on_camera(cam):
     return ip_node_pairs
 
 
+def _guess_color_space(file_path):
+    file_extension = file_path.lower().split('.')[-1]
+    if file_extension in lib_const.SCENE_LINEAR_FILE_EXTENSIONS:
+        color_space = maya.cmds.mmColorIO(roleSceneLinear=True)
+    elif file_extension in lib_const.SRGB_FILE_EXTENSIONS:
+        color_space = maya.cmds.mmColorIO(roleColorPicking=True)
+    else:
+        color_space = maya.cmds.mmColorIO(guessColorSpaceFromFile=file_path)
+
+    if not color_space:
+        color_space = maya.cmds.mmColorIO(roleData=True)
+    if not color_space:
+        color_space = maya.cmds.mmColorIO(roleDefault=True)
+
+    exists = maya.cmds.mmColorIO(colorSpaceExists=color_space)
+    if exists is False:
+        color_space = None
+
+    return color_space
+
+
 def set_image_sequence(mm_image_plane_node, image_sequence_path, attr_name=None):
     if attr_name is None:
         attr_name = lib_const.DEFAULT_IMAGE_SEQUENCE_ATTR_NAME
+    assert isinstance(attr_name, str)
+    assert attr_name in lib_const.VALID_INPUT_IMAGE_SEQUENCE_ATTR_NAMES
 
     tfm, shp = lib_mmimageplane.get_image_plane_node_pair(mm_image_plane_node)
     if tfm is None or shp is None:
         LOG.warn('mmImagePlane transform/shape could not be found.')
 
-    file_node = lib_mmimageplane.get_file_node(tfm)
-    if file_node is None:
-        LOG.warn('mmImagePlane shader file node is invalid.')
-
     if shp is not None:
         lib_mmimageplane.set_image_sequence(shp, image_sequence_path, attr_name)
-    if file_node is not None:
-        lib_shader.set_file_path(file_node, image_sequence_path)
+        lib_mmimageplane.set_image_sequence(
+            shp, image_sequence_path, lib_const.SHADER_FILE_PATH_ATTR_NAME
+        )
+
+        format_style = const_utils.IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME
+        (
+            file_pattern,
+            _,
+            _,
+            _,
+            _,
+        ) = imageseq_utils.expand_image_sequence_path(image_sequence_path, format_style)
+        first_frame_file_seq = file_pattern.replace('\\', '/')
+
+        input_color_space = _guess_color_space(first_frame_file_seq)
+        output_color_space = maya.cmds.mmColorIO(roleSceneLinear=True)
+
+        maya.cmds.setAttr(
+            shp + '.' + lib_const.INPUT_COLOR_SPACE_ATTR_NAME,
+            input_color_space,
+            type='string',
+        )
+        maya.cmds.setAttr(
+            shp + '.' + lib_const.OUTPUT_COLOR_SPACE_ATTR_NAME,
+            output_color_space,
+            type='string',
+        )
+
     return

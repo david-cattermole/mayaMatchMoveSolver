@@ -22,20 +22,37 @@
 // Global variables provided by Maya.
 uniform mat4 gWVPXf : WorldViewProjection;
 
-// The solid color uniform, its default value and several extra
-// parameters
-uniform vec4 gSolidColor : DIFFUSE = {1, 1, 1, 1};
 
-uniform float gColorGain = 1.0f;
-uniform float gAlphaGain = 1.0f;
+// Color and alpha modifications.
+uniform vec4 gColorGain : DIFFUSE = {1, 1, 1, 1};
+uniform float gColorExposure = 0.0f;
 uniform float gColorGamma = 1.0f;
+uniform float gColorSoftClip = 1.0f;
+uniform float gAlphaGain = 1.0f;
+uniform float4x4 gColorSaturationMatrix < string UIWidget = "None"; >;
+
+// Should we use the alpha channel from the image?
 uniform bool gIgnoreAlpha = false;
+
+// Flip or flop the image.
 uniform bool gFlip = false;
 uniform bool gFlop = false;
-uniform bool gShowChannelRed = false;
-uniform bool gShowChannelGreen = false;
-uniform bool gShowChannelBlue = false;
-uniform bool gShowChannelAlpha = false;
+
+// What type of channels to display to the user.
+//
+// NOTE: Matches the mmsolver::ImageDisplayChannel enum class.
+#define DISPLAY_CHANNEL_RGBA  (0)
+#define DISPLAY_CHANNEL_RGB   (1)
+#define DISPLAY_CHANNEL_RED   (2)
+#define DISPLAY_CHANNEL_GREEN (3)
+#define DISPLAY_CHANNEL_BLUE  (4)
+#define DISPLAY_CHANNEL_ALPHA (5)
+#define DISPLAY_CHANNEL_LUMINANCE (6)
+uniform int gDisplayChannel = 0;
+
+// When the image is not found the fallback color should be shown.
+uniform bool gImageNotFound = false;
+uniform vec4 gFallbackColor : DIFFUSE = {0.3f, 0.0f, 0.0f, 1};
 
 // The main image texture displaying RGBA values to the user.
 uniform texture2D gImageTexture
@@ -90,10 +107,37 @@ GLSLShader VS_mmImagePlane {
 
 // Pixel Shader Outputs
 attribute PIXEL_DATA {
-    vec4 colorOut : COLOR0;
+    vec4 color_out : COLOR0;
 }
 
 GLSLShader PS_mmImagePlane_Main {
+
+    // Simple Reinhard tone-mapping operator.
+    //
+    // blend_value is a blend between no adjustment and the full
+    // tone-mapping (0.0 to 1.0).
+    vec3 apply_soft_clip(vec3 in_color, float blend_value) {
+        vec3 adjusted = in_color / (1.0 + in_color);
+        return mix(in_color, adjusted, blend_value);
+    }
+
+    vec4 convert_to_luminance_only(vec4 in_color) {
+        // Luminance weights
+        //
+        // From Mozilla:
+        // https://developer.mozilla.org/en-US/docs/Web/Accessibility/Understanding_Colors_and_Luminance
+        float r_weight = 0.2126f; // Luminance Red
+        float g_weight = 0.7152f; // Luminance Green
+        float b_weight = 0.0722f; // Luminance Blue
+
+        mat4 matrix;
+        matrix[0] = vec4(r_weight, g_weight, b_weight, 0.0);
+        matrix[1] = vec4(r_weight, g_weight, b_weight, 0.0);
+        matrix[2] = vec4(r_weight, g_weight, b_weight, 0.0);
+        matrix[3] = vec4(0.0, 0.0, 0.0, 1.0);
+
+        return in_color * matrix;
+    }
 
     // The OCIO function will be replaced and injected at runtime into
     // this line. This function is used as a stand-in.
@@ -105,13 +149,15 @@ GLSLShader PS_mmImagePlane_Main {
             texture_color.a = 1.0f;
         }
 
-        vec3 gamma = vec3(gColorGamma, gColorGamma, gColorGamma);
-        texture_color.rgb = max(vec3(0.0f, 0.0f, 0.0f), texture_color.rgb);
-        texture_color.rgb = pow(texture_color.rgb, (1.0f / gamma));
+        vec3 gamma = 1.0f / vec3(gColorGamma, gColorGamma, gColorGamma);
 
-        texture_color.r *= gColorGain;
-        texture_color.g *= gColorGain;
-        texture_color.b *= gColorGain;
+        texture_color.rgb *= gColorGain.rgb;
+        texture_color.rgb *= pow(2.0, gColorExposure);
+        texture_color.rgb = max(vec3(0.0f, 0.0f, 0.0f), texture_color.rgb);
+        texture_color.rgb = pow(texture_color.rgb, gamma);
+        texture_color *= gColorSaturationMatrix;
+        texture_color.rgb = apply_soft_clip(texture_color.rgb, gColorSoftClip);
+
         texture_color.a *= gAlphaGain;
 
         if (texture_color.a > 1.0f) {
@@ -120,15 +166,19 @@ GLSLShader PS_mmImagePlane_Main {
             texture_color.a = 0.0f;
         }
 
-        colorOut = gSolidColor * texture_color;
-        if (gShowChannelRed) {
-            colorOut = vec4(colorOut.r, colorOut.r, colorOut.r, 1.0f);
-        } else if (gShowChannelGreen) {
-            colorOut = vec4(colorOut.g, colorOut.g, colorOut.g, 1.0f);
-        } else if (gShowChannelBlue) {
-            colorOut = vec4(colorOut.b, colorOut.b, colorOut.b, 1.0f);
-        } else if (gShowChannelAlpha) {
-            colorOut = vec4(colorOut.a, colorOut.a, colorOut.a, 1.0f);
+        color_out = texture_color;
+        if (gDisplayChannel == DISPLAY_CHANNEL_RGB) {
+            color_out = vec4(color_out.rgb, 1.0f);
+        } else if (gDisplayChannel == DISPLAY_CHANNEL_RED) {
+            color_out = vec4(color_out.rrr, 1.0f);
+        } else if (gDisplayChannel == DISPLAY_CHANNEL_GREEN) {
+            color_out = vec4(color_out.ggg, 1.0f);
+        } else if (gDisplayChannel == DISPLAY_CHANNEL_BLUE) {
+            color_out = vec4(color_out.bbb, 1.0f);
+        } else if (gDisplayChannel == DISPLAY_CHANNEL_ALPHA) {
+            color_out = vec4(color_out.aaa, 1.0f);
+        } else if (gDisplayChannel == DISPLAY_CHANNEL_LUMINANCE) {
+            color_out = convert_to_luminance_only(color_out);
         }
     }
 }

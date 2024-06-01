@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 David Cattermole.
+ * Copyright (C) 2022, 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -77,23 +77,25 @@ MObject ImagePlaneShapeNode::m_camera_height_inch;
 MObject ImagePlaneShapeNode::m_lens_hash_current;
 MObject ImagePlaneShapeNode::m_lens_hash_previous;
 MObject ImagePlaneShapeNode::m_geometry_node;
-MObject ImagePlaneShapeNode::m_shader_node;
 MObject ImagePlaneShapeNode::m_camera_node;
 
-// Shader Attributes
-MObject ImagePlaneShapeNode::m_use_color_plug;
+// Image Attributes
 MObject ImagePlaneShapeNode::m_image_display_channel;
-MObject ImagePlaneShapeNode::m_color_gain;
-MObject ImagePlaneShapeNode::m_alpha_gain;
-MObject ImagePlaneShapeNode::m_ignore_alpha;
-MObject ImagePlaneShapeNode::m_flip;
-MObject ImagePlaneShapeNode::m_flop;
-MObject ImagePlaneShapeNode::m_is_transparent;
-MObject ImagePlaneShapeNode::m_frame_number;
-MObject ImagePlaneShapeNode::m_file_path;
-MObject ImagePlaneShapeNode::m_input_color_space;
-MObject ImagePlaneShapeNode::m_output_color_space;
-MObject ImagePlaneShapeNode::m_color;
+MObject ImagePlaneShapeNode::m_image_color_gain;
+MObject ImagePlaneShapeNode::m_image_color_exposure;
+MObject ImagePlaneShapeNode::m_image_color_gamma;
+MObject ImagePlaneShapeNode::m_image_color_saturation;
+MObject ImagePlaneShapeNode::m_image_color_soft_clip;
+MObject ImagePlaneShapeNode::m_image_alpha_gain;
+MObject ImagePlaneShapeNode::m_image_default_color;
+MObject ImagePlaneShapeNode::m_image_ignore_alpha;
+MObject ImagePlaneShapeNode::m_image_flip;
+MObject ImagePlaneShapeNode::m_image_flop;
+MObject ImagePlaneShapeNode::m_image_frame_number;
+MObject ImagePlaneShapeNode::m_image_file_path;
+MObject ImagePlaneShapeNode::m_image_input_color_space;
+MObject ImagePlaneShapeNode::m_image_output_color_space;
+MObject ImagePlaneShapeNode::m_shader_is_transparent;
 
 ImagePlaneShapeNode::ImagePlaneShapeNode() {}
 
@@ -260,13 +262,6 @@ MStatus ImagePlaneShapeNode::initialize() {
     CHECK_MSTATUS(msgAttr.setKeyable(false));
     CHECK_MSTATUS(addAttribute(m_geometry_node));
 
-    m_shader_node = msgAttr.create("shaderNode", "shdnd", &status);
-    CHECK_MSTATUS(status);
-    CHECK_MSTATUS(msgAttr.setStorable(true));
-    CHECK_MSTATUS(msgAttr.setConnectable(true));
-    CHECK_MSTATUS(msgAttr.setKeyable(false));
-    CHECK_MSTATUS(addAttribute(m_shader_node));
-
     m_camera_node = msgAttr.create("cameraNode", "camnd", &status);
     CHECK_MSTATUS(status);
     CHECK_MSTATUS(msgAttr.setStorable(true));
@@ -274,120 +269,176 @@ MStatus ImagePlaneShapeNode::initialize() {
     CHECK_MSTATUS(msgAttr.setKeyable(false));
     CHECK_MSTATUS(addAttribute(m_camera_node));
 
-    m_use_color_plug = nAttr.create("useColorPlug", "useclrplg",
-                                    MFnNumericData::kBoolean, true);
+    m_image_color_gain = nAttr.createColor("colorGain", "colgn");
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setReadable(true));
+    CHECK_MSTATUS(nAttr.setWritable(true));
+    CHECK_MSTATUS(nAttr.setDefault(1.0f, 1.0f, 1.0f));
+    CHECK_MSTATUS(addAttribute(m_image_color_gain));
+
+    const float exposure_soft_min = -9.0f;
+    const float exposure_soft_max = +9.0f;
+    const float exposure_default = 0.0f;
+    m_image_color_exposure = nAttr.create(
+        "colorExposure", "colexpsr", MFnNumericData::kFloat, exposure_default);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setSoftMin(exposure_soft_min));
+    CHECK_MSTATUS(nAttr.setSoftMax(exposure_soft_max));
+    CHECK_MSTATUS(addAttribute(m_image_color_exposure));
+
+    const float gamma_min = 0.0f;
+    const float gamma_soft_max = +2.0f;
+    const float gamma_default = 1.0f;
+    m_image_color_gamma = nAttr.create("colorGamma", "colgmma",
+                                       MFnNumericData::kFloat, gamma_default);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(gamma_min));
+    CHECK_MSTATUS(nAttr.setSoftMax(gamma_soft_max));
+    CHECK_MSTATUS(addAttribute(m_image_color_gamma));
+
+    const float saturation_min = 0.0f;
+    const float saturation_soft_max = 2.0f;
+    const float saturation_default = 1.0f;
+    m_image_color_saturation =
+        nAttr.create("colorSaturation", "colstrtn", MFnNumericData::kFloat,
+                     saturation_default);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(saturation_min));
+    CHECK_MSTATUS(nAttr.setSoftMax(saturation_soft_max));
+    CHECK_MSTATUS(addAttribute(m_image_color_saturation));
+
+    const float soft_clip_min = 0.0f;
+    const float soft_clip_max = 1.0f;
+    const float soft_clip_default = 0.0f;
+    m_image_color_soft_clip =
+        nAttr.create("colorSoftClip", "colsftclp", MFnNumericData::kFloat,
+                     soft_clip_default);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(soft_clip_min));
+    CHECK_MSTATUS(nAttr.setMax(soft_clip_max));
+    CHECK_MSTATUS(addAttribute(m_image_color_soft_clip));
+
+    const double alpha_min = 0.0;
+    const double alpha_max = 1.0;
+    const double alpha_default = 1.0;
+    m_image_alpha_gain = nAttr.create("alphaGain", "alpgn",
+                                      MFnNumericData::kDouble, alpha_default);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setConnectable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(m_use_color_plug));
+    CHECK_MSTATUS(nAttr.setMin(alpha_min));
+    CHECK_MSTATUS(nAttr.setMax(alpha_max));
+    CHECK_MSTATUS(addAttribute(m_image_alpha_gain));
 
     // Which channel of the image should be displayed?
-    short value_all = static_cast<short>(ImageDisplayChannel::kAll);
-    short value_red = static_cast<short>(ImageDisplayChannel::kRed);
-    short value_green = static_cast<short>(ImageDisplayChannel::kGreen);
-    short value_blue = static_cast<short>(ImageDisplayChannel::kBlue);
-    short value_alpha = static_cast<short>(ImageDisplayChannel::kAlpha);
-    m_image_display_channel = eAttr.create("shaderImageDisplayChannel",
-                                           "shdimgdspchan", value_all, &status);
+    const short value_all = static_cast<short>(ImageDisplayChannel::kAll);
+    const short value_rgb = static_cast<short>(ImageDisplayChannel::kRGB);
+    const short value_red = static_cast<short>(ImageDisplayChannel::kRed);
+    const short value_green = static_cast<short>(ImageDisplayChannel::kGreen);
+    const short value_blue = static_cast<short>(ImageDisplayChannel::kBlue);
+    const short value_alpha = static_cast<short>(ImageDisplayChannel::kAlpha);
+    const short value_luminance =
+        static_cast<short>(ImageDisplayChannel::kLuminance);
+    m_image_display_channel =
+        eAttr.create("displayChannel", "dspchan", value_all, &status);
     CHECK_MSTATUS(status);
     CHECK_MSTATUS(eAttr.addField("RGBA", value_all));
+    CHECK_MSTATUS(eAttr.addField("RGB", value_rgb));
     CHECK_MSTATUS(eAttr.addField("Red", value_red));
     CHECK_MSTATUS(eAttr.addField("Green", value_green));
     CHECK_MSTATUS(eAttr.addField("Blue", value_blue));
     CHECK_MSTATUS(eAttr.addField("Alpha", value_alpha));
+    CHECK_MSTATUS(eAttr.addField("Luminance", value_luminance));
     CHECK_MSTATUS(eAttr.setStorable(true));
     CHECK_MSTATUS(eAttr.setKeyable(true));
     CHECK_MSTATUS(addAttribute(m_image_display_channel));
 
-    m_color_gain = nAttr.create("shaderColorGain", "shdclgn",
-                                MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setConnectable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(false));
-    CHECK_MSTATUS(nAttr.setMin(0.0));
-    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Color Gain (Shader)")));
-    CHECK_MSTATUS(addAttribute(m_color_gain));
-
-    m_alpha_gain = nAttr.create("shaderAlphaGain", "shdalpgn",
-                                MFnNumericData::kDouble, 1.0);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setConnectable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(false));
-    CHECK_MSTATUS(nAttr.setMin(0.0));
-    CHECK_MSTATUS(nAttr.setMax(1.0));
-    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Alpha Gain (Shader)")));
-    CHECK_MSTATUS(addAttribute(m_alpha_gain));
-
-    m_ignore_alpha = nAttr.create("shaderIgnoreAlpha", "shdignalp",
-                                  MFnNumericData::kBoolean, false);
+    m_image_ignore_alpha = nAttr.create("imageIgnoreAlpha", "imgignalp",
+                                        MFnNumericData::kBoolean, false);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setConnectable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Ignore Alpha (Shader)")));
-    CHECK_MSTATUS(addAttribute(m_ignore_alpha));
+    CHECK_MSTATUS(addAttribute(m_image_ignore_alpha));
 
-    m_flip =
-        nAttr.create("shaderFlip", "shdflip", MFnNumericData::kBoolean, false);
+    m_image_flip =
+        nAttr.create("imageFlip", "imgflip", MFnNumericData::kBoolean, false);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setConnectable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Flip (Shader)")));
-    CHECK_MSTATUS(addAttribute(m_flip));
+    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Image Flip (Vertical)")));
+    CHECK_MSTATUS(addAttribute(m_image_flip));
 
-    m_flop =
-        nAttr.create("shaderFlop", "shdflop", MFnNumericData::kBoolean, false);
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setConnectable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Flop (Shader)")));
-    CHECK_MSTATUS(addAttribute(m_flop));
-
-    m_is_transparent = nAttr.create("shaderIsTransparent", "shdistrnsp",
-                                    MFnNumericData::kBoolean, false);
+    m_image_flop =
+        nAttr.create("imageFlop", "imgflop", MFnNumericData::kBoolean, false);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setConnectable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(
-        nAttr.setNiceNameOverride(MString("Is Transparent (Shader)")));
-    CHECK_MSTATUS(addAttribute(m_is_transparent));
+        nAttr.setNiceNameOverride(MString("Image Flop (Horizontal)")));
+    CHECK_MSTATUS(addAttribute(m_image_flop));
 
-    m_frame_number =
-        nAttr.create("frameNumber", "frmnmb", MFnNumericData::kInt, 1);
+    m_shader_is_transparent = nAttr.create("shaderIsTransparent", "shdistrnsp",
+                                           MFnNumericData::kBoolean, false);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setConnectable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(
+        nAttr.setNiceNameOverride(MString("Shader Is Transparent (Debug)")));
+    CHECK_MSTATUS(addAttribute(m_shader_is_transparent));
+
+    m_image_default_color = nAttr.createColor("imageDefaultColor", "imgdefcol");
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setReadable(true));
+    CHECK_MSTATUS(nAttr.setWritable(true));
+    CHECK_MSTATUS(nAttr.setDefault(1.0f, 1.0f, 1.0f));
+    CHECK_MSTATUS(addAttribute(m_image_default_color));
+
+    m_image_frame_number =
+        nAttr.create("imageFrameNumber", "imgfrmnmb", MFnNumericData::kInt, 1);
     CHECK_MSTATUS(nAttr.setStorable(true));
     CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(addAttribute(m_frame_number));
+    CHECK_MSTATUS(addAttribute(m_image_frame_number));
+
+    // // Pixel Data Type
+    // m_cache_pixel_data_type = eAttr.create(
+    //     "cachePixelDataType", "cchpxldtyp",
+    //     kDataTypeUnknown);
+    // CHECK_MSTATUS(eAttr.addField("auto", kDataTypeUnknown));
+    // CHECK_MSTATUS(eAttr.addField("uint8", kDataTypeUInt8));
+    // CHECK_MSTATUS(eAttr.addField("uint16", kDataTypeUInt16));
+    // CHECK_MSTATUS(eAttr.addField("half16", kDataTypeHalf16));
+    // CHECK_MSTATUS(eAttr.addField("float32", kDataTypeFloat32));
+    // CHECK_MSTATUS(eAttr.setStorable(true));
 
     // Create empty string data to be used as attribute default
     // (string) value.
     MFnStringData empty_string_data;
     MObject empty_string_data_obj = empty_string_data.create("");
 
-    m_file_path = tAttr.create("shaderFilePath", "shdflpth", MFnData::kString,
-                               empty_string_data_obj);
+    m_image_file_path = tAttr.create("imageFilePath", "imgflpth",
+                                     MFnData::kString, empty_string_data_obj);
     CHECK_MSTATUS(tAttr.setStorable(true));
     CHECK_MSTATUS(tAttr.setUsedAsFilename(true));
-    CHECK_MSTATUS(addAttribute(m_file_path));
+    CHECK_MSTATUS(addAttribute(m_image_file_path));
 
-    m_input_color_space = tAttr.create("inputColorSpace", "incolspc",
-                                       MFnData::kString, empty_string_data_obj);
+    m_image_input_color_space = tAttr.create(
+        "inputColorSpace", "incolspc", MFnData::kString, empty_string_data_obj);
     CHECK_MSTATUS(tAttr.setStorable(true));
     CHECK_MSTATUS(tAttr.setUsedAsFilename(false));
-    CHECK_MSTATUS(addAttribute(m_input_color_space));
+    CHECK_MSTATUS(addAttribute(m_image_input_color_space));
 
-    m_output_color_space =
+    m_image_output_color_space =
         tAttr.create("outputColorSpace", "outcolspc", MFnData::kString,
                      empty_string_data_obj);
     CHECK_MSTATUS(tAttr.setStorable(true));
     CHECK_MSTATUS(tAttr.setUsedAsFilename(false));
-    CHECK_MSTATUS(addAttribute(m_output_color_space));
-
-    m_color = nAttr.createColor("shaderColor", "shdcl");
-    CHECK_MSTATUS(nAttr.setDefault(0.0f, 0.58824f, 0.644f));
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setConnectable(true));
-    CHECK_MSTATUS(nAttr.setKeyable(false));
-    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Color (Shader)")));
-    CHECK_MSTATUS(addAttribute(m_color));
+    CHECK_MSTATUS(addAttribute(m_image_output_color_space));
 
     return MS::kSuccess;
 }

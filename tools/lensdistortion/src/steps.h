@@ -51,7 +51,7 @@
 // memory required for the largest image and therefore always be sure
 // that we are not exceeding the memory.
 template <typename LENS_TYPE>
-mmimage::Box2F32 calculate_bbox_region_function(
+mmimage::Box2F32 calculate_lens_distortion_bbox_region_function(
     const mmlens::FrameNumber frame,
     const mmlens::CameraParameters camera_parameters,
     const double film_back_radius_cm, const LENS_TYPE lens_parameters,
@@ -121,7 +121,7 @@ mmimage::Box2F32 calculate_bbox_region_function(
 
 // Process lens distortion bounding box, and calculate the maximum
 // bbox region required for undistortion and redistortion.
-mmimage::Box2F32 calculate_bbox_region(
+mmimage::Box2F32 calculate_lens_distortion_bbox_region(
     const uint8_t layer_num, const mmlens::FrameNumber frame,
     const mmlens::LensModelType lens_model_type,
     const mmlens::CameraParameters camera_parameters,
@@ -144,7 +144,7 @@ mmimage::Box2F32 calculate_bbox_region(
             "LensParameters are expected to exist for matching LensModelType.");
 
         const auto lens_parameters = option.value;
-        box_region = calculate_bbox_region_function(
+        box_region = calculate_lens_distortion_bbox_region_function(
             frame, camera_parameters, film_back_radius_cm, lens_parameters,
             bbox_duration, verbose);
 
@@ -157,7 +157,7 @@ mmimage::Box2F32 calculate_bbox_region(
             "LensParameters are expected to exist for matching LensModelType.");
 
         const auto lens_parameters = option.value;
-        box_region = calculate_bbox_region_function(
+        box_region = calculate_lens_distortion_bbox_region_function(
             frame, camera_parameters, film_back_radius_cm, lens_parameters,
             bbox_duration, verbose);
     } else if (lens_model_type ==
@@ -170,7 +170,7 @@ mmimage::Box2F32 calculate_bbox_region(
             "LensParameters are expected to exist for matching LensModelType.");
 
         const auto lens_parameters = option.value;
-        box_region = calculate_bbox_region_function(
+        box_region = calculate_lens_distortion_bbox_region_function(
             frame, camera_parameters, film_back_radius_cm, lens_parameters,
             bbox_duration, verbose);
     } else if (lens_model_type ==
@@ -183,13 +183,15 @@ mmimage::Box2F32 calculate_bbox_region(
             "LensParameters are expected to exist for matching LensModelType.");
 
         const auto lens_parameters = option.value;
-        box_region = calculate_bbox_region_function(
+        box_region = calculate_lens_distortion_bbox_region_function(
             frame, camera_parameters, film_back_radius_cm, lens_parameters,
             bbox_duration, verbose);
 
     } else {
-        MMSOLVER_PANIC("calculate_bbox_region: Unsupported lens_model_type: "
-                       << static_cast<int>(lens_model_type));
+        MMSOLVER_PANIC(
+            "calculate_lens_distortion_bbox_region: Unsupported "
+            "lens_model_type: "
+            << static_cast<int>(lens_model_type));
     }
 
     auto bbox_end = std::chrono::high_resolution_clock::now();
@@ -344,14 +346,14 @@ std::string compute_output_file_path(const std::string& input_output_file_path,
     return output_file_path_string;
 }
 
-bool save_image(const mmimage::ImageRegionRectangle display_window,
-                const mmimage::Vec2I32 layer_position,
-                const ExrCompressionMode exr_compression_mode,
-                mmimage::ImagePixelBuffer& pixel_buffer,
-                mmimage::ImageMetaData& meta_data,
-                const rust::Str& output_file_path,
-                std::chrono::duration<float>& write_duration,
-                const bool verbose) {
+bool save_exr_image(const mmimage::ImageRegionRectangle display_window,
+                    const mmimage::Vec2I32 layer_position,
+                    const ExrCompressionMode exr_compression_mode,
+                    mmimage::ImagePixelBuffer& pixel_buffer,
+                    mmimage::ImageMetaData& meta_data,
+                    const rust::Str& output_file_path,
+                    std::chrono::duration<float>& write_duration,
+                    const bool verbose) {
     auto exr_compression = convert_exr_compression(exr_compression_mode);
     auto exr_encoder = mmimage::ImageExrEncoder{
         exr_compression,

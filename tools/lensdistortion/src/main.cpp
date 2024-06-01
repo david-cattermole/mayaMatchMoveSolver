@@ -37,6 +37,111 @@
 #include "constants.h"
 #include "steps.h"
 
+bool run_frame(mmlens::FrameNumber frame,
+               const mmlens::DistortionDirection distortion_direction,
+               const size_t image_width, const size_t image_height,
+               const size_t num_channels,
+               const mmlens::CameraParameters camera_parameters,
+               const double film_back_radius_cm,
+
+               const uint8_t layer_count, mmlens::DistortionLayers& lens_layers,
+
+               const ExrCompressionMode exr_compression_mode,
+               std::string output_file_path_string, int32_t num_threads,
+               const bool verbose) {
+    auto bbox_in_data_ptr = &BOUNDING_BOX_IDENTITY_COORDS[0];
+    const size_t bbox_in_data_stride = 2;
+    const size_t bbox_out_data_stride = 4;
+    const size_t bbox_in_data_size =
+        BOUNDING_BOX_COORD_COUNT * bbox_in_data_stride;
+    const size_t bbox_out_data_size =
+        BOUNDING_BOX_COORD_COUNT * bbox_out_data_stride;
+
+    for (uint8_t layer_num = 0; layer_num < layer_count; layer_num++) {
+        std::cout << "layer_num: " << static_cast<int>(layer_num) << std::endl;
+        const auto lens_model_type =
+            lens_layers.layer_lens_model_type(layer_num);
+
+        std::chrono::duration<float> bbox_duration;
+        const mmimage::Box2F32 box_region =
+            calculate_lens_distortion_bbox_region(
+                layer_num, frame, lens_model_type, camera_parameters,
+                film_back_radius_cm, lens_layers, bbox_duration, verbose);
+
+        auto display_window =
+            mmimage::ImageRegionRectangle{0, 0, image_width, image_height};
+        auto layer_position = mmimage::Vec2I32{0, 0};
+
+        std::chrono::duration<float> create_duration;
+        std::chrono::duration<float> process_duration;
+        auto pixel_buffer = mmimage::ImagePixelBuffer();
+        calculate_image(distortion_direction, layer_num, frame, lens_model_type,
+                        camera_parameters, film_back_radius_cm, lens_layers,
+                        //
+                        image_width, image_height, num_channels, pixel_buffer,
+                        num_threads,
+                        //
+                        create_duration, process_duration);
+
+        const std::string output_file_path_string =
+            compute_output_file_path(output_file_path_string, frame, verbose);
+        const auto output_file_path = rust::Str(output_file_path_string);
+
+        auto meta_data = mmimage::ImageMetaData();
+        std::chrono::duration<float> write_duration;
+        bool save_result = save_exr_image(
+            display_window, layer_position, exr_compression_mode, pixel_buffer,
+            meta_data, output_file_path, write_duration, verbose);
+
+        // Controls if the image will be double checked by reading the
+        // saved image file just after being written. This is a validation
+        // test that is not needed for anything other than testing.
+        const bool reread_image = false;
+
+        auto reread_duration = std::chrono::duration<float>::zero();
+        bool reread_result = true;
+        if (reread_image) {
+            auto reread_start = std::chrono::high_resolution_clock::now();
+            reread_result = mmimage::image_read_pixels_exr_f32x4(
+                output_file_path, meta_data, pixel_buffer);
+            auto reread_end = std::chrono::high_resolution_clock::now();
+            reread_duration = reread_end - reread_start;
+            std::cout << "Re-read image file path: " << output_file_path << '\n'
+                      << "        image read result: "
+                      << static_cast<uint32_t>(reread_result) << '\n'
+                      << "        image width x height: "
+                      << pixel_buffer.image_width() << 'x'
+                      << pixel_buffer.image_height() << std::endl;
+        }
+
+        if (verbose) {
+            std::cout << std::fixed << std::setprecision(3)
+                      << "Create time: " << create_duration.count()
+                      << " seconds\n"
+                      << "BBox time: " << bbox_duration.count() << " seconds\n"
+                      << "Process time: " << process_duration.count()
+                      << " seconds\n"
+                      << "Write time: " << write_duration.count()
+                      << " seconds\n"
+                      << "Re-Read time: " << reread_duration.count()
+                      << " seconds" << std::endl;
+        }
+
+        if (!save_result) {
+            std::cerr << "Failed to write image." << output_file_path
+                      << std::endl;
+            return false;
+        }
+
+        if (!reread_result) {
+            std::cerr << "Failed to re-read image: " << output_file_path
+                      << std::endl;
+            return false;
+        }
+    }
+    return true;
+}
+
 bool run(const Arguments& args) {
     if (args.verbose) {
         std::cout
@@ -59,15 +164,17 @@ bool run(const Arguments& args) {
         std::cout << "Initialized " << thread_count << " threads." << std::endl;
     }
 
-    // 1) Read input image dimensions.
+    // Read input image dimensions.
     //
     // ... or fall back to the given resolution (via command line arguments)
+    //
+    // TODO: Update resolution based on the input file contents.
     const size_t image_width = 3600;
     const size_t image_height = 2400;
     const size_t num_channels = 4;  // 4 channels - RGBA
     const auto input_file_path = rust::Str(args.input_file_path);
 
-    // 2) Read input lens distortion file.
+    // Read input lens distortion file.
     //
     // From the file we can tell if the lens distortion is animated,
     // or not. We can re-use lens distortion values across frames if
@@ -102,9 +209,12 @@ bool run(const Arguments& args) {
 
         const mmlens::HashValue64 frame_hash = lens_layers.frame_hash(frame);
         std::cout << "frame_hash: " << frame_hash << std::endl;
-        // TODO: Check if the last frame's hash is the same and re-use
-        // the computed values from last frame if so.
-        last_frame_hash = frame_hash;
+
+        if (last_frame_hash == frame_hash) {
+            // TODO: Re-use the computed values from last frame if so.
+        } else {
+            last_frame_hash = frame_hash;
+        }
 
         bool frame_valid = lens_layers_frame_is_valid(lens_layers, frame);
         if (!frame_valid) {
@@ -113,105 +223,19 @@ bool run(const Arguments& args) {
             continue;
         }
 
-        auto bbox_in_data_ptr = &BOUNDING_BOX_IDENTITY_COORDS[0];
-        const size_t bbox_in_data_stride = 2;
-        const size_t bbox_out_data_stride = 4;
-        const size_t bbox_in_data_size =
-            BOUNDING_BOX_COORD_COUNT * bbox_in_data_stride;
-        const size_t bbox_out_data_size =
-            BOUNDING_BOX_COORD_COUNT * bbox_out_data_stride;
+        const bool result =
+            run_frame(frame, distortion_direction, image_width, image_height,
+                      num_channels, camera_parameters, film_back_radius_cm,
 
-        for (uint8_t layer_num = 0; layer_num < layer_count; layer_num++) {
-            std::cout << "layer_num: " << static_cast<int>(layer_num)
-                      << std::endl;
-            const auto lens_model_type =
-                lens_layers.layer_lens_model_type(layer_num);
+                      // Layers
+                      layer_count, lens_layers,
 
-            // 3) Calculate lens distortion bbox.
-            std::chrono::duration<float> bbox_duration;
-            const mmimage::Box2F32 box_region = calculate_bbox_region(
-                layer_num, frame, lens_model_type, camera_parameters,
-                film_back_radius_cm, lens_layers, bbox_duration, args.verbose);
+                      // Out to write out data.
+                      args.exr_compression, args.output_file_path,
+                      args.num_threads, args.verbose);
 
-            // 4) calculate image
-            auto display_window =
-                mmimage::ImageRegionRectangle{0, 0, image_width, image_height};
-            auto layer_position = mmimage::Vec2I32{0, 0};
-
-            std::chrono::duration<float> create_duration;
-            std::chrono::duration<float> process_duration;
-            auto pixel_buffer = mmimage::ImagePixelBuffer();
-            calculate_image(distortion_direction, layer_num, frame,
-                            lens_model_type, camera_parameters,
-                            film_back_radius_cm, lens_layers,
-
-                            //
-                            image_width, image_height, num_channels,
-                            pixel_buffer, args.num_threads,
-
-                            //
-                            create_duration, process_duration);
-
-            const std::string output_file_path_string =
-                compute_output_file_path(args.output_file_path, frame,
-                                         args.verbose);
-            const auto output_file_path = rust::Str(output_file_path_string);
-
-            // 5) Save the OpenEXR image.
-            auto meta_data = mmimage::ImageMetaData();
-            std::chrono::duration<float> write_duration;
-            bool save_result =
-                save_image(display_window, layer_position, args.exr_compression,
-                           pixel_buffer, meta_data, output_file_path,
-                           write_duration, args.verbose);
-
-            // Controls if the image will be double checked by reading the
-            // saved image file just after being written. This is a validation
-            // test that is not needed for anything other than testing.
-            const bool reread_image = false;
-
-            auto reread_duration = std::chrono::duration<float>::zero();
-            bool reread_result = true;
-            if (reread_image) {
-                auto reread_start = std::chrono::high_resolution_clock::now();
-                reread_result = mmimage::image_read_pixels_exr_f32x4(
-                    output_file_path, meta_data, pixel_buffer);
-                auto reread_end = std::chrono::high_resolution_clock::now();
-                reread_duration = reread_end - reread_start;
-                std::cout << "Re-read image file path: " << output_file_path
-                          << '\n'
-                          << "        image read result: "
-                          << static_cast<uint32_t>(reread_result) << '\n'
-                          << "        image width x height: "
-                          << pixel_buffer.image_width() << 'x'
-                          << pixel_buffer.image_height() << std::endl;
-            }
-
-            if (args.verbose) {
-                std::cout << std::fixed << std::setprecision(3)
-                          << "Create time: " << create_duration.count()
-                          << " seconds\n"
-                          << "BBox time: " << bbox_duration.count()
-                          << " seconds\n"
-                          << "Process time: " << process_duration.count()
-                          << " seconds\n"
-                          << "Write time: " << write_duration.count()
-                          << " seconds\n"
-                          << "Re-Read time: " << reread_duration.count()
-                          << " seconds" << std::endl;
-            }
-
-            if (!save_result) {
-                std::cerr << "Failed to write image." << output_file_path
-                          << std::endl;
-                return false;
-            }
-
-            if (!reread_result) {
-                std::cerr << "Failed to re-read image: " << output_file_path
-                          << std::endl;
-                return false;
-            }
+        if (!result) {
+            return result;
         }
     }
 

@@ -23,8 +23,8 @@ This project was copied from the following lcoation:
 Page: https://github.com/openMVG/openMVG
 Documentation: https://openmvg.readthedocs.io/en/latest/
 Git URL: https://github.com/openMVG/openMVG.git
-Git Tag: v2.0
-Git Commmit: d0fe73dd426ae4001631a51272cff71047522df9
+Git Tag: v2.1
+Git Commmit: 01193a245ee3c36458e650b1cf4402caad8983ef
 
 ## Copied Files
 

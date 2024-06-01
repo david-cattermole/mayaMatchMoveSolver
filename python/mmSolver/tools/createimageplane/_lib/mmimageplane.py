@@ -1,4 +1,4 @@
-# Copyright (C) 2020, 2022 David Cattermole.
+# Copyright (C) 2020, 2022, 2024 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -121,68 +121,6 @@ def _create_transform_attrs(image_plane_tfm):
 
 
 def _create_image_plane_shape_attrs(image_plane_shp):
-    # Exposure attribute
-    attr = 'exposure'
-    maya.cmds.addAttr(
-        image_plane_shp,
-        longName=attr,
-        attributeType='double',
-        softMinValue=-5.0,
-        softMaxValue=5.0,
-        defaultValue=0.0,
-    )
-    node_attr = image_plane_shp + '.' + attr
-    maya.cmds.setAttr(node_attr, keyable=True)
-
-    # Gamma attribute
-    attr = 'gamma'
-    maya.cmds.addAttr(
-        image_plane_shp,
-        longName=attr,
-        attributeType='double',
-        minValue=0.0,
-        softMaxValue=3.0,
-        defaultValue=1.0,
-    )
-    node_attr = image_plane_shp + '.' + attr
-    maya.cmds.setAttr(node_attr, keyable=True)
-
-    # Color Gain attribute
-    attr = 'colorGain'
-    default_value = 1.0
-    lib_utils.add_attr_float3_color(image_plane_shp, attr, default_value)
-
-    # Alpha Gain attribute
-    attr = 'alphaGain'
-    maya.cmds.addAttr(
-        image_plane_shp,
-        longName=attr,
-        attributeType='double',
-        minValue=0.0,
-        softMaxValue=1.0,
-        defaultValue=1.0,
-    )
-    node_attr = image_plane_shp + '.' + attr
-    maya.cmds.setAttr(node_attr, keyable=True)
-
-    # Use Image Alpha Channel attribute
-    attr = 'imageUseAlphaChannel'
-    maya.cmds.addAttr(
-        image_plane_shp, longName=attr, attributeType='bool', defaultValue=0
-    )
-    node_attr = image_plane_shp + '.' + attr
-    maya.cmds.setAttr(node_attr, keyable=True)
-
-    # Default Image Color attribute, display a dark-red color when an
-    # image is not found.
-    attr = 'imageDefaultColor'
-    default_value = 0.0
-    lib_utils.add_attr_float3_color(image_plane_shp, attr, default_value)
-    node_attr = image_plane_shp + '.' + attr
-    maya.cmds.setAttr(node_attr + 'R', 0.3)
-    maya.cmds.setAttr(node_attr + 'G', 0.0)
-    maya.cmds.setAttr(node_attr + 'B', 0.0)
-
     # Image Load Enable attribute
     attr = 'imageLoadEnable'
     maya.cmds.addAttr(
@@ -248,6 +186,8 @@ def _create_image_plane_shape_attrs(image_plane_shp):
     )
     node_attr = image_plane_shp + '.' + attr
     maya.cmds.setAttr(node_attr, keyable=True)
+    dst_node_attr = image_plane_shp + '.imageFrameNumber'
+    lib_utils.force_connect_attr(node_attr, dst_node_attr)
 
     # Image Sequence details.
     maya.cmds.addAttr(
@@ -320,7 +260,10 @@ def create_transform_node(name_tfm, cam_tfm, cam_shp):
 
 
 def create_shape_node(
-    name_img_shp, tfm, cam_shp, poly_plane_node_network, shader_node_network
+    name_img_shp,
+    tfm,
+    cam_shp,
+    poly_plane_node_network,
 ):
     """
     Convert mesh to a mmImagePlaneShape.
@@ -330,13 +273,6 @@ def create_shape_node(
     img_plane_poly_shp = poly_plane_node_network.mesh_shape
     img_plane_poly_shp_original = poly_plane_node_network.mesh_shape_original
     poly_creator = poly_plane_node_network.plane_creator
-
-    shd_node = shader_node_network.shd_node
-    file_node = shader_node_network.file_node
-    color_gamma_node = shader_node_network.color_gamma_node
-    alpha_channel_blend_node = shader_node_network.alpha_channel_blend_node
-    image_load_invert_boolean_node = shader_node_network.image_load_invert_boolean_node
-    alpha_channel_reverse_node = shader_node_network.alpha_channel_reverse_node
 
     mmapi.load_plugin()
     shp = maya.cmds.createNode('mmImagePlaneShape', name=name_img_shp, parent=tfm)
@@ -365,44 +301,10 @@ def create_shape_node(
 
     # Nodes to drive the image plane shape.
     lib_utils.force_connect_attr(img_plane_poly_shp + '.outMesh', shp + '.geometryNode')
-    lib_utils.force_connect_attr(shd_node + '.outColor', shp + '.shaderNode')
     lib_utils.force_connect_attr(cam_shp + '.message', shp + '.cameraNode')
 
     # The image drives the pixel aspect ratio of the image plane.
     lib_utils.force_connect_attr(shp + '.imagePixelAspect', tfm + '.pixelAspect')
-
-    # Use the image alpha channel, or not
-    lib_utils.force_connect_attr(
-        shp + '.imageUseAlphaChannel', alpha_channel_blend_node + '.blender'
-    )
-
-    # Allow user to load the image, or not.
-    lib_utils.force_connect_attr(
-        shp + '.imageLoadEnable', image_load_invert_boolean_node + '.inputX'
-    )
-
-    # Color Exposure control.
-    lib_utils.force_connect_attr(shp + '.exposure', file_node + '.exposure')
-
-    # Color Gamma control.
-    lib_utils.force_connect_attr(shp + '.gamma', color_gamma_node + '.gammaX')
-    lib_utils.force_connect_attr(shp + '.gamma', color_gamma_node + '.gammaY')
-    lib_utils.force_connect_attr(shp + '.gamma', color_gamma_node + '.gammaZ')
-
-    # Control file color multiplier
-    lib_utils.force_connect_attr(shp + '.colorGain', file_node + '.colorGain')
-
-    # Control the alpha gain when 'imageUseAlphaChannel' is disabled.
-    lib_utils.force_connect_attr(shp + '.alphaGain', file_node + '.alphaGain')
-    lib_utils.force_connect_attr(
-        shp + '.alphaGain', alpha_channel_reverse_node + '.inputX'
-    )
-    lib_utils.force_connect_attr(
-        shp + '.alphaGain', alpha_channel_reverse_node + '.inputY'
-    )
-    lib_utils.force_connect_attr(
-        shp + '.alphaGain', alpha_channel_reverse_node + '.inputZ'
-    )
 
     # Set the camera size of the image plane shape HUD.
     lib_utils.force_connect_attr(
@@ -410,11 +312,6 @@ def create_shape_node(
     )
     lib_utils.force_connect_attr(
         tfm + '.verticalFilmAperture', shp + '.cameraHeightInch'
-    )
-
-    # Default color for the image plane, when nothing is loaded.
-    lib_utils.force_connect_attr(
-        shp + '.imageDefaultColor', file_node + '.defaultColor'
     )
 
     # Mesh Resolution attr drives the plane sub-divisions.
@@ -427,7 +324,6 @@ def create_shape_node(
     maya.cmds.setAttr(img_plane_poly_shp + '.intermediateObject', 1)
 
     # Add extra message attributes for finding nodes during callbacks.
-    maya.cmds.addAttr(shp, longName='shaderFileNode', attributeType='message')
     maya.cmds.addAttr(shp, longName='imagePlaneShapeNode', attributeType='message')
     return shp
 
@@ -439,16 +335,15 @@ def set_image_sequence(shp, image_sequence_path, attr_name):
     format_style = const_utils.IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME
     (
         file_pattern,
-        start_frame,
-        end_frame,
-        pad_num,
-        is_seq,
+        _,
+        _,
+        _,
+        _,
     ) = imageseq_utils.expand_image_sequence_path(image_sequence_path, format_style)
-    first_frame_file_seq = file_pattern
+    first_frame_file_seq = file_pattern.replace('\\', '/')
 
     mmapi.load_plugin()
     try:
-        first_frame_file_seq = first_frame_file_seq.replace('\\', '/')
         image_width_height = maya.cmds.mmReadImage(
             first_frame_file_seq, query=True, widthHeight=True
         )
@@ -470,6 +365,15 @@ def set_image_sequence(shp, image_sequence_path, attr_name):
         if not node_utils.node_is_referenced(shp):
             maya.cmds.setAttr(shp + '.imageWidth', lock=True)
             maya.cmds.setAttr(shp + '.imageHeight', lock=True)
+
+    format_style = const_utils.IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED
+    (
+        file_pattern,
+        start_frame,
+        end_frame,
+        pad_num,
+        is_seq,
+    ) = imageseq_utils.expand_image_sequence_path(image_sequence_path, format_style)
 
     maya.cmds.setAttr(shp + '.' + attr_name, file_pattern, type='string')
 
@@ -530,20 +434,3 @@ def get_image_plane_node_pair(node):
         tfm = get_transform_node(node)
         shp = node
     return tfm, shp
-
-
-def get_file_node(image_plane_tfm):
-    file_node = None
-    conns = (
-        maya.cmds.listConnections(
-            image_plane_tfm + '.shaderFileNode',
-            destination=False,
-            source=True,
-            plugs=False,
-            type='file',
-        )
-        or []
-    )
-    if len(conns) > 0:
-        file_node = conns[0]
-    return file_node

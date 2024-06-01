@@ -1,4 +1,4 @@
-# Copyright (C) 2022 David Cattermole.
+# Copyright (C) 2022, 2024 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -17,3 +17,20 @@
 #
 
 DEFAULT_IMAGE_SEQUENCE_ATTR_NAME = 'imageSequenceMain'
+ALT_1_IMAGE_SEQUENCE_ATTR_NAME = 'imageSequenceAlternate1'
+ALT_2_IMAGE_SEQUENCE_ATTR_NAME = 'imageSequenceAlternate2'
+ALT_3_IMAGE_SEQUENCE_ATTR_NAME = 'imageSequenceAlternate3'
+
+VALID_INPUT_IMAGE_SEQUENCE_ATTR_NAMES = [
+    DEFAULT_IMAGE_SEQUENCE_ATTR_NAME,
+    ALT_1_IMAGE_SEQUENCE_ATTR_NAME,
+    ALT_2_IMAGE_SEQUENCE_ATTR_NAME,
+    ALT_3_IMAGE_SEQUENCE_ATTR_NAME,
+]
+
+SHADER_FILE_PATH_ATTR_NAME = 'imageFilePath'
+INPUT_COLOR_SPACE_ATTR_NAME = 'inputColorSpace'
+OUTPUT_COLOR_SPACE_ATTR_NAME = 'outputColorSpace'
+
+SCENE_LINEAR_FILE_EXTENSIONS = ['exr', 'sxr']
+SRGB_FILE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'tif', 'tiff', 'tga', 'iff']

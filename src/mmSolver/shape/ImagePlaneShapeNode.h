@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 David Cattermole.
+ * Copyright (C) 2022, 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -44,7 +44,15 @@
 
 namespace mmsolver {
 
-enum class ImageDisplayChannel { kAll = 0, kRed, kGreen, kBlue, kAlpha };
+enum class ImageDisplayChannel {
+    kAll = 0,
+    kRGB,
+    kRed,
+    kGreen,
+    kBlue,
+    kAlpha,
+    kLuminance
+};
 
 class ImagePlaneShapeNode : public MPxLocatorNode {
 public:
@@ -99,23 +107,25 @@ public:
     static MObject m_lens_hash_current;
     static MObject m_lens_hash_previous;
     static MObject m_geometry_node;
-    static MObject m_shader_node;
     static MObject m_camera_node;
+    static MObject m_shader_is_transparent;
 
-    // Shader Attributes
-    static MObject m_use_color_plug;
+    // Image Attributes
     static MObject m_image_display_channel;
-    static MObject m_color_gain;
-    static MObject m_alpha_gain;
-    static MObject m_ignore_alpha;
-    static MObject m_flip;
-    static MObject m_flop;
-    static MObject m_is_transparent;
-    static MObject m_frame_number;
-    static MObject m_file_path;
-    static MObject m_input_color_space;
-    static MObject m_output_color_space;
-    static MObject m_color;
+    static MObject m_image_color_gain;
+    static MObject m_image_color_exposure;
+    static MObject m_image_color_gamma;
+    static MObject m_image_color_saturation;
+    static MObject m_image_color_soft_clip;
+    static MObject m_image_alpha_gain;
+    static MObject m_image_default_color;
+    static MObject m_image_ignore_alpha;
+    static MObject m_image_flip;
+    static MObject m_image_flop;
+    static MObject m_image_file_path;
+    static MObject m_image_frame_number;
+    static MObject m_image_input_color_space;
+    static MObject m_image_output_color_space;
 };
 
 }  // namespace mmsolver

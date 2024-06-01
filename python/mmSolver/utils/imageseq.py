@@ -91,6 +91,19 @@ def _get_image_sequence_start_end_frames(base_dir, file_name, file_extension):
 
 
 def expand_image_sequence_path(image_sequence_path, format_style):
+    """
+    Expand a given image sequence path into tokens.
+
+    The tokens are:
+      - file_pattern: str, the pattern of the file path.
+      - start_frame: int, first frame of the image sequence.
+      - end_frame: int, last frame of the image sequence.
+      - padding_num: int, number of padding digits for the frame number.
+      - is_seq: bool, is this a sequence? Otherwise it's a single frame.
+
+    :returns:
+        Tuple of (file_pattern, start_frame, end_frame, padding_num, is_seq)
+    """
     image_sequence_path = os.path.abspath(image_sequence_path)
 
     (

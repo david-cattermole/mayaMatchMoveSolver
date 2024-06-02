@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022, 2024 David Cattermole.
+ * Copyright (C) 2022 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -25,17 +25,11 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-// STL
-#include <algorithm>
-#include <cstring>
-#include <string>
-
 // Maya
 #include <maya/MColor.h>
 #include <maya/MDistance.h>
 #include <maya/MEventMessage.h>
 #include <maya/MFnDependencyNode.h>
-#include <maya/MImage.h>
 #include <maya/MObject.h>
 #include <maya/MPlug.h>
 #include <maya/MPlugArray.h>
@@ -47,17 +41,12 @@
 #include <maya/MGeometryExtractor.h>
 #include <maya/MPxGeometryOverride.h>
 #include <maya/MShaderManager.h>
-#include <maya/MSharedPtr.h>
 #include <maya/MUserData.h>
 
 // MM Solver
-#include <mmcolorio/lib.h>
-#include <mmcore/lib.h>
-
-#include "ImageCache.h"
+#include "ImagePlaneShapeNode.h"
+#include "ImagePlaneUtils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
-#include "mmSolver/render/shader/shader_utils.h"
-#include "mmSolver/shape/constant_texture_data.h"
 #include "mmSolver/utilities/number_utils.h"
 
 namespace mmsolver {
@@ -73,66 +62,15 @@ ImagePlaneGeometryOverride::ImagePlaneGeometryOverride(const MObject &obj)
     , m_draw_hud(false)
     , m_draw_image_size(false)
     , m_draw_camera_size(false)
-    , m_geometry_node_type(MFn::kInvalid)
-    , m_image_display_channel(ImageDisplayChannel::kAll)
-    , m_color_gain(1.0, 1.0, 1.0, 1.0)
-    , m_color_exposure(0.0f)
-    , m_color_gamma(1.0f)
-    , m_color_saturation(1.0f)
-    , m_color_soft_clip(0.0f)
-    , m_alpha_gain(1.0f)
-    , m_default_color(0.3, 0.0, 0.0, 1.0)
-    , m_ignore_alpha(false)
-    , m_flip(false)
-    , m_flop(false)
-    , m_is_transparent(false)
-    , m_frame(0)
-    , m_file_path()
-    , m_input_color_space_name()
-    , m_output_color_space_name()
-    , m_shader(nullptr)
-    , m_update_shader(false)
-    , m_color_texture(nullptr)
-    , m_texture_sampler(nullptr) {
+    , m_geometry_node_type(MFn::kInvalid) {
     m_model_editor_changed_callback_id = MEventMessage::addEventCallback(
-        "modelEditorChanged",
-        ImagePlaneGeometryOverride::on_model_editor_changed_func, this);
-#if MAYA_API_VERSION >= 20200000
-    m_shader_link_lost_user_data_ptr =
-        ShaderLinkLostUserDataPtr(new ShaderLinkLostUserData());
-#elif
-    m_shader_link_lost_user_data = ShaderLinkLostUserData();
-#endif
+        "modelEditorChanged", on_model_editor_changed_func, this);
 }
 
 ImagePlaneGeometryOverride::~ImagePlaneGeometryOverride() {
     if (m_model_editor_changed_callback_id != 0) {
         MMessage::removeCallback(m_model_editor_changed_callback_id);
         m_model_editor_changed_callback_id = 0;
-    }
-
-    if (m_color_texture) {
-        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-        MHWRender::MTextureManager *textureMgr =
-            renderer ? renderer->getTextureManager() : nullptr;
-        if (textureMgr) {
-            textureMgr->releaseTexture(m_color_texture);
-            m_color_texture = nullptr;
-        }
-    }
-
-    if (m_texture_sampler) {
-        MHWRender::MStateManager::releaseSamplerState(m_texture_sampler);
-        m_texture_sampler = nullptr;
-    }
-
-    if (m_shader) {
-        MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-        const MHWRender::MShaderManager *shaderManager =
-            renderer ? renderer->getShaderManager() : nullptr;
-        if (shaderManager) {
-            shaderManager->releaseShader(m_shader);
-        }
     }
 }
 
@@ -147,356 +85,24 @@ void ImagePlaneGeometryOverride::on_model_editor_changed_func(
     }
 }
 
-void ImagePlaneGeometryOverride::shader_link_lost_func(
-    ShaderLinkLostUserData *userData) {
-    // TODO: What should this function do? Does it need to do anything?
-    MMSOLVER_MAYA_DBG(
-        "mmImagePlaneShape: shader_link_lost_func: link_lost_count="
-        << (*userData).link_lost_count
-        << " set_shader_count=" << (*userData).set_shader_count);
-    (*userData).link_lost_count += 1;
-}
-
 MHWRender::DrawAPI ImagePlaneGeometryOverride::supportedDrawAPIs() const {
-    // TODO: We cannot support DirectX, unless we also write another
-    // mmImagePlane for DirectX. Legacy OpenGL is also unsupported.
-    return MHWRender::kOpenGLCoreProfile;
-}
-
-bool getUpstreamNodeFromConnection(const MObject &this_node,
-                                   const MString &attr_name,
-                                   MPlugArray &out_connections) {
-    MStatus status;
-    MFnDependencyNode mfn_depend_node(this_node);
-
-    bool wantNetworkedPlug = true;
-    MPlug plug =
-        mfn_depend_node.findPlug(attr_name, wantNetworkedPlug, &status);
-    if (status != MStatus::kSuccess) {
-        CHECK_MSTATUS(status);
-        return false;
-    }
-    if (plug.isNull()) {
-        MMSOLVER_MAYA_WRN("Could not get plug for \""
-                          << mfn_depend_node.name().asChar() << "."
-                          << attr_name.asChar() << "\" node.");
-        return false;
-    }
-
-    bool as_destination = true;
-    bool as_source = false;
-    // Ask for plugs connecting to this node's ".shaderNode"
-    // attribute.
-    plug.connectedTo(out_connections, as_destination, as_source, &status);
-    if (status != MStatus::kSuccess) {
-        CHECK_MSTATUS(status);
-        return false;
-    }
-    if (out_connections.length() == 0) {
-        MMSOLVER_MAYA_WRN("No connections to the \""
-                          << mfn_depend_node.name().asChar() << "."
-                          << attr_name.asChar() << "\" attribute.");
-        return false;
-    }
-    return true;
-}
-
-void calculate_node_image_size_string(MDagPath &objPath,
-                                      const uint32_t int_precision,
-                                      const uint32_t double_precision,
-                                      bool &out_draw_image_size,
-                                      MString &out_image_size) {
-    MStatus status = MS::kSuccess;
-
-    double width = 1.0;
-    double height = 1.0;
-    double pixel_aspect = 1.0;
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_draw_image_size,
-                         out_draw_image_size);
-    CHECK_MSTATUS(status);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_width, width);
-    CHECK_MSTATUS(status);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_height, height);
-    CHECK_MSTATUS(status);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_pixel_aspect,
-                         pixel_aspect);
-    CHECK_MSTATUS(status);
-
-    double aspect = (width * pixel_aspect) / height;
-
-    MString width_string;
-    MString height_string;
-    MString pixel_aspect_string;
-    MString aspect_string;
-
-    width_string.set(width, int_precision);
-    height_string.set(height, int_precision);
-    pixel_aspect_string.set(pixel_aspect, double_precision);
-    aspect_string.set(aspect, double_precision);
-
-    out_image_size = MString("Image: ") + width_string + MString(" x ") +
-                     height_string + MString(" | PAR ") + pixel_aspect_string +
-                     MString(" | ") + aspect_string;
-    return;
-}
-
-void calculate_node_camera_size_string(MDagPath &objPath,
-                                       const uint32_t double_precision,
-                                       bool &out_draw_camera_size,
-                                       MString &out_camera_size) {
-    MStatus status = MS::kSuccess;
-
-    double width = 0.0;
-    double height = 0.0;
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_draw_camera_size,
-                         out_draw_camera_size);
-    CHECK_MSTATUS(status);
-
-    status =
-        getNodeAttr(objPath, ImagePlaneShapeNode::m_camera_width_inch, width);
-    CHECK_MSTATUS(status);
-
-    status =
-        getNodeAttr(objPath, ImagePlaneShapeNode::m_camera_height_inch, height);
-    CHECK_MSTATUS(status);
-
-    double aspect = width / height;
-
-    MString width_string;
-    MString height_string;
-    MString aspect_string;
-
-    width_string.set(width * INCH_TO_MM, double_precision);
-    height_string.set(height * INCH_TO_MM, double_precision);
-    aspect_string.set(aspect, double_precision);
-
-    out_camera_size = MString("Camera: ") + width_string + MString("mm x ") +
-                      height_string + MString("mm | ") + aspect_string;
-}
-
-void ImagePlaneGeometryOverride::query_node_attributes(
-    MObject &node, MDagPath &out_camera_node_path, bool &out_visible,
-    bool &out_visible_to_camera_only, bool &out_is_under_camera,
-    bool &out_draw_hud, bool &out_draw_image_size, MString &out_image_size,
-    bool &out_draw_camera_size, MString &out_camera_size,
-    ImageDisplayChannel &out_image_display_channel, MColor &out_color_gain,
-    float &out_color_exposure, float &out_color_gamma,
-    float &out_color_saturation, float &out_color_soft_clip,
-    float &out_alpha_gain, MColor &out_default_color, bool &out_ignore_alpha,
-    bool &out_flip, bool &out_flop, bool &out_is_transparent,
-    mmcore::FrameValue &out_frame, MString &out_file_path,
-    MString &out_input_color_space_name, MString &out_output_color_space_name) {
-    const bool verbose = false;
-
-    MDagPath objPath;
-    MDagPath::getAPathTo(node, objPath);
-
-    if (!objPath.isValid()) {
-        return;
-    }
-    MStatus status;
-
-    auto frame_context = MPxGeometryOverride::getFrameContext();
-    MDagPath camera_node_path = frame_context->getCurrentCameraPath(&status);
-    CHECK_MSTATUS(status);
-
-    // By default the draw is visible, unless overridden by
-    // out_visible_to_camera_only or out_is_under_camera.
-    out_visible = true;
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_visible_to_camera_only,
-                         out_visible_to_camera_only);
-    CHECK_MSTATUS(status);
-
-    status =
-        getNodeAttr(objPath, ImagePlaneShapeNode::m_draw_hud, out_draw_hud);
-    CHECK_MSTATUS(status);
-
-    out_is_under_camera = true;
-    if (camera_node_path.isValid() && out_camera_node_path.isValid()) {
-        // Using an explicit camera node path to compare
-        // against ensures that if a rouge camera is parented
-        // under the attached camera, the node will be
-        // invisible.
-        out_is_under_camera = out_camera_node_path == camera_node_path;
-    }
-
-    if (!out_is_under_camera) {
-        if (out_visible_to_camera_only) {
-            out_visible = false;
-        }
-        // Do not draw the HUD if we are not under the camera,
-        // the HUD must only be visible from the point of view
-        // of the intended camera, otherwise it will look
-        // wrong.
-        out_draw_hud = false;
-    }
-
-    const auto int_precision = 0;
-    const auto double_precision = 3;
-    calculate_node_image_size_string(objPath, int_precision, double_precision,
-                                     out_draw_image_size, out_image_size);
-    calculate_node_camera_size_string(objPath, double_precision,
-                                      out_draw_camera_size, out_camera_size);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_color_gain,
-                         out_color_gain);
-    CHECK_MSTATUS(status);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_color_exposure,
-                         out_color_exposure);
-    CHECK_MSTATUS(status);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_color_gamma,
-                         out_color_gamma);
-    CHECK_MSTATUS(status);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_color_saturation,
-                         out_color_saturation);
-    CHECK_MSTATUS(status);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_color_soft_clip,
-                         out_color_soft_clip);
-    CHECK_MSTATUS(status);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_alpha_gain,
-                         out_alpha_gain);
-    CHECK_MSTATUS(status);
-
-    short image_display_channel_value = 0;
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_display_channel,
-                         image_display_channel_value);
-    CHECK_MSTATUS(status);
-    out_image_display_channel =
-        static_cast<ImageDisplayChannel>(image_display_channel_value);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_ignore_alpha,
-                         out_ignore_alpha);
-    CHECK_MSTATUS(status);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_flip, out_flip);
-    CHECK_MSTATUS(status);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_flop, out_flop);
-    CHECK_MSTATUS(status);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_shader_is_transparent,
-                         out_is_transparent);
-    CHECK_MSTATUS(status);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_frame_number,
-                         out_frame);
-    CHECK_MSTATUS(status);
-
-    status = getNodeAttr(objPath, ImagePlaneShapeNode::m_image_file_path,
-                         out_file_path);
-    CHECK_MSTATUS(status);
-
-    status =
-        getNodeAttr(objPath, ImagePlaneShapeNode::m_image_input_color_space,
-                    out_input_color_space_name);
-    CHECK_MSTATUS(status);
-
-    status =
-        getNodeAttr(objPath, ImagePlaneShapeNode::m_image_output_color_space,
-                    out_output_color_space_name);
-    CHECK_MSTATUS(status);
-
-    // Find the input/output file color spaces.
-    //
-    // TODO: Do not re-calculate this each update. Compute once and
-    // cache the results.
-    const char *file_color_space_name =
-        mmcolorio::guess_color_space_name_from_file_path(
-            out_file_path.asChar());
-    MMSOLVER_MAYA_VRB("mmImagePlaneShape: query_node_attributes:"
-                      << " file_color_space_name=\"" << file_color_space_name
-                      << "\".");
-
-    const char *output_color_space_name = mmcolorio::get_role_color_space_name(
-        mmcolorio::ColorSpaceRole::kSceneLinear);
-    out_output_color_space_name = MString(output_color_space_name);
-    MMSOLVER_MAYA_VRB("mmImagePlaneShape: query_node_attributes:"
-                      << " out_output_color_space_name=\""
-                      << out_output_color_space_name.asChar() << "\".");
-}
-
-void find_geometry_node_path(MObject &node, MString &attr_name,
-                             MDagPath &out_geometry_node_path,
-                             MFn::Type &out_geometry_node_type) {
-    const auto verbose = false;
-
-    MPlugArray connections;
-    bool ok = getUpstreamNodeFromConnection(node, attr_name, connections);
-    if (!ok) {
-        return;
-    }
-
-    for (uint32_t i = 0; i < connections.length(); ++i) {
-        MObject node = connections[i].node();
-
-        if (node.hasFn(MFn::kMesh)) {
-            MDagPath path;
-            MDagPath::getAPathTo(node, path);
-            out_geometry_node_path = path;
-            out_geometry_node_type = path.apiType();
-            MMSOLVER_MAYA_VRB("Validated geometry node: "
-                              << " path="
-                              << out_geometry_node_path.fullPathName().asChar()
-                              << " type=" << node.apiTypeStr());
-            break;
-        } else {
-            MMSOLVER_MAYA_WRN("Geometry node is not correct type:"
-                              << " path="
-                              << out_geometry_node_path.fullPathName().asChar()
-                              << " type=" << node.apiTypeStr());
-        }
-    }
-}
-
-void find_camera_node_path(MObject &node, MString &attr_name,
-                           MDagPath &out_camera_node_path,
-                           MFn::Type &out_camera_node_type) {
-    const auto verbose = false;
-
-    MPlugArray connections;
-    bool ok = getUpstreamNodeFromConnection(node, attr_name, connections);
-    if (!ok) {
-        return;
-    }
-
-    for (uint32_t i = 0; i < connections.length(); ++i) {
-        MObject node = connections[i].node();
-
-        if (node.hasFn(MFn::kCamera)) {
-            MDagPath path;
-            MDagPath::getAPathTo(node, path);
-            out_camera_node_path = path;
-            out_camera_node_type = path.apiType();
-            MMSOLVER_MAYA_VRB("Validated camera node: "
-                              << " path="
-                              << out_camera_node_path.fullPathName().asChar()
-                              << " type=" << node.apiTypeStr());
-            break;
-        } else {
-            MMSOLVER_MAYA_WRN("Camera node is not correct type:"
-                              << " path="
-                              << out_camera_node_path.fullPathName().asChar()
-                              << " type=" << node.apiTypeStr());
-        }
-    }
+    return (MHWRender::kOpenGL | MHWRender::kDirectX11 |
+            MHWRender::kOpenGLCoreProfile);
 }
 
 void ImagePlaneGeometryOverride::updateDG() {
+    const auto verbose = false;
+
     if (!m_geometry_node_path.isValid()) {
         MString attr_name = "geometryNode";
         find_geometry_node_path(m_this_node, attr_name, m_geometry_node_path,
                                 m_geometry_node_type);
+    }
+
+    if (m_shader_node.isNull()) {
+        MString attr_name = "shaderNode";
+        find_shader_node_path(m_this_node, attr_name, m_shader_node,
+                              m_shader_node_type);
     }
 
     if (!m_camera_node_path.isValid()) {
@@ -506,235 +112,68 @@ void ImagePlaneGeometryOverride::updateDG() {
     }
 
     // Query Attributes from the base node.
-    MString temp_input_color_space_name = "";
-    MString temp_output_color_space_name = "";
-    ImagePlaneGeometryOverride::query_node_attributes(
-        m_this_node, m_camera_node_path, m_visible, m_visible_to_camera_only,
-        m_is_under_camera, m_draw_hud, m_draw_image_size, m_image_size,
-        m_draw_camera_size, m_camera_size, m_image_display_channel,
-        m_color_gain, m_color_exposure, m_color_gamma, m_color_saturation,
-        m_color_soft_clip, m_alpha_gain, m_default_color, m_ignore_alpha,
-        m_flip, m_flop, m_is_transparent, m_frame, m_file_path,
-        temp_input_color_space_name, temp_output_color_space_name);
+    {
+        MDagPath objPath;
+        MDagPath::getAPathTo(m_this_node, objPath);
 
-    if ((m_input_color_space_name.asChar() !=
-         temp_input_color_space_name.asChar()) ||
-        (m_input_color_space_name.asChar() !=
-         temp_input_color_space_name.asChar())) {
-        m_input_color_space_name = temp_input_color_space_name;
-        m_output_color_space_name = temp_output_color_space_name;
-        m_update_shader = true;
-    }
-}
+        if (objPath.isValid()) {
+            MStatus status;
 
-inline MFloatMatrix create_saturation_matrix(const float saturation) {
-    // Luminance weights
-    //
-    // From Mozilla:
-    // https://developer.mozilla.org/en-US/docs/Web/Accessibility/Understanding_Colors_and_Luminance
-    const float kLuminanceRed = 0.2126f;
-    const float kLuminanceGreen = 0.7152f;
-    const float kLuminanceBlue = 0.0722f;
+            auto frame_context = getFrameContext();
+            MDagPath camera_node_path =
+                frame_context->getCurrentCameraPath(&status);
+            CHECK_MSTATUS(status);
 
-    const float r_weight = kLuminanceRed;
-    const float g_weight = kLuminanceGreen;
-    const float b_weight = kLuminanceBlue;
+            // By default the draw is visible, unless overridden by
+            // m_visible_to_camera_only or m_is_under_camera.
+            m_visible = true;
 
-    const float r1 = (1.0 - saturation) * r_weight + saturation;
-    const float r2 = (1.0 - saturation) * r_weight;
-    const float r3 = (1.0 - saturation) * r_weight;
+            status = getNodeAttr(objPath,
+                                 ImagePlaneShapeNode::m_visible_to_camera_only,
+                                 m_visible_to_camera_only);
+            CHECK_MSTATUS(status);
 
-    const float g1 = (1.0 - saturation) * g_weight;
-    const float g2 = (1.0 - saturation) * g_weight + saturation;
-    const float g3 = (1.0 - saturation) * g_weight;
+            status = getNodeAttr(objPath, ImagePlaneShapeNode::m_draw_hud,
+                                 m_draw_hud);
+            CHECK_MSTATUS(status);
 
-    const float b1 = (1.0 - saturation) * b_weight;
-    const float b2 = (1.0 - saturation) * b_weight;
-    const float b3 = (1.0 - saturation) * b_weight + saturation;
-
-    const float saturation_matrix_values[4][4] = {
-        // Column 0
-        {r1, g1, b1, 0.0},
-        // Column 1
-        {r2, g2, b2, 0.0},
-        // Column 2
-        {r3, g3, b3, 0.0},
-        // Column 3
-        {0.0, 0.0, 0.0, 1.0},
-    };
-
-    return MFloatMatrix(saturation_matrix_values);
-}
-
-void ImagePlaneGeometryOverride::set_shader_instance_parameters(
-    MShaderInstance *shader, MHWRender::MTextureManager *textureManager,
-    const MColor &color_gain, const float color_exposure,
-    const float color_gamma, const float color_saturation,
-    const float color_soft_clip, const float alpha_gain,
-    const MColor &default_color, const bool ignore_alpha, const bool flip,
-    const bool flop, const bool is_transparent,
-    const ImageDisplayChannel image_display_channel,
-    const mmcore::FrameValue frame, const MString &file_path,
-    const MString &input_color_space_name,
-    const MString &output_color_space_name,
-    MHWRender::MTexture *out_color_texture,
-    const MHWRender::MSamplerState *out_texture_sampler) {
-    MStatus status = MStatus::kSuccess;
-    const bool verbose = false;
-    MMSOLVER_MAYA_VRB("mmImagePlaneShape: set_shader_instance_parameters.");
-
-    const float color[] = {color_gain[0], color_gain[1], color_gain[2], 1.0f};
-    status = shader->setParameter("gColorGain", color);
-    CHECK_MSTATUS(status);
-
-    status = shader->setParameter("gColorExposure", color_exposure);
-    CHECK_MSTATUS(status);
-
-    status = shader->setParameter("gColorGamma", color_gamma);
-    CHECK_MSTATUS(status);
-
-    MFloatMatrix saturation_matrix = create_saturation_matrix(color_saturation);
-    status = shader->setParameter("gColorSaturationMatrix", saturation_matrix);
-    CHECK_MSTATUS(status);
-
-    status = shader->setParameter("gColorSoftClip", color_soft_clip);
-    CHECK_MSTATUS(status);
-
-    status = shader->setParameter("gAlphaGain", alpha_gain);
-    CHECK_MSTATUS(status);
-
-    const float temp_default_color[] = {default_color[0], default_color[1],
-                                        default_color[2], 1.0f};
-    status = shader->setParameter("gFallbackColor", temp_default_color);
-    CHECK_MSTATUS(status);
-
-    status = shader->setParameter("gFlip", flip);
-    CHECK_MSTATUS(status);
-
-    status = shader->setParameter("gFlop", flop);
-    CHECK_MSTATUS(status);
-
-    status = shader->setParameter("gIgnoreAlpha", m_ignore_alpha);
-    CHECK_MSTATUS(status);
-
-    status = shader->setParameter("gDisplayChannel",
-                                  static_cast<int32_t>(image_display_channel));
-    CHECK_MSTATUS(status);
-
-    status = shader->setIsTransparent(is_transparent);
-    MMSOLVER_MAYA_VRB("mmImagePlaneShape: shader->isTransparent()="
-                      << shader->isTransparent());
-    CHECK_MSTATUS(status);
-
-    MMSOLVER_MAYA_VRB("mmImagePlaneShape: file_path=" << file_path.asChar());
-
-    rust::Str file_path_rust_str = rust::Str(file_path.asChar());
-    rust::String expanded_file_path_rust_string =
-        mmcore::expand_file_path_string(file_path_rust_str, frame);
-    MString expanded_file_path(expanded_file_path_rust_string.data(),
-                               expanded_file_path_rust_string.length());
-    MMSOLVER_MAYA_VRB("mmImagePlaneShape: expanded_file_path="
-                      << expanded_file_path.asChar());
-
-    MMSOLVER_MAYA_VRB(
-        "mmImagePlaneShape: start out_color_texture=" << out_color_texture);
-
-    if (!out_color_texture) {
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: use image read");
-        const MImage::MPixelType pixel_type = MImage::MPixelType::kByte;
-
-        // // TODO: using kFloat crashes.
-        // const MImage::MPixelType pixel_type = MImage::MPixelType::kFloat;
-
-        const bool do_texture_update = false;
-        ImageCache &image_cache = ImageCache::getInstance();
-        out_color_texture =
-            read_image_file(textureManager, image_cache, m_temp_image,
-                            expanded_file_path, pixel_type, do_texture_update);
-
-        if (out_color_texture) {
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture->name()="
-                              << out_color_texture->name().asChar());
-            const void *resource_handle = out_color_texture->resourceHandle();
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture->resourceHandle()="
-                              << resource_handle);
-            if (resource_handle) {
-                MMSOLVER_MAYA_VRB(
-                    "mmImagePlaneShape: *texture->resourceHandle()="
-                    << *(uint32_t *)resource_handle);
+            m_is_under_camera = true;
+            if (camera_node_path.isValid() && m_camera_node_path.isValid()) {
+                // Using an explicit camera node path to compare
+                // against ensures that if a rouge camera is parented
+                // under the attached camera, the node will be
+                // invisible.
+                m_is_under_camera = m_camera_node_path == camera_node_path;
             }
 
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture->hasAlpha()="
-                              << out_color_texture->hasAlpha());
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture->hasZeroAlpha()="
-                              << out_color_texture->hasZeroAlpha());
-            MMSOLVER_MAYA_VRB(
-                "mmImagePlaneShape: texture->hasTransparentAlpha()="
-                << out_color_texture->hasTransparentAlpha());
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture->bytesPerPixel()="
-                              << out_color_texture->bytesPerPixel());
+            if (!m_is_under_camera) {
+                if (m_visible_to_camera_only) {
+                    m_visible = false;
+                }
+                // Do not draw the HUD if we are not under the camera,
+                // the HUD must only be visible from the point of view
+                // of the intended camera, otherwise it will look
+                // wrong.
+                m_draw_hud = false;
+            }
 
-            MTextureDescription texture_desc;
-            out_color_texture->textureDescription(texture_desc);
+            const auto int_precision = 0;
+            const auto double_precision = 3;
+            calculate_node_image_size_string(
+                objPath, ImagePlaneShapeNode::m_draw_image_size,
+                ImagePlaneShapeNode::m_image_width,
+                ImagePlaneShapeNode::m_image_height,
+                ImagePlaneShapeNode::m_image_pixel_aspect, int_precision,
+                double_precision,
 
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fWidth="
-                              << texture_desc.fWidth);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fHeight="
-                              << texture_desc.fHeight);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fDepth="
-                              << texture_desc.fDepth);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fBytesPerRow="
-                              << texture_desc.fBytesPerRow);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fBytesPerSlice="
-                              << texture_desc.fBytesPerSlice);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fMipmaps="
-                              << texture_desc.fMipmaps);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fArraySlices="
-                              << texture_desc.fArraySlices);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fFormat="
-                              << texture_desc.fFormat);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fTextureType="
-                              << texture_desc.fTextureType);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fEnvMapType="
-                              << texture_desc.fEnvMapType);
+                m_draw_image_size, m_image_size);
+            calculate_node_camera_size_string(
+                objPath, ImagePlaneShapeNode::m_draw_camera_size,
+                ImagePlaneShapeNode::m_camera_width_inch,
+                ImagePlaneShapeNode::m_camera_height_inch, double_precision,
+                m_draw_camera_size, m_camera_size);
         }
     }
-
-    if (!out_texture_sampler) {
-        MHWRender::MSamplerStateDesc sampler_desc;
-        sampler_desc.addressU = MHWRender::MSamplerState::kTexWrap;
-        sampler_desc.addressV = MHWRender::MSamplerState::kTexWrap;
-        sampler_desc.addressW = MHWRender::MSamplerState::kTexWrap;
-        // kMinMagMipPoint is "nearest pixel" filtering.
-        sampler_desc.filter = MHWRender::MSamplerState::kMinMagMipPoint;
-        out_texture_sampler =
-            MHWRender::MStateManager::acquireSamplerState(sampler_desc);
-    }
-
-    if (out_texture_sampler) {
-        status =
-            shader->setParameter("gImageTextureSampler", *out_texture_sampler);
-        CHECK_MSTATUS(status);
-    } else {
-        MMSOLVER_MAYA_WRN("mmImagePlaneShape: Could not get texture sampler."
-                          << " out_texture_sampler=" << out_texture_sampler);
-    }
-
-    if (out_color_texture) {
-        MHWRender::MTextureAssignment texture_assignment;
-        texture_assignment.texture = out_color_texture;
-        status = shader->setParameter("gImageTexture", texture_assignment);
-        CHECK_MSTATUS(status);
-
-        out_color_texture = nullptr;
-    } else {
-        MMSOLVER_MAYA_VRB(
-            "mmImagePlaneShape: Could not get color texture; "
-            "did not assign texture."
-            << " out_color_texture=" << out_color_texture);
-    }
-
-    return;
 }
 
 void ImagePlaneGeometryOverride::updateRenderItems(const MDagPath &path,
@@ -746,23 +185,22 @@ void ImagePlaneGeometryOverride::updateRenderItems(const MDagPath &path,
         return;
     }
 
-    MHWRender::MRenderer *renderer = MRenderer::theRenderer();
+    MRenderer *renderer = MRenderer::theRenderer();
     if (!renderer) {
         MMSOLVER_MAYA_WRN("mmImagePlaneShape: Could not get MRenderer.");
         return;
     }
 
-    const MHWRender::MShaderManager *shaderManager =
-        renderer->getShaderManager();
+    const MShaderManager *shaderManager = renderer->getShaderManager();
     if (!shaderManager) {
         MMSOLVER_MAYA_WRN("mmImagePlaneShape: Could not get MShaderManager.");
         return;
     }
 
     if (m_geometry_node_type != MFn::kMesh) {
-        MMSOLVER_MAYA_WRN("mmImagePlaneShape: "
-                          << "Only Meshes are supported, geometry node "
-                             "given is not a mesh.");
+        MMSOLVER_MAYA_WRN(
+            "mmImagePlaneShape: "
+            << "Only Meshes are supported, geometry node given is not a mesh.");
         return;
     }
 
@@ -776,8 +214,8 @@ void ImagePlaneGeometryOverride::updateRenderItems(const MDagPath &path,
         if (index >= 0) {
             wireframeItem = list.itemAt(index);
         } else {
-            MMSOLVER_MAYA_VRB(
-                "mmImagePlaneShape: Generate wireframe MRenderItem...");
+            // MMSOLVER_MAYA_INFO("mmImagePlaneShape: Generate wireframe
+            // MRenderItem...");
             wireframeItem = MRenderItem::Create(
                 renderItemName_imagePlaneWireframe, MRenderItem::DecorationItem,
                 MGeometry::kLines);
@@ -819,8 +257,7 @@ void ImagePlaneGeometryOverride::updateRenderItems(const MDagPath &path,
             shaderManager->getStockShader(MShaderManager::k3dSolidShader);
         if (shader) {
             static const float color[] = {1.0f, 0.0f, 0.0f, 1.0f};
-            MStatus status = shader->setParameter("solidColor", color);
-            CHECK_MSTATUS(status);
+            shader->setParameter("solidColor", color);
             wireframeItem->setShader(shader);
             shaderManager->releaseShader(shader);
         }
@@ -829,92 +266,27 @@ void ImagePlaneGeometryOverride::updateRenderItems(const MDagPath &path,
     if (shadedItem) {
         shadedItem->enable(m_visible);
 
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
-                          << "shadedItem->isEnabled()="
-                          << shadedItem->isEnabled());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
-                          << "shadedItem->isShaderFromNode()="
-                          << shadedItem->isShaderFromNode());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
-                          << "shadedItem->isMultiDraw()="
-                          << shadedItem->isMultiDraw());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
-                          << "shadedItem->isConsolidated()="
-                          << shadedItem->isConsolidated());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
-                          << "shadedItem->wantConsolidation()="
-                          << shadedItem->wantConsolidation());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
-                          << "shadedItem->castsShadows()="
-                          << shadedItem->castsShadows());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
-                          << "shadedItem->receivesShadows()="
-                          << shadedItem->receivesShadows());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
-                          << "shadedItem->excludedFromPostEffects()="
-                          << shadedItem->excludedFromPostEffects());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
-                          << "shadedItem->supportsAdvancedTransparency()="
-                          << shadedItem->supportsAdvancedTransparency());
-
-        if (!m_shader || m_update_shader) {
-            if (m_shader) {
-                shaderManager->releaseShader(m_shader);
+        if (!m_shader_node.isNull()) {
+            // TODO: Implement callback to detect when the shader
+            // needs to be re-compiled.
+            auto linkLostCb = nullptr;
+            auto linkLostUserData = nullptr;
+            bool nonTextured = false;
+            shadedItem->setShaderFromNode(m_shader_node, m_geometry_node_path,
+                                          linkLostCb, linkLostUserData,
+                                          nonTextured);
+        } else {
+            MMSOLVER_MAYA_WRN(
+                "mmImagePlaneShape: "
+                << "Shader node is not valid, using fallback blue shader.");
+            MShaderInstance *shader =
+                shaderManager->getStockShader(MShaderManager::k3dSolidShader);
+            if (shader) {
+                static const float color[] = {0.0f, 0.0f, 1.0f, 1.0f};
+                shader->setParameter("solidColor", color);
+                shadedItem->setShader(shader);
+                shaderManager->releaseShader(shader);
             }
-
-            const MString shader_file_path =
-                mmsolver::render::find_shader_file_path("mmImagePlane.ogsfx");
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: found shader_file_path=\""
-                              << shader_file_path << "\"");
-
-            if (shader_file_path.length() > 0) {
-                MString shader_text =
-                    mmsolver::render::read_shader_file(shader_file_path);
-
-                std::string ocio_shader_text;
-                mmcolorio::generate_shader_text(
-                    m_input_color_space_name.asChar(),
-                    m_output_color_space_name.asChar(), ocio_shader_text);
-                MMSOLVER_MAYA_VRB("mmImagePlaneShape: ocio_shader_text=\""
-                                  << ocio_shader_text << "\"");
-                if (ocio_shader_text.size() > 0) {
-                    const MString ocio_function_declare_text = MString(
-                        "vec4 OCIODisplay(vec4 passthrough) { return "
-                        "passthrough; "
-                        "}");
-                    MStatus status = shader_text.substitute(
-                        ocio_function_declare_text,
-                        MString(ocio_shader_text.c_str()));
-                    CHECK_MSTATUS(status);
-                }
-
-                m_shader =
-                    mmsolver::render::compile_shader_text(shader_text, "Main");
-            }
-
-            if (m_shader) {
-                m_update_shader = false;
-            }
-        }
-
-        if (m_shader) {
-            MHWRender::MTextureManager *textureManager =
-                renderer->getTextureManager();
-            if (!textureManager) {
-                MMSOLVER_MAYA_WRN(
-                    "mmImagePlaneShape: Could not get MTextureManager.");
-                return;
-            }
-
-            set_shader_instance_parameters(
-                m_shader, textureManager, m_color_gain, m_color_exposure,
-                m_color_gamma, m_color_saturation, m_color_soft_clip,
-                m_alpha_gain, m_default_color, m_ignore_alpha, m_flip, m_flop,
-                m_is_transparent, m_image_display_channel, m_frame, m_file_path,
-                m_input_color_space_name, m_output_color_space_name,
-                m_color_texture, m_texture_sampler);
-
-            shadedItem->setShader(m_shader);
         }
     }
 }
@@ -1034,7 +406,7 @@ void ImagePlaneGeometryOverride::cleanUp() {}
 #if MAYA_API_VERSION >= 20190000
 bool ImagePlaneGeometryOverride::requiresGeometryUpdate() const {
     const bool verbose = false;
-    if (m_geometry_node_path.isValid()) {
+    if (m_geometry_node_path.isValid() && !m_shader_node.isNull()) {
         MMSOLVER_MAYA_VRB(
             "ImagePlaneGeometryOverride::requiresGeometryUpdate: false");
         return false;

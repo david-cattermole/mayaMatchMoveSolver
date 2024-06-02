@@ -847,13 +847,23 @@
             ]
         },
         "create_image_plane": {
+            "name": "Create Image Plane... (version 1)",
+            "name_shelf": "",
+            "tooltip": "Create a new Image Plane.",
+            "icon_shelf": "createImagePlane_32x32.png",
+            "command": [
+                "import mmSolver.tools.createimageplane.tool;",
+                "mmSolver.tools.createimageplane.tool.main_version_one();"
+            ]
+        },
+        "create_image_plane2": {
             "name": "Create Image Plane...",
             "name_shelf": "",
             "tooltip": "Create a new Image Plane.",
             "icon_shelf": "createImagePlane_32x32.png",
             "command": [
                 "import mmSolver.tools.createimageplane.tool;",
-                "mmSolver.tools.createimageplane.tool.main();"
+                "mmSolver.tools.createimageplane.tool.main_version_two();"
             ]
         },
         "camera_toggle_distortion": {

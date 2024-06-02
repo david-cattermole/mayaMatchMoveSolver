@@ -36,7 +36,6 @@
 // MM Solver
 #include <mmcore/lib.h>
 
-#include "ImagePlaneShapeNode.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {

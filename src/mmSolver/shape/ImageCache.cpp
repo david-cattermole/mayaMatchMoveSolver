@@ -26,11 +26,10 @@
 #include <cmath>
 
 // STL
-#include <algorithm>
 #include <cassert>
+#include <cstdlib>
 #include <cstring>
 #include <string>
-#include <unordered_map>
 
 // Maya
 #include <maya/MImage.h>
@@ -302,13 +301,18 @@ MTexture *read_image_file(MHWRender::MTextureManager *texture_manager,
     // Duplicate the Maya-owned pixel data for our image cache.
     const size_t pixel_data_byte_count =
         width * height * number_of_channels * bytes_per_channel;
-    std::vector<uint8_t> pixel_data_vec;
-    pixel_data_vec.resize(pixel_data_byte_count);
-    std::memcpy(pixel_data_vec.data(), maya_owned_pixel_data,
+    image_pixel_data = CacheImagePixelData();
+    const bool allocated_ok = image_pixel_data.allocate_pixels(
+        width, height, number_of_channels, pixel_data_type);
+    if (allocated_ok == false) {
+        MMSOLVER_MAYA_ERR("mmsolver::ImageCache: read_image_file: "
+                          << "Could not allocate pixel data!");
+        return nullptr;
+    }
+    assert(image_pixel_data.is_valid() == true);
+    assert(image_pixel_data.byte_count() == pixel_data_byte_count);
+    std::memcpy(image_pixel_data.pixel_data(), maya_owned_pixel_data,
                 pixel_data_byte_count);
-    image_pixel_data =
-        CacheImagePixelData(static_cast<void *>(pixel_data_vec.data()), width,
-                            height, number_of_channels, pixel_data_type);
 
     const bool cpu_inserted = image_cache.cpu_insert(key, image_pixel_data);
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_image_file: "

@@ -662,6 +662,10 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
 
         const bool do_texture_update = false;
         ImageCache &image_cache = ImageCache::getInstance();
+        // TODO: Set the capacity using a command, and use sensible
+        // defaults.
+        image_cache.set_gpu_capacity(10);
+        image_cache.set_cpu_capacity(1000);
         out_color_texture =
             read_image_file(textureManager, image_cache, m_temp_image,
                             expanded_file_path, pixel_type, do_texture_update);

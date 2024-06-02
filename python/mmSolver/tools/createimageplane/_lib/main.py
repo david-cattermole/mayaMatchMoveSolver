@@ -1,4 +1,4 @@
-# Copyright (C) 2020, 2022, 2024 David Cattermole.
+# Copyright (C) 2020, 2022 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -28,34 +28,46 @@ import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.constant as const_utils
 import mmSolver.utils.imageseq as imageseq_utils
 import mmSolver.utils.python_compat as pycompat
-
 import mmSolver.tools.createimageplane.constant as const
 import mmSolver.tools.createimageplane._lib.constant as lib_const
-import mmSolver.tools.createimageplane._lib.utilities as lib_utils
 import mmSolver.tools.createimageplane._lib.mmimageplane as lib_mmimageplane
-import mmSolver.tools.createimageplane._lib.polyplane as lib_polyplane
+import mmSolver.tools.createimageplane._lib.mmimageplane_v1 as lib_mmimageplane_v1
 import mmSolver.tools.createimageplane._lib.nativeimageplane as lib_nativeimageplane
+import mmSolver.tools.createimageplane._lib.polyplane as lib_polyplane
+import mmSolver.tools.createimageplane._lib.shader as lib_shader
+import mmSolver.tools.createimageplane._lib.utilities as lib_utils
 
 LOG = mmSolver.logger.get_logger()
 
 
-def create_image_plane_on_camera(cam, name=None):
+def create_image_plane_on_camera(cam, name=None, version=None):
     """Create an Image Plane that can be distorted in Maya's viewport
     (realtime).
     """
+    if version is None:
+        version = lib_const.MM_IMAGE_PLANE_VERSION_TWO
     if name is None:
         name = 'mmImagePlane1'
     assert isinstance(cam, mmapi.Camera)
     assert isinstance(name, pycompat.TEXT_TYPE)
+    assert version in lib_const.MM_IMAGE_PLANE_VERSION_LIST
+
     cam_tfm = cam.get_transform_node()
     cam_shp = cam.get_shape_node()
 
-    mm_ip_tfm = lib_mmimageplane.create_transform_node(name, cam_tfm, cam_shp)
+    mm_ip_tfm = lib_mmimageplane.create_transform_node(
+        name, cam_tfm, cam_shp, version=version
+    )
 
     poly_plane_name = name + 'MeshShape'
     poly_plane_network = lib_polyplane.create_poly_plane(
         poly_plane_name, mm_ip_tfm, cam_shp
     )
+
+    shader_network = None
+    if version == lib_const.MM_IMAGE_PLANE_VERSION_ONE:
+        name_shade = name + 'Shader'
+        shader_network = lib_shader.create_network(name_shade, mm_ip_tfm)
 
     name_img_shp = name + 'Shape'
     mm_ip_shp = lib_mmimageplane.create_shape_node(
@@ -63,6 +75,8 @@ def create_image_plane_on_camera(cam, name=None):
         mm_ip_tfm,
         cam_shp,
         poly_plane_network,
+        shader_network,
+        version=version,
     )
 
     # Logic to calculate the frame number.
@@ -147,20 +161,52 @@ def _guess_color_space(file_path):
     return color_space
 
 
-def set_image_sequence(mm_image_plane_node, image_sequence_path, attr_name=None):
+def _set_image_sequence_v1(mm_image_plane_node, image_sequence_path, attr_name=None):
+    if attr_name is None:
+        attr_name = lib_const.DEFAULT_IMAGE_SEQUENCE_ATTR_NAME
+    version = lib_const.MM_IMAGE_PLANE_VERSION_ONE
+
+    tfm, shp = lib_mmimageplane.get_image_plane_node_pair(
+        mm_image_plane_node, version=version
+    )
+    if tfm is None or shp is None:
+        LOG.warn('mmImagePlane transform/shape could not be found.')
+
+    file_node = lib_mmimageplane_v1.get_file_node(tfm)
+    if file_node is None:
+        LOG.warn('mmImagePlane shader file node is invalid.')
+
+    if shp is not None:
+        lib_mmimageplane.set_image_sequence(
+            shp, image_sequence_path, attr_name, version=version
+        )
+    if file_node is not None:
+        lib_shader.set_file_path(file_node, image_sequence_path)
+    return
+
+
+def _set_image_sequence_v2(mm_image_plane_node, image_sequence_path, attr_name=None):
     if attr_name is None:
         attr_name = lib_const.DEFAULT_IMAGE_SEQUENCE_ATTR_NAME
     assert isinstance(attr_name, str)
     assert attr_name in lib_const.VALID_INPUT_IMAGE_SEQUENCE_ATTR_NAMES
+    version = lib_const.MM_IMAGE_PLANE_VERSION_TWO
 
-    tfm, shp = lib_mmimageplane.get_image_plane_node_pair(mm_image_plane_node)
+    tfm, shp = lib_mmimageplane.get_image_plane_node_pair(
+        mm_image_plane_node, version=version
+    )
     if tfm is None or shp is None:
         LOG.warn('mmImagePlane transform/shape could not be found.')
 
     if shp is not None:
-        lib_mmimageplane.set_image_sequence(shp, image_sequence_path, attr_name)
         lib_mmimageplane.set_image_sequence(
-            shp, image_sequence_path, lib_const.SHADER_FILE_PATH_ATTR_NAME
+            shp, image_sequence_path, attr_name, version=version
+        )
+        lib_mmimageplane.set_image_sequence(
+            shp,
+            image_sequence_path,
+            lib_const.SHADER_FILE_PATH_ATTR_NAME,
+            version=version,
         )
 
         format_style = const_utils.IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME
@@ -188,3 +234,19 @@ def set_image_sequence(mm_image_plane_node, image_sequence_path, attr_name=None)
         )
 
     return
+
+
+def set_image_sequence(
+    mm_image_plane_node, image_sequence_path, attr_name=None, version=None
+):
+    if version is None:
+        version = lib_const.MM_IMAGE_PLANE_VERSION_TWO
+    assert version in lib_const.MM_IMAGE_PLANE_VERSION_LIST
+    if version == lib_const.MM_IMAGE_PLANE_VERSION_ONE:
+        return _set_image_sequence_v1(
+            mm_image_plane_node, image_sequence_path, attr_name=attr_name
+        )
+    elif version == lib_const.MM_IMAGE_PLANE_VERSION_TWO:
+        return _set_image_sequence_v2(
+            mm_image_plane_node, image_sequence_path, attr_name=attr_name
+        )

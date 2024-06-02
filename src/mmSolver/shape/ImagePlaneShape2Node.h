@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022 David Cattermole.
+ * Copyright (C) 2022, 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -19,11 +19,8 @@
  *
  */
 
-#ifndef MM_IMAGE_PLANE_SHAPE_NODE_H
-#define MM_IMAGE_PLANE_SHAPE_NODE_H
-
-// STL
-#include <assert.h>
+#ifndef MM_IMAGE_PLANE_SHAPE_2_NODE_H
+#define MM_IMAGE_PLANE_SHAPE_2_NODE_H
 
 // Maya
 #include <maya/MArrayDataBuilder.h>
@@ -45,11 +42,11 @@
 
 namespace mmsolver {
 
-class ImagePlaneShapeNode : public MPxLocatorNode {
+class ImagePlaneShape2Node : public MPxLocatorNode {
 public:
-    ImagePlaneShapeNode();
+    ImagePlaneShape2Node();
 
-    ~ImagePlaneShapeNode() override;
+    ~ImagePlaneShape2Node() override;
 
     MStatus compute(const MPlug &plug, MDataBlock &data) override;
 
@@ -98,10 +95,27 @@ public:
     static MObject m_lens_hash_current;
     static MObject m_lens_hash_previous;
     static MObject m_geometry_node;
-    static MObject m_shader_node;
     static MObject m_camera_node;
+    static MObject m_shader_is_transparent;
+
+    // Image Attributes
+    static MObject m_image_display_channel;
+    static MObject m_image_color_gain;
+    static MObject m_image_color_exposure;
+    static MObject m_image_color_gamma;
+    static MObject m_image_color_saturation;
+    static MObject m_image_color_soft_clip;
+    static MObject m_image_alpha_gain;
+    static MObject m_image_default_color;
+    static MObject m_image_ignore_alpha;
+    static MObject m_image_flip;
+    static MObject m_image_flop;
+    static MObject m_image_file_path;
+    static MObject m_image_frame_number;
+    static MObject m_image_input_color_space;
+    static MObject m_image_output_color_space;
 };
 
 }  // namespace mmsolver
 
-#endif  // MM_IMAGE_PLANE_SHAPE_NODE_H
+#endif  // MM_IMAGE_PLANE_SHAPE_2_NODE_H

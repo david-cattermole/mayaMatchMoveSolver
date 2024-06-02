@@ -68,7 +68,9 @@
 // Shape nodes.
 #include "mmSolver/shape/BundleDrawOverride.h"
 #include "mmSolver/shape/BundleShapeNode.h"
+#include "mmSolver/shape/ImagePlaneGeometry2Override.h"
 #include "mmSolver/shape/ImagePlaneGeometryOverride.h"
+#include "mmSolver/shape/ImagePlaneShape2Node.h"
 #include "mmSolver/shape/ImagePlaneShapeNode.h"
 #include "mmSolver/shape/LineDrawOverride.h"
 #include "mmSolver/shape/LineShapeNode.h"
@@ -319,12 +321,14 @@ MStatus initializePlugin(MObject obj) {
                   mmsolver::MMLensModelToggleNode::creator,
                   mmsolver::MMLensModelToggleNode::initialize, status);
 
-    const MString markerClassification = MM_MARKER_DRAW_CLASSIFY;
     const MString bundleClassification = MM_BUNDLE_DRAW_CLASSIFY;
+    const MString lineClassification = MM_LINE_DRAW_CLASSIFY;
+    const MString markerClassification = MM_MARKER_DRAW_CLASSIFY;
+    const MString skyDomeClassification = MM_SKY_DOME_DRAW_CLASSIFY;
     const MString imagePlaneShapeClassification =
         MM_IMAGE_PLANE_SHAPE_DRAW_CLASSIFY;
-    const MString skyDomeClassification = MM_SKY_DOME_DRAW_CLASSIFY;
-    const MString lineClassification = MM_LINE_DRAW_CLASSIFY;
+    const MString imagePlaneShape2Classification =
+        MM_IMAGE_PLANE_SHAPE_2_DRAW_CLASSIFY;
     REGISTER_LOCATOR_NODE(plugin, mmsolver::MarkerShapeNode::nodeName(),
                           mmsolver::MarkerShapeNode::m_id,
                           mmsolver::MarkerShapeNode::creator,
@@ -339,6 +343,12 @@ MStatus initializePlugin(MObject obj) {
                           mmsolver::ImagePlaneShapeNode::m_id,
                           mmsolver::ImagePlaneShapeNode::creator,
                           mmsolver::ImagePlaneShapeNode::initialize,
+                          MPxNode::kLocatorNode, &imagePlaneShapeClassification,
+                          status);
+    REGISTER_LOCATOR_NODE(plugin, mmsolver::ImagePlaneShape2Node::nodeName(),
+                          mmsolver::ImagePlaneShape2Node::m_id,
+                          mmsolver::ImagePlaneShape2Node::creator,
+                          mmsolver::ImagePlaneShape2Node::initialize,
                           MPxNode::kLocatorNode, &imagePlaneShapeClassification,
                           status);
     REGISTER_LOCATOR_NODE(
@@ -362,6 +372,10 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::ImagePlaneShapeNode::m_draw_db_classification,
         mmsolver::ImagePlaneShapeNode::m_draw_registrant_id,
         mmsolver::ImagePlaneGeometryOverride::Creator, status);
+    REGISTER_GEOMETRY_OVERRIDE(
+        mmsolver::ImagePlaneShape2Node::m_draw_db_classification,
+        mmsolver::ImagePlaneShape2Node::m_draw_registrant_id,
+        mmsolver::ImagePlaneGeometry2Override::Creator, status);
     REGISTER_DRAW_OVERRIDE(mmsolver::SkyDomeShapeNode::m_draw_db_classification,
                            mmsolver::SkyDomeShapeNode::m_draw_registrant_id,
                            mmsolver::SkyDomeDrawOverride::Creator, status);

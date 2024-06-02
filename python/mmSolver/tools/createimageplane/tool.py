@@ -32,6 +32,7 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.viewport as utils_viewport
 import mmSolver.utils.camera as utils_camera
+import mmSolver.tools.createimageplane._lib.constant as const
 import mmSolver.tools.createimageplane.lib as lib
 
 
@@ -92,10 +93,11 @@ def prompt_user_for_image_sequence(start_dir=None):
     return image_sequence_path
 
 
-def main():
+def _run(version):
     """
     Create a new Image Plane on the selected camera.
     """
+    assert version in const.MM_IMAGE_PLANE_VERSION_LIST
     mmapi.load_plugin()
 
     # Get selected camera(s).
@@ -163,3 +165,15 @@ def main():
     else:
         maya.cmds.select(sel, replace=True)
     return
+
+
+def main():
+    _run(const.MM_IMAGE_PLANE_VERSION_ONE)
+
+
+def main_version_one():
+    _run(const.MM_IMAGE_PLANE_VERSION_ONE)
+
+
+def main_version_two():
+    _run(const.MM_IMAGE_PLANE_VERSION_TWO)

@@ -31,7 +31,7 @@
             "attr_tools/attr_popup/attribute_bake",
             "camera_tools/camera_popup/---Camera & Lens",
             "camera_tools/camera_popup/create_camera",
-            "camera_tools/camera_popup/create_image_plane",
+            "camera_tools/camera_popup/create_image_plane2",
             "camera_tools/camera_popup/create_lens",
             "camera_tools/camera_popup/---Distortion",
             "camera_tools/camera_popup/camera_toggle_distortion",

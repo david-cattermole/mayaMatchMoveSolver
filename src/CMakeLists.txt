@@ -97,8 +97,11 @@ set(SOURCE_FILES
   mmSolver/shape/BundleDrawOverride.cpp
   mmSolver/shape/BundleShapeNode.cpp
   mmSolver/shape/ImageCache.cpp
+  mmSolver/shape/ImagePlaneGeometry2Override.cpp
   mmSolver/shape/ImagePlaneGeometryOverride.cpp
+  mmSolver/shape/ImagePlaneShape2Node.cpp
   mmSolver/shape/ImagePlaneShapeNode.cpp
+  mmSolver/shape/ImagePlaneUtils.cpp
   mmSolver/shape/LineDrawOverride.cpp
   mmSolver/shape/LineShapeNode.cpp
   mmSolver/shape/MarkerDrawOverride.cpp

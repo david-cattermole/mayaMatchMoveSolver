@@ -54,9 +54,9 @@
 #include <mmcolorio/lib.h>
 #include <mmcore/lib.h>
 
-#include "ImageCache.h"
 #include "ImagePlaneShape2Node.h"
 #include "ImagePlaneUtils.h"
+#include "mmSolver/image/ImageCache.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/render/shader/shader_utils.h"
 #include "mmSolver/shape/constant_texture_data.h"
@@ -661,7 +661,7 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
         // const MImage::MPixelType pixel_type = MImage::MPixelType::kFloat;
 
         const bool do_texture_update = false;
-        ImageCache &image_cache = ImageCache::getInstance();
+        image::ImageCache &image_cache = image::ImageCache::getInstance();
         // // TODO: Set the capacity using a command, and use sensible
         // // defaults.
         // image_cache.set_gpu_min_item_count(10);
@@ -671,9 +671,9 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
         // image_cache.get_gpu_used_bytes();
         // image_cache.get_cpu_used_bytes();
         // image_cache.print_cache_details();
-        out_color_texture =
-            read_image_file(textureManager, image_cache, m_temp_image,
-                            expanded_file_path, pixel_type, do_texture_update);
+        out_color_texture = image::read_texture_image_file(
+            textureManager, image_cache, m_temp_image, expanded_file_path,
+            pixel_type, do_texture_update);
 
         if (out_color_texture) {
             MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture->name()="

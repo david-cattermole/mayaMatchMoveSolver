@@ -65,6 +65,11 @@ set(SOURCE_FILES
   mmSolver/cmd/arg_flags_solve_scene_graph.cpp
   mmSolver/cmd/arg_flags_solve_scene_graph.h
   mmSolver/core/reprojection.cpp
+  mmSolver/image/ImageCache.cpp
+  mmSolver/image/ImagePixelData.cpp
+  mmSolver/image/PixelDataType.cpp
+  mmSolver/image/TextureData.cpp
+  mmSolver/image/image_io.cpp
   mmSolver/mayahelper/maya_attr.cpp
   mmSolver/mayahelper/maya_bundle.cpp
   mmSolver/mayahelper/maya_camera.cpp
@@ -96,7 +101,6 @@ set(SOURCE_FILES
   mmSolver/sfm/sfm_utils.cpp
   mmSolver/shape/BundleDrawOverride.cpp
   mmSolver/shape/BundleShapeNode.cpp
-  mmSolver/shape/ImageCache.cpp
   mmSolver/shape/ImagePlaneGeometry2Override.cpp
   mmSolver/shape/ImagePlaneGeometryOverride.cpp
   mmSolver/shape/ImagePlaneShape2Node.cpp

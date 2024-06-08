@@ -38,6 +38,7 @@
 #include <maya/MSyntax.h>
 
 // MM Solver
+#include "mmSolver/image/image_io.h"
 #include "mmSolver/utilities/debug_utils.h"
 
 namespace mmsolver {
@@ -118,6 +119,7 @@ MStatus MMReadImageCmd::parseArgs(const MArgList &args) {
 }
 
 MStatus MMReadImageCmd::doIt(const MArgList &args) {
+    const bool verbose = false;
     MStatus status = MStatus::kSuccess;
 
     // Read all the flag arguments.
@@ -140,20 +142,31 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
     }
     MString resolved_file_path = file_object.resolvedFullName();
     if (resolved_file_path.length() > 0) {
-        // MMSOLVER_MAYA_INFO(
-        //     "mmReadImage: resolved file path "
-        //     << "\"" << resolved_file_path.asChar() << "\".");
+        MMSOLVER_MAYA_VRB("mmReadImage: resolved file path "
+                          << "\"" << resolved_file_path.asChar() << "\".");
         m_file_path = file_object.resolvedFullName();
     }
 
     if (m_query_width_height) {
         auto image = MImage();
+
         // kUnknown attempts to load the native pixel type.
         auto pixel_type = MImage::kUnknown;
-        status = image.readFromFile(
-            m_file_path,
-            pixel_type  // The desired pixel format is unknown.
-        );
+
+        // TODO: Can we read just the file header to get the image
+        // size? This would remove the need to read the entire image
+        // for this command's usage.
+        uint32_t image_width;
+        uint32_t image_height;
+        uint8_t num_channels;
+        uint8_t bytes_per_channel;
+        MHWRender::MRasterFormat texture_format;
+        image::PixelDataType pixel_data_type;
+        void *pixel_data = nullptr;
+        status = image::read_image_file(image, m_file_path, pixel_type,
+                                        image_width, image_height, num_channels,
+                                        bytes_per_channel, texture_format,
+                                        pixel_data_type, pixel_data);
         if (status != MS::kSuccess) {
             status = MS::kSuccess;
             MMSOLVER_MAYA_WRN("mmReadImage: "
@@ -161,10 +174,6 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
                               << m_file_path.asChar());
             return status;
         }
-
-        uint32_t image_width = 2;
-        uint32_t image_height = 2;
-        image.getSize(image_width, image_height);
 
         MIntArray outResult;
         outResult.append(image_width);

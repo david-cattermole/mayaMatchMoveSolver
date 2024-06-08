@@ -41,7 +41,7 @@
 // MM Solver
 #include <mmcore/lib.h>
 
-#include "ImageCache.h"
+#include "mmSolver/image/ImageCache.h"
 #include "ImagePlaneShape2Node.h"
 #include "ImagePlaneUtils.h"
 #include "mmSolver/utilities/debug_utils.h"

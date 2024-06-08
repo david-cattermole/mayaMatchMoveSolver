@@ -54,7 +54,6 @@
 #include <mmcolorio/lib.h>
 #include <mmcore/lib.h>
 
-#include "ImageCache.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/render/shader/shader_utils.h"
 #include "mmSolver/shape/constant_texture_data.h"

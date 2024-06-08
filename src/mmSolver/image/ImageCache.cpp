@@ -19,37 +19,6 @@
  *
  */
 
-#include "ImageCache.h"
-
-// Get M_PI constant
-#define _USE_MATH_DEFINES
-#include <cmath>
-
-// STL
-#include <cassert>
-#include <cstdlib>
-#include <cstring>
-#include <string>
-
-// Maya
-#include <maya/MImage.h>
-#include <maya/MString.h>
-
-// Maya Viewport 2.0
-#include <maya/MTextureManager.h>
-
-// MM Solver
-#include <mmcolorio/lib.h>
-#include <mmcore/lib.h>
-
-#include "mmSolver/mayahelper/maya_utils.h"
-#include "mmSolver/render/shader/shader_utils.h"
-#include "mmSolver/shape/constant_texture_data.h"
-#include "mmSolver/utilities/number_utils.h"
-#include "mmSolver/utilities/path_utils.h"
-
-namespace mmsolver {
-
 // Get GPU memory info from the Maya API:
 //
 // MRenderer::GPUtotalMemorySize()
@@ -97,180 +66,72 @@ namespace mmsolver {
 // https://github.com/david-cattermole/cpp-utilities/blob/master/include/hashUtils.h
 // https://github.com/david-cattermole/cpp-utilities/blob/master/include/osMemoryUtils.h
 
-void *get_mimage_pixel_data(const MImage &image,
-                            const CachePixelDataType pixel_data_type,
-                            const uint32_t width, const uint32_t height,
-                            const uint8_t number_of_channels,
-                            uint8_t &out_bytes_per_channel,
-                            MHWRender::MRasterFormat &out_texture_format) {
-    const bool verbose = false;
+#include "ImageCache.h"
 
-    const uint32_t print_num_pixels = 8;
-    void *pixel_data = nullptr;
-    if (pixel_data_type == CachePixelDataType::kU8) {
-        MMSOLVER_MAYA_VRB("mmsolver::ImageCache: get_mimage_pixel_data:"
-                          << " pixel_data_type=CachePixelDataType::kU8");
+// Get M_PI constant
+#define _USE_MATH_DEFINES
+#include <cmath>
 
-        // 8-bit unsigned integers use 1 byte.
-        out_bytes_per_channel = 1;
+// STL
+#include <cassert>
+#include <cstdlib>
+#include <cstring>
+#include <string>
 
-        const bool is_rgba = image.isRGBA();
-        MMSOLVER_MAYA_VRB("mmsolver::ImageCache: get_mimage_pixel_data:"
-                          << " is_rgba=" << is_rgba);
-        if (is_rgba) {
-            out_texture_format = MHWRender::kR8G8B8A8_UNORM;
-        } else {
-            out_texture_format = MHWRender::kB8G8R8A8;
-        }
+// Maya
+#include <maya/MImage.h>
+#include <maya/MString.h>
 
-        unsigned char *pixels = image.pixels();
+// Maya Viewport 2.0
+#include <maya/MTextureManager.h>
 
-        if (verbose) {
-            for (uint32_t row = 0; row <= print_num_pixels; row++) {
-                const uint32_t index = row * number_of_channels;
-                const uint32_t r = static_cast<uint32_t>(pixels[index + 0]);
-                const uint32_t g = static_cast<uint32_t>(pixels[index + 1]);
-                const uint32_t b = static_cast<uint32_t>(pixels[index + 2]);
-                const uint32_t a = static_cast<uint32_t>(pixels[index + 3]);
-                MMSOLVER_MAYA_VRB("mmsolver::ImageCache: get_mimage_pixel_data:"
-                                  << " row=" << row << " pixel=" << r << ", "
-                                  << g << ", " << b << ", " << a);
-            }
-        }
+// MM Solver
+#include <mmcore/lib.h>
 
-        // TODO: Allow giving the explicit input and output color
-        // space names.
-        //
-        // TODO: Allow outputting 32-bit/16-bit float pixel data, to
-        // ensure the plate doesn't get quantize.
-        //
-        // mmcolorio::image_convert_srgb_to_linear_srgb_u8(pixels, width,
-        // height,
-        //                                                 number_of_channels);
+#include "ImagePixelData.h"
+#include "PixelDataType.h"
+#include "TextureData.h"
+#include "image_io.h"
+#include "mmSolver/mayahelper/maya_utils.h"
+#include "mmSolver/render/shader/shader_utils.h"
+#include "mmSolver/shape/constant_texture_data.h"
+#include "mmSolver/utilities/number_utils.h"
+#include "mmSolver/utilities/path_utils.h"
 
-        // mmcolorio::test_opencolorio(pixels, width, height,
-        // number_of_channels);
+namespace mmsolver {
+namespace image {
 
-        pixel_data = static_cast<void *>(pixels);
-    } else if (pixel_data_type == CachePixelDataType::kF32) {
-        MMSOLVER_MAYA_VRB("mmsolver::ImageCache: get_mimage_pixel_data:"
-                          << " pixel_data_type=CachePixelDataType::kF32");
-
-        // 32-bit floats use 4 bytes.
-        out_bytes_per_channel = 4;
-
-        out_texture_format = MHWRender::kR32G32B32A32_FLOAT;
-
-        float *floatPixels = image.floatPixels();
-
-        if (verbose) {
-            for (uint32_t row = 0; row <= print_num_pixels; row++) {
-                const uint32_t index = row * number_of_channels;
-                const float r = floatPixels[index + 0];
-                const float g = floatPixels[index + 1];
-                const float b = floatPixels[index + 2];
-                const float a = floatPixels[index + 3];
-                MMSOLVER_MAYA_VRB("mmsolver::ImageCache: get_mimage_pixel_data:"
-                                  << " row=" << row << " pixel=" << r << ", "
-                                  << g << ", " << b << ", " << a);
-            }
-        }
-
-        // mmcolorio::image_convert_srgb_to_linear_srgb_f32(
-        //     floatPixels, width, height, number_of_channels);
-
-        pixel_data = static_cast<void *>(floatPixels);
-    } else {
-        MMSOLVER_MAYA_ERR("mmsolver::ImageCache: get_mimage_pixel_data: "
-                          << "Invalid pixel type is "
-                          << static_cast<int>(pixel_data_type));
-        return nullptr;
-    }
-
-    return pixel_data;
-}
-
-CachePixelDataType convert_mpixel_type_to_pixel_data_type(
-    MImage::MPixelType pixel_type) {
-    CachePixelDataType pixel_data_type = CachePixelDataType::kUnknown;
-    if (pixel_type == MImage::MPixelType::kByte) {
-        pixel_data_type = CachePixelDataType::kU8;
-    } else if (pixel_type == MImage::MPixelType::kFloat) {
-        pixel_data_type = CachePixelDataType::kF32;
-    } else {
-        MMSOLVER_MAYA_WRN(
-            "mmsolver::ImageCache: convert_mpixel_type_to_pixel_data_type: "
-            "Invalid MImage::MPixelType value.");
-    }
-    return pixel_data_type;
-}
-
-MStatus read_with_mimage(MImage &image, MString &file_path,
-                         const MImage::MPixelType pixel_type,
-                         uint32_t &out_width, uint32_t &out_height,
-                         uint8_t &out_number_of_channels,
-                         uint8_t &out_bytes_per_channel,
-                         MHWRender::MRasterFormat &out_texture_format,
-                         CachePixelDataType &out_pixel_data_type,
-                         void *&out_pixel_data) {
-    const bool verbose = false;
-
-    MStatus status = MStatus::kSuccess;
-
-    // TODO: This code can be changed to whatever reading function
-    // that reads the input file path.
-    status = image.readFromFile(file_path, pixel_type);
-    CHECK_MSTATUS(status);
-    if (status != MS::kSuccess) {
-        MMSOLVER_MAYA_WRN("mmsolver::ImageCache: read_with_mimage:"
-                          << " failed to read image \"" << file_path.asChar()
-                          << "\".");
-        return status;
-    }
-
-    image.getSize(out_width, out_height);
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_with_mimage:"
-                      << " width=" << out_width << " height=" << out_height);
-
-    out_pixel_data_type = convert_mpixel_type_to_pixel_data_type(pixel_type);
-
-    out_pixel_data = get_mimage_pixel_data(
-        image, out_pixel_data_type, out_width, out_height,
-        out_number_of_channels, out_bytes_per_channel, out_texture_format);
-
-    return status;
-}
-
-MTexture *read_image_file(MHWRender::MTextureManager *texture_manager,
-                          ImageCache &image_cache, MImage &temp_image,
-                          const MString &file_path,
-                          const MImage::MPixelType pixel_type,
-                          const bool do_texture_update) {
+MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
+                                  ImageCache &image_cache, MImage &temp_image,
+                                  const MString &file_path,
+                                  const MImage::MPixelType pixel_type,
+                                  const bool do_texture_update) {
     assert(texture_manager != nullptr);
 
     const bool verbose = false;
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_image_file:"
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_texture_image_file:"
                       << " file_path=" << file_path.asChar());
 
     MString resolved_file_path = file_path;
     MStatus status = mmpath::resolve_input_file_path(resolved_file_path);
     if (status != MS::kSuccess) {
-        MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_image_file:"
+        MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_texture_image_file:"
                           << " file does not exist \""
                           << resolved_file_path.asChar() << "\".");
         return nullptr;
     }
 
     std::string key = std::string(resolved_file_path.asChar());
-    CacheTextureData texture_data = image_cache.gpu_find(key);
+    TextureData texture_data = image_cache.gpu_find(key);
 
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_image_file: findTexture: "
-                      << texture_data.is_valid());
     MMSOLVER_MAYA_VRB(
-        "mmsolver::ImageCache: read_image_file: do_texture_update="
+        "mmsolver::ImageCache: read_texture_image_file: findTexture: "
+        << texture_data.is_valid());
+    MMSOLVER_MAYA_VRB(
+        "mmsolver::ImageCache: read_texture_image_file: do_texture_update="
         << do_texture_update);
     if (texture_data.is_valid() && (do_texture_update == false)) {
-        MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_image_file DONE1:"
+        MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_texture_image_file DONE1:"
                           << " texture=" << texture_data.texture());
         return texture_data.texture();
     }
@@ -286,14 +147,14 @@ MTexture *read_image_file(MHWRender::MTextureManager *texture_manager,
     // Python user code to add the list of valid images into the
     // cache.
 
-    CacheImagePixelData image_pixel_data = image_cache.cpu_find(key);
+    ImagePixelData image_pixel_data = image_cache.cpu_find(key);
 
     uint32_t width = 0;
     uint32_t height = 0;
     uint8_t number_of_channels = 4;
     uint8_t bytes_per_channel = 0;
     MHWRender::MRasterFormat texture_format;
-    CachePixelDataType pixel_data_type = CachePixelDataType::kUnknown;
+    PixelDataType pixel_data_type = PixelDataType::kUnknown;
     void *maya_owned_pixel_data = nullptr;
 
     const bool image_pixel_data_valid = image_pixel_data.is_valid();
@@ -306,10 +167,10 @@ MTexture *read_image_file(MHWRender::MTextureManager *texture_manager,
         bytes_per_channel =
             convert_pixel_data_type_to_bytes_per_channel(pixel_data_type);
 
-        if (pixel_data_type == CachePixelDataType::kU8) {
+        if (pixel_data_type == PixelDataType::kU8) {
             // Assumes the 8-bit data is "RGBA".
             texture_format = MHWRender::kR8G8B8A8_UNORM;
-        } else if (pixel_data_type == CachePixelDataType::kF32) {
+        } else if (pixel_data_type == PixelDataType::kF32) {
             texture_format = MHWRender::kR32G32B32A32_FLOAT;
         }
 
@@ -317,10 +178,10 @@ MTexture *read_image_file(MHWRender::MTextureManager *texture_manager,
         // TODO: This code can be changed to whatever reading function
         // that reads the input file path.
 
-        status = read_with_mimage(temp_image, resolved_file_path, pixel_type,
-                                  width, height, number_of_channels,
-                                  bytes_per_channel, texture_format,
-                                  pixel_data_type, maya_owned_pixel_data);
+        status = read_image_file(temp_image, resolved_file_path, pixel_type,
+                                 width, height, number_of_channels,
+                                 bytes_per_channel, texture_format,
+                                 pixel_data_type, maya_owned_pixel_data);
         if (status != MS::kSuccess) {
             return nullptr;
         }
@@ -331,28 +192,28 @@ MTexture *read_image_file(MHWRender::MTextureManager *texture_manager,
     }
 
     if (!maya_owned_pixel_data) {
-        MMSOLVER_MAYA_ERR("mmsolver::ImageCache: read_image_file: "
+        MMSOLVER_MAYA_ERR("mmsolver::ImageCache: read_texture_image_file: "
                           << "Invalid pixel data!");
         return nullptr;
     }
 
-    CacheImagePixelData gpu_image_pixel_data =
-        CacheImagePixelData(static_cast<void *>(maya_owned_pixel_data), width,
-                            height, number_of_channels, pixel_data_type);
+    ImagePixelData gpu_image_pixel_data =
+        ImagePixelData(static_cast<void *>(maya_owned_pixel_data), width,
+                       height, number_of_channels, pixel_data_type);
 
     texture_data =
         image_cache.gpu_insert(texture_manager, key, gpu_image_pixel_data);
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_image_file: "
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_texture_image_file: "
                       << "gpu_inserted=" << texture_data.texture());
 
     // Duplicate the Maya-owned pixel data for our image cache.
     const size_t pixel_data_byte_count =
         width * height * number_of_channels * bytes_per_channel;
-    image_pixel_data = CacheImagePixelData();
+    image_pixel_data = ImagePixelData();
     const bool allocated_ok = image_pixel_data.allocate_pixels(
         width, height, number_of_channels, pixel_data_type);
     if (allocated_ok == false) {
-        MMSOLVER_MAYA_ERR("mmsolver::ImageCache: read_image_file: "
+        MMSOLVER_MAYA_ERR("mmsolver::ImageCache: read_texture_image_file: "
                           << "Could not allocate pixel data!");
         return nullptr;
     }
@@ -362,10 +223,10 @@ MTexture *read_image_file(MHWRender::MTextureManager *texture_manager,
                 pixel_data_byte_count);
 
     const bool cpu_inserted = image_cache.cpu_insert(key, image_pixel_data);
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_image_file: "
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_texture_image_file: "
                       << "cpu_inserted=" << cpu_inserted);
 
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_image_file DONE2:"
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_texture_image_file DONE2:"
                       << " texture=" << texture_data.texture());
 
     return texture_data.texture();
@@ -410,8 +271,8 @@ bool ImageCache::cpu_insert(const CPUCacheKey &key,
     return ok;
 }
 
-void update_texture(MTexture *texture,
-                    const ImageCache::CPUCacheValue &image_pixel_data) {
+static void update_texture(MTexture *texture,
+                           const ImageCache::CPUCacheValue &image_pixel_data) {
     const bool verbose = false;
 
     // No need for MIP-maps.
@@ -710,4 +571,5 @@ bool ImageCache::cpu_erase(const CPUCacheKey &key) {
     return found;
 }
 
+}  // namespace image
 }  // namespace mmsolver

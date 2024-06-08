@@ -224,6 +224,7 @@ def create_image_plane_shape_attrs(image_plane_shp):
 
 
 def set_image_sequence(shp, image_sequence_path, attr_name):
+    assert isinstance(image_sequence_path, str)
     assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2
     assert node_utils.attribute_exists(attr_name, shp) is True
 

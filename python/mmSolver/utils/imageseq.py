@@ -104,6 +104,8 @@ def expand_image_sequence_path(image_sequence_path, format_style):
     :returns:
         Tuple of (file_pattern, start_frame, end_frame, padding_num, is_seq)
     """
+    assert os.path.isfile(image_sequence_path)
+    assert format_style in const.IMAGE_SEQ_FORMAT_STYLE_VALUES
     image_sequence_path = os.path.abspath(image_sequence_path)
 
     (
@@ -143,3 +145,62 @@ def expand_image_sequence_path(image_sequence_path, format_style):
         file_pattern = os.path.join(base_dir, file_pattern)
 
     return file_pattern, start_frame, end_frame, padding_num, is_seq
+
+
+def resolve_file_pattern_to_file_path(file_pattern, format_style):
+    """
+    Resolve a file pattern into a valid file path.
+
+    :param file_pattern: The pattern of the file path.
+    :type file_pattern: str
+
+    :param format_style: The format style of the input file pattern
+    :type format_style: One of mmSolver.utils.constant.IMAGE_SEQ_FORMAT_STYLE_VALUES
+
+    :returns: Valid file path or None.
+    :rtype: str or None
+    """
+    assert format_style in const.IMAGE_SEQ_FORMAT_STYLE_VALUES
+
+    if os.path.isfile(file_pattern):
+        file_pattern = os.path.abspath(file_pattern)
+        return file_pattern
+
+    if format_style == const.IMAGE_SEQ_FORMAT_STYLE_MAYA:
+        # file.<f>.png
+        file_pattern = file_pattern.replace('<f>', '')
+    elif format_style == const.IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED:
+        # file.####.png
+        file_pattern = file_pattern.replace('#', '')
+    elif format_style == const.IMAGE_SEQ_FORMAT_STYLE_PRINTF:
+        # file.%04d.png
+        raise NotImplementedError
+    elif format_style == const.IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME:
+        # file.1001.png
+
+        # Should have already been picked out as a valid file path, so
+        # it must be wrong.
+        return None
+    else:
+        raise NotImplementedError
+
+    (
+        base_dir,
+        file_name,
+        seq_num_int,
+        seq_num_str,
+        file_extension,
+    ) = _split_image_sequence_path(file_pattern)
+
+    start_frame, end_frame, padding_num = _get_image_sequence_start_end_frames(
+        base_dir, file_name, file_extension
+    )
+
+    image_seq_num = str(start_frame).zfill(padding_num)
+    file_pattern = '{}{}{}'.format(file_name, image_seq_num, file_extension)
+    file_pattern = os.path.join(base_dir, file_pattern)
+
+    file_path, _, _, _, _ = expand_image_sequence_path(
+        file_pattern, const.IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME
+    )
+    return file_path

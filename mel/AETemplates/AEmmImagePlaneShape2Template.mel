@@ -135,6 +135,8 @@ global proc AEmmImagePlaneShape2_sequenceSlotChanged(
     AEmmImagePlaneShape2_setSlotValue($image_plane_shp, $slot_attr_value);
 
     string $cmd = "";
+    $cmd = $cmd + "import mmSolver.utils.constant as utils_const;\n";
+    $cmd = $cmd + "import mmSolver.utils.imageseq as utils_imageseq;\n";
     $cmd = $cmd + "import mmSolver.tools.createimageplane.tool as tool;\n";
     $cmd = $cmd + "import mmSolver.tools.createimageplane.lib as lib;\n";
     $cmd = $cmd + "\n";
@@ -147,9 +149,11 @@ global proc AEmmImagePlaneShape2_sequenceSlotChanged(
     $cmd = $cmd + "if len(image_seq) == 0:\n";
     $cmd = $cmd + "    image_seq = lib.get_default_image_path();\n";
     $cmd = $cmd + "\n";
+    $cmd = $cmd + "format_style = utils_const.IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED;\n";
+    $cmd = $cmd + "real_file_path = utils_imageseq.resolve_file_pattern_to_file_path(image_seq, format_style);\n";
     $cmd = $cmd + "lib.set_image_sequence(\n";
     $cmd = $cmd + "    mm_ip_shp,\n";
-    $cmd = $cmd + "    image_seq,\n";
+    $cmd = $cmd + "    real_file_path,\n";
     $cmd = $cmd + "    attr_name=current_slot_attr\n";
     $cmd = $cmd + ")\n";
 

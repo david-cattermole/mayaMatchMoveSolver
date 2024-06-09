@@ -44,14 +44,10 @@
 #include <maya/MString.h>
 #include <maya/MSyntax.h>
 
-namespace mmsolver {
+// MM Solver
+#include "mmSolver/utilities/memory_utils.h"
 
-enum class MemoryUnit : uint8_t {
-    kBytes = 0,
-    kKiloBytes,
-    kMegaBytes,
-    kGigaBytes,
-};
+namespace mmsolver {
 
 class MMMemorySystemCmd : public MPxCommand {
 public:
@@ -60,7 +56,7 @@ public:
         , m_system_physical_memory_free(false)
         , m_system_physical_memory_used(false)
         , m_process_memory_used(false)
-        , m_memory_unit(MemoryUnit::kBytes){};
+        , m_memory_unit(mmmemory::MemoryUnit::kBytes){};
 
     virtual ~MMMemorySystemCmd();
 
@@ -82,7 +78,7 @@ private:
     bool m_system_physical_memory_free;
     bool m_system_physical_memory_used;
     bool m_process_memory_used;
-    MemoryUnit m_memory_unit;
+    mmmemory::MemoryUnit m_memory_unit;
 };
 
 }  // namespace mmsolver

@@ -19,7 +19,7 @@
  *
  */
 
-#include "system_memory_utils.h"
+#include "memory_system_utils.h"
 
 // STL
 #include <fstream>   // ifstream
@@ -39,7 +39,7 @@
 #include <unistd.h>       // sysconf
 #endif
 
-namespace mmsystemmemory {
+namespace mmmemorysystem {
 
 // Get the current process's memory usage.
 //
@@ -167,4 +167,4 @@ size_t system_physical_memory_free() {
 #endif
 }
 
-}  // namespace mmsystemmemory
+}  // namespace mmmemorysystem

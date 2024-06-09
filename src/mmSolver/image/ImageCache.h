@@ -42,6 +42,7 @@
 #include "PixelDataType.h"
 #include "TextureData.h"
 #include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/number_utils.h"
 
 namespace mmsolver {
 namespace image {
@@ -85,10 +86,6 @@ namespace image {
 // retained - even if it's not colour accurate.
 //
 
-// TODO: Move to a constants header.
-const size_t MEGABYTES_TO_BYTES = 1e+6;
-const double kBYTES_TO_MEGABYTES = 1e-6;
-
 struct ImageCache {
     using GPUCacheKey = std::string;
     using GPUCacheValue = TextureData;
@@ -118,8 +115,8 @@ private:
     ImageCache()
         : m_gpu_min_item_count(1)
         , m_cpu_min_item_count(1)
-        , m_gpu_capacity_bytes(200 * MEGABYTES_TO_BYTES)
-        , m_cpu_capacity_bytes(1000 * MEGABYTES_TO_BYTES)
+        , m_gpu_capacity_bytes(200 * BYTES_TO_MEGABYTES)
+        , m_cpu_capacity_bytes(1000 * BYTES_TO_MEGABYTES)
         , m_gpu_used_bytes(0)
         , m_cpu_used_bytes(0) {}
 
@@ -205,9 +202,9 @@ public:
             << m_gpu_cache_map.size()
             // << " GPU min item count=" << m_gpu_min_item_count
             << " used MB="
-            << (static_cast<double>(m_gpu_used_bytes) * kBYTES_TO_MEGABYTES)
+            << (static_cast<double>(m_gpu_used_bytes) * BYTES_TO_MEGABYTES)
             << " capacity MB="
-            << (static_cast<double>(m_gpu_capacity_bytes) * kBYTES_TO_MEGABYTES)
+            << (static_cast<double>(m_gpu_capacity_bytes) * BYTES_TO_MEGABYTES)
             << " percent="
             << (static_cast<double>(m_gpu_used_bytes) /
                 static_cast<double>(m_gpu_capacity_bytes)));
@@ -217,9 +214,9 @@ public:
             << m_cpu_cache_map.size()
             // << " CPU min item count=" << m_cpu_min_item_count
             << " used MB="
-            << (static_cast<double>(m_cpu_used_bytes) * kBYTES_TO_MEGABYTES)
+            << (static_cast<double>(m_cpu_used_bytes) * BYTES_TO_MEGABYTES)
             << " capacity MB="
-            << (static_cast<double>(m_cpu_capacity_bytes) * kBYTES_TO_MEGABYTES)
+            << (static_cast<double>(m_cpu_capacity_bytes) * BYTES_TO_MEGABYTES)
             << " percent="
             << (static_cast<double>(m_cpu_used_bytes) /
                 static_cast<double>(m_cpu_capacity_bytes)));

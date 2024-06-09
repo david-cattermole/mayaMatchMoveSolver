@@ -195,7 +195,7 @@ public:
         return m_cpu_used_bytes;
     }
 
-    void print_cache_details() const {
+    void print_brief() const {
         MMSOLVER_MAYA_INFO(
             "mmsolver::ImageCache::print_cache_details:"
             << " GPU cache item count="

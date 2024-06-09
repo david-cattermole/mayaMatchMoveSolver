@@ -43,6 +43,7 @@ set(SOURCE_FILES
   mmSolver/cmd/MMCameraSolveCmd.cpp
   mmSolver/cmd/MMColorIOCmd.cpp
   mmSolver/cmd/MMConvertImageCmd.cpp
+  mmSolver/cmd/MMImageCacheCmd.cpp
   mmSolver/cmd/MMMarkerHomographyCmd.cpp
   mmSolver/cmd/MMMemoryGPUCmd.cpp
   mmSolver/cmd/MMMemorySystemCmd.cpp

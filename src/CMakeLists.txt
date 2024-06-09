@@ -44,6 +44,7 @@ set(SOURCE_FILES
   mmSolver/cmd/MMColorIOCmd.cpp
   mmSolver/cmd/MMConvertImageCmd.cpp
   mmSolver/cmd/MMMarkerHomographyCmd.cpp
+  mmSolver/cmd/MMMemorySystemCmd.cpp
   mmSolver/cmd/MMReadImageCmd.cpp
   mmSolver/cmd/MMReprojectionCmd.cpp
   mmSolver/cmd/MMSolver2Cmd.cpp
@@ -117,6 +118,7 @@ set(SOURCE_FILES
   mmSolver/utilities/number_utils.cpp
   mmSolver/utilities/path_utils.cpp
   mmSolver/utilities/string_utils.cpp
+  mmSolver/utilities/system_memory_utils.cpp
 )
 
 if (MMSOLVER_BUILD_RENDERER)

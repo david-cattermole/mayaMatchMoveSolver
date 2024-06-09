@@ -19,52 +19,9 @@
  *
  */
 
-// Get GPU memory info from the Maya API:
-//
-// MRenderer::GPUtotalMemorySize()
-// MRenderer::GPUUsedMemorySize()
-//
-//
-// These methods can be used to inform Maya's internal system of any
-// GPU memory that we allocate/deallocate:
-//
-// MRenderer::holdGPUMemory();
-// MRenderer::releaseGPUMemory();
-//
-//
-// How to get the amount of (CPU) system memory?
-// https://stackoverflow.com/questions/2513505/how-to-get-available-memory-c-g
-// https://stackoverflow.com/questions/63166/how-to-determine-cpu-and-memory-consumption-from-inside-a-process/
-//
-//
-// On UNIX-like operating systems, use sysconf to get the amount of
-// system memory:
-//
-// #include <unistd.h>
-// unsigned long long getTotalSystemMemory()
-// {
-//     long pages = sysconf(_SC_PHYS_PAGES);
-//     long page_size = sysconf(_SC_PAGE_SIZE);
-//     return pages * page_size;
-// }
-//
-//
-// On Windows, use GlobalMemoryStatusEx:
-//
-// #include <windows.h>
-// unsigned long long getTotalSystemMemory()
-// {
-//     MEMORYSTATUSEX status;
-//     status.dwLength = sizeof(status);
-//     GlobalMemoryStatusEx(&status);
-//     return status.ullTotalPhys;
-// }
-//
-//
 // Helpful code:
 // https://github.com/david-cattermole/cpp-utilities/blob/master/include/fileSystemUtils.h
 // https://github.com/david-cattermole/cpp-utilities/blob/master/include/hashUtils.h
-// https://github.com/david-cattermole/cpp-utilities/blob/master/include/osMemoryUtils.h
 
 #include "ImageCache.h"
 

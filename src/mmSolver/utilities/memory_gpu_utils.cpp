@@ -55,7 +55,7 @@ MStatus memory_total_size_in_bytes(size_t &out_size_in_bytes) {
 
 MStatus gpu_memory_usage(size_t &total_memory, size_t &free_memory,
                          size_t &used_memory) {
-    const bool verbose = true;
+    const bool verbose = false;
     MStatus status = MStatus::kSuccess;
 
     total_memory = 0;

@@ -41,6 +41,22 @@
 #include "mmSolver/image/image_io.h"
 #include "mmSolver/utilities/debug_utils.h"
 
+// Command arguments and command name:
+#define FILE_PATH_FLAG "-fp"
+#define FILE_PATH_FLAG_LONG "-filePath"
+
+#define WIDTH_HEIGHT_FLAG "-wh"
+#define WIDTH_HEIGHT_FLAG_LONG "-widthHeight"
+
+// TODO: Add flags to:
+// - Return the number of channels in the image.
+// - Return the number of bytes per-channel in the image.
+// - Return the number of total raw bytes in the image.
+//
+// NOTE: We do not want to have to call mmReadImage multiple times. We
+// want to get as much data as possible in a single call, because
+// subsequent calls will need to re-read the image.
+
 namespace mmsolver {
 
 MMReadImageCmd::~MMReadImageCmd() {}

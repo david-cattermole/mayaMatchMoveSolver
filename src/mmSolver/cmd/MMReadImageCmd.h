@@ -33,13 +33,6 @@
 #include <maya/MString.h>
 #include <maya/MSyntax.h>
 
-// Command arguments and command name:
-#define FILE_PATH_FLAG "-fp"
-#define FILE_PATH_FLAG_LONG "-filePath"
-
-#define WIDTH_HEIGHT_FLAG "-wh"
-#define WIDTH_HEIGHT_FLAG_LONG "-widthHeight"
-
 namespace mmsolver {
 
 class MMReadImageCmd : public MPxCommand {

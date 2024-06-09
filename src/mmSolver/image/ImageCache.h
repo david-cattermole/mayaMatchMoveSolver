@@ -86,7 +86,12 @@ namespace image {
 // retained - even if it's not colour accurate.
 //
 
+// The default ImageCache sizes.
+const size_t kDEFAULT_GPU_CAPACITY_BYTES = BYTES_TO_MEGABYTES * 128;
+const size_t kDEFAULT_CPU_CAPACITY_BYTES = BYTES_TO_MEGABYTES * 1024;
+
 struct ImageCache {
+    // GPU data types
     using GPUCacheKey = std::string;
     using GPUCacheValue = TextureData;
     using GPUKeyList = std::list<GPUCacheKey>;
@@ -95,6 +100,7 @@ struct ImageCache {
         std::unordered_map<GPUCacheKey, std::pair<GPUKeyListIt, GPUCacheValue>>;
     using GPUMapIt = GPUMap::iterator;
 
+    // CPU data types
     using CPUCacheKey = std::string;
     using CPUCacheValue = ImagePixelData;
     using CPUKeyList = std::list<CPUCacheKey>;
@@ -113,10 +119,8 @@ public:
 private:
     // Constructor. The {} brackets are needed here.
     ImageCache()
-        : m_gpu_min_item_count(1)
-        , m_cpu_min_item_count(1)
-        , m_gpu_capacity_bytes(200 * BYTES_TO_MEGABYTES)
-        , m_cpu_capacity_bytes(1000 * BYTES_TO_MEGABYTES)
+        : m_gpu_capacity_bytes(kDEFAULT_GPU_CAPACITY_BYTES)
+        , m_cpu_capacity_bytes(kDEFAULT_CPU_CAPACITY_BYTES)
         , m_gpu_used_bytes(0)
         , m_cpu_used_bytes(0) {}
 
@@ -128,47 +132,6 @@ private:
     }
 
 public:
-    // TODO: Allow a minimum number of items to be cached. For example
-    // even if the GPU memory capacity is zero bytes, we allow at
-    // least N items, "no questions asked".
-    size_t get_gpu_min_item_count() const {
-        const bool verbose = false;
-        MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_gpu_min_item_count: "
-                          << "m_gpu_min_item_count=" << m_gpu_min_item_count);
-
-        return m_gpu_min_item_count;
-    }
-    size_t get_cpu_min_item_count() const {
-        const bool verbose = false;
-
-        MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_cpu_min_item_count: "
-                          << "m_cpu_min_item_count=" << m_cpu_min_item_count);
-
-        return m_cpu_min_item_count;
-    }
-
-    void set_gpu_min_item_count(const size_t value) {
-        const bool verbose = false;
-
-        // TODO: Evict the contents of the cache, if the current
-        // number of cached items exceeds the new capacity size.
-        m_gpu_min_item_count = value;
-
-        MMSOLVER_MAYA_VRB("mmsolver::ImageCache::set_gpu_min_item_count: "
-                          << "m_gpu_min_item_count=" << m_gpu_min_item_count);
-    }
-
-    void set_cpu_min_item_count(const size_t value) {
-        const bool verbose = false;
-
-        // TODO: Evict the contents of the cache, if the current
-        // number of cached items exceeds the new capacity size.
-        m_cpu_min_item_count = value;
-
-        MMSOLVER_MAYA_VRB("mmsolver::ImageCache::set_cpu_min_item_count: "
-                          << "m_cpu_min_item_count=" << m_cpu_min_item_count);
-    }
-
     // Get the capacity of the GPU and CPU.
     size_t get_gpu_capacity_bytes() const {
         const bool verbose = false;
@@ -377,10 +340,6 @@ private:
         MHWRender::MTextureManager *texture_manager,
         const size_t new_memory_chunk_size);
     bool cpu_evict_enough_for_new_entry(const size_t new_memory_chunk_size);
-
-    // Number of items allowed in the cache.
-    size_t m_gpu_min_item_count;
-    size_t m_cpu_min_item_count;
 
     // Amount of memory capacity.
     size_t m_gpu_capacity_bytes;

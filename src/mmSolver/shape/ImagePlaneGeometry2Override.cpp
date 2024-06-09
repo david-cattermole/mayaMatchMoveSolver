@@ -115,10 +115,10 @@ ImagePlaneGeometry2Override::~ImagePlaneGeometry2Override() {
 
     if (m_color_texture) {
         MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
-        MHWRender::MTextureManager *textureMgr =
+        MHWRender::MTextureManager *texture_manager =
             renderer ? renderer->getTextureManager() : nullptr;
-        if (textureMgr) {
-            textureMgr->releaseTexture(m_color_texture);
+        if (texture_manager) {
+            texture_manager->releaseTexture(m_color_texture);
             m_color_texture = nullptr;
         }
     }
@@ -396,7 +396,7 @@ inline MFloatMatrix create_saturation_matrix(const float saturation) {
 }
 
 void ImagePlaneGeometry2Override::set_shader_instance_parameters(
-    MShaderInstance *shader, MHWRender::MTextureManager *textureManager,
+    MShaderInstance *shader, MHWRender::MTextureManager *texture_manager,
     const MColor &color_gain, const float color_exposure,
     const float color_gamma, const float color_saturation,
     const float color_soft_clip, const float alpha_gain,
@@ -477,17 +477,8 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
 
         const bool do_texture_update = false;
         image::ImageCache &image_cache = image::ImageCache::getInstance();
-        // // TODO: Set the capacity using a command, and use sensible
-        // // defaults.
-        // image_cache.set_gpu_min_item_count(10);
-        // image_cache.set_cpu_min_item_count(1000);
-        // image_cache.get_gpu_capacity_bytes();
-        // image_cache.get_cpu_capacity_bytes();
-        // image_cache.get_gpu_used_bytes();
-        // image_cache.get_cpu_used_bytes();
-        // image_cache.print_cache_details();
         out_color_texture = image::read_texture_image_file(
-            textureManager, image_cache, m_temp_image, expanded_file_path,
+            texture_manager, image_cache, m_temp_image, expanded_file_path,
             pixel_type, do_texture_update);
 
         if (out_color_texture) {
@@ -736,16 +727,16 @@ void ImagePlaneGeometry2Override::updateRenderItems(const MDagPath &path,
         }
 
         if (m_shader) {
-            MHWRender::MTextureManager *textureManager =
+            MHWRender::MTextureManager *texture_manager =
                 renderer->getTextureManager();
-            if (!textureManager) {
+            if (!texture_manager) {
                 MMSOLVER_MAYA_WRN(
                     "mmImagePlaneShape: Could not get MTextureManager.");
                 return;
             }
 
             set_shader_instance_parameters(
-                m_shader, textureManager, m_color_gain, m_color_exposure,
+                m_shader, texture_manager, m_color_gain, m_color_exposure,
                 m_color_gamma, m_color_saturation, m_color_soft_clip,
                 m_alpha_gain, m_default_color, m_ignore_alpha, m_flip, m_flop,
                 m_is_transparent, m_image_display_channel, m_frame, m_file_path,

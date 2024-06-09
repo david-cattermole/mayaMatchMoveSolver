@@ -42,6 +42,7 @@
 #include "mmSolver/cmd/MMColorIOCmd.h"
 #include "mmSolver/cmd/MMConvertImageCmd.h"
 #include "mmSolver/cmd/MMMarkerHomographyCmd.h"
+#include "mmSolver/cmd/MMMemoryGPUCmd.h"
 #include "mmSolver/cmd/MMMemorySystemCmd.h"
 #include "mmSolver/cmd/MMReadImageCmd.h"
 #include "mmSolver/cmd/MMReprojectionCmd.h"
@@ -266,6 +267,10 @@ MStatus initializePlugin(MObject obj) {
     REGISTER_COMMAND(plugin, mmsolver::MMMarkerHomographyCmd::cmdName(),
                      mmsolver::MMMarkerHomographyCmd::creator,
                      mmsolver::MMMarkerHomographyCmd::newSyntax, status);
+
+    REGISTER_COMMAND(plugin, mmsolver::MMMemoryGPUCmd::cmdName(),
+                     mmsolver::MMMemoryGPUCmd::creator,
+                     mmsolver::MMMemoryGPUCmd::newSyntax, status);
 
     REGISTER_COMMAND(plugin, mmsolver::MMMemorySystemCmd::cmdName(),
                      mmsolver::MMMemorySystemCmd::creator,
@@ -631,6 +636,7 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, mmsolver::MMConvertImageCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMMarkerHomographyCmd::cmdName(),
                        status);
+    DEREGISTER_COMMAND(plugin, mmsolver::MMMemoryGPUCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMMemorySystemCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMReadImageCmd::cmdName(), status);
 

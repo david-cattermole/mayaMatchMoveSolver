@@ -44,6 +44,7 @@ set(SOURCE_FILES
   mmSolver/cmd/MMColorIOCmd.cpp
   mmSolver/cmd/MMConvertImageCmd.cpp
   mmSolver/cmd/MMMarkerHomographyCmd.cpp
+  mmSolver/cmd/MMMemoryGPUCmd.cpp
   mmSolver/cmd/MMMemorySystemCmd.cpp
   mmSolver/cmd/MMReadImageCmd.cpp
   mmSolver/cmd/MMReprojectionCmd.cpp
@@ -115,6 +116,7 @@ set(SOURCE_FILES
   mmSolver/shape/SkyDomeDrawOverride.cpp
   mmSolver/shape/SkyDomeShapeNode.cpp
   mmSolver/utilities/debug_utils.cpp
+  mmSolver/utilities/memory_gpu_utils.cpp
   mmSolver/utilities/memory_system_utils.cpp
   mmSolver/utilities/memory_utils.cpp
   mmSolver/utilities/number_utils.cpp

@@ -45,10 +45,10 @@
 #include <mmcolorio/lib.h>
 
 #include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/utilities/number_utils.h"
+#include "mmSolver/utilities/memory_system_utils.h"
+#include "mmSolver/utilities/memory_utils.h"
 #include "mmSolver/utilities/path_utils.h"
 #include "mmSolver/utilities/string_utils.h"
-#include "mmSolver/utilities/system_memory_utils.h"
 
 // Command arguments and command name:
 #define SYSTEM_PHYSICAL_MEMORY_TOTAL_FLAG "-tot"
@@ -155,13 +155,13 @@ MStatus MMMemorySystemCmd::parseArgs(const MArgList &args) {
         argData.isFlagSet(MEMORY_AS_GIGABYTES_FLAG, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    m_memory_unit = MemoryUnit::kBytes;
+    m_memory_unit = mmmemory::MemoryUnit::kBytes;
     if (as_kilobytes) {
-        m_memory_unit = MemoryUnit::kKiloBytes;
+        m_memory_unit = mmmemory::MemoryUnit::kKiloBytes;
     } else if (as_megabytes) {
-        m_memory_unit = MemoryUnit::kMegaBytes;
+        m_memory_unit = mmmemory::MemoryUnit::kMegaBytes;
     } else if (as_gigabytes) {
-        m_memory_unit = MemoryUnit::kGigaBytes;
+        m_memory_unit = mmmemory::MemoryUnit::kGigaBytes;
     }
 
     return status;
@@ -177,15 +177,15 @@ MStatus MMMemorySystemCmd::doIt(const MArgList &args) {
 
     size_t bytes_value = 0;
     if (m_system_physical_memory_total) {
-        bytes_value = mmsystemmemory::system_physical_memory_total();
+        bytes_value = mmmemorysystem::system_physical_memory_total();
     } else if (m_system_physical_memory_free) {
-        bytes_value = mmsystemmemory::system_physical_memory_free();
+        bytes_value = mmmemorysystem::system_physical_memory_free();
     } else if (m_system_physical_memory_used) {
-        bytes_value = mmsystemmemory::system_physical_memory_used();
+        bytes_value = mmmemorysystem::system_physical_memory_used();
     } else if (m_process_memory_used) {
         size_t peak_resident_set_size = 0;
         size_t current_resident_set_size = 0;
-        mmsystemmemory::process_memory_usage(peak_resident_set_size,
+        mmmemorysystem::process_memory_usage(peak_resident_set_size,
                                              current_resident_set_size);
         bytes_value = current_resident_set_size;
     } else {
@@ -195,7 +195,7 @@ MStatus MMMemorySystemCmd::doIt(const MArgList &args) {
         return MStatus::kFailure;
     }
 
-    if (m_memory_unit == MemoryUnit::kBytes) {
+    if (m_memory_unit == mmmemory::MemoryUnit::kBytes) {
         // It is only possible to return a maximum of "unsigned int"
         // (unsigned 32-bit number) from a Maya command, but our
         // maximum may exceed that size, so we must return the full
@@ -204,23 +204,11 @@ MStatus MMMemorySystemCmd::doIt(const MArgList &args) {
         std::string number_string = mmstring::numberToString(bytes_value);
         MString number_mstring(number_string.c_str());
         MMMemorySystemCmd::setResult(number_mstring);
-    } else if (m_memory_unit == MemoryUnit::kKiloBytes) {
-        double outResult =
-            static_cast<double>(bytes_value) / BYTES_TO_KILOBYTES;
-        MMMemorySystemCmd::setResult(outResult);
-    } else if (m_memory_unit == MemoryUnit::kMegaBytes) {
-        double outResult =
-            static_cast<double>(bytes_value) / BYTES_TO_MEGABYTES;
-        MMMemorySystemCmd::setResult(outResult);
-    } else if (m_memory_unit == MemoryUnit::kGigaBytes) {
-        double outResult =
-            static_cast<double>(bytes_value) / BYTES_TO_GIGABYTES;
-        MMMemorySystemCmd::setResult(outResult);
     } else {
-        // Should not get here.
-        return MStatus::kFailure;
+        double outResult =
+            mmmemory::bytes_as_double(bytes_value, m_memory_unit);
+        MMMemorySystemCmd::setResult(outResult);
     }
-
     return status;
 }
 

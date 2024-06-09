@@ -17,19 +17,27 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Generic path helper functions.
+ * Memory-related utilities.
  */
 
-#ifndef SYSTEM_MEMORY_UTILS_H
-#define SYSTEM_MEMORY_UTILS_H
+#ifndef MEMORY_UTILS_H
+#define MEMORY_UTILS_H
 
-namespace mmsystemmemory {
-void process_memory_usage(size_t &peak_resident_set_size,
-                          size_t &current_resident_set_size);
-size_t system_physical_memory_total();
-size_t system_physical_memory_free();
-size_t system_physical_memory_used();
+// STL
+#include <cstdint>
 
-}  // namespace mmsystemmemory
+namespace mmmemory {
 
-#endif  // SYSTEM_MEMORY_UTILS_H
+enum class MemoryUnit : uint8_t {
+    kBytes = 0,
+    kKiloBytes,
+    kMegaBytes,
+    kGigaBytes,
+};
+
+double bytes_as_double(const size_t size_as_bytes,
+                       const mmmemory::MemoryUnit memory_unit);
+
+}  // namespace mmmemory
+
+#endif  // MEMORY_UTILS_H

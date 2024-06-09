@@ -115,10 +115,11 @@ set(SOURCE_FILES
   mmSolver/shape/SkyDomeDrawOverride.cpp
   mmSolver/shape/SkyDomeShapeNode.cpp
   mmSolver/utilities/debug_utils.cpp
+  mmSolver/utilities/memory_system_utils.cpp
+  mmSolver/utilities/memory_utils.cpp
   mmSolver/utilities/number_utils.cpp
   mmSolver/utilities/path_utils.cpp
   mmSolver/utilities/string_utils.cpp
-  mmSolver/utilities/system_memory_utils.cpp
 )
 
 if (MMSOLVER_BUILD_RENDERER)

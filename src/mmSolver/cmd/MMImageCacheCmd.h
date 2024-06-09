@@ -118,7 +118,7 @@ enum class ImageCacheFlagMode : uint8_t {
     kCpuCapacity,
     kGpuUsed,
     kCpuUsed,
-    kPrintBrief,
+    kGenerateBriefText,
     kUnknown = 255
 };
 

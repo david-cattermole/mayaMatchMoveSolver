@@ -173,7 +173,7 @@ public:
         // Because we must always ensure our used memory is less than
         // the given capacity.
         if ((m_gpu_used_bytes > m_gpu_capacity_bytes) &&
-            m_gpu_cache_key_list.empty()) {
+            !m_gpu_cache_key_list.empty()) {
             // If we are at capacity remove the least recently used items
             // until our capacity is under 'new_used_bytes'.
             while (m_gpu_used_bytes > m_gpu_capacity_bytes) {
@@ -199,7 +199,7 @@ public:
         // Because we must always ensure our used memory is less than
         // the given capacity.
         if ((m_cpu_used_bytes > m_cpu_capacity_bytes) &&
-            m_cpu_cache_key_list.empty()) {
+            !m_cpu_cache_key_list.empty()) {
             // If we are at capacity remove the least recently used items
             // until our capacity is under 'new_used_bytes'.
             while (m_cpu_used_bytes > m_cpu_capacity_bytes) {

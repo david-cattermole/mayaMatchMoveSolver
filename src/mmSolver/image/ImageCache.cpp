@@ -54,6 +54,7 @@
 #include "mmSolver/shape/constant_texture_data.h"
 #include "mmSolver/utilities/number_utils.h"
 #include "mmSolver/utilities/path_utils.h"
+#include "mmSolver/utilities/string_utils.h"
 
 namespace mmsolver {
 namespace image {
@@ -187,6 +188,65 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
                       << " texture=" << texture_data.texture());
 
     return texture_data.texture();
+}
+
+inline std::string generate_cache_brief(const char *prefix_str,
+                                        const size_t item_count,
+                                        const size_t capacity_bytes,
+                                        const size_t used_bytes) {
+    const size_t capacity_megabytes = capacity_bytes / BYTES_TO_MEGABYTES;
+    const size_t used_megabytes = used_bytes / BYTES_TO_MEGABYTES;
+
+    std::string capacity_megabytes_str =
+        mmstring::numberToStringWithCommas(capacity_megabytes);
+
+    std::string used_megabytes_str =
+        mmstring::numberToStringWithCommas(used_megabytes);
+
+    double used_percent = 0.0;
+    if (capacity_bytes > 0) {
+        used_percent = (static_cast<double>(used_bytes) /
+                        static_cast<double>(capacity_bytes)) *
+                       100.0;
+    }
+
+    std::stringstream ss;
+    ss << prefix_str << "count=" << item_count << " items "
+       << "| used=" << used_megabytes_str << "MB "
+       << "| capacity=" << used_megabytes_str << "MB "
+       << "| percent=" << used_percent << '%';
+    return ss.str();
+}
+
+MString ImageCache::generate_cache_brief_text() const {
+    std::string gpu_cache_text =
+        generate_cache_brief("GPU cache | ", m_gpu_cache_map.size(),
+                             m_gpu_capacity_bytes, m_gpu_used_bytes);
+    std::string cpu_cache_text =
+        generate_cache_brief("CPU cache | ", m_cpu_cache_map.size(),
+                             m_cpu_capacity_bytes, m_cpu_used_bytes);
+
+    std::stringstream ss;
+    ss << gpu_cache_text << std::endl << cpu_cache_text << std::endl;
+
+    std::string string = ss.str();
+    MString mstring = MString(string.c_str());
+    return mstring;
+}
+
+void ImageCache::print_cache_brief() const {
+    std::string gpu_cache_text =
+        generate_cache_brief("GPU cache | ", m_gpu_cache_map.size(),
+                             m_gpu_capacity_bytes, m_gpu_used_bytes);
+    std::string cpu_cache_text =
+        generate_cache_brief("CPU cache | ", m_cpu_cache_map.size(),
+                             m_cpu_capacity_bytes, m_cpu_used_bytes);
+
+    MMSOLVER_MAYA_INFO(
+        "mmsolver::ImageCache::print_cache_brief: " << gpu_cache_text);
+    MMSOLVER_MAYA_INFO(
+        "mmsolver::ImageCache::print_cache_brief: " << cpu_cache_text);
+    return;
 }
 
 bool ImageCache::cpu_insert(const CPUCacheKey &key,

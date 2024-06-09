@@ -55,8 +55,8 @@
 #define CPU_USED_FLAG "-cpu"
 #define CPU_USED_FLAG_LONG "-cpuUsed"
 
-#define PRINT_BRIEF_FLAG "-pbf"
-#define PRINT_BRIEF_FLAG_LONG "-printBrief"
+#define BRIEF_TEXT_FLAG "-btx"
+#define BRIEF_TEXT_FLAG_LONG "-briefText"
 
 namespace mmsolver {
 
@@ -91,7 +91,7 @@ MSyntax MMImageCacheCmd::newSyntax() {
     CHECK_MSTATUS(syntax.addFlag(GPU_USED_FLAG, GPU_USED_FLAG_LONG));
     CHECK_MSTATUS(syntax.addFlag(CPU_USED_FLAG, CPU_USED_FLAG_LONG));
 
-    CHECK_MSTATUS(syntax.addFlag(PRINT_BRIEF_FLAG, PRINT_BRIEF_FLAG_LONG));
+    CHECK_MSTATUS(syntax.addFlag(BRIEF_TEXT_FLAG, BRIEF_TEXT_FLAG_LONG));
 
     return syntax;
 }
@@ -122,7 +122,7 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
     const bool has_cpu_capacity = argData.isFlagSet(CPU_CAPACITY_FLAG, &status);
     const bool has_gpu_used = argData.isFlagSet(GPU_USED_FLAG, &status);
     const bool has_cpu_used = argData.isFlagSet(CPU_USED_FLAG, &status);
-    const bool has_print_brief = argData.isFlagSet(PRINT_BRIEF_FLAG, &status);
+    const bool has_print_brief = argData.isFlagSet(BRIEF_TEXT_FLAG, &status);
 
     MMSOLVER_MAYA_VRB(
         "MMImageCacheCmd::parseArgs: "
@@ -155,7 +155,7 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
         } else if (has_cpu_used) {
             m_command_flag = ImageCacheFlagMode::kCpuUsed;
         } else if (has_print_brief) {
-            m_command_flag = ImageCacheFlagMode::kPrintBrief;
+            m_command_flag = ImageCacheFlagMode::kGenerateBriefText;
         } else {
             MMSOLVER_MAYA_ERR(
                 "MMImageCacheCmd::parseArgs: "
@@ -234,12 +234,12 @@ inline MStatus get_texture_manager(
     return MStatus::kSuccess;
 }
 
-inline MStatus set_values(const ImageCacheFlagMode command_flag,
+inline MStatus set_values(image::ImageCache &image_cache,
+                          const ImageCacheFlagMode command_flag,
                           const size_t gpu_capacity_bytes,
                           const size_t cpu_capacity_bytes) {
     MStatus status = MStatus::kSuccess;
 
-    image::ImageCache &image_cache = image::ImageCache::getInstance();
     if (command_flag == ImageCacheFlagMode::kGpuCapacity) {
         MHWRender::MTextureManager *texture_manager = nullptr;
         status = get_texture_manager(texture_manager);
@@ -268,14 +268,12 @@ MStatus MMImageCacheCmd::doIt(const MArgList &args) {
     status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    image::ImageCache &image_cache = image::ImageCache::getInstance();
-
     if (m_is_query) {
-        if (m_command_flag == ImageCacheFlagMode::kPrintBrief) {
-            // Prints to terminal/Output Window.
-            image_cache.print_brief();
-            MString number_mstring = "TODO: brief text here";
-            MMImageCacheCmd::setResult(number_mstring);
+        image::ImageCache &image_cache = image::ImageCache::getInstance();
+
+        if (m_command_flag == ImageCacheFlagMode::kGenerateBriefText) {
+            MString mstring = image_cache.generate_cache_brief_text();
+            MMImageCacheCmd::setResult(mstring);
         } else {
             size_t bytes_value = 0;
             if (m_command_flag == ImageCacheFlagMode::kGpuCapacity) {
@@ -300,7 +298,9 @@ MStatus MMImageCacheCmd::doIt(const MArgList &args) {
             MMImageCacheCmd::setResult(number_mstring);
         }
     } else if (m_is_edit) {
-        set_values(m_command_flag, m_gpu_capacity_bytes, m_cpu_capacity_bytes);
+        image::ImageCache &image_cache = image::ImageCache::getInstance();
+        set_values(image_cache, m_command_flag, m_gpu_capacity_bytes,
+                   m_cpu_capacity_bytes);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
         MMSOLVER_MAYA_ERR(
@@ -316,7 +316,8 @@ MStatus MMImageCacheCmd::doIt(const MArgList &args) {
 MStatus MMImageCacheCmd::redoIt() {
     MStatus status = MStatus::kSuccess;
     if (m_is_edit) {
-        status = set_values(m_command_flag, m_gpu_capacity_bytes,
+        image::ImageCache &image_cache = image::ImageCache::getInstance();
+        status = set_values(image_cache, m_command_flag, m_gpu_capacity_bytes,
                             m_cpu_capacity_bytes);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
@@ -326,7 +327,9 @@ MStatus MMImageCacheCmd::redoIt() {
 MStatus MMImageCacheCmd::undoIt() {
     MStatus status = MStatus::kSuccess;
     if (m_is_edit) {
-        status = set_values(m_command_flag, m_previous_gpu_capacity_bytes,
+        image::ImageCache &image_cache = image::ImageCache::getInstance();
+        status = set_values(image_cache, m_command_flag,
+                            m_previous_gpu_capacity_bytes,
                             m_previous_cpu_capacity_bytes);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }

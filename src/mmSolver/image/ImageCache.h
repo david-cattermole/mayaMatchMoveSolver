@@ -158,34 +158,6 @@ public:
         return m_cpu_used_bytes;
     }
 
-    void print_brief() const {
-        MMSOLVER_MAYA_INFO(
-            "mmsolver::ImageCache::print_cache_details:"
-            << " GPU cache item count="
-            << m_gpu_cache_map.size()
-            // << " GPU min item count=" << m_gpu_min_item_count
-            << " used MB="
-            << (static_cast<double>(m_gpu_used_bytes) * BYTES_TO_MEGABYTES)
-            << " capacity MB="
-            << (static_cast<double>(m_gpu_capacity_bytes) * BYTES_TO_MEGABYTES)
-            << " percent="
-            << (static_cast<double>(m_gpu_used_bytes) /
-                static_cast<double>(m_gpu_capacity_bytes)));
-        MMSOLVER_MAYA_INFO(
-            "mmsolver::ImageCache::print_cache_details:"
-            << " CPU cache item count="
-            << m_cpu_cache_map.size()
-            // << " CPU min item count=" << m_cpu_min_item_count
-            << " used MB="
-            << (static_cast<double>(m_cpu_used_bytes) * BYTES_TO_MEGABYTES)
-            << " capacity MB="
-            << (static_cast<double>(m_cpu_capacity_bytes) * BYTES_TO_MEGABYTES)
-            << " percent="
-            << (static_cast<double>(m_cpu_used_bytes) /
-                static_cast<double>(m_cpu_capacity_bytes)));
-        return;
-    }
-
     // Set the capacity of the GPU.
     //
     // Note: Setting a lower value than what is already used will
@@ -238,6 +210,10 @@ public:
             }
         }
     }
+
+    // Debug functions to display internals of the cache.
+    MString generate_cache_brief_text() const;
+    void print_cache_brief() const;
 
     // TODO: Set/Get Disk cache location. Used to find disk-cached
     // files. This should be a directory on a very fast disk.

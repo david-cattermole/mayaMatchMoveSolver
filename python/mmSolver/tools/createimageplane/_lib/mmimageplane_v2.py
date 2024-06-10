@@ -240,27 +240,46 @@ def set_image_sequence(shp, image_sequence_path, attr_name):
 
     mmapi.load_plugin()
     try:
-        image_width_height = maya.cmds.mmReadImage(
-            first_frame_file_seq, query=True, widthHeight=True
+        image_data_header = maya.cmds.mmReadImage(
+            first_frame_file_seq, query=True, dataHeader=True
         )
     except RuntimeError:
-        image_width_height = None
+        image_data_header = None
         LOG.warn('Failed to read file: %r', first_frame_file_seq)
 
-    if image_width_height is not None:
-        image_width = image_width_height[0]
-        image_height = image_width_height[1]
+    LOG.warn('image_data_header: %r', image_data_header)
 
-        if not node_utils.node_is_referenced(shp):
-            maya.cmds.setAttr(shp + '.imageWidth', lock=False)
-            maya.cmds.setAttr(shp + '.imageHeight', lock=False)
+    image_width = 1
+    image_height = 1
+    image_num_channels = 0
+    image_bytes_per_channel = 0
+    image_data_size_as_bytes = 0
+    if image_data_header is not None:
+        image_width = int(image_data_header[0])
+        image_height = int(image_data_header[1])
+        image_num_channels = int(image_data_header[2])
+        image_bytes_per_channel = int(image_data_header[3])
+        image_data_size_as_bytes = image_data_header[4]
 
-        maya.cmds.setAttr(shp + '.imageWidth', image_width)
-        maya.cmds.setAttr(shp + '.imageHeight', image_height)
+    if not node_utils.node_is_referenced(shp):
+        maya.cmds.setAttr(shp + '.imageWidth', lock=False)
+        maya.cmds.setAttr(shp + '.imageHeight', lock=False)
+        maya.cmds.setAttr(shp + '.imageNumChannels', lock=False)
+        maya.cmds.setAttr(shp + '.imageBytesPerChannel', lock=False)
+        maya.cmds.setAttr(shp + '.imageSizeBytes', lock=False)
 
-        if not node_utils.node_is_referenced(shp):
-            maya.cmds.setAttr(shp + '.imageWidth', lock=True)
-            maya.cmds.setAttr(shp + '.imageHeight', lock=True)
+    maya.cmds.setAttr(shp + '.imageWidth', image_width)
+    maya.cmds.setAttr(shp + '.imageHeight', image_height)
+    maya.cmds.setAttr(shp + '.imageNumChannels', image_num_channels)
+    maya.cmds.setAttr(shp + '.imageBytesPerChannel', image_bytes_per_channel)
+    maya.cmds.setAttr(shp + '.imageSizeBytes', image_data_size_as_bytes, type='string')
+
+    if not node_utils.node_is_referenced(shp):
+        maya.cmds.setAttr(shp + '.imageWidth', lock=True)
+        maya.cmds.setAttr(shp + '.imageHeight', lock=True)
+        maya.cmds.setAttr(shp + '.imageNumChannels', lock=True)
+        maya.cmds.setAttr(shp + '.imageBytesPerChannel', lock=True)
+        maya.cmds.setAttr(shp + '.imageSizeBytes', lock=True)
 
     format_style = const_utils.IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED
     (

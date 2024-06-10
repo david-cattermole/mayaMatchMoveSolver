@@ -73,6 +73,9 @@ MObject ImagePlaneShape2Node::m_draw_image_size;
 MObject ImagePlaneShape2Node::m_draw_camera_size;
 MObject ImagePlaneShape2Node::m_image_width;
 MObject ImagePlaneShape2Node::m_image_height;
+MObject ImagePlaneShape2Node::m_image_num_channels;
+MObject ImagePlaneShape2Node::m_image_bytes_per_channel;
+MObject ImagePlaneShape2Node::m_image_size_bytes;
 MObject ImagePlaneShape2Node::m_image_pixel_aspect;
 MObject ImagePlaneShape2Node::m_camera_width_inch;
 MObject ImagePlaneShape2Node::m_camera_height_inch;
@@ -214,6 +217,31 @@ MStatus ImagePlaneShape2Node::initialize() {
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(1));
     CHECK_MSTATUS(addAttribute(m_image_height));
+
+    m_image_num_channels =
+        nAttr.create("imageNumChannels", "imgnchan", MFnNumericData::kInt, 4);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(0));
+    CHECK_MSTATUS(addAttribute(m_image_num_channels));
+
+    m_image_bytes_per_channel = nAttr.create(
+        "imageBytesPerChannel", "imgbtyprchan", MFnNumericData::kInt, 1);
+    CHECK_MSTATUS(nAttr.setStorable(true));
+    CHECK_MSTATUS(nAttr.setKeyable(true));
+    CHECK_MSTATUS(nAttr.setMin(0));
+    CHECK_MSTATUS(addAttribute(m_image_bytes_per_channel));
+
+    // Create empty string data to be used as attribute default
+    // (string) value.
+    MFnStringData zero_string_data;
+    MObject zero_string_data_obj = zero_string_data.create("0");
+
+    m_image_size_bytes = tAttr.create("imageSizeBytes", "imgszbyt",
+                                      MFnData::kString, zero_string_data_obj);
+    CHECK_MSTATUS(tAttr.setStorable(true));
+    CHECK_MSTATUS(tAttr.setUsedAsFilename(false));
+    CHECK_MSTATUS(addAttribute(m_image_size_bytes));
 
     m_image_pixel_aspect = nAttr.create("imagePixelAspect", "imgpxasp",
                                         MFnNumericData::kDouble, 1.0);

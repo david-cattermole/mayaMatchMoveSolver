@@ -55,6 +55,7 @@
 #include "mmSolver/cmd/MMTestCameraMatrixCmd.h"
 #include "mmSolver/node/MMCameraCalibrateNode.h"
 #include "mmSolver/node/MMImagePlaneTransformNode.h"
+#include "mmSolver/node/MMImageSequenceFrameLogicNode.h"
 #include "mmSolver/node/MMLensData.h"
 #include "mmSolver/node/MMLensDeformerNode.h"
 #include "mmSolver/node/MMLensEvaluateNode.h"
@@ -289,6 +290,11 @@ MStatus initializePlugin(MObject obj) {
                   mmsolver::MMMarkerScaleNode::m_id,
                   mmsolver::MMMarkerScaleNode::creator,
                   mmsolver::MMMarkerScaleNode::initialize, status);
+
+    REGISTER_NODE(plugin, mmsolver::MMImageSequenceFrameLogicNode::nodeName(),
+                  mmsolver::MMImageSequenceFrameLogicNode::m_id,
+                  mmsolver::MMImageSequenceFrameLogicNode::creator,
+                  mmsolver::MMImageSequenceFrameLogicNode::initialize, status);
 
     REGISTER_NODE(plugin, mmsolver::MMReprojectionNode::nodeName(),
                   mmsolver::MMReprojectionNode::m_id,
@@ -693,6 +699,9 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, mmsolver::MMMarkerGroupTransformNode::nodeName(),
                     mmsolver::MMMarkerGroupTransformNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, mmsolver::MMImageSequenceFrameLogicNode::nodeName(),
+                    mmsolver::MMImageSequenceFrameLogicNode::m_id, status);
 
     DEREGISTER_NODE(plugin, mmsolver::MMImagePlaneTransformNode::nodeName(),
                     mmsolver::MMImagePlaneTransformNode::m_id, status);

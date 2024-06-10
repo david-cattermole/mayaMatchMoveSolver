@@ -28,26 +28,3 @@ if ({image_plane_tfm}.displayMode == 0)
     {live_image_plane_shape}.lodVisibility = 0;
 }}
 '''
-
-# NOTE: '{{' and '}}' is used in place of real '{' and '}' characters,
-# to allow Python's 'str.format()' to work.
-FRAME_EXPRESSION = '''
-int $start_frame = {node}.imageSequenceStartFrame;
-int $end_frame = {node}.imageSequenceEndFrame;
-int $first_frame = {node}.imageSequenceFirstFrame;
-int $input_frame = {node}.imageSequenceFrame;
-
-int $result = ($start_frame - $first_frame) + $input_frame;
-
-// // Clamp to start and end frames.
-// if ($result < $start_frame)
-// {{
-//     $result = $start_frame;
-// }}
-// else if ($result > $end_frame)
-// {{
-//     $result = $end_frame;
-// }}
-
-{node}.imageSequenceFrameOutput = $result;
-'''

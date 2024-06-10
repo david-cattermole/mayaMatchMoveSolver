@@ -84,6 +84,7 @@ set(SOURCE_FILES
   mmSolver/mayahelper/maya_utils.cpp
   mmSolver/node/MMCameraCalibrateNode.cpp
   mmSolver/node/MMImagePlaneTransformNode.cpp
+  mmSolver/node/MMImageSequenceFrameLogicNode.cpp
   mmSolver/node/MMLensData.cpp
   mmSolver/node/MMLensDeformerNode.cpp
   mmSolver/node/MMLensEvaluateNode.cpp

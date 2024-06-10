@@ -25,17 +25,24 @@
  *
  *
  * Use cases:
+ *
  * - Get total amount of used CPU memory, displayed in a UI.
+ *
  * - Get total amount of CPU memory on the system.
+ *
  * - Get amount of CPU memory used by the current process.
+ *
  * - Get total GPU memory.
+ *
  * - Get used GPU memory.
+ *
  * - Display on an image plane node...
  *   - How much memory the currently loaded image sequence is expected
  *     to take up.
  *   - How much memory each frame takes up.
  *   - What is the currently used CPU and GPU memory by this image
  *     sequence/image plane.
+ *
  * - UI to display overall memory usage, with...
  *   - Each loaded image sequence.
  *   - How much memory is used by each image sequence (CPU and GPU).
@@ -47,21 +54,17 @@
  *
  * MEL:
  *     // Return the number of used GPU memory bytes by the image cache.
- *     mmImageCache -query -gpuCapacityUsedBytes;
+ *     mmImageCache -query -gpuUsed;
  *
  *     // Return the number of free GPU memory bytes by the image cache.
- *     mmImageCache -query -gpuCapacityFreeBytes;
+ *     mmImageCache -query -gpuFree;
  *
  *     // Return the total number of GPU memory bytes that is allowed
  *     // to be to be used by the image cache.
- *     mmImageCache -query -gpuCapacityAllowedBytes;
+ *     mmImageCache -query -gpuCapacity;
  *
  *     // Set the number of GPU memory bytes that is allowed to be used.
- *     mmImageCache -edit -gpuCapacityBytes 1000;
- *
- *     // Set the minimum number of GPU images allowed to be stored in
- *     // the cache.
- *     mmImageCache -edit -gpuItemMinimum 3;
+ *     mmImageCache -edit -gpuCapacity 1000;
  *
  *     // Get the amount of data that the image contains.
  *     //
@@ -69,7 +72,8 @@
  *     // to find the data type and dimensions.
  *     string $image_sequence = "/path/to/image.####.png";
  *     string $image_file = "/path/to/image.1001.png";
- *     int $data_size = `mmReadImage -dataSizeBytes $image_file`;
+ *     string $data_header[] = `mmReadImage -dataHeader $image_file`;
+ *     string $data_size = $data_header[4];
  *
  *     // Set the number of CPU memory bytes that is allowed to be used.
  *     int $start_frame = 1001;
@@ -80,7 +84,7 @@
  *     // CPU memory, before attempting to load the full image sequence
  *     // or not.
  *     int $new_capacity = ($data_size * ($frame_count + $extra_buffer))
- *     mmImageCache -edit -cpuCapacityBytes $new_capacity;
+ *     mmImageCache -edit -cpuCapacity $new_capacity;
  *
  *     // Read the image sequence into RAM.
  *     //

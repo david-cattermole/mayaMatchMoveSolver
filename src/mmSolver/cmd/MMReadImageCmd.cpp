@@ -18,6 +18,24 @@
  * ====================================================================
  *
  * Command for running mmReadImage.
+ *
+ * MEL:
+ *     // Get the width and height of the input image.
+ *     mmReadImage -query -widthHeight "/path/to/image.png";
+ *     // For example, returns [1920, 1080]
+ *
+ *     // Get the image's header details and pixel data size.
+ *     mmReadImage -query -dataHeader "/path/to/image.png";
+ *     // For example, returns ["1920", "1080", "4", "1", "8294400"]
+ *     // Index 0 is image width.
+ *     // Index 1 is image height.
+ *     // Index 2 is image channel count.
+ *     // Index 3 is image bytes-per-channel count.
+ *     // Index 4 is image size in bytes.
+ *
+ *     // Full file path to the image name.
+ *     string $resolved = `mmReadImage -query -resolveFilePath "/path/to/image.png"`;
+ *     // Returns the resolved file path, if it exists, None otherwise.
  */
 
 #include "MMReadImageCmd.h"
@@ -52,6 +70,9 @@
 #define DATA_HEADER_FLAG "-dhr"
 #define DATA_HEADER_FLAG_LONG "-dataHeader"
 
+#define RESOLVE_FILE_PATH_FLAG "-rfp"
+#define RESOLVE_FILE_PATH_FLAG_LONG "-resolveFilePath"
+
 namespace mmsolver {
 
 MMReadImageCmd::~MMReadImageCmd() {}
@@ -81,6 +102,7 @@ MSyntax MMReadImageCmd::newSyntax() {
 
     syntax.addFlag(WIDTH_HEIGHT_FLAG, WIDTH_HEIGHT_FLAG_LONG);
     syntax.addFlag(DATA_HEADER_FLAG, DATA_HEADER_FLAG_LONG);
+    syntax.addFlag(RESOLVE_FILE_PATH_FLAG, RESOLVE_FILE_PATH_FLAG_LONG);
 
     return syntax;
 }
@@ -132,6 +154,10 @@ MStatus MMReadImageCmd::parseArgs(const MArgList &args) {
 
     m_query_data_header = argData.isFlagSet(DATA_HEADER_FLAG, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    m_query_resolve_file_path =
+        argData.isFlagSet(RESOLVE_FILE_PATH_FLAG, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
     return status;
 }
 
@@ -175,11 +201,18 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
     status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // status = resolve_file_path(m_file_path);
-    status = mmpath::resolve_input_file_path(m_file_path);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
+    if (m_query_resolve_file_path) {
+        status = mmpath::resolve_input_file_path(m_file_path);
+        if (status == MStatus::kSuccess) {
+            MMReadImageCmd::setResult(m_file_path);
+        } else {
+            // Pretend everything is fine.
+            status = MStatus::kSuccess;
+        }
+    } else if (m_query_width_height) {
+        status = mmpath::resolve_input_file_path(m_file_path);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    if (m_query_width_height) {
         uint32_t image_width = 0;
         uint32_t image_height = 0;
         uint8_t num_channels = 0;
@@ -197,6 +230,9 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
         outResult.append(image_height);
         MMReadImageCmd::setResult(outResult);
     } else if (m_query_data_header) {
+        status = mmpath::resolve_input_file_path(m_file_path);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
         // NOTE: We do not want to have to call mmReadImage multiple
         // times. We want to get as much data as possible in a single
         // call, because subsequent calls will need to re-read the

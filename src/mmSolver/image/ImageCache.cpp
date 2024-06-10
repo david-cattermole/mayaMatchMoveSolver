@@ -133,9 +133,6 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
         }
 
     } else {
-        // TODO: This code can be changed to whatever reading function
-        // that reads the input file path.
-
         status = read_image_file(temp_image, resolved_file_path, pixel_type,
                                  width, height, number_of_channels,
                                  bytes_per_channel, texture_format,
@@ -190,8 +187,55 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
     return texture_data.texture();
 }
 
+void ImageCache::set_gpu_capacity_bytes(
+    MHWRender::MTextureManager *texture_manager, const size_t value) {
+    const bool verbose = false;
+    m_gpu_capacity_bytes = value;
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::set_gpu_capacity_bytes: "
+                      << "m_gpu_capacity_bytes=" << m_gpu_capacity_bytes);
+
+    // Because we must always ensure our used memory is less than
+    // the given capacity.
+    //
+    // If we are at capacity remove the least recently used items
+    // until our capacity is under 'new_used_bytes' or we reach the minimum
+    // number of items
+    while (!m_gpu_cache_map.empty() &&
+           (m_gpu_cache_map.size() > m_gpu_item_count_minumum) &&
+           (m_gpu_used_bytes > m_gpu_capacity_bytes)) {
+        const CacheEvictionResult result =
+            ImageCache::gpu_evict_one(texture_manager);
+        if (result != CacheEvictionResult::kSuccess) {
+            break;
+        }
+    }
+}
+
+void ImageCache::set_cpu_capacity_bytes(const size_t value) {
+    const bool verbose = false;
+    m_cpu_capacity_bytes = value;
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::set_cpu_capacity_bytes: "
+                      << "m_cpu_capacity_bytes=" << m_cpu_capacity_bytes);
+
+    // Because we must always ensure our used memory is less than
+    // the given capacity.
+    //
+    // If we are at capacity remove the least recently used items
+    // until our capacity is under 'new_used_bytes' or we reach the minimum
+    // number of items
+    while (!m_cpu_cache_map.empty() &&
+           (m_cpu_cache_map.size() > m_cpu_item_count_minumum) &&
+           (m_cpu_used_bytes > m_cpu_capacity_bytes)) {
+        const CacheEvictionResult result = ImageCache::cpu_evict_one();
+        if (result != CacheEvictionResult::kSuccess) {
+            break;
+        }
+    }
+}
+
 inline std::string generate_cache_brief(const char *prefix_str,
                                         const size_t item_count,
+                                        const size_t item_min_count,
                                         const size_t capacity_bytes,
                                         const size_t used_bytes) {
     const size_t capacity_megabytes = capacity_bytes / BYTES_TO_MEGABYTES;
@@ -212,6 +256,7 @@ inline std::string generate_cache_brief(const char *prefix_str,
 
     std::stringstream ss;
     ss << prefix_str << "count=" << item_count << " items "
+       << "| minimum=" << item_min_count << " items "
        << "| used=" << used_megabytes_str << "MB "
        << "| capacity=" << used_megabytes_str << "MB "
        << "| percent=" << used_percent << '%';
@@ -219,12 +264,12 @@ inline std::string generate_cache_brief(const char *prefix_str,
 }
 
 MString ImageCache::generate_cache_brief_text() const {
-    std::string gpu_cache_text =
-        generate_cache_brief("GPU cache | ", m_gpu_cache_map.size(),
-                             m_gpu_capacity_bytes, m_gpu_used_bytes);
-    std::string cpu_cache_text =
-        generate_cache_brief("CPU cache | ", m_cpu_cache_map.size(),
-                             m_cpu_capacity_bytes, m_cpu_used_bytes);
+    std::string gpu_cache_text = generate_cache_brief(
+        "GPU cache | ", m_gpu_cache_map.size(), m_gpu_item_count_minumum,
+        m_gpu_capacity_bytes, m_gpu_used_bytes);
+    std::string cpu_cache_text = generate_cache_brief(
+        "CPU cache | ", m_cpu_cache_map.size(), m_cpu_item_count_minumum,
+        m_cpu_capacity_bytes, m_cpu_used_bytes);
 
     std::stringstream ss;
     ss << gpu_cache_text << std::endl << cpu_cache_text << std::endl;
@@ -235,12 +280,12 @@ MString ImageCache::generate_cache_brief_text() const {
 }
 
 void ImageCache::print_cache_brief() const {
-    std::string gpu_cache_text =
-        generate_cache_brief("GPU cache | ", m_gpu_cache_map.size(),
-                             m_gpu_capacity_bytes, m_gpu_used_bytes);
-    std::string cpu_cache_text =
-        generate_cache_brief("CPU cache | ", m_cpu_cache_map.size(),
-                             m_cpu_capacity_bytes, m_cpu_used_bytes);
+    std::string gpu_cache_text = generate_cache_brief(
+        "GPU cache | ", m_gpu_cache_map.size(), m_gpu_item_count_minumum,
+        m_gpu_capacity_bytes, m_gpu_used_bytes);
+    std::string cpu_cache_text = generate_cache_brief(
+        "CPU cache | ", m_cpu_cache_map.size(), m_gpu_item_count_minumum,
+        m_cpu_capacity_bytes, m_cpu_used_bytes);
 
     MMSOLVER_MAYA_INFO(
         "mmsolver::ImageCache::print_cache_brief: " << gpu_cache_text);
@@ -264,11 +309,12 @@ bool ImageCache::cpu_insert(const CPUCacheKey &key,
 
     // If we are at capacity, make room for new entry.
     const size_t image_data_size = image_pixel_data.byte_count();
-    const bool evict_ok =
+    const CacheEvictionResult evict_result =
         ImageCache::cpu_evict_enough_for_new_entry(image_data_size);
-    if (!evict_ok) {
+    if (evict_result == CacheEvictionResult::kFailed) {
         MMSOLVER_MAYA_WRN(
             "mmsolver::ImageCache::cpu_insert: evicting memory failed!");
+        ImageCache::print_cache_brief();
     }
 
     m_cpu_used_bytes += image_data_size;
@@ -326,11 +372,14 @@ ImageCache::GPUCacheValue ImageCache::gpu_insert(
     if (!found) {
         // If we are at capacity, make room for new entry.
         const size_t image_data_size = image_pixel_data.byte_count();
-        const bool evict_ok = ImageCache::gpu_evict_enough_for_new_entry(
-            texture_manager, image_data_size);
-        if (!evict_ok) {
+
+        const CacheEvictionResult evict_result =
+            ImageCache::gpu_evict_enough_for_new_entry(texture_manager,
+                                                       image_data_size);
+        if (evict_result == CacheEvictionResult::kFailed) {
             MMSOLVER_MAYA_WRN(
                 "mmsolver::ImageCache::gpu_insert: evicting memory failed!");
+            ImageCache::print_cache_brief();
         }
 
         const bool allocate_ok = texture_data.allocate_texture(
@@ -415,7 +464,8 @@ ImageCache::CPUCacheValue ImageCache::cpu_find(const CPUCacheKey &key) {
     return CPUCacheValue();
 }
 
-bool ImageCache::gpu_evict_one(MHWRender::MTextureManager *texture_manager) {
+CacheEvictionResult ImageCache::gpu_evict_one(
+    MHWRender::MTextureManager *texture_manager) {
     const bool verbose = false;
 
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_evict_one: ");
@@ -426,8 +476,9 @@ bool ImageCache::gpu_evict_one(MHWRender::MTextureManager *texture_manager) {
         << m_gpu_used_bytes);
 
     assert(texture_manager != nullptr);
-    if (m_gpu_cache_key_list.empty()) {
-        return false;
+    if (m_gpu_cache_key_list.empty() ||
+        (m_gpu_cache_map.size() <= m_gpu_item_count_minumum)) {
+        return CacheEvictionResult::kNotNeeded;
     }
 
     const GPUCacheKey lru_key = m_gpu_cache_key_list.front();
@@ -445,10 +496,10 @@ bool ImageCache::gpu_evict_one(MHWRender::MTextureManager *texture_manager) {
         "mmsolver::ImageCache::gpu_evict_one: "
         "after m_gpu_used_bytes="
         << m_gpu_used_bytes);
-    return true;
+    return CacheEvictionResult::kSuccess;
 }
 
-bool ImageCache::cpu_evict_one() {
+CacheEvictionResult ImageCache::cpu_evict_one() {
     const bool verbose = false;
 
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_evict_one: ");
@@ -458,8 +509,9 @@ bool ImageCache::cpu_evict_one() {
         "before m_cpu_used_bytes="
         << m_cpu_used_bytes);
 
-    if (m_cpu_cache_key_list.empty()) {
-        return false;
+    if (m_cpu_cache_key_list.empty() ||
+        (m_cpu_cache_map.size() <= m_cpu_item_count_minumum)) {
+        return CacheEvictionResult::kNotNeeded;
     }
 
     const CPUCacheKey lru_key = m_cpu_cache_key_list.front();
@@ -477,20 +529,22 @@ bool ImageCache::cpu_evict_one() {
         "mmsolver::ImageCache::cpu_evict_one: "
         "after m_cpu_used_bytes="
         << m_cpu_used_bytes);
-    return true;
+    return CacheEvictionResult::kSuccess;
 }
 
-bool ImageCache::gpu_evict_enough_for_new_entry(
+CacheEvictionResult ImageCache::gpu_evict_enough_for_new_entry(
     MHWRender::MTextureManager *texture_manager,
     const size_t new_memory_chunk_size) {
     const bool verbose = false;
 
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_evict_enough_for_new_entry: ");
 
-    if (m_gpu_cache_key_list.empty()) {
-        return false;
+    if (m_gpu_cache_key_list.empty() ||
+        (m_gpu_cache_map.size() <= m_gpu_item_count_minumum)) {
+        return CacheEvictionResult::kNotNeeded;
     }
 
+    CacheEvictionResult result = CacheEvictionResult::kSuccess;
     // If we are at capacity remove the least recently used items
     // until we have enough room to store 'new_memory_chunk_size'.
     size_t new_used_bytes = m_gpu_used_bytes + new_memory_chunk_size;
@@ -498,9 +552,13 @@ bool ImageCache::gpu_evict_enough_for_new_entry(
         "mmsolver::ImageCache::gpu_evict_enough_for_new_entry: "
         "new_used_bytes="
         << new_used_bytes);
-    while (new_used_bytes > m_gpu_capacity_bytes) {
-        const bool ok = ImageCache::gpu_evict_one(texture_manager);
-        if (!ok) {
+    while (!m_gpu_cache_map.empty() &&
+           (m_gpu_cache_map.size() > m_gpu_item_count_minumum) &&
+           (new_used_bytes > m_gpu_capacity_bytes)) {
+        const CacheEvictionResult evict_result =
+            ImageCache::gpu_evict_one(texture_manager);
+        if (evict_result != CacheEvictionResult::kSuccess) {
+            result = evict_result;
             break;
         }
         new_used_bytes = m_gpu_used_bytes + new_memory_chunk_size;
@@ -510,19 +568,21 @@ bool ImageCache::gpu_evict_enough_for_new_entry(
             << new_used_bytes);
     }
 
-    return true;
+    return result;
 }
 
-bool ImageCache::cpu_evict_enough_for_new_entry(
+CacheEvictionResult ImageCache::cpu_evict_enough_for_new_entry(
     const size_t new_memory_chunk_size) {
     const bool verbose = false;
 
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_evict_enough_for_new_entry: ");
 
-    if (m_cpu_cache_key_list.empty()) {
-        return false;
+    if (m_cpu_cache_key_list.empty() ||
+        (m_cpu_cache_map.size() <= m_cpu_item_count_minumum)) {
+        return CacheEvictionResult::kNotNeeded;
     }
 
+    CacheEvictionResult result = CacheEvictionResult::kSuccess;
     // If we are at capacity remove the least recently used items
     // until we have enough room to store 'new_memory_chunk_size'.
     size_t new_used_bytes = m_cpu_used_bytes + new_memory_chunk_size;
@@ -530,9 +590,12 @@ bool ImageCache::cpu_evict_enough_for_new_entry(
         "mmsolver::ImageCache::cpu_evict_enough_for_new_entry: "
         "new_used_bytes="
         << new_used_bytes);
-    while (new_used_bytes > m_cpu_capacity_bytes) {
-        const bool ok = ImageCache::cpu_evict_one();
-        if (!ok) {
+    while (!m_cpu_cache_map.empty() &&
+           (m_cpu_cache_map.size() > m_cpu_item_count_minumum) &&
+           (new_used_bytes > m_cpu_capacity_bytes)) {
+        const CacheEvictionResult evict_result = ImageCache::cpu_evict_one();
+        if (evict_result != CacheEvictionResult::kSuccess) {
+            result = evict_result;
             break;
         }
         new_used_bytes = m_cpu_used_bytes + new_memory_chunk_size;
@@ -542,7 +605,7 @@ bool ImageCache::cpu_evict_enough_for_new_entry(
             << new_used_bytes);
     }
 
-    return true;
+    return result;
 }
 
 bool ImageCache::gpu_erase(MHWRender::MTextureManager *texture_manager,

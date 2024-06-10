@@ -89,6 +89,9 @@ public:
     static MObject m_draw_camera_size;
     static MObject m_image_width;
     static MObject m_image_height;
+    static MObject m_image_num_channels;
+    static MObject m_image_bytes_per_channel;
+    static MObject m_image_size_bytes;
     static MObject m_image_pixel_aspect;
     static MObject m_camera_width_inch;
     static MObject m_camera_height_inch;

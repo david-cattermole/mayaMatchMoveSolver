@@ -285,6 +285,9 @@ global proc AEmmImagePlaneShape2Template(string $nodeName)
     editorTemplate -addSeparator;
     editorTemplate -addControl "imageWidth";
     editorTemplate -addControl "imageHeight";
+    editorTemplate -addControl "imageNumChannels";
+    editorTemplate -addControl "imageBytesPerChannel";
+    editorTemplate -addControl "imageSizeBytes";
     editorTemplate -addControl "imagePixelAspect";
     editorTemplate -addSeparator;
     editorTemplate -addControl "imageSequenceStartFrame";

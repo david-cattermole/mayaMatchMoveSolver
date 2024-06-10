@@ -20,12 +20,15 @@
  * Command for running mmReadImage.
  *
  * MEL:
+ *     // Example image file path.
+ *     string $file_path = "/path/to/image.png";
+ *
  *     // Get the width and height of the input image.
- *     mmReadImage -query -widthHeight "/path/to/image.png";
+ *     mmReadImage -query -widthHeight $file_path;
  *     // For example, returns [1920, 1080]
  *
  *     // Get the image's header details and pixel data size.
- *     mmReadImage -query -dataHeader "/path/to/image.png";
+ *     mmReadImage -query -dataHeader $file_path;
  *     // For example, returns ["1920", "1080", "4", "1", "8294400"]
  *     // Index 0 is image width.
  *     // Index 1 is image height.
@@ -34,7 +37,6 @@
  *     // Index 4 is image size in bytes.
  *
  *     // Full file path to the image name.
- *     string $file_path = "/path/to/image.png";
  *     string $resolved = `mmReadImage -query -resolveFilePath $file_path`;
  *     // Returns the resolved file path, if it exists, None otherwise.
  */

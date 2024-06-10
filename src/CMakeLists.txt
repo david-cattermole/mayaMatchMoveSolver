@@ -72,6 +72,7 @@ set(SOURCE_FILES
   mmSolver/image/ImagePixelData.cpp
   mmSolver/image/PixelDataType.cpp
   mmSolver/image/TextureData.cpp
+  mmSolver/image/image_convert.cpp
   mmSolver/image/image_io.cpp
   mmSolver/mayahelper/maya_attr.cpp
   mmSolver/mayahelper/maya_bundle.cpp

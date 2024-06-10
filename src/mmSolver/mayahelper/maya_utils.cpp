@@ -44,9 +44,9 @@ MStatus MMNodeInitUtils::attributeAffectsMulti(
             MObject outputAttr = outputAttrs[j];
             status = MPxNode::attributeAffects(inputAttr, outputAttr);
             if (status != MS::kSuccess) {
-                MStreamUtils::stdErrorStream()
-                    << "ERROR: attributeAffects failed at "
-                    << "input_index=" << i << " output_index=" << j << '\n';
+                MMSOLVER_MAYA_ERR(
+                    "MMNodeInitUtils::attributeAffects: Failed at "
+                    << "input_index=" << i << " output_index=" << j);
                 CHECK_MSTATUS(status);
             }
         }

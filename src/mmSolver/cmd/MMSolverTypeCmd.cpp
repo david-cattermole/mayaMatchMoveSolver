@@ -45,9 +45,9 @@
 
 // MM Solver
 #include "mmSolver/adjust/adjust_base.h"
+#include "mmSolver/mayahelper/maya_string_utils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
-#include "mmSolver/utilities/string_utils.h"
 
 namespace mmsolver {
 
@@ -207,9 +207,9 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
 
                 MString item = "";
                 if (m_index) {
-                    std::string index_string =
-                        mmstring::numberToString<int>(index);
-                    item += MString(index_string.c_str());
+                    MString index_mstring =
+                        mmmayastring::numberToMString<int>(index);
+                    item += index_mstring;
                     item += "=";
                 }
                 item += name.c_str();
@@ -237,8 +237,9 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
             std::string name = solverType.second;
 
             if (m_index) {
-                std::string index_string = mmstring::numberToString<int>(index);
-                outResult += MString(index_string.c_str());
+                MString index_mstring =
+                    mmmayastring::numberToMString<int>(index);
+                outResult += index_mstring;
                 outResult += "=";
             }
             outResult += name.c_str();

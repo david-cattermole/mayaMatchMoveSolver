@@ -38,6 +38,7 @@
 #include <mmcolorio/lib.h>
 
 #include "mmSolver/image/ImageCache.h"
+#include "mmSolver/mayahelper/maya_string_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/path_utils.h"
 #include "mmSolver/utilities/string_utils.h"
@@ -172,8 +173,7 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
             MString mstring;
             status = argData.getFlagArgument(GPU_CAPACITY_FLAG, 0, mstring);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            std::string std_string = mstring.asChar();
-            m_gpu_capacity_bytes = mmstring::stringToNumber<size_t>(std_string);
+            m_gpu_capacity_bytes = mmmayastring::mstringToNumber<size_t>(mstring);
 
             // Store the current value, so we can undo later.
             m_previous_gpu_capacity_bytes =
@@ -183,8 +183,7 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
             MString mstring;
             status = argData.getFlagArgument(CPU_CAPACITY_FLAG, 0, mstring);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            std::string std_string = mstring.asChar();
-            m_cpu_capacity_bytes = mmstring::stringToNumber<size_t>(std_string);
+            m_cpu_capacity_bytes = mmmayastring::mstringToNumber<size_t>(mstring);
 
             // Store the current value, so we can undo later.
             m_previous_cpu_capacity_bytes =
@@ -293,8 +292,7 @@ MStatus MMImageCacheCmd::doIt(const MArgList &args) {
                 return MStatus::kFailure;
             }
 
-            std::string number_string = mmstring::numberToString(bytes_value);
-            MString number_mstring(number_string.c_str());
+            MString number_mstring(mmmayastring::numberToMString(bytes_value));
             MMImageCacheCmd::setResult(number_mstring);
         }
     } else if (m_is_edit) {

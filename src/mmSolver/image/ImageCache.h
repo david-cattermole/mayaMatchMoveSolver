@@ -86,9 +86,7 @@ namespace image {
 // retained - even if it's not colour accurate.
 //
 
-// The default ImageCache sizes.
-const size_t kDEFAULT_GPU_CAPACITY_BYTES = BYTES_TO_MEGABYTES * 128;
-const size_t kDEFAULT_CPU_CAPACITY_BYTES = BYTES_TO_MEGABYTES * 1024;
+enum class CacheEvictionResult : uint8_t { kSuccess = 0, kNotNeeded, kFailed };
 
 struct ImageCache {
     // GPU data types
@@ -119,8 +117,10 @@ public:
 private:
     // Constructor. The {} brackets are needed here.
     ImageCache()
-        : m_gpu_capacity_bytes(kDEFAULT_GPU_CAPACITY_BYTES)
-        , m_cpu_capacity_bytes(kDEFAULT_CPU_CAPACITY_BYTES)
+        : m_gpu_capacity_bytes(0)
+        , m_cpu_capacity_bytes(0)
+        , m_gpu_item_count_minumum(1)
+        , m_cpu_item_count_minumum(1)
         , m_gpu_used_bytes(0)
         , m_cpu_used_bytes(0) {}
 
@@ -132,7 +132,7 @@ private:
     }
 
 public:
-    // Get the capacity of the GPU and CPU.
+    // Get the capacity of the cache.
     size_t get_gpu_capacity_bytes() const {
         const bool verbose = false;
         MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_gpu_capacity_bytes: "
@@ -158,58 +158,10 @@ public:
         return m_cpu_used_bytes;
     }
 
-    // Set the capacity of the GPU.
-    //
-    // Note: Setting a lower value than what is already used will
-    // cause the cached memory to be evicted until the new memory
-    // capacity is reached.
+    // Set the capacity of the cache.
     void set_gpu_capacity_bytes(MHWRender::MTextureManager *texture_manager,
-                                const size_t value) {
-        const bool verbose = false;
-        m_gpu_capacity_bytes = value;
-        MMSOLVER_MAYA_VRB("mmsolver::ImageCache::set_gpu_capacity_bytes: "
-                          << "m_gpu_capacity_bytes=" << m_gpu_capacity_bytes);
-
-        // Because we must always ensure our used memory is less than
-        // the given capacity.
-        if ((m_gpu_used_bytes > m_gpu_capacity_bytes) &&
-            !m_gpu_cache_key_list.empty()) {
-            // If we are at capacity remove the least recently used items
-            // until our capacity is under 'new_used_bytes'.
-            while (m_gpu_used_bytes > m_gpu_capacity_bytes) {
-                const bool ok = ImageCache::gpu_evict_one(texture_manager);
-                if (!ok) {
-                    break;
-                }
-            }
-        }
-    }
-
-    // Set the capacity of the CPU.
-    //
-    // Note: Setting a lower value than what is already used will
-    // cause the cached memory to be evicted until the new memory
-    // capacity is reached.
-    void set_cpu_capacity_bytes(const size_t value) {
-        const bool verbose = false;
-        m_cpu_capacity_bytes = value;
-        MMSOLVER_MAYA_VRB("mmsolver::ImageCache::set_cpu_capacity_bytes: "
-                          << "m_cpu_capacity_bytes=" << m_cpu_capacity_bytes);
-
-        // Because we must always ensure our used memory is less than
-        // the given capacity.
-        if ((m_cpu_used_bytes > m_cpu_capacity_bytes) &&
-            !m_cpu_cache_key_list.empty()) {
-            // If we are at capacity remove the least recently used items
-            // until our capacity is under 'new_used_bytes'.
-            while (m_cpu_used_bytes > m_cpu_capacity_bytes) {
-                const bool ok = ImageCache::cpu_evict_one();
-                if (!ok) {
-                    break;
-                }
-            }
-        }
-    }
+                                const size_t value);
+    void set_cpu_capacity_bytes(const size_t value);
 
     // Debug functions to display internals of the cache.
     MString generate_cache_brief_text() const;
@@ -276,13 +228,14 @@ public:
     //
     // Returns true/false, if an item was removed from the cache or
     // not.
-    bool gpu_evict_one(MHWRender::MTextureManager *texture_manager);
+    CacheEvictionResult gpu_evict_one(
+        MHWRender::MTextureManager *texture_manager);
 
     // Evict the least recently used item from the CPU cache.
     //
     // Returns true/false, if an item was removed from the cache or
     // not.
-    bool cpu_evict_one();
+    CacheEvictionResult cpu_evict_one();
 
     // Remove the key from the image GPU cache.
     //
@@ -312,10 +265,11 @@ public:
     void operator=(ImageCache const &) = delete;
 
 private:
-    bool gpu_evict_enough_for_new_entry(
+    CacheEvictionResult gpu_evict_enough_for_new_entry(
         MHWRender::MTextureManager *texture_manager,
         const size_t new_memory_chunk_size);
-    bool cpu_evict_enough_for_new_entry(const size_t new_memory_chunk_size);
+    CacheEvictionResult cpu_evict_enough_for_new_entry(
+        const size_t new_memory_chunk_size);
 
     // Amount of memory capacity.
     size_t m_gpu_capacity_bytes;
@@ -324,6 +278,12 @@ private:
     // How much memory is currently stored in the cached?
     size_t m_gpu_used_bytes;
     size_t m_cpu_used_bytes;
+
+    // The minimum number of items that are allowed in the cache.  We
+    // want to retain a fixed number of images, to avoid invalid
+    // conditions in the cache.
+    size_t m_gpu_item_count_minumum;
+    size_t m_cpu_item_count_minumum;
 
     // A Map of keys to values.
     //

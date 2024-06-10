@@ -44,6 +44,7 @@
 // MM Solver
 #include <mmcolorio/lib.h>
 
+#include "mmSolver/mayahelper/maya_string_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/memory_system_utils.h"
 #include "mmSolver/utilities/memory_utils.h"
@@ -202,8 +203,7 @@ MStatus MMMemorySystemCmd::doIt(const MArgList &args) {
         // maximum may exceed that size, so we must return the full
         // number converted to a string, then have the Python (or
         // MEL?) code convert that to an integer.
-        std::string number_string = mmstring::numberToString(bytes_value);
-        MString number_mstring(number_string.c_str());
+        MString number_mstring = mmmayastring::numberToMString(bytes_value);
         MMMemorySystemCmd::setResult(number_mstring);
     } else {
         double outResult =

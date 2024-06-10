@@ -37,6 +37,7 @@
 #include "mmSolver/image/ImagePixelData.h"
 #include "mmSolver/image/PixelDataType.h"
 #include "mmSolver/image/image_io.h"
+#include "mmSolver/mayahelper/maya_string_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
@@ -238,19 +239,13 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
 
         // Some of the numbers may be more than 'int' can hold, so we
         // must return as a MString.
-        std::string width_string = mmstring::numberToString(image_width);
-        std::string height_string = mmstring::numberToString(image_height);
-        std::string num_channels_string =
-            mmstring::numberToString(static_cast<uint32_t>(num_channels));
-        std::string bytes_per_channel_string =
-            mmstring::numberToString(static_cast<uint32_t>(bytes_per_channel));
-        std::string byte_count_string = mmstring::numberToString(byte_count);
-
-        MString width_mstring(width_string.c_str());
-        MString height_mstring(height_string.c_str());
-        MString num_channels_mstring(num_channels_string.c_str());
-        MString bytes_per_channel_mstring(bytes_per_channel_string.c_str());
-        MString byte_count_mstring(byte_count_string.c_str());
+        MString width_mstring(mmmayastring::numberToMString(image_width));
+        MString height_mstring(mmmayastring::numberToMString(image_height));
+        MString num_channels_mstring(
+            mmmayastring::numberToMString(num_channels));
+        MString bytes_per_channel_mstring(
+            mmmayastring::numberToMString(bytes_per_channel));
+        MString byte_count_mstring(mmmayastring::numberToMString(byte_count));
 
         MStringArray outResult;
         outResult.append(width_mstring);

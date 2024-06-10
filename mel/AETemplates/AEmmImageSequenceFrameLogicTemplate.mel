@@ -25,7 +25,7 @@ source "AEmmNodeTemplateCommon";
 global proc AEmmImageSequenceFrameLogicTemplate(string $nodeName) {
     AEmmNodeTemplateCommonBegin($nodeName);
 
-    editorTemplate -beginLayout "Common" - collapse 0;
+    editorTemplate -beginLayout "Common" -collapse 0;
     editorTemplate -addControl "inFrame";
     editorTemplate -addSeparator;
     editorTemplate -addControl "firstFrame";

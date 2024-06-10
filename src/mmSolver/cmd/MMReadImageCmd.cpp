@@ -34,7 +34,8 @@
  *     // Index 4 is image size in bytes.
  *
  *     // Full file path to the image name.
- *     string $resolved = `mmReadImage -query -resolveFilePath "/path/to/image.png"`;
+ *     string $file_path = "/path/to/image.png";
+ *     string $resolved = `mmReadImage -query -resolveFilePath $file_path`;
  *     // Returns the resolved file path, if it exists, None otherwise.
  */
 
@@ -254,17 +255,20 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
         image::ImagePixelData image_pixel_data(pixel_data, image_width,
                                                image_height, num_channels,
                                                pixel_data_type);
-        size_t byte_count = image_pixel_data.byte_count();
+        const size_t byte_count = image_pixel_data.byte_count();
 
         // Some of the numbers may be more than 'int' can hold, so we
         // must return as a MString.
-        MString width_mstring(mmmayastring::numberToMString(image_width));
-        MString height_mstring(mmmayastring::numberToMString(image_height));
+        MString width_mstring(
+            mmmayastring::numberToMString<uint32_t>(image_width));
+        MString height_mstring(
+            mmmayastring::numberToMString<uint32_t>(image_height));
         MString num_channels_mstring(
-            mmmayastring::numberToMString(num_channels));
+            mmmayastring::numberToMString<uint32_t>(num_channels));
         MString bytes_per_channel_mstring(
-            mmmayastring::numberToMString(bytes_per_channel));
-        MString byte_count_mstring(mmmayastring::numberToMString(byte_count));
+            mmmayastring::numberToMString<uint32_t>(bytes_per_channel));
+        MString byte_count_mstring(
+            mmmayastring::numberToMString<size_t>(byte_count));
 
         MStringArray outResult;
         outResult.append(width_mstring);

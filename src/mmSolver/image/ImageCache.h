@@ -27,6 +27,7 @@
 #include <list>
 #include <string>
 #include <unordered_map>
+// #include <unordered_set>
 
 // Maya
 #include <maya/MImage.h>
@@ -92,20 +93,38 @@ struct ImageCache {
     // GPU data types
     using GPUCacheKey = std::string;
     using GPUCacheValue = TextureData;
+
     using GPUKeyList = std::list<GPUCacheKey>;
     using GPUKeyListIt = GPUKeyList::iterator;
+
     using GPUMap =
         std::unordered_map<GPUCacheKey, std::pair<GPUKeyListIt, GPUCacheValue>>;
     using GPUMapIt = GPUMap::iterator;
 
+    // using GPUGroupKeySet = std::unordered_set<GPUCacheKey>;
+    // using GPUGroupKeySetIt = GPUGroupKeySet::iterator;
+
+    // using GPUCacheGroupKey = std::string;
+    // using GPUGroupKeyMap = std::unordered_map<GPUCacheGroupKey,
+    // GPUGroupKeySet>; using GPUGroupKeyMapIt = GPUGroupKeyMap::iterator;
+
     // CPU data types
     using CPUCacheKey = std::string;
     using CPUCacheValue = ImagePixelData;
+
     using CPUKeyList = std::list<CPUCacheKey>;
     using CPUKeyListIt = CPUKeyList::iterator;
+
     using CPUMap =
         std::unordered_map<CPUCacheKey, std::pair<CPUKeyListIt, CPUCacheValue>>;
     using CPUMapIt = CPUMap::iterator;
+
+    // using CPUGroupKeySet = std::unordered_set<CPUCacheKey>;
+    // using CPUGroupKeySetIt = CPUGroupKeySet::iterator;
+
+    // using CPUCacheGroupKey = std::string;
+    // using CPUGroupKeyMap = std::unordered_map<CPUCacheGroupKey,
+    // CPUGroupKeySet>; using CPUGroupKeyMapIt = CPUGroupKeyMap::iterator;
 
 public:
     static ImageCache &getInstance() {
@@ -311,12 +330,18 @@ private:
     // 'back' of the list is the "most recently used" key.
     GPUKeyList m_gpu_cache_key_list;
     CPUKeyList m_cpu_cache_key_list;
+
+    // // A Map of groups to a Set of key values.
+    // //
+    // // This map can be used to find all the loaded values used by an
+    // // image sequence.
+    // GPUGroupKeyMap m_gpu_cache_group_map;
+    // CPUGroupKeyMap m_cpu_cache_group_map;
 };
 
 MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
                                   ImageCache &image_cache, MImage &temp_image,
                                   const MString &file_path,
-                                  const MImage::MPixelType pixel_type,
                                   const bool do_texture_update);
 }  // namespace image
 }  // namespace mmsolver

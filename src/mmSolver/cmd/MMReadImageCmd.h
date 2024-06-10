@@ -57,6 +57,7 @@ private:
 
     MString m_file_path;
     bool m_query_width_height;
+    bool m_query_data_header;
 };
 
 }  // namespace mmsolver

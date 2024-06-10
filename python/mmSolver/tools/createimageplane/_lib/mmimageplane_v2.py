@@ -247,8 +247,6 @@ def set_image_sequence(shp, image_sequence_path, attr_name):
         image_data_header = None
         LOG.warn('Failed to read file: %r', first_frame_file_seq)
 
-    LOG.warn('image_data_header: %r', image_data_header)
-
     image_width = 1
     image_height = 1
     image_num_channels = 0

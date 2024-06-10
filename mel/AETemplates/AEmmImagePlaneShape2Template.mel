@@ -285,9 +285,6 @@ global proc AEmmImagePlaneShape2Template(string $nodeName)
     editorTemplate -addSeparator;
     editorTemplate -addControl "imageWidth";
     editorTemplate -addControl "imageHeight";
-    editorTemplate -addControl "imageNumChannels";
-    editorTemplate -addControl "imageBytesPerChannel";
-    editorTemplate -addControl "imageSizeBytes";
     editorTemplate -addControl "imagePixelAspect";
     editorTemplate -addSeparator;
     editorTemplate -addControl "imageSequenceStartFrame";
@@ -335,6 +332,9 @@ global proc AEmmImagePlaneShape2Template(string $nodeName)
     editorTemplate -endLayout;
 
     // Internals that we don't want the user to see.
+    editorTemplate -suppress "imageNumChannels";
+    editorTemplate -suppress "imageBytesPerChannel";
+    editorTemplate -suppress "imageSizeBytes";
     editorTemplate -suppress "imageSequencePadding";
     editorTemplate -suppress "cameraWidthInch";
     editorTemplate -suppress "cameraHeightInch";

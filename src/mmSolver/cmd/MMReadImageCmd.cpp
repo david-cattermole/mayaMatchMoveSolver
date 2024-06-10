@@ -39,6 +39,7 @@
 #include "mmSolver/image/image_io.h"
 #include "mmSolver/mayahelper/maya_string_utils.h"
 #include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/path_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
 // Command arguments and command name:
@@ -174,27 +175,9 @@ MStatus MMReadImageCmd::doIt(const MArgList &args) {
     status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    auto file_object = MFileObject();
-    file_object.setRawFullName(m_file_path);
-    file_object.setResolveMethod(MFileObject::kInputFile);
-
-    bool path_exists = file_object.exists();
-    if (!path_exists) {
-        MString resolved_file_path = file_object.resolvedFullName();
-        status = MS::kFailure;
-        MMSOLVER_MAYA_WRN("mmReadImage: Could not find file path "
-                          << "\"" << m_file_path.asChar()
-                          << "\", resolved path "
-                          << "\"" << resolved_file_path.asChar() << "\".");
-        return status;
-    }
-
-    MString resolved_file_path = file_object.resolvedFullName();
-    if (resolved_file_path.length() > 0) {
-        MMSOLVER_MAYA_VRB("mmReadImage: resolved file path "
-                          << "\"" << resolved_file_path.asChar() << "\".");
-        m_file_path = file_object.resolvedFullName();
-    }
+    // status = resolve_file_path(m_file_path);
+    status = mmpath::resolve_input_file_path(m_file_path);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_query_width_height) {
         uint32_t image_width = 0;

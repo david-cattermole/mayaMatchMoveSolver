@@ -173,7 +173,8 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
             MString mstring;
             status = argData.getFlagArgument(GPU_CAPACITY_FLAG, 0, mstring);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            m_gpu_capacity_bytes = mmmayastring::mstringToNumber<size_t>(mstring);
+            m_gpu_capacity_bytes =
+                mmmayastring::mstringToNumber<size_t>(mstring);
 
             // Store the current value, so we can undo later.
             m_previous_gpu_capacity_bytes =
@@ -183,7 +184,8 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
             MString mstring;
             status = argData.getFlagArgument(CPU_CAPACITY_FLAG, 0, mstring);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            m_cpu_capacity_bytes = mmmayastring::mstringToNumber<size_t>(mstring);
+            m_cpu_capacity_bytes =
+                mmmayastring::mstringToNumber<size_t>(mstring);
 
             // Store the current value, so we can undo later.
             m_previous_cpu_capacity_bytes =

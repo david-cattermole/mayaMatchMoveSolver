@@ -28,11 +28,11 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.python_compat as pycompat
+import mmSolver.tools.createimageplane.constant as const
 import mmSolver.tools.createimageplane._lib.constant as lib_const
 import mmSolver.tools.createimageplane._lib.mmimageplane_v1 as lib_mmimageplane_v1
 import mmSolver.tools.createimageplane._lib.mmimageplane_v2 as lib_mmimageplane_v2
 import mmSolver.tools.createimageplane._lib.utilities as lib_utils
-
 
 LOG = mmSolver.logger.get_logger()
 
@@ -207,9 +207,20 @@ def create_shape_node(
     maya.cmds.setAttr(img_plane_poly_shp + '.intermediateObject', 1)
 
     # Add extra message attributes for finding nodes during callbacks.
-    # maya.cmds.addAttr(shp, longName='imagePlaneShapeNode', attributeType='message')
     if shader_node_network is not None:
         maya.cmds.addAttr(shp, longName='shaderFileNode', attributeType='message')
+
+    # Logic to calculate the frame number.
+    node = maya.cmds.createNode('mmImageSequenceFrameLogic')
+    lib_utils.force_connect_attr(shp + '.imageSequenceFrame', node + '.inFrame')
+    lib_utils.force_connect_attr(shp + '.imageSequenceFirstFrame', node + '.firstFrame')
+    lib_utils.force_connect_attr(shp + '.imageSequenceStartFrame', node + '.startFrame')
+    lib_utils.force_connect_attr(shp + '.imageSequenceEndFrame', node + '.endFrame')
+    lib_utils.force_connect_attr(node + '.outFrame', shp + '.imageSequenceFrameOutput')
+
+    # Only show the users the final frame number, no editing.
+    maya.cmds.setAttr(shp + '.imageSequenceFrameOutput', lock=True)
+
     return shp
 
 

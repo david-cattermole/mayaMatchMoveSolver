@@ -28,7 +28,6 @@ import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.constant as const_utils
 import mmSolver.utils.imageseq as imageseq_utils
 import mmSolver.utils.python_compat as pycompat
-import mmSolver.tools.createimageplane.constant as const
 import mmSolver.tools.createimageplane._lib.constant as lib_const
 import mmSolver.tools.createimageplane._lib.mmimageplane as lib_mmimageplane
 import mmSolver.tools.createimageplane._lib.mmimageplane_v1 as lib_mmimageplane_v1
@@ -78,19 +77,6 @@ def create_image_plane_on_camera(cam, name=None, version=None):
         shader_network,
         version=version,
     )
-
-    # Logic to calculate the frame number.
-    #
-    # TODO: Move this expression into a Maya node, because expressions
-    # are buggy and not flexible.
-    frame_expr = const.FRAME_EXPRESSION.format(node=mm_ip_shp)
-    frame_expr = frame_expr.replace('{{', '{')
-    frame_expr = frame_expr.replace('}}', '}')
-    maya.cmds.expression(string=frame_expr)
-
-    # Show the users the final frame number.
-    shp_node_attr = mm_ip_shp + '.imageSequenceFrameOutput'
-    maya.cmds.setAttr(shp_node_attr, lock=True)
 
     # Image sequence.
     image_sequence_path = lib_utils.get_default_image_path()

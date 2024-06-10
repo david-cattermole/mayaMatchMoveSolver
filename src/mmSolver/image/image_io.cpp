@@ -56,7 +56,7 @@ namespace image {
 void *get_mimage_pixel_data(const MImage &image,
                             const PixelDataType pixel_data_type,
                             const uint32_t width, const uint32_t height,
-                            const uint8_t number_of_channels,
+                            const uint8_t num_channels,
                             uint8_t &out_bytes_per_channel,
                             MHWRender::MRasterFormat &out_texture_format) {
     const bool verbose = false;
@@ -83,7 +83,7 @@ void *get_mimage_pixel_data(const MImage &image,
 
         if (verbose) {
             for (uint32_t row = 0; row <= print_num_pixels; row++) {
-                const uint32_t index = row * number_of_channels;
+                const uint32_t index = row * num_channels;
                 const uint32_t r = static_cast<uint32_t>(pixels[index + 0]);
                 const uint32_t g = static_cast<uint32_t>(pixels[index + 1]);
                 const uint32_t b = static_cast<uint32_t>(pixels[index + 2]);
@@ -102,10 +102,10 @@ void *get_mimage_pixel_data(const MImage &image,
         //
         // mmcolorio::image_convert_srgb_to_linear_srgb_u8(pixels, width,
         // height,
-        //                                                 number_of_channels);
+        //                                                 num_channels);
 
         // mmcolorio::test_opencolorio(pixels, width, height,
-        // number_of_channels);
+        // num_channels);
 
         pixel_data = static_cast<void *>(pixels);
     } else if (pixel_data_type == PixelDataType::kF32) {
@@ -121,7 +121,7 @@ void *get_mimage_pixel_data(const MImage &image,
 
         if (verbose) {
             for (uint32_t row = 0; row <= print_num_pixels; row++) {
-                const uint32_t index = row * number_of_channels;
+                const uint32_t index = row * num_channels;
                 const float r = floatPixels[index + 0];
                 const float g = floatPixels[index + 1];
                 const float b = floatPixels[index + 2];
@@ -133,7 +133,7 @@ void *get_mimage_pixel_data(const MImage &image,
         }
 
         // mmcolorio::image_convert_srgb_to_linear_srgb_f32(
-        //     floatPixels, width, height, number_of_channels);
+        //     floatPixels, width, height, num_channels);
 
         pixel_data = static_cast<void *>(floatPixels);
     } else {
@@ -147,7 +147,7 @@ void *get_mimage_pixel_data(const MImage &image,
 }
 
 PixelDataType convert_mpixel_type_to_pixel_data_type(
-    MImage::MPixelType pixel_type) {
+    const MImage::MPixelType pixel_type) {
     PixelDataType pixel_data_type = PixelDataType::kUnknown;
     if (pixel_type == MImage::MPixelType::kByte) {
         pixel_data_type = PixelDataType::kU8;
@@ -156,12 +156,14 @@ PixelDataType convert_mpixel_type_to_pixel_data_type(
     } else {
         MMSOLVER_MAYA_WRN(
             "mmsolver::image_io::convert_mpixel_type_to_pixel_data_type: "
-            "Invalid MImage::MPixelType value.");
+            "Invalid MImage::MPixelType value. "
+            "value="
+            << static_cast<int>(pixel_type));
     }
     return pixel_data_type;
 }
 
-MStatus read_with_maya_image(MImage &image, MString &file_path,
+MStatus read_with_maya_image(MImage &image, const MString &file_path,
                              const MImage::MPixelType pixel_type,
                              uint32_t &out_width, uint32_t &out_height,
                              uint8_t &out_num_channels,
@@ -195,7 +197,7 @@ MStatus read_with_maya_image(MImage &image, MString &file_path,
     return status;
 }
 
-MStatus read_exr_with_mmimage(MImage &image, MString &file_path,
+MStatus read_exr_with_mmimage(MImage &image, const MString &file_path,
                               uint32_t &out_width, uint32_t &out_height,
                               uint8_t &out_num_channels,
                               uint8_t &out_bytes_per_channel,
@@ -212,6 +214,7 @@ MStatus read_exr_with_mmimage(MImage &image, MString &file_path,
     const std::string input_file_path_string = file_path.asChar();
     const auto input_file_path = rust::Str(input_file_path_string);
 
+    // TODO: Support 3-channel RGB EXR images.
     bool read_ok = mmimage::image_read_pixels_exr_f32x4(
         input_file_path, meta_data, pixel_buffer);
 
@@ -282,7 +285,6 @@ MStatus read_exr_with_mmimage(MImage &image, MString &file_path,
 
     bool ok = false;
     void *data = std::malloc(pixel_data_byte_count);
-
     MMSOLVER_MAYA_VRB("mmsolver::image_io::read_exr_with_mmimage:"
                       << " void *data=" << data);
 
@@ -353,8 +355,7 @@ MStatus read_exr_with_mmimage(MImage &image, MString &file_path,
     return status;
 }
 
-MStatus read_image_file(MImage &image, MString &file_path,
-                        const MImage::MPixelType pixel_type,
+MStatus read_image_file(MImage &image, const MString &file_path,
                         uint32_t &out_width, uint32_t &out_height,
                         uint8_t &out_num_channels,
                         uint8_t &out_bytes_per_channel,
@@ -382,12 +383,24 @@ MStatus read_image_file(MImage &image, MString &file_path,
                       << " file_extension=" << file_extension.asChar());
 
     if (file_extension == "exr") {
+        MMSOLVER_MAYA_VRB("mmsolver::image_io::read_image_file:"
+                          << "read_exr_with_mmimage...");
         status = read_exr_with_mmimage(image, file_path, out_width, out_height,
                                        out_num_channels, out_bytes_per_channel,
                                        out_texture_format, out_pixel_data_type,
                                        out_pixel_data);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
+        MMSOLVER_MAYA_VRB("mmsolver::image_io::read_image_file:"
+                          << "read_with_maya_image...");
+
+        // Maya always reads images as RGBA.
+        out_num_channels = 4;
+
+        // Maya is meant to be able to load pixels as float (kFloat),
+        // but in my attempts it just fails, so lets hard-code to 8-bit.
+        const MImage::MPixelType pixel_type = MImage::MPixelType::kByte;
+
         status = read_with_maya_image(image, file_path, pixel_type, out_width,
                                       out_height, out_num_channels,
                                       out_bytes_per_channel, out_texture_format,

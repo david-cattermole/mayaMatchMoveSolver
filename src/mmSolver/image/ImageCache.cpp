@@ -62,7 +62,6 @@ namespace image {
 MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
                                   ImageCache &image_cache, MImage &temp_image,
                                   const MString &file_path,
-                                  const MImage::MPixelType pixel_type,
                                   const bool do_texture_update) {
     assert(texture_manager != nullptr);
 
@@ -109,7 +108,7 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
 
     uint32_t width = 0;
     uint32_t height = 0;
-    uint8_t number_of_channels = 4;
+    uint8_t num_channels = 4;
     uint8_t bytes_per_channel = 0;
     MHWRender::MRasterFormat texture_format;
     PixelDataType pixel_data_type = PixelDataType::kUnknown;
@@ -120,7 +119,7 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
         maya_owned_pixel_data = image_pixel_data.pixel_data();
         width = image_pixel_data.width();
         height = image_pixel_data.height();
-        number_of_channels = image_pixel_data.num_channels();
+        num_channels = image_pixel_data.num_channels();
         pixel_data_type = image_pixel_data.pixel_data_type();
         bytes_per_channel =
             convert_pixel_data_type_to_bytes_per_channel(pixel_data_type);
@@ -133,10 +132,10 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
         }
 
     } else {
-        status = read_image_file(temp_image, resolved_file_path, pixel_type,
-                                 width, height, number_of_channels,
-                                 bytes_per_channel, texture_format,
-                                 pixel_data_type, maya_owned_pixel_data);
+        status =
+            read_image_file(temp_image, resolved_file_path, width, height,
+                            num_channels, bytes_per_channel, texture_format,
+                            pixel_data_type, maya_owned_pixel_data);
         if (status != MS::kSuccess) {
             return nullptr;
         }
@@ -154,7 +153,7 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
 
     ImagePixelData gpu_image_pixel_data =
         ImagePixelData(static_cast<void *>(maya_owned_pixel_data), width,
-                       height, number_of_channels, pixel_data_type);
+                       height, num_channels, pixel_data_type);
 
     texture_data =
         image_cache.gpu_insert(texture_manager, key, gpu_image_pixel_data);
@@ -163,10 +162,10 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
 
     // Duplicate the Maya-owned pixel data for our image cache.
     const size_t pixel_data_byte_count =
-        width * height * number_of_channels * bytes_per_channel;
+        width * height * num_channels * bytes_per_channel;
     image_pixel_data = ImagePixelData();
     const bool allocated_ok = image_pixel_data.allocate_pixels(
-        width, height, number_of_channels, pixel_data_type);
+        width, height, num_channels, pixel_data_type);
     if (allocated_ok == false) {
         MMSOLVER_MAYA_ERR("mmsolver::ImageCache: read_texture_image_file: "
                           << "Could not allocate pixel data!");

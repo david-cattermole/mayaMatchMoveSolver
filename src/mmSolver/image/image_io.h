@@ -44,8 +44,7 @@
 namespace mmsolver {
 namespace image {
 
-MStatus read_image_file(MImage &image, MString &file_path,
-                        const MImage::MPixelType pixel_type,
+MStatus read_image_file(MImage &image, const MString &file_path,
                         uint32_t &out_width, uint32_t &out_height,
                         uint8_t &out_num_channels,
                         uint8_t &out_bytes_per_channel,

@@ -866,6 +866,15 @@
                 "mmSolver.tools.createimageplane.tool.main_version_two();"
             ]
         },
+        "image_cache_ui": {
+            "name": "Image Cache UI...",
+            "name_shelf": "ImgCch",
+            "tooltip": "Open the Image Cache UI.",
+            "command": [
+                "import mmSolver.tools.imagecache.tool;",
+                "mmSolver.tools.imagecache.tool.main();"
+            ]
+        },
         "camera_toggle_distortion": {
             "name": "Toggle Camera Lens Distortion",
             "name_shelf": "TglDst",

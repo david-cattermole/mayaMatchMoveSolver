@@ -116,6 +116,7 @@
             "general_tools/sort_nodes_in_outliner",
             "general_tools/remove_all_solver_nodes",
             "general_tools/---Settings & Preferences",
+            "general_tools/image_cache_ui",
             "general_tools/user_preferences_window",
             "file_io_tools/---Marker",
             "file_io_tools/load_marker_ui",

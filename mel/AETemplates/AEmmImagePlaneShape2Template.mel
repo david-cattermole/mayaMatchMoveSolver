@@ -315,9 +315,21 @@ global proc AEmmImagePlaneShape2Template(string $nodeName)
     // TODO: Add 'hudTextColor' - control the HUD text color.
     editorTemplate -endLayout;
 
-    // editorTemplate -beginLayout "Image Cache" -collapse 1;
-    // // TODO: Add controls to view and edit the image cache.
-    // editorTemplate -endLayout;
+    editorTemplate -beginLayout "Image Cache" -collapse 1;
+    // TODO: Add controls to view and edit the image cache.
+    //
+    // Add:
+    // - Display:
+    //   - the current image size for one frame (MB)
+    //   - the total memory size for the image sequence (GB / MB)
+    //   - the used cache size.
+    // - Update button.
+    // - Clear cache button menu
+    //   - Clear image plane.
+    //   - Clear unused contents.
+    //   - Clear all.
+    //
+    editorTemplate -endLayout;
 
     editorTemplate -beginLayout "Miscellaneous" -collapse 1;
     editorTemplate -addControl "meshResolution";

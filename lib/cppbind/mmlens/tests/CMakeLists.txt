@@ -21,6 +21,7 @@
 set(target_test_exe_name "mmlens_tests")
 
 set(test_source_files
+  ${CMAKE_CURRENT_SOURCE_DIR}/common.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_batch_3de_anamorphic_std_deg4.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_batch_3de_anamorphic_std_deg4_rescaled.cpp

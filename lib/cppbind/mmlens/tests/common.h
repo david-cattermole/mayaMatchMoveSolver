@@ -26,12 +26,7 @@
 #include <sstream>
 #include <string>
 
-static std::string join_path(const char* arg1, const char* arg2) {
-    std::stringstream stream;
-    stream << arg1;
-    stream << arg2;
-    return stream.str();
-}
+std::string join_path(const char* arg1, const char* arg2);
 
 const int kCoordinateSystemImage = 0;
 const int kCoordinateSystemNDC = 1;

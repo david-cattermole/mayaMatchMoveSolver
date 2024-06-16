@@ -71,8 +71,8 @@ int test_lens_file_load(const char* dir_path, const char* file_name) {
             if (!option_lens_parameters.exists) {
                 continue;
             }
-            const mmlens::Parameters3deClassic lens_parameters =
-                option_lens_parameters.value;
+            // const mmlens::Parameters3deClassic lens_parameters =
+            //     option_lens_parameters.value;
             // TODO: Do something with the lens parameters.
 
         } else if (lens_model_type ==
@@ -83,8 +83,8 @@ int test_lens_file_load(const char* dir_path, const char* file_name) {
             if (!option_lens_parameters.exists) {
                 continue;
             }
-            const mmlens::Parameters3deRadialStdDeg4 lens_parameters =
-                option_lens_parameters.value;
+            // const mmlens::Parameters3deRadialStdDeg4 lens_parameters =
+            //     option_lens_parameters.value;
             // TODO: Do something with the lens parameters.
 
         } else if (lens_model_type ==
@@ -97,8 +97,8 @@ int test_lens_file_load(const char* dir_path, const char* file_name) {
             if (!option_lens_parameters.exists) {
                 continue;
             }
-            const mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters =
-                option_lens_parameters.value;
+            // const mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters =
+            //     option_lens_parameters.value;
             // TODO: Do something with the lens parameters.
 
         } else if (lens_model_type ==
@@ -111,8 +111,8 @@ int test_lens_file_load(const char* dir_path, const char* file_name) {
             if (!option_lens_parameters.exists) {
                 continue;
             }
-            const mmlens::Parameters3deAnamorphicStdDeg4Rescaled
-                lens_parameters = option_lens_parameters.value;
+            // const mmlens::Parameters3deAnamorphicStdDeg4Rescaled
+            //     lens_parameters = option_lens_parameters.value;
             // TODO: Do something with the lens parameters.
 
         } else {

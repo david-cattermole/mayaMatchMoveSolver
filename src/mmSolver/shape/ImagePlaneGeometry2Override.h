@@ -38,6 +38,10 @@
 #include <maya/MPxGeometryOverride.h>
 #include <maya/MUserData.h>
 
+#if MAYA_API_VERSION >= 20220000
+#include <maya/MSharedPtr.h>
+#endif
+
 // MM Solver
 #include <mmcore/lib.h>
 
@@ -51,7 +55,16 @@ namespace mmsolver {
 class ShaderLinkLostUserData2 : public MUserData {
 public:
     ShaderLinkLostUserData2()
-        : MUserData(), link_lost_count(0), set_shader_count(0) {}
+#if MAYA_API_VERSION >= 20220000
+        : MUserData()
+#else
+        // MUserData(bool) constructor is deprecated in Maya 2022+
+        // because 'deleteAfterUse' is no longer needed.
+        : MUserData(true)
+#endif
+        , link_lost_count(0)
+        , set_shader_count(0) {
+    }
 
     // Keep track of the number of times stuff happens, just for
     // interest sake (maybe to help debugging?) - doesn't really mean
@@ -60,7 +73,9 @@ public:
     uint32_t set_shader_count;
 };
 
+#if MAYA_API_VERSION >= 20220000
 using ShaderLinkLostUserData2Ptr = MSharedPtr<ShaderLinkLostUserData2>;
+#endif
 
 class ImagePlaneGeometry2Override : public MPxGeometryOverride {
 public:
@@ -178,9 +193,9 @@ protected:
     MHWRender::MTexture *m_color_texture;
     const MHWRender::MSamplerState *m_texture_sampler;
 
-#if MAYA_API_VERSION >= 20200000
+#if MAYA_API_VERSION >= 20220000
     ShaderLinkLostUserData2Ptr m_shader_link_lost_user_data_ptr;
-#elif
+#else
     ShaderLinkLostUserData2 m_shader_link_lost_user_data;
 #endif
 };

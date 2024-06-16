@@ -47,7 +47,6 @@
 #include <maya/MGeometryExtractor.h>
 #include <maya/MPxGeometryOverride.h>
 #include <maya/MShaderManager.h>
-#include <maya/MSharedPtr.h>
 #include <maya/MUserData.h>
 
 // MM Solver

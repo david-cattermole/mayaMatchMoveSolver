@@ -370,7 +370,7 @@ MStatus initializePlugin(MObject obj) {
                           mmsolver::ImagePlaneShape2Node::m_id,
                           mmsolver::ImagePlaneShape2Node::creator,
                           mmsolver::ImagePlaneShape2Node::initialize,
-                          MPxNode::kLocatorNode, &imagePlaneShapeClassification,
+                          MPxNode::kLocatorNode, &imagePlaneShape2Classification,
                           status);
     REGISTER_LOCATOR_NODE(
         plugin, mmsolver::SkyDomeShapeNode::nodeName(),

@@ -38,11 +38,13 @@ cmake_policy(SET CMP0048 NEW)
 # https://cmake.org/cmake/help/latest/policy/CMP0063.html
 cmake_policy(SET CMP0063 NEW)
 
-# Changes how timestamps of downloaded files with
-# ExternalProject_Add() are set.
-#
-# https://cmake.org/cmake/help/latest/policy/CMP0135.html
-cmake_policy(SET CMP0135 NEW)
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
+  # Changes how timestamps of downloaded files with
+  # ExternalProject_Add() are set.
+  #
+  # https://cmake.org/cmake/help/latest/policy/CMP0135.html
+  cmake_policy(SET CMP0135 NEW)
+endif()
 
 # Do not allow using GNU extensions (such as '-std=g++11'), because
 # it's not compatible with Maya.

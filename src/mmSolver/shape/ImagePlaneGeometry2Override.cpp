@@ -47,7 +47,6 @@
 #include <maya/MGeometryExtractor.h>
 #include <maya/MPxGeometryOverride.h>
 #include <maya/MShaderManager.h>
-#include <maya/MSharedPtr.h>
 #include <maya/MUserData.h>
 
 // MM Solver
@@ -99,10 +98,10 @@ ImagePlaneGeometry2Override::ImagePlaneGeometry2Override(const MObject &obj)
     m_model_editor_changed_callback_id = MEventMessage::addEventCallback(
         "modelEditorChanged",
         ImagePlaneGeometry2Override::on_model_editor_changed_func, this);
-#if MAYA_API_VERSION >= 20200000
+#if MAYA_API_VERSION >= 20220000
     m_shader_link_lost_user_data_ptr =
         ShaderLinkLostUserData2Ptr(new ShaderLinkLostUserData2());
-#elif
+#else
     m_shader_link_lost_user_data = ShaderLinkLostUserData2();
 #endif
 }

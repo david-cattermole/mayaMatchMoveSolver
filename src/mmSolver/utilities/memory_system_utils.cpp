@@ -161,7 +161,7 @@ size_t system_physical_memory_free() {
 
     size_t physical_memory_free_bytes = memInfo.freeram;
     // Multiply to avoid int overflow on right hand side.
-    physical_memory_used_bytes *= memInfo.mem_unit;
+    physical_memory_free_bytes *= memInfo.mem_unit;
 
     return physical_memory_free_bytes;
 #endif

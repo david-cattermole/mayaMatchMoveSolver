@@ -140,7 +140,7 @@
 
 #define MM_IMAGE_PLANE_SHAPE_2_TYPE_ID 0x0012F18F
 #define MM_IMAGE_PLANE_SHAPE_2_TYPE_NAME "mmImagePlaneShape2"
-#define MM_IMAGE_PLANE_SHAPE_2_DRAW_CLASSIFY "drawdb/geometry/mmSolver/imagePlane"
+#define MM_IMAGE_PLANE_SHAPE_2_DRAW_CLASSIFY "drawdb/geometry/mmSolver/imagePlane2"
 #define MM_IMAGE_PLANE_SHAPE_2_DRAW_REGISTRANT_ID "mmImagePlaneShape2"
 #define MM_IMAGE_PLANE_SHAPE_2_SELECTION_TYPE_NAME "mmImagePlaneShape2Selection"
 // Same as v1.

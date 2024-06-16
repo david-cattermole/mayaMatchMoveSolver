@@ -370,8 +370,8 @@ MStatus initializePlugin(MObject obj) {
                           mmsolver::ImagePlaneShape2Node::m_id,
                           mmsolver::ImagePlaneShape2Node::creator,
                           mmsolver::ImagePlaneShape2Node::initialize,
-                          MPxNode::kLocatorNode, &imagePlaneShape2Classification,
-                          status);
+                          MPxNode::kLocatorNode,
+                          &imagePlaneShape2Classification, status);
     REGISTER_LOCATOR_NODE(
         plugin, mmsolver::SkyDomeShapeNode::nodeName(),
         mmsolver::SkyDomeShapeNode::m_id, mmsolver::SkyDomeShapeNode::creator,
@@ -531,6 +531,14 @@ MStatus initializePlugin(MObject obj) {
     CHECK_MSTATUS(status);
 
     MSelectionMask::registerSelectionType(
+        mmsolver::ImagePlaneShape2Node::m_selection_type_name, 2);
+    mel_cmd = "selectType -byName \"";
+    mel_cmd += mmsolver::ImagePlaneShape2Node::m_selection_type_name;
+    mel_cmd += "\" 1";
+    status = MGlobal::executeCommand(mel_cmd);
+    CHECK_MSTATUS(status);
+
+    MSelectionMask::registerSelectionType(
         mmsolver::SkyDomeShapeNode::m_selection_type_name, 2);
     mel_cmd = "selectType -byName \"";
     mel_cmd += mmsolver::SkyDomeShapeNode::m_selection_type_name;
@@ -561,6 +569,10 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::ImagePlaneShapeNode::m_display_filter_name,
         mmsolver::ImagePlaneShapeNode::m_display_filter_label,
         mmsolver::ImagePlaneShapeNode::m_draw_db_classification);
+    plugin.registerDisplayFilter(
+        mmsolver::ImagePlaneShape2Node::m_display_filter_name,
+        mmsolver::ImagePlaneShape2Node::m_display_filter_label,
+        mmsolver::ImagePlaneShape2Node::m_draw_db_classification);
     plugin.registerDisplayFilter(
         mmsolver::SkyDomeShapeNode::m_display_filter_name,
         mmsolver::SkyDomeShapeNode::m_display_filter_label,
@@ -661,6 +673,9 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_GEOMETRY_OVERRIDE(
         mmsolver::ImagePlaneShapeNode::m_draw_db_classification,
         mmsolver::ImagePlaneShapeNode::m_draw_registrant_id, status);
+    DEREGISTER_GEOMETRY_OVERRIDE(
+        mmsolver::ImagePlaneShape2Node::m_draw_db_classification,
+        mmsolver::ImagePlaneShape2Node::m_draw_registrant_id, status);
     DEREGISTER_DRAW_OVERRIDE(
         mmsolver::SkyDomeShapeNode::m_draw_db_classification,
         mmsolver::SkyDomeShapeNode::m_draw_registrant_id, status);
@@ -674,6 +689,8 @@ MStatus uninitializePlugin(MObject obj) {
                             mmsolver::BundleShapeNode::m_id, status);
     DEREGISTER_LOCATOR_NODE(plugin, mmsolver::ImagePlaneShapeNode::nodeName(),
                             mmsolver::ImagePlaneShapeNode::m_id, status);
+    DEREGISTER_LOCATOR_NODE(plugin, mmsolver::ImagePlaneShape2Node::nodeName(),
+                            mmsolver::ImagePlaneShape2Node::m_id, status);
     DEREGISTER_LOCATOR_NODE(plugin, mmsolver::SkyDomeShapeNode::nodeName(),
                             mmsolver::SkyDomeShapeNode::m_id, status);
     DEREGISTER_LOCATOR_NODE(plugin, mmsolver::LineShapeNode::nodeName(),

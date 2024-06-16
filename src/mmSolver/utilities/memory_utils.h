@@ -25,6 +25,7 @@
 
 // STL
 #include <cstdint>
+#include <cstddef>
 
 namespace mmmemory {
 

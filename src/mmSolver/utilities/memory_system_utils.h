@@ -23,6 +23,9 @@
 #ifndef MEMORY_SYSTEM_UTILS_H
 #define MEMORY_SYSTEM_UTILS_H
 
+// STL
+#include <cstddef>
+
 namespace mmmemorysystem {
 void process_memory_usage(size_t &peak_resident_set_size,
                           size_t &current_resident_set_size);

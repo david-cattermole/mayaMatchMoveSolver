@@ -68,6 +68,8 @@ function(set_global_maya_plugin_compile_options)
     add_compile_definitions(USERDLL)
 
     # Use multithread-specific Run-Time Library.
+    #
+    # NOTE: This changes the ABI.
     set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} /MD")
 
     add_compile_options("/arch:AVX2")
@@ -87,6 +89,8 @@ function(set_global_maya_plugin_compile_options)
     set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /LTCG")
 
     # Use debug-specific Run-Time Library.
+    #
+    # NOTE: This changes the ABI.
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} /MDd")
 
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od")    # Optimize for Debug.
@@ -169,14 +173,18 @@ function(set_global_maya_plugin_compile_options)
     #
     # https://vfxplatform.com/#footnote-gcc6
     #
-    # TODO: In VFX Platform CY2023, and the move to RHEL 8 or RHEL 9,
+    # In VFX Platform CY2023, and the move to RHEL 8 or RHEL 9,
     # the new default is to use "_GLIBCXX_USE_CXX11_ABI=1".
     #
     # https://vfxplatform.com/#footnote-gcc9
     #
-    # TODO: Expose this variable as a CMake option, so we can enable
-    # this for RHEL 8/9 and Rocky Linux 8.
-    add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
+    # NOTE: This changes the ABI.
+    if (VFX_PLATFORM VERSION_GREATER_EQUAL 2023)
+      # Must be enabled for RHEL 8/9, Alma Linux and Rocky Linux 8/9.
+      add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=1)
+    else ()
+      add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
+    endif()
 
     # Enable warnings.
     add_definitions(-Wall)
@@ -332,7 +340,7 @@ function(install_target_plugin_to_module target module_dir)
 endfunction()
 
 
-# Install the Plug-In.
+# Install executables.
 function(install_target_executable_to_module target module_dir)
   set_target_properties(${target} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${module_dir}")
@@ -344,9 +352,9 @@ endfunction()
 
 # Install shared (dynamic) library.
 function(install_shared_library lib_file lib_file_dll install_dir)
-  # message(STATUS "INSTALL FILE: ${lib_file}")
-  # message(STATUS "INSTALL DLL : ${lib_file_dll}")
-  # message(STATUS "INSTALL DIR : ${install_dir}")
+  # message(STATUS "install_shared_library install file: ${lib_file}")
+  # message(STATUS "install_shared_library install dll : ${lib_file_dll}")
+  # message(STATUS "install_shared_library install dir : ${install_dir}")
   if (WIN32)
     if (EXISTS ${lib_file_dll})
       install(FILES ${lib_file_dll}
@@ -357,12 +365,17 @@ function(install_shared_library lib_file lib_file_dll install_dir)
   elseif (UNIX)
     string(FIND ${lib_file} ".so" find_so)
     if(${find_so} GREATER_EQUAL 0)
-      # Install only the real library, with the symlink name.
-      get_filename_component(absolute_lib_file ${lib_file} REALPATH)
+      # message(STATUS "install_shared_library lib_file     : ${lib_file}")
+
+      # Install only the real library, with the original name.
+      get_filename_component(abs_lib_file ${lib_file} REALPATH)
       get_filename_component(lib_file_name ${lib_file} NAME)
-      install(FILES ${absolute_lib_file}
+      # message(STATUS "install_shared_library abs_lib_file : ${abs_lib_file}")
+      # message(STATUS "install_shared_library lib_file_name: ${lib_file_name}")
+      install(FILES ${abs_lib_file}
         DESTINATION ${install_dir}
-        RENAME ${lib_file_name})
+        RENAME ${lib_file_name}
+      )
 
       # # Copies all files similar to ${lib_file} to the install
       # # directory.
@@ -370,6 +383,37 @@ function(install_shared_library lib_file lib_file_dll install_dir)
       #   LIST_DIRECTORIES 0
       #   "${lib_file}*")
       # install(FILES ${lib_files} DESTINATION ${install_dir})
+    endif ()
+  endif ()
+endfunction()
+
+
+function(install_shared_library_with_name lib_file lib_file_dll lib_name install_dir)
+  # message(STATUS "install_shared_library install file: ${lib_file}")
+  # message(STATUS "install_shared_library install dll : ${lib_file_dll}")
+  # message(STATUS "install_shared_library install name: ${lib_name}")
+  # message(STATUS "install_shared_library install dir : ${install_dir}")
+  if (WIN32)
+    if (EXISTS ${lib_file_dll})
+      install(FILES ${lib_file_dll}
+        DESTINATION ${install_dir})
+    else ()
+      message(FATAL_ERROR "Cannot find .dll file to install: ${lib_file_dll}")
+    endif ()
+  elseif (UNIX)
+    string(FIND ${lib_file} ".so" find_so)
+    if(${find_so} GREATER_EQUAL 0)
+      # message(STATUS "install_shared_library lib_file     : ${lib_file}")
+
+      # Install only the real library, with the original name.
+      get_filename_component(abs_lib_file ${lib_file} REALPATH)
+      get_filename_component(lib_file_name ${lib_file} NAME)
+      # message(STATUS "install_shared_library abs_lib_file : ${abs_lib_file}")
+
+      install(FILES ${abs_lib_file}
+        DESTINATION ${install_dir}
+        RENAME ${lib_name}
+      )
     endif ()
   endif ()
 endfunction()

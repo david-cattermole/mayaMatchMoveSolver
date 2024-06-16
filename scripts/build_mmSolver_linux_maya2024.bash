@@ -32,12 +32,22 @@ RUST_CARGO_EXE=cargo
 # OpenColorIO specific options.
 OPENCOLORIO_TARBALL_NAME="OpenColorIO-2.2.1.tar.gz"
 OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME="OpenColorIO-2.2.1"
-EXPAT_VERSION=2.4.1
+EXPAT_RELATIVE_CMAKE_DIR=lib64/cmake/expat-2.4.1/
+EXPAT_RELATIVE_LIB_PATH=lib64/libexpat.a
+# yaml-cpp 0.7.0
+YAML_RELATIVE_CMAKE_DIR=share/cmake/yaml-cpp
+YAML_RELATIVE_LIB_PATH=lib64/libyaml-cpp.a
+PYSTRING_RELATIVE_LIB_PATH=lib64/libpystring.a
+ZLIB_RELATIVE_LIB_PATH=lib/libz.a
 
 # Manually override OpenGL include headers, because CMake doesn't seem
 # to automatically find OpenGL headers on RockyLinux8 (which is used
 # in the Docker containers).
 OPENGL_INCLUDE_DIR=/usr/include/
+
+# Which version of the VFX platform are we "using"? (Maya doesn't
+# currently conform to the VFX Platform.)
+VFX_PLATFORM=2023
 
 # C++ Standard to use.
 CXX_STANDARD=14

@@ -56,6 +56,10 @@ SET OPENCOLORIO_INSTALL_PATH=%BUILD_DIR_BASE%\build_opencolorio\install\maya%MAY
 :: What type of build? "Release" or "Debug"?
 SET BUILD_TYPE=Release
 
+:: Allows you to see the build command lines, to help debugging build
+:: problems. Set to ON to enable, and OFF to disable.
+SET MMSOLVER_BUILD_VERBOSE=OFF
+
 :: Make sure source code archive is downloaded and exists.
 SET SOURCE_TARBALL=%PROJECT_ROOT%\external\archives\%OPENCOLORIO_TARBALL_NAME%
 IF NOT EXIST %SOURCE_TARBALL% (
@@ -109,14 +113,21 @@ CHDIR "%BUILD_DIR_BASE%\build_opencolorio\"
 MKDIR "%BUILD_DIR_NAME%"
 CHDIR "%BUILD_DIR%"
 
+:: Renaming the library name and C++ namespace, is so that software
+:: looking for the "regular" OpenColorIO will not conflict with the
+:: mmSolver library.
+SET MMSOLVER_OCIO_LIBNAME_SUFFIX="_mmSolver"
+SET MMSOLVER_OCIO_NAMESPACE="OpenColorIO_mmSolver"
+
 %CMAKE_EXE% -G %CMAKE_GENERATOR% ^
-    -DBUILD_SHARED_LIBS=OFF ^
+    -DBUILD_SHARED_LIBS=ON ^
     -DCMAKE_BUILD_TYPE=%BUILD_TYPE% ^
     -DCMAKE_INSTALL_PREFIX=%OPENCOLORIO_INSTALL_PATH% ^
     -DCMAKE_IGNORE_PATH=%IGNORE_INCLUDE_DIRECTORIES% ^
     -DCMAKE_C_COMPILER=%CMAKE_C_COMPILER% ^
     -DCMAKE_CXX_COMPILER=%CMAKE_CXX_COMPILER% ^
     -DCMAKE_CXX_STANDARD=%CXX_STANDARD% ^
+    -DCMAKE_VERBOSE_MAKEFILE=%MMSOLVER_BUILD_VERBOSE% ^
     -DOCIO_INSTALL_EXT_PACKAGES=ALL ^
     -DOCIO_BUILD_APPS=OFF ^
     -DOCIO_USE_OIIO_FOR_APPS=OFF ^
@@ -127,6 +138,8 @@ CHDIR "%BUILD_DIR%"
     -DOCIO_BUILD_PYTHON=OFF ^
     -DOCIO_BUILD_OPENFX=OFF ^
     -DOCIO_USE_SSE=ON ^
+    -DOCIO_LIBNAME_SUFFIX=%MMSOLVER_OCIO_LIBNAME_SUFFIX% ^
+    -DOCIO_NAMESPACE=%MMSOLVER_OCIO_NAMESPACE% ^
     %SOURCE_ROOT%
 IF errorlevel 1 GOTO failed_to_generate_cpp
 

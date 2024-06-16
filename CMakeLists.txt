@@ -50,23 +50,6 @@ endif()
 # it's not compatible with Maya.
 set(CXX_EXTENSIONS OFF)
 
-# Use the older C++11 ABI for std::string and std::list, to be
-# compatible with RHEL/CentOS 7, Maya and the VFX Platform.
-#
-# https://vfxplatform.com/#footnote-gcc6
-#
-# TODO: In VFX Platform CY2023, and the move to RHEL 8 or RHEL 9,
-# the new default is to use "_GLIBCXX_USE_CXX11_ABI=1".
-#
-# https://vfxplatform.com/#footnote-gcc9
-#
-# TODO: Add a flag for use in RHEL 8/9 and Rocky Linux, so we can
-# enable/disable.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
-endif()
-
 # For Windows, allow paths of more than 250 to avoid build issues
 # arrising on Windows with very long file paths.
 if(NOT DEFINED CMAKE_OBJECT_PATH_MAX)

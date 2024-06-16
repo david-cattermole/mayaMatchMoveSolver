@@ -102,67 +102,11 @@ target_link_libraries(${cpp_lib_name}
 # ldpk to be installed so we have the 'ldpk_INCLUDE_DIR' variable.
 add_dependencies(${cpp_lib_name} ldpk::ldpk)
 
-
-# OpenColorIO
-message(STATUS "OpenColorIO_DIR: ${OpenColorIO_DIR}")
-find_package(OpenColorIO REQUIRED)
-
-get_target_property(OpenColorIO_INTERFACE_INCLUDE_DIRECTORIES OpenColorIO::OpenColorIO INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(OpenColorIO_IMPORTED_LOCATION_RELEASE OpenColorIO::OpenColorIO IMPORTED_LOCATION_RELEASE)
-get_target_property(OpenColorIO_INTERFACE_LINK_LIBRARIES OpenColorIO::OpenColorIO INTERFACE_LINK_LIBRARIES)
-
-message(STATUS "OpenColorIO_INTERFACE_INCLUDE_DIRECTORIES: ${OpenColorIO_INTERFACE_INCLUDE_DIRECTORIES}")
-message(STATUS "OpenColorIO_IMPORTED_LOCATION_RELEASE: ${OpenColorIO_IMPORTED_LOCATION_RELEASE}")
-message(STATUS "OpenColorIO_INTERFACE_LINK_LIBRARIES: ${OpenColorIO_INTERFACE_LINK_LIBRARIES}")
-
-target_include_directories(${cpp_lib_name}
-  PRIVATE ${OpenColorIO_INTERFACE_INCLUDE_DIRECTORIES}
-)
-
-find_package(ZLIB REQUIRED)
-message(STATUS "ZLIB: Found: ${ZLIB_FOUND}")
-message(STATUS "ZLIB: Version: ${ZLIB_VERSION}")
-message(STATUS "ZLIB: Libraries: ${ZLIB_LIBRARIES}")
-message(STATUS "ZLIB: Include Dirs: ${ZLIB_INCLUDE_DIRS}")
-
-find_package(pystring REQUIRED)
-message(STATUS "pystring: Found: ${pystring_FOUND}")
-message(STATUS "pystring: Libraries: ${pystring_LIBRARY}")
-message(STATUS "pystring: Include Dir: ${pystring_INCLUDE_DIR}")
-
-find_package(Imath REQUIRED)
-message(STATUS "Imath: Found: ${Imath_FOUND}")
-message(STATUS "Imath: Version: ${Imath_VERSION}")
-message(STATUS "Imath: Libraries: ${Imath_LIBRARY}")
-message(STATUS "Imath: Include Dir: ${Imath_INCLUDE_DIR}")
-
-find_package(expat REQUIRED)
-message(STATUS "expat: Found: ${expat_FOUND}")
-message(STATUS "expat: Version: ${expat_VERSION}")
-message(STATUS "expat: Libraries: ${expat_LIBRARY}")
-message(STATUS "expat: Include Dir: ${expat_INCLUDE_DIR}")
-
-find_package(minizip-ng REQUIRED)
-message(STATUS "minizip-ng: Found: ${minizip-ng_FOUND}")
-message(STATUS "minizip-ng: Version: ${minizip-ng_VERSION}")
-message(STATUS "minizip-ng: Libraries: ${minizip-ng_LIBRARY}")
-message(STATUS "minizip-ng: Include Dir: ${minizip-ng_INCLUDE_DIR}")
-
-find_package(yaml-cpp REQUIRED)
-message(STATUS "yaml-cpp: Found: ${yaml-cpp_FOUND}")
-message(STATUS "yaml-cpp: Version: ${yaml-cpp_VERSION}")
-message(STATUS "yaml-cpp: Libraries: ${yaml-cpp_LIBRARY}")
-message(STATUS "yaml-cpp: Include Dir: ${yaml-cpp_INCLUDE_DIR}")
-
-target_link_libraries(${cpp_lib_name}
-  PRIVATE OpenColorIO::OpenColorIO
-  PRIVATE ZLIB::ZLIB
-  PRIVATE expat::expat
-  PRIVATE Imath::Imath
-  PRIVATE pystring::pystring
-  PRIVATE yaml-cpp
-  PRIVATE MINIZIP::minizip-ng
-  )
+# MM Color IO dependencies
+include(MMColorIOUtils)
+mmcolorio_find_packages()
+mmcolorio_target_link_packages(${cpp_lib_name})
+mmcolorio_target_include_packages(${cpp_lib_name})
 
 target_include_directories(${cpp_lib_name}
   PUBLIC $<BUILD_INTERFACE:${main_include_dir}>

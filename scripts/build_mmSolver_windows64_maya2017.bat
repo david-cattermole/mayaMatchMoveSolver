@@ -45,6 +45,8 @@ if errorlevel 1 goto failed_to_build_mmsolverlibs
 
 CALL scripts\internal\build_mmSolver_windows64.bat
 if errorlevel 1 goto failed_to_build_mmsolver
+
+:: Successful return.
 exit /b 0
 
 :failed_to_build_mmsolverlibs

@@ -56,6 +56,10 @@ OPENCOLORIO_INSTALL_PATH="${BUILD_DIR_BASE}/build_opencolorio/install/maya${MAYA
 # What type of build? "Release" or "Debug"?
 BUILD_TYPE=Release
 
+# Allows you to see the build command lines, to help debugging build
+# problems. Set to ON to enable, and OFF to disable.
+MMSOLVER_BUILD_VERBOSE=OFF
+
 # Path to this script.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # The root of this project.
@@ -93,13 +97,20 @@ BUILD_DIR="${BUILD_DIR_BASE}/build_opencolorio/${BUILD_DIR_NAME}"
 mkdir -p ${BUILD_DIR}
 cd ${BUILD_DIR}
 
+# Renaming the library name and C++ namespace, is so that software
+# looking for the "regular" OpenColorIO will not conflict with the
+# mmSolver library.
+MMSOLVER_OCIO_LIBNAME_SUFFIX="_mmSolver"
+MMSOLVER_OCIO_NAMESPACE="OpenColorIO_mmSolver"
+
 ${CMAKE_EXE} \
-    -DBUILD_SHARED_LIBS=OFF \
+    -DBUILD_SHARED_LIBS=ON \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DCMAKE_INSTALL_PREFIX=${OPENCOLORIO_INSTALL_PATH} \
     -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH} \
     -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
     -DCMAKE_CXX_STANDARD=${CXX_STANDARD} \
+    -DCMAKE_VERBOSE_MAKEFILE=${MMSOLVER_BUILD_VERBOSE} \
     -DOCIO_INSTALL_EXT_PACKAGES=ALL \
     -DOCIO_BUILD_APPS=OFF \
     -DOCIO_USE_OIIO_FOR_APPS=OFF \
@@ -109,6 +120,8 @@ ${CMAKE_EXE} \
     -DOCIO_BUILD_FROZEN_DOCS=OFF \
     -DOCIO_BUILD_PYTHON=OFF \
     -DOCIO_BUILD_OPENFX=OFF \
+    -DOCIO_LIBNAME_SUFFIX=${MMSOLVER_OCIO_LIBNAME_SUFFIX} \
+    -DOCIO_NAMESPACE=${MMSOLVER_OCIO_NAMESPACE} \
     ${SOURCE_ROOT}
 
 ${CMAKE_EXE} --build . --parallel

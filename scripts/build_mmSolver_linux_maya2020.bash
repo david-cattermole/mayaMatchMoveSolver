@@ -29,6 +29,21 @@ PYTHON_EXE=python
 CMAKE_EXE=cmake3
 RUST_CARGO_EXE=cargo
 
+# OpenColorIO specific options.
+OPENCOLORIO_TARBALL_NAME="OpenColorIO-2.2.1.tar.gz"
+OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME="OpenColorIO-2.2.1"
+EXPAT_RELATIVE_CMAKE_DIR=lib64/cmake/expat-2.4.1/
+EXPAT_RELATIVE_LIB_PATH=lib64/libexpat.a
+# yaml-cpp 0.7.0
+YAML_RELATIVE_CMAKE_DIR=share/cmake/yaml-cpp
+YAML_RELATIVE_LIB_PATH=lib64/libyaml-cpp.a
+PYSTRING_RELATIVE_LIB_PATH=lib64/libpystring.a
+ZLIB_RELATIVE_LIB_PATH=lib/libz.a
+
+# Which version of the VFX platform are we "using"? (Maya doesn't
+# currently conform to the VFX Platform.)
+VFX_PLATFORM=2019
+
 # C++ Standard to use.
 CXX_STANDARD=11
 
@@ -40,6 +55,7 @@ CWD=`pwd`
 
 # These scripts assume 'RUST_CARGO_EXE' has been set to the Rust
 # 'cargo' executable.
+source "${CWD}/scripts/internal/build_openColorIO_linux.bash"
 source "${CWD}/scripts/internal/build_mmSolverLibs_linux.bash"
 source "${CWD}/scripts/internal/build_mmSolver_linux.bash"
 

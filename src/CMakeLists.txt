@@ -218,11 +218,13 @@ if(MAYA_FOUND)
     )
 endif()
 
-find_package(ZLIB REQUIRED)
+# MM Color IO dependencies
+include(MMColorIOUtils)
+mmcolorio_find_packages()
+mmcolorio_target_link_packages(mmSolver)
 
 # Link all libraries.
 target_link_libraries(mmSolver
-  PRIVATE ZLIB::ZLIB
   PRIVATE cminpack::cminpack
   PRIVATE glog::glog
   PRIVATE Eigen3::Eigen
@@ -230,28 +232,48 @@ target_link_libraries(mmSolver
   PRIVATE openMVG
 )
 
-# OpenColorIO
-find_package(OpenColorIO REQUIRED)
-
-get_target_property(OpenColorIO_INTERFACE_INCLUDE_DIRECTORIES OpenColorIO::OpenColorIO INTERFACE_INCLUDE_DIRECTORIES)
-get_target_property(OpenColorIO_IMPORTED_LOCATION_RELEASE OpenColorIO::OpenColorIO IMPORTED_LOCATION_RELEASE)
-get_target_property(OpenColorIO_INTERFACE_LINK_LIBRARIES OpenColorIO::OpenColorIO INTERFACE_LINK_LIBRARIES)
-
-message(STATUS "OpenColorIO_INTERFACE_INCLUDE_DIRECTORIES: ${OpenColorIO_INTERFACE_INCLUDE_DIRECTORIES}")
-message(STATUS "OpenColorIO_IMPORTED_LOCATION_RELEASE: ${OpenColorIO_IMPORTED_LOCATION_RELEASE}")
-message(STATUS "OpenColorIO_INTERFACE_LINK_LIBRARIES: ${OpenColorIO_INTERFACE_LINK_LIBRARIES}")
-
-if (MSVC)
-  target_link_libraries(mmSolver
-    PRIVATE ${OpenColorIO_IMPORTED_LOCATION_RELEASE}
-  )
-else()
-  target_link_libraries(mmSolver
-    PRIVATE ${OpenColorIO_IMPORTED_LOCATION_RELEASE}
-    )
-endif()
-
 target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CMINPACK)
 target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_OPENMVG)
 
 install_target_plugin_to_module(mmSolver "${MODULE_FULL_NAME}")
+
+
+# TODO: Extract this logic into a reusable function/macro in a CMake
+# module.
+if (WIN32)
+  get_target_property(OpenColorIO_IMPLIB_RELEASE
+    OpenColorIO::OpenColorIO
+    IMPORTED_IMPLIB_RELEASE)
+  message(STATUS
+    "OpenColorIO_IMPLIB_RELEASE: ${OpenColorIO_IMPLIB_RELEASE}")
+
+  get_target_property(OpenColorIO_LOCATION_RELEASE
+    OpenColorIO::OpenColorIO
+    IMPORTED_LOCATION_RELEASE)
+  message(STATUS
+    "OpenColorIO_LOCATION_RELEASE: ${OpenColorIO_LOCATION_RELEASE}")
+
+  install_shared_library(
+    ${OpenColorIO_IMPLIB_RELEASE}
+    ${OpenColorIO_LOCATION_RELEASE}
+    "${MODULE_FULL_NAME}/lib")
+elseif (UNIX)
+
+  get_target_property(OpenColorIO_LOCATION_RELEASE
+    OpenColorIO::OpenColorIO
+    IMPORTED_LOCATION_RELEASE)
+  message(STATUS
+    "OpenColorIO_LOCATION_RELEASE: ${OpenColorIO_LOCATION_RELEASE}")
+
+    get_target_property(OpenColorIO_SONAME_RELEASE
+      OpenColorIO::OpenColorIO
+      IMPORTED_SONAME_RELEASE)
+    message(STATUS
+      "OpenColorIO_SONAME_RELEASE: ${OpenColorIO_SONAME_RELEASE}")
+
+  install_shared_library_with_name(
+    ${OpenColorIO_LOCATION_RELEASE}
+    ${OpenColorIO_LOCATION_RELEASE}
+    ${OpenColorIO_SONAME_RELEASE}
+    "${MODULE_FULL_NAME}/lib")
+endif ()

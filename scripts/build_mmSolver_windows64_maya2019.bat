@@ -33,11 +33,31 @@ SET PYTHON_EXE=python
 SET CMAKE_EXE=cmake
 SET RUST_CARGO_EXE=cargo
 
+:: OpenColorIO specific options.
+::
+:: Maya doesn't ship with OpenColorIO at all, so lets pick the v2.0.x.
+::
+:: https://github.com/AcademySoftwareFoundation/OpenColorIO/releases/tag/v2.0.5
+:: https://github.com/AcademySoftwareFoundation/OpenColorIO/archive/refs/tags/v2.0.5.tar.gz
+SET OPENCOLORIO_TARBALL_NAME=OpenColorIO-2.0.5.tar.gz
+SET OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME=OpenColorIO-2.0.5
+SET EXPAT_RELATIVE_LIB_PATH=lib\cmake\expat-2.2.8\
+:: yaml-cpp 0.6.3
+SET YAML_RELATIVE_CMAKE_DIR=CMake\
+SET HALF_RELATIVE_LIB_PATH=lib\Half-2_4.lib
+
+:: Which version of the VFX platform are we "using"? (Maya doesn't
+:: currently conform to the VFX Platform.)
+SET VFX_PLATFORM=2018
+
 :: C++ Standard to use.
 SET CXX_STANDARD=11
 
 :: Setup Compiler environment. Change for your install path as needed.
 CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+
+CALL scripts\internal\build_opencolorio_windows64.bat
+if errorlevel 1 goto failed_to_build_opencolorio
 
 :: This script assumes 'RUST_CARGO_EXE' has been set to the Rust
 :: 'cargo' executable.
@@ -46,7 +66,13 @@ if errorlevel 1 goto failed_to_build_mmsolverlibs
 
 CALL scripts\internal\build_mmSolver_windows64.bat
 if errorlevel 1 goto failed_to_build_mmsolver
+
+:: Successful return.
 exit /b 0
+
+:failed_to_build_opencolorio
+echo Failed to build OpenColorIO dependency.
+exit /b 1
 
 :failed_to_build_mmsolverlibs
 echo Failed to build MM Solver Library entry point.

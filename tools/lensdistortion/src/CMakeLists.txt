@@ -28,9 +28,6 @@ set(source_files
 # Add test executable using the C++ bindings.
 add_executable(${lensdistortion_exe_name} ${source_files})
 
-# OpenColorIO is needed by 'mmsolverlibs_cpp'.
-find_package(OpenColorIO REQUIRED)
-
 # MM Solver standalone libraries.
 find_package(mmsolverlibs_cpp REQUIRED)
 find_package(mmsolverlibs_rust REQUIRED)
@@ -40,9 +37,14 @@ target_link_libraries(${lensdistortion_exe_name}
   # 'target_link_libraries()' in '${PROJECT_ROOT}/src/CMakeLists.txt'.
   PUBLIC mmsolverlibs_rust::mmsolverlibs_rust
   PUBLIC mmsolverlibs_cpp::mmsolverlibs_cpp
-  PRIVATE OpenColorIO::OpenColorIO
+
   PRIVATE ${rust_depend_on_libraries}
 )
+
+# MM Color IO dependencies
+include(MMColorIOUtils)
+mmcolorio_find_packages()
+mmcolorio_target_link_packages(${lensdistortion_exe_name})
 
 target_include_directories(${lensdistortion_exe_name}
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}

@@ -465,6 +465,7 @@ function(compile_qt_ui_to_python_file
             PATH_SUFFIXES
                 MacOS/
                 bin/
+                libexec/   # Maya 2025 on Linux changed the directory.
             DOC
                 "Maya provided Qt 'uic' executable path"
                 )
@@ -528,6 +529,7 @@ function(compile_qt_resources_qrc_to_rcc_file
             MacOS
             bin3/  # Use Python 3.x location, in Maya 2022.
             bin/
+            libexec/  # Maya 2025 on Linux changed the directory.
         DOC
             "Maya's Qt resource compiler (rcc) executable path"
     )

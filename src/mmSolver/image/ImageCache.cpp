@@ -257,7 +257,7 @@ inline std::string generate_cache_brief(const char *prefix_str,
     ss << prefix_str << "count=" << item_count << " items "
        << "| minimum=" << item_min_count << " items "
        << "| used=" << used_megabytes_str << "MB "
-       << "| capacity=" << used_megabytes_str << "MB "
+       << "| capacity=" << capacity_megabytes_str << "MB "
        << "| percent=" << used_percent << '%';
     return ss.str();
 }

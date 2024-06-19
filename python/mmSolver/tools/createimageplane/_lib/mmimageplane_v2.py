@@ -307,6 +307,30 @@ def set_image_sequence(shp, image_sequence_path, attr_name):
     return
 
 
+def get_frame_size_bytes(shp):
+    assert isinstance(shp, str)
+    assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2
+    image_size_bytes = maya.cmds.getAttr(shp + '.imageSizeBytes')
+    return int(image_size_bytes)
+
+
+def get_frame_count(shp):
+    assert isinstance(shp, str)
+    assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2
+    start_frame = maya.cmds.getAttr(shp + '.imageSequenceStartFrame')
+    end_frame = maya.cmds.getAttr(shp + '.imageSequenceEndFrame')
+    frame_count = end_frame - start_frame
+    return frame_count
+
+
+def get_image_sequence_size_bytes(shp):
+    assert isinstance(shp, str)
+    assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2
+    image_size_bytes = get_frame_size_bytes(shp)
+    frame_count = get_frame_count(shp)
+    return image_size_bytes * frame_count
+
+
 def get_shape_node(image_plane_tfm):
     assert maya.cmds.nodeType(image_plane_tfm) == lib_const.MM_IMAGE_PLANE_TRANSFORM
 

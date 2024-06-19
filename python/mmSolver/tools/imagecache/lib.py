@@ -27,8 +27,17 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.tools.imagecache.constant as const
+import mmSolver.tools.createimageplane._lib.mmimageplane_v2 as imageplane_lib
 
 LOG = mmSolver.logger.get_logger()
+
+
+# Memory Conversion
+BYTES_TO_KILOBYTES = 1024  # int(pow(2, 10))
+BYTES_TO_MEGABYTES = 1048576  # int(pow(2, 20))
+BYTES_TO_GIGABYTES = 1073741824  # int(pow(2, 30))
+KILOBYTES_TO_MEGABYTES = 1024  # int(pow(2, 10))
+KILOBYTES_TO_GIGABYTES = 1048576  # int(pow(2, 20))
 
 
 def format_image_sequence_size(image_plane_shp):
@@ -37,8 +46,42 @@ def format_image_sequence_size(image_plane_shp):
         'format_image_sequence_size: image_plane_shp=%r',
         image_plane_shp,
     )
-    # TODO: Calculate this string.
-    return '2,346MB (23MB x 102 frames)'
+
+    frame_size_bytes = imageplane_lib.get_frame_size_bytes(image_plane_shp)
+    frame_count = imageplane_lib.get_frame_count(image_plane_shp)
+    image_sequence_size_bytes = imageplane_lib.get_image_sequence_size_bytes(
+        image_plane_shp
+    )
+
+    seq_size_mb = int(image_sequence_size_bytes / BYTES_TO_MEGABYTES)
+    frame_size_mb = int(frame_size_bytes / BYTES_TO_MEGABYTES)
+    text = '2,346MB (23MB x 102 frames)'
+    text = '{seq_size_mb}MB (frame_size_mb)MB x {frame_count} frames)'
+    return text.format(
+        seq_size_mb=seq_size_mb, frame_size_mb=frame_size_mb, frame_count=frame_count
+    )
+
+
+def _format_cache_used(used_bytes, capacity_bytes):
+    assert isinstance(used_bytes, int)
+    assert isinstance(capacity_bytes, int)
+
+    usage_percent = 0
+    usage_gigabytes = 0
+    capacity_gigabyte = 0
+    if capacity_bytes > 0:
+        usage_percent = used_bytes / capacity_bytes
+        usage_gigabytes = used_bytes / BYTES_TO_GIGABYTES
+        capacity_gigabyte = capacity_bytes / BYTES_TO_GIGABYTES
+
+    # TODO: Limit the percentage of the gigabyte float values to only
+    # 1 or 2 digits of precision.
+    text = '{usage_percent} ({usage_gigabytes}GB) of {capacity_gigabyte}GB'
+    return text.format(
+        usage_percent=usage_percent,
+        usage_gigabytes=usage_gigabytes,
+        capacity_gigabyte=capacity_gigabyte,
+    )
 
 
 def format_cache_gpu_used(image_plane_shp):
@@ -47,8 +90,11 @@ def format_cache_gpu_used(image_plane_shp):
         'format_cache_gpu_used: image_plane_shp=%r',
         image_plane_shp,
     )
-    # TODO: Calculate this string.
-    return '42% (3.5GB) of 8GB'
+
+    text = '42% (3.5GB) of 8GB'
+    used_bytes = int(maya.cmds.mmImageCache(query=True, gpuUsed=True))
+    capacity_bytes = int(maya.cmds.mmImageCache(query=True, gpuCapacity=True))
+    return _format_cache_used(used_bytes, capacity_bytes)
 
 
 def format_cache_cpu_used(image_plane_shp):
@@ -57,8 +103,11 @@ def format_cache_cpu_used(image_plane_shp):
         'format_cache_cpu_used: image_plane_shp=%r',
         image_plane_shp,
     )
-    # TODO: Calculate this string.
-    return '23% (34GB) of 240GB'
+
+    text = '23% (34GB) of 240GB'
+    used_bytes = int(maya.cmds.mmImageCache(query=True, cpuUsed=True))
+    capacity_bytes = int(maya.cmds.mmImageCache(query=True, cpuCapacity=True))
+    return _format_cache_used(used_bytes, capacity_bytes)
 
 
 def format_cache_available(image_plane_shp):
@@ -67,8 +116,17 @@ def format_cache_available(image_plane_shp):
         'format_cache_available: image_plane_shp=%r',
         image_plane_shp,
     )
-    # TODO: Calculate this string.
-    return 'CPU: 240GB | GPU: 8GB'
+
+    cpu_memory_gigabytes = maya.cmds.mmMemorySystem(query=True, systemPhysicalMemoryTotal=True, asGigaBytes=True)
+    gpu_memory_gigabytes = maya.cmds.mmMemoryGPU(query=True, total=True, asGigaBytes=True)
+
+    text = 'CPU: 240GB | GPU: 8GB'
+    # TODO: Round these values to the closest value.
+    text = 'CPU: {cpu_memory_gigabytes}GB | GPU: {gpu_memory_gigabytes}GB'
+    return text.format(
+        cpu_memory_gigabytes=cpu_memory_gigabytes,
+        gpu_memory_gigabytes=gpu_memory_gigabytes
+    )
 
 
 def cache_remove_all_image_plane_slots(cache_type, image_plane_shp):

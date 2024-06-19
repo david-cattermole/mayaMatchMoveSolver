@@ -20,3 +20,12 @@ Image Cache constants.
 """
 
 WINDOW_TITLE = 'mmSolver Image Cache'
+
+CACHE_TYPE_ALL = 'all'
+CACHE_TYPE_GPU = 'gpu'
+CACHE_TYPE_CPU = 'cpu'
+CACHE_TYPE_VALUES = [
+    CACHE_TYPE_ALL,
+    CACHE_TYPE_GPU,
+    CACHE_TYPE_CPU,
+]

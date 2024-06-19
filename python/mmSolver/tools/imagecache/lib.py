@@ -23,38 +23,113 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import maya.cmds
+
 import mmSolver.logger
+import mmSolver.tools.imagecache.constant as const
 
 LOG = mmSolver.logger.get_logger()
 
 
-CACHE_TYPE_ALL = 'all'
-CACHE_TYPE_GPU = 'gpu'
-CACHE_TYPE_CPU = 'cpu'
-CACHE_TYPE_VALUES = [
-    CACHE_TYPE_ALL,
-    CACHE_TYPE_GPU,
-    CACHE_TYPE_CPU,
-]
+def format_image_sequence_size(image_plane_shp):
+    assert maya.cmds.nodeType(image_plane_shp) == 'mmImagePlaneShape2'
+    LOG.info(
+        'format_image_sequence_size: image_plane_shp=%r',
+        image_plane_shp,
+    )
+    # TODO: Calculate this string.
+    return '2,346MB (23MB x 102 frames)'
 
 
-def cache_remove_image_plane_contents(cache_type):
-    pass
+def format_cache_gpu_used(image_plane_shp):
+    assert maya.cmds.nodeType(image_plane_shp) == 'mmImagePlaneShape2'
+    LOG.info(
+        'format_cache_gpu_used: image_plane_shp=%r',
+        image_plane_shp,
+    )
+    # TODO: Calculate this string.
+    return '42% (3.5GB) of 8GB'
 
 
-def cache_remove_image_sequence(file_pattern, start_frame, end_frame, cache_type):
-    pass
+def format_cache_cpu_used(image_plane_shp):
+    assert maya.cmds.nodeType(image_plane_shp) == 'mmImagePlaneShape2'
+    LOG.info(
+        'format_cache_cpu_used: image_plane_shp=%r',
+        image_plane_shp,
+    )
+    # TODO: Calculate this string.
+    return '23% (34GB) of 240GB'
+
+
+def format_cache_available(image_plane_shp):
+    assert maya.cmds.nodeType(image_plane_shp) == 'mmImagePlaneShape2'
+    LOG.info(
+        'format_cache_available: image_plane_shp=%r',
+        image_plane_shp,
+    )
+    # TODO: Calculate this string.
+    return 'CPU: 240GB | GPU: 8GB'
+
+
+def cache_remove_all_image_plane_slots(cache_type, image_plane_shp):
+    assert cache_type in const.CACHE_TYPE_VALUES
+    assert maya.cmds.nodeType(image_plane_shp) == 'mmImagePlaneShape2'
+    LOG.info(
+        'cache_remove_all_image_plane_slots: image_plane_shp=%r, cache_type=%r',
+        image_plane_shp,
+        cache_type,
+    )
+    return
+
+
+def cache_remove_active_image_plane_slot(cache_type, image_plane_shp):
+    assert cache_type in const.CACHE_TYPE_VALUES
+    assert maya.cmds.nodeType(image_plane_shp) == 'mmImagePlaneShape2'
+    LOG.info(
+        'cache_remove_active_image_plane_slot: image_plane_shp=%r, cache_type=%r',
+        image_plane_shp,
+        cache_type,
+    )
+    return
+
+
+def cache_remove_unused_image_plane_slots(cache_type, image_plane_shp):
+    assert cache_type in const.CACHE_TYPE_VALUES
+    assert maya.cmds.nodeType(image_plane_shp) == 'mmImagePlaneShape2'
+    LOG.info(
+        'cache_remove_unused_image_plane_slots: image_plane_shp=%r, cache_type=%r',
+        image_plane_shp,
+        cache_type,
+    )
+    return
 
 
 def cache_remove_all(cache_type):
+    assert cache_type in const.CACHE_TYPE_VALUES
+    LOG.info(
+        'cache_remove_unused_image_plane_slots: cache_type=%r',
+        cache_type,
+    )
+    return
+
+
+def cache_remove_image_sequence(file_pattern, start_frame, end_frame, cache_type):
+    LOG.info(
+        'cache_remove_image_sequence: '
+        'file_pattern=%r, start_frame=%r, end_frame=%r, cache_type=%r',
+        file_pattern,
+        start_frame,
+        end_frame,
+        cache_type,
+    )
     pass
 
 
 def cache_remove_all_inactive(cache_type):
     # Removes all the items in the cache that cannot be 'reached' by
     # any of the image planes.
-    pass
-
-
-def function():
+    LOG.info(
+        'cache_remove_all_inactive: cache_type=%r',
+        cache_type,
+    )
     pass

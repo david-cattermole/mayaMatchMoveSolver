@@ -66,10 +66,13 @@ class ImageCacheWindow(BaseWindow):
         # Standard Buttons
         self.baseHideStandardButtons()
         self.applyBtn.show()
+        self.resetBtn.show()
         self.closeBtn.show()
         self.applyBtn.setText('Apply')
+        self.resetBtn.setText('Clear Cache')
 
-        # self.applyBtn.clicked.connect(tool.do_cache_things)
+        self.applyBtn.clicked.connect(self._apply)
+        self.resetBtn.clicked.connect(self._clear_cache)
 
         # Hide irrelevant stuff
         self.baseHideProgressBar()
@@ -87,6 +90,20 @@ class ImageCacheWindow(BaseWindow):
         help_menu = QtWidgets.QMenu('Help', menubar)
         commonmenus.create_help_menu_items(help_menu, tool_help_func=_open_help)
         menubar.addMenu(help_menu)
+
+    def _apply(self):
+        # 1) Get the widget value.
+        # 2) Convert percentage into byte count.
+        # 3) Set the ImageCache capacity (CPU and GPU)
+        LOG.info('Set Capacity...')
+        return
+
+    def _clear_cache(self):
+        # 1) Get the ImageCache capacities (CPU and GPU).
+        # 2) Set the ImageCache capacity (CPU and GPU) to zero.
+        # 3) Restore the ImageCache capacities (CPU and GPU).
+        LOG.info('Clear Cache...')
+        return
 
     def reset_options(self):
         form = self.getSubForm()

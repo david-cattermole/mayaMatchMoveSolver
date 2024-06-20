@@ -13,8 +13,8 @@ path = "./src/lib.rs"
 anyhow = "1.0.71"
 # NOTE: When changing this version number ensure to also update the
 # installed 'cxxbridge-cmd' version so it stays in sync; Update it
-# here: './scripts/internal/build_rust_library_*.*'
-cxx = "=1.0.75"
+# here: './scripts/internal/build_mmSolverLibs_*.*'
+cxx = "=1.0.124"
 num_cpus = "1.15.0"
 rayon = "1.7.0"
 smallvec = "1.10.0"

@@ -87,11 +87,12 @@ bool test_a_image_read(const char *test_name, rust::Str file_path) {
 }
 
 int test_a(const char *test_name, const char *dir_path) {
-    auto path_string1 =
+    const std::string path_string1 =
         join_path(dir_path, "/Beachball/singlepart.0001", ".exr");
-    auto path_string2 = join_path(dir_path, "/ScanLines/Tree", ".exr");
-    const auto file_path1 = rust::Str(path_string1);
-    const auto file_path2 = rust::Str(path_string2);
+    const std::string path_string2 =
+        join_path(dir_path, "/ScanLines/Tree", ".exr");
+    const rust::Str file_path1(path_string1.c_str());
+    const rust::Str file_path2(path_string2.c_str());
 
     bool ok = test_a_image_read(test_name, file_path1);
     if (!ok) {

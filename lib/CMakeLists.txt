@@ -90,9 +90,7 @@ add_subdirectory(mmsolverlibs/src)
 option(MMSOLVERLIBS_BUILD_TESTS "Do you want to build the test files for mmsolverlibs?" OFF)
 if (MMSOLVERLIBS_BUILD_TESTS)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmlens/tests)
-  # # TODO: This does not work on Maya 2024. I suspect this is because
-  # # of the std::string ABI has changed in CentOS 8.x/9.x.
-  # add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmimage/tests)
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmimage/tests)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmscenegraph/tests)
 endif()
 

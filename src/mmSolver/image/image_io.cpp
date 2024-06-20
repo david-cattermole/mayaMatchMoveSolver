@@ -212,7 +212,7 @@ MStatus read_exr_with_mmimage(MImage &image, const MString &file_path,
     auto meta_data = mmimage::ImageMetaData();
 
     const std::string input_file_path_string = file_path.asChar();
-    const auto input_file_path = rust::Str(input_file_path_string);
+    const rust::Str input_file_path(input_file_path_string.c_str());
 
     // TODO: Support 3-channel RGB EXR images.
     bool read_ok = mmimage::image_read_pixels_exr_f32x4(

@@ -172,8 +172,9 @@ endif ()
 
 # Set global flags and options that need to apply to the Maya
 # plug-in. See 'MMSolverUtils' CMake module for more information.
-set_global_treat_warnings_as_errors()
-set_global_maya_plugin_compile_options()
+include(MMCommonUtils)
+mm_common_set_global_treat_warnings_as_errors()
+mm_common_set_global_compile_options()
 
 # MM Solver standalone libraries.
 find_package(mmsolverlibs_cpp REQUIRED)

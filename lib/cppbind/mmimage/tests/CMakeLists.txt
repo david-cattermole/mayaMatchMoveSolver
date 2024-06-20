@@ -22,6 +22,7 @@ set(target_test_exe_name "mmimage_tests")
 
 set(test_source_files
   ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/common.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_a.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_b.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_c.cpp

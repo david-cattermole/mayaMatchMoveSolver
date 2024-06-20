@@ -18,7 +18,7 @@ cxx = "=1.0.124"
 num_cpus = "1.15.0"
 rayon = "1.7.0"
 smallvec = "1.10.0"
-rustc-hash = "1.1.0"
+rustc-hash = "2.0.0"
 
 [profile.release]
 opt-level = 3

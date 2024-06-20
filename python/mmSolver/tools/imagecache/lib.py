@@ -27,21 +27,30 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.tools.imagecache.constant as const
+import mmSolver.tools.createimageplane._lib.constant as imageplane_const
 import mmSolver.tools.createimageplane._lib.mmimageplane_v2 as imageplane_lib
 
 LOG = mmSolver.logger.get_logger()
 
+# Shorter alias.
+_MM_IMAGE_PLANE_SHAPE_V2 = imageplane_const.MM_IMAGE_PLANE_SHAPE_V2
 
 # Memory Conversion
-BYTES_TO_KILOBYTES = 1024  # int(pow(2, 10))
-BYTES_TO_MEGABYTES = 1048576  # int(pow(2, 20))
-BYTES_TO_GIGABYTES = 1073741824  # int(pow(2, 30))
-KILOBYTES_TO_MEGABYTES = 1024  # int(pow(2, 10))
-KILOBYTES_TO_GIGABYTES = 1048576  # int(pow(2, 20))
+_BYTES_TO_KILOBYTES = 1024  # int(pow(2, 10))
+_BYTES_TO_MEGABYTES = 1048576  # int(pow(2, 20))
+_BYTES_TO_GIGABYTES = 1073741824  # int(pow(2, 30))
+_KILOBYTES_TO_MEGABYTES = 1024  # int(pow(2, 10))
+_KILOBYTES_TO_GIGABYTES = 1048576  # int(pow(2, 20))
 
 
 def format_image_sequence_size(image_plane_shp):
-    assert maya.cmds.nodeType(image_plane_shp) == 'mmImagePlaneShape2'
+    """
+    Look up node values and format as text.
+
+    Example output:
+    '2,346.1MB (23.7MB x 102 frames)'
+    """
+    assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
     LOG.info(
         'format_image_sequence_size: image_plane_shp=%r',
         image_plane_shp,
@@ -53,16 +62,21 @@ def format_image_sequence_size(image_plane_shp):
         image_plane_shp
     )
 
-    seq_size_mb = int(image_sequence_size_bytes / BYTES_TO_MEGABYTES)
-    frame_size_mb = int(frame_size_bytes / BYTES_TO_MEGABYTES)
-    text = '2,346MB (23MB x 102 frames)'
-    text = '{seq_size_mb}MB (frame_size_mb)MB x {frame_count} frames)'
+    frame_size_mb = frame_size_bytes / _BYTES_TO_MEGABYTES
+    seq_size_mb = image_sequence_size_bytes / _BYTES_TO_MEGABYTES
+    text = '{seq_size_mb:0,.1f} MB ({frame_size_mb:0,.1f} MB x {frame_count} frames)'
     return text.format(
         seq_size_mb=seq_size_mb, frame_size_mb=frame_size_mb, frame_count=frame_count
     )
 
 
 def _format_cache_used(used_bytes, capacity_bytes):
+    """
+    Look up node values and format as text.
+
+    Example text:
+    ' 42.1% (3.53 GB) of 8.00 GB'
+    """
     assert isinstance(used_bytes, int)
     assert isinstance(capacity_bytes, int)
 
@@ -70,13 +84,11 @@ def _format_cache_used(used_bytes, capacity_bytes):
     usage_gigabytes = 0
     capacity_gigabyte = 0
     if capacity_bytes > 0:
-        usage_percent = used_bytes / capacity_bytes
-        usage_gigabytes = used_bytes / BYTES_TO_GIGABYTES
-        capacity_gigabyte = capacity_bytes / BYTES_TO_GIGABYTES
+        usage_percent = (used_bytes / capacity_bytes) * 100.0
+        usage_gigabytes = used_bytes / _BYTES_TO_GIGABYTES
+        capacity_gigabyte = capacity_bytes / _BYTES_TO_GIGABYTES
 
-    # TODO: Limit the percentage of the gigabyte float values to only
-    # 1 or 2 digits of precision.
-    text = '{usage_percent} ({usage_gigabytes}GB) of {capacity_gigabyte}GB'
+    text = '{usage_percent:3.1f}% ({usage_gigabytes:0,.2f} GB) of {capacity_gigabyte:0,.2f} GB'
     return text.format(
         usage_percent=usage_percent,
         usage_gigabytes=usage_gigabytes,
@@ -85,53 +97,92 @@ def _format_cache_used(used_bytes, capacity_bytes):
 
 
 def format_cache_gpu_used(image_plane_shp):
-    assert maya.cmds.nodeType(image_plane_shp) == 'mmImagePlaneShape2'
+    """
+    Look up node values and format text.
+
+    Example text:
+    ' 42.1% (3.53GB) of 8.00GB'
+    """
+    assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
     LOG.info(
         'format_cache_gpu_used: image_plane_shp=%r',
         image_plane_shp,
     )
 
-    text = '42% (3.5GB) of 8GB'
-    used_bytes = int(maya.cmds.mmImageCache(query=True, gpuUsed=True))
-    capacity_bytes = int(maya.cmds.mmImageCache(query=True, gpuCapacity=True))
-    return _format_cache_used(used_bytes, capacity_bytes)
+    used_bytes = maya.cmds.mmImageCache(query=True, gpuUsed=True)
+    capacity_bytes = maya.cmds.mmImageCache(query=True, gpuCapacity=True)
+    LOG.info('used_bytes: %r', used_bytes)
+    LOG.info('capacity_bytes: %r', capacity_bytes)
+    return _format_cache_used(int(used_bytes), int(capacity_bytes))
 
 
 def format_cache_cpu_used(image_plane_shp):
-    assert maya.cmds.nodeType(image_plane_shp) == 'mmImagePlaneShape2'
+    """
+    Look up node values and format as text.
+
+    Example text:
+    ' 23.1% (34.24 GB) of 240.00 GB'
+    """
+    assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
     LOG.info(
         'format_cache_cpu_used: image_plane_shp=%r',
         image_plane_shp,
     )
 
-    text = '23% (34GB) of 240GB'
-    used_bytes = int(maya.cmds.mmImageCache(query=True, cpuUsed=True))
-    capacity_bytes = int(maya.cmds.mmImageCache(query=True, cpuCapacity=True))
-    return _format_cache_used(used_bytes, capacity_bytes)
+    used_bytes = maya.cmds.mmImageCache(query=True, cpuUsed=True)
+    capacity_bytes = maya.cmds.mmImageCache(query=True, cpuCapacity=True)
+    LOG.info('used_bytes: %r', used_bytes)
+    LOG.info('capacity_bytes: %r', capacity_bytes)
+    return _format_cache_used(int(used_bytes), int(capacity_bytes))
 
 
-def format_cache_available(image_plane_shp):
-    assert maya.cmds.nodeType(image_plane_shp) == 'mmImagePlaneShape2'
+def format_memory_gpu_available(image_plane_shp):
+    """
+    Look up node values and format as text.
+
+    Example text:
+    'GPU 8.00 GB'
+    """
+    assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
     LOG.info(
-        'format_cache_available: image_plane_shp=%r',
+        'format_memory_available: image_plane_shp=%r',
         image_plane_shp,
     )
 
-    cpu_memory_gigabytes = maya.cmds.mmMemorySystem(query=True, systemPhysicalMemoryTotal=True, asGigaBytes=True)
-    gpu_memory_gigabytes = maya.cmds.mmMemoryGPU(query=True, total=True, asGigaBytes=True)
+    memory_gigabytes = maya.cmds.mmMemoryGPU(query=True, total=True, asGigaBytes=True)
 
-    text = 'CPU: 240GB | GPU: 8GB'
-    # TODO: Round these values to the closest value.
-    text = 'CPU: {cpu_memory_gigabytes}GB | GPU: {gpu_memory_gigabytes}GB'
+    text = 'GPU: {memory_gigabytes:0,.2f} GB'
     return text.format(
-        cpu_memory_gigabytes=cpu_memory_gigabytes,
-        gpu_memory_gigabytes=gpu_memory_gigabytes
+        memory_gigabytes=memory_gigabytes,
+    )
+
+
+def format_memory_cpu_available(image_plane_shp):
+    """
+    Look up node values and format as text.
+
+    Example text:
+    'CPU: 240.00 GB'
+    """
+    assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
+    LOG.info(
+        'format_memory_available: image_plane_shp=%r',
+        image_plane_shp,
+    )
+
+    memory_gigabytes = maya.cmds.mmMemorySystem(
+        query=True, systemPhysicalMemoryTotal=True, asGigaBytes=True
+    )
+
+    text = 'CPU: {memory_gigabytes:0,.2f} GB'
+    return text.format(
+        memory_gigabytes=memory_gigabytes,
     )
 
 
 def cache_remove_all_image_plane_slots(cache_type, image_plane_shp):
     assert cache_type in const.CACHE_TYPE_VALUES
-    assert maya.cmds.nodeType(image_plane_shp) == 'mmImagePlaneShape2'
+    assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
     LOG.info(
         'cache_remove_all_image_plane_slots: image_plane_shp=%r, cache_type=%r',
         image_plane_shp,
@@ -142,7 +193,7 @@ def cache_remove_all_image_plane_slots(cache_type, image_plane_shp):
 
 def cache_remove_active_image_plane_slot(cache_type, image_plane_shp):
     assert cache_type in const.CACHE_TYPE_VALUES
-    assert maya.cmds.nodeType(image_plane_shp) == 'mmImagePlaneShape2'
+    assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
     LOG.info(
         'cache_remove_active_image_plane_slot: image_plane_shp=%r, cache_type=%r',
         image_plane_shp,
@@ -153,7 +204,7 @@ def cache_remove_active_image_plane_slot(cache_type, image_plane_shp):
 
 def cache_remove_unused_image_plane_slots(cache_type, image_plane_shp):
     assert cache_type in const.CACHE_TYPE_VALUES
-    assert maya.cmds.nodeType(image_plane_shp) == 'mmImagePlaneShape2'
+    assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
     LOG.info(
         'cache_remove_unused_image_plane_slots: image_plane_shp=%r, cache_type=%r',
         image_plane_shp,

@@ -320,7 +320,9 @@ def get_frame_count(shp):
     start_frame = maya.cmds.getAttr(shp + '.imageSequenceStartFrame')
     end_frame = maya.cmds.getAttr(shp + '.imageSequenceEndFrame')
     frame_count = end_frame - start_frame
-    return frame_count
+    # When the start and end are the same value, that's still one
+    # frame.
+    return frame_count + 1
 
 
 def get_image_sequence_size_bytes(shp):

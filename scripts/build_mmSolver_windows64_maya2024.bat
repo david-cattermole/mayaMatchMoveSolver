@@ -47,7 +47,6 @@ SET MINIZIP_RELATIVE_CMAKE_DIR=lib\cmake\minizip-ng
 SET YAML_RELATIVE_CMAKE_DIR=share\cmake\yaml-cpp\
 SET YAML_RELATIVE_LIB_PATH=lib\yaml-cpp.lib
 SET PYSTRING_RELATIVE_LIB_PATH=lib\pystring.lib
-SET HALF_RELATIVE_LIB_PATH=lib\Imath-3_1.lib
 
 :: Which version of the VFX platform are we "using"? (Maya doesn't
 :: currently conform to the VFX Platform.)

@@ -44,7 +44,6 @@ SET OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME=OpenColorIO-2.0.5
 SET EXPAT_RELATIVE_LIB_PATH=lib\cmake\expat-2.2.8\
 :: yaml-cpp 0.6.3
 SET YAML_RELATIVE_CMAKE_DIR=CMake\
-SET HALF_RELATIVE_LIB_PATH=lib\Half-2_4.lib
 
 :: Which version of the VFX platform are we "using"? (Maya doesn't
 :: currently conform to the VFX Platform.)

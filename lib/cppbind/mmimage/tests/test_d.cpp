@@ -91,8 +91,9 @@ bool test_d_image_write(const char *test_name, const size_t image_width,
 }
 
 int test_d(const char *test_name, const char *dir_path) {
-    auto out_path = join_path(dir_path, "test_identity_st_map.0001.out.exr");
-    const auto out_file_path = rust::Str(out_path);
+    const std::string out_path =
+        join_path(dir_path, "test_identity_st_map.0001.out.exr");
+    rust::Str out_file_path(out_path.c_str());
 
     size_t image_width = 2048;
     size_t image_height = 1556;

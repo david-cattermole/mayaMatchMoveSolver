@@ -250,19 +250,25 @@ global proc AEmmImagePlaneShape2_imageCache_updateValues(
     $cache_cpu_used_cmd += "image_plane_shp = \"" + $image_plane_shp + "\";";
     $cache_cpu_used_cmd += "lib.format_cache_cpu_used(image_plane_shp);";
 
-    string $cache_available_cmd = "import mmSolver.tools.imagecache.lib as lib;";
-    $cache_available_cmd += "image_plane_shp = \"" + $image_plane_shp + "\";";
-    $cache_available_cmd += "lib.format_cache_available(image_plane_shp);";
+    string $memory_gpu_available_cmd = "import mmSolver.tools.imagecache.lib as lib;";
+    $memory_gpu_available_cmd += "image_plane_shp = \"" + $image_plane_shp + "\";";
+    $memory_gpu_available_cmd += "lib.format_memory_gpu_available(image_plane_shp);";
+
+    string $memory_cpu_available_cmd = "import mmSolver.tools.imagecache.lib as lib;";
+    $memory_cpu_available_cmd += "image_plane_shp = \"" + $image_plane_shp + "\";";
+    $memory_cpu_available_cmd += "lib.format_memory_cpu_available(image_plane_shp);";
 
     string $image_seq_size = python($image_seq_size_cmd);
     string $cache_gpu_used = python($cache_gpu_used_cmd);
     string $cache_cpu_used = python($cache_cpu_used_cmd);
-    string $cache_available = python($cache_available_cmd);
+    string $memory_gpu_available = python($memory_gpu_available_cmd);
+    string $memory_cpu_available = python($memory_cpu_available_cmd);
 
     text -edit -label $image_seq_size imageCacheImageSequenceSizeText;
     text -edit -label $cache_gpu_used imageCacheCacheGpuUsedText;
     text -edit -label $cache_cpu_used imageCacheCacheCpuUsedText;
-    text -edit -label $cache_available imageCacheCacheAvailableText;
+    text -edit -label $memory_gpu_available imageCacheMemoryGpuAvailableText;
+    text -edit -label $memory_cpu_available imageCacheMemoryCpuAvailableText;
 }
 
 
@@ -280,6 +286,8 @@ global proc AEmmImagePlaneShape2_imageCacheDisplaySectionNew(string $attr_name)
     }
     setParent ..;
 
+    text -label "";  // spacer
+
     rowLayout -nc 2 imageCacheCacheGpuUsedLayout;
     {
         text -label "GPU Cache Used:";
@@ -294,10 +302,19 @@ global proc AEmmImagePlaneShape2_imageCacheDisplaySectionNew(string $attr_name)
     }
     setParent ..;
 
-    rowLayout -nc 2 imageCacheCacheAvailableLayout;
+    text -label "";  // spacer
+
+    rowLayout -nc 2 imageCacheMemoryGpuAvailableLayout;
     {
         text -label "Total Memory Available:";
-        text -align "left" imageCacheCacheAvailableText;
+        text -align "left" imageCacheMemoryGpuAvailableText;
+    }
+    setParent ..;
+
+    rowLayout -nc 2 imageCacheMemoryCpuAvailableLayout;
+    {
+        text -label "";  // empty space
+        text -align "left" imageCacheMemoryCpuAvailableText;
     }
     setParent ..;
 
@@ -561,15 +578,11 @@ global proc AEmmImagePlaneShape2Template(string $nodeName)
         editorTemplate -addControl "imageNumChannels";
         editorTemplate -addControl "imageBytesPerChannel";
         editorTemplate -addControl "imageSizeBytes";
-
-        // editorTemplate -suppress "imageNumChannels";
-        // editorTemplate -suppress "imageBytesPerChannel";
-        // editorTemplate -suppress "imageSizeBytes";
+        editorTemplate -addControl "imageSequencePadding";
     }
     editorTemplate -endLayout;
 
     // Internals that we don't want the user to see.
-    editorTemplate -suppress "imageSequencePadding";
     editorTemplate -suppress "cameraWidthInch";
     editorTemplate -suppress "cameraHeightInch";
     editorTemplate -suppress "lensHashCurrent";

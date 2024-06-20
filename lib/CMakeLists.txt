@@ -66,8 +66,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 set(cpp_lib_name "mmsolverlibs_cpp")
 set(rust_lib_name "mmsolverlibs_rust")
 
-include(MMSolverUtils)
-set_global_maya_plugin_compile_options()
+include(MMCommonUtils)
+mm_common_set_global_compile_options()
 
 include(MMRustUtils)
 set(rust_linktime_file "NOT-FOUND")

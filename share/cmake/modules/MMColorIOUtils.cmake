@@ -83,22 +83,28 @@ endmacro()
 macro(mmcolorio_target_link_packages target)
   message(STATUS "mmcolorio_target_link_packages: ${target}")
 
+  find_package(yaml-cpp REQUIRED)
   get_target_property(yaml_cpp_LOCATION_RELEASE
     yaml-cpp
     IMPORTED_LOCATION_RELEASE)
   message(STATUS
     "yaml_cpp_LOCATION_RELEASE: ${yaml_cpp_LOCATION_RELEASE}")
 
+  find_package(expat REQUIRED)
+  find_package(pystring REQUIRED)
   target_link_libraries(${target}
     PRIVATE ${expat_LIBRARY}
     PRIVATE ${pystring_LIBRARY}
     PRIVATE ${yaml_cpp_LOCATION_RELEASE}
   )
 
+  find_package(OpenColorIO REQUIRED)
+  find_package(ZLIB REQUIRED)
+  find_package(minizip-ng REQUIRED)
   if(OpenColorIO_VERSION VERSION_GREATER_EQUAL "2.2.0")
     target_link_libraries(${target}
       PRIVATE ZLIB::ZLIB
-      PRIVATE MINIZIP::minizip-ng
+      PRIVATE ${minizip-ng_LIBRARY}
     )
   endif()
 
@@ -110,16 +116,19 @@ macro(mmcolorio_target_link_packages target)
   # but since many libraries wanted the 'half' data type without all
   # of OpenEXR, it was refactored out of OpenEXR.
   if(OpenColorIO_VERSION VERSION_GREATER_EQUAL "2.2.0")
+    find_package(Imath REQUIRED)
     target_link_libraries(${target}
       PRIVATE Imath::Imath
     )
   else()
+    find_package(Half REQUIRED)
     target_link_libraries(${target}
       PRIVATE ${Half_LIBRARY}
     )
   endif()
 
   if (WIN32)
+    find_package(OpenColorIO REQUIRED)
     get_target_property(OpenColorIO_IMPLIB_RELEASE
       OpenColorIO::OpenColorIO
       IMPORTED_IMPLIB_RELEASE)
@@ -138,8 +147,6 @@ macro(mmcolorio_target_link_packages target)
       REALPATH)
 
     target_link_libraries(${target}
-      # PRIVATE OpenColorIO::OpenColorIO
-      # PRIVATE ${OpenColorIO_LOCATION_RELEASE}
       PRIVATE ${OpenColorIO_IMPLIB_RELEASE_ABS}
     )
   elseif (UNIX)
@@ -150,11 +157,8 @@ macro(mmcolorio_target_link_packages target)
       "OpenColorIO_LOCATION_RELEASE: ${OpenColorIO_LOCATION_RELEASE}")
 
     target_link_libraries(${target}
-      # PRIVATE OpenColorIO::OpenColorIO
       PRIVATE ${OpenColorIO_LOCATION_RELEASE}
-      # PRIVATE ${OpenColorIO_IMPLIB_RELEASE}
     )
-
   endif ()
 
 endmacro()

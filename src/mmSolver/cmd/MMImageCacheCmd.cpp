@@ -56,6 +56,12 @@
 #define CPU_USED_FLAG "-cpu"
 #define CPU_USED_FLAG_LONG "-cpuUsed"
 
+#define GPU_ITEM_COUNT_FLAG "-gpi"
+#define GPU_ITEM_COUNT_FLAG_LONG "-gpuItemCount"
+
+#define CPU_ITEM_COUNT_FLAG "-cpi"
+#define CPU_ITEM_COUNT_FLAG_LONG "-cpuItemCount"
+
 #define BRIEF_TEXT_FLAG "-btx"
 #define BRIEF_TEXT_FLAG_LONG "-briefText"
 
@@ -92,6 +98,11 @@ MSyntax MMImageCacheCmd::newSyntax() {
     CHECK_MSTATUS(syntax.addFlag(GPU_USED_FLAG, GPU_USED_FLAG_LONG));
     CHECK_MSTATUS(syntax.addFlag(CPU_USED_FLAG, CPU_USED_FLAG_LONG));
 
+    CHECK_MSTATUS(
+        syntax.addFlag(GPU_ITEM_COUNT_FLAG, GPU_ITEM_COUNT_FLAG_LONG));
+    CHECK_MSTATUS(
+        syntax.addFlag(CPU_ITEM_COUNT_FLAG, CPU_ITEM_COUNT_FLAG_LONG));
+
     CHECK_MSTATUS(syntax.addFlag(BRIEF_TEXT_FLAG, BRIEF_TEXT_FLAG_LONG));
 
     return syntax;
@@ -123,28 +134,11 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
     const bool has_cpu_capacity = argData.isFlagSet(CPU_CAPACITY_FLAG, &status);
     const bool has_gpu_used = argData.isFlagSet(GPU_USED_FLAG, &status);
     const bool has_cpu_used = argData.isFlagSet(CPU_USED_FLAG, &status);
+    const bool has_gpu_item_count =
+        argData.isFlagSet(GPU_ITEM_COUNT_FLAG, &status);
+    const bool has_cpu_item_count =
+        argData.isFlagSet(CPU_ITEM_COUNT_FLAG, &status);
     const bool has_print_brief = argData.isFlagSet(BRIEF_TEXT_FLAG, &status);
-
-    MMSOLVER_MAYA_VRB(
-        "MMImageCacheCmd::parseArgs: "
-        "has_gpu_capacity="
-        << has_gpu_capacity);
-    MMSOLVER_MAYA_VRB(
-        "MMImageCacheCmd::parseArgs: "
-        "has_cpu_capacity="
-        << has_cpu_capacity);
-    MMSOLVER_MAYA_VRB(
-        "MMImageCacheCmd::parseArgs: "
-        "has_gpu_used="
-        << has_gpu_used);
-    MMSOLVER_MAYA_VRB(
-        "MMImageCacheCmd::parseArgs: "
-        "has_cpu_used="
-        << has_cpu_used);
-    MMSOLVER_MAYA_VRB(
-        "MMImageCacheCmd::parseArgs: "
-        "has_print_brief="
-        << has_print_brief);
 
     if (m_is_query) {
         if (has_gpu_capacity) {
@@ -155,6 +149,10 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
             m_command_flag = ImageCacheFlagMode::kGpuUsed;
         } else if (has_cpu_used) {
             m_command_flag = ImageCacheFlagMode::kCpuUsed;
+        } else if (has_gpu_item_count) {
+            m_command_flag = ImageCacheFlagMode::kGpuItemCount;
+        } else if (has_cpu_item_count) {
+            m_command_flag = ImageCacheFlagMode::kCpuItemCount;
         } else if (has_print_brief) {
             m_command_flag = ImageCacheFlagMode::kGenerateBriefText;
         } else {
@@ -285,6 +283,10 @@ MStatus MMImageCacheCmd::doIt(const MArgList &args) {
                 bytes_value = image_cache.get_gpu_used_bytes();
             } else if (m_command_flag == ImageCacheFlagMode::kCpuUsed) {
                 bytes_value = image_cache.get_cpu_used_bytes();
+            } else if (m_command_flag == ImageCacheFlagMode::kGpuItemCount) {
+                bytes_value = image_cache.get_gpu_item_count();
+            } else if (m_command_flag == ImageCacheFlagMode::kCpuItemCount) {
+                bytes_value = image_cache.get_cpu_item_count();
             } else {
                 MMSOLVER_MAYA_ERR(
                     "MMImageCacheCmd::doIt: "

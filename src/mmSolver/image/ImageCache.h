@@ -176,6 +176,20 @@ public:
                           << "m_cpu_used_bytes=" << m_cpu_used_bytes);
         return m_cpu_used_bytes;
     }
+    size_t get_gpu_item_count() const {
+        const bool verbose = false;
+        MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_gpu_item_count: "
+                          << "m_gpu_cache_map.size()="
+                          << m_gpu_cache_map.size());
+        return m_gpu_cache_map.size();
+    }
+    size_t get_cpu_item_count() const {
+        const bool verbose = false;
+        MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_cpu_item_count: "
+                          << "m_cpu_cache_map.size()="
+                          << m_cpu_cache_map.size());
+        return m_cpu_cache_map.size();
+    }
 
     // Set the capacity of the cache.
     void set_gpu_capacity_bytes(MHWRender::MTextureManager *texture_manager,

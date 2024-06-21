@@ -305,6 +305,7 @@ MStatus ImagePlaneShape2Node::initialize() {
     CHECK_MSTATUS(nAttr.setReadable(true));
     CHECK_MSTATUS(nAttr.setWritable(true));
     CHECK_MSTATUS(nAttr.setDefault(1.0f, 1.0f, 1.0f));
+    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Gain")));
     CHECK_MSTATUS(addAttribute(m_image_color_gain));
 
     const float exposure_soft_min = -9.0f;
@@ -316,6 +317,7 @@ MStatus ImagePlaneShape2Node::initialize() {
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setSoftMin(exposure_soft_min));
     CHECK_MSTATUS(nAttr.setSoftMax(exposure_soft_max));
+    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Exposure")));
     CHECK_MSTATUS(addAttribute(m_image_color_exposure));
 
     const float gamma_min = 0.0f;
@@ -327,6 +329,7 @@ MStatus ImagePlaneShape2Node::initialize() {
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(gamma_min));
     CHECK_MSTATUS(nAttr.setSoftMax(gamma_soft_max));
+    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Gamma")));
     CHECK_MSTATUS(addAttribute(m_image_color_gamma));
 
     const float saturation_min = 0.0f;
@@ -339,6 +342,7 @@ MStatus ImagePlaneShape2Node::initialize() {
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(saturation_min));
     CHECK_MSTATUS(nAttr.setSoftMax(saturation_soft_max));
+    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("Saturation")));
     CHECK_MSTATUS(addAttribute(m_image_color_saturation));
 
     const float soft_clip_min = 0.0f;
@@ -351,6 +355,7 @@ MStatus ImagePlaneShape2Node::initialize() {
     CHECK_MSTATUS(nAttr.setKeyable(true));
     CHECK_MSTATUS(nAttr.setMin(soft_clip_min));
     CHECK_MSTATUS(nAttr.setMax(soft_clip_max));
+    CHECK_MSTATUS(nAttr.setNiceNameOverride(MString("SoftClip")));
     CHECK_MSTATUS(addAttribute(m_image_color_soft_clip));
 
     const double alpha_min = 0.0;

@@ -51,7 +51,7 @@ def format_image_sequence_size(image_plane_shp):
     '2,346.1MB (23.7MB x 102 frames)'
     """
     assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
-    LOG.info(
+    LOG.debug(
         'format_image_sequence_size: image_plane_shp=%r',
         image_plane_shp,
     )
@@ -104,15 +104,13 @@ def format_cache_gpu_used(image_plane_shp):
     ' 42.1% (3.53GB) of 8.00GB'
     """
     assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
-    LOG.info(
+    LOG.debug(
         'format_cache_gpu_used: image_plane_shp=%r',
         image_plane_shp,
     )
 
-    used_bytes = maya.cmds.mmImageCache(query=True, gpuUsed=True)
-    capacity_bytes = maya.cmds.mmImageCache(query=True, gpuCapacity=True)
-    LOG.info('used_bytes: %r', used_bytes)
-    LOG.info('capacity_bytes: %r', capacity_bytes)
+    used_bytes = get_gpu_cache_used_bytes()
+    capacity_bytes = get_gpu_cache_capacity_bytes()
     return _format_cache_used(int(used_bytes), int(capacity_bytes))
 
 
@@ -124,15 +122,13 @@ def format_cache_cpu_used(image_plane_shp):
     ' 23.1% (34.24 GB) of 240.00 GB'
     """
     assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
-    LOG.info(
+    LOG.debug(
         'format_cache_cpu_used: image_plane_shp=%r',
         image_plane_shp,
     )
 
-    used_bytes = maya.cmds.mmImageCache(query=True, cpuUsed=True)
-    capacity_bytes = maya.cmds.mmImageCache(query=True, cpuCapacity=True)
-    LOG.info('used_bytes: %r', used_bytes)
-    LOG.info('capacity_bytes: %r', capacity_bytes)
+    used_bytes = get_cpu_cache_used_bytes()
+    capacity_bytes = get_cpu_cache_capacity_bytes()
     return _format_cache_used(int(used_bytes), int(capacity_bytes))
 
 
@@ -144,12 +140,15 @@ def format_memory_gpu_available(image_plane_shp):
     'GPU 8.00 GB'
     """
     assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
-    LOG.info(
+    LOG.debug(
         'format_memory_available: image_plane_shp=%r',
         image_plane_shp,
     )
 
-    memory_gigabytes = maya.cmds.mmMemoryGPU(query=True, total=True, asGigaBytes=True)
+    memory_bytes = get_gpu_memory_total_bytes()
+    memory_gigabytes = 0.0
+    if memory_bytes > 0:
+        memory_gigabytes = memory_bytes / _BYTES_TO_GIGABYTES
 
     text = 'GPU: {memory_gigabytes:0,.2f} GB'
     return text.format(
@@ -165,18 +164,71 @@ def format_memory_cpu_available(image_plane_shp):
     'CPU: 240.00 GB'
     """
     assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
-    LOG.info(
+    LOG.debug(
         'format_memory_available: image_plane_shp=%r',
         image_plane_shp,
     )
 
-    memory_gigabytes = maya.cmds.mmMemorySystem(
-        query=True, systemPhysicalMemoryTotal=True, asGigaBytes=True
-    )
+    memory_bytes = get_cpu_memory_total_bytes()
+    memory_gigabytes = 0.0
+    if memory_bytes > 0:
+        memory_gigabytes = memory_bytes / _BYTES_TO_GIGABYTES
 
     text = 'CPU: {memory_gigabytes:0,.2f} GB'
     return text.format(
         memory_gigabytes=memory_gigabytes,
+    )
+
+
+def get_gpu_cache_item_count():
+    # TODO: Query the image cache.
+    return 42
+
+
+def get_cpu_cache_item_count():
+    # TODO: Query the image cache.
+    return 42
+
+
+def get_gpu_cache_used_bytes():
+    return int(maya.cmds.mmImageCache(query=True, gpuUsed=True))
+
+
+def get_cpu_cache_used_bytes():
+    return int(maya.cmds.mmImageCache(query=True, cpuUsed=True))
+
+
+def get_gpu_cache_capacity_bytes():
+    return int(maya.cmds.mmImageCache(query=True, gpuCapacity=True))
+
+
+def get_cpu_cache_capacity_bytes():
+    return int(maya.cmds.mmImageCache(query=True, cpuCapacity=True))
+
+
+def get_gpu_memory_total_bytes():
+    return int(maya.cmds.mmMemoryGPU(query=True, total=True))
+
+
+def get_gpu_memory_used_bytes():
+    return int(maya.cmds.mmMemoryGPU(query=True, used=True))
+
+
+def get_cpu_memory_total_bytes():
+    return int(
+        maya.cmds.mmMemorySystem(
+            query=True,
+            systemPhysicalMemoryTotal=True,
+        )
+    )
+
+
+def get_cpu_memory_used_bytes():
+    return int(
+        maya.cmds.mmMemorySystem(
+            query=True,
+            systemPhysicalMemoryUsed=True,
+        )
     )
 
 

@@ -219,9 +219,9 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <widget class="QLabel" name="gpuItems_label">
+           <widget class="QLabel" name="gpuCacheItemCount_label">
             <property name="text">
-             <string>Items:</string>
+             <string>Item Count:</string>
             </property>
            </widget>
           </item>
@@ -239,7 +239,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="gpuItemsValue_label">
+           <widget class="QLabel" name="gpuCacheItemCountValue_label">
             <property name="text">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;42&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -250,9 +250,9 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_9">
           <item>
-           <widget class="QLabel" name="gpuMemoryTotal_label_2">
+           <widget class="QLabel" name="gpuCacheCapacity_label_2">
             <property name="text">
-             <string>Cache Capacity:</string>
+             <string>Capacity:</string>
             </property>
            </widget>
           </item>
@@ -270,7 +270,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="gpuMemoryTotalValue_label_2">
+           <widget class="QLabel" name="gpuCacheCapacityValue_label">
             <property name="text">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;2.0 GB&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -281,9 +281,9 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_10">
           <item>
-           <widget class="QLabel" name="gpuMemoryUsed_label_2">
+           <widget class="QLabel" name="gpuCacheUsed_label">
             <property name="text">
-             <string>Cache Used:</string>
+             <string>Used:</string>
             </property>
            </widget>
           </item>
@@ -301,7 +301,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="gpuMemoryUsedValue_label_2">
+           <widget class="QLabel" name="gpuCacheUsedValue_label">
             <property name="text">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;0.125 GB (6.3%)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -321,9 +321,9 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_11">
           <item>
-           <widget class="QLabel" name="cpuItems_label">
+           <widget class="QLabel" name="cpuCacheItemCount_label">
             <property name="text">
-             <string>Items:</string>
+             <string>Item Count:</string>
             </property>
            </widget>
           </item>
@@ -341,7 +341,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="cpuItemsValue_label">
+           <widget class="QLabel" name="cpuCacheItemCountValue_label">
             <property name="text">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;42&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -352,7 +352,7 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_12">
           <item>
-           <widget class="QLabel" name="cpuMemoryTotal_label_2">
+           <widget class="QLabel" name="cpuCacheCapacity_label_2">
             <property name="text">
              <string>Capacity:</string>
             </property>
@@ -372,7 +372,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="cpuMemoryTotalValue_label_2">
+           <widget class="QLabel" name="cpuCacheCapacityValue_label">
             <property name="text">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;128.0 GB&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -383,7 +383,7 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_13">
           <item>
-           <widget class="QLabel" name="cpuMemoryUsed_label_2">
+           <widget class="QLabel" name="cpuCacheUsed_label">
             <property name="text">
              <string>Used:</string>
             </property>
@@ -403,7 +403,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="cpuMemoryUsedValue_label_2">
+           <widget class="QLabel" name="cpuCacheUsedValue_label">
             <property name="text">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;22.5 GB (17.5%)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>

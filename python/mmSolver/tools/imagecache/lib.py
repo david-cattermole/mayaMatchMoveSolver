@@ -181,13 +181,11 @@ def format_memory_cpu_available(image_plane_shp):
 
 
 def get_gpu_cache_item_count():
-    # TODO: Query the image cache.
-    return 42
+    return int(maya.cmds.mmImageCache(query=True, gpuItemCount=True))
 
 
 def get_cpu_cache_item_count():
-    # TODO: Query the image cache.
-    return 42
+    return int(maya.cmds.mmImageCache(query=True, cpuItemCount=True))
 
 
 def get_gpu_cache_used_bytes():

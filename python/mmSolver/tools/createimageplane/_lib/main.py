@@ -171,6 +171,13 @@ def _set_image_sequence_v1(mm_image_plane_node, image_sequence_path, attr_name=N
     return
 
 
+def _set_locked_string_attr(node_attr, value):
+    maya.cmds.setAttr(node_attr, lock=False)
+    maya.cmds.setAttr(node_attr, value, type='string')
+    maya.cmds.setAttr(node_attr, lock=True)
+    return
+
+
 def _set_image_sequence_v2(mm_image_plane_node, image_sequence_path, attr_name=None):
     if attr_name is None:
         attr_name = lib_const.DEFAULT_IMAGE_SEQUENCE_ATTR_NAME
@@ -208,16 +215,11 @@ def _set_image_sequence_v2(mm_image_plane_node, image_sequence_path, attr_name=N
         input_color_space = _guess_color_space(first_frame_file_seq)
         output_color_space = maya.cmds.mmColorIO(roleSceneLinear=True)
 
-        maya.cmds.setAttr(
-            shp + '.' + lib_const.INPUT_COLOR_SPACE_ATTR_NAME,
-            input_color_space,
-            type='string',
-        )
-        maya.cmds.setAttr(
-            shp + '.' + lib_const.OUTPUT_COLOR_SPACE_ATTR_NAME,
-            output_color_space,
-            type='string',
-        )
+        node_attr = shp + '.' + lib_const.INPUT_COLOR_SPACE_ATTR_NAME
+        _set_locked_string_attr(node_attr, input_color_space)
+
+        node_attr = shp + '.' + lib_const.OUTPUT_COLOR_SPACE_ATTR_NAME
+        _set_locked_string_attr(node_attr, output_color_space)
 
     return
 

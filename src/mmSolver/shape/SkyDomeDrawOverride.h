@@ -46,7 +46,13 @@ namespace mmsolver {
 class SkyDomeDrawData : public MUserData {
 public:
     SkyDomeDrawData()
+#if MAYA_API_VERSION >= 20220000
+        : MUserData()
+#else
+        // MUserData(bool) constructor is deprecated in Maya 2022+
+        // because 'deleteAfterUse' is no longer needed.
         : MUserData(/*deleteAfterUse=*/true)  // let Maya clean up
+#endif
         , m_draw_mode(static_cast<short>(DrawMode::kDrawOnTop))
         , m_transform_mode(static_cast<short>(TransformMode::kNoOffset))
         , m_line_width(1.0)
@@ -77,7 +83,8 @@ public:
         , m_grid_lat_line_width(1.0f)
         , m_grid_long_line_width(1.0f)
         , m_grid_lat_divisions(6)
-        , m_grid_long_divisions(6) {}
+        , m_grid_long_divisions(6) {
+    }
 
     ~SkyDomeDrawData() override {}
 

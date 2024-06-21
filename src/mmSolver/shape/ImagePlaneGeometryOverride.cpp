@@ -271,10 +271,16 @@ void ImagePlaneGeometryOverride::updateRenderItems(const MDagPath &path,
             // needs to be re-compiled.
             auto linkLostCb = nullptr;
             auto linkLostUserData = nullptr;
-            bool nonTextured = false;
+            const bool nonTextured = false;
+#if MAYA_API_VERSION >= 20220000
+            shadedItem->setShaderFromNode2(m_shader_node, m_geometry_node_path,
+                                           linkLostCb, linkLostUserData,
+                                           nonTextured);
+#else
             shadedItem->setShaderFromNode(m_shader_node, m_geometry_node_path,
                                           linkLostCb, linkLostUserData,
                                           nonTextured);
+#endif
         } else {
             MMSOLVER_MAYA_WRN(
                 "mmImagePlaneShape: "

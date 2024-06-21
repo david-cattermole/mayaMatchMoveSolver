@@ -49,7 +49,13 @@ namespace mmsolver {
 class LineDrawData : public MUserData {
 public:
     LineDrawData()
+#if MAYA_API_VERSION >= 20220000
+        : MUserData()
+#else
+        // MUserData(bool) constructor is deprecated in Maya 2022+
+        // because 'deleteAfterUse' is no longer needed.
         : MUserData(/*deleteAfterUse=*/true)  // let Maya clean up
+#endif
         , m_depth_priority(0)
         , m_inner_line_width(1.0)
         , m_middle_line_width(1.0)
@@ -58,7 +64,8 @@ public:
         , m_point_list()
         , m_active(false)
         , m_draw_name(false)
-        , m_draw_middle(false) {}
+        , m_draw_middle(false) {
+    }
 
     ~LineDrawData() override {}
 

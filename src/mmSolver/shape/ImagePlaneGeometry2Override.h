@@ -60,7 +60,7 @@ public:
 #else
         // MUserData(bool) constructor is deprecated in Maya 2022+
         // because 'deleteAfterUse' is no longer needed.
-        : MUserData(true)
+        : MUserData(/*deleteAfterUse=*/true)  // let Maya clean up
 #endif
         , link_lost_count(0)
         , set_shader_count(0) {

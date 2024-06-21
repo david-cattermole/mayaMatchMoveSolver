@@ -48,13 +48,20 @@ namespace mmsolver {
 class BundleDrawData : public MUserData {
 public:
     BundleDrawData()
+#if MAYA_API_VERSION >= 20220000
+        : MUserData()
+#else
+        // MUserData(bool) constructor is deprecated in Maya 2022+
+        // because 'deleteAfterUse' is no longer needed.
         : MUserData(/*deleteAfterUse=*/true)  // let Maya clean up
+#endif
         , m_depth_priority(0)
         , m_line_width(1.0)
         , m_point_size(1.0)
         , m_icon_size(1.0)
         , m_active(false)
-        , m_draw_name(false) {}
+        , m_draw_name(false) {
+    }
 
     ~BundleDrawData() override {}
 

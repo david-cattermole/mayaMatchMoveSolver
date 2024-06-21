@@ -85,9 +85,9 @@ def main(show=True, auto_raise=True, delete=False):
                    developing the UI in Maya script editor.
     :type delete: bool
 
-    :returns: A new solver window, or None if the window cannot be
-              opened.
-    :rtype: SolverWindow or None.
+    :returns: A new channel sensitivity window, or None if the window
+              cannot be opened.
+    :rtype: ChannelSenWindow or None.
     """
     win = ChannelSenWindow.open_window(show=show, auto_raise=auto_raise, delete=delete)
     return win

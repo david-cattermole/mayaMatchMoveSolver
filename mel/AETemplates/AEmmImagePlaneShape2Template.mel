@@ -501,13 +501,14 @@ global proc AEmmImagePlaneShape2Template(string $nodeName)
         editorTemplate -addControl "colorSoftClip";
         editorTemplate -addControl "alphaGain";
         editorTemplate -addSeparator;
-        editorTemplate -addControl "imageIgnoreAlpha";
-        editorTemplate -addControl "displayChannel";
         editorTemplate
             -callCustom
             "AEmmImagePlaneShape2_colorSpaceNew"
             "AEmmImagePlaneShape2_colorSpaceReplace"
             "inputColorSpace";
+        editorTemplate -addSeparator;
+        editorTemplate -addControl "imageIgnoreAlpha";
+        editorTemplate -addControl "displayChannel";
     }
     editorTemplate -endLayout;
 

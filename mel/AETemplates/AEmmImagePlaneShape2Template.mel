@@ -235,111 +235,22 @@ global proc AEmmImagePlaneShape2_imageSequenceReplace(string $file_attr)
 }
 
 
-proc string set_color_space_make_command(string $quoted_node_attr, string $control_name, string $value)
+global proc AEmmImagePlaneShape2_colorSpaceNew(string $node_attr)
 {
-    string $cmd = "";
-    // TODO: Check if the node is editable first?
-    $cmd += "setAttr -lock false " + $quoted_node_attr + ";";
-    $cmd += "setAttr -type \"string\" " + $quoted_node_attr + " \"" + $value + "\";";
-    $cmd += "setAttr -lock true " + $quoted_node_attr + ";";
-    $cmd += "button -edit -label \"" + $value + "\" " + $control_name + ";";
-    return $cmd;
-}
-
-global proc AEmmImagePlaneShape2_inputColorSpaceNew(string $attr_name)
-{
-    string $image_plane_shp[];
-    tokenize($attr_name, ".", $image_plane_shp);
-    if(size($image_plane_shp) < 1) {
-        return;
-    }
-
-    string $attr_names[];
-    tokenize ($attr_name, ".", $attr_names);
-
-    string $nice_name = `attributeName -nice $attr_name`;
-    string $node_attr = $image_plane_shp[0] + "." + $attr_names[1];
-    string $quoted_node_attr = "\"" + $image_plane_shp[0] + "." + $attr_names[1] + "\"";
-
     setUITemplate -pst attributeEditorTemplate;
 
-    string $current_value = `getAttr $node_attr`;
-    string $role = "";
-    string $cmd = "";
-
-    rowLayout -nc 3 inputColorSpaceLayout;
-    {
-        // TODO: Convert color space button into a Python script.
-        text -label $nice_name;
-
-        string $button_name = "inputColorSpaceButton";
-        button inputColorSpaceButton;
-
-        if (size($current_value) == 0) {
-            button -edit -label "<empty>" inputColorSpaceButton;
-        } else {
-            button -edit -label $current_value inputColorSpaceButton;
-        }
-
-        int $left_mouse_button = 1;
-        popupMenu -button $left_mouse_button;
-
-        $role = `mmColorIO -roleDefault true`;
-        if (size($role) > 0) {
-            $cmd = set_color_space_make_command(
-                $quoted_node_attr, $button_name, $role);
-            menuItem -label ("Default: " + $role) -command $cmd;
-        }
-
-        $role = `mmColorIO -roleSceneLinear true`;
-        if (size($role) > 0) {
-            $cmd = set_color_space_make_command(
-                $quoted_node_attr, $button_name, $role);
-            menuItem -label ("Scene Linear: " + $role) -command $cmd;
-        }
-
-        $role = `mmColorIO -roleMattePaint true`;
-        if (size($role) > 0) {
-            $cmd = set_color_space_make_command(
-                $quoted_node_attr, $button_name, $role);
-            menuItem -label ("Matte Paint: " + $role) -command $cmd;
-        }
-
-        $role = `mmColorIO -roleData true`;
-        if (size($role) > 0) {
-            $cmd = set_color_space_make_command(
-                $quoted_node_attr, $button_name, $role);
-            menuItem -label ("Data: " + $role) -command $cmd;
-        }
-
-        $role = `mmColorIO -roleColorPicking true`;
-        if (size($role) > 0) {
-            $cmd = set_color_space_make_command(
-                $quoted_node_attr, $button_name, $role);
-            menuItem -label ("Color Picking: " + $role) -command $cmd;
-        }
-
-        menuItem -divider true;
-
-        string $names[] = `mmColorIO -listColorSpacesActive true`;
-        string $name;
-        for($name in $names)
-        {
-            $cmd = set_color_space_make_command(
-                $quoted_node_attr, $button_name, $name);
-            menuItem -label $name -command $cmd;
-        }
-
-    }
-    setParent ..;
+    string $cmd = "import mmSolver.tools.createimageplane._lib.mmimageplane_v2 as lib;";
+    $cmd += "node_attr = \"" + $node_attr + "\";";
+    $cmd += "lib.color_space_attribute_editor_new(node_attr);";
+    python($cmd);
 
     setUITemplate -ppt;
 
-    AEmmImagePlaneShape2_inputColorSpaceReplace $attr_name;
+    AEmmImagePlaneShape2_colorSpaceReplace $node_attr;
 }
 
 
-global proc AEmmImagePlaneShape2_inputColorSpaceReplace(string $attr_name)
+global proc AEmmImagePlaneShape2_colorSpaceReplace(string $node_attr)
 {
     // Nothing needed here.
 }
@@ -580,6 +491,11 @@ global proc AEmmImagePlaneShape2Template(string $nodeName)
         editorTemplate -addSeparator;
         editorTemplate -addControl "imageIgnoreAlpha";
         editorTemplate -addControl "displayChannel";
+        editorTemplate
+            -callCustom
+            "AEmmImagePlaneShape2_colorSpaceNew"
+            "AEmmImagePlaneShape2_colorSpaceReplace"
+            "inputColorSpace";
     }
     editorTemplate -endLayout;
 
@@ -619,12 +535,6 @@ global proc AEmmImagePlaneShape2Template(string $nodeName)
         editorTemplate -addSeparator;
         editorTemplate -addControl "imageSequenceStartFrame";
         editorTemplate -addControl "imageSequenceEndFrame";
-        editorTemplate -addSeparator;
-        editorTemplate
-            -callCustom
-            "AEmmImagePlaneShape2_inputColorSpaceNew"
-            "AEmmImagePlaneShape2_inputColorSpaceReplace"
-            "inputColorSpace";
         editorTemplate -addSeparator;
         // TODO: Add radio button to choose what will connect to the
         // 'imageSequenceFrame' value? Options are:
@@ -670,6 +580,11 @@ global proc AEmmImagePlaneShape2Template(string $nodeName)
         editorTemplate -addControl "meshResolution";
         editorTemplate -addControl "imageDefaultColor";  // Cannot be textured.
         editorTemplate -addControl "shaderIsTransparent";
+        editorTemplate
+          -callCustom
+          "AEmmImagePlaneShape2_colorSpaceNew"
+          "AEmmImagePlaneShape2_colorSpaceReplace"
+          "outputColorSpace";
     }
     editorTemplate -endLayout;
 

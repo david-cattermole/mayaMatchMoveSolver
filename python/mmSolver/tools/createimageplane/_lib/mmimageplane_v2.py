@@ -386,3 +386,75 @@ def get_image_plane_node_pair(node):
         tfm = get_transform_node(node)
         shp = node
     return tfm, shp
+
+
+def _set_attribute_editor_color_space(node_attr, control_name, value):
+    # TODO: Check if the node is editable first?
+    maya.cmds.setAttr(node_attr, lock=False)
+    maya.cmds.setAttr(node_attr, value, type='string')
+    maya.cmds.setAttr(node_attr, lock=True)
+    maya.cmds.button(control_name, edit=True, label=value)
+
+
+def _maybe_make_menu_item(button_name, label, node_attr, value):
+    if value and len(value) > 0:
+        func = lambda x: _set_attribute_editor_color_space(
+            node_attr, button_name, value
+        )
+        maya.cmds.menuItem(label=label, command=func)
+    return
+
+
+def color_space_attribute_editor_new(node_attr):
+    assert isinstance(node_attr, str)
+    split = node_attr.split('.')
+    if len(split) == 0:
+        LOG.warn('Could not get attribute name from: %r', node_attr)
+        return
+    attr = split[-1]
+
+    current_value = maya.cmds.getAttr(node_attr)
+    nice_name = maya.cmds.attributeName(node_attr, nice=True)
+
+    layout_name = '{}_colorSpaceLayout'.format(attr)
+    maya.cmds.rowLayout(layout_name, numberOfColumns=3)
+
+    maya.cmds.text(label=nice_name)
+
+    button_name = "{}_colorSpaceButton".format(attr)
+    maya.cmds.button(button_name)
+    if len(current_value) == 0:
+        maya.cmds.button(button_name, edit=True, label="<empty>")
+    else:
+        maya.cmds.button(button_name, edit=True, label=current_value)
+
+    left_mouse_button = 1
+    maya.cmds.popupMenu(button=left_mouse_button)
+
+    value = maya.cmds.mmColorIO(roleDefault=True)
+    label = 'Default: {}'.format(value)
+    _maybe_make_menu_item(button_name, label, node_attr, value)
+
+    value = maya.cmds.mmColorIO(roleSceneLinear=True)
+    label = 'Scene Linear: {}'.format(value)
+    _maybe_make_menu_item(button_name, label, node_attr, value)
+
+    value = maya.cmds.mmColorIO(roleMattePaint=True)
+    label = 'Matte Paint: {}'.format(value)
+    _maybe_make_menu_item(button_name, label, node_attr, value)
+
+    value = maya.cmds.mmColorIO(roleData=True)
+    label = 'Data: {}'.format(value)
+    _maybe_make_menu_item(button_name, label, node_attr, value)
+
+    value = maya.cmds.mmColorIO(roleColorPicking=True)
+    label = 'Color Picking: {}'.format(value)
+    _maybe_make_menu_item(button_name, label, node_attr, value)
+
+    maya.cmds.menuItem(divider=True)
+
+    color_space_names = maya.cmds.mmColorIO(listColorSpacesActive=True)
+    for name in color_space_names:
+        _maybe_make_menu_item(button_name, name, node_attr, name)
+
+    maya.cmds.setParent('..')

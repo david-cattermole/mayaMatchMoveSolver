@@ -230,14 +230,89 @@ def get_cpu_memory_used_bytes():
     )
 
 
+def get_cache_group_names(cache_type):
+    assert cache_type in const.CACHE_TYPE_VALUES
+    value = None
+    if cache_type == const.CACHE_TYPE_GPU:
+        value = maya.cmds.mmImageCache(query=True, gpuGroupNames=True)
+    elif cache_type == const.CACHE_TYPE_CPU:
+        value = maya.cmds.mmImageCache(query=True, cpuGroupNames=True)
+    return value
+
+
+def get_cache_group_count(cache_type):
+    assert cache_type in const.CACHE_TYPE_VALUES
+    value = None
+    if cache_type == const.CACHE_TYPE_GPU:
+        value = maya.cmds.mmImageCache(query=True, gpuGroupCount=True)
+    elif cache_type == const.CACHE_TYPE_CPU:
+        value = maya.cmds.mmImageCache(query=True, cpuGroupCount=True)
+    return value
+
+
+def get_cache_group_item_count(cache_type, group_name):
+    assert cache_type in const.CACHE_TYPE_VALUES
+    assert isinstance(group_name, str)
+    value = None
+    if cache_type == const.CACHE_TYPE_GPU:
+        value = maya.cmds.mmImageCache(group_name, query=True, gpuGroupItemCount=True)
+    elif cache_type == const.CACHE_TYPE_CPU:
+        value = maya.cmds.mmImageCache(group_name, query=True, cpuGroupItemCount=True)
+    return value
+
+
+def get_cache_group_item_names(cache_type, group_name):
+    assert cache_type in const.CACHE_TYPE_VALUES
+    assert isinstance(group_name, str)
+    value = None
+    if cache_type == const.CACHE_TYPE_GPU:
+        value = maya.cmds.mmImageCache(group_name, query=True, gpuGroupItemNames=True)
+    elif cache_type == const.CACHE_TYPE_CPU:
+        value = maya.cmds.mmImageCache(group_name, query=True, cpuGroupItemNames=True)
+    return value
+
+
+def cache_erase_group(cache_type, group_name):
+    assert cache_type in const.CACHE_TYPE_VALUES
+    assert isinstance(group_name, str)
+    value = None
+    if cache_type == const.CACHE_TYPE_GPU:
+        value = maya.cmds.mmImageCache(edit=True, gpuEraseGroup=group_name)
+    elif cache_type == const.CACHE_TYPE_CPU:
+        value = maya.cmds.mmImageCache(edit=True, cpuEraseGroup=group_name)
+    return value
+
+
+def cache_erase_items(cache_type, items):
+    assert cache_type in const.CACHE_TYPE_VALUES
+    assert len(items) >= 0
+    value = None
+    if cache_type == const.CACHE_TYPE_GPU:
+        value = maya.cmds.mmImageCache(edit=True, gpuEraseItems=items)
+    elif cache_type == const.CACHE_TYPE_CPU:
+        value = maya.cmds.mmImageCache(edit=True, cpuEraseItems=items)
+    return value
+
+
 def cache_remove_all_image_plane_slots(cache_type, image_plane_shp):
     assert cache_type in const.CACHE_TYPE_VALUES
     assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
     LOG.info(
-        'cache_remove_all_image_plane_slots: image_plane_shp=%r, cache_type=%r',
-        image_plane_shp,
+        'cache_remove_all_image_plane_slots: cache_type=%r, image_plane_shp=%r',
         cache_type,
+        image_plane_shp,
     )
+
+    slots = imageplane_lib.get_image_sequence_for_all_slots(image_plane_shp)
+    LOG.info('cache_remove_all_image_plane_slots: slots=%r', slots)
+
+    group_names = get_cache_group_names(cache_type)
+    for slot in slots:
+        if slot not in group_names:
+            LOG.warn('Slot not found in groups: group_names=%r', group_names)
+            continue
+        cache_erase_group(cache_type, slot)
+
     return
 
 
@@ -245,10 +320,14 @@ def cache_remove_active_image_plane_slot(cache_type, image_plane_shp):
     assert cache_type in const.CACHE_TYPE_VALUES
     assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
     LOG.info(
-        'cache_remove_active_image_plane_slot: image_plane_shp=%r, cache_type=%r',
-        image_plane_shp,
+        'cache_remove_active_image_plane_slot: cache_type=%r, image_plane_shp=%r',
         cache_type,
+        image_plane_shp,
     )
+
+    slot = imageplane_lib.get_image_sequence_for_active_slot(image_plane_shp)
+    LOG.info('cache_remove_active_image_plane_slot: slot=%r', slot)
+
     return
 
 
@@ -256,10 +335,12 @@ def cache_remove_unused_image_plane_slots(cache_type, image_plane_shp):
     assert cache_type in const.CACHE_TYPE_VALUES
     assert maya.cmds.nodeType(image_plane_shp) == _MM_IMAGE_PLANE_SHAPE_V2
     LOG.info(
-        'cache_remove_unused_image_plane_slots: image_plane_shp=%r, cache_type=%r',
-        image_plane_shp,
+        'cache_remove_unused_image_plane_slots: cache_type=%r, image_plane_shp=%r',
         cache_type,
+        image_plane_shp,
     )
+    slots = imageplane_lib.get_image_sequence_for_unused_slots(image_plane_shp)
+    LOG.info('cache_remove_unused_image_plane_slots: slots=%r', slots)
     return
 
 
@@ -269,26 +350,62 @@ def cache_remove_all(cache_type):
         'cache_remove_unused_image_plane_slots: cache_type=%r',
         cache_type,
     )
+
+    # TODO: Clear image cache completely.
     return
 
 
-def cache_remove_image_sequence(file_pattern, start_frame, end_frame, cache_type):
+def cache_remove_image_sequence(cache_type, file_pattern, start_frame, end_frame):
+    assert cache_type in const.CACHE_TYPE_VALUES
+    assert isinstance(file_pattern, str)
+    assert isinstance(start_frame, int)
+    assert isinstance(end_frame, int)
     LOG.info(
         'cache_remove_image_sequence: '
-        'file_pattern=%r, start_frame=%r, end_frame=%r, cache_type=%r',
+        'cache_type=%r, file_pattern=%r, start_frame=%r, end_frame=%r',
+        cache_type,
         file_pattern,
         start_frame,
         end_frame,
-        cache_type,
     )
-    pass
+
+    item_count = get_cache_group_item_count(cache_type, file_pattern)
+    if item_count == 0:
+        LOG.warn('File pattern does not have any items. item_count=%r', item_count)
+        return
+
+    item_names = get_cache_group_item_names(cache_type, file_pattern)
+    assert len(item_names) > 0
+
+    # TODO:
+    #
+    # 1) Evaluate the file_pattern for start_frame to end_frame.
+    #
+    # 2) If the evaluated file path is in the image cache, add it to
+    #    the list to be removed.
+    #
+    # 3) Remove named items from the cache.
+
+    raise NotImplementedError
 
 
 def cache_remove_all_inactive(cache_type):
+    assert cache_type in const.CACHE_TYPE_VALUES
     # Removes all the items in the cache that cannot be 'reached' by
     # any of the image planes.
     LOG.info(
         'cache_remove_all_inactive: cache_type=%r',
         cache_type,
     )
-    pass
+
+    # TODO:
+    #
+    # 1) Get all image planes.
+    #
+    # 2) Get all active slots on all image planes.
+    #
+    # 3) Get all groups in the image cache.
+    #
+    # 4) For any group that is not in the active slots, remove it.
+
+    raise NotImplementedError

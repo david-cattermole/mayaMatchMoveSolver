@@ -124,7 +124,22 @@ enum class ImageCacheFlagMode : uint8_t {
     kCpuUsed,
     kGpuItemCount,
     kCpuItemCount,
+    kGpuGroupCount,
+    kCpuGroupCount,
+    kGpuGroupNames,
+    kCpuGroupNames,
+    kGpuGroupItemCount,
+    kCpuGroupItemCount,
+    kGpuGroupItemNames,
+    kCpuGroupItemNames,
     kGenerateBriefText,
+    kUnknown = 255
+};
+
+enum class ImageCacheOutputType : uint8_t {
+    kSize = 0,
+    kString,
+    kStringArray,
     kUnknown = 255
 };
 
@@ -134,10 +149,12 @@ public:
         : m_is_query(false)
         , m_is_edit(false)
         , m_command_flag(ImageCacheFlagMode::kUnknown)
+        , m_output_type(ImageCacheOutputType::kUnknown)
         , m_previous_gpu_capacity_bytes(0)
         , m_previous_cpu_capacity_bytes(0)
         , m_gpu_capacity_bytes(0)
-        , m_cpu_capacity_bytes(0){};
+        , m_cpu_capacity_bytes(0)
+        , m_string_objects(){};
 
     virtual ~MMImageCacheCmd();
 
@@ -160,6 +177,7 @@ private:
     bool m_is_query;
 
     ImageCacheFlagMode m_command_flag;
+    ImageCacheOutputType m_output_type;
 
     // The previous values, before the command was run.
     size_t m_previous_gpu_capacity_bytes;
@@ -167,6 +185,8 @@ private:
 
     size_t m_gpu_capacity_bytes;
     size_t m_cpu_capacity_bytes;
+
+    MStringArray m_string_objects;
 };
 
 }  // namespace mmsolver

@@ -223,6 +223,22 @@ def create_image_plane_shape_attrs(image_plane_shp):
     return
 
 
+def get_image_sequence_for_active_slot(shp):
+    assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2
+    raise NotImplementedError
+
+
+def get_image_sequence_for_unused_slots(shp):
+    assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2
+    raise NotImplementedError
+
+
+def get_image_sequence_for_all_slots(shp):
+    assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2
+    slots = ['slot 1', 'slot 2']
+    return slots
+
+
 def set_image_sequence(shp, image_sequence_path, attr_name):
     assert isinstance(image_sequence_path, str)
     assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2

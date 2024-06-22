@@ -107,12 +107,17 @@
 #ifndef MAYA_MM_IMAGE_CACHE_CMD_H
 #define MAYA_MM_IMAGE_CACHE_CMD_H
 
+// STL
+#include <string>
+#include <vector>
+
 // Maya
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MGlobal.h>
 #include <maya/MPxCommand.h>
 #include <maya/MString.h>
+#include <maya/MStringArray.h>
 #include <maya/MSyntax.h>
 
 namespace mmsolver {
@@ -124,6 +129,10 @@ enum class ImageCacheFlagMode : uint8_t {
     kCpuUsed,
     kGpuItemCount,
     kCpuItemCount,
+    kGpuEraseGroups,
+    kCpuEraseGroups,
+    kGpuEraseItems,
+    kCpuEraseItems,
     kGpuGroupCount,
     kCpuGroupCount,
     kGpuGroupNames,
@@ -154,7 +163,8 @@ public:
         , m_previous_cpu_capacity_bytes(0)
         , m_gpu_capacity_bytes(0)
         , m_cpu_capacity_bytes(0)
-        , m_string_objects(){};
+        , m_item_names()
+        , m_group_name(){};
 
     virtual ~MMImageCacheCmd();
 
@@ -186,7 +196,8 @@ private:
     size_t m_gpu_capacity_bytes;
     size_t m_cpu_capacity_bytes;
 
-    MStringArray m_string_objects;
+    std::vector<std::string> m_item_names;
+    std::string m_group_name;
 };
 
 }  // namespace mmsolver

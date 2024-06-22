@@ -24,11 +24,13 @@
 // STD
 #include <cassert>
 #include <string>
+#include <vector>
 
 // Maya
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
 #include <maya/MString.h>
+#include <maya/MStringArray.h>
 #include <maya/MSyntax.h>
 
 // Maya Viewport 2.0
@@ -58,6 +60,16 @@
 #define GPU_ITEM_COUNT_FLAG_LONG "-gpuItemCount"
 #define CPU_ITEM_COUNT_FLAG "-cic"
 #define CPU_ITEM_COUNT_FLAG_LONG "-cpuItemCount"
+
+#define GPU_ERASE_ITEMS_FLAG "-gei"
+#define GPU_ERASE_ITEMS_FLAG_LONG "-gpuEraseItems"
+#define CPU_ERASE_ITEMS_FLAG "-cei"
+#define CPU_ERASE_ITEMS_FLAG_LONG "-cpuEraseItems"
+
+#define GPU_ERASE_GROUPS_FLAG "-geg"
+#define GPU_ERASE_GROUPS_FLAG_LONG "-gpuEraseGroups"
+#define CPU_ERASE_GROUPS_FLAG "-ceg"
+#define CPU_ERASE_GROUPS_FLAG_LONG "-cpuEraseGroups"
 
 #define GPU_GROUP_COUNT_FLAG "-ggc"
 #define GPU_GROUP_COUNT_FLAG_LONG "-gpuGroupCount"
@@ -123,6 +135,16 @@ MSyntax MMImageCacheCmd::newSyntax() {
         syntax.addFlag(CPU_ITEM_COUNT_FLAG, CPU_ITEM_COUNT_FLAG_LONG));
 
     CHECK_MSTATUS(
+        syntax.addFlag(GPU_ERASE_ITEMS_FLAG, GPU_ERASE_ITEMS_FLAG_LONG));
+    CHECK_MSTATUS(
+        syntax.addFlag(CPU_ERASE_ITEMS_FLAG, CPU_ERASE_ITEMS_FLAG_LONG));
+
+    CHECK_MSTATUS(
+        syntax.addFlag(GPU_ERASE_GROUPS_FLAG, GPU_ERASE_GROUPS_FLAG_LONG));
+    CHECK_MSTATUS(
+        syntax.addFlag(CPU_ERASE_GROUPS_FLAG, CPU_ERASE_GROUPS_FLAG_LONG));
+
+    CHECK_MSTATUS(
         syntax.addFlag(GPU_GROUP_COUNT_FLAG, GPU_GROUP_COUNT_FLAG_LONG));
     CHECK_MSTATUS(
         syntax.addFlag(CPU_GROUP_COUNT_FLAG, CPU_GROUP_COUNT_FLAG_LONG));
@@ -152,7 +174,7 @@ MSyntax MMImageCacheCmd::newSyntax() {
  */
 MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
-    const bool verbose = true;
+    const bool verbose = false;
 
     MArgDatabase argData(syntax(), args, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -169,18 +191,48 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
         "m_is_edit="
         << m_is_edit);
 
-    // Get the file path.
+    // Get string objects given to the command.
     MStringArray string_objects;
     argData.getObjects(string_objects);
+
+    m_group_name = "";
+    if (string_objects.length() > 0) {
+        const std::string item_name = string_objects[0].asChar();
+        m_group_name = item_name;
+    }
+    MMSOLVER_MAYA_VRB(
+        "MMImageCacheCmd::parseArgs: "
+        "m_group_name=\""
+        << m_group_name << "\"");
+
+    for (auto i = 0; i < string_objects.length(); i++) {
+        const std::string item_name = string_objects[i].asChar();
+        m_item_names.push_back(item_name);
+        MMSOLVER_MAYA_VRB(
+            "MMImageCacheCmd::parseArgs: "
+            "m_item_names["
+            << i << "]=\"" << item_name << "\"");
+    }
 
     const bool has_gpu_capacity = argData.isFlagSet(GPU_CAPACITY_FLAG, &status);
     const bool has_cpu_capacity = argData.isFlagSet(CPU_CAPACITY_FLAG, &status);
     const bool has_gpu_used = argData.isFlagSet(GPU_USED_FLAG, &status);
     const bool has_cpu_used = argData.isFlagSet(CPU_USED_FLAG, &status);
+
     const bool has_gpu_item_count =
         argData.isFlagSet(GPU_ITEM_COUNT_FLAG, &status);
     const bool has_cpu_item_count =
         argData.isFlagSet(CPU_ITEM_COUNT_FLAG, &status);
+
+    const bool has_gpu_erase_items =
+        argData.isFlagSet(GPU_ERASE_ITEMS_FLAG, &status);
+    const bool has_cpu_erase_items =
+        argData.isFlagSet(CPU_ERASE_ITEMS_FLAG, &status);
+
+    const bool has_gpu_erase_groups =
+        argData.isFlagSet(GPU_ERASE_GROUPS_FLAG, &status);
+    const bool has_cpu_erase_groups =
+        argData.isFlagSet(CPU_ERASE_GROUPS_FLAG, &status);
 
     const bool has_gpu_group_count =
         argData.isFlagSet(GPU_GROUP_COUNT_FLAG, &status);
@@ -243,9 +295,6 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
                 return status;
             }
 
-            m_string_objects.clear();
-            m_string_objects.append(string_objects[0]);
-
             if (has_gpu_group_item_count) {
                 m_command_flag = ImageCacheFlagMode::kGpuGroupItemCount;
                 m_output_type = ImageCacheOutputType::kSize;
@@ -265,8 +314,8 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
         } else {
             MMSOLVER_MAYA_ERR(
                 "MMImageCacheCmd::parseArgs: "
-                "Invalid command query flag!"
-                "value="
+                "Invalid command query flag! "
+                "m_command_flag="
                 << static_cast<int>(m_command_flag));
             return MStatus::kFailure;
         }
@@ -295,11 +344,23 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
             // Store the current value, so we can undo later.
             m_previous_cpu_capacity_bytes =
                 image_cache.get_cpu_capacity_bytes();
+        } else if (has_gpu_erase_items) {
+            m_command_flag = ImageCacheFlagMode::kGpuEraseItems;
+            m_output_type = ImageCacheOutputType::kSize;
+        } else if (has_cpu_erase_items) {
+            m_command_flag = ImageCacheFlagMode::kCpuEraseItems;
+            m_output_type = ImageCacheOutputType::kSize;
+        } else if (has_gpu_erase_groups) {
+            m_command_flag = ImageCacheFlagMode::kGpuEraseGroups;
+            m_output_type = ImageCacheOutputType::kSize;
+        } else if (has_cpu_erase_groups) {
+            m_command_flag = ImageCacheFlagMode::kCpuEraseGroups;
+            m_output_type = ImageCacheOutputType::kSize;
         } else {
             MMSOLVER_MAYA_ERR(
                 "MMImageCacheCmd::parseArgs: "
-                "Invalid command edit flag!"
-                "value="
+                "Invalid command flag! "
+                "m_command_flag="
                 << static_cast<int>(m_command_flag));
             return MStatus::kFailure;
         }
@@ -343,9 +404,13 @@ inline MStatus get_texture_manager(
 inline MStatus set_values(image::ImageCache &image_cache,
                           const ImageCacheFlagMode command_flag,
                           const size_t gpu_capacity_bytes,
-                          const size_t cpu_capacity_bytes) {
+                          const size_t cpu_capacity_bytes,
+                          const std::vector<std::string> &item_names,
+                          const std::string &group_name,
+                          size_t &out_item_count) {
     MStatus status = MStatus::kSuccess;
 
+    out_item_count = 0;
     if (command_flag == ImageCacheFlagMode::kGpuCapacity) {
         MHWRender::MTextureManager *texture_manager = nullptr;
         status = get_texture_manager(texture_manager);
@@ -354,11 +419,55 @@ inline MStatus set_values(image::ImageCache &image_cache,
         image_cache.set_gpu_capacity_bytes(texture_manager, gpu_capacity_bytes);
     } else if (command_flag == ImageCacheFlagMode::kCpuCapacity) {
         image_cache.set_cpu_capacity_bytes(cpu_capacity_bytes);
+    } else if (command_flag == ImageCacheFlagMode::kGpuEraseItems) {
+        MHWRender::MTextureManager *texture_manager = nullptr;
+        status = get_texture_manager(texture_manager);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        for (auto it = item_names.begin(); it != item_names.end(); it++) {
+            const bool ok = image_cache.gpu_erase_item(texture_manager, *it);
+            out_item_count += static_cast<bool>(ok);
+        }
+    } else if (command_flag == ImageCacheFlagMode::kCpuEraseItems) {
+        for (auto it = item_names.begin(); it != item_names.end(); it++) {
+            const bool ok = image_cache.cpu_erase_item(*it);
+            out_item_count += static_cast<bool>(ok);
+        }
+    } else if (command_flag == ImageCacheFlagMode::kGpuEraseGroups) {
+        if (group_name.size() == 0) {
+            MMSOLVER_MAYA_ERR("MMImageCacheCmd::set_values: "
+                              << "\"" << GPU_ERASE_GROUPS_FLAG_LONG << "\" "
+                              << "flag needs a group name, but none given! "
+                                 "group_name.size()="
+                              << static_cast<int>(group_name.size()));
+            return MStatus::kFailure;
+        }
+
+        MHWRender::MTextureManager *texture_manager = nullptr;
+        status = get_texture_manager(texture_manager);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        for (auto it = item_names.begin(); it != item_names.end(); it++) {
+            out_item_count += image_cache.gpu_erase_group(texture_manager, *it);
+        }
+    } else if (command_flag == ImageCacheFlagMode::kCpuEraseGroups) {
+        if (group_name.size() == 0) {
+            MMSOLVER_MAYA_ERR("MMImageCacheCmd::set_values: "
+                              << "\"" << CPU_ERASE_GROUPS_FLAG_LONG << "\" "
+                              << "flag needs a group name, but none given! "
+                                 "group_name.size()="
+                              << static_cast<int>(group_name.size()));
+            return MStatus::kFailure;
+        }
+
+        for (auto it = item_names.begin(); it != item_names.end(); it++) {
+            out_item_count = image_cache.cpu_erase_group(*it);
+        }
     } else {
         MMSOLVER_MAYA_ERR(
             "MMImageCacheCmd::set_values: "
-            "Invalid command edit flag! "
-            "value="
+            "Invalid command flag! "
+            "command_flag="
             << static_cast<int>(command_flag));
         return MStatus::kFailure;
     }
@@ -393,9 +502,9 @@ MStatus get_value_size(image::ImageCache &image_cache,
         out_value = image_cache.cpu_group_item_count(group_name);
     } else {
         MMSOLVER_MAYA_ERR(
-            "MMImageCacheCmd::doIt: "
-            "Invalid command query flag! "
-            "value="
+            "MMImageCacheCmd::get_value_size: "
+            "Invalid command flag! "
+            "command_flag="
             << static_cast<int>(command_flag));
         return MStatus::kFailure;
     }
@@ -410,9 +519,9 @@ MStatus get_value_string(image::ImageCache &image_cache,
         out_result = image_cache.generate_cache_brief_text();
     } else {
         MMSOLVER_MAYA_ERR(
-            "MMImageCacheCmd::doIt: "
-            "Invalid command query flag! "
-            "value="
+            "MMImageCacheCmd::get_value_string: "
+            "Invalid command flag! "
+            "command_flag="
             << static_cast<int>(command_flag));
         return MStatus::kFailure;
     }
@@ -432,24 +541,41 @@ MStatus get_value_string_array(image::ImageCache &image_cache,
     } else if (command_flag == ImageCacheFlagMode::kCpuGroupNames) {
         image_cache.cpu_group_names(outputs);
     } else if (command_flag == ImageCacheFlagMode::kGpuGroupItemNames) {
+        if (group_name.size() == 0) {
+            MMSOLVER_MAYA_ERR("MMImageCacheCmd::get_value_string_array: "
+                              << "\"" << GPU_GROUP_ITEM_NAMES_FLAG_LONG << "\" "
+                              << "flag needs a group name, but none given! "
+                                 "group_name.size()="
+                              << static_cast<int>(group_name.size()));
+            return MStatus::kFailure;
+        }
+
         ok = image_cache.gpu_group_item_names(group_name, outputs);
     } else if (command_flag == ImageCacheFlagMode::kCpuGroupItemNames) {
+        if (group_name.size() == 0) {
+            MMSOLVER_MAYA_ERR("MMImageCacheCmd::get_value_string_array: "
+                              << "\"" << CPU_GROUP_ITEM_NAMES_FLAG_LONG << "\" "
+                              << "flag needs a group name, but none given! "
+                                 "group_name.size()="
+                              << static_cast<int>(group_name.size()));
+            return MStatus::kFailure;
+        }
+
         ok = image_cache.cpu_group_item_names(group_name, outputs);
     } else {
         MMSOLVER_MAYA_ERR(
-            "MMImageCacheCmd::doIt: "
-            "Invalid command query flag! "
-            "value="
+            "MMImageCacheCmd::get_value_string_array: "
+            "Invalid command flag! "
+            "command_flag="
             << static_cast<int>(command_flag));
         return MStatus::kFailure;
     }
 
     if (!ok) {
         MMSOLVER_MAYA_ERR(
-            "MMImageCacheCmd::doIt: "
-            "Invalid command query flag! "
-            "value="
-            << static_cast<int>(command_flag));
+            "MMImageCacheCmd::get_value_string_array: "
+            "failed to apply action! ok="
+            << static_cast<int>(ok));
         return MStatus::kFailure;
     }
 
@@ -464,7 +590,7 @@ MStatus get_value_string_array(image::ImageCache &image_cache,
 
 MStatus MMImageCacheCmd::doIt(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
-    const bool verbose = true;
+    const bool verbose = false;
 
     // Read all the flag arguments.
     status = parseArgs(args);
@@ -479,28 +605,17 @@ MStatus MMImageCacheCmd::doIt(const MArgList &args) {
             CHECK_MSTATUS_AND_RETURN_IT(status);
             MMImageCacheCmd::setResult(result);
         } else if (m_output_type == ImageCacheOutputType::kSize) {
-            std::string group_name = "";
-            if (m_string_objects.length() > 0) {
-                group_name = m_string_objects[0].asChar();
-            }
-
             size_t result = 0;
-            status =
-                get_value_size(image_cache, m_command_flag, group_name, result);
+            status = get_value_size(image_cache, m_command_flag, m_group_name,
+                                    result);
             CHECK_MSTATUS_AND_RETURN_IT(status);
 
             MString result_string(mmmayastring::numberToMString(result));
-
             MMImageCacheCmd::setResult(result_string);
         } else if (m_output_type == ImageCacheOutputType::kStringArray) {
-            std::string group_name = "";
-            if (m_string_objects.length() > 0) {
-                group_name = m_string_objects[0].asChar();
-            }
-
             MStringArray results;
             status = get_value_string_array(image_cache, m_command_flag,
-                                            group_name, results);
+                                            m_group_name, results);
             CHECK_MSTATUS_AND_RETURN_IT(status);
             MMImageCacheCmd::setResult(results);
         } else {
@@ -514,9 +629,17 @@ MStatus MMImageCacheCmd::doIt(const MArgList &args) {
 
     } else if (m_is_edit) {
         image::ImageCache &image_cache = image::ImageCache::getInstance();
-        set_values(image_cache, m_command_flag, m_gpu_capacity_bytes,
-                   m_cpu_capacity_bytes);
+
+        size_t item_count = 0;
+        status = set_values(image_cache, m_command_flag, m_gpu_capacity_bytes,
+                            m_cpu_capacity_bytes, m_item_names, m_group_name,
+                            item_count);
         CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        if (m_output_type == ImageCacheOutputType::kSize) {
+            MString result_string(mmmayastring::numberToMString(item_count));
+            MMImageCacheCmd::setResult(result_string);
+        }
     } else {
         MMSOLVER_MAYA_ERR(
             "MMImageCacheCmd::doIt: "
@@ -532,9 +655,17 @@ MStatus MMImageCacheCmd::redoIt() {
     MStatus status = MStatus::kSuccess;
     if (m_is_edit) {
         image::ImageCache &image_cache = image::ImageCache::getInstance();
+
+        size_t item_count = 0;
         status = set_values(image_cache, m_command_flag, m_gpu_capacity_bytes,
-                            m_cpu_capacity_bytes);
+                            m_cpu_capacity_bytes, m_item_names, m_group_name,
+                            item_count);
         CHECK_MSTATUS_AND_RETURN_IT(status);
+
+        if (m_output_type == ImageCacheOutputType::kSize) {
+            MString result_string(mmmayastring::numberToMString(item_count));
+            MMImageCacheCmd::setResult(result_string);
+        }
     }
     return status;
 }
@@ -542,11 +673,26 @@ MStatus MMImageCacheCmd::redoIt() {
 MStatus MMImageCacheCmd::undoIt() {
     MStatus status = MStatus::kSuccess;
     if (m_is_edit) {
-        image::ImageCache &image_cache = image::ImageCache::getInstance();
-        status = set_values(image_cache, m_command_flag,
-                            m_previous_gpu_capacity_bytes,
-                            m_previous_cpu_capacity_bytes);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        if ((m_command_flag == ImageCacheFlagMode::kGpuEraseItems) ||
+            (m_command_flag == ImageCacheFlagMode::kCpuEraseItems) ||
+            (m_command_flag == ImageCacheFlagMode::kGpuEraseGroups) ||
+            (m_command_flag == ImageCacheFlagMode::kCpuEraseGroups)) {
+            status = MStatus::kFailure;
+            MMSOLVER_MAYA_ERR(
+                "MMImageCacheCmd::undoIt: "
+                "Invalid command edit flag! "
+                "value="
+                << static_cast<int>(m_command_flag));
+        } else {
+            image::ImageCache &image_cache = image::ImageCache::getInstance();
+
+            size_t item_count = 0;
+            status = set_values(image_cache, m_command_flag,
+                                m_previous_gpu_capacity_bytes,
+                                m_previous_cpu_capacity_bytes, m_item_names,
+                                m_group_name, item_count);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+        }
     }
     return status;
 }

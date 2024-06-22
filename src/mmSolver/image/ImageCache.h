@@ -262,30 +262,28 @@ public:
     // erased.
     //
     // Returns true/false, if the the data was inserted or not.
-    bool cpu_insert(const CPUCacheString &group_name,
-                    const CPUCacheString &file_path,
-                    const CPUCacheValue &image_pixel_data);
+    bool cpu_insert_item(const CPUCacheString &group_name,
+                         const CPUCacheString &file_path,
+                         const CPUCacheValue &image_pixel_data);
 
     // Insert and upload some pixels to the GPU and cache the result.
     //
     // Returns the GPUCacheValue inserted into the GPU cache.
-    GPUCacheValue gpu_insert(MHWRender::MTextureManager *texture_manager,
-                             const GPUCacheString &group_name,
-                             const GPUCacheString &file_path,
-                             const CPUCacheValue &image_pixel_data);
+    GPUCacheValue gpu_insert_item(MHWRender::MTextureManager *texture_manager,
+                                  const GPUCacheString &group_name,
+                                  const GPUCacheString &file_path,
+                                  const CPUCacheValue &image_pixel_data);
 
-    // Find the key in the GPU cache.
+    // Find the key in the GPU/CPU cache.
     //
     // Returns the GPUCacheValue at the key, or nullptr.
-    GPUCacheValue gpu_find(const GPUCacheString &file_path);
-    GPUCacheValue gpu_find(const GPUCacheKey key);
-
-    // Find the key in the CPU cache.
     //
     // Returns the CPUCacheValue at the key, or constructs a default
     // value and returns it.
-    CPUCacheValue cpu_find(const CPUCacheString &file_path);
-    CPUCacheValue cpu_find(const CPUCacheKey key);
+    GPUCacheValue gpu_find_item(const GPUCacheString &file_path);
+    GPUCacheValue gpu_find_item(const GPUCacheKey key);
+    CPUCacheValue cpu_find_item(const CPUCacheString &file_path);
+    CPUCacheValue cpu_find_item(const CPUCacheKey key);
 
     // TODO: Add a 'gpu/cpu_prefetch()' method, used to add the images
     // into a prefetching queue.
@@ -303,39 +301,27 @@ public:
     //
     // Returns true/false, if an item was removed from the cache or
     // not.
-    CacheEvictionResult gpu_evict_one(
+    CacheEvictionResult gpu_evict_one_item(
         MHWRender::MTextureManager *texture_manager);
+    CacheEvictionResult cpu_evict_one_item();
 
-    // Evict the least recently used item from the CPU cache.
-    //
-    // Returns true/false, if an item was removed from the cache or
-    // not.
-    CacheEvictionResult cpu_evict_one();
-
-    // Remove the key from the image GPU cache.
+    // Remove the key from the image GPU/CPU cache.
     //
     // NOTE: Due to the way the LRU cache works, this can be quite
     // slow to to remove a specific key from the cache.
     //
     // Returns true/false, if the key was removed or not.
-    bool gpu_erase(MHWRender::MTextureManager *texture_manager,
-                   const GPUCacheString &file_path);
-    bool gpu_erase(MHWRender::MTextureManager *texture_manager,
-                   const GPUCacheKey key);
+    bool gpu_erase_item(MHWRender::MTextureManager *texture_manager,
+                        const GPUCacheString &file_path);
+    bool gpu_erase_item(MHWRender::MTextureManager *texture_manager,
+                        const GPUCacheKey key);
+    bool cpu_erase_item(const CPUCacheString &file_path);
+    bool cpu_erase_item(const CPUCacheKey key);
 
-    // Remove the key from the image CPU cache.
-    //
-    // NOTE: Due to the way the LRU cache works, this can be quite
-    // slow to to remove a specific key from the cache.
-    //
-    // Returns true/false, if the key was removed or not.
-    bool cpu_erase(const CPUCacheString &file_path);
-    bool cpu_erase(const CPUCacheKey key);
-
-    //
-    // // get_gpu_group
-    // bool gpu_erase_group(MHWRender::MTextureManager *texture_manager,
-    //                      const GPUCacheString &group_name);
+    // Erase all items in the given group_name.
+    size_t gpu_erase_group(MHWRender::MTextureManager *texture_manager,
+                           const GPUCacheString &group_name);
+    size_t cpu_erase_group(const GPUCacheString &group_name);
 
     // C++ 11; deleting the methods we don't want to ensure they can never be
     // used.
@@ -348,19 +334,19 @@ public:
     void operator=(ImageCache const &) = delete;
 
 private:
-    CacheEvictionResult gpu_evict_enough_for_new_entry(
+    CacheEvictionResult gpu_evict_enough_for_new_item(
         MHWRender::MTextureManager *texture_manager,
         const size_t new_memory_chunk_size);
-    CacheEvictionResult cpu_evict_enough_for_new_entry(
+    CacheEvictionResult cpu_evict_enough_for_new_item(
         const size_t new_memory_chunk_size);
 
     // Add group name into cache, associated with the file path.
     //
     // This is only used internally as a helper method.
-    bool gpu_group_insert(const GPUGroupKey group_key,
+    bool gpu_insert_group(const GPUGroupKey group_key,
                           const GPUCacheString &group_name,
                           const GPUCacheString &file_path);
-    bool cpu_group_insert(const CPUGroupKey group_key,
+    bool cpu_insert_group(const CPUGroupKey group_key,
                           const CPUCacheString &group_name,
                           const CPUCacheString &file_path);
 

@@ -68,7 +68,7 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
                                   const bool do_texture_update) {
     assert(texture_manager != nullptr);
 
-    const bool verbose = true;
+    const bool verbose = false;
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_texture_image_file:"
                       << " file_path=" << file_path.asChar());
 
@@ -82,7 +82,7 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
     }
 
     const std::string key = std::string(resolved_file_path.asChar());
-    TextureData texture_data = image_cache.gpu_find(key);
+    TextureData texture_data = image_cache.gpu_find_item(key);
 
     MMSOLVER_MAYA_VRB(
         "mmsolver::ImageCache: read_texture_image_file: findTexture: "
@@ -107,7 +107,7 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
     // Python user code to add the list of valid images into the
     // cache.
 
-    ImagePixelData image_pixel_data = image_cache.cpu_find(key);
+    ImagePixelData image_pixel_data = image_cache.cpu_find_item(key);
 
     uint32_t width = 0;
     uint32_t height = 0;
@@ -161,8 +161,8 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
     const std::string group_name = std::string(file_pattern.asChar());
     const uint64_t group_hash = mmsolver::hash::make_hash(group_name);
 
-    texture_data = image_cache.gpu_insert(texture_manager, group_name, key,
-                                          gpu_image_pixel_data);
+    texture_data = image_cache.gpu_insert_item(texture_manager, group_name, key,
+                                               gpu_image_pixel_data);
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_texture_image_file: "
                       << "gpu_inserted=" << texture_data.texture());
 
@@ -183,7 +183,7 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
                 pixel_data_byte_count);
 
     const bool cpu_inserted =
-        image_cache.cpu_insert(group_name, key, image_pixel_data);
+        image_cache.cpu_insert_item(group_name, key, image_pixel_data);
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_texture_image_file: "
                       << "cpu_inserted=" << cpu_inserted);
 
@@ -195,7 +195,7 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
 
 void ImageCache::set_gpu_capacity_bytes(
     MHWRender::MTextureManager *texture_manager, const size_t value) {
-    const bool verbose = true;
+    const bool verbose = false;
     m_gpu_capacity_bytes = value;
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::set_gpu_capacity_bytes: "
                       << "m_gpu_capacity_bytes=" << m_gpu_capacity_bytes);
@@ -210,7 +210,7 @@ void ImageCache::set_gpu_capacity_bytes(
            (m_gpu_item_map.size() > m_gpu_item_count_minumum) &&
            (m_gpu_used_bytes > m_gpu_capacity_bytes)) {
         const CacheEvictionResult result =
-            ImageCache::gpu_evict_one(texture_manager);
+            ImageCache::gpu_evict_one_item(texture_manager);
         if (result != CacheEvictionResult::kSuccess) {
             break;
         }
@@ -218,7 +218,7 @@ void ImageCache::set_gpu_capacity_bytes(
 }
 
 void ImageCache::set_cpu_capacity_bytes(const size_t value) {
-    const bool verbose = true;
+    const bool verbose = false;
     m_cpu_capacity_bytes = value;
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::set_cpu_capacity_bytes: "
                       << "m_cpu_capacity_bytes=" << m_cpu_capacity_bytes);
@@ -232,7 +232,7 @@ void ImageCache::set_cpu_capacity_bytes(const size_t value) {
     while (!m_cpu_item_map.empty() &&
            (m_cpu_item_map.size() > m_cpu_item_count_minumum) &&
            (m_cpu_used_bytes > m_cpu_capacity_bytes)) {
-        const CacheEvictionResult result = ImageCache::cpu_evict_one();
+        const CacheEvictionResult result = ImageCache::cpu_evict_one_item();
         if (result != CacheEvictionResult::kSuccess) {
             break;
         }
@@ -301,7 +301,7 @@ void ImageCache::print_cache_brief() const {
 }
 
 void ImageCache::gpu_group_names(GPUVectorString &out_group_names) const {
-    const bool verbose = true;
+    const bool verbose = false;
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_group_names: ");
 
     out_group_names.clear();
@@ -319,7 +319,7 @@ void ImageCache::gpu_group_names(GPUVectorString &out_group_names) const {
 }
 
 void ImageCache::cpu_group_names(CPUVectorString &out_group_names) const {
-    const bool verbose = true;
+    const bool verbose = false;
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_group_names: ");
 
     out_group_names.clear();
@@ -428,7 +428,7 @@ bool ImageCache::cpu_group_item_names(
     return true;
 }
 
-bool ImageCache::gpu_group_insert(const GPUGroupKey group_key,
+bool ImageCache::gpu_insert_group(const GPUGroupKey group_key,
                                   const GPUCacheString &group_name,
                                   const GPUCacheString &file_path) {
     const GPUGroupMapIt group_search = m_gpu_group_map.find(group_key);
@@ -459,7 +459,7 @@ bool ImageCache::gpu_group_insert(const GPUGroupKey group_key,
     return true;
 }
 
-bool ImageCache::cpu_group_insert(const CPUGroupKey group_key,
+bool ImageCache::cpu_insert_group(const CPUGroupKey group_key,
                                   const CPUCacheString &group_name,
                                   const CPUCacheString &file_path) {
     const CPUGroupMapIt group_search = m_cpu_group_map.find(group_key);
@@ -492,7 +492,7 @@ bool ImageCache::cpu_group_insert(const CPUGroupKey group_key,
 
 static void update_texture(MTexture *texture,
                            const ImageCache::CPUCacheValue &image_pixel_data) {
-    const bool verbose = true;
+    const bool verbose = false;
 
     // No need for MIP-maps.
     const bool generate_mip_maps = false;
@@ -512,18 +512,18 @@ static void update_texture(MTexture *texture,
     CHECK_MSTATUS(status);
 }
 
-ImageCache::GPUCacheValue ImageCache::gpu_insert(
+ImageCache::GPUCacheValue ImageCache::gpu_insert_item(
     MHWRender::MTextureManager *texture_manager,
     const GPUCacheString &group_name, const GPUCacheString &file_path,
     const ImageCache::CPUCacheValue &image_pixel_data) {
     assert(texture_manager != nullptr);
     assert(image_pixel_data.is_valid());
-    const bool verbose = true;
+    const bool verbose = false;
 
     const GPUGroupKey key = mmsolver::hash::make_hash(file_path);
     const GPUGroupKey group_key = mmsolver::hash::make_hash(group_name);
 
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_insert: "
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_insert_item: "
                       << "key=" << key << " group_name=" << group_name.c_str()
                       << " file_path=" << file_path.c_str());
 
@@ -535,11 +535,12 @@ ImageCache::GPUCacheValue ImageCache::gpu_insert(
         const size_t image_data_size = image_pixel_data.byte_count();
 
         const CacheEvictionResult evict_result =
-            ImageCache::gpu_evict_enough_for_new_entry(texture_manager,
-                                                       image_data_size);
+            ImageCache::gpu_evict_enough_for_new_item(texture_manager,
+                                                      image_data_size);
         if (evict_result == CacheEvictionResult::kFailed) {
             MMSOLVER_MAYA_WRN(
-                "mmsolver::ImageCache::gpu_insert: evicting memory failed!");
+                "mmsolver::ImageCache::gpu_insert_item: evicting memory "
+                "failed!");
             ImageCache::print_cache_brief();
         }
 
@@ -550,7 +551,7 @@ ImageCache::GPUCacheValue ImageCache::gpu_insert(
             image_pixel_data.pixel_data_type());
         if (!allocate_ok) {
             MMSOLVER_MAYA_ERR(
-                "mmsolver::ImageCache: gpu_insert: "
+                "mmsolver::ImageCache: gpu_insert_item: "
                 "Could not allocate texture!");
         }
 
@@ -575,7 +576,7 @@ ImageCache::GPUCacheValue ImageCache::gpu_insert(
         assert(ok == true);
 
         const bool group_ok =
-            ImageCache::gpu_group_insert(group_key, group_name, file_path);
+            ImageCache::gpu_insert_group(group_key, group_name, file_path);
         assert(group_ok == true);
 
     } else {
@@ -583,7 +584,7 @@ ImageCache::GPUCacheValue ImageCache::gpu_insert(
         texture_data = search->second.second;
         if (!texture_data.is_valid()) {
             MMSOLVER_MAYA_ERR(
-                "mmsolver::ImageCache: gpu_insert: "
+                "mmsolver::ImageCache: gpu_insert_item: "
                 "Found texture is invalid!");
             return ImageCache::GPUCacheValue();
         }
@@ -596,31 +597,31 @@ ImageCache::GPUCacheValue ImageCache::gpu_insert(
     return texture_data;
 }
 
-bool ImageCache::cpu_insert(const CPUCacheString &group_name,
-                            const CPUCacheString &file_path,
-                            const CPUCacheValue &image_pixel_data) {
-    const bool verbose = true;
+bool ImageCache::cpu_insert_item(const CPUCacheString &group_name,
+                                 const CPUCacheString &file_path,
+                                 const CPUCacheValue &image_pixel_data) {
+    const bool verbose = false;
 
     const CPUGroupKey key = mmsolver::hash::make_hash(file_path);
     const CPUGroupKey group_key = mmsolver::hash::make_hash(group_name);
 
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_insert: "
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_insert_item: "
                       << "key=" << key << " group_name=" << group_name.c_str()
                       << " file_path=" << file_path.c_str());
 
     const CPUMapIt item_search = m_cpu_item_map.find(key);
     const bool item_found = item_search != m_cpu_item_map.end();
     if (item_found) {
-        ImageCache::cpu_erase(key);
+        ImageCache::cpu_erase_item(key);
     }
 
     // If we are at capacity, make room for new entry.
     const size_t image_data_size = image_pixel_data.byte_count();
     const CacheEvictionResult evict_result =
-        ImageCache::cpu_evict_enough_for_new_entry(image_data_size);
+        ImageCache::cpu_evict_enough_for_new_item(image_data_size);
     if (evict_result == CacheEvictionResult::kFailed) {
         MMSOLVER_MAYA_WRN(
-            "mmsolver::ImageCache::cpu_insert: evicting memory failed!");
+            "mmsolver::ImageCache::cpu_insert_item: evicting memory failed!");
         ImageCache::print_cache_brief();
     }
 
@@ -640,27 +641,27 @@ bool ImageCache::cpu_insert(const CPUCacheString &group_name,
     assert(item_map_ok == true);
 
     const bool group_ok =
-        ImageCache::cpu_group_insert(group_key, group_name, file_path);
+        ImageCache::cpu_insert_group(group_key, group_name, file_path);
     assert(group_ok == true);
 
     return true;
 }
 
-ImageCache::GPUCacheValue ImageCache::gpu_find(
+ImageCache::GPUCacheValue ImageCache::gpu_find_item(
     const GPUCacheString &file_path) {
-    const bool verbose = true;
+    const bool verbose = false;
 
     const GPUGroupKey key = mmsolver::hash::make_hash(file_path);
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_find: "
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_find_item: "
                       << "key=" << key << "file_path=\"" << file_path.c_str()
                       << "\"");
-    return ImageCache::gpu_find(key);
+    return ImageCache::gpu_find_item(key);
 }
 
-ImageCache::GPUCacheValue ImageCache::gpu_find(const GPUCacheKey key) {
-    const bool verbose = true;
+ImageCache::GPUCacheValue ImageCache::gpu_find_item(const GPUCacheKey key) {
+    const bool verbose = false;
 
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_find: "
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_find_item: "
                       << "key=" << key);
 
     const GPUMapIt search = m_gpu_item_map.find(key);
@@ -674,21 +675,21 @@ ImageCache::GPUCacheValue ImageCache::gpu_find(const GPUCacheKey key) {
     return GPUCacheValue();
 }
 
-ImageCache::CPUCacheValue ImageCache::cpu_find(
+ImageCache::CPUCacheValue ImageCache::cpu_find_item(
     const CPUCacheString &file_path) {
-    const bool verbose = true;
+    const bool verbose = false;
 
     const CPUGroupKey key = mmsolver::hash::make_hash(file_path);
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_find: "
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_find_item: "
                       << "key=" << key << "file_path=\"" << file_path.c_str()
                       << "\"");
-    return ImageCache::cpu_find(key);
+    return ImageCache::cpu_find_item(key);
 }
 
-ImageCache::CPUCacheValue ImageCache::cpu_find(const CPUCacheKey key) {
-    const bool verbose = true;
+ImageCache::CPUCacheValue ImageCache::cpu_find_item(const CPUCacheKey key) {
+    const bool verbose = false;
 
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_find: "
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_find_item: "
                       << "key=" << key);
 
     const CPUMapIt search = m_cpu_item_map.find(key);
@@ -702,14 +703,14 @@ ImageCache::CPUCacheValue ImageCache::cpu_find(const CPUCacheKey key) {
     return CPUCacheValue();
 }
 
-CacheEvictionResult ImageCache::gpu_evict_one(
+CacheEvictionResult ImageCache::gpu_evict_one_item(
     MHWRender::MTextureManager *texture_manager) {
-    const bool verbose = true;
+    const bool verbose = false;
 
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_evict_one: ");
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_evict_one_item: ");
 
     MMSOLVER_MAYA_VRB(
-        "mmsolver::ImageCache::gpu_evict_one: "
+        "mmsolver::ImageCache::gpu_evict_one_item: "
         "before m_gpu_used_bytes="
         << m_gpu_used_bytes);
 
@@ -733,19 +734,19 @@ CacheEvictionResult ImageCache::gpu_evict_one(
     // TODO: Remove from group maps.
 
     MMSOLVER_MAYA_VRB(
-        "mmsolver::ImageCache::gpu_evict_one: "
+        "mmsolver::ImageCache::gpu_evict_one_item: "
         "after m_gpu_used_bytes="
         << m_gpu_used_bytes);
     return CacheEvictionResult::kSuccess;
 }
 
-CacheEvictionResult ImageCache::cpu_evict_one() {
-    const bool verbose = true;
+CacheEvictionResult ImageCache::cpu_evict_one_item() {
+    const bool verbose = false;
 
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_evict_one: ");
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_evict_one_item: ");
 
     MMSOLVER_MAYA_VRB(
-        "mmsolver::ImageCache::cpu_evict_one: "
+        "mmsolver::ImageCache::cpu_evict_one_item: "
         "before m_cpu_used_bytes="
         << m_cpu_used_bytes);
 
@@ -768,18 +769,18 @@ CacheEvictionResult ImageCache::cpu_evict_one() {
     // TODO: Remove from group maps.
 
     MMSOLVER_MAYA_VRB(
-        "mmsolver::ImageCache::cpu_evict_one: "
+        "mmsolver::ImageCache::cpu_evict_one_item: "
         "after m_cpu_used_bytes="
         << m_cpu_used_bytes);
     return CacheEvictionResult::kSuccess;
 }
 
-CacheEvictionResult ImageCache::gpu_evict_enough_for_new_entry(
+CacheEvictionResult ImageCache::gpu_evict_enough_for_new_item(
     MHWRender::MTextureManager *texture_manager,
     const size_t new_memory_chunk_size) {
-    const bool verbose = true;
+    const bool verbose = false;
 
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_evict_enough_for_new_entry: ");
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_evict_enough_for_new_item: ");
 
     if (m_gpu_key_list.empty() ||
         (m_gpu_item_map.size() <= m_gpu_item_count_minumum)) {
@@ -791,21 +792,21 @@ CacheEvictionResult ImageCache::gpu_evict_enough_for_new_entry(
     // until we have enough room to store 'new_memory_chunk_size'.
     size_t new_used_bytes = m_gpu_used_bytes + new_memory_chunk_size;
     MMSOLVER_MAYA_VRB(
-        "mmsolver::ImageCache::gpu_evict_enough_for_new_entry: "
+        "mmsolver::ImageCache::gpu_evict_enough_for_new_item: "
         "new_used_bytes="
         << new_used_bytes);
     while (!m_gpu_item_map.empty() &&
            (m_gpu_item_map.size() > m_gpu_item_count_minumum) &&
            (new_used_bytes > m_gpu_capacity_bytes)) {
         const CacheEvictionResult evict_result =
-            ImageCache::gpu_evict_one(texture_manager);
+            ImageCache::gpu_evict_one_item(texture_manager);
         if (evict_result != CacheEvictionResult::kSuccess) {
             result = evict_result;
             break;
         }
         new_used_bytes = m_gpu_used_bytes + new_memory_chunk_size;
         MMSOLVER_MAYA_VRB(
-            "mmsolver::ImageCache::gpu_evict_enough_for_new_entry: "
+            "mmsolver::ImageCache::gpu_evict_enough_for_new_item: "
             "new_used_bytes="
             << new_used_bytes);
     }
@@ -813,11 +814,11 @@ CacheEvictionResult ImageCache::gpu_evict_enough_for_new_entry(
     return result;
 }
 
-CacheEvictionResult ImageCache::cpu_evict_enough_for_new_entry(
+CacheEvictionResult ImageCache::cpu_evict_enough_for_new_item(
     const size_t new_memory_chunk_size) {
-    const bool verbose = true;
+    const bool verbose = false;
 
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_evict_enough_for_new_entry: ");
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_evict_enough_for_new_item: ");
 
     if (m_cpu_key_list.empty() ||
         (m_cpu_item_map.size() <= m_cpu_item_count_minumum)) {
@@ -829,20 +830,21 @@ CacheEvictionResult ImageCache::cpu_evict_enough_for_new_entry(
     // until we have enough room to store 'new_memory_chunk_size'.
     size_t new_used_bytes = m_cpu_used_bytes + new_memory_chunk_size;
     MMSOLVER_MAYA_VRB(
-        "mmsolver::ImageCache::cpu_evict_enough_for_new_entry: "
+        "mmsolver::ImageCache::cpu_evict_enough_for_new_item: "
         "new_used_bytes="
         << new_used_bytes);
     while (!m_cpu_item_map.empty() &&
            (m_cpu_item_map.size() > m_cpu_item_count_minumum) &&
            (new_used_bytes > m_cpu_capacity_bytes)) {
-        const CacheEvictionResult evict_result = ImageCache::cpu_evict_one();
+        const CacheEvictionResult evict_result =
+            ImageCache::cpu_evict_one_item();
         if (evict_result != CacheEvictionResult::kSuccess) {
             result = evict_result;
             break;
         }
         new_used_bytes = m_cpu_used_bytes + new_memory_chunk_size;
         MMSOLVER_MAYA_VRB(
-            "mmsolver::ImageCache::cpu_evict_enough_for_new_entry: "
+            "mmsolver::ImageCache::cpu_evict_enough_for_new_item: "
             "new_used_bytes="
             << new_used_bytes);
     }
@@ -850,21 +852,21 @@ CacheEvictionResult ImageCache::cpu_evict_enough_for_new_entry(
     return result;
 }
 
-bool ImageCache::gpu_erase(MHWRender::MTextureManager *texture_manager,
-                           const GPUCacheString &file_path) {
-    const bool verbose = true;
+bool ImageCache::gpu_erase_item(MHWRender::MTextureManager *texture_manager,
+                                const GPUCacheString &file_path) {
+    const bool verbose = false;
     const GPUGroupKey key = mmsolver::hash::make_hash(file_path);
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_erase: "
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_erase_item: "
                       << "key=" << key << "file_path=\"" << file_path.c_str()
                       << "\"");
-    return ImageCache::gpu_erase(texture_manager, key);
+    return ImageCache::gpu_erase_item(texture_manager, key);
 }
 
-bool ImageCache::gpu_erase(MHWRender::MTextureManager *texture_manager,
-                           const GPUCacheKey key) {
-    const bool verbose = true;
+bool ImageCache::gpu_erase_item(MHWRender::MTextureManager *texture_manager,
+                                const GPUCacheKey key) {
+    const bool verbose = false;
 
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_erase: "
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_erase_item: "
                       << "key=" << key);
 
     const GPUMapIt search = m_gpu_item_map.find(key);
@@ -885,19 +887,19 @@ bool ImageCache::gpu_erase(MHWRender::MTextureManager *texture_manager,
     return found;
 }
 
-bool ImageCache::cpu_erase(const CPUCacheString &file_path) {
-    const bool verbose = true;
+bool ImageCache::cpu_erase_item(const CPUCacheString &file_path) {
+    const bool verbose = false;
     const CPUGroupKey key = mmsolver::hash::make_hash(file_path);
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_erase: "
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_erase_item: "
                       << "key=" << key << "file_path=\"" << file_path.c_str()
                       << "\"");
-    return ImageCache::cpu_erase(key);
+    return ImageCache::cpu_erase_item(key);
 }
 
-bool ImageCache::cpu_erase(const CPUCacheKey key) {
-    const bool verbose = true;
+bool ImageCache::cpu_erase_item(const CPUCacheKey key) {
+    const bool verbose = false;
 
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_erase: "
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_erase_item: "
                       << "key=" << key);
 
     const CPUMapIt search = m_cpu_item_map.find(key);
@@ -916,6 +918,65 @@ bool ImageCache::cpu_erase(const CPUCacheKey key) {
         // TODO: Remove from group maps.
     }
     return found;
+}
+
+size_t ImageCache::gpu_erase_group(MHWRender::MTextureManager *texture_manager,
+                                   const GPUCacheString &group_name) {
+    const bool verbose = false;
+
+    const GPUGroupKey key = mmsolver::hash::make_hash(group_name);
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_erase_group: "
+                      << "key=" << key << "group_name=\"" << group_name.c_str()
+                      << "\"");
+
+    const GPUGroupMapIt group_search = m_gpu_group_map.find(key);
+    const bool group_found = group_search != m_gpu_group_map.end();
+    if (!group_found) {
+        MMSOLVER_MAYA_WRN(
+            "mmsolver::ImageCache: gpu_erase_group: "
+            "Group name \""
+            << group_name << "\" not found!");
+        return 0;
+    }
+
+    size_t count = 0;
+    GPUGroupSet &values_set = group_search->second;
+    for (auto it = values_set.begin(); it != values_set.end(); it++) {
+        GPUCacheString value = *it;
+        const bool ok = ImageCache::gpu_erase_item(texture_manager, value);
+        count += static_cast<size_t>(ok);
+    }
+
+    return count;
+}
+
+size_t ImageCache::cpu_erase_group(const CPUCacheString &group_name) {
+    const bool verbose = false;
+
+    const CPUGroupKey key = mmsolver::hash::make_hash(group_name);
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_erase_group: "
+                      << "key=" << key << "group_name=\"" << group_name.c_str()
+                      << "\"");
+
+    const CPUGroupMapIt group_search = m_cpu_group_map.find(key);
+    const bool group_found = group_search != m_cpu_group_map.end();
+    if (!group_found) {
+        MMSOLVER_MAYA_WRN(
+            "mmsolver::ImageCache: cpu_erase_group: "
+            "Group name \""
+            << group_name << "\" not found!");
+        return 0;
+    }
+
+    size_t count = 0;
+    CPUGroupSet &values_set = group_search->second;
+    for (auto it = values_set.begin(); it != values_set.end(); it++) {
+        CPUCacheString value = *it;
+        const bool ok = ImageCache::cpu_erase_item(value);
+        count += static_cast<size_t>(ok);
+    }
+
+    return count;
 }
 
 }  // namespace image

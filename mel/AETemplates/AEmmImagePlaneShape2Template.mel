@@ -399,8 +399,7 @@ global proc AEmmImagePlaneShape2_imageCache_clearUnusedSlots(
 }
 
 
-global proc AEmmImagePlaneShape2_imageCache_clearAllImages(
-    string $image_plane_shp)
+global proc AEmmImagePlaneShape2_imageCache_clearAllImages()
 {
     string $cmd = "import mmSolver.tools.imagecache.lib as lib;";
     $cmd += "import mmSolver.tools.imagecache.constant as const;";
@@ -409,8 +408,7 @@ global proc AEmmImagePlaneShape2_imageCache_clearAllImages(
 }
 
 
-global proc AEmmImagePlaneShape2_imageCache_openPreferences(
-    string $image_plane_shp)
+global proc AEmmImagePlaneShape2_imageCache_openImageCacheUI()
 {
     string $cmd = "import mmSolver.tools.imagecache.tool as tool;";
     $cmd += "tool.main();";
@@ -418,39 +416,50 @@ global proc AEmmImagePlaneShape2_imageCache_openPreferences(
 }
 
 
-global proc AEmmImagePlaneShape2_imageCacheClearSectionNew(string $attr_name)
+global proc AEmmImagePlaneShape2_imageCacheButtonsNew(string $attr_name)
 {
     setUITemplate -pst attributeEditorTemplate;
 
     text -label "";
 
-    // Clear buttons and Image Cache preferences.
-    rowLayout -nc 3 imageCacheClearLayout;
+    // Clear buttons
+    rowLayout -nc 3 imageCacheButtons_clearLayout;
     {
         // Spacer to avoid button on the screen-left of the Attribute
         // Editor.
         text -label "";
 
-        button -label "Clear..." imageCacheClearButton;
+        button -label "Clear..." imageCacheButtons_clearButton;
+
         int $left_mouse_button = 1;
         popupMenu -button $left_mouse_button;
-        menuItem -label "All image slots" imageCacheClearAllSlotsMenuItem;
-        menuItem -label "Active image slot" imageCacheClearActiveSlotMenuItem;
-        menuItem -label "Unused image slots" imageCacheClearUnusedImageSlotsMenuItem;
-        menuItem -divider true;
-        menuItem -label "All images in cache" imageCacheClearAllImagesMenuItem;
 
-        button -label "Preferences..." imageCachePreferencesButton;
+        menuItem -label "All image slots" imageCacheButtons_clearAllSlotsMenuItem;
+        menuItem -label "Active image slot" imageCacheButtons_clearActiveSlotMenuItem;
+        menuItem -label "Unused image slots" imageCacheButtons_clearUnusedImageSlotsMenuItem;
+        menuItem -divider true;
+        menuItem -label "All images in cache" imageCacheButtons_clearAllImagesMenuItem;
+    }
+    setParent ..;
+
+    // Image Cache Capacity preferences.
+    rowLayout -nc 3 imageCacheButtons_capacityLayout;
+    {
+        // Spacer to avoid button on the screen-left of the Attribute
+        // Editor.
+        text -label "";
+
+        button -label "Cache Capacity..." imageCacheButtons_capacityButton;
     }
     setParent ..;
 
     setUITemplate -ppt;
 
-    AEmmImagePlaneShape2_imageCacheClearSectionReplace $attr_name;
+    AEmmImagePlaneShape2_imageCacheButtonsReplace $attr_name;
 }
 
 
-global proc AEmmImagePlaneShape2_imageCacheClearSectionReplace(string $attr_name)
+global proc AEmmImagePlaneShape2_imageCacheButtonsReplace(string $attr_name)
 {
     string $image_plane_shp[];
     tokenize($attr_name, ".", $image_plane_shp);
@@ -458,19 +467,22 @@ global proc AEmmImagePlaneShape2_imageCacheClearSectionReplace(string $attr_name
         return;
     }
 
-    string $clear_all_slots_cmd = "AEmmImagePlaneShape2_imageCache_clearAllSlots " + $image_plane_shp[0];
-    string $clear_active_slot_cmd = "AEmmImagePlaneShape2_imageCache_clearActiveSlot " + $image_plane_shp[0];
-    string $clear_unused_cmd = "AEmmImagePlaneShape2_imageCache_clearUnusedSlots " + $image_plane_shp[0];
-    string $clear_all_cmd = "AEmmImagePlaneShape2_imageCache_clearAllImages " + $image_plane_shp[0];
+    menuItem -edit
+      -command ("AEmmImagePlaneShape2_imageCache_clearAllSlots " + $image_plane_shp[0])
+      imageCacheButtons_clearAllSlotsMenuItem;
+    menuItem -edit
+      -command ("AEmmImagePlaneShape2_imageCache_clearActiveSlot " + $image_plane_shp[0])
+      imageCacheButtons_clearActiveSlotMenuItem;
+    menuItem -edit
+      -command ("AEmmImagePlaneShape2_imageCache_clearUnusedSlots " + $image_plane_shp[0])
+      imageCacheButtons_clearUnusedImageSlotsMenuItem;
+    menuItem -edit
+      -command ("AEmmImagePlaneShape2_imageCache_clearAllImages;")
+      imageCacheButtons_clearAllImagesMenuItem;
 
-    string $open_preferences_cmd = "AEmmImagePlaneShape2_imageCache_openPreferences " + $image_plane_shp[0];
-
-    menuItem -edit -command $clear_all_slots_cmd imageCacheClearAllSlotsMenuItem;
-    menuItem -edit -command $clear_active_slot_cmd imageCacheClearActiveSlotMenuItem;
-    menuItem -edit -command $clear_unused_cmd imageCacheClearUnusedImageSlotsMenuItem;
-    menuItem -edit -command $clear_all_cmd imageCacheClearAllImagesMenuItem;
-
-    button -edit -command $open_preferences_cmd imageCachePreferencesButton;
+    button -edit
+      -command "AEmmImagePlaneShape2_imageCache_openImageCacheUI;"
+      imageCacheButtons_capacityButton;
 }
 
 
@@ -569,8 +581,8 @@ global proc AEmmImagePlaneShape2Template(string $nodeName)
             "";
         editorTemplate
             -callCustom
-            "AEmmImagePlaneShape2_imageCacheClearSectionNew"
-            "AEmmImagePlaneShape2_imageCacheClearSectionReplace"
+            "AEmmImagePlaneShape2_imageCacheButtonsNew"
+            "AEmmImagePlaneShape2_imageCacheButtonsReplace"
             "";
     }
     editorTemplate -endLayout;

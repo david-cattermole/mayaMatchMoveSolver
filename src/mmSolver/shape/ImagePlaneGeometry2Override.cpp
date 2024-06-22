@@ -473,8 +473,8 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
         const bool do_texture_update = false;
         image::ImageCache &image_cache = image::ImageCache::getInstance();
         out_color_texture = image::read_texture_image_file(
-            texture_manager, image_cache, m_temp_image, expanded_file_path,
-            do_texture_update);
+            texture_manager, image_cache, m_temp_image, file_path,
+            expanded_file_path, do_texture_update);
 
         if (out_color_texture) {
             MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture->name()="

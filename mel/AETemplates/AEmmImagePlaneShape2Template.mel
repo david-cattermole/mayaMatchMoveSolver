@@ -365,10 +365,9 @@ global proc AEmmImagePlaneShape2_imageCache_clearAllSlots(
 {
     string $cmd = "import mmSolver.tools.imagecache.lib as lib;";
     $cmd += "import mmSolver.tools.imagecache.constant as const;";
-    $cmd += "lib.cache_remove_all_image_plane_slots(";
-    $cmd += "    const.CACHE_TYPE_ALL, ";
-    $cmd += "    \"" + $image_plane_shp + "\"";
-    $cmd += ");";
+    $cmd += "node = \"" + $image_plane_shp + "\";";
+    $cmd += "lib.cache_remove_all_image_plane_slots(const.CACHE_TYPE_CPU, node);";
+    $cmd += "lib.cache_remove_all_image_plane_slots(const.CACHE_TYPE_GPU, node);";
     python($cmd);
 }
 
@@ -378,10 +377,9 @@ global proc AEmmImagePlaneShape2_imageCache_clearActiveSlot(
 {
     string $cmd = "import mmSolver.tools.imagecache.lib as lib;";
     $cmd += "import mmSolver.tools.imagecache.constant as const;";
-    $cmd += "lib.cache_remove_active_image_plane_slot(";
-    $cmd += "    const.CACHE_TYPE_ALL, ";
-    $cmd += "    \"" + $image_plane_shp + "\"";
-    $cmd += ");";
+    $cmd += "node = \"" + $image_plane_shp + "\";";
+    $cmd += "lib.cache_remove_active_image_plane_slot(const.CACHE_TYPE_CPU, node);";
+    $cmd += "lib.cache_remove_active_image_plane_slot(const.CACHE_TYPE_GPU, node);";
     python($cmd);
 }
 
@@ -391,10 +389,9 @@ global proc AEmmImagePlaneShape2_imageCache_clearUnusedSlots(
 {
     string $cmd = "import mmSolver.tools.imagecache.lib as lib;";
     $cmd += "import mmSolver.tools.imagecache.constant as const;";
-    $cmd += "lib.cache_remove_unused_image_plane_slots(";
-    $cmd += "    const.CACHE_TYPE_ALL, ";
-    $cmd += "    \"" + $image_plane_shp + "\"";
-    $cmd += ");";
+    $cmd += "node = \"" + $image_plane_shp + "\";";
+    $cmd += "lib.cache_remove_unused_image_plane_slots(const.CACHE_TYPE_CPU, node);";
+    $cmd += "lib.cache_remove_unused_image_plane_slots(const.CACHE_TYPE_GPU, node);";
     python($cmd);
 }
 
@@ -403,7 +400,8 @@ global proc AEmmImagePlaneShape2_imageCache_clearAllImages()
 {
     string $cmd = "import mmSolver.tools.imagecache.lib as lib;";
     $cmd += "import mmSolver.tools.imagecache.constant as const;";
-    $cmd += "lib.cache_remove_all(const.CACHE_TYPE_ALL);";
+    $cmd += "lib.cache_remove_all(const.CACHE_TYPE_CPU);";
+    $cmd += "lib.cache_remove_all(const.CACHE_TYPE_GPU);";
     python($cmd);
 }
 

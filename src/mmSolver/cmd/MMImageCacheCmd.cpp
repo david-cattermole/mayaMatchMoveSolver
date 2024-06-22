@@ -46,21 +46,38 @@
 // Command arguments and command name:
 #define GPU_CAPACITY_FLAG "-gpc"
 #define GPU_CAPACITY_FLAG_LONG "-gpuCapacity"
-
-#define GPU_USED_FLAG "-gpu"
-#define GPU_USED_FLAG_LONG "-gpuUsed"
-
 #define CPU_CAPACITY_FLAG "-cpc"
 #define CPU_CAPACITY_FLAG_LONG "-cpuCapacity"
 
+#define GPU_USED_FLAG "-gpu"
+#define GPU_USED_FLAG_LONG "-gpuUsed"
 #define CPU_USED_FLAG "-cpu"
 #define CPU_USED_FLAG_LONG "-cpuUsed"
 
-#define GPU_ITEM_COUNT_FLAG "-gpi"
+#define GPU_ITEM_COUNT_FLAG "-gic"
 #define GPU_ITEM_COUNT_FLAG_LONG "-gpuItemCount"
-
-#define CPU_ITEM_COUNT_FLAG "-cpi"
+#define CPU_ITEM_COUNT_FLAG "-cic"
 #define CPU_ITEM_COUNT_FLAG_LONG "-cpuItemCount"
+
+#define GPU_GROUP_COUNT_FLAG "-ggc"
+#define GPU_GROUP_COUNT_FLAG_LONG "-gpuGroupCount"
+#define CPU_GROUP_COUNT_FLAG "-cgc"
+#define CPU_GROUP_COUNT_FLAG_LONG "-cpuGroupCount"
+
+#define GPU_GROUP_NAMES_FLAG "-ggn"
+#define GPU_GROUP_NAMES_FLAG_LONG "-gpuGroupNames"
+#define CPU_GROUP_NAMES_FLAG "-cgn"
+#define CPU_GROUP_NAMES_FLAG_LONG "-cpuGroupNames"
+
+#define GPU_GROUP_ITEM_COUNT_FLAG "-ggt"
+#define GPU_GROUP_ITEM_COUNT_FLAG_LONG "-gpuGroupItemCount"
+#define CPU_GROUP_ITEM_COUNT_FLAG "-cgt"
+#define CPU_GROUP_ITEM_COUNT_FLAG_LONG "-cpuGroupItemCount"
+
+#define GPU_GROUP_ITEM_NAMES_FLAG "-gin"
+#define GPU_GROUP_ITEM_NAMES_FLAG_LONG "-gpuGroupItemNames"
+#define CPU_GROUP_ITEM_NAMES_FLAG "-cin"
+#define CPU_GROUP_ITEM_NAMES_FLAG_LONG "-cpuGroupItemNames"
 
 #define BRIEF_TEXT_FLAG "-btx"
 #define BRIEF_TEXT_FLAG_LONG "-briefText"
@@ -90,6 +107,8 @@ MSyntax MMImageCacheCmd::newSyntax() {
     syntax.enableQuery(true);
     syntax.enableEdit(true);
 
+    syntax.setObjectType(MSyntax::kStringObjects);
+
     CHECK_MSTATUS(syntax.addFlag(GPU_CAPACITY_FLAG, GPU_CAPACITY_FLAG_LONG,
                                  MSyntax::kString));
     CHECK_MSTATUS(syntax.addFlag(CPU_CAPACITY_FLAG, CPU_CAPACITY_FLAG_LONG,
@@ -103,6 +122,26 @@ MSyntax MMImageCacheCmd::newSyntax() {
     CHECK_MSTATUS(
         syntax.addFlag(CPU_ITEM_COUNT_FLAG, CPU_ITEM_COUNT_FLAG_LONG));
 
+    CHECK_MSTATUS(
+        syntax.addFlag(GPU_GROUP_COUNT_FLAG, GPU_GROUP_COUNT_FLAG_LONG));
+    CHECK_MSTATUS(
+        syntax.addFlag(CPU_GROUP_COUNT_FLAG, CPU_GROUP_COUNT_FLAG_LONG));
+
+    CHECK_MSTATUS(
+        syntax.addFlag(GPU_GROUP_NAMES_FLAG, GPU_GROUP_NAMES_FLAG_LONG));
+    CHECK_MSTATUS(
+        syntax.addFlag(CPU_GROUP_NAMES_FLAG, CPU_GROUP_NAMES_FLAG_LONG));
+
+    CHECK_MSTATUS(syntax.addFlag(GPU_GROUP_ITEM_COUNT_FLAG,
+                                 GPU_GROUP_ITEM_COUNT_FLAG_LONG));
+    CHECK_MSTATUS(syntax.addFlag(CPU_GROUP_ITEM_COUNT_FLAG,
+                                 CPU_GROUP_ITEM_COUNT_FLAG_LONG));
+
+    CHECK_MSTATUS(syntax.addFlag(GPU_GROUP_ITEM_NAMES_FLAG,
+                                 GPU_GROUP_ITEM_NAMES_FLAG_LONG));
+    CHECK_MSTATUS(syntax.addFlag(CPU_GROUP_ITEM_NAMES_FLAG,
+                                 CPU_GROUP_ITEM_NAMES_FLAG_LONG));
+
     CHECK_MSTATUS(syntax.addFlag(BRIEF_TEXT_FLAG, BRIEF_TEXT_FLAG_LONG));
 
     return syntax;
@@ -113,7 +152,7 @@ MSyntax MMImageCacheCmd::newSyntax() {
  */
 MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
-    const bool verbose = false;
+    const bool verbose = true;
 
     MArgDatabase argData(syntax(), args, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -130,6 +169,10 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
         "m_is_edit="
         << m_is_edit);
 
+    // Get the file path.
+    MStringArray string_objects;
+    argData.getObjects(string_objects);
+
     const bool has_gpu_capacity = argData.isFlagSet(GPU_CAPACITY_FLAG, &status);
     const bool has_cpu_capacity = argData.isFlagSet(CPU_CAPACITY_FLAG, &status);
     const bool has_gpu_used = argData.isFlagSet(GPU_USED_FLAG, &status);
@@ -138,23 +181,87 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
         argData.isFlagSet(GPU_ITEM_COUNT_FLAG, &status);
     const bool has_cpu_item_count =
         argData.isFlagSet(CPU_ITEM_COUNT_FLAG, &status);
+
+    const bool has_gpu_group_count =
+        argData.isFlagSet(GPU_GROUP_COUNT_FLAG, &status);
+    const bool has_cpu_group_count =
+        argData.isFlagSet(CPU_GROUP_COUNT_FLAG, &status);
+    const bool has_gpu_group_names =
+        argData.isFlagSet(GPU_GROUP_NAMES_FLAG, &status);
+    const bool has_cpu_group_names =
+        argData.isFlagSet(CPU_GROUP_NAMES_FLAG, &status);
+
+    const bool has_gpu_group_item_count =
+        argData.isFlagSet(GPU_GROUP_ITEM_COUNT_FLAG, &status);
+    const bool has_cpu_group_item_count =
+        argData.isFlagSet(CPU_GROUP_ITEM_COUNT_FLAG, &status);
+    const bool has_gpu_group_item_names =
+        argData.isFlagSet(GPU_GROUP_ITEM_NAMES_FLAG, &status);
+    const bool has_cpu_group_item_names =
+        argData.isFlagSet(CPU_GROUP_ITEM_NAMES_FLAG, &status);
+
     const bool has_print_brief = argData.isFlagSet(BRIEF_TEXT_FLAG, &status);
 
     if (m_is_query) {
         if (has_gpu_capacity) {
             m_command_flag = ImageCacheFlagMode::kGpuCapacity;
+            m_output_type = ImageCacheOutputType::kSize;
         } else if (has_cpu_capacity) {
             m_command_flag = ImageCacheFlagMode::kCpuCapacity;
+            m_output_type = ImageCacheOutputType::kSize;
         } else if (has_gpu_used) {
             m_command_flag = ImageCacheFlagMode::kGpuUsed;
+            m_output_type = ImageCacheOutputType::kSize;
         } else if (has_cpu_used) {
             m_command_flag = ImageCacheFlagMode::kCpuUsed;
+            m_output_type = ImageCacheOutputType::kSize;
         } else if (has_gpu_item_count) {
             m_command_flag = ImageCacheFlagMode::kGpuItemCount;
+            m_output_type = ImageCacheOutputType::kSize;
         } else if (has_cpu_item_count) {
             m_command_flag = ImageCacheFlagMode::kCpuItemCount;
+            m_output_type = ImageCacheOutputType::kSize;
+        } else if (has_gpu_group_count) {
+            m_command_flag = ImageCacheFlagMode::kGpuGroupCount;
+            m_output_type = ImageCacheOutputType::kSize;
+        } else if (has_cpu_group_count) {
+            m_command_flag = ImageCacheFlagMode::kCpuGroupCount;
+            m_output_type = ImageCacheOutputType::kSize;
+        } else if (has_gpu_group_names) {
+            m_command_flag = ImageCacheFlagMode::kGpuGroupNames;
+            m_output_type = ImageCacheOutputType::kStringArray;
+        } else if (has_cpu_group_names) {
+            m_command_flag = ImageCacheFlagMode::kCpuGroupNames;
+            m_output_type = ImageCacheOutputType::kStringArray;
+        } else if (has_gpu_group_item_count || has_cpu_group_item_count ||
+                   has_gpu_group_item_names || has_cpu_group_item_names) {
+            if (string_objects.length() != 1) {
+                status = MStatus::kFailure;
+                status.perror(
+                    "mmImageCache: "
+                    "One group name must be given to command!");
+                return status;
+            }
+
+            m_string_objects.clear();
+            m_string_objects.append(string_objects[0]);
+
+            if (has_gpu_group_item_count) {
+                m_command_flag = ImageCacheFlagMode::kGpuGroupItemCount;
+                m_output_type = ImageCacheOutputType::kSize;
+            } else if (has_cpu_group_item_count) {
+                m_command_flag = ImageCacheFlagMode::kCpuGroupItemCount;
+                m_output_type = ImageCacheOutputType::kSize;
+            } else if (has_gpu_group_item_names) {
+                m_command_flag = ImageCacheFlagMode::kGpuGroupItemNames;
+                m_output_type = ImageCacheOutputType::kStringArray;
+            } else if (has_cpu_group_item_names) {
+                m_command_flag = ImageCacheFlagMode::kCpuGroupItemNames;
+                m_output_type = ImageCacheOutputType::kStringArray;
+            }
         } else if (has_print_brief) {
             m_command_flag = ImageCacheFlagMode::kGenerateBriefText;
+            m_output_type = ImageCacheOutputType::kString;
         } else {
             MMSOLVER_MAYA_ERR(
                 "MMImageCacheCmd::parseArgs: "
@@ -259,9 +366,105 @@ inline MStatus set_values(image::ImageCache &image_cache,
     return status;
 }
 
+MStatus get_value_size(image::ImageCache &image_cache,
+                       const ImageCacheFlagMode command_flag,
+                       const std::string &group_name, size_t &out_value) {
+    out_value = 0;
+
+    if (command_flag == ImageCacheFlagMode::kGpuCapacity) {
+        out_value = image_cache.get_gpu_capacity_bytes();
+    } else if (command_flag == ImageCacheFlagMode::kCpuCapacity) {
+        out_value = image_cache.get_cpu_capacity_bytes();
+    } else if (command_flag == ImageCacheFlagMode::kGpuUsed) {
+        out_value = image_cache.get_gpu_used_bytes();
+    } else if (command_flag == ImageCacheFlagMode::kCpuUsed) {
+        out_value = image_cache.get_cpu_used_bytes();
+    } else if (command_flag == ImageCacheFlagMode::kGpuItemCount) {
+        out_value = image_cache.get_gpu_item_count();
+    } else if (command_flag == ImageCacheFlagMode::kCpuItemCount) {
+        out_value = image_cache.get_cpu_item_count();
+    } else if (command_flag == ImageCacheFlagMode::kGpuGroupCount) {
+        out_value = image_cache.get_gpu_group_count();
+    } else if (command_flag == ImageCacheFlagMode::kCpuGroupCount) {
+        out_value = image_cache.get_cpu_group_count();
+    } else if (command_flag == ImageCacheFlagMode::kGpuGroupItemCount) {
+        out_value = image_cache.gpu_group_item_count(group_name);
+    } else if (command_flag == ImageCacheFlagMode::kCpuGroupItemCount) {
+        out_value = image_cache.cpu_group_item_count(group_name);
+    } else {
+        MMSOLVER_MAYA_ERR(
+            "MMImageCacheCmd::doIt: "
+            "Invalid command query flag! "
+            "value="
+            << static_cast<int>(command_flag));
+        return MStatus::kFailure;
+    }
+
+    return MStatus::kSuccess;
+}
+
+MStatus get_value_string(image::ImageCache &image_cache,
+                         const ImageCacheFlagMode command_flag,
+                         MString &out_result) {
+    if (command_flag == ImageCacheFlagMode::kGenerateBriefText) {
+        out_result = image_cache.generate_cache_brief_text();
+    } else {
+        MMSOLVER_MAYA_ERR(
+            "MMImageCacheCmd::doIt: "
+            "Invalid command query flag! "
+            "value="
+            << static_cast<int>(command_flag));
+        return MStatus::kFailure;
+    }
+
+    return MStatus::kSuccess;
+}
+
+MStatus get_value_string_array(image::ImageCache &image_cache,
+                               const ImageCacheFlagMode command_flag,
+                               const std::string &group_name,
+                               MStringArray &out_results) {
+    bool ok = true;
+    std::vector<std::string> outputs;
+
+    if (command_flag == ImageCacheFlagMode::kGpuGroupNames) {
+        image_cache.gpu_group_names(outputs);
+    } else if (command_flag == ImageCacheFlagMode::kCpuGroupNames) {
+        image_cache.cpu_group_names(outputs);
+    } else if (command_flag == ImageCacheFlagMode::kGpuGroupItemNames) {
+        ok = image_cache.gpu_group_item_names(group_name, outputs);
+    } else if (command_flag == ImageCacheFlagMode::kCpuGroupItemNames) {
+        ok = image_cache.cpu_group_item_names(group_name, outputs);
+    } else {
+        MMSOLVER_MAYA_ERR(
+            "MMImageCacheCmd::doIt: "
+            "Invalid command query flag! "
+            "value="
+            << static_cast<int>(command_flag));
+        return MStatus::kFailure;
+    }
+
+    if (!ok) {
+        MMSOLVER_MAYA_ERR(
+            "MMImageCacheCmd::doIt: "
+            "Invalid command query flag! "
+            "value="
+            << static_cast<int>(command_flag));
+        return MStatus::kFailure;
+    }
+
+    out_results.clear();
+    for (auto i = 0; i < outputs.size(); i++) {
+        const auto value = outputs[i];
+        out_results.append(MString(value.c_str()));
+    }
+
+    return MStatus::kSuccess;
+}
+
 MStatus MMImageCacheCmd::doIt(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
-    const bool verbose = false;
+    const bool verbose = true;
 
     // Read all the flag arguments.
     status = parseArgs(args);
@@ -270,35 +473,45 @@ MStatus MMImageCacheCmd::doIt(const MArgList &args) {
     if (m_is_query) {
         image::ImageCache &image_cache = image::ImageCache::getInstance();
 
-        if (m_command_flag == ImageCacheFlagMode::kGenerateBriefText) {
-            MString mstring = image_cache.generate_cache_brief_text();
-            MMImageCacheCmd::setResult(mstring);
-        } else {
-            size_t bytes_value = 0;
-            if (m_command_flag == ImageCacheFlagMode::kGpuCapacity) {
-                bytes_value = image_cache.get_gpu_capacity_bytes();
-            } else if (m_command_flag == ImageCacheFlagMode::kCpuCapacity) {
-                bytes_value = image_cache.get_cpu_capacity_bytes();
-            } else if (m_command_flag == ImageCacheFlagMode::kGpuUsed) {
-                bytes_value = image_cache.get_gpu_used_bytes();
-            } else if (m_command_flag == ImageCacheFlagMode::kCpuUsed) {
-                bytes_value = image_cache.get_cpu_used_bytes();
-            } else if (m_command_flag == ImageCacheFlagMode::kGpuItemCount) {
-                bytes_value = image_cache.get_gpu_item_count();
-            } else if (m_command_flag == ImageCacheFlagMode::kCpuItemCount) {
-                bytes_value = image_cache.get_cpu_item_count();
-            } else {
-                MMSOLVER_MAYA_ERR(
-                    "MMImageCacheCmd::doIt: "
-                    "Invalid command query flag! "
-                    "value="
-                    << static_cast<int>(m_command_flag));
-                return MStatus::kFailure;
+        if (m_output_type == ImageCacheOutputType::kString) {
+            MString result;
+            status = get_value_string(image_cache, m_command_flag, result);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMImageCacheCmd::setResult(result);
+        } else if (m_output_type == ImageCacheOutputType::kSize) {
+            std::string group_name = "";
+            if (m_string_objects.length() > 0) {
+                group_name = m_string_objects[0].asChar();
             }
 
-            MString number_mstring(mmmayastring::numberToMString(bytes_value));
-            MMImageCacheCmd::setResult(number_mstring);
+            size_t result = 0;
+            status =
+                get_value_size(image_cache, m_command_flag, group_name, result);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+
+            MString result_string(mmmayastring::numberToMString(result));
+
+            MMImageCacheCmd::setResult(result_string);
+        } else if (m_output_type == ImageCacheOutputType::kStringArray) {
+            std::string group_name = "";
+            if (m_string_objects.length() > 0) {
+                group_name = m_string_objects[0].asChar();
+            }
+
+            MStringArray results;
+            status = get_value_string_array(image_cache, m_command_flag,
+                                            group_name, results);
+            CHECK_MSTATUS_AND_RETURN_IT(status);
+            MMImageCacheCmd::setResult(results);
+        } else {
+            MMSOLVER_MAYA_ERR(
+                "MMImageCacheCmd::doIt: "
+                "Invalid command query flag! "
+                "value="
+                << static_cast<int>(m_command_flag));
+            return MStatus::kFailure;
         }
+
     } else if (m_is_edit) {
         image::ImageCache &image_cache = image::ImageCache::getInstance();
         set_values(image_cache, m_command_flag, m_gpu_capacity_bytes,

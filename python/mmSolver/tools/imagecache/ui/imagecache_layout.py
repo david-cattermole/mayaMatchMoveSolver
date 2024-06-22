@@ -50,6 +50,7 @@ def memoryTotalUpdateUi(
     gigabytes = 0.0
     if size_bytes > 0:
         gigabytes = size_bytes / _BYTES_TO_GIGABYTES
+
     text = '<b>{:0,.2f} GB</b>'.format(gigabytes)
     label.setText(text)
 
@@ -62,6 +63,7 @@ def memoryUsedUpdateUi(label, used_size_bytes, total_size_bytes):
     used_percent = 0.0
     if used_size_bytes > 0 and total_size_bytes > 0:
         used_percent = (used_size_bytes / total_size_bytes) * 100.0
+
     text = '<b>{:0,.2f} GB ({:3.1f}%)</b>'.format(used_gigabytes, used_percent)
     label.setText(text)
 
@@ -81,6 +83,7 @@ def cacheCapacityUpdateUi(
     gigabytes = 0.0
     if size_bytes > 0:
         gigabytes = size_bytes / _BYTES_TO_GIGABYTES
+
     text = '<b>{:0,.2f} GB</b>'.format(gigabytes)
     label.setText(text)
 
@@ -93,6 +96,7 @@ def cacheUsedUpdateUi(label, used_size_bytes, capacity_size_bytes):
     used_percent = 0.0
     if used_size_bytes > 0 and capacity_size_bytes > 0:
         used_percent = (used_size_bytes / capacity_size_bytes) * 100.0
+
     text = '<b>{:0,.2f} GB ({:3.1f}%)</b>'.format(used_gigabytes, used_percent)
     label.setText(text)
 

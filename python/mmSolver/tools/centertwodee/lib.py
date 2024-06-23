@@ -27,56 +27,12 @@ from __future__ import print_function
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.math as math_utils
 import mmSolver.utils.viewport as viewport_utils
 import mmSolver.utils.reproject as reproject_utils
 import mmSolver.tools.centertwodee.constant as const
 
 LOG = mmSolver.logger.get_logger()
-
-
-def _lerp(min_value, max_value, mix):
-    """
-    Return 'min_value' to 'max_value' linearly, for a 'mix' value
-    between 0.0 and 1.0.
-
-    :type min_value: float
-    :type max_value: float
-    :type mix: float
-
-    :rtype: float
-    """
-    return (1.0 - mix) * min_value + mix * max_value
-
-
-def _inverse_lerp(min_value, max_value, mix):
-    """
-    Return 0.0 to 1.0 linearly, for a 'mix' value between 'min_value'
-    and 'max_value'.
-
-    :type min_value: float
-    :type max_value: float
-    :type mix: float
-
-    :rtype: float
-    """
-    return (mix - min_value) / (max_value - min_value)
-
-
-def _remap(old_min, old_max, new_min, new_max, mix):
-    """
-    Remap from the 'old_*' values to 'new_*' values, using a 'mix'
-    value between 0.0 and 1.0;
-
-    :type old_min: float
-    :type old_max: float
-    :type new_min: float
-    :type new_max: float
-    :type mix: float
-
-    :rtype: float
-    """
-    blend = _inverse_lerp(old_min, old_max, mix)
-    return _lerp(new_min, new_max, blend)
 
 
 def set_offset_range(source='slider'):
@@ -168,7 +124,7 @@ def process_value(input_value=None, source=None, zoom=None):
         zoom = True
     input_range_start, input_range_end, output_range_start, output_range_end = new_range
 
-    output = _remap(
+    output = math_utils.remap(
         input_range_start,
         input_range_end,
         float(output_range_start),

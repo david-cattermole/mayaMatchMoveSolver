@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>608</width>
-    <height>481</height>
+    <width>547</width>
+    <height>537</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -217,6 +217,37 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_5">
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_20">
+          <item>
+           <widget class="QLabel" name="gpuCacheGroupCount_label">
+            <property name="text">
+             <string>Group Count:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_12">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="gpuCacheGroupCountValue_label">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;2&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
            <widget class="QLabel" name="gpuCacheItemCount_label">
@@ -319,6 +350,37 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_6">
         <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_21">
+          <item>
+           <widget class="QLabel" name="cpuCacheGroupCount_label">
+            <property name="text">
+             <string>Group Count:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_13">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="cpuCacheGroupCountValue_label">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;2&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
          <layout class="QHBoxLayout" name="horizontalLayout_11">
           <item>
            <widget class="QLabel" name="cpuCacheItemCount_label">
@@ -417,36 +479,45 @@
     </layout>
    </item>
    <item>
-    <widget class="QGroupBox" name="imageCacheSettings_groupBox">
+    <widget class="QGroupBox" name="imageCacheDefaultSettings_groupBox">
      <property name="title">
-      <string>Image Cache Settings</string>
+      <string>Image Cache Defaults</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_8">
         <item>
-         <widget class="QLabel" name="gpuCacheCapacity_label">
+         <widget class="QLabel" name="gpuCacheDefaultCapacity_label">
           <property name="text">
            <string>GPU Capacity:</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="gpuCacheCapacityGigaBytes_label">
+         <widget class="QLabel" name="gpuCacheDefaultCapacityValue_label">
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;1 GB&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QSlider" name="gpuCacheCapacity_horizontalSlider">
+         <widget class="QSlider" name="gpuCacheDefaultCapacity_horizontalSlider">
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+          <property name="pageStep">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>500</number>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QDoubleSpinBox" name="gpuCacheCapacity_doubleSpinBox">
+         <widget class="QDoubleSpinBox" name="gpuCacheDefaultCapacity_doubleSpinBox">
           <property name="suffix">
            <string>%</string>
           </property>
@@ -460,7 +531,7 @@
            <double>5.000000000000000</double>
           </property>
           <property name="value">
-           <double>5.000000000000000</double>
+           <double>50.000000000000000</double>
           </property>
          </widget>
         </item>
@@ -469,28 +540,37 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_7">
         <item>
-         <widget class="QLabel" name="cpuCacheCapacity_label">
+         <widget class="QLabel" name="cpuCacheDefaultCapacity_label">
           <property name="text">
            <string>CPU Capacity:</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="cpuCacheCapacityGigaBytes_label">
+         <widget class="QLabel" name="cpuCacheDefaultCapacityValue_label">
           <property name="text">
            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;5 GB&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QSlider" name="cpuCacheCapacity_horizontalSlider">
+         <widget class="QSlider" name="cpuCacheDefaultCapacity_horizontalSlider">
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+          <property name="pageStep">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>500</number>
+          </property>
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QDoubleSpinBox" name="cpuCacheCapacity_doubleSpinBox">
+         <widget class="QDoubleSpinBox" name="cpuCacheDefaultCapacity_doubleSpinBox">
           <property name="suffix">
            <string>%</string>
           </property>
@@ -504,7 +584,128 @@
            <double>5.000000000000000</double>
           </property>
           <property name="value">
+           <double>50.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="imageCacheSceneSettings_groupBox">
+     <property name="title">
+      <string>Image Cache Scene Override</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_7">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_18">
+        <item>
+         <widget class="QLabel" name="gpuCacheSceneCapacity_label">
+          <property name="text">
+           <string>GPU Capacity:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="gpuCacheSceneCapacityValue_label">
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;1 GB&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSlider" name="gpuCacheSceneCapacity_horizontalSlider">
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+          <property name="pageStep">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>500</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="gpuCacheSceneCapacity_doubleSpinBox">
+          <property name="suffix">
+           <string>%</string>
+          </property>
+          <property name="decimals">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <double>100.000000000000000</double>
+          </property>
+          <property name="singleStep">
            <double>5.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>50.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_19">
+        <item>
+         <widget class="QLabel" name="cpuCacheSceneCapacity_label">
+          <property name="text">
+           <string>CPU Capacity:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="cpuCacheSceneCapacityValue_label">
+          <property name="text">
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;5 GB&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSlider" name="cpuCacheSceneCapacity_horizontalSlider">
+          <property name="maximum">
+           <number>1000</number>
+          </property>
+          <property name="pageStep">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>500</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="cpuCacheSceneCapacity_doubleSpinBox">
+          <property name="suffix">
+           <string>%</string>
+          </property>
+          <property name="decimals">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <double>100.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>5.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>50.000000000000000</double>
           </property>
          </widget>
         </item>

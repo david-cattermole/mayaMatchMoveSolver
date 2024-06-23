@@ -124,7 +124,7 @@
             "general_tools/gen_tools_popup/sort_nodes_in_outliner",
             "general_tools/gen_tools_popup/remove_all_solver_nodes",
             "general_tools/gen_tools_popup/---Settings & Preferences",
-            "general_tools/gen_tools_popup/image_cache_ui",
+            "general_tools/gen_tools_popup/image_cache_preferences_window",
             "general_tools/gen_tools_popup/user_preferences_window",
             "file_io_tools/file_io_popup/---Marker",
             "file_io_tools/file_io_popup/load_marker_ui",

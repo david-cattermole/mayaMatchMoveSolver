@@ -16,19 +16,18 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Controls the mmSolver Image Cache.
+Image Cache constants.
 """
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+WINDOW_TITLE = 'Image Cache Preferences'
 
-import mmSolver.logger
+CONFIG_FILE_NAME = "tools_imagecacheprefs.json"
 
-LOG = mmSolver.logger.get_logger()
+CONFIG_SCENE_CAPACITY_OVERRIDE_KEY = 'mmSolver_imagecache_capacity_override'
+CONFIG_SCENE_GPU_CAPACITY_PERCENT_KEY = 'mmSolver_imagecache_gpu_capacity_percent'
+CONFIG_SCENE_CPU_CAPACITY_PERCENT_KEY = 'mmSolver_imagecache_cpu_capacity_percent'
 
-
-def main():
-    import mmSolver.tools.imagecache.ui.imagecache_window as window
-
-    window.main()
+CONFIG_UPDATE_EVERY_N_SECONDS_KEY = 'data/update_every_n_seconds'
+CONFIG_UPDATE_EVERY_N_SECONDS_DEFAULT_VALUE = 2
+CONFIG_GPU_CAPACITY_PERCENT_KEY = 'data/gpu_capacity_percent'
+CONFIG_CPU_CAPACITY_PERCENT_KEY = 'data/cpu_capacity_percent'

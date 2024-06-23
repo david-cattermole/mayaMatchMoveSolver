@@ -36,9 +36,11 @@ import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.ui.commonmenus as commonmenus
-import mmSolver.tools.imagecache.constant as const
-import mmSolver.tools.imagecache.tool as tool
-import mmSolver.tools.imagecache.ui.imagecache_layout as imagecache_layout
+
+# import mmSolver.tools.imagecache.constant as imagecache_const
+import mmSolver.tools.imagecache.lib as imagecache_lib
+import mmSolver.tools.imagecacheprefs.constant as const
+import mmSolver.tools.imagecacheprefs.ui.imagecacheprefs_layout as imagecacheprefs_layout
 
 
 LOG = mmSolver.logger.get_logger()
@@ -52,13 +54,13 @@ def _open_help():
     return
 
 
-class ImageCacheWindow(BaseWindow):
-    name = 'ImageCacheWindow'
+class ImageCachePrefsWindow(BaseWindow):
+    name = 'ImageCachePrefsWindow'
 
     def __init__(self, parent=None, name=None):
-        super(ImageCacheWindow, self).__init__(parent, name=name)
+        super(ImageCachePrefsWindow, self).__init__(parent, name=name)
         self.setupUi(self)
-        self.addSubForm(imagecache_layout.ImageCacheLayout)
+        self.addSubForm(imagecacheprefs_layout.ImageCachePrefsLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
         self.setWindowFlags(QtCore.Qt.Tool)
@@ -66,13 +68,10 @@ class ImageCacheWindow(BaseWindow):
         # Standard Buttons
         self.baseHideStandardButtons()
         self.applyBtn.show()
-        self.resetBtn.show()
         self.closeBtn.show()
-        self.applyBtn.setText('Apply')
-        self.resetBtn.setText('Clear Cache')
+        self.applyBtn.setText('Apply Capacity')
 
         self.applyBtn.clicked.connect(self._apply)
-        self.resetBtn.clicked.connect(self._clear_cache)
 
         # Hide irrelevant stuff
         self.baseHideProgressBar()
@@ -92,17 +91,15 @@ class ImageCacheWindow(BaseWindow):
         menubar.addMenu(help_menu)
 
     def _apply(self):
-        # 1) Get the widget value.
-        # 2) Convert percentage into byte count.
-        # 3) Set the ImageCache capacity (CPU and GPU)
-        LOG.info('Set Capacity...')
-        return
+        form = self.getSubForm()
+        gpu_capacity_bytes = form.get_gpu_capacity_bytes()
+        cpu_capacity_bytes = form.get_cpu_capacity_bytes()
 
-    def _clear_cache(self):
-        # 1) Get the ImageCache capacities (CPU and GPU).
-        # 2) Set the ImageCache capacity (CPU and GPU) to zero.
-        # 3) Restore the ImageCache capacities (CPU and GPU).
-        LOG.info('Clear Cache...')
+        imagecache_lib.set_gpu_cache_capacity_bytes(gpu_capacity_bytes)
+        imagecache_lib.set_cpu_cache_capacity_bytes(cpu_capacity_bytes)
+
+        form.update_resource_values()
+        form.save_options()
         return
 
     def reset_options(self):
@@ -127,7 +124,9 @@ def main(show=True, auto_raise=True, delete=False):
 
     :returns: A new image cache window, or None if the window cannot be
               opened.
-    :rtype: ImageCacheWindow or None.
+    :rtype: ImageCachePrefsWindow or None.
     """
-    win = ImageCacheWindow.open_window(show=show, auto_raise=auto_raise, delete=delete)
+    win = ImageCachePrefsWindow.open_window(
+        show=show, auto_raise=auto_raise, delete=delete
+    )
     return win

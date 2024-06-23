@@ -16,5 +16,5 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Image Cache.
+Image Cache tool - Adjust the mmSolver Image Cache
 """

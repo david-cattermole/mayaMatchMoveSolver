@@ -66,10 +66,10 @@
 #define CPU_ERASE_ITEMS_FLAG "-cei"
 #define CPU_ERASE_ITEMS_FLAG_LONG "-cpuEraseItems"
 
-#define GPU_ERASE_GROUPS_FLAG "-geg"
-#define GPU_ERASE_GROUPS_FLAG_LONG "-gpuEraseGroups"
-#define CPU_ERASE_GROUPS_FLAG "-ceg"
-#define CPU_ERASE_GROUPS_FLAG_LONG "-cpuEraseGroups"
+#define GPU_ERASE_GROUP_ITEMS_FLAG "-geg"
+#define GPU_ERASE_GROUP_ITEMS_FLAG_LONG "-gpuEraseGroupItems"
+#define CPU_ERASE_GROUP_ITEMS_FLAG "-ceg"
+#define CPU_ERASE_GROUP_ITEMS_FLAG_LONG "-cpuEraseGroupItems"
 
 #define GPU_GROUP_COUNT_FLAG "-ggc"
 #define GPU_GROUP_COUNT_FLAG_LONG "-gpuGroupCount"
@@ -139,10 +139,10 @@ MSyntax MMImageCacheCmd::newSyntax() {
     CHECK_MSTATUS(
         syntax.addFlag(CPU_ERASE_ITEMS_FLAG, CPU_ERASE_ITEMS_FLAG_LONG));
 
-    CHECK_MSTATUS(
-        syntax.addFlag(GPU_ERASE_GROUPS_FLAG, GPU_ERASE_GROUPS_FLAG_LONG));
-    CHECK_MSTATUS(
-        syntax.addFlag(CPU_ERASE_GROUPS_FLAG, CPU_ERASE_GROUPS_FLAG_LONG));
+    CHECK_MSTATUS(syntax.addFlag(GPU_ERASE_GROUP_ITEMS_FLAG,
+                                 GPU_ERASE_GROUP_ITEMS_FLAG_LONG));
+    CHECK_MSTATUS(syntax.addFlag(CPU_ERASE_GROUP_ITEMS_FLAG,
+                                 CPU_ERASE_GROUP_ITEMS_FLAG_LONG));
 
     CHECK_MSTATUS(
         syntax.addFlag(GPU_GROUP_COUNT_FLAG, GPU_GROUP_COUNT_FLAG_LONG));
@@ -229,10 +229,10 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
     const bool has_cpu_erase_items =
         argData.isFlagSet(CPU_ERASE_ITEMS_FLAG, &status);
 
-    const bool has_gpu_erase_groups =
-        argData.isFlagSet(GPU_ERASE_GROUPS_FLAG, &status);
-    const bool has_cpu_erase_groups =
-        argData.isFlagSet(CPU_ERASE_GROUPS_FLAG, &status);
+    const bool has_gpu_erase_group_items =
+        argData.isFlagSet(GPU_ERASE_GROUP_ITEMS_FLAG, &status);
+    const bool has_cpu_erase_group_items =
+        argData.isFlagSet(CPU_ERASE_GROUP_ITEMS_FLAG, &status);
 
     const bool has_gpu_group_count =
         argData.isFlagSet(GPU_GROUP_COUNT_FLAG, &status);
@@ -350,11 +350,11 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
         } else if (has_cpu_erase_items) {
             m_command_flag = ImageCacheFlagMode::kCpuEraseItems;
             m_output_type = ImageCacheOutputType::kSize;
-        } else if (has_gpu_erase_groups) {
-            m_command_flag = ImageCacheFlagMode::kGpuEraseGroups;
+        } else if (has_gpu_erase_group_items) {
+            m_command_flag = ImageCacheFlagMode::kGpuEraseGroupItems;
             m_output_type = ImageCacheOutputType::kSize;
-        } else if (has_cpu_erase_groups) {
-            m_command_flag = ImageCacheFlagMode::kCpuEraseGroups;
+        } else if (has_cpu_erase_group_items) {
+            m_command_flag = ImageCacheFlagMode::kCpuEraseGroupItems;
             m_output_type = ImageCacheOutputType::kSize;
         } else {
             MMSOLVER_MAYA_ERR(
@@ -433,10 +433,11 @@ inline MStatus set_values(image::ImageCache &image_cache,
             const bool ok = image_cache.cpu_erase_item(*it);
             out_item_count += static_cast<bool>(ok);
         }
-    } else if (command_flag == ImageCacheFlagMode::kGpuEraseGroups) {
+    } else if (command_flag == ImageCacheFlagMode::kGpuEraseGroupItems) {
         if (group_name.size() == 0) {
             MMSOLVER_MAYA_ERR("MMImageCacheCmd::set_values: "
-                              << "\"" << GPU_ERASE_GROUPS_FLAG_LONG << "\" "
+                              << "\"" << GPU_ERASE_GROUP_ITEMS_FLAG_LONG
+                              << "\" "
                               << "flag needs a group name, but none given! "
                                  "group_name.size()="
                               << static_cast<int>(group_name.size()));
@@ -448,12 +449,14 @@ inline MStatus set_values(image::ImageCache &image_cache,
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         for (auto it = item_names.begin(); it != item_names.end(); it++) {
-            out_item_count += image_cache.gpu_erase_group(texture_manager, *it);
+            out_item_count +=
+                image_cache.gpu_erase_group_items(texture_manager, *it);
         }
-    } else if (command_flag == ImageCacheFlagMode::kCpuEraseGroups) {
+    } else if (command_flag == ImageCacheFlagMode::kCpuEraseGroupItems) {
         if (group_name.size() == 0) {
             MMSOLVER_MAYA_ERR("MMImageCacheCmd::set_values: "
-                              << "\"" << CPU_ERASE_GROUPS_FLAG_LONG << "\" "
+                              << "\"" << CPU_ERASE_GROUP_ITEMS_FLAG_LONG
+                              << "\" "
                               << "flag needs a group name, but none given! "
                                  "group_name.size()="
                               << static_cast<int>(group_name.size()));
@@ -461,7 +464,7 @@ inline MStatus set_values(image::ImageCache &image_cache,
         }
 
         for (auto it = item_names.begin(); it != item_names.end(); it++) {
-            out_item_count = image_cache.cpu_erase_group(*it);
+            out_item_count = image_cache.cpu_erase_group_items(*it);
         }
     } else {
         MMSOLVER_MAYA_ERR(
@@ -675,8 +678,8 @@ MStatus MMImageCacheCmd::undoIt() {
     if (m_is_edit) {
         if ((m_command_flag == ImageCacheFlagMode::kGpuEraseItems) ||
             (m_command_flag == ImageCacheFlagMode::kCpuEraseItems) ||
-            (m_command_flag == ImageCacheFlagMode::kGpuEraseGroups) ||
-            (m_command_flag == ImageCacheFlagMode::kCpuEraseGroups)) {
+            (m_command_flag == ImageCacheFlagMode::kGpuEraseGroupItems) ||
+            (m_command_flag == ImageCacheFlagMode::kCpuEraseGroupItems)) {
             status = MStatus::kFailure;
             MMSOLVER_MAYA_ERR(
                 "MMImageCacheCmd::undoIt: "

@@ -121,8 +121,8 @@ struct ImageCache {
     using GPUGroupSetIt = GPUGroupSet::iterator;
     using CPUGroupSetIt = CPUGroupSet::iterator;
 
-    using GPUGroupMap = std::unordered_map<GPUGroupKey, GPUGroupSet>;
-    using CPUGroupMap = std::unordered_map<CPUGroupKey, CPUGroupSet>;
+    using GPUGroupMap = std::unordered_map<GPUCacheString, GPUGroupSet>;
+    using CPUGroupMap = std::unordered_map<GPUCacheString, CPUGroupSet>;
     using GPUGroupMapIt = GPUGroupMap::iterator;
     using CPUGroupMapIt = CPUGroupMap::iterator;
 
@@ -149,6 +149,25 @@ private:
         // The back of the list is the "most recently used" key.
         key_list.splice(key_list.end(), key_list, key_list_iterator);
     }
+
+    // Evict cached items until a new memory chunk can fit in.
+    CacheEvictionResult gpu_evict_enough_for_new_item(
+        MHWRender::MTextureManager *texture_manager,
+        const size_t new_memory_chunk_size);
+    CacheEvictionResult cpu_evict_enough_for_new_item(
+        const size_t new_memory_chunk_size);
+
+    // Add group name into cache, associated with the file path.
+    //
+    // This is only used internally as a helper method.
+    bool gpu_insert_group(const GPUCacheString &group_name,
+                          const GPUCacheString &file_path);
+    bool cpu_insert_group(const CPUCacheString &group_name,
+                          const CPUCacheString &file_path);
+
+    // Removes the given item key from the groups.
+    size_t gpu_remove_item_from_group(const GPUCacheKey item_key);
+    size_t cpu_remove_item_from_group(const CPUCacheKey item_key);
 
 public:
     // Get the capacity of the cache.
@@ -206,16 +225,16 @@ public:
     size_t get_gpu_group_count() const {
         const bool verbose = false;
         MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_gpu_group_count: "
-                          << "m_gpu_group_names_set.size()="
-                          << m_gpu_group_names_set.size());
-        return m_gpu_group_names_set.size();
+                          << "m_gpu_group_map.size()="
+                          << m_gpu_group_map.size());
+        return m_gpu_group_map.size();
     }
     size_t get_cpu_group_count() const {
         const bool verbose = false;
         MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_cpu_group_count: "
-                          << "m_cpu_group_names_set.size()="
-                          << m_cpu_group_names_set.size());
-        return m_cpu_group_names_set.size();
+                          << "m_cpu_group_map.size()="
+                          << m_cpu_group_map.size());
+        return m_cpu_group_map.size();
     }
 
     // Get sorted vector of group names.
@@ -224,18 +243,12 @@ public:
 
     // Get the number of items in the given group name.
     size_t gpu_group_item_count(const GPUCacheString &group_name) const;
-    size_t gpu_group_item_count(const GPUGroupKey group_key) const;
     size_t cpu_group_item_count(const CPUCacheString &group_name) const;
-    size_t cpu_group_item_count(const GPUGroupKey group_key) const;
 
     // Item names in a group.
     bool gpu_group_item_names(const GPUCacheString &group_name,
                               GPUVectorString &out_group_item_names) const;
-    bool gpu_group_item_names(const GPUGroupKey group_key,
-                              GPUVectorString &out_group_item_names) const;
     bool cpu_group_item_names(const CPUCacheString &group_name,
-                              CPUVectorString &out_group_item_names) const;
-    bool cpu_group_item_names(const CPUGroupKey group_key,
                               CPUVectorString &out_group_item_names) const;
 
     // TODO: Set/Get Disk cache location. Used to find disk-cached
@@ -258,8 +271,8 @@ public:
 
     // Insert pixels into CPU cache.
     //
-    // If the key is already in the image cache, the previous value is
-    // erased.
+    // If the file path is already in the image cache, the previous
+    // value is erased.
     //
     // Returns true/false, if the the data was inserted or not.
     bool cpu_insert_item(const CPUCacheString &group_name,
@@ -274,16 +287,16 @@ public:
                                   const GPUCacheString &file_path,
                                   const CPUCacheValue &image_pixel_data);
 
-    // Find the key in the GPU/CPU cache.
+    // Find the item key in the GPU/CPU cache.
     //
-    // Returns the GPUCacheValue at the key, or nullptr.
+    // Returns the GPUCacheValue at the item key, or nullptr.
     //
-    // Returns the CPUCacheValue at the key, or constructs a default
+    // Returns the CPUCacheValue at the item key, or constructs a default
     // value and returns it.
     GPUCacheValue gpu_find_item(const GPUCacheString &file_path);
-    GPUCacheValue gpu_find_item(const GPUCacheKey key);
+    GPUCacheValue gpu_find_item(const GPUCacheKey item_key);
     CPUCacheValue cpu_find_item(const CPUCacheString &file_path);
-    CPUCacheValue cpu_find_item(const CPUCacheKey key);
+    CPUCacheValue cpu_find_item(const CPUCacheKey item_key);
 
     // TODO: Add a 'gpu/cpu_prefetch()' method, used to add the images
     // into a prefetching queue.
@@ -305,23 +318,23 @@ public:
         MHWRender::MTextureManager *texture_manager);
     CacheEvictionResult cpu_evict_one_item();
 
-    // Remove the key from the image GPU/CPU cache.
+    // Remove the file path from the image GPU/CPU cache.
     //
     // NOTE: Due to the way the LRU cache works, this can be quite
-    // slow to to remove a specific key from the cache.
+    // slow to to remove a specific file path from the cache.
     //
-    // Returns true/false, if the key was removed or not.
+    // Returns true/false, if the item was removed or not.
     bool gpu_erase_item(MHWRender::MTextureManager *texture_manager,
                         const GPUCacheString &file_path);
     bool gpu_erase_item(MHWRender::MTextureManager *texture_manager,
-                        const GPUCacheKey key);
+                        const GPUCacheKey item_key);
     bool cpu_erase_item(const CPUCacheString &file_path);
-    bool cpu_erase_item(const CPUCacheKey key);
+    bool cpu_erase_item(const CPUCacheKey item_key);
 
     // Erase all items in the given group_name.
-    size_t gpu_erase_group(MHWRender::MTextureManager *texture_manager,
-                           const GPUCacheString &group_name);
-    size_t cpu_erase_group(const GPUCacheString &group_name);
+    size_t gpu_erase_group_items(MHWRender::MTextureManager *texture_manager,
+                                 const GPUCacheString &group_name);
+    size_t cpu_erase_group_items(const GPUCacheString &group_name);
 
     // C++ 11; deleting the methods we don't want to ensure they can never be
     // used.
@@ -334,22 +347,6 @@ public:
     void operator=(ImageCache const &) = delete;
 
 private:
-    CacheEvictionResult gpu_evict_enough_for_new_item(
-        MHWRender::MTextureManager *texture_manager,
-        const size_t new_memory_chunk_size);
-    CacheEvictionResult cpu_evict_enough_for_new_item(
-        const size_t new_memory_chunk_size);
-
-    // Add group name into cache, associated with the file path.
-    //
-    // This is only used internally as a helper method.
-    bool gpu_insert_group(const GPUGroupKey group_key,
-                          const GPUCacheString &group_name,
-                          const GPUCacheString &file_path);
-    bool cpu_insert_group(const CPUGroupKey group_key,
-                          const CPUCacheString &group_name,
-                          const CPUCacheString &file_path);
-
     // Amount of memory capacity.
     size_t m_gpu_capacity_bytes;
     size_t m_cpu_capacity_bytes;
@@ -397,10 +394,6 @@ private:
     // image sequence.
     GPUGroupMap m_gpu_group_map;
     CPUGroupMap m_cpu_group_map;
-
-    // All of the group names in a set.
-    GPUGroupSet m_gpu_group_names_set;
-    CPUGroupSet m_cpu_group_names_set;
 };
 
 MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,

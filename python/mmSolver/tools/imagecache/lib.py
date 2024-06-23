@@ -272,14 +272,14 @@ def get_cache_group_item_names(cache_type, group_name):
     return value
 
 
-def cache_erase_groups(cache_type, group_names):
+def cache_erase_group_items(cache_type, group_names):
     assert cache_type in const.CACHE_TYPE_VALUES
     assert len(group_names) >= 0
     value = None
     if cache_type == const.CACHE_TYPE_GPU:
-        value = maya.cmds.mmImageCache(group_names, edit=True, gpuEraseGroups=True)
+        value = maya.cmds.mmImageCache(group_names, edit=True, gpuEraseGroupItems=True)
     elif cache_type == const.CACHE_TYPE_CPU:
-        value = maya.cmds.mmImageCache(group_names, edit=True, cpuEraseGroups=True)
+        value = maya.cmds.mmImageCache(group_names, edit=True, cpuEraseGroupItems=True)
     return value
 
 
@@ -314,7 +314,7 @@ def cache_remove_all_image_plane_slots(cache_type, image_plane_shp):
             continue
         slots_to_remove.append(slot)
 
-    return cache_erase_groups(cache_type, slots_to_remove)
+    return cache_erase_group_items(cache_type, slots_to_remove)
 
 
 def cache_remove_active_image_plane_slot(cache_type, image_plane_shp):

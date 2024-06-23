@@ -188,6 +188,46 @@ def get_cpu_cache_item_count():
     return int(maya.cmds.mmImageCache(query=True, cpuItemCount=True))
 
 
+def get_gpu_cache_group_names():
+    return maya.cmds.mmImageCache(query=True, gpuGroupNames=True)
+
+
+def get_cpu_cache_group_names():
+    return maya.cmds.mmImageCache(query=True, cpuGroupNames=True)
+
+
+def get_gpu_cache_group_count():
+    return int(maya.cmds.mmImageCache(query=True, gpuGroupCount=True))
+
+
+def get_cpu_cache_group_count():
+    return int(maya.cmds.mmImageCache(query=True, cpuGroupCount=True))
+
+
+def get_gpu_cache_group_item_count(group_name):
+    assert isinstance(group_name, str)
+    assert len(group_name) > 0
+    return int(maya.cmds.mmImageCache(group_name, query=True, gpuGroupItemCount=True))
+
+
+def get_cpu_cache_group_item_count(group_name):
+    assert isinstance(group_name, str)
+    assert len(group_name) > 0
+    return int(maya.cmds.mmImageCache(group_name, query=True, cpuGroupItemCount=True))
+
+
+def get_gpu_cache_group_item_names(group_name):
+    assert isinstance(group_name, str)
+    assert len(group_name) > 0
+    return maya.cmds.mmImageCache(group_name, query=True, gpuGroupItemNames=True)
+
+
+def get_cpu_cache_group_item_names(group_name):
+    assert isinstance(group_name, str)
+    assert len(group_name) > 0
+    return maya.cmds.mmImageCache(group_name, query=True, cpuGroupItemNames=True)
+
+
 def get_gpu_cache_used_bytes():
     return int(maya.cmds.mmImageCache(query=True, gpuUsed=True))
 
@@ -202,6 +242,16 @@ def get_gpu_cache_capacity_bytes():
 
 def get_cpu_cache_capacity_bytes():
     return int(maya.cmds.mmImageCache(query=True, cpuCapacity=True))
+
+
+def set_gpu_cache_capacity_bytes(size_bytes):
+    assert isinstance(size_bytes, int)
+    return maya.cmds.mmImageCache(edit=True, gpuCapacity=size_bytes)
+
+
+def set_cpu_cache_capacity_bytes(size_bytes):
+    assert isinstance(size_bytes, int)
+    return maya.cmds.mmImageCache(edit=True, cpuCapacity=size_bytes)
 
 
 def get_gpu_memory_total_bytes():
@@ -234,9 +284,9 @@ def get_cache_group_names(cache_type):
     assert cache_type in const.CACHE_TYPE_VALUES
     value = None
     if cache_type == const.CACHE_TYPE_GPU:
-        value = maya.cmds.mmImageCache(query=True, gpuGroupNames=True)
+        value = get_gpu_cache_group_names()
     elif cache_type == const.CACHE_TYPE_CPU:
-        value = maya.cmds.mmImageCache(query=True, cpuGroupNames=True)
+        value = get_cpu_cache_group_names()
     return value
 
 
@@ -244,35 +294,49 @@ def get_cache_group_count(cache_type):
     assert cache_type in const.CACHE_TYPE_VALUES
     value = None
     if cache_type == const.CACHE_TYPE_GPU:
-        value = maya.cmds.mmImageCache(query=True, gpuGroupCount=True)
+        value = get_gpu_cache_group_count()
     elif cache_type == const.CACHE_TYPE_CPU:
-        value = maya.cmds.mmImageCache(query=True, cpuGroupCount=True)
+        value = get_cpu_cache_group_count()
     return value
 
 
 def get_cache_group_item_count(cache_type, group_name):
     assert cache_type in const.CACHE_TYPE_VALUES
     assert isinstance(group_name, str)
+    assert len(group_name) > 0
     value = None
     if cache_type == const.CACHE_TYPE_GPU:
-        value = maya.cmds.mmImageCache(group_name, query=True, gpuGroupItemCount=True)
+        value = get_gpu_cache_group_item_count(group_name)
     elif cache_type == const.CACHE_TYPE_CPU:
-        value = maya.cmds.mmImageCache(group_name, query=True, cpuGroupItemCount=True)
+        value = get_cpu_cache_group_item_count(group_name)
     return value
 
 
 def get_cache_group_item_names(cache_type, group_name):
     assert cache_type in const.CACHE_TYPE_VALUES
     assert isinstance(group_name, str)
+    assert len(group_name) > 0
     value = None
     if cache_type == const.CACHE_TYPE_GPU:
-        value = maya.cmds.mmImageCache(group_name, query=True, gpuGroupItemNames=True)
+        value = get_gpu_cache_group_item_names(group_name)
     elif cache_type == const.CACHE_TYPE_CPU:
-        value = maya.cmds.mmImageCache(group_name, query=True, cpuGroupItemNames=True)
+        value = get_cpu_cache_group_item_names(group_name)
     return value
 
 
-def cache_erase_group_items(cache_type, group_names):
+def cache_erase_group_items(cache_type, group_name):
+    assert cache_type in const.CACHE_TYPE_VALUES
+    assert isinstance(group_name, str)
+    assert len(group_name) > 0
+    value = None
+    if cache_type == const.CACHE_TYPE_GPU:
+        value = maya.cmds.mmImageCache([group_name], edit=True, gpuEraseGroupItems=True)
+    elif cache_type == const.CACHE_TYPE_CPU:
+        value = maya.cmds.mmImageCache([group_name], edit=True, cpuEraseGroupItems=True)
+    return value
+
+
+def cache_erase_groups_items(cache_type, group_names):
     assert cache_type in const.CACHE_TYPE_VALUES
     assert len(group_names) >= 0
     value = None
@@ -314,7 +378,7 @@ def cache_remove_all_image_plane_slots(cache_type, image_plane_shp):
             continue
         slots_to_remove.append(slot)
 
-    return cache_erase_group_items(cache_type, slots_to_remove)
+    return cache_erase_groups_items(cache_type, slots_to_remove)
 
 
 def cache_remove_active_image_plane_slot(cache_type, image_plane_shp):
@@ -353,6 +417,11 @@ def cache_remove_all(cache_type):
     )
 
     # TODO: Clear image cache completely.
+
+    # 1) Get the ImageCache capacities (CPU and GPU).
+    # 2) Set the ImageCache capacity (CPU and GPU) to zero.
+    # 3) Restore the ImageCache capacities (CPU and GPU).
+
     return
 
 

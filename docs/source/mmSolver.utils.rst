@@ -145,6 +145,13 @@ Node Affects
     :members:
     :undoc-members:
 
+Math
+++++
+
+.. automodule:: mmSolver.utils.math
+    :members:
+    :undoc-members:
+
 Python Compatibility
 ++++++++++++++++++++
 

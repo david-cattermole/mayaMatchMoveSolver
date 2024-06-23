@@ -194,9 +194,9 @@ if (MMSOLVER_BUILD_QT_UI)
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/surfacecluster/ui/ui_surfacecluster_layout.py
             )
 
-    compile_qt_ui_to_python_file("imagecache"
-            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/imagecache/ui/imagecache_layout.ui
-            ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/imagecache/ui/ui_imagecache_layout.py
+    compile_qt_ui_to_python_file("imagecacheprefs"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/imagecacheprefs/ui/imagecacheprefs_layout.ui
+            ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/imagecacheprefs/ui/ui_imagecacheprefs_layout.py
             )
 
     # Install generated Python UI files

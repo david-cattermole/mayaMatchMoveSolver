@@ -866,13 +866,13 @@
                 "mmSolver.tools.createimageplane.tool.main_version_two();"
             ]
         },
-        "image_cache_ui": {
-            "name": "Image Cache UI...",
-            "name_shelf": "ImgCch",
-            "tooltip": "Open the Image Cache UI.",
+        "image_cache_preferences_window": {
+            "name": "Image Cache Preferences...",
+            "name_shelf": "ICPref",
+            "tooltip": "Open the Image Cache Preferences window.",
             "command": [
-                "import mmSolver.tools.imagecache.tool;",
-                "mmSolver.tools.imagecache.tool.main();"
+                "import mmSolver.tools.imagecacheprefs.tool;",
+                "mmSolver.tools.imagecacheprefs.tool.open_window();"
             ]
         },
         "camera_toggle_distortion": {

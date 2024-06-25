@@ -81,7 +81,13 @@ def erase_all_images_on_image_plane_slots(cache_type, image_plane_shp):
     slots = imageplane_lib.get_image_sequence_for_all_slots(image_plane_shp)
     LOG.info('erase_all_images_on_image_plane_slots: slots=%r', slots)
 
-    group_names = imagecache_cmd.get_cache_group_names(cache_type)
+    group_names = None
+    if cache_type == const.CACHE_TYPE_GPU:
+        group_names = imagecache_cmd.get_gpu_cache_group_names()
+    elif cache_type == const.CACHE_TYPE_CPU:
+        group_names = imagecache_cmd.get_cpu_cache_group_names()
+    assert group_names is not None
+
     slots_to_erase = []
     for slot in slots:
         if slot not in group_names:
@@ -89,7 +95,11 @@ def erase_all_images_on_image_plane_slots(cache_type, image_plane_shp):
             continue
         slots_to_erase.append(slot)
 
-    return imagecache_cmd.cache_erase_groups_items(cache_type, slots_to_erase)
+    if cache_type == const.CACHE_TYPE_GPU:
+        return erase_gpu_groups_items(slots_to_erase)
+    elif cache_type == const.CACHE_TYPE_CPU:
+        return erase_cpu_groups_items(slots_to_erase)
+    assert False
 
 
 def erase_images_in_active_image_plane_slot(cache_type, image_plane_shp):
@@ -134,7 +144,13 @@ def erase_image_sequence(cache_type, file_pattern, start_frame, end_frame):
         end_frame,
     )
 
-    item_count = imagecache_cmd.get_cache_group_item_count(cache_type, file_pattern)
+    item_count = None
+    if cache_type == const.CACHE_TYPE_GPU:
+        item_count = imagecache_cmd.get_gpu_cache_group_item_count(file_pattern)
+    elif cache_type == const.CACHE_TYPE_CPU:
+        item_count = imagecache_cmd.get_cpu_cache_group_item_count(file_pattern)
+    assert item_count is not None
+
     if item_count == 0:
         LOG.warn('File pattern does not have any items. item_count=%r', item_count)
         return

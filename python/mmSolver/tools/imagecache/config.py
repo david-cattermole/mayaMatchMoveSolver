@@ -76,3 +76,29 @@ def resolve_capacity_data():
         resolved_gpu_capacity,
         resolved_cpu_capacity,
     )
+
+
+def save_capacity_values(
+    gpu_percent_default,
+    cpu_percent_default,
+    scene_override,
+    gpu_percent_scene,
+    cpu_percent_scene,
+):
+    assert isinstance(gpu_percent_default, float)
+    assert isinstance(cpu_percent_default, float)
+    assert isinstance(scene_override, bool)
+    assert isinstance(gpu_percent_scene, float)
+    assert isinstance(cpu_percent_scene, float)
+
+    # Save config values in config file.
+    config_file.set_gpu_capacity_percent(gpu_percent_default)
+    config_file.set_cpu_capacity_percent(cpu_percent_default)
+    config_file.write()
+
+    # Save config values in Maya Scene.
+    config_scene.set_cache_scene_override(scene_override)
+    if scene_override is True:
+        config_scene.set_gpu_capacity_percent(gpu_percent_scene)
+        config_scene.set_cpu_capacity_percent(cpu_percent_scene)
+    return

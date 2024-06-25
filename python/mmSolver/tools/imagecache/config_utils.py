@@ -16,12 +16,24 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Image Cache constants.
+Functions to control the image cache.
 """
 
-WINDOW_TITLE = 'Image Cache Preferences'
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 
-CONFIG_FILE_NAME = "tools_imagecacheprefs.json"
+import collections
 
-CONFIG_UPDATE_EVERY_N_SECONDS_KEY = 'data/update_every_n_seconds'
-CONFIG_UPDATE_EVERY_N_SECONDS_DEFAULT_VALUE = 2
+import mmSolver.logger
+
+LOG = mmSolver.logger.get_logger()
+CapacityValue = collections.namedtuple('CapacityValue', ['size_bytes', 'percent'])
+
+
+def convert_to_capacity_value(percent, total_bytes):
+    assert isinstance(percent, float)
+    ratio = percent / 100.0
+    size_bytes = int(total_bytes * ratio)
+    return CapacityValue(size_bytes, percent)
+

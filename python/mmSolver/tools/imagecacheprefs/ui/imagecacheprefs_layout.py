@@ -35,6 +35,7 @@ import mmSolver.utils.constant as const_utils
 import mmSolver.utils.math as math_utils
 import mmSolver.tools.imagecache.config_file as config_file
 import mmSolver.tools.imagecache.config_scene as config_scene
+import mmSolver.tools.imagecache.config as config
 import mmSolver.tools.imagecache.lib as lib
 import mmSolver.tools.imagecacheprefs.constant as tool_const
 import mmSolver.tools.imagecacheprefs.ui.ui_imagecacheprefs_layout as ui_imagecacheprefs_layout
@@ -497,7 +498,7 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
         update_seconds = get_update_every_n_seconds(self._config)
         self.updateEvery_spinBox.setValue(update_seconds)
 
-        capacity_data = lib.resolve_capacity_data()
+        capacity_data = config.resolve_capacity_data()
         default_gpu_capacity = capacity_data.gpu_default_capacity
         default_cpu_capacity = capacity_data.cpu_default_capacity
         scene_override = capacity_data.scene_override
@@ -547,20 +548,17 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
             tool_const.CONFIG_UPDATE_EVERY_N_SECONDS_KEY, update_seconds
         )
 
-        # Save config values in config file.
         gpu_percent_default = self.gpuCacheDefaultCapacity_doubleSpinBox.value()
         cpu_percent_default = self.cpuCacheDefaultCapacity_doubleSpinBox.value()
-        config_file.set_gpu_capacity_percent(gpu_percent_default)
-        config_file.set_cpu_capacity_percent(cpu_percent_default)
-        config_file.write()
-
-        # Save config values in Maya Scene.
         scene_override = self.imageCacheSceneSettings_groupBox.isChecked()
-        assert isinstance(scene_override, bool)
         gpu_percent_scene = self.gpuCacheSceneCapacity_doubleSpinBox.value()
         cpu_percent_scene = self.cpuCacheSceneCapacity_doubleSpinBox.value()
-        config_scene.set_cache_scene_override(scene_override)
-        if scene_override is True:
-            config_scene.set_gpu_capacity_percent(gpu_percent_scene)
-            config_scene.set_cpu_capacity_percent(cpu_percent_scene)
+
+        config.save_capacity_values(
+            gpu_percent_default,
+            cpu_percent_default,
+            scene_override,
+            gpu_percent_scene,
+            cpu_percent_scene,
+        )
         return

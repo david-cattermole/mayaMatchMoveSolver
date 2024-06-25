@@ -500,57 +500,49 @@ MStatus initializePlugin(MObject obj) {
     }
 #endif
 
-    // TODO: Construct a single MEL command buffer and run all
-    //  'selectType' MEL commands at once.
-    MString mel_cmd = "";
-
     // Register a custom selection mask with priority 2 (same as
     // locators by default).
+    MString mel_cmd = "";
+    auto selection_priority = 2;
     MSelectionMask::registerSelectionType(
-        mmsolver::MarkerShapeNode::m_selection_type_name, 2);
-    mel_cmd = "selectType -byName \"";
+        mmsolver::MarkerShapeNode::m_selection_type_name, selection_priority);
+    mel_cmd += "selectType -byName \"";
     mel_cmd += mmsolver::MarkerShapeNode::m_selection_type_name;
-    mel_cmd += "\" 1";
-    status = MGlobal::executeCommand(mel_cmd);
-    CHECK_MSTATUS(status);
+    mel_cmd += "\" 1;";
 
     MSelectionMask::registerSelectionType(
-        mmsolver::BundleShapeNode::m_selection_type_name, 2);
-    mel_cmd = "selectType -byName \"";
+        mmsolver::BundleShapeNode::m_selection_type_name, selection_priority);
+    mel_cmd += "selectType -byName \"";
     mel_cmd += mmsolver::BundleShapeNode::m_selection_type_name;
-    mel_cmd += "\" 1";
-    status = MGlobal::executeCommand(mel_cmd);
-    CHECK_MSTATUS(status);
+    mel_cmd += "\" 1;";
 
     MSelectionMask::registerSelectionType(
-        mmsolver::ImagePlaneShapeNode::m_selection_type_name, 2);
-    mel_cmd = "selectType -byName \"";
+        mmsolver::ImagePlaneShapeNode::m_selection_type_name,
+        selection_priority);
+    mel_cmd += "selectType -byName \"";
     mel_cmd += mmsolver::ImagePlaneShapeNode::m_selection_type_name;
-    mel_cmd += "\" 1";
-    status = MGlobal::executeCommand(mel_cmd);
-    CHECK_MSTATUS(status);
+    mel_cmd += "\" 1;";
 
     MSelectionMask::registerSelectionType(
-        mmsolver::ImagePlaneShape2Node::m_selection_type_name, 2);
+        mmsolver::ImagePlaneShape2Node::m_selection_type_name,
+        selection_priority);
     mel_cmd = "selectType -byName \"";
     mel_cmd += mmsolver::ImagePlaneShape2Node::m_selection_type_name;
-    mel_cmd += "\" 1";
-    status = MGlobal::executeCommand(mel_cmd);
-    CHECK_MSTATUS(status);
+    mel_cmd += "\" 1;";
 
     MSelectionMask::registerSelectionType(
-        mmsolver::SkyDomeShapeNode::m_selection_type_name, 2);
+        mmsolver::SkyDomeShapeNode::m_selection_type_name, selection_priority);
     mel_cmd = "selectType -byName \"";
     mel_cmd += mmsolver::SkyDomeShapeNode::m_selection_type_name;
-    mel_cmd += "\" 1";
-    status = MGlobal::executeCommand(mel_cmd);
-    CHECK_MSTATUS(status);
+    mel_cmd += "\" 1;";
 
     MSelectionMask::registerSelectionType(
-        mmsolver::LineShapeNode::m_selection_type_name, 2);
+        mmsolver::LineShapeNode::m_selection_type_name, selection_priority);
     mel_cmd = "selectType -byName \"";
     mel_cmd += mmsolver::LineShapeNode::m_selection_type_name;
-    mel_cmd += "\" 1";
+    mel_cmd += "\" 1;";
+
+    // Register selection types.
     status = MGlobal::executeCommand(mel_cmd);
     CHECK_MSTATUS(status);
 

@@ -69,6 +69,15 @@ def mmsolver_register_events():
     mmSolver.tools.registerevents.tool.register_events()
 
 
+def mmsolver_image_cache_initalize():
+    """
+    Initialise the mmSolver ImageCache.
+    """
+    import mmSolver.tools.imagecache.lib
+
+    mmSolver.tools.imagecache.lib.initialize()
+
+
 def mmsolver_startup():
     """
     Responsible for starting up mmSolver, including creating shelves,
@@ -106,4 +115,7 @@ def mmsolver_startup():
 
         # Register Events.
         maya.utils.executeDeferred(mmsolver_register_events)
+
+        # Start up the image cache.
+        maya.utils.executeDeferred(mmsolver_image_cache_initalize)
     return

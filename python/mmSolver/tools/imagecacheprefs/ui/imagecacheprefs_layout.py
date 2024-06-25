@@ -21,7 +21,6 @@ window.
 """
 
 import os
-import collections
 
 import mmSolver.ui.qtpyutils as qtpyutils
 
@@ -32,17 +31,15 @@ import mmSolver.ui.Qt.QtCore as QtCore
 
 import mmSolver.logger
 import mmSolver.utils.config as config_utils
-import mmSolver.utils.configmaya as configmaya
 import mmSolver.utils.constant as const_utils
 import mmSolver.utils.math as math_utils
+import mmSolver.tools.imagecache.config_file as config_file
+import mmSolver.tools.imagecache.config_scene as config_scene
 import mmSolver.tools.imagecache.lib as lib
-import mmSolver.tools.imagecacheprefs.constant as const
+import mmSolver.tools.imagecacheprefs.constant as tool_const
 import mmSolver.tools.imagecacheprefs.ui.ui_imagecacheprefs_layout as ui_imagecacheprefs_layout
 
 LOG = mmSolver.logger.get_logger()
-
-
-CapacityValue = collections.namedtuple('CapacityValue', ['size_bytes', 'percent'])
 
 
 def set_memory_total_label(
@@ -150,9 +147,9 @@ def set_capacity_widgets(
     return
 
 
-def get_config():
+def get_tool_config():
     """Get the Image Cache config object or None."""
-    file_name = const.CONFIG_FILE_NAME
+    file_name = tool_const.CONFIG_FILE_NAME
     config_path = config_utils.get_home_dir_path(file_name)
     config = config_utils.Config(config_path)
     config.set_autoread(False)
@@ -162,8 +159,9 @@ def get_config():
     return config
 
 
-def get_config_value(config, key, fallback):
-    """Query the attribute from the user's home directory. If the user's
+def _get_tool_config_value(config, key, fallback):
+    """
+    Query the attribute from the user's home directory. If the user's
     option is saved, use that value instead.
     """
     value = fallback
@@ -172,107 +170,13 @@ def get_config_value(config, key, fallback):
     return value
 
 
-def get_update_every_n_seconds(config, default_value=None):
-    if default_value is None:
-        default_value = const.CONFIG_UPDATE_EVERY_N_SECONDS_DEFAULT_VALUE
+def get_update_every_n_seconds(config):
+    default_value = tool_const.CONFIG_UPDATE_EVERY_N_SECONDS_DEFAULT_VALUE
     assert isinstance(default_value, int)
-    name = const.CONFIG_UPDATE_EVERY_N_SECONDS_KEY
-    seconds = get_config_value(config, name, default_value)
+    name = tool_const.CONFIG_UPDATE_EVERY_N_SECONDS_KEY
+    seconds = _get_tool_config_value(config, name, default_value)
     assert isinstance(seconds, int)
     return seconds
-
-
-def get_gpu_cache_capacity_percent_default(config, default_value=None):
-    if default_value is None:
-        default_value = 0.0
-    assert isinstance(default_value, float)
-    name = const.CONFIG_GPU_CAPACITY_PERCENT_KEY
-    percent = get_config_value(config, name, default_value)
-    assert isinstance(percent, float)
-    ratio = percent / 100.0
-    capacity_bytes = lib.get_gpu_memory_total_bytes()
-    size_bytes = int(capacity_bytes * ratio)
-    return CapacityValue(size_bytes, percent)
-
-
-def get_gpu_cache_capacity_percent_default(config, default_value=None):
-    if default_value is None:
-        default_value = 0.0
-    assert isinstance(default_value, float)
-    name = const.CONFIG_GPU_CAPACITY_PERCENT_KEY
-    percent = get_config_value(config, name, default_value)
-    assert isinstance(percent, float)
-    ratio = percent / 100.0
-    capacity_bytes = lib.get_gpu_memory_total_bytes()
-    size_bytes = int(capacity_bytes * ratio)
-    return CapacityValue(size_bytes, percent)
-
-
-def get_cpu_cache_capacity_percent_default(config, default_value=None):
-    if default_value is None:
-        default_value = 0.0
-    assert isinstance(default_value, float)
-    name = const.CONFIG_CPU_CAPACITY_PERCENT_KEY
-    percent = get_config_value(config, name, default_value)
-    assert isinstance(percent, float)
-    ratio = percent / 100.0
-    capacity_bytes = lib.get_cpu_memory_total_bytes()
-    size_bytes = int(capacity_bytes * ratio)
-    return CapacityValue(size_bytes, percent)
-
-
-def get_cache_scene_override():
-    name = const.CONFIG_SCENE_CAPACITY_OVERRIDE_KEY
-    value = configmaya.get_scene_option(name, default=None)
-    assert value is None or isinstance(value, bool)
-    return value
-
-
-def get_gpu_cache_capacity_percent_scene(default_value=None):
-    if default_value is None:
-        default_value = 0.0
-    assert isinstance(default_value, float)
-    name = const.CONFIG_SCENE_GPU_CAPACITY_PERCENT_KEY
-    percent = configmaya.get_scene_option(name, default=default_value)
-    assert isinstance(percent, float)
-    ratio = percent / 100.0
-    capacity_bytes = lib.get_gpu_memory_total_bytes()
-    size_bytes = int(capacity_bytes * ratio)
-    return CapacityValue(size_bytes, percent)
-
-
-def get_cpu_cache_capacity_percent_scene(default_value=None):
-    if default_value is None:
-        default_value = 0.0
-    assert isinstance(default_value, float)
-    name = const.CONFIG_SCENE_CPU_CAPACITY_PERCENT_KEY
-    percent = configmaya.get_scene_option(name, default=default_value)
-    assert isinstance(percent, float)
-    ratio = percent / 100.0
-    capacity_bytes = lib.get_cpu_memory_total_bytes()
-    size_bytes = int(capacity_bytes * ratio)
-    return CapacityValue(size_bytes, percent)
-
-
-def set_cache_scene_override(value):
-    assert value is None or isinstance(value, bool)
-    name = const.CONFIG_SCENE_CAPACITY_OVERRIDE_KEY
-    configmaya.set_scene_option(name, value, add_attr=True)
-    return
-
-
-def set_gpu_cache_capacity_percent_scene(percent):
-    assert isinstance(percent, float)
-    name = const.CONFIG_SCENE_GPU_CAPACITY_PERCENT_KEY
-    percent = configmaya.set_scene_option(name, percent, add_attr=True)
-    return
-
-
-def set_cpu_cache_capacity_percent_scene(percent):
-    assert isinstance(percent, float)
-    name = const.CONFIG_SCENE_CPU_CAPACITY_PERCENT_KEY
-    percent = configmaya.set_scene_option(name, percent, add_attr=True)
-    return
 
 
 class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form):
@@ -280,9 +184,13 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
         super(ImageCachePrefsLayout, self).__init__(*args, **kwargs)
         self.setupUi(self)
 
+        self._config = get_tool_config()
+
         # Update timer.
         self.update_timer = QtCore.QTimer()
-        milliseconds = int(const.CONFIG_UPDATE_EVERY_N_SECONDS_DEFAULT_VALUE * 1000)
+        milliseconds = int(
+            tool_const.CONFIG_UPDATE_EVERY_N_SECONDS_DEFAULT_VALUE * 1000
+        )
         self.update_timer.setInterval(milliseconds)
         self.update_timer.timeout.connect(self.update_resource_values)
         self.update_timer.start()
@@ -502,10 +410,9 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
         milliseconds = int(value * 1000)
         self.update_timer.setInterval(milliseconds)
 
-        config = get_config()
-        if config is not None:
-            config.set_value(const.CONFIG_UPDATE_EVERY_N_SECONDS_KEY, value)
-            config.write()
+        if self._config is not None:
+            self._config.set_value(tool_const.CONFIG_UPDATE_EVERY_N_SECONDS_KEY, value)
+            self._config.write()
         return
 
     def _get_capacity_bytes(
@@ -587,19 +494,15 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
         """
         self.update_resource_values()
 
-        config = get_config()
-        update_seconds = get_update_every_n_seconds(config)
+        update_seconds = get_update_every_n_seconds(self._config)
         self.updateEvery_spinBox.setValue(update_seconds)
 
-        default_gpu_capacity = get_gpu_cache_capacity_percent_default(config)
-        default_cpu_capacity = get_cpu_cache_capacity_percent_default(config)
-
-        scene_override = get_cache_scene_override()
-        scene_gpu_capacity = default_gpu_capacity
-        scene_cpu_capacity = default_cpu_capacity
-        if scene_override is True:
-            scene_gpu_capacity = get_gpu_cache_capacity_percent_scene()
-            scene_cpu_capacity = get_cpu_cache_capacity_percent_scene()
+        capacity_data = lib.resolve_capacity_data()
+        default_gpu_capacity = capacity_data.gpu_default_capacity
+        default_cpu_capacity = capacity_data.cpu_default_capacity
+        scene_override = capacity_data.scene_override
+        scene_gpu_capacity = capacity_data.gpu_scene_capacity
+        scene_cpu_capacity = capacity_data.cpu_scene_capacity
 
         # Set default capacities.
         set_capacity_widgets(
@@ -640,22 +543,24 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
     def save_options(self):
         # Save config values in config file.
         update_seconds = self.updateEvery_spinBox.value()
+        self._config.set_value(
+            tool_const.CONFIG_UPDATE_EVERY_N_SECONDS_KEY, update_seconds
+        )
+
+        # Save config values in config file.
         gpu_percent_default = self.gpuCacheDefaultCapacity_doubleSpinBox.value()
         cpu_percent_default = self.cpuCacheDefaultCapacity_doubleSpinBox.value()
-        config = get_config()
-        if config is not None:
-            config.set_value(const.CONFIG_UPDATE_EVERY_N_SECONDS_KEY, update_seconds)
-            config.set_value(const.CONFIG_GPU_CAPACITY_PERCENT_KEY, gpu_percent_default)
-            config.set_value(const.CONFIG_CPU_CAPACITY_PERCENT_KEY, cpu_percent_default)
-            config.write()
+        config_file.set_gpu_capacity_percent(gpu_percent_default)
+        config_file.set_cpu_capacity_percent(cpu_percent_default)
+        config_file.write()
 
         # Save config values in Maya Scene.
         scene_override = self.imageCacheSceneSettings_groupBox.isChecked()
         assert isinstance(scene_override, bool)
         gpu_percent_scene = self.gpuCacheSceneCapacity_doubleSpinBox.value()
         cpu_percent_scene = self.cpuCacheSceneCapacity_doubleSpinBox.value()
-        set_cache_scene_override(scene_override)
+        config_scene.set_cache_scene_override(scene_override)
         if scene_override is True:
-            set_gpu_cache_capacity_percent_scene(gpu_percent_scene)
-            set_cpu_cache_capacity_percent_scene(cpu_percent_scene)
+            config_scene.set_gpu_capacity_percent(gpu_percent_scene)
+            config_scene.set_cpu_capacity_percent(cpu_percent_scene)
         return

@@ -20,7 +20,7 @@ Window for the Image Cache tool.
 
 Usage::
 
-   import mmSolver.tools.imagecache.ui.imagecache_window as window
+   import mmSolver.tools.imagecacheprefs.ui.imagecacheprefs_window as window
    window.main()
 
 """
@@ -36,9 +36,7 @@ import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.ui.helputils as helputils
 import mmSolver.ui.commonmenus as commonmenus
-
-# import mmSolver.tools.imagecache.constant as imagecache_const
-import mmSolver.tools.imagecache.lib as imagecache_lib
+import mmSolver.tools.imagecache.lib as lib
 import mmSolver.tools.imagecacheprefs.constant as const
 import mmSolver.tools.imagecacheprefs.ui.imagecacheprefs_layout as imagecacheprefs_layout
 
@@ -95,8 +93,8 @@ class ImageCachePrefsWindow(BaseWindow):
         gpu_capacity_bytes = form.get_gpu_capacity_bytes()
         cpu_capacity_bytes = form.get_cpu_capacity_bytes()
 
-        imagecache_lib.set_gpu_cache_capacity_bytes(gpu_capacity_bytes)
-        imagecache_lib.set_cpu_cache_capacity_bytes(cpu_capacity_bytes)
+        lib.set_gpu_cache_capacity_bytes(gpu_capacity_bytes)
+        lib.set_cpu_cache_capacity_bytes(cpu_capacity_bytes)
 
         form.update_resource_values()
         form.save_options()

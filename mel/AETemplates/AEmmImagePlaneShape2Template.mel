@@ -259,23 +259,28 @@ global proc AEmmImagePlaneShape2_colorSpaceReplace(string $node_attr)
 global proc AEmmImagePlaneShape2_imageCache_updateValues(
     string $image_plane_shp)
 {
-    string $image_seq_size_cmd = "import mmSolver.tools.imagecache.lib as lib;";
+    string $image_seq_size_cmd = "";
+    $image_seq_size_cmd = "import mmSolver.tools.createimageplane.lib as lib;";
     $image_seq_size_cmd += "image_plane_shp = \"" + $image_plane_shp + "\";";
     $image_seq_size_cmd += "lib.format_image_sequence_size(image_plane_shp);";
 
-    string $cache_gpu_used_cmd = "import mmSolver.tools.imagecache.lib as lib;";
+    string $cache_gpu_used_cmd = "";
+    $cache_gpu_used_cmd = "import mmSolver.tools.createimageplane.lib as lib;";
     $cache_gpu_used_cmd += "image_plane_shp = \"" + $image_plane_shp + "\";";
     $cache_gpu_used_cmd += "lib.format_cache_gpu_used(image_plane_shp);";
 
-    string $cache_cpu_used_cmd = "import mmSolver.tools.imagecache.lib as lib;";
+    string $cache_cpu_used_cmd = "";
+    $cache_cpu_used_cmd = "import mmSolver.tools.createimageplane.lib as lib;";
     $cache_cpu_used_cmd += "image_plane_shp = \"" + $image_plane_shp + "\";";
     $cache_cpu_used_cmd += "lib.format_cache_cpu_used(image_plane_shp);";
 
-    string $memory_gpu_available_cmd = "import mmSolver.tools.imagecache.lib as lib;";
+    string $memory_gpu_available_cmd = "";
+    $memory_gpu_available_cmd = "import mmSolver.tools.createimageplane.lib as lib;";
     $memory_gpu_available_cmd += "image_plane_shp = \"" + $image_plane_shp + "\";";
     $memory_gpu_available_cmd += "lib.format_memory_gpu_available(image_plane_shp);";
 
-    string $memory_cpu_available_cmd = "import mmSolver.tools.imagecache.lib as lib;";
+    string $memory_cpu_available_cmd = "";
+    $memory_cpu_available_cmd = "import mmSolver.tools.createimageplane.lib as lib;";
     $memory_cpu_available_cmd += "image_plane_shp = \"" + $image_plane_shp + "\";";
     $memory_cpu_available_cmd += "lib.format_memory_cpu_available(image_plane_shp);";
 
@@ -366,8 +371,8 @@ global proc AEmmImagePlaneShape2_imageCache_clearAllSlots(
     string $cmd = "import mmSolver.tools.imagecache.lib as lib;";
     $cmd += "import mmSolver.tools.imagecache.constant as const;";
     $cmd += "node = \"" + $image_plane_shp + "\";";
-    $cmd += "lib.cache_remove_all_image_plane_slots(const.CACHE_TYPE_CPU, node);";
-    $cmd += "lib.cache_remove_all_image_plane_slots(const.CACHE_TYPE_GPU, node);";
+    $cmd += "lib.erase_all_images_on_image_plane_slots(const.CACHE_TYPE_CPU, node);";
+    $cmd += "lib.erase_all_images_on_image_plane_slots(const.CACHE_TYPE_GPU, node);";
     python($cmd);
 }
 
@@ -378,8 +383,8 @@ global proc AEmmImagePlaneShape2_imageCache_clearActiveSlot(
     string $cmd = "import mmSolver.tools.imagecache.lib as lib;";
     $cmd += "import mmSolver.tools.imagecache.constant as const;";
     $cmd += "node = \"" + $image_plane_shp + "\";";
-    $cmd += "lib.cache_remove_active_image_plane_slot(const.CACHE_TYPE_CPU, node);";
-    $cmd += "lib.cache_remove_active_image_plane_slot(const.CACHE_TYPE_GPU, node);";
+    $cmd += "lib.erase_images_in_active_image_plane_slot(const.CACHE_TYPE_CPU, node);";
+    $cmd += "lib.erase_images_in_active_image_plane_slot(const.CACHE_TYPE_GPU, node);";
     python($cmd);
 }
 
@@ -390,8 +395,8 @@ global proc AEmmImagePlaneShape2_imageCache_clearUnusedSlots(
     string $cmd = "import mmSolver.tools.imagecache.lib as lib;";
     $cmd += "import mmSolver.tools.imagecache.constant as const;";
     $cmd += "node = \"" + $image_plane_shp + "\";";
-    $cmd += "lib.cache_remove_unused_image_plane_slots(const.CACHE_TYPE_CPU, node);";
-    $cmd += "lib.cache_remove_unused_image_plane_slots(const.CACHE_TYPE_GPU, node);";
+    $cmd += "lib.erase_images_in_unused_image_plane_slots(const.CACHE_TYPE_CPU, node);";
+    $cmd += "lib.erase_images_in_unused_image_plane_slots(const.CACHE_TYPE_GPU, node);";
     python($cmd);
 }
 
@@ -400,16 +405,16 @@ global proc AEmmImagePlaneShape2_imageCache_clearAllImages()
 {
     string $cmd = "import mmSolver.tools.imagecache.lib as lib;";
     $cmd += "import mmSolver.tools.imagecache.constant as const;";
-    $cmd += "lib.cache_remove_all(const.CACHE_TYPE_CPU);";
-    $cmd += "lib.cache_remove_all(const.CACHE_TYPE_GPU);";
+    $cmd += "lib.erase_all_images(const.CACHE_TYPE_CPU);";
+    $cmd += "lib.erase_all_images(const.CACHE_TYPE_GPU);";
     python($cmd);
 }
 
 
 global proc AEmmImagePlaneShape2_imageCache_openImageCacheUI()
 {
-    string $cmd = "import mmSolver.tools.imagecache.tool as tool;";
-    $cmd += "tool.main();";
+    string $cmd = "import mmSolver.tools.imagecacheprefs.tool as tool;";
+    $cmd += "tool.open_window();";
     python($cmd);
 }
 

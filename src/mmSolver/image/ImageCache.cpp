@@ -154,7 +154,13 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
         ImagePixelData(static_cast<void *>(maya_owned_pixel_data), width,
                        height, num_channels, pixel_data_type);
 
-    const std::string group_name = std::string(file_pattern.asChar());
+    // All group names are normalised to use UNIX-style path
+    // separators, so that the internal values are all consistent.
+    MString normalised_file_pattern(file_pattern);
+    normalised_file_pattern.substitute("\\", "/");
+    const std::string group_name =
+        std::string(normalised_file_pattern.asChar());
+
     texture_data = image_cache.gpu_insert_item(texture_manager, group_name,
                                                item_key, gpu_image_pixel_data);
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_texture_image_file: "

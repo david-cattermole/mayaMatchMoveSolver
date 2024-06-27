@@ -37,25 +37,40 @@ LOG = mmSolver.logger.get_logger()
 _IMAGE_PLANE_SHAPE = imageplane_const.MM_IMAGE_PLANE_SHAPE_V2
 
 
+def _make_group_name_consistent(group_name):
+    assert isinstance(group_name, str)
+    assert len(group_name) > 0
+
+    # The ImageCache stores all file paths with UNIX
+    # forward-slashes convention.
+    group_name = group_name.replace('\\', '/')
+
+    return group_name
+
+
 def erase_gpu_group_items(group_name):
     assert isinstance(group_name, str)
     assert len(group_name) > 0
+    group_name = _make_group_name_consistent(group_name)
     return maya.cmds.mmImageCache([group_name], edit=True, gpuEraseGroupItems=True)
 
 
 def erase_cpu_group_items(group_name):
     assert isinstance(group_name, str)
     assert len(group_name) > 0
+    group_name = _make_group_name_consistent(group_name)
     return maya.cmds.mmImageCache([group_name], edit=True, cpuEraseGroupItems=True)
 
 
 def erase_gpu_groups_items(group_names):
     assert len(group_names) >= 0
+    group_names = [_make_group_name_consistent(x) for x in group_names]
     return maya.cmds.mmImageCache(group_names, edit=True, gpuEraseGroupItems=True)
 
 
 def erase_cpu_groups_items(group_names):
     assert len(group_names) >= 0
+    group_names = [_make_group_name_consistent(x) for x in group_names]
     return maya.cmds.mmImageCache(group_names, edit=True, cpuEraseGroupItems=True)
 
 

@@ -88,17 +88,20 @@ FRAME_RANGE_MODE_VALUES = [
 #
 # - Maya Style: "file.<f>.png"
 # - First frame style "file.1001.png"
+# - Exact frame style "file.0042.png"
 # - Hash Padded style: "file.####.png"
 # - "old school" Nuke style: file.%04d.png
 #
 IMAGE_SEQ_FORMAT_STYLE_MAYA = 'maya'
 IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED = 'hash_padded'
 IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME = 'first_frame'
+IMAGE_SEQ_FORMAT_STYLE_EXACT_FRAME = 'exact_frame'
 IMAGE_SEQ_FORMAT_STYLE_PRINTF = 'printf'
 IMAGE_SEQ_FORMAT_STYLE_VALUES = [
     IMAGE_SEQ_FORMAT_STYLE_MAYA,
     IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED,
     IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME,
+    IMAGE_SEQ_FORMAT_STYLE_EXACT_FRAME,
     IMAGE_SEQ_FORMAT_STYLE_PRINTF,
 ]
 

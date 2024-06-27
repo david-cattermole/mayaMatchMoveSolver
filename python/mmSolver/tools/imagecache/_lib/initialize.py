@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import maya.cmds
+import maya.OpenMaya as OpenMaya
 
 import mmSolver.logger
 import mmSolver.api as mmapi
@@ -33,6 +34,8 @@ import mmSolver.tools.imagecache.config as config
 
 
 LOG = mmSolver.logger.get_logger()
+AFTER_NEW_CALLBACK_ID = None
+AFTER_OPEN_CALLBACK_ID = None
 
 
 def _format_gigabytes(memory_bytes):
@@ -63,15 +66,33 @@ def _ensure_plugin_loaded():
     return
 
 
+def _dummy_initialize(*args):
+    """
+    This dummy function is used for the callbacks below, but it
+    contains an extra argument.
+    """
+    initialize()
+
+
 def initialize():
     """
     Set Image Cache capacities from preferences.
     """
     LOG.info('MM Solver Initialize Image Cache...')
 
-    # TODO: Install a callback to be called each time a new scene is
+    # Install callbacks to be called each time a new scene is
     # opened. We will look for enabled scene override values for the
     # cache and set it, otherwise we use the defaults.
+    global AFTER_NEW_CALLBACK_ID
+    global AFTER_OPEN_CALLBACK_ID
+    if AFTER_NEW_CALLBACK_ID is None:
+        AFTER_NEW_CALLBACK_ID = OpenMaya.MSceneMessage.addCallback(
+            OpenMaya.MSceneMessage.kAfterNew, _dummy_initialize
+        )
+    if AFTER_OPEN_CALLBACK_ID is None:
+        AFTER_OPEN_CALLBACK_ID = OpenMaya.MSceneMessage.addCallback(
+            OpenMaya.MSceneMessage.kAfterOpen, _dummy_initialize
+        )
 
     _ensure_plugin_loaded()
 
@@ -87,13 +108,22 @@ def initialize():
     gpu_capacity_percent = _format_percent(gpu_capacity_percent)
     cpu_capacity_percent = _format_percent(cpu_capacity_percent)
 
-    LOG.info(
-        'Image Cache GPU Capacity: %s (%s)', gpu_capacty_gigabytes, gpu_capacity_percent
-    )
-    LOG.info(
-        'Image Cache CPU Capacity: %s (%s)', cpu_capacty_gigabytes, cpu_capacity_percent
-    )
+    gpu_current_capacity_bytes = imagecache_cmd.get_gpu_cache_capacity_bytes()
+    cpu_current_capacity_bytes = imagecache_cmd.get_cpu_cache_capacity_bytes()
 
-    imagecache_cmd.set_gpu_cache_capacity_bytes(gpu_capacity_bytes)
-    imagecache_cmd.set_cpu_cache_capacity_bytes(cpu_capacity_bytes)
+    if gpu_capacity_bytes != gpu_current_capacity_bytes:
+        LOG.info(
+            'Image Cache - Set GPU Capacity: %s (%s)',
+            gpu_capacty_gigabytes,
+            gpu_capacity_percent,
+        )
+        imagecache_cmd.set_gpu_cache_capacity_bytes(gpu_capacity_bytes)
+
+    if cpu_capacity_bytes != cpu_current_capacity_bytes:
+        LOG.info(
+            'Image Cache - Set CPU Capacity: %s (%s)',
+            cpu_capacty_gigabytes,
+            cpu_capacity_percent,
+        )
+        imagecache_cmd.set_cpu_cache_capacity_bytes(cpu_capacity_bytes)
     return

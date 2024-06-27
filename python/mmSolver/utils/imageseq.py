@@ -90,9 +90,22 @@ def _get_image_sequence_start_end_frames(base_dir, file_name, file_extension):
     return start_frame, end_frame, padding_num
 
 
-def expand_image_sequence_path(image_sequence_path, format_style):
+def expand_image_sequence_path(image_sequence_path, format_style, exact_frame=None):
     """
     Expand a given image sequence path into tokens.
+
+    Converts 'file.1001.png' into 'file.####.png', when format_style
+    is IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED.
+
+    :param image_sequence_path: An existing file path.
+    :type image_sequence_path: str
+
+    :param format_style: What style this function should expand into?
+    :type format_style: One of mmSolver.utils.constant.IMAGE_SEQ_FORMAT_STYLE_VALUES
+
+    :param exact_frame: The frame number that will be expanded to when
+        format_style IMAGE_SEQ_FORMAT_STYLE_EXACT_FRAME is used.
+    :type exact_frame: None or int
 
     The tokens are:
       - file_pattern: str, the pattern of the file path.
@@ -106,6 +119,7 @@ def expand_image_sequence_path(image_sequence_path, format_style):
     """
     assert os.path.isfile(image_sequence_path)
     assert format_style in const.IMAGE_SEQ_FORMAT_STYLE_VALUES
+    assert exact_frame is None or isinstance(exact_frame, int)
     image_sequence_path = os.path.abspath(image_sequence_path)
 
     (
@@ -139,6 +153,15 @@ def expand_image_sequence_path(image_sequence_path, format_style):
         elif format_style == const.IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME:
             # file.1001.png
             image_seq_num = str(start_frame).zfill(padding_num)
+        elif format_style == const.IMAGE_SEQ_FORMAT_STYLE_EXACT_FRAME:
+            # file.0042.png (exact_frame == 42)
+            #
+            # Same as 'IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME', but allows
+            # the user to give the frame value that will be used.
+            frame = start_frame
+            if exact_frame is not None:
+                frame = exact_frame
+            image_seq_num = str(frame).zfill(padding_num)
         else:
             raise NotImplementedError
         file_pattern = '{}{}{}'.format(file_name, image_seq_num, file_extension)
@@ -147,9 +170,12 @@ def expand_image_sequence_path(image_sequence_path, format_style):
     return file_pattern, start_frame, end_frame, padding_num, is_seq
 
 
-def resolve_file_pattern_to_file_path(file_pattern, format_style):
+def resolve_file_pattern_to_file_path(file_pattern, format_style, exact_frame=None):
     """
     Resolve a file pattern into a valid file path.
+
+    Converts 'file.####.png' into 'file.1001.png', when format_style
+    is IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED.
 
     :param file_pattern: The pattern of the file path.
     :type file_pattern: str
@@ -157,10 +183,15 @@ def resolve_file_pattern_to_file_path(file_pattern, format_style):
     :param format_style: The format style of the input file pattern
     :type format_style: One of mmSolver.utils.constant.IMAGE_SEQ_FORMAT_STYLE_VALUES
 
+    :param exact_frame: The frame number that will be expanded to.
+        If None is given, the start_frame of the image sequence is used.
+    :type exact_frame: None or int
+
     :returns: Valid file path or None.
     :rtype: str or None
     """
     assert format_style in const.IMAGE_SEQ_FORMAT_STYLE_VALUES
+    assert isinstance(file_pattern, str)
 
     if os.path.isfile(file_pattern):
         file_pattern = os.path.abspath(file_pattern)
@@ -175,7 +206,10 @@ def resolve_file_pattern_to_file_path(file_pattern, format_style):
     elif format_style == const.IMAGE_SEQ_FORMAT_STYLE_PRINTF:
         # file.%04d.png
         raise NotImplementedError
-    elif format_style == const.IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME:
+    elif format_style in [
+        const.IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME,
+        const.IMAGE_SEQ_FORMAT_STYLE_EXACT_FRAME,
+    ]:
         # file.1001.png
 
         # Should have already been picked out as a valid file path, so
@@ -201,6 +235,6 @@ def resolve_file_pattern_to_file_path(file_pattern, format_style):
     file_pattern = os.path.join(base_dir, file_pattern)
 
     file_path, _, _, _, _ = expand_image_sequence_path(
-        file_pattern, const.IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME
+        file_pattern, const.IMAGE_SEQ_FORMAT_STYLE_EXACT_FRAME, exact_frame=exact_frame
     )
     return file_path

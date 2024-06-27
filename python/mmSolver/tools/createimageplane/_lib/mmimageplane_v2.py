@@ -223,20 +223,89 @@ def create_image_plane_shape_attrs(image_plane_shp):
     return
 
 
-def get_image_sequence_for_active_slot(shp):
+SLOT_NUMBER_MAIN = 0
+SLOT_NUMBER_ALT1 = 1
+SLOT_NUMBER_ALT2 = 2
+SLOT_NUMBER_ALT3 = 3
+SLOT_NUMBER_VALUES = [
+    SLOT_NUMBER_MAIN,
+    SLOT_NUMBER_ALT1,
+    SLOT_NUMBER_ALT2,
+    SLOT_NUMBER_ALT3,
+]
+SLOT_ATTR_NAME_MAIN = 'imageSequenceMain'
+SLOT_ATTR_NAME_ALT1 = 'imageSequenceAlternate1'
+SLOT_ATTR_NAME_ALT2 = 'imageSequenceAlternate2'
+SLOT_ATTR_NAME_ALT3 = 'imageSequenceAlternate3'
+SLOT_ATTR_NAME_VALUES = [
+    SLOT_ATTR_NAME_MAIN,
+    SLOT_ATTR_NAME_ALT1,
+    SLOT_ATTR_NAME_ALT2,
+    SLOT_ATTR_NAME_ALT3,
+]
+SLOT_NUMBER_TO_ATTR_NAME_MAP = {
+    SLOT_NUMBER_MAIN: SLOT_ATTR_NAME_MAIN,
+    SLOT_NUMBER_ALT1: SLOT_ATTR_NAME_ALT1,
+    SLOT_NUMBER_ALT2: SLOT_ATTR_NAME_ALT2,
+    SLOT_NUMBER_ALT3: SLOT_ATTR_NAME_ALT3,
+}
+SLOT_ATTR_NAME_TO_NUMBER_MAP = {
+    SLOT_ATTR_NAME_MAIN: SLOT_NUMBER_MAIN,
+    SLOT_ATTR_NAME_ALT1: SLOT_NUMBER_ALT1,
+    SLOT_ATTR_NAME_ALT2: SLOT_NUMBER_ALT2,
+    SLOT_ATTR_NAME_ALT3: SLOT_NUMBER_ALT2,
+}
+
+
+def _get_image_plane_image_slot_number(shp):
+    slot_number = maya.cmds.getAttr(shp + '.imageSequenceSlot')
+    return slot_number
+
+
+def _slot_number_to_attr_name(slot_number):
+    assert isinstance(slot_number, int)
+    assert slot_number in SLOT_NUMBER_VALUES
+    return SLOT_NUMBER_TO_ATTR_NAME_MAP[slot_number]
+
+
+def _slot_attr_name_to_number(attr_name):
+    assert isinstance(attr_name, str)
+    assert attr_name in SLOT_ATTR_NAME_VALUES
+    return SLOT_ATTR_NAME_TO_NUMBER_MAP[attr_name]
+
+
+def get_file_pattern_for_active_slot(shp):
     assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2
-    raise NotImplementedError
+    slot_number = _get_image_plane_image_slot_number(shp)
+    slot_attr_name = _slot_number_to_attr_name(slot_number)
+    file_pattern = maya.cmds.getAttr('{}.{}'.format(shp, slot_attr_name))
+    return file_pattern
 
 
-def get_image_sequence_for_unused_slots(shp):
+def get_file_pattern_for_unused_slots(shp):
     assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2
-    raise NotImplementedError
+
+    slot_number = _get_image_plane_image_slot_number(shp)
+    slot_attr_name = _slot_number_to_attr_name(slot_number)
+
+    all_slot_attr_names = list(SLOT_ATTR_NAME_VALUES)
+    all_slot_attr_names.remove(slot_attr_name)
+
+    unused_file_patterns = []
+    for attr_name in sorted(all_slot_attr_names):
+        file_pattern = maya.cmds.getAttr('{}.{}'.format(shp, attr_name))
+        unused_file_patterns.append(file_pattern)
+    return unused_file_patterns
 
 
-def get_image_sequence_for_all_slots(shp):
+def get_file_pattern_for_all_slots(shp):
     assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2
-    slots = ['slot 1', 'slot 2']
-    return slots
+
+    all_file_patterns = []
+    for attr_name in SLOT_ATTR_NAME_VALUES:
+        file_pattern = maya.cmds.getAttr('{}.{}'.format(shp, attr_name))
+        all_file_patterns.append(file_pattern)
+    return all_file_patterns
 
 
 def set_image_sequence(shp, image_sequence_path, attr_name):

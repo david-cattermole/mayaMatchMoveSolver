@@ -382,7 +382,11 @@ MStatus read_image_file(MImage &image, const MString &file_path,
     MMSOLVER_MAYA_VRB("mmsolver::image_io::read_image_file:"
                       << " file_extension=" << file_extension.asChar());
 
-    if (file_extension == "exr") {
+    // BUG: The EXR reader is leaking memory and we don't know where,
+    // so for now, lets disable the reader.
+    const bool use_exr_reader = false;
+
+    if ((file_extension == "exr") && use_exr_reader) {
         MMSOLVER_MAYA_VRB("mmsolver::image_io::read_image_file:"
                           << "read_exr_with_mmimage...");
         status = read_exr_with_mmimage(image, file_path, out_width, out_height,

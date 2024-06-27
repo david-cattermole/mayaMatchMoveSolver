@@ -184,6 +184,12 @@ global proc AEmmImagePlaneShape2_sequenceSlotNew(string $file_attr)
 
 global proc AEmmImagePlaneShape2_sequenceSlotReplace(string $file_attr)
 {
+    string $image_plane_shp[];
+    tokenize($file_attr, ".", $image_plane_shp);
+    if(size($image_plane_shp) < 1) {
+        return;
+    }
+
     string $tokens[];
     tokenize($file_attr, ".", $tokens);
     if(size($tokens) < 1) {
@@ -194,6 +200,13 @@ global proc AEmmImagePlaneShape2_sequenceSlotReplace(string $file_attr)
     // the 'changeCommand'.
     string $cmd =
         "AEmmImagePlaneShape2_sequenceSlotChanged \"" + $tokens[1] + "\" " + $tokens[0] + " \"#1\";";
+
+    // Ensure the slot is maintained when the Attribute Editor is
+    // opened.
+    int $slot = AEmmImagePlaneShape2_getSlotValue($image_plane_shp[0]);
+    // The slot value stored is 0-indexed. With '-1' meaning the value
+    // is undefined and '0' equal to the 'Main' slot.
+    optionMenu -edit -select ($slot + 1) imageSeqSlotField;
 
     optionMenu -edit -changeCommand $cmd imageSeqSlotField;
 }
@@ -629,6 +642,7 @@ global proc AEmmImagePlaneShape2Template(string $nodeName)
     editorTemplate -suppress "cameraHeightInch";
     editorTemplate -suppress "lensHashCurrent";
     editorTemplate -suppress "lensHashPrevious";
+    editorTemplate -suppress "imageSequenceSlot";
 
     AEmmNodeShapeTemplateCommonEnd($nodeName);
 }

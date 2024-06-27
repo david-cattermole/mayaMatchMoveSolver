@@ -26,6 +26,8 @@ from __future__ import print_function
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.imageseq as imageseq_utils
+import mmSolver.utils.constant as const_utils
 import mmSolver.tools.imagecache.constant as const
 import mmSolver.tools.imagecache._lib.imagecache_cmd as imagecache_cmd
 import mmSolver.tools.createimageplane._lib.constant as imageplane_const
@@ -84,80 +86,64 @@ def erase_cpu_image_items(items):
     return maya.cmds.mmImageCache(items, edit=True, cpuEraseItems=True)
 
 
-def erase_all_images_on_image_plane_slots(cache_type, image_plane_shp):
+def erase_all_images_on_image_plane_slots(cache_type, shape_node):
     assert cache_type in const.CACHE_TYPE_VALUES
-    assert maya.cmds.nodeType(image_plane_shp) == _IMAGE_PLANE_SHAPE
-    LOG.info(
-        'erase_all_images_on_image_plane_slots: cache_type=%r, image_plane_shp=%r',
-        cache_type,
-        image_plane_shp,
-    )
+    assert maya.cmds.nodeType(shape_node) == _IMAGE_PLANE_SHAPE
 
-    slots = imageplane_lib.get_image_sequence_for_all_slots(image_plane_shp)
-    LOG.info('erase_all_images_on_image_plane_slots: slots=%r', slots)
-
-    group_names = None
-    if cache_type == const.CACHE_TYPE_GPU:
-        group_names = imagecache_cmd.get_gpu_cache_group_names()
-    elif cache_type == const.CACHE_TYPE_CPU:
-        group_names = imagecache_cmd.get_cpu_cache_group_names()
-    assert group_names is not None
-
-    slots_to_erase = []
-    for slot in slots:
-        if slot not in group_names:
-            LOG.warn('Slot not found in groups: group_names=%r', group_names)
-            continue
-        slots_to_erase.append(slot)
+    file_patterns = imageplane_lib.get_file_pattern_for_all_slots(shape_node)
+    file_patterns = [x for x in file_patterns if isinstance(x, str) and len(x) > 0]
+    if len(file_patterns) == 0:
+        LOG.warn('mmImagePlane unused slots are all invalid; node=%r', shape_node)
+        return
 
     if cache_type == const.CACHE_TYPE_GPU:
-        return erase_gpu_groups_items(slots_to_erase)
+        return erase_gpu_groups_items(file_patterns)
     elif cache_type == const.CACHE_TYPE_CPU:
-        return erase_cpu_groups_items(slots_to_erase)
+        return erase_cpu_groups_items(file_patterns)
     assert False
 
 
-def erase_images_in_active_image_plane_slot(cache_type, image_plane_shp):
+def erase_images_in_active_image_plane_slot(cache_type, shape_node):
     assert cache_type in const.CACHE_TYPE_VALUES
-    assert maya.cmds.nodeType(image_plane_shp) == _IMAGE_PLANE_SHAPE
-    LOG.info(
-        'erase_images_in_active_image_plane_slot: cache_type=%r, image_plane_shp=%r',
-        cache_type,
-        image_plane_shp,
-    )
+    assert maya.cmds.nodeType(shape_node) == _IMAGE_PLANE_SHAPE
 
-    slot = imageplane_lib.get_image_sequence_for_active_slot(image_plane_shp)
-    LOG.info('erase_images_in_active_image_plane_slot: slot=%r', slot)
+    file_pattern = imageplane_lib.get_file_pattern_for_active_slot(shape_node)
+    if file_pattern is None or len(file_pattern) == 0:
+        LOG.warn('mmImagePlane active slot is invalid=%r', file_pattern)
+        return
 
-    return
+    if cache_type == const.CACHE_TYPE_GPU:
+        return erase_gpu_group_items(file_pattern)
+    elif cache_type == const.CACHE_TYPE_CPU:
+        return erase_cpu_group_items(file_pattern)
+    raise NotImplementedError
 
 
-def erase_images_in_unused_image_plane_slots(cache_type, image_plane_shp):
+def erase_images_in_unused_image_plane_slots(cache_type, shape_node):
     assert cache_type in const.CACHE_TYPE_VALUES
-    assert maya.cmds.nodeType(image_plane_shp) == _IMAGE_PLANE_SHAPE
-    LOG.info(
-        'erase_images_in_unused_image_plane_slots: cache_type=%r, image_plane_shp=%r',
-        cache_type,
-        image_plane_shp,
-    )
-    slots = imageplane_lib.get_image_sequence_for_unused_slots(image_plane_shp)
-    LOG.info('erase_images_in_unused_image_plane_slots: slots=%r', slots)
-    return
+    assert maya.cmds.nodeType(shape_node) == _IMAGE_PLANE_SHAPE
+
+    file_patterns = imageplane_lib.get_file_pattern_for_unused_slots(shape_node)
+    file_patterns = [x for x in file_patterns if isinstance(x, str) and len(x) > 0]
+    if len(file_patterns) == 0:
+        LOG.warn('mmImagePlane unused slots are all invalid; node=%r', shape_node)
+        return
+
+    if cache_type == const.CACHE_TYPE_GPU:
+        return erase_gpu_groups_items(file_patterns)
+    elif cache_type == const.CACHE_TYPE_CPU:
+        return erase_cpu_groups_items(file_patterns)
+    raise NotImplementedError
 
 
-def erase_image_sequence(cache_type, file_pattern, start_frame, end_frame):
+def erase_image_sequence(
+    cache_type, file_pattern, format_style, start_frame, end_frame
+):
     assert cache_type in const.CACHE_TYPE_VALUES
+    assert format_style in const_utils.IMAGE_SEQ_FORMAT_STYLE_VALUES
     assert isinstance(file_pattern, str)
     assert isinstance(start_frame, int)
     assert isinstance(end_frame, int)
-    LOG.info(
-        'erase_image_sequence: '
-        'cache_type=%r, file_pattern=%r, start_frame=%r, end_frame=%r',
-        cache_type,
-        file_pattern,
-        start_frame,
-        end_frame,
-    )
 
     item_count = None
     if cache_type == const.CACHE_TYPE_GPU:
@@ -170,19 +156,33 @@ def erase_image_sequence(cache_type, file_pattern, start_frame, end_frame):
         LOG.warn('File pattern does not have any items. item_count=%r', item_count)
         return
 
-    item_names = imagecache_cmd.get_gpu_group_item_names(cache_type, file_pattern)
+    item_names = set(imagecache_cmd.get_gpu_group_item_names(cache_type, file_pattern))
     assert len(item_names) > 0
 
-    # TODO:
-    #
-    # 1) Evaluate the file_pattern for start_frame to end_frame.
-    #
-    # 2) If the evaluated file path is in the image cache, add it to
-    #    the list to be removed.
-    #
-    # 3) Remove named items from the cache.
+    # Evaluate the file_pattern for start_frame to end_frame.
+    image_file_paths = set()
+    for frame in range(start_frame, end_frame + 1):
+        format_style = const_utils.IMAGE_SEQ_FORMAT_STYLE_EXACT_FRAME
+        file_path = imageseq_utils.resolve_file_pattern_to_file_path(
+            file_pattern, format_style, exact_frame=start_frame
+        )
+        image_file_paths.add(file_path)
 
-    raise NotImplementedError
+    # If the evaluated file path is in the image cache, add it to the
+    # list to be removed.
+    #
+    # This assumes both lists use the same representation of the same
+    # file; the file is absolute and both use forward-slashes (which
+    # is expected).
+    common_file_paths = item_names & image_file_paths
+
+    # Remove named items from the cache.
+    if cache_type == const.CACHE_TYPE_GPU:
+        return erase_gpu_image_items(list(common_file_paths))
+    elif cache_type == const.CACHE_TYPE_CPU:
+        return erase_cpu_image_items(list(common_file_paths))
+    else:
+        raise NotImplementedError
 
 
 def erase_all_inactive_images(cache_type):
@@ -208,16 +208,48 @@ def erase_all_inactive_images(cache_type):
 
 
 def erase_all_images(cache_type):
+    """
+    Clear image cache completely.
+    """
     assert cache_type in const.CACHE_TYPE_VALUES
-    LOG.info(
-        'erase_images_in_unused_image_plane_slots: cache_type=%r',
-        cache_type,
+
+    # Remove named items from the cache.
+    before_item_count = None
+    after_item_count = None
+    if cache_type == const.CACHE_TYPE_GPU:
+        before_item_count = imagecache_cmd.get_gpu_cache_item_count()
+        capacity_bytes = imagecache_cmd.get_gpu_cache_capacity_bytes()
+
+        # Because setting the capacity to zero will automatically
+        # evict "all" images (except the minimum number allowed) from
+        # the cache.
+        imagecache_cmd.set_gpu_cache_capacity_bytes(0)
+
+        imagecache_cmd.set_gpu_cache_capacity_bytes(capacity_bytes)
+        after_item_count = imagecache_cmd.get_gpu_cache_item_count()
+    elif cache_type == const.CACHE_TYPE_CPU:
+        before_item_count = imagecache_cmd.get_cpu_cache_item_count()
+        capacity_bytes = imagecache_cmd.get_cpu_cache_capacity_bytes()
+
+        # Because setting the capacity to zero will automatically
+        # evict "all" images (except the minimum number allowed) from
+        # the cache.
+        imagecache_cmd.set_cpu_cache_capacity_bytes(0)
+
+        imagecache_cmd.set_cpu_cache_capacity_bytes(capacity_bytes)
+        after_item_count = imagecache_cmd.get_cpu_cache_item_count()
+    else:
+        raise NotImplementedError
+
+    LOG.debug(
+        '%s ImageCache items before clearing: %r', cache_type.upper(), before_item_count
+    )
+    LOG.debug(
+        '%s ImageCache items after clearing: %r', cache_type.upper(), after_item_count
     )
 
-    # TODO: Clear image cache completely.
-
-    # 1) Get the ImageCache capacities (CPU and GPU).
-    # 2) Set the ImageCache capacity (CPU and GPU) to zero.
-    # 3) Restore the ImageCache capacities (CPU and GPU).
-
+    removed_count = before_item_count - after_item_count
+    LOG.info(
+        'Erased %r images from the %s Image Cache', removed_count, cache_type.upper()
+    )
     return

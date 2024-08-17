@@ -111,6 +111,7 @@ private:
     MSelectionList m_image_plane_nodes;
 
     bool m_enable;
+    bool m_override_color;
     float m_depth_offset;
     float m_width;
     float m_color[3];

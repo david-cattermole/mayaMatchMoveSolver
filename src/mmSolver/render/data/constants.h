@@ -118,6 +118,7 @@ const MString kRendererSilhouetteCreateNodeCommand =
 
 // Silhouette Attribute Names
 const MString kAttrNameSilhouetteEnable = "enable";
+const MString kAttrNameSilhouetteOverrideColor = "overrideColor";
 const MString kAttrNameSilhouetteDepthOffset = "depthOffset";
 const MString kAttrNameSilhouetteWidth = "width";
 const MString kAttrNameSilhouetteColor = "color";
@@ -130,6 +131,7 @@ const MString kAttrNameSilhouetteOperationNum = "operationNum";
 
 // Silhouette Renderer Attribute Default Values
 const bool kSilhouetteEnableDefault = true;
+const bool kSilhouetteOverrideColorDefault = false;
 const float kSilhouetteDepthOffsetDefault = -1.0f;
 const float kSilhouetteWidthDefault = 2.0f;
 const float kSilhouetteColorDefault[] = {0.0f, 1.0f, 0.0f};

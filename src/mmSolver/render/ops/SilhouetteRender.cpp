@@ -35,6 +35,7 @@
 #include <maya/MGeometryExtractor.h>
 #include <maya/MGlobal.h>
 #include <maya/MHWGeometry.h>
+#include <maya/MHWGeometryUtilities.h>
 #include <maya/MHardwareRenderer.h>
 #include <maya/MItDag.h>
 #include <maya/MRenderTargetManager.h>
@@ -57,6 +58,7 @@ SilhouetteRender::SilhouetteRender(const MString& name)
     , m_shader_program(0)
     , m_output_targets(nullptr)
     , m_silhouette_cull_face(GL_BACK)
+    , m_silhouette_override_color(false)
     , gGLFT(nullptr) {}
 
 SilhouetteRender::~SilhouetteRender() {
@@ -335,6 +337,10 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
 
     const float default_line_width = drawContext.getGlobalLineWidth();
 
+    float silhouette_color[3] = {m_silhouette_color[0], m_silhouette_color[1],
+                                 m_silhouette_color[2]};
+    MColor wireframe_color = MColor();
+
     // Extract OpenGL buffers from Maya mesh nodes, then render the
     // buffers using our own OpenGL pipeline.
     MItDag dag_iter = MItDag(MItDag::kDepthFirst, MFn::kMesh);
@@ -354,6 +360,19 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
         }
         if (!dag_path.isValid() || !dag_path.isVisible()) {
             continue;
+        }
+
+        if (!m_silhouette_override_color) {
+            // TODO: Write our own version of
+            // 'MGeometryUtilities::wireframeColor', that will do the same
+            // logic, but will not take into account the current selection
+            // status of the DagPath. This would avoid the need to save
+            // the selection list, de-select and re-select.
+            wireframe_color =
+                MHWRender::MGeometryUtilities::wireframeColor(dag_path);
+            silhouette_color[0] = wireframe_color.r;
+            silhouette_color[1] = wireframe_color.g;
+            silhouette_color[2] = wireframe_color.b;
         }
 
         // TODO: Check if an attribute exists on the shape node, and
@@ -438,7 +457,7 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
         const MGLuint* triangles_index_buffer_handle =
             static_cast<MGLuint*>(triangles_index_buffer_handle_ptr);
         draw_buffers(
-            gGLFT, m_silhouette_color, m_silhouette_alpha, m_silhouette_width,
+            gGLFT, silhouette_color, m_silhouette_alpha, m_silhouette_width,
             m_silhouette_depth_offset, m_silhouette_cull_face,
             default_line_width, model_view_projection, vertex_buffer_handle,
             edge_index_buffer_handle, triangles_index_buffer_handle,

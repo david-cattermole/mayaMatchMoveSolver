@@ -62,6 +62,7 @@ public:
 
     void setPanelName(MString value) { m_panel_name = value; }
     void setSilhouetteEnable(const bool value) { m_silhouette_enable = value; }
+    void setSilhouetteOverrideColor(const bool value) { m_silhouette_override_color = value; }
     void setSilhouetteDepthOffset(const float value) {
         m_silhouette_depth_offset = value;
     }
@@ -98,6 +99,7 @@ protected:
     MGLFunctionTable *gGLFT;
 
     bool m_silhouette_enable;
+    bool m_silhouette_override_color;
     float m_silhouette_depth_offset;
     float m_silhouette_width;
     float m_silhouette_color[3];

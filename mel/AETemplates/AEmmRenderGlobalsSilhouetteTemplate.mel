@@ -32,16 +32,16 @@ global proc AEmmRenderGlobalsSilhouetteTemplate(string $name) {
                 -collapse false;
 
                 editorTemplate
-                    -label "Enable"
-                    -addControl "enable";
-
-                editorTemplate
                     -label "Depth Offset"
                     -addControl "depthOffset";
 
                 editorTemplate
                     -label "Width"
                     -addControl "width";
+
+                editorTemplate
+                    -label "Override Color"
+                    -addControl "overrideColor";
 
                 editorTemplate
                     -label "Color"
@@ -51,7 +51,26 @@ global proc AEmmRenderGlobalsSilhouetteTemplate(string $name) {
                     -label "Alpha"
                     -addControl "alpha";
 
+                editorTemplate
+                    -label "Cull Face"
+                    -addControl "cullFace";
+
             editorTemplate -endLayout;
+
+            editorTemplate
+                -beginLayout "Debug"
+                -collapse true;
+
+                editorTemplate
+                    -label "Enable"
+                    -addControl "enable";
+
+                editorTemplate
+                    -label "Operation Number"
+                    -addControl "operationNum";
+
+            editorTemplate -endLayout;
+
 
         editorTemplate -endNoOptimize;
 
@@ -59,6 +78,10 @@ global proc AEmmRenderGlobalsSilhouetteTemplate(string $name) {
 
     // include/call base class/node attributes
     AEabstractBaseCreateTemplate $name;
+
+    // Don't need to show the enable check-box, users will always want
+    // it enabled, but we leave it here for testing/debugging.
+    editorTemplate -suppress "enable";
 
     editorTemplate -endScrollLayout;
 }

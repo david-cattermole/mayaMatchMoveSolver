@@ -40,5 +40,9 @@ global proc mmRendererSilhouetteOptionBox() {
         lockNode -lock on $node;
     }
     select -r "mmRenderGlobalsSilhouette";
+
+    // Users want to be able to select and change the color swatch, so
+    // we need the attribute editor open.
+    AttributeEditor;
     return;
 }

@@ -31,9 +31,11 @@
 #include <maya/MBoundingBox.h>
 #include <maya/MDagMessage.h>
 #include <maya/MObjectHandle.h>
-#include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
 #include <maya/MUiMessage.h>
+
+// Maya Viewport 2.0
+#include <maya/MRenderTargetManager.h>
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver

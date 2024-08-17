@@ -28,11 +28,15 @@
 
 // Maya
 #include <maya/M3dView.h>
-#include <maya/MGL.h>
-#include <maya/MGLFunctionTable.h>
-#include <maya/MRenderTargetManager.h>
 #include <maya/MSelectionList.h>
 #include <maya/MString.h>
+
+// Maya Viewport 1.0
+#include <maya/MGL.h>
+#include <maya/MGLFunctionTable.h>
+
+// Maya Viewport 2.0
+#include <maya/MRenderTargetManager.h>
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver

@@ -28,21 +28,25 @@
 // Maya
 #include <maya/M3dView.h>
 #include <maya/MDagPath.h>
-#include <maya/MDrawContext.h>
 #include <maya/MFnDependencyNode.h>
-#include <maya/MGL.h>
-#include <maya/MGLFunctionTable.h>
 #include <maya/MGeometryExtractor.h>
 #include <maya/MGlobal.h>
-#include <maya/MHWGeometry.h>
-#include <maya/MHWGeometryUtilities.h>
-#include <maya/MHardwareRenderer.h>
 #include <maya/MItDag.h>
-#include <maya/MRenderTargetManager.h>
 #include <maya/MSelectionList.h>
+#include <maya/MString.h>
+
+// Maya Viewport 1.0
+#include <maya/MGL.h>
+#include <maya/MGLFunctionTable.h>
+#include <maya/MHWGeometry.h>
+#include <maya/MHardwareRenderer.h>
+
+// Maya Viewport 2.0
+#include <maya/MDrawContext.h>
+#include <maya/MHWGeometryUtilities.h>
+#include <maya/MRenderTargetManager.h>
 #include <maya/MShaderManager.h>
 #include <maya/MStateManager.h>
-#include <maya/MString.h>
 #include <maya/MTextureManager.h>
 #include <maya/MViewport2Renderer.h>
 

@@ -152,6 +152,10 @@ MStatus calculate_model_view_projection_matrix(
     M3dView view, MDagPath dag_path, MMatrix& out_model_view_projection) {
     const MMatrix inclusive_matrix = dag_path.inclusiveMatrix();
 
+    // The camera and geometry matrices must be updated each frame,
+    // when playblasting. This is not obvious when viewing in the
+    view.updateViewingParameters();
+
     MMatrix projection_matrix;
     MStatus status = view.projectionMatrix(projection_matrix);
     CHECK_MSTATUS_AND_RETURN_IT(status);

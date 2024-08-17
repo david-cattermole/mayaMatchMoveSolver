@@ -151,15 +151,14 @@ GLuint build_shader_program(MGLFunctionTable* gGLFT) {
 }
 
 MStatus calculate_model_view_projection_matrix(
-    M3dView view, MDagPath dag_path, MMatrix& out_model_view_projection) {
+    M3dView view, MDagPath dag_path, MMatrix& projection_matrix,
+    MMatrix& out_model_view_projection) {
     const MMatrix inclusive_matrix = dag_path.inclusiveMatrix();
 
     // The camera and geometry matrices must be updated each frame,
     // when playblasting. This is not obvious when viewing in the
-    view.updateViewingParameters();
-
-    MMatrix projection_matrix;
-    MStatus status = view.projectionMatrix(projection_matrix);
+    MStatus status = MStatus::kSuccess;
+    status = view.updateViewingParameters();
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MMatrix model_view_matrix;
@@ -378,9 +377,13 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
         // TODO: Check if an attribute exists on the shape node, and
         // check the value of the shape node.
 
+        MMatrix projection_matrix = drawContext.getMatrix(
+            MHWRender::MFrameContext::kProjectionMtx, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
         MMatrix model_view_projection;
-        status = calculate_model_view_projection_matrix(view, dag_path,
-                                                        model_view_projection);
+        status = calculate_model_view_projection_matrix(
+            view, dag_path, projection_matrix, model_view_projection);
 
         // Create vertex buffer desc for position
         const MString empty_string = "";

@@ -66,7 +66,9 @@ public:
 
     void setPanelName(MString value) { m_panel_name = value; }
     void setSilhouetteEnable(const bool value) { m_silhouette_enable = value; }
-    void setSilhouetteOverrideColor(const bool value) { m_silhouette_override_color = value; }
+    void setSilhouetteOverrideColor(const bool value) {
+        m_silhouette_override_color = value;
+    }
     void setSilhouetteDepthOffset(const float value) {
         m_silhouette_depth_offset = value;
     }

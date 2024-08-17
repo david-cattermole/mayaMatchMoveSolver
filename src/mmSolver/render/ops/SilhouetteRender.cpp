@@ -155,7 +155,7 @@ GLuint build_shader_program(MGLFunctionTable* gGLFT) {
 }
 
 MStatus calculate_model_view_projection_matrix(
-    M3dView view, MDagPath dag_path, MMatrix& projection_matrix,
+    M3dView view, const MDagPath dag_path, const MMatrix& projection_matrix,
     MMatrix& out_model_view_projection) {
     const MMatrix inclusive_matrix = dag_path.inclusiveMatrix();
 
@@ -342,7 +342,6 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
 
     float silhouette_color[3] = {m_silhouette_color[0], m_silhouette_color[1],
                                  m_silhouette_color[2]};
-    MColor wireframe_color = MColor();
 
     // Extract OpenGL buffers from Maya mesh nodes, then render the
     // buffers using our own OpenGL pipeline.
@@ -371,7 +370,7 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
             // logic, but will not take into account the current selection
             // status of the DagPath. This would avoid the need to save
             // the selection list, de-select and re-select.
-            wireframe_color =
+            const MColor wireframe_color =
                 MHWRender::MGeometryUtilities::wireframeColor(dag_path);
             silhouette_color[0] = wireframe_color.r;
             silhouette_color[1] = wireframe_color.g;
@@ -381,7 +380,7 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
         // TODO: Check if an attribute exists on the shape node, and
         // check the value of the shape node.
 
-        MMatrix projection_matrix = drawContext.getMatrix(
+        const MMatrix projection_matrix = drawContext.getMatrix(
             MHWRender::MFrameContext::kProjectionMtx, &status);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -427,6 +426,8 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
         vertex_buffer.commit(vertices_ptr);
 
         // Fill edge index buffer with data
+        //
+        // Edges have 2 indices for each edge.
         unsigned int edge_count =
             geometry_extractor.primitiveCount(edge_description);
         void* edge_indices_ptr =
@@ -436,6 +437,8 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
         edge_index_buffer.commit(edge_indices_ptr);
 
         // Fill tri index buffer with data
+        //
+        // Triangles have 3 indices for each triangle.
         unsigned int triangles_count =
             geometry_extractor.primitiveCount(triangle_description);
         void* triangles_indices_ptr =

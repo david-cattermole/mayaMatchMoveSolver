@@ -463,6 +463,13 @@
             "tooltip": "General Tools",
             "command": ["pass"]
         },
+        "mesh_tools": {
+            "name": "Mesh Tools",
+            "name_shelf": "",
+            "icon_shelf": "mesh_bunny.png",
+            "tooltip": "Mesh Tools",
+            "command": ["pass"]
+        },
         "center_twodee_ui": {
             "name": "Offset 2D Center UI",
             "name_shelf": "Center",
@@ -615,6 +622,15 @@
             "command": [
                 "import mmSolver.tools.undoredoscene.tool;",
                 "mmSolver.tools.undoredoscene.tool.main_redo();"
+            ]
+        },
+        "mesh_from_locators": {
+            "name": "Mesh From Locators",
+            "name_shelf": "MeshFrLoc",
+            "tooltip": "Creates mesh from locators",
+            "command": [
+                "import mmSolver.tools.meshfromlocators.tool;",
+                "mmSolver.tools.meshfromlocators.tool.main();"
             ]
         },
         "reparent_under_node": {

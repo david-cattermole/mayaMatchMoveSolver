@@ -97,6 +97,7 @@
             "mesh_tools/mesh_tools_popup/---Hold-Outs",
             "mesh_tools/mesh_tools_popup/enable_holdouts_for_selected_meshes",
             "mesh_tools/mesh_tools_popup/disable_holdouts_for_selected_meshes",
+            "mesh_tools/mesh_tools_popup/enable_holdouts_for_all_meshes",
             "general_tools/gen_tools_popup/---Parenting",
             "general_tools/gen_tools_popup/reparent_under_node2",
             "general_tools/gen_tools_popup/unparent_to_world2",

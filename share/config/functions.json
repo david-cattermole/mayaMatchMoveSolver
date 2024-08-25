@@ -660,6 +660,15 @@
                 "mmSolver.tools.holdoutsenableallmeshes.tool.main();"
             ]
         },
+        "disable_holdouts_for_all_meshes": {
+            "name": "Disable Hold-Outs For All Meshes",
+            "name_shelf": "",
+            "tooltip": "Disable Hold-Out attribute for all meshes.",
+            "command": [
+                "import mmSolver.tools.holdoutsdisableallmeshes.tool;",
+                "mmSolver.tools.holdoutsdisableallmeshes.tool.main();"
+            ]
+        },
         "reparent_under_node": {
             "name": "Reparent under Node (v1)",
             "name_shelf": "RePar",

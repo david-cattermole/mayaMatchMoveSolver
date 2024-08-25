@@ -633,13 +633,22 @@
                 "mmSolver.tools.meshfromlocators.tool.main();"
             ]
         },
-        "enable_holdouts_for_all_meshes": {
-            "name": "Enable Hold-Outs For All Meshes",
-            "name_shelf": "HldAll",
-            "tooltip": "Enables Hold-Out attribute for all meshes.",
+        "enable_holdouts_for_selected_meshes": {
+            "name": "Enable Hold-Outs For Selected Meshes",
+            "name_shelf": "",
+            "tooltip": "Enable Hold-Out attribute for selected meshes.",
             "command": [
                 "import mmSolver.tools.holdoutsenableselectedmeshes.tool;",
                 "mmSolver.tools.holdoutsenableselectedmeshes.tool.main();"
+            ]
+        },
+        "disable_holdouts_for_selected_meshes": {
+            "name": "Disable Hold-Outs For Selected Meshes",
+            "name_shelf": "",
+            "tooltip": "Disable Hold-Out attribute for selected meshes.",
+            "command": [
+                "import mmSolver.tools.holdoutsdisableselectedmeshes.tool;",
+                "mmSolver.tools.holdoutsdisableselectedmeshes.tool.main();"
             ]
         },
         "reparent_under_node": {

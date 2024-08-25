@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Enable Hold-Outs for selected meshes.
+Disable Hold-Outs for selected meshes.
 """
 
 from __future__ import absolute_import

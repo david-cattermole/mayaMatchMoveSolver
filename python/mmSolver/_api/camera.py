@@ -44,6 +44,14 @@ def _create_camera_attributes(cam_shp):
     """
     assert isinstance(cam_shp, pycompat.TEXT_TYPE)
     assert maya.cmds.nodeType(cam_shp) == 'camera'
+
+    if maya.cmds.lockNode(cam_shp, query=True) is False:
+        LOG.warn(
+            'Cannot create camera attributes, camera shape is locked; cam_shp=%r',
+            cam_shp,
+        )
+        return
+
     node_obj = node_utils.get_as_object_apione(cam_shp)
     dg_node_fn = OpenMaya.MFnDependencyNode(node_obj)
 
@@ -72,9 +80,16 @@ def _create_camera_attributes(cam_shp):
 
 
 def _create_lens_toggle_setup(cam_tfm, cam_shp):
-    # When linking to a camera, if an attribute 'lens'
-    # does not already exist, create it.
-    _create_camera_attributes(cam_shp)
+    cam_shp_is_locked = maya.cmds.lockNode(cam_shp, query=True)
+    if cam_shp_is_locked is False:
+        _create_camera_attributes(cam_shp)
+
+    in_lens_attr_exists = node_utils.attribute_exists('inLens', cam_shp)
+    if in_lens_attr_exists is False:
+        return None
+
+    # When linking to a camera, if an attribute 'lens' does not
+    # already exist, create it.
     toggle_nodes = (
         maya.cmds.listConnections(cam_shp + ".inLens", shapes=False, destination=True)
         or []
@@ -84,8 +99,13 @@ def _create_lens_toggle_setup(cam_tfm, cam_shp):
         toggle_node = maya.cmds.createNode(
             'mmLensModelToggle', name=const.LENS_TOGGLE_NODE_NAME
         )
-        maya.cmds.connectAttr(cam_shp + '.inLens', toggle_node + '.inLens')
-        maya.cmds.connectAttr(toggle_node + '.outLens', cam_shp + '.outLens')
+
+        out_lens_attr_exists = node_utils.attribute_exists('outLens', cam_shp)
+
+        if in_lens_attr_exists:
+            maya.cmds.connectAttr(cam_shp + '.inLens', toggle_node + '.inLens')
+        if out_lens_attr_exists:
+            maya.cmds.connectAttr(toggle_node + '.outLens', cam_shp + '.outLens')
     else:
         toggle_node = toggle_nodes[0]
     return toggle_node
@@ -96,6 +116,16 @@ def _link_lens_to_camera(cam_tfm, cam_shp, lens):
 
     Assumes that no lens is already connected to the camera."""
     assert isinstance(lens, lensmodule.Lens)
+
+    in_lens_attr_exists = node_utils.attribute_exists('inLens', cam_shp)
+    if in_lens_attr_exists is False:
+        LOG.warn(
+            'Cannot link lens to camera, missing "inLens" attribute; cam_shp=%r lens=%r',
+            cam_shp,
+            lens,
+        )
+        return
+
     lens_node = lens.get_node()
     src = lens_node + '.outLens'
     dst = cam_shp + '.inLens'
@@ -106,6 +136,14 @@ def _link_lens_to_camera(cam_tfm, cam_shp, lens):
 
 def _unlink_lens_from_camera(cam_tfm, cam_shp):
     """Disconnect Lens(es) from the Camera attribute."""
+    in_lens_attr_exists = node_utils.attribute_exists('inLens', cam_shp)
+    if in_lens_attr_exists is False:
+        LOG.warn(
+            'Cannot unlink lens from camera, missing "inLens" attribute; cam_shp=%r',
+            cam_shp,
+        )
+        return
+
     lens_node_connections = (
         maya.cmds.listConnections(
             cam_shp + ".inLens",
@@ -519,7 +557,13 @@ class Camera(object):
             msg = "Camera object has no transform/shape node: object=%r"
             LOG.warn(msg, self)
             return
+
         toggle_node = _create_lens_toggle_setup(cam_tfm, cam_shp)
+        if toggle_node is None:
+            msg = "Camera node toggle could not be found or created: object=%r"
+            LOG.warn(msg, self)
+            return
+
         return maya.cmds.getAttr(toggle_node + '.enable')
 
     def set_lens_enable(self, value):
@@ -533,7 +577,13 @@ class Camera(object):
             msg = "Camera object has no transform/shape node: object=%r"
             LOG.warn(msg, self)
             return
+
         toggle_node = _create_lens_toggle_setup(cam_tfm, cam_shp)
+        if toggle_node is None:
+            msg = "Camera node toggle could not be found or created: object=%r"
+            LOG.warn(msg, self)
+            return
+
         maya.cmds.setAttr(toggle_node + '.enable', value)
         return
 
@@ -552,7 +602,14 @@ class Camera(object):
             msg = "Camera object has no transform/shape node: object=%r"
             LOG.warn(msg, self)
             return lens
+
         _create_lens_toggle_setup(cam_tfm, cam_shp)
+        in_lens_attr_exists = node_utils.attribute_exists('inLens', cam_shp)
+        if in_lens_attr_exists is not True:
+            msg = 'Camera node "inLens" attribute not found: object=%r'
+            LOG.warn(msg, self)
+            return
+
         nodes = (
             maya.cmds.listConnections(
                 cam_shp + '.inLens', source=True, destination=False, shapes=False

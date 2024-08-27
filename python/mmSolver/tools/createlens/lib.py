@@ -50,6 +50,7 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.api as mmapi
+import mmSolver.utils.node as node_utils
 
 LOG = mmSolver.logger.get_logger()
 
@@ -84,10 +85,19 @@ def create_marker_connections(cam):
         for src, dst in zip(src_list, dst_list):
             maya.cmds.disconnectAttr(src, dst)
 
-    # Ensure Marker have connections to the camera lens.
     cam_shp = cam.get_shape_node()
+    in_lens_attr_exists = node_utils.attribute_exists('inLens', cam_shp)
+    if in_lens_attr_exists is False:
+        LOG.warn(
+            'Cannot create marker connections, camera is missing "inLens" attribute; '
+            'cam_shp=%r',
+            cam_shp,
+        )
+        return
+
+    # Ensure Marker have connections to the camera lens.
+    src = cam_shp + '.outLens'
     for mkr_node in mkr_nodes:
-        src = cam_shp + '.outLens'
         dst = mkr_node + '.inLens'
         if not maya.cmds.isConnected(src, dst):
             maya.cmds.connectAttr(src, dst)

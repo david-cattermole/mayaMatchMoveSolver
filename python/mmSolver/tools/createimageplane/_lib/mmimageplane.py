@@ -33,6 +33,7 @@ import mmSolver.tools.createimageplane._lib.constant as lib_const
 import mmSolver.tools.createimageplane._lib.mmimageplane_v1 as lib_mmimageplane_v1
 import mmSolver.tools.createimageplane._lib.mmimageplane_v2 as lib_mmimageplane_v2
 import mmSolver.tools.createimageplane._lib.utilities as lib_utils
+import mmSolver.utils.node as node_utils
 
 LOG = mmSolver.logger.get_logger()
 
@@ -127,7 +128,8 @@ def create_shape_node(
     # Image plane hash will be used to stop updating the Viewport 2.0
     # shape when the lens distortion values stay the same.
     lens_eval_node = maya.cmds.createNode('mmLensEvaluate')
-    lib_utils.force_connect_attr(cam_shp + '.outLens', lens_eval_node + '.inLens')
+    if node_utils.attribute_exists('outLens', cam_shp):
+        lib_utils.force_connect_attr(cam_shp + '.outLens', lens_eval_node + '.inLens')
     lib_utils.force_connect_attr(lens_eval_node + '.outHash', shp + '.lensHashCurrent')
 
     maya.cmds.reorder(shp, back=True)

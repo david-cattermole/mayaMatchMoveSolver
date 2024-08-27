@@ -29,6 +29,7 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.tools.createimageplane._lib.utilities as lib_utils
+import mmSolver.utils.node as node_utils
 
 LOG = mmSolver.logger.get_logger()
 
@@ -70,7 +71,8 @@ def create_poly_plane(name_mesh_shp, image_plane_tfm, cam_shp):
     # Drive the Deformer node with the camera lens.
     src = cam_shp + '.outLens'
     dst = deform_node + '.inLens'
-    if not maya.cmds.isConnected(src, dst):
+    src_attr_exists = node_utils.attribute_exists('outLens', cam_shp)
+    if src_attr_exists is True and (not maya.cmds.isConnected(src, dst)):
         lib_utils.force_connect_attr(src, dst)
 
     # Get the intermediate mesh shape, so we can re-order the nodes

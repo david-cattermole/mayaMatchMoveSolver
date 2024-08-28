@@ -92,7 +92,7 @@
             "zdepth_tools/zdepth_popup/camera_object_scale_remove",
             "zdepth_tools/zdepth_popup/---",
             "zdepth_tools/zdepth_popup/screen_z_transform_bake",
-            "mesh_tools/mesh_tools_popup/---Mesh",
+            "mesh_tools/mesh_tools_popup/---Create",
             "mesh_tools/mesh_tools_popup/mesh_from_locators",
             "mesh_tools/mesh_tools_popup/---Hold-Outs",
             "mesh_tools/mesh_tools_popup/enable_holdouts_for_all_meshes",

@@ -250,9 +250,9 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_20">
           <item>
-           <widget class="QLabel" name="gpuCacheGroupCount_label">
+           <widget class="QLabel" name="gpuCacheSlotCount_label">
             <property name="text">
-             <string>Image Groups:</string>
+             <string>Image Slots:</string>
             </property>
            </widget>
           </item>
@@ -270,7 +270,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="gpuCacheGroupCountValue_label">
+           <widget class="QLabel" name="gpuCacheSlotCountValue_label">
             <property name="text">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;2&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -383,9 +383,9 @@
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_21">
           <item>
-           <widget class="QLabel" name="cpuCacheGroupCount_label">
+           <widget class="QLabel" name="cpuCacheSlotCount_label">
             <property name="text">
-             <string>Image Groups:</string>
+             <string>Image Slots:</string>
             </property>
            </widget>
           </item>
@@ -403,7 +403,7 @@
            </spacer>
           </item>
           <item>
-           <widget class="QLabel" name="cpuCacheGroupCountValue_label">
+           <widget class="QLabel" name="cpuCacheSlotCountValue_label">
             <property name="text">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;2&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>

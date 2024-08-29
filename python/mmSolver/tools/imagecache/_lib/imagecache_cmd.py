@@ -46,11 +46,15 @@ def get_cpu_cache_group_names():
     return maya.cmds.mmImageCache(query=True, cpuGroupNames=True)
 
 
-def get_gpu_cache_group_count():
+def get_gpu_cache_slot_count():
+    # NOTE: The internal mmImageCache name for a "slot" is actually a
+    # "group" - a group of images.
     return int(maya.cmds.mmImageCache(query=True, gpuGroupCount=True))
 
 
-def get_cpu_cache_group_count():
+def get_cpu_cache_slot_count():
+    # NOTE: The internal mmImageCache name for a "slot" is actually a
+    # "group" - a group of images.
     return int(maya.cmds.mmImageCache(query=True, cpuGroupCount=True))
 
 

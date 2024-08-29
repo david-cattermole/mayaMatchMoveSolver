@@ -448,8 +448,8 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
     def update_resource_values(self):
         gpu_cache_item_count = lib.get_gpu_cache_item_count()
         cpu_cache_item_count = lib.get_cpu_cache_item_count()
-        gpu_cache_group_count = lib.get_gpu_cache_group_count()
-        cpu_cache_group_count = lib.get_cpu_cache_group_count()
+        gpu_cache_slot_count = lib.get_gpu_cache_slot_count()
+        cpu_cache_slot_count = lib.get_cpu_cache_slot_count()
         gpu_cache_used = lib.get_gpu_cache_used_bytes()
         cpu_cache_used = lib.get_cpu_cache_used_bytes()
         gpu_cache_capacity = lib.get_gpu_cache_capacity_bytes()
@@ -472,8 +472,8 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
         set_count_label(self.gpuCacheItemCountValue_label, gpu_cache_item_count)
         set_count_label(self.cpuCacheItemCountValue_label, cpu_cache_item_count)
 
-        set_count_label(self.gpuCacheGroupCountValue_label, gpu_cache_group_count)
-        set_count_label(self.cpuCacheGroupCountValue_label, cpu_cache_group_count)
+        set_count_label(self.gpuCacheSlotCountValue_label, gpu_cache_slot_count)
+        set_count_label(self.cpuCacheSlotCountValue_label, cpu_cache_slot_count)
 
         set_capacity_size_label(self.gpuCacheCapacityValue_label, gpu_cache_capacity)
         set_capacity_size_label(self.cpuCacheCapacityValue_label, cpu_cache_capacity)

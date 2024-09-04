@@ -69,7 +69,7 @@ Node type groups include:
 
 - Show/Hide geometry in the current viewport.
 
-- Show/Hide Markers, Bundles, Locators and NURBS Curves in the current viewport.
+- Show/Hide Locators and NURBS Curves in the current viewport.
 
 - Show/Hide Image Planes in the current viewport.
 

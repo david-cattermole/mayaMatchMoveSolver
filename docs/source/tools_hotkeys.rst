@@ -89,7 +89,7 @@ viewport.
      - :ref:`Link <toggle-viewport-node-types-ref>`
 
    * - Press **ALT + 2** key
-     - Show/Hide Markers, Bundles, Locators and NURBS Curves in the
+     - Show/Hide Locators and NURBS Curves in the
        current viewport.
      - :ref:`Link <toggle-viewport-node-types-ref>`
 

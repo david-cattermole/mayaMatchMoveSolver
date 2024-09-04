@@ -456,6 +456,33 @@
                 "mmSolver.tools.createskydome.tool.main(preset_name=const.PRESET_HORIZON_LINE_NAME);"
             ]
         },
+        "toggle_viewport_geom": {
+            "name": "Toggle Viewport Geometry",
+            "name_shelf": "TglGeo",
+            "tooltip": "Toggle the visiblity of geometry in the active viewport.",
+            "command": [
+                "import mmSolver.tools.toggleviewportgeom.tool;",
+                "mmSolver.tools.toggleviewportgeom.tool.main();"
+            ]
+        },
+        "toggle_viewport_ctrls": {
+            "name": "Toggle Viewport Controls",
+            "name_shelf": "TglCtl",
+            "tooltip": "Toggle the visiblity of character controls in the active viewport.",
+            "command": [
+                "import mmSolver.tools.toggleviewportctrls.tool;",
+                "mmSolver.tools.toggleviewportctrls.tool.main();"
+            ]
+        },
+        "toggle_viewport_imgplns": {
+            "name": "Toggle Viewport Image Planes",
+            "name_shelf": "TglImPl",
+            "tooltip": "Toggle the visiblity of image planes in the active viewport.",
+            "command": [
+                "import mmSolver.tools.toggleviewportimgplns.tool;",
+                "mmSolver.tools.toggleviewportimgplns.tool.main();"
+            ]
+        },
         "general_tools": {
             "name": "General Tools",
             "name_shelf": "",

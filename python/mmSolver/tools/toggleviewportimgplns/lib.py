@@ -33,5 +33,5 @@ def toggle_image_plane_visibility(model_panel):
     value = viewport_utils.get_image_plane_visibility(model_panel)
     new_value = not value
     viewport_utils.set_image_plane_visibility(model_panel, new_value)
-    viewport_utils.set_mm_image_plane_visibility(model_panel, new_value)
+    viewport_utils.set_mm_image_plane_v2_visibility(model_panel, new_value)
     return

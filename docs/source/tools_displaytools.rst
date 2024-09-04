@@ -123,6 +123,9 @@ control visibility like so:
         viewport_utils.set_locator_visibility(model_panel, new_value)
 
 
+See :ref:`mmSolver.utils.viewport <mmsolver-utils-viewport-ref>`
+Python module documentation for more help.
+
 .. _create-sky-dome-tool-ref:
 
 Create Horizon / Axis Dome / Sky Dome

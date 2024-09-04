@@ -1,3 +1,5 @@
+.. _mmsolver-utils-ref:
+
 mmSolver.utils
 ==============
 
@@ -236,6 +238,8 @@ Undo
 .. automodule:: mmSolver.utils.undo
     :members:
     :undoc-members:
+
+.. _mmsolver-utils-viewport-ref:
 
 Viewport
 ++++++++

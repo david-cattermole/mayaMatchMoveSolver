@@ -61,6 +61,8 @@ MString ImagePlaneShape2Node::m_draw_registrant_id(
     MM_IMAGE_PLANE_SHAPE_2_DRAW_REGISTRANT_ID);
 MString ImagePlaneShape2Node::m_selection_type_name(
     MM_IMAGE_PLANE_SHAPE_2_SELECTION_TYPE_NAME);
+MString ImagePlaneShape2Node::m_display_filter_draw_db_classification(
+    MM_IMAGE_PLANE_SHAPE_2_DISPLAY_FILTER_DRAW_DB_CLASSIFICATION);
 MString ImagePlaneShape2Node::m_display_filter_name(
     MM_IMAGE_PLANE_SHAPE_2_DISPLAY_FILTER_NAME);
 MString ImagePlaneShape2Node::m_display_filter_label(

@@ -546,6 +546,11 @@ MStatus initializePlugin(MObject obj) {
     status = MGlobal::executeCommand(mel_cmd);
     CHECK_MSTATUS(status);
 
+    // Should we create a display filter for the 'mmImagePlaneShape'?
+    // We have a newer 'mmImagePlaneShape2' and it would be good to
+    // avoid having two almost identical display filter names.
+    const bool registerLegacyImagePlaneDisplayFilter = false;
+
     // Register plugin display filter.
     // The filter is registered in both interactive and batch mode
     // (Hardware 2.0)
@@ -557,14 +562,18 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::BundleShapeNode::m_display_filter_name,
         mmsolver::BundleShapeNode::m_display_filter_label,
         mmsolver::BundleShapeNode::m_draw_db_classification);
-    plugin.registerDisplayFilter(
-        mmsolver::ImagePlaneShapeNode::m_display_filter_name,
-        mmsolver::ImagePlaneShapeNode::m_display_filter_label,
-        mmsolver::ImagePlaneShapeNode::m_draw_db_classification);
+    if (registerLegacyImagePlaneDisplayFilter) {
+        plugin.registerDisplayFilter(
+            mmsolver::ImagePlaneShapeNode::m_display_filter_name,
+            mmsolver::ImagePlaneShapeNode::m_display_filter_label,
+            mmsolver::ImagePlaneShapeNode::
+                m_display_filter_draw_db_classification);
+    }
     plugin.registerDisplayFilter(
         mmsolver::ImagePlaneShape2Node::m_display_filter_name,
         mmsolver::ImagePlaneShape2Node::m_display_filter_label,
-        mmsolver::ImagePlaneShape2Node::m_draw_db_classification);
+        mmsolver::ImagePlaneShape2Node::
+            m_display_filter_draw_db_classification);
     plugin.registerDisplayFilter(
         mmsolver::SkyDomeShapeNode::m_display_filter_name,
         mmsolver::SkyDomeShapeNode::m_display_filter_label,

@@ -131,20 +131,20 @@
 
 #define MM_IMAGE_PLANE_SHAPE_TYPE_ID 0x0012F187
 #define MM_IMAGE_PLANE_SHAPE_TYPE_NAME "mmImagePlaneShape"
-#define MM_IMAGE_PLANE_SHAPE_DRAW_CLASSIFY "drawdb/geometry/mmSolver/imagePlane"
+#define MM_IMAGE_PLANE_SHAPE_DRAW_CLASSIFY "drawdb/geometry/mmSolver/imagePlane/v1"
 #define MM_IMAGE_PLANE_SHAPE_DRAW_REGISTRANT_ID "mmImagePlaneShape"
 #define MM_IMAGE_PLANE_SHAPE_SELECTION_TYPE_NAME "mmImagePlaneShapeSelection"
-// Same as v2.
+#define MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_DRAW_DB_CLASSIFICATION "drawdb/geometry/mmSolver/imagePlane/v1"
 #define MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_NAME "mmImagePlaneDisplayFilter"
-#define MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_LABEL "MM ImagePlane"
+#define MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_LABEL "MM ImagePlane (legacy)"
 
 #define MM_IMAGE_PLANE_SHAPE_2_TYPE_ID 0x0012F18F
 #define MM_IMAGE_PLANE_SHAPE_2_TYPE_NAME "mmImagePlaneShape2"
-#define MM_IMAGE_PLANE_SHAPE_2_DRAW_CLASSIFY "drawdb/geometry/mmSolver/imagePlane2"
+#define MM_IMAGE_PLANE_SHAPE_2_DRAW_CLASSIFY "drawdb/geometry/mmSolver/imagePlane/v2"
 #define MM_IMAGE_PLANE_SHAPE_2_DRAW_REGISTRANT_ID "mmImagePlaneShape2"
 #define MM_IMAGE_PLANE_SHAPE_2_SELECTION_TYPE_NAME "mmImagePlaneShape2Selection"
-// Same as v1.
-#define MM_IMAGE_PLANE_SHAPE_2_DISPLAY_FILTER_NAME "mmImagePlaneDisplayFilter"
+#define MM_IMAGE_PLANE_SHAPE_2_DISPLAY_FILTER_DRAW_DB_CLASSIFICATION "drawdb/geometry/mmSolver/imagePlane/v2"
+#define MM_IMAGE_PLANE_SHAPE_2_DISPLAY_FILTER_NAME "mmImagePlane2DisplayFilter"
 #define MM_IMAGE_PLANE_SHAPE_2_DISPLAY_FILTER_LABEL "MM ImagePlane"
 
 #define CAMERA_INFERNO_TYPE_ID 0x0012F183  // Not used in mmSolver.

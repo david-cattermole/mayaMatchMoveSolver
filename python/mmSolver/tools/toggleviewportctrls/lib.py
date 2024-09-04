@@ -32,7 +32,9 @@ LOG = mmSolver.logger.get_logger()
 def toggle_ctrls_visibility(model_panel):
     value = viewport_utils.get_locator_visibility(model_panel)
     new_value = not value
-    # TODO: Add MM Markers, Bundles and Lines to be disabled/enabled.
+    viewport_utils.set_mm_marker_visibility(model_panel, new_value)
+    viewport_utils.set_mm_bundle_visibility(model_panel, new_value)
+    viewport_utils.set_mm_line_visibility(model_panel, new_value)
     viewport_utils.set_nurbs_curve_visibility(model_panel, new_value)
     viewport_utils.set_locator_visibility(model_panel, new_value)
     viewport_utils.set_joint_visibility(model_panel, new_value)

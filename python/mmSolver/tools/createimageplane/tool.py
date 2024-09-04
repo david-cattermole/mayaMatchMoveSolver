@@ -147,11 +147,11 @@ def _run(version):
         # user has the transform and shape nodes selected.
         if cam_shp in created:
             continue
-        mm_ip_tfm, mm_ip_shp = lib.create_image_plane_on_camera(cam)
+        mm_ip_tfm, mm_ip_shp = lib.create_image_plane_on_camera(cam, version=version)
 
         image_seq = prompt_user_for_image_sequence()
         if image_seq:
-            lib.set_image_sequence(mm_ip_tfm, image_seq)
+            lib.set_image_sequence(mm_ip_tfm, image_seq, version=version)
 
         nodes.append(mm_ip_shp)
         created.add(cam_shp)
@@ -168,7 +168,7 @@ def _run(version):
 
 
 def main():
-    _run(const.MM_IMAGE_PLANE_VERSION_ONE)
+    _run(const.MM_IMAGE_PLANE_VERSION_TWO)
 
 
 def main_version_one():

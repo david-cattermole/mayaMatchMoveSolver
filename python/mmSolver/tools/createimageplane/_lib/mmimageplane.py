@@ -211,6 +211,7 @@ def create_shape_node(
     # Add extra message attributes for finding nodes during callbacks.
     if shader_node_network is not None:
         maya.cmds.addAttr(shp, longName='shaderFileNode', attributeType='message')
+        lib_utils.force_connect_attr(file_node + '.message', shp + '.shaderFileNode')
 
     # Logic to calculate the frame number.
     node = maya.cmds.createNode('mmImageSequenceFrameLogic')

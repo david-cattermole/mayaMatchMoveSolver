@@ -56,6 +56,9 @@ SUPPORTED_DISPLAY_NODE_TYPES = [
     'nRigid',
     'texture',
     'stroke',
+    #
+    # Custom mmSolver node types:
+    'mmImagePlaneShape2',
 ]
 
 
@@ -410,14 +413,16 @@ def set_selection_highlight(model_panel, value):
 
 def _get_node_type_visibility(model_panel, node_type):
     """
-    Query the image plane visibility.
+    Query the node type visibility of the given model panel.
 
     :param model_panel: Model panel name to set visibility.
     :type model_panel: str
 
-    :return: The visibility of image planes.
+    :return: The visibility of the node type.
     :rtype: bool
     """
+    assert isinstance(model_panel, str)
+    assert isinstance(node_type, str)
     model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
     kwargs = {
         'query': True,
@@ -434,15 +439,58 @@ def _set_node_type_visibility(model_panel, node_type, value):
     :param model_panel: Model panel name to set visibility.
     :type model_panel: str
 
-    :param value: Visibility of image planes.
+    :param value: Visibility of the node type.
     :type value: bool
     """
+    assert isinstance(model_panel, str)
+    assert isinstance(node_type, str)
+    assert isinstance(value, bool)
     model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
     kwargs = {
         'edit': True,
         str(node_type): value,
     }
     maya.cmds.modelEditor(model_editor, **kwargs)
+    return
+
+
+def _get_plugin_display_filter_visibility(model_panel, plugin_display_filter):
+    """
+    Query the display filter visibility of the given model panel.
+
+    :param model_panel: Model panel name to set visibility.
+    :type model_panel: str
+
+    :return: The visibility of the display filter.
+    :rtype: bool
+    """
+    assert isinstance(model_panel, str)
+    assert isinstance(plugin_display_filter, str)
+    model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
+    value = maya.cmds.modelEditor(
+        model_editor, query=True, queryPluginObjects=plugin_display_filter
+    )
+    return value
+
+
+def _set_plugin_display_filter_visibility(model_panel, plugin_display_filter, value):
+    """
+    Set the visibility of a plug-in display filter for the given
+    model panel.
+
+    :param model_panel: Model panel name to set visibility.
+    :type model_panel: str
+
+    :param value: Visibility of the node type.
+    :type value: bool
+    """
+    assert isinstance(model_panel, str)
+    assert isinstance(plugin_display_filter, str)
+    assert isinstance(value, bool)
+    model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
+    maya.cmds.modelEditor(
+        model_editor, edit=True, pluginObjects=[plugin_display_filter, value]
+    )
     return
 
 
@@ -472,6 +520,24 @@ def set_image_plane_visibility(model_panel, value):
     Set the visibility of imagePlane nodes in the given model panel.
     """
     return _set_node_type_visibility(model_panel, 'imagePlane', value)
+
+
+def get_mm_image_plane_visibility(model_panel):
+    """
+    Query the MM Image Plane visibility in given model panel.
+    """
+    return _get_plugin_display_filter_visibility(
+        model_panel, 'mmImagePlane2DisplayFilter'
+    )
+
+
+def set_mm_image_plane_visibility(model_panel, value):
+    """
+    Set the visibility of MM Image Plane nodes in the given model panel.
+    """
+    return _set_plugin_display_filter_visibility(
+        model_panel, 'mmImagePlane2DisplayFilter', value
+    )
 
 
 def get_camera_visibility(model_panel):
@@ -757,6 +823,7 @@ def set_stroke_visibility(model_panel, value):
 NODE_TYPE_TO_GET_VIS_FUNC = {
     'mesh': get_mesh_visibility,
     'imagePlane': get_image_plane_visibility,
+    'mmImagePlane': get_mm_image_plane_visibility,
     'nurbsCurve': get_nurbs_curve_visibility,
     'nurbsSurface': get_nurbs_surface_visibility,
     'subdiv': get_subdiv_visibility,
@@ -781,6 +848,7 @@ NODE_TYPE_TO_GET_VIS_FUNC = {
 NODE_TYPE_TO_SET_VIS_FUNC = {
     'mesh': set_mesh_visibility,
     'imagePlane': set_image_plane_visibility,
+    'mmImagePlane': set_mm_image_plane_visibility,
     'nurbsCurve': set_nurbs_curve_visibility,
     'nurbsSurface': set_nurbs_surface_visibility,
     'subdiv': set_subdiv_visibility,

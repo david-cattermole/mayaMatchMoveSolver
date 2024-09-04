@@ -57,6 +57,72 @@ To run the tool, use this Python command:
     tool.remove()
 
 
+.. _toggle-viewport-node-types-ref:
+
+Toggle Viewport Node Types
+--------------------------
+
+There are a range of `Toggle Viewport *` tools that are used to
+hide/show groups of node types.
+
+Node type groups include:
+
+- Show/Hide geometry in the current viewport.
+
+- Show/Hide Markers, Bundles, Locators and NURBS Curves in the current viewport.
+
+- Show/Hide Image Planes in the current viewport.
+
+Usage:
+
+1) Activate a 3D Viewport.
+
+2) Run tool.
+
+   - The node type visibility will be shown/hidden based on the
+     current visibility.
+
+Each different group can be activated with a slightly different Python
+command.
+
+
+Toggle Viewport Geometry (Mesh, NURBS, etc):
+
+.. code:: python
+
+    import mmSolver.tools.toggleviewportgeom.tool as tool
+    tool.main()
+
+
+Toggle Viewport Controls: (Locators, Curves, etc)
+
+.. code:: python
+
+    import mmSolver.tools.toggleviewportctrls.tool as tool
+    tool.main()
+
+
+Toggle Viewport Image Planes (Maya native and MM solver image planes):
+
+.. code:: python
+
+    import mmSolver.tools.toggleviewportimgplns.tool as tool
+    tool.main()
+
+
+Alternatively, a user can construct their own custom scripts to
+control visibility like so:
+
+.. code:: python
+
+    import mmSolver.utils.viewport as viewport_utils
+    model_panel = viewport_utils.get_active_model_panel()
+    if model_panel:
+        value = viewport_utils.get_locator_visibility(model_panel)
+        new_value = not value
+        viewport_utils.set_locator_visibility(model_panel, new_value)
+
+
 .. _create-sky-dome-tool-ref:
 
 Create Horizon / Axis Dome / Sky Dome

@@ -26,7 +26,7 @@ SETLOCAL
 :: Note: Do not enclose the MAYA_VERSION in quotes, it will
 ::       lead to tears.
 SET MAYA_VERSION=2024
-SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2024"
+SET MAYA_LOCATION="%PROGRAMFILES%\Autodesk\Maya2024"
 
 :: Executable names/paths used for build process.
 SET PYTHON_EXE=python
@@ -56,7 +56,7 @@ SET VFX_PLATFORM=2023
 SET CXX_STANDARD=14
 
 :: Setup Compiler environment. Change for your install path as needed.
-CALL "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
+CALL "%PROGRAMFILES%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall.bat" amd64
 
 CALL scripts\internal\build_opencolorio_windows64.bat
 if errorlevel 1 goto failed_to_build_opencolorio

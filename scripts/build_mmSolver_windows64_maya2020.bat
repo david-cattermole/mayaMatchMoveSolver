@@ -26,7 +26,7 @@ SETLOCAL
 :: Note: Do not enclose the MAYA_VERSION in quotes, it will
 ::       lead to tears.
 SET MAYA_VERSION=2020
-SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2020"
+SET MAYA_LOCATION="%PROGRAMFILES%\Autodesk\Maya2020"
 
 :: Executable names/paths used for build process.
 SET PYTHON_EXE=python

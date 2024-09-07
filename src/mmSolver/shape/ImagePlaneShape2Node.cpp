@@ -170,7 +170,7 @@ void ImagePlaneShape2Node::getCacheSetup(
                                   monitoredAttributes);
     assert(!disablingInfo.getCacheDisabled());
     cacheSetupInfo.setPreference(MNodeCacheSetupInfo::kWantToCacheByDefault,
-                                 true);
+                                 false);
 }
 #endif
 

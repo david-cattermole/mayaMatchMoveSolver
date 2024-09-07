@@ -88,19 +88,15 @@ public:
     MHWRender::DrawAPI supportedDrawAPIs() const override;
 
     bool hasUIDrawables() const override;
-
-    void updateDG() override;
-
-    void updateRenderItems(const MDagPath &path,
-                           MRenderItemList &list) override;
-
     void addUIDrawables(const MDagPath &path, MUIDrawManager &drawManager,
                         const MFrameContext &frameContext) override;
 
+    void updateDG() override;
+    void updateRenderItems(const MDagPath &path,
+                           MRenderItemList &list) override;
     void populateGeometry(const MGeometryRequirements &requirements,
                           const MRenderItemList &renderItems,
                           MGeometry &data) override;
-
     void cleanUp() override;
 
 #if MAYA_API_VERSION >= 20190000

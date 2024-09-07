@@ -152,7 +152,9 @@ void ImagePlaneGeometry2Override::shader_link_lost_func(
     ShaderLinkLostUserData2 *userData) {
     // TODO: What should this function do? Does it need to do anything?
     MMSOLVER_MAYA_DBG(
-        "mmImagePlaneShape: shader_link_lost_func: link_lost_count="
+        "mmImagePlaneGeometry2Override: "
+        "shader_link_lost_func: "
+        "link_lost_count="
         << (*userData).link_lost_count
         << " set_shader_count=" << (*userData).set_shader_count);
     (*userData).link_lost_count += 1;
@@ -308,16 +310,19 @@ void ImagePlaneGeometry2Override::query_node_attributes(
     const char *file_color_space_name =
         mmcolorio::guess_color_space_name_from_file_path(
             out_file_path.asChar());
-    MMSOLVER_MAYA_VRB("mmImagePlaneShape: query_node_attributes:"
-                      << " file_color_space_name=\"" << file_color_space_name
-                      << "\".");
+    MMSOLVER_MAYA_VRB(
+        "mmImagePlaneGeometry2Override: "
+        "query_node_attributes:"
+        << " file_color_space_name=\"" << file_color_space_name << "\".");
 
     const char *output_color_space_name = mmcolorio::get_role_color_space_name(
         mmcolorio::ColorSpaceRole::kSceneLinear);
     out_output_color_space_name = MString(output_color_space_name);
-    MMSOLVER_MAYA_VRB("mmImagePlaneShape: query_node_attributes:"
-                      << " out_output_color_space_name=\""
-                      << out_output_color_space_name.asChar() << "\".");
+    MMSOLVER_MAYA_VRB(
+        "mmImagePlaneGeometry2Override: "
+        "query_node_attributes:"
+        << " out_output_color_space_name=\""
+        << out_output_color_space_name.asChar() << "\".");
 }
 
 void ImagePlaneGeometry2Override::updateDG() {
@@ -409,7 +414,8 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
     const MHWRender::MSamplerState *out_texture_sampler) {
     MStatus status = MStatus::kSuccess;
     const bool verbose = false;
-    MMSOLVER_MAYA_VRB("mmImagePlaneShape: set_shader_instance_parameters.");
+    MMSOLVER_MAYA_VRB(
+        "mmImagePlaneGeometry2Override: set_shader_instance_parameters.");
 
     const float color[] = {color_gain[0], color_gain[1], color_gain[2], 1.0f};
     status = shader->setParameter("gColorGain", color);
@@ -450,25 +456,26 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
     CHECK_MSTATUS(status);
 
     status = shader->setIsTransparent(is_transparent);
-    MMSOLVER_MAYA_VRB("mmImagePlaneShape: shader->isTransparent()="
+    MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: shader->isTransparent()="
                       << shader->isTransparent());
     CHECK_MSTATUS(status);
 
-    MMSOLVER_MAYA_VRB("mmImagePlaneShape: file_path=" << file_path.asChar());
+    MMSOLVER_MAYA_VRB(
+        "mmImagePlaneGeometry2Override: file_path=" << file_path.asChar());
 
     rust::Str file_path_rust_str = rust::Str(file_path.asChar());
     rust::String expanded_file_path_rust_string =
         mmcore::expand_file_path_string(file_path_rust_str, frame);
     MString expanded_file_path(expanded_file_path_rust_string.data(),
                                expanded_file_path_rust_string.length());
-    MMSOLVER_MAYA_VRB("mmImagePlaneShape: expanded_file_path="
+    MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: expanded_file_path="
                       << expanded_file_path.asChar());
 
-    MMSOLVER_MAYA_VRB(
-        "mmImagePlaneShape: start out_color_texture=" << out_color_texture);
+    MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: start out_color_texture="
+                      << out_color_texture);
 
     if (!out_color_texture) {
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: use image read");
+        MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: use image read");
 
         const bool do_texture_update = false;
         image::ImageCache &image_cache = image::ImageCache::getInstance();
@@ -477,50 +484,64 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
             expanded_file_path, do_texture_update);
 
         if (out_color_texture) {
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture->name()="
+            MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: texture->name()="
                               << out_color_texture->name().asChar());
             const void *resource_handle = out_color_texture->resourceHandle();
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture->resourceHandle()="
-                              << resource_handle);
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: texture->resourceHandle()="
+                << resource_handle);
             if (resource_handle) {
                 MMSOLVER_MAYA_VRB(
-                    "mmImagePlaneShape: *texture->resourceHandle()="
+                    "mmImagePlaneGeometry2Override: *texture->resourceHandle()="
                     << *(uint32_t *)resource_handle);
             }
 
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture->hasAlpha()="
-                              << out_color_texture->hasAlpha());
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture->hasZeroAlpha()="
-                              << out_color_texture->hasZeroAlpha());
             MMSOLVER_MAYA_VRB(
-                "mmImagePlaneShape: texture->hasTransparentAlpha()="
+                "mmImagePlaneGeometry2Override: texture->hasAlpha()="
+                << out_color_texture->hasAlpha());
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: texture->hasZeroAlpha()="
+                << out_color_texture->hasZeroAlpha());
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: texture->hasTransparentAlpha()="
                 << out_color_texture->hasTransparentAlpha());
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture->bytesPerPixel()="
-                              << out_color_texture->bytesPerPixel());
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: texture->bytesPerPixel()="
+                << out_color_texture->bytesPerPixel());
 
             MTextureDescription texture_desc;
             out_color_texture->textureDescription(texture_desc);
 
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fWidth="
-                              << texture_desc.fWidth);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fHeight="
-                              << texture_desc.fHeight);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fDepth="
-                              << texture_desc.fDepth);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fBytesPerRow="
-                              << texture_desc.fBytesPerRow);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fBytesPerSlice="
-                              << texture_desc.fBytesPerSlice);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fMipmaps="
-                              << texture_desc.fMipmaps);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fArraySlices="
-                              << texture_desc.fArraySlices);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fFormat="
-                              << texture_desc.fFormat);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fTextureType="
-                              << texture_desc.fTextureType);
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: texture_desc.fEnvMapType="
-                              << texture_desc.fEnvMapType);
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: texture_desc.fWidth="
+                << texture_desc.fWidth);
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: texture_desc.fHeight="
+                << texture_desc.fHeight);
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: texture_desc.fDepth="
+                << texture_desc.fDepth);
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: texture_desc.fBytesPerRow="
+                << texture_desc.fBytesPerRow);
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: texture_desc.fBytesPerSlice="
+                << texture_desc.fBytesPerSlice);
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: texture_desc.fMipmaps="
+                << texture_desc.fMipmaps);
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: texture_desc.fArraySlices="
+                << texture_desc.fArraySlices);
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: texture_desc.fFormat="
+                << texture_desc.fFormat);
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: texture_desc.fTextureType="
+                << texture_desc.fTextureType);
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: texture_desc.fEnvMapType="
+                << texture_desc.fEnvMapType);
         }
     }
 
@@ -540,8 +561,10 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
             shader->setParameter("gImageTextureSampler", *out_texture_sampler);
         CHECK_MSTATUS(status);
     } else {
-        MMSOLVER_MAYA_WRN("mmImagePlaneShape: Could not get texture sampler."
-                          << " out_texture_sampler=" << out_texture_sampler);
+        MMSOLVER_MAYA_WRN(
+            "mmImagePlaneGeometry2Override: "
+            "Could not get texture sampler."
+            << " out_texture_sampler=" << out_texture_sampler);
     }
 
     if (out_color_texture) {
@@ -553,8 +576,8 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
         out_color_texture = nullptr;
     } else {
         MMSOLVER_MAYA_VRB(
-            "mmImagePlaneShape: Could not get color texture; "
-            "did not assign texture."
+            "mmImagePlaneGeometry2Override: "
+            "Could not get color texture; did not assign texture."
             << " out_color_texture=" << out_color_texture);
     }
 
@@ -565,26 +588,31 @@ void ImagePlaneGeometry2Override::updateRenderItems(const MDagPath &path,
                                                     MRenderItemList &list) {
     const bool verbose = false;
     if (!m_geometry_node_path.isValid()) {
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
-                          << "Geometry node DAG path is not valid.");
+        MMSOLVER_MAYA_VRB(
+            "mmImagePlaneGeometry2Override: "
+            "Geometry node DAG path is not valid.");
         return;
     }
 
     MHWRender::MRenderer *renderer = MRenderer::theRenderer();
     if (!renderer) {
-        MMSOLVER_MAYA_WRN("mmImagePlaneShape: Could not get MRenderer.");
+        MMSOLVER_MAYA_WRN(
+            "mmImagePlaneGeometry2Override: "
+            "Could not get MRenderer.");
         return;
     }
 
     const MHWRender::MShaderManager *shaderManager =
         renderer->getShaderManager();
     if (!shaderManager) {
-        MMSOLVER_MAYA_WRN("mmImagePlaneShape: Could not get MShaderManager.");
+        MMSOLVER_MAYA_WRN(
+            "mmImagePlaneGeometry2Override: "
+            "Could not get MShaderManager.");
         return;
     }
 
     if (m_geometry_node_type != MFn::kMesh) {
-        MMSOLVER_MAYA_WRN("mmImagePlaneShape: "
+        MMSOLVER_MAYA_WRN("mmImagePlaneGeometry2Override: "
                           << "Only Meshes are supported, geometry node "
                              "given is not a mesh.");
         return;
@@ -601,7 +629,8 @@ void ImagePlaneGeometry2Override::updateRenderItems(const MDagPath &path,
             wireframeItem = list.itemAt(index);
         } else {
             MMSOLVER_MAYA_VRB(
-                "mmImagePlaneShape: Generate wireframe MRenderItem...");
+                "mmImagePlaneGeometry2Override: "
+                "Generate wireframe MRenderItem...");
             wireframeItem = MRenderItem::Create(
                 renderItemName_imagePlaneWireframe, MRenderItem::DecorationItem,
                 MGeometry::kLines);
@@ -622,7 +651,9 @@ void ImagePlaneGeometry2Override::updateRenderItems(const MDagPath &path,
     if (index >= 0) {
         shadedItem = list.itemAt(index);
     } else {
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: Generate shaded MRenderItem...");
+        MMSOLVER_MAYA_VRB(
+            "mmImagePlaneGeometry2Override: "
+            "Generate shaded MRenderItem...");
         shadedItem = MRenderItem::Create(renderItemName_imagePlaneShaded,
                                          MRenderItem::NonMaterialSceneItem,
                                          MGeometry::kTriangles);
@@ -653,31 +684,31 @@ void ImagePlaneGeometry2Override::updateRenderItems(const MDagPath &path,
     if (shadedItem) {
         shadedItem->enable(m_visible);
 
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
+        MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: "
                           << "shadedItem->isEnabled()="
                           << shadedItem->isEnabled());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
+        MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: "
                           << "shadedItem->isShaderFromNode()="
                           << shadedItem->isShaderFromNode());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
+        MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: "
                           << "shadedItem->isMultiDraw()="
                           << shadedItem->isMultiDraw());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
+        MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: "
                           << "shadedItem->isConsolidated()="
                           << shadedItem->isConsolidated());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
+        MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: "
                           << "shadedItem->wantConsolidation()="
                           << shadedItem->wantConsolidation());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
+        MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: "
                           << "shadedItem->castsShadows()="
                           << shadedItem->castsShadows());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
+        MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: "
                           << "shadedItem->receivesShadows()="
                           << shadedItem->receivesShadows());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
+        MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: "
                           << "shadedItem->excludedFromPostEffects()="
                           << shadedItem->excludedFromPostEffects());
-        MMSOLVER_MAYA_VRB("mmImagePlaneShape: "
+        MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: "
                           << "shadedItem->supportsAdvancedTransparency()="
                           << shadedItem->supportsAdvancedTransparency());
 
@@ -688,8 +719,10 @@ void ImagePlaneGeometry2Override::updateRenderItems(const MDagPath &path,
 
             const MString shader_file_path =
                 mmsolver::render::find_shader_file_path("mmImagePlane.ogsfx");
-            MMSOLVER_MAYA_VRB("mmImagePlaneShape: found shader_file_path=\""
-                              << shader_file_path << "\"");
+            MMSOLVER_MAYA_VRB(
+                "mmImagePlaneGeometry2Override: "
+                "found shader_file_path=\""
+                << shader_file_path << "\"");
 
             if (shader_file_path.length() > 0) {
                 MString shader_text =
@@ -699,8 +732,10 @@ void ImagePlaneGeometry2Override::updateRenderItems(const MDagPath &path,
                 mmcolorio::generate_shader_text(
                     m_input_color_space_name.asChar(),
                     m_output_color_space_name.asChar(), ocio_shader_text);
-                MMSOLVER_MAYA_VRB("mmImagePlaneShape: ocio_shader_text=\""
-                                  << ocio_shader_text << "\"");
+                MMSOLVER_MAYA_VRB(
+                    "mmImagePlaneGeometry2Override: "
+                    "ocio_shader_text=\""
+                    << ocio_shader_text << "\"");
                 if (ocio_shader_text.size() > 0) {
                     const MString ocio_function_declare_text = MString(
                         "vec4 OCIODisplay(vec4 passthrough) { return "
@@ -726,7 +761,8 @@ void ImagePlaneGeometry2Override::updateRenderItems(const MDagPath &path,
                 renderer->getTextureManager();
             if (!texture_manager) {
                 MMSOLVER_MAYA_WRN(
-                    "mmImagePlaneShape: Could not get MTextureManager.");
+                    "mmImagePlaneGeometry2Override: "
+                    "Could not get MTextureManager.");
                 return;
             }
 
@@ -749,7 +785,8 @@ void ImagePlaneGeometry2Override::populateGeometry(
     const bool verbose = false;
     if (!m_geometry_node_path.isValid()) {
         MMSOLVER_MAYA_VRB(
-            "mmImagePlaneShape: Geometry node DAG path is not valid.");
+            "mmImagePlaneGeometry2Override: "
+            "Geometry node DAG path is not valid.");
         return;
     }
 

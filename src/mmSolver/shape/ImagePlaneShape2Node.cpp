@@ -41,11 +41,13 @@
 #include <maya/MString.h>
 #include <maya/MTypeId.h>
 #include <maya/MVector.h>
-#include <maya/MViewport2Renderer.h>
 
 #if MAYA_API_VERSION >= 20190000
 #include <maya/MEvaluationNode.h>
 #endif
+
+// Maya Viewport 2.0
+#include <maya/MViewport2Renderer.h>
 
 // MM Solver
 #include "ImagePlaneUtils.h"

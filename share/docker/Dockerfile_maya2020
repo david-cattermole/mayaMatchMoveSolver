@@ -26,11 +26,29 @@
 
 FROM centos:7
 
+# Pull CentOS 7.x Packages from the Vault, because CentOS 7.x is now
+# End-Of-Life (EOL) as of June 30tb, 2024.
+#
+# https://vault.centos.org/centos/7/
+# https://serverfault.com/questions/1161816/mirrorlist-centos-org-no-longer-resolve
+RUN sed -i 's/mirror.centos.org/vault.centos.org/g' /etc/yum.repos.d/CentOS-*.repo \
+    && sed -i 's/^#.*baseurl=http/baseurl=http/g' /etc/yum.repos.d/CentOS-*.repo \
+    && sed -i 's/^mirrorlist=http/#mirrorlist=http/g' /etc/yum.repos.d/CentOS-*.repo
+
+# Install Software Collections (SCL) repo for the extended devtools.
+# Install Extra Packages Enterprise Linux (EPEL) repo for extra tools.
+# Install Yum and RPM tools to speed up installations.
 RUN yum install --assumeyes \
        centos-release-scl \
        epel-release \
        deltarpm \
        yum-utils
+
+# Now new repos are installed, make sure they're all from the Vault.
+RUN sed -i 's/mirror.centos.org/vault.centos.org/g' /etc/yum.repos.d/CentOS-*.repo \
+    && sed -i 's/^#.*baseurl=http/baseurl=http/g' /etc/yum.repos.d/CentOS-*.repo \
+    && sed -i 's/^mirrorlist=http/#mirrorlist=http/g' /etc/yum.repos.d/CentOS-*.repo \
+    && yum clean all && yum makecache
 
 # OpenSource "mesa" OpenGL Driver.
 RUN yum install --assumeyes \

@@ -147,7 +147,7 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y \
 
 # Install Maya from archive.
 ADD ./external/archives/Autodesk_Maya_2020_ML_Linux_64bit.tgz /temp
-RUN rpm -Uvh /temp/Packages/Maya*.rpm && rm -r /temp
+RUN rpm -Uvh /temp/Packages/Maya2020*.rpm && rm -r /temp
 ENV MAYA_LOCATION=/usr/autodesk/maya/
 ENV PATH=$MAYA_LOCATION/bin:$PATH
 

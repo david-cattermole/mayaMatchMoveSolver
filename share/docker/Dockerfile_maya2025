@@ -1,5 +1,6 @@
 # To create and run the docker container in PowerShell or BASH:
 #
+# $ cd /path/to/project/root/mayaMatchMoveSolver/
 # $ docker build --file share/docker/Dockerfile_maya2025 -t mmsolver-linux-maya2025-build .
 # $ docker run --rm --interactive --volume "${PWD}:/mmSolver" --tty mmsolver-linux-maya2025-build
 #

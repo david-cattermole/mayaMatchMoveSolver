@@ -57,26 +57,35 @@ def preSolve_updateProgress(prog_fn, status_fn):
     return
 
 
-def preSolve_queryViewportState(options, panels):
+def preSolve_queryViewportState(refresh, do_isolate, display_node_types, panels):
     """
+    Query the viewport state before solving.
+
     If 'refresh' is 'on' change all viewports to 'isolate
     selected' on only the markers and bundles being solved. This
     will speed up computations, especially per-frame solving as
     it will not re-compute any invisible nodes (such as rigs or
     image planes).
 
-    :param options:
-    :param panels:
-    :return:
+    :type refresh: bool or None
+    :type do_isolate: bool or None
+    :type display_node_types: {str: bool, ..}
+
+    :param panels: List of panel names to query details from.
+    :type panels: [str, ..]
+
+    :rtype: ({str: [str, ..]}, {str: {str: bool}})
     """
+    assert refresh is None or isinstance(refresh, bool)
+    assert do_isolate is None or isinstance(do_isolate, bool)
+    assert display_node_types is None or isinstance(display_node_types, dict)
+
     panel_objs = {}
     panel_node_type_vis = collections.defaultdict(dict)
-    if options.refresh is not True:
+    if refresh is not True:
         return panel_objs, panel_node_type_vis
 
-    display_node_types = options.display_node_types
     if display_node_types is not None:
-        assert isinstance(display_node_types, dict)
         for panel in panels:
             node_types = display_node_types.keys()
             node_type_vis = dict()
@@ -85,7 +94,7 @@ def preSolve_queryViewportState(options, panels):
                 node_type_vis[node_type] = value
             panel_node_type_vis[panel] = node_type_vis
 
-    if options.do_isolate is True:
+    if do_isolate is True:
         for panel in panels:
             state = maya.cmds.isolateSelect(panel, query=True, state=True)
             nodes = None
@@ -96,17 +105,28 @@ def preSolve_queryViewportState(options, panels):
     return panel_objs, panel_node_type_vis
 
 
-def preSolve_setIsolatedNodes(actions_list, options, panels):
+def preSolve_setIsolatedNodes(
+    actions_list, refresh, do_isolate, display_node_types, panels
+):
     """
     Prepare frame solve
 
     Isolate all nodes used in all of the kwargs to be run.
     Note; This assumes the isolated objects are visible, but
     they may actually be hidden.
+
+    :type refresh: bool or None
+    :type do_isolate: bool or None
+    :type display_node_types: {str: bool, ..}
+
+    :returns: None
     """
-    if options.refresh is not True:
+    assert refresh is None or isinstance(refresh, bool)
+    assert do_isolate is None or isinstance(do_isolate, bool)
+    assert display_node_types is None or isinstance(display_node_types, dict)
+    if refresh is not True:
         return
-    if options.do_isolate is True:
+    if do_isolate is True:
         isolate_nodes = set()
         for action in actions_list:
             kwargs = action.kwargs
@@ -117,9 +137,7 @@ def preSolve_setIsolatedNodes(actions_list, options, panels):
         for panel in panels:
             viewport_utils.set_isolated_nodes(panel, isolate_node_list, True)
 
-    display_node_types = options.display_node_types
     if display_node_types is not None:
-        assert isinstance(display_node_types, dict)
         for panel in panels:
             for node_type, value in display_node_types.items():
                 if value is None:
@@ -129,7 +147,9 @@ def preSolve_setIsolatedNodes(actions_list, options, panels):
     return
 
 
-def preSolve_triggerEvaluation(action_list, cur_frame, options):
+def preSolve_triggerEvaluation(
+    action_list, cur_frame, pre_solve_force_eval, force_update
+):
     """
     Set the first current time to the frame before current.
 
@@ -144,10 +164,12 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
     :param cur_frame: The current frame number.
     :type cur_frame: int or float
 
-    :param options: The execution options for the solve.
-    :type options: ExecuteOptions
+    :type pre_solve_force_eval: None or bool
+    :type force_update: None or bool
+
+    :rtype: None
     """
-    if options.pre_solve_force_eval is not True:
+    if pre_solve_force_eval is not True:
         return
     frame_list = []
     for action in action_list:
@@ -160,7 +182,7 @@ def preSolve_triggerEvaluation(action_list, cur_frame, options):
         maya.cmds.currentTime(
             cur_frame + 1,
             edit=True,
-            update=options.force_update,
+            update=force_update,
         )
     return
 

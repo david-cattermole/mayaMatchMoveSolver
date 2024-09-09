@@ -279,7 +279,7 @@ def execute(
 
     panels = viewport_utils.get_all_model_panels()
     panel_objs, panel_node_type_vis = executepresolve.preSolve_queryViewportState(
-        options, panels
+        options.refresh, options.do_isolate, options.display_node_types, panels
     )
 
     # Save scene state, to revert to later on.
@@ -343,8 +343,16 @@ def execute(
         marker_relock_nodes |= executepresolve.preSolve_unlockMarkerAttrs(mkr_list)
 
         # Prepare frame solve
-        executepresolve.preSolve_setIsolatedNodes(action_list, options, panels)
-        executepresolve.preSolve_triggerEvaluation(action_list, cur_frame, options)
+        executepresolve.preSolve_setIsolatedNodes(
+            action_list,
+            options.refresh,
+            options.do_isolate,
+            options.display_node_types,
+            panels,
+        )
+        executepresolve.preSolve_triggerEvaluation(
+            action_list, cur_frame, options.pre_solve_force_eval, options.force_update
+        )
 
         # Ensure prediction attributes are created and initialised.
         collectionutils.set_initial_prediction_attributes(col, attr_list, cur_frame)
@@ -506,7 +514,9 @@ def execute(
             # Refresh the Viewport.
             if func_is_mmsolver_v1 is True:
                 frame = kwargs.get('frame')
-                executepostsolve.postSolve_refreshViewport(options, frame)
+                executepostsolve.postSolve_refreshViewport(
+                    options.refresh, options.force_update, frame
+                )
     finally:
         # If something has gone wrong, or the user cancels the solver
         # without finishing, then we make sure to reconnect animcurves
@@ -523,7 +533,7 @@ def execute(
         marker_relock_nodes = set()
 
         executepostsolve.postSolve_setViewportState(
-            options, panel_objs, panel_node_type_vis
+            options.refresh, options.do_isolate, panel_objs, panel_node_type_vis
         )
         collectionutils.run_status_func(status_fn, 'Solve Ended')
         collectionutils.run_progress_func(prog_fn, 100)

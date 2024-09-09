@@ -681,6 +681,7 @@ def gather_execute_options():
     image_plane_state = lib_state.get_display_image_plane_while_solving_state()
     meshes_state = lib_state.get_display_meshes_while_solving_state()
     disp_node_types['imagePlane'] = image_plane_state
+    disp_node_types['mmImagePlaneShape2'] = image_plane_state
     disp_node_types['mesh'] = meshes_state
 
     # Minimal UI from config file.

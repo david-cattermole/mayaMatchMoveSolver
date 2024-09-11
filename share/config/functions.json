@@ -633,42 +633,6 @@
                 "mmSolver.tools.meshfromlocators.tool.main();"
             ]
         },
-        "enable_holdouts_for_selected_meshes": {
-            "name": "Enable Hold-Outs For Selected Meshes",
-            "name_shelf": "",
-            "tooltip": "Enable Hold-Out attribute for selected meshes.",
-            "command": [
-                "import mmSolver.tools.holdoutsenableselectedmeshes.tool;",
-                "mmSolver.tools.holdoutsenableselectedmeshes.tool.main();"
-            ]
-        },
-        "disable_holdouts_for_selected_meshes": {
-            "name": "Disable Hold-Outs For Selected Meshes",
-            "name_shelf": "",
-            "tooltip": "Disable Hold-Out attribute for selected meshes.",
-            "command": [
-                "import mmSolver.tools.holdoutsdisableselectedmeshes.tool;",
-                "mmSolver.tools.holdoutsdisableselectedmeshes.tool.main();"
-            ]
-        },
-        "enable_holdouts_for_all_meshes": {
-            "name": "Enable Hold-Outs For All Meshes",
-            "name_shelf": "",
-            "tooltip": "Enable Hold-Out attribute for all meshes.",
-            "command": [
-                "import mmSolver.tools.holdoutsenableallmeshes.tool;",
-                "mmSolver.tools.holdoutsenableallmeshes.tool.main();"
-            ]
-        },
-        "disable_holdouts_for_all_meshes": {
-            "name": "Disable Hold-Outs For All Meshes",
-            "name_shelf": "",
-            "tooltip": "Disable Hold-Out attribute for all meshes.",
-            "command": [
-                "import mmSolver.tools.holdoutsdisableallmeshes.tool;",
-                "mmSolver.tools.holdoutsdisableallmeshes.tool.main();"
-            ]
-        },
         "reparent_under_node": {
             "name": "Reparent under Node (v1)",
             "name_shelf": "RePar",
@@ -876,6 +840,42 @@
             "command": [
                 "import mmSolver.tools.toggleobjectmotiontrail.tool;",
                 "mmSolver.tools.toggleobjectmotiontrail.tool.main();"
+            ]
+        },
+        "enable_holdout_all_meshes": {
+            "name": "Enable Hold-Out For All Meshes",
+            "name_shelf": "EnHOAll",
+            "tooltip": "Enable Hold-Out for all meshes in scene.",
+            "command": [
+                "import mmSolver.tools.setmeshholdouts.tool;",
+                "mmSolver.tools.setmeshholdouts.tool.enable_all_meshes();"
+            ]
+        },
+        "disable_holdout_all_meshes": {
+            "name": "Disable Hold-Out For All Meshes",
+            "name_shelf": "DsHOAll",
+            "tooltip": "Disable Hold-Out for all meshes in scene.",
+            "command": [
+                "import mmSolver.tools.setmeshholdouts.tool;",
+                "mmSolver.tools.setmeshholdouts.tool.disable_all_meshes();"
+            ]
+        },
+        "enable_holdout_selected_meshes": {
+            "name": "Enable Hold-Out For Selected Meshes",
+            "name_shelf": "EnHOSel",
+            "tooltip": "Enable Hold-Out for selected meshes in scene.",
+            "command": [
+                "import mmSolver.tools.setmeshholdouts.tool;",
+                "mmSolver.tools.setmeshholdouts.tool.enable_selected_meshes();"
+            ]
+        },
+        "disable_holdout_selected_meshes": {
+            "name": "Disable Hold-Out For Selected Meshes",
+            "name_shelf": "DsHOSel",
+            "tooltip": "Disable Hold-Out for selected meshes in scene.",
+            "command": [
+                "import mmSolver.tools.setmeshholdouts.tool;",
+                "mmSolver.tools.setmeshholdouts.tool.disable_selected_meshes();"
             ]
         },
         "create_camera": {

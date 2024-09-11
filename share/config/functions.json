@@ -490,6 +490,13 @@
             "tooltip": "General Tools",
             "command": ["pass"]
         },
+        "mesh_tools": {
+            "name": "Mesh Tools",
+            "name_shelf": "",
+            "icon_shelf": "mesh_bunny.png",
+            "tooltip": "Mesh Tools",
+            "command": ["pass"]
+        },
         "center_twodee_ui": {
             "name": "Offset 2D Center UI",
             "name_shelf": "Center",
@@ -642,6 +649,15 @@
             "command": [
                 "import mmSolver.tools.undoredoscene.tool;",
                 "mmSolver.tools.undoredoscene.tool.main_redo();"
+            ]
+        },
+        "mesh_from_locators": {
+            "name": "Mesh From Locators",
+            "name_shelf": "MeshFrLoc",
+            "tooltip": "Creates mesh from locators",
+            "command": [
+                "import mmSolver.tools.meshfromlocators.tool;",
+                "mmSolver.tools.meshfromlocators.tool.main();"
             ]
         },
         "reparent_under_node": {
@@ -851,6 +867,42 @@
             "command": [
                 "import mmSolver.tools.toggleobjectmotiontrail.tool;",
                 "mmSolver.tools.toggleobjectmotiontrail.tool.main();"
+            ]
+        },
+        "enable_holdout_all_meshes": {
+            "name": "Enable Hold-Out For All Meshes",
+            "name_shelf": "EnHOAll",
+            "tooltip": "Enable Hold-Out for all meshes in scene.",
+            "command": [
+                "import mmSolver.tools.setmeshholdouts.tool;",
+                "mmSolver.tools.setmeshholdouts.tool.enable_all_meshes();"
+            ]
+        },
+        "disable_holdout_all_meshes": {
+            "name": "Disable Hold-Out For All Meshes",
+            "name_shelf": "DsHOAll",
+            "tooltip": "Disable Hold-Out for all meshes in scene.",
+            "command": [
+                "import mmSolver.tools.setmeshholdouts.tool;",
+                "mmSolver.tools.setmeshholdouts.tool.disable_all_meshes();"
+            ]
+        },
+        "enable_holdout_selected_meshes": {
+            "name": "Enable Hold-Out For Selected Meshes",
+            "name_shelf": "EnHOSel",
+            "tooltip": "Enable Hold-Out for selected meshes in scene.",
+            "command": [
+                "import mmSolver.tools.setmeshholdouts.tool;",
+                "mmSolver.tools.setmeshholdouts.tool.enable_selected_meshes();"
+            ]
+        },
+        "disable_holdout_selected_meshes": {
+            "name": "Disable Hold-Out For Selected Meshes",
+            "name_shelf": "DsHOSel",
+            "tooltip": "Disable Hold-Out for selected meshes in scene.",
+            "command": [
+                "import mmSolver.tools.setmeshholdouts.tool;",
+                "mmSolver.tools.setmeshholdouts.tool.disable_selected_meshes();"
             ]
         },
         "create_camera": {

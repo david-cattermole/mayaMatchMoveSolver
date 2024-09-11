@@ -89,6 +89,11 @@
             "display_tools/display_popup/reset_object_colour",
             "display_tools/display_popup/toggle_object_motion_trail",
             "display_tools/display_popup/create_screen_space_motion_trail",
+            "display_tools/display_popup/---Mesh Hold-Out",
+            "display_tools/display_popup/enable_holdout_all_meshes",
+            "display_tools/display_popup/disable_holdout_all_meshes",
+            "display_tools/display_popup/enable_holdout_selected_meshes",
+            "display_tools/display_popup/disable_holdout_selected_meshes",
             "zdepth_tools/zdepth_popup/---Z-Depth Screen-Space Tools",
             "zdepth_tools/zdepth_popup/screen_z_manipulator",
             "zdepth_tools/zdepth_popup/screen_space_rig_bake",
@@ -96,6 +101,8 @@
             "zdepth_tools/zdepth_popup/camera_object_scale_remove",
             "zdepth_tools/zdepth_popup/---",
             "zdepth_tools/zdepth_popup/screen_z_transform_bake",
+            "mesh_tools/mesh_tools_popup/---Create",
+            "mesh_tools/mesh_tools_popup/mesh_from_locators",
             "general_tools/gen_tools_popup/---Parenting",
             "general_tools/gen_tools_popup/reparent_under_node2",
             "general_tools/gen_tools_popup/unparent_to_world2",
@@ -172,6 +179,10 @@
                 "popup_button": ["left", "right"]
             },
             "zdepth_popup": {
+                "popup": true,
+                "popup_button": ["left", "right"]
+            },
+            "mesh_tools_popup": {
                 "popup": true,
                 "popup_button": ["left", "right"]
             },

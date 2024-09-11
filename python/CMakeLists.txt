@@ -194,6 +194,11 @@ if (MMSOLVER_BUILD_QT_UI)
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/surfacecluster/ui/ui_surfacecluster_layout.py
             )
 
+    compile_qt_ui_to_python_file("meshfromlocators"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/meshfromlocators/ui/meshfromlocators_layout.ui
+            ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/meshfromlocators/ui/ui_meshfromlocators_layout.py
+            )
+
     compile_qt_ui_to_python_file("imagecacheprefs"
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/imagecacheprefs/ui/imagecacheprefs_layout.ui
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/imagecacheprefs/ui/ui_imagecacheprefs_layout.py

@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU Lesser General Public
 # License along with this Delaunator-Python; If not, see <https://www.gnu.org/licenses/>.
 #
-# Code from https://github.com/HakanSeven12/Delaunator-Python/blob/master/Delaunator.py4
+# Code from https://github.com/HakanSeven12/Delaunator-Python/blob/master/Delaunator.py
 #
 
 import math

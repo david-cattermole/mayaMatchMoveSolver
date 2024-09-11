@@ -15,27 +15,46 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""
-Disable Hold-Outs for selected meshes.
-"""
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
 
 import maya.cmds as cmds
+
 import mmSolver.logger
-import mmSolver.tools.holdoutsenableselectedmeshes.lib as lib
 
 LOG = mmSolver.logger.get_logger()
 
 
-def main():
-    """
-    Disable Hold-Outs for all meshes.
-    """
+def set_holdout(mesh_list, enable=True):
+    for mesh in mesh_list:
+        cmds.setAttr(mesh + ".holdOut", enable)
+
+
+def enable_all_meshes():
     all_meshes = cmds.ls(dag=True, type="mesh") or []
     if not all_meshes:
         LOG.warn("Mesh not found.")
         return
-    lib.set_holdout(all_meshes, False)
+    set_holdout(all_meshes, True)
+
+
+def disable_all_meshes():
+    all_meshes = cmds.ls(dag=True, type="mesh") or []
+    if not all_meshes:
+        LOG.warn("Mesh not found.")
+        return
+    set_holdout(all_meshes, False)
+
+
+def enable_selected_meshes():
+    selected_meshes = cmds.ls(selection=True, dag=True, type="mesh") or []
+    if not selected_meshes:
+        LOG.warn("Mesh selection not found.")
+        return
+    set_holdout(selected_meshes, True)
+
+
+def disable_selected_meshes():
+    selected_meshes = cmds.ls(selection=True, dag=True, type="mesh") or []
+    if not selected_meshes:
+        LOG.warn("Mesh selection not found.")
+        return
+    set_holdout(selected_meshes, False)

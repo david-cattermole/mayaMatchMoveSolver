@@ -80,7 +80,7 @@ def create_world_controllers():
         restore_current_frame=True,
         use_dg_evaluation_mode=True,
         disable_viewport=True,
-        disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE
+        disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE,
     ):
 
         for node in nodes:

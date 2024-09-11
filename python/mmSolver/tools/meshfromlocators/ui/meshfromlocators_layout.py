@@ -33,8 +33,7 @@ import mmSolver.tools.meshfromlocators.ui.ui_meshfromlocators_layout as ui_meshf
 import mmSolver.tools.meshfromlocators.lib as lib
 
 
-class MeshFromLocatorsLayout(QtWidgets.QWidget,
-                             ui_meshfromlocators_layout.Ui_Form):
+class MeshFromLocatorsLayout(QtWidgets.QWidget, ui_meshfromlocators_layout.Ui_Form):
     def __init__(self, parent=None, *args, **kwargs):
         super(MeshFromLocatorsLayout, self).__init__(*args, **kwargs)
         self.setupUi(self)
@@ -45,7 +44,8 @@ class MeshFromLocatorsLayout(QtWidgets.QWidget,
         self.createFullMeshBtn.clicked.connect(self.full_mesh_btn_clicked)
         self.createBorderMeshBtn.clicked.connect(self.border_mesh_btn_clicked)
         self.createEdgeStripMeshBtn.clicked.connect(
-            self.border_edge_strip_mesh_btn_clicked)
+            self.border_edge_strip_mesh_btn_clicked
+        )
 
     def full_mesh_btn_clicked(self):
         lib.create_mesh_from_locators('fullMesh')

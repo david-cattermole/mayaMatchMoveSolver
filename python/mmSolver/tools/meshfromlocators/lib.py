@@ -18,7 +18,7 @@
 
 import maya.api.OpenMaya as om
 import maya.api.OpenMayaUI as omui
-import maya.cmds as cmds
+import maya.cmds
 
 import mmSolver.logger
 from mmSolver.tools.meshfromlocators.delaunator import Delaunator
@@ -34,29 +34,34 @@ def delaunator_indices(locators):
     :param locators: locatorlist
     :type locators: list
     """
-    mesh_data = {"world_positions": [],
-                 "vew_positions": [],
-                 "full_mesh_indices": [],
-                 "border_mesh_indices": []}
+    mesh_data = {
+        "world_positions": [],
+        "vew_positions": [],
+        "full_mesh_indices": [],
+        "border_mesh_indices": [],
+    }
     for locator_name in locators:
-        locator_pos = cmds.xform(locator_name, query=True, worldSpace=True,
-                                 translation=True)
-        locator_mpoint = om.MPoint(locator_pos[0], locator_pos[1],
-                                   locator_pos[2])
+        locator_pos = maya.cmds.xform(
+            locator_name, query=True, worldSpace=True, translation=True
+        )
+        locator_mpoint = om.MPoint(locator_pos[0], locator_pos[1], locator_pos[2])
         mesh_data["world_positions"].append(locator_mpoint)
         # Convert world position to view space
         view = omui.M3dView.active3dView()
         view_pos = view.worldToView(locator_mpoint)
         view_x, view_y = view_pos[0], view_pos[1]
         mesh_data["vew_positions"].append([view_x, view_y])
+
     # Indices
     mesh_indices = Delaunator(mesh_data["vew_positions"]).triangles
+
     # Reverse order
     mesh_indices_reverse = []
     for i in range(0, len(mesh_indices), 3):
-        chunk = mesh_indices[i:i + 3]
+        chunk = mesh_indices[i : i + 3]
         mesh_indices_reverse.extend(chunk[::-1])
     mesh_data["full_mesh_indices"] = mesh_indices_reverse
+
     # Hull indices
     hull = Delaunator(mesh_data["vew_positions"]).hull
     hull.reverse()
@@ -74,7 +79,7 @@ def create_mesh_from_locators(mesh_type=None, offset_value=1.0):
     :param offset_value: An offset value for borderEdgeStripMesh
     :type offset_value: float
     """
-    locators = cmds.ls(selection=True, transforms=True) or []
+    locators = maya.cmds.ls(selection=True, transforms=True) or []
     if len(locators) < 3:
         LOG.warn('at least three locators must be selected.')
         return
@@ -93,15 +98,18 @@ def create_mesh_from_locators(mesh_type=None, offset_value=1.0):
     # Create the mesh
     mesh_fn = om.MFnMesh()
     mesh = mesh_fn.create(positions, face_counts, indices)
+
     # Set mesh name
     dag_node = om.MFnDagNode(mesh)
     dag_node.setName(const.MESH_NAME)
     mesh_name = dag_node.name()
+
     # Set lambert
-    cmds.sets(mesh_name, edit=True, forceElement='initialShadingGroup')
+    maya.cmds.sets(mesh_name, edit=True, forceElement='initialShadingGroup')
+
     # Create border edge strip mesh
     if mesh_type == 'borderEdgeStripMesh':
-        cmds.polyExtrudeFacet(mesh_name, offset=offset_value)
+        maya.cmds.polyExtrudeFacet(mesh_name, offset=offset_value)
         face_0 = '{}.f[0]'.format(mesh_name)
         face_1 = '{}.f[1]'.format(mesh_name)
-        cmds.delete(face_0, face_1)
+        maya.cmds.delete(face_0, face_1)

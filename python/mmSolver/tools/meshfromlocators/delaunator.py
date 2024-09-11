@@ -1,21 +1,21 @@
-# Copyright (C) 2024 Patcha Saheb Binginapalli.
+# Delaunator-Python - Fast Delaunay triangulation of 2D points implemented in Python.
+# Copyright (C) 2020  Hakan Seven (https://github.com/HakanSeven12 hakanseven12@gmail.com)
 #
-# This file is part of mmSolver.
+# Delaunator-Python is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
 #
-# mmSolver is free software: you can redistribute it and/or modify it
-# under the terms of the GNU Lesser General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-#
-# mmSolver is distributed in the hope that it will be useful,
+# Delaunator-Python is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Lesser General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU Lesser General Public License
-# along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+# You should have received a copy of the GNU Lesser General Public
+# License along with this Delaunator-Python; If not, see <https://www.gnu.org/licenses/>.
 #
-# Code from https://github.com/HakanSeven12/Delaunator-Python
+# Code from https://github.com/HakanSeven12/Delaunator-Python/blob/master/Delaunator.py4
+#
 
 import math
 

@@ -70,13 +70,12 @@ source "${PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT}"
 # Install requirements
 if [ ${REQUIRE_PACKAGE_INSTALL} -eq 1 ]; then
     ${PYTHON_EXE} -m pip install --upgrade pip
-    ${PYTHON_EXE} -m pip install -r "${PROJECT_ROOT}/share/requirements-dev.txt"
-    ${PYTHON_EXE} -m pip install -r "${PROJECT_ROOT}/share/requirements-doc.txt"
 
     REQUIRE_DEV_MAYA_VERSION_FILE="${PROJECT_ROOT}/share/requirements-dev-maya${MAYA_VERSION}.txt"
-    if [ -f "$REQUIRE_DEV_MAYA_VERSION_FILE" ]; then
-        ${PYTHON_EXE} -m pip install -r $REQUIRE_DEV_MAYA_VERSION_FILE
-    fi
+    REQUIRE_DOC_MAYA_VERSION_FILE="${PROJECT_ROOT}/share/requirements-doc-maya${MAYA_VERSION}.txt"
+
+    ${PYTHON_EXE} -m pip install -r $REQUIRE_DEV_MAYA_VERSION_FILE
+    ${PYTHON_EXE} -m pip install -r $REQUIRE_DOC_MAYA_VERSION_FILE
 fi
 
 cd ${PROJECT_ROOT}

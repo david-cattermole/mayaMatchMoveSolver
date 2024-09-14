@@ -35,12 +35,10 @@ SET RUST_CARGO_EXE=cargo
 
 :: OpenColorIO specific options.
 ::
-:: Maya doesn't ship with OpenColorIO at all, so lets pick the v2.0.x.
-::
-:: https://github.com/AcademySoftwareFoundation/OpenColorIO/releases/tag/v2.0.5
-:: https://github.com/AcademySoftwareFoundation/OpenColorIO/archive/refs/tags/v2.0.5.tar.gz
-SET OPENCOLORIO_TARBALL_NAME=OpenColorIO-2.0.5.tar.gz
-SET OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME=OpenColorIO-2.0.5
+:: https://github.com/AcademySoftwareFoundation/OpenColorIO/releases/tag/v2.2.1
+:: https://github.com/AcademySoftwareFoundation/OpenColorIO/archive/refs/tags/v2.2.1.tar.gz
+SET OPENCOLORIO_TARBALL_NAME=OpenColorIO-2.2.1.tar.gz
+SET OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME=OpenColorIO-2.2.1
 SET EXPAT_RELATIVE_LIB_PATH=lib\cmake\expat-2.2.8\
 :: yaml-cpp 0.6.3
 SET YAML_RELATIVE_CMAKE_DIR=CMake\

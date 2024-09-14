@@ -52,7 +52,7 @@ INSTALL_MODULE_DIR="${HOME}/maya/${MAYA_VERSION}/modules"
 
 # Build ZIP Package.
 # For developer use. Make ZIP packages ready to distribute to others.
-BUILD_PACKAGE=0
+BUILD_PACKAGE=1
 
 # What directory to build the project in?
 BUILD_DIR_BASE="${PROJECT_ROOT}/../"

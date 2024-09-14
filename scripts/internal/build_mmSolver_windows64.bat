@@ -52,7 +52,7 @@ SET INSTALL_MODULE_DIR="%USERPROFILE%\My Documents\maya\%MAYA_VERSION%\modules"
 
 :: Build ZIP Package.
 :: For developer use. Make ZIP packages ready to distribute to others.
-SET BUILD_PACKAGE=0
+SET BUILD_PACKAGE=1
 
 :: Do not edit below, unless you know what you're doing.
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::

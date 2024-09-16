@@ -131,7 +131,9 @@ const MString kAttrNameSilhouetteOperationNum = "operationNum";
 
 // Silhouette Renderer Attribute Default Values
 const bool kSilhouetteEnableDefault = true;
-const bool kSilhouetteOverrideColorDefault = false;
+// We enable 'override color' by default, so that users with wireframe
+// on shaded can see the obvious effect right away.
+const bool kSilhouetteOverrideColorDefault = true;
 const float kSilhouetteDepthOffsetDefault = -1.0f;
 const float kSilhouetteWidthDefault = 2.0f;
 const float kSilhouetteColorDefault[] = {0.0f, 1.0f, 0.0f};

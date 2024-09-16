@@ -66,9 +66,9 @@ static uint8_t convert_pixel_data_type_to_bytes_per_channel(
         bytes_per_channel = 4;
     } else {
         bytes_per_channel = 0;
-        MMSOLVER_MAYA_ERR("mmsolver::image::convert_pixel_data_type_to_bytes_per_channel: "
-                          << "Invalid pixel type is "
-                          << static_cast<int>(pixel_data_type));
+        MMSOLVER_MAYA_ERR(
+            "mmsolver::image::convert_pixel_data_type_to_bytes_per_channel: "
+            << "Invalid pixel type is " << static_cast<int>(pixel_data_type));
     }
     return bytes_per_channel;
 }

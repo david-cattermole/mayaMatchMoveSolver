@@ -24,8 +24,8 @@
 #define MEMORY_UTILS_H
 
 // STL
-#include <cstdint>
 #include <cstddef>
+#include <cstdint>
 
 namespace mmmemory {
 

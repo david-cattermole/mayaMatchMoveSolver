@@ -483,9 +483,9 @@ def _set_attribute_editor_color_space(node_attr, control_name, value):
 
 def _maybe_make_menu_item(button_name, label, node_attr, value):
     if value and len(value) > 0:
-        func = lambda x: _set_attribute_editor_color_space(
-            node_attr, button_name, value
-        )
+        def func(x):
+            _set_attribute_editor_color_space(node_attr, button_name, value)
+
         maya.cmds.menuItem(label=label, command=func)
     return
 

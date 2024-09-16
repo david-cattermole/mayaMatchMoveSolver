@@ -23,8 +23,8 @@ import maya.api.OpenMayaUI as omui
 import maya.cmds
 
 import mmSolver.logger
-from mmSolver.tools.meshfromlocators.delaunator import Delaunator
-import mmSolver.tools.meshfromlocators.constant as const
+from mmSolver.tools.meshfrompoints.delaunator import Delaunator
+import mmSolver.tools.meshfrompoints.constant as const
 
 
 LOG = mmSolver.logger.get_logger()
@@ -98,7 +98,7 @@ def create_mesh_from_transform_nodes(
     Creates mesh from transform nodes.
 
     :param mesh_type: The type of mesh to create.
-    :type mesh_type: mmSolver.tools.meshfromlocators.constant.MESH_TYPE_*_VALUE.
+    :type mesh_type: mmSolver.tools.meshfrompoints.constant.MESH_TYPE_*_VALUE.
 
     :param transform_nodes: List of transform nodes to get 3D positions from.
     :type transform_nodes: [str, ..]

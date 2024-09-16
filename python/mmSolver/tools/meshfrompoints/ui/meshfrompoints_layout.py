@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-The main component of the user interface for the mesh from locators window.
+The main component of the user interface for the mesh from points window.
 """
 
 from __future__ import absolute_import
@@ -33,9 +33,9 @@ import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
 import mmSolver.utils.configmaya as configmaya
-import mmSolver.tools.meshfromlocators.ui.ui_meshfromlocators_layout as ui_meshfromlocators_layout
-import mmSolver.tools.meshfromlocators.lib as lib
-import mmSolver.tools.meshfromlocators.constant as const
+import mmSolver.tools.meshfrompoints.ui.ui_meshfrompoints_layout as ui_meshfrompoints_layout
+import mmSolver.tools.meshfrompoints.lib as lib
+import mmSolver.tools.meshfrompoints.constant as const
 
 
 LOG = mmSolver.logger.get_logger()
@@ -49,9 +49,9 @@ def _get_selection():
     return transform_nodes
 
 
-class MeshFromLocatorsLayout(QtWidgets.QWidget, ui_meshfromlocators_layout.Ui_Form):
+class MeshFromPointsLayout(QtWidgets.QWidget, ui_meshfrompoints_layout.Ui_Form):
     def __init__(self, parent=None, *args, **kwargs):
-        super(MeshFromLocatorsLayout, self).__init__(*args, **kwargs)
+        super(MeshFromPointsLayout, self).__init__(*args, **kwargs)
         self.setupUi(self)
         self.create_connections()
 

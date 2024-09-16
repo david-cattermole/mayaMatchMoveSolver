@@ -16,5 +16,22 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Mesh From Locators tool.
+Mesh From Points main.
 """
+
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
+import mmSolver.logger
+
+LOG = mmSolver.logger.get_logger()
+
+
+def main():
+    """
+    Open the 'Mesh From Points' window.
+    """
+    import mmSolver.tools.meshfrompoints.ui.meshfrompoints_window as window
+
+    window.main()

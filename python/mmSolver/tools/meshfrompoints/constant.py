@@ -15,23 +15,25 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
-"""
-Mesh From Locators main.
-"""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+WINDOW_TITLE = 'Mesh From Points'
 
-import mmSolver.logger
+# We must have at least 3 points to make a mesh.
+MINIMUM_NUMBER_OF_POINTS = 3
 
-LOG = mmSolver.logger.get_logger()
+# The different types of meshes that can be created.
+MESH_TYPE_FULL_MESH_VALUE = 'full_mesh'
+MESH_TYPE_BORDER_MESH_VALUE = 'border_mesh'
+MESH_TYPE_BORDER_EDGE_STRIP_MESH_VALUE = 'border_edge_strip_mesh'
+MESH_TYPE_VALUES = [
+    MESH_TYPE_FULL_MESH_VALUE,
+    MESH_TYPE_BORDER_MESH_VALUE,
+    MESH_TYPE_BORDER_EDGE_STRIP_MESH_VALUE,
+]
 
+# Default values.
+DEFAULT_MESH_NAME = 'meshFromPoints'
+DEFAULT_STRIP_WIDTH = 1.0
 
-def main():
-    """
-    Open the 'Mesh From Locators' window.
-    """
-    import mmSolver.tools.meshfromlocators.ui.meshfromlocators_window as window
-
-    window.main()
+# Config value keys.
+CONFIG_STRIP_WIDTH_KEY = 'mmSolver_meshfrompoints_stripWidth'

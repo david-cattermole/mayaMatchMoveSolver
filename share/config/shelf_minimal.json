@@ -113,7 +113,7 @@
             "zdepth_tools/zdepth_popup/---",
             "zdepth_tools/zdepth_popup/screen_z_transform_bake",
             "mesh_tools/mesh_tools_popup/---Create",
-            "mesh_tools/mesh_tools_popup/mesh_from_locators_ui",
+            "mesh_tools/mesh_tools_popup/mesh_from_points_ui",
             "general_tools/gen_tools_popup/---Parenting",
             "general_tools/gen_tools_popup/reparent_under_node2",
             "general_tools/gen_tools_popup/unparent_to_world2",

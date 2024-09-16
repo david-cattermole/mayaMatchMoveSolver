@@ -23,22 +23,42 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import maya.cmds
+
 import mmSolver.ui.qtpyutils as qtpyutils
 
 qtpyutils.override_binding_order()
 
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
+import mmSolver.logger
+import mmSolver.utils.configmaya as configmaya
 import mmSolver.tools.meshfromlocators.ui.ui_meshfromlocators_layout as ui_meshfromlocators_layout
 import mmSolver.tools.meshfromlocators.lib as lib
+import mmSolver.tools.meshfromlocators.constant as const
+
+
+LOG = mmSolver.logger.get_logger()
+
+
+def _get_selection():
+    transform_nodes = maya.cmds.ls(selection=True, transforms=True) or []
+    if len(transform_nodes) < 3:
+        LOG.warn('Please select least three transform nodes.')
+        return None
+    return transform_nodes
 
 
 class MeshFromLocatorsLayout(QtWidgets.QWidget, ui_meshfromlocators_layout.Ui_Form):
     def __init__(self, parent=None, *args, **kwargs):
         super(MeshFromLocatorsLayout, self).__init__(*args, **kwargs)
         self.setupUi(self)
-
         self.create_connections()
+
+        # TODO: Should the mesh node name be exposed to the user to set?
+
+        # Populate the UI with data
+        self.populateUi()
 
     def create_connections(self):
         self.createFullMeshBtn.clicked.connect(self.full_mesh_btn_clicked)
@@ -47,12 +67,50 @@ class MeshFromLocatorsLayout(QtWidgets.QWidget, ui_meshfromlocators_layout.Ui_Fo
             self.border_edge_strip_mesh_btn_clicked
         )
 
+    def reset_options(self):
+        name = const.CONFIG_STRIP_WIDTH_KEY
+        value = const.DEFAULT_STRIP_WIDTH
+        configmaya.set_scene_option(name, value)
+        LOG.debug('key=%r value=%r', name, value)
+
+        self.populateUi()
+        return
+
+    def populateUi(self):
+        """
+        Update the UI for the first time the class is created.
+        """
+        name = const.CONFIG_STRIP_WIDTH_KEY
+        value = configmaya.get_scene_option(name, default=const.DEFAULT_STRIP_WIDTH)
+        LOG.debug('key=%r value=%r', name, value)
+        self.stripWidthSpinBox.setValue(value)
+
     def full_mesh_btn_clicked(self):
-        lib.create_mesh_from_locators('fullMesh')
+        transform_nodes = _get_selection()
+        if transform_nodes is None:
+            return
+
+        lib.create_mesh_from_transform_nodes(
+            const.MESH_TYPE_FULL_MESH_VALUE, transform_nodes
+        )
 
     def border_mesh_btn_clicked(self):
-        lib.create_mesh_from_locators('borderMesh')
+        transform_nodes = _get_selection()
+        if transform_nodes is None:
+            return
+
+        lib.create_mesh_from_transform_nodes(
+            const.MESH_TYPE_BORDER_MESH_VALUE, transform_nodes
+        )
 
     def border_edge_strip_mesh_btn_clicked(self):
+        transform_nodes = _get_selection()
+        if transform_nodes is None:
+            return
+
         offset = self.stripWidthSpinBox.value()
-        lib.create_mesh_from_locators('borderEdgeStripMesh', offset)
+        lib.create_mesh_from_transform_nodes(
+            const.MESH_TYPE_BORDER_EDGE_STRIP_MESH_VALUE,
+            transform_nodes,
+            offset_value=offset,
+        )

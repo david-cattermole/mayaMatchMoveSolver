@@ -16,5 +16,24 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 
-MESH_NAME = 'meshFromLocators'
 WINDOW_TITLE = 'Mesh From Locators'
+
+# We must have at least 3 points to make a mesh.
+MINIMUM_NUMBER_OF_POINTS = 3
+
+# The different types of meshes that can be created.
+MESH_TYPE_FULL_MESH_VALUE = 'full_mesh'
+MESH_TYPE_BORDER_MESH_VALUE = 'border_mesh'
+MESH_TYPE_BORDER_EDGE_STRIP_MESH_VALUE = 'border_edge_strip_mesh'
+MESH_TYPE_VALUES = [
+    MESH_TYPE_FULL_MESH_VALUE,
+    MESH_TYPE_BORDER_MESH_VALUE,
+    MESH_TYPE_BORDER_EDGE_STRIP_MESH_VALUE,
+]
+
+# Default values.
+DEFAULT_MESH_NAME = 'meshFromLocators'
+DEFAULT_STRIP_WIDTH = 1.0
+
+# Config value keys.
+CONFIG_STRIP_WIDTH_KEY = 'mmSolver_meshfromlocators_stripWidth'

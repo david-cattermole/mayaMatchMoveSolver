@@ -20,8 +20,8 @@ extend-exclude = '''
 # Same as Black.
 line-length = 88
 
-# Assume Python 3.7
-target-version = "py37"
+# Assume Python 3.6+
+target-version = "py36"
 
 [tool.ruff.mccabe]
 # Unlike Flake8, default to a complexity level of 10.

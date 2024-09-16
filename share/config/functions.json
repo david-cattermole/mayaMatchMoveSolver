@@ -493,7 +493,7 @@
         "mesh_tools": {
             "name": "Mesh Tools",
             "name_shelf": "",
-            "icon_shelf": "mesh_bunny.png",
+            "icon_shelf": "meshTools_32x32.png",
             "tooltip": "Mesh Tools",
             "command": ["pass"]
         },

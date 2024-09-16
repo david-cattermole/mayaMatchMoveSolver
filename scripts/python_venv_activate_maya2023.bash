@@ -33,7 +33,7 @@ PROJECT_ROOT=`pwd`
 MAYA_VERSION=2023
 
 # Python executable - edit this to point to an explicit python executable file.
-PYTHON_EXE=python
+PYTHON_EXE=python3
 
 PYTHON_VIRTUAL_ENV_DIR_NAME="python_venv_linux_maya${MAYA_VERSION}"
 source "${PROJECT_ROOT}/scripts/internal/python_venv_activate.bash"

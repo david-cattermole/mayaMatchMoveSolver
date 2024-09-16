@@ -1,0 +1,14 @@
+# Python Package Requirements.
+#
+# Expects Python 3.9.x
+
+# Tools needed for code linting and formatting.
+black == 24.8.0
+pylint == 3.2.7
+flake8 == 7.1.1
+cpplint == 1.6.1
+ruff == 0.6.5
+
+# Tools needed for documentation building.
+Sphinx == 7.4.7
+furo == 2024.8.6

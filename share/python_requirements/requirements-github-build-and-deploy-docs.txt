@@ -1,0 +1,10 @@
+# .github/workflows/build_and_deploy_docs.yml
+#
+# Expects Python 3.7.x
+
+# Required packages for building documentation on GitHub.
+#
+# NOTE: No versions are specified to allow the package version resolver
+# to resolve correctly.
+Sphinx
+furo

@@ -1,0 +1,17 @@
+# Python Package Requirements.
+#
+# Expects Python 3.6.x
+
+# Tools needed for code linting and formatting.
+#
+# NOTE: No versions are explicitly to allow the PIP version resolver to find a match.
+black
+pylint
+flake8
+cpplint
+
+# Tools needed for documentation building.
+#
+# NOTE: No versions are explicitly to allow the PIP version resolver to find a match.
+Sphinx
+furo

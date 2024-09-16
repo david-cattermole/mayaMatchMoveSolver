@@ -25,6 +25,9 @@ MAYA_VERSION=2024
 MAYA_LOCATION=/usr/autodesk/maya2024/
 
 # Executable names/paths used for build process.
+#
+# RockyLinux8 has Python 3.6 by default, but we use Python 3.9 because
+# it has better support for tools like 'ruff'.
 PYTHON_EXE=python3.9
 CMAKE_EXE=cmake3
 RUST_CARGO_EXE=cargo

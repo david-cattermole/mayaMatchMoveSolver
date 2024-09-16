@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r share/requirements-doc.txt
+          pip install -r share/python_requirements/requirements-github-build-and-deploy-docs.txt
 
       - name: Building Sphinx Documentation
         run: |

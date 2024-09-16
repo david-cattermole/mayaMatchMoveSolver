@@ -1,0 +1,12 @@
+# .github/workflows/lint_code.yml
+#
+# Expects Python 3.7.x
+
+# Required packages for linting code on GitHub.
+#
+# NOTE: No versions are specified to allow the package version resolver
+# to resolve correctly.
+black
+pylint
+flake8
+cpplint

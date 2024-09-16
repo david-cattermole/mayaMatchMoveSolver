@@ -105,7 +105,7 @@
             "zdepth_tools/---",
             "zdepth_tools/screen_z_transform_bake",
             "mesh_tools/---Create",
-            "mesh_tools/mesh_from_locators",
+            "mesh_tools/mesh_from_locators_ui",
             "general_tools/---Parenting",
             "general_tools/reparent_under_node2",
             "general_tools/unparent_to_world2",

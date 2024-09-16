@@ -651,10 +651,10 @@
                 "mmSolver.tools.undoredoscene.tool.main_redo();"
             ]
         },
-        "mesh_from_locators": {
-            "name": "Mesh From Locators",
+        "mesh_from_locators_ui": {
+            "name": "Mesh From Locators...",
             "name_shelf": "MeshFrLoc",
-            "tooltip": "Creates mesh from locators",
+            "tooltip": "Open Mesh from Locators UI, to create triangulated meshes.",
             "command": [
                 "import mmSolver.tools.meshfromlocators.tool;",
                 "mmSolver.tools.meshfromlocators.tool.main();"

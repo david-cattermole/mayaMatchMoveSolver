@@ -57,6 +57,7 @@ changes.
 
 | Releases                                                                                | Description                                        |
 | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| [v0.4.9](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.9)   | Bug fix for Surface Cluster.                       |
 | [v0.4.8](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.8)   | Add Create Rivet and Surface Cluster tools.        |
 | [v0.4.7](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.7)   | Bug fix for "Convert to Marker" tool.              |
 | [v0.4.6](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.6)   | Bug fix for solver and minor features.             |

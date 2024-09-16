@@ -21,7 +21,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r share/python_requirements/requirements-github-lint-code.txt
 
-      - name: Analysing the Python code with flake8 (Hard Error)
+      - name: Analysing the Python code with ruff (Hard Error)
         run: |
           ./scripts/python_linter_run_ruff.bash
 

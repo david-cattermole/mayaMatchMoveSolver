@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7"]
+        python-version: ["3.9"]
     steps:
       - uses: actions/checkout@v3
 
@@ -23,7 +23,7 @@ jobs:
 
       - name: Analysing the Python code with flake8 (Hard Error)
         run: |
-          ./scripts/python_linter_run_flake8_errors_only.bash
+          ./scripts/python_linter_run_ruff.bash
 
       - name: Install Clang-Format
         run: |

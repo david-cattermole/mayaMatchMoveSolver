@@ -1,12 +1,11 @@
 # .github/workflows/lint_code.yml
 #
-# Expects Python 3.7.x
+# Expects Python 3.7.x, because that's the minimum supported version
+# by Ruff.
 
 # Required packages for linting code on GitHub.
 #
 # NOTE: No versions are specified to allow the package version resolver
 # to resolve correctly.
-black
-pylint
-flake8
+ruff
 cpplint

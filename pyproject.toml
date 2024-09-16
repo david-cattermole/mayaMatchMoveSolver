@@ -20,8 +20,62 @@ extend-exclude = '''
 # Same as Black.
 line-length = 88
 
-# Assume Python 3.6+
-target-version = "py36"
+# Assume Python 3.7+, because that's the minimum supported version by
+# Ruff.
+target-version = "py37"
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+
+    # Custom directories for mmSolver.
+    "mltools",
+    "delaunator.py"
+]
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = [
+    "E4",
+    "E7",
+    "E9",
+    "F",
+    # "B"  # "Bugbear" lints. Enable at a later date.
+]
+
+ignore = [
+    "E402", # Avoid line-length complaints.
+    "E501", # Avoid module import complaints.
+    "F401", # Unused module.
+    "F841"  # Local variable `start_frame` is assigned to but never used
+]
 
 [tool.ruff.mccabe]
 # Unlike Flake8, default to a complexity level of 10.

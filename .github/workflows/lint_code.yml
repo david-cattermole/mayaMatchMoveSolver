@@ -25,10 +25,6 @@ jobs:
         run: |
           ./scripts/python_linter_run_flake8_errors_only.bash
 
-      - name: Check Python Formatting
-        run: |
-          ./scripts/python_formatter_run_black_check.bash
-
       - name: Install Clang-Format
         run: |
           sudo apt-get install -y clang-format

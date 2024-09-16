@@ -36,4 +36,3 @@ def convert_to_capacity_value(percent, total_bytes):
     ratio = percent / 100.0
     size_bytes = int(total_bytes * ratio)
     return CapacityValue(size_bytes, percent)
-

@@ -156,7 +156,7 @@ def create_network(name_shader, image_plane_tfm):
         ['outUV', 'uvCoord'],
         ['outUvFilterSize', 'uvFilterSize'],
     ]
-    for (src_attr, dst_attr) in conns:
+    for src_attr, dst_attr in conns:
         src = file_place2d + '.' + src_attr
         dst = file_node + '.' + dst_attr
         lib_utils.force_connect_attr(src, dst)

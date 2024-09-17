@@ -1,7 +1,7 @@
 [tool.black]
 line-length = 88  # The black default is a good compromise.
 skip-string-normalization = 1
-target-version = ['py36', 'py37', 'py38', 'py39', 'py310', 'py311', 'py312']
+target-version = ['py36', 'py37', 'py38', 'py39', 'py310']
 include = '\.py$'
 extend-exclude = '''
 /(

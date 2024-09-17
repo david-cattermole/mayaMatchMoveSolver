@@ -16,12 +16,12 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Window for the Mesh From Locators tool.
+Window for the Mesh From Points tool.
 
 Usage::
 
-   import mmSolver.tools.meshfromlocators.ui.meshfromlocators_window as meshfromlocators_window
-   meshfromlocators_window.main()
+   import mmSolver.tools.meshfrompoints.ui.meshfrompoints_window as meshfrompoints_window
+   meshfrompoints_window.main()
 
 """
 
@@ -36,35 +36,62 @@ qtpyutils.override_binding_order()
 import mmSolver.ui.Qt.QtCore as QtCore
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
-import maya.cmds
-
 import mmSolver.logger
 import mmSolver.ui.uiutils as uiutils
-import mmSolver.tools.meshfromlocators.ui.meshfromlocators_layout as meshfromlocators_layout
-import mmSolver.tools.meshfromlocators.constant as const
+import mmSolver.ui.commonmenus as commonmenus
+import mmSolver.ui.helputils as helputils
+import mmSolver.tools.meshfrompoints.ui.meshfrompoints_layout as meshfrompoints_layout
+import mmSolver.tools.meshfrompoints.constant as const
 
 LOG = mmSolver.logger.get_logger()
 baseModule, BaseWindow = uiutils.getBaseWindow()
 
 
-class MeshFromLocatorsWindow(BaseWindow):
-    name = 'MeshFromLocatorsWindow'
+def _open_help():
+    src = helputils.get_help_source()
+    page = 'tools_meshtools.html#mesh-from-points'
+    helputils.open_help_in_browser(page=page, help_source=src)
+    return
+
+
+class MeshFromPointsWindow(BaseWindow):
+    name = 'MeshFromPointsWindow'
 
     def __init__(self, parent=None, name=None):
-        super(MeshFromLocatorsWindow, self).__init__(parent, name=name)
+        super(MeshFromPointsWindow, self).__init__(parent, name=name)
         self.setupUi(self)
-        self.addSubForm(meshfromlocators_layout.MeshFromLocatorsLayout)
+        self.addSubForm(meshfrompoints_layout.MeshFromPointsLayout)
 
         self.setWindowTitle(const.WINDOW_TITLE)
         self.setWindowFlags(QtCore.Qt.Tool)
+
         # Hide irrelevant stuff
         self.baseHideStandardButtons()
         self.baseHideProgressBar()
 
+        self.add_menus(self.menubar)
+        self.menubar.show()
+
+    def add_menus(self, menubar):
+        edit_menu = QtWidgets.QMenu('Edit', menubar)
+        commonmenus.create_edit_menu_items(
+            edit_menu, reset_settings_func=self.reset_options
+        )
+        menubar.addMenu(edit_menu)
+
+        help_menu = QtWidgets.QMenu('Help', menubar)
+        commonmenus.create_help_menu_items(help_menu, tool_help_func=_open_help)
+        menubar.addMenu(help_menu)
+
+    def reset_options(self):
+        form = self.getSubForm()
+        form.reset_options()
+        return
+
 
 def main(show=True, auto_raise=True, delete=False):
     """
-    Open the Mesh From Locators UI.
+    Open the Mesh From Points UI.
 
     :param show: Show the UI.
     :type show: bool
@@ -78,9 +105,9 @@ def main(show=True, auto_raise=True, delete=False):
 
     :returns: A new ui window, or None if the window cannot be
               opened.
-    :rtype: MeshFromLocatorsWindow or None
+    :rtype: MeshFromPointsWindow or None
     """
-    win = MeshFromLocatorsWindow.open_window(
+    win = MeshFromPointsWindow.open_window(
         show=show, auto_raise=auto_raise, delete=delete
     )
     return win

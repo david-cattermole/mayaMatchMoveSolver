@@ -493,7 +493,7 @@
         "mesh_tools": {
             "name": "Mesh Tools",
             "name_shelf": "",
-            "icon_shelf": "mesh_bunny.png",
+            "icon_shelf": "meshTools_32x32.png",
             "tooltip": "Mesh Tools",
             "command": ["pass"]
         },
@@ -651,13 +651,13 @@
                 "mmSolver.tools.undoredoscene.tool.main_redo();"
             ]
         },
-        "mesh_from_locators": {
-            "name": "Mesh From Locators",
-            "name_shelf": "MeshFrLoc",
-            "tooltip": "Creates mesh from locators",
+        "mesh_from_points_ui": {
+            "name": "Mesh From Points...",
+            "name_shelf": "MeshFrPts",
+            "tooltip": "Open Mesh from Points UI, to create triangulated meshes.",
             "command": [
-                "import mmSolver.tools.meshfromlocators.tool;",
-                "mmSolver.tools.meshfromlocators.tool.main();"
+                "import mmSolver.tools.meshfrompoints.tool;",
+                "mmSolver.tools.meshfrompoints.tool.main();"
             ]
         },
         "reparent_under_node": {

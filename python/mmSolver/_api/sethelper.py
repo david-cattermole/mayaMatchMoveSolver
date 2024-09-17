@@ -116,7 +116,7 @@ class SetHelper(object):
         return ret
 
     def set_annotation(self, value):
-        assert isinstance(value, str)
+        assert isinstance(value, pycompat.TEXT_TYPE)
         set_node = self.get_node()
         maya.cmds.sets(set_node, edit=True, text=value)
         return

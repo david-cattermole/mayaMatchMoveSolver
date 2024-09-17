@@ -30,6 +30,7 @@ import mmSolver.api as mmapi
 import mmSolver.utils.constant as const_utils
 import mmSolver.utils.imageseq as imageseq_utils
 import mmSolver.utils.node as node_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.createimageplane._lib.constant as lib_const
 import mmSolver.tools.createimageplane._lib.utilities as lib_utils
 
@@ -269,7 +270,7 @@ def _slot_number_to_attr_name(slot_number):
 
 
 def _slot_attr_name_to_number(attr_name):
-    assert isinstance(attr_name, str)
+    assert isinstance(attr_name, pycompat.TEXT_TYPE)
     assert attr_name in SLOT_ATTR_NAME_VALUES
     return SLOT_ATTR_NAME_TO_NUMBER_MAP[attr_name]
 
@@ -309,7 +310,7 @@ def get_file_pattern_for_all_slots(shp):
 
 
 def set_image_sequence(shp, image_sequence_path, attr_name):
-    assert isinstance(image_sequence_path, str)
+    assert isinstance(image_sequence_path, pycompat.TEXT_TYPE)
     assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2
     assert node_utils.attribute_exists(attr_name, shp) is True
 
@@ -393,14 +394,14 @@ def set_image_sequence(shp, image_sequence_path, attr_name):
 
 
 def get_frame_size_bytes(shp):
-    assert isinstance(shp, str)
+    assert isinstance(shp, pycompat.TEXT_TYPE)
     assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2
     image_size_bytes = maya.cmds.getAttr(shp + '.imageSizeBytes')
     return int(image_size_bytes)
 
 
 def get_frame_count(shp):
-    assert isinstance(shp, str)
+    assert isinstance(shp, pycompat.TEXT_TYPE)
     assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2
     start_frame = maya.cmds.getAttr(shp + '.imageSequenceStartFrame')
     end_frame = maya.cmds.getAttr(shp + '.imageSequenceEndFrame')
@@ -411,7 +412,7 @@ def get_frame_count(shp):
 
 
 def get_image_sequence_size_bytes(shp):
-    assert isinstance(shp, str)
+    assert isinstance(shp, pycompat.TEXT_TYPE)
     assert maya.cmds.nodeType(shp) == lib_const.MM_IMAGE_PLANE_SHAPE_V2
     image_size_bytes = get_frame_size_bytes(shp)
     frame_count = get_frame_count(shp)
@@ -483,6 +484,7 @@ def _set_attribute_editor_color_space(node_attr, control_name, value):
 
 def _maybe_make_menu_item(button_name, label, node_attr, value):
     if value and len(value) > 0:
+
         def func(x):
             _set_attribute_editor_color_space(node_attr, button_name, value)
 
@@ -491,7 +493,7 @@ def _maybe_make_menu_item(button_name, label, node_attr, value):
 
 
 def color_space_attribute_editor_new(node_attr):
-    assert isinstance(node_attr, str)
+    assert isinstance(node_attr, pycompat.TEXT_TYPE)
     split = node_attr.split('.')
     if len(split) == 0:
         LOG.warn('Could not get attribute name from: %r', node_attr)

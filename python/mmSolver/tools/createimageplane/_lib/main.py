@@ -181,7 +181,7 @@ def _set_locked_string_attr(node_attr, value):
 def _set_image_sequence_v2(mm_image_plane_node, image_sequence_path, attr_name=None):
     if attr_name is None:
         attr_name = lib_const.DEFAULT_IMAGE_SEQUENCE_ATTR_NAME
-    assert isinstance(attr_name, str)
+    assert isinstance(attr_name, pycompat.TEXT_TYPE)
     assert attr_name in lib_const.VALID_INPUT_IMAGE_SEQUENCE_ATTR_NAMES
     version = lib_const.MM_IMAGE_PLANE_VERSION_TWO
 

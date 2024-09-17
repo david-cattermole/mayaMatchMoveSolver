@@ -30,6 +30,7 @@ import mmSolver.logger
 import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.constant as const
+import mmSolver.utils.python_compat as pycompat
 
 LOG = mmSolver.logger.get_logger()
 
@@ -425,8 +426,8 @@ def _get_node_type_visibility(model_panel, node_type):
     :return: The visibility of the node type.
     :rtype: bool
     """
-    assert isinstance(model_panel, str)
-    assert isinstance(node_type, str)
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
+    assert isinstance(node_type, pycompat.TEXT_TYPE)
     model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
     kwargs = {
         'query': True,
@@ -446,8 +447,8 @@ def _set_node_type_visibility(model_panel, node_type, value):
     :param value: Visibility of the node type.
     :type value: bool
     """
-    assert isinstance(model_panel, str)
-    assert isinstance(node_type, str)
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
+    assert isinstance(node_type, pycompat.TEXT_TYPE)
     assert isinstance(value, bool)
     model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
     kwargs = {
@@ -468,8 +469,8 @@ def _get_plugin_display_filter_visibility(model_panel, plugin_display_filter):
     :return: The visibility of the display filter.
     :rtype: bool
     """
-    assert isinstance(model_panel, str)
-    assert isinstance(plugin_display_filter, str)
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
+    assert isinstance(plugin_display_filter, pycompat.TEXT_TYPE)
     model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
     value = maya.cmds.modelEditor(
         model_editor, query=True, queryPluginObjects=plugin_display_filter
@@ -488,8 +489,8 @@ def _set_plugin_display_filter_visibility(model_panel, plugin_display_filter, va
     :param value: Visibility of the node type.
     :type value: bool
     """
-    assert isinstance(model_panel, str)
-    assert isinstance(plugin_display_filter, str)
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
+    assert isinstance(plugin_display_filter, pycompat.TEXT_TYPE)
     assert isinstance(value, bool)
     model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
     maya.cmds.modelEditor(

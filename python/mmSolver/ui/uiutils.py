@@ -230,7 +230,7 @@ def getIcon(path):
     :return: Qt Icon object.
     :rtype: QIcon
     """
-    assert isinstance(path, str)
+    assert isinstance(path, pycompat.TEXT_TYPE)
     icon = QtGui.QIcon(QtGui.QPixmap(path))
     return icon
 

@@ -29,6 +29,7 @@ from contextlib import contextmanager
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.utils.viewport as viewport_utils
 
 LOG = mmSolver.logger.get_logger()
@@ -113,7 +114,7 @@ def tool_context(
         use_undo_chunk = True
     if undo_chunk_name is None:
         undo_chunk_name = str(uuid.uuid4())
-    assert isinstance(undo_chunk_name, str)
+    assert isinstance(undo_chunk_name, pycompat.TEXT_TYPE)
     if pre_update_frame is None:
         pre_update_frame = False
     if post_update_frame is None:

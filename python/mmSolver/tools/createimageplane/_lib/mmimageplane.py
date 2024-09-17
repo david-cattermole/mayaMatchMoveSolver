@@ -228,9 +228,9 @@ def create_shape_node(
 
 
 def set_image_sequence(shp, image_sequence_path, attr_name, version=None):
-    assert isinstance(shp, str)
-    assert isinstance(image_sequence_path, str)
-    assert isinstance(attr_name, str)
+    assert isinstance(shp, pycompat.TEXT_TYPE)
+    assert isinstance(image_sequence_path, pycompat.TEXT_TYPE)
+    assert isinstance(attr_name, pycompat.TEXT_TYPE)
     assert version in lib_const.MM_IMAGE_PLANE_VERSION_LIST
     result = None
     if version == lib_const.MM_IMAGE_PLANE_VERSION_ONE:
@@ -247,7 +247,7 @@ def set_image_sequence(shp, image_sequence_path, attr_name, version=None):
 
 
 def get_shape_node(image_plane_tfm, version=None):
-    assert isinstance(image_plane_tfm, str)
+    assert isinstance(image_plane_tfm, pycompat.TEXT_TYPE)
     assert maya.cmds.objExists(image_plane_tfm)
     assert version in lib_const.MM_IMAGE_PLANE_VERSION_LIST
     result = None
@@ -261,7 +261,7 @@ def get_shape_node(image_plane_tfm, version=None):
 
 
 def get_transform_node(image_plane_shp, version=None):
-    assert isinstance(image_plane_shp, str)
+    assert isinstance(image_plane_shp, pycompat.TEXT_TYPE)
     assert maya.cmds.objExists(image_plane_shp)
     assert version in lib_const.MM_IMAGE_PLANE_VERSION_LIST
     result = None
@@ -275,7 +275,7 @@ def get_transform_node(image_plane_shp, version=None):
 
 
 def get_image_plane_node_pair(node, version=None):
-    assert isinstance(node, str)
+    assert isinstance(node, pycompat.TEXT_TYPE)
     assert maya.cmds.objExists(node)
     assert version in lib_const.MM_IMAGE_PLANE_VERSION_LIST
     result = None

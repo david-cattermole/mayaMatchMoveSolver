@@ -23,6 +23,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import mmSolver.utils.python_compat as pycompat
+
 
 def get_nodes_recursively(top_node):
     nodes = []
@@ -151,7 +153,7 @@ class Node(object):
         self._neverHasChildren = value
 
     def icon(self):
-        assert isinstance(self._iconPath, str)
+        assert isinstance(self._iconPath, pycompat.TEXT_TYPE)
         if self._icon is None:
             import mmSolver.ui.uiutils as uiutils
 

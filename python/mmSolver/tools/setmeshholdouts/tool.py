@@ -21,45 +21,57 @@ Tools to set hold-out attributes on meshes.
 These tools can enable or disable the hold-out attribute on mesh nodes.
 """
 
-import maya.cmds as cmds
+import maya.cmds
 
 import mmSolver.logger
 
+import mmSolver.utils.node as node_utils
+
 LOG = mmSolver.logger.get_logger()
 
+NO_SCENE_MESHES_WARNING_MESSAGE = "No mesh nodes found in the Maya scene."
+SELECTED_MESHES_WARNING_MESSAGE = (
+    "Please select mesh objects, no mesh nodes were found from the selection."
+)
 
-def set_holdout(mesh_list, enable=True):
-    for mesh in mesh_list:
-        cmds.setAttr(mesh + ".holdOut", enable)
+
+def set_holdout(mesh_nodes, value):
+    assert isinstance(value, bool)
+    attr_name = 'holdOut'
+    for mesh_node in mesh_nodes:
+        if node_utils.attribute_exists(attr_name, mesh_node):
+            node_attr = "{}.holdOut".format(mesh_node)
+            node_utils.set_attr(node_attr, value, relock=True)
+    return
 
 
 def enable_all_meshes():
-    all_meshes = cmds.ls(dag=True, type="mesh") or []
-    if not all_meshes:
-        LOG.warn("Mesh not found.")
+    all_meshes = maya.cmds.ls(dag=True, type="mesh") or []
+    if len(all_meshes) == 0:
+        LOG.warn(NO_SCENE_MESHES_WARNING_MESSAGE)
         return
     set_holdout(all_meshes, True)
 
 
 def disable_all_meshes():
-    all_meshes = cmds.ls(dag=True, type="mesh") or []
-    if not all_meshes:
-        LOG.warn("Mesh not found.")
+    all_meshes = maya.cmds.ls(dag=True, type="mesh") or []
+    if len(all_meshes) == 0:
+        LOG.warn(NO_SCENE_MESHES_WARNING_MESSAGE)
         return
     set_holdout(all_meshes, False)
 
 
 def enable_selected_meshes():
-    selected_meshes = cmds.ls(selection=True, dag=True, type="mesh") or []
-    if not selected_meshes:
-        LOG.warn("Mesh selection not found.")
+    selected_meshes = maya.cmds.ls(selection=True, dag=True, type="mesh") or []
+    if len(selected_meshes) == 0:
+        LOG.warn(SELECTED_MESHES_WARNING_MESSAGE)
         return
     set_holdout(selected_meshes, True)
 
 
 def disable_selected_meshes():
-    selected_meshes = cmds.ls(selection=True, dag=True, type="mesh") or []
-    if not selected_meshes:
-        LOG.warn("Mesh selection not found.")
+    selected_meshes = maya.cmds.ls(selection=True, dag=True, type="mesh") or []
+    if len(selected_meshes) == 0:
+        LOG.warn(SELECTED_MESHES_WARNING_MESSAGE)
         return
     set_holdout(selected_meshes, False)

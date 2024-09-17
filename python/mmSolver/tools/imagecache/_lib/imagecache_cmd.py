@@ -26,6 +26,7 @@ from __future__ import print_function
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.python_compat as pycompat
 
 LOG = mmSolver.logger.get_logger()
 
@@ -59,25 +60,25 @@ def get_cpu_cache_slot_count():
 
 
 def get_gpu_cache_group_item_count(group_name):
-    assert isinstance(group_name, str)
+    assert isinstance(group_name, pycompat.TEXT_TYPE)
     assert len(group_name) > 0
     return int(maya.cmds.mmImageCache(group_name, query=True, gpuGroupItemCount=True))
 
 
 def get_cpu_cache_group_item_count(group_name):
-    assert isinstance(group_name, str)
+    assert isinstance(group_name, pycompat.TEXT_TYPE)
     assert len(group_name) > 0
     return int(maya.cmds.mmImageCache(group_name, query=True, cpuGroupItemCount=True))
 
 
 def get_gpu_cache_group_item_names(group_name):
-    assert isinstance(group_name, str)
+    assert isinstance(group_name, pycompat.TEXT_TYPE)
     assert len(group_name) > 0
     return maya.cmds.mmImageCache(group_name, query=True, gpuGroupItemNames=True)
 
 
 def get_cpu_cache_group_item_names(group_name):
-    assert isinstance(group_name, str)
+    assert isinstance(group_name, pycompat.TEXT_TYPE)
     assert len(group_name) > 0
     return maya.cmds.mmImageCache(group_name, query=True, cpuGroupItemNames=True)
 

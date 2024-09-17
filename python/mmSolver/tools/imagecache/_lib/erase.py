@@ -28,6 +28,7 @@ import maya.cmds
 import mmSolver.logger
 import mmSolver.utils.imageseq as imageseq_utils
 import mmSolver.utils.constant as const_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.imagecache.constant as const
 import mmSolver.tools.imagecache._lib.imagecache_cmd as imagecache_cmd
 import mmSolver.tools.createimageplane._lib.constant as imageplane_const
@@ -40,7 +41,7 @@ _IMAGE_PLANE_SHAPE = imageplane_const.MM_IMAGE_PLANE_SHAPE_V2
 
 
 def _make_group_name_consistent(group_name):
-    assert isinstance(group_name, str)
+    assert isinstance(group_name, pycompat.TEXT_TYPE)
     assert len(group_name) > 0
 
     # The ImageCache stores all file paths with UNIX
@@ -51,14 +52,14 @@ def _make_group_name_consistent(group_name):
 
 
 def erase_gpu_group_items(group_name):
-    assert isinstance(group_name, str)
+    assert isinstance(group_name, pycompat.TEXT_TYPE)
     assert len(group_name) > 0
     group_name = _make_group_name_consistent(group_name)
     return maya.cmds.mmImageCache([group_name], edit=True, gpuEraseGroupItems=True)
 
 
 def erase_cpu_group_items(group_name):
-    assert isinstance(group_name, str)
+    assert isinstance(group_name, pycompat.TEXT_TYPE)
     assert len(group_name) > 0
     group_name = _make_group_name_consistent(group_name)
     return maya.cmds.mmImageCache([group_name], edit=True, cpuEraseGroupItems=True)
@@ -91,7 +92,9 @@ def erase_all_images_on_image_plane_slots(cache_type, shape_node):
     assert maya.cmds.nodeType(shape_node) == _IMAGE_PLANE_SHAPE
 
     file_patterns = imageplane_lib.get_file_pattern_for_all_slots(shape_node)
-    file_patterns = [x for x in file_patterns if isinstance(x, str) and len(x) > 0]
+    file_patterns = [
+        x for x in file_patterns if isinstance(x, pycompat.TEXT_TYPE) and len(x) > 0
+    ]
     if len(file_patterns) == 0:
         LOG.warn('mmImagePlane unused slots are all invalid; node=%r', shape_node)
         return
@@ -124,7 +127,9 @@ def erase_images_in_unused_image_plane_slots(cache_type, shape_node):
     assert maya.cmds.nodeType(shape_node) == _IMAGE_PLANE_SHAPE
 
     file_patterns = imageplane_lib.get_file_pattern_for_unused_slots(shape_node)
-    file_patterns = [x for x in file_patterns if isinstance(x, str) and len(x) > 0]
+    file_patterns = [
+        x for x in file_patterns if isinstance(x, pycompat.TEXT_TYPE) and len(x) > 0
+    ]
     if len(file_patterns) == 0:
         LOG.warn('mmImagePlane unused slots are all invalid; node=%r', shape_node)
         return
@@ -141,7 +146,7 @@ def erase_image_sequence(
 ):
     assert cache_type in const.CACHE_TYPE_VALUES
     assert format_style in const_utils.IMAGE_SEQ_FORMAT_STYLE_VALUES
-    assert isinstance(file_pattern, str)
+    assert isinstance(file_pattern, pycompat.TEXT_TYPE)
     assert isinstance(start_frame, int)
     assert isinstance(end_frame, int)
 

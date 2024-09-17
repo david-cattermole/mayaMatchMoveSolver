@@ -15,6 +15,11 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
+"""
+Tools to set hold-out attributes on meshes.
+
+These tools can enable or disable the hold-out attribute on mesh nodes.
+"""
 
 import maya.cmds as cmds
 

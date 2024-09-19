@@ -71,7 +71,7 @@ def _dummy_initialize(*args):
     This dummy function is used for the callbacks below, but it
     contains an extra argument.
     """
-    initialize()
+    main()
 
 
 def main():

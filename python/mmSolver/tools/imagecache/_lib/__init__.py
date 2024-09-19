@@ -16,25 +16,5 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Functions to control the image cache.
+Image Cache library functions.
 """
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
-import collections
-
-import mmSolver.logger
-import mmSolver.utils.python_compat as pycompat
-
-LOG = mmSolver.logger.get_logger()
-CapacityValue = collections.namedtuple('CapacityValue', ['size_bytes', 'percent'])
-
-
-def convert_to_capacity_value(percent, total_bytes):
-    assert isinstance(percent, float)
-    assert isinstance(total_bytes, pycompat.INT_TYPES)
-    ratio = percent / 100.0
-    size_bytes = pycompat.LONG_TYPE(total_bytes * ratio)
-    return CapacityValue(size_bytes, percent)

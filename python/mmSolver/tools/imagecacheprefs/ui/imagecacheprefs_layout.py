@@ -20,6 +20,10 @@ The main component of the user interface for the image cache
 window.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 
 import mmSolver.ui.qtpyutils as qtpyutils
@@ -33,6 +37,7 @@ import mmSolver.logger
 import mmSolver.utils.config as config_utils
 import mmSolver.utils.constant as const_utils
 import mmSolver.utils.math as math_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.imagecache.config_file as config_file
 import mmSolver.tools.imagecache.config_scene as config_scene
 import mmSolver.tools.imagecache.config as config
@@ -48,7 +53,7 @@ def set_memory_total_label(
     size_bytes,
 ):
     assert isinstance(label, QtWidgets.QLabel)
-    assert isinstance(size_bytes, int)
+    assert isinstance(size_bytes, pycompat.INT_TYPES)
     gigabytes = 0.0
     if size_bytes > 0:
         gigabytes = size_bytes / const_utils.BYTES_TO_GIGABYTES
@@ -59,8 +64,8 @@ def set_memory_total_label(
 
 def set_memory_used_label(label, used_size_bytes, total_size_bytes):
     assert isinstance(label, QtWidgets.QLabel)
-    assert isinstance(used_size_bytes, int)
-    assert isinstance(total_size_bytes, int)
+    assert isinstance(used_size_bytes, pycompat.INT_TYPES)
+    assert isinstance(total_size_bytes, pycompat.INT_TYPES)
     used_gigabytes = 0.0
     if used_size_bytes > 0:
         used_gigabytes = used_size_bytes / const_utils.BYTES_TO_GIGABYTES
@@ -88,7 +93,7 @@ def set_capacity_size_label(
     size_bytes,
 ):
     assert isinstance(label, QtWidgets.QLabel)
-    assert isinstance(size_bytes, int)
+    assert isinstance(size_bytes, pycompat.INT_TYPES)
     gigabytes = 0.0
     if size_bytes > 0:
         gigabytes = size_bytes / const_utils.BYTES_TO_GIGABYTES
@@ -99,8 +104,8 @@ def set_capacity_size_label(
 
 def set_used_size_label(label, used_size_bytes, capacity_size_bytes):
     assert isinstance(label, QtWidgets.QLabel)
-    assert isinstance(used_size_bytes, int)
-    assert isinstance(capacity_size_bytes, int)
+    assert isinstance(used_size_bytes, pycompat.INT_TYPES)
+    assert isinstance(capacity_size_bytes, pycompat.INT_TYPES)
     used_gigabytes = 0.0
     if used_size_bytes > 0:
         used_gigabytes = used_size_bytes / const_utils.BYTES_TO_GIGABYTES
@@ -140,7 +145,7 @@ def set_value_double_spin_box(
 def set_capacity_widgets(
     label, slider, double_spin_box, capacity_bytes, capacity_percent
 ):
-    assert isinstance(capacity_bytes, int)
+    assert isinstance(capacity_bytes, pycompat.INT_TYPES)
     assert isinstance(capacity_percent, float)
     set_capacity_size_label(label, capacity_bytes)
     set_percent_slider(slider, capacity_percent)
@@ -239,7 +244,7 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
 
         gpu_memory_total = lib.get_gpu_memory_total_bytes()
         ratio = percent / 100.0
-        size_bytes = int(ratio * gpu_memory_total)
+        size_bytes = pycompat.LONG_TYPE(ratio * gpu_memory_total)
         LOG.debug('_gpu_default_capacity_spin_box_changed: ratio=%r', ratio)
         LOG.debug('_gpu_default_capacity_spin_box_changed: size_bytes=%r', size_bytes)
 
@@ -258,7 +263,7 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
 
         cpu_memory_total = lib.get_cpu_memory_total_bytes()
         ratio = percent / 100.0
-        size_bytes = int(ratio * cpu_memory_total)
+        size_bytes = pycompat.LONG_TYPE(ratio * cpu_memory_total)
         LOG.debug('_cpu_default_capacity_spin_box_changed: ratio=%r', ratio)
         LOG.debug('_cpu_default_capacity_spin_box_changed: size_bytes=%r', size_bytes)
 
@@ -277,7 +282,7 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
 
         gpu_memory_total = lib.get_gpu_memory_total_bytes()
         ratio = percent / 100.0
-        size_bytes = int(ratio * gpu_memory_total)
+        size_bytes = pycompat.LONG_TYPE(ratio * gpu_memory_total)
         LOG.debug('_gpu_scene_capacity_spin_box_changed: ratio=%r', ratio)
         LOG.debug('_gpu_scene_capacity_spin_box_changed: size_bytes=%r', size_bytes)
 
@@ -296,7 +301,7 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
 
         cpu_memory_total = lib.get_cpu_memory_total_bytes()
         ratio = percent / 100.0
-        size_bytes = int(ratio * cpu_memory_total)
+        size_bytes = pycompat.LONG_TYPE(ratio * cpu_memory_total)
         LOG.debug('_cpu_scene_capacity_spin_box_changed: ratio=%r', ratio)
         LOG.debug('_cpu_scene_capacity_spin_box_changed: size_bytes=%r', size_bytes)
 
@@ -323,7 +328,7 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
         LOG.debug('_gpu_default_capacity_slider_changed: percent=%r', percent)
 
         gpu_memory_total = lib.get_gpu_memory_total_bytes()
-        size_bytes = int(ratio * gpu_memory_total)
+        size_bytes = pycompat.LONG_TYPE(ratio * gpu_memory_total)
 
         set_capacity_size_label(label, size_bytes)
 
@@ -348,7 +353,7 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
         LOG.debug('_cpu_default_capacity_slider_changed: percent=%r', percent)
 
         cpu_memory_total = lib.get_cpu_memory_total_bytes()
-        size_bytes = int(ratio * cpu_memory_total)
+        size_bytes = pycompat.LONG_TYPE(ratio * cpu_memory_total)
 
         set_capacity_size_label(label, size_bytes)
 
@@ -373,7 +378,7 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
         LOG.debug('_gpu_scene_capacity_slider_changed: percent=%r', percent)
 
         gpu_memory_total = lib.get_gpu_memory_total_bytes()
-        size_bytes = int(ratio * gpu_memory_total)
+        size_bytes = pycompat.LONG_TYPE(ratio * gpu_memory_total)
 
         set_capacity_size_label(label, size_bytes)
 
@@ -398,7 +403,7 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
         LOG.debug('_cpu_scene_capacity_slider_changed: percent=%r', percent)
 
         cpu_memory_total = lib.get_cpu_memory_total_bytes()
-        size_bytes = int(ratio * cpu_memory_total)
+        size_bytes = pycompat.LONG_TYPE(ratio * cpu_memory_total)
 
         set_capacity_size_label(label, size_bytes)
 
@@ -424,7 +429,7 @@ class ImageCachePrefsLayout(QtWidgets.QWidget, ui_imagecacheprefs_layout.Ui_Form
             percent = scene_spin_box.value()
         ratio = percent / 100.0
 
-        size_bytes = int(ratio * memory_total)
+        size_bytes = pycompat.LONG_TYPE(ratio * memory_total)
         return size_bytes
 
     def get_gpu_capacity_bytes(self):

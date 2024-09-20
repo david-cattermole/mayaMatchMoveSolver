@@ -48,7 +48,9 @@ def get_bake_frame_range(frame_range_mode, custom_start_frame, custom_end_frame)
     return frame_range
 
 
-def bake_attributes(nodes, attrs, start_frame, end_frame, smart_bake=False):
+def bake_attributes(
+    nodes, attrs, start_frame, end_frame, smart_bake=False, preserve_outside_keys=False
+):
     """
     Bake the attributes on nodes.
 
@@ -60,11 +62,14 @@ def bake_attributes(nodes, attrs, start_frame, end_frame, smart_bake=False):
     :param start_frame: Start frame to bake.
     :param end_frame: End frame to bake.
     :param smart_bake: Perform a "smart" bake - do not bake per-frame.
+    :param preserve_outside_keys:
+        Delete the keyframes outside the given frame range, or not.
     """
     assert isinstance(nodes, list)
     assert isinstance(start_frame, pycompat.INT_TYPES)
     assert isinstance(end_frame, pycompat.INT_TYPES)
     assert isinstance(smart_bake, bool)
+    assert isinstance(preserve_outside_keys, bool)
     assert isinstance(attrs, list)
     if smart_bake is True:
         maya.cmds.bakeResults(
@@ -72,6 +77,7 @@ def bake_attributes(nodes, attrs, start_frame, end_frame, smart_bake=False):
             time=(start_frame, end_frame),
             attribute=attrs,
             smart=int(smart_bake),
+            preserveOutsideKeys=preserve_outside_keys,
             simulation=True,
             sparseAnimCurveBake=False,
             minimizeRotation=True,
@@ -81,6 +87,7 @@ def bake_attributes(nodes, attrs, start_frame, end_frame, smart_bake=False):
             nodes,
             time=(start_frame, end_frame),
             attribute=attrs,
+            preserveOutsideKeys=preserve_outside_keys,
             simulation=True,
             sparseAnimCurveBake=False,
             minimizeRotation=True,

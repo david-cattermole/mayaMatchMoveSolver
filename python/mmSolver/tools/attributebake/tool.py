@@ -66,6 +66,10 @@ def main():
     from_channelbox_state = configmaya.get_scene_option(
         const.CONFIG_FROM_CHANNELBOX_KEY, const.DEFAULT_FROM_CHANNELBOX_STATE
     )
+    preserve_outside_keys_state = configmaya.get_scene_option(
+        const.CONFIG_PRESERVE_OUTSIDE_KEYS_KEY,
+        const.DEFAULT_PRESERVE_OUTSIDE_KEYS_STATE,
+    )
 
     frame_range = lib.get_bake_frame_range(
         frame_range_mode, custom_start_frame, custom_end_frame
@@ -86,15 +90,25 @@ def main():
         disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE,
     )
     with ctx:
+        bake_success = False
         try:
             lib.bake_attributes(
-                nodes, attrs, frame_range.start, frame_range.end, smart_bake_state
+                nodes,
+                attrs,
+                frame_range.start,
+                frame_range.end,
+                smart_bake=smart_bake_state,
+                preserve_outside_keys=preserve_outside_keys_state,
             )
+            bake_success = True
         except Exception:
             LOG.exception('Bake attributes failed.')
         finally:
             e = time.time()
-            LOG.warn('Bake attribute success. Time elapsed: %r secs', e - s)
+            if bake_success is True:
+                LOG.info('Bake attribute success. Time elapsed: %r secs', e - s)
+            else:
+                LOG.error('Bake attribute failed. Time elapsed: %r secs', e - s)
     return
 
 

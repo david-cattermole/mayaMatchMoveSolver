@@ -126,6 +126,69 @@ control visibility like so:
 See :ref:`mmSolver.utils.viewport <mmsolver-utils-viewport-ref>`
 Python module documentation for more help.
 
+.. _set-mesh-hold-outs-ref:
+
+Set Mesh Hold-Outs
+------------------
+
+This tool is used to force mesh nodes to be rendered as hold-out in
+the viewport, or not.
+
+This is similar to assigning a UseBackground shader, to geometry,
+however this tool avoids the need to create a shader, and manage
+assignments.
+
+The tool is split into different individual features which are fairly
+self-explanatory:
+
+- Enable / Disable Hold-Outs on *selected* meshes.
+
+- Enable / Disable Hold-Outs on *all* Meshes in the scene.
+
+Usage:
+
+1) Select meshes (optional)
+
+2) Run tool.
+
+   - Meshes will be have the Hold-Out attribute enabled / disabled.
+
+
+Each different feature can be activated with a slightly different Python
+command.
+
+Enable Hold-outs on Selected Meshes:
+
+.. code:: python
+
+    import mmSolver.tools.setmesholdouts.tool as tool
+    tool.enable_selected_meshes()
+
+
+Disable Hold-outs on Selected Meshes:
+
+.. code:: python
+
+    import mmSolver.tools.setmesholdouts.tool as tool
+    tool.disable_selected_meshes()
+
+
+Enable Hold-outs on All Meshes:
+
+.. code:: python
+
+    import mmSolver.tools.setmesholdouts.tool as tool
+    tool.enable_all_meshes()
+
+
+Disable Hold-outs on All Meshes:
+
+.. code:: python
+
+    import mmSolver.tools.setmesholdouts.tool as tool
+    tool.disable_all_meshes()
+
+
 .. _create-sky-dome-tool-ref:
 
 Create Horizon / Axis Dome / Sky Dome

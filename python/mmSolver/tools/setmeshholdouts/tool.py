@@ -35,7 +35,7 @@ SELECTED_MESHES_WARNING_MESSAGE = (
 )
 
 
-def set_holdout(mesh_nodes, value):
+def _set_holdout(mesh_nodes, value):
     assert isinstance(value, bool)
     attr_name = 'holdOut'
     for mesh_node in mesh_nodes:
@@ -50,7 +50,7 @@ def enable_all_meshes():
     if len(all_meshes) == 0:
         LOG.warn(NO_SCENE_MESHES_WARNING_MESSAGE)
         return
-    set_holdout(all_meshes, True)
+    _set_holdout(all_meshes, True)
 
 
 def disable_all_meshes():
@@ -58,7 +58,7 @@ def disable_all_meshes():
     if len(all_meshes) == 0:
         LOG.warn(NO_SCENE_MESHES_WARNING_MESSAGE)
         return
-    set_holdout(all_meshes, False)
+    _set_holdout(all_meshes, False)
 
 
 def enable_selected_meshes():
@@ -66,7 +66,7 @@ def enable_selected_meshes():
     if len(selected_meshes) == 0:
         LOG.warn(SELECTED_MESHES_WARNING_MESSAGE)
         return
-    set_holdout(selected_meshes, True)
+    _set_holdout(selected_meshes, True)
 
 
 def disable_selected_meshes():
@@ -74,4 +74,4 @@ def disable_selected_meshes():
     if len(selected_meshes) == 0:
         LOG.warn(SELECTED_MESHES_WARNING_MESSAGE)
         return
-    set_holdout(selected_meshes, False)
+    _set_holdout(selected_meshes, False)

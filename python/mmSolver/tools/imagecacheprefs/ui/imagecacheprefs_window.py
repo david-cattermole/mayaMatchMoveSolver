@@ -51,7 +51,7 @@ baseModule, BaseWindow = uiutils.getBaseWindow()
 
 def _open_help():
     src = helputils.get_help_source()
-    page = 'tools_generaltools.html#image-cache'
+    page = 'tools_generaltools.html#image-cache-preferences'
     helputils.open_help_in_browser(page=page, help_source=src)
     return
 

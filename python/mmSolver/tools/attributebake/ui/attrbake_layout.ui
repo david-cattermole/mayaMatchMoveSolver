@@ -94,6 +94,16 @@
         </item>
        </layout>
       </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="preserve_outside_keys_cbox">
+        <property name="text">
+         <string>Preserve Outside Keys</string>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>

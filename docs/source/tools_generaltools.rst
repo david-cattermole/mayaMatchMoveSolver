@@ -516,6 +516,25 @@ To run the tool, use this Python command:
     import mmSolver.tools.removesolvernodes.tool as tool
     tool.main()
 
+.. _image-cache-preferences-ref:
+
+Image Cache Preferences
+-----------------------
+
+.. figure:: images/tools_image_cache_preferences_ui.png
+    :alt: Image Cache Preferences window
+    :align: center
+    :width: 60%
+
+*To be written.*
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.imagecacheprefs.tool as tool
+    tool.open_window()
+
 .. _user-preferences-tool-ref:
 
 User Preferences

@@ -48,7 +48,7 @@ def _delaunator_indices(transform_nodes, viewport):
 
     """
     assert isinstance(viewport, omui.M3dView)
-    assert len(transform_nodes) > const.MINIMUM_NUMBER_OF_POINTS
+    assert len(transform_nodes) >= const.MINIMUM_NUMBER_OF_POINTS
 
     world_positions = []
     view_positions = []
@@ -117,7 +117,7 @@ def create_mesh_from_transform_nodes(
     assert isinstance(mesh_name, str)
     assert len(mesh_name) > 0
     assert isinstance(offset_value, float)
-    assert len(transform_nodes) > const.MINIMUM_NUMBER_OF_POINTS
+    assert len(transform_nodes) >= const.MINIMUM_NUMBER_OF_POINTS
 
     active_viewport = omui.M3dView.active3dView()
     mesh_data = _delaunator_indices(transform_nodes, active_viewport)

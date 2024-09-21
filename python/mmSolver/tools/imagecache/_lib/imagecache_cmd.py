@@ -84,26 +84,26 @@ def get_cpu_cache_group_item_names(group_name):
 
 
 def get_gpu_cache_used_bytes():
-    return int(maya.cmds.mmImageCache(query=True, gpuUsed=True))
+    return pycompat.LONG_TYPE(maya.cmds.mmImageCache(query=True, gpuUsed=True))
 
 
 def get_cpu_cache_used_bytes():
-    return int(maya.cmds.mmImageCache(query=True, cpuUsed=True))
+    return pycompat.LONG_TYPE(maya.cmds.mmImageCache(query=True, cpuUsed=True))
 
 
 def get_gpu_cache_capacity_bytes():
-    return int(maya.cmds.mmImageCache(query=True, gpuCapacity=True))
+    return pycompat.LONG_TYPE(maya.cmds.mmImageCache(query=True, gpuCapacity=True))
 
 
 def get_cpu_cache_capacity_bytes():
-    return int(maya.cmds.mmImageCache(query=True, cpuCapacity=True))
+    return pycompat.LONG_TYPE(maya.cmds.mmImageCache(query=True, cpuCapacity=True))
 
 
 def set_gpu_cache_capacity_bytes(size_bytes):
-    assert isinstance(size_bytes, int)
+    assert isinstance(size_bytes, pycompat.INT_TYPES)
     return maya.cmds.mmImageCache(edit=True, gpuCapacity=size_bytes)
 
 
 def set_cpu_cache_capacity_bytes(size_bytes):
-    assert isinstance(size_bytes, int)
+    assert isinstance(size_bytes, pycompat.INT_TYPES)
     return maya.cmds.mmImageCache(edit=True, cpuCapacity=size_bytes)

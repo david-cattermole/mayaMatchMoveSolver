@@ -53,6 +53,7 @@ DEFAULT_FRAME_END = 120
 DEFAULT_FRAME_RANGE_MODE = FRAME_RANGE_MODE_TIMELINE_INNER_VALUE
 DEFAULT_SMART_BAKE_STATE = False
 DEFAULT_FROM_CHANNELBOX_STATE = True
+DEFAULT_PRESERVE_OUTSIDE_KEYS_STATE = True
 
 # Config files
 CONFIG_FRAME_RANGE_MODE_KEY = 'mmSolver_attrbake_frame_range_mode'
@@ -60,3 +61,4 @@ CONFIG_FRAME_START_KEY = 'mmSolver_attrbake_frame_start'
 CONFIG_FRAME_END_KEY = 'mmSolver_attrbake_frame_end'
 CONFIG_SMART_BAKE_KEY = 'mmSolver_attrbake_smart_bake'
 CONFIG_FROM_CHANNELBOX_KEY = 'mmSolver_attrbake_from_channel_box'
+CONFIG_PRESERVE_OUTSIDE_KEYS_KEY = 'mmSolver_attrbake_preserve_outside_keys'

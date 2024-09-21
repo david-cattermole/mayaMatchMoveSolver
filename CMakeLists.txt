@@ -64,7 +64,7 @@ set(PROJECT_VERSION_PATCH 0)
 set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
 set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodesk Maya.")
-set(PROJECT_AUTHOR "David Cattermole and others (see AUTHORS.txt file)")
+set(PROJECT_AUTHOR "David Cattermole, Patcha Saheb Binginapalli, and others (see AUTHORS.txt file)")
 set(PROJECT_COPYRIGHT
   "2018-2024, David Cattermole, Anil Reddy, Kazuma Tonegawa, Patcha Saheb Binginapalli.")
 enable_testing()

@@ -17,7 +17,14 @@
 # Code from https://github.com/HakanSeven12/Delaunator-Python/blob/master/Delaunator.py
 #
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import math
+
+import mmSolver.utils.python_compat as pycompat
+
 
 EPSILON = math.pow(2, -52)
 EDGE_STACK = [None] * 512
@@ -49,7 +56,7 @@ class Delaunator():
         self._halfedges = [None] * maxTriangles * 3
 
         # temporary arrays for tracking the edges of the advancing convex hull
-        self.hashSize = math.ceil(math.sqrt(n))
+        self.hashSize = pycompat.LONG_TYPE(math.ceil(math.sqrt(n)))
         self.hullPrev = [None] * n  # edge to prev edge
         self.hullNext = [None] * n  # edge to next edge
         self.hullTri = [None] * n  # edge to adjacent triangle
@@ -66,10 +73,10 @@ class Delaunator():
         n = len(coords) >> 1
 
         # populate an array of point indices; calculate input data bbox
-        minX = math.inf
-        minY = math.inf
-        maxX = -math.inf
-        maxY = -math.inf
+        minX = float('inf')
+        minY = float('inf')
+        maxX = float('-inf')
+        maxY = float('-inf')
 
         for i in range(0, n):
             x = coords[2 * i]
@@ -83,7 +90,7 @@ class Delaunator():
         cx = (minX + maxX) / 2
         cy = (minY + maxY) / 2
 
-        minDist = math.inf
+        minDist = float('inf')
         i0 = 0
         i1 = 0
         i2 = 0
@@ -98,7 +105,7 @@ class Delaunator():
 
         i0x = coords[2 * i0]
         i0y = coords[2 * i0 + 1]
-        minDist = math.inf
+        minDist = float('inf')
 
         # find the point closest to the seed
         for i in range(0, n):
@@ -112,7 +119,7 @@ class Delaunator():
         i1x = coords[2 * i1]
         i1y = coords[2 * i1 + 1]
 
-        minRadius = math.inf
+        minRadius = float('inf')
 
         # find the third point which forms the smallest circumcircle with the first two
         for i in range(0, n):
@@ -127,7 +134,7 @@ class Delaunator():
         i2x = coords[2 * i2]
         i2y = coords[2 * i2 + 1]
 
-        if (minRadius == math.inf):
+        if (minRadius == float('inf')):
             # order collinear points by dx (or dy if all x are identical)
             # and return the list as a hull
             for i in range(0, n):
@@ -137,7 +144,7 @@ class Delaunator():
             quicksort(self._ids, self._dists, 0, n - 1)
             hull = [None] * n
             j = 0
-            d0 = -math.inf
+            d0 = float('-inf')
 
             for i in range(0, n):
                 id = self._ids[i]
@@ -295,8 +302,10 @@ class Delaunator():
         return self.triangles
 
     def _hashKey(self, x, y):
-        return math.floor(pseudoAngle(x - self._cx,
-                                      y - self._cy) * self.hashSize) % self.hashSize
+        angle = pseudoAngle(x - self._cx,
+                            y - self._cy)
+        key = math.floor(angle * self.hashSize) % self.hashSize
+        return pycompat.LONG_TYPE(key)
 
     def _legalize(self, a, coords):
         i = 0

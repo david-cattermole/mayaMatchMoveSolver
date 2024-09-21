@@ -25,6 +25,10 @@ Usage::
 
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import mmSolver.ui.qtpyutils as qtpyutils
 
 qtpyutils.override_binding_order()
@@ -47,7 +51,7 @@ baseModule, BaseWindow = uiutils.getBaseWindow()
 
 def _open_help():
     src = helputils.get_help_source()
-    page = 'tools_generaltools.html#image-cache'
+    page = 'tools_generaltools.html#image-cache-preferences'
     helputils.open_help_in_browser(page=page, help_source=src)
     return
 

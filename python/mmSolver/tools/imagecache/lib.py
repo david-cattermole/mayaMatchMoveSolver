@@ -23,7 +23,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-from mmSolver.tools.imagecache._lib.initialize import initialize
 from mmSolver.tools.imagecache._lib.query_resources import (
     get_gpu_memory_total_bytes,
     get_gpu_memory_used_bytes,
@@ -65,8 +64,6 @@ from mmSolver.tools.imagecache._lib.erase import (
 
 # Stop users from accessing the internal functions of this sub-module.
 __all__ = [
-    'initialize',
-    #
     'get_gpu_memory_total_bytes',
     'get_gpu_memory_used_bytes',
     'get_cpu_memory_total_bytes',

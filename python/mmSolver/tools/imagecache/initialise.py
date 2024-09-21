@@ -16,7 +16,7 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 #
 """
-Functions to control the image cache.
+Start up and initialize the image cache.
 """
 
 from __future__ import absolute_import
@@ -29,7 +29,7 @@ import maya.OpenMaya as OpenMaya
 import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.constant as const_utils
-import mmSolver.tools.imagecache._lib.imagecache_cmd as imagecache_cmd
+import mmSolver.tools.imagecache.lib as lib
 import mmSolver.tools.imagecache.config as config
 
 
@@ -71,10 +71,10 @@ def _dummy_initialize(*args):
     This dummy function is used for the callbacks below, but it
     contains an extra argument.
     """
-    initialize()
+    main()
 
 
-def initialize():
+def main():
     """
     Set Image Cache capacities from preferences.
     """
@@ -108,8 +108,8 @@ def initialize():
     gpu_capacity_percent = _format_percent(gpu_capacity_percent)
     cpu_capacity_percent = _format_percent(cpu_capacity_percent)
 
-    gpu_current_capacity_bytes = imagecache_cmd.get_gpu_cache_capacity_bytes()
-    cpu_current_capacity_bytes = imagecache_cmd.get_cpu_cache_capacity_bytes()
+    gpu_current_capacity_bytes = lib.get_gpu_cache_capacity_bytes()
+    cpu_current_capacity_bytes = lib.get_cpu_cache_capacity_bytes()
 
     if gpu_capacity_bytes != gpu_current_capacity_bytes:
         LOG.info(
@@ -117,7 +117,7 @@ def initialize():
             gpu_capacty_gigabytes,
             gpu_capacity_percent,
         )
-        imagecache_cmd.set_gpu_cache_capacity_bytes(gpu_capacity_bytes)
+        lib.set_gpu_cache_capacity_bytes(gpu_capacity_bytes)
 
     if cpu_capacity_bytes != cpu_current_capacity_bytes:
         LOG.info(
@@ -125,5 +125,5 @@ def initialize():
             cpu_capacty_gigabytes,
             cpu_capacity_percent,
         )
-        imagecache_cmd.set_cpu_cache_capacity_bytes(cpu_capacity_bytes)
+        lib.set_cpu_cache_capacity_bytes(cpu_capacity_bytes)
     return

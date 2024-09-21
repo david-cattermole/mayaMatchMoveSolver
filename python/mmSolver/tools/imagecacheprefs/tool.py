@@ -24,6 +24,7 @@ from __future__ import division
 from __future__ import print_function
 
 import mmSolver.logger
+import mmSolver.api as mmapi
 
 LOG = mmSolver.logger.get_logger()
 
@@ -31,4 +32,5 @@ LOG = mmSolver.logger.get_logger()
 def open_window():
     import mmSolver.tools.imagecacheprefs.ui.imagecacheprefs_window as window
 
+    mmapi.load_plugin()
     window.main()

@@ -23,6 +23,7 @@ import maya.api.OpenMayaUI as omui
 import maya.cmds
 
 import mmSolver.logger
+import mmSolver.utils.node as node_utils
 from mmSolver.tools.meshfrompoints.delaunator import Delaunator
 import mmSolver.tools.meshfrompoints.constant as const
 
@@ -108,6 +109,9 @@ def create_mesh_from_transform_nodes(
 
     :param mesh_name: The name of the mesh node created.
     :type mesh_name: str
+
+    :returns: The name of the created mesh node.
+    :rtype: str
     """
     if offset_value is None:
         offset_value = const.DEFAULT_STRIP_WIDTH
@@ -138,15 +142,16 @@ def create_mesh_from_transform_nodes(
     # Set mesh name.
     dag_node = om.MFnDagNode(mesh)
     dag_node.setName(mesh_name)
-    mesh_name = dag_node.name()
+    mesh_node = dag_node.name()
 
     # Set lambert
-    maya.cmds.sets(mesh_name, edit=True, forceElement='initialShadingGroup')
+    maya.cmds.sets(mesh_node, edit=True, forceElement='initialShadingGroup')
 
     # Create border edge strip mesh
     if mesh_type == const.MESH_TYPE_BORDER_EDGE_STRIP_MESH_VALUE:
-        maya.cmds.polyExtrudeFacet(mesh_name, offset=offset_value)
-        face_0 = '{}.f[0]'.format(mesh_name)
-        face_1 = '{}.f[1]'.format(mesh_name)
+        maya.cmds.polyExtrudeFacet(mesh_node, offset=offset_value)
+        face_0 = '{}.f[0]'.format(mesh_node)
+        face_1 = '{}.f[1]'.format(mesh_node)
         maya.cmds.delete(face_0, face_1)
-    return
+
+    return node_utils.get_long_name(mesh_node)

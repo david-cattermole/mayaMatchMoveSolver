@@ -73,13 +73,13 @@ def mmsolver_register_events():
     mmSolver.tools.registerevents.tool.register_events()
 
 
-def mmsolver_image_cache_initalize():
+def mmsolver_image_cache_initialise():
     """
     Initialise the mmSolver ImageCache.
     """
-    import mmSolver.tools.imagecache.initialize
+    import mmSolver.tools.imagecache.initialise
 
-    mmSolver.tools.imagecache.initialize.main()
+    mmSolver.tools.imagecache.initialise.main()
 
 
 def mmsolver_startup():
@@ -119,7 +119,4 @@ def mmsolver_startup():
 
         # Register Events.
         maya.utils.executeDeferred(mmsolver_register_events)
-
-        # Start up the image cache.
-        maya.utils.executeDeferred(mmsolver_image_cache_initalize)
     return

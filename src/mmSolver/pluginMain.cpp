@@ -583,15 +583,19 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::LineShapeNode::m_display_filter_label,
         mmsolver::LineShapeNode::m_draw_db_classification);
 
-    // Run the Python startup function when the plug-in loads.
+    // Run the Python startup and image cache initialisation function
+    // when the plug-in loads.
     bool displayEnabled = true;
     bool undoEnabled = false;
     MString startup_cmd;
     startup_cmd += "global proc mmsolver_startup() ";
     startup_cmd += "{ ";
+    startup_cmd += "python(\"";
     startup_cmd +=
-        "python(\"import mmSolver.startup; "
-        "mmSolver.startup.mmsolver_startup()\"); ";
+        "import mmSolver.startup; "
+        "mmSolver.startup.mmsolver_startup();"
+        "mmSolver.startup.mmsolver_image_cache_initialise();";
+    startup_cmd += "\"); ";
     startup_cmd += "} ";
     startup_cmd += "evalDeferred(\"mmsolver_startup\");";
     status = MGlobal::executeCommand(startup_cmd, displayEnabled, undoEnabled);

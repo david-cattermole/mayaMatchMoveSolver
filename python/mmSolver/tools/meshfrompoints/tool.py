@@ -23,9 +23,50 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import maya.cmds
+
 import mmSolver.logger
 
+import mmSolver.tools.meshfrompoints.constant as const
+import mmSolver.tools.meshfrompoints.lib as lib
+
 LOG = mmSolver.logger.get_logger()
+
+
+def _get_selection():
+    transform_nodes = maya.cmds.ls(selection=True, transforms=True) or []
+    if len(transform_nodes) < 3:
+        LOG.warn('Please select least three transform nodes.')
+        return None
+    return transform_nodes
+
+
+def create_full_mesh():
+    transform_nodes = _get_selection()
+    if transform_nodes is None:
+        return
+
+    node = lib.create_mesh_from_transform_nodes(
+        const.MESH_TYPE_FULL_MESH_VALUE, transform_nodes
+    )
+
+    if node is not None and maya.cmds.objExists(node):
+        maya.cmds.select(node, replace=True)
+    return
+
+
+def create_border_mesh():
+    transform_nodes = _get_selection()
+    if transform_nodes is None:
+        return
+
+    node = lib.create_mesh_from_transform_nodes(
+        const.MESH_TYPE_BORDER_MESH_VALUE, transform_nodes
+    )
+
+    if node is not None and maya.cmds.objExists(node):
+        maya.cmds.select(node, replace=True)
+    return
 
 
 def main():

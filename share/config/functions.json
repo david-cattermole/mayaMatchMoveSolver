@@ -660,6 +660,24 @@
                 "mmSolver.tools.meshfrompoints.tool.main();"
             ]
         },
+        "mesh_from_points_full_mesh": {
+            "name": "Create Full Mesh From Points",
+            "name_shelf": "FlMshPts",
+            "tooltip": "Create a triangulated full mesh from the selected nodes.",
+            "command": [
+                "import mmSolver.tools.meshfrompoints.tool;",
+                "mmSolver.tools.meshfrompoints.tool.create_full_mesh();"
+            ]
+        },
+        "mesh_from_points_border_mesh": {
+            "name": "Create Border Mesh From Points",
+            "name_shelf": "FlMshPts",
+            "tooltip": "Create a triangulated border mesh from the selected nodes.",
+            "command": [
+                "import mmSolver.tools.meshfrompoints.tool;",
+                "mmSolver.tools.meshfrompoints.tool.create_border_mesh();"
+            ]
+        },
         "reparent_under_node": {
             "name": "Reparent under Node (v1)",
             "name_shelf": "RePar",

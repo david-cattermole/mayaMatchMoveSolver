@@ -45,7 +45,8 @@ def _create_camera_attributes(cam_shp):
     assert isinstance(cam_shp, pycompat.TEXT_TYPE)
     assert maya.cmds.nodeType(cam_shp) == 'camera'
 
-    if maya.cmds.lockNode(cam_shp, query=True) is False:
+    cam_shp_is_locked = maya.cmds.lockNode(cam_shp, query=True)[0]
+    if cam_shp_is_locked is True:
         LOG.warn(
             'Cannot create camera attributes, camera shape is locked; cam_shp=%r',
             cam_shp,
@@ -80,7 +81,7 @@ def _create_camera_attributes(cam_shp):
 
 
 def _create_lens_toggle_setup(cam_tfm, cam_shp):
-    cam_shp_is_locked = maya.cmds.lockNode(cam_shp, query=True)
+    cam_shp_is_locked = maya.cmds.lockNode(cam_shp, query=True)[0]
     if cam_shp_is_locked is False:
         _create_camera_attributes(cam_shp)
 

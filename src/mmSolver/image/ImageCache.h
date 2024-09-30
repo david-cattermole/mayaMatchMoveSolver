@@ -172,13 +172,13 @@ private:
 public:
     // Get the capacity of the cache.
     size_t get_gpu_capacity_bytes() const {
-        const bool verbose = true;
+        const bool verbose = false;
         MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_gpu_capacity_bytes: "
                           << "m_gpu_capacity_bytes=" << m_gpu_capacity_bytes);
         return m_gpu_capacity_bytes;
     }
     size_t get_cpu_capacity_bytes() const {
-        const bool verbose = true;
+        const bool verbose = false;
         MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_cpu_capacity_bytes: "
                           << "m_cpu_capacity_bytes=" << m_cpu_capacity_bytes);
         return m_cpu_capacity_bytes;
@@ -186,13 +186,13 @@ public:
 
     // Get amount of bytes used by the cache.
     size_t get_gpu_used_bytes() const {
-        const bool verbose = true;
+        const bool verbose = false;
         MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_gpu_used_bytes: "
                           << "m_gpu_used_bytes=" << m_gpu_used_bytes);
         return m_gpu_used_bytes;
     }
     size_t get_cpu_used_bytes() const {
-        const bool verbose = true;
+        const bool verbose = false;
         MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_cpu_used_bytes: "
                           << "m_cpu_used_bytes=" << m_cpu_used_bytes);
         return m_cpu_used_bytes;
@@ -200,13 +200,13 @@ public:
 
     // Get the number of items in the cache.
     size_t get_gpu_item_count() const {
-        const bool verbose = true;
+        const bool verbose = false;
         MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_gpu_item_count: "
                           << "m_gpu_item_map.size()=" << m_gpu_item_map.size());
         return m_gpu_item_map.size();
     }
     size_t get_cpu_item_count() const {
-        const bool verbose = true;
+        const bool verbose = false;
         MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_cpu_item_count: "
                           << "m_cpu_item_map.size()=" << m_cpu_item_map.size());
         return m_cpu_item_map.size();
@@ -223,14 +223,14 @@ public:
 
     // Get the number of groups in the cache.
     size_t get_gpu_group_count() const {
-        const bool verbose = true;
+        const bool verbose = false;
         MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_gpu_group_count: "
                           << "m_gpu_group_map.size()="
                           << m_gpu_group_map.size());
         return m_gpu_group_map.size();
     }
     size_t get_cpu_group_count() const {
-        const bool verbose = true;
+        const bool verbose = false;
         MMSOLVER_MAYA_VRB("mmsolver::ImageCache::get_cpu_group_count: "
                           << "m_cpu_group_map.size()="
                           << m_cpu_group_map.size());

@@ -64,7 +64,7 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
                                   const bool do_texture_update) {
     assert(texture_manager != nullptr);
 
-    const bool verbose = false;
+    const bool verbose = true;
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache: read_texture_image_file:"
                       << " file_path=" << file_path.asChar());
 
@@ -195,7 +195,7 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
 
 void ImageCache::set_gpu_capacity_bytes(
     MHWRender::MTextureManager *texture_manager, const size_t value) {
-    const bool verbose = false;
+    const bool verbose = true;
     m_gpu_capacity_bytes = value;
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::set_gpu_capacity_bytes: "
                       << "m_gpu_capacity_bytes=" << m_gpu_capacity_bytes);
@@ -218,7 +218,7 @@ void ImageCache::set_gpu_capacity_bytes(
 }
 
 void ImageCache::set_cpu_capacity_bytes(const size_t value) {
-    const bool verbose = false;
+    const bool verbose = true;
     m_cpu_capacity_bytes = value;
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::set_cpu_capacity_bytes: "
                       << "m_cpu_capacity_bytes=" << m_cpu_capacity_bytes);
@@ -301,7 +301,7 @@ void ImageCache::print_cache_brief() const {
 }
 
 void ImageCache::gpu_group_names(GPUVectorString &out_group_names) const {
-    const bool verbose = false;
+    const bool verbose = true;
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_group_names: ");
 
     out_group_names.clear();
@@ -318,7 +318,7 @@ void ImageCache::gpu_group_names(GPUVectorString &out_group_names) const {
 }
 
 void ImageCache::cpu_group_names(CPUVectorString &out_group_names) const {
-    const bool verbose = false;
+    const bool verbose = true;
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_group_names: ");
 
     out_group_names.clear();
@@ -444,7 +444,7 @@ bool ImageCache::cpu_insert_group(const CPUCacheString &group_name,
 
 static void update_texture(MTexture *texture,
                            const ImageCache::CPUCacheValue &image_pixel_data) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     // No need for MIP-maps.
     const bool generate_mip_maps = false;
@@ -470,7 +470,7 @@ ImageCache::GPUCacheValue ImageCache::gpu_insert_item(
     const ImageCache::CPUCacheValue &image_pixel_data) {
     assert(texture_manager != nullptr);
     assert(image_pixel_data.is_valid());
-    const bool verbose = false;
+    const bool verbose = true;
 
     const GPUGroupKey item_key = mmsolver::hash::make_hash(file_path);
     const GPUGroupKey group_key = mmsolver::hash::make_hash(group_name);
@@ -553,7 +553,7 @@ ImageCache::GPUCacheValue ImageCache::gpu_insert_item(
 bool ImageCache::cpu_insert_item(const CPUCacheString &group_name,
                                  const CPUCacheString &file_path,
                                  const CPUCacheValue &image_pixel_data) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     const CPUGroupKey item_key = mmsolver::hash::make_hash(file_path);
     const CPUGroupKey group_key = mmsolver::hash::make_hash(group_name);
@@ -602,7 +602,7 @@ bool ImageCache::cpu_insert_item(const CPUCacheString &group_name,
 
 ImageCache::GPUCacheValue ImageCache::gpu_find_item(
     const GPUCacheString &file_path) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     const GPUGroupKey item_key = mmsolver::hash::make_hash(file_path);
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_find_item: "
@@ -613,7 +613,7 @@ ImageCache::GPUCacheValue ImageCache::gpu_find_item(
 
 ImageCache::GPUCacheValue ImageCache::gpu_find_item(
     const GPUCacheKey item_key) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_find_item: "
                       << "item_key=" << item_key);
@@ -631,7 +631,7 @@ ImageCache::GPUCacheValue ImageCache::gpu_find_item(
 
 ImageCache::CPUCacheValue ImageCache::cpu_find_item(
     const CPUCacheString &file_path) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     const CPUGroupKey item_key = mmsolver::hash::make_hash(file_path);
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_find_item: "
@@ -642,7 +642,7 @@ ImageCache::CPUCacheValue ImageCache::cpu_find_item(
 
 ImageCache::CPUCacheValue ImageCache::cpu_find_item(
     const CPUCacheKey item_key) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_find_item: "
                       << "item_key=" << item_key);
@@ -660,7 +660,7 @@ ImageCache::CPUCacheValue ImageCache::cpu_find_item(
 
 CacheEvictionResult ImageCache::gpu_evict_one_item(
     MHWRender::MTextureManager *texture_manager) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_evict_one_item: ");
     MMSOLVER_MAYA_VRB(
@@ -701,7 +701,7 @@ CacheEvictionResult ImageCache::gpu_evict_one_item(
 }
 
 CacheEvictionResult ImageCache::cpu_evict_one_item() {
-    const bool verbose = false;
+    const bool verbose = true;
 
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_evict_one_item: ");
     MMSOLVER_MAYA_VRB(
@@ -743,7 +743,7 @@ CacheEvictionResult ImageCache::cpu_evict_one_item() {
 CacheEvictionResult ImageCache::gpu_evict_enough_for_new_item(
     MHWRender::MTextureManager *texture_manager,
     const size_t new_memory_chunk_size) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_evict_enough_for_new_item: ");
 
@@ -781,7 +781,7 @@ CacheEvictionResult ImageCache::gpu_evict_enough_for_new_item(
 
 CacheEvictionResult ImageCache::cpu_evict_enough_for_new_item(
     const size_t new_memory_chunk_size) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_evict_enough_for_new_item: ");
 
@@ -818,7 +818,7 @@ CacheEvictionResult ImageCache::cpu_evict_enough_for_new_item(
 }
 
 size_t ImageCache::gpu_remove_item_from_group(const GPUCacheKey item_key) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     MMSOLVER_MAYA_VRB(
         "mmsolver::ImageCache::gpu_remove_item_from_group: "
@@ -861,7 +861,7 @@ size_t ImageCache::gpu_remove_item_from_group(const GPUCacheKey item_key) {
 }
 
 size_t ImageCache::cpu_remove_item_from_group(const CPUCacheKey item_key) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     MMSOLVER_MAYA_VRB(
         "mmsolver::ImageCache::cpu_remove_item_from_group: "
@@ -905,7 +905,7 @@ size_t ImageCache::cpu_remove_item_from_group(const CPUCacheKey item_key) {
 
 bool ImageCache::gpu_erase_item(MHWRender::MTextureManager *texture_manager,
                                 const GPUCacheString &file_path) {
-    const bool verbose = false;
+    const bool verbose = true;
     const GPUGroupKey item_key = mmsolver::hash::make_hash(file_path);
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_erase_item: "
                       << "item_key=" << item_key << "file_path=\""
@@ -915,7 +915,7 @@ bool ImageCache::gpu_erase_item(MHWRender::MTextureManager *texture_manager,
 
 bool ImageCache::gpu_erase_item(MHWRender::MTextureManager *texture_manager,
                                 const GPUCacheKey item_key) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_erase_item: "
                       << "item_key=" << item_key);
@@ -939,7 +939,7 @@ bool ImageCache::gpu_erase_item(MHWRender::MTextureManager *texture_manager,
 }
 
 bool ImageCache::cpu_erase_item(const CPUCacheString &file_path) {
-    const bool verbose = false;
+    const bool verbose = true;
     const CPUGroupKey item_key = mmsolver::hash::make_hash(file_path);
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_erase_item: "
                       << "item_key=" << item_key << "file_path=\""
@@ -948,7 +948,7 @@ bool ImageCache::cpu_erase_item(const CPUCacheString &file_path) {
 }
 
 bool ImageCache::cpu_erase_item(const CPUCacheKey item_key) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_erase_item: "
                       << "item_key=" << item_key);
@@ -974,7 +974,7 @@ bool ImageCache::cpu_erase_item(const CPUCacheKey item_key) {
 size_t ImageCache::gpu_erase_group_items(
     MHWRender::MTextureManager *texture_manager,
     const GPUCacheString &group_name) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     if (verbose) {
         const GPUGroupKey group_key = mmsolver::hash::make_hash(group_name);
@@ -1005,7 +1005,7 @@ size_t ImageCache::gpu_erase_group_items(
 }
 
 size_t ImageCache::cpu_erase_group_items(const CPUCacheString &group_name) {
-    const bool verbose = false;
+    const bool verbose = true;
 
     if (verbose) {
         const CPUGroupKey group_key = mmsolver::hash::make_hash(group_name);

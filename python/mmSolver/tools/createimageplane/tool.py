@@ -40,18 +40,22 @@ LOG = mmSolver.logger.get_logger()
 
 
 def _get_start_directory():
+    fallback_path = os.getcwd()
+
     workspace_path = maya.cmds.workspace(query=True, fullName=True)
     if workspace_path is None:
-        return os.getcwd()
+        return fallback_path
     workspace_path = os.path.abspath(workspace_path)
 
     file_rules = maya.cmds.workspace(query=True, fileRule=True)
     if file_rules is None:
-        return os.getcwd()
+        return fallback_path
     file_rule_names = file_rules[0::2]
     file_rule_values = file_rules[1::2]
 
     file_rule = 'sourceImages'
+    if file_rule not in file_rule_names:
+        return fallback_path
     file_rule_index = file_rule_names.index(file_rule)
     dir_name = file_rule_values[file_rule_index]
 

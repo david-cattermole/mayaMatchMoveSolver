@@ -27,6 +27,7 @@ import maya.cmds
 
 import mmSolver.logger
 import mmSolver.utils.constant as const_utils
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.tools.imagecache.lib as lib
 import mmSolver.tools.createimageplane._lib.constant as imageplane_const
 import mmSolver.tools.createimageplane._lib.mmimageplane_v2 as imageplane_lib
@@ -67,8 +68,8 @@ def _format_cache_used(used_bytes, capacity_bytes):
     Example text:
     ' 42.1% (3.53 GB) of 8.00 GB'
     """
-    assert isinstance(used_bytes, int)
-    assert isinstance(capacity_bytes, int)
+    assert isinstance(used_bytes, pycompat.INT_TYPES)
+    assert isinstance(capacity_bytes, pycompat.INT_TYPES)
 
     usage_percent = 0
     usage_gigabytes = 0

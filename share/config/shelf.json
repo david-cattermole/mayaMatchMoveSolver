@@ -40,6 +40,7 @@
             "camera_tools/camera_popup/---Input Output",
             "camera_tools/camera_popup/copy_camera_to_clipboard",
             "camera_tools/camera_popup/load_lens",
+            "camera_tools/camera_popup/save_lens_file",
             "marker_tools/marker_popup/---Edit Marker",
             "marker_tools/marker_popup/toggle_marker_lock",
             "marker_tools/marker_popup/place_marker_manipulator",

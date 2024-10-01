@@ -46,6 +46,7 @@
             "camera_tools/---Input Output",
             "camera_tools/copy_camera_to_clipboard",
             "camera_tools/load_lens",
+            "camera_tools/save_lens_file",
             "marker_tools/---Edit Marker",
             "marker_tools/toggle_marker_lock",
             "marker_tools/place_marker_manipulator",

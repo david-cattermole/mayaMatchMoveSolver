@@ -46,7 +46,7 @@ pub struct ImagePixelBuffer {
 }
 
 impl ImagePixelBuffer {
-    pub fn new() -> ImagePixelBuffer {
+    pub fn empty() -> ImagePixelBuffer {
         ImagePixelBuffer {
             data_type: BufferDataType::None,
             image_width: 0,

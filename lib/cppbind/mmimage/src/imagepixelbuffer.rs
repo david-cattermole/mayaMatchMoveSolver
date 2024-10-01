@@ -50,9 +50,9 @@ pub struct ShimImagePixelBuffer {
 }
 
 impl ShimImagePixelBuffer {
-    pub fn new() -> Self {
+    pub fn empty() -> Self {
         Self {
-            inner: CoreImagePixelBuffer::new(),
+            inner: CoreImagePixelBuffer::empty(),
         }
     }
 
@@ -129,5 +129,5 @@ impl ShimImagePixelBuffer {
 }
 
 pub fn shim_create_image_pixel_buffer_box() -> Box<ShimImagePixelBuffer> {
-    Box::new(ShimImagePixelBuffer::new())
+    Box::new(ShimImagePixelBuffer::empty())
 }

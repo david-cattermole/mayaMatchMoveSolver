@@ -39,6 +39,14 @@ import mmSolver.tools.createimageplane.lib as lib
 LOG = mmSolver.logger.get_logger()
 
 
+# Function from
+# ./python/mmSolver/tools/cameracontextmenu/lib/utilities.py
+def _open_node_in_attribute_editor(node):
+    mel_cmd = 'showEditorExact "{node}";'.format(node=node)
+    maya.mel.eval(mel_cmd)
+    return
+
+
 def _get_start_directory():
     fallback_path = os.getcwd()
 
@@ -165,7 +173,7 @@ def _run(version):
 
         # Show the last node in the attribute editor.
         node = nodes[-1]
-        maya.mel.eval('updateAE("{}");'.format(node))
+        _open_node_in_attribute_editor(node)
     else:
         maya.cmds.select(sel, replace=True)
     return

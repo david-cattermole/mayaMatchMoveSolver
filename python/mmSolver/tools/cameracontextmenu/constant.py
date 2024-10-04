@@ -107,7 +107,13 @@ CREATE_CAMERA_LABEL = 'Create Camera'
 CREATE_CAMERA_TOOLTIP = 'Create a camera.'
 CREATE_CAMERA_CMD_LANG = 'python'
 CREATE_CAMERA_CMD = (
-    'import mmSolver.tools.cameracontextmenu.lib as lib;' 'lib.create_camera();'
+    'import maya.cmds;'
+    'import mmSolver.tools.cameracontextmenu.lib as lib;'
+    'cam = lib.create_camera();'
+    'cam_tfm = cam.get_transform_node();'
+    'cam_shp = cam.get_shape_node();'
+    'maya.cmds.select(cam_tfm, replace=True);'
+    'lib.open_node_in_attribute_editor(node=cam_shp);'
 )
 
 
@@ -115,8 +121,11 @@ CREATE_IMAGE_PLANE_LABEL = 'Create MM Image Plane...'
 CREATE_IMAGE_PLANE_TOOLTIP = 'Create MM Image Plane on {camera_shape_name}.'
 CREATE_IMAGE_PLANE_CMD_LANG = 'python'
 CREATE_IMAGE_PLANE_CMD = (
+    'import maya.cmds;'
     'import mmSolver.tools.cameracontextmenu.lib as lib;'
-    'lib.create_image_plane(camera_shape_node="{camera_shape_node}");'
+    'tfm, shp = lib.create_image_plane(camera_shape_node="{camera_shape_node}");'
+    'maya.cmds.select(shp, replace=True);'
+    'lib.open_node_in_attribute_editor(node=shp);'
 )
 
 
@@ -124,6 +133,13 @@ CREATE_LENS_LABEL = 'Create Lens Layer'
 CREATE_LENS_TOOLTIP = 'Create Lens Layer on {camera_shape_name}.'
 CREATE_LENS_CMD_LANG = 'python'
 CREATE_LENS_CMD = (
-    'import mmSolver.tools.cameracontextmenu.lib as lib;'
-    'lib.create_lens(camera_shape_node="{camera_shape_node}");'
+    'import maya.cmds\n'
+    'import mmSolver.tools.cameracontextmenu.lib as lib\n'
+    'lens = lib.create_lens(camera_shape_node="{camera_shape_node}")\n'
+    'node = None\n'
+    'if lens is not None:\n'
+    '    node = lens.get_node()\n'
+    'if node is not None:\n'
+    '    maya.cmds.select(node, replace=True)\n'
+    '    lib.open_node_in_attribute_editor(node=node)\n'
 )

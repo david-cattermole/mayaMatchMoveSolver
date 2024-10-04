@@ -31,8 +31,6 @@ LOG = mmSolver.logger.get_logger()
 
 def create_camera():
     cam = createcamera_lib.create_camera()
-    cam_shp = cam.get_shape_node()
-    maya.cmds.select(cam_shp, replace=True)
     return cam
 
 

@@ -195,6 +195,7 @@ MStatus MMImageCacheCmd::parseArgs(const MArgList &args) {
     MStringArray string_objects;
     argData.getObjects(string_objects);
 
+    // TODO: Do we actually use the group name? Or can it be removed?
     m_group_name = "";
     if (string_objects.length() > 0) {
         const std::string item_name = string_objects[0].asChar();
@@ -408,32 +409,73 @@ inline MStatus set_values(image::ImageCache &image_cache,
                           const std::vector<std::string> &item_names,
                           const std::string &group_name,
                           size_t &out_item_count) {
+    const bool verbose = false;
     MStatus status = MStatus::kSuccess;
+
+    const auto command_flag_int = static_cast<int>(command_flag);
+    if (verbose) {
+        std::stringstream item_names_ss;
+        for (auto it = item_names.begin(); it != item_names.end(); it++) {
+            auto item_name = *it;
+            item_names_ss << item_name << ";";
+        }
+        MMSOLVER_MAYA_VRB("MMImageCacheCmd::set_values: "
+                          << "command_flag=" << command_flag_int
+                          << " gpu_capacity_bytes=" << gpu_capacity_bytes
+                          << " cpu_capacity_bytes=" << cpu_capacity_bytes
+                          << " item_names=" << item_names_ss.str()
+                          << " item_names.size()=" << item_names.size()
+                          << " group_name=" << group_name.c_str()
+                          << " group_name.size()=" << group_name.size());
+    }
 
     out_item_count = 0;
     if (command_flag == ImageCacheFlagMode::kGpuCapacity) {
+        MMSOLVER_MAYA_VRB("MMImageCacheCmd::set_values: "
+                          << "flag=\"" << GPU_CAPACITY_FLAG_LONG << "\"");
+
         MHWRender::MTextureManager *texture_manager = nullptr;
         status = get_texture_manager(texture_manager);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         image_cache.set_gpu_capacity_bytes(texture_manager, gpu_capacity_bytes);
     } else if (command_flag == ImageCacheFlagMode::kCpuCapacity) {
+        MMSOLVER_MAYA_VRB("MMImageCacheCmd::set_values: "
+                          << "flag=\"" << CPU_CAPACITY_FLAG_LONG << "\"");
+
         image_cache.set_cpu_capacity_bytes(cpu_capacity_bytes);
     } else if (command_flag == ImageCacheFlagMode::kGpuEraseItems) {
+        MMSOLVER_MAYA_VRB("MMImageCacheCmd::set_values: "
+                          << "flag=\"" << GPU_ERASE_ITEMS_FLAG_LONG << "\"");
+
         MHWRender::MTextureManager *texture_manager = nullptr;
         status = get_texture_manager(texture_manager);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         for (auto it = item_names.begin(); it != item_names.end(); it++) {
-            const bool ok = image_cache.gpu_erase_item(texture_manager, *it);
+            auto item_name = *it;
+            MMSOLVER_MAYA_VRB("MMImageCacheCmd::set_values: "
+                              << "item_name=\"" << item_name.c_str() << "\"");
+            const bool ok =
+                image_cache.gpu_erase_item(texture_manager, item_name);
             out_item_count += static_cast<bool>(ok);
         }
     } else if (command_flag == ImageCacheFlagMode::kCpuEraseItems) {
+        MMSOLVER_MAYA_VRB("MMImageCacheCmd::set_values: "
+                          << "flag=\"" << CPU_ERASE_ITEMS_FLAG_LONG << "\"");
+
         for (auto it = item_names.begin(); it != item_names.end(); it++) {
-            const bool ok = image_cache.cpu_erase_item(*it);
+            auto item_name = *it;
+            MMSOLVER_MAYA_VRB("MMImageCacheCmd::set_values: "
+                              << "item_name=\"" << item_name.c_str() << "\"");
+            const bool ok = image_cache.cpu_erase_item(item_name);
             out_item_count += static_cast<bool>(ok);
         }
     } else if (command_flag == ImageCacheFlagMode::kGpuEraseGroupItems) {
+        MMSOLVER_MAYA_VRB("MMImageCacheCmd::set_values: "
+                          << "flag=\"" << CPU_ERASE_GROUP_ITEMS_FLAG_LONG
+                          << "\"");
+
         if (group_name.size() == 0) {
             MMSOLVER_MAYA_ERR("MMImageCacheCmd::set_values: "
                               << "\"" << GPU_ERASE_GROUP_ITEMS_FLAG_LONG
@@ -449,10 +491,17 @@ inline MStatus set_values(image::ImageCache &image_cache,
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         for (auto it = item_names.begin(); it != item_names.end(); it++) {
+            auto item_name = *it;
+            MMSOLVER_MAYA_VRB("MMImageCacheCmd::set_values: "
+                              << "item_name=\"" << item_name.c_str() << "\"");
             out_item_count +=
-                image_cache.gpu_erase_group_items(texture_manager, *it);
+                image_cache.gpu_erase_group_items(texture_manager, item_name);
         }
     } else if (command_flag == ImageCacheFlagMode::kCpuEraseGroupItems) {
+        MMSOLVER_MAYA_VRB("MMImageCacheCmd::set_values: "
+                          << "flag=\"" << CPU_ERASE_GROUP_ITEMS_FLAG_LONG
+                          << "\"");
+
         if (group_name.size() == 0) {
             MMSOLVER_MAYA_ERR("MMImageCacheCmd::set_values: "
                               << "\"" << CPU_ERASE_GROUP_ITEMS_FLAG_LONG
@@ -463,8 +512,14 @@ inline MStatus set_values(image::ImageCache &image_cache,
             return MStatus::kFailure;
         }
 
+        MMSOLVER_MAYA_VRB("MMImageCacheCmd::set_values: "
+                          << "group_name=\"" << group_name.c_str() << "\"");
+
         for (auto it = item_names.begin(); it != item_names.end(); it++) {
-            out_item_count = image_cache.cpu_erase_group_items(*it);
+            auto item_name = *it;
+            MMSOLVER_MAYA_VRB("MMImageCacheCmd::set_values: "
+                              << "item_name=\"" << item_name.c_str() << "\"");
+            out_item_count += image_cache.cpu_erase_group_items(item_name);
         }
     } else {
         MMSOLVER_MAYA_ERR(
@@ -474,6 +529,9 @@ inline MStatus set_values(image::ImageCache &image_cache,
             << static_cast<int>(command_flag));
         return MStatus::kFailure;
     }
+
+    MMSOLVER_MAYA_VRB(
+        "MMImageCacheCmd::set_values: out_item_count=" << out_item_count);
 
     return status;
 }

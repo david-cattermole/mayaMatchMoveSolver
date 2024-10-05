@@ -842,18 +842,19 @@ size_t ImageCache::gpu_remove_item_from_group(const GPUCacheKey item_key) {
                 it2 = values_set.erase(it2);
                 count += 1;
                 MMSOLVER_MAYA_VRB(
-                    "mmsolver::ImageCache::gpu_erase_item: "
+                    "mmsolver::ImageCache::gpu_remove_item_from_group: "
                     << "group_key=" << group_key << " item_key=" << item_key
                     << " item_value_hash=" << item_value_hash << " - got it");
             } else {
-                MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_erase_item: "
-                                  << "item_key=" << item_key
-                                  << " item_value_hash=" << item_value_hash);
+                MMSOLVER_MAYA_VRB(
+                    "mmsolver::ImageCache::gpu_remove_item_from_group: "
+                    << "item_key=" << item_key
+                    << " item_value_hash=" << item_value_hash);
                 ++it2;
             }
         }
 
-        MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_erase_item: "
+        MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_remove_item_from_group: "
                           << "values_set.size()=" << values_set.size());
 
         if (values_set.size() == 0) {
@@ -862,7 +863,7 @@ size_t ImageCache::gpu_remove_item_from_group(const GPUCacheKey item_key) {
             ++it;
         }
     }
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_erase_item: "
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_remove_item_from_group: "
                       << "count=" << count);
 
     return count;
@@ -893,18 +894,19 @@ size_t ImageCache::cpu_remove_item_from_group(const CPUCacheKey item_key) {
                 it2 = values_set.erase(it2);
                 count += 1;
                 MMSOLVER_MAYA_VRB(
-                    "mmsolver::ImageCache::cpu_erase_item: "
+                    "mmsolver::ImageCache::cpu_remove_item_from_group: "
                     << "group_key=" << group_key << " item_key=" << item_key
                     << " item_value_hash=" << item_value_hash << " - got it");
             } else {
-                MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_erase_item: "
-                                  << "item_key=" << item_key
-                                  << " item_value_hash=" << item_value_hash);
+                MMSOLVER_MAYA_VRB(
+                    "mmsolver::ImageCache::cpu_remove_item_from_group: "
+                    << "item_key=" << item_key
+                    << " item_value_hash=" << item_value_hash);
                 ++it2;
             }
         }
 
-        MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_erase_item: "
+        MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_remove_item_from_group: "
                           << "values_set.size()=" << values_set.size());
 
         if (values_set.size() == 0) {
@@ -913,7 +915,7 @@ size_t ImageCache::cpu_remove_item_from_group(const CPUCacheKey item_key) {
             ++it;
         }
     }
-    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_erase_item: "
+    MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_remove_item_from_group: "
                       << "count=" << count);
 
     return count;
@@ -924,7 +926,7 @@ bool ImageCache::gpu_erase_item(MHWRender::MTextureManager *texture_manager,
     const bool verbose = false;
     const GPUGroupKey item_key = mmsolver::hash::make_hash(file_path);
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_erase_item: "
-                      << "item_key=" << item_key << "file_path=\""
+                      << "item_key=" << item_key << " file_path=\""
                       << file_path.c_str() << "\"");
     return ImageCache::gpu_erase_item(texture_manager, item_key);
 }
@@ -958,7 +960,7 @@ bool ImageCache::cpu_erase_item(const CPUCacheString &file_path) {
     const bool verbose = false;
     const CPUGroupKey item_key = mmsolver::hash::make_hash(file_path);
     MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_erase_item: "
-                      << "item_key=" << item_key << "file_path=\""
+                      << "item_key=" << item_key << " file_path=\""
                       << file_path.c_str() << "\"");
     return ImageCache::cpu_erase_item(item_key);
 }
@@ -995,26 +997,41 @@ size_t ImageCache::gpu_erase_group_items(
     if (verbose) {
         const GPUGroupKey group_key = mmsolver::hash::make_hash(group_name);
         MMSOLVER_MAYA_VRB("mmsolver::ImageCache::gpu_erase_group_items: "
-                          << "group_key=" << group_key << "group_name=\""
+                          << "group_key=" << group_key << " group_name=\""
                           << group_name.c_str() << "\"");
     }
 
-    const GPUGroupMapIt group_search = m_gpu_group_map.find(group_name);
-    const bool group_found = group_search != m_gpu_group_map.end();
-    if (!group_found) {
-        MMSOLVER_MAYA_WRN(
-            "mmsolver::ImageCache: gpu_erase_group_items: "
-            "Group name \""
-            << group_name << "\" not found!");
-        return 0;
-    }
-
+    // Loop until all items in the group are removed.
+    size_t iteration = 0;
     size_t count = 0;
-    GPUGroupSet &values_set = group_search->second;
-    for (auto it = values_set.begin(); it != values_set.end(); it++) {
-        GPUCacheString value = *it;
+    while (true) {
+        const GPUGroupMapIt group_search = m_gpu_group_map.find(group_name);
+        const bool group_found = group_search != m_gpu_group_map.end();
+        if (!group_found) {
+            if (iteration == 0) {
+                // When a user gives the wrong group name, we will
+                // print the warning, but if the group name is not
+                // valid after a removal (iteration > 0), then the
+                // user shouldn't be notified of that the group is not
+                // available.
+                MMSOLVER_MAYA_WRN(
+                    "mmsolver::ImageCache: gpu_erase_group_items: "
+                    "Group name \""
+                    << group_name << "\" not found!");
+            }
+            break;
+        }
+
+        GPUGroupSet &values_set = group_search->second;
+        GPUCacheString value = *values_set.begin();
+        // NOTE: This call will invalidate the 'values_set' value,
+        // because 'ImageCache::m_gpu_group_map' is changed by
+        // 'ImageCache::gpu_remove_item_from_group()' via
+        // 'ImageCache::gpu_erase_item()'.
         const bool ok = ImageCache::gpu_erase_item(texture_manager, value);
         count += static_cast<size_t>(ok);
+
+        iteration++;
     }
 
     return count;
@@ -1026,26 +1043,41 @@ size_t ImageCache::cpu_erase_group_items(const CPUCacheString &group_name) {
     if (verbose) {
         const CPUGroupKey group_key = mmsolver::hash::make_hash(group_name);
         MMSOLVER_MAYA_VRB("mmsolver::ImageCache::cpu_erase_group_items: "
-                          << "group_key=" << group_key << "group_name=\""
+                          << "group_key=" << group_key << " group_name=\""
                           << group_name.c_str() << "\"");
     }
 
-    const CPUGroupMapIt group_search = m_cpu_group_map.find(group_name);
-    const bool group_found = group_search != m_cpu_group_map.end();
-    if (!group_found) {
-        MMSOLVER_MAYA_WRN(
-            "mmsolver::ImageCache: cpu_erase_group_items: "
-            "Group name \""
-            << group_name << "\" not found!");
-        return 0;
-    }
-
+    // Loop until all items in the group are removed.
+    size_t iteration = 0;
     size_t count = 0;
-    CPUGroupSet &values_set = group_search->second;
-    for (auto it = values_set.begin(); it != values_set.end(); it++) {
-        CPUCacheString value = *it;
+    while (true) {
+        const CPUGroupMapIt group_search = m_cpu_group_map.find(group_name);
+        const bool group_found = group_search != m_cpu_group_map.end();
+        if (!group_found) {
+            if (iteration == 0) {
+                // When a user gives the wrong group name, we will
+                // print the warning, but if the group name is not
+                // valid after a removal (iteration > 0), then the
+                // user shouldn't be notified of that the group is not
+                // available.
+                MMSOLVER_MAYA_WRN(
+                    "mmsolver::ImageCache: cpu_erase_group_items: "
+                    "Group name \""
+                    << group_name << "\" not found!");
+            }
+            break;
+        }
+
+        CPUGroupSet &values_set = group_search->second;
+        CPUCacheString value = *values_set.begin();
+        // NOTE: This call will invalidate the 'values_set' value,
+        // because 'ImageCache::m_cpu_group_map' is changed by
+        // 'ImageCache::cpu_remove_item_from_group()' via
+        // 'ImageCache::cpu_erase_item()'.
         const bool ok = ImageCache::cpu_erase_item(value);
         count += static_cast<size_t>(ok);
+
+        iteration++;
     }
 
     return count;

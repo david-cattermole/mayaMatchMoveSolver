@@ -24,7 +24,7 @@ criterion = { version = "0.5.1", default-features = false, features = ["html_rep
 exr = "1.6.3"
 fastapprox = "0.3.0"
 log = "0.4.0"
-nalgebra = { version = "0.32.2", default-features = false, features = ["std", "matrixmultiply"] }
+nalgebra = { version = "0.33.0", default-features = false, features = ["std", "matrixmultiply"] }
 num = "0.4.0"
 num-traits = "0.2"
 num_cpus = "1.15.0"

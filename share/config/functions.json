@@ -5,7 +5,7 @@
             "name": "Solver",
             "name_shelf": "",
             "tooltip": "Open the MM Solver window.",
-            "icon_shelf": "mmSolverWindow_32x32.png",
+            "icon_shelf": "mmSolverWindow.png",
             "command": [
                 "import mmSolver.tools.solver.tool;",
                 "mmSolver.tools.solver.tool.open_window();"
@@ -15,7 +15,7 @@
             "name": "Open Solver...",
             "name_shelf": "",
             "tooltip": "Open the MM Solver window.",
-            "icon_shelf": "mmSolverWindow_32x32.png",
+            "icon_shelf": "mmSolverWindow.png",
             "command": [
                 "import mmSolver.tools.solver.tool;",
                 "mmSolver.tools.solver.tool.open_window();"
@@ -24,7 +24,7 @@
         "solver_run": {
             "name": "Run Solver",
             "name_shelf": "",
-            "icon_shelf": "mmSolverRun_32x32.png",
+            "icon_shelf": "mmSolverRun.png",
             "tooltip": "Run solver on currently active Collection.",
             "command": [
                 "import mmSolver.tools.solver.tool as tool;",
@@ -34,7 +34,7 @@
         "solver_run_current_frame": {
             "name": "Run Solver (Current Frame)",
             "name_shelf": "",
-            "icon_shelf": "mmSolverRunFrame_32x32.png",
+            "icon_shelf": "mmSolverRunFrame.png",
             "tooltip": "Run solver on currently active Collection on the current frame.",
             "command": [
                 "import mmSolver.tools.solver.tool as tool;",
@@ -44,7 +44,7 @@
         "navigate_root_frame_next": {
             "name": "Next User Frame",
             "name_shelf": "",
-            "icon_shelf": "keyFrameNext_32x32.png",
+            "icon_shelf": "keyFrameNext.png",
             "tooltip": "Jump to the next user frame.",
             "command": [
                 "import mmSolver.tools.navigaterootframes.tool as tool;",
@@ -54,7 +54,7 @@
         "navigate_root_frame_prev": {
             "name": "Previous User Frame",
             "name_shelf": "",
-            "icon_shelf": "keyFramePrevious_32x32.png",
+            "icon_shelf": "keyFramePrevious.png",
             "tooltip": "Jump to the previous user frame.",
             "command": [
                 "import mmSolver.tools.navigaterootframes.tool as tool;",
@@ -64,7 +64,7 @@
         "edit_root_frame_add": {
             "name": "Add User Frame",
             "name_shelf": "",
-            "icon_shelf": "keyFrameAdd_32x32.png",
+            "icon_shelf": "keyFrameAdd.png",
             "tooltip": "Add the current frame to the user frame list.",
             "command": [
                 "import mmSolver.tools.editrootframes.tool as tool;",
@@ -74,7 +74,7 @@
         "edit_root_frame_remove": {
             "name": "Remove User Frame",
             "name_shelf": "",
-            "icon_shelf": "keyFrameRemove_32x32.png",
+            "icon_shelf": "keyFrameRemove.png",
             "tooltip": "Remove the current frame from the user frame list.",
             "command": [
                 "import mmSolver.tools.editrootframes.tool as tool;",
@@ -84,7 +84,7 @@
         "file_io_tools": {
             "name": "File Input/Output Tools",
             "name_shelf": "",
-            "icon_shelf": "fileInputOutput_32x32.png",
+            "icon_shelf": "fileInputOutput.png",
             "tooltip": "File input and output Tools.",
             "command": ["pass"]
         },
@@ -98,7 +98,7 @@
             "name": "Create Marker",
             "name_shelf": "",
             "tooltip": "Create a new Marker.",
-            "icon_shelf": "createMarker_32x32.png",
+            "icon_shelf": "createMarker.png",
             "command": [
                 "import mmSolver.tools.createmarker.tool;",
                 "mmSolver.tools.createmarker.tool.main();"
@@ -108,7 +108,7 @@
             "name": "Marker Tools",
             "name_shelf": "",
             "tooltip": "Marker Tools",
-            "icon_shelf": "markerTools_32x32.png",
+            "icon_shelf": "markerTools.png",
             "command": ["pass"]
         },
         "toggle_marker_lock": {
@@ -123,7 +123,7 @@
             "name": "Bundle Tools",
             "name_shelf": "",
             "tooltip": "Bundle Tools",
-            "icon_shelf": "bundleTools_32x32.png",
+            "icon_shelf": "bundleTools.png",
             "command": ["pass"]
         },
         "toggle_bundle_lock": {
@@ -249,21 +249,21 @@
         "attr_tools": {
             "name": "Attribute Tools",
             "name_shelf": "",
-            "icon_shelf": "attributeTools_32x32.png",
+            "icon_shelf": "attributeTools.png",
             "tooltip": "Tools to adjust Attributes.",
             "command": ["pass"]
         },
         "mb_tools": {
             "name": "Marker-Bundle Tools",
             "name_shelf": "",
-            "icon_shelf": "markerBundleLinkTools_32x32.png",
+            "icon_shelf": "markerBundleLinkTools.png",
             "tooltip": "Marker bundle link and unlink Tools.",
             "command": ["pass"]
         },
         "mb_link_tools": {
             "name": "Marker-Bundle Link Tools",
             "name_shelf": "",
-            "icon_shelf": "markerBundleLinkTools_32x32.png",
+            "icon_shelf": "markerBundleLinkTools.png",
             "tooltip": "Marker bundle link and unlink Tools.",
             "command": ["pass"]
         },
@@ -287,7 +287,7 @@
             "name": "Convert to Marker",
             "name_shelf": "",
             "tooltip": "Convert 3D Transform to Marker.",
-            "icon_shelf": "convertToMarker_32x32.png",
+            "icon_shelf": "convertToMarker.png",
             "command": [
                 "import mmSolver.tools.convertmarker.tool;",
                 "mmSolver.tools.convertmarker.tool.main();"
@@ -302,7 +302,7 @@
             "name": "Convert to Marker...",
             "name_shelf": "",
             "tooltip": "Convert 3D Transform to Marker.",
-            "icon_shelf": "convertToMarker_32x32.png",
+            "icon_shelf": "convertToMarker.png",
             "command": [
                 "import mmSolver.tools.convertmarker.tool;",
                 "mmSolver.tools.convertmarker.tool.open_window();"
@@ -312,7 +312,7 @@
             "name": "Load Marker...",
             "name_shelf": "",
             "tooltip": "Load Marker.",
-            "icon_shelf": "loadMarker_32x32.png",
+            "icon_shelf": "loadMarker.png",
             "command": [
                 "import mmSolver.tools.loadmarker.tool;",
                 "mmSolver.tools.loadmarker.tool.open_window();"
@@ -352,7 +352,7 @@
             "name": "Create Bundle",
             "name_shelf": "",
             "tooltip": "Create Bundle.",
-            "icon_shelf": "createBundle_32x32.png",
+            "icon_shelf": "createBundle.png",
             "command": [
                 "import mmSolver.tools.createbundle.tool;",
                 "mmSolver.tools.createbundle.tool.main();"
@@ -373,7 +373,7 @@
         "swap_marker_bundles": {
             "name": "Swap Markers / Bundles",
             "name_shelf": "",
-            "icon_shelf": "markerBundleSwapSelection_32x32.png",
+            "icon_shelf": "markerBundleSwapSelection.png",
             "tooltip": "Toggle Markers Bundles.",
             "command": [
                 "import mmSolver.tools.selection.tools as selection_tool;",
@@ -383,7 +383,7 @@
         "select_marker_bundles": {
             "name": "Select Markers and Bundles",
             "name_shelf": "",
-            "icon_shelf": "markerBundleCombineSelection_32x32.png",
+            "icon_shelf": "markerBundleCombineSelection.png",
             "tooltip": "Select Markers and Bundles.",
             "command": [
                 "import mmSolver.tools.selection.tools as selection_tool;",
@@ -419,7 +419,7 @@
         "display_tools": {
             "name": "Display Tools",
             "name_shelf": "",
-            "icon_shelf": "displayTools_32x32.png",
+            "icon_shelf": "displayTools.png",
             "tooltip": "Display Tools",
             "command": ["pass"]
         },
@@ -427,7 +427,7 @@
             "name": "Create Sky Dome",
             "name_shelf": "",
             "tooltip": "Create a new Sky Dome.",
-            "icon_shelf": "createSkyDome_32x32.png",
+            "icon_shelf": "createSkyDome.png",
             "command": [
                 "import mmSolver.tools.createskydome.tool;",
                 "import mmSolver.tools.createskydome.constant as const;",
@@ -438,7 +438,7 @@
             "name": "Create Axis Dome",
             "name_shelf": "",
             "tooltip": "Create a new Axis Dome.",
-            "icon_shelf": "createSkyDome_32x32.png",
+            "icon_shelf": "createSkyDome.png",
             "command": [
                 "import mmSolver.tools.createskydome.tool;",
                 "import mmSolver.tools.createskydome.constant as const;",
@@ -449,7 +449,7 @@
             "name": "Create Horizon Line",
             "name_shelf": "",
             "tooltip": "Create a new Horizon Line.",
-            "icon_shelf": "createSkyDome_32x32.png",
+            "icon_shelf": "createSkyDome.png",
             "command": [
                 "import mmSolver.tools.createskydome.tool;",
                 "import mmSolver.tools.createskydome.constant as const;",
@@ -486,14 +486,14 @@
         "general_tools": {
             "name": "General Tools",
             "name_shelf": "",
-            "icon_shelf": "generalTools_32x32.png",
+            "icon_shelf": "generalTools.png",
             "tooltip": "General Tools",
             "command": ["pass"]
         },
         "mesh_tools": {
             "name": "Mesh Tools",
             "name_shelf": "",
-            "icon_shelf": "meshTools_32x32.png",
+            "icon_shelf": "meshTools.png",
             "tooltip": "Mesh Tools",
             "command": ["pass"]
         },
@@ -582,7 +582,7 @@
         "zdepth_tools": {
             "name": "Z-Depth Tools",
             "name_shelf": "",
-            "icon_shelf": "zDepthTools_32x32.png",
+            "icon_shelf": "zDepthTools.png",
             "tooltip": "Screen-Space Z-Depth Tools",
             "command": ["pass"]
         },
@@ -927,7 +927,7 @@
             "name": "Create Camera",
             "name_shelf": "",
             "tooltip": "Create a new Camera.",
-            "icon_shelf": "createCamera_32x32.png",
+            "icon_shelf": "createCamera.png",
             "command": [
                 "import mmSolver.tools.createcamera.tool;",
                 "mmSolver.tools.createcamera.tool.main();"
@@ -937,7 +937,7 @@
             "name": "Create Lens",
             "name_shelf": "",
             "tooltip": "Create a new Lens.",
-            "icon_shelf": "createLens_32x32.png",
+            "icon_shelf": "createLens.png",
             "command": [
                 "import mmSolver.tools.createlens.tool;",
                 "mmSolver.tools.createlens.tool.main();"
@@ -947,7 +947,7 @@
             "name": "Create Image Plane... (version 1)",
             "name_shelf": "",
             "tooltip": "Create a new Image Plane.",
-            "icon_shelf": "createImagePlane_32x32.png",
+            "icon_shelf": "createImagePlane.png",
             "command": [
                 "import mmSolver.tools.createimageplane.tool;",
                 "mmSolver.tools.createimageplane.tool.main_version_one();"
@@ -957,7 +957,7 @@
             "name": "Create Image Plane...",
             "name_shelf": "",
             "tooltip": "Create a new Image Plane.",
-            "icon_shelf": "createImagePlane_32x32.png",
+            "icon_shelf": "createImagePlane.png",
             "command": [
                 "import mmSolver.tools.createimageplane.tool;",
                 "mmSolver.tools.createimageplane.tool.main_version_two();"
@@ -1018,7 +1018,7 @@
             "name": "Camera Context",
             "name_shelf": "",
             "tooltip": "Display camera nodes.",
-            "icon_shelf": "cameraContext_32x32.png",
+            "icon_shelf": "cameraContext.png",
             "command": [
                 "pass"
             ]
@@ -1035,7 +1035,7 @@
             "name": "Deform Marker",
             "name_shelf": "MkrOff",
             "tooltip": "Deform Marker",
-            "icon_shelf": "createMarker_32x32.png",
+            "icon_shelf": "createMarker.png",
             "command": ["pass"]
         },
         "deform_marker_create_offset": {
@@ -1066,7 +1066,7 @@
             "name": "Hotkey",
             "name_shelf": "",
             "tooltip": "Switch Hotkey Sets.",
-            "icon_shelf": "hotkeySwitcher_32x32.png",
+            "icon_shelf": "hotkeySwitcher.png",
             "command": [
                 "pass"
             ]
@@ -1112,14 +1112,14 @@
             "name": "Camera Tools",
             "name_shelf": "",
             "tooltip": "Camera Tools",
-            "icon_shelf": "cameraTools_32x32.png",
+            "icon_shelf": "cameraTools.png",
             "command": ["pass"]
         },
         "create_line": {
             "name": "Create Line",
             "name_shelf": "",
             "tooltip": "Create a new Line.",
-            "icon_shelf": "createLine_32x32.png",
+            "icon_shelf": "createLine.png",
             "command": [
                 "import mmSolver.tools.createline.tool;",
                 "mmSolver.tools.createline.tool.main();"
@@ -1129,7 +1129,7 @@
             "name": "Line Tools",
             "name_shelf": "",
             "tooltip": "Line Tools",
-            "icon_shelf": "lineTools_32x32.png",
+            "icon_shelf": "lineTools.png",
             "command": ["pass"]
         },
         "toggle_line_lock": {

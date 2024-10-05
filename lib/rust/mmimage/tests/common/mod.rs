@@ -1,5 +1,6 @@
 use anyhow::bail;
 use anyhow::Result;
+use log::warn;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -15,7 +16,7 @@ pub fn construct_image_file_paths(
         if file_path.is_file() {
             file_paths.push(file_path);
         } else {
-            println!("Could not find file name {:?}", file_path);
+            warn!("Could not find file name {:?}", file_path);
         }
     }
     if file_paths.len() == 0 {

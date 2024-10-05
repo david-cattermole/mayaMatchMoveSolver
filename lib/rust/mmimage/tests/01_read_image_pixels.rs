@@ -19,6 +19,7 @@
 //
 
 use anyhow::Result;
+use log::{debug, info};
 use mmimage_rust::image_read_rgba_pixels_exr_f32;
 
 mod common;
@@ -50,11 +51,11 @@ fn main() -> Result<()> {
         let file_path_str = file_path.as_path().to_str();
         match file_path_str {
             Some(value) => {
-                println!("Reading: {}", value);
+                info!("Reading: {}", value);
                 let (_pixel_data, _meta_data) =
                     image_read_rgba_pixels_exr_f32(value)?;
-                // println!("Metadata: {:?}", meta_data);
-                // println!("Pixel Data: {:?}", pixel_data);
+                debug!("Metadata: {:?}", meta_data);
+                debug!("Pixel Data: {:?}", pixel_data);
             }
             _ => (),
         }

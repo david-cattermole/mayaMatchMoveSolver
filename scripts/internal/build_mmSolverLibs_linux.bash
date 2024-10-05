@@ -109,7 +109,7 @@ then
     # './lib/cppbind/mmlens/Cargo.toml'
     # './lib/cppbind/mmcore/Cargo.toml'
     # './scripts/internal/build_mmSolverLibs_windows64.bat'
-    ${RUST_CARGO_EXE} install cxxbridge-cmd --version 1.0.124
+    ${RUST_CARGO_EXE} install cxxbridge-cmd --version 1.0.128
 fi
 MMSOLVERLIBS_CXXBRIDGE_EXE="${HOME}/.cargo/bin/cxxbridge"
 

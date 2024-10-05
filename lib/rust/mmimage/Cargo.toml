@@ -10,10 +10,6 @@ name = "mmimage_rust"
 path = "./src/lib.rs"
 crate_type = ["lib"]
 
-[[bench]]
-name = "bench"
-harness = false
-
 [dependencies]
 log = { workspace = true }
 exr = { workspace = true }

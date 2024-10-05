@@ -1,9 +1,9 @@
 [package]
 name = "mmscenegraph_cppbind"
-version = "0.1.0"
-authors = ["david-cattermole <cattermole91@gmail.com>"]
-edition = "2018"
-publish = false
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+publish.workspace = true
 
 [lib]
 name = "mmscenegraph"
@@ -14,21 +14,5 @@ path = "./src/lib.rs"
 # crate_type = ["staticlib"]
 
 [dependencies]
-# NOTE: When changing this version number ensure to also update the
-# installed 'cxxbridge-cmd' version so it stays in sync; Update it
-# here: './scripts/internal/build_mmSolverLibs_*.*'
-cxx = "=1.0.124"
-
-[dependencies.mmscenegraph_rust]
-path = "../../rust/mmscenegraph/"
-
-[profile.release]
-opt-level = 3
-rpath = false
-lto = true
-codegen-units = 1
-
-# NOTE: If we use 'panic = "abort"' then we are unable to produce tests.
-# # https://github.com/rust-lang/cargo/issues/6313
-#
-# panic = "abort"
+cxx = { workspace = true }
+mmscenegraph_rust = { workspace = true }

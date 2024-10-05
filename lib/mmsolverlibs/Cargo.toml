@@ -1,9 +1,9 @@
 [package]
 name = "mmsolverlibs_cppbind"
-version = "0.1.0"
-authors = ["david-cattermole <cattermole91@gmail.com>"]
-edition = "2018"
-publish = false
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+publish.workspace = true
 
 [lib]
 name = "mmsolverlibs_rust"
@@ -12,20 +12,8 @@ path = "./src/lib.rs"
 # link with C++.
 crate_type = ["staticlib"]
 
-[dependencies.mmcore_cppbind]
-path = "../cppbind/mmcore"
-
-[dependencies.mmimage_cppbind]
-path = "../cppbind/mmimage"
-
-[dependencies.mmlens_cppbind]
-path = "../cppbind/mmlens"
-
-[dependencies.mmscenegraph_cppbind]
-path = "../cppbind/mmscenegraph"
-
-[profile.release]
-opt-level = 3
-rpath = false
-lto = true
-codegen-units = 1
+[dependencies]
+mmcore_cppbind = { workspace = true }
+mmimage_cppbind = { workspace = true }
+mmlens_cppbind = { workspace = true }
+mmscenegraph_cppbind = { workspace = true }

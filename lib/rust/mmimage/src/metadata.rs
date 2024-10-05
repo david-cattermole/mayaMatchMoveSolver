@@ -139,7 +139,7 @@ fn convert_option_f32_to_option_rational(
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub enum AttributeValue {
     None,
     String(String),
@@ -226,7 +226,7 @@ fn generate_named_attributes(
     named_attributes
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct ImageMetaData {
     // ImageAttributes
     // https://docs.rs/exr/latest/exr/meta/header/struct.ImageAttributes.html

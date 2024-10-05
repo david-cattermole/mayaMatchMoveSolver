@@ -20,12 +20,12 @@
 
 use crate::encoder::ImageExrEncoder;
 use crate::metadata::ImageMetaData;
-use crate::pixelbuffer::BufferDataType;
 use crate::pixelbuffer::ImagePixelBuffer;
 use crate::pixeldata::ImagePixelDataF32x4;
 use anyhow::bail;
 use anyhow::Result;
 use exr::prelude::traits::*;
+use log::debug;
 
 pub mod datatype;
 pub mod encoder;
@@ -64,25 +64,31 @@ pub fn image_read_metadata_exr(file_path: &str) -> Result<ImageMetaData> {
 pub fn image_read_pixels_exr_f32x4(
     file_path: &str,
 ) -> Result<(ImageMetaData, ImagePixelBuffer)> {
+    debug!("Opening file: {}", file_path);
+
     let image = exr::image::read::read()
         .no_deep_data()
         .largest_resolution_level()
         .rgba_channels(
             |resolution, _channels: &exr::image::RgbaChannels| {
-                // instantiate your image type with the size of the image in
-                // file.
-                let default_pixel = (0.0, 0.0, 0.0, 0.0);
-                let empty_line = vec![default_pixel; resolution.width()];
-                let empty_image = vec![empty_line; resolution.height()];
-                empty_image
+                let pixel_buffer = ImagePixelBuffer::new_f32x4(
+                    resolution.width(),
+                    resolution.height(),
+                );
+                pixel_buffer
             },
-            |pixel_vector, position, (r, g, b, a): (f32, f32, f32, f32)| {
+            |pixel_buffer, position, (r, g, b, a): (f32, f32, f32, f32)| {
                 // transfer the colors from the file to your image type,
                 // requesting all values to be converted to f32 numbers (you
                 // can also directly use f16 instead) and you could also use
                 // `Sample` instead of `f32` to keep the original data type
                 // from the file
-                pixel_vector[position.y()][position.x()] = (r, g, b, a)
+                //
+                // TODO: We can vertically flip the image here if needed.
+                let index = (position.y() * (pixel_buffer.image_width()))
+                    + position.x();
+                let pixel_buffer_slice = pixel_buffer.as_slice_f32x4_mut();
+                pixel_buffer_slice[index] = (r, g, b, a)
             },
         )
         .first_valid_layer()
@@ -91,43 +97,16 @@ pub fn image_read_pixels_exr_f32x4(
 
     // printing all pixels might kill the console, so only print some
     // meta data about the image.
-    let _data_window = image.layer_data.absolute_bounds();
+    let data_window = image.layer_data.absolute_bounds();
     let layer_attributes = image.layer_data.attributes;
-    let image_width = image.layer_data.size.width();
-    let image_height = image.layer_data.size.height();
+    let _image_width = image.layer_data.size.width();
+    let _image_height = image.layer_data.size.height();
 
-    // println!("Opened file: {}", file_path);
-    // println!("Layer Attributes: {:#?}", layer_attributes);
-    // println!("Data Window: {:?}", data_window);
+    debug!("Opened file: {}", file_path);
+    debug!("Layer Attributes: {:#?}", layer_attributes);
+    debug!("Data Window: {:?}", data_window);
 
-    let pixel_count = image_width * image_height;
-    let default_pixel = 0.0;
-    let mut pixel_data: Vec<f64> = vec![default_pixel; pixel_count * 2];
-    let pixel_data_slice = unsafe {
-        std::mem::transmute::<&mut [f64], &mut [(f32, f32, f32, f32)]>(
-            pixel_data.as_mut_slice(),
-        )
-    };
-
-    for y in 0..image_height {
-        for x in 0..image_width {
-            let position = exr::math::Vec2(x, y);
-            let pixel = image.layer_data.channel_data.pixels[position.y()]
-                [position.x()];
-            let pixel_index = (image_width * y) + x;
-            pixel_data_slice[pixel_index] = pixel;
-        }
-    }
-
-    let num_channels = 4;
-    let image_data = ImagePixelBuffer::from_data(
-        BufferDataType::F32,
-        image_width,
-        image_height,
-        num_channels,
-        pixel_data,
-    );
-
+    let image_data = image.layer_data.channel_data.pixels;
     let image_metadata =
         ImageMetaData::with_attributes(&image.attributes, &layer_attributes);
 

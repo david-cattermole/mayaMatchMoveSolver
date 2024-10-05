@@ -44,7 +44,7 @@ fn bind_to_core_buffer_data_type(
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct ShimImagePixelBuffer {
     inner: CoreImagePixelBuffer,
 }

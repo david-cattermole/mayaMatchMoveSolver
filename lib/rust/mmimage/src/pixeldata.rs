@@ -21,7 +21,7 @@
 use crate::pixelbuffer::ImagePixelBuffer;
 use exr::prelude::*;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct ImagePixelDataF32x4<'a> {
     buffer_ref: &'a ImagePixelBuffer,
 }
@@ -46,7 +46,7 @@ impl GetPixel for ImagePixelDataF32x4<'_> {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct ImagePixelDataF64x2 {
     pub width: usize,
     pub height: usize,

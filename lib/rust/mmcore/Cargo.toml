@@ -1,9 +1,9 @@
 [package]
 name = "mmcore_rust"
-version = "0.1.0"
-authors = ["david-cattermole <cattermole91@gmail.com>"]
-edition = "2018"
-publish = false
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+publish.workspace = true
 
 [lib]
 name = "mmcore_rust"
@@ -11,23 +11,5 @@ path = "./src/lib.rs"
 crate_type = ["lib"]
 
 [dependencies]
-log = "0.4.0"
-
-[dependencies.shellexpand]
-version = "3.1"
-default-features = false
-features = ["full"]
-
-[profile.release]
-opt-level = 3
-rpath = false
-codegen-units = 1
-
-# 'lto = true' Performs "fat" LTO which attempts to perform
-# optimizations across all crates within the dependency graph.
-lto = true
-
-# NOTE: If we use 'panic = "abort"' then we are unable to produce tests.
-# # https://github.com/rust-lang/cargo/issues/6313
-#
-# panic = "abort"
+log = { workspace = true }
+shellexpand = { workspace = true }

@@ -58,11 +58,15 @@ pub fn image_read_metadata_exr(file_path: &str) -> Result<ImageMetaData> {
 }
 
 /// Read an EXR image from a file path.
+///
+/// Allows vertically flipping the exported pixel data as we read the
+/// data.
 //
 // https://github.com/johannesvollmer/exrs/blob/master/GUIDE.md
 // https://github.com/johannesvollmer/exrs/blob/master/examples/0c_read_rgba.rs
 pub fn image_read_pixels_exr_f32x4(
     file_path: &str,
+    vertical_flip: bool,
 ) -> Result<(ImageMetaData, ImagePixelBuffer)> {
     debug!("Opening file: {}", file_path);
 
@@ -77,16 +81,25 @@ pub fn image_read_pixels_exr_f32x4(
                 );
                 pixel_buffer
             },
-            |pixel_buffer, position, (r, g, b, a): (f32, f32, f32, f32)| {
+            move |pixel_buffer,
+                  position,
+                  (r, g, b, a): (f32, f32, f32, f32)| {
                 // transfer the colors from the file to your image type,
                 // requesting all values to be converted to f32 numbers (you
                 // can also directly use f16 instead) and you could also use
                 // `Sample` instead of `f32` to keep the original data type
-                // from the file
-                //
-                // TODO: We can vertically flip the image here if needed.
-                let index = (position.y() * (pixel_buffer.image_width()))
-                    + position.x();
+                // from the file.
+
+                let image_width = pixel_buffer.image_width();
+                let image_height = pixel_buffer.image_height();
+
+                let position_x = position.x();
+                let position_y = match vertical_flip {
+                    false => position.y(),
+                    true => (image_height - 1) - position.y(),
+                };
+                let index = (position_y * image_width) + position_x;
+
                 let pixel_buffer_slice = pixel_buffer.as_slice_f32x4_mut();
                 pixel_buffer_slice[index] = (r, g, b, a)
             },

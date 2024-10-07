@@ -47,11 +47,12 @@ pub fn shim_image_read_metadata_exr(
 
 pub fn shim_image_read_pixels_exr_f32x4(
     file_path: &str,
+    vertical_flip: bool,
     out_meta_data: &mut Box<ShimImageMetaData>,
     out_pixel_buffer: &mut Box<ShimImagePixelBuffer>,
 ) -> bool {
     // TODO: How to return errors? An enum perhaps?
-    let image = core_image_read_pixels_exr_f32x4(file_path);
+    let image = core_image_read_pixels_exr_f32x4(file_path, vertical_flip);
     if let Err(_err) = image {
         return false;
     }

@@ -38,6 +38,7 @@
 
 // MM Solver
 #include <mmcore/lib.h>
+#include <mmimage/lib.h>
 
 #include "ImagePixelData.h"
 #include "PixelDataType.h"
@@ -398,6 +399,8 @@ private:
 
 MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
                                   ImageCache &image_cache, MImage &temp_image,
+                                  mmimage::ImagePixelBuffer &temp_pixel_buffer,
+                                  mmimage::ImageMetaData &temp_meta_data,
                                   const MString &file_pattern,
                                   const MString &file_path,
                                   const bool do_texture_update);

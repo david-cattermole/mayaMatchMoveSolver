@@ -37,6 +37,7 @@
 
 // MM Solver
 #include <mmcore/lib.h>
+#include <mmimage/lib.h>
 
 #include "PixelDataType.h"
 #include "mmSolver/utilities/debug_utils.h"
@@ -44,9 +45,11 @@
 namespace mmsolver {
 namespace image {
 
-MStatus read_image_file(MImage &image, const MString &file_path,
-                        uint32_t &out_width, uint32_t &out_height,
-                        uint8_t &out_num_channels,
+MStatus read_image_file(MImage &maya_mimage,
+                        mmimage::ImagePixelBuffer &pixel_buffer,
+                        mmimage::ImageMetaData &meta_data,
+                        const MString &file_path, uint32_t &out_width,
+                        uint32_t &out_height, uint8_t &out_num_channels,
                         uint8_t &out_bytes_per_channel,
                         MHWRender::MRasterFormat &out_texture_format,
                         PixelDataType &out_pixel_data_type,

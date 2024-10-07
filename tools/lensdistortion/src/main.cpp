@@ -102,8 +102,9 @@ bool run_frame(mmlens::FrameNumber frame,
         bool reread_result = true;
         if (reread_image) {
             auto reread_start = std::chrono::high_resolution_clock::now();
+            const bool vertical_flip = false;
             reread_result = mmimage::image_read_pixels_exr_f32x4(
-                output_file_path, meta_data, pixel_buffer);
+                output_file_path, vertical_flip, meta_data, pixel_buffer);
             auto reread_end = std::chrono::high_resolution_clock::now();
             reread_duration = reread_end - reread_start;
             std::cout << "Re-read image file path: " << output_file_path << '\n'

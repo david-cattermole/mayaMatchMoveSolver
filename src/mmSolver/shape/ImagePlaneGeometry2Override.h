@@ -44,6 +44,7 @@
 
 // MM Solver
 #include <mmcore/lib.h>
+#include <mmimage/lib.h>
 
 #include "ImagePlaneShape2Node.h"
 #include "ImagePlaneUtils.h"
@@ -186,6 +187,8 @@ protected:
 
     // Texture caching
     MImage m_temp_image;
+    mmimage::ImagePixelBuffer m_temp_pixel_buffer;
+    mmimage::ImageMetaData m_temp_meta_data;
     MHWRender::MTexture *m_color_texture;
     const MHWRender::MSamplerState *m_texture_sampler;
 

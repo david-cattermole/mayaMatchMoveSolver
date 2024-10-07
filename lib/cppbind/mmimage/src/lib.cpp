@@ -42,13 +42,14 @@ bool image_read_metadata_exr(const rust::Str& file_path,
 }
 
 bool image_read_pixels_exr_f32x4(const rust::Str& file_path,
+                                 const bool vertical_flip,
                                  ImageMetaData& out_meta_data,
                                  ImagePixelBuffer& out_pixel_data) {
     auto pixel_data = out_pixel_data.get_inner();
     auto meta_data = out_meta_data.get_inner();
 
-    bool result =
-        shim_image_read_pixels_exr_f32x4(file_path, meta_data, pixel_data);
+    bool result = shim_image_read_pixels_exr_f32x4(file_path, vertical_flip,
+                                                   meta_data, pixel_data);
 
     out_pixel_data.set_inner(pixel_data);
     out_meta_data.set_inner(meta_data);

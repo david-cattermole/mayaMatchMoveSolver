@@ -59,6 +59,8 @@ namespace image {
 
 MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
                                   ImageCache &image_cache, MImage &temp_image,
+                                  mmimage::ImagePixelBuffer &temp_pixel_buffer,
+                                  mmimage::ImageMetaData &temp_meta_data,
                                   const MString &file_pattern,
                                   const MString &file_path,
                                   const bool do_texture_update) {
@@ -131,10 +133,10 @@ MTexture *read_texture_image_file(MHWRender::MTextureManager *texture_manager,
         }
 
     } else {
-        status =
-            read_image_file(temp_image, resolved_file_path, width, height,
-                            num_channels, bytes_per_channel, texture_format,
-                            pixel_data_type, maya_owned_pixel_data);
+        status = read_image_file(
+            temp_image, temp_pixel_buffer, temp_meta_data, resolved_file_path,
+            width, height, num_channels, bytes_per_channel, texture_format,
+            pixel_data_type, maya_owned_pixel_data);
         if (status != MS::kSuccess) {
             return nullptr;
         }

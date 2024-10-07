@@ -55,6 +55,9 @@
 #include <maya/MSyntax.h>
 
 // MM Solver
+#include <mmcore/lib.h>
+#include <mmimage/lib.h>
+
 #include "mmSolver/image/ImagePixelData.h"
 #include "mmSolver/image/PixelDataType.h"
 #include "mmSolver/image/image_io.h"
@@ -170,7 +173,9 @@ MStatus read_image_header(const MString &file_path, uint32_t &out_image_width,
                           MHWRender::MRasterFormat &out_texture_format,
                           image::PixelDataType &out_pixel_data_type) {
     MStatus status = MStatus::kSuccess;
-    MImage image;
+    MImage temp_mimage;
+    mmimage::ImagePixelBuffer temp_pixel_buffer;
+    mmimage::ImageMetaData temp_meta_data;
 
     out_image_width = 0;
     out_image_height = 0;
@@ -183,7 +188,8 @@ MStatus read_image_header(const MString &file_path, uint32_t &out_image_width,
     // TODO: Can we read just the file header to get the image size?
     // This would remove the need to read the entire image for this
     // command's usage.
-    status = image::read_image_file(image, file_path, out_image_width,
+    status = image::read_image_file(temp_mimage, temp_pixel_buffer,
+                                    temp_meta_data, file_path, out_image_width,
                                     out_image_height, out_num_channels,
                                     out_bytes_per_channel, out_texture_format,
                                     out_pixel_data_type, pixel_data);

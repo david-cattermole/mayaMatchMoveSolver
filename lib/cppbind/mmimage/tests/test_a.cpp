@@ -34,8 +34,9 @@ bool test_a_image_read(const char *test_name, rust::Str file_path) {
     auto meta_data = mmimg::ImageMetaData();
     auto pixel_buffer = mmimg::ImagePixelBuffer();
 
-    bool result =
-        mmimg::image_read_pixels_exr_f32x4(file_path, meta_data, pixel_buffer);
+    const bool vertical_flip = false;
+    bool result = mmimg::image_read_pixels_exr_f32x4(file_path, vertical_flip,
+                                                     meta_data, pixel_buffer);
     std::cout << test_name << " image file path: " << file_path
               << " image read result: " << static_cast<uint32_t>(result)
               << std::endl

@@ -20,8 +20,8 @@
  * Stores global values for the mmSolver viewport renderer.
  */
 
-#ifndef MM_SOLVER_RENDER_RENDER_GLOBALS_BASIC_NODE_H
-#define MM_SOLVER_RENDER_RENDER_GLOBALS_BASIC_NODE_H
+#ifndef MM_SOLVER_RENDER_RENDER_GLOBALS_STANDARD_NODE_H
+#define MM_SOLVER_RENDER_RENDER_GLOBALS_STANDARD_NODE_H
 
 // Maya
 #include <maya/MFnDependencyNode.h>
@@ -34,11 +34,11 @@
 namespace mmsolver {
 namespace render {
 
-class RenderGlobalsBasicNode : public MPxNode {
+class RenderGlobalsStandardNode : public MPxNode {
 public:
-    RenderGlobalsBasicNode();
+    RenderGlobalsStandardNode();
 
-    ~RenderGlobalsBasicNode() override;
+    ~RenderGlobalsStandardNode() override;
 
     MStatus compute(const MPlug &plug, MDataBlock &data) override;
 
@@ -63,4 +63,4 @@ private:
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MM_SOLVER_RENDER_RENDER_GLOBALS_BASIC_NODE_H
+#endif  // MM_SOLVER_RENDER_RENDER_GLOBALS_STANDARD_NODE_H

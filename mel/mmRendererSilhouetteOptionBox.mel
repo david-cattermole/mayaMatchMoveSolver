@@ -32,14 +32,15 @@
 //
 
 global proc mmRendererSilhouetteOptionBox() {
-    print("mmRendererSilhouetteOptionBox");
-    if (!`objExists "mmRenderGlobalsSilhouette"`) {
-        string $node = `createNode "mmRenderGlobalsSilhouette"
-            -name "mmRenderGlobalsSilhouette"
+    // print("mmRendererSilhouetteOptionBox");
+    string $node_type = "mmRenderGlobalsSilhouette";
+    if (!`objExists $node_type`) {
+        string $node = `createNode $node_type
+            -name $node_type
             -shared -skipSelect`;
         lockNode -lock on $node;
     }
-    select -r "mmRenderGlobalsSilhouette";
+    select -r $node_type;
 
     // Users want to be able to select and change the color swatch, so
     // we need the attribute editor open.

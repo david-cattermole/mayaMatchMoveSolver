@@ -17,10 +17,10 @@
 // along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 // ---------------------------------------------------------------------
 //
-// mmRenderer Render Globals AE Template
+// Standard Renderer Render Globals AE Template
 //
 
-global proc AEmmRenderGlobalsTemplate(string $name) {
+global proc AEmmRenderGlobalsStandardTemplate(string $name) {
     string $parent = `setParent -q`;
 
     editorTemplate -beginScrollLayout;

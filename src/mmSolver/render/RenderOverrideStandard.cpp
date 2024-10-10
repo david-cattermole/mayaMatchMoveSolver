@@ -21,7 +21,7 @@
  *
  */
 
-#include "RenderOverrideBasic.h"
+#include "RenderOverrideStandard.h"
 
 // Maya
 #include <maya/MFnDependencyNode.h>
@@ -49,30 +49,30 @@ namespace mmsolver {
 namespace render {
 
 static MStatus create_render_globals_node() {
-    return MGlobal::executeCommand(kRendererBasicCreateNodeCommand,
+    return MGlobal::executeCommand(kRendererStandardCreateNodeCommand,
                                    /*displayEnabled*/ true,
                                    /*undoEnabled*/ true);
 }
 
 // Callback for tracking renderer changes
-void RenderOverrideBasic::renderer_change_func(const MString &panel_name,
-                                               const MString &old_renderer,
-                                               const MString &new_renderer,
-                                               void * /*client_data*/) {
+void RenderOverrideStandard::renderer_change_func(const MString &panel_name,
+                                                  const MString &old_renderer,
+                                                  const MString &new_renderer,
+                                                  void * /*client_data*/) {
     const bool verbose = false;
     MMSOLVER_MAYA_VRB("Renderer changed for panel '"
                       << panel_name.asChar() << "'. "
                       << "New renderer is '" << new_renderer.asChar() << "', "
                       << "old was '" << old_renderer.asChar() << "'.");
 
-    if (new_renderer == MM_RENDERER_BASIC_NAME) {
+    if (new_renderer == MM_RENDERER_STANDARD_NAME) {
         MStatus status = create_render_globals_node();
         CHECK_MSTATUS(status);
     }
 }
 
 // Callback for tracking render override changes
-void RenderOverrideBasic::render_override_change_func(
+void RenderOverrideStandard::render_override_change_func(
     const MString &panel_name, const MString &old_renderer,
     const MString &new_renderer, void * /*client_data*/) {
     const bool verbose = false;
@@ -81,27 +81,28 @@ void RenderOverrideBasic::render_override_change_func(
                       << "New override is '" << new_renderer.asChar() << "', "
                       << "old was '" << old_renderer.asChar() << "'.");
 
-    if (new_renderer == MM_RENDERER_BASIC_NAME) {
+    if (new_renderer == MM_RENDERER_STANDARD_NAME) {
         MStatus status = create_render_globals_node();
         CHECK_MSTATUS(status);
     }
 }
 
 // Set up operations
-RenderOverrideBasic::RenderOverrideBasic(const MString &name)
+RenderOverrideStandard::RenderOverrideStandard(const MString &name)
     : MRenderOverride(name)
-    , m_ui_name(kRendererBasicUiName)
+    , m_ui_name(kRendererStandardUiName)
     , m_renderer_change_callback(0)
     , m_render_override_change_callback(0)
     , m_globals_node() {
     MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
     if (!renderer) {
         MMSOLVER_MAYA_ERR(
-            "MM Renderer Basic Render Override: "
+            "MM Renderer Standard Render Override: "
             "Failed to get renderer.");
     }
 
-    const MString kBackgroundOpName = MString("mmRendererBasic_backgroundPass");
+    const MString kBackgroundOpName =
+        MString("mmRendererStandard_backgroundPass");
 
     m_backgroundOp = new SceneRender(kBackgroundOpName);
     m_backgroundOp->setEnabled(true);
@@ -143,10 +144,10 @@ RenderOverrideBasic::RenderOverrideBasic(const MString &name)
         MHWRender::MRenderOperation::kStandardBackgroundName, m_backgroundOp);
 }
 
-RenderOverrideBasic::~RenderOverrideBasic() {
+RenderOverrideStandard::~RenderOverrideStandard() {
     m_backgroundOp = nullptr;
 
-    RenderOverrideBasic::cleanup();
+    RenderOverrideStandard::cleanup();
 
     // Clean up callbacks
     if (m_renderer_change_callback) {
@@ -157,16 +158,16 @@ RenderOverrideBasic::~RenderOverrideBasic() {
     }
 }
 
-MHWRender::DrawAPI RenderOverrideBasic::supportedDrawAPIs() const {
+MHWRender::DrawAPI RenderOverrideStandard::supportedDrawAPIs() const {
     // The SilhouetteRender only works on OpenGL, so we cannot support
     // DirectX on Windows or Metal on Apple.
     return MHWRender::kOpenGLCoreProfile;
 }
 
 // Perform any setup required before render operations are to be executed.
-MStatus RenderOverrideBasic::setup(const MString &destination) {
+MStatus RenderOverrideStandard::setup(const MString &destination) {
     const bool verbose = false;
-    MMSOLVER_MAYA_VRB("RenderOverrideBasic::setup: start "
+    MMSOLVER_MAYA_VRB("RenderOverrideStandard::setup: start "
                       << destination.asChar());
 
     MStatus status = MS::kSuccess;
@@ -187,19 +188,19 @@ MStatus RenderOverrideBasic::setup(const MString &destination) {
     }
 
     MMSOLVER_MAYA_VRB(
-        "RenderOverrideBasic::setup: m_backgroundOp=" << m_backgroundOp);
+        "RenderOverrideStandard::setup: m_backgroundOp=" << m_backgroundOp);
     if (m_backgroundOp) {
         m_image_plane_nodes.clear();
         status = add_all_image_planes(m_image_plane_nodes);
         MMSOLVER_MAYA_VRB(
-            "RenderOverrideBasic::setup: m_image_plane_nodes.length()="
+            "RenderOverrideStandard::setup: m_image_plane_nodes.length()="
             << m_image_plane_nodes.length());
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         m_backgroundOp->setObjectSetOverride(&m_image_plane_nodes);
     }
 
-    MMSOLVER_MAYA_VRB("RenderOverrideBasic::setup: end "
+    MMSOLVER_MAYA_VRB("RenderOverrideStandard::setup: end "
                       << destination.asChar());
     return MRenderOverride::setup(destination);
 }
@@ -209,9 +210,9 @@ MStatus RenderOverrideBasic::setup(const MString &destination) {
 //
 // End of frame cleanup. Clears out any data on operations which may
 // change from frame to frame (render target, output panel name etc).
-MStatus RenderOverrideBasic::cleanup() {
+MStatus RenderOverrideStandard::cleanup() {
     const bool verbose = false;
-    MMSOLVER_MAYA_VRB("RenderOverrideBasic::cleanup: ");
+    MMSOLVER_MAYA_VRB("RenderOverrideStandard::cleanup: ");
 
     return MRenderOverride::cleanup();
 }

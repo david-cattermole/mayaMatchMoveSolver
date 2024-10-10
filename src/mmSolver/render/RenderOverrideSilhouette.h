@@ -39,7 +39,7 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "RenderGlobalsBasicNode.h"
+#include "RenderGlobalsStandardNode.h"
 #include "mmSolver/render/data/RenderMode.h"
 #include "mmSolver/render/data/constants.h"
 #include "mmSolver/render/ops/ClearOperation.h"
@@ -107,7 +107,7 @@ private:
     HudRender* m_hudOp;
     PresentTarget* m_presentOp;
 
-    // A handle to the 'mmRenderGlobals' node.
+    // A handle to the 'mmRenderGlobalsSilhouette' node.
     MObjectHandle m_globals_node;
 
     MSelectionList m_image_plane_nodes;

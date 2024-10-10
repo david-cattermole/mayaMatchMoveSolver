@@ -130,10 +130,10 @@ set(SOURCE_FILES
 if (MMSOLVER_BUILD_RENDERER)
   set(SOURCE_FILES
     ${SOURCE_FILES}
-    mmSolver/render/MMRendererBasicCmd.cpp
+    mmSolver/render/MMRendererStandardCmd.cpp
     mmSolver/render/MMRendererSilhouetteCmd.cpp
-    mmSolver/render/RenderOverrideBasic.cpp
-    mmSolver/render/RenderGlobalsBasicNode.cpp
+    mmSolver/render/RenderOverrideStandard.cpp
+    mmSolver/render/RenderGlobalsStandardNode.cpp
     mmSolver/render/RenderGlobalsSilhouetteNode.cpp
     mmSolver/render/RenderOverrideSilhouette.cpp
     mmSolver/render/ops/ClearOperation.cpp

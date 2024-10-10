@@ -20,7 +20,7 @@
  * Stores global values for the mmSolver viewport renderer.
  */
 
-#include "RenderGlobalsBasicNode.h"
+#include "RenderGlobalsStandardNode.h"
 
 // Maya
 #include <maya/M3dView.h>
@@ -37,7 +37,7 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "RenderOverrideBasic.h"
+#include "RenderOverrideStandard.h"
 #include "mmSolver/nodeTypeIds.h"
 #include "mmSolver/render/data/RenderColorFormat.h"
 #include "mmSolver/utilities/debug_utils.h"
@@ -45,21 +45,22 @@
 namespace mmsolver {
 namespace render {
 
-MTypeId RenderGlobalsBasicNode::m_id(MM_RENDER_GLOBALS_BASIC_TYPE_ID);
+MTypeId RenderGlobalsStandardNode::m_id(MM_RENDER_GLOBALS_STANDARD_TYPE_ID);
 
-RenderGlobalsBasicNode::RenderGlobalsBasicNode() : m_attr_change_callback(0) {}
+RenderGlobalsStandardNode::RenderGlobalsStandardNode()
+    : m_attr_change_callback(0) {}
 
-RenderGlobalsBasicNode::~RenderGlobalsBasicNode() {
+RenderGlobalsStandardNode::~RenderGlobalsStandardNode() {
     if (m_attr_change_callback) {
         MMessage::removeCallback(m_attr_change_callback);
     }
 }
 
-MString RenderGlobalsBasicNode::nodeName() {
-    return MString(MM_RENDER_GLOBALS_BASIC_TYPE_NAME);
+MString RenderGlobalsStandardNode::nodeName() {
+    return MString(MM_RENDER_GLOBALS_STANDARD_TYPE_NAME);
 }
 
-void RenderGlobalsBasicNode::postConstructor() {
+void RenderGlobalsStandardNode::postConstructor() {
     MObject obj = thisMObject();
     if ((m_attr_change_callback == 0) && (!obj.isNull())) {
         m_attr_change_callback =
@@ -67,7 +68,7 @@ void RenderGlobalsBasicNode::postConstructor() {
     }
 }
 
-void RenderGlobalsBasicNode::attr_change_func(
+void RenderGlobalsStandardNode::attr_change_func(
     MNodeMessage::AttributeMessage msg, MPlug &plug, MPlug & /*other_plug*/,
     void * /*client_data*/) {
     const bool verbose = false;
@@ -95,11 +96,11 @@ void RenderGlobalsBasicNode::attr_change_func(
         return;
     }
 
-    RenderOverrideBasic *override_ptr =
-        (RenderOverrideBasic *)renderer->findRenderOverride(
-            MM_RENDERER_BASIC_NAME);
+    RenderOverrideStandard *override_ptr =
+        (RenderOverrideStandard *)renderer->findRenderOverride(
+            MM_RENDERER_STANDARD_NAME);
     if (override_ptr == nullptr) {
-        MGlobal::displayError(kRendererBasicCmdName + " is not registered.");
+        MGlobal::displayError(kRendererStandardCmdName + " is not registered.");
         return;
     }
 
@@ -112,17 +113,17 @@ void RenderGlobalsBasicNode::attr_change_func(
     view.refresh(/*all=*/false, /*force=*/true);
 }
 
-MStatus RenderGlobalsBasicNode::compute(const MPlug & /*plug*/,
-                                        MDataBlock & /*data*/) {
+MStatus RenderGlobalsStandardNode::compute(const MPlug & /*plug*/,
+                                           MDataBlock & /*data*/) {
     // This node does not compute any values.
     return MS::kUnknownParameter;
 }
 
-void *RenderGlobalsBasicNode::creator() {
-    return (new RenderGlobalsBasicNode());
+void *RenderGlobalsStandardNode::creator() {
+    return (new RenderGlobalsStandardNode());
 }
 
-MStatus RenderGlobalsBasicNode::initialize() { return MS::kSuccess; }
+MStatus RenderGlobalsStandardNode::initialize() { return MS::kSuccess; }
 
 }  // namespace render
 }  // namespace mmsolver

@@ -19,7 +19,7 @@
  *
  */
 
-#include "MMRendererBasicCmd.h"
+#include "MMRendererStandardCmd.h"
 
 // Maya
 #include <maya/M3dView.h>
@@ -29,26 +29,28 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "RenderOverrideBasic.h"
+#include "RenderOverrideStandard.h"
 
 namespace mmsolver {
 namespace render {
 
-MMRendererBasicCmd::MMRendererBasicCmd() {}
+MMRendererStandardCmd::MMRendererStandardCmd() {}
 
-MMRendererBasicCmd::~MMRendererBasicCmd() {}
+MMRendererStandardCmd::~MMRendererStandardCmd() {}
 
-void *MMRendererBasicCmd::creator() { return (void *)(new MMRendererBasicCmd); }
+void *MMRendererStandardCmd::creator() {
+    return (void *)(new MMRendererStandardCmd);
+}
 
-MString MMRendererBasicCmd::cmdName() { return kRendererBasicCmdName; }
+MString MMRendererStandardCmd::cmdName() { return kRendererStandardCmdName; }
 
-MSyntax MMRendererBasicCmd::newSyntax() {
+MSyntax MMRendererStandardCmd::newSyntax() {
     MSyntax syntax;
     syntax.enableQuery(true);
     return syntax;
 }
 
-MStatus MMRendererBasicCmd::doIt(const MArgList &args) {
+MStatus MMRendererStandardCmd::doIt(const MArgList &args) {
     MStatus status = MStatus::kFailure;
 
     MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
@@ -57,10 +59,11 @@ MStatus MMRendererBasicCmd::doIt(const MArgList &args) {
         return status;
     }
 
-    RenderOverrideBasic *override_ptr =
-        (RenderOverrideBasic *)renderer->findRenderOverride(kRendererBasicName);
+    RenderOverrideStandard *override_ptr =
+        (RenderOverrideStandard *)renderer->findRenderOverride(
+            kRendererStandardName);
     if (override_ptr == nullptr) {
-        MGlobal::displayError(kRendererBasicCmdName + " is not registered.");
+        MGlobal::displayError(kRendererStandardCmdName + " is not registered.");
         return status;
     }
 

@@ -17,17 +17,17 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * mmSolver Basic Renderer command.
+ * mmSolver Standard Renderer command.
  *
  * This command is used to query and edit values for the mmSolver
  * Renderer.
  *
- * Create a 'mmRendererBasic' node used to store the attributes for the
+ * Create a 'mmRendererStandard' node used to store the attributes for the
  * renderer in the scene.
  */
 
-#ifndef MM_SOLVER_RENDER_MM_RENDERER_BASIC_CMD_H
-#define MM_SOLVER_RENDER_MM_RENDERER_BASIC_CMD_H
+#ifndef MM_SOLVER_RENDER_MM_RENDERER_STANDARD_CMD_H
+#define MM_SOLVER_RENDER_MM_RENDERER_STANDARD_CMD_H
 
 // Maya
 #include <maya/MPxCommand.h>
@@ -36,13 +36,13 @@ namespace mmsolver {
 namespace render {
 
 /*
- * MM Basic Renderer command.
+ * MM Standard Renderer command.
  */
-class MMRendererBasicCmd : public MPxCommand {
+class MMRendererStandardCmd : public MPxCommand {
 public:
-    MMRendererBasicCmd();
+    MMRendererStandardCmd();
 
-    ~MMRendererBasicCmd() override;
+    ~MMRendererStandardCmd() override;
 
     MStatus doIt(const MArgList &args) override;
 
@@ -56,4 +56,4 @@ public:
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MAYA_MM_SOLVER_RENDER_MM_RENDERER_BASIC_CMD_H
+#endif  // MAYA_MM_SOLVER_RENDER_MM_RENDERER_STANDARD_CMD_H

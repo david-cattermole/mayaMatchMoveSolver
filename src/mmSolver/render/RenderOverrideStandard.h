@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef MM_SOLVER_RENDER_BASIC_RENDER_OVERRIDE_H
-#define MM_SOLVER_RENDER_BASIC_RENDER_OVERRIDE_H
+#ifndef MM_SOLVER_RENDER_STANDARD_RENDER_OVERRIDE_H
+#define MM_SOLVER_RENDER_STANDARD_RENDER_OVERRIDE_H
 
 // STL
 #include <vector>
@@ -37,7 +37,7 @@
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "RenderGlobalsBasicNode.h"
+#include "RenderGlobalsStandardNode.h"
 #include "mmSolver/render/data/RenderMode.h"
 #include "mmSolver/render/data/constants.h"
 #include "mmSolver/render/ops/SceneRender.h"
@@ -46,10 +46,10 @@
 namespace mmsolver {
 namespace render {
 
-class RenderOverrideBasic : public MHWRender::MRenderOverride {
+class RenderOverrideStandard : public MHWRender::MRenderOverride {
 public:
-    RenderOverrideBasic(const MString& name);
-    ~RenderOverrideBasic() override;
+    RenderOverrideStandard(const MString& name);
+    ~RenderOverrideStandard() override;
 
     MHWRender::DrawAPI supportedDrawAPIs() const override;
 
@@ -81,7 +81,7 @@ protected:
 private:
     SceneRender* m_backgroundOp;
 
-    // A handle to the 'mmRenderGlobals' node.
+    // A handle to the 'mmRenderGlobalsStandard' node.
     MObjectHandle m_globals_node;
 
     MSelectionList m_image_plane_nodes;
@@ -90,4 +90,4 @@ private:
 }  // namespace render
 }  // namespace mmsolver
 
-#endif  // MAYA_MM_SOLVER_RENDER_BASIC_RENDER_OVERRIDE_H
+#endif  // MAYA_MM_SOLVER_RENDER_STANDARD_RENDER_OVERRIDE_H

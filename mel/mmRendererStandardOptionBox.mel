@@ -31,14 +31,15 @@
 //
 //
 
-global proc mmRendererOptionBox() {
-    print("mmRendererOptionBox");
-    if (!`objExists "mmRenderGlobals"`) {
-        string $node = `createNode "mmRenderGlobals"
-            -name "mmRenderGlobals"
+global proc mmRendererStandardOptionBox() {
+    // print("mmRendererStandardOptionBox");
+    string $node_type = "mmRenderGlobalsStandard";
+    if (!`objExists $node_type`) {
+        string $node = `createNode $node_type
+            -name $node_type
             -shared -skipSelect`;
         lockNode -lock on $node;
     }
-    select -r "mmRenderGlobals";
+    select -r $node_type;
     return;
 }

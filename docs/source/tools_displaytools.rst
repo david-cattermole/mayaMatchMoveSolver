@@ -134,7 +134,7 @@ Set Mesh Hold-Outs
 This tool is used to force mesh nodes to be rendered as hold-out in
 the viewport, or not.
 
-This is similar to assigning a UseBackground shader, to geometry,
+This is similar to assigning a `useBackground` shader, to geometry,
 however this tool avoids the need to create a shader, and manage
 assignments.
 

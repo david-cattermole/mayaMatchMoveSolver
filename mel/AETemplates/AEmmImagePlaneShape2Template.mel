@@ -607,7 +607,6 @@ global proc AEmmImagePlaneShape2Template(string $nodeName)
     editorTemplate -beginLayout "Miscellaneous" -collapse 1;
     {
         editorTemplate -addControl "meshResolution";
-        editorTemplate -addControl "imageDefaultColor";  // Cannot be textured.
         editorTemplate -addControl "shaderIsTransparent";
         editorTemplate
           -callCustom

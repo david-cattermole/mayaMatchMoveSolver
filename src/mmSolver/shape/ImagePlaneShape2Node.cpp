@@ -430,14 +430,6 @@ MStatus ImagePlaneShape2Node::initialize() {
         nAttr.setNiceNameOverride(MString("Shader Is Transparent (Debug)")));
     CHECK_MSTATUS(addAttribute(m_shader_is_transparent));
 
-    m_image_default_color = nAttr.createColor("imageDefaultColor", "imgdefcol");
-    CHECK_MSTATUS(nAttr.setKeyable(true));
-    CHECK_MSTATUS(nAttr.setStorable(true));
-    CHECK_MSTATUS(nAttr.setReadable(true));
-    CHECK_MSTATUS(nAttr.setWritable(true));
-    CHECK_MSTATUS(nAttr.setDefault(1.0f, 1.0f, 1.0f));
-    CHECK_MSTATUS(addAttribute(m_image_default_color));
-
     m_image_frame_number =
         nAttr.create("imageFrameNumber", "imgfrmnmb", MFnNumericData::kInt, 1);
     CHECK_MSTATUS(nAttr.setStorable(true));

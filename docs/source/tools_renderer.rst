@@ -34,7 +34,7 @@ Currently the following Viewport 2.0 renderers are available.
 .. _renderer-standard-ref:
 
 MM Standard Renderer
-====================
+--------------------
 
 `MM Standard Renderer` is a Viewport 2.0 renderer designed to add
 helpful features for use with MatchMove workflows and reviews.
@@ -62,7 +62,7 @@ the Viewport's "Renderer" menu to switch to ``MM Standard Renderer``.
 .. _renderer-silhouette-ref:
 
 MM Silhouette Renderer
-======================
+----------------------
 
 The `MM Silhouette Renderer` is used to add silhouette outline edge to
 rendered geometry, allowing the artist to clearly see the edges of a

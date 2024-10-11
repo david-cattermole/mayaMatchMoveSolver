@@ -139,7 +139,7 @@ def set_value_double_spin_box(
 ):
     assert isinstance(doubleSpinBox, QtWidgets.QDoubleSpinBox)
     assert isinstance(value, float)
-    doubleSpinBox.setValue(int(value))
+    doubleSpinBox.setValue(value)
 
 
 def set_capacity_widgets(

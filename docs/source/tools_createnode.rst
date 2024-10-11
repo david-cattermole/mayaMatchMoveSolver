@@ -170,7 +170,7 @@ Key features:
 
 - Real-Time Lens Distortion; Lenses added to the camera (with
   :ref:`Create Lens <create-lens-ref>` tool) will distort the `MM
-  ImagePlane` in real-time, as the Lens attributes are updated.
+  ImagePlane` in real-time as attributes update.
 
 - Frame Range controls and details; Override the first frame of an
   image sequence to any other frame, and see the output frame number

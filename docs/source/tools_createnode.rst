@@ -121,8 +121,9 @@ Run this Python command:
 Create ImagePlane
 -----------------
 
-Create a MM Solver ImagePlane node, with the chosen image file
-(sequence).
+Create a :ref:`MM ImagePlane <imageplane-ref>` node, with the chosen
+image file (sequence) used to display a flat plane with an image
+texture in the Maya 3D scene.
 
 .. note:: The image plane supports any image format supported by
    Maya's ``file`` node, but can be buggy when reading image
@@ -145,7 +146,7 @@ Usage:
      ``file.#.ext``), it will be detected and the full image sequence
      will be loaded.
 
-Run this Python command:
+To create an image plane, you can run this Python command:
 
 .. code:: python
 

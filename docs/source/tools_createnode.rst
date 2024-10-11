@@ -125,10 +125,6 @@ Create a :ref:`MM ImagePlane <imageplane-ref>` node, with the chosen
 image file (sequence) used to display a flat plane with an image
 texture in the Maya 3D scene.
 
-.. note:: The image plane supports any image format supported by
-   Maya's ``file`` node, but can be buggy when reading image
-   sequences.
-
 .. figure:: images/tools_create_mm_image_plane.png
     :alt: MM Image Plane
     :align: center

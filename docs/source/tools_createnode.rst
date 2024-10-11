@@ -159,7 +159,8 @@ MM ImagePlane
 -------------
 
 The `MM ImagePlane` node is an improved Image Plane, designed for
-MatchMove tasks.
+MatchMove tasks, and can be created with the :ref:`Create ImagePlane
+<create-imageplane-ref>` tool.
 
 Key features:
 
@@ -188,49 +189,154 @@ Key features:
 Display Attributes
 ~~~~~~~~~~~~~~~~~~
 
+.. figure:: images/tools_image_plane_attributes_display.png
+    :alt: MM ImagePlane Display attributes.
+    :align: center
+    :width: 80%
+
 *To be written*
+
+.. list-table:: Display Attributes
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Description
+
+   * - Name
+     - Description
 
 .. _imageplane-image-sequence-attributes-ref:
 
 Image Sequence Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. figure:: images/tools_image_plane_attributes_image_sequence.png
+    :alt: MM ImagePlane Image Sequence attributes.
+    :align: center
+    :width: 80%
+
 *To be written*
+
+.. list-table:: Image Sequence Attributes
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Description
+
+   * - Name
+     - Description
 
 .. _imageplane-hud-attributes-ref:
 
 HUD Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. figure:: images/tools_image_plane_attributes_hud.png
+    :alt: MM ImagePlane HUD attributes.
+    :align: center
+    :width: 80%
+
 *To be written*
+
+.. list-table:: HUD Attributes
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Description
+
+   * - Name
+     - Description
 
 .. _imageplane-image-cache-attributes-ref:
 
 Image Cache Attributes
 ~~~~~~~~~~~~~~~~~~~~~~
 
+.. figure:: images/tools_image_plane_attributes_image_cache.png
+    :alt: MM ImagePlane Image Cache attributes.
+    :align: center
+    :width: 80%
+
 *To be written*
 
 See :ref:`Image Cache Preferences <image-cache-preferences-ref>` for
 details on how to control the MM Image Plane hardware resources used.
+
+.. list-table:: Image Cache Attributes
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Description
+
+   * - Name
+     - Description
 
 .. _imageplane-misc-attributes-ref:
 
 Miscellaneous Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. figure:: images/tools_image_plane_attributes_misc.png
+    :alt: MM ImagePlane Miscellaneous attributes.
+    :align: center
+    :width: 80%
+
 *To be written*
+
+.. list-table:: Miscellaneous Attributes
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Description
+
+   * - Name
+     - Description
 
 .. _imageplane-nodes-attributes-ref:
 
 Nodes Attributes
 ~~~~~~~~~~~~~~~~
 
+.. figure:: images/tools_image_plane_attributes_nodes.png
+    :alt: MM ImagePlane Nodes attributes.
+    :align: center
+    :width: 80%
+
 *To be written*
+
+.. list-table:: Nodes Attributes
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Description
+
+   * - Name
+     - Description
 
 .. _imageplane-extended-image-details-attributes-ref:
 
 Extended Image Details Attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. figure:: images/tools_image_plane_attributes_extended_image_details.png
+    :alt: MM ImagePlane Extended Image Details attributes.
+    :align: center
+    :width: 80%
+
 *To be written*
+
+.. list-table:: Extended Image Details Attributes
+   :widths: auto
+   :header-rows: 1
+
+   * - Name
+     - Description
+
+   * - Name
+     - Description

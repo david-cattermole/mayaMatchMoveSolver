@@ -607,7 +607,6 @@ global proc AEmmImagePlaneShape2Template(string $nodeName)
     editorTemplate -beginLayout "Miscellaneous" -collapse 1;
     {
         editorTemplate -addControl "meshResolution";
-        editorTemplate -addControl "shaderIsTransparent";
         editorTemplate
           -callCustom
           "AEmmImagePlaneShape2_colorSpaceNew"

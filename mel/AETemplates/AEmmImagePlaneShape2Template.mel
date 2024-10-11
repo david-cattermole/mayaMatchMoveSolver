@@ -465,7 +465,7 @@ global proc AEmmImagePlaneShape2_imageCacheButtonsNew(string $attr_name)
         // Editor.
         text -label "";
 
-        button -label "Cache Capacity..." imageCacheButtons_capacityButton;
+        button -label "Image Cache Preferences..." imageCacheButtons_capacityButton;
     }
     setParent ..;
 

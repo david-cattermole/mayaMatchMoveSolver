@@ -152,3 +152,13 @@ To create an image plane, you can run this Python command:
 
     import mmSolver.tools.createimageplane.tool as tool
     tool.main()
+
+.. _imageplane-ref:
+
+ImagePlane
+----------
+
+*To be written*
+
+See :ref:`Image Cache Preferences <image-cache-preferences-ref>` for
+details on how to control the MM Image Plane hardware resources used.

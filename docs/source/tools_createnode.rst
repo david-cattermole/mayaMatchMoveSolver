@@ -155,10 +155,82 @@ To create an image plane, you can run this Python command:
 
 .. _imageplane-ref:
 
-ImagePlane
-----------
+MM ImagePlane
+-------------
+
+The `MM ImagePlane` node is an improved Image Plane, designed for
+MatchMove tasks.
+
+Key features:
+
+- Multiple Image Slots; Switch seamlessly between 4 different image
+  sequences loaded onto the `MM ImagePlane`.
+
+- Memory resource control; The :ref:`Image Cache
+  <image-cache-preferences-ref>` is used to limit and detail memory
+  usage for the `MM ImagePlane` allowing greater control than the
+  native Maya ImagePlane.
+
+- Real-Time Lens Distortion; Lenses added to the camera (with
+  :ref:`Create Lens <create-lens-ref>` tool) will distort the `MM
+  ImagePlane` in real-time, as the Lens attributes are updated.
+
+- Frame Range controls and details; Override the first frame of an
+  image sequence to any other frame, and see the output frame number
+  easily for debugging.
+
+- Enhanced Display Controls; Adjust the exposure, gamma, saturation
+  and soft-clip of the input image data, and display individual colour
+  channels.
+
+.. _imageplane-display-attributes-ref:
+
+Display Attributes
+~~~~~~~~~~~~~~~~~~
+
+*To be written*
+
+.. _imageplane-image-sequence-attributes-ref:
+
+Image Sequence Attributes
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*To be written*
+
+.. _imageplane-hud-attributes-ref:
+
+HUD Attributes
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*To be written*
+
+.. _imageplane-image-cache-attributes-ref:
+
+Image Cache Attributes
+~~~~~~~~~~~~~~~~~~~~~~
 
 *To be written*
 
 See :ref:`Image Cache Preferences <image-cache-preferences-ref>` for
 details on how to control the MM Image Plane hardware resources used.
+
+.. _imageplane-misc-attributes-ref:
+
+Miscellaneous Attributes
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+*To be written*
+
+.. _imageplane-nodes-attributes-ref:
+
+Nodes Attributes
+~~~~~~~~~~~~~~~~
+
+*To be written*
+
+.. _imageplane-extended-image-details-attributes-ref:
+
+Extended Image Details Attributes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+*To be written*

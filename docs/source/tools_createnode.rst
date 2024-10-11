@@ -160,25 +160,25 @@ MatchMove tasks, and can be created with the :ref:`Create ImagePlane
 
 Key features:
 
-- Multiple Image Slots; Switch seamlessly between 4 different image
-  sequences loaded onto the `MM ImagePlane`.
+- **Multiple Image Slots**; Switch seamlessly between 4 different
+  image sequences loaded onto the `MM ImagePlane`.
 
-- Memory resource control; The :ref:`Image Cache
+- **Memory resource control**; The :ref:`Image Cache
   <image-cache-preferences-ref>` is used to limit and detail memory
   usage for the `MM ImagePlane` allowing greater control than the
   native Maya ImagePlane.
 
-- Real-Time Lens Distortion; Lenses added to the camera (with
+- **Real-Time Lens Distortion**; Lenses added to the camera (with
   :ref:`Create Lens <create-lens-ref>` tool) will distort the `MM
   ImagePlane` in real-time as attributes update.
 
-- Frame Range controls and details; Override the first frame of an
+- **Frame Range controls and details**; Override the first frame of an
   image sequence to any other frame, and see the output frame number
   easily for debugging.
 
-- Enhanced Display Controls; Adjust the exposure, gamma, saturation
-  and soft-clip of the input image data, and display individual colour
-  channels.
+- **Enhanced Display controls**; Adjust the exposure, gamma,
+  saturation and soft-clip of the input image data, and display
+  individual colour channels.
 
 .. _imageplane-display-attributes-ref:
 

@@ -190,7 +190,8 @@ Display Attributes
     :align: center
     :width: 80%
 
-*To be written*
+`Display Attributes` control how the `MM ImagePlane` looks in the
+viewport; use these attributes to make the image easier to see.
 
 .. list-table:: Display Attributes
    :widths: auto
@@ -199,7 +200,34 @@ Display Attributes
    * - Name
      - Description
 
-   * - Name
+   * - Visible To Camera Only
+     - Description
+
+   * - Gain
+     - Description
+
+   * - Exposure
+     - Description
+
+   * - Gamma
+     - Description
+
+   * - Saturation
+     - Description
+
+   * - SoftClip
+     - Description
+
+   * - Alpha Gain
+     - Description
+
+   * - Input Color Space
+     - Description
+
+   * - Image Ignore Alpha
+     - Description
+
+   * - Display Channel
      - Description
 
 .. _imageplane-image-sequence-attributes-ref:
@@ -221,7 +249,49 @@ Image Sequence Attributes
    * - Name
      - Description
 
-   * - Name
+   * - Image Sequence Slot
+     - Description
+
+   * - Image Sequence (Main)
+     - Description
+
+   * - Image Sequence (Alt 1)
+     - Description
+
+   * - Image Sequence (Alt 2)
+     - Description
+
+   * - Image Sequence (Alt 3)
+     - Description
+
+   * - Image Width
+     - Description
+
+   * - Image Height
+     - Description
+
+   * - Image Pixel Aspect
+     - Description
+
+   * - Start Frame
+     - Description
+
+   * - End Frame
+     - Description
+
+   * - Image Sequence Frame
+     - Description
+
+   * - First Frame
+     - Description
+
+   * - Frame Output
+     - Description
+
+   * - Image Flip (Vertical)
+     - Description
+
+   * - Image Flip (Horizontal)
      - Description
 
 .. _imageplane-hud-attributes-ref:
@@ -243,7 +313,13 @@ HUD Attributes
    * - Name
      - Description
 
-   * - Name
+   * - Draw Hud
+     - Description
+
+   * - Draw Camera Size
+     - Description
+
+   * - Draw Image Size
      - Description
 
 .. _imageplane-image-cache-attributes-ref:
@@ -268,8 +344,26 @@ details on how to control the MM Image Plane hardware resources used.
    * - Name
      - Description
 
-   * - Name
+   * - Refresh Attribute Editor (button)
      - Description
+
+   * - Image Sequence Size
+     - Description
+
+   * - GPU Cache Used
+     - Description
+
+   * - CPU Cache Used
+     - Description
+
+   * - Total Memory Available
+     - Description
+
+   * - Clear... (button)
+     - Description
+
+   * - Image Cache Preferences... (button)
+     - Open the :ref:`Image Cache Preferences <image-cache-preferences-ref>`.
 
 .. _imageplane-misc-attributes-ref:
 
@@ -290,7 +384,10 @@ Miscellaneous Attributes
    * - Name
      - Description
 
-   * - Name
+   * - Mesh Resolution
+     - Description
+
+   * - Output Color Space
      - Description
 
 .. _imageplane-nodes-attributes-ref:
@@ -312,7 +409,12 @@ Nodes Attributes
    * - Name
      - Description
 
-   * - Name
+   * - Geometry Node
+     - Mostly used for debugging. The connected node used to extract
+       mesh geometry for the `MM ImagePlane` to draw on the
+       screen. This geometry node may be deformed by lens distortion.
+
+   * - Camera Node
      - Description
 
 .. _imageplane-extended-image-details-attributes-ref:
@@ -334,5 +436,20 @@ Extended Image Details Attributes
    * - Name
      - Description
 
-   * - Name
+   * - Padding
+     - Description
+
+   * - Image Num Channels
+     - Description
+
+   * - Image Bytes Per Channel
+     - Description
+
+   * - Image Size Bytes
+     - Description
+
+   * - Input Color Space
+     - Description
+
+   * - Output Color Space
      - Description

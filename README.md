@@ -57,6 +57,7 @@ changes.
 
 | Releases                                                                                | Description                                        |
 | --------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| [v0.5.0](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.5.0)   | Silhouette Renderer and Improved MM ImagePlane.    |
 | [v0.4.9](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.9)   | Bug fix for Surface Cluster.                       |
 | [v0.4.8](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.8)   | Add Create Rivet and Surface Cluster tools.        |
 | [v0.4.7](https://github.com/david-cattermole/mayaMatchMoveSolver/releases/tag/v0.4.7)   | Bug fix for "Convert to Marker" tool.              |

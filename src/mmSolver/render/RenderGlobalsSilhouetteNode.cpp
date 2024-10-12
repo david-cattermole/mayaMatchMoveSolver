@@ -52,6 +52,7 @@ MTypeId RenderGlobalsSilhouetteNode::m_id(MM_RENDER_GLOBALS_SILHOUETTE_TYPE_ID);
 
 // Input Attributes
 MObject RenderGlobalsSilhouetteNode::a_enable;
+MObject RenderGlobalsSilhouetteNode::a_overrideColor;
 MObject RenderGlobalsSilhouetteNode::a_depthOffset;
 MObject RenderGlobalsSilhouetteNode::a_width;
 MObject RenderGlobalsSilhouetteNode::a_color;
@@ -150,6 +151,18 @@ MStatus RenderGlobalsSilhouetteNode::initialize() {
         CHECK_MSTATUS(numeric_attribute.setConnectable(true));
         CHECK_MSTATUS(numeric_attribute.setKeyable(true));
         CHECK_MSTATUS(addAttribute(a_enable));
+    }
+
+    // Silhouette Override Color
+    {
+        a_overrideColor = numeric_attribute.create(
+            kAttrNameSilhouetteOverrideColor, "ovrdcol",
+            MFnNumericData::kBoolean,
+            static_cast<int>(kSilhouetteOverrideColorDefault));
+        CHECK_MSTATUS(numeric_attribute.setStorable(true));
+        CHECK_MSTATUS(numeric_attribute.setConnectable(true));
+        CHECK_MSTATUS(numeric_attribute.setKeyable(true));
+        CHECK_MSTATUS(addAttribute(a_overrideColor));
     }
 
     // Silhouette Depth Offset

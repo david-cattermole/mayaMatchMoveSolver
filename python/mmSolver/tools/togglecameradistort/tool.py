@@ -77,6 +77,9 @@ def main():
     for cam in cams_to_toggle:
         # Set lens mode (enabled/disabled)
         enable = cam.get_lens_enable()
+        if enable is None:
+            LOG.error('Cannot toggle lens distortion on camera; cam=%r', cam)
+            continue
         cam.set_lens_enable(not enable)
     maya.cmds.select(sel, replace=True)
     return

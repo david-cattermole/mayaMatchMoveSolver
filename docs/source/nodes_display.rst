@@ -3,7 +3,12 @@ Display Nodes
 
 *To be written.*
 
-``mmRenderGlobals`` Nodes
+``mmRenderGlobalsStandard`` Nodes
++++++++++++++++++++++++++
+
+*To be written.*
+
+``mmRenderGlobalsSilhouette`` Nodes
 +++++++++++++++++++++++++
 
 *To be written.*

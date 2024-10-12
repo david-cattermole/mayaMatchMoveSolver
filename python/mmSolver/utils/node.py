@@ -60,11 +60,12 @@ def set_attr(plug, value, relock=False):
     Optionally unlocks and re-locks the plugs.
 
     :param plug: Node.Attr to set.
-    :param value: The ne value to set.
+    :param value: The new value to set.
     :param relock: If the plug was already locked, should we set the new
                    value, then re-lock afterward?
 
-    :return:
+    :return: True or False, depending if the value was set or not.
+    :rtype: bool
     """
     node = plug.partition('.')[0]
     is_referenced = node_is_referenced(node)
@@ -72,13 +73,14 @@ def set_attr(plug, value, relock=False):
     if is_referenced is True and locked is True:
         msg = 'Cannot set attr %r, it is locked and the node is referenced.'
         LOG.warning(msg, plug)
+        return False
     if is_referenced is False:
         # Make sure the plug is unlocked.
         maya.cmds.setAttr(plug, lock=False)
     maya.cmds.setAttr(plug, value)
     if is_referenced is False and relock is True:
         maya.cmds.setAttr(plug, lock=locked)
-    return
+    return True
 
 
 def get_long_name(node):

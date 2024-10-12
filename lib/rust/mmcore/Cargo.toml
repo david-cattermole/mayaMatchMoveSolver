@@ -1,0 +1,15 @@
+[package]
+name = "mmcore_rust"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[lib]
+name = "mmcore_rust"
+path = "./src/lib.rs"
+crate_type = ["lib"]
+
+[dependencies]
+log = { workspace = true }
+shellexpand = { workspace = true }

@@ -31,20 +31,21 @@ LOG = mmSolver.logger.get_logger()
 
 def create_camera():
     cam = createcamera_lib.create_camera()
-    cam_shp = cam.get_shape_node()
-    maya.cmds.select(cam_shp, replace=True)
     return cam
 
 
 def camera_lens_distortion_enabled(camera_shape_node):
     assert camera_shape_node is not None
     cam = mmapi.Camera(shape=camera_shape_node)
-    return cam.get_lens_enable()
+    return cam.get_lens_enable() is True
 
 
 def toggle_camera_lens_distortion_enabled(camera_shape_node):
     assert camera_shape_node is not None
     cam = mmapi.Camera(shape=camera_shape_node)
     enable = cam.get_lens_enable()
+    if enable is None:
+        LOG.warn('Cannot toggle camera lens distortion.')
+        return
     cam.set_lens_enable(not enable)
     return

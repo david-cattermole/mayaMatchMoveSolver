@@ -41,8 +41,9 @@ bool test_c_image_write(const char *test_name, rust::Str input_file_path,
     };
 
     // TODO: Get the EXR Encoding when reading the file.
-    bool result = mmimg::image_read_pixels_exr_f32x4(input_file_path, meta_data,
-                                                     pixel_buffer);
+    const bool vertical_flip = false;
+    bool result = mmimg::image_read_pixels_exr_f32x4(
+        input_file_path, vertical_flip, meta_data, pixel_buffer);
     std::cout << test_name << " image file path: " << input_file_path
               << " image read result: " << static_cast<uint32_t>(result)
               << std::endl
@@ -82,7 +83,7 @@ bool test_c_image_write(const char *test_name, rust::Str input_file_path,
                                                  meta_data, pixel_buffer);
 
     bool reread_result = mmimg::image_read_pixels_exr_f32x4(
-        output_file_path, meta_data, pixel_buffer);
+        output_file_path, vertical_flip, meta_data, pixel_buffer);
     std::cout << test_name << " image file path: " << output_file_path
               << " image read result: " << static_cast<uint32_t>(reread_result)
               << std::endl
@@ -100,16 +101,19 @@ bool test_c_image_write(const char *test_name, rust::Str input_file_path,
 }
 
 int test_c(const char *test_name, const char *dir_path) {
-    auto path_string1 =
+    const std::string path_string1 =
         join_path(dir_path, "/Beachball/singlepart.0001", ".exr");
-    auto path_string2 = join_path(dir_path, "/ScanLines/Tree", ".exr");
-    auto path_out_string1 =
+    const std::string path_string2 =
+        join_path(dir_path, "/ScanLines/Tree", ".exr");
+    const std::string path_out_string1 =
         join_path(dir_path, "/Beachball/singlepart.0001", ".out.exr");
-    auto path_out_string2 = join_path(dir_path, "/ScanLines/Tree", ".out.exr");
-    const auto file_path1 = rust::Str(path_string1);
-    const auto file_path2 = rust::Str(path_string2);
-    const auto file_path_out1 = rust::Str(path_out_string1);
-    const auto file_path_out2 = rust::Str(path_out_string2);
+    const std::string path_out_string2 =
+        join_path(dir_path, "/ScanLines/Tree", ".out.exr");
+
+    const rust::Str file_path1(path_string1.c_str());
+    const rust::Str file_path2(path_string2.c_str());
+    const rust::Str file_path_out1(path_out_string1.c_str());
+    const rust::Str file_path_out2(path_out_string2.c_str());
 
     bool ok = test_c_image_write(test_name, file_path1, file_path_out1);
     if (!ok) {

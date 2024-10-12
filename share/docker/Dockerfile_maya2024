@@ -1,5 +1,6 @@
 # To create and run the docker container in PowerShell or BASH:
 #
+# $ cd /path/to/project/root/mayaMatchMoveSolver/
 # $ docker build --file share/docker/Dockerfile_maya2024 -t mmsolver-linux-maya2024-build .
 # $ docker run --rm --interactive --volume "${PWD}:/mmSolver" --tty mmsolver-linux-maya2024-build
 #
@@ -32,6 +33,7 @@ FROM rockylinux:8
 # And this forum post:
 # https://forums.autodesk.com/t5/maya-forum/install-maya-2023-update-3-on-rocky-linux-8-7-instructions/td-p/11735138
 
+# Install Extra Packages Enterprise Linux (EPEL) repo for extra tools.
 RUN dnf install --assumeyes https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
        && dnf install --assumeyes epel-release \
        && dnf update --assumeyes \

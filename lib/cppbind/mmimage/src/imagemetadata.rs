@@ -25,7 +25,7 @@ use crate::cxxbridge::ffi::Vec2I32 as BindVec2I32;
 
 use mmimage_rust::metadata::ImageMetaData as CoreImageMetaData;
 
-#[derive(Debug, Clone)]
+#[derive(Debug)]
 pub struct ShimImageMetaData {
     inner: CoreImageMetaData,
 }

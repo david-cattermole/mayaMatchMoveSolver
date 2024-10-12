@@ -18,6 +18,9 @@
 // ====================================================================
 //
 
+use log::debug;
+use std::fmt;
+
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub enum BufferDataType {
     None = 0,
@@ -31,7 +34,6 @@ pub enum BufferDataType {
 ///
 /// The stored data is 64-bit aligned, to allow SSE and AVX
 /// instructions can be used by the compiler.
-#[derive(Clone, Debug)]
 pub struct ImagePixelBuffer {
     data_type: BufferDataType,
     image_width: usize,
@@ -45,14 +47,50 @@ pub struct ImagePixelBuffer {
     data: Vec<f64>,
 }
 
+impl fmt::Debug for ImagePixelBuffer {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("ImagePixelBuffer")
+            .field("data_type", &self.data_type)
+            .field("image_width", &self.image_width)
+            .field("image_height", &self.image_height)
+            .field("num_channels", &self.num_channels)
+            .finish()
+    }
+}
+
+impl Drop for ImagePixelBuffer {
+    fn drop(&mut self) {
+        debug!("Drop {:?}", self)
+    }
+}
+
 impl ImagePixelBuffer {
-    pub fn new() -> ImagePixelBuffer {
+    pub fn empty() -> ImagePixelBuffer {
         ImagePixelBuffer {
             data_type: BufferDataType::None,
             image_width: 0,
             image_height: 0,
             num_channels: 0,
             data: Vec::new(),
+        }
+    }
+
+    pub fn new_f32x4(
+        image_width: usize,
+        image_height: usize,
+    ) -> ImagePixelBuffer {
+        let pixel_count = image_width * image_height;
+        let default_pixel = 0.0;
+        // 'f64' is used to allocate the Vec, so we can ensure the
+        // underlying memory is 64-bit aligned.
+        let pixel_data: Vec<f64> = vec![default_pixel; pixel_count * 2];
+
+        ImagePixelBuffer {
+            data_type: BufferDataType::F32,
+            image_width,
+            image_height,
+            num_channels: 4,
+            data: pixel_data,
         }
     }
 

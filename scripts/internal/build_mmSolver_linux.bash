@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (C) 2019, 2022 David Cattermole.
+# Copyright (C) 2019, 2022, 2024 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -76,6 +76,10 @@ MMSOLVER_BUILD_ICONS=1
 MMSOLVER_BUILD_CONFIG=1
 MMSOLVER_BUILD_TESTS=0
 
+# Allows you to see the build command lines, to help debugging build
+# problems. Set to ON to enable, and OFF to disable.
+MMSOLVER_BUILD_VERBOSE=OFF
+
 # Path to this script.
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 # The root of this project.
@@ -86,10 +90,34 @@ echo "Project Root: ${PROJECT_ROOT}"
 PYTHON_VIRTUAL_ENV_DIR_NAME="python_venv_linux_maya${MAYA_VERSION}"
 source "${PROJECT_ROOT}/scripts/internal/python_venv_activate.bash"
 
-# Paths for dependencies.
+# Where to find the mmsolverlibs Rust libraries and headers.
 MMSOLVERLIBS_INSTALL_DIR="${BUILD_DIR_BASE}/build_mmsolverlibs/install/maya${MAYA_VERSION}_linux/"
 MMSOLVERLIBS_CMAKE_CONFIG_DIR="${MMSOLVERLIBS_INSTALL_DIR}/lib64/cmake/mmsolverlibs_cpp"
 MMSOLVERLIBS_RUST_DIR="${BUILD_DIR_BASE}/build_mmsolverlibs/rust_linux_maya${MAYA_VERSION}/${BUILD_TYPE_DIR}"
+
+# Paths for dependencies.
+EXTERNAL_BUILD_DIR="${BUILD_DIR_BASE}/build_opencolorio/cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}/ext/dist"
+OPENCOLORIO_INSTALL_DIR="${BUILD_DIR_BASE}/build_opencolorio/install/maya${MAYA_VERSION}_linux/"
+OPENCOLORIO_CMAKE_CONFIG_DIR="${OPENCOLORIO_INSTALL_DIR}/lib64/cmake/OpenColorIO/"
+OPENCOLORIO_CMAKE_FIND_MODULES_DIR="${PROJECT_ROOT}/external/working/maya${MAYA_VERSION}_linux/${OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME}/share/cmake/modules"
+
+expat_DIR="${EXTERNAL_BUILD_DIR}/${EXPAT_RELATIVE_CMAKE_DIR}"
+expat_INCLUDE_DIR="${EXTERNAL_BUILD_DIR}/include/"
+expat_LIBRARY="${EXTERNAL_BUILD_DIR}/${EXPAT_RELATIVE_LIB_PATH}"
+
+pystring_LIBRARY="${EXTERNAL_BUILD_DIR}/${PYSTRING_RELATIVE_LIB_PATH}"
+pystring_INCLUDE_DIR="${EXTERNAL_BUILD_DIR}/include"
+
+yaml_DIR="${EXTERNAL_BUILD_DIR}/${YAML_RELATIVE_CMAKE_DIR}"
+yaml_LIBRARY="${EXTERNAL_BUILD_DIR}/${YAML_RELATIVE_LIB_PATH}"
+yaml_INCLUDE_DIR="${EXTERNAL_BUILD_DIR}/include/"
+
+Imath_DIR="${EXTERNAL_BUILD_DIR}/lib64/cmake/Imath"
+
+ZLIB_LIBRARY="${EXTERNAL_BUILD_DIR}/${ZLIB_RELATIVE_LIB_PATH}"
+ZLIB_INCLUDE_DIR="${EXTERNAL_BUILD_DIR}/include/"
+
+minizip_DIR="${EXTERNAL_BUILD_DIR}/lib64/cmake/minizip-ng"
 
 # We don't want to find system packages.
 CMAKE_IGNORE_PATH="/lib;/lib64;/usr;/usr/lib;/usr/lib64;/usr/local;/usr/local/lib;/usr/local/lib64;"
@@ -108,7 +136,10 @@ ${CMAKE_EXE} \
     -DCMAKE_IGNORE_PATH=${CMAKE_IGNORE_PATH} \
     -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
     -DCMAKE_CXX_STANDARD=${CXX_STANDARD} \
+    -DCMAKE_MODULE_PATH=${OPENCOLORIO_CMAKE_FIND_MODULES_DIR} \
+    -DCMAKE_VERBOSE_MAKEFILE=${MMSOLVER_BUILD_VERBOSE} \
     -DOPENGL_INCLUDE_DIR=${OPENGL_INCLUDE_DIR} \
+    -DMMSOLVER_VFX_PLATFORM=${VFX_PLATFORM} \
     -DMMSOLVER_BUILD_PLUGIN=${MMSOLVER_BUILD_PLUGIN} \
     -DMMSOLVER_BUILD_TOOLS=${MMSOLVER_BUILD_TOOLS} \
     -DMMSOLVER_BUILD_PYTHON=${MMSOLVER_BUILD_PYTHON} \
@@ -126,6 +157,22 @@ ${CMAKE_EXE} \
     -DMAYA_VERSION=${MAYA_VERSION} \
     -Dmmsolverlibs_rust_DIR=${MMSOLVERLIBS_RUST_DIR} \
     -Dmmsolverlibs_cpp_DIR=${MMSOLVERLIBS_CMAKE_CONFIG_DIR} \
+    -DOpenColorIO_DIR=${OPENCOLORIO_CMAKE_CONFIG_DIR} \
+    -DOCIO_INSTALL_EXT_PACKAGES=NONE \
+    -Dexpat_DIR=${expat_DIR} \
+    -Dexpat_LIBRARY=${expat_LIBRARY} \
+    -Dexpat_INCLUDE_DIR=${expat_INCLUDE_DIR} \
+    -Dexpat_USE_STATIC_LIBS=TRUE \
+    -Dpystring_LIBRARY=${pystring_LIBRARY} \
+    -Dpystring_INCLUDE_DIR=${pystring_INCLUDE_DIR} \
+    -Dyaml-cpp_DIR=${yaml_DIR} \
+    -Dyaml-cpp_LIBRARY=${yaml_LIBRARY} \
+    -Dyaml-cpp_INCLUDE_DIR=${yaml_INCLUDE_DIR} \
+    -DImath_DIR=${Imath_DIR} \
+    -DZLIB_LIBRARY=${ZLIB_LIBRARY} \
+    -DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR} \
+    -DZLIB_STATIC_LIBRARY=ON \
+    -Dminizip-ng_DIR=${minizip_DIR} \
     ${PROJECT_ROOT}
 
 ${CMAKE_EXE} --build . --parallel

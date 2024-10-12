@@ -21,6 +21,10 @@
 
 #include "shader_utils.h"
 
+// STL
+#include <fstream>
+#include <string>
+
 // Maya
 #include <maya/M3dView.h>
 #include <maya/MGlobal.h>
@@ -31,6 +35,7 @@
 
 // MM Solver
 #include "mmSolver/utilities/debug_utils.h"
+#include "mmSolver/utilities/path_utils.h"
 
 namespace mmsolver {
 namespace render {
@@ -70,12 +75,70 @@ const MHWRender::MShaderManager *get_shader_manager() {
     return shader_manager;
 }
 
+MString find_shader_file_path(const MString &shader_file_name) {
+    const bool verbose = false;
+    MStatus status = MS::kSuccess;
+
+    MMSOLVER_MAYA_VRB("MM Renderer finding shader file..."
+                      << " shader_file_name=" << shader_file_name.asChar());
+
+    MString shader_file_path = "";
+    const MHWRender::MShaderManager *shader_manager = get_shader_manager();
+    if (!shader_manager) {
+        return shader_file_path;
+    }
+
+    MStringArray shader_paths;
+    status = shader_manager->shaderPaths(shader_paths);
+    if (status != MStatus::kSuccess) {
+        return shader_file_path;
+    }
+
+    for (auto i = 0; i < shader_paths.length(); i++) {
+        MMSOLVER_MAYA_VRB("MM Renderer look for shader in: "
+                          << " shader_paths[" << i
+                          << "]=" << shader_paths[i].asChar());
+
+        MString test_file_path = shader_paths[i];
+        const auto found_forward_slash_index = test_file_path.rindex('/');
+        MMSOLVER_MAYA_VRB(
+            "MM Renderer test_file_path.length(): " << test_file_path.length());
+        MMSOLVER_MAYA_VRB("MM Renderer found_forward_slash_index: "
+                          << found_forward_slash_index);
+        if (found_forward_slash_index != (test_file_path.length() - 1)) {
+            test_file_path += MString("/");
+        }
+        test_file_path += shader_file_name;
+        // TODO: Should we automatically try and find the file name
+        // with the '.ogsfx' appended?
+        MMSOLVER_MAYA_VRB(
+            "MM Renderer test_file_path: " << test_file_path.asChar());
+
+        status = mmpath::resolve_input_file_path(test_file_path);
+        if ((status == MStatus::kSuccess) && (test_file_path.length() > 0)) {
+            shader_file_path = test_file_path;
+            break;
+        }
+    }
+
+    return shader_file_path;
+}
+
+MString read_shader_file(const MString &shader_file_path) {
+    std::ifstream file_stream(shader_file_path.asChar());
+    const std::string content((std::istreambuf_iterator<char>(file_stream)),
+                              (std::istreambuf_iterator<char>()));
+    return MString(content.c_str());
+}
+
 MHWRender::MShaderInstance *compile_shader_file(const MString &shader_file_name,
                                                 const MString &technique_name) {
     const bool verbose = false;
     MStatus status = MS::kSuccess;
 
-    MMSOLVER_MAYA_VRB("MM Renderer compiling shader file...");
+    MMSOLVER_MAYA_VRB("MM Renderer compiling shader file..."
+                      << " shader_file_name=" << shader_file_name.asChar()
+                      << " technique_name=" << technique_name.asChar());
 
     const MHWRender::MShaderManager *shader_manager = get_shader_manager();
     if (!shader_manager) {
@@ -84,8 +147,8 @@ MHWRender::MShaderInstance *compile_shader_file(const MString &shader_file_name,
 
     // Shader compiling options.
     MShaderCompileMacro *macros = nullptr;
-    unsigned int number_of_macros = 0;
-    bool use_effect_cache = true;
+    const unsigned int number_of_macros = 0;
+    const bool use_effect_cache = true;
 
     // Get Techniques.
     MMSOLVER_MAYA_VRB("MM Renderer: Get techniques...");
@@ -108,6 +171,64 @@ MHWRender::MShaderInstance *compile_shader_file(const MString &shader_file_name,
         shader_manager->getEffectsFileShader(shader_file_name, technique_name,
                                              macros, number_of_macros,
                                              use_effect_cache);
+    if (!shader_instance) {
+        MString error_message =
+            MString("MM Renderer failed to compile shader.");
+        bool display_line_number = true;
+        bool filter_source = true;
+        uint32_t num_lines = 3;
+        MGlobal::displayError(error_message);
+        MGlobal::displayError(MHWRender::MShaderManager::getLastError());
+        MGlobal::displayError(MHWRender::MShaderManager::getLastErrorSource(
+            display_line_number, filter_source, num_lines));
+        MMSOLVER_MAYA_ERR("MM Renderer failed to compile shader.");
+        MMSOLVER_MAYA_ERR(MHWRender::MShaderManager::getLastError().asChar());
+        MMSOLVER_MAYA_ERR(MHWRender::MShaderManager::getLastErrorSource(
+                              display_line_number, filter_source, num_lines)
+                              .asChar());
+        return nullptr;
+    }
+
+    MStringArray parameter_list;
+    shader_instance->parameterList(parameter_list);
+    for (uint32_t i = 0; i < parameter_list.length(); ++i) {
+        MMSOLVER_MAYA_VRB("MM Renderer: param " << i << ": "
+                                                << parameter_list[i].asChar());
+    }
+
+    return shader_instance;
+}
+
+MHWRender::MShaderInstance *compile_shader_text(const MString &shader_text,
+                                                const MString &technique_name) {
+    const bool verbose = false;
+    MStatus status = MS::kSuccess;
+
+    MMSOLVER_MAYA_VRB("MM Renderer compiling shader file..."
+                      << " technique_name=" << technique_name.asChar());
+    MMSOLVER_MAYA_VRB("Shader text: ");
+    MMSOLVER_MAYA_VRB(shader_text.asChar());
+
+    const MHWRender::MShaderManager *shader_manager = get_shader_manager();
+    if (!shader_manager) {
+        return nullptr;
+    }
+
+    const void *text_buffer = static_cast<const void *>(shader_text.asChar());
+    const unsigned int text_buffer_size =
+        static_cast<unsigned int>(shader_text.length());
+
+    // Shader compiling options.
+    MShaderCompileMacro *macros = nullptr;
+    const unsigned int number_of_macros = 0;
+    const bool use_effect_cache = true;
+
+    // Compile shader.
+    MMSOLVER_MAYA_VRB("MM Renderer: Compiling shader...");
+    MHWRender::MShaderInstance *shader_instance =
+        shader_manager->getEffectsBufferShader(
+            text_buffer, text_buffer_size, technique_name, macros,
+            number_of_macros, use_effect_cache);
     if (!shader_instance) {
         MString error_message =
             MString("MM Renderer failed to compile shader.");

@@ -58,6 +58,7 @@ fi
 REQUIRE_PACKAGE_INSTALL=0
 if [ ! -f "${PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT}" ]; then
     echo "Setting up Python Virtual Environment ${PYTHON_VIRTUAL_ENV_DIR_NAME}"
+    ${PYTHON_EXE} --version
     ${PYTHON_EXE} -m venv ${PYTHON_VIRTUAL_ENV_DIR}
     REQUIRE_PACKAGE_INSTALL=1
 fi
@@ -69,14 +70,11 @@ source "${PYTHON_VIRTUAL_ENV_ACTIVATE_SCRIPT}"
 
 # Install requirements
 if [ ${REQUIRE_PACKAGE_INSTALL} -eq 1 ]; then
+    ${PYTHON_EXE} --version
     ${PYTHON_EXE} -m pip install --upgrade pip
-    ${PYTHON_EXE} -m pip install -r "${PROJECT_ROOT}/share/requirements-dev.txt"
-    ${PYTHON_EXE} -m pip install -r "${PROJECT_ROOT}/share/requirements-doc.txt"
 
-    REQUIRE_DEV_MAYA_VERSION_FILE="${PROJECT_ROOT}/share/requirements-dev-maya${MAYA_VERSION}.txt"
-    if [ -f "$REQUIRE_DEV_MAYA_VERSION_FILE" ]; then
-        ${PYTHON_EXE} -m pip install -r $REQUIRE_DEV_MAYA_VERSION_FILE
-    fi
+    REQUIRE_MAYA_VERSION_FILE="${PROJECT_ROOT}/share/python_requirements/requirements-maya${MAYA_VERSION}.txt"
+    ${PYTHON_EXE} -m pip install -r $REQUIRE_MAYA_VERSION_FILE
 fi
 
 cd ${PROJECT_ROOT}

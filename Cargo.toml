@@ -1,0 +1,67 @@
+[workspace]
+resolver = "2"
+members = [
+    "lib/cppbind/mmcore",
+    "lib/cppbind/mmimage",
+    "lib/cppbind/mmlens",
+    "lib/cppbind/mmscenegraph",
+    "lib/mmsolverlibs",
+    "lib/rust/mmcore",
+    "lib/rust/mmimage",
+    "lib/rust/mmscenegraph",
+]
+
+[workspace.package]
+version = "0.1.0"
+authors = ["david-cattermole <cattermole91@gmail.com>"]
+edition = "2018"
+publish = false
+
+[workspace.dependencies]
+anyhow = "1.0.89"
+approx = "0.5.1"
+criterion = { version = "0.5.1", default-features = false, features = ["html_reports"] }
+exr = "1.72.0"
+fastapprox = "0.3.1"
+log = "0.4.22"
+nalgebra = { version = "0.33.0", default-features = false, features = ["std", "matrixmultiply"] }
+num = "0.4.3"
+num-traits = "0.2"
+num_cpus = "1.16.0"
+petgraph = { version = "0.6", default-features = false, features = ["stable_graph"] }
+rand = { version = "0.8.5", default-features = false, features = ["std", "alloc", "small_rng"] }
+rayon = "1.10.0"
+rustc-hash = "2.0.0"
+shellexpand = { version = "3.1", default-features = false, features = ["full"] }
+smallvec = "1.13.2"
+
+# CXX is used to build C++ bindings.
+#
+# NOTE: When changing this version number ensure to also update the
+# installed 'cxxbridge-cmd' version so it stays in sync; Update it
+# here: './scripts/internal/build_mmSolverLibs_*.*'
+cxx = "=1.0.128"
+
+# Crates defined inside this project.
+mmcore_cppbind = { path = "./lib/cppbind/mmcore" }
+mmcore_rust = { path = "./lib/rust/mmcore" }
+mmimage_cppbind = { path = "./lib/cppbind/mmimage" }
+mmimage_rust = { path = "./lib/rust/mmimage" }
+mmlens_cppbind = { path = "./lib/cppbind/mmlens" }
+mmlens_rust = { path = "./lib/rust/mmlens" }
+mmscenegraph_cppbind = { path = "./lib/cppbind/mmscenegraph" }
+mmscenegraph_rust = { path = "./lib/rust/mmscenegraph/" }
+
+[profile.release]
+opt-level = 3
+rpath = false
+codegen-units = 1
+
+# 'lto = true' Performs "fat" LTO which attempts to perform
+# optimizations across all crates within the dependency graph.
+lto = true
+
+# NOTE: If we use 'panic = "abort"' then we are unable to produce tests.
+# # https://github.com/rust-lang/cargo/issues/6313
+#
+# panic = "abort"

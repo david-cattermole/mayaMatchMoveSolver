@@ -30,6 +30,7 @@ import mmSolver.logger
 import mmSolver.utils.camera as camera_utils
 import mmSolver.utils.node as node_utils
 import mmSolver.utils.constant as const
+import mmSolver.utils.python_compat as pycompat
 
 LOG = mmSolver.logger.get_logger()
 
@@ -56,6 +57,13 @@ SUPPORTED_DISPLAY_NODE_TYPES = [
     'nRigid',
     'texture',
     'stroke',
+    #
+    # Custom mmSolver node types:
+    'mmImagePlaneShape2',
+    'mmMarkerShape',
+    'mmBundleShape',
+    'mmLineShape',
+    'mmSkyDomeShape',
 ]
 
 
@@ -410,14 +418,16 @@ def set_selection_highlight(model_panel, value):
 
 def _get_node_type_visibility(model_panel, node_type):
     """
-    Query the image plane visibility.
+    Query the node type visibility of the given model panel.
 
     :param model_panel: Model panel name to set visibility.
     :type model_panel: str
 
-    :return: The visibility of image planes.
+    :return: The visibility of the node type.
     :rtype: bool
     """
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
+    assert isinstance(node_type, pycompat.TEXT_TYPE)
     model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
     kwargs = {
         'query': True,
@@ -434,15 +444,58 @@ def _set_node_type_visibility(model_panel, node_type, value):
     :param model_panel: Model panel name to set visibility.
     :type model_panel: str
 
-    :param value: Visibility of image planes.
+    :param value: Visibility of the node type.
     :type value: bool
     """
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
+    assert isinstance(node_type, pycompat.TEXT_TYPE)
+    assert isinstance(value, bool)
     model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
     kwargs = {
         'edit': True,
         str(node_type): value,
     }
     maya.cmds.modelEditor(model_editor, **kwargs)
+    return
+
+
+def _get_plugin_display_filter_visibility(model_panel, plugin_display_filter):
+    """
+    Query the display filter visibility of the given model panel.
+
+    :param model_panel: Model panel name to set visibility.
+    :type model_panel: str
+
+    :return: The visibility of the display filter.
+    :rtype: bool
+    """
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
+    assert isinstance(plugin_display_filter, pycompat.TEXT_TYPE)
+    model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
+    value = maya.cmds.modelEditor(
+        model_editor, query=True, queryPluginObjects=plugin_display_filter
+    )
+    return value
+
+
+def _set_plugin_display_filter_visibility(model_panel, plugin_display_filter, value):
+    """
+    Set the visibility of a plug-in display filter for the given
+    model panel.
+
+    :param model_panel: Model panel name to set visibility.
+    :type model_panel: str
+
+    :param value: Visibility of the node type.
+    :type value: bool
+    """
+    assert isinstance(model_panel, pycompat.TEXT_TYPE)
+    assert isinstance(plugin_display_filter, pycompat.TEXT_TYPE)
+    assert isinstance(value, bool)
+    model_editor = maya.cmds.modelPanel(model_panel, query=True, modelEditor=True)
+    maya.cmds.modelEditor(
+        model_editor, edit=True, pluginObjects=[plugin_display_filter, value]
+    )
     return
 
 
@@ -754,6 +807,88 @@ def set_stroke_visibility(model_panel, value):
     return _set_node_type_visibility(model_panel, 'strokes', value)
 
 
+def get_mm_image_plane_v2_visibility(model_panel):
+    """
+    Query the MM Image Plane visibility in given model panel.
+    """
+    return _get_plugin_display_filter_visibility(
+        model_panel, 'mmImagePlane2DisplayFilter'
+    )
+
+
+def set_mm_image_plane_v2_visibility(model_panel, value):
+    """
+    Set the visibility of MM Image Plane nodes in the given model panel.
+    """
+    return _set_plugin_display_filter_visibility(
+        model_panel, 'mmImagePlane2DisplayFilter', value
+    )
+
+
+def get_mm_marker_visibility(model_panel):
+    """
+    Query the MM Marker visibility in given model panel.
+    """
+    return _get_plugin_display_filter_visibility(model_panel, 'mmMarkerDisplayFilter')
+
+
+def set_mm_marker_visibility(model_panel, value):
+    """
+    Set the visibility of MM Marker nodes in the given model panel.
+    """
+    return _set_plugin_display_filter_visibility(
+        model_panel, 'mmMarkerDisplayFilter', value
+    )
+
+
+def get_mm_bundle_visibility(model_panel):
+    """
+    Query the MM Bundle visibility in given model panel.
+    """
+    return _get_plugin_display_filter_visibility(model_panel, 'mmBundleDisplayFilter')
+
+
+def set_mm_bundle_visibility(model_panel, value):
+    """
+    Set the visibility of MM Bundle nodes in the given model panel.
+    """
+    return _set_plugin_display_filter_visibility(
+        model_panel, 'mmBundleDisplayFilter', value
+    )
+
+
+def get_mm_line_visibility(model_panel):
+    """
+    Query the MM Line visibility in given model panel.
+    """
+    return _get_plugin_display_filter_visibility(model_panel, 'mmLineDisplayFilter')
+
+
+def set_mm_line_visibility(model_panel, value):
+    """
+    Set the visibility of MM Line nodes in the given model panel.
+    """
+    return _set_plugin_display_filter_visibility(
+        model_panel, 'mmLineDisplayFilter', value
+    )
+
+
+def get_mm_sky_dome_visibility(model_panel):
+    """
+    Query the MM Sky Dome visibility in given model panel.
+    """
+    return _get_plugin_display_filter_visibility(model_panel, 'mmSkyDomeDisplayFilter')
+
+
+def set_mm_sky_dome_visibility(model_panel, value):
+    """
+    Set the visibility of MM Sky Dome nodes in the given model panel.
+    """
+    return _set_plugin_display_filter_visibility(
+        model_panel, 'mmSkyDomeDisplayFilter', value
+    )
+
+
 NODE_TYPE_TO_GET_VIS_FUNC = {
     'mesh': get_mesh_visibility,
     'imagePlane': get_image_plane_visibility,
@@ -775,6 +910,13 @@ NODE_TYPE_TO_GET_VIS_FUNC = {
     'nRigid': get_nrigid_visibility,
     'texture': get_texture_visibility,
     'stroke': get_stroke_visibility,
+    #
+    # Custom MM Solver node types.
+    'mmImagePlaneShape2': get_mm_image_plane_v2_visibility,
+    'mmMarkerShape': get_mm_marker_visibility,
+    'mmBundleShape': get_mm_bundle_visibility,
+    'mmLineShape': get_mm_line_visibility,
+    'mmSkyDomeShape': get_mm_sky_dome_visibility,
 }
 
 
@@ -799,6 +941,13 @@ NODE_TYPE_TO_SET_VIS_FUNC = {
     'nRigid': set_nrigid_visibility,
     'texture': set_texture_visibility,
     'stroke': set_stroke_visibility,
+    #
+    # Custom MM Solver node types.
+    'mmImagePlaneShape2': set_mm_image_plane_v2_visibility,
+    'mmMarkerShape': set_mm_marker_visibility,
+    'mmBundleShape': set_mm_bundle_visibility,
+    'mmLineShape': set_mm_line_visibility,
+    'mmSkyDomeShape': set_mm_sky_dome_visibility,
 }
 
 

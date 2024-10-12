@@ -19,3 +19,9 @@
 //
 
 pub mod cxxbridge;
+
+use mmcore_rust::pathutils::expand_file_path_string as core_expand_file_path_string;
+
+pub fn shim_expand_file_path_string(value: &str, frame: i32) -> String {
+    core_expand_file_path_string(value, frame)
+}

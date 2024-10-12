@@ -85,7 +85,7 @@ bool run_frame(mmlens::FrameNumber frame,
 
         const std::string output_file_path_string =
             compute_output_file_path(output_file_path_string, frame, verbose);
-        const auto output_file_path = rust::Str(output_file_path_string);
+        const rust::Str output_file_path(output_file_path_string.c_str());
 
         auto meta_data = mmimage::ImageMetaData();
         std::chrono::duration<float> write_duration;
@@ -102,8 +102,9 @@ bool run_frame(mmlens::FrameNumber frame,
         bool reread_result = true;
         if (reread_image) {
             auto reread_start = std::chrono::high_resolution_clock::now();
+            const bool vertical_flip = false;
             reread_result = mmimage::image_read_pixels_exr_f32x4(
-                output_file_path, meta_data, pixel_buffer);
+                output_file_path, vertical_flip, meta_data, pixel_buffer);
             auto reread_end = std::chrono::high_resolution_clock::now();
             reread_duration = reread_end - reread_start;
             std::cout << "Re-read image file path: " << output_file_path << '\n'
@@ -172,7 +173,7 @@ bool run(const Arguments& args) {
     const size_t image_width = 3600;
     const size_t image_height = 2400;
     const size_t num_channels = 4;  // 4 channels - RGBA
-    const auto input_file_path = rust::Str(args.input_file_path);
+    const rust::Str input_file_path(args.input_file_path.c_str());
 
     // Read input lens distortion file.
     //
@@ -181,7 +182,7 @@ bool run(const Arguments& args) {
     // they are not animated. This also includes when some frames
     // share lens distortion, but others do not; such as frames 1 to
     // 10 are the same and frames 11 to 20 are animated.
-    const auto lens_file_path = rust::Str(args.lens_file_path);
+    const rust::Str lens_file_path(args.lens_file_path.c_str());
     mmlens::DistortionLayers lens_layers =
         mmlens::read_lens_file(lens_file_path);
     std::cout << "read_lens_file: " << lens_layers.as_string().c_str()

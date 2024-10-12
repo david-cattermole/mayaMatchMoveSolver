@@ -28,20 +28,25 @@
 // Maya
 #include <maya/M3dView.h>
 #include <maya/MDagPath.h>
-#include <maya/MDrawContext.h>
 #include <maya/MFnDependencyNode.h>
-#include <maya/MGL.h>
-#include <maya/MGLFunctionTable.h>
 #include <maya/MGeometryExtractor.h>
 #include <maya/MGlobal.h>
+#include <maya/MItDag.h>
+#include <maya/MSelectionList.h>
+#include <maya/MString.h>
+
+// Maya Viewport 1.0
+#include <maya/MGL.h>
+#include <maya/MGLFunctionTable.h>
 #include <maya/MHWGeometry.h>
 #include <maya/MHardwareRenderer.h>
-#include <maya/MItDag.h>
+
+// Maya Viewport 2.0
+#include <maya/MDrawContext.h>
+#include <maya/MHWGeometryUtilities.h>
 #include <maya/MRenderTargetManager.h>
-#include <maya/MSelectionList.h>
 #include <maya/MShaderManager.h>
 #include <maya/MStateManager.h>
-#include <maya/MString.h>
 #include <maya/MTextureManager.h>
 #include <maya/MViewport2Renderer.h>
 
@@ -57,6 +62,7 @@ SilhouetteRender::SilhouetteRender(const MString& name)
     , m_shader_program(0)
     , m_output_targets(nullptr)
     , m_silhouette_cull_face(GL_BACK)
+    , m_silhouette_override_color(false)
     , gGLFT(nullptr) {}
 
 SilhouetteRender::~SilhouetteRender() {
@@ -149,11 +155,14 @@ GLuint build_shader_program(MGLFunctionTable* gGLFT) {
 }
 
 MStatus calculate_model_view_projection_matrix(
-    M3dView view, MDagPath dag_path, MMatrix& out_model_view_projection) {
+    M3dView view, const MDagPath dag_path, const MMatrix& projection_matrix,
+    MMatrix& out_model_view_projection) {
     const MMatrix inclusive_matrix = dag_path.inclusiveMatrix();
 
-    MMatrix projection_matrix;
-    MStatus status = view.projectionMatrix(projection_matrix);
+    // The camera and geometry matrices must be updated each frame,
+    // when playblasting. This is not obvious when viewing in the
+    MStatus status = MStatus::kSuccess;
+    status = view.updateViewingParameters();
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MMatrix model_view_matrix;
@@ -331,6 +340,9 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
 
     const float default_line_width = drawContext.getGlobalLineWidth();
 
+    float silhouette_color[3] = {m_silhouette_color[0], m_silhouette_color[1],
+                                 m_silhouette_color[2]};
+
     // Extract OpenGL buffers from Maya mesh nodes, then render the
     // buffers using our own OpenGL pipeline.
     MItDag dag_iter = MItDag(MItDag::kDepthFirst, MFn::kMesh);
@@ -352,12 +364,29 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
             continue;
         }
 
+        if (!m_silhouette_override_color) {
+            // TODO: Write our own version of
+            // 'MGeometryUtilities::wireframeColor', that will do the same
+            // logic, but will not take into account the current selection
+            // status of the DagPath. This would avoid the need to save
+            // the selection list, de-select and re-select.
+            const MColor wireframe_color =
+                MHWRender::MGeometryUtilities::wireframeColor(dag_path);
+            silhouette_color[0] = wireframe_color.r;
+            silhouette_color[1] = wireframe_color.g;
+            silhouette_color[2] = wireframe_color.b;
+        }
+
         // TODO: Check if an attribute exists on the shape node, and
         // check the value of the shape node.
 
+        const MMatrix projection_matrix = drawContext.getMatrix(
+            MHWRender::MFrameContext::kProjectionMtx, &status);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+
         MMatrix model_view_projection;
-        status = calculate_model_view_projection_matrix(view, dag_path,
-                                                        model_view_projection);
+        status = calculate_model_view_projection_matrix(
+            view, dag_path, projection_matrix, model_view_projection);
 
         // Create vertex buffer desc for position
         const MString empty_string = "";
@@ -397,6 +426,8 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
         vertex_buffer.commit(vertices_ptr);
 
         // Fill edge index buffer with data
+        //
+        // Edges have 2 indices for each edge.
         unsigned int edge_count =
             geometry_extractor.primitiveCount(edge_description);
         void* edge_indices_ptr =
@@ -406,6 +437,8 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
         edge_index_buffer.commit(edge_indices_ptr);
 
         // Fill tri index buffer with data
+        //
+        // Triangles have 3 indices for each triangle.
         unsigned int triangles_count =
             geometry_extractor.primitiveCount(triangle_description);
         void* triangles_indices_ptr =
@@ -434,7 +467,7 @@ MStatus SilhouetteRender::execute(const MHWRender::MDrawContext& drawContext) {
         const MGLuint* triangles_index_buffer_handle =
             static_cast<MGLuint*>(triangles_index_buffer_handle_ptr);
         draw_buffers(
-            gGLFT, m_silhouette_color, m_silhouette_alpha, m_silhouette_width,
+            gGLFT, silhouette_color, m_silhouette_alpha, m_silhouette_width,
             m_silhouette_depth_offset, m_silhouette_cull_face,
             default_line_width, model_view_projection, vertex_buffer_handle,
             edge_index_buffer_handle, triangles_index_buffer_handle,

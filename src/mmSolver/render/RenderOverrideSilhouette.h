@@ -31,13 +31,15 @@
 #include <maya/MBoundingBox.h>
 #include <maya/MDagMessage.h>
 #include <maya/MObjectHandle.h>
-#include <maya/MRenderTargetManager.h>
 #include <maya/MString.h>
 #include <maya/MUiMessage.h>
+
+// Maya Viewport 2.0
+#include <maya/MRenderTargetManager.h>
 #include <maya/MViewport2Renderer.h>
 
 // MM Solver
-#include "RenderGlobalsBasicNode.h"
+#include "RenderGlobalsStandardNode.h"
 #include "mmSolver/render/data/RenderMode.h"
 #include "mmSolver/render/data/constants.h"
 #include "mmSolver/render/ops/ClearOperation.h"
@@ -105,12 +107,13 @@ private:
     HudRender* m_hudOp;
     PresentTarget* m_presentOp;
 
-    // A handle to the 'mmRenderGlobals' node.
+    // A handle to the 'mmRenderGlobalsSilhouette' node.
     MObjectHandle m_globals_node;
 
     MSelectionList m_image_plane_nodes;
 
     bool m_enable;
+    bool m_override_color;
     float m_depth_offset;
     float m_width;
     float m_color[3];

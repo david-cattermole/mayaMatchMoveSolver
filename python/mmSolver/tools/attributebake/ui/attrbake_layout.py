@@ -57,6 +57,9 @@ class AttributeBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         self.end_frame_spinbox.valueChanged.connect(self.endFrameValueChanged)
         self.smart_bake_cbox.stateChanged.connect(self.smartBakeValueChanged)
         self.channel_box_cbox.stateChanged.connect(self.fromChannelBoxValueChanged)
+        self.preserve_outside_keys_cbox.stateChanged.connect(
+            self.preserveOutsideKeysValueChanged
+        )
 
         self.populateUi()
 
@@ -127,6 +130,11 @@ class AttributeBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         value = self.channel_box_cbox.isChecked()
         configmaya.set_scene_option(name, value, add_attr=True)
 
+    def preserveOutsideKeysValueChanged(self):
+        name = const.CONFIG_PRESERVE_OUTSIDE_KEYS_KEY
+        value = self.preserve_outside_keys_cbox.isChecked()
+        configmaya.set_scene_option(name, value, add_attr=True)
+
     def reset_options(self):
         name = const.CONFIG_FRAME_RANGE_MODE_KEY
         value = const.DEFAULT_FRAME_RANGE_MODE
@@ -146,6 +154,10 @@ class AttributeBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
         name = const.CONFIG_FROM_CHANNELBOX_KEY
         value = const.DEFAULT_FROM_CHANNELBOX_STATE
+        configmaya.set_scene_option(name, value)
+
+        name = const.CONFIG_PRESERVE_OUTSIDE_KEYS_KEY
+        value = const.DEFAULT_PRESERVE_OUTSIDE_KEYS_STATE
         configmaya.set_scene_option(name, value)
 
         self.populateUi()
@@ -168,6 +180,10 @@ class AttributeBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
             const.CONFIG_FROM_CHANNELBOX_KEY,
             default=const.DEFAULT_FROM_CHANNELBOX_STATE,
         )
+        preserve_outside_keys_state = configmaya.get_scene_option(
+            const.CONFIG_PRESERVE_OUTSIDE_KEYS_KEY,
+            default=const.DEFAULT_PRESERVE_OUTSIDE_KEYS_STATE,
+        )
 
         label = const.FRAME_RANGE_MODE_VALUE_LABEL_MAP[frame_range_mode]
         self.frame_range_combo.setCurrentText(label)
@@ -180,4 +196,5 @@ class AttributeBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
 
         self.smart_bake_cbox.setChecked(bool(smart_bake_state))
         self.channel_box_cbox.setChecked(bool(from_channelbox_state))
+        self.preserve_outside_keys_cbox.setChecked(bool(preserve_outside_keys_state))
         return

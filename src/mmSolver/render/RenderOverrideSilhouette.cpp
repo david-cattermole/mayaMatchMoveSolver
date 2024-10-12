@@ -108,6 +108,7 @@ RenderOverrideSilhouette::RenderOverrideSilhouette(const MString &name)
     , m_render_override_change_callback(0)
     , m_globals_node()
     , m_enable(kSilhouetteEnableDefault)
+    , m_override_color(kSilhouetteOverrideColorDefault)
     , m_depth_offset(kSilhouetteDepthOffsetDefault)
     , m_width(kSilhouetteWidthDefault)
     , m_color{kSilhouetteColorDefault[0], kSilhouetteColorDefault[1],
@@ -319,10 +320,11 @@ MHWRender::DrawAPI RenderOverrideSilhouette::supportedDrawAPIs() const {
 // Read node plug attributes and set the values.
 MStatus update_parameters_silhouette(
     MObjectHandle &out_globals_node, bool &out_silhouette_enable,
-    float &out_silhouette_depth_offset, float &out_silhouette_width,
-    float &out_silhouette_color_r, float &out_silhouette_color_g,
-    float &out_silhouette_color_b, float &out_silhouette_alpha,
-    CullFace &out_silhouette_cull_face, uint8_t &out_operation_num) {
+    bool &out_silhouette_override_color, float &out_silhouette_depth_offset,
+    float &out_silhouette_width, float &out_silhouette_color_r,
+    float &out_silhouette_color_g, float &out_silhouette_color_b,
+    float &out_silhouette_alpha, CullFace &out_silhouette_cull_face,
+    uint8_t &out_operation_num) {
     const bool verbose = false;
     MStatus status = MS::kSuccess;
     MMSOLVER_MAYA_VRB("RenderOverrideSilhouette::update_parameters_silhouette");
@@ -384,6 +386,16 @@ MStatus update_parameters_silhouette(
     }
     MMSOLVER_MAYA_VRB("RenderOverrideSilhouette Silhouette Enable: "
                       << static_cast<int>(out_silhouette_enable));
+
+    // Override Color Silhouette render.
+    out_silhouette_override_color = kSilhouetteOverrideColorDefault;
+    MPlug silhouette_override_color_plug = depends_node.findPlug(
+        kAttrNameSilhouetteOverrideColor, want_networked_plug, &status);
+    if (status == MStatus::kSuccess) {
+        out_silhouette_override_color = silhouette_override_color_plug.asBool();
+    }
+    MMSOLVER_MAYA_VRB("RenderOverrideSilhouette Silhouette Override Color: "
+                      << static_cast<int>(out_silhouette_override_color));
 
     // Silhouette Depth Offset
     out_silhouette_depth_offset = kSilhouetteDepthOffsetDefault;
@@ -562,8 +574,9 @@ MStatus RenderOverrideSilhouette::setup(const MString &destination) {
 
     // Get override values.
     status = update_parameters_silhouette(
-        m_globals_node, m_enable, m_depth_offset, m_width, m_color[0],
-        m_color[1], m_color[2], m_alpha, m_cull_face, m_operation_num);
+        m_globals_node, m_enable, m_override_color, m_depth_offset, m_width,
+        m_color[0], m_color[1], m_color[2], m_alpha, m_cull_face,
+        m_operation_num);
     CHECK_MSTATUS(status);
 
     MMSOLVER_MAYA_VRB(
@@ -587,6 +600,7 @@ MStatus RenderOverrideSilhouette::setup(const MString &destination) {
     m_silhouetteOp->setPanelName(destination);
 
     m_silhouetteOp->setEnabled(m_enable);
+    m_silhouetteOp->setSilhouetteOverrideColor(m_override_color);
     m_silhouetteOp->setSilhouetteDepthOffset(m_depth_offset);
     m_silhouetteOp->setSilhouetteWidth(m_width);
     m_silhouetteOp->setSilhouetteColor(m_color[0], m_color[1], m_color[2]);

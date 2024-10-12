@@ -23,6 +23,10 @@ The functions defined in this module should be used to load the various
 components of mmSolver.
 """
 
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+
 import os
 import maya.cmds
 import maya.utils
@@ -67,6 +71,15 @@ def mmsolver_register_events():
     import mmSolver.tools.registerevents.tool
 
     mmSolver.tools.registerevents.tool.register_events()
+
+
+def mmsolver_image_cache_initialise():
+    """
+    Initialise the mmSolver ImageCache.
+    """
+    import mmSolver.tools.imagecache.initialise
+
+    mmSolver.tools.imagecache.initialise.main()
 
 
 def mmsolver_startup():

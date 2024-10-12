@@ -19,6 +19,7 @@
 //
 
 use anyhow::Result;
+use log::info;
 use mmimage_rust::image_read_metadata_exr;
 
 mod common;
@@ -60,21 +61,21 @@ fn main() -> Result<()> {
         let file_path_str = file_path.as_path().to_str();
         match file_path_str {
             Some(value) => {
-                println!("Reading: {}", value);
+                info!("Reading: {}", value);
                 let metadata = image_read_metadata_exr(value)?;
-                println!("{:#?}", metadata);
+                info!("{:#?}", metadata);
 
                 let attr_names = metadata.all_named_attribute_names();
-                println!("Attr Name Count: {}", attr_names.len());
+                info!("Attr Name Count: {}", attr_names.len());
                 for attr_name in attr_names {
-                    println!("Attr Name: {:#?}", attr_name);
+                    info!("Attr Name: {:#?}", attr_name);
                     let has_attr = metadata.has_named_attribute(&attr_name);
                     let attr_type =
                         metadata.get_named_attribute_type_index(&attr_name);
                     let value = metadata.get_named_attribute_as_f32(&attr_name);
-                    println!("Attr Name Exists: {:#?}", has_attr);
-                    println!("Attr Type: {:#?}", attr_type);
-                    println!("Attr Value: {:#?}", value);
+                    info!("Attr Name Exists: {:#?}", has_attr);
+                    info!("Attr Type: {:#?}", attr_type);
+                    info!("Attr Value: {:#?}", value);
                 }
 
                 let attr_name = "focal_length";
@@ -83,9 +84,9 @@ fn main() -> Result<()> {
                     metadata.get_named_attribute_type_index(&attr_name);
                 let focal_length =
                     metadata.get_named_attribute_as_f32(&attr_name);
-                println!("Focal Length Name Exists: {:#?}", has_focal_length);
-                println!("Focal Length Type: {:#?}", focal_length_type);
-                println!("Focal Length Value: {:#?}", focal_length);
+                info!("Focal Length Name Exists: {:#?}", has_focal_length);
+                info!("Focal Length Type: {:#?}", focal_length_type);
+                info!("Focal Length Value: {:#?}", focal_length);
             }
             _ => (),
         }

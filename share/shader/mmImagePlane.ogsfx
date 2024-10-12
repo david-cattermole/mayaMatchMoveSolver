@@ -1,0 +1,196 @@
+#version 400
+// Copyright (C) 2021, 2023, 2024 David Cattermole.
+//
+// This file is part of mmSolver.
+//
+// mmSolver is free software: you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// mmSolver is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+// --------------------------------------------------------------------
+//
+// Draw a texture on an image plane.
+
+// Global variables provided by Maya.
+uniform mat4 gWVPXf : WorldViewProjection;
+
+
+// Color and alpha modifications.
+uniform vec4 gColorGain : DIFFUSE = {1, 1, 1, 1};
+uniform float gColorExposure = 0.0f;
+uniform float gColorGamma = 1.0f;
+uniform float gColorSoftClip = 1.0f;
+uniform float gAlphaGain = 1.0f;
+uniform float4x4 gColorSaturationMatrix < string UIWidget = "None"; >;
+
+// Should we use the alpha channel from the image?
+uniform bool gIgnoreAlpha = false;
+
+// Flip or flop the image.
+uniform bool gFlip = false;
+uniform bool gFlop = false;
+
+// What type of channels to display to the user.
+//
+// NOTE: Matches the mmsolver::ImageDisplayChannel enum class.
+#define DISPLAY_CHANNEL_RGBA  (0)
+#define DISPLAY_CHANNEL_RGB   (1)
+#define DISPLAY_CHANNEL_RED   (2)
+#define DISPLAY_CHANNEL_GREEN (3)
+#define DISPLAY_CHANNEL_BLUE  (4)
+#define DISPLAY_CHANNEL_ALPHA (5)
+#define DISPLAY_CHANNEL_LUMINANCE (6)
+uniform int gDisplayChannel = 0;
+
+// When the image is not found the fallback color should be shown.
+uniform bool gImageNotFound = false;
+uniform vec4 gFallbackColor : DIFFUSE = {0.3f, 0.0f, 0.0f, 1};
+
+// The main image texture displaying RGBA values to the user.
+uniform texture2D gImageTexture
+<
+    string ResourceName = "";
+    string ResourceType = "2D";
+>;
+
+uniform sampler2D gImageTextureSampler = sampler_state
+{
+    Texture = <gImageTexture>;
+    TEXTURE_MIN_FILTER = NEAREST;
+    TEXTURE_MAG_FILTER = NEAREST;
+    TEXTURE_WRAP_S = CLAMP_TO_EDGE;
+    TEXTURE_WRAP_T = CLAMP_TO_EDGE;
+    TEXTURE_WRAP_R = CLAMP_TO_EDGE;
+};
+
+
+// Vertex Shader inputs.
+attribute VS_INPUT {
+    vec3 Pos : POSITION;
+    vec2 UV : TEXCOORD0;
+};
+
+// Vertex Shader data outputs, to be used by the Pixel Shader.
+attribute SHADER_DATA {
+    vec2 UV;
+};
+
+// Vertex Shader
+GLSLShader VS_mmImagePlane {
+    void main() {
+        gl_Position = gWVPXf * vec4(Pos, 1);
+
+        vec2 uv = UV;
+        if (gFlop) {
+            uv.x -= 0.5f;
+            uv.x *= -1.0f;
+            uv.x += 0.5f;
+        }
+
+        if (gFlip) {
+            uv.y -= 0.5f;
+            uv.y *= -1.0f;
+            uv.y += 0.5f;
+        }
+
+        VS_OUTPUT.UV = uv;
+    }
+}
+
+// Pixel Shader Outputs
+attribute PIXEL_DATA {
+    vec4 color_out : COLOR0;
+}
+
+GLSLShader PS_mmImagePlane_Main {
+
+    // Simple Reinhard tone-mapping operator.
+    //
+    // blend_value is a blend between no adjustment and the full
+    // tone-mapping (0.0 to 1.0).
+    vec3 apply_soft_clip(vec3 in_color, float blend_value) {
+        vec3 adjusted = in_color / (1.0 + in_color);
+        return mix(in_color, adjusted, blend_value);
+    }
+
+    vec4 convert_to_luminance_only(vec4 in_color) {
+        // Luminance weights
+        //
+        // From Mozilla:
+        // https://developer.mozilla.org/en-US/docs/Web/Accessibility/Understanding_Colors_and_Luminance
+        float r_weight = 0.2126f; // Luminance Red
+        float g_weight = 0.7152f; // Luminance Green
+        float b_weight = 0.0722f; // Luminance Blue
+
+        mat4 matrix;
+        matrix[0] = vec4(r_weight, g_weight, b_weight, 0.0);
+        matrix[1] = vec4(r_weight, g_weight, b_weight, 0.0);
+        matrix[2] = vec4(r_weight, g_weight, b_weight, 0.0);
+        matrix[3] = vec4(0.0, 0.0, 0.0, 1.0);
+
+        return in_color * matrix;
+    }
+
+    // The OCIO function will be replaced and injected at runtime into
+    // this line. This function is used as a stand-in.
+    vec4 OCIODisplay(vec4 passthrough) { return passthrough; }
+
+    void main() {
+        vec4 texture_color = OCIODisplay(texture2D(gImageTextureSampler, PS_INPUT.UV));
+        if (gIgnoreAlpha) {
+            texture_color.a = 1.0f;
+        }
+
+        vec3 gamma = 1.0f / vec3(gColorGamma, gColorGamma, gColorGamma);
+
+        texture_color.rgb *= gColorGain.rgb;
+        texture_color.rgb *= pow(2.0, gColorExposure);
+        texture_color.rgb = max(vec3(0.0f, 0.0f, 0.0f), texture_color.rgb);
+        texture_color.rgb = pow(texture_color.rgb, gamma);
+        texture_color *= gColorSaturationMatrix;
+        texture_color.rgb = apply_soft_clip(texture_color.rgb, gColorSoftClip);
+
+        texture_color.a *= gAlphaGain;
+
+        if (texture_color.a > 1.0f) {
+            texture_color.a = 1.0f;
+        } else if (texture_color.a < 0.0f) {
+            texture_color.a = 0.0f;
+        }
+
+        color_out = texture_color;
+        if (gDisplayChannel == DISPLAY_CHANNEL_RGB) {
+            color_out = vec4(color_out.rgb, 1.0f);
+        } else if (gDisplayChannel == DISPLAY_CHANNEL_RED) {
+            color_out = vec4(color_out.rrr, 1.0f);
+        } else if (gDisplayChannel == DISPLAY_CHANNEL_GREEN) {
+            color_out = vec4(color_out.ggg, 1.0f);
+        } else if (gDisplayChannel == DISPLAY_CHANNEL_BLUE) {
+            color_out = vec4(color_out.bbb, 1.0f);
+        } else if (gDisplayChannel == DISPLAY_CHANNEL_ALPHA) {
+            color_out = vec4(color_out.aaa, 1.0f);
+        } else if (gDisplayChannel == DISPLAY_CHANNEL_LUMINANCE) {
+            color_out = convert_to_luminance_only(color_out);
+        }
+    }
+}
+
+technique Main
+<
+// Tell Maya to support transparency for this technique.
+string Transparency = "Transparent"; // or "Opaque".
+>
+{
+    pass p0 {
+        VertexShader(in VS_INPUT, out SHADER_DATA VS_OUTPUT) = VS_mmImagePlane;
+        PixelShader(in SHADER_DATA PS_INPUT, out PIXEL_DATA) = PS_mmImagePlane_Main;
+    }
+}

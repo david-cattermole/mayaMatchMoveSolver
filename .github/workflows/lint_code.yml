@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.7"]
+        python-version: ["3.9"]
     steps:
       - uses: actions/checkout@v3
 
@@ -19,15 +19,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r share/requirements-dev.txt
+          pip install -r share/python_requirements/requirements-github-lint-code.txt
 
-      - name: Analysing the Python code with flake8 (Hard Error)
+      - name: Analysing the Python code with ruff (Hard Error)
         run: |
-          ./scripts/python_linter_run_flake8_errors_only.bash
-
-      - name: Check Python Formatting
-        run: |
-          ./scripts/python_formatter_run_black_check.bash
+          ./scripts/python_linter_run_ruff.bash
 
       - name: Install Clang-Format
         run: |

@@ -21,4 +21,10 @@
 
 #include <mmcore/lib.h>
 
-namespace mmcore {}  // namespace mmcore
+namespace mmcore {
+
+rust::String expand_file_path_string(const rust::Str& value, FrameValue frame) {
+    return shim_expand_file_path_string(value, frame);
+}
+
+}  // namespace mmcore

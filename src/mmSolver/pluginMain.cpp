@@ -39,8 +39,12 @@
 #include "mmSolver/cmd/MMCameraPoseFromPointsCmd.h"
 #include "mmSolver/cmd/MMCameraRelativePoseCmd.h"
 #include "mmSolver/cmd/MMCameraSolveCmd.h"
+#include "mmSolver/cmd/MMColorIOCmd.h"
 #include "mmSolver/cmd/MMConvertImageCmd.h"
+#include "mmSolver/cmd/MMImageCacheCmd.h"
 #include "mmSolver/cmd/MMMarkerHomographyCmd.h"
+#include "mmSolver/cmd/MMMemoryGPUCmd.h"
+#include "mmSolver/cmd/MMMemorySystemCmd.h"
 #include "mmSolver/cmd/MMReadImageCmd.h"
 #include "mmSolver/cmd/MMReprojectionCmd.h"
 #include "mmSolver/cmd/MMSolver2Cmd.h"
@@ -51,6 +55,7 @@
 #include "mmSolver/cmd/MMTestCameraMatrixCmd.h"
 #include "mmSolver/node/MMCameraCalibrateNode.h"
 #include "mmSolver/node/MMImagePlaneTransformNode.h"
+#include "mmSolver/node/MMImageSequenceFrameLogicNode.h"
 #include "mmSolver/node/MMLensData.h"
 #include "mmSolver/node/MMLensDeformerNode.h"
 #include "mmSolver/node/MMLensEvaluateNode.h"
@@ -67,7 +72,9 @@
 // Shape nodes.
 #include "mmSolver/shape/BundleDrawOverride.h"
 #include "mmSolver/shape/BundleShapeNode.h"
+#include "mmSolver/shape/ImagePlaneGeometry2Override.h"
 #include "mmSolver/shape/ImagePlaneGeometryOverride.h"
+#include "mmSolver/shape/ImagePlaneShape2Node.h"
 #include "mmSolver/shape/ImagePlaneShapeNode.h"
 #include "mmSolver/shape/LineDrawOverride.h"
 #include "mmSolver/shape/LineShapeNode.h"
@@ -78,12 +85,12 @@
 
 // MM Renderer
 #if MMSOLVER_BUILD_RENDERER == 1
-#include "mmSolver/render/MMRendererBasicCmd.h"
 #include "mmSolver/render/MMRendererSilhouetteCmd.h"
-#include "mmSolver/render/RenderGlobalsBasicNode.h"
+#include "mmSolver/render/MMRendererStandardCmd.h"
 #include "mmSolver/render/RenderGlobalsSilhouetteNode.h"
-#include "mmSolver/render/RenderOverrideBasic.h"
+#include "mmSolver/render/RenderGlobalsStandardNode.h"
 #include "mmSolver/render/RenderOverrideSilhouette.h"
+#include "mmSolver/render/RenderOverrideStandard.h"
 #endif
 
 #define REGISTER_COMMAND(plugin, name, creator, syntax, stat) \
@@ -251,13 +258,29 @@ MStatus initializePlugin(MObject obj) {
                      mmsolver::MMCameraSolveCmd::creator,
                      mmsolver::MMCameraSolveCmd::newSyntax, status);
 
+    REGISTER_COMMAND(plugin, mmsolver::MMColorIOCmd::cmdName(),
+                     mmsolver::MMColorIOCmd::creator,
+                     mmsolver::MMColorIOCmd::newSyntax, status);
+
     REGISTER_COMMAND(plugin, mmsolver::MMConvertImageCmd::cmdName(),
                      mmsolver::MMConvertImageCmd::creator,
                      mmsolver::MMConvertImageCmd::newSyntax, status);
 
+    REGISTER_COMMAND(plugin, mmsolver::MMImageCacheCmd::cmdName(),
+                     mmsolver::MMImageCacheCmd::creator,
+                     mmsolver::MMImageCacheCmd::newSyntax, status);
+
     REGISTER_COMMAND(plugin, mmsolver::MMMarkerHomographyCmd::cmdName(),
                      mmsolver::MMMarkerHomographyCmd::creator,
                      mmsolver::MMMarkerHomographyCmd::newSyntax, status);
+
+    REGISTER_COMMAND(plugin, mmsolver::MMMemoryGPUCmd::cmdName(),
+                     mmsolver::MMMemoryGPUCmd::creator,
+                     mmsolver::MMMemoryGPUCmd::newSyntax, status);
+
+    REGISTER_COMMAND(plugin, mmsolver::MMMemorySystemCmd::cmdName(),
+                     mmsolver::MMMemorySystemCmd::creator,
+                     mmsolver::MMMemorySystemCmd::newSyntax, status);
 
     REGISTER_COMMAND(plugin, mmsolver::MMReadImageCmd::cmdName(),
                      mmsolver::MMReadImageCmd::creator,
@@ -267,6 +290,11 @@ MStatus initializePlugin(MObject obj) {
                   mmsolver::MMMarkerScaleNode::m_id,
                   mmsolver::MMMarkerScaleNode::creator,
                   mmsolver::MMMarkerScaleNode::initialize, status);
+
+    REGISTER_NODE(plugin, mmsolver::MMImageSequenceFrameLogicNode::nodeName(),
+                  mmsolver::MMImageSequenceFrameLogicNode::m_id,
+                  mmsolver::MMImageSequenceFrameLogicNode::creator,
+                  mmsolver::MMImageSequenceFrameLogicNode::initialize, status);
 
     REGISTER_NODE(plugin, mmsolver::MMReprojectionNode::nodeName(),
                   mmsolver::MMReprojectionNode::m_id,
@@ -314,12 +342,14 @@ MStatus initializePlugin(MObject obj) {
                   mmsolver::MMLensModelToggleNode::creator,
                   mmsolver::MMLensModelToggleNode::initialize, status);
 
-    const MString markerClassification = MM_MARKER_DRAW_CLASSIFY;
     const MString bundleClassification = MM_BUNDLE_DRAW_CLASSIFY;
+    const MString lineClassification = MM_LINE_DRAW_CLASSIFY;
+    const MString markerClassification = MM_MARKER_DRAW_CLASSIFY;
+    const MString skyDomeClassification = MM_SKY_DOME_DRAW_CLASSIFY;
     const MString imagePlaneShapeClassification =
         MM_IMAGE_PLANE_SHAPE_DRAW_CLASSIFY;
-    const MString skyDomeClassification = MM_SKY_DOME_DRAW_CLASSIFY;
-    const MString lineClassification = MM_LINE_DRAW_CLASSIFY;
+    const MString imagePlaneShape2Classification =
+        MM_IMAGE_PLANE_SHAPE_2_DRAW_CLASSIFY;
     REGISTER_LOCATOR_NODE(plugin, mmsolver::MarkerShapeNode::nodeName(),
                           mmsolver::MarkerShapeNode::m_id,
                           mmsolver::MarkerShapeNode::creator,
@@ -336,6 +366,12 @@ MStatus initializePlugin(MObject obj) {
                           mmsolver::ImagePlaneShapeNode::initialize,
                           MPxNode::kLocatorNode, &imagePlaneShapeClassification,
                           status);
+    REGISTER_LOCATOR_NODE(plugin, mmsolver::ImagePlaneShape2Node::nodeName(),
+                          mmsolver::ImagePlaneShape2Node::m_id,
+                          mmsolver::ImagePlaneShape2Node::creator,
+                          mmsolver::ImagePlaneShape2Node::initialize,
+                          MPxNode::kLocatorNode,
+                          &imagePlaneShape2Classification, status);
     REGISTER_LOCATOR_NODE(
         plugin, mmsolver::SkyDomeShapeNode::nodeName(),
         mmsolver::SkyDomeShapeNode::m_id, mmsolver::SkyDomeShapeNode::creator,
@@ -357,6 +393,10 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::ImagePlaneShapeNode::m_draw_db_classification,
         mmsolver::ImagePlaneShapeNode::m_draw_registrant_id,
         mmsolver::ImagePlaneGeometryOverride::Creator, status);
+    REGISTER_GEOMETRY_OVERRIDE(
+        mmsolver::ImagePlaneShape2Node::m_draw_db_classification,
+        mmsolver::ImagePlaneShape2Node::m_draw_registrant_id,
+        mmsolver::ImagePlaneGeometry2Override::Creator, status);
     REGISTER_DRAW_OVERRIDE(mmsolver::SkyDomeShapeNode::m_draw_db_classification,
                            mmsolver::SkyDomeShapeNode::m_draw_registrant_id,
                            mmsolver::SkyDomeDrawOverride::Creator, status);
@@ -396,18 +436,20 @@ MStatus initializePlugin(MObject obj) {
                        markerTfmClassification, status);
 
 #if MMSOLVER_BUILD_RENDERER == 1
-    REGISTER_COMMAND(plugin, mmsolver::render::MMRendererBasicCmd::cmdName(),
-                     mmsolver::render::MMRendererBasicCmd::creator,
-                     mmsolver::render::MMRendererBasicCmd::newSyntax, status);
+    REGISTER_COMMAND(plugin, mmsolver::render::MMRendererStandardCmd::cmdName(),
+                     mmsolver::render::MMRendererStandardCmd::creator,
+                     mmsolver::render::MMRendererStandardCmd::newSyntax,
+                     status);
     REGISTER_COMMAND(
         plugin, mmsolver::render::MMRendererSilhouetteCmd::cmdName(),
         mmsolver::render::MMRendererSilhouetteCmd::creator,
         mmsolver::render::MMRendererSilhouetteCmd::newSyntax, status);
 
-    REGISTER_NODE(plugin, mmsolver::render::RenderGlobalsBasicNode::nodeName(),
-                  mmsolver::render::RenderGlobalsBasicNode::m_id,
-                  mmsolver::render::RenderGlobalsBasicNode::creator,
-                  mmsolver::render::RenderGlobalsBasicNode::initialize, status);
+    REGISTER_NODE(
+        plugin, mmsolver::render::RenderGlobalsStandardNode::nodeName(),
+        mmsolver::render::RenderGlobalsStandardNode::m_id,
+        mmsolver::render::RenderGlobalsStandardNode::creator,
+        mmsolver::render::RenderGlobalsStandardNode::initialize, status);
     REGISTER_NODE(
         plugin, mmsolver::render::RenderGlobalsSilhouetteNode::nodeName(),
         mmsolver::render::RenderGlobalsSilhouetteNode::m_id,
@@ -446,9 +488,9 @@ MStatus initializePlugin(MObject obj) {
             shader_location += MString("/shader");
             shader_manager->addShaderPath(shader_location);
 
-            mmsolver::render::RenderOverrideBasic* default_renderer_ptr =
-                new mmsolver::render::RenderOverrideBasic(
-                    MM_RENDERER_BASIC_NAME);
+            mmsolver::render::RenderOverrideStandard* default_renderer_ptr =
+                new mmsolver::render::RenderOverrideStandard(
+                    MM_RENDERER_STANDARD_NAME);
             renderer->registerOverride(default_renderer_ptr);
 
             mmsolver::render::RenderOverrideSilhouette*
@@ -460,51 +502,56 @@ MStatus initializePlugin(MObject obj) {
     }
 #endif
 
-    // TODO: Construct a single MEL command buffer and run all
-    //  'selectType' MEL commands at once.
-    MString mel_cmd = "";
-
     // Register a custom selection mask with priority 2 (same as
     // locators by default).
+    MString mel_cmd = "";
+    auto selection_priority = 2;
     MSelectionMask::registerSelectionType(
-        mmsolver::MarkerShapeNode::m_selection_type_name, 2);
-    mel_cmd = "selectType -byName \"";
+        mmsolver::MarkerShapeNode::m_selection_type_name, selection_priority);
+    mel_cmd += "selectType -byName \"";
     mel_cmd += mmsolver::MarkerShapeNode::m_selection_type_name;
-    mel_cmd += "\" 1";
-    status = MGlobal::executeCommand(mel_cmd);
-    CHECK_MSTATUS(status);
+    mel_cmd += "\" 1;";
 
     MSelectionMask::registerSelectionType(
-        mmsolver::BundleShapeNode::m_selection_type_name, 2);
-    mel_cmd = "selectType -byName \"";
+        mmsolver::BundleShapeNode::m_selection_type_name, selection_priority);
+    mel_cmd += "selectType -byName \"";
     mel_cmd += mmsolver::BundleShapeNode::m_selection_type_name;
-    mel_cmd += "\" 1";
-    status = MGlobal::executeCommand(mel_cmd);
-    CHECK_MSTATUS(status);
+    mel_cmd += "\" 1;";
 
     MSelectionMask::registerSelectionType(
-        mmsolver::ImagePlaneShapeNode::m_selection_type_name, 2);
-    mel_cmd = "selectType -byName \"";
+        mmsolver::ImagePlaneShapeNode::m_selection_type_name,
+        selection_priority);
+    mel_cmd += "selectType -byName \"";
     mel_cmd += mmsolver::ImagePlaneShapeNode::m_selection_type_name;
-    mel_cmd += "\" 1";
-    status = MGlobal::executeCommand(mel_cmd);
-    CHECK_MSTATUS(status);
+    mel_cmd += "\" 1;";
 
     MSelectionMask::registerSelectionType(
-        mmsolver::SkyDomeShapeNode::m_selection_type_name, 2);
+        mmsolver::ImagePlaneShape2Node::m_selection_type_name,
+        selection_priority);
+    mel_cmd = "selectType -byName \"";
+    mel_cmd += mmsolver::ImagePlaneShape2Node::m_selection_type_name;
+    mel_cmd += "\" 1;";
+
+    MSelectionMask::registerSelectionType(
+        mmsolver::SkyDomeShapeNode::m_selection_type_name, selection_priority);
     mel_cmd = "selectType -byName \"";
     mel_cmd += mmsolver::SkyDomeShapeNode::m_selection_type_name;
-    mel_cmd += "\" 1";
+    mel_cmd += "\" 1;";
+
+    MSelectionMask::registerSelectionType(
+        mmsolver::LineShapeNode::m_selection_type_name, selection_priority);
+    mel_cmd = "selectType -byName \"";
+    mel_cmd += mmsolver::LineShapeNode::m_selection_type_name;
+    mel_cmd += "\" 1;";
+
+    // Register selection types.
     status = MGlobal::executeCommand(mel_cmd);
     CHECK_MSTATUS(status);
 
-    MSelectionMask::registerSelectionType(
-        mmsolver::LineShapeNode::m_selection_type_name, 2);
-    mel_cmd = "selectType -byName \"";
-    mel_cmd += mmsolver::LineShapeNode::m_selection_type_name;
-    mel_cmd += "\" 1";
-    status = MGlobal::executeCommand(mel_cmd);
-    CHECK_MSTATUS(status);
+    // Should we create a display filter for the 'mmImagePlaneShape'?
+    // We have a newer 'mmImagePlaneShape2' and it would be good to
+    // avoid having two almost identical display filter names.
+    const bool registerLegacyImagePlaneDisplayFilter = false;
 
     // Register plugin display filter.
     // The filter is registered in both interactive and batch mode
@@ -517,10 +564,18 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::BundleShapeNode::m_display_filter_name,
         mmsolver::BundleShapeNode::m_display_filter_label,
         mmsolver::BundleShapeNode::m_draw_db_classification);
+    if (registerLegacyImagePlaneDisplayFilter) {
+        plugin.registerDisplayFilter(
+            mmsolver::ImagePlaneShapeNode::m_display_filter_name,
+            mmsolver::ImagePlaneShapeNode::m_display_filter_label,
+            mmsolver::ImagePlaneShapeNode::
+                m_display_filter_draw_db_classification);
+    }
     plugin.registerDisplayFilter(
-        mmsolver::ImagePlaneShapeNode::m_display_filter_name,
-        mmsolver::ImagePlaneShapeNode::m_display_filter_label,
-        mmsolver::ImagePlaneShapeNode::m_draw_db_classification);
+        mmsolver::ImagePlaneShape2Node::m_display_filter_name,
+        mmsolver::ImagePlaneShape2Node::m_display_filter_label,
+        mmsolver::ImagePlaneShape2Node::
+            m_display_filter_draw_db_classification);
     plugin.registerDisplayFilter(
         mmsolver::SkyDomeShapeNode::m_display_filter_name,
         mmsolver::SkyDomeShapeNode::m_display_filter_label,
@@ -530,15 +585,19 @@ MStatus initializePlugin(MObject obj) {
         mmsolver::LineShapeNode::m_display_filter_label,
         mmsolver::LineShapeNode::m_draw_db_classification);
 
-    // Run the Python startup function when the plug-in loads.
+    // Run the Python startup and image cache initialisation function
+    // when the plug-in loads.
     bool displayEnabled = true;
     bool undoEnabled = false;
     MString startup_cmd;
     startup_cmd += "global proc mmsolver_startup() ";
     startup_cmd += "{ ";
+    startup_cmd += "python(\"";
     startup_cmd +=
-        "python(\"import mmSolver.startup; "
-        "mmSolver.startup.mmsolver_startup()\"); ";
+        "import mmSolver.startup; "
+        "mmSolver.startup.mmsolver_startup();"
+        "mmSolver.startup.mmsolver_image_cache_initialise();";
+    startup_cmd += "\"); ";
     startup_cmd += "} ";
     startup_cmd += "evalDeferred(\"mmsolver_startup\");";
     status = MGlobal::executeCommand(startup_cmd, displayEnabled, undoEnabled);
@@ -562,7 +621,7 @@ MStatus uninitializePlugin(MObject obj) {
     if (renderer) {
         // Find override with the given name and deregister
         const MHWRender::MRenderOverride* default_renderer_ptr =
-            renderer->findRenderOverride(MM_RENDERER_BASIC_NAME);
+            renderer->findRenderOverride(MM_RENDERER_STANDARD_NAME);
         if (default_renderer_ptr) {
             renderer->deregisterOverride(default_renderer_ptr);
             delete default_renderer_ptr;
@@ -576,14 +635,14 @@ MStatus uninitializePlugin(MObject obj) {
         }
     }
 
-    DEREGISTER_COMMAND(plugin, mmsolver::render::MMRendererBasicCmd::cmdName(),
-                       status);
+    DEREGISTER_COMMAND(
+        plugin, mmsolver::render::MMRendererStandardCmd::cmdName(), status);
     DEREGISTER_COMMAND(
         plugin, mmsolver::render::MMRendererSilhouetteCmd::cmdName(), status);
 
     DEREGISTER_NODE(plugin,
-                    mmsolver::render::RenderGlobalsBasicNode::nodeName(),
-                    mmsolver::render::RenderGlobalsBasicNode::m_id, status);
+                    mmsolver::render::RenderGlobalsStandardNode::nodeName(),
+                    mmsolver::render::RenderGlobalsStandardNode::m_id, status);
     DEREGISTER_NODE(
         plugin, mmsolver::render::RenderGlobalsSilhouetteNode::nodeName(),
         mmsolver::render::RenderGlobalsSilhouetteNode::m_id, status);
@@ -603,9 +662,13 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, mmsolver::MMCameraRelativePoseCmd::cmdName(),
                        status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMCameraSolveCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, mmsolver::MMColorIOCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, mmsolver::MMImageCacheCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMConvertImageCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMMarkerHomographyCmd::cmdName(),
                        status);
+    DEREGISTER_COMMAND(plugin, mmsolver::MMMemoryGPUCmd::cmdName(), status);
+    DEREGISTER_COMMAND(plugin, mmsolver::MMMemorySystemCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMReadImageCmd::cmdName(), status);
 
     DEREGISTER_DRAW_OVERRIDE(
@@ -617,6 +680,9 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_GEOMETRY_OVERRIDE(
         mmsolver::ImagePlaneShapeNode::m_draw_db_classification,
         mmsolver::ImagePlaneShapeNode::m_draw_registrant_id, status);
+    DEREGISTER_GEOMETRY_OVERRIDE(
+        mmsolver::ImagePlaneShape2Node::m_draw_db_classification,
+        mmsolver::ImagePlaneShape2Node::m_draw_registrant_id, status);
     DEREGISTER_DRAW_OVERRIDE(
         mmsolver::SkyDomeShapeNode::m_draw_db_classification,
         mmsolver::SkyDomeShapeNode::m_draw_registrant_id, status);
@@ -630,6 +696,8 @@ MStatus uninitializePlugin(MObject obj) {
                             mmsolver::BundleShapeNode::m_id, status);
     DEREGISTER_LOCATOR_NODE(plugin, mmsolver::ImagePlaneShapeNode::nodeName(),
                             mmsolver::ImagePlaneShapeNode::m_id, status);
+    DEREGISTER_LOCATOR_NODE(plugin, mmsolver::ImagePlaneShape2Node::nodeName(),
+                            mmsolver::ImagePlaneShape2Node::m_id, status);
     DEREGISTER_LOCATOR_NODE(plugin, mmsolver::SkyDomeShapeNode::nodeName(),
                             mmsolver::SkyDomeShapeNode::m_id, status);
     DEREGISTER_LOCATOR_NODE(plugin, mmsolver::LineShapeNode::nodeName(),
@@ -655,6 +723,9 @@ MStatus uninitializePlugin(MObject obj) {
 
     DEREGISTER_NODE(plugin, mmsolver::MMMarkerGroupTransformNode::nodeName(),
                     mmsolver::MMMarkerGroupTransformNode::m_id, status);
+
+    DEREGISTER_NODE(plugin, mmsolver::MMImageSequenceFrameLogicNode::nodeName(),
+                    mmsolver::MMImageSequenceFrameLogicNode::m_id, status);
 
     DEREGISTER_NODE(plugin, mmsolver::MMImagePlaneTransformNode::nodeName(),
                     mmsolver::MMImagePlaneTransformNode::m_id, status);

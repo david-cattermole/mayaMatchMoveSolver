@@ -34,8 +34,9 @@ bool test_a_image_read(const char *test_name, rust::Str file_path) {
     auto meta_data = mmimg::ImageMetaData();
     auto pixel_buffer = mmimg::ImagePixelBuffer();
 
-    bool result =
-        mmimg::image_read_pixels_exr_f32x4(file_path, meta_data, pixel_buffer);
+    const bool vertical_flip = false;
+    bool result = mmimg::image_read_pixels_exr_f32x4(file_path, vertical_flip,
+                                                     meta_data, pixel_buffer);
     std::cout << test_name << " image file path: " << file_path
               << " image read result: " << static_cast<uint32_t>(result)
               << std::endl
@@ -87,11 +88,12 @@ bool test_a_image_read(const char *test_name, rust::Str file_path) {
 }
 
 int test_a(const char *test_name, const char *dir_path) {
-    auto path_string1 =
+    const std::string path_string1 =
         join_path(dir_path, "/Beachball/singlepart.0001", ".exr");
-    auto path_string2 = join_path(dir_path, "/ScanLines/Tree", ".exr");
-    const auto file_path1 = rust::Str(path_string1);
-    const auto file_path2 = rust::Str(path_string2);
+    const std::string path_string2 =
+        join_path(dir_path, "/ScanLines/Tree", ".exr");
+    const rust::Str file_path1(path_string1.c_str());
+    const rust::Str file_path2(path_string2.c_str());
 
     bool ok = test_a_image_read(test_name, file_path1);
     if (!ok) {

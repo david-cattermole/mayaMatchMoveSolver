@@ -41,6 +41,11 @@ target_link_libraries(${lensdistortion_exe_name}
   PRIVATE ${rust_depend_on_libraries}
 )
 
+# MM Color IO dependencies
+include(MMColorIOUtils)
+mmcolorio_find_packages()
+mmcolorio_target_link_packages(${lensdistortion_exe_name})
+
 target_include_directories(${lensdistortion_exe_name}
   PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}
 

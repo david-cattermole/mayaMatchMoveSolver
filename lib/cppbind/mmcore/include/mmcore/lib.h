@@ -26,6 +26,7 @@
 #include <string>
 
 #include "_cxx.h"
+#include "_cxxbridge.h"
 #include "_symbol_export.h"
 #include "_types.h"
 #include "mmcamera.h"
@@ -35,6 +36,10 @@
 #include "mmhash.h"
 #include "mmmath.h"
 
-namespace mmcore {}  // namespace mmcore
+namespace mmcore {
+
+rust::String expand_file_path_string(const rust::Str& value, FrameValue frame);
+
+}  // namespace mmcore
 
 #endif  // MM_CORE_LIB_H

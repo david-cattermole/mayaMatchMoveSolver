@@ -22,6 +22,8 @@ set(MMSOLVERLIBS_CXXBRIDGE_EXE "/path/to/cxxbridge/executable/cxxbridge" CACHE P
   "The path to the cxxbridge executable file.")
 
 set(main_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+set(mmcolorio_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcolorio/include)
+set(mmcolorio_source_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcolorio/src)
 set(mmcore_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcore/include)
 set(mmcore_source_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmcore/src)
 set(mmimage_include_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmimage/include)
@@ -33,6 +35,9 @@ set(mmscenegraph_source_dir ${CMAKE_CURRENT_SOURCE_DIR}/../../cppbind/mmscenegra
 
 # C++ Source Code
 set(lib_source_files
+  ${mmcolorio_source_dir}/lib.cpp
+
+  ${mmcore_source_dir}/_cxxbridge.cpp
   ${mmcore_source_dir}/lib.cpp
   ${mmcore_source_dir}/mmcamera.cpp
   ${mmcore_source_dir}/mmcoord.cpp
@@ -41,8 +46,8 @@ set(lib_source_files
   ${mmcore_source_dir}/mmmath.cpp
 
   ${mmlens_source_dir}/_cxxbridge.cpp
-  ${mmlens_source_dir}/distortion_process.cpp
   ${mmlens_source_dir}/distortion_layers.cpp
+  ${mmlens_source_dir}/distortion_process.cpp
   ${mmlens_source_dir}/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.cpp
   ${mmlens_source_dir}/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy_rescaled.cpp
   ${mmlens_source_dir}/lens_model_3de_classic.cpp
@@ -57,11 +62,11 @@ set(lib_source_files
 
   ${mmscenegraph_source_dir}/_cxxbridge.cpp
   ${mmscenegraph_source_dir}/attrdatablock.cpp
+  ${mmscenegraph_source_dir}/evaluationobjects.cpp
   ${mmscenegraph_source_dir}/flatscene.cpp
   ${mmscenegraph_source_dir}/line.cpp
   ${mmscenegraph_source_dir}/scenebake.cpp
   ${mmscenegraph_source_dir}/scenegraph.cpp
-  ${mmscenegraph_source_dir}/evaluationobjects.cpp
 )
 
 include(MMCommonUtils)
@@ -97,8 +102,15 @@ target_link_libraries(${cpp_lib_name}
 # ldpk to be installed so we have the 'ldpk_INCLUDE_DIR' variable.
 add_dependencies(${cpp_lib_name} ldpk::ldpk)
 
+# MM Color IO dependencies
+include(MMColorIOUtils)
+mmcolorio_find_packages()
+mmcolorio_target_link_packages(${cpp_lib_name})
+mmcolorio_target_include_packages(${cpp_lib_name})
+
 target_include_directories(${cpp_lib_name}
   PUBLIC $<BUILD_INTERFACE:${main_include_dir}>
+  PUBLIC $<BUILD_INTERFACE:${mmcolorio_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmcore_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmlens_include_dir}>
   PUBLIC $<BUILD_INTERFACE:${mmimage_include_dir}>
@@ -106,13 +118,14 @@ target_include_directories(${cpp_lib_name}
   PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   PRIVATE $<BUILD_INTERFACE:${ldpk_INCLUDE_DIR}>
   PUBLIC $<INSTALL_INTERFACE:include/>
-)
+  )
 
 mm_common_install_target_library("mmsolverlibs_cpp" ${cpp_lib_name})
 
 # Install public headers
 include(GNUInstallDirs)
 install(DIRECTORY
+  "${mmcolorio_include_dir}/"
   "${mmcore_include_dir}/"
   "${mmimage_include_dir}/"
   "${mmlens_include_dir}/"

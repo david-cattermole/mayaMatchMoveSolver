@@ -33,37 +33,22 @@ cmake_policy(SET CMP0074 NEW)
 # https://cmake.org/cmake/help/latest/policy/CMP0048.html
 cmake_policy(SET CMP0048 NEW)
 
-# # Changes how timestamps of downloaded files with
-# # ExternalProject_Add() are set.
-# #
-# # https://cmake.org/cmake/help/latest/policy/CMP0135.html
-# cmake_policy(SET CMP0135 NEW)
-
 # Honor visibility properties for all target types.
 #
 # https://cmake.org/cmake/help/latest/policy/CMP0063.html
 cmake_policy(SET CMP0063 NEW)
 
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
+  # Changes how timestamps of downloaded files with
+  # ExternalProject_Add() are set.
+  #
+  # https://cmake.org/cmake/help/latest/policy/CMP0135.html
+  cmake_policy(SET CMP0135 NEW)
+endif()
+
 # Do not allow using GNU extensions (such as '-std=g++11'), because
 # it's not compatible with Maya.
 set(CXX_EXTENSIONS OFF)
-
-# Use the older C++11 ABI for std::string and std::list, to be
-# compatible with RHEL/CentOS 7, Maya and the VFX Platform.
-#
-# https://vfxplatform.com/#footnote-gcc6
-#
-# TODO: In VFX Platform CY2023, and the move to RHEL 8 or RHEL 9,
-# the new default is to use "_GLIBCXX_USE_CXX11_ABI=1".
-#
-# https://vfxplatform.com/#footnote-gcc9
-#
-# TODO: Add a flag for use in RHEL 8/9 and Rocky Linux, so we can
-# enable/disable.
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
-if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=0")
-endif()
 
 # For Windows, allow paths of more than 250 to avoid build issues
 # arrising on Windows with very long file paths.
@@ -76,11 +61,10 @@ project(mayaMatchMoveSolver)
 set(PROJECT_VERSION_MAJOR 0)
 set(PROJECT_VERSION_MINOR 5)
 set(PROJECT_VERSION_PATCH 0)
-set(PROJECT_VERSION_TWEAK beta4)
-set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}.${PROJECT_VERSION_TWEAK}")
+set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
 set(PROJECT_DESCRIPTION "Bundle Adjustment solver for MatchMove tasks in Autodesk Maya.")
-set(PROJECT_AUTHOR "David Cattermole and others (see AUTHORS.txt file)")
+set(PROJECT_AUTHOR "David Cattermole, Patcha Saheb Binginapalli, and others (see AUTHORS.txt file)")
 set(PROJECT_COPYRIGHT
   "2018-2024, David Cattermole, Anil Reddy, Kazuma Tonegawa, Patcha Saheb Binginapalli.")
 enable_testing()

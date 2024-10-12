@@ -88,13 +88,22 @@ FRAME_RANGE_MODE_VALUES = [
 #
 # - Maya Style: "file.<f>.png"
 # - First frame style "file.1001.png"
+# - Exact frame style "file.0042.png"
 # - Hash Padded style: "file.####.png"
 # - "old school" Nuke style: file.%04d.png
 #
 IMAGE_SEQ_FORMAT_STYLE_MAYA = 'maya'
 IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED = 'hash_padded'
 IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME = 'first_frame'
+IMAGE_SEQ_FORMAT_STYLE_EXACT_FRAME = 'exact_frame'
 IMAGE_SEQ_FORMAT_STYLE_PRINTF = 'printf'
+IMAGE_SEQ_FORMAT_STYLE_VALUES = [
+    IMAGE_SEQ_FORMAT_STYLE_MAYA,
+    IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED,
+    IMAGE_SEQ_FORMAT_STYLE_FIRST_FRAME,
+    IMAGE_SEQ_FORMAT_STYLE_EXACT_FRAME,
+    IMAGE_SEQ_FORMAT_STYLE_PRINTF,
+]
 
 
 # What type of lens distortion mode is used?
@@ -109,3 +118,9 @@ DISTORT_MODE_VALUE_LIST = (
     DISTORT_MODE_UNDISTORT,
     DISTORT_MODE_REDISTORT,
 )
+
+
+# Memory Conversion
+BYTES_TO_KILOBYTES = 1024  ####### int(pow(2, 10))
+BYTES_TO_MEGABYTES = 1048576  #### int(pow(2, 20))
+BYTES_TO_GIGABYTES = 1073741824  # int(pow(2, 30))

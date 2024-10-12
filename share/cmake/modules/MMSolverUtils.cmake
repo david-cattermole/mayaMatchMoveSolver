@@ -1,4 +1,4 @@
-# Copyright (C) 2020 David Cattermole.
+# Copyright (C) 2020, 2024 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -18,217 +18,6 @@
 #
 # CMake utilities for mmSolver.
 #
-
-
-function(set_global_maya_plugin_compile_options)
-
-  if(CMAKE_BUILD_TYPE EQUAL "Release")
-    add_compile_definitions(NDEBUG)
-  elseif (CMAKE_BUILD_TYPE EQUAL "Debug")
-    add_compile_definitions(_DEBUG)
-  endif ()
-
-  # Compile Flags.
-  #
-  # TODO: Make this function take a target and set the compile
-  # arguments per-target.
-  #
-  # Release flags come from the Autodesk Maya build scripts (and
-  # Visual Studio project files).
-  if (MSVC)
-    # For Visual Studio 11 2012
-    set(CMAKE_CXX_FLAGS "")  # Zero out the C++ flags, we have complete control.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GS")          # Buffer Security Check
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:wchar_t")  # wchar_t Is Native Type
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi")          # Separate .pdb debug info file.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /fp:precise")  # Precise floating-point behavior
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:forScope") # Force Conformance in for Loop Scope
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GR")          # Enable Run-Time Type Information
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Gd")          # __cdecl Calling Convention
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")        # Handle standard C++ Exceptions.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")          # Warning Levels 1-4 enabled.
-
-    add_compile_definitions(OSWin_)
-    add_compile_definitions(WIN32)
-    add_compile_definitions(_WINDOWS)
-    add_compile_definitions(_USRDLL)
-    add_compile_definitions(NT_PLUGIN)
-    add_compile_definitions(_HAS_ITERATOR_DEBUGGING=0)
-    add_compile_definitions(_SECURE_SCL=0)
-    add_compile_definitions(_SECURE_SCL_THROWS=0)
-    add_compile_definitions(_SECURE_SCL_DEPRECATE=0)
-    add_compile_definitions(_CRT_SECURE_NO_DEPRECATE)
-    add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
-    add_compile_definitions(TBB_USE_DEBUG=0)
-    add_compile_definitions(__TBB_LIB_NAME=tbb.lib)
-    add_compile_definitions(_WINDLL)
-    add_compile_definitions(Bits64_)
-    add_compile_definitions(REQUIRE_IOSTREAM)
-    add_compile_definitions(NT_PLUGIN)
-    add_compile_definitions(USERDLL)
-
-    # Use multithread-specific Run-Time Library.
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} /MD")
-
-    add_compile_options("/arch:AVX2")
-
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Gy")  # Enable Function-Level Linking
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GF")  # Eliminate Duplicate Strings
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O2")  # Optimize for Maximize Speed
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Oi")  # Generate Intrinsic Functions
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /GL")  # Whole program optimization
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /arch:AVX2")  # Use AVX2 instructions
-
-    # Link-time code generation.
-    #
-    # /LTGC and /GL work together and therefore are both enabled.
-    set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
-    set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /LTCG")
-    set(CMAKE_MODULE_LINKER_FLAGS_RELEASE "${CMAKE_MODULE_LINKER_FLAGS_RELEASE} /LTCG")
-
-    # Use debug-specific Run-Time Library.
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} /MDd")
-
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od")    # Optimize for Debug.
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /RTC1")  # Run-time error checks
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Ob0")   # Disables inline expansions.
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /GR")    # Enable Run-Time Type Information
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /GL")    # Whole program optimization
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Oi")    # Generate Intrinsic Functions
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Gy")    # Enable Function-Level Linking
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Zi")    # Debug Information Format
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /EHsc")  # Handle standard C++ Exceptions.
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /analyze")  # Code analysis
-
-    # Ensure Google Logging does not use "ERROR" macro, because Windows
-    # doesn't support it.
-    add_compile_definitions(GLOG_NO_ABBREVIATED_SEVERITIES)
-
-    # Ceres running on Windows can trigger a MSVC warning:
-    #
-    # "Compiler Warning (level 3) C4996: Your code uses a function,
-    # class member, variable, or typedef that's marked deprecated."
-    #
-    # To override this, we define "_CRT_NONSTDC_NO_DEPRECATE"
-    #
-    # https://docs.microsoft.com/en-us/previous-versions/ms235384(v=vs.100)
-    add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
-
-  elseif (APPLE)
-
-    # For MacOS with Clang (which is the supported compiler for Maya
-    # 2018+)
-    set(CMAKE_CXX_FLAGS "")  # Zero out the C++ flags, we have complete control.
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -arch x86_64")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x  -stdlib=libc++")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-multichar -Wno-comment -Wno-sign-compare")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated -Wno-reorder")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ftemplate-depth-35 -fno-gnu-keywords")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -funsigned-char -fpascal-strings") #  -pthread
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCC_GNU_")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOSMac_")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOSMacOSX_")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOSMac_MachO_")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_LANGUAGE_C_PLUS_PLUS")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.8")
-
-    # Special MacOS linking stuff
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -headerpad_max_install_names")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -framework System")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -framework SystemConfiguration")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -framework CoreServices")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -framework Carbon")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -framework Cocoa")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -framework ApplicationServices")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -framework IOKit")
-    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -bundle")
-
-    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -fPIC -fno-strict-aliasing -m64")
-
-  else ()
-    # For Linux with GCC
-
-    # Definitions
-    add_compile_definitions(Bits64_)
-    add_compile_definitions(UNIX)
-    add_compile_definitions(_BOOL)
-    add_compile_definitions(LINUX)
-    add_compile_definitions(linux)
-    add_compile_definitions(__linux__)
-    add_compile_definitions(OSLinux_)
-    add_compile_definitions(FUNCPROTO)
-    add_compile_definitions(_GNU_SOURCE)
-    add_compile_definitions(LINUX_64)
-    add_compile_definitions(REQUIRE_IOSTREAM)
-
-    # Use the older C++11 ABI for std::string and std::list, to be
-    # compatible with RHEL/CentOS 7, Maya and the VFX Platform.
-    #
-    # https://vfxplatform.com/#footnote-gcc6
-    #
-    # TODO: In VFX Platform CY2023, and the move to RHEL 8 or RHEL 9,
-    # the new default is to use "_GLIBCXX_USE_CXX11_ABI=1".
-    #
-    # https://vfxplatform.com/#footnote-gcc9
-    #
-    # TODO: Expose this variable as a CMake option, so we can enable
-    # this for RHEL 8/9 and Rocky Linux 8.
-    add_compile_definitions(_GLIBCXX_USE_CXX11_ABI=0)
-
-    # Enable warnings.
-    add_definitions(-Wall)
-    add_definitions(-Wno-multichar)
-    add_definitions(-Wno-comment)
-    add_definitions(-Wno-sign-compare)
-    add_definitions(-Wno-unused-parameter)
-    add_definitions(-Wno-unused-parameter)
-    add_definitions(-Wno-unused-variable)
-    add_definitions(-Wno-unused-private-field)
-    add_definitions(-Wno-deprecated)
-    add_definitions(-Wno-reorder)
-
-    # GCC Features
-    add_definitions(-pthread)
-    add_definitions(-fopenmp)
-    add_definitions(-fvisibility=hidden)
-    add_definitions(-funsigned-char)
-    add_definitions(-fno-gnu-keywords)
-    add_definitions(-fno-strict-aliasing)
-
-    # '-ftemplate-depth-27' is required to compile under GCC 4.8.5.
-    # '-ftemplate-depth-35' is required to compile under GCC 5.5.x.
-    #
-    # In GCC 6.3.x, with C++11 the default depth is set to 900, but
-    # the C++11 standard says 1024 is the default.
-    add_definitions(-ftemplate-depth-900)
-
-    set(CMAKE_CXX_FLAGS_DEBUG "-O0")  # No optmizations.
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")  # Include debug symbols
-
-    # Enable AddressSanitizer.
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fsanitize=address")
-
-    # Nicer stack traces in error messages
-    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer")
-
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")  # Optimize for maximum performance.
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -m64")  # Set 64-bit machine.
-    set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -march=skylake")   # Use AVX2 instructions
-
-  endif ()
-endfunction()
-
-
-function(set_global_treat_warnings_as_errors)
-  if(MSVC)
-    add_compile_options(/WX)
-  else()
-    add_compile_options(-Werror)
-  endif()
-endfunction()
 
 
 function(add_library_maya_plugin target source_files)
@@ -332,7 +121,7 @@ function(install_target_plugin_to_module target module_dir)
 endfunction()
 
 
-# Install the Plug-In.
+# Install executables.
 function(install_target_executable_to_module target module_dir)
   set_target_properties(${target} PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${module_dir}")
@@ -344,9 +133,9 @@ endfunction()
 
 # Install shared (dynamic) library.
 function(install_shared_library lib_file lib_file_dll install_dir)
-  # message(STATUS "INSTALL FILE: ${lib_file}")
-  # message(STATUS "INSTALL DLL : ${lib_file_dll}")
-  # message(STATUS "INSTALL DIR : ${install_dir}")
+  # message(STATUS "install_shared_library install file: ${lib_file}")
+  # message(STATUS "install_shared_library install dll : ${lib_file_dll}")
+  # message(STATUS "install_shared_library install dir : ${install_dir}")
   if (WIN32)
     if (EXISTS ${lib_file_dll})
       install(FILES ${lib_file_dll}
@@ -357,12 +146,17 @@ function(install_shared_library lib_file lib_file_dll install_dir)
   elseif (UNIX)
     string(FIND ${lib_file} ".so" find_so)
     if(${find_so} GREATER_EQUAL 0)
-      # Install only the real library, with the symlink name.
-      get_filename_component(absolute_lib_file ${lib_file} REALPATH)
+      # message(STATUS "install_shared_library lib_file     : ${lib_file}")
+
+      # Install only the real library, with the original name.
+      get_filename_component(abs_lib_file ${lib_file} REALPATH)
       get_filename_component(lib_file_name ${lib_file} NAME)
-      install(FILES ${absolute_lib_file}
+      # message(STATUS "install_shared_library abs_lib_file : ${abs_lib_file}")
+      # message(STATUS "install_shared_library lib_file_name: ${lib_file_name}")
+      install(FILES ${abs_lib_file}
         DESTINATION ${install_dir}
-        RENAME ${lib_file_name})
+        RENAME ${lib_file_name}
+      )
 
       # # Copies all files similar to ${lib_file} to the install
       # # directory.
@@ -370,6 +164,37 @@ function(install_shared_library lib_file lib_file_dll install_dir)
       #   LIST_DIRECTORIES 0
       #   "${lib_file}*")
       # install(FILES ${lib_files} DESTINATION ${install_dir})
+    endif ()
+  endif ()
+endfunction()
+
+
+function(install_shared_library_with_name lib_file lib_file_dll lib_name install_dir)
+  # message(STATUS "install_shared_library install file: ${lib_file}")
+  # message(STATUS "install_shared_library install dll : ${lib_file_dll}")
+  # message(STATUS "install_shared_library install name: ${lib_name}")
+  # message(STATUS "install_shared_library install dir : ${install_dir}")
+  if (WIN32)
+    if (EXISTS ${lib_file_dll})
+      install(FILES ${lib_file_dll}
+        DESTINATION ${install_dir})
+    else ()
+      message(FATAL_ERROR "Cannot find .dll file to install: ${lib_file_dll}")
+    endif ()
+  elseif (UNIX)
+    string(FIND ${lib_file} ".so" find_so)
+    if(${find_so} GREATER_EQUAL 0)
+      # message(STATUS "install_shared_library lib_file     : ${lib_file}")
+
+      # Install only the real library, with the original name.
+      get_filename_component(abs_lib_file ${lib_file} REALPATH)
+      get_filename_component(lib_file_name ${lib_file} NAME)
+      # message(STATUS "install_shared_library abs_lib_file : ${abs_lib_file}")
+
+      install(FILES ${abs_lib_file}
+        DESTINATION ${install_dir}
+        RENAME ${lib_name}
+      )
     endif ()
   endif ()
 endfunction()
@@ -421,6 +246,7 @@ function(compile_qt_ui_to_python_file
             PATH_SUFFIXES
                 MacOS/
                 bin/
+                libexec/   # Maya 2025 on Linux changed the directory.
             DOC
                 "Maya provided Qt 'uic' executable path"
                 )
@@ -484,6 +310,7 @@ function(compile_qt_resources_qrc_to_rcc_file
             MacOS
             bin3/  # Use Python 3.x location, in Maya 2022.
             bin/
+            libexec/  # Maya 2025 on Linux changed the directory.
         DOC
             "Maya's Qt resource compiler (rcc) executable path"
     )

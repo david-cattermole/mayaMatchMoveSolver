@@ -26,6 +26,7 @@ import maya.cmds
 import mmSolver.logger
 
 import mmSolver.utils.time as time_utils
+import mmSolver.utils.constant as const_utils
 import mmSolver.utils.tools as tools_utils
 import mmSolver.tools.createcontroller2.constant as const
 import mmSolver.tools.createcontroller2.lib as lib
@@ -79,6 +80,7 @@ def create_world_controllers():
         restore_current_frame=True,
         use_dg_evaluation_mode=True,
         disable_viewport=True,
+        disable_viewport_mode=const_utils.DISABLE_VIEWPORT_MODE_VP1_VALUE,
     ):
 
         for node in nodes:

@@ -92,23 +92,23 @@ const BackgroundStyle kBackgroundStyleDefault = BackgroundStyle::kMayaDefault;
 const RenderColorFormat kRenderColorFormatDefault =
     RenderColorFormat::kRGBA16BitFloat;
 
-// Basic Constants
-const MString kRenderGlobalsBasicNodeName = "mmRenderGlobals";
-const MString kRendererBasicCmdName = "mmRenderer";
-const char kRendererBasicName[] = "mmRenderer";
-const char kRendererBasicUiName[] = "mmRenderer";
-const MString kRendererBasicCreateNodeCommand =
+// Standard Renderer Constants
+const MString kRenderGlobalsStandardNodeName = "mmRenderGlobalsStandard";
+const MString kRendererStandardCmdName = "mmRendererStandard";
+const char kRendererStandardName[] = "mmRendererStandard";
+const char kRendererStandardUiName[] = "MM Standard Renderer";
+const MString kRendererStandardCreateNodeCommand =
     "string $mm_globals_node = `createNode \"" +
-    MString(MM_RENDER_GLOBALS_BASIC_TYPE_NAME) + "\" -name \"" +
-    MString(kRenderGlobalsBasicNodeName) + "\" -shared -skipSelect`;\n" +
+    MString(MM_RENDER_GLOBALS_STANDARD_TYPE_NAME) + "\" -name \"" +
+    MString(kRenderGlobalsStandardNodeName) + "\" -shared -skipSelect`;\n" +
     "if (size($mm_globals_node) > 0) {\n" +
     "    lockNode -lock on $mm_globals_node;\n" + "}\n";
 
-// Silhouette Constants
+// Silhouette Renderer Constants
 const MString kRenderGlobalsSilhouetteNodeName = "mmRenderGlobalsSilhouette";
 const MString kRendererSilhouetteCmdName = "mmRendererSilhouette";
 const char kRendererSilhouetteName[] = "mmRendererSilhouette";
-const char kRendererSilhouetteUiName[] = "mmRenderer (silhouette)";
+const char kRendererSilhouetteUiName[] = "MM Silhouette Renderer";
 const MString kRendererSilhouetteCreateNodeCommand =
     "string $mm_globals_node = `createNode \"" +
     MString(MM_RENDER_GLOBALS_SILHOUETTE_TYPE_NAME) + "\" -name \"" +
@@ -118,6 +118,7 @@ const MString kRendererSilhouetteCreateNodeCommand =
 
 // Silhouette Attribute Names
 const MString kAttrNameSilhouetteEnable = "enable";
+const MString kAttrNameSilhouetteOverrideColor = "overrideColor";
 const MString kAttrNameSilhouetteDepthOffset = "depthOffset";
 const MString kAttrNameSilhouetteWidth = "width";
 const MString kAttrNameSilhouetteColor = "color";
@@ -130,6 +131,9 @@ const MString kAttrNameSilhouetteOperationNum = "operationNum";
 
 // Silhouette Renderer Attribute Default Values
 const bool kSilhouetteEnableDefault = true;
+// We enable 'override color' by default, so that users with wireframe
+// on shaded can see the obvious effect right away.
+const bool kSilhouetteOverrideColorDefault = true;
 const float kSilhouetteDepthOffsetDefault = -1.0f;
 const float kSilhouetteWidthDefault = 2.0f;
 const float kSilhouetteColorDefault[] = {0.0f, 1.0f, 0.0f};

@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 David Cattermole.
+// Copyright (C) 2023, 2024 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -17,6 +17,8 @@
 // along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 // ====================================================================
 //
+
+use crate::shim_expand_file_path_string;
 
 #[cxx::bridge(namespace = "mmcore")]
 pub mod ffi {
@@ -37,5 +39,9 @@ pub mod ffi {
 
         #[cxx_name = "kNumDistortionDirection"]
         NumDistortionDirection,
+    }
+
+    extern "Rust" {
+        pub fn shim_expand_file_path_string(value: &str, frame: i32) -> String;
     }
 }

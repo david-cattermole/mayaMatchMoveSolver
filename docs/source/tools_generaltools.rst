@@ -516,6 +516,137 @@ To run the tool, use this Python command:
     import mmSolver.tools.removesolvernodes.tool as tool
     tool.main()
 
+.. _image-cache-preferences-ref:
+
+Image Cache Preferences
+-----------------------
+
+.. figure:: images/tools_image_cache_preferences_ui.png
+    :alt: Image Cache Preferences window
+    :align: center
+    :width: 60%
+
+The `Image Cache Preferences` control how much memory `MM Solver` is
+allowed to use to store image data, and displays real-time information
+about memory consumption of the computer hardware resources; both CPU
+and GPU memory.
+
+The :ref:`MM ImagePlane <imageplane-ref>` uses the Image Cache to
+store all image data.
+
+The `Image Cache Preferences` have *defaults* and *scene override*
+options. The *default* options are used when Maya is started, and new
+Maya scenes are created. The *scene override* options are used when
+the current Maya scene is opened; these only apply to the current Maya
+scene and are useful when you wish to adjust a specific scene with
+exceptional requirements without adjusting your regular *default*
+options.
+
+.. note:: The `Image Cache Preferences` *only* control the capacity of
+          images loaded by `MM Solver`. Other types of data in Maya
+          like geometry and material/surface textures are not
+          controlled or detailed.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.imagecacheprefs.tool as tool
+    tool.open_window()
+
+What Image Cache Values Should I Use?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Image Cache Capacity values are depending on two things; hardware
+memory capacity and frame count / image resolution. This section lists
+some common wisdom and logic to optimise the use of the `Image Cache`.
+
+The default `Image Cache Preferences` are intended for a user with a
+~200 frame 1080p HD shot, 4 GB of GPU memory and 32 GB CPU memory. The
+hardware specifications for a professional workstation in 2024 is
+expected to surpass these values, but this assumption is intended to
+ensure that lower-spec hardware still performs okay.
+
+If you don't care about MM ImagePlane playback speed; set the `Image
+Cache` capacity to 0%.
+
+If you want the maximum performance and you have a lot of GPU and CPU
+memory, and you only work with one Maya Scene open at once; set the
+`Image Cache` capacity to 100%
+
+If you want to fit the image sequence of an `MM ImagePlane`, look at
+the `Image Cache` tab in the Attribute Editor, and set your GPU and
+CPU `Image Cache` capacity to just above that number.
+
+If you are often running out of GPU memory, decrease your GPU memory
+capacity to 0% or the lowest possible - you may get a limited playback
+speed (depending on the image resolution), however the Image Cache
+will only keep 1 image in GPU memory at any one time - at the cost of
+slower playback.
+
+Hardware Resource Monitor
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. figure:: images/tools_image_cache_preferences_monitor.png
+    :alt: Image Cache Preferences window
+    :align: center
+    :width: 60%
+
+The `Image Cache Preferences` window allows users to monitor the
+computer's memory resources similar to the `Microsoft Windows` Task
+Manager or System Monitors on `Linux`. Additionally the window
+provides details of the `Image Cache` memory usage, detailing how many
+individual *Images* are stored and how many *Image Slots* (similar to
+image sequences) are stored.
+
+.. note:: The `Image Cache` *Capacity* and *Used* values only display
+          statistics of memory of the Image Cache; geometry and
+          material/shader textures are not counted.
+
+.. list-table:: GPU/CPU Resource Fields
+   :widths: auto
+   :header-rows: 1
+
+   * - Field
+     - Description
+     - Measurement Unit
+
+   * - Memory Total
+     - Total amount of memory of the hardware resource.
+     - Gigabytes (GB)
+
+   * - Memory Used
+     - Amount of memory available for the hardware resource.
+     - Gigabytes (GB)
+
+
+.. list-table:: GPU/CPU Image Cache Overview Fields
+   :widths: auto
+   :header-rows: 1
+
+   * - Field
+     - Description
+     - Measurement Unit
+
+   * - Images
+     - Number of individual images stored in the `Image Cache` on the
+       hardware.
+     - Count
+
+   * - Image Slots
+     - Number of unique image sequences stored in the `Image Cache` on
+       the hardware.
+     - Count
+
+   * - Capacity
+     - Amount of hardware memory allowed to be used for the `Image
+       Cache`.
+     - Gigabytes (GB)
+
+   * - Used
+     - Amount of `Image Cache` capacity used.
+     - Gigabytes (GB) / Percentage of Capacity
+
 .. _user-preferences-tool-ref:
 
 User Preferences

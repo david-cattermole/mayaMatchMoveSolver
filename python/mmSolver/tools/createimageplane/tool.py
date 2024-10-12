@@ -32,25 +32,38 @@ import mmSolver.logger
 import mmSolver.api as mmapi
 import mmSolver.utils.viewport as utils_viewport
 import mmSolver.utils.camera as utils_camera
+import mmSolver.tools.createimageplane._lib.constant as const
 import mmSolver.tools.createimageplane.lib as lib
 
 
 LOG = mmSolver.logger.get_logger()
 
 
+# Function from
+# ./python/mmSolver/tools/cameracontextmenu/lib/utilities.py
+def _open_node_in_attribute_editor(node):
+    mel_cmd = 'showEditorExact "{node}";'.format(node=node)
+    maya.mel.eval(mel_cmd)
+    return
+
+
 def _get_start_directory():
+    fallback_path = os.getcwd()
+
     workspace_path = maya.cmds.workspace(query=True, fullName=True)
     if workspace_path is None:
-        return os.getcwd()
+        return fallback_path
     workspace_path = os.path.abspath(workspace_path)
 
     file_rules = maya.cmds.workspace(query=True, fileRule=True)
     if file_rules is None:
-        return os.getcwd()
+        return fallback_path
     file_rule_names = file_rules[0::2]
     file_rule_values = file_rules[1::2]
 
     file_rule = 'sourceImages'
+    if file_rule not in file_rule_names:
+        return fallback_path
     file_rule_index = file_rule_names.index(file_rule)
     dir_name = file_rule_values[file_rule_index]
 
@@ -92,10 +105,11 @@ def prompt_user_for_image_sequence(start_dir=None):
     return image_sequence_path
 
 
-def main():
+def _run(version):
     """
     Create a new Image Plane on the selected camera.
     """
+    assert version in const.MM_IMAGE_PLANE_VERSION_LIST
     mmapi.load_plugin()
 
     # Get selected camera(s).
@@ -145,11 +159,11 @@ def main():
         # user has the transform and shape nodes selected.
         if cam_shp in created:
             continue
-        mm_ip_tfm, mm_ip_shp = lib.create_image_plane_on_camera(cam)
+        mm_ip_tfm, mm_ip_shp = lib.create_image_plane_on_camera(cam, version=version)
 
         image_seq = prompt_user_for_image_sequence()
         if image_seq:
-            lib.set_image_sequence(mm_ip_tfm, image_seq)
+            lib.set_image_sequence(mm_ip_tfm, image_seq, version=version)
 
         nodes.append(mm_ip_shp)
         created.add(cam_shp)
@@ -159,7 +173,19 @@ def main():
 
         # Show the last node in the attribute editor.
         node = nodes[-1]
-        maya.mel.eval('updateAE("{}");'.format(node))
+        _open_node_in_attribute_editor(node)
     else:
         maya.cmds.select(sel, replace=True)
     return
+
+
+def main():
+    _run(const.MM_IMAGE_PLANE_VERSION_TWO)
+
+
+def main_version_one():
+    _run(const.MM_IMAGE_PLANE_VERSION_ONE)
+
+
+def main_version_two():
+    _run(const.MM_IMAGE_PLANE_VERSION_TWO)

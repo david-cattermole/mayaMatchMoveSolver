@@ -22,6 +22,9 @@
 #ifndef MM_IMAGE_PLANE_SHAPE_NODE_H
 #define MM_IMAGE_PLANE_SHAPE_NODE_H
 
+// STL
+#include <assert.h>
+
 // Maya
 #include <maya/MArrayDataBuilder.h>
 #include <maya/MColor.h>
@@ -39,8 +42,6 @@
 #if MAYA_API_VERSION >= 20190000
 #include <maya/MEvaluationNode.h>
 #endif
-
-#include <assert.h>
 
 namespace mmsolver {
 
@@ -81,6 +82,7 @@ public:
     static MString m_draw_db_classification;
     static MString m_draw_registrant_id;
     static MString m_selection_type_name;
+    static MString m_display_filter_draw_db_classification;
     static MString m_display_filter_name;
     static MString m_display_filter_label;
 

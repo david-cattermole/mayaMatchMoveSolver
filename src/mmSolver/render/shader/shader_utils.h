@@ -31,7 +31,14 @@ namespace render {
 
 const MHWRender::MShaderManager *get_shader_manager();
 
+MString find_shader_file_path(const MString &shader_file_name);
+
+MString read_shader_file(const MString &shader_file_path);
+
 MHWRender::MShaderInstance *compile_shader_file(const MString &shader_file_name,
+                                                const MString &technique_name);
+
+MHWRender::MShaderInstance *compile_shader_text(const MString &shader_text,
                                                 const MString &technique_name);
 
 }  // namespace render

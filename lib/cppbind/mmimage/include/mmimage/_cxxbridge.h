@@ -386,7 +386,8 @@ typename Slice<T>::iterator::difference_type
 Slice<T>::iterator::operator-(const iterator &other) const noexcept {
   auto diff = std::distance(static_cast<char *>(other.pos),
                             static_cast<char *>(this->pos));
-  return diff / this->stride;
+  return diff / static_cast<typename Slice<T>::iterator::difference_type>(
+                    this->stride);
 }
 
 template <typename T>
@@ -989,12 +990,12 @@ struct ExrPixelLayout final {
   ::std::size_t tile_size_x;
   ::std::size_t tile_size_y;
 
-  bool operator==(const ExrPixelLayout &) const noexcept;
-  bool operator!=(const ExrPixelLayout &) const noexcept;
-  bool operator<(const ExrPixelLayout &) const noexcept;
-  bool operator<=(const ExrPixelLayout &) const noexcept;
-  bool operator>(const ExrPixelLayout &) const noexcept;
-  bool operator>=(const ExrPixelLayout &) const noexcept;
+  bool operator==(ExrPixelLayout const &) const noexcept;
+  bool operator!=(ExrPixelLayout const &) const noexcept;
+  bool operator<(ExrPixelLayout const &) const noexcept;
+  bool operator<=(ExrPixelLayout const &) const noexcept;
+  bool operator>(ExrPixelLayout const &) const noexcept;
+  bool operator>=(ExrPixelLayout const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$ExrPixelLayout
@@ -1016,12 +1017,12 @@ struct ImageExrEncoder final {
   ::mmimage::ExrPixelLayout pixel_layout;
   ::mmimage::ExrLineOrder line_order;
 
-  bool operator==(const ImageExrEncoder &) const noexcept;
-  bool operator!=(const ImageExrEncoder &) const noexcept;
-  bool operator<(const ImageExrEncoder &) const noexcept;
-  bool operator<=(const ImageExrEncoder &) const noexcept;
-  bool operator>(const ImageExrEncoder &) const noexcept;
-  bool operator>=(const ImageExrEncoder &) const noexcept;
+  bool operator==(ImageExrEncoder const &) const noexcept;
+  bool operator!=(ImageExrEncoder const &) const noexcept;
+  bool operator<(ImageExrEncoder const &) const noexcept;
+  bool operator<=(ImageExrEncoder const &) const noexcept;
+  bool operator>(ImageExrEncoder const &) const noexcept;
+  bool operator>=(ImageExrEncoder const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$ImageExrEncoder
@@ -1032,12 +1033,12 @@ struct OptionF32 final {
   bool exists;
   float value;
 
-  bool operator==(const OptionF32 &) const noexcept;
-  bool operator!=(const OptionF32 &) const noexcept;
-  bool operator<(const OptionF32 &) const noexcept;
-  bool operator<=(const OptionF32 &) const noexcept;
-  bool operator>(const OptionF32 &) const noexcept;
-  bool operator>=(const OptionF32 &) const noexcept;
+  bool operator==(OptionF32 const &) const noexcept;
+  bool operator!=(OptionF32 const &) const noexcept;
+  bool operator<(OptionF32 const &) const noexcept;
+  bool operator<=(OptionF32 const &) const noexcept;
+  bool operator>(OptionF32 const &) const noexcept;
+  bool operator>=(OptionF32 const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$OptionF32
@@ -1048,12 +1049,12 @@ struct Vec2F32 final {
   float x;
   float y;
 
-  bool operator==(const Vec2F32 &) const noexcept;
-  bool operator!=(const Vec2F32 &) const noexcept;
-  bool operator<(const Vec2F32 &) const noexcept;
-  bool operator<=(const Vec2F32 &) const noexcept;
-  bool operator>(const Vec2F32 &) const noexcept;
-  bool operator>=(const Vec2F32 &) const noexcept;
+  bool operator==(Vec2F32 const &) const noexcept;
+  bool operator!=(Vec2F32 const &) const noexcept;
+  bool operator<(Vec2F32 const &) const noexcept;
+  bool operator<=(Vec2F32 const &) const noexcept;
+  bool operator>(Vec2F32 const &) const noexcept;
+  bool operator>=(Vec2F32 const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$Vec2F32
@@ -1064,12 +1065,12 @@ struct Vec2I32 final {
   ::std::int32_t x;
   ::std::int32_t y;
 
-  bool operator==(const Vec2I32 &) const noexcept;
-  bool operator!=(const Vec2I32 &) const noexcept;
-  bool operator<(const Vec2I32 &) const noexcept;
-  bool operator<=(const Vec2I32 &) const noexcept;
-  bool operator>(const Vec2I32 &) const noexcept;
-  bool operator>=(const Vec2I32 &) const noexcept;
+  bool operator==(Vec2I32 const &) const noexcept;
+  bool operator!=(Vec2I32 const &) const noexcept;
+  bool operator<(Vec2I32 const &) const noexcept;
+  bool operator<=(Vec2I32 const &) const noexcept;
+  bool operator>(Vec2I32 const &) const noexcept;
+  bool operator>=(Vec2I32 const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$Vec2I32
@@ -1082,12 +1083,12 @@ struct Box2F32 final {
   float max_x;
   float max_y;
 
-  bool operator==(const Box2F32 &) const noexcept;
-  bool operator!=(const Box2F32 &) const noexcept;
-  bool operator<(const Box2F32 &) const noexcept;
-  bool operator<=(const Box2F32 &) const noexcept;
-  bool operator>(const Box2F32 &) const noexcept;
-  bool operator>=(const Box2F32 &) const noexcept;
+  bool operator==(Box2F32 const &) const noexcept;
+  bool operator!=(Box2F32 const &) const noexcept;
+  bool operator<(Box2F32 const &) const noexcept;
+  bool operator<=(Box2F32 const &) const noexcept;
+  bool operator>(Box2F32 const &) const noexcept;
+  bool operator>=(Box2F32 const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$Box2F32
@@ -1100,12 +1101,12 @@ struct ImageRegionRectangle final {
   ::std::size_t size_x;
   ::std::size_t size_y;
 
-  bool operator==(const ImageRegionRectangle &) const noexcept;
-  bool operator!=(const ImageRegionRectangle &) const noexcept;
-  bool operator<(const ImageRegionRectangle &) const noexcept;
-  bool operator<=(const ImageRegionRectangle &) const noexcept;
-  bool operator>(const ImageRegionRectangle &) const noexcept;
-  bool operator>=(const ImageRegionRectangle &) const noexcept;
+  bool operator==(ImageRegionRectangle const &) const noexcept;
+  bool operator!=(ImageRegionRectangle const &) const noexcept;
+  bool operator<(ImageRegionRectangle const &) const noexcept;
+  bool operator<=(ImageRegionRectangle const &) const noexcept;
+  bool operator>(ImageRegionRectangle const &) const noexcept;
+  bool operator>=(ImageRegionRectangle const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$ImageRegionRectangle
@@ -1118,12 +1119,12 @@ struct PixelF32x4 final {
   float b;
   float a;
 
-  bool operator==(const PixelF32x4 &) const noexcept;
-  bool operator!=(const PixelF32x4 &) const noexcept;
-  bool operator<(const PixelF32x4 &) const noexcept;
-  bool operator<=(const PixelF32x4 &) const noexcept;
-  bool operator>(const PixelF32x4 &) const noexcept;
-  bool operator>=(const PixelF32x4 &) const noexcept;
+  bool operator==(PixelF32x4 const &) const noexcept;
+  bool operator!=(PixelF32x4 const &) const noexcept;
+  bool operator<(PixelF32x4 const &) const noexcept;
+  bool operator<=(PixelF32x4 const &) const noexcept;
+  bool operator>(PixelF32x4 const &) const noexcept;
+  bool operator>=(PixelF32x4 const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$PixelF32x4
@@ -1134,12 +1135,12 @@ struct PixelF64x2 final {
   double x;
   double y;
 
-  bool operator==(const PixelF64x2 &) const noexcept;
-  bool operator!=(const PixelF64x2 &) const noexcept;
-  bool operator<(const PixelF64x2 &) const noexcept;
-  bool operator<=(const PixelF64x2 &) const noexcept;
-  bool operator>(const PixelF64x2 &) const noexcept;
-  bool operator>=(const PixelF64x2 &) const noexcept;
+  bool operator==(PixelF64x2 const &) const noexcept;
+  bool operator!=(PixelF64x2 const &) const noexcept;
+  bool operator<(PixelF64x2 const &) const noexcept;
+  bool operator<=(PixelF64x2 const &) const noexcept;
+  bool operator>(PixelF64x2 const &) const noexcept;
+  bool operator>=(PixelF64x2 const &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$PixelF64x2
@@ -1162,8 +1163,8 @@ struct ShimImagePixelBuffer final : public ::rust::Opaque {
   MMIMAGE_API_EXPORT ::std::size_t num_channels() const noexcept;
   MMIMAGE_API_EXPORT ::std::size_t pixel_count() const noexcept;
   MMIMAGE_API_EXPORT ::std::size_t element_count() const noexcept;
-  MMIMAGE_API_EXPORT ::rust::Slice<const ::mmimage::PixelF32x4> as_slice_f32x4() const noexcept;
-  MMIMAGE_API_EXPORT ::rust::Slice<::mmimage::PixelF32x4> as_slice_f32x4_mut() noexcept;
+  MMIMAGE_API_EXPORT ::rust::Slice<::mmimage::PixelF32x4 const> as_slice_f32x4() const noexcept;
+  MMIMAGE_API_EXPORT ::rust::Slice<::mmimage::PixelF32x4 > as_slice_f32x4_mut() noexcept;
   MMIMAGE_API_EXPORT void resize(::mmimage::BufferDataType data_type, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t num_channels) noexcept;
   ~ShimImagePixelBuffer() = delete;
 
@@ -1230,9 +1231,9 @@ MMIMAGE_API_EXPORT ::rust::Box<::mmimage::ShimImagePixelBuffer> shim_create_imag
 
 MMIMAGE_API_EXPORT ::rust::Box<::mmimage::ShimImageMetaData> shim_create_image_meta_data_box() noexcept;
 
-MMIMAGE_API_EXPORT bool shim_image_read_pixels_exr_f32x4(::rust::Str file_path, ::rust::Box<::mmimage::ShimImageMetaData> &out_meta_data, ::rust::Box<::mmimage::ShimImagePixelBuffer> &out_pixel_buffer) noexcept;
+MMIMAGE_API_EXPORT bool shim_image_read_pixels_exr_f32x4(::rust::Str file_path, bool vertical_flip, ::rust::Box<::mmimage::ShimImageMetaData> &out_meta_data, ::rust::Box<::mmimage::ShimImagePixelBuffer> &out_pixel_buffer) noexcept;
 
 MMIMAGE_API_EXPORT bool shim_image_read_metadata_exr(::rust::Str file_path, ::rust::Box<::mmimage::ShimImageMetaData> &out_meta_data) noexcept;
 
-MMIMAGE_API_EXPORT bool shim_image_write_pixels_exr_f32x4(::rust::Str file_path, ::mmimage::ImageExrEncoder exr_encoder, const ::rust::Box<::mmimage::ShimImageMetaData> &in_meta_data, const ::rust::Box<::mmimage::ShimImagePixelBuffer> &in_pixel_buffer) noexcept;
+MMIMAGE_API_EXPORT bool shim_image_write_pixels_exr_f32x4(::rust::Str file_path, ::mmimage::ImageExrEncoder exr_encoder, ::rust::Box<::mmimage::ShimImageMetaData> const &in_meta_data, ::rust::Box<::mmimage::ShimImagePixelBuffer> const &in_pixel_buffer) noexcept;
 } // namespace mmimage

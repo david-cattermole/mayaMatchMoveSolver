@@ -1,4 +1,4 @@
-# Copyright (C) 2023 David Cattermole.
+# Copyright (C) 2023, 2024 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -19,6 +19,27 @@
 
 cmake_minimum_required(VERSION 3.15)
 
+
+# The "project" command will overwrite the "VERSION" variables. We set
+# the VERSION variables after the "project" command, so it should not
+# affect us.
+#
+# https://cmake.org/cmake/help/latest/policy/CMP0048.html
+cmake_policy(SET CMP0048 NEW)
+
+# # Honor visibility properties for all target types.
+# #
+# # https://cmake.org/cmake/help/latest/policy/CMP0063.html
+# cmake_policy(SET CMP0063 NEW)
+
+if(CMAKE_VERSION VERSION_GREATER_EQUAL "3.24.0")
+  # Changes how timestamps of downloaded files with
+  # ExternalProject_Add() are set.
+  #
+  # https://cmake.org/cmake/help/latest/policy/CMP0135.html
+  cmake_policy(SET CMP0135 NEW)
+endif()
+
 # Do not allow using GNU extensions (such as '-std=g++11'), because
 # it's not compatible with Maya.
 set(CXX_EXTENSIONS OFF)
@@ -33,7 +54,7 @@ set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT
 set(PROJECT_HOMEPAGE_URL "https://github.com/david-cattermole/mayaMatchMoveSolver")
 set(PROJECT_DESCRIPTION "mmSolver libraries.")
 set(PROJECT_AUTHOR "David Cattermole")
-set(PROJECT_COPYRIGHT "2023, David Cattermole.")
+set(PROJECT_COPYRIGHT "2023, 2024, David Cattermole.")
 
 set(MMSOLVERLIBS_LIB_DIR "/path/to/rust/build/directory/" CACHE PATH
   "The path to the directory containing the compiled library.")
@@ -45,10 +66,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}
 set(cpp_lib_name "mmsolverlibs_cpp")
 set(rust_lib_name "mmsolverlibs_rust")
 
-set(CMAKE_CXX_STANDARD 11)
-
-include(MMSolverUtils)
-set_global_maya_plugin_compile_options()
+include(MMCommonUtils)
+mm_common_set_global_compile_options()
 
 include(MMRustUtils)
 set(rust_linktime_file "NOT-FOUND")
@@ -71,9 +90,7 @@ add_subdirectory(mmsolverlibs/src)
 option(MMSOLVERLIBS_BUILD_TESTS "Do you want to build the test files for mmsolverlibs?" OFF)
 if (MMSOLVERLIBS_BUILD_TESTS)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmlens/tests)
-  # # TODO: This does not work on Maya 2024. I suspect this is because
-  # # of the std::string ABI has changed in CentOS 8.x/9.x.
-  # add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmimage/tests)
+  add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmimage/tests)
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/cppbind/mmscenegraph/tests)
 endif()
 

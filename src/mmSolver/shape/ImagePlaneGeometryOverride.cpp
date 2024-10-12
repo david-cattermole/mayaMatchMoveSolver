@@ -44,6 +44,8 @@
 #include <maya/MUserData.h>
 
 // MM Solver
+#include "ImagePlaneShapeNode.h"
+#include "ImagePlaneUtils.h"
 #include "mmSolver/mayahelper/maya_utils.h"
 #include "mmSolver/utilities/number_utils.h"
 
@@ -88,140 +90,25 @@ MHWRender::DrawAPI ImagePlaneGeometryOverride::supportedDrawAPIs() const {
             MHWRender::kOpenGLCoreProfile);
 }
 
-bool getUpstreamNodeFromConnection(const MObject &this_node,
-                                   const MString &attr_name,
-                                   MPlugArray &out_connections) {
-    MStatus status;
-    MFnDependencyNode mfn_depend_node(this_node);
-
-    bool wantNetworkedPlug = true;
-    MPlug plug =
-        mfn_depend_node.findPlug(attr_name, wantNetworkedPlug, &status);
-    if (status != MStatus::kSuccess) {
-        CHECK_MSTATUS(status);
-        return false;
-    }
-    if (plug.isNull()) {
-        MMSOLVER_MAYA_WRN("Could not get plug for \""
-                          << mfn_depend_node.name().asChar() << "."
-                          << attr_name.asChar() << "\" node.");
-        return false;
-    }
-
-    bool as_destination = true;
-    bool as_source = false;
-    // Ask for plugs connecting to this node's ".shaderNode"
-    // attribute.
-    plug.connectedTo(out_connections, as_destination, as_source, &status);
-    if (status != MStatus::kSuccess) {
-        CHECK_MSTATUS(status);
-        return false;
-    }
-    if (out_connections.length() == 0) {
-        MMSOLVER_MAYA_WRN("No connections to the \""
-                          << mfn_depend_node.name().asChar() << "."
-                          << attr_name.asChar() << "\" attribute.");
-        return false;
-    }
-    return true;
-}
-
 void ImagePlaneGeometryOverride::updateDG() {
     const auto verbose = false;
+
     if (!m_geometry_node_path.isValid()) {
         MString attr_name = "geometryNode";
-        MPlugArray connections;
-        bool ok =
-            getUpstreamNodeFromConnection(m_this_node, attr_name, connections);
-
-        if (ok) {
-            for (uint32_t i = 0; i < connections.length(); ++i) {
-                MObject node = connections[i].node();
-
-                if (node.hasFn(MFn::kMesh)) {
-                    MDagPath path;
-                    MDagPath::getAPathTo(node, path);
-                    m_geometry_node_path = path;
-                    m_geometry_node_type = path.apiType();
-                    MMSOLVER_MAYA_VRB(
-                        "Validated geometry node: "
-                        << " path="
-                        << m_geometry_node_path.fullPathName().asChar()
-                        << " type=" << node.apiTypeStr());
-                    break;
-                } else {
-                    MMSOLVER_MAYA_WRN(
-                        "Geometry node is not correct type:"
-                        << " path="
-                        << m_geometry_node_path.fullPathName().asChar()
-                        << " type=" << node.apiTypeStr());
-                }
-            }
-        }
+        find_geometry_node_path(m_this_node, attr_name, m_geometry_node_path,
+                                m_geometry_node_type);
     }
 
     if (m_shader_node.isNull()) {
         MString attr_name = "shaderNode";
-        MPlugArray connections;
-        bool ok =
-            getUpstreamNodeFromConnection(m_this_node, attr_name, connections);
-
-        if (ok) {
-            for (uint32_t i = 0; i < connections.length(); ++i) {
-                MObject node = connections[i].node();
-
-                MFnDependencyNode mfn_depend_node(node);
-                if (node.hasFn(MFn::kSurfaceShader) ||
-                    node.hasFn(MFn::kHwShaderNode) ||
-                    node.hasFn(MFn::kPluginHardwareShader) ||
-                    node.hasFn(MFn::kPluginHwShaderNode)) {
-                    m_shader_node = node;
-                    m_shader_node_type = node.apiType();
-                    MMSOLVER_MAYA_VRB("Validated shader node:"
-                                      << " name="
-                                      << mfn_depend_node.name().asChar()
-                                      << " type=" << node.apiTypeStr());
-                    break;
-                } else {
-                    MMSOLVER_MAYA_WRN("Shader node is not correct type: "
-                                      << " name="
-                                      << mfn_depend_node.name().asChar()
-                                      << " type=" << node.apiTypeStr());
-                }
-            }
-        }
+        find_shader_node_path(m_this_node, attr_name, m_shader_node,
+                              m_shader_node_type);
     }
 
     if (!m_camera_node_path.isValid()) {
         MString attr_name = "cameraNode";
-        MPlugArray connections;
-        bool ok =
-            getUpstreamNodeFromConnection(m_this_node, attr_name, connections);
-
-        if (ok) {
-            for (uint32_t i = 0; i < connections.length(); ++i) {
-                MObject node = connections[i].node();
-
-                if (node.hasFn(MFn::kCamera)) {
-                    MDagPath path;
-                    MDagPath::getAPathTo(node, path);
-                    m_camera_node_path = path;
-                    m_camera_node_type = path.apiType();
-                    MMSOLVER_MAYA_VRB(
-                        "Validated camera node: "
-                        << " path="
-                        << m_camera_node_path.fullPathName().asChar()
-                        << " type=" << node.apiTypeStr());
-                    break;
-                } else {
-                    MMSOLVER_MAYA_WRN(
-                        "Camera node is not correct type:"
-                        << " path="
-                        << m_camera_node_path.fullPathName().asChar()
-                        << " type=" << node.apiTypeStr());
-                }
-            }
-        }
+        find_camera_node_path(m_this_node, attr_name, m_camera_node_path,
+                              m_camera_node_type);
     }
 
     // Query Attributes from the base node.
@@ -272,78 +159,19 @@ void ImagePlaneGeometryOverride::updateDG() {
 
             const auto int_precision = 0;
             const auto double_precision = 3;
-            {
-                double width = 1.0;
-                double height = 1.0;
-                double pixel_aspect = 1.0;
+            calculate_node_image_size_string(
+                objPath, ImagePlaneShapeNode::m_draw_image_size,
+                ImagePlaneShapeNode::m_image_width,
+                ImagePlaneShapeNode::m_image_height,
+                ImagePlaneShapeNode::m_image_pixel_aspect, int_precision,
+                double_precision,
 
-                status =
-                    getNodeAttr(objPath, ImagePlaneShapeNode::m_draw_image_size,
-                                m_draw_image_size);
-                CHECK_MSTATUS(status);
-
-                status = getNodeAttr(objPath,
-                                     ImagePlaneShapeNode::m_image_width, width);
-                CHECK_MSTATUS(status);
-
-                status = getNodeAttr(
-                    objPath, ImagePlaneShapeNode::m_image_height, height);
-                CHECK_MSTATUS(status);
-
-                status = getNodeAttr(objPath,
-                                     ImagePlaneShapeNode::m_image_pixel_aspect,
-                                     pixel_aspect);
-                CHECK_MSTATUS(status);
-
-                double aspect = (width * pixel_aspect) / height;
-
-                MString width_string;
-                MString height_string;
-                MString pixel_aspect_string;
-                MString aspect_string;
-
-                width_string.set(width, int_precision);
-                height_string.set(height, int_precision);
-                pixel_aspect_string.set(pixel_aspect, double_precision);
-                aspect_string.set(aspect, double_precision);
-
-                m_image_size = MString("Image: ") + width_string +
-                               MString(" x ") + height_string +
-                               MString(" | PAR ") + pixel_aspect_string +
-                               MString(" | ") + aspect_string;
-            }
-
-            {
-                double width = 0.0;
-                double height = 0.0;
-
-                status = getNodeAttr(objPath,
-                                     ImagePlaneShapeNode::m_draw_camera_size,
-                                     m_draw_camera_size);
-                CHECK_MSTATUS(status);
-
-                status = getNodeAttr(
-                    objPath, ImagePlaneShapeNode::m_camera_width_inch, width);
-                CHECK_MSTATUS(status);
-
-                status = getNodeAttr(
-                    objPath, ImagePlaneShapeNode::m_camera_height_inch, height);
-                CHECK_MSTATUS(status);
-
-                double aspect = width / height;
-
-                MString width_string;
-                MString height_string;
-                MString aspect_string;
-
-                width_string.set(width * INCH_TO_MM, double_precision);
-                height_string.set(height * INCH_TO_MM, double_precision);
-                aspect_string.set(aspect, double_precision);
-
-                m_camera_size = MString("Camera: ") + width_string +
-                                MString("mm x ") + height_string +
-                                MString("mm | ") + aspect_string;
-            }
+                m_draw_image_size, m_image_size);
+            calculate_node_camera_size_string(
+                objPath, ImagePlaneShapeNode::m_draw_camera_size,
+                ImagePlaneShapeNode::m_camera_width_inch,
+                ImagePlaneShapeNode::m_camera_height_inch, double_precision,
+                m_draw_camera_size, m_camera_size);
         }
     }
 }
@@ -443,10 +271,16 @@ void ImagePlaneGeometryOverride::updateRenderItems(const MDagPath &path,
             // needs to be re-compiled.
             auto linkLostCb = nullptr;
             auto linkLostUserData = nullptr;
-            bool nonTextured = false;
+            const bool nonTextured = false;
+#if MAYA_API_VERSION >= 20220000
+            shadedItem->setShaderFromNode2(m_shader_node, m_geometry_node_path,
+                                           linkLostCb, linkLostUserData,
+                                           nonTextured);
+#else
             shadedItem->setShaderFromNode(m_shader_node, m_geometry_node_path,
                                           linkLostCb, linkLostUserData,
                                           nonTextured);
+#endif
         } else {
             MMSOLVER_MAYA_WRN(
                 "mmImagePlaneShape: "

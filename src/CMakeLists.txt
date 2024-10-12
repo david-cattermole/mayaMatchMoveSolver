@@ -29,15 +29,32 @@ set(SOURCE_FILES
   mmSolver/adjust/adjust_cminpack_base.cpp
   mmSolver/adjust/adjust_cminpack_lmder.cpp
   mmSolver/adjust/adjust_cminpack_lmdif.cpp
+  mmSolver/adjust/adjust_measureErrors.cpp
   mmSolver/adjust/adjust_relationships.cpp
   mmSolver/adjust/adjust_results_helpers.cpp
   mmSolver/adjust/adjust_results_setMarkerData.cpp
   mmSolver/adjust/adjust_results_setSolveData.cpp
   mmSolver/adjust/adjust_setParameters.cpp
-  mmSolver/adjust/adjust_measureErrors.cpp
   mmSolver/adjust/adjust_solveFunc.cpp
   mmSolver/calibrate/calibrate_common.cpp
   mmSolver/calibrate/vanishing_point.cpp
+  mmSolver/cmd/MMCameraPoseFromPointsCmd.cpp
+  mmSolver/cmd/MMCameraRelativePoseCmd.cpp
+  mmSolver/cmd/MMCameraSolveCmd.cpp
+  mmSolver/cmd/MMColorIOCmd.cpp
+  mmSolver/cmd/MMConvertImageCmd.cpp
+  mmSolver/cmd/MMImageCacheCmd.cpp
+  mmSolver/cmd/MMMarkerHomographyCmd.cpp
+  mmSolver/cmd/MMMemoryGPUCmd.cpp
+  mmSolver/cmd/MMMemorySystemCmd.cpp
+  mmSolver/cmd/MMReadImageCmd.cpp
+  mmSolver/cmd/MMReprojectionCmd.cpp
+  mmSolver/cmd/MMSolver2Cmd.cpp
+  mmSolver/cmd/MMSolverAffectsCmd.cpp
+  mmSolver/cmd/MMSolverCmd.cpp
+  mmSolver/cmd/MMSolverSceneGraphCmd.cpp
+  mmSolver/cmd/MMSolverTypeCmd.cpp
+  mmSolver/cmd/MMTestCameraMatrixCmd.cpp
   mmSolver/cmd/arg_flags_attr_details.cpp
   mmSolver/cmd/arg_flags_attr_details.h
   mmSolver/cmd/arg_flags_solve_frames.cpp
@@ -50,20 +67,13 @@ set(SOURCE_FILES
   mmSolver/cmd/arg_flags_solve_object.h
   mmSolver/cmd/arg_flags_solve_scene_graph.cpp
   mmSolver/cmd/arg_flags_solve_scene_graph.h
-  mmSolver/cmd/MMCameraPoseFromPointsCmd.cpp
-  mmSolver/cmd/MMCameraRelativePoseCmd.cpp
-  mmSolver/cmd/MMCameraSolveCmd.cpp
-  mmSolver/cmd/MMConvertImageCmd.cpp
-  mmSolver/cmd/MMMarkerHomographyCmd.cpp
-  mmSolver/cmd/MMReadImageCmd.cpp
-  mmSolver/cmd/MMReprojectionCmd.cpp
-  mmSolver/cmd/MMSolverAffectsCmd.cpp
-  mmSolver/cmd/MMSolverCmd.cpp
-  mmSolver/cmd/MMSolver2Cmd.cpp
-  mmSolver/cmd/MMSolverSceneGraphCmd.cpp
-  mmSolver/cmd/MMSolverTypeCmd.cpp
-  mmSolver/cmd/MMTestCameraMatrixCmd.cpp
   mmSolver/core/reprojection.cpp
+  mmSolver/image/ImageCache.cpp
+  mmSolver/image/ImagePixelData.cpp
+  mmSolver/image/PixelDataType.cpp
+  mmSolver/image/TextureData.cpp
+  mmSolver/image/image_convert.cpp
+  mmSolver/image/image_io.cpp
   mmSolver/mayahelper/maya_attr.cpp
   mmSolver/mayahelper/maya_bundle.cpp
   mmSolver/mayahelper/maya_camera.cpp
@@ -74,6 +84,7 @@ set(SOURCE_FILES
   mmSolver/mayahelper/maya_utils.cpp
   mmSolver/node/MMCameraCalibrateNode.cpp
   mmSolver/node/MMImagePlaneTransformNode.cpp
+  mmSolver/node/MMImageSequenceFrameLogicNode.cpp
   mmSolver/node/MMLensData.cpp
   mmSolver/node/MMLensDeformerNode.cpp
   mmSolver/node/MMLensEvaluateNode.cpp
@@ -88,34 +99,41 @@ set(SOURCE_FILES
   mmSolver/node/MMMarkerTransformNode.cpp
   mmSolver/node/MMReprojectionNode.cpp
   mmSolver/node/node_line_utils.cpp
-  mmSolver/sfm/camera_relative_pose.cpp
+  mmSolver/pluginMain.cpp
   mmSolver/sfm/camera_from_known_points.cpp
+  mmSolver/sfm/camera_relative_pose.cpp
   mmSolver/sfm/homography.cpp
   mmSolver/sfm/sfm_utils.cpp
-  mmSolver/shape/ShapeDrawUtils.cpp
-  mmSolver/shape/MarkerShapeNode.cpp
-  mmSolver/shape/MarkerDrawOverride.cpp
-  mmSolver/shape/BundleShapeNode.cpp
   mmSolver/shape/BundleDrawOverride.cpp
-  mmSolver/shape/ImagePlaneShapeNode.cpp
+  mmSolver/shape/BundleShapeNode.cpp
+  mmSolver/shape/ImagePlaneGeometry2Override.cpp
   mmSolver/shape/ImagePlaneGeometryOverride.cpp
-  mmSolver/shape/LineShapeNode.cpp
+  mmSolver/shape/ImagePlaneShape2Node.cpp
+  mmSolver/shape/ImagePlaneShapeNode.cpp
+  mmSolver/shape/ImagePlaneUtils.cpp
   mmSolver/shape/LineDrawOverride.cpp
-  mmSolver/shape/SkyDomeShapeNode.cpp
+  mmSolver/shape/LineShapeNode.cpp
+  mmSolver/shape/MarkerDrawOverride.cpp
+  mmSolver/shape/MarkerShapeNode.cpp
+  mmSolver/shape/ShapeDrawUtils.cpp
   mmSolver/shape/SkyDomeDrawOverride.cpp
+  mmSolver/shape/SkyDomeShapeNode.cpp
   mmSolver/utilities/debug_utils.cpp
+  mmSolver/utilities/memory_gpu_utils.cpp
+  mmSolver/utilities/memory_system_utils.cpp
+  mmSolver/utilities/memory_utils.cpp
   mmSolver/utilities/number_utils.cpp
+  mmSolver/utilities/path_utils.cpp
   mmSolver/utilities/string_utils.cpp
-  mmSolver/pluginMain.cpp
 )
 
 if (MMSOLVER_BUILD_RENDERER)
   set(SOURCE_FILES
     ${SOURCE_FILES}
-    mmSolver/render/MMRendererBasicCmd.cpp
+    mmSolver/render/MMRendererStandardCmd.cpp
     mmSolver/render/MMRendererSilhouetteCmd.cpp
-    mmSolver/render/RenderOverrideBasic.cpp
-    mmSolver/render/RenderGlobalsBasicNode.cpp
+    mmSolver/render/RenderOverrideStandard.cpp
+    mmSolver/render/RenderGlobalsStandardNode.cpp
     mmSolver/render/RenderGlobalsSilhouetteNode.cpp
     mmSolver/render/RenderOverrideSilhouette.cpp
     mmSolver/render/ops/ClearOperation.cpp
@@ -154,8 +172,9 @@ endif ()
 
 # Set global flags and options that need to apply to the Maya
 # plug-in. See 'MMSolverUtils' CMake module for more information.
-set_global_treat_warnings_as_errors()
-set_global_maya_plugin_compile_options()
+include(MMCommonUtils)
+mm_common_set_global_treat_warnings_as_errors()
+mm_common_set_global_compile_options()
 
 # MM Solver standalone libraries.
 find_package(mmsolverlibs_cpp REQUIRED)
@@ -200,18 +219,62 @@ if(MAYA_FOUND)
     )
 endif()
 
+# MM Color IO dependencies
+include(MMColorIOUtils)
+mmcolorio_find_packages()
+mmcolorio_target_link_packages(mmSolver)
 
 # Link all libraries.
 target_link_libraries(mmSolver
-  PRIVATE
-  cminpack::cminpack
-  glog::glog
-  Eigen3::Eigen
-  ceres
-  openMVG
+  PRIVATE cminpack::cminpack
+  PRIVATE glog::glog
+  PRIVATE Eigen3::Eigen
+  PRIVATE ceres
+  PRIVATE openMVG
 )
 
 target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_CMINPACK)
 target_compile_definitions(mmSolver PRIVATE MMSOLVER_USE_OPENMVG)
 
 install_target_plugin_to_module(mmSolver "${MODULE_FULL_NAME}")
+
+
+# TODO: Extract this logic into a reusable function/macro in a CMake
+# module.
+if (WIN32)
+  get_target_property(OpenColorIO_IMPLIB_RELEASE
+    OpenColorIO::OpenColorIO
+    IMPORTED_IMPLIB_RELEASE)
+  message(STATUS
+    "OpenColorIO_IMPLIB_RELEASE: ${OpenColorIO_IMPLIB_RELEASE}")
+
+  get_target_property(OpenColorIO_LOCATION_RELEASE
+    OpenColorIO::OpenColorIO
+    IMPORTED_LOCATION_RELEASE)
+  message(STATUS
+    "OpenColorIO_LOCATION_RELEASE: ${OpenColorIO_LOCATION_RELEASE}")
+
+  install_shared_library(
+    ${OpenColorIO_IMPLIB_RELEASE}
+    ${OpenColorIO_LOCATION_RELEASE}
+    "${MODULE_FULL_NAME}/lib")
+elseif (UNIX)
+
+  get_target_property(OpenColorIO_LOCATION_RELEASE
+    OpenColorIO::OpenColorIO
+    IMPORTED_LOCATION_RELEASE)
+  message(STATUS
+    "OpenColorIO_LOCATION_RELEASE: ${OpenColorIO_LOCATION_RELEASE}")
+
+    get_target_property(OpenColorIO_SONAME_RELEASE
+      OpenColorIO::OpenColorIO
+      IMPORTED_SONAME_RELEASE)
+    message(STATUS
+      "OpenColorIO_SONAME_RELEASE: ${OpenColorIO_SONAME_RELEASE}")
+
+  install_shared_library_with_name(
+    ${OpenColorIO_LOCATION_RELEASE}
+    ${OpenColorIO_LOCATION_RELEASE}
+    ${OpenColorIO_SONAME_RELEASE}
+    "${MODULE_FULL_NAME}/lib")
+endif ()

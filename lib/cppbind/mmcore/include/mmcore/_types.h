@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020, 2021, 2023 David Cattermole.
+ * Copyright (C) 2020, 2021, 2023, 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -23,4 +23,8 @@
 
 #include <iostream>
 
-namespace mmcore {}  // namespace mmcore
+namespace mmcore {
+
+using FrameValue = int32_t;
+
+}  // namespace mmcore

@@ -26,18 +26,35 @@ SETLOCAL
 :: Note: Do not enclose the MAYA_VERSION in quotes, it will
 ::       lead to tears.
 SET MAYA_VERSION=2018
-SET MAYA_LOCATION="C:\Program Files\Autodesk\Maya2018"
+SET MAYA_LOCATION="%PROGRAMFILES%\Autodesk\Maya2018"
 
 :: Executable names/paths used for build process.
 SET PYTHON_EXE=python
 SET CMAKE_EXE=cmake
 SET RUST_CARGO_EXE=cargo
 
+:: OpenColorIO specific options.
+::
+:: https://github.com/AcademySoftwareFoundation/OpenColorIO/releases/tag/v2.2.1
+:: https://github.com/AcademySoftwareFoundation/OpenColorIO/archive/refs/tags/v2.2.1.tar.gz
+SET OPENCOLORIO_TARBALL_NAME=OpenColorIO-2.2.1.tar.gz
+SET OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME=OpenColorIO-2.2.1
+SET EXPAT_RELATIVE_LIB_PATH=lib\cmake\expat-2.2.8\
+:: yaml-cpp 0.6.3
+SET YAML_RELATIVE_CMAKE_DIR=CMake\
+
+:: Which version of the VFX platform are we "using"? (Maya doesn't
+:: currently conform to the VFX Platform.)
+SET VFX_PLATFORM=2017
+
 :: C++ Standard to use.
 SET CXX_STANDARD=11
 
 :: Setup Compiler environment. Change for your install path as needed.
 CALL "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+
+CALL scripts\internal\build_opencolorio_windows64.bat
+if errorlevel 1 goto failed_to_build_opencolorio
 
 :: This script assumes 'RUST_CARGO_EXE' has been set to the Rust
 :: 'cargo' executable.
@@ -46,7 +63,13 @@ if errorlevel 1 goto failed_to_build_mmsolverlibs
 
 CALL scripts\internal\build_mmSolver_windows64.bat
 if errorlevel 1 goto failed_to_build_mmsolver
+
+:: Successful return.
 exit /b 0
+
+:failed_to_build_opencolorio
+echo Failed to build OpenColorIO dependency.
+exit /b 1
 
 :failed_to_build_mmsolverlibs
 echo Failed to build MM Solver Library entry point.

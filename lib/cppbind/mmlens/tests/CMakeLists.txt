@@ -21,6 +21,7 @@
 set(target_test_exe_name "mmlens_tests")
 
 set(test_source_files
+  ${CMAKE_CURRENT_SOURCE_DIR}/common.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_batch_3de_anamorphic_std_deg4.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_batch_3de_anamorphic_std_deg4_rescaled.cpp
@@ -36,6 +37,9 @@ set(test_source_files
   ${CMAKE_CURRENT_SOURCE_DIR}/test_once_3de_classic.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/test_once_3de_radial_std_deg4.cpp
 )
+
+include(MMCommonUtils)
+mm_common_set_global_compile_options()
 
 # Add test executable using the C++ bindings.
 add_executable(${target_test_exe_name} ${test_source_files})
@@ -53,5 +57,10 @@ target_include_directories(${target_test_exe_name}
 target_include_directories(${target_test_exe_name}
   PUBLIC ${RUST_INCLUDE_DIR}
 )
+
+# MM Color IO dependencies
+include(MMColorIOUtils)
+mmcolorio_find_packages()
+mmcolorio_target_link_packages(${target_test_exe_name})
 
 install(TARGETS ${target_test_exe_name})

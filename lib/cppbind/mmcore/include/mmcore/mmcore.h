@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 David Cattermole.
+ * Copyright (C) 2023, 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -23,6 +23,7 @@
 #define MM_CORE_MM_CORE_H
 
 #include "_cxx.h"
+#include "_cxxbridge.h"
 #include "_types.h"
 #include "lib.h"
 #include "mmcamera.h"

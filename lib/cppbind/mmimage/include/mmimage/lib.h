@@ -42,6 +42,7 @@ bool image_read_metadata_exr(const rust::Str& file_path,
                              ImageMetaData& out_meta_data);
 
 bool image_read_pixels_exr_f32x4(const rust::Str& file_path,
+                                 const bool vertical_flip,
                                  ImageMetaData& out_meta_data,
                                  ImagePixelBuffer& out_pixel_data);
 

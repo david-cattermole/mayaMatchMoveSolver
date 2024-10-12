@@ -97,6 +97,8 @@ global proc AEmmImagePlaneShape_browser(
     string $cmd = "";
     $cmd = $cmd + "import mmSolver.tools.createimageplane.tool as tool;\n";
     $cmd = $cmd + "import mmSolver.tools.createimageplane.lib as lib;\n";
+    $cmd = $cmd + "import mmSolver.tools.createimageplane._lib.constant as const;\n";
+    $cmd = $cmd + "version = const.MM_IMAGE_PLANE_VERSION_ONE;\n";
     $cmd = $cmd + "image_seq = tool.prompt_user_for_image_sequence();\n";
     $cmd = $cmd + "if image_seq:\n";
     $cmd = $cmd + "    mm_ip_shp = \"" + $image_plane_shp + "\";\n";
@@ -106,7 +108,8 @@ global proc AEmmImagePlaneShape_browser(
     $cmd = $cmd + "        lib.set_image_sequence(\n";
     $cmd = $cmd + "            mm_ip_shp,\n";
     $cmd = $cmd + "            image_seq,\n";
-    $cmd = $cmd + "            attr_name=attr_name\n";
+    $cmd = $cmd + "            attr_name=attr_name,\n";
+    $cmd = $cmd + "            version=version\n";
     $cmd = $cmd + "        )\n";
     $cmd = $cmd + "    else:\n";
     $cmd = $cmd + "        maya.cmds.setAttr(\n";
@@ -135,6 +138,8 @@ global proc AEmmImagePlaneShape_sequenceSlotChanged(
     $cmd = $cmd + "import os.path;\n";
     $cmd = $cmd + "import mmSolver.tools.createimageplane.tool as tool;\n";
     $cmd = $cmd + "import mmSolver.tools.createimageplane.lib as lib;\n";
+    $cmd = $cmd + "import mmSolver.tools.createimageplane._lib.constant as const;\n";
+    $cmd = $cmd + "version = const.MM_IMAGE_PLANE_VERSION_ONE;\n";
     $cmd = $cmd + "mm_ip_shp = \"" + $image_plane_shp + "\";\n";
     $cmd = $cmd + "attr_name = \"" + $attr_name + "\";\n";
     $cmd = $cmd + "current_slot_attr = \"" + $slot_attr_name + "\";\n";
@@ -145,7 +150,8 @@ global proc AEmmImagePlaneShape_sequenceSlotChanged(
     $cmd = $cmd + "lib.set_image_sequence(\n";
     $cmd = $cmd + "    mm_ip_shp,\n";
     $cmd = $cmd + "    image_seq,\n";
-    $cmd = $cmd + "    attr_name=current_slot_attr\n";
+    $cmd = $cmd + "    attr_name=current_slot_attr,\n";
+    $cmd = $cmd + "    version=version\n";
     $cmd = $cmd + ")\n";
 
     python($cmd);

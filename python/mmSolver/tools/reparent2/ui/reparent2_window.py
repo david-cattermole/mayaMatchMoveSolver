@@ -140,9 +140,9 @@ def main(show=True, auto_raise=True, delete=False):
                    developing the UI in Maya script editor.
     :type delete: bool
 
-    :returns: A new solver window, or None if the window cannot be
+    :returns: A new reparent2 window, or None if the window cannot be
               opened.
-    :rtype: SolverWindow or None.
+    :rtype: Reparent2Window or None.
     """
     win = Reparent2Window.open_window(show=show, auto_raise=auto_raise, delete=delete)
     return win

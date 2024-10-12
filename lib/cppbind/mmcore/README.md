@@ -14,14 +14,15 @@ used in Maya.
 
 # Structure
 
-Unlike the other similar sub-libraries 'mmcore' is only defined in
-'cppbind/mmcore', the Rust component is not yet needed and has not
-been added.
+mmcore is split into 2 different directories; 'rust/mmcore' and 'cppbind/mmcore'.
+
+'rust/mmcore' is the core library written in Rust without the
+requirements of C++.
 
 'cppbind/mmcore' is a Rust crate to define C++ bindings with the help
 of the CXX crate.
 
 # Build Process
 
-'cppbind/mmcore' are built as part of
+'cppbind/mmcore' and 'rust/mmcore' are built as part of
 'mmsolverlibs'.

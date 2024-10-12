@@ -497,7 +497,7 @@ def initializePlugin(obj):
             MMMarkerBundleShape.initialize,
             om.MPxNode.kLocatorNode,
             MMMarkerBundleShape.drawDbClassification)
-    except:
+    except RuntimeError:
         sys.stderr.write("Failed to register node\n")
         raise
     try:
@@ -505,7 +505,7 @@ def initializePlugin(obj):
             MMMarkerBundleShape.drawDbClassification,
             MMMarkerBundleShape.drawRegistrantId,
             MarkerBundleShapeDrawOverride.creator)
-    except:
+    except RuntimeError:
         sys.stderr.write("Failed to register override\n")
         raise
 
@@ -514,15 +514,13 @@ def uninitializePlugin(obj):
     plugin = om.MFnPlugin(obj)
     try:
         plugin.deregisterNode(MMMarkerBundleShape.id)
-    except:
+    except RuntimeError:
         sys.stderr.write("Failed to deregister node\n")
         pass
     try:
         omr.MDrawRegistry.deregisterDrawOverrideCreator(
             MMMarkerBundleShape.drawDbClassification,
             MMMarkerBundleShape.drawRegistrantId)
-    except:
+    except RuntimeError:
         sys.stderr.write("Failed to deregister override\n")
         pass
-
-

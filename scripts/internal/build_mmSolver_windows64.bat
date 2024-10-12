@@ -1,7 +1,7 @@
 @ECHO OFF
 SETLOCAL
 ::
-:: Copyright (C) 2019 David Cattermole.
+:: Copyright (C) 2019, 2024 David Cattermole.
 ::
 :: This file is part of mmSolver.
 ::
@@ -76,6 +76,10 @@ SET MMSOLVER_BUILD_ICONS=1
 SET MMSOLVER_BUILD_CONFIG=1
 SET MMSOLVER_BUILD_TESTS=0
 
+:: Allows you to see the build command lines, to help debugging build
+:: problems. Set to ON to enable, and OFF to disable.
+SET MMSOLVER_BUILD_VERBOSE=OFF
+
 SET PYTHON_VIRTUAL_ENV_DIR_NAME=python_venv_windows64_maya%MAYA_VERSION%
 
 :: Note: There is no need to deactivate the virtual environment because
@@ -87,6 +91,33 @@ CALL %PROJECT_ROOT%\scripts\internal\python_venv_activate.bat
 SET MMSOLVERLIBS_INSTALL_DIR="%BUILD_DIR_BASE%\build_mmsolverlibs\install\maya%MAYA_VERSION%_windows64"
 SET MMSOLVERLIBS_CMAKE_CONFIG_DIR="%MMSOLVERLIBS_INSTALL_DIR%\lib\cmake\mmsolverlibs_cpp"
 SET MMSOLVERLIBS_RUST_DIR="%BUILD_DIR_BASE%\build_mmsolverlibs\rust_windows64_maya%MAYA_VERSION%\%BUILD_TYPE_DIR%"
+
+:: Paths for dependencies.
+SET EXTERNAL_BUILD_DIR=%BUILD_DIR_BASE%\build_opencolorio\cmake_win64_maya%MAYA_VERSION%_%BUILD_TYPE%\ext\dist
+SET OPENCOLORIO_INSTALL_DIR=%BUILD_DIR_BASE%\build_opencolorio\install\maya%MAYA_VERSION%_windows64\
+SET OPENCOLORIO_CMAKE_CONFIG_DIR=%OPENCOLORIO_INSTALL_DIR%\lib\cmake\OpenColorIO\
+SET OPENCOLORIO_CMAKE_FIND_MODULES_DIR=%PROJECT_ROOT%\external\working\maya%MAYA_VERSION%_windows64\%OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME%\share\cmake\modules
+:: Convert back-slashes to forward-slashes.
+:: https://stackoverflow.com/questions/23542453/change-backslash-to-forward-slash-in-windows-batch-file
+SET "OPENCOLORIO_CMAKE_FIND_MODULES_DIR=%OPENCOLORIO_CMAKE_FIND_MODULES_DIR:\=/%"
+
+SET expat_DIR=%EXTERNAL_BUILD_DIR%\%EXPAT_RELATIVE_CMAKE_DIR%
+SET expat_INCLUDE_DIR=%EXTERNAL_BUILD_DIR%\include\
+SET expat_LIBRARY=%EXTERNAL_BUILD_DIR%\%EXPAT_RELATIVE_LIB_PATH%
+
+SET pystring_INCLUDE_DIR=%EXTERNAL_BUILD_DIR%\include
+SET pystring_LIBRARY=%EXTERNAL_BUILD_DIR%\%PYSTRING_RELATIVE_LIB_PATH%
+
+SET yaml_DIR=%EXTERNAL_BUILD_DIR%\%YAML_RELATIVE_CMAKE_DIR%
+SET yaml_LIBRARY=%EXTERNAL_BUILD_DIR%\%YAML_RELATIVE_LIB_PATH%
+SET yaml_INCLUDE_DIR=%EXTERNAL_BUILD_DIR%\include\
+
+SET Imath_DIR=%EXTERNAL_BUILD_DIR%\lib\cmake\Imath
+
+SET ZLIB_INCLUDE_DIR=%EXTERNAL_BUILD_DIR%\include\
+SET ZLIB_LIBRARY=%EXTERNAL_BUILD_DIR%\%ZLIB_RELATIVE_LIB_PATH%
+
+SET minizip_DIR=%EXTERNAL_BUILD_DIR%\%MINIZIP_RELATIVE_CMAKE_DIR%
 
 :: MinGW is a common install for developers on Windows and
 :: if installed and used it will cause build conflicts and
@@ -124,6 +155,9 @@ CHDIR "%BUILD_DIR%"
     -DCMAKE_CXX_STANDARD=%CXX_STANDARD% ^
     -DCMAKE_C_COMPILER=%CMAKE_C_COMPILER% ^
     -DCMAKE_CXX_COMPILER=%CMAKE_CXX_COMPILER% ^
+    -DCMAKE_MODULE_PATH=%OPENCOLORIO_CMAKE_FIND_MODULES_DIR% ^
+    -DCMAKE_VERBOSE_MAKEFILE=%MMSOLVER_BUILD_VERBOSE% ^
+    -DMMSOLVER_VFX_PLATFORM=%VFX_PLATFORM% ^
     -DMMSOLVER_BUILD_PLUGIN=%MMSOLVER_BUILD_PLUGIN% ^
     -DMMSOLVER_BUILD_TOOLS=%MMSOLVER_BUILD_TOOLS% ^
     -DMMSOLVER_BUILD_PYTHON=%MMSOLVER_BUILD_PYTHON% ^
@@ -141,6 +175,22 @@ CHDIR "%BUILD_DIR%"
     -DMAYA_VERSION=%MAYA_VERSION% ^
     -Dmmsolverlibs_rust_DIR=%MMSOLVERLIBS_RUST_DIR% ^
     -Dmmsolverlibs_cpp_DIR=%MMSOLVERLIBS_CMAKE_CONFIG_DIR% ^
+    -DOpenColorIO_DIR=%OPENCOLORIO_CMAKE_CONFIG_DIR% ^
+    -DOCIO_INSTALL_EXT_PACKAGES=NONE ^
+    -DZLIB_LIBRARY=%ZLIB_LIBRARY% ^
+    -DZLIB_INCLUDE_DIR=%ZLIB_INCLUDE_DIR% ^
+    -DZLIB_STATIC_LIBRARY=ON ^
+    -Dexpat_DIR=%expat_DIR% ^
+    -Dexpat_LIBRARY=%expat_LIBRARY% ^
+    -Dexpat_INCLUDE_DIR=%expat_INCLUDE_DIR% ^
+    -Dexpat_USE_STATIC_LIBS=TRUE ^
+    -DImath_DIR=%Imath_DIR% ^
+    -Dminizip-ng_DIR=%minizip_DIR% ^
+    -Dpystring_LIBRARY=%pystring_LIBRARY% ^
+    -Dpystring_INCLUDE_DIR=%pystring_INCLUDE_DIR% ^
+    -Dyaml-cpp_DIR=%yaml_DIR% ^
+    -Dyaml-cpp_LIBRARY=%yaml_LIBRARY% ^
+    -Dyaml-cpp_INCLUDE_DIR=%yaml_INCLUDE_DIR% ^
     %PROJECT_ROOT%
 if errorlevel 1 goto failed_to_generate
 

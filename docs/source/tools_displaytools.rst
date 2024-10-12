@@ -57,6 +57,138 @@ To run the tool, use this Python command:
     tool.remove()
 
 
+.. _toggle-viewport-node-types-ref:
+
+Toggle Viewport Node Types
+--------------------------
+
+There are a range of `Toggle Viewport *` tools that are used to
+hide/show groups of node types.
+
+Node type groups include:
+
+- Show/Hide geometry in the current viewport.
+
+- Show/Hide Locators and NURBS Curves in the current viewport.
+
+- Show/Hide Image Planes in the current viewport.
+
+Usage:
+
+1) Activate a 3D Viewport.
+
+2) Run tool.
+
+   - The node type visibility will be shown/hidden based on the
+     current visibility.
+
+Each different group can be activated with a slightly different Python
+command.
+
+
+Toggle Viewport Geometry (Mesh, NURBS, etc):
+
+.. code:: python
+
+    import mmSolver.tools.toggleviewportgeom.tool as tool
+    tool.main()
+
+
+Toggle Viewport Controls: (Locators, Curves, etc)
+
+.. code:: python
+
+    import mmSolver.tools.toggleviewportctrls.tool as tool
+    tool.main()
+
+
+Toggle Viewport Image Planes (Maya native and MM solver image planes):
+
+.. code:: python
+
+    import mmSolver.tools.toggleviewportimgplns.tool as tool
+    tool.main()
+
+
+Alternatively, a user can construct their own custom scripts to
+control visibility like so:
+
+.. code:: python
+
+    import mmSolver.utils.viewport as viewport_utils
+    model_panel = viewport_utils.get_active_model_panel()
+    if model_panel:
+        value = viewport_utils.get_locator_visibility(model_panel)
+        new_value = not value
+        viewport_utils.set_locator_visibility(model_panel, new_value)
+
+
+See :ref:`mmSolver.utils.viewport <mmsolver-utils-viewport-ref>`
+Python module documentation for more help.
+
+.. _set-mesh-hold-outs-ref:
+
+Set Mesh Hold-Outs
+------------------
+
+This tool is used to force mesh nodes to be rendered as hold-out in
+the viewport, or not.
+
+This is similar to assigning a `useBackground` shader, to geometry,
+however this tool avoids the need to create a shader, and manage
+assignments.
+
+The tool is split into different individual features which are fairly
+self-explanatory:
+
+- Enable / Disable Hold-Outs on *selected* meshes.
+
+- Enable / Disable Hold-Outs on *all* Meshes in the scene.
+
+Usage:
+
+1) Select meshes (optional)
+
+2) Run tool.
+
+   - Meshes will be have the Hold-Out attribute enabled / disabled.
+
+
+Each different feature can be activated with a slightly different Python
+command.
+
+Enable Hold-outs on Selected Meshes:
+
+.. code:: python
+
+    import mmSolver.tools.setmesholdouts.tool as tool
+    tool.enable_selected_meshes()
+
+
+Disable Hold-outs on Selected Meshes:
+
+.. code:: python
+
+    import mmSolver.tools.setmesholdouts.tool as tool
+    tool.disable_selected_meshes()
+
+
+Enable Hold-outs on All Meshes:
+
+.. code:: python
+
+    import mmSolver.tools.setmesholdouts.tool as tool
+    tool.enable_all_meshes()
+
+
+Disable Hold-outs on All Meshes:
+
+.. code:: python
+
+    import mmSolver.tools.setmesholdouts.tool as tool
+    tool.disable_all_meshes()
+
+
 .. _create-sky-dome-tool-ref:
 
 Create Horizon / Axis Dome / Sky Dome

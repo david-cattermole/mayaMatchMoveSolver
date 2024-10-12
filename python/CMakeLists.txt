@@ -194,6 +194,16 @@ if (MMSOLVER_BUILD_QT_UI)
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/surfacecluster/ui/ui_surfacecluster_layout.py
             )
 
+    compile_qt_ui_to_python_file("meshfrompoints"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/meshfrompoints/ui/meshfrompoints_layout.ui
+            ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/meshfrompoints/ui/ui_meshfrompoints_layout.py
+            )
+
+    compile_qt_ui_to_python_file("imagecacheprefs"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/imagecacheprefs/ui/imagecacheprefs_layout.ui
+            ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/imagecacheprefs/ui/ui_imagecacheprefs_layout.py
+            )
+
     # Install generated Python UI files
     install(DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/"
             DESTINATION "${MODULE_FULL_NAME}/python"

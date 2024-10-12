@@ -56,6 +56,7 @@ public:
     static MObject a_enable;
     static MObject a_depthOffset;
     static MObject a_width;
+    static MObject a_overrideColor;
     static MObject a_color;
     static MObject a_alpha;
     static MObject a_cullFace;

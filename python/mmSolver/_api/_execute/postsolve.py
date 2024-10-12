@@ -32,37 +32,39 @@ import mmSolver._api.collectionutils as collectionutils
 LOG = mmSolver.logger.get_logger()
 
 
-def postSolve_refreshViewport(options, frame):
+def postSolve_refreshViewport(refresh, force_update, frame):
     """
     Refresh the viewport after a solve has finished.
 
-    :param options: The execution options for the current solve.
-    :type options: ExecuteOptions
+    :type refresh: bool or None
+    :type do_isolate: bool or None
 
     :param frame:
         The list of frame numbers, first item in list is used to
         refresh the viewport.
     :type frame: [int or float, ..]
     """
-    # Refresh the Viewport.
-    if options.refresh is not True:
+    assert refresh is None or isinstance(refresh, bool)
+    assert force_update is None or isinstance(force_update, bool)
+
+    if refresh is not True:
         return
 
     maya.cmds.currentTime(
         frame[0],
         edit=True,
-        update=options.force_update,
+        update=force_update,
     )
     maya.cmds.refresh()
     return
 
 
-def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
+def postSolve_setViewportState(refresh, do_isolate, panel_objs, panel_node_type_vis):
     """
-    Change the viewport state based on the ExecuteOptions given
+    Change the viewport state based on the values given
 
-    :param options: The execution options for the current solve.
-    :type options: ExecuteOptions
+    :type refresh: bool or None
+    :type do_isolate: bool or None
 
     :param panel_objs:
         The panels and object to isolate, in a list of tuples.
@@ -72,7 +74,10 @@ def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
         The panels and node-type visibility options in a list of tuples.
     :type panel_node_type_vis: [(str, {str: int or bool or None}), ..]
     """
-    if options.refresh is not True:
+    assert refresh is None or isinstance(refresh, bool)
+    assert do_isolate is None or isinstance(do_isolate, bool)
+
+    if refresh is not True:
         return
 
     # Isolate Objects restore.
@@ -80,10 +85,10 @@ def postSolve_setViewportState(options, panel_objs, panel_node_type_vis):
         if objs is None:
             # No original objects, disable 'isolate
             # selected' after resetting the objects.
-            if options.do_isolate is True:
+            if do_isolate is True:
                 viewport_utils.set_isolated_nodes(panel, [], False)
 
-        elif options.do_isolate is True:
+        elif do_isolate is True:
             viewport_utils.set_isolated_nodes(panel, list(objs), True)
 
     # Show menu restore.

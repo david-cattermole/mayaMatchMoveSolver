@@ -1,0 +1,655 @@
+//
+// Copyright (C) 2022, 2024 David Cattermole.
+//
+// This file is part of mmSolver.
+//
+// mmSolver is free software: you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// mmSolver is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public License
+// along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
+// ---------------------------------------------------------------------
+//
+// Image plane shape node Template file.
+//
+
+
+source "AEmmNodeTemplateCommon";
+
+global proc string AEmmImagePlaneShape2_slotAttrNameFromInteger(int $value)
+{
+    string $attr_name = "unknown";
+    if ($value == 0) {
+        $attr_name = "imageSequenceMain";
+    } else if ($value == 1) {
+        $attr_name = "imageSequenceAlternate1";
+    } else if ($value == 2) {
+        $attr_name = "imageSequenceAlternate2";
+    } else if ($value == 3) {
+        $attr_name = "imageSequenceAlternate3";
+    }
+    return $attr_name;
+}
+
+
+global proc string AEmmImagePlaneShape2_slotAttrNameFromOptionMenu(string $option_name)
+{
+    string $attr_name = "unknown";
+    if ($option_name == "Main") {
+        $attr_name = "imageSequenceMain";
+    } else if ($option_name == "Alternate 1") {
+        $attr_name = "imageSequenceAlternate1";
+    } else if ($option_name == "Alternate 2") {
+        $attr_name = "imageSequenceAlternate2";
+    } else if ($option_name == "Alternate 3") {
+        $attr_name = "imageSequenceAlternate3";
+    }
+    return $attr_name;
+}
+
+
+global proc int AEmmImagePlaneShape2_slotAttrValueFromOptionMenu(string $option_name)
+{
+    int $attr_value = -1;
+    if ($option_name == "Main") {
+        $attr_value = 0;
+    } else if ($option_name == "Alternate 1") {
+        $attr_value = 1;
+    } else if ($option_name == "Alternate 2") {
+        $attr_value = 2;
+    } else if ($option_name == "Alternate 3") {
+        $attr_value = 3;
+    }
+    return $attr_value;
+}
+
+
+global proc int AEmmImagePlaneShape2_getSlotValue(string $image_plane_shp)
+{
+    int $slot = `getAttr ($image_plane_shp + ".imageSequenceSlot")`;
+    return $slot;
+}
+
+
+global proc AEmmImagePlaneShape2_setSlotValue(
+    string $image_plane_shp,
+    int $value)
+{
+    setAttr ($image_plane_shp + ".imageSequenceSlot") $value;
+}
+
+
+global proc AEmmImagePlaneShape2_browser(
+    string $attr_name,
+    string $image_plane_shp)
+{
+    int $slot = AEmmImagePlaneShape2_getSlotValue($image_plane_shp);
+    string $slot_attr_name =
+        AEmmImagePlaneShape2_slotAttrNameFromInteger($slot);
+
+    string $cmd = "";
+    $cmd = $cmd + "import mmSolver.tools.createimageplane.tool as tool;\n";
+    $cmd = $cmd + "import mmSolver.tools.createimageplane.lib as lib;\n";
+    $cmd = $cmd + "\n";
+    $cmd = $cmd + "image_seq = tool.prompt_user_for_image_sequence();\n";
+    $cmd = $cmd + "\n";
+    $cmd = $cmd + "mm_ip_shp = \"" + $image_plane_shp + "\";\n";
+    $cmd = $cmd + "attr_name = \"" + $attr_name + "\";\n";
+    $cmd = $cmd + "current_slot_attr = \"" + $slot_attr_name + "\";\n";
+    $cmd = $cmd + "\n";
+    $cmd = $cmd + "if image_seq:\n";
+    $cmd = $cmd + "    if attr_name == current_slot_attr:\n";
+    $cmd = $cmd + "        lib.set_image_sequence(\n";
+    $cmd = $cmd + "            mm_ip_shp,\n";
+    $cmd = $cmd + "            image_seq,\n";
+    $cmd = $cmd + "            attr_name=attr_name\n";
+    $cmd = $cmd + "        )\n";
+    $cmd = $cmd + "    else:\n";
+    $cmd = $cmd + "        maya.cmds.setAttr(\n";
+    $cmd = $cmd + "            mm_ip_shp + '.' + attr_name,\n";
+    $cmd = $cmd + "            image_seq,\n";
+    $cmd = $cmd + "            type='string'\n";
+    $cmd = $cmd + "        )\n";
+
+    python($cmd);
+}
+
+
+global proc AEmmImagePlaneShape2_sequenceSlotChanged(
+    string $attr_name,
+    string $image_plane_shp,
+    string $slot_option_value)
+{
+    string $slot_attr_name =
+        AEmmImagePlaneShape2_slotAttrNameFromOptionMenu($slot_option_value);
+    int $slot_attr_value =
+        AEmmImagePlaneShape2_slotAttrValueFromOptionMenu($slot_option_value);
+
+    AEmmImagePlaneShape2_setSlotValue($image_plane_shp, $slot_attr_value);
+
+    string $cmd = "";
+    $cmd = $cmd + "import mmSolver.utils.constant as utils_const;\n";
+    $cmd = $cmd + "import mmSolver.utils.imageseq as utils_imageseq;\n";
+    $cmd = $cmd + "import mmSolver.tools.createimageplane.tool as tool;\n";
+    $cmd = $cmd + "import mmSolver.tools.createimageplane.lib as lib;\n";
+    $cmd = $cmd + "\n";
+    $cmd = $cmd + "mm_ip_shp = \"" + $image_plane_shp + "\";\n";
+    $cmd = $cmd + "attr_name = \"" + $attr_name + "\";\n";
+    $cmd = $cmd + "current_slot_attr = \"" + $slot_attr_name + "\";\n";
+    $cmd = $cmd + "\n";
+    $cmd = $cmd + "image_seq = maya.cmds.getAttr(\n";
+    $cmd = $cmd + "    mm_ip_shp + '.' + current_slot_attr) or ''\n";
+    $cmd = $cmd + "if len(image_seq) == 0:\n";
+    $cmd = $cmd + "    image_seq = lib.get_default_image_path();\n";
+    $cmd = $cmd + "\n";
+    $cmd = $cmd + "format_style = utils_const.IMAGE_SEQ_FORMAT_STYLE_HASH_PADDED;\n";
+    $cmd = $cmd + "real_file_path = utils_imageseq.resolve_file_pattern_to_file_path(image_seq, format_style);\n";
+    $cmd = $cmd + "lib.set_image_sequence(\n";
+    $cmd = $cmd + "    mm_ip_shp,\n";
+    $cmd = $cmd + "    real_file_path,\n";
+    $cmd = $cmd + "    attr_name=current_slot_attr\n";
+    $cmd = $cmd + ")\n";
+
+    python($cmd);
+}
+
+global proc AEmmImagePlaneShape2_sequenceSlotNew(string $file_attr)
+{
+    string $nice_name = `attributeName -nice $file_attr`;
+
+    setUITemplate -pst attributeEditorTemplate;
+    rowLayout -nc 3 imageSeqSlotLayout;
+
+    text -label $nice_name;
+    optionMenu -alwaysCallChangeCommand imageSeqSlotField;
+
+    menuItem -label "Main";
+    menuItem -label "Alternate 1";
+    menuItem -label "Alternate 2";
+    menuItem -label "Alternate 3";
+
+    setParent ..;
+    setUITemplate -ppt;
+
+    AEmmImagePlaneShape2_sequenceSlotReplace $file_attr;
+}
+
+
+global proc AEmmImagePlaneShape2_sequenceSlotReplace(string $file_attr)
+{
+    string $image_plane_shp[];
+    tokenize($file_attr, ".", $image_plane_shp);
+    if(size($image_plane_shp) < 1) {
+        return;
+    }
+
+    string $tokens[];
+    tokenize($file_attr, ".", $tokens);
+    if(size($tokens) < 1) {
+        return;
+    }
+
+    // In MEL the '#1' text will be replaced by the chosen value from
+    // the 'changeCommand'.
+    string $cmd =
+        "AEmmImagePlaneShape2_sequenceSlotChanged \"" + $tokens[1] + "\" " + $tokens[0] + " \"#1\";";
+
+    // Ensure the slot is maintained when the Attribute Editor is
+    // opened.
+    int $slot = AEmmImagePlaneShape2_getSlotValue($image_plane_shp[0]);
+    // The slot value stored is 0-indexed. With '-1' meaning the value
+    // is undefined and '0' equal to the 'Main' slot.
+    optionMenu -edit -select ($slot + 1) imageSeqSlotField;
+
+    optionMenu -edit -changeCommand $cmd imageSeqSlotField;
+}
+
+
+global proc AEmmImagePlaneShape2_imageSequenceNew(string $file_attr)
+{
+    string $nice_name = `attributeName -nice $file_attr`;
+
+    setUITemplate -pst attributeEditorTemplate;
+
+    rowLayout -nc 3 textureNameLayout;
+    text -label $nice_name;
+    textField textureNameField;
+    symbolButton -image "navButtonBrowse.png" browser;
+    setParent ..;
+
+    setUITemplate -ppt;
+
+    AEmmImagePlaneShape2_imageSequenceReplace $file_attr;
+}
+
+
+global proc AEmmImagePlaneShape2_imageSequenceReplace(string $file_attr)
+{
+    string $image_plane_shp[];
+    tokenize($file_attr, ".", $image_plane_shp);
+    if(size($image_plane_shp) < 1) {
+        return;
+    }
+
+    string $attr_names[];
+    tokenize ($file_attr, ".", $attr_names);
+
+    string $cmd = "AEmmImagePlaneShape2_browser \"" + $attr_names[1] + "\" " + $image_plane_shp[0];
+
+    connectControl -fileName textureNameField $file_attr;
+    button -edit -command $cmd browser;
+}
+
+
+global proc AEmmImagePlaneShape2_colorSpaceNew(string $node_attr)
+{
+    setUITemplate -pst attributeEditorTemplate;
+
+    string $cmd = "import mmSolver.tools.createimageplane._lib.mmimageplane_v2 as lib;";
+    $cmd += "node_attr = \"" + $node_attr + "\";";
+    $cmd += "lib.color_space_attribute_editor_new(node_attr);";
+    python($cmd);
+
+    setUITemplate -ppt;
+
+    AEmmImagePlaneShape2_colorSpaceReplace $node_attr;
+}
+
+
+global proc AEmmImagePlaneShape2_colorSpaceReplace(string $node_attr)
+{
+    // Nothing needed here.
+}
+
+
+global proc AEmmImagePlaneShape2_imageCache_updateValues(
+    string $image_plane_shp)
+{
+    string $image_seq_size_cmd = "";
+    $image_seq_size_cmd = "import mmSolver.tools.createimageplane.lib as lib;";
+    $image_seq_size_cmd += "image_plane_shp = \"" + $image_plane_shp + "\";";
+    $image_seq_size_cmd += "lib.format_image_sequence_size(image_plane_shp);";
+
+    string $cache_gpu_used_cmd = "";
+    $cache_gpu_used_cmd = "import mmSolver.tools.createimageplane.lib as lib;";
+    $cache_gpu_used_cmd += "image_plane_shp = \"" + $image_plane_shp + "\";";
+    $cache_gpu_used_cmd += "lib.format_cache_gpu_used(image_plane_shp);";
+
+    string $cache_cpu_used_cmd = "";
+    $cache_cpu_used_cmd = "import mmSolver.tools.createimageplane.lib as lib;";
+    $cache_cpu_used_cmd += "image_plane_shp = \"" + $image_plane_shp + "\";";
+    $cache_cpu_used_cmd += "lib.format_cache_cpu_used(image_plane_shp);";
+
+    string $memory_gpu_available_cmd = "";
+    $memory_gpu_available_cmd = "import mmSolver.tools.createimageplane.lib as lib;";
+    $memory_gpu_available_cmd += "image_plane_shp = \"" + $image_plane_shp + "\";";
+    $memory_gpu_available_cmd += "lib.format_memory_gpu_available(image_plane_shp);";
+
+    string $memory_cpu_available_cmd = "";
+    $memory_cpu_available_cmd = "import mmSolver.tools.createimageplane.lib as lib;";
+    $memory_cpu_available_cmd += "image_plane_shp = \"" + $image_plane_shp + "\";";
+    $memory_cpu_available_cmd += "lib.format_memory_cpu_available(image_plane_shp);";
+
+    string $image_seq_size = python($image_seq_size_cmd);
+    string $cache_gpu_used = python($cache_gpu_used_cmd);
+    string $cache_cpu_used = python($cache_cpu_used_cmd);
+    string $memory_gpu_available = python($memory_gpu_available_cmd);
+    string $memory_cpu_available = python($memory_cpu_available_cmd);
+
+    text -edit -label $image_seq_size imageCacheImageSequenceSizeText;
+    text -edit -label $cache_gpu_used imageCacheCacheGpuUsedText;
+    text -edit -label $cache_cpu_used imageCacheCacheCpuUsedText;
+    text -edit -label $memory_gpu_available imageCacheMemoryGpuAvailableText;
+    text -edit -label $memory_cpu_available imageCacheMemoryCpuAvailableText;
+}
+
+
+global proc AEmmImagePlaneShape2_imageCacheDisplaySectionNew(string $attr_name)
+{
+    setUITemplate -pst attributeEditorTemplate;
+
+    // Refresh button
+    rowLayout -nc 3 imageCacheDisplay_refreshLayout;
+    {
+        // Spacer to avoid button on the screen-left of the Attribute
+        // Editor.
+        text -label "";
+
+        button -label "Refresh Attribute Editor" imageCacheDisplay_refreshButton;
+    }
+    setParent ..;
+
+    // The total memory size for the image sequence (GB / MB)
+    rowLayout -nc 2 imageCacheImageSequenceSizeLayout;
+    {
+        text -label "Image Sequence Size:";
+        text -align "left" imageCacheImageSequenceSizeText;
+    }
+    setParent ..;
+
+    text -label "";  // spacer
+
+    rowLayout -nc 2 imageCacheCacheGpuUsedLayout;
+    {
+        text -label "GPU Cache Used:";
+        text -align "left" imageCacheCacheGpuUsedText;
+    }
+    setParent ..;
+
+    rowLayout -nc 2 imageCacheCacheCpuUsedLayout;
+    {
+        text -label "CPU Cache Used:";
+        text -align "left" imageCacheCacheCpuUsedText;
+    }
+    setParent ..;
+
+    text -label "";  // spacer
+
+    rowLayout -nc 2 imageCacheMemoryGpuAvailableLayout;
+    {
+        text -label "Total Memory Available:";
+        text -align "left" imageCacheMemoryGpuAvailableText;
+    }
+    setParent ..;
+
+    rowLayout -nc 2 imageCacheMemoryCpuAvailableLayout;
+    {
+        text -label "";  // empty space
+        text -align "left" imageCacheMemoryCpuAvailableText;
+    }
+    setParent ..;
+
+    setUITemplate -ppt;
+
+    AEmmImagePlaneShape2_imageCacheDisplaySectionReplace $attr_name;
+}
+
+
+global proc AEmmImagePlaneShape2_imageCacheDisplaySectionReplace(string $attr_name)
+{
+    string $image_plane_shp[];
+    tokenize($attr_name, ".", $image_plane_shp);
+    if(size($image_plane_shp) < 1) {
+        return;
+    }
+
+    AEmmImagePlaneShape2_imageCache_updateValues($image_plane_shp[0]);
+
+    string $update_cmd = "AEmmImagePlaneShape2_imageCache_updateValues " + $image_plane_shp[0];
+    button -edit -command $update_cmd imageCacheDisplay_refreshButton;
+}
+
+
+global proc AEmmImagePlaneShape2_imageCache_clearAllSlots(
+    string $image_plane_shp)
+{
+    string $cmd = "import mmSolver.tools.imagecache.lib as lib;";
+    $cmd += "import mmSolver.tools.imagecache.constant as const;";
+    $cmd += "node = \"" + $image_plane_shp + "\";";
+    $cmd += "lib.erase_all_images_on_image_plane_slots(const.CACHE_TYPE_CPU, node);";
+    $cmd += "lib.erase_all_images_on_image_plane_slots(const.CACHE_TYPE_GPU, node);";
+    python($cmd);
+}
+
+
+global proc AEmmImagePlaneShape2_imageCache_clearActiveSlot(
+    string $image_plane_shp)
+{
+    string $cmd = "import mmSolver.tools.imagecache.lib as lib;";
+    $cmd += "import mmSolver.tools.imagecache.constant as const;";
+    $cmd += "node = \"" + $image_plane_shp + "\";";
+    $cmd += "lib.erase_images_in_active_image_plane_slot(const.CACHE_TYPE_CPU, node);";
+    $cmd += "lib.erase_images_in_active_image_plane_slot(const.CACHE_TYPE_GPU, node);";
+    python($cmd);
+}
+
+
+global proc AEmmImagePlaneShape2_imageCache_clearUnusedSlots(
+    string $image_plane_shp)
+{
+    string $cmd = "import mmSolver.tools.imagecache.lib as lib;";
+    $cmd += "import mmSolver.tools.imagecache.constant as const;";
+    $cmd += "node = \"" + $image_plane_shp + "\";";
+    $cmd += "lib.erase_images_in_unused_image_plane_slots(const.CACHE_TYPE_CPU, node);";
+    $cmd += "lib.erase_images_in_unused_image_plane_slots(const.CACHE_TYPE_GPU, node);";
+    python($cmd);
+}
+
+
+global proc AEmmImagePlaneShape2_imageCache_clearAllImages()
+{
+    string $cmd = "import mmSolver.tools.imagecache.lib as lib;";
+    $cmd += "import mmSolver.tools.imagecache.constant as const;";
+    $cmd += "lib.erase_all_images(const.CACHE_TYPE_CPU);";
+    $cmd += "lib.erase_all_images(const.CACHE_TYPE_GPU);";
+    python($cmd);
+}
+
+
+global proc AEmmImagePlaneShape2_imageCache_openImageCacheUI()
+{
+    string $cmd = "import mmSolver.tools.imagecacheprefs.tool as tool;";
+    $cmd += "tool.open_window();";
+    python($cmd);
+}
+
+
+global proc AEmmImagePlaneShape2_imageCacheButtonsNew(string $attr_name)
+{
+    setUITemplate -pst attributeEditorTemplate;
+
+    text -label "";
+
+    // Clear buttons
+    rowLayout -nc 3 imageCacheButtons_clearLayout;
+    {
+        // Spacer to avoid button on the screen-left of the Attribute
+        // Editor.
+        text -label "";
+
+        button -label "Clear..." imageCacheButtons_clearButton;
+
+        int $left_mouse_button = 1;
+        popupMenu -button $left_mouse_button;
+
+        menuItem -label "All image slots" imageCacheButtons_clearAllSlotsMenuItem;
+        menuItem -label "Active image slot" imageCacheButtons_clearActiveSlotMenuItem;
+        menuItem -label "Unused image slots" imageCacheButtons_clearUnusedImageSlotsMenuItem;
+        menuItem -divider true;
+        menuItem -label "All images in cache" imageCacheButtons_clearAllImagesMenuItem;
+    }
+    setParent ..;
+
+    // Image Cache Capacity preferences.
+    rowLayout -nc 3 imageCacheButtons_capacityLayout;
+    {
+        // Spacer to avoid button on the screen-left of the Attribute
+        // Editor.
+        text -label "";
+
+        button -label "Image Cache Preferences..." imageCacheButtons_capacityButton;
+    }
+    setParent ..;
+
+    setUITemplate -ppt;
+
+    AEmmImagePlaneShape2_imageCacheButtonsReplace $attr_name;
+}
+
+
+global proc AEmmImagePlaneShape2_imageCacheButtonsReplace(string $attr_name)
+{
+    string $image_plane_shp[];
+    tokenize($attr_name, ".", $image_plane_shp);
+    if(size($image_plane_shp) < 1) {
+        return;
+    }
+
+    menuItem -edit
+      -command ("AEmmImagePlaneShape2_imageCache_clearAllSlots " + $image_plane_shp[0])
+      imageCacheButtons_clearAllSlotsMenuItem;
+    menuItem -edit
+      -command ("AEmmImagePlaneShape2_imageCache_clearActiveSlot " + $image_plane_shp[0])
+      imageCacheButtons_clearActiveSlotMenuItem;
+    menuItem -edit
+      -command ("AEmmImagePlaneShape2_imageCache_clearUnusedSlots " + $image_plane_shp[0])
+      imageCacheButtons_clearUnusedImageSlotsMenuItem;
+    menuItem -edit
+      -command ("AEmmImagePlaneShape2_imageCache_clearAllImages;")
+      imageCacheButtons_clearAllImagesMenuItem;
+
+    button -edit
+      -command "AEmmImagePlaneShape2_imageCache_openImageCacheUI;"
+      imageCacheButtons_capacityButton;
+}
+
+
+global proc AEmmImagePlaneShape2Template(string $nodeName)
+{
+    AEmmNodeShapeTemplateCommonBegin($nodeName);
+
+    editorTemplate -beginLayout "Display" -collapse 0;
+    {
+        editorTemplate -addControl "visibleToCameraOnly";
+        editorTemplate -addSeparator;
+        editorTemplate -addControl "colorGain";
+        editorTemplate -addControl "colorExposure";
+        editorTemplate -addControl "colorGamma";
+        editorTemplate -addControl "colorSaturation";
+        editorTemplate -addControl "colorSoftClip";
+        editorTemplate -addControl "alphaGain";
+        editorTemplate -addSeparator;
+        editorTemplate
+            -callCustom
+            "AEmmImagePlaneShape2_colorSpaceNew"
+            "AEmmImagePlaneShape2_colorSpaceReplace"
+            "inputColorSpace";
+        editorTemplate -addSeparator;
+        editorTemplate -addControl "imageIgnoreAlpha";
+        editorTemplate -addControl "displayChannel";
+    }
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "Image Sequence" -collapse 0;
+    {
+        editorTemplate
+            -callCustom
+            "AEmmImagePlaneShape2_sequenceSlotNew"
+            "AEmmImagePlaneShape2_sequenceSlotReplace"
+            "imageSequenceSlot";
+
+        editorTemplate
+            -callCustom
+            "AEmmImagePlaneShape2_imageSequenceNew"
+            "AEmmImagePlaneShape2_imageSequenceReplace"
+            "imageSequenceMain";
+        editorTemplate
+            -callCustom
+            "AEmmImagePlaneShape2_imageSequenceNew"
+            "AEmmImagePlaneShape2_imageSequenceReplace"
+            "imageSequenceAlternate1";
+        editorTemplate
+            -callCustom
+            "AEmmImagePlaneShape2_imageSequenceNew"
+            "AEmmImagePlaneShape2_imageSequenceReplace"
+            "imageSequenceAlternate2";
+        editorTemplate
+            -callCustom
+            "AEmmImagePlaneShape2_imageSequenceNew"
+            "AEmmImagePlaneShape2_imageSequenceReplace"
+            "imageSequenceAlternate3";
+
+        editorTemplate -addSeparator;
+        editorTemplate -addControl "imageWidth";
+        editorTemplate -addControl "imageHeight";
+        editorTemplate -addControl "imagePixelAspect";
+        editorTemplate -addSeparator;
+        editorTemplate -addControl "imageSequenceStartFrame";
+        editorTemplate -addControl "imageSequenceEndFrame";
+        editorTemplate -addSeparator;
+        // TODO: Add radio button to choose what will connect to the
+        // 'imageSequenceFrame' value? Options are:
+        //  - Scene Time (time1)
+        //  - Animation Curve
+        //
+        editorTemplate -addControl "imageSequenceFrame";
+        editorTemplate -addControl "imageSequenceFirstFrame";
+        editorTemplate -addControl "imageSequenceFrameOutput";
+        editorTemplate -addSeparator;
+        editorTemplate -addControl "imageFlip";
+        editorTemplate -addControl "imageFlop";
+    }
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "HUD" -collapse 0;
+    {
+        editorTemplate -addControl "drawHud";
+        editorTemplate -addSeparator;
+        editorTemplate -addControl "drawCameraSize";
+        editorTemplate -addControl "drawImageSize";
+        // TODO: Add 'hudTextColor' - control the HUD text color.
+    }
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "Image Cache" -collapse 1;
+    {
+        editorTemplate
+            -callCustom
+            "AEmmImagePlaneShape2_imageCacheDisplaySectionNew"
+            "AEmmImagePlaneShape2_imageCacheDisplaySectionReplace"
+            "";
+        editorTemplate
+            -callCustom
+            "AEmmImagePlaneShape2_imageCacheButtonsNew"
+            "AEmmImagePlaneShape2_imageCacheButtonsReplace"
+            "";
+    }
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "Miscellaneous" -collapse 1;
+    {
+        editorTemplate -addControl "meshResolution";
+        editorTemplate
+          -callCustom
+          "AEmmImagePlaneShape2_colorSpaceNew"
+          "AEmmImagePlaneShape2_colorSpaceReplace"
+          "outputColorSpace";
+    }
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "Nodes" -collapse 1;
+    {
+        editorTemplate -addControl "geometryNode";
+        editorTemplate -addControl "cameraNode";
+        editorTemplate -addControl "imagePlaneShapeNode";
+    }
+    editorTemplate -endLayout;
+
+
+    editorTemplate -beginLayout "Extended Image Details" -collapse 1;
+    {
+        editorTemplate -addControl "imageNumChannels";
+        editorTemplate -addControl "imageBytesPerChannel";
+        editorTemplate -addControl "imageSizeBytes";
+        editorTemplate -addControl "imageSequencePadding";
+        editorTemplate -addControl "inputColorSpace";
+        editorTemplate -addControl "outputColorSpace";
+    }
+    editorTemplate -endLayout;
+
+    // Internals that we don't want the user to see.
+    editorTemplate -suppress "cameraWidthInch";
+    editorTemplate -suppress "cameraHeightInch";
+    editorTemplate -suppress "lensHashCurrent";
+    editorTemplate -suppress "lensHashPrevious";
+    editorTemplate -suppress "imageSequenceSlot";
+
+    AEmmNodeShapeTemplateCommonEnd($nodeName);
+}

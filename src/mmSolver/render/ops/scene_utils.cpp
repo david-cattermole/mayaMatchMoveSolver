@@ -361,9 +361,10 @@ bool set_background_clear_operation(
     MHWRender::MClearOperation& out_clear_operation) {
     if (background_style == BackgroundStyle::kTransparentBlack) {
         float val[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+        out_clear_operation.setOverridesColors(false);
         out_clear_operation.setClearColor(val);
         out_clear_operation.setClearColor2(val);
-        out_clear_operation.setClearGradient(false);
+        out_clear_operation.setClearGradient(true);
         out_clear_operation.setClearStencil(0);
         // A depth value of 1.0f represents the 'most distant'
         // object. As objects draw, they draw darker pixels on top of
@@ -374,14 +375,23 @@ bool set_background_clear_operation(
         // preferences. MRenderer provides us a way to get these
         // values automatically.
         MHWRender::MRenderer* renderer = MHWRender::MRenderer::theRenderer();
-        bool gradient = renderer->useGradient();
-        MColor color1 = renderer->clearColor();
-        MColor color2 = renderer->clearColor2();
+        const bool gradient = renderer->useGradient();
+        const MColor color1 = renderer->clearColor();
+        const MColor color2 = renderer->clearColor2();
+
         float val1[4] = {color1[0], color1[1], color1[2], 1.0f};
         float val2[4] = {color2[0], color2[1], color2[2], 1.0f};
+
+        out_clear_operation.setOverridesColors(true);
         out_clear_operation.setClearColor(val1);
         out_clear_operation.setClearColor2(val2);
-        out_clear_operation.setClearGradient(gradient);
+        // NOTE: The gradient is forced to enabled because
+        // MRenderer::useGradient() appears to return zero when
+        // playblasting, but correctly returns values when rendering
+        // in the interactive Maya viewport. If we force the clear
+        // gradient enabled, the 'clearColor's will be set to solid
+        // colours when a non-gradient is waned.
+        out_clear_operation.setClearGradient(true);
         out_clear_operation.setClearStencil(0);
         out_clear_operation.setClearDepth(1.0f);
     } else {

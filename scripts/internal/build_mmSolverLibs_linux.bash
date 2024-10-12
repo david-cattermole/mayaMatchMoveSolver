@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (C) 2022, 2023 David Cattermole.
+# Copyright (C) 2022, 2023, 2024 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -52,6 +52,10 @@ if [ ${BUILD_TYPE}=="Release" ]; then
     BUILD_TYPE_DIR="release"
 fi
 
+# Allows you to see the build command lines, to help debugging build
+# problems. Set to ON to enable, and OFF to disable.
+MMSOLVER_BUILD_VERBOSE=OFF
+
 # Where to find the mmsolverlibs Rust libraries and headers.
 MMSOLVERLIBS_INSTALL_PATH="${BUILD_DIR_BASE}/build_mmsolverlibs/install/maya${MAYA_VERSION}_linux/"
 MMSOLVERLIBS_ROOT="${PROJECT_ROOT}/lib"
@@ -59,6 +63,30 @@ MMSOLVERLIBS_RUST_ROOT="${MMSOLVERLIBS_ROOT}/mmsolverlibs"
 MMSOLVERLIBS_CPP_TARGET_DIR="${BUILD_DIR_BASE}/build_mmsolverlibs/rust_linux_maya${MAYA_VERSION}"
 MMSOLVERLIBS_LIB_DIR="${MMSOLVERLIBS_CPP_TARGET_DIR}/${BUILD_TYPE_DIR}"
 MMSOLVERLIBS_INCLUDE_DIR="${MMSOLVERLIBS_ROOT}/include"
+
+# Paths for dependencies.
+EXTERNAL_BUILD_DIR="${BUILD_DIR_BASE}/build_opencolorio/cmake_linux_maya${MAYA_VERSION}_${BUILD_TYPE}/ext/dist"
+OPENCOLORIO_INSTALL_DIR="${BUILD_DIR_BASE}/build_opencolorio/install/maya${MAYA_VERSION}_linux/"
+OPENCOLORIO_CMAKE_CONFIG_DIR="${OPENCOLORIO_INSTALL_DIR}/lib64/cmake/OpenColorIO/"
+OPENCOLORIO_CMAKE_FIND_MODULES_DIR="${PROJECT_ROOT}/external/working/maya${MAYA_VERSION}_linux/${OPENCOLORIO_TARBALL_EXTRACTED_DIR_NAME}/share/cmake/modules"
+
+expat_DIR="${EXTERNAL_BUILD_DIR}/${EXPAT_RELATIVE_CMAKE_DIR}"
+expat_INCLUDE_DIR="${EXTERNAL_BUILD_DIR}/include/"
+expat_LIBRARY="${EXTERNAL_BUILD_DIR}/${EXPAT_RELATIVE_LIB_PATH}"
+
+pystring_LIBRARY="${EXTERNAL_BUILD_DIR}/${PYSTRING_RELATIVE_LIB_PATH}"
+pystring_INCLUDE_DIR="${EXTERNAL_BUILD_DIR}/include"
+
+yaml_DIR="${EXTERNAL_BUILD_DIR}/${YAML_RELATIVE_CMAKE_DIR}"
+yaml_LIBRARY="${EXTERNAL_BUILD_DIR}/${YAML_RELATIVE_LIB_PATH}"
+yaml_INCLUDE_DIR="${EXTERNAL_BUILD_DIR}/include/"
+
+Imath_DIR="${EXTERNAL_BUILD_DIR}/lib64/cmake/Imath"
+
+ZLIB_LIBRARY="${EXTERNAL_BUILD_DIR}/${ZLIB_RELATIVE_LIB_PATH}"
+ZLIB_INCLUDE_DIR="${EXTERNAL_BUILD_DIR}/include/"
+
+minizip_DIR="${EXTERNAL_BUILD_DIR}/lib64/cmake/minizip-ng"
 
 MMSOLVERLIBS_BUILD_TESTS=1
 
@@ -81,9 +109,9 @@ then
     # './lib/cppbind/mmlens/Cargo.toml'
     # './lib/cppbind/mmcore/Cargo.toml'
     # './scripts/internal/build_mmSolverLibs_windows64.bat'
-    ${RUST_CARGO_EXE} install cxxbridge-cmd --version 1.0.75
+    ${RUST_CARGO_EXE} install cxxbridge-cmd --version 1.0.128
 fi
-MMSOLVERLIBS_CXXBRIDGE_EXE="${HOME}\.cargo\bin\cxxbridge"
+MMSOLVERLIBS_CXXBRIDGE_EXE="${HOME}/.cargo/bin/cxxbridge"
 
 cd ${MMSOLVERLIBS_RUST_ROOT}
 ${RUST_CARGO_EXE} build ${RELEASE_FLAG} --target-dir ${MMSOLVERLIBS_CPP_TARGET_DIR}
@@ -101,15 +129,34 @@ cd ${BUILD_DIR}
 
 export MAYA_VERSION=${MAYA_VERSION}
 ${CMAKE_EXE} \
+    -DBUILD_SHARED_LIBS=OFF \
     -DCMAKE_BUILD_TYPE=${BUILD_TYPE} \
     -DCMAKE_INSTALL_PREFIX=${MMSOLVERLIBS_INSTALL_PATH} \
     -DCMAKE_POSITION_INDEPENDENT_CODE=1 \
     -DCMAKE_CXX_STANDARD=${CXX_STANDARD} \
+    -DCMAKE_MODULE_PATH=${OPENCOLORIO_CMAKE_FIND_MODULES_DIR} \
+    -DCMAKE_VERBOSE_MAKEFILE=${MMSOLVER_BUILD_VERBOSE} \
+    -DMMSOLVER_VFX_PLATFORM=${VFX_PLATFORM} \
     -DMMSOLVERLIBS_CXXBRIDGE_EXE=${MMSOLVERLIBS_CXXBRIDGE_EXE} \
     -DMMSOLVERLIBS_BUILD_TESTS=${MMSOLVERLIBS_BUILD_TESTS} \
     -DMMSOLVERLIBS_LIB_DIR=${MMSOLVERLIBS_LIB_DIR} \
     -Dldpk_URL=${LDPK_URL} \
-    -DBUILD_SHARED_LIBS=OFF \
+    -DOpenColorIO_DIR=${OPENCOLORIO_CMAKE_CONFIG_DIR} \
+    -DOCIO_INSTALL_EXT_PACKAGES=NONE \
+    -Dexpat_DIR=${expat_DIR} \
+    -Dexpat_LIBRARY=${expat_LIBRARY} \
+    -Dexpat_INCLUDE_DIR=${expat_INCLUDE_DIR} \
+    -Dexpat_USE_STATIC_LIBS=TRUE \
+    -Dpystring_LIBRARY=${pystring_LIBRARY} \
+    -Dpystring_INCLUDE_DIR=${pystring_INCLUDE_DIR} \
+    -Dyaml-cpp_DIR=${yaml_DIR} \
+    -Dyaml-cpp_LIBRARY=${yaml_LIBRARY} \
+    -Dyaml-cpp_INCLUDE_DIR=${yaml_INCLUDE_DIR} \
+    -DImath_DIR=${Imath_DIR} \
+    -DZLIB_LIBRARY=${ZLIB_LIBRARY} \
+    -DZLIB_INCLUDE_DIR=${ZLIB_INCLUDE_DIR} \
+    -DZLIB_STATIC_LIBRARY=ON \
+    -Dminizip-ng_DIR=${minizip_DIR} \
     ${MMSOLVERLIBS_ROOT}
 
 ${CMAKE_EXE} --build . --parallel

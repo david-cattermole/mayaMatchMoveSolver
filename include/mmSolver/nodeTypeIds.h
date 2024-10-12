@@ -86,9 +86,9 @@
 #define MM_MARKER_GROUP_TRANSFORM_TYPE_NAME "mmMarkerGroupTransform"
 #define MM_MARKER_GROUP_DRAW_CLASSIFY "drawdb/geometry/transform"
 
-#define MM_RENDERER_BASIC_NAME "mmRenderer"
-#define MM_RENDER_GLOBALS_BASIC_TYPE_ID 0x0012F194
-#define MM_RENDER_GLOBALS_BASIC_TYPE_NAME "mmRenderGlobals"
+#define MM_RENDERER_STANDARD_NAME "mmRendererStandard"
+#define MM_RENDER_GLOBALS_STANDARD_TYPE_ID 0x0012F194
+#define MM_RENDER_GLOBALS_STANDARD_TYPE_NAME "mmRenderGlobalsStandard"
 
 #define MM_RENDERER_SILHOUETTE_NAME "mmRendererSilhouette"
 #define MM_RENDER_GLOBALS_SILHOUETTE_TYPE_ID 0x0012F18E
@@ -131,11 +131,25 @@
 
 #define MM_IMAGE_PLANE_SHAPE_TYPE_ID 0x0012F187
 #define MM_IMAGE_PLANE_SHAPE_TYPE_NAME "mmImagePlaneShape"
-#define MM_IMAGE_PLANE_SHAPE_DRAW_CLASSIFY "drawdb/geometry/mmSolver/imagePlane"
+#define MM_IMAGE_PLANE_SHAPE_DRAW_CLASSIFY \
+    "drawdb/geometry/mmSolver/imagePlane/v1"
 #define MM_IMAGE_PLANE_SHAPE_DRAW_REGISTRANT_ID "mmImagePlaneShape"
 #define MM_IMAGE_PLANE_SHAPE_SELECTION_TYPE_NAME "mmImagePlaneShapeSelection"
+#define MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_DRAW_DB_CLASSIFICATION \
+    "drawdb/geometry/mmSolver/imagePlane/v1"
 #define MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_NAME "mmImagePlaneDisplayFilter"
-#define MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_LABEL "MM ImagePlane"
+#define MM_IMAGE_PLANE_SHAPE_DISPLAY_FILTER_LABEL "MM ImagePlane (legacy)"
+
+#define MM_IMAGE_PLANE_SHAPE_2_TYPE_ID 0x0012F18F
+#define MM_IMAGE_PLANE_SHAPE_2_TYPE_NAME "mmImagePlaneShape2"
+#define MM_IMAGE_PLANE_SHAPE_2_DRAW_CLASSIFY \
+    "drawdb/geometry/mmSolver/imagePlane/v2"
+#define MM_IMAGE_PLANE_SHAPE_2_DRAW_REGISTRANT_ID "mmImagePlaneShape2"
+#define MM_IMAGE_PLANE_SHAPE_2_SELECTION_TYPE_NAME "mmImagePlaneShape2Selection"
+#define MM_IMAGE_PLANE_SHAPE_2_DISPLAY_FILTER_DRAW_DB_CLASSIFICATION \
+    "drawdb/geometry/mmSolver/imagePlane/v2"
+#define MM_IMAGE_PLANE_SHAPE_2_DISPLAY_FILTER_NAME "mmImagePlane2DisplayFilter"
+#define MM_IMAGE_PLANE_SHAPE_2_DISPLAY_FILTER_LABEL "MM ImagePlane"
 
 #define CAMERA_INFERNO_TYPE_ID 0x0012F183  // Not used in mmSolver.
 
@@ -153,6 +167,9 @@
 #define MM_IMAGE_PLANE_TRANSFORM_TYPE_ID 0x0012F18D
 #define MM_IMAGE_PLANE_TRANSFORM_TYPE_NAME "mmImagePlaneTransform"
 #define MM_IMAGE_PLANE_TRANSFORM_DRAW_CLASSIFY "drawdb/geometry/transform"
+
+#define MM_IMAGE_SEQUENCE_FRAME_LOGIC_TYPE_ID 0x0012F190
+#define MM_IMAGE_SEQUENCE_FRAME_LOGIC_TYPE_NAME "mmImageSequenceFrameLogic"
 
 #define OCGM_IMAGE_PLANE_SHAPE_TYPE_ID 0x0012F18B
 

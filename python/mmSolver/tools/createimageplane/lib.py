@@ -79,6 +79,14 @@ from mmSolver.tools.createimageplane._lib.constant import (
 
 from mmSolver.tools.createimageplane._lib.utilities import get_default_image_path
 
+from mmSolver.tools.createimageplane._lib.format import (
+    format_image_sequence_size,
+    format_cache_gpu_used,
+    format_cache_cpu_used,
+    format_memory_gpu_available,
+    format_memory_cpu_available,
+)
+
 
 # Stop users from accessing the internal functions of this sub-module.
 __all__ = [
@@ -87,4 +95,9 @@ __all__ = [
     'set_image_sequence',
     'get_default_image_path',
     'DEFAULT_IMAGE_SEQUENCE_ATTR_NAME',
+    'format_image_sequence_size',
+    'format_cache_gpu_used',
+    'format_cache_cpu_used',
+    'format_memory_gpu_available',
+    'format_memory_cpu_available',
 ]

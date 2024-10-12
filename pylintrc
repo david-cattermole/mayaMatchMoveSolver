@@ -13,7 +13,8 @@ ignore=CVS,.git
 
 # Add files or directories matching the regex patterns to the blacklist. The
 # regex matches against base names, not paths.
-ignore-paths=python/mmSolver/tools/mltools/*.py
+ignore-paths=^python/mmSolver/tools/mltools/*.py$,
+             ^python/mmSolver/tools/meshfrompoints/delaunator.py$
 
 # Pickle collected data for later comparisons.
 persistent=yes

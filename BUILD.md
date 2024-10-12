@@ -87,7 +87,8 @@ mmSolver v0.4.0 a C++ compiler with at least C++11 is required.
   - [Visual Studio 2015 update 3 (MSVC 14.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2018 and 2019)
   - [Visual Studio 2017 (MSVC 15.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2020)
   - [Visual Studio 2019 (MSVC 16.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2022 and 2023)
-  - [Visual Studio 2019 (MSVC 19.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2024)
+  - [Visual Studio 2022 (MSVC 17.0)](https://visualstudio.microsoft.com/downloads/) (Maya 2024)
+  - [Visual Studio 2022 (MSVC 17.8.3+)](https://visualstudio.microsoft.com/downloads/) (Maya 2025)
 
 ## Rust
 

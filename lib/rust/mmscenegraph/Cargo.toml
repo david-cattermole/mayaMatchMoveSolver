@@ -1,9 +1,9 @@
 [package]
 name = "mmscenegraph_rust"
-version = "0.1.0"
-authors = ["david-cattermole <cattermole91@gmail.com>"]
-edition = "2018"
-publish = false
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+publish.workspace = true
 
 [lib]
 name = "mmscenegraph_rust"
@@ -15,40 +15,14 @@ name = "bench"
 harness = false
 
 [dependencies]
-approx = "0.3.2"
-fastapprox = "0.3.0"
-rustc-hash = "1.1.0"
-log = "0.4.0"
-num-traits = "0.2"
+approx = { workspace = true }
+fastapprox = { workspace = true }
+rustc-hash = { workspace = true }
+log = { workspace = true }
+num-traits = { workspace = true }
+rand = { workspace = true }
+petgraph = { workspace = true }
+nalgebra = { workspace = true }
 
-[dependencies.rand]
-version = "0.7"
-default-features = false
-features = ["std", "alloc", "small_rng"]
-
-[dependencies.petgraph]
-version = "0.5"
-default-features = false
-features = ["stable_graph"]
-
-[dependencies.nalgebra]
-version = "0.29"
-default-features = false
-features = ["std", "matrixmultiply"]
-
-[dev-dependencies.criterion]
-version = "0.3.6"
-default-features = false
-features = ["html_reports"]
-
-[profile.release]
-opt-level = 3
-rpath = false
-# 'lto = true' Performs "fat" LTO which attempts to perform
-# optimizations across all crates within the dependency graph.
-lto = true
-# NOTE: If we use 'panic = "abort"' then we are unable to produce tests.
-# # https://github.com/rust-lang/cargo/issues/6313
-#
-# panic = "abort"
-codegen-units = 1
+[dev-dependencies]
+criterion = { workspace = true }

@@ -1,3 +1,5 @@
+.. _mmsolver-utils-ref:
+
 mmSolver.utils
 ==============
 
@@ -145,6 +147,13 @@ Node Affects
     :members:
     :undoc-members:
 
+Math
+++++
+
+.. automodule:: mmSolver.utils.math
+    :members:
+    :undoc-members:
+
 Python Compatibility
 ++++++++++++++++++++
 
@@ -229,6 +238,8 @@ Undo
 .. automodule:: mmSolver.utils.undo
     :members:
     :undoc-members:
+
+.. _mmsolver-utils-viewport-ref:
 
 Viewport
 ++++++++

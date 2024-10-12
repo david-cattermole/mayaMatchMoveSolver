@@ -6,7 +6,7 @@
 <link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Techniques" href="techniques.html" /><link rel="prev" title="Hotkeys" href="tools_hotkeys.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>MM Renderer - mayaMatchMoveSolver master documentation</title>
+        <title>Viewport Renderers - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -176,10 +176,11 @@
 <li class="toctree-l2"><a class="reference internal" href="tools_linetools.html">Line Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_displaytools.html">Display Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_zdepthtools.html">Z-Depth Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_meshtools.html">Mesh Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_generaltools.html">General Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_inputoutput.html">Input/Output Tools</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tools_hotkeys.html">Hotkeys</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">MM Renderer</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Viewport Renderers</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="techniques.html">Techniques</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -211,6 +212,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.attachbundletocurve.html">mmSolver.tools.attachbundletocurve</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.attributebake.html">mmSolver.tools.attributebake</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.averagemarker.html">mmSolver.tools.averagemarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.calibratecamera.html">mmSolver.tools.calibratecamera</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.cameraaim.html">mmSolver.tools.cameraaim</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.cameracontextmenu.html">mmSolver.tools.cameracontextmenu</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.cameraobjectscaleadjust.html">mmSolver.tools.cameraobjectscaleadjust</a></li>
@@ -239,6 +241,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.loadmarker.html">mmSolver.tools.loadmarker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.markerbundlerename.html">mmSolver.tools.markerbundlerename</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.markerbundlerenamewithmetadata.html">mmSolver.tools.markerbundlerenamewithmetadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.meshfrompoints.html">mmSolver.tools.meshfrompoints</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.mmhotkeyset.html">mmSolver.tools.mmhotkeyset</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.mmmenu.html">mmSolver.tools.mmmenu</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.mmshelf.html">mmSolver.tools.mmshelf</a></li>
@@ -259,6 +262,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.selection.html">mmSolver.tools.selection</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.setattributedetails.html">mmSolver.tools.setattributedetails</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.setcameraoriginframe.html">mmSolver.tools.setcameraoriginframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.setmeshholdouts.html">mmSolver.tools.setmeshholdouts</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.setobjectcolour.html">mmSolver.tools.setobjectcolour</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.showdeviationcurves.html">mmSolver.tools.showdeviationcurves</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.smoothkeyframes.html">mmSolver.tools.smoothkeyframes</a></li>
@@ -271,6 +275,10 @@
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.togglecameradistort.html">mmSolver.tools.togglecameradistort</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.togglelinelock.html">mmSolver.tools.togglelinelock</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.togglemarkerlock.html">mmSolver.tools.togglemarkerlock</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.toggleobjectmotiontrail.html">mmSolver.tools.toggleobjectmotiontrail</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.toggleviewportctrls.html">mmSolver.tools.toggleviewportctrls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.toggleviewportgeom.html">mmSolver.tools.toggleviewportgeom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.toggleviewportimgplns.html">mmSolver.tools.toggleviewportimgplns</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.triangulatebundle.html">mmSolver.tools.triangulatebundle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.undoredoscene.html">mmSolver.tools.undoredoscene</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.userpreferences.html">mmSolver.tools.userpreferences</a></li>
@@ -331,35 +339,157 @@
           </label>
         </div>
         <article role="main">
-          <section id="mm-renderer">
-<span id="renderer-ref"></span><h1>MM Renderer<a class="headerlink" href="#mm-renderer" title="Permalink to this heading">#</a></h1>
-<p><cite>MM Renderer</cite> is a Viewport 2.0 renderer designed to add helpful
-features for use with MatchMove workflows and reviews.</p>
-<p>This tool is currently only in beta, and is not enabled in stable <cite>MM
-Solver</cite> releases.</p>
-<figure class="align-center" id="id1">
-<a class="reference internal image-reference" href="_images/tools_renderer_menu.png"><img alt="Viewport Renderer menu" src="_images/tools_renderer_menu.png" style="width: 327.20000000000005px; height: 76.0px;" /></a>
+          <section id="viewport-renderers">
+<span id="renderer-ref"></span><h1>Viewport Renderers<a class="headerlink" href="#viewport-renderers" title="Permalink to this heading">#</a></h1>
+<p><cite>MM Solver</cite> comes with specialised Viewport 2.0 renderers designed to
+add helpful features for use with MatchMove workflows and reviews.</p>
+<figure class="align-center" id="id2">
+<a class="reference internal image-reference" href="_images/tools_renderer_menu.png"><img alt="Viewport Renderer menu" src="_images/tools_renderer_menu.png" style="width: 356.0px; height: 85.60000000000001px;" /></a>
 <figcaption>
-<p><span class="caption-text">Enable <cite>MM Renderer</cite> in the “Renderer” menu on each Viewport.</span><a class="headerlink" href="#id1" title="Permalink to this image">#</a></p>
+<p><span class="caption-text">Viewport 2.0 “Renderer” menu.</span><a class="headerlink" href="#id2" title="Permalink to this image">#</a></p>
 </figcaption>
 </figure>
-<p><cite>MM Renderer</cite> is different from regular Viewport 2.0 because it has
-the following features:</p>
-<ul class="simple">
-<li><p>Display of MM Image Plane nodes with native useBackground shaders.</p></li>
-</ul>
-<section id="getting-started">
-<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h2>
-<p>To use <cite>MM Renderer</cite>, simply load the <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> plug-in (for
-example open the Solver UI to ensure the plug-in is loaded), then
-use the Viewport’s “Renderer” menu to switch to <code class="docutils literal notranslate"><span class="pre">MM</span> <span class="pre">Renderer</span></code>.</p>
+<p>Currently the following Viewport 2.0 renderers are available.</p>
+<div class="table-wrapper colwidths-auto docutils container" id="id3">
+<table class="docutils align-default" id="id3">
+<caption><span class="caption-text">MM Solver Renderers</span><a class="headerlink" href="#id3" title="Permalink to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference internal" href="#renderer-standard-ref"><span class="std std-ref">MM Standard Renderer</span></a></p></td>
+<td><p>Identical to default “Viewport 2.0”, but correctly works with
+<cite>MM ImagePlane</cite> nodes in from hold-outs, either using Hold Out
+attributes or <cite>Use Background</cite> shaders.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#renderer-silhouette-ref"><span class="std std-ref">MM Silhouette Renderer</span></a></p></td>
+<td><p>Identical to <cite>MM Standard Renderer</cite>, but adds a silhouette
+outline edge to all rendered meshes in the viewport.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<section id="mm-standard-renderer">
+<span id="renderer-standard-ref"></span><h2>MM Standard Renderer<a class="headerlink" href="#mm-standard-renderer" title="Permalink to this heading">#</a></h2>
+<p><cite>MM Standard Renderer</cite> is a Viewport 2.0 renderer designed to add
+helpful features for use with MatchMove workflows and reviews.</p>
+<p><cite>MM Standard Renderer</cite> is different from regular Viewport 2.0 because
+it can display <cite>MM Image Plane</cite> nodes with native <cite>useBackground</cite>
+shaders (or Hold-Out geometry).</p>
+<section id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this heading">#</a></h3>
+<p>1) To use <cite>MM Standard Renderer</cite>, load the <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> plug-in (for
+example open the Solver UI to ensure the plug-in is loaded), then use
+the Viewport’s “Renderer” menu to switch to <code class="docutils literal notranslate"><span class="pre">MM</span> <span class="pre">Standard</span> <span class="pre">Renderer</span></code>.</p>
+<figure class="align-center" id="id4">
+<a class="reference internal image-reference" href="_images/tools_renderer_menu_standard.png"><img alt="Viewport Renderer menu for `MM Standard Renderer`." src="_images/tools_renderer_menu_standard.png" style="width: 357.6px; height: 86.4px;" /></a>
+<figcaption>
+<p><span class="caption-text">Enable <cite>MM Standard Renderer</cite> in the Viewport “Renderer” menu.</span><a class="headerlink" href="#id4" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<ol class="arabic simple" start="2">
+<li><p>Use the Maya viewport and playblast as normal.</p></li>
+</ol>
 </section>
-<section id="known-issues">
-<h2>Known Issues<a class="headerlink" href="#known-issues" title="Permalink to this heading">#</a></h2>
-<p><cite>MM Renderer</cite> is <em>beta</em> software and is only released in <code class="docutils literal notranslate"><span class="pre">beta</span></code>
-versions of <cite>MM Solver</cite>.  There are numerous bugs and issues that are
-not yet resolved and the viewport renderer is available as a preview
-only.</p>
+</section>
+<section id="mm-silhouette-renderer">
+<span id="renderer-silhouette-ref"></span><h2>MM Silhouette Renderer<a class="headerlink" href="#mm-silhouette-renderer" title="Permalink to this heading">#</a></h2>
+<p>The <cite>MM Silhouette Renderer</cite> is used to add silhouette outline edge to
+rendered geometry, allowing the artist to clearly see the edges of a
+mesh against an image sequence.</p>
+<p>This rendering effect is particularly effective when the geometry
+contains a Hold-Out effect using a <cite>useBackground</cite> shader or hold-out
+attributes (see <a class="reference internal" href="tools_displaytools.html#set-mesh-hold-outs-ref"><span class="std std-ref">Set Mesh Hold-Out</span></a>
+tool).</p>
+<figure class="align-center" id="id5">
+<a class="reference internal image-reference" href="_images/tools_renderer_silhouette_viewport.png"><img alt="Example green silhouette effect on shaded objects." src="_images/tools_renderer_silhouette_viewport.png" style="width: 896.0px; height: 555.2px;" /></a>
+<figcaption>
+<p><span class="caption-text">Example green silhouette effect on shaded objects.</span><a class="headerlink" href="#id5" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><cite>MM Silhouette Renderer</cite> requires the use of the OpenGL
+graphics API backend; DirectX is not supported.</p>
+</div>
+<section id="id1">
+<h3>Usage<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h3>
+<p>1) To use <cite>MM Silhouette Renderer</cite>, load the <code class="docutils literal notranslate"><span class="pre">mmSolver</span></code> plug-in (for
+example open the Solver UI to ensure the plug-in is loaded), then use
+the Viewport’s “Renderer” menu to switch to <code class="docutils literal notranslate"><span class="pre">MM</span> <span class="pre">Silhouette</span>
+<span class="pre">Renderer</span></code>.</p>
+<figure class="align-center" id="id6">
+<a class="reference internal image-reference" href="_images/tools_renderer_menu_silhouette.png"><img alt="Viewport Renderer menu for `MM Silhouette Renderer`." src="_images/tools_renderer_menu_silhouette.png" style="width: 356.8px; height: 86.4px;" /></a>
+<figcaption>
+<p><span class="caption-text">Enable <cite>MM Silhouette Renderer</cite> in the Viewport “Renderer” menu.</span><a class="headerlink" href="#id6" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<ol class="arabic simple" start="2">
+<li><p>Click viewport panel menu “Renderer &gt; MM Silhouette Renderer
+[Option Box]” to open the <a class="reference internal" href="#renderer-silhouette-settings-ref"><span class="std std-ref">renderer settings</span></a> in the Attribute Editor.</p></li>
+<li><p>Adjust Silhouette settings as needed for desired effect.</p></li>
+<li><p>Use the Maya viewport and playblast as normal.</p></li>
+</ol>
+</section>
+<section id="settings">
+<span id="renderer-silhouette-settings-ref"></span><h3>Settings<a class="headerlink" href="#settings" title="Permalink to this heading">#</a></h3>
+<p>The settings for the <cite>MM Silhouette Renderer</cite> affect all open viewport
+panels using the same renderer and allow adjusting the silhouette
+effect, including the color and opacity.</p>
+<figure class="align-center" id="id7">
+<a class="reference internal image-reference" href="_images/tools_renderer_globals_silhouette.png"><img alt="The global settings for the `MM Silhouette Renderer` in the Attribute Editor." src="_images/tools_renderer_globals_silhouette.png" style="width: 366.40000000000003px; height: 342.40000000000003px;" /></a>
+<figcaption>
+<p><span class="caption-text">The global settings for the <cite>MM Silhouette Renderer</cite> in the
+Attribute Editor.</span><a class="headerlink" href="#id7" title="Permalink to this image">#</a></p>
+</figcaption>
+</figure>
+<div class="table-wrapper colwidths-auto docutils container" id="id8">
+<table class="docutils align-default" id="id8">
+<caption><span class="caption-text">MM Silhouette Renderer Settings</span><a class="headerlink" href="#id8" title="Permalink to this table">#</a></caption>
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Depth Offset</p></td>
+<td><p>The separation between the invisible solid geometry and the
+wireframe mesh. Adjust to lower values if small-mesh artifacts
+are visible. Set to <code class="docutils literal notranslate"><span class="pre">0.0</span></code> to create a shaded wireframe
+effect.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Width</p></td>
+<td><p>The width of the silhouette lines.</p></td>
+</tr>
+<tr class="row-even"><td><p>Override Color</p></td>
+<td><p>When enabled, all objects will use the silhouette color
+below. When disabled, the wireframe color of the object is used
+for each object’s lines.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Color</p></td>
+<td><p>The override color for silhouette lines.</p></td>
+</tr>
+<tr class="row-even"><td><p>Alpha</p></td>
+<td><p>The global opacity of the silhouette lines.</p></td>
+</tr>
+<tr class="row-odd"><td><p>Cull Face</p></td>
+<td><p>Backface culling for solid invisible mesh surfaces. For meshes
+with inverted normals values other than <code class="docutils literal notranslate"><span class="pre">Back</span></code>; Options are
+<code class="docutils literal notranslate"><span class="pre">Back</span></code>, <code class="docutils literal notranslate"><span class="pre">Front</span></code> or <code class="docutils literal notranslate"><span class="pre">FrontAndBack</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p>(debug) Enable</p></td>
+<td><p>Toggle the silhouette effect on/off.</p></td>
+</tr>
+<tr class="row-odd"><td><p>(debug) Operation Number</p></td>
+<td><p>Used internally to draw only the first N number of rendering
+operations inside the renderer.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 </section>
 </section>
 
@@ -418,9 +548,16 @@ only.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">MM Renderer</a><ul>
-<li><a class="reference internal" href="#getting-started">Getting Started</a></li>
-<li><a class="reference internal" href="#known-issues">Known Issues</a></li>
+<li><a class="reference internal" href="#">Viewport Renderers</a><ul>
+<li><a class="reference internal" href="#mm-standard-renderer">MM Standard Renderer</a><ul>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mm-silhouette-renderer">MM Silhouette Renderer</a><ul>
+<li><a class="reference internal" href="#id1">Usage</a></li>
+<li><a class="reference internal" href="#settings">Settings</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

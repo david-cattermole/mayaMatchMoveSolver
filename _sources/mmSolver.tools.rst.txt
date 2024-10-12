@@ -11,6 +11,7 @@ mmSolver.tools
    mmSolver.tools.attachbundletocurve
    mmSolver.tools.attributebake
    mmSolver.tools.averagemarker
+   mmSolver.tools.calibratecamera
    mmSolver.tools.cameraaim
    mmSolver.tools.cameracontextmenu
    mmSolver.tools.cameraobjectscaleadjust
@@ -39,6 +40,7 @@ mmSolver.tools
    mmSolver.tools.loadmarker
    mmSolver.tools.markerbundlerename
    mmSolver.tools.markerbundlerenamewithmetadata
+   mmSolver.tools.meshfrompoints
    mmSolver.tools.mmhotkeyset
    mmSolver.tools.mmmenu
    mmSolver.tools.mmshelf
@@ -59,6 +61,7 @@ mmSolver.tools
    mmSolver.tools.selection
    mmSolver.tools.setattributedetails
    mmSolver.tools.setcameraoriginframe
+   mmSolver.tools.setmeshholdouts
    mmSolver.tools.setobjectcolour
    mmSolver.tools.showdeviationcurves
    mmSolver.tools.smoothkeyframes
@@ -71,6 +74,10 @@ mmSolver.tools
    mmSolver.tools.togglecameradistort
    mmSolver.tools.togglelinelock
    mmSolver.tools.togglemarkerlock
+   mmSolver.tools.toggleobjectmotiontrail
+   mmSolver.tools.toggleviewportctrls
+   mmSolver.tools.toggleviewportgeom
+   mmSolver.tools.toggleviewportimgplns
    mmSolver.tools.triangulatebundle
    mmSolver.tools.undoredoscene
    mmSolver.tools.userpreferences

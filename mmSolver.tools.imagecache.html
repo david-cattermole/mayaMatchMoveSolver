@@ -1,0 +1,790 @@
+<!doctype html>
+<html class="no-js" lang="en">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
+
+    <!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
+        <title>mmSolver.tools.imagecache - mayaMatchMoveSolver master documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #eeffcc;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="index.html"><div class="brand">mayaMatchMoveSolver master documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="index.html">
+  
+  
+  <span class="sidebar-brand-text">mayaMatchMoveSolver master documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="tools.html">Tools</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="tools_solver_ui.html">Solver UI</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_basic.html">Basic Solver Tab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_standard.html">Standard Solver Tab</a></li>
+<li class="toctree-l3"><a class="reference internal" href="tools_solver_ui_tab_camera.html">Camera Solver Tab</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="tools_createnode.html">Create Node Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_selection.html">Selection Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_frametools.html">Frame Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_cameracontextmenu.html">Camera Context Menu</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_attributetools.html">Attribute Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_cameratools.html">Camera Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markerbundletools.html">Marker Bundle Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_bundletools.html">Bundle Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_markertools.html">Marker Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_linetools.html">Line Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_displaytools.html">Display Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_zdepthtools.html">Z-Depth Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_meshtools.html">Mesh Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_generaltools.html">General Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_inputoutput.html">Input/Output Tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_hotkeys.html">Hotkeys</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tools_renderer.html">Viewport Renderers</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="techniques.html">Techniques</a><input class="toctree-checkbox" id="toctree-checkbox-3" name="toctree-checkbox-3" role="switch" type="checkbox"/><label for="toctree-checkbox-3"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="techniques_rigs.html">Solving Maya Rigs</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="nodes.html">Nodes</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="nodes_transforms.html">Transform Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_shapes.html">Shape Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_imageplane.html">Image Plane Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_lens.html">Lens Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_display.html">Display Nodes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nodes_other.html">Other Nodes</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="commands.html">Commands</a><input class="toctree-checkbox" id="toctree-checkbox-5" name="toctree-checkbox-5" role="switch" type="checkbox"/><label for="toctree-checkbox-5"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="commands_solve.html">Solve Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_other.html">Other Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_image.html">Image Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="commands_display.html">Display Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="scripting.html">Scripting</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="mmSolver.tools.html">mmSolver.tools</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.aboutwindow.html">mmSolver.tools.aboutwindow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.attachbundletocurve.html">mmSolver.tools.attachbundletocurve</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.attributebake.html">mmSolver.tools.attributebake</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.averagemarker.html">mmSolver.tools.averagemarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.calibratecamera.html">mmSolver.tools.calibratecamera</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.cameraaim.html">mmSolver.tools.cameraaim</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.cameracontextmenu.html">mmSolver.tools.cameracontextmenu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.cameraobjectscaleadjust.html">mmSolver.tools.cameraobjectscaleadjust</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.cameraobjectscaleremove.html">mmSolver.tools.cameraobjectscaleremove</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.centertwodee.html">mmSolver.tools.centertwodee</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.channelsen.html">mmSolver.tools.channelsen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.convertmarker.html">mmSolver.tools.convertmarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.copypastecamera.html">mmSolver.tools.copypastecamera</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.copypastemarker.html">mmSolver.tools.copypastemarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createbundle.html">mmSolver.tools.createbundle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createcamera.html">mmSolver.tools.createcamera</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createcontroller.html">mmSolver.tools.createcontroller</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createcontroller2.html">mmSolver.tools.createcontroller2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createimageplane.html">mmSolver.tools.createimageplane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createlens.html">mmSolver.tools.createlens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createline.html">mmSolver.tools.createline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createmarker.html">mmSolver.tools.createmarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createrivet.html">mmSolver.tools.createrivet</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createskydome.html">mmSolver.tools.createskydome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.deformmarker.html">mmSolver.tools.deformmarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.duplicatemarker.html">mmSolver.tools.duplicatemarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.editrootframes.html">mmSolver.tools.editrootframes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.hotkeyswitcher.html">mmSolver.tools.hotkeyswitcher</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.linkmarkerbundle.html">mmSolver.tools.linkmarkerbundle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.loadlens.html">mmSolver.tools.loadlens</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.loadmarker.html">mmSolver.tools.loadmarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.markerbundlerename.html">mmSolver.tools.markerbundlerename</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.markerbundlerenamewithmetadata.html">mmSolver.tools.markerbundlerenamewithmetadata</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.meshfrompoints.html">mmSolver.tools.meshfrompoints</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.mmhotkeyset.html">mmSolver.tools.mmhotkeyset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.mmmenu.html">mmSolver.tools.mmmenu</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.mmshelf.html">mmSolver.tools.mmshelf</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.navigaterootframes.html">mmSolver.tools.navigaterootframes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.placemarkermanip.html">mmSolver.tools.placemarkermanip</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.raycastmarker.html">mmSolver.tools.raycastmarker</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.removecontroller2.html">mmSolver.tools.removecontroller2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.removesolvernodes.html">mmSolver.tools.removesolvernodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.reparent.html">mmSolver.tools.reparent</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.reparent2.html">mmSolver.tools.reparent2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.reprojectbundle.html">mmSolver.tools.reprojectbundle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.savelensfile.html">mmSolver.tools.savelensfile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.savemarkerfile.html">mmSolver.tools.savemarkerfile</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.screenspacemotiontrail.html">mmSolver.tools.screenspacemotiontrail</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.screenspacerigbake.html">mmSolver.tools.screenspacerigbake</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.screenspacetransform.html">mmSolver.tools.screenspacetransform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.screenzmanipulator.html">mmSolver.tools.screenzmanipulator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.selection.html">mmSolver.tools.selection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.setattributedetails.html">mmSolver.tools.setattributedetails</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.setcameraoriginframe.html">mmSolver.tools.setcameraoriginframe</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.setmeshholdouts.html">mmSolver.tools.setmeshholdouts</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.setobjectcolour.html">mmSolver.tools.setobjectcolour</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.showdeviationcurves.html">mmSolver.tools.showdeviationcurves</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.smoothkeyframes.html">mmSolver.tools.smoothkeyframes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.solver.html">mmSolver.tools.solver</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.sortoutlinernodes.html">mmSolver.tools.sortoutlinernodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.subdivideline.html">mmSolver.tools.subdivideline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.surfacecluster.html">mmSolver.tools.surfacecluster</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.sysinfowindow.html">mmSolver.tools.sysinfowindow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.togglebundlelock.html">mmSolver.tools.togglebundlelock</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.togglecameradistort.html">mmSolver.tools.togglecameradistort</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.togglelinelock.html">mmSolver.tools.togglelinelock</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.togglemarkerlock.html">mmSolver.tools.togglemarkerlock</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.toggleobjectmotiontrail.html">mmSolver.tools.toggleobjectmotiontrail</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.toggleviewportctrls.html">mmSolver.tools.toggleviewportctrls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.toggleviewportgeom.html">mmSolver.tools.toggleviewportgeom</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.toggleviewportimgplns.html">mmSolver.tools.toggleviewportimgplns</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.triangulatebundle.html">mmSolver.tools.triangulatebundle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.undoredoscene.html">mmSolver.tools.undoredoscene</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.userpreferences.html">mmSolver.tools.userpreferences</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.userprefswindow.html">mmSolver.tools.userprefswindow</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.api.html">mmSolver.api</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.logger.html">mmSolver.logger</a></li>
+<li class="toctree-l2 has-children"><a class="reference internal" href="mmSolver.ui.html">mmSolver.ui</a><input class="toctree-checkbox" id="toctree-checkbox-8" name="toctree-checkbox-8" role="switch" type="checkbox"/><label for="toctree-checkbox-8"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.ui.base_maya_window.html">mmSolver.ui.base_maya_window</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.ui.converttypes.html">mmSolver.ui.converttypes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.ui.commonmenus.html">mmSolver.ui.commonmenus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.ui.nodes.html">mmSolver.ui.nodes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.ui.shelfutils.html">mmSolver.ui.shelfutils</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.ui.uimodels.html">mmSolver.ui.uimodels</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.ui.uiutils.html">mmSolver.ui.uiutils</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="mmSolver.utils.html">mmSolver.utils</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">Related Books and Papers</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="licenses.html">Licenses</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="module-mmSolver.tools.imagecache">
+<span id="mmsolver-tools-imagecache"></span><h1>mmSolver.tools.imagecache<a class="headerlink" href="#module-mmSolver.tools.imagecache" title="Permalink to this heading">#</a></h1>
+<p>Image Cache.</p>
+<section id="initialize">
+<h2>Initialize<a class="headerlink" href="#initialize" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="tools">
+<h2>Tools<a class="headerlink" href="#tools" title="Permalink to this heading">#</a></h2>
+</section>
+<section id="module-mmSolver.tools.imagecache.lib">
+<span id="library"></span><h2>Library<a class="headerlink" href="#module-mmSolver.tools.imagecache.lib" title="Permalink to this heading">#</a></h2>
+<p>Functions to control the image cache.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_gpu_memory_total_bytes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_gpu_memory_total_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_gpu_memory_total_bytes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_gpu_memory_used_bytes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_gpu_memory_used_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_gpu_memory_used_bytes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_cpu_memory_total_bytes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_cpu_memory_total_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_cpu_memory_total_bytes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_cpu_memory_used_bytes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_cpu_memory_used_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_cpu_memory_used_bytes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_gpu_cache_item_count">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_gpu_cache_item_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_gpu_cache_item_count" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_cpu_cache_item_count">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_cpu_cache_item_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_cpu_cache_item_count" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_gpu_cache_group_names">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_gpu_cache_group_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_gpu_cache_group_names" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_cpu_cache_group_names">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_cpu_cache_group_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_cpu_cache_group_names" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_gpu_cache_slot_count">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_gpu_cache_slot_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_gpu_cache_slot_count" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_cpu_cache_slot_count">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_cpu_cache_slot_count</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_cpu_cache_slot_count" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_gpu_cache_group_item_count">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_gpu_cache_group_item_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_gpu_cache_group_item_count" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_cpu_cache_group_item_count">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_cpu_cache_group_item_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_cpu_cache_group_item_count" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_gpu_cache_group_item_names">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_gpu_cache_group_item_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_gpu_cache_group_item_names" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_cpu_cache_group_item_names">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_cpu_cache_group_item_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_cpu_cache_group_item_names" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_gpu_cache_used_bytes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_gpu_cache_used_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_gpu_cache_used_bytes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_cpu_cache_used_bytes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_cpu_cache_used_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_cpu_cache_used_bytes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_gpu_cache_capacity_bytes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_gpu_cache_capacity_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_gpu_cache_capacity_bytes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.get_cpu_cache_capacity_bytes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">get_cpu_cache_capacity_bytes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.get_cpu_cache_capacity_bytes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.set_gpu_cache_capacity_bytes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">set_gpu_cache_capacity_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_bytes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.set_gpu_cache_capacity_bytes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.set_cpu_cache_capacity_bytes">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">set_cpu_cache_capacity_bytes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_bytes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.set_cpu_cache_capacity_bytes" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.erase_gpu_group_items">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">erase_gpu_group_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.erase_gpu_group_items" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.erase_cpu_group_items">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">erase_cpu_group_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.erase_cpu_group_items" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.erase_gpu_groups_items">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">erase_gpu_groups_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.erase_gpu_groups_items" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.erase_cpu_groups_items">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">erase_cpu_groups_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">group_names</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.erase_cpu_groups_items" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.erase_gpu_image_items">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">erase_gpu_image_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.erase_gpu_image_items" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.erase_cpu_image_items">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">erase_cpu_image_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.erase_cpu_image_items" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.erase_all_images_on_image_plane_slots">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">erase_all_images_on_image_plane_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape_node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.erase_all_images_on_image_plane_slots" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.erase_images_in_active_image_plane_slot">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">erase_images_in_active_image_plane_slot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape_node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.erase_images_in_active_image_plane_slot" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.erase_images_in_unused_image_plane_slots">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">erase_images_in_unused_image_plane_slots</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape_node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.erase_images_in_unused_image_plane_slots" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.erase_image_sequence">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">erase_image_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_pattern</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format_style</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_frame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.erase_image_sequence" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.erase_all_inactive_images">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">erase_all_inactive_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.erase_all_inactive_images" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.lib.erase_all_images">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.lib.</span></span><span class="sig-name descname"><span class="pre">erase_all_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_type</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.lib.erase_all_images" title="Permalink to this definition">#</a></dt>
+<dd><p>Clear image cache completely.</p>
+</dd></dl>
+
+</section>
+<section id="module-mmSolver.tools.imagecache.config_file">
+<span id="configuration"></span><h2>Configuration<a class="headerlink" href="#module-mmSolver.tools.imagecache.config_file" title="Permalink to this heading">#</a></h2>
+<p>Functions to control the image cache.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_file.write">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config_file.</span></span><span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config_file.write" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_file.get_gpu_capacity_percent">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config_file.</span></span><span class="sig-name descname"><span class="pre">get_gpu_capacity_percent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config_file.get_gpu_capacity_percent" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_file.set_gpu_capacity_percent">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config_file.</span></span><span class="sig-name descname"><span class="pre">set_gpu_capacity_percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config_file.set_gpu_capacity_percent" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_file.get_cpu_capacity_percent">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config_file.</span></span><span class="sig-name descname"><span class="pre">get_cpu_capacity_percent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config_file.get_cpu_capacity_percent" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_file.set_cpu_capacity_percent">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config_file.</span></span><span class="sig-name descname"><span class="pre">set_cpu_capacity_percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config_file.set_cpu_capacity_percent" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<span class="target" id="module-mmSolver.tools.imagecache.config"></span><p>Functions to control the image cache.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config.CapacityData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config.</span></span><span class="sig-name descname"><span class="pre">CapacityData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gpu_default_capacity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpu_default_capacity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scene_override</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpu_scene_capacity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpu_scene_capacity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpu_resolved_capacity</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpu_resolved_capacity</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config.CapacityData" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config.CapacityData.cpu_default_capacity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cpu_default_capacity</span></span><a class="headerlink" href="#mmSolver.tools.imagecache.config.CapacityData.cpu_default_capacity" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config.CapacityData.cpu_resolved_capacity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cpu_resolved_capacity</span></span><a class="headerlink" href="#mmSolver.tools.imagecache.config.CapacityData.cpu_resolved_capacity" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 6</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config.CapacityData.cpu_scene_capacity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cpu_scene_capacity</span></span><a class="headerlink" href="#mmSolver.tools.imagecache.config.CapacityData.cpu_scene_capacity" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config.CapacityData.gpu_default_capacity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gpu_default_capacity</span></span><a class="headerlink" href="#mmSolver.tools.imagecache.config.CapacityData.gpu_default_capacity" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config.CapacityData.gpu_resolved_capacity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gpu_resolved_capacity</span></span><a class="headerlink" href="#mmSolver.tools.imagecache.config.CapacityData.gpu_resolved_capacity" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config.CapacityData.gpu_scene_capacity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">gpu_scene_capacity</span></span><a class="headerlink" href="#mmSolver.tools.imagecache.config.CapacityData.gpu_scene_capacity" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config.CapacityData.scene_override">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">scene_override</span></span><a class="headerlink" href="#mmSolver.tools.imagecache.config.CapacityData.scene_override" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config.resolve_capacity_data">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config.</span></span><span class="sig-name descname"><span class="pre">resolve_capacity_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config.resolve_capacity_data" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config.save_capacity_values">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config.</span></span><span class="sig-name descname"><span class="pre">save_capacity_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gpu_percent_default</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpu_percent_default</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scene_override</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gpu_percent_scene</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cpu_percent_scene</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config.save_capacity_values" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<span class="target" id="module-mmSolver.tools.imagecache.config_scene"></span><p>Functions to control the image cache.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_scene.get_cache_scene_override">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config_scene.</span></span><span class="sig-name descname"><span class="pre">get_cache_scene_override</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config_scene.get_cache_scene_override" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_scene.set_cache_scene_override">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config_scene.</span></span><span class="sig-name descname"><span class="pre">set_cache_scene_override</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config_scene.set_cache_scene_override" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_scene.get_gpu_capacity_percent">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config_scene.</span></span><span class="sig-name descname"><span class="pre">get_gpu_capacity_percent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config_scene.get_gpu_capacity_percent" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_scene.set_gpu_capacity_percent">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config_scene.</span></span><span class="sig-name descname"><span class="pre">set_gpu_capacity_percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config_scene.set_gpu_capacity_percent" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_scene.get_cpu_capacity_percent">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config_scene.</span></span><span class="sig-name descname"><span class="pre">get_cpu_capacity_percent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config_scene.get_cpu_capacity_percent" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_scene.set_cpu_capacity_percent">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config_scene.</span></span><span class="sig-name descname"><span class="pre">set_cpu_capacity_percent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config_scene.set_cpu_capacity_percent" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+<span class="target" id="module-mmSolver.tools.imagecache.config_utils"></span><p>Functions to control the image cache.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_utils.CapacityValue">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config_utils.</span></span><span class="sig-name descname"><span class="pre">CapacityValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size_bytes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percent</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config_utils.CapacityValue" title="Permalink to this definition">#</a></dt>
+<dd><dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_utils.CapacityValue.percent">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">percent</span></span><a class="headerlink" href="#mmSolver.tools.imagecache.config_utils.CapacityValue.percent" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_utils.CapacityValue.size_bytes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">size_bytes</span></span><a class="headerlink" href="#mmSolver.tools.imagecache.config_utils.CapacityValue.size_bytes" title="Permalink to this definition">#</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="mmSolver.tools.imagecache.config_utils.convert_to_capacity_value">
+<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.imagecache.config_utils.</span></span><span class="sig-name descname"><span class="pre">convert_to_capacity_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">percent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">total_bytes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.imagecache.config_utils.convert_to_capacity_value" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="module-mmSolver.tools.imagecache.constant">
+<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.imagecache.constant" title="Permalink to this heading">#</a></h2>
+<p>Image Cache constants.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          
+          
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2018-2022, David Cattermole, Anil Reddy, Kazuma Tonegawa, and Patcha Saheb Binginapalli.
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">mmSolver.tools.imagecache</a><ul>
+<li><a class="reference internal" href="#initialize">Initialize</a></li>
+<li><a class="reference internal" href="#tools">Tools</a></li>
+<li><a class="reference internal" href="#module-mmSolver.tools.imagecache.lib">Library</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_gpu_memory_total_bytes"><code class="docutils literal notranslate"><span class="pre">get_gpu_memory_total_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_gpu_memory_used_bytes"><code class="docutils literal notranslate"><span class="pre">get_gpu_memory_used_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_cpu_memory_total_bytes"><code class="docutils literal notranslate"><span class="pre">get_cpu_memory_total_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_cpu_memory_used_bytes"><code class="docutils literal notranslate"><span class="pre">get_cpu_memory_used_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_gpu_cache_item_count"><code class="docutils literal notranslate"><span class="pre">get_gpu_cache_item_count()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_cpu_cache_item_count"><code class="docutils literal notranslate"><span class="pre">get_cpu_cache_item_count()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_gpu_cache_group_names"><code class="docutils literal notranslate"><span class="pre">get_gpu_cache_group_names()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_cpu_cache_group_names"><code class="docutils literal notranslate"><span class="pre">get_cpu_cache_group_names()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_gpu_cache_slot_count"><code class="docutils literal notranslate"><span class="pre">get_gpu_cache_slot_count()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_cpu_cache_slot_count"><code class="docutils literal notranslate"><span class="pre">get_cpu_cache_slot_count()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_gpu_cache_group_item_count"><code class="docutils literal notranslate"><span class="pre">get_gpu_cache_group_item_count()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_cpu_cache_group_item_count"><code class="docutils literal notranslate"><span class="pre">get_cpu_cache_group_item_count()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_gpu_cache_group_item_names"><code class="docutils literal notranslate"><span class="pre">get_gpu_cache_group_item_names()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_cpu_cache_group_item_names"><code class="docutils literal notranslate"><span class="pre">get_cpu_cache_group_item_names()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_gpu_cache_used_bytes"><code class="docutils literal notranslate"><span class="pre">get_gpu_cache_used_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_cpu_cache_used_bytes"><code class="docutils literal notranslate"><span class="pre">get_cpu_cache_used_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_gpu_cache_capacity_bytes"><code class="docutils literal notranslate"><span class="pre">get_gpu_cache_capacity_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.get_cpu_cache_capacity_bytes"><code class="docutils literal notranslate"><span class="pre">get_cpu_cache_capacity_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.set_gpu_cache_capacity_bytes"><code class="docutils literal notranslate"><span class="pre">set_gpu_cache_capacity_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.set_cpu_cache_capacity_bytes"><code class="docutils literal notranslate"><span class="pre">set_cpu_cache_capacity_bytes()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.erase_gpu_group_items"><code class="docutils literal notranslate"><span class="pre">erase_gpu_group_items()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.erase_cpu_group_items"><code class="docutils literal notranslate"><span class="pre">erase_cpu_group_items()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.erase_gpu_groups_items"><code class="docutils literal notranslate"><span class="pre">erase_gpu_groups_items()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.erase_cpu_groups_items"><code class="docutils literal notranslate"><span class="pre">erase_cpu_groups_items()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.erase_gpu_image_items"><code class="docutils literal notranslate"><span class="pre">erase_gpu_image_items()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.erase_cpu_image_items"><code class="docutils literal notranslate"><span class="pre">erase_cpu_image_items()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.erase_all_images_on_image_plane_slots"><code class="docutils literal notranslate"><span class="pre">erase_all_images_on_image_plane_slots()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.erase_images_in_active_image_plane_slot"><code class="docutils literal notranslate"><span class="pre">erase_images_in_active_image_plane_slot()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.erase_images_in_unused_image_plane_slots"><code class="docutils literal notranslate"><span class="pre">erase_images_in_unused_image_plane_slots()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.erase_image_sequence"><code class="docutils literal notranslate"><span class="pre">erase_image_sequence()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.erase_all_inactive_images"><code class="docutils literal notranslate"><span class="pre">erase_all_inactive_images()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.lib.erase_all_images"><code class="docutils literal notranslate"><span class="pre">erase_all_images()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.imagecache.config_file">Configuration</a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_file.write"><code class="docutils literal notranslate"><span class="pre">write()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_file.get_gpu_capacity_percent"><code class="docutils literal notranslate"><span class="pre">get_gpu_capacity_percent()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_file.set_gpu_capacity_percent"><code class="docutils literal notranslate"><span class="pre">set_gpu_capacity_percent()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_file.get_cpu_capacity_percent"><code class="docutils literal notranslate"><span class="pre">get_cpu_capacity_percent()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_file.set_cpu_capacity_percent"><code class="docutils literal notranslate"><span class="pre">set_cpu_capacity_percent()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config.CapacityData"><code class="docutils literal notranslate"><span class="pre">CapacityData</span></code></a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config.CapacityData.cpu_default_capacity"><code class="docutils literal notranslate"><span class="pre">CapacityData.cpu_default_capacity</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config.CapacityData.cpu_resolved_capacity"><code class="docutils literal notranslate"><span class="pre">CapacityData.cpu_resolved_capacity</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config.CapacityData.cpu_scene_capacity"><code class="docutils literal notranslate"><span class="pre">CapacityData.cpu_scene_capacity</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config.CapacityData.gpu_default_capacity"><code class="docutils literal notranslate"><span class="pre">CapacityData.gpu_default_capacity</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config.CapacityData.gpu_resolved_capacity"><code class="docutils literal notranslate"><span class="pre">CapacityData.gpu_resolved_capacity</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config.CapacityData.gpu_scene_capacity"><code class="docutils literal notranslate"><span class="pre">CapacityData.gpu_scene_capacity</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config.CapacityData.scene_override"><code class="docutils literal notranslate"><span class="pre">CapacityData.scene_override</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config.resolve_capacity_data"><code class="docutils literal notranslate"><span class="pre">resolve_capacity_data()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config.save_capacity_values"><code class="docutils literal notranslate"><span class="pre">save_capacity_values()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_scene.get_cache_scene_override"><code class="docutils literal notranslate"><span class="pre">get_cache_scene_override()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_scene.set_cache_scene_override"><code class="docutils literal notranslate"><span class="pre">set_cache_scene_override()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_scene.get_gpu_capacity_percent"><code class="docutils literal notranslate"><span class="pre">get_gpu_capacity_percent()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_scene.set_gpu_capacity_percent"><code class="docutils literal notranslate"><span class="pre">set_gpu_capacity_percent()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_scene.get_cpu_capacity_percent"><code class="docutils literal notranslate"><span class="pre">get_cpu_capacity_percent()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_scene.set_cpu_capacity_percent"><code class="docutils literal notranslate"><span class="pre">set_cpu_capacity_percent()</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_utils.CapacityValue"><code class="docutils literal notranslate"><span class="pre">CapacityValue</span></code></a><ul>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_utils.CapacityValue.percent"><code class="docutils literal notranslate"><span class="pre">CapacityValue.percent</span></code></a></li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_utils.CapacityValue.size_bytes"><code class="docutils literal notranslate"><span class="pre">CapacityValue.size_bytes</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#mmSolver.tools.imagecache.config_utils.convert_to_capacity_value"><code class="docutils literal notranslate"><span class="pre">convert_to_capacity_value()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-mmSolver.tools.imagecache.constant">Constants</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/scripts/furo.js"></script>
+    </body>
+</html>

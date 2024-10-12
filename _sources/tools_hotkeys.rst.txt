@@ -86,16 +86,16 @@ viewport.
 
    * - Press **ALT + 1** key
      - Show/Hide geometry in the current viewport.
-     - N/A
+     - :ref:`Link <toggle-viewport-node-types-ref>`
 
    * - Press **ALT + 2** key
      - Show/Hide Markers, Bundles, Locators and NURBS Curves in the
        current viewport.
-     - N/A
+     - :ref:`Link <toggle-viewport-node-types-ref>`
 
    * - Press **ALT + 3** key
-     - Show/Hide Maya Image Planes in the current viewport.
-     - N/A
+     - Show/Hide Image Planes in the current viewport.
+     - :ref:`Link <toggle-viewport-node-types-ref>`
 
 .. _marking-menu-heading:
 

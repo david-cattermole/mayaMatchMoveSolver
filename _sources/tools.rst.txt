@@ -28,6 +28,7 @@ Pages dedicated to specific tools:
     tools_linetools
     tools_displaytools
     tools_zdepthtools
+    tools_meshtools
     tools_generaltools
     tools_inputoutput
     tools_hotkeys

@@ -281,6 +281,7 @@ pub mod ffi {
     extern "Rust" {
         fn shim_image_read_pixels_exr_f32x4(
             file_path: &str,
+            vertical_flip: bool,
             out_meta_data: &mut Box<ShimImageMetaData>,
             out_pixel_buffer: &mut Box<ShimImagePixelBuffer>,
         ) -> bool;

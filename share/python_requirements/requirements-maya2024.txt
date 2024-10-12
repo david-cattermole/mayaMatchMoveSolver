@@ -3,7 +3,7 @@
 # Expects Python 3.9.x
 
 # Tools needed for code linting and formatting.
-black == 24.8.0
+black == 24.3.0
 pylint == 3.2.7
 flake8 == 7.1.1
 cpplint == 1.6.1

@@ -315,7 +315,16 @@ global proc AEmmImagePlaneShape2_imageCacheDisplaySectionNew(string $attr_name)
 {
     setUITemplate -pst attributeEditorTemplate;
 
-    symbolButton -image "TypeResetAll.png" imageCacheUpdateValuesButton;
+    // Refresh button
+    rowLayout -nc 3 imageCacheDisplay_refreshLayout;
+    {
+        // Spacer to avoid button on the screen-left of the Attribute
+        // Editor.
+        text -label "";
+
+        button -label "Refresh Attribute Editor" imageCacheDisplay_refreshButton;
+    }
+    setParent ..;
 
     // The total memory size for the image sequence (GB / MB)
     rowLayout -nc 2 imageCacheImageSequenceSizeLayout;
@@ -374,7 +383,7 @@ global proc AEmmImagePlaneShape2_imageCacheDisplaySectionReplace(string $attr_na
     AEmmImagePlaneShape2_imageCache_updateValues($image_plane_shp[0]);
 
     string $update_cmd = "AEmmImagePlaneShape2_imageCache_updateValues " + $image_plane_shp[0];
-    symbolButton -edit -command $update_cmd imageCacheUpdateValuesButton;
+    button -edit -command $update_cmd imageCacheDisplay_refreshButton;
 }
 
 

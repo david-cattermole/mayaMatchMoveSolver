@@ -494,10 +494,7 @@ def create_surface_cluster_on_component(component):
         if len(soft_selection_weights) > 0:
             soft_selection_weights = soft_selection_weights[0]
 
-        # Get position from the component.
-        in_position = maya.cmds.xform(
-            component, query=True, worldSpace=True, translation=True
-        )
+        in_position = selection_utils.get_selection_center_3d_point(component)
 
         point_data = nearestpointonmesh.get_nearest_point_on_mesh(mesh_shp, in_position)
         uv_coordinate = point_data.coords

@@ -26,6 +26,7 @@ from __future__ import print_function
 import maya.cmds
 import maya.OpenMaya as OpenMaya
 
+import mmSolver.utils.python_compat as pycompat
 import mmSolver.logger
 
 
@@ -150,3 +151,59 @@ def get_soft_selection_weights(only_shape_node=None):
         all_weights.append(component_weights)
 
     return all_weights
+
+
+def get_selection_center_3d_point(nodes_or_components):
+    """
+    Return a 3D point that is the average position for the given
+    nodes/components.
+
+    :param nodes_or_components:
+        List of nodes or components, or a single node or component.
+    :type nodes_or_components: [str, ] or str
+
+    :returns: Tuple of 3 floats; 3D Point representing the average position.
+    :rtype: (float, float, float)
+    """
+    assert len(nodes_or_components) > 0
+
+    # Get position from the node/nodes or component/components.
+    #
+    # NOTE: maya.cmds.xform, with a Mesh 'vertex' component as the input, the returned
+    # positions will be a list of 3 float numbers; with a 'face'
+    # component the number of numbers will 3 float numbers of each
+    # vertex in the face.
+    positions = []
+    if isinstance(nodes_or_components, pycompat.TEXT_TYPE):
+        assert maya.cmds.objExists(nodes_or_components)
+        positions += (
+            maya.cmds.xform(
+                nodes_or_components, query=True, worldSpace=True, translation=True
+            )
+            or []
+        )
+    else:
+        for node_or_component in nodes_or_components:
+            assert maya.cmds.objExists(node_or_component)
+            positions += (
+                maya.cmds.xform(
+                    node_or_component, query=True, worldSpace=True, translation=True
+                )
+                or []
+            )
+
+    # Get average position from all selected nodes (or components).
+    sum_x = 0.0
+    sum_y = 0.0
+    sum_z = 0.0
+    positions_count = len(positions) // 3
+    for i in range(positions_count):
+        index = i * 3
+        sum_x += positions[index + 0]
+        sum_y += positions[index + 1]
+        sum_z += positions[index + 2]
+    sum_x /= positions_count
+    sum_y /= positions_count
+    sum_z /= positions_count
+    average_position = (sum_x, sum_y, sum_z)
+    return average_position

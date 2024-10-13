@@ -48,30 +48,32 @@ def get_nearest_point_on_mesh(mesh_shape, in_position):
     maya.cmds.loadPlugin('nearestPointOnMesh', quiet=True)
 
     tmp_node = maya.cmds.createNode('nearestPointOnMesh')
-    maya.cmds.connectAttr(mesh_shape + '.worldMesh[0]', tmp_node + '.inMesh')
+    try:
+        maya.cmds.connectAttr(mesh_shape + '.worldMesh[0]', tmp_node + '.inMesh')
 
-    maya.cmds.setAttr(tmp_node + '.inPositionX', in_position[0])
-    maya.cmds.setAttr(tmp_node + '.inPositionY', in_position[1])
-    maya.cmds.setAttr(tmp_node + '.inPositionZ', in_position[2])
+        maya.cmds.setAttr(tmp_node + '.inPositionX', in_position[0])
+        maya.cmds.setAttr(tmp_node + '.inPositionY', in_position[1])
+        maya.cmds.setAttr(tmp_node + '.inPositionZ', in_position[2])
 
-    position = (
-        maya.cmds.getAttr(tmp_node + '.positionX'),
-        maya.cmds.getAttr(tmp_node + '.positionY'),
-        maya.cmds.getAttr(tmp_node + '.positionZ'),
-    )
-    normal = (
-        maya.cmds.getAttr(tmp_node + '.normalX'),
-        maya.cmds.getAttr(tmp_node + '.normalY'),
-        maya.cmds.getAttr(tmp_node + '.normalZ'),
-    )
-    coords = (
-        maya.cmds.getAttr(tmp_node + '.parameterU'),
-        maya.cmds.getAttr(tmp_node + '.parameterV'),
-    )
-    face_index = maya.cmds.getAttr(tmp_node + '.nearestFaceIndex')
-    result = NearestPointData(
-        position=position, normal=normal, coords=coords, face_index=face_index
-    )
+        position = (
+            maya.cmds.getAttr(tmp_node + '.positionX'),
+            maya.cmds.getAttr(tmp_node + '.positionY'),
+            maya.cmds.getAttr(tmp_node + '.positionZ'),
+        )
+        normal = (
+            maya.cmds.getAttr(tmp_node + '.normalX'),
+            maya.cmds.getAttr(tmp_node + '.normalY'),
+            maya.cmds.getAttr(tmp_node + '.normalZ'),
+        )
+        coords = (
+            maya.cmds.getAttr(tmp_node + '.parameterU'),
+            maya.cmds.getAttr(tmp_node + '.parameterV'),
+        )
+        face_index = maya.cmds.getAttr(tmp_node + '.nearestFaceIndex')
+        result = NearestPointData(
+            position=position, normal=normal, coords=coords, face_index=face_index
+        )
+    finally:
+        maya.cmds.delete(tmp_node)
 
-    maya.cmds.delete(tmp_node)
     return result

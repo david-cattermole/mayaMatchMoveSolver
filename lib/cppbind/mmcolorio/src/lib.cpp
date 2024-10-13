@@ -555,7 +555,7 @@ std::vector<std::string> get_color_space_names(
 
 void generate_shader_text(const char *input_color_space_name,
                           const char *output_color_space_name,
-                          const std::string &out_shader_text) {
+                          std::string &out_shader_text) {
     const bool verbose = false;
 
     MMSOLVER_CORE_VRB(

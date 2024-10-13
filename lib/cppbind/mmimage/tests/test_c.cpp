@@ -72,8 +72,6 @@ bool test_c_image_write(const char *test_name, rust::Str input_file_path,
             pixel.b *= 2.0f;
             pixel.a *= 2.0f;
             raw_data_mut[index] = pixel;
-
-            pixel = raw_data[index];
         }
     }
 

@@ -528,19 +528,19 @@ MStatus initializePlugin(MObject obj) {
     MSelectionMask::registerSelectionType(
         mmsolver::ImagePlaneShape2Node::m_selection_type_name,
         selection_priority);
-    mel_cmd = "selectType -byName \"";
+    mel_cmd += "selectType -byName \"";
     mel_cmd += mmsolver::ImagePlaneShape2Node::m_selection_type_name;
     mel_cmd += "\" 1;";
 
     MSelectionMask::registerSelectionType(
         mmsolver::SkyDomeShapeNode::m_selection_type_name, selection_priority);
-    mel_cmd = "selectType -byName \"";
+    mel_cmd += "selectType -byName \"";
     mel_cmd += mmsolver::SkyDomeShapeNode::m_selection_type_name;
     mel_cmd += "\" 1;";
 
     MSelectionMask::registerSelectionType(
         mmsolver::LineShapeNode::m_selection_type_name, selection_priority);
-    mel_cmd = "selectType -byName \"";
+    mel_cmd += "selectType -byName \"";
     mel_cmd += mmsolver::LineShapeNode::m_selection_type_name;
     mel_cmd += "\" 1;";
 

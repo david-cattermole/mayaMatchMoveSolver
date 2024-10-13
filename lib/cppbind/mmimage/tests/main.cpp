@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
         print_help(argv[0]);
         return 0;
     }
-    char *dir_path = argv[1];
+    const char *dir_path = argv[1];
 
     if (!test_a("mmimage_test_a:", dir_path)) {
         return 1;

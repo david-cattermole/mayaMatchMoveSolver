@@ -45,7 +45,7 @@ namespace OCIO = OCIO_NAMESPACE;
 
 namespace mmcolorio {
 
-void print_ocio_config_details(OCIO::ConstConfigRcPtr &config) {
+void print_ocio_config_details(const OCIO::ConstConfigRcPtr &config) {
     MMSOLVER_CORE_INFO(std::cout, "mmcolorio: ----------------------------");
     MMSOLVER_CORE_INFO(std::cout,
                        "mmcolorio: OpenColorIO Version=" << OCIO_VERSION);
@@ -555,7 +555,7 @@ std::vector<std::string> get_color_space_names(
 
 void generate_shader_text(const char *input_color_space_name,
                           const char *output_color_space_name,
-                          std::string &out_shader_text) {
+                          const std::string &out_shader_text) {
     const bool verbose = false;
 
     MMSOLVER_CORE_VRB(

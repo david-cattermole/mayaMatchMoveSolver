@@ -389,7 +389,7 @@ struct ErrorMetricsResult {
 
     ErrorMetricsResult() = default;
 
-    void fill(const int numberOfMarkerErrors, MarkerPtrList &markerList,
+    void fill(const int numberOfMarkerErrors, const MarkerPtrList &markerList,
               const MTimeArray &frameList,
               const std::vector<IndexPair> &errorToMarkerList,
               const std::vector<double> &errorDistanceList) {

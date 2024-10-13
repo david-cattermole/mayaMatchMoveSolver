@@ -5,15 +5,30 @@
     <analyze-all-vs-configs>false</analyze-all-vs-configs>
     <check-headers>true</check-headers>
     <check-unused-templates>true</check-unused-templates>
+    <inline-suppression>true</inline-suppression>
     <max-ctu-depth>2</max-ctu-depth>
     <max-template-recursion>100</max-template-recursion>
     <includedir>
         <dir name="include/"/>
-        <dir name="mmscenegraph/cppbind/include/"/>
+        <dir name="lib/cppbind/mmcolorio/include"/>
+        <dir name="lib/cppbind/mmcore/include"/>
+        <dir name="lib/cppbind/mmimage/include"/>
+        <dir name="lib/cppbind/mmlens/include"/>
+        <dir name="lib/cppbind/mmscenegraph/include"/>
+        <dir name="lib/mmsolverlibs/include/"/>
     </includedir>
     <paths>
+        <dir name="lib/cppbind/mmcolorio/src"/>
+        <dir name="lib/cppbind/mmcore/src"/>
+        <dir name="lib/cppbind/mmimage/src"/>
+        <dir name="lib/cppbind/mmimage/tests/"/>
+        <dir name="lib/cppbind/mmlens/src"/>
+        <dir name="lib/cppbind/mmlens/tests/"/>
+        <dir name="lib/cppbind/mmscenegraph/src"/>
+        <dir name="lib/cppbind/mmscenegraph/tests/"/>
+        <dir name="lib/mmsolverlibs/src"/>
+        <dir name="lib/mmsolverlibs/src/"/>
         <dir name="src"/>
-        <dir name="mmscenegraph/cppbind/src"/>
     </paths>
     <tools>
         <tool>clang-tidy</tool>

@@ -256,7 +256,7 @@ public:
         const Ticks ticks = get_ticks(loopNums);
         if (loopNums <= 1) {
             stream << heading << " Ticks: ";
-        } else if (loopNums > 0) {
+        } else {
             stream << heading << " Ticks (per-loop): ";
         }
         stream << ticks << " ticks";
@@ -293,7 +293,7 @@ public:
         const double secs = get_seconds(loopNums);
         if (loopNums <= 1) {
             stream << heading << " Time: ";
-        } else if (loopNums > 0) {
+        } else {
             stream << heading << " Time (per-loop): ";
         }
         stream << secs << " seconds";

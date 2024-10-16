@@ -347,13 +347,15 @@ void ImagePlaneGeometryOverride::populateGeometry(
                 uint32_t vertexCount = extractor.vertexCount();
                 bool writeOnly =
                     true;  // We don't need the current buffer values.
-                float *data = static_cast<float *>(
+                float *acquired_data = static_cast<float *>(
                     vertexBuffer->acquire(vertexCount, writeOnly));
-                if (data) {
-                    status =
-                        extractor.populateVertexBuffer(data, vertexCount, desc);
-                    if (status == MS::kFailure) return;
-                    vertexBuffer->commit(data);
+                if (acquired_data) {
+                    status = extractor.populateVertexBuffer(acquired_data,
+                                                            vertexCount, desc);
+                    if (status == MS::kFailure) {
+                        return;
+                    }
+                    vertexBuffer->commit(acquired_data);
                 }
             }
         }

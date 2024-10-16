@@ -89,12 +89,12 @@ void applyLossFunctionToErrors(const int numberOfErrors, double *f,
 bool get_initial_parameters(const int numberOfParameters,
                             std::vector<double> &paramList,
                             std::vector<std::pair<int, int> > &paramToAttrList,
-                            AttrPtrList &attrList, MTimeArray &frameList,
+                            const AttrPtrList &attrList, MTimeArray &frameList,
                             SolverResult &out_solverResult);
 
 bool set_maya_attribute_values(
     const int numberOfParameters,
-    std::vector<std::pair<int, int> > &paramToAttrList, AttrPtrList &attrList,
+    std::vector<std::pair<int, int> > &paramToAttrList, const AttrPtrList &attrList,
     std::vector<double> &paramList, MTimeArray &frameList, MDGModifier &dgmod,
     MAnimCurveChange &curveChange);
 
@@ -114,14 +114,14 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
               StiffAttrsPtrList &stiffAttrsList,
               SmoothAttrsPtrList &smoothAttrsList, MDGModifier &dgmod,
               MAnimCurveChange &curveChange, MComputation &computation,
-              MStringArray &printStatsList, const LogLevel logLevel,
+              const MStringArray &printStatsList, const LogLevel logLevel,
               MStringArray &outResult);
 
 bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
               MarkerPtrList &markerList, BundlePtrList &bundleList,
               AttrPtrList &attrList, const MTimeArray &frameList,
               MDGModifier &dgmod, MAnimCurveChange &curveChange,
-              MComputation &computation, MStringArray &printStatsList,
+              MComputation &computation, const MStringArray &printStatsList,
               const LogLevel logLevel, CommandResult &out_cmdResult);
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_BASE_H

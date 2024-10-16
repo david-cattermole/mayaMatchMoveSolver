@@ -245,7 +245,7 @@ MStatus add_attribute(Attr &mayaAttr, const MString &attr_name,
         out_attrId = out_attrDataBlock.create_attr_static(value * scaleFactor);
     }
 
-    MString nodeAttrName = mayaAttr.getLongName();
+    const MString nodeAttrName = mayaAttr.getLongName();
     auto nodeAttrNameStr = std::string(nodeAttrName.asChar());
     out_attrNameToAttrIdMap.insert({nodeAttrNameStr, out_attrId});
 
@@ -1111,19 +1111,17 @@ MStatus convert_attributes_to_attr_ids(
     return status;
 }
 
-MStatus construct_scene_graph(CameraPtrList &cameraList,
-                              MarkerPtrList &markerList,
-                              BundlePtrList &bundleList, AttrPtrList &attrList,
-                              const MTimeArray &frameList,
-                              const int timeEvalMode,
-                              mmsg::SceneGraph &out_sceneGraph,
-                              mmsg::AttrDataBlock &out_attrDataBlock,
-                              mmsg::FlatScene &out_flatScene,
-                              std::vector<mmsg::FrameValue> &out_frameList,
-                              std::vector<mmsg::CameraNode> &out_cameraNodes,
-                              std::vector<mmsg::BundleNode> &out_bundleNodes,
-                              std::vector<mmsg::MarkerNode> &out_markerNodes,
-                              std::vector<mmsg::AttrId> &out_attrIdList) {
+MStatus construct_scene_graph(
+    const CameraPtrList &cameraList, const MarkerPtrList &markerList,
+    const BundlePtrList &bundleList, const AttrPtrList &attrList,
+    const MTimeArray &frameList, const int timeEvalMode,
+    mmsg::SceneGraph &out_sceneGraph, mmsg::AttrDataBlock &out_attrDataBlock,
+    mmsg::FlatScene &out_flatScene,
+    std::vector<mmsg::FrameValue> &out_frameList,
+    std::vector<mmsg::CameraNode> &out_cameraNodes,
+    std::vector<mmsg::BundleNode> &out_bundleNodes,
+    std::vector<mmsg::MarkerNode> &out_markerNodes,
+    std::vector<mmsg::AttrId> &out_attrIdList) {
     const bool verbose = false;
     MMSOLVER_MAYA_VRB(
         "construct_scene_graph -----------------------------------");

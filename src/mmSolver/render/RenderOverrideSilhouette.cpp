@@ -116,7 +116,7 @@ RenderOverrideSilhouette::RenderOverrideSilhouette(const MString &name)
     , m_alpha(kSilhouetteAlphaDefault)
     , m_cull_face(kSilhouetteCullFaceDefault)
     , m_operation_num(255) {
-    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+    const MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
     if (!renderer) {
         MMSOLVER_MAYA_ERR(
             "MM Renderer Silhouette Render Override: "

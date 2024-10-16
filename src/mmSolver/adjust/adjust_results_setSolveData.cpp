@@ -476,7 +476,7 @@ MStatus setErrorMetricsResultDataOnNode(ErrorMetricsResult &results,
     // Set deviation attributes for each for each marker, on the given
     // `node`.
     const char *prefix = "mkr___";
-    for (auto &kv : results.error_per_marker_per_frame) {
+    for (const auto &kv : results.error_per_marker_per_frame) {
         const auto marker_name = get_short_node_name(kv.first);
         const auto map = kv.second;
 

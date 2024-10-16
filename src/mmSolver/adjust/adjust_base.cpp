@@ -260,7 +260,7 @@ double parameterBoundFromExternalToInternal(double value, double xmin,
 bool get_initial_parameters(
     const int numberOfParameters, std::vector<double> &paramList,
     const std::vector<std::pair<int, int>> &paramToAttrList,
-    AttrPtrList &attrList, const MTimeArray &frameList,
+    const AttrPtrList &attrList, const MTimeArray &frameList,
     SolverResult &out_solverResult) {
     MStatus status = MS::kSuccess;
     const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
@@ -297,7 +297,7 @@ bool get_initial_parameters(
 bool set_maya_attribute_values(
     const int numberOfParameters,
     const std::vector<std::pair<int, int>> &paramToAttrList,
-    AttrPtrList &attrList, const std::vector<double> &paramList,
+    const AttrPtrList &attrList, const std::vector<double> &paramList,
     const MTimeArray &frameList, MDGModifier &dgmod,
     MAnimCurveChange &curveChange) {
     MStatus status = MS::kSuccess;
@@ -371,7 +371,7 @@ bool compute_error_stats(const int numberOfMarkerErrors,
     return true;
 }
 
-void logResultsTimer(SolverTimer &timer, TimerResult &outTimerResult) {
+void logResultsTimer(const SolverTimer &timer, TimerResult &outTimerResult) {
     outTimerResult.fill(timer);
 }
 
@@ -385,7 +385,7 @@ void logResultsSolveValues(const int numberOfParameters,
 }
 
 void logResultsErrorMetrics(const int numberOfMarkerErrors,
-                            MarkerPtrList &markerList,
+                            const MarkerPtrList &markerList,
                             const MTimeArray &frameList,
                             const std::vector<IndexPair> &errorToMarkerList,
                             const std::vector<double> &errorDistanceList,
@@ -714,9 +714,9 @@ MStatus solveFrames(
     CameraPtrList &cameraList, BundlePtrList &bundleList,
     const MTimeArray &frameList, MarkerPtrList &usedMarkerList,
     MarkerPtrList &unusedMarkerList, AttrPtrList &usedAttrList,
-    AttrPtrList &unusedAttrList, StiffAttrsPtrList &stiffAttrsList,
-    SmoothAttrsPtrList &smoothAttrsList, const BoolList2D &markerToAttrList,
-    SolverOptions &solverOptions,
+    AttrPtrList &unusedAttrList, const StiffAttrsPtrList &stiffAttrsList,
+    const SmoothAttrsPtrList &smoothAttrsList,
+    const BoolList2D &markerToAttrList, SolverOptions &solverOptions,
     //
     const MGlobal::MMayaState &mayaSessionState, MDGModifier &out_dgmod,
     MAnimCurveChange &out_curveChange, MComputation &out_computation,
@@ -1300,7 +1300,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
               StiffAttrsPtrList &stiffAttrsList,
               SmoothAttrsPtrList &smoothAttrsList, MDGModifier &dgmod,
               MAnimCurveChange &curveChange, MComputation &computation,
-              MStringArray &printStatsList, const LogLevel logLevel,
+              const MStringArray &printStatsList, const LogLevel logLevel,
               MStringArray &outResult) {
     MStatus status = MS::kSuccess;
 
@@ -1491,7 +1491,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
               MarkerPtrList &markerList, BundlePtrList &bundleList,
               AttrPtrList &attrList, const MTimeArray &frameList,
               MDGModifier &dgmod, MAnimCurveChange &curveChange,
-              MComputation &computation, MStringArray &printStatsList,
+              MComputation &computation, const MStringArray &printStatsList,
               const LogLevel logLevel, CommandResult &out_cmdResult) {
     MStatus status = MS::kSuccess;
 

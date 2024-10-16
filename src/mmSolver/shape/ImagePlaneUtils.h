@@ -74,15 +74,15 @@ void calculate_node_camera_size_string(MDagPath &objPath,
                                        bool &out_draw_camera_size,
                                        MString &out_camera_size);
 
-void find_geometry_node_path(MObject &node, MString &attr_name,
+void find_geometry_node_path(const MObject &node, const MString &attr_name,
                              MDagPath &out_geometry_node_path,
                              MFn::Type &out_geometry_node_type);
 
-void find_shader_node_path(MObject &node, MString &attr_name,
+void find_shader_node_path(const MObject &node, const MString &attr_name,
                            MObject &out_shader_node,
                            MFn::Type &out_shader_node_type);
 
-void find_camera_node_path(MObject &node, MString &attr_name,
+void find_camera_node_path(const MObject &node, const MString &attr_name,
                            MDagPath &out_camera_node_path,
                            MFn::Type &out_camera_node_type);
 

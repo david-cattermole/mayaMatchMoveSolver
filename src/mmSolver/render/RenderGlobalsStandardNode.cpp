@@ -96,7 +96,7 @@ void RenderGlobalsStandardNode::attr_change_func(
         return;
     }
 
-    RenderOverrideStandard *override_ptr =
+    const RenderOverrideStandard *override_ptr =
         (RenderOverrideStandard *)renderer->findRenderOverride(
             MM_RENDERER_STANDARD_NAME);
     if (override_ptr == nullptr) {

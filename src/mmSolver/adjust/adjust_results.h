@@ -756,7 +756,7 @@ struct SolverObjectUsageResult {
     void appendToMStringArray(MStringArray &result) {
         if (!Self::markers_used.empty()) {
             MString str = "markers_used=";
-            for (auto &value : Self::markers_used) {
+            for (const auto &value : Self::markers_used) {
                 str += MString(value.c_str());
                 str += CMD_RESULT_SPLIT_CHAR;
             }
@@ -765,7 +765,7 @@ struct SolverObjectUsageResult {
 
         if (!Self::markers_unused.empty()) {
             MString str = "markers_unused=";
-            for (auto &value : Self::markers_unused) {
+            for (const auto &value : Self::markers_unused) {
                 str += MString(value.c_str());
                 str += CMD_RESULT_SPLIT_CHAR;
             }
@@ -774,7 +774,7 @@ struct SolverObjectUsageResult {
 
         if (!Self::attributes_used.empty()) {
             MString str = "attributes_used=";
-            for (auto &value : Self::attributes_used) {
+            for (const auto &value : Self::attributes_used) {
                 str += MString(value.c_str());
                 str += CMD_RESULT_SPLIT_CHAR;
             }
@@ -783,7 +783,7 @@ struct SolverObjectUsageResult {
 
         if (!Self::attributes_unused.empty()) {
             MString str = "attributes_unused=";
-            for (auto &value : Self::attributes_unused) {
+            for (const auto &value : Self::attributes_unused) {
                 str += MString(value.c_str());
                 str += CMD_RESULT_SPLIT_CHAR;
             }

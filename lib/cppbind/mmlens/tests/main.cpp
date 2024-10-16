@@ -74,7 +74,7 @@ int main(int argc, char* argv[]) {
         print_help(argv[0]);
         return 0;
     }
-    char* dir_path = argv[1];
+    const char* dir_path = argv[1];
 
     // Verbosity level;
     // - 0 == Minimal info is printed.
@@ -96,7 +96,7 @@ int main(int argc, char* argv[]) {
     // Loop over all values in a buffer, evaluating all values in the
     // buffer at once, in batch.
     bool multithread = false;
-    for (auto& test_size : test_image_sizes) {
+    for (const auto& test_size : test_image_sizes) {
         size_t image_width = test_size.first;
         size_t image_height = test_size.second;
         multithread = false;
@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
         test_batch_3de_classic(image_width, image_height, multithread,
                                verbosity);
     }
-    for (auto& test_size : test_image_sizes) {
+    for (const auto& test_size : test_image_sizes) {
         size_t image_width = test_size.first;
         size_t image_height = test_size.second;
         multithread = false;
@@ -116,7 +116,7 @@ int main(int argc, char* argv[]) {
         test_batch_3de_radial_std_deg4(image_width, image_height, multithread,
                                        verbosity);
     }
-    for (auto& test_size : test_image_sizes) {
+    for (const auto& test_size : test_image_sizes) {
         size_t image_width = test_size.first;
         size_t image_height = test_size.second;
         multithread = false;
@@ -126,7 +126,7 @@ int main(int argc, char* argv[]) {
         test_batch_3de_anamorphic_std_deg4(image_width, image_height,
                                            multithread, verbosity);
     }
-    for (auto& test_size : test_image_sizes) {
+    for (const auto& test_size : test_image_sizes) {
         size_t image_width = test_size.first;
         size_t image_height = test_size.second;
         multithread = false;
@@ -140,22 +140,22 @@ int main(int argc, char* argv[]) {
     // Loop over each coordinate and call the evaluation of each
     // once. This achieves the same result as the "batch" approach but
     // could be slower due to the number of (virtual?) function calls.
-    for (auto& test_size : test_image_sizes) {
+    for (const auto& test_size : test_image_sizes) {
         size_t image_width = test_size.first;
         size_t image_height = test_size.second;
         test_once_3de_classic(image_width, image_height, verbosity);
     }
-    for (auto& test_size : test_image_sizes) {
+    for (const auto& test_size : test_image_sizes) {
         size_t image_width = test_size.first;
         size_t image_height = test_size.second;
         test_once_3de_radial_std_deg4(image_width, image_height, verbosity);
     }
-    for (auto& test_size : test_image_sizes) {
+    for (const auto& test_size : test_image_sizes) {
         size_t image_width = test_size.first;
         size_t image_height = test_size.second;
         test_once_3de_anamorphic_std_deg4(image_width, image_height, verbosity);
     }
-    for (auto& test_size : test_image_sizes) {
+    for (const auto& test_size : test_image_sizes) {
         size_t image_width = test_size.first;
         size_t image_height = test_size.second;
         test_once_3de_anamorphic_std_deg4_rescaled(image_width, image_height,
@@ -163,7 +163,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Calculates both undistortion and redistortion in the same loop.
-    for (auto& test_size : test_image_sizes) {
+    for (const auto& test_size : test_image_sizes) {
         size_t image_width = test_size.first;
         size_t image_height = test_size.second;
         multithread = false;
@@ -173,7 +173,7 @@ int main(int argc, char* argv[]) {
         test_both_3de_classic(image_width, image_height, multithread,
                               verbosity);
     }
-    for (auto& test_size : test_image_sizes) {
+    for (const auto& test_size : test_image_sizes) {
         size_t image_width = test_size.first;
         size_t image_height = test_size.second;
         multithread = false;
@@ -183,7 +183,7 @@ int main(int argc, char* argv[]) {
         test_both_3de_radial_std_deg4(image_width, image_height, multithread,
                                       verbosity);
     }
-    for (auto& test_size : test_image_sizes) {
+    for (const auto& test_size : test_image_sizes) {
         size_t image_width = test_size.first;
         size_t image_height = test_size.second;
         multithread = false;
@@ -193,7 +193,7 @@ int main(int argc, char* argv[]) {
         test_both_3de_anamorphic_std_deg4(image_width, image_height,
                                           multithread, verbosity);
     }
-    for (auto& test_size : test_image_sizes) {
+    for (const auto& test_size : test_image_sizes) {
         size_t image_width = test_size.first;
         size_t image_height = test_size.second;
         multithread = false;

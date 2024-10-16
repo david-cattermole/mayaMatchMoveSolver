@@ -59,7 +59,7 @@ MStatus MMRendererStandardCmd::doIt(const MArgList &args) {
         return status;
     }
 
-    RenderOverrideStandard *override_ptr =
+    const RenderOverrideStandard *override_ptr =
         (RenderOverrideStandard *)renderer->findRenderOverride(
             kRendererStandardName);
     if (override_ptr == nullptr) {

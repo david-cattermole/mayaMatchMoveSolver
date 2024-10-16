@@ -109,7 +109,7 @@ void RenderGlobalsSilhouetteNode::attr_change_func(
         return;
     }
 
-    RenderOverrideSilhouette *override_ptr =
+    const RenderOverrideSilhouette *override_ptr =
         (RenderOverrideSilhouette *)renderer->findRenderOverride(
             MM_RENDERER_SILHOUETTE_NAME);
     if (override_ptr == nullptr) {

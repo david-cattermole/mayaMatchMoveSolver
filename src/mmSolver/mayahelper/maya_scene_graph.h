@@ -48,8 +48,8 @@
 #include "maya_utils.h"
 
 MStatus construct_scene_graph(
-    CameraPtrList &cameraList, MarkerPtrList &markerList,
-    BundlePtrList &bundleList, AttrPtrList &attrList,
+    const CameraPtrList &cameraList, const MarkerPtrList &markerList,
+    const BundlePtrList &bundleList, const AttrPtrList &attrList,
     const MTimeArray &frameList, const int timeEvalMode,
     mmscenegraph::SceneGraph &out_sceneGraph,
     mmscenegraph::AttrDataBlock &out_attrDataBlock,

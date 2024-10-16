@@ -94,7 +94,7 @@ RenderOverrideStandard::RenderOverrideStandard(const MString &name)
     , m_renderer_change_callback(0)
     , m_render_override_change_callback(0)
     , m_globals_node() {
-    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+    const MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
     if (!renderer) {
         MMSOLVER_MAYA_ERR(
             "MM Renderer Standard Render Override: "

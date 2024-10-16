@@ -61,7 +61,7 @@ MStatus MMRendererSilhouetteCmd::doIt(const MArgList &args) {
         return status;
     }
 
-    RenderOverrideSilhouette *override_ptr =
+    const RenderOverrideSilhouette *override_ptr =
         (RenderOverrideSilhouette *)renderer->findRenderOverride(
             kRendererSilhouetteName);
     if (override_ptr == nullptr) {

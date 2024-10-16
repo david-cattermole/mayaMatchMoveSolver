@@ -42,7 +42,7 @@ namespace mmmemorygpu {
 
 MStatus memory_total_size_in_bytes(size_t &out_size_in_bytes) {
     out_size_in_bytes = 0;
-    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+    const MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
     if (!renderer) {
         MMSOLVER_MAYA_WRN(
             "mmmemorygpu::memory_total_size_in_bytes: "
@@ -195,7 +195,7 @@ MStatus memory_free_size_in_bytes(size_t &out_size_in_bytes) {
 MStatus current_maya_process_memory_used_size_in_bytes(
     size_t &out_size_in_bytes) {
     out_size_in_bytes = 0;
-    MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+    const MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
     if (!renderer) {
         MMSOLVER_MAYA_WRN(
             "mmmemorygpu::current_maya_process_memory_used_size_in_bytes: "

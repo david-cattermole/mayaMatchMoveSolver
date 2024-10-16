@@ -80,7 +80,8 @@
 // Per-attribute type delta values
 #define PER_ATTR_TYPE_DELTA_VALUE 0
 
-inline int getStringArrayIndexOfValue(MStringArray &array, MString &value) {
+inline int getStringArrayIndexOfValue(const MStringArray &array,
+                                      const MString &value) {
 #if MAYA_API_VERSION >= 201700
     return array.indexOf(value);
 #else
@@ -99,7 +100,8 @@ inline int getStringArrayIndexOfValue(MStringArray &array, MString &value) {
  * Generate a 'dgdirty' MEL command listing all nodes that may be
  * changed by our solve function.
  */
-MString generateDirtyCommand(int numberOfMarkerErrors, SolverData *userData) {
+MString generateDirtyCommand(const int numberOfMarkerErrors,
+                             SolverData *userData) {
     MString dgDirtyCmd = "dgdirty ";
     MStringArray dgDirtyNodeNames;
     for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
@@ -305,7 +307,7 @@ int solveFunc_measureErrors(
 int solveFunc_calculateJacobianMatrixForParameter(
     const int i, const int progressMin, const int progressMax,
     std::vector<double> &paramListA, std::vector<double> &errorListA,
-    std::vector<bool> &evalMeasurements, const int autoDiffType,
+    const std::vector<bool> &evalMeasurements, const int autoDiffType,
     const int ldfjac, const int numberOfMarkerErrors,
     const int numberOfAttrStiffnessErrors,
     const int numberOfAttrSmoothnessErrors, const double imageWidth,

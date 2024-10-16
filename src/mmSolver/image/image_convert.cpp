@@ -239,7 +239,7 @@ MStatus convert_image(const MString &src_file_path,
         // Make sure we do our color management with floating point
         // numbers, to avoid loss of detail. This does not do anything
         // if the pixel format is already MImage::kFloat.
-        float *float_pixels = image.floatPixels();
+        const float *float_pixels = image.floatPixels();
         if (float_pixels == nullptr) {
             // The data pointer should be valid because we have
             // already read and operated on the pixels, so it seems

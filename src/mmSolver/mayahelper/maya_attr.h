@@ -187,7 +187,7 @@ enum class AttrSolverType {
 };
 
 inline AttrSolverType computeSolverAttrType(ObjectType objectType,
-                                            MString &attrName) {
+                                            const MString &attrName) {
     auto attr_type = AttrSolverType::kUnknown;
     if (objectType == ObjectType::kBundle) {
         // A bundle node.

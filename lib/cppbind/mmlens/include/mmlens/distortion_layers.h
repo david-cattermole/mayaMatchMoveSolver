@@ -38,7 +38,7 @@ public:
     DistortionLayers() noexcept;
 
     MMLENS_API_EXPORT
-    DistortionLayers(rust::Box<ShimDistortionLayers> &&value) noexcept;
+    explicit DistortionLayers(rust::Box<ShimDistortionLayers> &&value) noexcept;
 
     MMLENS_API_EXPORT
     rust::Box<ShimDistortionLayers> get_inner() noexcept;

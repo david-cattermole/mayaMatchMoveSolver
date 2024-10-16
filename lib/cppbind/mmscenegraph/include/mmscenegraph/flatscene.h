@@ -39,7 +39,7 @@ public:
     FlatScene() noexcept;
 
     MMSCENEGRAPH_API_EXPORT
-    FlatScene(rust::Box<ShimFlatScene> flat_scene) noexcept;
+    explicit FlatScene(rust::Box<ShimFlatScene> flat_scene) noexcept;
 
     MMSCENEGRAPH_API_EXPORT
     rust::Slice<const Real> markers() const noexcept;

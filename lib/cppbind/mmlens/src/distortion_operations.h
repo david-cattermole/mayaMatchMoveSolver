@@ -232,20 +232,20 @@ void apply_lens_distortion_from_identity_with_stride(
     const double film_back_radius_cm, LENS_TYPE lens) {
     if (out_data_stride == 2) {
         // The output buffer is expected to have 2D coordinates only.
-        const size_t out_data_stride = 2;
+        const size_t output_buffer_data_stride = 2;
 
-        apply_lens_distortion_from_identity<DIRECTION, out_data_stride,
-                                            OUT_TYPE, LENS_TYPE>(
+        apply_lens_distortion_from_identity<
+            DIRECTION, output_buffer_data_stride, OUT_TYPE, LENS_TYPE>(
             image_width, image_height, start_image_width, start_image_height,
             end_image_width, end_image_height, out_data_ptr, out_data_size,
             camera_parameters, film_back_radius_cm, lens);
 
     } else if (out_data_stride == 4) {
         // The output buffer is expected to have 4 values; RGBA.
-        const size_t out_data_stride = 4;
+        const size_t output_buffer_data_stride = 4;
 
-        apply_lens_distortion_from_identity<DIRECTION, out_data_stride,
-                                            OUT_TYPE, LENS_TYPE>(
+        apply_lens_distortion_from_identity<
+            DIRECTION, output_buffer_data_stride, OUT_TYPE, LENS_TYPE>(
             image_width, image_height, start_image_width, start_image_height,
             end_image_width, end_image_height, out_data_ptr, out_data_size,
             camera_parameters, film_back_radius_cm, lens);
@@ -331,27 +331,27 @@ void apply_lens_distortion_from_buffer_with_stride(
     LENS_TYPE lens) {
     if ((in_data_stride == 2) && (out_data_stride == 2)) {
         // The input buffer will be 2D.
-        const size_t in_data_stride = 2;
+        const size_t input_buffer_data_stride = 2;
 
         // The output buffer is expected to have 2D coordinates only.
-        const size_t out_data_stride = 2;
+        const size_t output_buffer_data_stride = 2;
 
-        apply_lens_distortion_to_buffer<DIRECTION, in_data_stride,
-                                        out_data_stride, IN_TYPE, OUT_TYPE,
-                                        LENS_TYPE>(
+        apply_lens_distortion_to_buffer<DIRECTION, input_buffer_data_stride,
+                                        output_buffer_data_stride, IN_TYPE,
+                                        OUT_TYPE, LENS_TYPE>(
             data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
             out_data_ptr, out_data_size, camera_parameters, film_back_radius_cm,
             lens);
     } else if ((in_data_stride == 2) && (out_data_stride == 4)) {
         // The input buffer will be 2D.
-        const size_t in_data_stride = 2;
+        const size_t input_buffer_data_stride = 2;
 
         // The output buffer is expected to have 4 values; RGBA.
-        const size_t out_data_stride = 4;
+        const size_t output_buffer_data_stride = 4;
 
-        apply_lens_distortion_to_buffer<DIRECTION, in_data_stride,
-                                        out_data_stride, IN_TYPE, OUT_TYPE,
-                                        LENS_TYPE>(
+        apply_lens_distortion_to_buffer<DIRECTION, input_buffer_data_stride,
+                                        output_buffer_data_stride, IN_TYPE,
+                                        OUT_TYPE, LENS_TYPE>(
             data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
             out_data_ptr, out_data_size, camera_parameters, film_back_radius_cm,
             lens);

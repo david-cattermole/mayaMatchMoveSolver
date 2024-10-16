@@ -144,14 +144,14 @@ MStatus add_all_image_planes(MSelectionList& out_selection_list) {
 
     if (verbose) {
         MStatus status = MS::kSuccess;
-        MDagPath dagPath;
+        MDagPath dag_path;
         for (int i = 0; i < out_selection_list.length(); i++) {
-            status = out_selection_list.getDagPath(i, dagPath);
+            status = out_selection_list.getDagPath(i, dag_path);
             if (status == MS::kSuccess) {
                 MMSOLVER_MAYA_VRB(
                     "add_all_image_planes: "
                     "i="
-                    << i << " node=\"" << dagPath.fullPathName().asChar()
+                    << i << " node=\"" << dag_path.fullPathName().asChar()
                     << "\".");
             }
         }

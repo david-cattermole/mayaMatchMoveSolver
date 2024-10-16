@@ -107,10 +107,10 @@ bool TextureData::allocate_texture(MHWRender::MTextureManager *texture_manager,
     // avoid reallocations.
     const MString g_empty_string;
 
-    MTexture *texture = texture_manager->acquireTexture(
+    MTexture *new_texture = texture_manager->acquireTexture(
         g_empty_string, texture_desc, pixel_data, generate_mip_maps);
-    if (texture) {
-        m_texture = texture;
+    if (new_texture) {
+        m_texture = new_texture;
         ok = true;
     } else {
         ok = false;

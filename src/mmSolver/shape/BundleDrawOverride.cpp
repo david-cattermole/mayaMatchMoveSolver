@@ -170,7 +170,6 @@ MUserData *BundleDrawOverride::prepareForDraw(
     float alpha = 0.0;
     auto display_status = MHWRender::MGeometryUtilities::displayStatus(objPath);
     if ((display_status == MHWRender::kLead) ||
-        (display_status == MHWRender::kLead) ||
         (display_status == MHWRender::kActive) ||
         (display_status == MHWRender::kHilite) ||
         (display_status == MHWRender::kActiveComponent)) {

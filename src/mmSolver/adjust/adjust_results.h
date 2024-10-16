@@ -603,8 +603,6 @@ struct AffectsResult {
 
     void fill(const MarkerPtrList &markerList, const AttrPtrList &attrList,
               const BoolList2D &markerToAttrList) {
-        std::string resultStr;
-
         std::vector<bool>::const_iterator cit_inner;
         BoolList2D::const_iterator cit_outer;
         int markerIndex = 0;

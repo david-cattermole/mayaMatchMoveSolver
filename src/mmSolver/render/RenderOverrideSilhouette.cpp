@@ -293,9 +293,7 @@ RenderOverrideSilhouette::~RenderOverrideSilhouette() {
                 }
 
                 if (m_targets[id]) {
-                    if (target_manager) {
-                        target_manager->releaseRenderTarget(m_targets[id]);
-                    }
+                    target_manager->releaseRenderTarget(m_targets[id]);
                     m_targets[id] = nullptr;
                 }
             }

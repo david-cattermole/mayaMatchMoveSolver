@@ -112,8 +112,6 @@ MStatus fit_line_to_points(const mmsg::Real line_length,
     auto line_center_y = 0.0;
     auto line_dir_x = 1.0;
     auto line_dir_y = 0.0;
-    auto line_slope = 0.0;
-    auto line_angle = 0.0;
 
     if (point_data_x.size() > 2) {
         rust::Slice<const mmsg::Real> x_slice{point_data_x.data(),

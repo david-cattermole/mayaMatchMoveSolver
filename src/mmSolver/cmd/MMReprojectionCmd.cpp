@@ -400,7 +400,6 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     std::vector<double> verticalFilmApertureList;
     std::vector<double> horizontalFilmOffsetList;
     std::vector<double> verticalFilmOffsetList;
-    std::vector<std::shared_ptr<mmlens::LensModel>> lensModelList;
 
     const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
 

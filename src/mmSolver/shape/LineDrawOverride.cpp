@@ -218,7 +218,6 @@ MUserData *LineDrawOverride::prepareForDraw(
     // Adjust colors due to state.
     auto display_status = MHWRender::MGeometryUtilities::displayStatus(objPath);
     if ((display_status == MHWRender::kLead) ||
-        (display_status == MHWRender::kLead) ||
         (display_status == MHWRender::kActive) ||
         (display_status == MHWRender::kHilite) ||
         (display_status == MHWRender::kActiveComponent)) {
@@ -297,8 +296,6 @@ MUserData *LineDrawOverride::prepareForDraw(
     {
         auto line_length = data->m_middle_scale;
         auto line_center = mmdata::Point2D();
-        auto line_center_x = 0.0;
-        auto line_center_y = 0.0;
         auto line_slope = 0.0;
         auto line_angle = 0.0;
         auto line_dir = mmdata::Vector2D();

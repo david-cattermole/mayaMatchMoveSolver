@@ -187,10 +187,10 @@ double calculateParameterDelta(const double value, const double delta,
  * markers and attributes - speeding up the evaluation.
  */
 void determineMarkersToBeEvaluated(
-    int numberOfParameters, int numberOfMarkers, double delta,
-    std::vector<double> previousParamList, const double *parameters,
-    std::vector<std::vector<bool>> errorToParamList,
-    std::vector<bool> &evalMeasurements) {
+    const int numberOfParameters, const int numberOfMarkers, const double delta,
+    const std::vector<double> previousParamList, const double *parameters,
+    const std::vector<std::vector<bool>> &errorToParamList,
+    std::vector<bool> &out_evalMeasurements) {
     std::vector<int> evalCount(numberOfMarkers, 0);
 
     // Get all parameters that have changed.
@@ -220,9 +220,9 @@ void determineMarkersToBeEvaluated(
     }
 
     // Convert evalCount to list of bools
-    evalMeasurements.resize((unsigned long)numberOfMarkers, false);
+    out_evalMeasurements.resize((unsigned long)numberOfMarkers, false);
     for (size_t i = 0; i < evalCount.size(); ++i) {
-        evalMeasurements[i] = static_cast<bool>(evalCount[i] > 0);
+        out_evalMeasurements[i] = static_cast<bool>(evalCount[i] > 0);
     }
     return;
 }

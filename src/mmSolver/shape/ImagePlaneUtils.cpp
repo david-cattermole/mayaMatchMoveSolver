@@ -148,7 +148,8 @@ void calculate_node_camera_size_string(MDagPath &objPath,
     double width = 0.0;
     double height = 0.0;
 
-    MStatus status = getNodeAttr(objPath, draw_camera_size_attr, out_draw_camera_size);
+    MStatus status =
+        getNodeAttr(objPath, draw_camera_size_attr, out_draw_camera_size);
     CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, camera_width_inch_attr, width);

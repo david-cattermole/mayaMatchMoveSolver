@@ -86,7 +86,8 @@ public:
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(const mmdata::Vector2D in_point_dn) const override {
+    mmdata::Vector2D map_inverse(
+        const mmdata::Vector2D in_point_dn) const override {
         ldpk::vec2d out_point_dn = m_distortion.map_inverse(
             ldpk::vec2d(in_point_dn.x_, in_point_dn.y_));
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
@@ -128,7 +129,8 @@ public:
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(const mmdata::Vector2D in_point_dn) const override {
+    mmdata::Vector2D map_inverse(
+        const mmdata::Vector2D in_point_dn) const override {
         ldpk::vec2d out_point_dn = m_radial.map_inverse(
             m_cylindric.eval_inv(ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)));
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
@@ -183,7 +185,8 @@ public:
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(const mmdata::Vector2D in_point_dn) const override {
+    mmdata::Vector2D map_inverse(
+        const mmdata::Vector2D in_point_dn) const override {
         ldpk::vec2d out_point_dn =
             m_pixel_aspect_and_rotation.eval(m_anamorphic.map_inverse(
                 m_rotation_squeeze_xy_pixel_aspect.eval_inv(
@@ -259,7 +262,8 @@ public:
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(const mmdata::Vector2D in_point_dn) const override {
+    mmdata::Vector2D map_inverse(
+        const mmdata::Vector2D in_point_dn) const override {
         ldpk::vec2d out_point_dn =
             m_pixel_aspect_rescale_and_rotation.eval(m_anamorphic.map_inverse(
                 m_rotation_squeeze_xy_rescale_pixel_aspect.eval_inv(

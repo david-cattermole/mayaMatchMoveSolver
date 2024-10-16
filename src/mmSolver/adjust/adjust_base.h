@@ -94,9 +94,9 @@ bool get_initial_parameters(const int numberOfParameters,
 
 bool set_maya_attribute_values(
     const int numberOfParameters,
-    std::vector<std::pair<int, int> > &paramToAttrList, const AttrPtrList &attrList,
-    std::vector<double> &paramList, MTimeArray &frameList, MDGModifier &dgmod,
-    MAnimCurveChange &curveChange);
+    std::vector<std::pair<int, int> > &paramToAttrList,
+    const AttrPtrList &attrList, std::vector<double> &paramList,
+    MTimeArray &frameList, MDGModifier &dgmod, MAnimCurveChange &curveChange);
 
 bool compute_error_stats(const int numberOfMarkerErrors,
                          const std::vector<double> &errorDistanceList,

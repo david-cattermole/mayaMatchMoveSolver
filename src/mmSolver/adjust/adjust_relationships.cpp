@@ -84,8 +84,6 @@ int countUpNumberOfErrors(
 
     // For each marker on each frame that it is valid, we add
     // ERRORS_PER_MARKER errors.
-    int i = 0;
-    int j = 0;
 
     // For normalising the marker weight per-frame, create a mapping
     // data structure to use later.
@@ -107,10 +105,11 @@ int countUpNumberOfErrors(
     const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
 
     // Get all the marker data
+    int i = 0;
     for (MarkerPtrListCIt mit = markerList.cbegin(); mit != markerList.cend();
          ++mit) {
         MarkerPtr marker = *mit;
-        for (j = 0; j < (int)frameList.length(); ++j) {
+        for (int j = 0; j < (int)frameList.length(); ++j) {
             MTime frame = frameList[j];
 
             bool enable = false;
@@ -271,7 +270,6 @@ int countUpNumberOfUnknownParameters(
             // Animated parameter (affects a subset of frames -
             // usually only 1 frame).
             numUnknowns += frameList.length();
-            int j = 0;
             for (int j = 0; j < (int)frameList.length(); ++j) {
                 // 'j' is index of frame.
                 //

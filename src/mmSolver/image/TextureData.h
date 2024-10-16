@@ -83,7 +83,8 @@ struct TextureData {
     size_t byte_count() const {
         const uint8_t bytes_per_channel =
             convert_pixel_data_type_to_bytes_per_channel(m_pixel_data_type);
-        return m_width * m_height * m_num_channels * bytes_per_channel;
+        return m_width * m_height * m_num_channels *
+               static_cast<size_t>(bytes_per_channel);
     }
 
 private:

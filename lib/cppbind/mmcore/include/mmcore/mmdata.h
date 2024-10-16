@@ -57,7 +57,10 @@ struct Vector2D {
 public:
     double x_, y_;
 
-    Vector2D(double f = 0.0) : x_(f), y_(f) {}
+    Vector2D() : x_(0.0), y_(0.0) {}
+
+    // Converting constructor.
+    explicit Vector2D(double f) : x_(f), y_(f) {}
 
     Vector2D(double x, double y) : x_(x), y_(y) {}
 };
@@ -66,7 +69,10 @@ struct Vector3D {
 public:
     double x_, y_, z_;
 
-    Vector3D(double f = 0.0) : x_(f), y_(f), z_(f) {}
+    Vector3D() : x_(0.0), y_(0.0), z_(0.0) {}
+
+    // Converting constructor.
+    explicit Vector3D(double f) : x_(f), y_(f), z_(f) {}
 
     Vector3D(double x, double y) : x_(x), y_(y), z_(0.0) {}
 

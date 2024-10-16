@@ -62,7 +62,7 @@ enum SilhouetteTargetId {
 
 class RenderOverrideSilhouette : public MHWRender::MRenderOverride {
 public:
-    RenderOverrideSilhouette(const MString& name);
+    explicit RenderOverrideSilhouette(const MString& name);
     ~RenderOverrideSilhouette() override;
 
     MHWRender::DrawAPI supportedDrawAPIs() const override;

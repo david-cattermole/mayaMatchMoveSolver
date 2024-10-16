@@ -49,7 +49,7 @@ namespace render {
 
 class SilhouetteRender : public MHWRender::MUserRenderOperation {
 public:
-    SilhouetteRender(const MString &name);
+    explicit SilhouetteRender(const MString &name);
     ~SilhouetteRender() override;
 
     MStatus execute(const MHWRender::MDrawContext &drawContext) override;

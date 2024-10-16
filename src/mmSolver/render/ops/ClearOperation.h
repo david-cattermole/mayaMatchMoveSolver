@@ -32,7 +32,7 @@ namespace render {
 
 class ClearOperation : public MHWRender::MClearOperation {
 public:
-    ClearOperation(const MString &name);
+    explicit ClearOperation(const MString &name);
     ~ClearOperation() override;
 
     void setRenderTargets(MHWRender::MRenderTarget **targets,

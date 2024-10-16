@@ -31,7 +31,7 @@ namespace render {
 
 class PresentTarget : public MHWRender::MPresentTarget {
 public:
-    PresentTarget(const MString &name);
+    explicit PresentTarget(const MString &name);
 
     ~PresentTarget() override;
 

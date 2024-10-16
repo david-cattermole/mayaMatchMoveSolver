@@ -131,7 +131,7 @@ public:
     }
 
 private:
-    LineDrawOverride(const MObject &obj);
+    explicit LineDrawOverride(const MObject &obj);
 
     static void on_model_editor_changed_func(void *clientData);
 

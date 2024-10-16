@@ -40,7 +40,7 @@ class MMMarkerTransformNode : public MPxTransform {
 public:
     MMMarkerTransformNode();
 #if MAYA_API_VERSION < 20200000
-    MMMarkerTransformNode(MPxTransformationMatrix *);
+    explicit MMMarkerTransformNode(MPxTransformationMatrix *);
 #endif
 
     virtual ~MMMarkerTransformNode();

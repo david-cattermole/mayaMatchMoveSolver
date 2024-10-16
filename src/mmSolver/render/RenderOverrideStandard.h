@@ -48,7 +48,7 @@ namespace render {
 
 class RenderOverrideStandard : public MHWRender::MRenderOverride {
 public:
-    RenderOverrideStandard(const MString& name);
+    explicit RenderOverrideStandard(const MString& name);
     ~RenderOverrideStandard() override;
 
     MHWRender::DrawAPI supportedDrawAPIs() const override;

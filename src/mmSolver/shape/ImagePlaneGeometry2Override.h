@@ -116,7 +116,7 @@ public:
     }
 
 protected:
-    ImagePlaneGeometry2Override(const MObject &obj);
+    explicit ImagePlaneGeometry2Override(const MObject &obj);
 
     static void on_model_editor_changed_func(void *clientData);
     static void shader_link_lost_func(ShaderLinkLostUserData2 *userData);

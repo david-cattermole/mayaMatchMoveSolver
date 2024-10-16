@@ -40,7 +40,7 @@ public:
     // Maya 2020+ will manage the creation of MPxTransformationMatrix
     // on demand for us.
 #if MAYA_API_VERSION < 20200000
-    MMMarkerGroupTransformNode(MPxTransformationMatrix *);
+    explicit MMMarkerGroupTransformNode(MPxTransformationMatrix *);
 #endif
 
     virtual ~MMMarkerGroupTransformNode();

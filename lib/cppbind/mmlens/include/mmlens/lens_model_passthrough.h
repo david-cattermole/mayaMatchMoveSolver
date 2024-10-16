@@ -45,13 +45,13 @@ public:
         return std::shared_ptr<LensModel>(new LensModelPassthrough(*this));
     }
 
-    virtual void applyModelUndistort(const double x, const double y,
-                                     double &out_x, double &out_y);
+    void applyModelUndistort(const double x, const double y, double &out_x,
+                             double &out_y) override;
 
-    virtual void applyModelDistort(const double x, const double y,
-                                   double &out_x, double &out_y);
+    void applyModelDistort(const double x, const double y, double &out_x,
+                           double &out_y) override;
 
-    virtual mmhash::HashValue hashValue();
+    mmhash::HashValue hashValue() override;
 };
 
 }  // namespace mmlens

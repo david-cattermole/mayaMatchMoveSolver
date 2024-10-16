@@ -169,7 +169,7 @@ public:
     }
 
 private:
-    SkyDomeDrawOverride(const MObject &obj);
+    explicit SkyDomeDrawOverride(const MObject &obj);
 
     // The shape node we're attached to.
     SkyDomeShapeNode *m_node;

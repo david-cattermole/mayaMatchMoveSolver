@@ -74,19 +74,19 @@ class Distortion3deClassic : public Distortion {
 public:
     Distortion3deClassic() {}
 
-    void set_parameter(const int index, const double value) {
+    void set_parameter(const int index, const double value) override {
         m_distortion.set_coeff(index, value);
     }
 
-    void initialize_parameters(CameraParameters camera_parameters) {}
+    void initialize_parameters(CameraParameters camera_parameters) override {}
 
-    mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const {
+    mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const override {
         ldpk::vec2d out_point_dn =
             m_distortion.eval(ldpk::vec2d(in_point_dn.x_, in_point_dn.y_));
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(const mmdata::Vector2D in_point_dn) const {
+    mmdata::Vector2D map_inverse(const mmdata::Vector2D in_point_dn) const override {
         ldpk::vec2d out_point_dn = m_distortion.map_inverse(
             ldpk::vec2d(in_point_dn.x_, in_point_dn.y_));
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
@@ -94,7 +94,7 @@ public:
 
     mmdata::Vector2D map_inverse(
         const mmdata::Vector2D in_point_dn,
-        const mmdata::Vector2D in_initial_point_dn) const {
+        const mmdata::Vector2D in_initial_point_dn) const override {
         ldpk::vec2d out_point_dn = m_distortion.map_inverse(
             ldpk::vec2d(in_point_dn.x_, in_point_dn.y_),
             ldpk::vec2d(in_initial_point_dn.x_, in_initial_point_dn.y_));
@@ -109,7 +109,7 @@ class Distortion3deRadialStdDeg4 : public Distortion {
 public:
     Distortion3deRadialStdDeg4() {}
 
-    void set_parameter(const int index, const double value) {
+    void set_parameter(const int index, const double value) override {
         if (index < 6) {
             m_radial.set_coeff(index, value);
         } else if (index == 6) {
@@ -120,15 +120,15 @@ public:
         return;
     }
 
-    void initialize_parameters(CameraParameters camera_parameters) {}
+    void initialize_parameters(CameraParameters camera_parameters) override {}
 
-    mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const {
+    mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const override {
         ldpk::vec2d out_point_dn = m_cylindric.eval(
             m_radial.eval(ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)));
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(const mmdata::Vector2D in_point_dn) const {
+    mmdata::Vector2D map_inverse(const mmdata::Vector2D in_point_dn) const override {
         ldpk::vec2d out_point_dn = m_radial.map_inverse(
             m_cylindric.eval_inv(ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)));
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
@@ -136,7 +136,7 @@ public:
 
     mmdata::Vector2D map_inverse(
         const mmdata::Vector2D in_point_dn,
-        const mmdata::Vector2D in_initial_point_dn) const {
+        const mmdata::Vector2D in_initial_point_dn) const override {
         ldpk::vec2d out_point_dn = m_radial.map_inverse(
             m_cylindric.eval_inv(ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)),
             m_cylindric.eval_inv(
@@ -153,7 +153,7 @@ class Distortion3deAnamorphicStdDeg4 : public Distortion {
 public:
     Distortion3deAnamorphicStdDeg4() {}
 
-    void set_parameter(const int index, const double value) {
+    void set_parameter(const int index, const double value) override {
         if (index < 10) {
             m_anamorphic.set_coeff(index, value);
         } else if (index == 10) {
@@ -166,7 +166,7 @@ public:
         return;
     }
 
-    void initialize_parameters(CameraParameters camera_parameters) {
+    void initialize_parameters(CameraParameters camera_parameters) override {
         m_pixel_aspect.set_sq(camera_parameters.pixel_aspect);
         m_rotation_squeeze_xy_pixel_aspect.set(m_rotation, m_squeeze_x,
                                                m_squeeze_y, m_pixel_aspect);
@@ -176,14 +176,14 @@ public:
         m_anamorphic.prepare();
     }
 
-    mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const {
+    mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const override {
         ldpk::vec2d out_point_dn = m_rotation_squeeze_xy_pixel_aspect.eval(
             m_anamorphic.eval(m_pixel_aspect_and_rotation.eval_inv(
                 ldpk::vec2d(in_point_dn.x_, in_point_dn.y_))));
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(const mmdata::Vector2D in_point_dn) const {
+    mmdata::Vector2D map_inverse(const mmdata::Vector2D in_point_dn) const override {
         ldpk::vec2d out_point_dn =
             m_pixel_aspect_and_rotation.eval(m_anamorphic.map_inverse(
                 m_rotation_squeeze_xy_pixel_aspect.eval_inv(
@@ -193,7 +193,7 @@ public:
 
     mmdata::Vector2D map_inverse(
         const mmdata::Vector2D in_point_dn,
-        const mmdata::Vector2D in_initial_point_dn) const {
+        const mmdata::Vector2D in_initial_point_dn) const override {
         ldpk::vec2d out_point_dn =
             m_pixel_aspect_and_rotation.eval(m_anamorphic.map_inverse(
                 m_rotation_squeeze_xy_pixel_aspect.eval_inv(
@@ -224,7 +224,7 @@ class Distortion3deAnamorphicStdDeg4Rescaled : public Distortion {
 public:
     Distortion3deAnamorphicStdDeg4Rescaled() {}
 
-    void set_parameter(const int index, const double value) {
+    void set_parameter(const int index, const double value) override {
         if (index < 10) {
             m_anamorphic.set_coeff(index, value);
         } else if (index == 10) {
@@ -239,7 +239,7 @@ public:
         return;
     }
 
-    void initialize_parameters(CameraParameters camera_parameters) {
+    void initialize_parameters(CameraParameters camera_parameters) override {
         m_pixel_aspect.set_sq(camera_parameters.pixel_aspect);
         m_rotation_squeeze_xy_rescale_pixel_aspect.set(
             m_rotation, m_squeeze_x, m_squeeze_y, m_rescale, m_pixel_aspect);
@@ -250,7 +250,7 @@ public:
         m_anamorphic.prepare();
     }
 
-    mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const {
+    mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const override {
         ldpk::vec2d out_point_dn =
             m_rotation_squeeze_xy_rescale_pixel_aspect.eval(
                 m_anamorphic.eval(m_pixel_aspect_rescale_and_rotation.eval_inv(
@@ -259,7 +259,7 @@ public:
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(const mmdata::Vector2D in_point_dn) const {
+    mmdata::Vector2D map_inverse(const mmdata::Vector2D in_point_dn) const override {
         ldpk::vec2d out_point_dn =
             m_pixel_aspect_rescale_and_rotation.eval(m_anamorphic.map_inverse(
                 m_rotation_squeeze_xy_rescale_pixel_aspect.eval_inv(
@@ -269,7 +269,7 @@ public:
 
     mmdata::Vector2D map_inverse(
         const mmdata::Vector2D in_point_dn,
-        const mmdata::Vector2D in_initial_point_dn) const {
+        const mmdata::Vector2D in_initial_point_dn) const override {
         ldpk::vec2d out_point_dn =
             m_pixel_aspect_rescale_and_rotation.eval(m_anamorphic.map_inverse(
                 m_rotation_squeeze_xy_rescale_pixel_aspect.eval_inv(

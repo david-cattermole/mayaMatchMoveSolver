@@ -211,13 +211,13 @@ public:
         }
     }
 
-    virtual void applyModelUndistort(const double x, const double y,
-                                     double &out_x, double &out_y);
+    void applyModelUndistort(const double x, const double y, double &out_x,
+                             double &out_y) override;
 
-    virtual void applyModelDistort(const double x, const double y,
-                                   double &out_x, double &out_y);
+    void applyModelDistort(const double x, const double y, double &out_x,
+                           double &out_y) override;
 
-    virtual mmhash::HashValue hashValue();
+    mmhash::HashValue hashValue() override;
 
 private:
     Parameters3deAnamorphicStdDeg4Rescaled m_lens;

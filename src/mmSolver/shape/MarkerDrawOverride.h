@@ -122,7 +122,7 @@ public:
     }
 
 private:
-    MarkerDrawOverride(const MObject &obj);
+    explicit MarkerDrawOverride(const MObject &obj);
 
     static void on_model_editor_changed_func(void *clientData);
 

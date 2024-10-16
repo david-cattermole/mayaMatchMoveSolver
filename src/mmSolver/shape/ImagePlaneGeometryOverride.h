@@ -85,7 +85,7 @@ public:
     }
 
 protected:
-    ImagePlaneGeometryOverride(const MObject &obj);
+    explicit ImagePlaneGeometryOverride(const MObject &obj);
 
     static void on_model_editor_changed_func(void *clientData);
 

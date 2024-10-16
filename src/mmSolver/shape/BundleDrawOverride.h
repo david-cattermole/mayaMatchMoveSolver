@@ -118,7 +118,7 @@ public:
     }
 
 private:
-    BundleDrawOverride(const MObject &obj);
+    explicit BundleDrawOverride(const MObject &obj);
 
     static void on_model_editor_changed_func(void *clientData);
 

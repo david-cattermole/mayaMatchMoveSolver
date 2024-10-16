@@ -36,7 +36,7 @@ namespace render {
 
 class SceneRender : public SceneRenderBase {
 public:
-    SceneRender(const MString &name);
+    explicit SceneRender(const MString &name);
     ~SceneRender() override;
 
     const MHWRender::MShaderInstance *shaderOverride() override;

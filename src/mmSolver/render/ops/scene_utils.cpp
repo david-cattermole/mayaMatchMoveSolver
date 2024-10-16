@@ -375,7 +375,6 @@ bool set_background_clear_operation(
         // preferences. MRenderer provides us a way to get these
         // values automatically.
         MHWRender::MRenderer* renderer = MHWRender::MRenderer::theRenderer();
-        const bool gradient = renderer->useGradient();
         const MColor color1 = renderer->clearColor();
         const MColor color2 = renderer->clearColor2();
 

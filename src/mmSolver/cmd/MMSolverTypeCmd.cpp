@@ -185,10 +185,9 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
     //                     MEL script that is being run to terminate unless the
     //                     error is caught using a "catch" statement.
     //
-    MStatus status = MStatus::kSuccess;
 
     // Read all the flag arguments.
-    status = parseArgs(args);
+    MStatus status = parseArgs(args);
     if (status != MStatus::kSuccess) {
         return status;
     }
@@ -202,11 +201,11 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
             MStringArray outResult;
 
             for (cit = solverTypes.cbegin(); cit != solverTypes.cend(); ++cit) {
-                int index = cit->first;
-                std::string name = cit->second;
+                const std::string name = cit->second;
 
                 MString item = "";
                 if (m_index) {
+                    int index = cit->first;
                     MString index_mstring =
                         mmmayastring::numberToMString<int>(index);
                     item += index_mstring;
@@ -217,7 +216,7 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
             }
 
             MMSolverTypeCmd::setResult(outResult);
-        } else if (!m_name && m_index) {
+        } else if (m_index) {
             MIntArray outResult;
 
             for (cit = solverTypes.cbegin(); cit != solverTypes.cend(); ++cit) {
@@ -233,10 +232,10 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
 
         if (m_name) {
             MString outResult = "";
-            int index = solverType.first;
-            std::string name = solverType.second;
+            const std::string name = solverType.second;
 
             if (m_index) {
+                const int index = solverType.first;
                 MString index_mstring =
                     mmmayastring::numberToMString<int>(index);
                 outResult += index_mstring;
@@ -245,7 +244,7 @@ MStatus MMSolverTypeCmd::doIt(const MArgList &args) {
             outResult += name.c_str();
 
             MMSolverTypeCmd::setResult(outResult);
-        } else if (!m_name && m_index) {
+        } else if (m_index) {
             int outResult = solverType.first;
             MMSolverTypeCmd::setResult(outResult);
         } else {

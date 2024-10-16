@@ -212,10 +212,8 @@ MStatus setAttrsOnMarkers(MarkerPtrList markerList, AttrPtrList attrList,
 }
 
 MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
-    MStatus status = MStatus::kSuccess;
-
     // Read all the flag arguments.
-    status = MMSolverAffectsCmd::parseArgs(args);
+    MStatus status = MMSolverAffectsCmd::parseArgs(args);
     if (status != MStatus::kSuccess) {
         MMSOLVER_MAYA_ERR("Error parsing mmSolverAffects command arguments.");
         return status;

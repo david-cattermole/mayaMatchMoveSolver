@@ -252,9 +252,6 @@ MUserData *LineDrawOverride::prepareForDraw(
     data->m_point_list.clear();
     MObject node = objPath.node(&status);
     if (status == MStatus::kSuccess) {
-        double x = 0.0;
-        double y = 0.0;
-        double z = 0.0;
         MPoint point;
 
         MPlug plug(node, LineShapeNode::m_objects);
@@ -264,6 +261,9 @@ MUserData *LineDrawOverride::prepareForDraw(
                 MPlug plugElement = plug.elementByPhysicalIndex(i, &status);
                 CHECK_MSTATUS(status);
                 if (!plugElement.isNull()) {
+                    double x = 0.0;
+                    double y = 0.0;
+                    double z = 0.0;
                     status =
                         get_position_from_connected_node(plugElement, x, y, z);
                     CHECK_MSTATUS(status);

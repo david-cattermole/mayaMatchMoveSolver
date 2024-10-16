@@ -265,10 +265,8 @@ MStatus MMCameraSolveCmd::parseArgs(const MArgList &args) {
 }
 
 MStatus MMCameraSolveCmd::doIt(const MArgList &args) {
-    MStatus status = MStatus::kSuccess;
-
     // Read all the flag arguments.
-    status = parseArgs(args);
+    MStatus status = parseArgs(args);
     if (status == MStatus::kFailure) {
         return status;
     }

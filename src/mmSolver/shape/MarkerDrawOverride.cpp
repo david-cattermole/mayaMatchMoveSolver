@@ -170,6 +170,7 @@ MUserData *MarkerDrawOverride::prepareForDraw(
 
     double icon_size = 0.0;
     status = getNodeAttr(objPath, MarkerShapeNode::m_icon_size, icon_size);
+    CHECK_MSTATUS(status);
     data->m_icon_size = icon_size * pixel_size_x;
 
     MColor user_color(0.0f, 0.0f, 0.0f, 0.0f);
@@ -216,10 +217,6 @@ MUserData *MarkerDrawOverride::prepareForDraw(
         }
     }
 
-    float hue = 0.0;
-    float sat = 0.0;
-    float val = 0.0;
-    float alpha = 0.0;
     auto display_status = MHWRender::MGeometryUtilities::displayStatus(objPath);
     if ((display_status == MHWRender::kLead) ||
         (display_status == MHWRender::kActive) ||
@@ -230,6 +227,10 @@ MUserData *MarkerDrawOverride::prepareForDraw(
         data->m_depth_priority =
             MHWRender::MRenderItem::sActiveWireDepthPriority;
 
+        float hue = 0.0;
+        float sat = 0.0;
+        float val = 0.0;
+        float alpha = 0.0;
         user_color.get(MColor::kHSV, hue, sat, val, alpha);
         sat *= selection_saturation_factor;
         val *= selection_value_factor;

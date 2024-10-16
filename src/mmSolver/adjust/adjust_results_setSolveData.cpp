@@ -44,10 +44,9 @@
 
 MStatus createResultAttr_boolean(const char *attr_name, MObject &node,
                                  MDGModifier &dgmod) {
-    MStatus status = MS::kSuccess;
     MFnNumericAttribute numeric_attr;
-    status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
-                                 MFnNumericData::kBoolean);
+    MStatus status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
+                                         MFnNumericData::kBoolean);
     numeric_attr.setKeyable(true);
     numeric_attr.setDefault(true);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -61,10 +60,9 @@ MStatus createResultAttr_success(const char *attr_name, MObject &node,
 
 MStatus createResultAttr_reasonNum(const char *attr_name, MObject &node,
                                    MDGModifier &dgmod) {
-    MStatus status = MS::kSuccess;
     MFnNumericAttribute numeric_attr;
-    status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
-                                 MFnNumericData::kLong);
+    MStatus status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
+                                         MFnNumericData::kLong);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     numeric_attr.setMin(0);
@@ -75,14 +73,12 @@ MStatus createResultAttr_reasonNum(const char *attr_name, MObject &node,
 
 MStatus createResultAttr_reasonString(const char *attr_name, MObject &node,
                                       MDGModifier &dgmod) {
-    MStatus status = MS::kSuccess;
-
     MFnTypedAttribute typedAttr;
 
     MFnStringData string_data_fn;
     MObject string_default_object = string_data_fn.create("");
 
-    status =
+    MStatus status =
         create_typed_attr(attr_name, node, dgmod, typedAttr, MFnData::kString);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
@@ -99,10 +95,9 @@ MStatus createResultAttr_userInterrupted(const char *attr_name, MObject &node,
 
 MStatus createResultAttr_deviation(const char *attr_name, MObject &node,
                                    MDGModifier &dgmod) {
-    MStatus status = MS::kSuccess;
     MFnNumericAttribute numeric_attr;
-    status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
-                                 MFnNumericData::kDouble);
+    MStatus status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
+                                         MFnNumericData::kDouble);
     numeric_attr.setKeyable(true);
     numeric_attr.setMin(-1.0);
     numeric_attr.setDefault(-1.0);
@@ -127,10 +122,9 @@ MStatus createResultAttr_minimumDeviation(const char *attr_name, MObject &node,
 
 MStatus createResultAttr_maxDeviationFrame(const char *attr_name, MObject &node,
                                            MDGModifier &dgmod) {
-    MStatus status = MS::kSuccess;
     MFnNumericAttribute numeric_attr;
-    status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
-                                 MFnNumericData::kLong);
+    MStatus status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
+                                         MFnNumericData::kLong);
     numeric_attr.setKeyable(true);
     numeric_attr.setMin(-1);
     numeric_attr.setDefault(-1);
@@ -140,10 +134,9 @@ MStatus createResultAttr_maxDeviationFrame(const char *attr_name, MObject &node,
 
 MStatus createResultAttr_objectCount(const char *attr_name, MObject &node,
                                      MDGModifier &dgmod) {
-    MStatus status = MS::kSuccess;
     MFnNumericAttribute numeric_attr;
-    status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
-                                 MFnNumericData::kLong);
+    MStatus status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
+                                         MFnNumericData::kLong);
     numeric_attr.setMin(0);
     numeric_attr.setDefault(0);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -460,14 +453,12 @@ std::string get_short_node_name(const std::string &in_string) {
 MStatus setErrorMetricsResultDataOnNode(ErrorMetricsResult &results,
                                         MObject &node, MDGModifier &dgmod,
                                         MAnimCurveChange &curveChange) {
-    MStatus status = MS::kSuccess;
-
     const char *deviation_attr_name = "deviation";
     const char *deviation_avg_attr_name = "average_deviation";
     const char *deviation_max_attr_name = "maximum_deviation";
     const char *deviation_max_frame_attr_name = "maximum_deviation_frame";
 
-    status = create_deviation_attrs_on_node(
+    MStatus status = create_deviation_attrs_on_node(
         node, results.error_per_frame, deviation_attr_name,
         deviation_avg_attr_name, deviation_max_attr_name,
         deviation_max_frame_attr_name, dgmod, curveChange);
@@ -671,11 +662,11 @@ MStatus setCommandResultDataOnNode(CommandResult &results,
                                    const PrintStatOptions &printStats,
                                    MObject &node, MDGModifier &dgmod,
                                    MAnimCurveChange &curveChange) {
-    MStatus status = MS::kSuccess;
     if (node.isNull()) {
         return MS::kFailure;
     }
 
+    MStatus status = MS::kSuccess;
     if (printStats.input) {
         status = setSolverObjectCountResultDataOnNode(
             results.solverObjectCountResult, node, dgmod, curveChange);

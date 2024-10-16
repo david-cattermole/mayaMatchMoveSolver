@@ -59,11 +59,10 @@ void createSolveObjectSyntax(MSyntax &syntax) {
 
 MStatus createMarkerGroupFromMarkerNodeName(const MString &markerName,
                                             MarkerGroupPtr &out_markerGroup) {
-    MStatus status = MStatus::kSuccess;
     const bool verbose = false;
 
     MDagPath node_path;
-    status = getAsDagPath(markerName, node_path);
+    MStatus status = getAsDagPath(markerName, node_path);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MObject node_obj;

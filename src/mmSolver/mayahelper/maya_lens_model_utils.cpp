@@ -265,10 +265,8 @@ MStatus getNodePlug(const MObject &node, const MString &attrName,
 
 MStatus getNodeEnabledState(const MObject &node, const MString &attrName,
                             bool &out_enabled) {
-    MStatus status = MS::kSuccess;
-
     MPlug plug;
-    status = getNodePlug(node, attrName, plug);
+    MStatus status = getNodePlug(node, attrName, plug);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     if (plug.isNull()) {
         out_enabled = false;
@@ -323,11 +321,10 @@ MStatus getLensModelFromPlug(
 // 'mmLensModel3de' node.
 MStatus getConnectedLensNode(const MObject &node, const MString &inputAttrName,
                              MObject &out_node) {
-    MStatus status = MS::kSuccess;
     out_node = MObject();
 
     MPlug inputPlug;
-    status = getNodePlug(node, inputAttrName, inputPlug);
+    MStatus status = getNodePlug(node, inputAttrName, inputPlug);
     if (inputPlug.isNull()) {
         return status;
     }
@@ -712,7 +709,7 @@ MStatus connectLensModels(
         previousLensModels.resize(num_frames);
 
         std::vector<MString> lensNodeNames = cameraLensNodeNames[i];
-        for (uint32_t j = lensNodeNames.size(); j < 0; --j) {
+        for (uint32_t j = lensNodeNames.size(); j == 0; --j) {
             MString lensNodeName = lensNodeNames[j];
             std::string lensNodeNameStr = lensNodeName.asChar();
 
@@ -868,16 +865,14 @@ MStatus constructLensModelList(
     std::vector<std::shared_ptr<mmlens::LensModel>>
         &out_attrFrameToLensModelList,
     std::vector<std::shared_ptr<mmlens::LensModel>> &out_lensModelList) {
-    MStatus status = MS::kSuccess;
-
     std::unordered_map<std::string, int32_t> cameraNodeNameToCameraIndex;
     std::vector<std::vector<MString>> cameraLensNodeNames;
     std::vector<MString> lensNodeNamesVec;
     std::unordered_map<std::string, std::shared_ptr<mmlens::LensModel>>
         lensNodeNameToLensModel;
-    status = getLensesFromCameraList(cameraList, cameraNodeNameToCameraIndex,
-                                     cameraLensNodeNames, lensNodeNamesVec,
-                                     lensNodeNameToLensModel);
+    MStatus status = getLensesFromCameraList(
+        cameraList, cameraNodeNameToCameraIndex, cameraLensNodeNames,
+        lensNodeNamesVec, lensNodeNameToLensModel);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     std::unordered_map<std::string, uint32_t> lensNodeNameToLensModelIndex;

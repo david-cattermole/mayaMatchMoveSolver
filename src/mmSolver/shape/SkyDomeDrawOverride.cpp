@@ -319,6 +319,7 @@ MUserData *SkyDomeDrawOverride::prepareForDraw(
 
     // Alpha
     status = get_node_attr(objPath, SkyDomeShapeNode::m_alpha, data->m_alpha);
+    CHECK_MSTATUS(status);
     status = get_node_attr(objPath, SkyDomeShapeNode::m_axis_x_alpha,
                            data->m_axis_x_color[3]);
     CHECK_MSTATUS(status);
@@ -440,8 +441,6 @@ void SkyDomeDrawOverride::addUIDrawables(
     MPointArray lines_latitude(initial_size_latitude);
     MPointArray lines_longitude(initial_size_longitude);
 
-    auto index = 0;
-
     // Calculate the start/end angle that each component will rotate.
     const double pi = static_cast<double>(M_PI);
     const double half_pi = static_cast<double>(M_PI / 2);
@@ -457,7 +456,7 @@ void SkyDomeDrawOverride::addUIDrawables(
 
     // X Axis
     if (data->m_axis_x_enable && (axis_x_top || axis_x_bot)) {
-        index = 0;
+        auto index = 0;
         for (uint32_t i = 0; i < res; i++) {
             const double ratio1 =
                 static_cast<double>(i) / static_cast<double>(res);
@@ -480,7 +479,7 @@ void SkyDomeDrawOverride::addUIDrawables(
 
     // Y Axis
     if (data->m_axis_y_enable) {
-        index = 0;
+        auto index = 0;
         for (uint32_t i = 0; i < res; i++) {
             const double ratio1 =
                 static_cast<double>(i) / static_cast<double>(res);
@@ -500,7 +499,7 @@ void SkyDomeDrawOverride::addUIDrawables(
 
     // Z Axis
     if (data->m_axis_z_enable && (axis_z_top || axis_z_bot)) {
-        index = 0;
+        auto index = 0;
         for (uint32_t i = 0; i < res; i++) {
             const double ratio1 =
                 static_cast<double>(i) / static_cast<double>(res);
@@ -525,7 +524,7 @@ void SkyDomeDrawOverride::addUIDrawables(
     //
     // TODO: Add little crosses, and/or dots at selected intervals.
     if (data->m_grid_lat_enable && (grid_lat_top || grid_lat_bot)) {
-        index = 0;
+        auto index = 0;
         for (uint32_t i = 0; i < interval_latitude; i++) {
             const double outer_ratio =
                 static_cast<double>(i) / static_cast<double>(interval_latitude);
@@ -558,7 +557,7 @@ void SkyDomeDrawOverride::addUIDrawables(
 
     // Longitude
     if (data->m_grid_long_enable && (grid_long_top || grid_long_bot)) {
-        index = 0;
+        auto index = 0;
         for (uint32_t j = 0; j < interval_longitude; j++) {
             const double outer_ratio = static_cast<double>(j) /
                                        static_cast<double>(interval_longitude);

@@ -218,20 +218,19 @@ MStatus parseCameraSelectionList(
     Attr &camera_rx_attr, Attr &camera_ry_attr, Attr &camera_rz_attr,
     int32_t &image_width, int32_t &image_height, double &focal_length_mm,
     double &sensor_width_mm, double &sensor_height_mm) {
-    MStatus status = MStatus::kSuccess;
-
     // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     if (selection_list.length() == 0) {
         MMSOLVER_MAYA_ERR("No camera given.");
-        status = MS::kFailure;
+        CHECK_MSTATUS(MS::kFailure);
+        return MS::kFailure;
     }
 
     MDagPath nodeDagPath;
     MObject node_obj;
 
-    status = selection_list.getDagPath(0, nodeDagPath);
+    MStatus status = selection_list.getDagPath(0, nodeDagPath);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     status = selection_list.getDependNode(0, node_obj);
     CHECK_MSTATUS_AND_RETURN_IT(status);

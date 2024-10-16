@@ -412,13 +412,12 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
     const MString &output_color_space_name,
     MHWRender::MTexture *out_color_texture,
     const MHWRender::MSamplerState *out_texture_sampler) {
-    MStatus status = MStatus::kSuccess;
     const bool verbose = false;
     MMSOLVER_MAYA_VRB(
         "mmImagePlaneGeometry2Override: set_shader_instance_parameters.");
 
     const float color[] = {color_gain[0], color_gain[1], color_gain[2], 1.0f};
-    status = shader->setParameter("gColorGain", color);
+    MStatus status = shader->setParameter("gColorGain", color);
     CHECK_MSTATUS(status);
 
     status = shader->setParameter("gColorExposure", color_exposure);
@@ -618,13 +617,11 @@ void ImagePlaneGeometry2Override::updateRenderItems(const MDagPath &path,
         return;
     }
 
-    bool draw_wireframe = false;
-    int index = 0;
-
     MRenderItem *wireframeItem = nullptr;
+    const bool draw_wireframe = false;  // for debugging.
     if (draw_wireframe) {
         // Add render item for drawing wireframe on the mesh
-        index = list.indexOf(renderItemName_imagePlaneWireframe);
+        int index = list.indexOf(renderItemName_imagePlaneWireframe);
         if (index >= 0) {
             wireframeItem = list.itemAt(index);
         } else {
@@ -647,7 +644,7 @@ void ImagePlaneGeometry2Override::updateRenderItems(const MDagPath &path,
 
     // Add render item for drawing shaded on the mesh
     MRenderItem *shadedItem = nullptr;
-    index = list.indexOf(renderItemName_imagePlaneShaded);
+    int index = list.indexOf(renderItemName_imagePlaneShaded);
     if (index >= 0) {
         shadedItem = list.itemAt(index);
     } else {

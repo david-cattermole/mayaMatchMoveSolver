@@ -77,7 +77,6 @@ const MHWRender::MShaderManager *get_shader_manager() {
 
 MString find_shader_file_path(const MString &shader_file_name) {
     const bool verbose = false;
-    MStatus status = MS::kSuccess;
 
     MMSOLVER_MAYA_VRB("MM Renderer finding shader file..."
                       << " shader_file_name=" << shader_file_name.asChar());
@@ -89,7 +88,7 @@ MString find_shader_file_path(const MString &shader_file_name) {
     }
 
     MStringArray shader_paths;
-    status = shader_manager->shaderPaths(shader_paths);
+    MStatus status = shader_manager->shaderPaths(shader_paths);
     if (status != MStatus::kSuccess) {
         return shader_file_path;
     }

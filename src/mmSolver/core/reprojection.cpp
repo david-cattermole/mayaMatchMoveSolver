@@ -131,11 +131,9 @@ MStatus reprojection(
     MMatrix &outWorldCameraProjectionMatrix,
     MMatrix &outWorldInverseCameraProjectionMatrix, double &outHorizontalPan,
     double &outVerticalPan) {
-    MStatus status = MStatus::kSuccess;
-
     // Get Camera Projection Matrix
     MMatrix camProjMatrix;
-    status = getProjectionMatrix(
+    MStatus status = getProjectionMatrix(
         focalLength, horizontalFilmAperture, verticalFilmAperture,
         horizontalFilmOffset, verticalFilmOffset, imageWidth, imageHeight,
         filmFit, nearClipPlane, farClipPlane, cameraScale, camProjMatrix);

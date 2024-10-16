@@ -233,11 +233,10 @@ MStatus MMColorIOCmd::parseArgs(const MArgList &args) {
 }
 
 MStatus MMColorIOCmd::doIt(const MArgList &args) {
-    MStatus status = MStatus::kSuccess;
     const bool verbose = false;
 
     // Read all the flag arguments.
-    status = parseArgs(args);
+    MStatus status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_list_color_spaces_all || m_list_color_spaces_active ||

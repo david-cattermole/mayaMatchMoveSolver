@@ -52,12 +52,10 @@ MStatus query_line_point_data(const MMatrix parentInverseMatrix,
                               rust::Vec<mmscenegraph::Real> &out_point_data_x,
                               rust::Vec<mmscenegraph::Real> &out_point_data_y,
                               const bool verbose) {
-    MStatus status = MS::kSuccess;
-
     out_point_data_x.clear();
     out_point_data_y.clear();
 
-    status = transformArrayHandle.jumpToArrayElement(0);
+    MStatus status = status = transformArrayHandle.jumpToArrayElement(0);
     if (status == MStatus::kSuccess) {
         do {
             MDataHandle transformArrayHandleElement =
@@ -108,12 +106,12 @@ MStatus fit_line_to_points(const mmsg::Real line_length,
                            const bool verbose) {
     MStatus status = MS::kSuccess;
 
-    auto line_center_x = 0.0;
-    auto line_center_y = 0.0;
     auto line_dir_x = 1.0;
     auto line_dir_y = 0.0;
 
     if (point_data_x.size() > 2) {
+        auto line_center_x = 0.0;
+        auto line_center_y = 0.0;
         rust::Slice<const mmsg::Real> x_slice{point_data_x.data(),
                                               point_data_x.size()};
         rust::Slice<const mmsg::Real> y_slice{point_data_y.data(),

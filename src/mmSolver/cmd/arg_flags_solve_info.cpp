@@ -277,10 +277,8 @@ MStatus parseSolveInfoArguments_other(const MArgDatabase &argData,
                                       bool &out_acceptOnlyBetter,
                                       FrameSolveMode &out_frameSolveMode,
                                       double &out_imageWidth) {
-    MStatus status = MStatus::kSuccess;
-
     // Get 'Scene Graph Mode'
-    status = parseSolveSceneGraphArguments(argData, out_sceneGraphMode);
+    MStatus status = parseSolveSceneGraphArguments(argData, out_sceneGraphMode);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Get 'Time Evaluation Mode'
@@ -329,9 +327,7 @@ MStatus parseSolveInfoArguments_v1(
     bool &out_supportParameterBounds, bool &out_supportRobustLoss,
     bool &out_removeUnusedMarkers, bool &out_removeUnusedAttributes,
     double &out_imageWidth) {
-    MStatus status = MStatus::kSuccess;
-
-    status = parseSolveInfoArguments_solverType(
+    MStatus status = parseSolveInfoArguments_solverType(
         argData, out_iterations, out_tau, out_epsilon1, out_epsilon2,
         out_epsilon3, out_delta, out_autoDiffType, out_autoParamScale,
         out_robustLossType, out_robustLossScale, out_solverType,
@@ -360,9 +356,7 @@ MStatus parseSolveInfoArguments_v2(
     bool &out_supportAutoDiffForward, bool &out_supportAutoDiffCentral,
     bool &out_supportParameterBounds, bool &out_supportRobustLoss,
     double &out_imageWidth) {
-    MStatus status = MStatus::kSuccess;
-
-    status = parseSolveInfoArguments_solverType(
+    MStatus status = parseSolveInfoArguments_solverType(
         argData, out_iterations, out_tau, out_epsilon1, out_epsilon2,
         out_epsilon3, out_delta, out_autoDiffType, out_autoParamScale,
         out_robustLossType, out_robustLossScale, out_solverType,

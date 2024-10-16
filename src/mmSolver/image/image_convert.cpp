@@ -89,8 +89,6 @@ MStatus guess_file_path_pixel_type(const MString &in_file_path,
 }
 
 MStatus resize_image(MImage &image, const double resize_scale) {
-    MStatus status = MStatus::kSuccess;
-
     MImage::MPixelType pixel_type = image.pixelType();
     if (pixel_type != MImage::kByte) {
         MMSOLVER_MAYA_WRN(
@@ -100,7 +98,7 @@ MStatus resize_image(MImage &image, const double resize_scale) {
 
     uint32_t src_width = 2;
     uint32_t src_height = 2;
-    status = image.getSize(src_width, src_height);
+    MStatus status = image.getSize(src_width, src_height);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     auto dst_width_float = static_cast<double>(src_width) * resize_scale;
@@ -140,20 +138,17 @@ MStatus convert_image(const MString &src_file_path,
                       // default.
                       const MString &dst_output_format,
                       const double resize_scale) {
-    MStatus status = MStatus::kSuccess;
-
     if (src_file_path == dst_file_path) {
-        status = MS::kFailure;
         MMSOLVER_MAYA_ERR("mmConvertImage: "
                           << "Cannot have source and destination as same path: "
                           << src_file_path.asChar());
-        CHECK_MSTATUS_AND_RETURN_IT(status);
+        CHECK_MSTATUS_AND_RETURN_IT(MS::kFailure);
     }
 
     auto image = MImage();
     // kUnknown attempts to load the native pixel type.
     auto src_pixel_type = MImage::kUnknown;
-    status = image.readFromFile(
+    MStatus status = image.readFromFile(
         src_file_path,
         src_pixel_type  // The desired pixel format is unknown.
     );

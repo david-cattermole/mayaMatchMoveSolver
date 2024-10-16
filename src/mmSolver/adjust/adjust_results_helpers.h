@@ -48,12 +48,9 @@ inline MStatus create_numeric_attr(const char *attr_name, MObject &node,
                                    MDGModifier &dgmod,
                                    MFnNumericAttribute &numeric_attr,
                                    const MFnNumericData::Type numeric_type) {
-    MStatus status = MS::kSuccess;
-
     MObject attr = numeric_attr.create(attr_name, attr_name, numeric_type);
-    status = dgmod.addAttribute(node, attr);
+    MStatus status = dgmod.addAttribute(node, attr);
     CHECK_MSTATUS_AND_RETURN_IT(status);
-
     return status;
 }
 
@@ -61,12 +58,9 @@ inline MStatus create_typed_attr(const char *attr_name, MObject &node,
                                  MDGModifier &dgmod,
                                  MFnTypedAttribute &typed_attr,
                                  const MFnData::Type &data_type) {
-    MStatus status = MS::kSuccess;
-
     MObject attr = typed_attr.create(attr_name, attr_name, data_type);
-    status = dgmod.addAttribute(node, attr);
+    MStatus status = dgmod.addAttribute(node, attr);
     CHECK_MSTATUS_AND_RETURN_IT(status);
-
     return status;
 }
 

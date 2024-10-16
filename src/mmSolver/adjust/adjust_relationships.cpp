@@ -233,7 +233,7 @@ int countUpNumberOfUnknownParameters(
 
     // Count up number of unknown parameters
     int i = 0;  // index of marker
-    int j = 0;  // index of frame
+
     int numUnknowns = 0;
 
     // Reset data structures, because we assume we start with an empty
@@ -271,7 +271,10 @@ int countUpNumberOfUnknownParameters(
             // Animated parameter (affects a subset of frames -
             // usually only 1 frame).
             numUnknowns += frameList.length();
-            for (j = 0; j < (int)frameList.length(); ++j) {
+            int j = 0;
+            for (int j = 0; j < (int)frameList.length(); ++j) {
+                // 'j' is index of frame.
+                //
                 // first index is into 'attrList'
                 // second index is into 'frameList'
                 IndexPair attrPair(i, j);
@@ -371,7 +374,6 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
                                        BoolList2D &out_markerToAttrList,
                                        MStatus &out_status) {
     out_status = MStatus::kSuccess;
-    int i, j;
 
     // Command execution options
     bool display = false;   // print out what happens in the python
@@ -384,7 +386,7 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
 
     // Calculate the relationship between attributes and markers.
     out_markerToAttrList.resize(markerList.size());
-    i = 0;  // index of marker
+    int i = 0;  // index of marker
     for (MarkerPtrListCIt mit = markerList.cbegin(); mit != markerList.cend();
          ++mit) {
         MarkerPtr marker = *mit;
@@ -425,7 +427,7 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
         CHECK_MSTATUS(out_status);
 
         // Determine if the marker can affect the attribute.
-        j = 0;  // index of attribute
+        int j = 0;  // index of attribute
         MString affectedPlugName;
         out_markerToAttrList[i].resize(attrList.size(), false);
         for (AttrPtrListCIt ait = attrList.begin(); ait != attrList.end();

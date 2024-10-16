@@ -39,10 +39,9 @@
 
 MStatus create_attr_deviation(const char *attr_name, MObject &node,
                               MDGModifier &dgmod) {
-    MStatus status = MS::kSuccess;
     MFnNumericAttribute numeric_attr;
-    status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
-                                 MFnNumericData::kDouble);
+    MStatus status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
+                                         MFnNumericData::kDouble);
     numeric_attr.setKeyable(true);
     numeric_attr.setMin(-1.0);
     numeric_attr.setDefault(-1.0);
@@ -62,10 +61,9 @@ MStatus create_attr_maximumDeviation(const char *attr_name, MObject &node,
 
 MStatus create_attr_maxDeviationFrame(const char *attr_name, MObject &node,
                                       MDGModifier &dgmod) {
-    MStatus status = MS::kSuccess;
     MFnNumericAttribute numeric_attr;
-    status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
-                                 MFnNumericData::kLong);
+    MStatus status = create_numeric_attr(attr_name, node, dgmod, numeric_attr,
+                                         MFnNumericData::kLong);
     numeric_attr.setKeyable(true);
     numeric_attr.setMin(-1);
     numeric_attr.setDefault(-1);

@@ -138,10 +138,8 @@ MStatus getAsDagPath(const MString &nodeName, MDagPath &nodeDagPath) {
 }
 
 MStatus getUniqueNodeName(MObject &node, MString &out_uniqueNodeName) {
-    MStatus status = MS::kSuccess;
-
     MDagPath dagPath;
-    status = MDagPath::getAPathTo(node, dagPath);
+    MStatus status = MDagPath::getAPathTo(node, dagPath);
     if (status == MS::kSuccess) {
         out_uniqueNodeName = dagPath.fullPathName();
     } else {
@@ -159,13 +157,14 @@ bool hasAttrName(MFnDependencyNode &dependFn, const MString &attrName) {
     MStatus status = MStatus::kSuccess;
     auto network_plug = true;
     MPlug plug = dependFn.findPlug(attrName, network_plug, &status);
+    CHECK_MSTATUS(status);
     return !plug.isNull();
 }
 
 ObjectType computeDgObjectType(const MObject &node_obj) {
-    MStatus status = MStatus::kSuccess;
     ObjectType objectType = ObjectType::kUnknown;
 
+    MStatus status = MStatus::kSuccess;
     MFnDependencyNode dependFn(node_obj, &status);
     CHECK_MSTATUS(status);
     if (status != MS::kSuccess) {
@@ -324,13 +323,11 @@ ObjectType computeObjectType(const MObject &node_obj) {
 MStatus constructAttrAffectsName(const MString &attrName,
                                  const MString &attrUuidStr,
                                  MString &outAttrName) {
-    MStatus status = MStatus::kSuccess;
-
     const MString attrNamePrefix = "node_";
     const MString attrNameSuffix = "_attr_";
 
     MString attrSubstitute(attrName);
-    status = attrSubstitute.substitute(".", "_");
+    MStatus status = attrSubstitute.substitute(".", "_");
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     outAttrName =
@@ -360,9 +357,8 @@ MStatus get_connected_node(const MPlug &plug, MObject &out_node) {
 
 MStatus get_position_from_connected_node(const MPlug &plug, double &x,
                                          double &y, double &z) {
-    MStatus status = MS::kSuccess;
     MObject connected_node;
-    status = get_connected_node(plug, connected_node);
+    MStatus status = get_connected_node(plug, connected_node);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (!connected_node.isNull()) {

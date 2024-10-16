@@ -103,13 +103,12 @@ void calculate_node_image_size_string(
     MObject &image_height_attr, MObject &image_pixel_aspect_attr,
     const uint32_t int_precision, const uint32_t double_precision,
     bool &out_draw_image_size, MString &out_image_size) {
-    MStatus status = MS::kSuccess;
-
     double width = 1.0;
     double height = 1.0;
     double pixel_aspect = 1.0;
 
-    status = getNodeAttr(objPath, draw_image_size_attr, out_draw_image_size);
+    MStatus status =
+        getNodeAttr(objPath, draw_image_size_attr, out_draw_image_size);
     CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, image_width_attr, width);
@@ -146,12 +145,10 @@ void calculate_node_camera_size_string(MDagPath &objPath,
                                        const uint32_t double_precision,
                                        bool &out_draw_camera_size,
                                        MString &out_camera_size) {
-    MStatus status = MS::kSuccess;
-
     double width = 0.0;
     double height = 0.0;
 
-    status = getNodeAttr(objPath, draw_camera_size_attr, out_draw_camera_size);
+    MStatus status = getNodeAttr(objPath, draw_camera_size_attr, out_draw_camera_size);
     CHECK_MSTATUS(status);
 
     status = getNodeAttr(objPath, camera_width_inch_attr, width);
@@ -186,23 +183,23 @@ void find_geometry_node_path(const MObject &node, const MString &attr_name,
     }
 
     for (uint32_t i = 0; i < connections.length(); ++i) {
-        MObject node = connections[i].node();
+        MObject connection_node = connections[i].node();
 
-        if (node.hasFn(MFn::kMesh)) {
+        if (connection_node.hasFn(MFn::kMesh)) {
             MDagPath path;
-            MDagPath::getAPathTo(node, path);
+            MDagPath::getAPathTo(connection_node, path);
             out_geometry_node_path = path;
             out_geometry_node_type = path.apiType();
             MMSOLVER_MAYA_VRB("Validated geometry node: "
                               << " path="
                               << out_geometry_node_path.fullPathName().asChar()
-                              << " type=" << node.apiTypeStr());
+                              << " type=" << connection_node.apiTypeStr());
             break;
         } else {
             MMSOLVER_MAYA_WRN("Geometry node is not correct type:"
                               << " path="
                               << out_geometry_node_path.fullPathName().asChar()
-                              << " type=" << node.apiTypeStr());
+                              << " type=" << connection_node.apiTypeStr());
         }
     }
 }
@@ -219,22 +216,23 @@ void find_shader_node_path(const MObject &node, const MString &attr_name,
     }
 
     for (uint32_t i = 0; i < connections.length(); ++i) {
-        MObject node = connections[i].node();
+        MObject connection_node = connections[i].node();
 
-        MFnDependencyNode mfn_depend_node(node);
-        if (node.hasFn(MFn::kSurfaceShader) || node.hasFn(MFn::kHwShaderNode) ||
-            node.hasFn(MFn::kPluginHardwareShader) ||
-            node.hasFn(MFn::kPluginHwShaderNode)) {
-            out_shader_node = node;
-            out_shader_node_type = node.apiType();
+        MFnDependencyNode mfn_depend_node(connection_node);
+        if (connection_node.hasFn(MFn::kSurfaceShader) ||
+            connection_node.hasFn(MFn::kHwShaderNode) ||
+            connection_node.hasFn(MFn::kPluginHardwareShader) ||
+            connection_node.hasFn(MFn::kPluginHwShaderNode)) {
+            out_shader_node = connection_node;
+            out_shader_node_type = connection_node.apiType();
             MMSOLVER_MAYA_VRB("Validated shader node: "
                               << " path=" << mfn_depend_node.name().asChar()
-                              << " type=" << node.apiTypeStr());
+                              << " type=" << connection_node.apiTypeStr());
             break;
         } else {
             MMSOLVER_MAYA_WRN("Shader node is not correct type:"
                               << " path=" << mfn_depend_node.name().asChar()
-                              << " type=" << node.apiTypeStr());
+                              << " type=" << connection_node.apiTypeStr());
         }
     }
 }
@@ -251,23 +249,23 @@ void find_camera_node_path(const MObject &node, const MString &attr_name,
     }
 
     for (uint32_t i = 0; i < connections.length(); ++i) {
-        MObject node = connections[i].node();
+        MObject connection_node = connections[i].node();
 
-        if (node.hasFn(MFn::kCamera)) {
+        if (connection_node.hasFn(MFn::kCamera)) {
             MDagPath path;
-            MDagPath::getAPathTo(node, path);
+            MDagPath::getAPathTo(connection_node, path);
             out_camera_node_path = path;
             out_camera_node_type = path.apiType();
             MMSOLVER_MAYA_VRB("Validated camera node: "
                               << " path="
                               << out_camera_node_path.fullPathName().asChar()
-                              << " type=" << node.apiTypeStr());
+                              << " type=" << connection_node.apiTypeStr());
             break;
         } else {
             MMSOLVER_MAYA_WRN("Camera node is not correct type:"
                               << " path="
                               << out_camera_node_path.fullPathName().asChar()
-                              << " type=" << node.apiTypeStr());
+                              << " type=" << connection_node.apiTypeStr());
         }
     }
 }

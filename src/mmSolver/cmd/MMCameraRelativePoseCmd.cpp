@@ -459,13 +459,11 @@ MStatus MMCameraRelativePoseCmd::parseArgs(const MArgList &args) {
 }
 
 MStatus MMCameraRelativePoseCmd::doIt(const MArgList &args) {
-    MStatus status = MStatus::kSuccess;
-
     // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     // Read all the flag arguments.
-    status = parseArgs(args);
+    MStatus status = parseArgs(args);
     if (status == MStatus::kFailure) {
         return status;
     }

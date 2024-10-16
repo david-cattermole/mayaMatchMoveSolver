@@ -139,13 +139,11 @@ MStatus MMSolverSceneGraphCmd::parseArgs(const MArgList &args) {
 }
 
 MStatus MMSolverSceneGraphCmd::doIt(const MArgList &args) {
-    MStatus status = MStatus::kSuccess;
-
     // Command Outputs
     auto outResult = true;
 
     // Read all the flag arguments.
-    status = parseArgs(args);
+    MStatus status = parseArgs(args);
     if (status != MStatus::kSuccess) {
         MMSOLVER_MAYA_ERR(
             "Error parsing mmSolverSceneGraph command arguments.");

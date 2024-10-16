@@ -172,7 +172,6 @@ MStatus read_image_header(const MString &file_path, uint32_t &out_image_width,
                           uint8_t &out_bytes_per_channel,
                           MHWRender::MRasterFormat &out_texture_format,
                           image::PixelDataType &out_pixel_data_type) {
-    MStatus status = MStatus::kSuccess;
     MImage temp_mimage;
     mmimage::ImagePixelBuffer temp_pixel_buffer;
     mmimage::ImageMetaData temp_meta_data;
@@ -188,11 +187,11 @@ MStatus read_image_header(const MString &file_path, uint32_t &out_image_width,
     // TODO: Can we read just the file header to get the image size?
     // This would remove the need to read the entire image for this
     // command's usage.
-    status = image::read_image_file(temp_mimage, temp_pixel_buffer,
-                                    temp_meta_data, file_path, out_image_width,
-                                    out_image_height, out_num_channels,
-                                    out_bytes_per_channel, out_texture_format,
-                                    out_pixel_data_type, pixel_data);
+    MStatus status = image::read_image_file(
+        temp_mimage, temp_pixel_buffer, temp_meta_data, file_path,
+        out_image_width, out_image_height, out_num_channels,
+        out_bytes_per_channel, out_texture_format, out_pixel_data_type,
+        pixel_data);
     if (status != MS::kSuccess) {
         MMSOLVER_MAYA_WRN("mmReadImage: "
                           << "Image file path could not be read: "
@@ -204,10 +203,9 @@ MStatus read_image_header(const MString &file_path, uint32_t &out_image_width,
 
 MStatus MMReadImageCmd::doIt(const MArgList &args) {
     const bool verbose = false;
-    MStatus status = MStatus::kSuccess;
 
     // Read all the flag arguments.
-    status = parseArgs(args);
+    MStatus status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_query_resolve_file_path) {

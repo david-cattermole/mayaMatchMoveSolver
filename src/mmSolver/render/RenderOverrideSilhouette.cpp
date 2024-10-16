@@ -481,8 +481,6 @@ MStatus RenderOverrideSilhouette::setup(const MString &destination) {
     MMSOLVER_MAYA_VRB("RenderOverrideSilhouette::setup: start "
                       << destination.asChar());
 
-    MStatus status = MS::kSuccess;
-
     // Track changes to the renderer and override for this viewport.
     if (!m_renderer_change_callback) {
         void *client_data = nullptr;
@@ -521,7 +519,8 @@ MStatus RenderOverrideSilhouette::setup(const MString &destination) {
 
         uint32_t target_width = 0;
         uint32_t target_height = 0;
-        status = renderer->outputTargetSize(target_width, target_height);
+        MStatus status =
+            renderer->outputTargetSize(target_width, target_height);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         const bool resize_occured =
@@ -571,7 +570,7 @@ MStatus RenderOverrideSilhouette::setup(const MString &destination) {
     m_presentOp->setRenderTargets(m_targets, 0, 2);
 
     // Get override values.
-    status = update_parameters_silhouette(
+    MStatus status = update_parameters_silhouette(
         m_globals_node, m_enable, m_override_color, m_depth_offset, m_width,
         m_color[0], m_color[1], m_color[2], m_alpha, m_cull_face,
         m_operation_num);

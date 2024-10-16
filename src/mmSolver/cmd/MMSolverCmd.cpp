@@ -120,13 +120,12 @@ MStatus MMSolverCmd::doIt(const MArgList &args) {
     //                     MEL script that is being run to terminate unless the
     //                     error is caught using a "catch" statement.
     //
-    MStatus status = MStatus::kSuccess;
 
     // Mouse cursor spinning...
     // MGlobal::executeCommand("waitCursor -state on;");
 
     // Read all the flag arguments.
-    status = parseArgs(args);
+    MStatus status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
     assert(m_frameList.length() > 0);
 

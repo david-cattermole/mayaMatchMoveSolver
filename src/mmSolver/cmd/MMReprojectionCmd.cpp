@@ -309,13 +309,12 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
     //                     MEL script that is being run to terminate unless the
     //                     error is caught using a "catch" statement.
     //
-    MStatus status = MStatus::kSuccess;
 
     // Command Outputs
     MDoubleArray outResult;
 
     // Read all the flag arguments.
-    status = parseArgs(args);
+    MStatus status = parseArgs(args);
     if (status == MStatus::kFailure) {
         return status;
     }

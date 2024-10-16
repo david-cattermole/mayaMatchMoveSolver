@@ -161,8 +161,7 @@ MStatus calculate_model_view_projection_matrix(
 
     // The camera and geometry matrices must be updated each frame,
     // when playblasting. This is not obvious when viewing in the
-    MStatus status = MStatus::kSuccess;
-    status = view.updateViewingParameters();
+    MStatus status = view.updateViewingParameters();
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     MMatrix model_view_matrix;

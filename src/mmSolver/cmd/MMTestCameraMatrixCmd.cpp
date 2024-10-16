@@ -128,12 +128,11 @@ MStatus MMTestCameraMatrixCmd::doIt(const MArgList &args) {
     //                     MEL script that is being run to terminate unless the
     //                     error is caught using a "catch" statement.
     //
-    MStatus status = MStatus::kSuccess;
     const int timeEvalMode = TIME_EVAL_MODE_DG_CONTEXT;
     // MMSOLVER_MAYA_DBG("MMTestCameraMatrixCmd::doIt()");
 
     // Read all the arguments.
-    status = parseArgs(args);
+    MStatus status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     // Maya Camera Function Set

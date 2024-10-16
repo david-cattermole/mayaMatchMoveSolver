@@ -178,9 +178,7 @@ MStatus read_with_maya_mimage(MImage &maya_mimage, const MString &file_path,
                               void *&out_pixel_data) {
     const bool verbose = false;
 
-    MStatus status = MStatus::kSuccess;
-
-    status = maya_mimage.readFromFile(file_path, pixel_type);
+    MStatus status = maya_mimage.readFromFile(file_path, pixel_type);
     CHECK_MSTATUS(status);
     if (status != MS::kSuccess) {
         MMSOLVER_MAYA_WRN("mmsolver::image_io::read_with_maya_mimage:"
@@ -293,7 +291,6 @@ MStatus read_image_file(MImage &maya_mimage,
                         PixelDataType &out_pixel_data_type,
                         void *&out_pixel_data) {
     const bool verbose = false;
-    MStatus status = MStatus::kSuccess;
 
     MMSOLVER_MAYA_VRB("mmsolver::image_io::read_image_file:"
                       << " file_path=" << file_path.asChar());
@@ -312,6 +309,7 @@ MStatus read_image_file(MImage &maya_mimage,
     MMSOLVER_MAYA_VRB("mmsolver::image_io::read_image_file:"
                       << " file_extension=" << file_extension.asChar());
 
+    MStatus status = MStatus::kSuccess;
     if (file_extension == "exr") {
         MMSOLVER_MAYA_VRB("mmsolver::image_io::read_image_file:"
                           << "read_exr_with_mmimage...");

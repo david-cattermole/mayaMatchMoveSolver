@@ -34,7 +34,6 @@ namespace mmpath {
 // This changes the given 'file_path' directly to a resolve file path,
 // or returns a non-MStatus::kSuccess status.
 MStatus resolve_input_file_path(MString &file_path) {
-    MStatus status = MStatus::kSuccess;
     const bool verbose = false;
 
     auto file_object = MFileObject();
@@ -44,16 +43,15 @@ MStatus resolve_input_file_path(MString &file_path) {
     bool path_exists = file_object.exists();
     if (!path_exists) {
         MString resolved_file_path = file_object.resolvedFullName();
-        status = MStatus::kFailure;
         MMSOLVER_MAYA_VRB(
             "mmpath::resolve_input_file_path: Could not find file path "
             << "\"" << file_path.asChar() << "\", resolved path "
             << "\"" << resolved_file_path.asChar() << "\".");
-        return status;
+        return MStatus::kFailure;
     }
 
     MString resolved_file_path = file_object.resolvedFullName();
-    status = MStatus::kFailure;
+    MStatus status = MStatus::kFailure;
     if (resolved_file_path.length() > 0) {
         MMSOLVER_MAYA_VRB("mmpath::resolve_input_file_path: resolved file path "
                           << "\"" << resolved_file_path.asChar() << "\".");

@@ -197,7 +197,6 @@ MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
     }
     for (uint32_t i = 0; i < numberOfMarkerFlags; ++i) {
         MArgList markerArgs;
-        ObjectType objectType = ObjectType::kUnknown;
         MDagPath dagPath;
         MString markerName = "";
         MObject markerObject;
@@ -210,7 +209,7 @@ MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
         status = getAsDagPath(markerName, dagPath);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        objectType = computeObjectType(markerObject, dagPath);
+        ObjectType objectType = computeObjectType(markerObject, dagPath);
         if (objectType != ObjectType::kMarker) {
             MMSOLVER_MAYA_ERR("Given marker node is not a Marker; "
                               << markerName.asChar());
@@ -250,13 +249,11 @@ MStatus MMCameraPoseFromPointsCmd::parseArgs(const MArgList &args) {
 }
 
 MStatus MMCameraPoseFromPointsCmd::doIt(const MArgList &args) {
-    MStatus status = MStatus::kSuccess;
-
     // Enable to print out 'MMSOLVER_MAYA_VRB' results.
     const bool verbose = false;
 
     // Read all the flag arguments.
-    status = parseArgs(args);
+    MStatus status = parseArgs(args);
     if (status == MStatus::kFailure) {
         return status;
     }

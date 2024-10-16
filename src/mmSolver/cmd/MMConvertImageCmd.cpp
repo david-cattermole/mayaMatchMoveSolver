@@ -125,20 +125,18 @@ MStatus find_file_path(MFileObject &file_object, MString &out_file_path) {
 MStatus find_existing_file_path(MFileObject &file_object,
                                 const MString &in_file_path,
                                 MString &out_file_path) {
-    MStatus status = MStatus::kSuccess;
-
     bool path_exists = file_object.exists();
     if (!path_exists) {
         MString resolved_file_path = file_object.resolvedFullName();
-        status = MS::kFailure;
         MMSOLVER_MAYA_WRN("mmConvertImage: Could not find file path "
                           << "\"" << in_file_path.asChar()
                           << "\", resolved path "
                           << "\"" << resolved_file_path.asChar() << "\".");
-        return status;
+        return MS::kFailure;
     }
 
-    status = find_file_path(file_object, out_file_path);
+    MStatus status = find_file_path(file_object, out_file_path);
+    CHECK_MSTATUS(status);
     return status;
 }
 
@@ -292,10 +290,8 @@ MStatus MMConvertImageCmd::parseArgs(const MArgList &args) {
 }
 
 MStatus MMConvertImageCmd::doIt(const MArgList &args) {
-    MStatus status = MStatus::kSuccess;
-
     // Convert all the flag arguments.
-    status = parseArgs(args);
+    MStatus status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     auto src_file_object = MFileObject();

@@ -89,14 +89,13 @@ MStatus parseSolveLogArguments_printStats(const MArgDatabase &argData,
 MStatus parseSolveLogArguments_v1(const MArgDatabase &argData,
                                   MStringArray &out_printStatsList,
                                   LogLevel &out_logLevel) {
-    MStatus status = MStatus::kSuccess;
-
     // 'Log Level' can be overwritten by the (deprecated) verbose
     // flag.
     out_logLevel = LOG_LEVEL_DEFAULT_VALUE;
 
     // Get 'Verbose' flag. This is deprecated, but kept for backwards
     // compatibility.
+    MStatus status = MS::kSuccess;
     if (argData.isFlagSet(VERBOSE_FLAG)) {
         bool verbose = VERBOSE_DEFAULT_VALUE;
         status = argData.getFlagArgument(VERBOSE_FLAG, 0, verbose);
@@ -124,9 +123,8 @@ MStatus parseSolveLogArguments_v2(const MArgDatabase &argData,
                                   LogLevel &out_logLevel,
                                   MObject &out_resultsNodeObject,
                                   bool &out_setMarkerDeviationAttrs) {
-    MStatus status = MStatus::kSuccess;
-
     // Get 'Results Node'
+    MStatus status = MS::kSuccess;
     if (argData.isFlagSet(RESULTS_NODE_FLAG)) {
         MString node_name;
         status = argData.getFlagArgument(RESULTS_NODE_FLAG, 0, node_name);

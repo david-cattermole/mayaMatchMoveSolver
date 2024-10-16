@@ -650,11 +650,10 @@ MStatus get_value_string_array(image::ImageCache &image_cache,
 }
 
 MStatus MMImageCacheCmd::doIt(const MArgList &args) {
-    MStatus status = MStatus::kSuccess;
     const bool verbose = false;
 
     // Read all the flag arguments.
-    status = parseArgs(args);
+    MStatus status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_is_query) {

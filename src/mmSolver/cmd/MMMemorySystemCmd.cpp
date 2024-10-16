@@ -170,11 +170,10 @@ MStatus MMMemorySystemCmd::parseArgs(const MArgList &args) {
 }
 
 MStatus MMMemorySystemCmd::doIt(const MArgList &args) {
-    MStatus status = MStatus::kSuccess;
     const bool verbose = false;
 
     // Read all the flag arguments.
-    status = parseArgs(args);
+    MStatus status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     size_t bytes_value = 0;

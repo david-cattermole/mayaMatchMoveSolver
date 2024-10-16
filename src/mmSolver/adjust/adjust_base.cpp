@@ -107,11 +107,10 @@ SolverTypePair getSolverTypeDefault() {
 
         std::vector<SolverTypePair>::const_iterator cit;
         for (cit = solverTypes.cbegin(); cit != solverTypes.cend(); ++cit) {
-            int index = cit->first;
             std::string name = cit->second;
 
             if (defaultSolver == name) {
-                solverTypeIndex = index;
+                solverTypeIndex = cit->first;
                 solverTypeName = name;
             }
         }

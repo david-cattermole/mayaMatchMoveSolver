@@ -523,11 +523,12 @@ MStatus RenderOverrideSilhouette::setup(const MString &destination) {
             renderer->outputTargetSize(target_width, target_height);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
-        const bool resize_occured =
-            (m_target_descriptions[SilhouetteTargetId::kColorTarget]->width() !=
-                 target_width ||
-             m_target_descriptions[SilhouetteTargetId::kDepthTarget]
-                     ->height() != target_height);
+        const auto color_target_width =
+            m_target_descriptions[SilhouetteTargetId::kColorTarget]->width();
+        const auto depth_target_height =
+            m_target_descriptions[SilhouetteTargetId::kDepthTarget]->height();
+        const bool resize_occured = (color_target_width != target_width) ||
+                                    (depth_target_height != target_height);
 
         for (uint32_t target_id = 0;
              target_id < SilhouetteTargetId::kTargetCount; ++target_id) {

@@ -69,7 +69,6 @@ bool solve_3d_cminpack_lmder(SolverOptions &solverOptions,
                              SolverData &userData, SolverResult &solveResult) {
     const int solverType = SOLVER_TYPE_CMINPACK_LMDER;
     int ret = 0;
-    std::string resultStr;
     int iterMax = solverOptions.iterMax;
     userData.solverType = solverType;
 

@@ -116,9 +116,8 @@ public:
         , m_asMarkerCoordinate(false)
         , m_asPixelCoordinate(false)
         , m_withCameraDirRatio(false)
-        , m_distort_mode(ReprojectionDistortMode::kNone) {
-        m_cameraPtr = CameraPtr(new Camera());
-    };
+        , m_distort_mode(ReprojectionDistortMode::kNone)
+        , m_cameraPtr(CameraPtr(new Camera())){};
 
     virtual ~MMReprojectionCmd();
 

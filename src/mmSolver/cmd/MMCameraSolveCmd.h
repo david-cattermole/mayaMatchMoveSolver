@@ -43,7 +43,13 @@ namespace mmsolver {
 
 class MMCameraSolveCmd : public MPxCommand {
 public:
-    MMCameraSolveCmd(){};
+    MMCameraSolveCmd()
+        : m_image_width_a(1)
+        , m_image_height_a(1)
+        , m_image_width_b(1)
+        , m_image_height_b(1)
+        , m_startFrame(1)
+        , m_endFrame(120){};
 
     virtual ~MMCameraSolveCmd();
 

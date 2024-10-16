@@ -59,10 +59,15 @@ namespace render {
 
 SilhouetteRender::SilhouetteRender(const MString& name)
     : MUserRenderOperation(name)
+    , mLightList(nullptr)
     , m_shader_program(0)
     , m_output_targets(nullptr)
     , m_silhouette_cull_face(GL_BACK)
+    , m_silhouette_enable(false)
     , m_silhouette_override_color(false)
+    , m_silhouette_depth_offset(0.0f)
+    , m_silhouette_width(1.0f)
+    , m_silhouette_alpha(1.0f)
     , gGLFT(nullptr) {}
 
 SilhouetteRender::~SilhouetteRender() {

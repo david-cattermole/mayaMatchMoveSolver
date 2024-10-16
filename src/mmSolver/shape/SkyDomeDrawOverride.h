@@ -53,12 +53,14 @@ public:
         // because 'deleteAfterUse' is no longer needed.
         : MUserData(/*deleteAfterUse=*/true)  // let Maya clean up
 #endif
+        , m_enable(true)
         , m_draw_mode(static_cast<short>(DrawMode::kDrawOnTop))
         , m_transform_mode(static_cast<short>(TransformMode::kNoOffset))
         , m_line_width(1.0)
         , m_alpha(1.0)
         , m_radius(1.0)
         , m_resolution(32)
+        , m_depth_priority(MHWRender::MRenderItem::sDormantFilledDepthPriority)
         , m_axis_x_enable(true)
         , m_axis_y_enable(true)
         , m_axis_z_enable(true)

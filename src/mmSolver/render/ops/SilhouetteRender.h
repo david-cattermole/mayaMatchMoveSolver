@@ -108,7 +108,7 @@ protected:
     bool m_silhouette_override_color;
     float m_silhouette_depth_offset;
     float m_silhouette_width;
-    float m_silhouette_color[3];
+    float m_silhouette_color[3] = {1.0f, 1.0f, 1.0f};
     float m_silhouette_alpha;
     GLenum m_silhouette_cull_face;
 };

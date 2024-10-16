@@ -37,7 +37,11 @@ namespace mmsolver {
 
 class MMReadImageCmd : public MPxCommand {
 public:
-    MMReadImageCmd() : m_file_path(){};
+    MMReadImageCmd()
+        : m_file_path()
+        , m_query_width_height(false)
+        , m_query_data_header(false)
+        , m_query_resolve_file_path(false){};
 
     virtual ~MMReadImageCmd();
 

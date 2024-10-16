@@ -53,7 +53,7 @@ namespace mmsolver {
 
 class MMCameraPoseFromPointsCmd : public MPxCommand {
 public:
-    MMCameraPoseFromPointsCmd(){};
+    MMCameraPoseFromPointsCmd() : m_set_values(false){};
     virtual ~MMCameraPoseFromPointsCmd();
 
     virtual bool hasSyntax() const;

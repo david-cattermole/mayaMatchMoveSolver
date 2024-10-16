@@ -463,7 +463,9 @@ MStatus MMReprojectionCmd::doIt(const MArgList &args) {
                 MMatrix tfmMatrix;
                 status =
                     cameraMatrixAttr.getValue(camMatrix, time, timeEvalMode);
+                CHECK_MSTATUS(status);
                 status = tfmMatrixAttr.getValue(tfmMatrix, time, timeEvalMode);
+                CHECK_MSTATUS(status);
                 camMatrixList.append(camMatrix);
                 tfmMatrixList.append(tfmMatrix);
 

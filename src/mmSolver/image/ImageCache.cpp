@@ -527,7 +527,7 @@ ImageCache::GPUCacheValue ImageCache::gpu_insert_item(
 
         const auto inserted_key_iterator = item_map_pair.first;
         const bool item_ok = item_map_pair.second;
-        assert(ok == true);
+        assert(item_ok == true);
 
         const bool group_ok =
             ImageCache::gpu_insert_group(group_name, file_path);

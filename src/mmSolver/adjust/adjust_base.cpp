@@ -438,13 +438,16 @@ void printSolveDetails(const SolverResult &solverResult, SolverData &userData,
         std::string evals_per_sec_string =
             mmstring::numberToStringWithCommas(evals_per_sec);
 
+        const auto solverResult_iterations =
+            static_cast<uint32_t>(solverResult.iterations);
+
         const size_t buffer_size = 128;
         char formatBuffer[buffer_size];
         std::snprintf(formatBuffer, buffer_size,
-                      "error avg %8.4f   min %8.4f   max %8.4f  iterations "
-                      "%03u  (%s evals/sec)",
+                      "error avg %8.4f   min %8.4f   max %8.4f  "
+                      "iterations %03u  (%s evals/sec)",
                       solverResult.errorAvg, solverResult.errorMin,
-                      solverResult.errorMax, solverResult.iterations,
+                      solverResult.errorMax, solverResult_iterations,
                       &evals_per_sec_string[0]);
         // Note: We use std::endl to flush the stream, and ensure an
         //  update for the user.

@@ -357,9 +357,7 @@ struct SolveValuesResult {
     }
 
     void appendToMStringArray(MStringArray &result) {
-        std::string str;
-
-        str = "solve_parameter_list=";
+        std::string str = "solve_parameter_list=";
         for (const auto &value : Self::solve_parameter_list) {
             str += mmstring::numberToString<double>(value);
             str += CMD_RESULT_SPLIT_CHAR;
@@ -661,12 +659,13 @@ struct AffectsResult {
     }
 
     void appendToMStringArray(MStringArray &result) {
+        std::string str;
         for (const auto &kv : Self::marker_affects_attribute) {
             const std::string &marker_name = kv.first.marker_name;
             const std::string &attr_name = kv.first.attr_name;
             const int value = kv.second;
 
-            std::string str = "marker_affects_attribute=";
+            str = "marker_affects_attribute=";
             str += marker_name;
             str += CMD_RESULT_SPLIT_CHAR;
             str += attr_name;
@@ -752,8 +751,9 @@ struct SolverObjectUsageResult {
     }
 
     void appendToMStringArray(MStringArray &result) {
+        MString str;
         if (!Self::markers_used.empty()) {
-            MString str = "markers_used=";
+            str = "markers_used=";
             for (const auto &value : Self::markers_used) {
                 str += MString(value.c_str());
                 str += CMD_RESULT_SPLIT_CHAR;
@@ -762,7 +762,7 @@ struct SolverObjectUsageResult {
         }
 
         if (!Self::markers_unused.empty()) {
-            MString str = "markers_unused=";
+            str = "markers_unused=";
             for (const auto &value : Self::markers_unused) {
                 str += MString(value.c_str());
                 str += CMD_RESULT_SPLIT_CHAR;
@@ -771,7 +771,7 @@ struct SolverObjectUsageResult {
         }
 
         if (!Self::attributes_used.empty()) {
-            MString str = "attributes_used=";
+            str = "attributes_used=";
             for (const auto &value : Self::attributes_used) {
                 str += MString(value.c_str());
                 str += CMD_RESULT_SPLIT_CHAR;
@@ -780,7 +780,7 @@ struct SolverObjectUsageResult {
         }
 
         if (!Self::attributes_unused.empty()) {
-            MString str = "attributes_unused=";
+            str = "attributes_unused=";
             for (const auto &value : Self::attributes_unused) {
                 str += MString(value.c_str());
                 str += CMD_RESULT_SPLIT_CHAR;

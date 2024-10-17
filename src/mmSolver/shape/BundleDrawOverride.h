@@ -60,6 +60,7 @@ public:
         , m_point_size(1.0)
         , m_icon_size(1.0)
         , m_active(false)
+        , m_draw_on_top(true)
         , m_draw_name(false) {
     }
 

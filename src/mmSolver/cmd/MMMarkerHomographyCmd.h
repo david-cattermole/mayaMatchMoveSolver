@@ -50,7 +50,18 @@ namespace mmsolver {
 
 class MMMarkerHomographyCmd : public MPxCommand {
 public:
-    MMMarkerHomographyCmd(){};
+    MMMarkerHomographyCmd()
+        : m_image_width_a(1)
+        , m_image_height_a(1)
+        , m_image_width_b(1)
+        , m_image_height_b(1)
+        , m_sensor_width_mm_a(1.0)
+        , m_sensor_height_mm_a(1.0)
+        , m_sensor_width_mm_b(1.0)
+        , m_sensor_height_mm_b(1.0)
+        , m_frame_a(1)
+        , m_frame_b(10){};
+
     virtual ~MMMarkerHomographyCmd();
 
     virtual bool hasSyntax() const;

@@ -64,7 +64,7 @@ enum class CommandMode {
 
 class MMSolverSceneGraphCmd : public MPxCommand {
 public:
-    MMSolverSceneGraphCmd(){};
+    MMSolverSceneGraphCmd() : m_commandMode(CommandMode::kUndefined){};
 
     virtual ~MMSolverSceneGraphCmd();
 

@@ -52,7 +52,21 @@ namespace mmsolver {
 
 class MMCameraRelativePoseCmd : public MPxCommand {
 public:
-    MMCameraRelativePoseCmd(){};
+    MMCameraRelativePoseCmd()
+        : m_set_values(false)
+        , m_image_width_a(1)
+        , m_image_height_a(1)
+        , m_image_width_b(1)
+        , m_image_height_b(1)
+        , m_focal_length_mm_a(35.0)
+        , m_focal_length_mm_b(35.0)
+        , m_sensor_width_mm_a(1.0)
+        , m_sensor_height_mm_a(1.0)
+        , m_sensor_width_mm_b(1.0)
+        , m_sensor_height_mm_b(1.0)
+        , m_use_camera_transform(false)
+        , m_frame_a(1)
+        , m_frame_b(10){};
     virtual ~MMCameraRelativePoseCmd();
 
     virtual bool hasSyntax() const;

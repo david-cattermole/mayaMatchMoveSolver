@@ -63,7 +63,7 @@ namespace mmsolver {
 
 class MMSolver2Cmd : public MPxCommand {
 public:
-    MMSolver2Cmd(){};
+    MMSolver2Cmd() : m_setMarkerDeviationAttrs(false){};
 
     virtual ~MMSolver2Cmd();
 

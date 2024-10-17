@@ -52,6 +52,7 @@
 
 // MM Solver
 #include "mmSolver/adjust/adjust_base.h"
+#include "mmSolver/adjust/adjust_defines.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -61,7 +62,27 @@ namespace mmsolver {
 
 class MMSolverCmd : public MPxCommand {
 public:
-    MMSolverCmd(){};
+    MMSolverCmd()
+        : m_iterations(10)
+        , m_tau(0.0)
+        , m_epsilon1(0.0)
+        , m_epsilon2(0.0)
+        , m_epsilon3(0.0)
+        , m_delta(0.0)
+        , m_autoDiffType(AUTO_DIFF_TYPE_FORWARD)
+        , m_autoParamScale(0)
+        , m_robustLossType(ROBUST_LOSS_TYPE_TRIVIAL)
+        , m_robustLossScale(1.0)
+        , m_solverType(SOLVER_TYPE_DEFAULT_VALUE)
+        , m_timeEvalMode(TIME_EVAL_MODE_DG_CONTEXT)
+        , m_acceptOnlyBetter(true)
+        , m_removeUnusedMarkers(false)
+        , m_removeUnusedAttributes(false)
+        , m_imageWidth(2048.0)
+        , m_supportAutoDiffForward(false)
+        , m_supportAutoDiffCentral(false)
+        , m_supportParameterBounds(false)
+        , m_supportRobustLoss(false){};
 
     virtual ~MMSolverCmd();
 

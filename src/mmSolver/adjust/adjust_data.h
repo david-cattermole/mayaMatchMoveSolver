@@ -257,7 +257,25 @@ struct SolverData {
 
     LogLevel logLevel;
 
-    SolverData() = default;
+    SolverData()
+        : funcEvalNum(0)
+        , iterNum(0)
+        , jacIterNum(0)
+        , solverType(SOLVER_TYPE_DEFAULT_VALUE)
+        , numberOfMarkerErrors(0)
+        , numberOfAttrStiffnessErrors(0)
+        , numberOfAttrSmoothnessErrors(0)
+        , isNormalCall(false)
+        , isJacobianCall(false)
+        , isPrintCall(false)
+        , doCalcJacobian(false)
+        , solverOptions(nullptr)
+        , timer()
+        , dgmod(nullptr)
+        , curveChange(nullptr)
+        , computation(nullptr)
+        , userInterrupted(false)
+        , logLevel(LogLevel::kInfo){};
 };
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_DATA_H

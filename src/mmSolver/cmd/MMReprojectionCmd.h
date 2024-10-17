@@ -109,6 +109,8 @@ public:
         , m_givenWorldPoint(false)
         , m_worldPoint()
         , m_timeList()
+        , m_imageResX(2048.0)
+        , m_imageResY(2048.0)
         , m_asCameraPoint(false)
         , m_asWorldPoint(false)
         , m_asCoordinate(false)

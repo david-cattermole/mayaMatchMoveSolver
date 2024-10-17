@@ -47,7 +47,7 @@ bool solve_3d_cminpack_lmdif(SolverOptions &solverOptions,
                              std::vector<double> &paramWeightList,
                              SolverData &userData, SolverResult &solveResult);
 
-int solveFunc_cminpack_lmdif(void *data, int n, int m, const double *p,
-                             double *x, int iflag);
+int solveFunc_cminpack_lmdif(void *data, int m, int n, const double *x,
+                             double *fvec, int iflag);
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDIF_H

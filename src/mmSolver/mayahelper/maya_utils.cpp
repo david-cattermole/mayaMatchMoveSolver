@@ -157,7 +157,10 @@ bool hasAttrName(MFnDependencyNode &dependFn, const MString &attrName) {
     MStatus status = MStatus::kSuccess;
     auto network_plug = true;
     MPlug plug = dependFn.findPlug(attrName, network_plug, &status);
-    CHECK_MSTATUS(status);
+    // There is no need to check the 'status' because we check the
+    // plug status anyway. Calling 'CHECK_MSTATUS(status);' would only
+    // spam the terminal output, because this function is called a lot
+    // and it is intended to return directly.
     return !plug.isNull();
 }
 

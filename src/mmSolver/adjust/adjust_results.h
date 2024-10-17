@@ -299,12 +299,12 @@ struct SolveValuesResult {
     void fill(const int numberOfParameters, const int numberOfErrors,
               const std::vector<double> &paramList,
               const std::vector<double> &errorList) {
-        for (int i = 0; i < numberOfParameters; ++i) {
+        for (auto i = 0; i < numberOfParameters; ++i) {
             const double param_value = paramList[i];
             Self::solve_parameter_list.push_back(param_value);
         }
 
-        for (int i = 0; i < numberOfErrors; ++i) {
+        for (auto i = 0; i < numberOfErrors; ++i) {
             const double err_value = errorList[i];
             Self::solve_error_list.push_back(err_value);
         }
@@ -401,7 +401,7 @@ struct ErrorMetricsResult {
         const auto ui_unit = MTime::uiUnit();
 
         TimeErrorMapping frame_error_mapping;
-        for (int i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
+        for (auto i = 0; i < (numberOfMarkerErrors / ERRORS_PER_MARKER); ++i) {
             const IndexPair marker_pair = errorToMarkerList[i];
             MarkerPtr marker = markerList[marker_pair.first];
             const MTime frame = frameList[marker_pair.second];

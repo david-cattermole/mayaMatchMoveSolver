@@ -162,19 +162,17 @@ MStatus MMMemoryGPUCmd::doIt(const MArgList &args) {
     size_t bytes_value = 0;
     if (m_memory_total) {
         status = mmmemorygpu::memory_total_size_in_bytes(bytes_value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
     } else if (m_memory_free) {
         status = mmmemorygpu::memory_free_size_in_bytes(bytes_value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
     } else if (m_memory_used) {
         status = mmmemorygpu::memory_used_size_in_bytes(bytes_value);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
     } else {
         MMSOLVER_MAYA_ERR(
             "mmsolver::MMMemoryGPUCmd::doIt: "
             "Give a flag to the command!");
         return MStatus::kFailure;
     }
+    CHECK_MSTATUS(status);
 
     if (m_memory_unit == mmmemory::MemoryUnit::kBytes) {
         // It is only possible to return a maximum of "unsigned int"

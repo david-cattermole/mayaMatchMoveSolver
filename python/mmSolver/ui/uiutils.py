@@ -117,9 +117,12 @@ def isValidQtObject(obj):
         raise NotImplementedError
     elif host == 'maya':
         try:
-            from shiboken2 import isValid
+            from shiboken6 import isValid
         except ImportError:
-            from shiboken import isValid
+            try:
+                from shiboken2 import isValid
+            except ImportError:
+                from shiboken import isValid
         v = isValid(obj)
     else:
         raise NotImplementedError

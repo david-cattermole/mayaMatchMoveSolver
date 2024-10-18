@@ -130,16 +130,16 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
 
     def createConnections(self):
         """Set up callback connections"""
-        self.loadMode_comboBox.currentIndexChanged[str].connect(
+        self.loadMode_comboBox.currentIndexChanged.connect(
             lambda x: self.updateLoadMode()
         )
-        self.camera_comboBox.currentIndexChanged[str].connect(
+        self.camera_comboBox.currentIndexChanged.connect(
             lambda x: self.markerGroupUpdateClicked()
         )
-        self.camera_comboBox.currentIndexChanged[str].connect(
+        self.camera_comboBox.currentIndexChanged.connect(
             lambda x: self.updateOverscanValues()
         )
-        self.markerGroup_comboBox.currentIndexChanged[str].connect(
+        self.markerGroup_comboBox.currentIndexChanged.connect(
             lambda x: self.updateOverscanValues()
         )
         self.collection_checkBox.clicked[bool].connect(

@@ -79,7 +79,7 @@ mmSolver v0.4.0 a C++ compiler with at least C++11 is required.
   - [GCC 9.3.1](https://gcc.gnu.org/) (Maya 2022 and 2023)
     - Red Hat [DST 9.1](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/9/html/9.1_release_notes/index)
     - `yum install devtoolset-9` on RHEL 7 / CentOS 7
-  - [GCC 11.2.1](https://gcc.gnu.org/) (Maya 2024)
+  - [GCC 11.2.1](https://gcc.gnu.org/) (Maya 2024 and 2025)
     - Red Hat [DST 11](https://access.redhat.com/documentation/en-us/red_hat_developer_toolset/11/html/11.0_release_notes/dts11.0_release)
     - `dnf install devtoolset-11` on RHEL 8 / Rocky Linux 8
 - Windows

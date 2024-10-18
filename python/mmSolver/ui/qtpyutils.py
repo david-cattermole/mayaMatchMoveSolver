@@ -29,7 +29,7 @@ from __future__ import print_function
 import os
 
 PREFERRED_BINDING = 'QT_PREFERRED_BINDING'
-BINDING_ORDER = ['PySide2', 'PyQt5', 'PySide', 'PyQt4']
+BINDING_ORDER = ['PySide6', 'PySide2', 'PyQt5', 'PySide', 'PyQt4']
 
 
 def override_binding_order(binding_order=None):

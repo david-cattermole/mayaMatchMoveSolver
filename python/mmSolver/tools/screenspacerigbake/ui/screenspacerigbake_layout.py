@@ -188,7 +188,8 @@ class ScreenSpaceRigBakeLayout(QtWidgets.QWidget, ui_layout.Ui_Form):
         top_level_item_count = self.rigsList.topLevelItemCount()
         for i in range(top_level_item_count + 1):
             top_level_item = self.rigsList.topLevelItem(i)
-            self.rigsList.setItemExpanded(top_level_item, True)
+            if top_level_item:
+                top_level_item.setExpanded(True)
 
     def create_item(self, name):
         item = QtWidgets.QTreeWidgetItem([name])

@@ -716,7 +716,7 @@ class StringDataListModel(QtCore.QAbstractListModel, uiutils.QtInfoMixin):
         # Emit Data Changed.
         if Qt.__binding__ in ['PySide', 'PyQt4']:
             self.dataChanged.emit(index, index)
-        elif Qt.__binding__ in ['PySide2', 'PyQt5']:
+        elif Qt.__binding__ in ['PySide6', 'PySide2', 'PyQt5']:
             if role in [QtCore.Qt.DisplayRole, QtCore.Qt.EditRole, QtCore.Qt.UserRole]:
                 self.dataChanged.emit(index, index, [role])
         else:

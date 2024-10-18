@@ -92,8 +92,8 @@ mmSolver v0.4.0 a C++ compiler with at least C++11 is required.
 
 ## Rust
 
-[Rust 1.43+](https://www.rust-lang.org/) is required for ``MM Scene
-Graph`` features inside mmSolver.
+[Rust 1.43+](https://www.rust-lang.org/) is required for various
+features inside mmSolver.
 
 Rust is a modern programming language comparable to C or C++ in terms
 of speed, is highly performant and provides safety and stability
@@ -110,8 +110,7 @@ installed dependencies via the package managers.
 
 [cxx-bridge](https://cxx.rs/) is an executable required for generating
 C++ bindings for Rust code. This utility allows C++ code to interact
-with Rust code in simple and a safe way. This is used for the ``MM
-Scene Graph`` features.
+with Rust code in simple and a safe way.
 
 ## Eigen
 

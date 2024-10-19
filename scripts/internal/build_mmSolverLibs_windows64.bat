@@ -104,7 +104,7 @@ IF ERRORLEVEL 1 (
    :: './lib/cppbind/mmcore/Cargo.toml'
    :: './scripts/internal/build_mmSolverLibs_windows64.bat'
    :: './scripts/internal/build_mmSolverLibs_linux.bash'
-   %RUST_CARGO_EXE% install cxxbridge-cmd --version 1.0.128
+   %RUST_CARGO_EXE% install cxxbridge-cmd --version 1.0.129
 )
 SET MMSOLVERLIBS_CXXBRIDGE_EXE="%USERPROFILE%\.cargo\bin\cxxbridge.exe"
 :: Convert back-slashes to forward-slashes.

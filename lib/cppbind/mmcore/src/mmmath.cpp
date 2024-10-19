@@ -50,6 +50,32 @@ double lerp(const double min_value, const double max_value, const double mix) {
     return ((1 - mix) * min_value) + (mix * max_value);
 }
 
+// Return a value between 0.0 and 1.0 for a value in an input range
+// 'from' to 'to'.
+float inverse_lerp(const float from, const float to, const float value) {
+    return (value - from) / (to - from);
+}
+
+double inverse_lerp(const double from, const double to, const double value) {
+    return (value - from) / (to - from);
+}
+
+// Remap from an 'original' value range to a 'target' value range.
+float remap(const float original_from, const float original_to,
+            const float target_from, const float target_to, const float value) {
+    float map_to_original_range =
+        inverse_lerp(original_from, original_to, value);
+    return lerp(target_from, target_to, map_to_original_range);
+}
+
+double remap(const double original_from, const double original_to,
+             const double target_from, const double target_to,
+             const double value) {
+    double map_to_original_range =
+        inverse_lerp(original_from, original_to, value);
+    return lerp(target_from, target_to, map_to_original_range);
+}
+
 double length(mmdata::Point2D a) {
     return std::sqrt(a.x_ * a.x_ + a.y_ * a.y_);
 }

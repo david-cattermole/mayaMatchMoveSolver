@@ -32,6 +32,18 @@ namespace mmmath {
 float lerp(const float min_value, const float max_value, const float mix);
 double lerp(const double min_value, const double max_value, const double mix);
 
+// Return a value between 0.0 and 1.0 for a value in an input range
+// 'from' to 'to'.
+float inverse_lerp(const float from, const float to, const float value);
+double inverse_lerp(const double from, const double to, const double value);
+
+// Remap from an 'original' value range to a 'target' value range.
+float remap(const float original_from, const float original_to,
+            const float target_from, const float target_to, const float value);
+double remap(const double original_from, const double original_to,
+             const double target_from, const double target_to,
+             const double value);
+
 inline float clamp(const float v, const float min, const float max) {
     const float x = v < min ? min : v;
     return x > max ? max : x;

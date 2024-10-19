@@ -97,11 +97,7 @@ IF ERRORLEVEL 1 (
    :: NOTE: When changing this version number, make sure to update the
    :: CXX version used in the C++ buildings, and all the build scripts
    :: using this value:
-   :: './lib/mmsolverlibs/Cargo.toml'
-   :: './lib/cppbind/mmscenegraph/Cargo.toml'
-   :: './lib/cppbind/mmimage/Cargo.toml'
-   :: './lib/cppbind/mmlens/Cargo.toml'
-   :: './lib/cppbind/mmcore/Cargo.toml'
+   :: './Cargo.toml'
    :: './scripts/internal/build_mmSolverLibs_windows64.bat'
    :: './scripts/internal/build_mmSolverLibs_linux.bash'
    %RUST_CARGO_EXE% install cxxbridge-cmd --version 1.0.129

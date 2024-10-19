@@ -49,7 +49,30 @@ import time
 import os
 import os.path
 
-from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
+import maya.cmds
+
+# In Maya 2025 the
+# 'maya.app.general.mayaMixin.MayaQWidgetDockableMixin' class is
+# creating an error with mmSolver UIs (because they all inherit from
+# BaseMayaWindow). This conditional is used to disable the use of
+# 'MayaQWidgetDockableMixin' and avoid the problem while also avoiding
+# code changes.
+#
+# See https://github.com/david-cattermole/mayaMatchMoveSolver/issues/267
+#
+_USE_MAYA_MIX_IN = maya.cmds.about(apiVersion=True) < 20250000
+if _USE_MAYA_MIX_IN is True:
+    from maya.app.general.mayaMixin import MayaQWidgetDockableMixin
+else:
+
+    # Stub class for compatibility only.
+    class MayaQWidgetDockableMixin(object):
+        def __init__(self, parent=None, *args, **kwargs):
+            super(MayaQWidgetDockableMixin, self).__init__()
+
+        def setDockableParameters(self, *args, **kwargs):
+            pass
+
 
 import mmSolver.ui.qtpyutils as qtpyutils
 

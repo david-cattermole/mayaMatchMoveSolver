@@ -8,7 +8,7 @@ publish.workspace = true
 [lib]
 name = "mmscenegraph_rust"
 path = "./src/lib.rs"
-crate_type = ["lib"]
+crate-type = ["lib"]
 
 [[bench]]
 name = "bench"

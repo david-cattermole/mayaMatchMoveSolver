@@ -10,7 +10,7 @@ name = "mmsolverlibs_rust"
 path = "./src/lib.rs"
 # NOTE: 'lib' is used to link with Rust crates, 'staticlib' is used to
 # link with C++.
-crate_type = ["staticlib"]
+crate-type = ["staticlib"]
 
 [dependencies]
 mmcore_cppbind = { workspace = true }

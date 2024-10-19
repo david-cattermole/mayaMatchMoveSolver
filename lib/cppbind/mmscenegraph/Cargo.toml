@@ -10,8 +10,8 @@ name = "mmscenegraph"
 path = "./src/lib.rs"
 # NOTE: 'lib' is used to link with Rust crates, 'staticlib' is used to
 # link with C++.
-# crate_type = ["rlib"]
-# crate_type = ["staticlib"]
+# crate-type = ["rlib"]
+# crate-type = ["staticlib"]
 
 [dependencies]
 cxx = { workspace = true }

@@ -92,7 +92,7 @@ mmSolver v0.4.0 a C++ compiler with at least C++11 is required.
 
 ## Rust
 
-[Rust 1.43+](https://www.rust-lang.org/) is required for various
+[Rust 1.67+](https://www.rust-lang.org/) is required for various
 features inside mmSolver.
 
 Rust is a modern programming language comparable to C or C++ in terms

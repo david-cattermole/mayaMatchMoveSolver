@@ -348,7 +348,7 @@ class SolverStandardWidget(QtWidgets.QWidget, ui_solver_standard_widget.Ui_Form)
             self.setOnlyRootFramesValue(col, False)
             self.onlyRootFramesChanged.emit()
 
-        # "Evaluate Complex Graphs" causes the solver to evalulate
+        # "Evaluate Complex Graphs" causes the solver to evaluate
         # time per-frame, so it's not possible to use with "Global
         # Solve" - therefore it's disabled.
         block = self.blockSignals(True)

@@ -20,7 +20,7 @@ Holds all constant data needed for the solver tool and UI.
 """
 
 # Window Title Bar format.
-WINDOW_TITLE_BAR = 'mmSolver v{version} | {collection}'
+WINDOW_TITLE_BAR = '{collection} | mmSolver v{version}'
 
 # Window button text.
 WINDOW_BUTTON_SOLVE_START_LABEL = 'Solve'

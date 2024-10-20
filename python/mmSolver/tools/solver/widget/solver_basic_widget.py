@@ -119,10 +119,6 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
             self.solveLensDistortionValueToggled
         )
 
-        desc = const.SOLVER_BASIC_DESC_DEFAULT
-        self.description_label.setText(desc)
-        self.description_label.setVisible(False)
-
         e = time.time()
         LOG.debug('SolverBasicWidget init: %r seconds', e - s)
         return

@@ -150,10 +150,6 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
             self.solveLensDistortionValueToggled
         )
 
-        desc = const.SOLVER_CAM_DESC_DEFAULT
-        self.description_label.setText(desc)
-        self.description_label.setVisible(False)
-
         self.dataChanged.connect(self.updateModel)
         self.frameRange_widget.rangeTypeChanged.connect(self.updateModel)
         self.rootFrames_widget.sendWarning.connect(self._sendWarningToUser)

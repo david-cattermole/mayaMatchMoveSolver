@@ -122,12 +122,10 @@ class SolverLayout(QtWidgets.QWidget):
             self.attribute_browser.updateColumnVisibility, ct
         )
         self.collection_widget.itemChanged.connect(self.solver_settings.updateModel, ct)
-        self.collection_widget.itemChanged.connect(self.solver_settings.updateInfo, ct)
         self.collection_widget.itemChanged.connect(self.solver_state.updateModel, ct)
 
         self.object_browser.dataChanged.connect(self.object_browser.updateModel, ct)
         self.object_browser.dataChanged.connect(self.object_browser.updateInfo, ct)
-        self.object_browser.dataChanged.connect(self.solver_settings.updateInfo, ct)
         self.object_browser.viewUpdated.connect(
             self.object_browser.updateToggleButtons, ct
         )
@@ -141,7 +139,6 @@ class SolverLayout(QtWidgets.QWidget):
         self.attribute_browser.dataChanged.connect(
             self.attribute_browser.updateInfo, ct
         )
-        self.attribute_browser.dataChanged.connect(self.solver_settings.updateInfo, ct)
         self.attribute_browser.viewUpdated.connect(
             self.attribute_browser.updateToggleButtons, ct
         )
@@ -149,8 +146,6 @@ class SolverLayout(QtWidgets.QWidget):
             self.attribute_browser.updateColumnVisibility, ct
         )
 
-        self.solver_settings.dataChanged.connect(self.solver_settings.updateInfo, ct)
-        self.solver_settings.tabChanged.connect(self.solver_settings.updateInfo, ct)
         self.solver_settings.tabChanged.connect(self.solver_settings.updateModel, ct)
         self.solver_settings.sendWarning.connect(self.setStatusLine, ct)
         return

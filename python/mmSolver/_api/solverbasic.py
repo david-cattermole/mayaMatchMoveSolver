@@ -97,22 +97,22 @@ class SolverBasic(solverbase.SolverBase):
         """
         Get 'Pre-Solve Object Relationships' value.
 
+        OBSOLETE! Do not use.
+
         :rtype: bool
         """
-        return self._data.get(
-            'eval_object_relationships',
-            const.SOLVER_STD_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE,
-        )
+        return True
 
     def set_eval_object_relationships(self, value):
         """
         Set 'Pre-Solve Object Relationships' value.
 
+        OBSOLETE! Do not use.
+
         :param value: Value to be set.
         :type value: bool or int
         """
-        assert isinstance(value, (bool, int, pycompat.LONG_TYPE))
-        self._data['eval_object_relationships'] = bool(value)
+        pass
 
     ############################################################################
 
@@ -405,8 +405,7 @@ class SolverBasic(solverbase.SolverBase):
         lineup_iter_num = self.get_lineup_iteration_num()
         use_euler_filter = True
         use_attr_blocks = self.get_use_attr_blocks()
-        eval_object_relationships = self.get_eval_object_relationships()
-        remove_unused_objects = eval_object_relationships
+        remove_unused_objects = True
         eval_complex_graphs = self.get_eval_complex_graphs()
         solve_focal_length = self.get_solve_focal_length()
         solve_lens_distortion = self.get_solve_lens_distortion()
@@ -445,16 +444,11 @@ class SolverBasic(solverbase.SolverBase):
                 yield action, vaction
 
         # Pre-calculate the 'affects' relationship.
-        if eval_object_relationships is True:
-            generator = solverutils.compile_solver_affects(
-                col, mkr_list, attr_list, precomputed_data, withtest
-            )
-            for action, vaction in generator:
-                yield action, vaction
-        else:
-            generator = solverutils.compile_reset_used_hints(col, mkr_list, attr_list)
-            for action, vaction in generator:
-                yield action, vaction
+        generator = solverutils.compile_solver_affects(
+            col, mkr_list, attr_list, precomputed_data, withtest
+        )
+        for action, vaction in generator:
+            yield action, vaction
 
         time_eval_mode = const.TIME_EVAL_MODE_DEFAULT
         if eval_complex_graphs is True:

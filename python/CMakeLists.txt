@@ -119,11 +119,6 @@ if (MMSOLVER_BUILD_QT_UI)
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/solver/widget/ui_solver_basic_widget.py
             )
 
-    compile_qt_ui_to_python_file("solver_solver_legacy_widget"
-            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/solver_legacy_widget.ui
-            ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/solver/widget/ui_solver_legacy_widget.py
-            )
-
     compile_qt_ui_to_python_file("solver_solver_standard_widget"
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/solver/widget/solver_standard_widget.ui
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/solver/widget/ui_solver_standard_widget.py

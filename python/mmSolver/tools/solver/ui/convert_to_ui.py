@@ -28,11 +28,8 @@ import time
 import mmSolver.logger
 
 import mmSolver.api as mmapi
-import mmSolver.tools.solver.lib.solver_step as solver_step
 import mmSolver.tools.solver.ui.attr_nodes as attr_nodes
 import mmSolver.tools.solver.ui.object_nodes as object_nodes
-import mmSolver.tools.solver.ui.solver_nodes as solver_nodes
-
 
 LOG = mmSolver.logger.get_logger()
 
@@ -310,16 +307,3 @@ def attributesToUINodes(col, attr_list, show_anm, show_stc, show_lck):
     e = time.time()
     LOG.debug('attributesToUINodes: %r seconds', e - s)
     return root
-
-
-def solverStepsToUINodes(step_list, col):
-    s = time.time()
-    node_list = []
-    for step in step_list:
-        assert isinstance(step, solver_step.SolverStep) is True
-        name = step.get_name()
-        node = solver_nodes.SolverStepNode(name, col)
-        node_list.append(node)
-    e = time.time()
-    LOG.debug('solverStepsToUINodes: %r seconds', e - s)
-    return node_list

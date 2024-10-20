@@ -35,7 +35,6 @@ import mmSolver.ui.Qt.QtWidgets as QtWidgets
 import mmSolver.logger
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
-import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.solver.widget.ui_solver_camera_widget as ui_solver_camera_widget
 import mmSolver.tools.solver.widget.framerange_widget as framerange_widget
 import mmSolver.tools.solver.widget.rootframe_widget as rootframe_widget
@@ -126,7 +125,6 @@ class CameraFrameRangeWidget(framerange_widget.FrameRangeWidget):
 
 
 class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
-
     viewUpdated = QtCore.Signal()
     dataChanged = QtCore.Signal()
     sendWarning = QtCore.Signal(str)
@@ -237,12 +235,6 @@ class SolverCameraWidget(QtWidgets.QWidget, ui_solver_camera_widget.Ui_Form):
         self.setSolveFocalLengthValue(col, solve_focal_length)
         self.setSolveLensDistortionValue(col, solve_lens_distortion)
         return
-
-    def queryInfo(self):
-        LOG.debug('RUN camera queryInfo')
-        col = lib_state.get_active_collection()
-        text = lib_col.query_solver_info_text(col)
-        return text
 
     @QtCore.Slot(int)
     def originFrameValueChanged(self, value):

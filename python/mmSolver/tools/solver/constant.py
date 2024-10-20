@@ -72,7 +72,6 @@ MM_SOLVER_DATA_ATTR_NAME = 'mmSolver_data'
 
 # Scene Data keys and default values.
 SCENE_DATA_ACTIVE_COLLECTION_UID = 'active_collection_uid'
-SCENE_DATA_AUTO_UPDATE_SOLVER_VALIDATION = 'auto_update_solver_validation'
 SCENE_DATA_PRE_SOLVE_FORCE_EVAL = 'pre_solve_force_eval'
 SCENE_DATA_REFRESH_VIEWPORT = 'refresh_viewport_state'
 SCENE_DATA_FORCE_DG_UPDATE = 'force_dg_update_state'
@@ -88,7 +87,6 @@ SCENE_DATA_DISPLAY_ATTRIBUTE_MIN_MAX = 'display_attribute_min_max'
 SCENE_DATA_DISPLAY_ATTRIBUTE_STIFFNESS = 'display_attribute_stiffness'
 SCENE_DATA_DISPLAY_ATTRIBUTE_SMOOTHNESS = 'display_attribute_smoothness'
 SCENE_DATA_LOG_LEVEL = 'log_level'
-SCENE_DATA_AUTO_UPDATE_SOLVER_VALIDATION_DEFAULT = False
 SCENE_DATA_PRE_SOLVE_FORCE_EVAL_DEFAULT = True
 SCENE_DATA_REFRESH_VIEWPORT_DEFAULT = True
 SCENE_DATA_FORCE_DG_UPDATE_DEFAULT = True
@@ -155,21 +153,6 @@ SOLVER_STEP_DATA_DEFAULT = {
     'use_anim_attrs': True,
     'use_static_attrs': False,
 }
-
-# Override Current Frame (stored on Collection node)
-OVERRIDE_CURRENT_FRAME_ATTR = 'override_current_frame'
-OVERRIDE_CURRENT_FRAME_ATTR_TYPE = 'bool'
-OVERRIDE_CURRENT_FRAME_DEFAULT_VALUE = False
-
-# Most simple solves converge on a result within 10 iterations, but 20
-# gives a wider range to refine more complex set ups. (LEGACY SOLVER)
-MAX_ITERATION_NUM_DEFAULT_VALUE = 20
-
-# Default Auto-Differencing type for solver steps (LEGACY SOLVER).
-#
-# 0=forward differencing
-# 1=central differencing
-AUTO_DIFF_TYPE_DEFAULT_VALUE = 0
 
 # List of common status messages.
 STATUS_READY = 'Ready.'
@@ -304,12 +287,10 @@ assert len(RANGE_TYPE_NAME_LIST) == len(RANGE_TYPE_VALUE_LIST)
 SOLVER_TAB_BASIC_VALUE = 'basic'
 SOLVER_TAB_STANDARD_VALUE = 'standard'
 SOLVER_TAB_CAMERA_VALUE = 'camera'
-SOLVER_TAB_LEGACY_VALUE = 'legacy'
 SOLVER_TAB_VALUE_LIST = [
     SOLVER_TAB_BASIC_VALUE,
     SOLVER_TAB_STANDARD_VALUE,
     SOLVER_TAB_CAMERA_VALUE,
-    SOLVER_TAB_LEGACY_VALUE,
 ]
 
 # Solver Tab (stored on Collection node)
@@ -372,21 +353,10 @@ SOLVER_GLOBAL_SOLVE_ATTR = 'solver_global_solve'
 SOLVER_GLOBAL_SOLVE_ATTR_TYPE = 'bool'
 SOLVER_GLOBAL_SOLVE_DEFAULT_VALUE = False
 
-# Solver Evaluate Object Relationships (stored on Collection node)
-#
-# Deprecated, do not use.
-SOLVER_EVAL_OBJECT_RELATIONSHIPS_ATTR = 'solver_eval_object_relationships'
-SOLVER_EVAL_OBJECT_RELATIONSHIPS_ATTR_TYPE = 'bool'
-SOLVER_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE = False
-
 # Solver Evaluate Complex Node Graphs (stored on Collection node)
 SOLVER_EVAL_COMPLEX_GRAPHS_ATTR = 'solver_eval_complex_node_graphs'
 SOLVER_EVAL_COMPLEX_GRAPHS_ATTR_TYPE = 'bool'
 SOLVER_EVAL_COMPLEX_GRAPHS_DEFAULT_VALUE = False
-
-# Hide "Eval Object Relationships", it's not used anymore and is
-# deprecated.
-EVAL_OBJECT_RELATIONSHIPS_WIDGET_VISIBLE = False
 
 # Solver Scene Graph Mode
 SCENE_GRAPH_MODE_AUTO = 0

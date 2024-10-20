@@ -38,7 +38,6 @@ import mmSolver.ui.uimodels as uimodels
 import mmSolver.ui.uiutils as uiutils
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as lib_col_state
-import mmSolver.tools.solver.lib.collection as lib_col
 import mmSolver.tools.solver.widget.ui_solver_basic_widget as ui_solver_basic_widget
 import mmSolver.tools.solver.widget.framerange_widget as framerange_widget
 import mmSolver.tools.solver.constant as const
@@ -54,17 +53,6 @@ def _populateWidgetsEnabled(widgets):
     for widget in widgets:
         widget.setEnabled(enabled)
     return
-
-
-def _getAllowObjectRelations():
-    # This feature is deprecated and is no longer allowed.
-    return False
-    config = userprefs_lib.get_config()
-    key = userprefs_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_KEY
-    allow_obj_relations = userprefs_lib.get_value(config, key)
-    true_value = userprefs_const.SOLVER_UI_ALLOW_OBJECT_RELATIONS_TRUE_VALUE
-    visible = allow_obj_relations == true_value
-    return visible
 
 
 class BasicFrameRangeWidget(framerange_widget.FrameRangeWidget):
@@ -94,11 +82,9 @@ class BasicFrameRangeWidget(framerange_widget.FrameRangeWidget):
 
 
 class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
-
     viewUpdated = QtCore.Signal()
     dataChanged = QtCore.Signal()
     sceneGraphModeChanged = QtCore.Signal()
-    evalObjectRelationshipsChanged = QtCore.Signal()
     evalComplexGraphsChanged = QtCore.Signal()
 
     def __init__(self, parent=None, *args, **kwargs):
@@ -121,14 +107,6 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
 
         self.sceneGraphMode_comboBox.setVisible(const.SCENE_GRAPH_MODE_WIDGET_VISIBLE)
         self.sceneGraphMode_label.setVisible(const.SCENE_GRAPH_MODE_WIDGET_VISIBLE)
-
-        # Deprecated, do not use.
-        self.evalObjectRelationships_checkBox.setVisible(
-            const.EVAL_OBJECT_RELATIONSHIPS_WIDGET_VISIBLE
-        )
-        self.evalObjectRelationships_checkBox.toggled.connect(
-            self.evalObjectRelationshipsValueToggled
-        )
 
         self.evalComplexGraphs_checkBox.toggled.connect(
             self.evalComplexGraphsValueToggled
@@ -160,17 +138,6 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
         lib_col_state.set_solver_scene_graph_mode_on_collection(col, value)
         return
 
-    def getEvalObjectRelationshipsValue(self, col):
-        allow_obj_relations = _getAllowObjectRelations()
-        if allow_obj_relations is False:
-            return False
-        value = lib_col_state.get_solver_eval_object_relationships_from_collection(col)
-        return value
-
-    def setEvalObjectRelationshipsValue(self, col, value):
-        lib_col_state.set_solver_eval_object_relationships_on_collection(col, value)
-        return
-
     def getEvalComplexGraphsValue(self, col):
         value = lib_col_state.get_solver_eval_complex_graphs_from_collection(col)
         return value
@@ -193,24 +160,6 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
 
     def setSolveLensDistortionValue(self, col, value):
         lib_col_state.set_solver_solve_lens_distortion_on_collection(col, value)
-        return
-
-    def event(self, ev):
-        if ev.type() == QtCore.QEvent.WindowActivate:
-            LOG.debug('window activated')
-            self.updateObjectRelationshipsWidgets()
-        return super(SolverBasicWidget, self).event(ev)
-
-    def updateObjectRelationshipsWidgets(self):
-        LOG.debug('updateObjectRelationshipsWidgets')
-        allow_obj_relations = _getAllowObjectRelations()
-        self.evalObjectRelationships_checkBox.setEnabled(allow_obj_relations)
-
-        col = lib_state.get_active_collection()
-        if col is None:
-            return
-        value = self.getEvalObjectRelationshipsValue(col)
-        self.evalObjectRelationships_checkBox.setChecked(value)
         return
 
     def getSceneGraphActiveIndex(self, model, col):
@@ -243,36 +192,23 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
             LOG.error('Could not get the active scene graph mode index.')
             return
 
-        allow_obj_relations = _getAllowObjectRelations()
-        eval_obj_conns = self.getEvalObjectRelationshipsValue(col)
         eval_complex_graphs = self.getEvalComplexGraphsValue(col)
-        if allow_obj_relations is False:
-            eval_obj_conns = False
 
         solve_focal_length = self.getSolveFocalLengthValue(col)
         solve_lens_distortion = self.getSolveLensDistortionValue(col)
 
         block = self.blockSignals(True)
         self.sceneGraphMode_comboBox.setCurrentIndex(scene_graph_mode)
-        self.evalObjectRelationships_checkBox.setEnabled(allow_obj_relations)
-        self.evalObjectRelationships_checkBox.setChecked(eval_obj_conns)
         self.evalComplexGraphs_checkBox.setChecked(eval_complex_graphs)
         self.solveFocalLength_checkBox.setChecked(solve_focal_length)
         self.solveLensDistortion_checkBox.setChecked(solve_lens_distortion)
         self.blockSignals(block)
 
         self.setSceneGraphModeValue(col, scene_graph_mode)
-        self.setEvalObjectRelationshipsValue(col, eval_obj_conns)
         self.setEvalComplexGraphsValue(col, eval_complex_graphs)
         self.setSolveFocalLengthValue(col, solve_focal_length)
         self.setSolveLensDistortionValue(col, solve_lens_distortion)
         return
-
-    def queryInfo(self):
-        LOG.debug('RUN basic queryInfo')
-        col = lib_state.get_active_collection()
-        text = lib_col.query_solver_info_text(col)
-        return text
 
     @QtCore.Slot(int)
     def sceneGraphModeIndexChanged(self, index):
@@ -288,15 +224,6 @@ class SolverBasicWidget(QtWidgets.QWidget, ui_solver_basic_widget.Ui_Form):
         assert isinstance(data, pycompat.INT_TYPES)
         self.setSceneGraphModeValue(col, data)
         self.sceneGraphModeChanged.emit()
-        return
-
-    @QtCore.Slot(bool)
-    def evalObjectRelationshipsValueToggled(self, value):
-        col = lib_state.get_active_collection()
-        if col is None:
-            return
-        self.setEvalObjectRelationshipsValue(col, value)
-        self.evalObjectRelationshipsChanged.emit()
         return
 
     @QtCore.Slot(bool)

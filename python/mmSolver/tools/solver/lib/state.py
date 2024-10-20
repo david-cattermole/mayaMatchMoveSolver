@@ -152,17 +152,6 @@ def set_state_str(name, value):
     return
 
 
-def get_auto_update_solver_validation_state():
-    return get_state_bool(
-        const.SCENE_DATA_AUTO_UPDATE_SOLVER_VALIDATION,
-        const.SCENE_DATA_AUTO_UPDATE_SOLVER_VALIDATION_DEFAULT,
-    )
-
-
-def set_auto_update_solver_validation_state(value):
-    return set_state_bool(const.SCENE_DATA_AUTO_UPDATE_SOLVER_VALIDATION, value)
-
-
 def get_pre_solve_force_eval_state():
     return get_state_bool(
         const.SCENE_DATA_PRE_SOLVE_FORCE_EVAL,

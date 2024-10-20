@@ -40,10 +40,8 @@ def __get_override_current_frame_value(col, tab):
     value = None
     if tab in [const.SOLVER_TAB_BASIC_VALUE, const.SOLVER_TAB_STANDARD_VALUE]:
         value = lib_col_state.get_solver_range_type_from_collection(col)
-    elif tab == const.SOLVER_TAB_LEGACY_VALUE:
-        value = lib_col.get_override_current_frame_from_collection(col)
     else:
-        raise ValueError('tab is not supported; tab=%r' % tab)
+        raise ValueError('Cannot get override current frame; tab is not supported; tab=%r' % tab)
     return value
 
 
@@ -52,12 +50,8 @@ def __set_override_current_frame_value(col, layout_ui, tab, value):
         if value is True:
             value = const.RANGE_TYPE_CURRENT_FRAME_VALUE
         lib_col_state.set_solver_range_type_on_collection(col, value)
-    elif tab == const.SOLVER_TAB_LEGACY_VALUE:
-        lib_col.set_override_current_frame_on_collection(col, value)
-        if layout_ui is not None:
-            layout_ui.solver_settings.legacy_widget.setOverrideCurrentFrame(col, value)
     else:
-        raise ValueError('tab is not supported; tab=%r' % tab)
+        raise ValueError('Cannot get override current frame; tab is not supported; tab=%r' % tab)
     return
 
 

@@ -208,48 +208,6 @@ def set_value_structure_on_node(
 #######################################################################
 
 
-def get_override_current_frame_from_collection(col):
-    """
-    Get the value of 'Override Current Frame', from a Collection.
-
-    :param col: The Collection to query.
-    :type col: Collection
-
-    :returns: True or False.
-    :rtype: bool
-    """
-    value = get_value_from_node(
-        col.get_node(),
-        const.OVERRIDE_CURRENT_FRAME_ATTR,
-        attr_type=const.OVERRIDE_CURRENT_FRAME_ATTR_TYPE,
-        default_value=const.OVERRIDE_CURRENT_FRAME_DEFAULT_VALUE,
-    )
-    return value
-
-
-def set_override_current_frame_on_collection(col, value):
-    """
-    Set the value of 'Override Current Frame' on a Collection.
-
-    :param col: The Collection to change.
-    :type col: Collection
-
-    :param value: Value to set to.
-    :type value: bool
-    """
-    set_value_on_node(
-        col.get_node(),
-        const.OVERRIDE_CURRENT_FRAME_ATTR,
-        value,
-        attr_type=const.OVERRIDE_CURRENT_FRAME_ATTR_TYPE,
-        default_value=const.OVERRIDE_CURRENT_FRAME_DEFAULT_VALUE,
-    )
-    return
-
-
-#######################################################################
-
-
 def get_attribute_toggle_animated_from_collection(col):
     """
     Get the value of 'Attributes Toggle Animated', from a Collection.
@@ -983,49 +941,6 @@ def set_solver_global_solve_on_collection(col, value):
         value,
         attr_type=const.SOLVER_GLOBAL_SOLVE_ATTR_TYPE,
         default_value=const.SOLVER_GLOBAL_SOLVE_DEFAULT_VALUE,
-    )
-    return
-
-
-#######################################################################
-
-
-def get_solver_eval_object_relationships_from_collection(col):
-    """
-    Get the value of solver 'Evaluate Object Relationships', from a Collection.
-
-    :param col: The Collection to query.
-    :type col: Collection
-
-    :returns:
-        A boolean, should the solver evaluate object relationships (relationships)?
-    :rtype: bool
-    """
-    value = get_value_from_node(
-        col.get_node(),
-        const.SOLVER_EVAL_OBJECT_RELATIONSHIPS_ATTR,
-        attr_type=const.SOLVER_EVAL_OBJECT_RELATIONSHIPS_ATTR_TYPE,
-        default_value=const.SOLVER_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE,
-    )
-    return value
-
-
-def set_solver_eval_object_relationships_on_collection(col, value):
-    """
-    Set the value of solver 'Pre-Solve Object Relationships' on a Collection.
-
-    :param col: The Collection to change.
-    :type col: Collection
-
-    :param value: Value to set to.
-    :type value: bool
-    """
-    set_value_on_node(
-        col.get_node(),
-        const.SOLVER_EVAL_OBJECT_RELATIONSHIPS_ATTR,
-        value,
-        attr_type=const.SOLVER_EVAL_OBJECT_RELATIONSHIPS_ATTR_TYPE,
-        default_value=const.SOLVER_EVAL_OBJECT_RELATIONSHIPS_DEFAULT_VALUE,
     )
     return
 

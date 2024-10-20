@@ -176,13 +176,6 @@
         </layout>
        </item>
        <item>
-        <widget class="QCheckBox" name="evalObjectRelationships_checkBox">
-         <property name="text">
-          <string>Evaluate Object Relationships</string>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QCheckBox" name="evalComplexGraphs_checkBox">
          <property name="text">
           <string>Evaluate Mesh Rivets</string>

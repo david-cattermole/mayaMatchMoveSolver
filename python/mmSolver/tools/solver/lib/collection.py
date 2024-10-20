@@ -22,7 +22,6 @@ Collection and solving functions.
 import logging
 import pprint
 import time
-import uuid
 
 import maya.cmds
 
@@ -37,7 +36,6 @@ import mmSolver.tools.userpreferences.constant as userprefs_const
 import mmSolver.tools.userpreferences.lib as userprefs_lib
 import mmSolver.tools.solver.lib.state as lib_state
 import mmSolver.tools.solver.lib.collectionstate as col_state
-import mmSolver.tools.solver.lib.solver_step as solver_step
 import mmSolver.tools.solver.lib.maya_utils as lib_maya_utils
 import mmSolver.tools.solver.constant as const
 
@@ -46,12 +44,6 @@ LOG = mmSolver.logger.get_logger()
 
 
 # Function aliases, for the 'collectionstate' module.
-get_override_current_frame_from_collection = (
-    col_state.get_override_current_frame_from_collection
-)
-set_override_current_frame_on_collection = (
-    col_state.set_override_current_frame_on_collection
-)
 get_attribute_toggle_animated_from_collection = (
     col_state.get_attribute_toggle_animated_from_collection
 )
@@ -333,133 +325,6 @@ def log_solve_results(
     return
 
 
-def create_solver_step():
-    """
-    Create a SolverStep object and return it.
-    """
-    data = const.SOLVER_STEP_DATA_DEFAULT.copy()
-
-    data['name'] = str(uuid.uuid4())
-
-    start, end = utils_time.get_maya_timeline_range_inner()
-    frame_list = list(range(start, end + 1))
-    data['frame_list'] = frame_list
-
-    step = solver_step.SolverStep(data=data)
-    return step
-
-
-def get_named_solver_step_from_collection(col, name):
-    assert isinstance(col, mmapi.Collection)
-    step_list = get_solver_steps_from_collection(col)
-    name_list = [s.get_name() for s in step_list]
-    if name not in name_list:
-        msg = 'SolverStep %r could not be found in all steps: %r'
-        LOG.warning(msg, name, name_list)
-        return None
-    idx = name_list.index(name)
-    return step_list[idx]
-
-
-def set_named_solver_step_to_collection(col, step):
-    assert isinstance(col, mmapi.Collection)
-    name = step.get_name()
-    step_list = get_solver_steps_from_collection(col)
-    name_list = [s.get_name() for s in step_list]
-    if name not in name_list:
-        raise ValueError
-    idx = list(name_list).index(name)
-    step_list.pop(idx)
-    step_list.insert(idx, step)
-    set_solver_step_list_to_collection(col, step_list)
-    return
-
-
-def add_solver_step_to_collection(col, step):
-    assert isinstance(col, mmapi.Collection)
-    step_list = get_solver_steps_from_collection(col)
-    name_list = [s.get_name() for s in step_list]
-    name = step.get_name()
-    if name in name_list:
-        raise ValueError('Solver step already exists with that name.')
-    step_list.insert(0, step)  # new step pushed onto the front.
-    set_solver_step_list_to_collection(col, step_list)
-    return
-
-
-def remove_solver_step_from_collection(col, step):
-    assert isinstance(col, mmapi.Collection)
-    if step is None:
-        msg = 'Cannot remove SolverStep, step is invalid.'
-        LOG.warning(msg)
-        return
-    step_list = get_solver_steps_from_collection(col)
-    name_list = [s.get_name() for s in step_list]
-    name = step.get_name()
-    if name not in name_list:
-        raise ValueError
-    idx = list(name_list).index(name)
-    step_list.pop(idx)
-    set_solver_step_list_to_collection(col, step_list)
-    return
-
-
-def compile_solvers_from_steps(col, step_list, prog_fn=None):
-    """
-    Compile the solver steps attached to Collection into solvers.
-    """
-    use_cur_frame = col_state.get_override_current_frame_from_collection(col)
-    sol_list = []
-    for i, step in enumerate(step_list):
-        sol_list += step.compile(col, override_current_frame=use_cur_frame)
-        if prog_fn is not None:
-            ratio = float(i) / len(step_list)
-            percent = int(ratio * 100.0)
-            prog_fn(percent)
-    return sol_list
-
-
-def get_solver_steps_from_collection(col):
-    """
-    Load all steps from collection.
-
-    :param col: The Collection to query.
-    :type col: Collection
-
-    :rtype: list of SolverStep
-    """
-    assert isinstance(col, mmapi.Collection)
-    if col is None:
-        return []
-    node = col.get_node()
-    if maya.cmds.objExists(node) is False:
-        return []
-    data_list = col_state.get_value_structure_from_node(
-        col.get_node(),
-        const.SOLVER_STEP_ATTR,
-        attr_type=const.SOLVER_STEP_ATTR_TYPE,
-        default_value=const.SOLVER_STEP_DEFAULT_VALUE,
-    )
-    if data_list is None:
-        data_list = list()
-    step_list = [solver_step.SolverStep(d) for d in data_list]
-    return step_list
-
-
-def set_solver_step_list_to_collection(col, step_list):
-    data_list = [s.get_data() for s in step_list]
-    col_state.set_value_structure_on_node(
-        col.get_node(),
-        const.SOLVER_STEP_ATTR,
-        data_list,
-        attr_type=const.SOLVER_STEP_ATTR_TYPE,
-        default_value=const.SOLVER_STEP_DEFAULT_VALUE,
-    )
-    sol_list = compile_solvers_from_steps(col, step_list)
-    col.set_solver_list(sol_list)
-    return
-
-
 def __compile_frame_list(range_type, frame_string, by_frame):
     assert isinstance(range_type, int)
     assert frame_string is None or isinstance(frame_string, pycompat.TEXT_TYPE)
@@ -516,9 +381,6 @@ def __compile_solver_basic_tab(col, scene_graph_mode):
         frames = [mmapi.Frame(f) for f in frame_nums]
         sol.set_frame_list(frames)
 
-    eval_obj_relations = col_state.get_solver_eval_object_relationships_from_collection(
-        col
-    )
     eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
     solve_focal_length = col_state.get_solver_solve_focal_length_from_collection(col)
     solve_lens_distortion = col_state.get_solver_solve_lens_distortion_from_collection(
@@ -532,7 +394,6 @@ def __compile_solver_basic_tab(col, scene_graph_mode):
         scene_graph_mode = const.SCENE_GRAPH_MODE_MAYA_DAG
 
     sol.set_scene_graph_mode(scene_graph_mode)
-    sol.set_eval_object_relationships(eval_obj_relations)
     sol.set_eval_complex_graphs(eval_complex_graphs)
     sol.set_solve_focal_length(solve_focal_length)
     sol.set_solve_lens_distortion(solve_lens_distortion)
@@ -560,9 +421,6 @@ def __compile_solver_standard_tab(col, scene_graph_mode):
 
     global_solve = col_state.get_solver_global_solve_from_collection(col)
     only_root = col_state.get_solver_only_root_frames_from_collection(col)
-    eval_obj_relations = col_state.get_solver_eval_object_relationships_from_collection(
-        col
-    )
     eval_complex_graphs = col_state.get_solver_eval_complex_graphs_from_collection(col)
     solve_focal_length = col_state.get_solver_solve_focal_length_from_collection(col)
     solve_lens_distortion = col_state.get_solver_solve_lens_distortion_from_collection(
@@ -578,7 +436,6 @@ def __compile_solver_standard_tab(col, scene_graph_mode):
     sol.set_global_solve(global_solve)
     sol.set_only_root_frames(only_root)
     sol.set_scene_graph_mode(scene_graph_mode)
-    sol.set_eval_object_relationships(eval_obj_relations)
     sol.set_eval_complex_graphs(eval_complex_graphs)
     sol.set_solve_focal_length(solve_focal_length)
     sol.set_solve_lens_distortion(solve_lens_distortion)
@@ -648,9 +505,6 @@ def compile_collection(col, prog_fn=None):
         sol_list = __compile_solver_basic_tab(col, scene_graph_mode)
     elif solver_tab == const.SOLVER_TAB_STANDARD_VALUE:
         sol_list = __compile_solver_standard_tab(col, scene_graph_mode)
-    elif solver_tab.lower() == const.SOLVER_TAB_LEGACY_VALUE:
-        step_list = get_solver_steps_from_collection(col)
-        sol_list = compile_solvers_from_steps(col, step_list, prog_fn=prog_fn)
     elif solver_tab == const.SOLVER_TAB_CAMERA_VALUE:
         sol_list = __compile_solver_camera_tab(col)
     else:

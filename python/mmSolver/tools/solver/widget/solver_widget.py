@@ -65,16 +65,15 @@ class SolverWidget(QtWidgets.QWidget, ui_solver_widget.Ui_Form):
 
         # Solver Settings Basic Widget
         self.basic_widget = solver_basic_widget.SolverBasicWidget(self)
-        self.basic_layout.addWidget(self.basic_widget)
+        self.basic_tab.layout().addWidget(self.basic_widget)
 
         # Solver Settings Standard Widget
         self.standard_widget = solver_standard_widget.SolverStandardWidget(self)
-        self.standard_layout.addWidget(self.standard_widget)
+        self.standard_tab.layout().addWidget(self.standard_widget)
 
         # Solver Settings Camera Widget
         self.camera_widget = solver_camera_widget.SolverCameraWidget(self)
-        self.camera_layout.addWidget(self.camera_widget)
-
+        self.camera_tab.layout().addWidget(self.camera_widget)
 
         self._tab_name_to_index_map = {
             'basic': 0,

@@ -71,11 +71,11 @@ class SolverLayout(QtWidgets.QWidget):
 
         # Object Widget
         self.object_browser = objectbrowser_widget.ObjectBrowserWidget(self)
-        self.ui.object_layout.addWidget(self.object_browser)
+        self.ui.object_frame.layout().addWidget(self.object_browser)
 
         # Attribute Widget
         self.attribute_browser = attrbrowser_widget.AttributeBrowserWidget(self)
-        self.ui.attribute_layout.addWidget(self.attribute_browser)
+        self.ui.attribute_frame.layout().addWidget(self.attribute_browser)
 
         # Solver Widget
         self.solver_settings = solver_widget.SolverWidget(self)
@@ -83,7 +83,7 @@ class SolverLayout(QtWidgets.QWidget):
 
         # Solver State Widget
         self.solver_state = solverstate_widget.SolverStateWidget(self)
-        self.ui.solverState_layout.addWidget(self.solver_state)
+        self.ui.solverState_frame.layout().addWidget(self.solver_state)
 
         self.createConnections()
 

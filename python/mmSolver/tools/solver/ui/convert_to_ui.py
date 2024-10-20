@@ -94,7 +94,7 @@ def _generateMarkerUINodes(cam, mkr, bnd, root_node, mkr_name, show_mkr, show_bn
         'uuid': bnd_uuid,
     }
     assert mkr_node is not None
-    bnd_node = object_nodes.BundleNode(bnd_name, data=data, parent=mkr_node)
+    # bnd_node = object_nodes.BundleNode(bnd_name, data=data, parent=mkr_node)
     return
 
 

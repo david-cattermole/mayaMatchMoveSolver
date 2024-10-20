@@ -30,9 +30,6 @@
     <number>2</number>
    </property>
    <item>
-    <widget class="QWidget" name="timelineDeviation_widget" native="true"/>
-   </item>
-   <item>
     <layout class="QHBoxLayout" name="statusLine_layout">
      <item>
       <widget class="QLabel" name="statusLine_label">

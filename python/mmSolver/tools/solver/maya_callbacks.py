@@ -410,9 +410,9 @@ def add_selection_changed_callback(obj_UI):
     >>> import maya.OpenMaya as OpenMaya
     >>> array = []
     >>> OpenMaya.MEventMessage.getEventNames(array)
-    >>> for x in sorted(array): print x
+    >>> for x in sorted(array): print(x)
     >>> OpenMaya.MConditionMessage.getConditionNames(array)
-    >>> for x in sorted(array): print x
+    >>> for x in sorted(array): print(x)
     >>>
 
     :param obj_UI: Expected to be an instance of the Solver UI

@@ -15,14 +15,16 @@ name = "bench"
 harness = false
 
 [dependencies]
+anyhow = { workspace = true }
 approx = { workspace = true }
 fastapprox = { workspace = true }
-rustc-hash = { workspace = true }
 log = { workspace = true }
-num-traits = { workspace = true }
-rand = { workspace = true }
-petgraph = { workspace = true }
 nalgebra = { workspace = true }
+num-traits = { workspace = true }
+petgraph = { workspace = true }
+rand = { workspace = true }
+rustc-hash = { workspace = true }
 
 [dev-dependencies]
 criterion = { workspace = true }
+plotters = { workspace = true }

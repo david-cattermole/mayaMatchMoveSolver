@@ -24,6 +24,7 @@ pub type AttrIndex = usize;
 pub type HashValue = u64;
 pub type NodeIndex = usize;
 pub type FrameValue = u32;
+pub type FrameTime = f64;
 pub type Real = f64;
 pub type Matrix44 = nalgebra::Matrix4<Real>;
 pub type Matrix33 = nalgebra::Matrix3<Real>;

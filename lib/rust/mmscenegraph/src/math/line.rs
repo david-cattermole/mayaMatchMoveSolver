@@ -18,6 +18,8 @@
 // ====================================================================
 //
 /// Line Regression.
+use log::debug;
+
 use crate::constant::Real;
 
 const EPSILON: Real = 1.0e-9;
@@ -87,6 +89,77 @@ fn impl_fit_line_to_points_type1(
     }
 }
 
+fn impl_combine_values_logic(
+    ok_a: bool,
+    ok_b: bool,
+    intercept_a: Real,
+    slope_a: Real,
+    slope_b: Real,
+    mean_x: Real,
+    mean_y: Real,
+    out_point_x: &mut Real,
+    out_point_y: &mut Real,
+    out_dir_x: &mut Real,
+    out_dir_y: &mut Real,
+) -> bool {
+    debug!("ok_a={ok_a} ok_b={ok_b}");
+
+    if ok_a && ok_b {
+        // Both linear regressions returned.
+
+        // Transpose the values, because of the swapped values given
+        // to the impl_fit_line_to_points_type1() function.
+        let slope_b = slope_b.recip().min(std::f64::MAX).copysign(slope_a);
+        assert_eq!(slope_a.signum(), slope_b.signum());
+
+        *out_point_x = mean_x;
+        *out_point_y = mean_y;
+
+        let slope = slope_a.signum() * (slope_a * slope_b).sqrt();
+        let angle = slope.atan();
+        *out_dir_x = angle.sin();
+        *out_dir_y = angle.cos();
+
+        debug!("slope_a={slope_a} slope_b={slope_b}");
+        debug!("angle={angle} slope={slope}");
+
+        true
+    } else if ok_a && !ok_b {
+        // The special case that the line is entirely vertical.
+        *out_point_x = intercept_a;
+        *out_point_y = mean_y;
+
+        let angle = slope_a.atan();
+        *out_dir_x = angle.sin();
+        *out_dir_y = angle.cos();
+
+        debug!("slope_a={slope_a} intercept_a={intercept_a}");
+        debug!("angle={angle}");
+
+        true
+    } else if !ok_a && ok_b {
+        // The special case that the line is entirely horizontal.
+
+        // Transpose the values, because of the swapped values given
+        // to the impl_fit_line_to_points_type1() function.
+        let slope_b = slope_b.recip().min(std::f64::MAX);
+
+        *out_point_x = mean_x;
+        *out_point_y = mean_y;
+
+        let angle = (-slope_b).atan();
+        *out_dir_x = angle.sin();
+        *out_dir_y = angle.cos();
+
+        debug!("slope_b={slope_b}");
+        debug!("angle={angle}");
+
+        true
+    } else {
+        false
+    }
+}
+
 pub fn fit_line_to_points_type1(
     x: &[Real],
     y: &[Real],
@@ -136,6 +209,60 @@ pub fn fit_line_to_points_type1(
         let angle = slope.atan();
         *out_dir_x = angle.sin();
         *out_dir_y = angle.cos();
+    }
+    ok
+}
+
+pub fn curve_fit_linear_regression_type1(
+    x: &[Real],
+    y: &[Real],
+    out_mean_x: &mut Real,
+    out_mean_y: &mut Real,
+    out_angle: &mut Real,
+) -> bool {
+    let mut sum_x: Real = 0.0;
+    let mut sum_y: Real = 0.0;
+    let mut sum_xy: Real = 0.0;
+    let mut sum_x2: Real = 0.0;
+    let mut sum_y2: Real = 0.0;
+    let mut mean_x: Real = 0.0;
+    let mut mean_y: Real = 0.0;
+
+    let ok = impl_precompute_line_fit_data(
+        &x,
+        &y,
+        &mut sum_x,
+        &mut sum_y,
+        &mut sum_xy,
+        &mut sum_x2,
+        &mut sum_y2,
+        &mut mean_x,
+        &mut mean_y,
+    );
+    if !ok {
+        return false;
+    }
+
+    let mut intercept: Real = 0.0;
+    let mut slope: Real = 0.0;
+    let ok = impl_fit_line_to_points_type1(
+        sum_x,
+        sum_xy,
+        sum_x2,
+        mean_x,
+        mean_y,
+        &mut intercept,
+        &mut slope,
+    );
+    if ok {
+        *out_mean_x = mean_x;
+        *out_mean_y = mean_y;
+
+        *out_angle = slope.atan();
+        let angle_degree = out_angle.to_degrees();
+        println!(
+            "fit_line_to_points_type1_curve angle={out_angle} degrees={angle_degree}"
+        );
     }
     ok
 }
@@ -206,51 +333,19 @@ pub fn fit_line_to_points_type2(
         &mut slope_b,
     );
 
-    if ok_a && ok_b {
-        // Both linear regressions returned.
-
-        // Transpose the values, because of the swapped values given
-        // to the fit_line_to_points_type1() function.
-        slope_b = slope_b.recip().min(std::f64::MAX).copysign(slope_a);
-        assert_eq!(slope_a.signum(), slope_b.signum());
-
-        *out_point_x = mean_x;
-        *out_point_y = mean_y;
-
-        let slope = slope_a.signum() * (slope_a * slope_b).sqrt();
-        let angle = slope.atan();
-        *out_dir_x = angle.sin();
-        *out_dir_y = angle.cos();
-
-        true
-    } else if ok_a && !ok_b {
-        // The special case that the line is entirely vertical.
-        *out_point_x = intercept_a;
-        *out_point_y = mean_y;
-
-        let angle = slope_a.atan();
-        *out_dir_x = angle.sin();
-        *out_dir_y = angle.cos();
-
-        true
-    } else if !ok_a && ok_b {
-        // The special case that the line is entirely horizontal.
-
-        // Transpose the values, because of the swapped values given
-        // to the fit_line_to_points_type1() function.
-        slope_b = slope_b.recip().min(std::f64::MAX);
-
-        *out_point_x = mean_x;
-        *out_point_y = mean_y;
-
-        let angle = (-slope_b).atan();
-        *out_dir_x = angle.sin();
-        *out_dir_y = angle.cos();
-
-        true
-    } else {
-        false
-    }
+    impl_combine_values_logic(
+        ok_a,
+        ok_b,
+        intercept_a,
+        slope_a,
+        slope_b,
+        mean_x,
+        mean_y,
+        out_point_x,
+        out_point_y,
+        out_dir_x,
+        out_dir_y,
+    )
 }
 
 /// Approximates a perfectly straight line from a set of (ordered) line

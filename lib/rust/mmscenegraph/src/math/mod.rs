@@ -19,6 +19,7 @@
 //
 
 pub mod camera;
+pub mod curve_fit;
 pub mod dag;
 pub mod line;
 pub mod line_intersect;

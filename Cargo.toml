@@ -20,13 +20,18 @@ publish = false
 [workspace.dependencies]
 anyhow = "1.0.89"
 approx = "0.5.1"
+argmin = { version = "0.10.0", default-features = true, features = ["serde1"] } # ,
+argmin-math = { version = "0.4", default-features = true, features = ["primitives", "vec", "ndarray_latest"] }
 criterion = { version = "0.5.1", default-features = false, features = ["html_reports"] }
 exr = "1.72.0"
 fastapprox = "0.3.1"
+finitediff = { version = "0.1.4", features = ["ndarray"] }
 log = "0.4.22"
-nalgebra = { version = "0.33.0", default-features = false, features = ["std", "matrixmultiply"] }
+nalgebra = { version = "0.33.1", default-features = false, features = ["std", "matrixmultiply"] }
+ndarray = "0.15.6"
+ndarray-linalg = { version = "0.16.0", features = ["intel-mkl-static"] }
 num = "0.4.3"
-num-traits = "0.2"
+num-traits = "0.2.19"
 num_cpus = "1.16.0"
 petgraph = { version = "0.6", default-features = false, features = ["stable_graph"] }
 plotters = { version = "0.3.7", default-features = false, features = ["image", "bitmap_encoder", "bitmap_backend", "line_series", "ttf"] }

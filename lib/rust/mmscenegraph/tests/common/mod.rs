@@ -20,9 +20,12 @@
 
 use plotters::prelude::*;
 
+#[allow(unused_imports)]
+use log::debug;
+
 use anyhow::bail;
 use anyhow::Result;
-use log::debug;
+
 use std::ffi::OsStr;
 use std::fs::File;
 use std::io::Read;
@@ -142,6 +145,7 @@ fn calculate_data_min_mean_max_values(
     *out_y_mean = *out_y_mean / num as Real;
 }
 
+#[allow(dead_code)]
 pub fn save_chart_linear_regression(
     data_raw: &[(FrameTime, Real)],
     data: &[(FrameTime, Real)],
@@ -258,6 +262,133 @@ pub fn save_chart_linear_regression(
 
     cc.draw_series(LineSeries::new(line.iter().map(|x| (x.0, x.1)), &GREEN))
         .unwrap();
+
+    // To avoid the IO failure being ignored silently, we manually
+    // call the present function.
+    root_area.present()?;
+    debug!("Chart saved to: {:?}", chart_file_path);
+
+    Ok(())
+}
+
+#[allow(dead_code)]
+pub fn save_chart_linear_n3_regression(
+    data_raw: &[(FrameTime, Real)],
+    data: &[(FrameTime, Real)],
+    point_a: Point2,
+    point_b: Point2,
+    point_c: Point2,
+    chart_title: &str,
+    chart_file_path: &OsStr,
+    chart_resolution: (u32, u32),
+) -> Result<()> {
+    let root_area = BitMapBackend::new(
+        chart_file_path,
+        (chart_resolution.0, chart_resolution.1),
+    )
+    .into_drawing_area();
+
+    root_area.fill(&WHITE)?;
+
+    let root_area = root_area.titled(chart_title, ("sans-serif", 60))?;
+
+    let mut x_min: FrameTime = FrameTime::MAX;
+    let mut x_mean: FrameTime = 0.0;
+    let mut x_max: FrameTime = FrameTime::MIN;
+    let mut y_min: Real = Real::MAX;
+    let mut y_mean: Real = 0.0;
+    let mut y_max: Real = Real::MIN;
+
+    calculate_data_min_mean_max_values(
+        data_raw,
+        &mut x_min,
+        &mut x_mean,
+        &mut x_max,
+        &mut y_min,
+        &mut y_mean,
+        &mut y_max,
+    );
+    calculate_data_min_mean_max_values(
+        data,
+        &mut x_min,
+        &mut x_mean,
+        &mut x_max,
+        &mut y_min,
+        &mut y_mean,
+        &mut y_max,
+    );
+    debug!("x_min={x_min}");
+    debug!("x_mean={x_mean}");
+    debug!("x_max={x_max}");
+    debug!("y_min={y_min}");
+    debug!("y_mean={y_mean}");
+    debug!("y_max={y_max}");
+
+    let x_first = data[0].0;
+    let y_first = data[0].1;
+    let x_last = data[data.len() - 1].0;
+    let y_last = data[data.len() - 1].1;
+    let x_diff = (x_last - x_first) as Real / 2.0;
+    let y_diff = (y_last - y_first) as Real / 2.0;
+    debug!("x_first={x_first}");
+    debug!("y_first={y_first}");
+    debug!("x_last={x_last}");
+    debug!("y_last={y_last}");
+    debug!("x_diff={x_diff}");
+    debug!("y_diff={y_diff}");
+
+    let mut line = Vec::<(FrameTime, Real)>::new();
+    line.push((point_a.x(), point_a.y()));
+    line.push((point_b.x(), point_b.y()));
+    line.push((point_c.x(), point_c.y()));
+    debug!("line: {:#?}", line);
+
+    let chart_caption = format!(
+        "Ay={:.3} By={:.3} Cy={:.3}",
+        point_a.y(),
+        point_b.y(),
+        point_c.y()
+    );
+
+    let x_pad = 0.1;
+    let y_pad = 0.1;
+    let chart_min_value_x = x_min - x_pad;
+    let chart_max_value_x = x_max + x_pad;
+    let chart_min_value_y = y_min - y_pad;
+    let chart_max_value_y = y_max + y_pad;
+
+    let mut cc = ChartBuilder::on(&root_area)
+        .margin(5)
+        .set_all_label_area_size(50)
+        .caption(&chart_caption, ("sans-serif", 40))
+        .build_cartesian_2d(
+            chart_min_value_x..chart_max_value_x,
+            chart_min_value_y..chart_max_value_y,
+        )?;
+
+    cc.configure_mesh()
+        .x_labels(20)
+        .y_labels(10)
+        .disable_mesh()
+        .x_label_formatter(&|v| format!("{:.0}", v))
+        .y_label_formatter(&|v| format!("{:.1}", v))
+        .draw()?;
+
+    cc.draw_series(
+        LineSeries::new(data_raw.iter().map(|x| (x.0, x.1)), &RED)
+            .point_size(2),
+    )
+    .unwrap();
+
+    cc.draw_series(
+        LineSeries::new(data.iter().map(|x| (x.0, x.1)), &BLUE).point_size(2),
+    )
+    .unwrap();
+
+    cc.draw_series(
+        LineSeries::new(line.iter().map(|x| (x.0, x.1)), &GREEN).point_size(2),
+    )
+    .unwrap();
 
     // To avoid the IO failure being ignored silently, we manually
     // call the present function.

@@ -17,9 +17,14 @@ harness = false
 [dependencies]
 anyhow = { workspace = true }
 approx = { workspace = true }
+argmin = { workspace = true }
+argmin-math = { workspace = true }
 fastapprox = { workspace = true }
+finitediff = { workspace = true }
 log = { workspace = true }
 nalgebra = { workspace = true }
+ndarray = { workspace = true }
+ndarray-linalg = { workspace = true }
 num-traits = { workspace = true }
 petgraph = { workspace = true }
 rand = { workspace = true }

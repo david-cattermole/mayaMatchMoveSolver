@@ -23,20 +23,24 @@ mod common;
 use anyhow::Result;
 use approx::assert_relative_eq;
 
-use mmscenegraph_rust::math::curve_analysis::calculate_derivatives;
+use mmscenegraph_rust::math::curve_analysis::allocate_derivatives_order_3;
+use mmscenegraph_rust::math::curve_analysis::calculate_derivatives_order_3;
 
 fn print_arrays(velocity: &[f64], acceleration: &[f64], jerk: &[f64]) {
-    println!("Found {} velocity:", velocity.len());
+    println!("Velocity (1st order derivative) count {} :", velocity.len());
     for (i, v) in velocity.iter().enumerate() {
         println!("i={i} v={v}");
     }
 
-    println!("Found {} acceleration:", acceleration.len());
+    println!(
+        "Acceleration (2nd order derivative) count {} :",
+        acceleration.len()
+    );
     for (i, v) in acceleration.iter().enumerate() {
         println!("i={i} v={v}");
     }
 
-    println!("Found {} jerk:", jerk.len());
+    println!("Jerk (3rd order derivative) count {} :", jerk.len());
     for (i, v) in jerk.iter().enumerate() {
         println!("i={i} v={v}");
     }
@@ -48,8 +52,18 @@ fn calculate_derivatives1() -> Result<()> {
     let times = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0];
     let heights = vec![1.0, 1.1, 1.2, 1.3, 1.4, 1.5];
 
-    let (velocity, acceleration, jerk) =
-        calculate_derivatives(&times, &heights)?;
+    // let (velocity, acceleration, jerk) =
+    //     calculate_derivatives(&times, &heights)?;
+
+    let (mut velocity, mut acceleration, mut jerk) =
+        allocate_derivatives_order_3(times.len())?;
+    calculate_derivatives_order_3(
+        &times,
+        &heights,
+        &mut velocity,
+        &mut acceleration,
+        &mut jerk,
+    )?;
 
     print_arrays(&velocity, &acceleration, &jerk);
 
@@ -87,8 +101,18 @@ fn calculate_derivatives2() -> Result<()> {
     let times = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0];
     let heights = vec![-1.0, -1.1, -1.2, -1.3, -1.4, -1.5];
 
-    let (velocity, acceleration, jerk) =
-        calculate_derivatives(&times, &heights)?;
+    // let (velocity, acceleration, jerk) =
+    //     calculate_derivatives(&times, &heights)?;
+
+    let (mut velocity, mut acceleration, mut jerk) =
+        allocate_derivatives_order_3(times.len())?;
+    calculate_derivatives_order_3(
+        &times,
+        &heights,
+        &mut velocity,
+        &mut acceleration,
+        &mut jerk,
+    )?;
 
     print_arrays(&velocity, &acceleration, &jerk);
 
@@ -126,8 +150,15 @@ fn calculate_derivatives3() -> Result<()> {
     let times = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0];
     let heights = vec![1.0, 1.1, 1.25, 1.5, 2.0, 4.0];
 
-    let (velocity, acceleration, jerk) =
-        calculate_derivatives(&times, &heights)?;
+    let (mut velocity, mut acceleration, mut jerk) =
+        allocate_derivatives_order_3(times.len())?;
+    calculate_derivatives_order_3(
+        &times,
+        &heights,
+        &mut velocity,
+        &mut acceleration,
+        &mut jerk,
+    )?;
 
     print_arrays(&velocity, &acceleration, &jerk);
 
@@ -150,8 +181,15 @@ fn calculate_derivatives4() -> Result<()> {
     let times = vec![0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0];
     let heights = vec![0.0, 1.0, 4.0, 9.0, 16.0, 25.0, 36.0]; // f(x) = x^2
 
-    let (velocity, acceleration, jerk) =
-        calculate_derivatives(&times, &heights)?;
+    let (mut velocity, mut acceleration, mut jerk) =
+        allocate_derivatives_order_3(times.len())?;
+    calculate_derivatives_order_3(
+        &times,
+        &heights,
+        &mut velocity,
+        &mut acceleration,
+        &mut jerk,
+    )?;
 
     print_arrays(&velocity, &acceleration, &jerk);
 

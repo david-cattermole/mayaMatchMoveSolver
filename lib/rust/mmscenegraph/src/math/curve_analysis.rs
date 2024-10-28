@@ -88,29 +88,128 @@ fn calc_derivative(
     Ok(())
 }
 
-/// Calculate derivatives (velocity, acceleration, jerk) from time and
-/// height data.
-///
-/// Returns vectors of the same length as input by using forward,
-/// central, and backward differences
-pub fn calculate_derivatives(
-    times: &[Real],
-    heights: &[Real],
+/// Allocate vectors for 1st order derivatives.
+pub fn allocate_derivatives_order_1(num: usize) -> Result<Vec<Real>> {
+    let velocity = vec![0.0; num];
+    Ok(velocity)
+}
+
+/// Allocate vectors for 2nd order derivatives.
+pub fn allocate_derivatives_order_2(
+    num: usize,
+) -> Result<(Vec<Real>, Vec<Real>)> {
+    let velocity = vec![0.0; num];
+    let acceleration = vec![0.0; num];
+    Ok((velocity, acceleration))
+}
+
+/// Allocate vectors for 3rd order derivatives.
+pub fn allocate_derivatives_order_3(
+    num: usize,
 ) -> Result<(Vec<Real>, Vec<Real>, Vec<Real>)> {
-    let n = heights.len();
+    let velocity = vec![0.0; num];
+    let acceleration = vec![0.0; num];
+    let jerk = vec![0.0; num];
+    Ok((velocity, acceleration, jerk))
+}
+
+/// Calculate 1st order derivatives (velocity) from time and value
+/// data.
+///
+/// Returns vectors of the same length as input by using finite
+/// differences.
+pub fn calculate_derivatives_order_1(
+    times: &[Real],
+    values: &[Real],
+    out_velocity: &mut [Real],
+) -> Result<()> {
+    // Verify slice lengths match
+    if times.len() != values.len() || times.len() != out_velocity.len() {
+        bail!("Input and output slices must have equal length; times.len()={} values.len()={} out_velocity.len()={}",
+              times.len(),
+              values.len(),
+              out_velocity.len())
+    }
+
+    let n = values.len();
     if n < 4 {
         bail!("Need at least 4 points for derivative analysis");
     }
 
-    // TODO: Should these vectors be given to this function to be
-    // allocated?
-    let mut velocity = vec![0.0; n];
-    let mut acceleration = vec![0.0; n];
-    let mut jerk = vec![0.0; n];
+    calc_derivative(times, values, out_velocity)?;
 
-    calc_derivative(times, heights, &mut velocity)?;
-    calc_derivative(times, &velocity, &mut acceleration)?;
-    calc_derivative(times, &acceleration, &mut jerk)?;
+    Ok(())
+}
 
-    Ok((velocity, acceleration, jerk))
+/// Calculate 2nd order derivatives (velocity and acceleration) from
+/// time and value data.
+///
+/// Returns vectors of the same length as input by using finite
+/// differences.
+pub fn calculate_derivatives_order_2(
+    times: &[Real],
+    values: &[Real],
+    out_velocity: &mut [Real],
+    out_acceleration: &mut [Real],
+) -> Result<()> {
+    // Verify slice lengths match
+    if times.len() != values.len()
+        || times.len() != out_velocity.len()
+        || times.len() != out_acceleration.len()
+    {
+        bail!("Input and output slices must have equal length; times.len()={} values.len()={} out_velocity.len()={} out_acceleration.len()={}",
+        times.len(),
+        values.len(),
+        out_velocity.len(),
+        out_acceleration.len(),
+        )
+    }
+
+    let n = values.len();
+    if n < 4 {
+        bail!("Need at least 4 points for derivative analysis");
+    }
+
+    calc_derivative(times, values, out_velocity)?;
+    calc_derivative(times, &out_velocity, out_acceleration)?;
+
+    Ok(())
+}
+
+/// Calculate 3rd order derivatives (velocity, acceleration, and jerk)
+/// from time and value data.
+///
+/// Returns vectors of the same length as input by using finite
+/// differences.
+pub fn calculate_derivatives_order_3(
+    times: &[Real],
+    values: &[Real],
+    out_velocity: &mut [Real],
+    out_acceleration: &mut [Real],
+    out_jerk: &mut [Real],
+) -> Result<()> {
+    // Verify slice lengths match
+    if times.len() != values.len()
+        || times.len() != out_velocity.len()
+        || times.len() != out_acceleration.len()
+        || times.len() != out_jerk.len()
+    {
+        bail!("Input and output slices must have equal length; times.len()={} values.len()={} out_velocity.len()={} out_acceleration.len()={} out_jerk.len()={}",
+              times.len(),
+              values.len(),
+              out_velocity.len(),
+              out_acceleration.len(),
+              out_jerk.len());
+    }
+
+    let n = values.len();
+    if n < 4 {
+        bail!("Need at least 4 points for derivative analysis");
+    }
+
+    calc_derivative(times, values, out_velocity)?;
+    calc_derivative(times, out_velocity, out_acceleration)?;
+    calc_derivative(times, out_acceleration, out_jerk)?;
+
+    Ok(())
 }

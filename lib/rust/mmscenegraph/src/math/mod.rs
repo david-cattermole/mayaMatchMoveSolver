@@ -22,6 +22,7 @@ pub mod camera;
 pub mod curve_derivatives;
 pub mod curve_fit;
 pub mod dag;
+pub mod fit_plane;
 pub mod line;
 pub mod line_intersect;
 pub mod reprojection;

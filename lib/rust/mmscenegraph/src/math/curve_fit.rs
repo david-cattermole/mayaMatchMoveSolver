@@ -37,6 +37,10 @@ pub struct Point2 {
 }
 
 impl Point2 {
+    pub fn new(x: f64, y: f64) -> Self {
+        Self { x, y }
+    }
+
     pub fn x(self) -> Real {
         self.x
     }
@@ -430,6 +434,258 @@ pub fn nonlinear_line_n3(
                 y: parameters[2],
             },
         )),
+        None => bail!("Solve failed."),
+    }
+}
+
+#[derive(Debug)]
+pub struct CurveFitLinearNPointsProblem {
+    // Curve values we are trying to fit to
+    reference_values: Vec<(f64, f64)>,
+    reference_values_first_x: usize,
+
+    // X-coordinates of control points (fixed)
+    control_points_x: Vec<f64>,
+}
+
+impl CurveFitLinearNPointsProblem {
+    fn new(control_points_x: Vec<f64>, reference_curve: &[(f64, f64)]) -> Self {
+        let x_first: usize = reference_curve[0].0.floor() as usize;
+        let reference_values: Vec<(f64, f64)> =
+            reference_curve.iter().copied().collect();
+
+        Self {
+            reference_values,
+            reference_values_first_x: x_first,
+            control_points_x,
+        }
+    }
+
+    fn parameter_count(&self) -> usize {
+        // Only Y coordinates need to be solved for.
+        self.control_points_x.len()
+    }
+
+    fn reference_y_value_at_value_x(&self, value_x: f64) -> f64 {
+        let value_start = self.control_points_x[0].floor() as usize;
+        let value_end = self.control_points_x.last().unwrap().ceil() as usize;
+
+        let mut value_index = value_x.round() as usize;
+        if value_index < value_start {
+            value_index = value_start;
+        } else if value_index > value_end {
+            value_index = value_end;
+        }
+
+        let mut index = value_index - self.reference_values_first_x;
+        if index >= self.reference_values.len() {
+            index = self.reference_values.len() - 1;
+        }
+
+        self.reference_values[index].1
+    }
+
+    fn interpolate_y_value_at_x(
+        &self,
+        value_x: f64,
+        control_points_y: &[f64],
+    ) -> f64 {
+        debug_assert_eq!(self.control_points_x.len(), control_points_y.len());
+
+        // Find the segment containing value_x.
+        for i in 0..self.control_points_x.len() - 1 {
+            if value_x <= self.control_points_x[i + 1] {
+                if value_x == self.control_points_x[i + 1] {
+                    return control_points_y[i + 1];
+                }
+                return linear_interpolate_point_y_value_at_value_x(
+                    value_x,
+                    self.control_points_x[i],
+                    control_points_y[i],
+                    self.control_points_x[i + 1],
+                    control_points_y[i + 1],
+                );
+            }
+        }
+
+        // If we get here, value_x is beyond the last point.
+        *control_points_y.last().unwrap()
+    }
+
+    fn residuals(&self, control_points_y: &[f64]) -> Vec<f64> {
+        self.reference_values
+            .iter()
+            .map(|&(value_x, data_y)| {
+                let curve_y =
+                    self.interpolate_y_value_at_x(value_x, control_points_y);
+                (curve_y - data_y).abs()
+            })
+            .collect()
+    }
+}
+
+impl argmin::core::CostFunction for CurveFitLinearNPointsProblem {
+    type Param = Array1<f64>;
+    type Output = f64;
+
+    fn cost(
+        &self,
+        parameters: &Self::Param,
+    ) -> Result<Self::Output, argmin::core::Error> {
+        debug!("Cost: parameters={parameters:?}");
+        assert_eq!(parameters.len(), self.parameter_count());
+
+        let residuals_data = self.residuals(parameters.as_slice().unwrap());
+        let residuals = Array1::from_vec(residuals_data);
+
+        let residuals_sum = residuals.sum();
+        debug!("residuals_sum: {residuals_sum}");
+
+        Ok(residuals_sum * residuals_sum)
+    }
+}
+
+impl argmin::core::Gradient for CurveFitLinearNPointsProblem {
+    type Param = Array1<f64>;
+    type Gradient = Array1<f64>;
+
+    fn gradient(
+        &self,
+        parameters: &Self::Param,
+    ) -> Result<Self::Gradient, argmin::core::Error> {
+        debug!("Gradient: parameters={parameters:?}");
+
+        assert_eq!(parameters.len(), self.parameter_count());
+
+        let vector = (*parameters).forward_diff(&|x| {
+            let sum: f64 =
+                self.residuals(x.as_slice().unwrap()).into_iter().sum();
+            debug!("forward_diff residuals_sum: {sum}");
+            sum * sum
+        });
+
+        Ok(vector)
+    }
+}
+
+impl argmin::core::Hessian for CurveFitLinearNPointsProblem {
+    type Param = Array1<f64>;
+    type Hessian = Array2<f64>;
+
+    fn hessian(
+        &self,
+        parameters: &Self::Param,
+    ) -> Result<Self::Hessian, argmin::core::Error> {
+        debug!("Hessian: parameters={parameters:?}");
+        assert_eq!(parameters.len(), self.parameter_count());
+
+        let matrix =
+            (*parameters).forward_hessian(&|x| self.gradient(x).unwrap());
+
+        Ok(matrix)
+    }
+}
+
+pub fn nonlinear_line_n_points(
+    x_values: &[f64],
+    y_values: &[f64],
+    control_point_count: usize,
+) -> Result<Vec<Point2>> {
+    assert_eq!(x_values.len(), y_values.len());
+    let value_count = x_values.len();
+    assert!(value_count > 2);
+    assert!(
+        control_point_count >= 3,
+        "Must have at least 3 control points"
+    );
+
+    // TODO: Normalize the input values to a known range, say 0.0 to
+    // 1.0, solve and then scale back to the original time and value
+    // range.
+
+    // First get initial guess using linear regression
+    let mut point_x = 0.0;
+    let mut point_y = 0.0;
+    let mut angle = 0.0;
+    curve_fit_linear_regression_type1(
+        x_values,
+        y_values,
+        &mut point_x,
+        &mut point_y,
+        &mut angle,
+    );
+
+    let dir_x = angle.cos();
+    let dir_y = angle.sin();
+    debug!("point_x={point_x} point_y={point_y}");
+    debug!("dir_x={dir_x} dir_y={dir_y}");
+
+    // Calculate the range of x values
+    let x_first = x_values[0];
+    let x_last = x_values[value_count - 1];
+    let x_range = x_last - x_first;
+
+    // Generate evenly spaced control points along x-axis
+    let mut control_points_x = Vec::with_capacity(control_point_count);
+    let mut initial_y_values = Vec::with_capacity(control_point_count);
+    for i in 0..control_point_count {
+        let mix = i as f64 / (control_point_count - 1) as f64;
+        let x = (x_first + (mix * x_range)).floor();
+        control_points_x.push(x);
+
+        // Initial y-values based on linear regression line.
+        let y = point_y + (dir_y * (x - point_x) / dir_x);
+        initial_y_values.push(y);
+    }
+
+    // Create reference values
+    let reference_values: Vec<(f64, f64)> = x_values
+        .iter()
+        .zip(y_values)
+        .map(|(&x, &y)| (x, y))
+        .collect();
+
+    // Define the problem
+    let problem = CurveFitLinearNPointsProblem::new(
+        control_points_x.clone(),
+        &reference_values,
+    );
+
+    // Set up solver
+    let epsilon = 1e-3;
+    let condition =
+        argmin::solver::linesearch::condition::ArmijoCondition::new(1e-5)?;
+    let linesearch =
+        argmin::solver::linesearch::BacktrackingLineSearch::new(condition)
+            .rho(0.5)?;
+    let solver = argmin::solver::quasinewton::BFGS::new(linesearch)
+        .with_tolerance_cost(epsilon)?;
+
+    // Run solver
+    let initial_parameters = Array1::from(initial_y_values);
+    let initial_hessian: Array2<f64> = Array2::eye(control_point_count);
+    let result = argmin::core::Executor::new(problem, solver)
+        .configure(|state| {
+            state
+                .param(initial_parameters)
+                .inv_hessian(initial_hessian)
+                .max_iters(50)
+        })
+        .run()?;
+
+    debug!("Solver Result: {result}");
+
+    match result.state().get_best_param() {
+        Some(parameters) => {
+            let mut control_points = Vec::with_capacity(control_point_count);
+            for i in 0..control_point_count {
+                control_points.push(Point2 {
+                    x: control_points_x[i],
+                    y: parameters[i],
+                });
+            }
+            Ok(control_points)
+        }
         None => bail!("Solve failed."),
     }
 }

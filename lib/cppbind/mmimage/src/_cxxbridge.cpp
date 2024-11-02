@@ -386,8 +386,7 @@ typename Slice<T>::iterator::difference_type
 Slice<T>::iterator::operator-(const iterator &other) const noexcept {
   auto diff = std::distance(static_cast<char *>(other.pos),
                             static_cast<char *>(this->pos));
-  return diff / static_cast<typename Slice<T>::iterator::difference_type>(
-                    this->stride);
+  return diff / this->stride;
 }
 
 template <typename T>
@@ -928,10 +927,6 @@ class Slice<T>::uninit {};
 template <typename T>
 inline Slice<T>::Slice(uninit) noexcept {}
 
-namespace repr {
-using Fat = ::std::array<::std::uintptr_t, 2>;
-} // namespace repr
-
 namespace detail {
 template <typename T, typename = void *>
 struct operator_new {
@@ -953,6 +948,10 @@ union MaybeUninit {
 };
 
 namespace {
+namespace repr {
+using Fat = ::std::array<::std::uintptr_t, 2>;
+} // namespace repr
+
 template <>
 class impl<Str> final {
 public:
@@ -1044,12 +1043,12 @@ struct ExrPixelLayout final {
   ::std::size_t tile_size_x;
   ::std::size_t tile_size_y;
 
-  bool operator==(ExrPixelLayout const &) const noexcept;
-  bool operator!=(ExrPixelLayout const &) const noexcept;
-  bool operator<(ExrPixelLayout const &) const noexcept;
-  bool operator<=(ExrPixelLayout const &) const noexcept;
-  bool operator>(ExrPixelLayout const &) const noexcept;
-  bool operator>=(ExrPixelLayout const &) const noexcept;
+  bool operator==(const ExrPixelLayout &) const noexcept;
+  bool operator!=(const ExrPixelLayout &) const noexcept;
+  bool operator<(const ExrPixelLayout &) const noexcept;
+  bool operator<=(const ExrPixelLayout &) const noexcept;
+  bool operator>(const ExrPixelLayout &) const noexcept;
+  bool operator>=(const ExrPixelLayout &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$ExrPixelLayout
@@ -1071,12 +1070,12 @@ struct ImageExrEncoder final {
   ::mmimage::ExrPixelLayout pixel_layout;
   ::mmimage::ExrLineOrder line_order;
 
-  bool operator==(ImageExrEncoder const &) const noexcept;
-  bool operator!=(ImageExrEncoder const &) const noexcept;
-  bool operator<(ImageExrEncoder const &) const noexcept;
-  bool operator<=(ImageExrEncoder const &) const noexcept;
-  bool operator>(ImageExrEncoder const &) const noexcept;
-  bool operator>=(ImageExrEncoder const &) const noexcept;
+  bool operator==(const ImageExrEncoder &) const noexcept;
+  bool operator!=(const ImageExrEncoder &) const noexcept;
+  bool operator<(const ImageExrEncoder &) const noexcept;
+  bool operator<=(const ImageExrEncoder &) const noexcept;
+  bool operator>(const ImageExrEncoder &) const noexcept;
+  bool operator>=(const ImageExrEncoder &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$ImageExrEncoder
@@ -1087,12 +1086,12 @@ struct OptionF32 final {
   bool exists;
   float value;
 
-  bool operator==(OptionF32 const &) const noexcept;
-  bool operator!=(OptionF32 const &) const noexcept;
-  bool operator<(OptionF32 const &) const noexcept;
-  bool operator<=(OptionF32 const &) const noexcept;
-  bool operator>(OptionF32 const &) const noexcept;
-  bool operator>=(OptionF32 const &) const noexcept;
+  bool operator==(const OptionF32 &) const noexcept;
+  bool operator!=(const OptionF32 &) const noexcept;
+  bool operator<(const OptionF32 &) const noexcept;
+  bool operator<=(const OptionF32 &) const noexcept;
+  bool operator>(const OptionF32 &) const noexcept;
+  bool operator>=(const OptionF32 &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$OptionF32
@@ -1103,12 +1102,12 @@ struct Vec2F32 final {
   float x;
   float y;
 
-  bool operator==(Vec2F32 const &) const noexcept;
-  bool operator!=(Vec2F32 const &) const noexcept;
-  bool operator<(Vec2F32 const &) const noexcept;
-  bool operator<=(Vec2F32 const &) const noexcept;
-  bool operator>(Vec2F32 const &) const noexcept;
-  bool operator>=(Vec2F32 const &) const noexcept;
+  bool operator==(const Vec2F32 &) const noexcept;
+  bool operator!=(const Vec2F32 &) const noexcept;
+  bool operator<(const Vec2F32 &) const noexcept;
+  bool operator<=(const Vec2F32 &) const noexcept;
+  bool operator>(const Vec2F32 &) const noexcept;
+  bool operator>=(const Vec2F32 &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$Vec2F32
@@ -1119,12 +1118,12 @@ struct Vec2I32 final {
   ::std::int32_t x;
   ::std::int32_t y;
 
-  bool operator==(Vec2I32 const &) const noexcept;
-  bool operator!=(Vec2I32 const &) const noexcept;
-  bool operator<(Vec2I32 const &) const noexcept;
-  bool operator<=(Vec2I32 const &) const noexcept;
-  bool operator>(Vec2I32 const &) const noexcept;
-  bool operator>=(Vec2I32 const &) const noexcept;
+  bool operator==(const Vec2I32 &) const noexcept;
+  bool operator!=(const Vec2I32 &) const noexcept;
+  bool operator<(const Vec2I32 &) const noexcept;
+  bool operator<=(const Vec2I32 &) const noexcept;
+  bool operator>(const Vec2I32 &) const noexcept;
+  bool operator>=(const Vec2I32 &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$Vec2I32
@@ -1137,12 +1136,12 @@ struct Box2F32 final {
   float max_x;
   float max_y;
 
-  bool operator==(Box2F32 const &) const noexcept;
-  bool operator!=(Box2F32 const &) const noexcept;
-  bool operator<(Box2F32 const &) const noexcept;
-  bool operator<=(Box2F32 const &) const noexcept;
-  bool operator>(Box2F32 const &) const noexcept;
-  bool operator>=(Box2F32 const &) const noexcept;
+  bool operator==(const Box2F32 &) const noexcept;
+  bool operator!=(const Box2F32 &) const noexcept;
+  bool operator<(const Box2F32 &) const noexcept;
+  bool operator<=(const Box2F32 &) const noexcept;
+  bool operator>(const Box2F32 &) const noexcept;
+  bool operator>=(const Box2F32 &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$Box2F32
@@ -1155,12 +1154,12 @@ struct ImageRegionRectangle final {
   ::std::size_t size_x;
   ::std::size_t size_y;
 
-  bool operator==(ImageRegionRectangle const &) const noexcept;
-  bool operator!=(ImageRegionRectangle const &) const noexcept;
-  bool operator<(ImageRegionRectangle const &) const noexcept;
-  bool operator<=(ImageRegionRectangle const &) const noexcept;
-  bool operator>(ImageRegionRectangle const &) const noexcept;
-  bool operator>=(ImageRegionRectangle const &) const noexcept;
+  bool operator==(const ImageRegionRectangle &) const noexcept;
+  bool operator!=(const ImageRegionRectangle &) const noexcept;
+  bool operator<(const ImageRegionRectangle &) const noexcept;
+  bool operator<=(const ImageRegionRectangle &) const noexcept;
+  bool operator>(const ImageRegionRectangle &) const noexcept;
+  bool operator>=(const ImageRegionRectangle &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$ImageRegionRectangle
@@ -1173,12 +1172,12 @@ struct PixelF32x4 final {
   float b;
   float a;
 
-  bool operator==(PixelF32x4 const &) const noexcept;
-  bool operator!=(PixelF32x4 const &) const noexcept;
-  bool operator<(PixelF32x4 const &) const noexcept;
-  bool operator<=(PixelF32x4 const &) const noexcept;
-  bool operator>(PixelF32x4 const &) const noexcept;
-  bool operator>=(PixelF32x4 const &) const noexcept;
+  bool operator==(const PixelF32x4 &) const noexcept;
+  bool operator!=(const PixelF32x4 &) const noexcept;
+  bool operator<(const PixelF32x4 &) const noexcept;
+  bool operator<=(const PixelF32x4 &) const noexcept;
+  bool operator>(const PixelF32x4 &) const noexcept;
+  bool operator>=(const PixelF32x4 &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$PixelF32x4
@@ -1189,12 +1188,12 @@ struct PixelF64x2 final {
   double x;
   double y;
 
-  bool operator==(PixelF64x2 const &) const noexcept;
-  bool operator!=(PixelF64x2 const &) const noexcept;
-  bool operator<(PixelF64x2 const &) const noexcept;
-  bool operator<=(PixelF64x2 const &) const noexcept;
-  bool operator>(PixelF64x2 const &) const noexcept;
-  bool operator>=(PixelF64x2 const &) const noexcept;
+  bool operator==(const PixelF64x2 &) const noexcept;
+  bool operator!=(const PixelF64x2 &) const noexcept;
+  bool operator<(const PixelF64x2 &) const noexcept;
+  bool operator<=(const PixelF64x2 &) const noexcept;
+  bool operator>(const PixelF64x2 &) const noexcept;
+  bool operator>=(const PixelF64x2 &) const noexcept;
   using IsRelocatable = ::std::true_type;
 };
 #endif // CXXBRIDGE1_STRUCT_mmimage$PixelF64x2
@@ -1217,8 +1216,8 @@ struct ShimImagePixelBuffer final : public ::rust::Opaque {
   MMIMAGE_API_EXPORT ::std::size_t num_channels() const noexcept;
   MMIMAGE_API_EXPORT ::std::size_t pixel_count() const noexcept;
   MMIMAGE_API_EXPORT ::std::size_t element_count() const noexcept;
-  MMIMAGE_API_EXPORT ::rust::Slice<::mmimage::PixelF32x4 const> as_slice_f32x4() const noexcept;
-  MMIMAGE_API_EXPORT ::rust::Slice<::mmimage::PixelF32x4 > as_slice_f32x4_mut() noexcept;
+  MMIMAGE_API_EXPORT ::rust::Slice<const ::mmimage::PixelF32x4> as_slice_f32x4() const noexcept;
+  MMIMAGE_API_EXPORT ::rust::Slice<::mmimage::PixelF32x4> as_slice_f32x4_mut() noexcept;
   MMIMAGE_API_EXPORT void resize(::mmimage::BufferDataType data_type, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t num_channels) noexcept;
   ~ShimImagePixelBuffer() = delete;
 
@@ -1282,72 +1281,72 @@ private:
 #endif // CXXBRIDGE1_STRUCT_mmimage$ShimImageMetaData
 
 extern "C" {
-bool mmimage$cxxbridge1$ExrPixelLayout$operator$eq(ExrPixelLayout const &, ExrPixelLayout const &) noexcept;
-bool mmimage$cxxbridge1$ExrPixelLayout$operator$ne(ExrPixelLayout const &, ExrPixelLayout const &) noexcept;
-bool mmimage$cxxbridge1$ExrPixelLayout$operator$lt(ExrPixelLayout const &, ExrPixelLayout const &) noexcept;
-bool mmimage$cxxbridge1$ExrPixelLayout$operator$le(ExrPixelLayout const &, ExrPixelLayout const &) noexcept;
-bool mmimage$cxxbridge1$ExrPixelLayout$operator$gt(ExrPixelLayout const &, ExrPixelLayout const &) noexcept;
-bool mmimage$cxxbridge1$ExrPixelLayout$operator$ge(ExrPixelLayout const &, ExrPixelLayout const &) noexcept;
-bool mmimage$cxxbridge1$ImageExrEncoder$operator$eq(ImageExrEncoder const &, ImageExrEncoder const &) noexcept;
-bool mmimage$cxxbridge1$ImageExrEncoder$operator$ne(ImageExrEncoder const &, ImageExrEncoder const &) noexcept;
-bool mmimage$cxxbridge1$ImageExrEncoder$operator$lt(ImageExrEncoder const &, ImageExrEncoder const &) noexcept;
-bool mmimage$cxxbridge1$ImageExrEncoder$operator$le(ImageExrEncoder const &, ImageExrEncoder const &) noexcept;
-bool mmimage$cxxbridge1$ImageExrEncoder$operator$gt(ImageExrEncoder const &, ImageExrEncoder const &) noexcept;
-bool mmimage$cxxbridge1$ImageExrEncoder$operator$ge(ImageExrEncoder const &, ImageExrEncoder const &) noexcept;
-bool mmimage$cxxbridge1$OptionF32$operator$eq(OptionF32 const &, OptionF32 const &) noexcept;
-bool mmimage$cxxbridge1$OptionF32$operator$ne(OptionF32 const &, OptionF32 const &) noexcept;
-bool mmimage$cxxbridge1$OptionF32$operator$lt(OptionF32 const &, OptionF32 const &) noexcept;
-bool mmimage$cxxbridge1$OptionF32$operator$le(OptionF32 const &, OptionF32 const &) noexcept;
-bool mmimage$cxxbridge1$OptionF32$operator$gt(OptionF32 const &, OptionF32 const &) noexcept;
-bool mmimage$cxxbridge1$OptionF32$operator$ge(OptionF32 const &, OptionF32 const &) noexcept;
-bool mmimage$cxxbridge1$Vec2F32$operator$eq(Vec2F32 const &, Vec2F32 const &) noexcept;
-bool mmimage$cxxbridge1$Vec2F32$operator$ne(Vec2F32 const &, Vec2F32 const &) noexcept;
-bool mmimage$cxxbridge1$Vec2F32$operator$lt(Vec2F32 const &, Vec2F32 const &) noexcept;
-bool mmimage$cxxbridge1$Vec2F32$operator$le(Vec2F32 const &, Vec2F32 const &) noexcept;
-bool mmimage$cxxbridge1$Vec2F32$operator$gt(Vec2F32 const &, Vec2F32 const &) noexcept;
-bool mmimage$cxxbridge1$Vec2F32$operator$ge(Vec2F32 const &, Vec2F32 const &) noexcept;
-bool mmimage$cxxbridge1$Vec2I32$operator$eq(Vec2I32 const &, Vec2I32 const &) noexcept;
-bool mmimage$cxxbridge1$Vec2I32$operator$lt(Vec2I32 const &, Vec2I32 const &) noexcept;
-bool mmimage$cxxbridge1$Vec2I32$operator$le(Vec2I32 const &, Vec2I32 const &) noexcept;
-::std::size_t mmimage$cxxbridge1$Vec2I32$operator$hash(Vec2I32 const &) noexcept;
-bool mmimage$cxxbridge1$Box2F32$operator$eq(Box2F32 const &, Box2F32 const &) noexcept;
-bool mmimage$cxxbridge1$Box2F32$operator$ne(Box2F32 const &, Box2F32 const &) noexcept;
-bool mmimage$cxxbridge1$Box2F32$operator$lt(Box2F32 const &, Box2F32 const &) noexcept;
-bool mmimage$cxxbridge1$Box2F32$operator$le(Box2F32 const &, Box2F32 const &) noexcept;
-bool mmimage$cxxbridge1$Box2F32$operator$gt(Box2F32 const &, Box2F32 const &) noexcept;
-bool mmimage$cxxbridge1$Box2F32$operator$ge(Box2F32 const &, Box2F32 const &) noexcept;
-bool mmimage$cxxbridge1$ImageRegionRectangle$operator$eq(ImageRegionRectangle const &, ImageRegionRectangle const &) noexcept;
-bool mmimage$cxxbridge1$ImageRegionRectangle$operator$lt(ImageRegionRectangle const &, ImageRegionRectangle const &) noexcept;
-bool mmimage$cxxbridge1$ImageRegionRectangle$operator$le(ImageRegionRectangle const &, ImageRegionRectangle const &) noexcept;
-::std::size_t mmimage$cxxbridge1$ImageRegionRectangle$operator$hash(ImageRegionRectangle const &) noexcept;
-bool mmimage$cxxbridge1$PixelF32x4$operator$eq(PixelF32x4 const &, PixelF32x4 const &) noexcept;
-bool mmimage$cxxbridge1$PixelF32x4$operator$ne(PixelF32x4 const &, PixelF32x4 const &) noexcept;
-bool mmimage$cxxbridge1$PixelF32x4$operator$lt(PixelF32x4 const &, PixelF32x4 const &) noexcept;
-bool mmimage$cxxbridge1$PixelF32x4$operator$le(PixelF32x4 const &, PixelF32x4 const &) noexcept;
-bool mmimage$cxxbridge1$PixelF32x4$operator$gt(PixelF32x4 const &, PixelF32x4 const &) noexcept;
-bool mmimage$cxxbridge1$PixelF32x4$operator$ge(PixelF32x4 const &, PixelF32x4 const &) noexcept;
-bool mmimage$cxxbridge1$PixelF64x2$operator$eq(PixelF64x2 const &, PixelF64x2 const &) noexcept;
-bool mmimage$cxxbridge1$PixelF64x2$operator$ne(PixelF64x2 const &, PixelF64x2 const &) noexcept;
-bool mmimage$cxxbridge1$PixelF64x2$operator$lt(PixelF64x2 const &, PixelF64x2 const &) noexcept;
-bool mmimage$cxxbridge1$PixelF64x2$operator$le(PixelF64x2 const &, PixelF64x2 const &) noexcept;
-bool mmimage$cxxbridge1$PixelF64x2$operator$gt(PixelF64x2 const &, PixelF64x2 const &) noexcept;
-bool mmimage$cxxbridge1$PixelF64x2$operator$ge(PixelF64x2 const &, PixelF64x2 const &) noexcept;
+bool mmimage$cxxbridge1$ExrPixelLayout$operator$eq(const ExrPixelLayout &, const ExrPixelLayout &) noexcept;
+bool mmimage$cxxbridge1$ExrPixelLayout$operator$ne(const ExrPixelLayout &, const ExrPixelLayout &) noexcept;
+bool mmimage$cxxbridge1$ExrPixelLayout$operator$lt(const ExrPixelLayout &, const ExrPixelLayout &) noexcept;
+bool mmimage$cxxbridge1$ExrPixelLayout$operator$le(const ExrPixelLayout &, const ExrPixelLayout &) noexcept;
+bool mmimage$cxxbridge1$ExrPixelLayout$operator$gt(const ExrPixelLayout &, const ExrPixelLayout &) noexcept;
+bool mmimage$cxxbridge1$ExrPixelLayout$operator$ge(const ExrPixelLayout &, const ExrPixelLayout &) noexcept;
+bool mmimage$cxxbridge1$ImageExrEncoder$operator$eq(const ImageExrEncoder &, const ImageExrEncoder &) noexcept;
+bool mmimage$cxxbridge1$ImageExrEncoder$operator$ne(const ImageExrEncoder &, const ImageExrEncoder &) noexcept;
+bool mmimage$cxxbridge1$ImageExrEncoder$operator$lt(const ImageExrEncoder &, const ImageExrEncoder &) noexcept;
+bool mmimage$cxxbridge1$ImageExrEncoder$operator$le(const ImageExrEncoder &, const ImageExrEncoder &) noexcept;
+bool mmimage$cxxbridge1$ImageExrEncoder$operator$gt(const ImageExrEncoder &, const ImageExrEncoder &) noexcept;
+bool mmimage$cxxbridge1$ImageExrEncoder$operator$ge(const ImageExrEncoder &, const ImageExrEncoder &) noexcept;
+bool mmimage$cxxbridge1$OptionF32$operator$eq(const OptionF32 &, const OptionF32 &) noexcept;
+bool mmimage$cxxbridge1$OptionF32$operator$ne(const OptionF32 &, const OptionF32 &) noexcept;
+bool mmimage$cxxbridge1$OptionF32$operator$lt(const OptionF32 &, const OptionF32 &) noexcept;
+bool mmimage$cxxbridge1$OptionF32$operator$le(const OptionF32 &, const OptionF32 &) noexcept;
+bool mmimage$cxxbridge1$OptionF32$operator$gt(const OptionF32 &, const OptionF32 &) noexcept;
+bool mmimage$cxxbridge1$OptionF32$operator$ge(const OptionF32 &, const OptionF32 &) noexcept;
+bool mmimage$cxxbridge1$Vec2F32$operator$eq(const Vec2F32 &, const Vec2F32 &) noexcept;
+bool mmimage$cxxbridge1$Vec2F32$operator$ne(const Vec2F32 &, const Vec2F32 &) noexcept;
+bool mmimage$cxxbridge1$Vec2F32$operator$lt(const Vec2F32 &, const Vec2F32 &) noexcept;
+bool mmimage$cxxbridge1$Vec2F32$operator$le(const Vec2F32 &, const Vec2F32 &) noexcept;
+bool mmimage$cxxbridge1$Vec2F32$operator$gt(const Vec2F32 &, const Vec2F32 &) noexcept;
+bool mmimage$cxxbridge1$Vec2F32$operator$ge(const Vec2F32 &, const Vec2F32 &) noexcept;
+bool mmimage$cxxbridge1$Vec2I32$operator$eq(const Vec2I32 &, const Vec2I32 &) noexcept;
+bool mmimage$cxxbridge1$Vec2I32$operator$lt(const Vec2I32 &, const Vec2I32 &) noexcept;
+bool mmimage$cxxbridge1$Vec2I32$operator$le(const Vec2I32 &, const Vec2I32 &) noexcept;
+::std::size_t mmimage$cxxbridge1$Vec2I32$operator$hash(const Vec2I32 &) noexcept;
+bool mmimage$cxxbridge1$Box2F32$operator$eq(const Box2F32 &, const Box2F32 &) noexcept;
+bool mmimage$cxxbridge1$Box2F32$operator$ne(const Box2F32 &, const Box2F32 &) noexcept;
+bool mmimage$cxxbridge1$Box2F32$operator$lt(const Box2F32 &, const Box2F32 &) noexcept;
+bool mmimage$cxxbridge1$Box2F32$operator$le(const Box2F32 &, const Box2F32 &) noexcept;
+bool mmimage$cxxbridge1$Box2F32$operator$gt(const Box2F32 &, const Box2F32 &) noexcept;
+bool mmimage$cxxbridge1$Box2F32$operator$ge(const Box2F32 &, const Box2F32 &) noexcept;
+bool mmimage$cxxbridge1$ImageRegionRectangle$operator$eq(const ImageRegionRectangle &, const ImageRegionRectangle &) noexcept;
+bool mmimage$cxxbridge1$ImageRegionRectangle$operator$lt(const ImageRegionRectangle &, const ImageRegionRectangle &) noexcept;
+bool mmimage$cxxbridge1$ImageRegionRectangle$operator$le(const ImageRegionRectangle &, const ImageRegionRectangle &) noexcept;
+::std::size_t mmimage$cxxbridge1$ImageRegionRectangle$operator$hash(const ImageRegionRectangle &) noexcept;
+bool mmimage$cxxbridge1$PixelF32x4$operator$eq(const PixelF32x4 &, const PixelF32x4 &) noexcept;
+bool mmimage$cxxbridge1$PixelF32x4$operator$ne(const PixelF32x4 &, const PixelF32x4 &) noexcept;
+bool mmimage$cxxbridge1$PixelF32x4$operator$lt(const PixelF32x4 &, const PixelF32x4 &) noexcept;
+bool mmimage$cxxbridge1$PixelF32x4$operator$le(const PixelF32x4 &, const PixelF32x4 &) noexcept;
+bool mmimage$cxxbridge1$PixelF32x4$operator$gt(const PixelF32x4 &, const PixelF32x4 &) noexcept;
+bool mmimage$cxxbridge1$PixelF32x4$operator$ge(const PixelF32x4 &, const PixelF32x4 &) noexcept;
+bool mmimage$cxxbridge1$PixelF64x2$operator$eq(const PixelF64x2 &, const PixelF64x2 &) noexcept;
+bool mmimage$cxxbridge1$PixelF64x2$operator$ne(const PixelF64x2 &, const PixelF64x2 &) noexcept;
+bool mmimage$cxxbridge1$PixelF64x2$operator$lt(const PixelF64x2 &, const PixelF64x2 &) noexcept;
+bool mmimage$cxxbridge1$PixelF64x2$operator$le(const PixelF64x2 &, const PixelF64x2 &) noexcept;
+bool mmimage$cxxbridge1$PixelF64x2$operator$gt(const PixelF64x2 &, const PixelF64x2 &) noexcept;
+bool mmimage$cxxbridge1$PixelF64x2$operator$ge(const PixelF64x2 &, const PixelF64x2 &) noexcept;
 ::std::size_t mmimage$cxxbridge1$ShimImagePixelBuffer$operator$sizeof() noexcept;
 ::std::size_t mmimage$cxxbridge1$ShimImagePixelBuffer$operator$alignof() noexcept;
 
-::mmimage::BufferDataType mmimage$cxxbridge1$ShimImagePixelBuffer$data_type(::mmimage::ShimImagePixelBuffer const &self) noexcept;
+::mmimage::BufferDataType mmimage$cxxbridge1$ShimImagePixelBuffer$data_type(const ::mmimage::ShimImagePixelBuffer &self) noexcept;
 
-::std::size_t mmimage$cxxbridge1$ShimImagePixelBuffer$image_width(::mmimage::ShimImagePixelBuffer const &self) noexcept;
+::std::size_t mmimage$cxxbridge1$ShimImagePixelBuffer$image_width(const ::mmimage::ShimImagePixelBuffer &self) noexcept;
 
-::std::size_t mmimage$cxxbridge1$ShimImagePixelBuffer$image_height(::mmimage::ShimImagePixelBuffer const &self) noexcept;
+::std::size_t mmimage$cxxbridge1$ShimImagePixelBuffer$image_height(const ::mmimage::ShimImagePixelBuffer &self) noexcept;
 
-::std::size_t mmimage$cxxbridge1$ShimImagePixelBuffer$num_channels(::mmimage::ShimImagePixelBuffer const &self) noexcept;
+::std::size_t mmimage$cxxbridge1$ShimImagePixelBuffer$num_channels(const ::mmimage::ShimImagePixelBuffer &self) noexcept;
 
-::std::size_t mmimage$cxxbridge1$ShimImagePixelBuffer$pixel_count(::mmimage::ShimImagePixelBuffer const &self) noexcept;
+::std::size_t mmimage$cxxbridge1$ShimImagePixelBuffer$pixel_count(const ::mmimage::ShimImagePixelBuffer &self) noexcept;
 
-::std::size_t mmimage$cxxbridge1$ShimImagePixelBuffer$element_count(::mmimage::ShimImagePixelBuffer const &self) noexcept;
+::std::size_t mmimage$cxxbridge1$ShimImagePixelBuffer$element_count(const ::mmimage::ShimImagePixelBuffer &self) noexcept;
 
-::rust::repr::Fat mmimage$cxxbridge1$ShimImagePixelBuffer$as_slice_f32x4(::mmimage::ShimImagePixelBuffer const &self) noexcept;
+::rust::repr::Fat mmimage$cxxbridge1$ShimImagePixelBuffer$as_slice_f32x4(const ::mmimage::ShimImagePixelBuffer &self) noexcept;
 
 ::rust::repr::Fat mmimage$cxxbridge1$ShimImagePixelBuffer$as_slice_f32x4_mut(::mmimage::ShimImagePixelBuffer &self) noexcept;
 
@@ -1357,77 +1356,77 @@ void mmimage$cxxbridge1$ShimImagePixelBuffer$resize(::mmimage::ShimImagePixelBuf
 ::std::size_t mmimage$cxxbridge1$ShimImageMetaData$operator$sizeof() noexcept;
 ::std::size_t mmimage$cxxbridge1$ShimImageMetaData$operator$alignof() noexcept;
 
-::mmimage::ImageRegionRectangle mmimage$cxxbridge1$ShimImageMetaData$get_display_window(::mmimage::ShimImageMetaData const &self) noexcept;
+::mmimage::ImageRegionRectangle mmimage$cxxbridge1$ShimImageMetaData$get_display_window(const ::mmimage::ShimImageMetaData &self) noexcept;
 
 void mmimage$cxxbridge1$ShimImageMetaData$set_display_window(::mmimage::ShimImageMetaData &self, ::mmimage::ImageRegionRectangle value) noexcept;
 
-float mmimage$cxxbridge1$ShimImageMetaData$get_pixel_aspect(::mmimage::ShimImageMetaData const &self) noexcept;
+float mmimage$cxxbridge1$ShimImageMetaData$get_pixel_aspect(const ::mmimage::ShimImageMetaData &self) noexcept;
 
 void mmimage$cxxbridge1$ShimImageMetaData$set_pixel_aspect(::mmimage::ShimImageMetaData &self, float value) noexcept;
 
-::rust::repr::Fat mmimage$cxxbridge1$ShimImageMetaData$get_layer_name(::mmimage::ShimImageMetaData const &self) noexcept;
+::rust::repr::Fat mmimage$cxxbridge1$ShimImageMetaData$get_layer_name(const ::mmimage::ShimImageMetaData &self) noexcept;
 
 void mmimage$cxxbridge1$ShimImageMetaData$set_layer_name(::mmimage::ShimImageMetaData &self, ::rust::Str value) noexcept;
 
-::mmimage::Vec2I32 mmimage$cxxbridge1$ShimImageMetaData$get_layer_position(::mmimage::ShimImageMetaData const &self) noexcept;
+::mmimage::Vec2I32 mmimage$cxxbridge1$ShimImageMetaData$get_layer_position(const ::mmimage::ShimImageMetaData &self) noexcept;
 
 void mmimage$cxxbridge1$ShimImageMetaData$set_layer_position(::mmimage::ShimImageMetaData &self, ::mmimage::Vec2I32 value) noexcept;
 
-::mmimage::Vec2F32 mmimage$cxxbridge1$ShimImageMetaData$get_screen_window_center(::mmimage::ShimImageMetaData const &self) noexcept;
+::mmimage::Vec2F32 mmimage$cxxbridge1$ShimImageMetaData$get_screen_window_center(const ::mmimage::ShimImageMetaData &self) noexcept;
 
 void mmimage$cxxbridge1$ShimImageMetaData$set_screen_window_center(::mmimage::ShimImageMetaData &self, ::mmimage::Vec2F32 value) noexcept;
 
-float mmimage$cxxbridge1$ShimImageMetaData$get_screen_window_width(::mmimage::ShimImageMetaData const &self) noexcept;
+float mmimage$cxxbridge1$ShimImageMetaData$get_screen_window_width(const ::mmimage::ShimImageMetaData &self) noexcept;
 
 void mmimage$cxxbridge1$ShimImageMetaData$set_screen_window_width(::mmimage::ShimImageMetaData &self, float value) noexcept;
 
-::rust::repr::Fat mmimage$cxxbridge1$ShimImageMetaData$get_owner(::mmimage::ShimImageMetaData const &self) noexcept;
+::rust::repr::Fat mmimage$cxxbridge1$ShimImageMetaData$get_owner(const ::mmimage::ShimImageMetaData &self) noexcept;
 
 void mmimage$cxxbridge1$ShimImageMetaData$set_owner(::mmimage::ShimImageMetaData &self, ::rust::Str value) noexcept;
 
-::rust::repr::Fat mmimage$cxxbridge1$ShimImageMetaData$get_comments(::mmimage::ShimImageMetaData const &self) noexcept;
+::rust::repr::Fat mmimage$cxxbridge1$ShimImageMetaData$get_comments(const ::mmimage::ShimImageMetaData &self) noexcept;
 
 void mmimage$cxxbridge1$ShimImageMetaData$set_comments(::mmimage::ShimImageMetaData &self, ::rust::Str value) noexcept;
 
-::rust::repr::Fat mmimage$cxxbridge1$ShimImageMetaData$get_capture_date(::mmimage::ShimImageMetaData const &self) noexcept;
+::rust::repr::Fat mmimage$cxxbridge1$ShimImageMetaData$get_capture_date(const ::mmimage::ShimImageMetaData &self) noexcept;
 
-::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_utc_offset(::mmimage::ShimImageMetaData const &self) noexcept;
+::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_utc_offset(const ::mmimage::ShimImageMetaData &self) noexcept;
 
-::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_longitude(::mmimage::ShimImageMetaData const &self) noexcept;
+::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_longitude(const ::mmimage::ShimImageMetaData &self) noexcept;
 
-::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_latitude(::mmimage::ShimImageMetaData const &self) noexcept;
+::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_latitude(const ::mmimage::ShimImageMetaData &self) noexcept;
 
-::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_altitude(::mmimage::ShimImageMetaData const &self) noexcept;
+::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_altitude(const ::mmimage::ShimImageMetaData &self) noexcept;
 
-::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_focus(::mmimage::ShimImageMetaData const &self) noexcept;
+::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_focus(const ::mmimage::ShimImageMetaData &self) noexcept;
 
-::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_exposure(::mmimage::ShimImageMetaData const &self) noexcept;
+::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_exposure(const ::mmimage::ShimImageMetaData &self) noexcept;
 
-::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_aperture(::mmimage::ShimImageMetaData const &self) noexcept;
+::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_aperture(const ::mmimage::ShimImageMetaData &self) noexcept;
 
-::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_iso_speed(::mmimage::ShimImageMetaData const &self) noexcept;
+::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_iso_speed(const ::mmimage::ShimImageMetaData &self) noexcept;
 
-::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_frames_per_second(::mmimage::ShimImageMetaData const &self) noexcept;
+::mmimage::OptionF32 mmimage$cxxbridge1$ShimImageMetaData$get_frames_per_second(const ::mmimage::ShimImageMetaData &self) noexcept;
 
-::rust::repr::Fat mmimage$cxxbridge1$ShimImageMetaData$get_software_name(::mmimage::ShimImageMetaData const &self) noexcept;
+::rust::repr::Fat mmimage$cxxbridge1$ShimImageMetaData$get_software_name(const ::mmimage::ShimImageMetaData &self) noexcept;
 
 void mmimage$cxxbridge1$ShimImageMetaData$set_software_name(::mmimage::ShimImageMetaData &self, ::rust::Str value) noexcept;
 
-void mmimage$cxxbridge1$ShimImageMetaData$all_named_attribute_names(::mmimage::ShimImageMetaData const &self, ::rust::Vec<::rust::String> *return$) noexcept;
+void mmimage$cxxbridge1$ShimImageMetaData$all_named_attribute_names(const ::mmimage::ShimImageMetaData &self, ::rust::Vec<::rust::String> *return$) noexcept;
 
-bool mmimage$cxxbridge1$ShimImageMetaData$has_named_attribute(::mmimage::ShimImageMetaData const &self, ::rust::Str attribute_name) noexcept;
+bool mmimage$cxxbridge1$ShimImageMetaData$has_named_attribute(const ::mmimage::ShimImageMetaData &self, ::rust::Str attribute_name) noexcept;
 
-::std::uint8_t mmimage$cxxbridge1$ShimImageMetaData$get_named_attribute_type_index(::mmimage::ShimImageMetaData const &self, ::rust::Str attribute_name) noexcept;
+::std::uint8_t mmimage$cxxbridge1$ShimImageMetaData$get_named_attribute_type_index(const ::mmimage::ShimImageMetaData &self, ::rust::Str attribute_name) noexcept;
 
-::std::int32_t mmimage$cxxbridge1$ShimImageMetaData$get_named_attribute_as_i32(::mmimage::ShimImageMetaData const &self, ::rust::Str attribute_name) noexcept;
+::std::int32_t mmimage$cxxbridge1$ShimImageMetaData$get_named_attribute_as_i32(const ::mmimage::ShimImageMetaData &self, ::rust::Str attribute_name) noexcept;
 
-float mmimage$cxxbridge1$ShimImageMetaData$get_named_attribute_as_f32(::mmimage::ShimImageMetaData const &self, ::rust::Str attribute_name) noexcept;
+float mmimage$cxxbridge1$ShimImageMetaData$get_named_attribute_as_f32(const ::mmimage::ShimImageMetaData &self, ::rust::Str attribute_name) noexcept;
 
-double mmimage$cxxbridge1$ShimImageMetaData$get_named_attribute_as_f64(::mmimage::ShimImageMetaData const &self, ::rust::Str attribute_name) noexcept;
+double mmimage$cxxbridge1$ShimImageMetaData$get_named_attribute_as_f64(const ::mmimage::ShimImageMetaData &self, ::rust::Str attribute_name) noexcept;
 
-void mmimage$cxxbridge1$ShimImageMetaData$get_named_attribute_as_string(::mmimage::ShimImageMetaData const &self, ::rust::Str attribute_name, ::rust::String *return$) noexcept;
+void mmimage$cxxbridge1$ShimImageMetaData$get_named_attribute_as_string(const ::mmimage::ShimImageMetaData &self, ::rust::Str attribute_name, ::rust::String *return$) noexcept;
 
-void mmimage$cxxbridge1$ShimImageMetaData$as_string(::mmimage::ShimImageMetaData const &self, ::rust::String *return$) noexcept;
+void mmimage$cxxbridge1$ShimImageMetaData$as_string(const ::mmimage::ShimImageMetaData &self, ::rust::String *return$) noexcept;
 
 ::mmimage::ShimImageMetaData *mmimage$cxxbridge1$shim_create_image_meta_data_box() noexcept;
 
@@ -1435,238 +1434,238 @@ bool mmimage$cxxbridge1$shim_image_read_pixels_exr_f32x4(::rust::Str file_path, 
 
 bool mmimage$cxxbridge1$shim_image_read_metadata_exr(::rust::Str file_path, ::rust::Box<::mmimage::ShimImageMetaData> &out_meta_data) noexcept;
 
-bool mmimage$cxxbridge1$shim_image_write_pixels_exr_f32x4(::rust::Str file_path, ::mmimage::ImageExrEncoder exr_encoder, ::rust::Box<::mmimage::ShimImageMetaData> const &in_meta_data, ::rust::Box<::mmimage::ShimImagePixelBuffer> const &in_pixel_buffer) noexcept;
+bool mmimage$cxxbridge1$shim_image_write_pixels_exr_f32x4(::rust::Str file_path, ::mmimage::ImageExrEncoder exr_encoder, const ::rust::Box<::mmimage::ShimImageMetaData> &in_meta_data, const ::rust::Box<::mmimage::ShimImagePixelBuffer> &in_pixel_buffer) noexcept;
 } // extern "C"
 } // namespace mmimage
 
 namespace std {
 template <> struct hash<::mmimage::Vec2I32> {
-  ::std::size_t operator()(::mmimage::Vec2I32 const &self) const noexcept {
+  ::std::size_t operator()(const ::mmimage::Vec2I32 &self) const noexcept {
     return ::mmimage::mmimage$cxxbridge1$Vec2I32$operator$hash(self);
   }
 };
 
 template <> struct hash<::mmimage::ImageRegionRectangle> {
-  ::std::size_t operator()(::mmimage::ImageRegionRectangle const &self) const noexcept {
+  ::std::size_t operator()(const ::mmimage::ImageRegionRectangle &self) const noexcept {
     return ::mmimage::mmimage$cxxbridge1$ImageRegionRectangle$operator$hash(self);
   }
 };
 } // namespace std
 
 namespace mmimage {
-bool ExrPixelLayout::operator==(ExrPixelLayout const &rhs) const noexcept {
+bool ExrPixelLayout::operator==(const ExrPixelLayout &rhs) const noexcept {
   return mmimage$cxxbridge1$ExrPixelLayout$operator$eq(*this, rhs);
 }
 
-bool ExrPixelLayout::operator!=(ExrPixelLayout const &rhs) const noexcept {
+bool ExrPixelLayout::operator!=(const ExrPixelLayout &rhs) const noexcept {
   return mmimage$cxxbridge1$ExrPixelLayout$operator$ne(*this, rhs);
 }
 
-bool ExrPixelLayout::operator<(ExrPixelLayout const &rhs) const noexcept {
+bool ExrPixelLayout::operator<(const ExrPixelLayout &rhs) const noexcept {
   return mmimage$cxxbridge1$ExrPixelLayout$operator$lt(*this, rhs);
 }
 
-bool ExrPixelLayout::operator<=(ExrPixelLayout const &rhs) const noexcept {
+bool ExrPixelLayout::operator<=(const ExrPixelLayout &rhs) const noexcept {
   return mmimage$cxxbridge1$ExrPixelLayout$operator$le(*this, rhs);
 }
 
-bool ExrPixelLayout::operator>(ExrPixelLayout const &rhs) const noexcept {
+bool ExrPixelLayout::operator>(const ExrPixelLayout &rhs) const noexcept {
   return mmimage$cxxbridge1$ExrPixelLayout$operator$gt(*this, rhs);
 }
 
-bool ExrPixelLayout::operator>=(ExrPixelLayout const &rhs) const noexcept {
+bool ExrPixelLayout::operator>=(const ExrPixelLayout &rhs) const noexcept {
   return mmimage$cxxbridge1$ExrPixelLayout$operator$ge(*this, rhs);
 }
 
-bool ImageExrEncoder::operator==(ImageExrEncoder const &rhs) const noexcept {
+bool ImageExrEncoder::operator==(const ImageExrEncoder &rhs) const noexcept {
   return mmimage$cxxbridge1$ImageExrEncoder$operator$eq(*this, rhs);
 }
 
-bool ImageExrEncoder::operator!=(ImageExrEncoder const &rhs) const noexcept {
+bool ImageExrEncoder::operator!=(const ImageExrEncoder &rhs) const noexcept {
   return mmimage$cxxbridge1$ImageExrEncoder$operator$ne(*this, rhs);
 }
 
-bool ImageExrEncoder::operator<(ImageExrEncoder const &rhs) const noexcept {
+bool ImageExrEncoder::operator<(const ImageExrEncoder &rhs) const noexcept {
   return mmimage$cxxbridge1$ImageExrEncoder$operator$lt(*this, rhs);
 }
 
-bool ImageExrEncoder::operator<=(ImageExrEncoder const &rhs) const noexcept {
+bool ImageExrEncoder::operator<=(const ImageExrEncoder &rhs) const noexcept {
   return mmimage$cxxbridge1$ImageExrEncoder$operator$le(*this, rhs);
 }
 
-bool ImageExrEncoder::operator>(ImageExrEncoder const &rhs) const noexcept {
+bool ImageExrEncoder::operator>(const ImageExrEncoder &rhs) const noexcept {
   return mmimage$cxxbridge1$ImageExrEncoder$operator$gt(*this, rhs);
 }
 
-bool ImageExrEncoder::operator>=(ImageExrEncoder const &rhs) const noexcept {
+bool ImageExrEncoder::operator>=(const ImageExrEncoder &rhs) const noexcept {
   return mmimage$cxxbridge1$ImageExrEncoder$operator$ge(*this, rhs);
 }
 
-bool OptionF32::operator==(OptionF32 const &rhs) const noexcept {
+bool OptionF32::operator==(const OptionF32 &rhs) const noexcept {
   return mmimage$cxxbridge1$OptionF32$operator$eq(*this, rhs);
 }
 
-bool OptionF32::operator!=(OptionF32 const &rhs) const noexcept {
+bool OptionF32::operator!=(const OptionF32 &rhs) const noexcept {
   return mmimage$cxxbridge1$OptionF32$operator$ne(*this, rhs);
 }
 
-bool OptionF32::operator<(OptionF32 const &rhs) const noexcept {
+bool OptionF32::operator<(const OptionF32 &rhs) const noexcept {
   return mmimage$cxxbridge1$OptionF32$operator$lt(*this, rhs);
 }
 
-bool OptionF32::operator<=(OptionF32 const &rhs) const noexcept {
+bool OptionF32::operator<=(const OptionF32 &rhs) const noexcept {
   return mmimage$cxxbridge1$OptionF32$operator$le(*this, rhs);
 }
 
-bool OptionF32::operator>(OptionF32 const &rhs) const noexcept {
+bool OptionF32::operator>(const OptionF32 &rhs) const noexcept {
   return mmimage$cxxbridge1$OptionF32$operator$gt(*this, rhs);
 }
 
-bool OptionF32::operator>=(OptionF32 const &rhs) const noexcept {
+bool OptionF32::operator>=(const OptionF32 &rhs) const noexcept {
   return mmimage$cxxbridge1$OptionF32$operator$ge(*this, rhs);
 }
 
-bool Vec2F32::operator==(Vec2F32 const &rhs) const noexcept {
+bool Vec2F32::operator==(const Vec2F32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Vec2F32$operator$eq(*this, rhs);
 }
 
-bool Vec2F32::operator!=(Vec2F32 const &rhs) const noexcept {
+bool Vec2F32::operator!=(const Vec2F32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Vec2F32$operator$ne(*this, rhs);
 }
 
-bool Vec2F32::operator<(Vec2F32 const &rhs) const noexcept {
+bool Vec2F32::operator<(const Vec2F32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Vec2F32$operator$lt(*this, rhs);
 }
 
-bool Vec2F32::operator<=(Vec2F32 const &rhs) const noexcept {
+bool Vec2F32::operator<=(const Vec2F32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Vec2F32$operator$le(*this, rhs);
 }
 
-bool Vec2F32::operator>(Vec2F32 const &rhs) const noexcept {
+bool Vec2F32::operator>(const Vec2F32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Vec2F32$operator$gt(*this, rhs);
 }
 
-bool Vec2F32::operator>=(Vec2F32 const &rhs) const noexcept {
+bool Vec2F32::operator>=(const Vec2F32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Vec2F32$operator$ge(*this, rhs);
 }
 
-bool Vec2I32::operator==(Vec2I32 const &rhs) const noexcept {
+bool Vec2I32::operator==(const Vec2I32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Vec2I32$operator$eq(*this, rhs);
 }
 
-bool Vec2I32::operator!=(Vec2I32 const &rhs) const noexcept {
+bool Vec2I32::operator!=(const Vec2I32 &rhs) const noexcept {
   return !(*this == rhs);
 }
 
-bool Vec2I32::operator<(Vec2I32 const &rhs) const noexcept {
+bool Vec2I32::operator<(const Vec2I32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Vec2I32$operator$lt(*this, rhs);
 }
 
-bool Vec2I32::operator<=(Vec2I32 const &rhs) const noexcept {
+bool Vec2I32::operator<=(const Vec2I32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Vec2I32$operator$le(*this, rhs);
 }
 
-bool Vec2I32::operator>(Vec2I32 const &rhs) const noexcept {
+bool Vec2I32::operator>(const Vec2I32 &rhs) const noexcept {
   return !(*this <= rhs);
 }
 
-bool Vec2I32::operator>=(Vec2I32 const &rhs) const noexcept {
+bool Vec2I32::operator>=(const Vec2I32 &rhs) const noexcept {
   return !(*this < rhs);
 }
 
-bool Box2F32::operator==(Box2F32 const &rhs) const noexcept {
+bool Box2F32::operator==(const Box2F32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Box2F32$operator$eq(*this, rhs);
 }
 
-bool Box2F32::operator!=(Box2F32 const &rhs) const noexcept {
+bool Box2F32::operator!=(const Box2F32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Box2F32$operator$ne(*this, rhs);
 }
 
-bool Box2F32::operator<(Box2F32 const &rhs) const noexcept {
+bool Box2F32::operator<(const Box2F32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Box2F32$operator$lt(*this, rhs);
 }
 
-bool Box2F32::operator<=(Box2F32 const &rhs) const noexcept {
+bool Box2F32::operator<=(const Box2F32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Box2F32$operator$le(*this, rhs);
 }
 
-bool Box2F32::operator>(Box2F32 const &rhs) const noexcept {
+bool Box2F32::operator>(const Box2F32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Box2F32$operator$gt(*this, rhs);
 }
 
-bool Box2F32::operator>=(Box2F32 const &rhs) const noexcept {
+bool Box2F32::operator>=(const Box2F32 &rhs) const noexcept {
   return mmimage$cxxbridge1$Box2F32$operator$ge(*this, rhs);
 }
 
-bool ImageRegionRectangle::operator==(ImageRegionRectangle const &rhs) const noexcept {
+bool ImageRegionRectangle::operator==(const ImageRegionRectangle &rhs) const noexcept {
   return mmimage$cxxbridge1$ImageRegionRectangle$operator$eq(*this, rhs);
 }
 
-bool ImageRegionRectangle::operator!=(ImageRegionRectangle const &rhs) const noexcept {
+bool ImageRegionRectangle::operator!=(const ImageRegionRectangle &rhs) const noexcept {
   return !(*this == rhs);
 }
 
-bool ImageRegionRectangle::operator<(ImageRegionRectangle const &rhs) const noexcept {
+bool ImageRegionRectangle::operator<(const ImageRegionRectangle &rhs) const noexcept {
   return mmimage$cxxbridge1$ImageRegionRectangle$operator$lt(*this, rhs);
 }
 
-bool ImageRegionRectangle::operator<=(ImageRegionRectangle const &rhs) const noexcept {
+bool ImageRegionRectangle::operator<=(const ImageRegionRectangle &rhs) const noexcept {
   return mmimage$cxxbridge1$ImageRegionRectangle$operator$le(*this, rhs);
 }
 
-bool ImageRegionRectangle::operator>(ImageRegionRectangle const &rhs) const noexcept {
+bool ImageRegionRectangle::operator>(const ImageRegionRectangle &rhs) const noexcept {
   return !(*this <= rhs);
 }
 
-bool ImageRegionRectangle::operator>=(ImageRegionRectangle const &rhs) const noexcept {
+bool ImageRegionRectangle::operator>=(const ImageRegionRectangle &rhs) const noexcept {
   return !(*this < rhs);
 }
 
-bool PixelF32x4::operator==(PixelF32x4 const &rhs) const noexcept {
+bool PixelF32x4::operator==(const PixelF32x4 &rhs) const noexcept {
   return mmimage$cxxbridge1$PixelF32x4$operator$eq(*this, rhs);
 }
 
-bool PixelF32x4::operator!=(PixelF32x4 const &rhs) const noexcept {
+bool PixelF32x4::operator!=(const PixelF32x4 &rhs) const noexcept {
   return mmimage$cxxbridge1$PixelF32x4$operator$ne(*this, rhs);
 }
 
-bool PixelF32x4::operator<(PixelF32x4 const &rhs) const noexcept {
+bool PixelF32x4::operator<(const PixelF32x4 &rhs) const noexcept {
   return mmimage$cxxbridge1$PixelF32x4$operator$lt(*this, rhs);
 }
 
-bool PixelF32x4::operator<=(PixelF32x4 const &rhs) const noexcept {
+bool PixelF32x4::operator<=(const PixelF32x4 &rhs) const noexcept {
   return mmimage$cxxbridge1$PixelF32x4$operator$le(*this, rhs);
 }
 
-bool PixelF32x4::operator>(PixelF32x4 const &rhs) const noexcept {
+bool PixelF32x4::operator>(const PixelF32x4 &rhs) const noexcept {
   return mmimage$cxxbridge1$PixelF32x4$operator$gt(*this, rhs);
 }
 
-bool PixelF32x4::operator>=(PixelF32x4 const &rhs) const noexcept {
+bool PixelF32x4::operator>=(const PixelF32x4 &rhs) const noexcept {
   return mmimage$cxxbridge1$PixelF32x4$operator$ge(*this, rhs);
 }
 
-bool PixelF64x2::operator==(PixelF64x2 const &rhs) const noexcept {
+bool PixelF64x2::operator==(const PixelF64x2 &rhs) const noexcept {
   return mmimage$cxxbridge1$PixelF64x2$operator$eq(*this, rhs);
 }
 
-bool PixelF64x2::operator!=(PixelF64x2 const &rhs) const noexcept {
+bool PixelF64x2::operator!=(const PixelF64x2 &rhs) const noexcept {
   return mmimage$cxxbridge1$PixelF64x2$operator$ne(*this, rhs);
 }
 
-bool PixelF64x2::operator<(PixelF64x2 const &rhs) const noexcept {
+bool PixelF64x2::operator<(const PixelF64x2 &rhs) const noexcept {
   return mmimage$cxxbridge1$PixelF64x2$operator$lt(*this, rhs);
 }
 
-bool PixelF64x2::operator<=(PixelF64x2 const &rhs) const noexcept {
+bool PixelF64x2::operator<=(const PixelF64x2 &rhs) const noexcept {
   return mmimage$cxxbridge1$PixelF64x2$operator$le(*this, rhs);
 }
 
-bool PixelF64x2::operator>(PixelF64x2 const &rhs) const noexcept {
+bool PixelF64x2::operator>(const PixelF64x2 &rhs) const noexcept {
   return mmimage$cxxbridge1$PixelF64x2$operator$gt(*this, rhs);
 }
 
-bool PixelF64x2::operator>=(PixelF64x2 const &rhs) const noexcept {
+bool PixelF64x2::operator>=(const PixelF64x2 &rhs) const noexcept {
   return mmimage$cxxbridge1$PixelF64x2$operator$ge(*this, rhs);
 }
 
@@ -1702,12 +1701,12 @@ MMIMAGE_API_EXPORT ::std::size_t ShimImagePixelBuffer::element_count() const noe
   return mmimage$cxxbridge1$ShimImagePixelBuffer$element_count(*this);
 }
 
-MMIMAGE_API_EXPORT ::rust::Slice<::mmimage::PixelF32x4 const> ShimImagePixelBuffer::as_slice_f32x4() const noexcept {
-  return ::rust::impl<::rust::Slice<::mmimage::PixelF32x4 const>>::slice(mmimage$cxxbridge1$ShimImagePixelBuffer$as_slice_f32x4(*this));
+MMIMAGE_API_EXPORT ::rust::Slice<const ::mmimage::PixelF32x4> ShimImagePixelBuffer::as_slice_f32x4() const noexcept {
+  return ::rust::impl<::rust::Slice<const ::mmimage::PixelF32x4>>::slice(mmimage$cxxbridge1$ShimImagePixelBuffer$as_slice_f32x4(*this));
 }
 
-MMIMAGE_API_EXPORT ::rust::Slice<::mmimage::PixelF32x4 > ShimImagePixelBuffer::as_slice_f32x4_mut() noexcept {
-  return ::rust::impl<::rust::Slice<::mmimage::PixelF32x4 >>::slice(mmimage$cxxbridge1$ShimImagePixelBuffer$as_slice_f32x4_mut(*this));
+MMIMAGE_API_EXPORT ::rust::Slice<::mmimage::PixelF32x4> ShimImagePixelBuffer::as_slice_f32x4_mut() noexcept {
+  return ::rust::impl<::rust::Slice<::mmimage::PixelF32x4>>::slice(mmimage$cxxbridge1$ShimImagePixelBuffer$as_slice_f32x4_mut(*this));
 }
 
 MMIMAGE_API_EXPORT void ShimImagePixelBuffer::resize(::mmimage::BufferDataType data_type, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t num_channels) noexcept {
@@ -1888,7 +1887,7 @@ MMIMAGE_API_EXPORT bool shim_image_read_metadata_exr(::rust::Str file_path, ::ru
   return mmimage$cxxbridge1$shim_image_read_metadata_exr(file_path, out_meta_data);
 }
 
-MMIMAGE_API_EXPORT bool shim_image_write_pixels_exr_f32x4(::rust::Str file_path, ::mmimage::ImageExrEncoder exr_encoder, ::rust::Box<::mmimage::ShimImageMetaData> const &in_meta_data, ::rust::Box<::mmimage::ShimImagePixelBuffer> const &in_pixel_buffer) noexcept {
+MMIMAGE_API_EXPORT bool shim_image_write_pixels_exr_f32x4(::rust::Str file_path, ::mmimage::ImageExrEncoder exr_encoder, const ::rust::Box<::mmimage::ShimImageMetaData> &in_meta_data, const ::rust::Box<::mmimage::ShimImagePixelBuffer> &in_pixel_buffer) noexcept {
   return mmimage$cxxbridge1$shim_image_write_pixels_exr_f32x4(file_path, exr_encoder, in_meta_data, in_pixel_buffer);
 }
 } // namespace mmimage

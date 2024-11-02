@@ -63,6 +63,7 @@ set(lib_source_files
   ${mmscenegraph_source_dir}/_cxxbridge.cpp
   ${mmscenegraph_source_dir}/attrdatablock.cpp
   ${mmscenegraph_source_dir}/evaluationobjects.cpp
+  ${mmscenegraph_source_dir}/fit_plane.cpp
   ${mmscenegraph_source_dir}/flatscene.cpp
   ${mmscenegraph_source_dir}/line.cpp
   ${mmscenegraph_source_dir}/scenebake.cpp

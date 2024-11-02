@@ -38,6 +38,7 @@ set(SOURCE_FILES
   mmSolver/adjust/adjust_solveFunc.cpp
   mmSolver/calibrate/calibrate_common.cpp
   mmSolver/calibrate/vanishing_point.cpp
+  mmSolver/cmd/MMBestFitPlaneCmd.cpp
   mmSolver/cmd/MMCameraPoseFromPointsCmd.cpp
   mmSolver/cmd/MMCameraRelativePoseCmd.cpp
   mmSolver/cmd/MMCameraSolveCmd.cpp

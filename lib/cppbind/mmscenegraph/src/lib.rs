@@ -22,6 +22,7 @@ pub mod attr;
 pub mod attrdatablock;
 pub mod cxxbridge;
 pub mod evaluationobjects;
+pub mod fit_plane;
 pub mod flatscene;
 pub mod line;
 pub mod math;

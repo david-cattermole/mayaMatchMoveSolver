@@ -22,6 +22,7 @@ use crate::attrdatablock::shim_create_attr_data_block_box;
 use crate::attrdatablock::ShimAttrDataBlock;
 use crate::evaluationobjects::shim_create_evaluation_objects_box;
 use crate::evaluationobjects::ShimEvaluationObjects;
+use crate::fit_plane::shim_fit_plane_to_points;
 use crate::flatscene::shim_create_flat_scene_box;
 use crate::flatscene::ShimFlatScene;
 use crate::line::shim_fit_line_to_points_type2;
@@ -70,6 +71,13 @@ pub mod ffi {
         pub y: f64,
         pub z: f64,
     }
+
+    // #[derive(Copy, Clone, Debug, PartialEq)]
+    // pub(crate) struct Vector3 {
+    //     pub x: f64,
+    //     pub y: f64,
+    //     pub z: f64,
+    // }
 
     #[derive(Debug, Copy, Clone, Hash, Eq, PartialEq, Ord, PartialOrd)]
     struct NodeId {
@@ -406,6 +414,20 @@ pub mod ffi {
             line_a: Point3,
             line_b: Point3,
             out_point: &mut Point3,
+        ) -> bool;
+    }
+
+    // Fit Plane
+    extern "Rust" {
+        fn shim_fit_plane_to_points(
+            points_xyz: &[f64],
+            out_point_x: &mut f64,
+            out_point_y: &mut f64,
+            out_point_z: &mut f64,
+            out_dir_x: &mut f64,
+            out_dir_y: &mut f64,
+            out_dir_z: &mut f64,
+            out_rms_error: &mut f64,
         ) -> bool;
     }
 }

@@ -36,6 +36,7 @@
 #include "mmSolver/nodeTypeIds.h"
 
 // Solver and nodes
+#include "mmSolver/cmd/MMBestFitPlaneCmd.h"
 #include "mmSolver/cmd/MMCameraPoseFromPointsCmd.h"
 #include "mmSolver/cmd/MMCameraRelativePoseCmd.h"
 #include "mmSolver/cmd/MMCameraSolveCmd.h"
@@ -245,6 +246,10 @@ MStatus initializePlugin(MObject obj) {
     REGISTER_COMMAND(plugin, mmsolver::MMTestCameraMatrixCmd::cmdName(),
                      mmsolver::MMTestCameraMatrixCmd::creator,
                      mmsolver::MMTestCameraMatrixCmd::newSyntax, status);
+
+    REGISTER_COMMAND(plugin, mmsolver::MMBestFitPlaneCmd::cmdName(),
+                     mmsolver::MMBestFitPlaneCmd::creator,
+                     mmsolver::MMBestFitPlaneCmd::newSyntax, status);
 
     REGISTER_COMMAND(plugin, mmsolver::MMCameraPoseFromPointsCmd::cmdName(),
                      mmsolver::MMCameraPoseFromPointsCmd::creator,
@@ -657,6 +662,7 @@ MStatus uninitializePlugin(MObject obj) {
                        status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMTestCameraMatrixCmd::cmdName(),
                        status);
+    DEREGISTER_COMMAND(plugin, mmsolver::MMBestFitPlaneCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMCameraPoseFromPointsCmd::cmdName(),
                        status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMCameraRelativePoseCmd::cmdName(),

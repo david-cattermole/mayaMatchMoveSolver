@@ -1338,6 +1338,8 @@ bool mmscenegraph$cxxbridge1$shim_fit_line_to_points_type2(::rust::Slice<const d
 bool mmscenegraph$cxxbridge1$shim_fit_straight_line_to_ordered_points(::rust::Slice<const double> points_coord_x, ::rust::Slice<const double> points_coord_y, double &out_point_x, double &out_point_y, double &out_dir_x, double &out_dir_y) noexcept;
 
 bool mmscenegraph$cxxbridge1$shim_line_point_intersection(::mmscenegraph::Point3 point, ::mmscenegraph::Point3 line_a, ::mmscenegraph::Point3 line_b, ::mmscenegraph::Point3 &out_point) noexcept;
+
+bool mmscenegraph$cxxbridge1$shim_fit_plane_to_points(::rust::Slice<const double> points_xyz, double &out_point_x, double &out_point_y, double &out_point_z, double &out_dir_x, double &out_dir_y, double &out_dir_z, double &out_rms_error) noexcept;
 } // extern "C"
 } // namespace mmscenegraph
 
@@ -1767,6 +1769,10 @@ MMSCENEGRAPH_API_EXPORT bool shim_fit_straight_line_to_ordered_points(::rust::Sl
 
 MMSCENEGRAPH_API_EXPORT bool shim_line_point_intersection(::mmscenegraph::Point3 point, ::mmscenegraph::Point3 line_a, ::mmscenegraph::Point3 line_b, ::mmscenegraph::Point3 &out_point) noexcept {
   return mmscenegraph$cxxbridge1$shim_line_point_intersection(point, line_a, line_b, out_point);
+}
+
+MMSCENEGRAPH_API_EXPORT bool shim_fit_plane_to_points(::rust::Slice<const double> points_xyz, double &out_point_x, double &out_point_y, double &out_point_z, double &out_dir_x, double &out_dir_y, double &out_dir_z, double &out_rms_error) noexcept {
+  return mmscenegraph$cxxbridge1$shim_fit_plane_to_points(points_xyz, out_point_x, out_point_y, out_point_z, out_dir_x, out_dir_y, out_dir_z, out_rms_error);
 }
 } // namespace mmscenegraph
 

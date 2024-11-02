@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020, 2021 David Cattermole.
+ * Copyright (C) 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -19,17 +19,20 @@
  *
  */
 
-#ifndef MM_SOLVER_MM_SCENE_GRAPH_MM_SCENE_GRAPH_H
-#define MM_SOLVER_MM_SCENE_GRAPH_MM_SCENE_GRAPH_H
+#include <mmscenegraph/_cxx.h>
+#include <mmscenegraph/_cxxbridge.h>
+#include <mmscenegraph/fit_plane.h>
 
-#include "_cxx.h"
-#include "_cxxbridge.h"
-#include "_types.h"
-#include "attrdatablock.h"
-#include "flatscene.h"
-#include "line.h"
-#include "fit_plane.h"
-#include "scenebake.h"
-#include "scenegraph.h"
+namespace mmscenegraph {
 
-#endif  // MM_SOLVER_MM_SCENE_GRAPH_MM_SCENE_GRAPH_H
+MMSCENEGRAPH_API_EXPORT
+bool fit_plane_to_points(rust::Slice<const Real> &points_xyz, Real &out_position_x,
+                         Real &out_position_y, Real &out_position_z, Real &out_normal_x,
+                         Real &out_normal_y, Real &out_normal_z,
+                         Real &out_rms_error) noexcept {
+    return shim_fit_plane_to_points(points_xyz, out_position_x, out_position_y,
+                                    out_position_z, out_normal_x, out_normal_y,
+                                    out_normal_z, out_rms_error);
+}
+
+}  // namespace mmscenegraph

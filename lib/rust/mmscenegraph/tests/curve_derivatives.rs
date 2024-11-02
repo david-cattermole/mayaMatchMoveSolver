@@ -27,8 +27,8 @@ mod common;
 use anyhow::Result;
 use approx::assert_relative_eq;
 
-use mmscenegraph_rust::math::curve_derivatives::allocate_derivatives_order_3;
-use mmscenegraph_rust::math::curve_derivatives::calculate_derivatives_order_3;
+use mmscenegraph_rust::curve::derivatives::allocate_derivatives_order_3;
+use mmscenegraph_rust::curve::derivatives::calculate_derivatives_order_3;
 
 fn print_arrays(velocity: &[f64], acceleration: &[f64], jerk: &[f64]) {
     println!("Velocity (1st order derivative) count {} :", velocity.len());

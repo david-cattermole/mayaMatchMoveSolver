@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2020, 2021 David Cattermole.
+// Copyright (C) 2024 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -18,12 +18,4 @@
 // ====================================================================
 //
 
-pub mod camera;
-pub mod curve_fit;
-pub mod dag;
-pub mod fit_plane;
-pub mod line;
-pub mod line_intersect;
-pub mod reprojection;
-pub mod rotate;
-pub mod transform;
+pub mod derivatives;

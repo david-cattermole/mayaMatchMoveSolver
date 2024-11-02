@@ -21,6 +21,7 @@
 pub mod attr;
 pub mod constant;
 pub mod core;
+pub mod curve;
 pub mod math;
 pub mod node;
 pub mod scene;

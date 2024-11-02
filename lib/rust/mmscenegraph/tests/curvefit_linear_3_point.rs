@@ -260,13 +260,13 @@ fn linear_3_point_variance4() -> Result<()> {
     )?;
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_a.y(), -1.21533949192, epsilon = 0.75);
+    assert_relative_eq!(point_a.y(), -1.21533949192, epsilon = 2.8);
 
     assert_relative_eq!(point_b.x(), 1051.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_b.y(), 4.5, epsilon = 2.0);
+    assert_relative_eq!(point_b.y(), 4.5, epsilon = 1.8);
 
     assert_relative_eq!(point_c.x(), 1101.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_c.y(), 1.855, epsilon = 2.5);
+    assert_relative_eq!(point_c.y(), 1.855, epsilon = 3.1);
 
     Ok(())
 }

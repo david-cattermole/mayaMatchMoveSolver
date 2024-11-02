@@ -389,7 +389,7 @@ pub fn nonlinear_line_n3(
     // solved.
     let initial_parameters_vec = vec![point_a.y, point_b.y, point_c.y];
     let initial_parameters: Array1<f64> = Array1::from(initial_parameters_vec);
-    println!("initial_parameters={initial_parameters:?}");
+    debug!("initial_parameters={initial_parameters:?}");
 
     // Define the problem
     let reference_values: Vec<(f64, f64)> = x_values
@@ -406,16 +406,25 @@ pub fn nonlinear_line_n3(
         &reference_values,
     );
 
-    // Set up the subproblem
-    let subproblem: argmin::solver::trustregion::CauchyPoint<f64> =
-        argmin::solver::trustregion::CauchyPoint::new();
-
-    // Set up solver
-    let solver = argmin::solver::trustregion::TrustRegion::new(subproblem);
+    // Set up solver.
+    let epsilon = 1e-9;
+    let condition =
+        argmin::solver::linesearch::condition::ArmijoCondition::new(1e-5)?;
+    let linesearch =
+        argmin::solver::linesearch::BacktrackingLineSearch::new(condition)
+            .rho(0.5)?;
+    let solver = argmin::solver::quasinewton::BFGS::new(linesearch)
+        .with_tolerance_cost(epsilon)?;
 
     // Run solver
+    let initial_hessian: Array2<f64> = Array2::eye(3);
     let result = argmin::core::Executor::new(problem, solver)
-        .configure(|state| state.param(initial_parameters).max_iters(30))
+        .configure(|state| {
+            state
+                .param(initial_parameters)
+                .inv_hessian(initial_hessian)
+                .max_iters(50)
+        })
         .run()?;
     debug!("Solver Result: {result}");
 

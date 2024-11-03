@@ -46,8 +46,7 @@ class MMBestFitPlaneCmd : public MPxCommand {
 public:
     MMBestFitPlaneCmd()
         : m_output_values_as(OutputValuesAs::kPositionAndDirection)
-        , m_output_rms_error(true)
-        , {};
+        , m_output_rms_error(true){};
     virtual ~MMBestFitPlaneCmd();
 
     virtual bool hasSyntax() const;

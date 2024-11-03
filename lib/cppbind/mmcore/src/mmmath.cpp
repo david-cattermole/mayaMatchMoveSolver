@@ -198,6 +198,8 @@ double determinant(mmdata::Matrix4x4 m) {
     return r0 + r1 + r2 + r3 + r4 + r5;
 }
 
+// Inverse calculation using cofactor method.
+//
 // http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
 mmdata::Matrix4x4 inverse(mmdata::Matrix4x4 m) {
     auto s = 1.0 / determinant(m);
@@ -275,7 +277,8 @@ mmdata::Matrix4x4 inverse(mmdata::Matrix4x4 m) {
     return r;
 }
 
-// Matrix multiplication: Matrix4x4 X Matrix4x4
+// Matrix multiplication: Matrix4x4 X Matrix4x4. Matrix is treated as
+// row-major order.
 //
 // https://www.euclideanspace.com/maths/algebra/matrix/arithmetic/fourD/index.htm
 //

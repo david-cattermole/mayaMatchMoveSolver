@@ -108,6 +108,9 @@ bool infiniteLineIntersection(mmdata::Point2D pointA, mmdata::Point2D pointB,
 
 double cosineAngleBetweenLines(mmdata::LinePair2D linePair);
 
+void createLookAtMatrix(const mmdata::Vector3D &dir,
+                        mmdata::Matrix4x4 &out_matrix);
+
 }  // namespace mmmath
 
 #endif  // MM_CORE_MM_MATH_H

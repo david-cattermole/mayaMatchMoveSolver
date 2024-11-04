@@ -103,7 +103,13 @@ pub fn fit_plane_to_points(points_xyz: &[f64]) -> Option<PlaneFit> {
         Some(u_value) => {
             // The normal vector is the last left singular vector
             // (corresponding to smallest singular value).
-            let normal = u_value.column(2).normalize();
+            let mut normal = u_value.column(2).normalize();
+
+            // Ensure the normal points towards +Y axis.
+            let up_axis = Vector3::new(0.0, 1.0, 0.0);
+            if normal.dot(&up_axis) <= 0.0 {
+                normal.neg_mut();
+            }
 
             // Calculate RMS error.
             let rms_error = calculate_rms_error(points_xyz, &normal, &position);

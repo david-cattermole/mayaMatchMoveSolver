@@ -235,14 +235,38 @@ double cosineAngleBetweenLines(mmdata::LinePair2D linePair);
 /**
  * Create look-at matrix from direction vector.
  *
+ * Result aligns X axis with direction and maintains Y axis up where
+ * possible.
+ *
+ * @param dir Direction vector to look at
+ * @param out_matrix Resulting orientation matrix
+ */
+void createLookAtMatrixAxisX(const mmdata::Vector3D &dir,
+                             mmdata::Matrix4x4 &out_matrix);
+
+/**
+ * Create look-at matrix from direction vector.
+ *
+ * Result aligns Y axis with direction and maintains Y axis up where
+ * possible.
+ *
+ * @param dir Direction vector to look at
+ * @param out_matrix Resulting orientation matrix
+ */
+void createLookAtMatrixAxisY(const mmdata::Vector3D &dir,
+                             mmdata::Matrix4x4 &out_matrix);
+
+/**
+ * Create look-at matrix from direction vector.
+ *
  * Result aligns Z axis with direction and maintains Y axis up where
  * possible.
  *
  * @param dir Direction vector to look at
  * @param out_matrix Resulting orientation matrix
  */
-void createLookAtMatrix(const mmdata::Vector3D &dir,
-                        mmdata::Matrix4x4 &out_matrix);
+void createLookAtMatrixAxisZ(const mmdata::Vector3D &dir,
+                             mmdata::Matrix4x4 &out_matrix);
 
 }  // namespace mmmath
 

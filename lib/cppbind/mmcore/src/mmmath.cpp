@@ -498,30 +498,116 @@ double cosineAngleBetweenLines(mmdata::LinePair2D linePair) {
     return angle_cosine;
 }
 
-void createLookAtMatrix(const mmdata::Vector3D &dir,
-                        mmdata::Matrix4x4 &out_matrix) {
+// Implementation detail. Do not reveal this to users of the API.
+void impl_createLookAtMatrix(const mmdata::Vector3D &dir,
+                             const mmdata::Vector3D &temp_up,
+                             mmdata::Vector3D &out_forward,
+                             mmdata::Vector3D &out_right,
+                             mmdata::Vector3D &out_up) {
+    out_forward.x_ = dir.x_;
+    out_forward.y_ = dir.y_;
+    out_forward.z_ = dir.z_;
+    out_forward = mmmath::normalize(out_forward);
+
+    out_right = mmmath::cross(temp_up, out_forward);
+    out_right = mmmath::normalize(out_right);
+
+    out_up = mmmath::cross(out_forward, out_right);
+    out_up = mmmath::normalize(out_up);
+}
+
+void createLookAtMatrixAxisX(const mmdata::Vector3D &dir,
+                             mmdata::Matrix4x4 &out_matrix) {
     const auto temp_up = mmdata::Vector3D(0.0, 1.0, 0.0);
+    auto forward = mmdata::Vector3D();
+    auto right = mmdata::Vector3D();
+    auto up = mmdata::Vector3D();
+    impl_createLookAtMatrix(dir, temp_up, forward, right, up);
 
-    auto forward = mmdata::Vector3D(dir.x_, dir.y_, dir.z_);
-    forward = mmmath::normalize(forward);
-
-    auto right = mmmath::cross(temp_up, forward);
-    right = mmmath::normalize(right);
-
-    auto up = mmmath::cross(forward, right);
-    up = mmmath::normalize(up);
-
-    out_matrix.m00_ = right.x_;
-    out_matrix.m01_ = right.y_;
-    out_matrix.m02_ = right.z_;
+    // X axis. Looking towards this axis.
+    out_matrix.m00_ = forward.x_;
+    out_matrix.m01_ = forward.y_;
+    out_matrix.m02_ = forward.z_;
     out_matrix.m03_ = 0.0;
+
+    // Y axis.
     out_matrix.m10_ = up.x_;
     out_matrix.m11_ = up.y_;
     out_matrix.m12_ = up.z_;
     out_matrix.m13_ = 0.0;
+
+    // Z axis.
+    out_matrix.m20_ = right.x_;
+    out_matrix.m21_ = right.y_;
+    out_matrix.m22_ = right.z_;
+    out_matrix.m23_ = 0.0;
+
+    // Translations (unused).
+    out_matrix.m30_ = 0.0;
+    out_matrix.m31_ = 0.0;
+    out_matrix.m32_ = 0.0;
+    out_matrix.m33_ = 1.0;
+}
+
+void createLookAtMatrixAxisY(const mmdata::Vector3D &dir,
+                             mmdata::Matrix4x4 &out_matrix) {
+    auto forward = mmdata::Vector3D();
+    auto right = mmdata::Vector3D();
+    auto up = mmdata::Vector3D();
+    const auto temp_up = mmdata::Vector3D(0.0, 0.0, 1.0);
+    impl_createLookAtMatrix(dir, temp_up, forward, right, up);
+
+    // X axis.
+    out_matrix.m00_ = right.x_;
+    out_matrix.m01_ = right.y_;
+    out_matrix.m02_ = right.z_;
+    out_matrix.m03_ = 0.0;
+
+    // Y axis. Looking towards this axis.
+    out_matrix.m10_ = forward.x_;
+    out_matrix.m11_ = forward.y_;
+    out_matrix.m12_ = forward.z_;
+    out_matrix.m13_ = 0.0;
+
+    // Z axis.
+    out_matrix.m20_ = up.x_;
+    out_matrix.m21_ = up.y_;
+    out_matrix.m22_ = up.z_;
+    out_matrix.m23_ = 0.0;
+
+    // Translations (unused).
+    out_matrix.m30_ = 0.0;
+    out_matrix.m31_ = 0.0;
+    out_matrix.m32_ = 0.0;
+    out_matrix.m33_ = 1.0;
+}
+
+void createLookAtMatrixAxisZ(const mmdata::Vector3D &dir,
+                             mmdata::Matrix4x4 &out_matrix) {
+    auto forward = mmdata::Vector3D();
+    auto right = mmdata::Vector3D();
+    auto up = mmdata::Vector3D();
+    const auto temp_up = mmdata::Vector3D(0.0, 1.0, 0.0);
+    impl_createLookAtMatrix(dir, temp_up, forward, right, up);
+
+    // X axis.
+    out_matrix.m00_ = right.x_;
+    out_matrix.m01_ = right.y_;
+    out_matrix.m02_ = right.z_;
+    out_matrix.m03_ = 0.0;
+
+    // Y axis.
+    out_matrix.m10_ = up.x_;
+    out_matrix.m11_ = up.y_;
+    out_matrix.m12_ = up.z_;
+    out_matrix.m13_ = 0.0;
+
+    // Z axis. Looking towards this axis.
     out_matrix.m20_ = forward.x_;
     out_matrix.m21_ = forward.y_;
     out_matrix.m22_ = forward.z_;
+
+    // Translations (unused).
     out_matrix.m23_ = 0.0;
     out_matrix.m30_ = 0.0;
     out_matrix.m31_ = 0.0;

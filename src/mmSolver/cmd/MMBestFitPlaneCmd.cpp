@@ -260,7 +260,7 @@ MStatus MMBestFitPlaneCmd::doIt(const MArgList &args) {
         mmdata::Matrix4x4 matrix;
         const mmdata::Vector3D dir(plane_normal_x, plane_normal_y,
                                    plane_normal_z);
-        mmmath::createLookAtMatrix(dir, matrix);
+        mmmath::createLookAtMatrixAxisY(dir, matrix);
         matrix.m30_ = plane_position_x;
         matrix.m31_ = plane_position_y;
         matrix.m32_ = plane_position_z;

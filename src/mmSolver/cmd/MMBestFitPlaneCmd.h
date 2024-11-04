@@ -35,9 +35,18 @@
 
 namespace mmsolver {
 
+enum class OutputValuesAs : uint8_t {
+    kPositionAndDirection = 0,
+    kMatrix4x4 = 1,
+
+    kUnknown = 255
+};
+
 class MMBestFitPlaneCmd : public MPxCommand {
 public:
-    MMBestFitPlaneCmd(){};
+    MMBestFitPlaneCmd()
+        : m_output_values_as(OutputValuesAs::kPositionAndDirection)
+        , m_output_rms_error(true){};
     virtual ~MMBestFitPlaneCmd();
 
     virtual bool hasSyntax() const;
@@ -53,6 +62,8 @@ private:
     MStatus parseArgs(const MArgList &args);
 
     rust::Vec<mmscenegraph::Real> m_points_xyz;
+    OutputValuesAs m_output_values_as;
+    bool m_output_rms_error;
 };
 
 }  // namespace mmsolver

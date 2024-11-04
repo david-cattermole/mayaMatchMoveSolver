@@ -198,6 +198,8 @@ double determinant(mmdata::Matrix4x4 m) {
     return r0 + r1 + r2 + r3 + r4 + r5;
 }
 
+// Inverse calculation using cofactor method.
+//
 // http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
 mmdata::Matrix4x4 inverse(mmdata::Matrix4x4 m) {
     auto s = 1.0 / determinant(m);
@@ -275,7 +277,8 @@ mmdata::Matrix4x4 inverse(mmdata::Matrix4x4 m) {
     return r;
 }
 
-// Matrix multiplication: Matrix4x4 X Matrix4x4
+// Matrix multiplication: Matrix4x4 X Matrix4x4. Matrix is treated as
+// row-major order.
 //
 // https://www.euclideanspace.com/maths/algebra/matrix/arithmetic/fourD/index.htm
 //
@@ -493,6 +496,37 @@ double cosineAngleBetweenLines(mmdata::LinePair2D linePair) {
         mmmath::normalize(mmmath::subtract(lineB.pointA_, lineB.pointB_));
     auto angle_cosine = std::abs(mmmath::dot(directionA, directionB));
     return angle_cosine;
+}
+
+void createLookAtMatrix(const mmdata::Vector3D &dir,
+                        mmdata::Matrix4x4 &out_matrix) {
+    const auto temp_up = mmdata::Vector3D(0.0, 1.0, 0.0);
+
+    auto forward = mmdata::Vector3D(dir.x_, dir.y_, dir.z_);
+    forward = mmmath::normalize(forward);
+
+    auto right = mmmath::cross(temp_up, forward);
+    right = mmmath::normalize(right);
+
+    auto up = mmmath::cross(forward, right);
+    up = mmmath::normalize(up);
+
+    out_matrix.m00_ = right.x_;
+    out_matrix.m01_ = right.y_;
+    out_matrix.m02_ = right.z_;
+    out_matrix.m03_ = 0.0;
+    out_matrix.m10_ = up.x_;
+    out_matrix.m11_ = up.y_;
+    out_matrix.m12_ = up.z_;
+    out_matrix.m13_ = 0.0;
+    out_matrix.m20_ = forward.x_;
+    out_matrix.m21_ = forward.y_;
+    out_matrix.m22_ = forward.z_;
+    out_matrix.m23_ = 0.0;
+    out_matrix.m30_ = 0.0;
+    out_matrix.m31_ = 0.0;
+    out_matrix.m32_ = 0.0;
+    out_matrix.m33_ = 1.0;
 }
 
 }  // namespace mmmath

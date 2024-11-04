@@ -26,9 +26,8 @@
  *
  * nodes = maya.cmds.ls(sl=True, long=True) or []
  *
- * points = [maya.cmds.xform(node, query=True, worldSpace=True, translation=True)
-             for node in nodes]
- * print('points: {}'.format(points))
+ * points = [maya.cmds.xform(node, query=True, worldSpace=True,
+ * translation=True) for node in nodes] print('points: {}'.format(points))
  *
  * points_components = []
  * for point in points:
@@ -37,17 +36,37 @@
  *     points_components.append(point[2])
  * print('points_components: {}'.format(points_components))
  *
- * result = maya.cmds.mmBestFitPlane(pointComponent=points_components)
- * if result is not None:
- *     assert len(result) == 7
+ * OUTPUT_VALUES_AS_POSITION_AND_DIRECTION = "position_and_direction"
+ * OUTPUT_VALUES_AS_MATRIX_4X4 = "matrix_4x4"
+ *
+ * result = maya.cmds.mmBestFitPlane(
+ *     pointComponent=points_components,
+ *     outputValuesAs=OUTPUT_VALUES_AS_MATRIX_4X4,
+ *     outputRmsError=True)
+ * print('result: {}'.format(result))
+ * if result is None:
+ *     print('The plane could not be fit to those input points.')
+ * elif len(result) in [7, 8]:
  *     plane_position = (result[0], result[1], result[2])
  *     plane_normal = (result[3], result[4], result[5])
  *     plane_fit_error = result[6]
  *     print('plane_position: {}'.format(plane_position))
- *     print('plane_normal : {}'.format(plane_normal ))
- *     print('plane_fit_error : {}'.format(plane_fit_error ))
- * else:
- *     print('The plane could not be fit to those input points.')
+ *     print('plane_normal : {}'.format(plane_normal))
+ *     print('plane_fit_error : {}'.format(plane_fit_error))
+ * elif len(result) in [16, 17]:
+ *     plane_matrix = (
+ *         result[0], result[1], result[2],  result[3],
+ *         result[4], result[5], result[6],  result[7],
+ *         result[8], result[9], result[10],  result[11],
+ *         result[12], result[13], result[14],  result[15],
+ *     )
+ *     plane_fit_error = result[16]
+ *     print('plane_matrix: {}'.format(plane_matrix))
+ *     print('plane_fit_error : {}'.format(plane_fit_error))
+ *
+ *     # Set value of 'pPlane1' node transform to output.
+ *     maya.cmds.xform('pPlane1', worldSpace=True, matrix=plane_matrix)
+ *
  *
  */
 
@@ -66,6 +85,9 @@
 #include <maya/MVector.h>
 
 // MM Solver
+#include <mmcore/mmdata.h>
+#include <mmcore/mmmath.h>
+
 #include "mmSolver/utilities/debug_utils.h"
 
 // MM Scene Graph
@@ -74,6 +96,16 @@
 // Command arguments
 #define POINT_COMPONENTS_SHORT_FLAG "-pc"
 #define POINT_COMPONENTS_LONG_FLAG "-pointComponent"
+
+#define OUTPUT_VALUES_AS_SHORT_FLAG "-ova"
+#define OUTPUT_VALUES_AS_LONG_FLAG "-outputValuesAs"
+
+#define OUTPUT_RMS_ERROR_SHORT_FLAG "-ore"
+#define OUTPUT_RMS_ERROR_LONG_FLAG "-outputRmsError"
+
+// Value strings.
+#define OUTPUT_VALUES_AS_POSITION_AND_DIRECTION "position_and_direction"
+#define OUTPUT_VALUES_AS_MATRIX_4X4 "matrix_4x4"
 
 namespace mmsg = mmscenegraph;
 
@@ -99,19 +131,22 @@ MSyntax MMBestFitPlaneCmd::newSyntax() {
     syntax.enableQuery(false);
     syntax.enableEdit(false);
 
-    // Add point flag that takes 3 doubles (x, y, z).
     syntax.addFlag(POINT_COMPONENTS_SHORT_FLAG, POINT_COMPONENTS_LONG_FLAG,
                    MSyntax::kDouble);
-
-    // Allow multiple uses of the point flag
     syntax.makeFlagMultiUse(POINT_COMPONENTS_SHORT_FLAG);
+
+    syntax.addFlag(OUTPUT_VALUES_AS_SHORT_FLAG, OUTPUT_VALUES_AS_LONG_FLAG,
+                   MSyntax::kString);
+
+    syntax.addFlag(OUTPUT_RMS_ERROR_SHORT_FLAG, OUTPUT_RMS_ERROR_LONG_FLAG,
+                   MSyntax::kBoolean);
 
     return syntax;
 }
 
 MStatus MMBestFitPlaneCmd::parseArgs(const MArgList &args) {
     MStatus status = MStatus::kSuccess;
-    const bool verbose = true;
+    const bool verbose = false;
 
     MArgDatabase argData(syntax(), args, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
@@ -149,6 +184,42 @@ MStatus MMBestFitPlaneCmd::parseArgs(const MArgList &args) {
         m_points_xyz.push_back(value);
     }
 
+    m_output_values_as = OutputValuesAs::kPositionAndDirection;
+    const bool output_as_values_flag =
+        argData.isFlagSet(OUTPUT_VALUES_AS_SHORT_FLAG, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_MAYA_VRB(
+        "mmBestFitPlane: output_as_values_flag=" << output_as_values_flag);
+    if (output_as_values_flag) {
+        MString flag_value;
+        status =
+            argData.getFlagArgument(OUTPUT_VALUES_AS_SHORT_FLAG, 0, flag_value);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        const char *string = flag_value.asChar();
+        MMSOLVER_MAYA_VRB("mmBestFitPlane: output_as_values=" << string);
+        if (std::strcmp(string, OUTPUT_VALUES_AS_POSITION_AND_DIRECTION) == 0) {
+            m_output_values_as = OutputValuesAs::kPositionAndDirection;
+        } else if (std::strcmp(string, OUTPUT_VALUES_AS_MATRIX_4X4) == 0) {
+            m_output_values_as = OutputValuesAs::kMatrix4x4;
+        }
+    }
+    MMSOLVER_MAYA_VRB("mmBestFitPlane: m_output_values_as="
+                      << static_cast<size_t>(m_output_values_as));
+
+    m_output_rms_error = true;
+    const bool output_rms_error_flag =
+        argData.isFlagSet(OUTPUT_RMS_ERROR_SHORT_FLAG, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_MAYA_VRB(
+        "mmBestFitPlane: output_rms_error_flag=" << output_rms_error_flag);
+    if (output_rms_error_flag) {
+        status = argData.getFlagArgument(OUTPUT_RMS_ERROR_SHORT_FLAG, 0,
+                                         m_output_rms_error);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_MAYA_VRB(
+            "mmBestFitPlane: m_output_rms_error=" << m_output_rms_error);
+    }
+
     return MStatus::kSuccess;
 }
 
@@ -177,15 +248,44 @@ MStatus MMBestFitPlaneCmd::doIt(const MArgList &args) {
     }
 
     // Return results as array of double floats:
-    // [pos_x, pos_y, pos_z, norm_x, norm_y, norm_z, rms_error]
     MDoubleArray result;
-    result.append(plane_position_x);
-    result.append(plane_position_y);
-    result.append(plane_position_z);
-    result.append(plane_normal_x);
-    result.append(plane_normal_y);
-    result.append(plane_normal_z);
-    result.append(rms_error);
+    if (m_output_values_as == OutputValuesAs::kPositionAndDirection) {
+        result.append(plane_position_x);
+        result.append(plane_position_y);
+        result.append(plane_position_z);
+        result.append(plane_normal_x);
+        result.append(plane_normal_y);
+        result.append(plane_normal_z);
+    } else if (m_output_values_as == OutputValuesAs::kMatrix4x4) {
+        mmdata::Matrix4x4 matrix;
+        const mmdata::Vector3D dir(plane_normal_x, plane_normal_y,
+                                   plane_normal_z);
+        mmmath::createLookAtMatrix(dir, matrix);
+        matrix.m30_ = plane_position_x;
+        matrix.m31_ = plane_position_y;
+        matrix.m32_ = plane_position_z;
+
+        result.append(matrix.m00_);
+        result.append(matrix.m01_);
+        result.append(matrix.m02_);
+        result.append(matrix.m03_);
+        result.append(matrix.m10_);
+        result.append(matrix.m11_);
+        result.append(matrix.m12_);
+        result.append(matrix.m13_);
+        result.append(matrix.m20_);
+        result.append(matrix.m21_);
+        result.append(matrix.m22_);
+        result.append(matrix.m23_);
+        result.append(matrix.m30_);
+        result.append(matrix.m31_);
+        result.append(matrix.m32_);
+        result.append(matrix.m33_);
+    }
+
+    if (m_output_rms_error) {
+        result.append(rms_error);
+    }
 
     MPxCommand::setResult(result);
     return status;

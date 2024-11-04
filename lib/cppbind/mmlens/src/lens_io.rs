@@ -76,6 +76,7 @@ type I32CurveData = HashMap<FrameNumber, i32>;
 enum KnobValue {
     None,
     F64(f64),
+    #[allow(dead_code)]
     I32(i32),
     F64Curve(F64CurveData),
     I32Curve(I32CurveData),

@@ -26,9 +26,9 @@
 #include "_cxxbridge.h"
 #include "_types.h"
 #include "attrdatablock.h"
+#include "fit_plane.h"
 #include "flatscene.h"
 #include "line.h"
-#include "fit_plane.h"
 #include "scenebake.h"
 #include "scenegraph.h"
 

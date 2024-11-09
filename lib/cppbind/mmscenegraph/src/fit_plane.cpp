@@ -26,8 +26,9 @@
 namespace mmscenegraph {
 
 MMSCENEGRAPH_API_EXPORT
-bool fit_plane_to_points(rust::Slice<const Real> &points_xyz, Real &out_position_x,
-                         Real &out_position_y, Real &out_position_z, Real &out_normal_x,
+bool fit_plane_to_points(rust::Slice<const Real> &points_xyz,
+                         Real &out_position_x, Real &out_position_y,
+                         Real &out_position_z, Real &out_normal_x,
                          Real &out_normal_y, Real &out_normal_z,
                          Real &out_rms_error) noexcept {
     return shim_fit_plane_to_points(points_xyz, out_position_x, out_position_y,

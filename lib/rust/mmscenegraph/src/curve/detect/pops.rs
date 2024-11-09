@@ -85,19 +85,19 @@ fn calculate_window_smoothness_score(
     smoothness_score
 }
 
-/// Represents a point that was classified as a spike
+/// Represents a point that was classified as a pop
 #[derive(Debug)]
-pub struct SpikePoint {
+pub struct PopPoint {
     pub time: f64,
     pub value: f64,
     pub score: f64,
 }
 
-impl fmt::Display for SpikePoint {
+impl fmt::Display for PopPoint {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "SpikePoint [ t={:.2}, v={:.2} (score={:.2}) ]",
+            "PopPoint [ t={:.2}, v={:.2} (score={:.2}) ]",
             self.time, self.value, self.score
         )
     }
@@ -178,12 +178,12 @@ fn calculate_per_frame_pop_score(
     Ok(())
 }
 
-/// Find spikes in the data.
+/// Find pops in the data.
 pub fn detect_curve_pops(
     times: &[f64],
     values: &[f64],
     threshold: f64,
-) -> Result<Vec<SpikePoint>> {
+) -> Result<Vec<PopPoint>> {
     if times.len() != values.len() {
         bail!("Times and values must have the same length.");
     }
@@ -220,7 +220,7 @@ pub fn detect_curve_pops(
             let t = times[i];
             let v = values[i];
 
-            let point = SpikePoint {
+            let point = PopPoint {
                 time: t,
                 value: v,
                 score: score_current,

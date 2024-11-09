@@ -33,12 +33,12 @@ def _generate_variance_data(raw_data, variance):
     return data
 
 
-def _generate_spike_data(raw_data, variance, spike_probability):
+def _generate_pop_data(raw_data, variance, pop_probability):
     data = []
     temp_data = [(f, random.uniform(v - variance, v + variance)) for f, v in raw_data]
-    for (raw_f, raw_v), (spike_f, spike_v) in zip(raw_data, temp_data):
-        if random.random() < spike_probability:
-            data.append((spike_f, spike_v))
+    for (raw_f, raw_v), (pop_f, pop_v) in zip(raw_data, temp_data):
+        if random.random() < pop_probability:
+            data.append((pop_f, pop_v))
         else:
             data.append((raw_f, raw_v))
     assert len(raw_data) == len(data)
@@ -57,9 +57,9 @@ variance_medium = 0.1
 variance_high = 1.0
 variance_very_high = 10.0
 
-spike_probability_low = 0.01
-spike_probability_medium = 0.1
-spike_probability_high = 0.25
+pop_probability_low = 0.01
+pop_probability_medium = 0.1
+pop_probability_high = 0.25
 
 # Identity (all zero values)
 raw_data = _sample_attr(start_frame, end_frame, 'identity.translateY')
@@ -82,21 +82,21 @@ data = _generate_variance_data(raw_data, variance)
 _write_data('identity_variance4', data, output_directory)
 
 variance = variance_low
-spike_probability = spike_probability_medium
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('identity_spike1', data, output_directory)
+pop_probability = pop_probability_medium
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('identity_pop1', data, output_directory)
 
 variance = variance_medium
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('identity_spike2', data, output_directory)
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('identity_pop2', data, output_directory)
 
 variance = variance_high
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('identity_spike3', data, output_directory)
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('identity_pop3', data, output_directory)
 
 variance = variance_very_high
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('identity_spike4', data, output_directory)
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('identity_pop4', data, output_directory)
 
 
 # Degrees 45 - Up
@@ -120,21 +120,21 @@ data = _generate_variance_data(raw_data, variance)
 _write_data('degree_45_up_variance4', data, output_directory)
 
 variance = variance_low
-spike_probability = spike_probability_medium
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('degree_45_up_spike1', data, output_directory)
+pop_probability = pop_probability_medium
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('degree_45_up_pop1', data, output_directory)
 
 variance = variance_medium
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('degree_45_up_spike2', data, output_directory)
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('degree_45_up_pop2', data, output_directory)
 
 variance = variance_high
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('degree_45_up_spike3', data, output_directory)
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('degree_45_up_pop3', data, output_directory)
 
 variance = variance_very_high
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('degree_45_up_spike4', data, output_directory)
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('degree_45_up_pop4', data, output_directory)
 
 
 # Degrees 45 - Down
@@ -200,21 +200,21 @@ data = _generate_variance_data(raw_data, variance)
 _write_data('linear_3_point_variance4', data, output_directory)
 
 variance = variance_low
-spike_probability = spike_probability_medium
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('linear_3_point_spike1', data, output_directory)
+pop_probability = pop_probability_medium
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('linear_3_point_pop1', data, output_directory)
 
 variance = variance_medium
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('linear_3_point_spike2', data, output_directory)
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('linear_3_point_pop2', data, output_directory)
 
 variance = variance_high
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('linear_3_point_spike3', data, output_directory)
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('linear_3_point_pop3', data, output_directory)
 
 variance = variance_very_high
-_generate_spike_data(raw_data, variance, spike_probability)
-data = _write_data('linear_3_point_spike4', data, output_directory)
+_generate_pop_data(raw_data, variance, pop_probability)
+data = _write_data('linear_3_point_pop4', data, output_directory)
 
 
 # Linear (4-point)
@@ -301,18 +301,18 @@ data = _generate_variance_data(raw_data, variance)
 _write_data('bounce_5_up_down_variance4', data, output_directory)
 
 variance = variance_low
-spike_probability = spike_probability_medium
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('bounce_5_up_down_spike1', data, output_directory)
+pop_probability = pop_probability_medium
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('bounce_5_up_down_pop1', data, output_directory)
 
 variance = variance_medium
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('bounce_5_up_down_spike2', data, output_directory)
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('bounce_5_up_down_pop2', data, output_directory)
 
 variance = variance_high
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('bounce_5_up_down_spike3', data, output_directory)
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('bounce_5_up_down_pop3', data, output_directory)
 
 variance = variance_very_high
-data = _generate_spike_data(raw_data, variance, spike_probability)
-_write_data('bounce_5_up_down_spike4', data, output_directory)
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('bounce_5_up_down_pop4', data, output_directory)

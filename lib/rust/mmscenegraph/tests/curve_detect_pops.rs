@@ -32,73 +32,71 @@ use crate::common::chan_data_filter_only_y;
 use crate::common::construct_input_file_path;
 use crate::common::construct_output_file_path;
 use crate::common::find_data_dir;
-use crate::common::print_actual_spikes;
+use crate::common::print_actual_pops;
 use crate::common::print_chan_data;
 use crate::common::read_chan_file;
-use crate::common::save_chart_linear_n3_regression_spike;
-use crate::common::save_chart_linear_n_points_regression_spike;
-use crate::common::save_chart_linear_regression_spike;
+use crate::common::save_chart_linear_n3_regression_pop;
+use crate::common::save_chart_linear_n_points_regression_pop;
+use crate::common::save_chart_linear_regression_pop;
 use crate::common::CHART_RESOLUTION;
 
 use mmscenegraph_rust::curve::detect::pops::detect_curve_pops;
 use mmscenegraph_rust::curve::detect::pops::filter_curve_pops;
-use mmscenegraph_rust::curve::detect::pops::SpikePoint;
+use mmscenegraph_rust::curve::detect::pops::PopPoint;
 use mmscenegraph_rust::curve::resample::resample_uniform_xy;
 use mmscenegraph_rust::curve::resample::Interpolation;
 use mmscenegraph_rust::math::curve_fit::linear_regression;
 use mmscenegraph_rust::math::curve_fit::nonlinear_line_n3;
 use mmscenegraph_rust::math::curve_fit::nonlinear_line_n_points;
 
-fn compare_detected_vs_actual_spikes(
-    actual_spike_times: &[f64],
-    spikes: &[SpikePoint],
+fn compare_detected_vs_actual_pops(
+    actual_pop_times: &[f64],
+    pops: &[PopPoint],
     allowed_not_found: usize,
 ) {
-    let spike_times: Vec<f64> = spikes.iter().map(|x| x.time).collect();
+    let pop_times: Vec<f64> = pops.iter().map(|x| x.time).collect();
 
     let mut not_found_count = 0;
-    for actual_spike_time in actual_spike_times {
-        let found = spike_times
-            .iter()
-            .find(|&&x| x == *actual_spike_time)
-            .is_some();
+    for actual_pop_time in actual_pop_times {
+        let found =
+            pop_times.iter().find(|&&x| x == *actual_pop_time).is_some();
         if !found {
-            println!("actual_spike_time={actual_spike_time} not found");
+            println!("actual_pop_time={actual_pop_time} not found");
             not_found_count += 1;
         }
     }
 
-    // Should find all spikes.
+    // Should find all pops.
     assert_eq!(not_found_count, allowed_not_found);
 }
 
 #[test]
-fn identity_spike1() -> Result<()> {
-    let chart_title = "identity_spike1";
+fn identity_pop1() -> Result<()> {
+    let chart_title = "identity_pop1";
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
-    let in_file_path_spike =
-        construct_input_file_path(&data_dir, "identity_spike1.chan")?;
+    let in_file_path_pop =
+        construct_input_file_path(&data_dir, "identity_pop1.chan")?;
     let in_file_path =
         construct_input_file_path(&data_dir, "identity_raw.chan")?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "identity_spike1.png")?;
+        construct_output_file_path(&data_dir, "identity_pop1.png")?;
 
-    let data_spike = read_chan_file(&in_file_path_spike.as_os_str())?;
+    let data_pop = read_chan_file(&in_file_path_pop.as_os_str())?;
     let data_raw = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data_spike);
-    let y_values = chan_data_filter_only_y(&data_spike);
+    let x_values = chan_data_filter_only_x(&data_pop);
+    let y_values = chan_data_filter_only_y(&data_pop);
     let y_values_raw = chan_data_filter_only_y(&data_raw);
 
-    let actual_spikes =
-        print_actual_spikes(&x_values, &y_values, &y_values_raw, 1.0e-9);
+    let actual_pops =
+        print_actual_pops(&x_values, &y_values, &y_values_raw, 1.0e-9);
 
     let threshold = 0.1;
-    let spikes = detect_curve_pops(&x_values, &y_values, threshold)?;
-    for spike in &spikes {
-        println!("spike: {spike:?}");
+    let pops = detect_curve_pops(&x_values, &y_values, threshold)?;
+    for pop in &pops {
+        println!("pop: {pop:?}");
     }
 
     let resample_start = 1001.0;
@@ -120,9 +118,9 @@ fn identity_spike1() -> Result<()> {
         linear_regression(&x_values_filtered, &y_values_filtered)?;
     println!("point={point:?} slope={slope:?}");
 
-    save_chart_linear_regression_spike(
+    save_chart_linear_regression_pop(
         &data_raw,
-        &data_spike,
+        &data_pop,
         &data_filtered,
         point,
         slope,
@@ -131,8 +129,8 @@ fn identity_spike1() -> Result<()> {
         chart_resolution,
     )?;
 
-    assert!(spikes.len() >= actual_spikes.len());
-    compare_detected_vs_actual_spikes(&actual_spikes, &spikes, 1);
+    assert!(pops.len() >= actual_pops.len());
+    compare_detected_vs_actual_pops(&actual_pops, &pops, 1);
 
     assert_relative_eq!(point.x(), 1051.0, epsilon = 1.0e-9);
     assert_relative_eq!(point.y(), 0.0, epsilon = 1.0e-5);
@@ -142,32 +140,32 @@ fn identity_spike1() -> Result<()> {
 }
 
 #[test]
-fn identity_spike2() -> Result<()> {
-    let chart_title = "identity_spike2";
+fn identity_pop2() -> Result<()> {
+    let chart_title = "identity_pop2";
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
-    let in_file_path_spike =
-        construct_input_file_path(&data_dir, "identity_spike2.chan")?;
+    let in_file_path_pop =
+        construct_input_file_path(&data_dir, "identity_pop2.chan")?;
     let in_file_path =
         construct_input_file_path(&data_dir, "identity_raw.chan")?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "identity_spike2.png")?;
+        construct_output_file_path(&data_dir, "identity_pop2.png")?;
 
-    let data_spike = read_chan_file(&in_file_path_spike.as_os_str())?;
+    let data_pop = read_chan_file(&in_file_path_pop.as_os_str())?;
     let data_raw = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data_spike);
-    let y_values = chan_data_filter_only_y(&data_spike);
+    let x_values = chan_data_filter_only_x(&data_pop);
+    let y_values = chan_data_filter_only_y(&data_pop);
     let y_values_raw = chan_data_filter_only_y(&data_raw);
 
-    let actual_spikes =
-        print_actual_spikes(&x_values, &y_values, &y_values_raw, 1.0e-9);
+    let actual_pops =
+        print_actual_pops(&x_values, &y_values, &y_values_raw, 1.0e-9);
 
     let threshold = 0.1;
-    let spikes = detect_curve_pops(&x_values, &y_values, threshold)?;
-    for spike in &spikes {
-        println!("spike: {spike:?}");
+    let pops = detect_curve_pops(&x_values, &y_values, threshold)?;
+    for pop in &pops {
+        println!("pop: {pop:?}");
     }
 
     let resample_start = 1001.0;
@@ -189,9 +187,9 @@ fn identity_spike2() -> Result<()> {
         linear_regression(&x_values_filtered, &y_values_filtered)?;
     println!("point={point:?} slope={slope:?}");
 
-    save_chart_linear_regression_spike(
+    save_chart_linear_regression_pop(
         &data_raw,
-        &data_spike,
+        &data_pop,
         &data_filtered,
         point,
         slope,
@@ -201,8 +199,8 @@ fn identity_spike2() -> Result<()> {
     )?;
 
     assert_eq!(data_filtered.len(), data_raw.len());
-    assert!(spikes.len() >= actual_spikes.len());
-    compare_detected_vs_actual_spikes(&actual_spikes, &spikes, 0);
+    assert!(pops.len() >= actual_pops.len());
+    compare_detected_vs_actual_pops(&actual_pops, &pops, 0);
 
     assert_relative_eq!(point.x(), 1051.0, epsilon = 1.0e-9);
     assert_relative_eq!(point.y(), 0.0, epsilon = 1.0e-2);
@@ -212,32 +210,32 @@ fn identity_spike2() -> Result<()> {
 }
 
 #[test]
-fn linear_3_point_spike3() -> Result<()> {
-    let chart_title = "linear_3_point_spike3";
+fn linear_3_point_pop3() -> Result<()> {
+    let chart_title = "linear_3_point_pop3";
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
-    let in_file_path_spike =
-        construct_input_file_path(&data_dir, "linear_3_point_spike3.chan")?;
+    let in_file_path_pop =
+        construct_input_file_path(&data_dir, "linear_3_point_pop3.chan")?;
     let in_file_path =
         construct_input_file_path(&data_dir, "linear_3_point_raw.chan")?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "linear_3_point_spike3.png")?;
+        construct_output_file_path(&data_dir, "linear_3_point_pop3.png")?;
 
-    let data_spike = read_chan_file(&in_file_path_spike.as_os_str())?;
+    let data_pop = read_chan_file(&in_file_path_pop.as_os_str())?;
     let data_raw = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data_spike);
-    let y_values = chan_data_filter_only_y(&data_spike);
+    let x_values = chan_data_filter_only_x(&data_pop);
+    let y_values = chan_data_filter_only_y(&data_pop);
     let y_values_raw = chan_data_filter_only_y(&data_raw);
 
-    let actual_spikes =
-        print_actual_spikes(&x_values, &y_values, &y_values_raw, 1.0e-9);
+    let actual_pops =
+        print_actual_pops(&x_values, &y_values, &y_values_raw, 1.0e-9);
 
     let threshold = 0.1;
-    let spikes = detect_curve_pops(&x_values, &y_values, threshold)?;
-    for spike in &spikes {
-        println!("spike: {spike:?}");
+    let pops = detect_curve_pops(&x_values, &y_values, threshold)?;
+    for pop in &pops {
+        println!("pop: {pop:?}");
     }
 
     let resample_start = 1001.0;
@@ -261,9 +259,9 @@ fn linear_3_point_spike3() -> Result<()> {
     println!("point_b={point_b:?}");
     println!("point_c={point_c:?}");
 
-    save_chart_linear_n3_regression_spike(
+    save_chart_linear_n3_regression_pop(
         &data_raw,
-        &data_spike,
+        &data_pop,
         &data_filtered,
         point_a,
         point_b,
@@ -273,8 +271,8 @@ fn linear_3_point_spike3() -> Result<()> {
         chart_resolution,
     )?;
 
-    assert!(spikes.len() >= actual_spikes.len());
-    compare_detected_vs_actual_spikes(&actual_spikes, &spikes, 0);
+    assert!(pops.len() >= actual_pops.len());
+    compare_detected_vs_actual_pops(&actual_pops, &pops, 0);
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-1);
     assert_relative_eq!(point_a.y(), -1.21533949192, epsilon = 0.3);
@@ -289,32 +287,32 @@ fn linear_3_point_spike3() -> Result<()> {
 }
 
 #[test]
-fn degree_45_up_spike3() -> Result<()> {
-    let chart_title = "degree_45_up_spike3";
+fn degree_45_up_pop3() -> Result<()> {
+    let chart_title = "degree_45_up_pop3";
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
-    let in_file_path_spike =
-        construct_input_file_path(&data_dir, "degree_45_up_spike3.chan")?;
+    let in_file_path_pop =
+        construct_input_file_path(&data_dir, "degree_45_up_pop3.chan")?;
     let in_file_path =
         construct_input_file_path(&data_dir, "degree_45_up_raw.chan")?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "degree_45_up_spike3.png")?;
+        construct_output_file_path(&data_dir, "degree_45_up_pop3.png")?;
 
-    let data_spike = read_chan_file(&in_file_path_spike.as_os_str())?;
+    let data_pop = read_chan_file(&in_file_path_pop.as_os_str())?;
     let data_raw = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data_spike);
-    let y_values = chan_data_filter_only_y(&data_spike);
+    let x_values = chan_data_filter_only_x(&data_pop);
+    let y_values = chan_data_filter_only_y(&data_pop);
     let y_values_raw = chan_data_filter_only_y(&data_raw);
 
-    let actual_spikes =
-        print_actual_spikes(&x_values, &y_values, &y_values_raw, 1.0e-9);
+    let actual_pops =
+        print_actual_pops(&x_values, &y_values, &y_values_raw, 1.0e-9);
 
     let threshold = 0.1;
-    let spikes = detect_curve_pops(&x_values, &y_values, threshold)?;
-    for spike in &spikes {
-        println!("spike: {spike:?}");
+    let pops = detect_curve_pops(&x_values, &y_values, threshold)?;
+    for pop in &pops {
+        println!("pop: {pop:?}");
     }
 
     let resample_start = 1001.0;
@@ -336,9 +334,9 @@ fn degree_45_up_spike3() -> Result<()> {
         linear_regression(&x_values_filtered, &y_values_filtered)?;
     println!("point={point:?} slope={slope:?}");
 
-    save_chart_linear_regression_spike(
+    save_chart_linear_regression_pop(
         &data_raw,
-        &data_spike,
+        &data_pop,
         &data_filtered,
         point,
         slope,
@@ -347,8 +345,8 @@ fn degree_45_up_spike3() -> Result<()> {
         chart_resolution,
     )?;
 
-    assert!(spikes.len() >= actual_spikes.len());
-    compare_detected_vs_actual_spikes(&actual_spikes, &spikes, 1);
+    assert!(pops.len() >= actual_pops.len());
+    compare_detected_vs_actual_pops(&actual_pops, &pops, 1);
 
     assert_relative_eq!(point.x(), 1051.0, epsilon = 1.0e-9);
     assert_relative_eq!(point.y(), 50.0, epsilon = 1.14);
@@ -358,32 +356,32 @@ fn degree_45_up_spike3() -> Result<()> {
 }
 
 #[test]
-fn bounce_5_up_down_spike3() -> Result<()> {
-    let chart_title = "bounce_5_up_down_spike3";
+fn bounce_5_up_down_pop3() -> Result<()> {
+    let chart_title = "bounce_5_up_down_pop3";
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
-    let in_file_path_spike =
-        construct_input_file_path(&data_dir, "bounce_5_up_down_spike3.chan")?;
+    let in_file_path_pop =
+        construct_input_file_path(&data_dir, "bounce_5_up_down_pop3.chan")?;
     let in_file_path =
         construct_input_file_path(&data_dir, "bounce_5_up_down_raw.chan")?;
     let out_file_path =
-        construct_output_file_path(&data_dir, "bounce_5_up_down_spike3.png")?;
+        construct_output_file_path(&data_dir, "bounce_5_up_down_pop3.png")?;
 
-    let data_spike = read_chan_file(&in_file_path_spike.as_os_str())?;
+    let data_pop = read_chan_file(&in_file_path_pop.as_os_str())?;
     let data_raw = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data_spike);
-    let y_values = chan_data_filter_only_y(&data_spike);
+    let x_values = chan_data_filter_only_x(&data_pop);
+    let y_values = chan_data_filter_only_y(&data_pop);
     let y_values_raw = chan_data_filter_only_y(&data_raw);
 
-    let actual_spikes =
-        print_actual_spikes(&x_values, &y_values, &y_values_raw, 1.0e-9);
+    let actual_pops =
+        print_actual_pops(&x_values, &y_values, &y_values_raw, 1.0e-9);
 
     let threshold = 0.1;
-    let spikes = detect_curve_pops(&x_values, &y_values, threshold)?;
-    for spike in &spikes {
-        println!("spike: {spike:?}");
+    let pops = detect_curve_pops(&x_values, &y_values, threshold)?;
+    for pop in &pops {
+        println!("pop: {pop:?}");
     }
 
     let resample_start = 1001.0;
@@ -405,9 +403,9 @@ fn bounce_5_up_down_spike3() -> Result<()> {
         nonlinear_line_n_points(&x_values_filtered, &y_values_filtered, 5)?;
     println!("points={points:?}");
 
-    save_chart_linear_n_points_regression_spike(
+    save_chart_linear_n_points_regression_pop(
         &data_raw,
-        &data_spike,
+        &data_pop,
         &data_filtered,
         &points,
         chart_title,
@@ -426,8 +424,8 @@ fn bounce_5_up_down_spike3() -> Result<()> {
     println!("point_d={point_d:?}");
     println!("point_e={point_e:?}");
 
-    assert!(spikes.len() >= actual_spikes.len());
-    compare_detected_vs_actual_spikes(&actual_spikes, &spikes, 1);
+    assert!(pops.len() >= actual_pops.len());
+    compare_detected_vs_actual_pops(&actual_pops, &pops, 1);
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-9);
     assert_relative_eq!(point_a.y(), -0.9371984654725308, epsilon = 1.0e-9);

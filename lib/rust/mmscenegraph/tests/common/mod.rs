@@ -105,24 +105,24 @@ pub fn print_chan_data(data: &[(FrameTime, Real)]) {
 }
 
 #[allow(dead_code)]
-pub fn print_actual_spikes(
+pub fn print_actual_pops(
     x_values: &[f64],
-    y_values_spike: &[f64],
+    y_values_pop: &[f64],
     y_values_raw: &[f64],
     threshold: f64,
 ) -> Vec<f64> {
-    println!("print_actual_spikes: start");
+    println!("print_actual_pops: start");
     let mut out = Vec::new();
-    for (x, (y_spike, y_raw)) in
-        x_values.iter().zip(y_values_spike.iter().zip(y_values_raw))
+    for (x, (y_pop, y_raw)) in
+        x_values.iter().zip(y_values_pop.iter().zip(y_values_raw))
     {
-        let diff = (y_raw - y_spike).abs();
+        let diff = (y_raw - y_pop).abs();
         if diff > threshold {
-            println!("print_actual_spike: x={x} diff={diff}");
+            println!("print_actual_pop: x={x} diff={diff}");
             out.push(*x)
         }
     }
-    println!("print_actual_spikes: end; count={}", out.len());
+    println!("print_actual_pops: end; count={}", out.len());
 
     out
 }
@@ -367,9 +367,9 @@ pub fn save_chart_linear_regression(
 }
 
 #[allow(dead_code)]
-pub fn save_chart_linear_regression_spike(
+pub fn save_chart_linear_regression_pop(
     data_raw: &[(FrameTime, Real)],
-    data_spike: &[(FrameTime, Real)],
+    data_pop: &[(FrameTime, Real)],
     data_filtered: &[(FrameTime, Real)],
     point: Point2,
     angle: AngleRadian,
@@ -385,12 +385,12 @@ pub fn save_chart_linear_regression_spike(
     root_area.fill(&WHITE)?;
 
     let root_area = root_area.titled(chart_title, ("sans-serif", 60))?;
-    let bounds = calculate_bounds(&[data_raw, data_spike, data_filtered], None);
+    let bounds = calculate_bounds(&[data_raw, data_pop, data_filtered], None);
 
-    let x_first = data_spike[0].0;
-    let y_first = data_spike[0].1;
-    let x_last = data_spike[data_spike.len() - 1].0;
-    let y_last = data_spike[data_spike.len() - 1].1;
+    let x_first = data_pop[0].0;
+    let y_first = data_pop[0].1;
+    let x_last = data_pop[data_pop.len() - 1].0;
+    let y_last = data_pop[data_pop.len() - 1].1;
     let x_diff = (x_last - x_first) as Real / 2.0;
     let y_diff = (y_last - y_first) as Real / 2.0;
     debug!("x_first={x_first}");
@@ -437,7 +437,7 @@ pub fn save_chart_linear_regression_spike(
         .draw()?;
 
     draw_line_series(&mut cc, data_raw, &RED, 2)?;
-    draw_line_series(&mut cc, data_spike, &BLUE, 2)?;
+    draw_line_series(&mut cc, data_pop, &BLUE, 2)?;
     draw_line_series(&mut cc, data_filtered, &CYAN, 2)?;
     draw_line_series(&mut cc, &line, &GREEN, 2)?;
 
@@ -530,9 +530,9 @@ pub fn save_chart_linear_n3_regression(
 }
 
 #[allow(dead_code)]
-pub fn save_chart_linear_n3_regression_spike(
+pub fn save_chart_linear_n3_regression_pop(
     data_raw: &[(FrameTime, Real)],
-    data_spike: &[(FrameTime, Real)],
+    data_pop: &[(FrameTime, Real)],
     data_filtered: &[(FrameTime, Real)],
     point_a: Point2,
     point_b: Point2,
@@ -549,12 +549,12 @@ pub fn save_chart_linear_n3_regression_spike(
     root_area.fill(&WHITE)?;
 
     let root_area = root_area.titled(chart_title, ("sans-serif", 60))?;
-    let bounds = calculate_bounds(&[data_raw, data_spike, data_filtered], None);
+    let bounds = calculate_bounds(&[data_raw, data_pop, data_filtered], None);
 
-    let x_first = data_spike[0].0;
-    let y_first = data_spike[0].1;
-    let x_last = data_spike[data_spike.len() - 1].0;
-    let y_last = data_spike[data_spike.len() - 1].1;
+    let x_first = data_pop[0].0;
+    let y_first = data_pop[0].1;
+    let x_last = data_pop[data_pop.len() - 1].0;
+    let y_last = data_pop[data_pop.len() - 1].1;
     let x_diff = (x_last - x_first) as Real / 2.0;
     let y_diff = (y_last - y_first) as Real / 2.0;
     debug!("x_first={x_first}");
@@ -599,7 +599,7 @@ pub fn save_chart_linear_n3_regression_spike(
         .draw()?;
 
     draw_line_series(&mut cc, data_raw, &RED, 2)?;
-    draw_line_series(&mut cc, data_spike, &BLUE, 2)?;
+    draw_line_series(&mut cc, data_pop, &BLUE, 2)?;
     draw_line_series(&mut cc, data_filtered, &CYAN, 2)?;
     draw_line_series(&mut cc, &line, &GREEN, 2)?;
 
@@ -670,9 +670,9 @@ pub fn save_chart_linear_n_points_regression(
 }
 
 #[allow(dead_code)]
-pub fn save_chart_linear_n_points_regression_spike(
+pub fn save_chart_linear_n_points_regression_pop(
     data_raw: &[(FrameTime, Real)],
-    data_spike: &[(FrameTime, Real)],
+    data_pop: &[(FrameTime, Real)],
     data_filtered: &[(FrameTime, Real)],
     control_points: &[Point2],
     chart_title: &str,
@@ -688,7 +688,7 @@ pub fn save_chart_linear_n_points_regression_spike(
     root_area.fill(&WHITE)?;
 
     let root_area = root_area.titled(chart_title, ("sans-serif", 60))?;
-    let bounds = calculate_bounds(&[data_raw, data_spike, data_filtered], None);
+    let bounds = calculate_bounds(&[data_raw, data_pop, data_filtered], None);
     let line = create_control_points_line(&control_points);
     debug!("control points line: {:#?}", line);
 
@@ -719,7 +719,7 @@ pub fn save_chart_linear_n_points_regression_spike(
         .draw()?;
 
     draw_line_series(&mut cc, data_raw, &RED, 2)?;
-    draw_line_series(&mut cc, data_spike, &BLUE, 2)?;
+    draw_line_series(&mut cc, data_pop, &BLUE, 2)?;
     draw_line_series(&mut cc, data_filtered, &CYAN, 2)?;
     draw_line_series(&mut cc, &line, &GREEN, 2)?;
 

@@ -18,6 +18,7 @@
 // ====================================================================
 //
 
+use plotters::coord::types::RangedCoordf64;
 use plotters::prelude::*;
 
 #[allow(unused_imports)]
@@ -103,6 +104,29 @@ pub fn print_chan_data(data: &[(FrameTime, Real)]) {
     }
 }
 
+#[allow(dead_code)]
+pub fn print_actual_spikes(
+    x_values: &[f64],
+    y_values_spike: &[f64],
+    y_values_raw: &[f64],
+    threshold: f64,
+) -> Vec<f64> {
+    println!("print_actual_spikes: start");
+    let mut out = Vec::new();
+    for (x, (y_spike, y_raw)) in
+        x_values.iter().zip(y_values_spike.iter().zip(y_values_raw))
+    {
+        let diff = (y_raw - y_spike).abs();
+        if diff > threshold {
+            println!("print_actual_spike: x={x} diff={diff}");
+            out.push(*x)
+        }
+    }
+    println!("print_actual_spikes: end; count={}", out.len());
+
+    out
+}
+
 pub fn chan_data_filter_only_x(data: &[(FrameTime, Real)]) -> Vec<Real> {
     data.iter().map(|x| x.0 as Real).collect()
 }
@@ -161,6 +185,106 @@ fn calculate_control_point_min_max_values(
     }
 }
 
+struct ChartData {
+    x_min: FrameTime,
+    x_max: FrameTime,
+    y_min: Real,
+    y_max: Real,
+}
+
+// Calculate bounds for all data series
+fn calculate_bounds(
+    data_series: &[&[(FrameTime, Real)]],
+    control_points: Option<&[Point2]>,
+) -> ChartData {
+    let mut bounds = ChartData {
+        x_min: FrameTime::MAX,
+        x_max: FrameTime::MIN,
+        y_min: Real::MAX,
+        y_max: Real::MIN,
+    };
+
+    for data in data_series {
+        calculate_data_min_max_values(
+            data,
+            &mut bounds.x_min,
+            &mut bounds.x_max,
+            &mut bounds.y_min,
+            &mut bounds.y_max,
+        );
+    }
+
+    if let Some(points) = control_points {
+        calculate_control_point_min_max_values(
+            points,
+            &mut bounds.x_min,
+            &mut bounds.x_max,
+            &mut bounds.y_min,
+            &mut bounds.y_max,
+        );
+    }
+
+    bounds
+}
+
+// Generate caption for control points
+fn generate_control_points_caption(control_points: &[Point2]) -> String {
+    control_points
+        .iter()
+        .enumerate()
+        .map(|(i, p)| format!("P{}y={:.3}", i, p.y()))
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
+type ChartCoord = Cartesian2d<RangedCoordf64, RangedCoordf64>;
+type DrawingBackendResult<'a> = BitMapBackend<'a>;
+
+// Draw a line series with specified color
+fn draw_line_series<'a>(
+    chart: &mut ChartContext<'a, DrawingBackendResult, ChartCoord>,
+    data: &[(FrameTime, Real)],
+    color: &RGBColor,
+    point_size: u32,
+) -> Result<()> {
+    chart
+        .draw_series(
+            LineSeries::new(data.iter().map(|x| (x.0 as f64, x.1)), color)
+                .point_size(point_size),
+        )
+        .map_err(|e| anyhow::anyhow!("Failed to draw line series: {}", e))?;
+    Ok(())
+}
+
+// Create a control points line with proper type conversion
+fn create_control_points_line(points: &[Point2]) -> Vec<(f64, Real)> {
+    points.iter().map(|p| (p.x() as f64, p.y())).collect()
+}
+
+fn create_control_points_from_points(
+    point_a: Point2,
+    point_b: Point2,
+    point_c: Point2,
+) -> Vec<(f64, Real)> {
+    let mut line = Vec::<(FrameTime, Real)>::new();
+    line.push((point_a.x(), point_a.y()));
+    line.push((point_b.x(), point_b.y()));
+    line.push((point_c.x(), point_c.y()));
+    line
+}
+
+fn create_control_points_from_point_and_dir(
+    point: Point2,
+    dir_x: Real,
+    dir_y: Real,
+) -> Vec<(f64, Real)> {
+    let mut line = Vec::<(FrameTime, Real)>::new();
+    line.push(((point.x() as Real - dir_x) as FrameTime, point.y() - dir_y));
+    line.push((point.x() as FrameTime, point.y()));
+    line.push(((point.x() as Real + dir_x) as FrameTime, point.y() + dir_y));
+    line
+}
+
 #[allow(dead_code)]
 pub fn save_chart_linear_regression(
     data_raw: &[(FrameTime, Real)],
@@ -176,26 +300,10 @@ pub fn save_chart_linear_regression(
         (chart_resolution.0, chart_resolution.1),
     )
     .into_drawing_area();
-
     root_area.fill(&WHITE)?;
 
     let root_area = root_area.titled(chart_title, ("sans-serif", 60))?;
-
-    let mut x_min: FrameTime = FrameTime::MAX;
-    let mut x_max: FrameTime = FrameTime::MIN;
-    let mut y_min: Real = Real::MAX;
-    let mut y_max: Real = Real::MIN;
-
-    calculate_data_min_max_values(
-        data_raw, &mut x_min, &mut x_max, &mut y_min, &mut y_max,
-    );
-    calculate_data_min_max_values(
-        data, &mut x_min, &mut x_max, &mut y_min, &mut y_max,
-    );
-    debug!("x_min={x_min}");
-    debug!("x_max={x_max}");
-    debug!("y_min={y_min}");
-    debug!("y_max={y_max}");
+    let bounds = calculate_bounds(&[data_raw, data], None);
 
     let x_first = data[0].0;
     let y_first = data[0].1;
@@ -216,21 +324,18 @@ pub fn save_chart_linear_regression(
     let dir_x = dir_x * x_diff;
     let dir_y = dir_y * x_diff;
 
-    let mut line = Vec::<(FrameTime, Real)>::new();
-    line.push(((point.x() as Real - dir_x) as FrameTime, point.y() - dir_y));
-    line.push((point.x() as FrameTime, point.y()));
-    line.push(((point.x() as Real + dir_x) as FrameTime, point.y() + dir_y));
+    let line = create_control_points_from_point_and_dir(point, dir_x, dir_y);
     debug!("line: {:#?}", line);
-
-    let angle = angle.as_degrees();
-    let chart_caption = format!("angle: {angle}");
 
     let x_pad = 0.1;
     let y_pad = 0.1;
-    let chart_min_value_x = x_min - x_pad;
-    let chart_max_value_x = x_max + x_pad;
-    let chart_min_value_y = y_min - y_pad;
-    let chart_max_value_y = y_max + y_pad;
+    let chart_min_value_x = bounds.x_min - x_pad;
+    let chart_max_value_x = bounds.x_max + x_pad;
+    let chart_min_value_y = bounds.y_min - y_pad;
+    let chart_max_value_y = bounds.y_max + y_pad;
+
+    let angle = angle.as_degrees();
+    let chart_caption = format!("angle: {angle}");
 
     let mut cc = ChartBuilder::on(&root_area)
         .margin(5)
@@ -249,19 +354,92 @@ pub fn save_chart_linear_regression(
         .y_label_formatter(&|v| format!("{:.1}", v))
         .draw()?;
 
-    cc.draw_series(
-        LineSeries::new(data_raw.iter().map(|x| (x.0, x.1)), &RED)
-            .point_size(2),
-    )
-    .unwrap();
+    draw_line_series(&mut cc, data_raw, &RED, 2)?;
+    draw_line_series(&mut cc, data, &BLUE, 2)?;
+    draw_line_series(&mut cc, &line, &GREEN, 2)?;
 
-    cc.draw_series(
-        LineSeries::new(data.iter().map(|x| (x.0, x.1)), &BLUE).point_size(2),
-    )
-    .unwrap();
+    // To avoid the IO failure being ignored silently, we manually
+    // call the present function.
+    root_area.present()?;
+    debug!("Chart saved to: {:?}", chart_file_path);
 
-    cc.draw_series(LineSeries::new(line.iter().map(|x| (x.0, x.1)), &GREEN))
-        .unwrap();
+    Ok(())
+}
+
+#[allow(dead_code)]
+pub fn save_chart_linear_regression_spike(
+    data_raw: &[(FrameTime, Real)],
+    data_spike: &[(FrameTime, Real)],
+    data_filtered: &[(FrameTime, Real)],
+    point: Point2,
+    angle: AngleRadian,
+    chart_title: &str,
+    chart_file_path: &OsStr,
+    chart_resolution: (u32, u32),
+) -> Result<()> {
+    let root_area = BitMapBackend::new(
+        chart_file_path,
+        (chart_resolution.0, chart_resolution.1),
+    )
+    .into_drawing_area();
+    root_area.fill(&WHITE)?;
+
+    let root_area = root_area.titled(chart_title, ("sans-serif", 60))?;
+    let bounds = calculate_bounds(&[data_raw, data_spike, data_filtered], None);
+
+    let x_first = data_spike[0].0;
+    let y_first = data_spike[0].1;
+    let x_last = data_spike[data_spike.len() - 1].0;
+    let y_last = data_spike[data_spike.len() - 1].1;
+    let x_diff = (x_last - x_first) as Real / 2.0;
+    let y_diff = (y_last - y_first) as Real / 2.0;
+    debug!("x_first={x_first}");
+    debug!("y_first={y_first}");
+    debug!("x_last={x_last}");
+    debug!("y_last={y_last}");
+    debug!("x_diff={x_diff}");
+    debug!("y_diff={y_diff}");
+
+    let (dir_x, dir_y) = angle.as_direction();
+
+    // Scale up to X axis range.
+    let dir_x = dir_x * x_diff;
+    let dir_y = dir_y * x_diff;
+
+    let line = create_control_points_from_point_and_dir(point, dir_x, dir_y);
+    debug!("line: {:#?}", line);
+
+    let x_pad = 0.1;
+    let y_pad = 0.1;
+    let chart_min_value_x = bounds.x_min - x_pad;
+    let chart_max_value_x = bounds.x_max + x_pad;
+    let chart_min_value_y = bounds.y_min - y_pad;
+    let chart_max_value_y = bounds.y_max + y_pad;
+
+    let angle = angle.as_degrees();
+    let chart_caption = format!("angle: {angle}");
+
+    let mut cc = ChartBuilder::on(&root_area)
+        .margin(5)
+        .set_all_label_area_size(50)
+        .caption(&chart_caption, ("sans-serif", 40))
+        .build_cartesian_2d(
+            chart_min_value_x..chart_max_value_x,
+            chart_min_value_y..chart_max_value_y,
+        )?;
+
+    cc.configure_mesh()
+        .x_labels(20)
+        .y_labels(10)
+        .disable_mesh()
+        .x_label_formatter(&|v| format!("{:.1}", v))
+        .y_label_formatter(&|v| format!("{:.1}", v))
+        .draw()?;
+
+    draw_line_series(&mut cc, data_raw, &RED, 2)?;
+    draw_line_series(&mut cc, data_spike, &BLUE, 2)?;
+    draw_line_series(&mut cc, data_filtered, &CYAN, 2)?;
+    draw_line_series(&mut cc, &line, &GREEN, 2)?;
 
     // To avoid the IO failure being ignored silently, we manually
     // call the present function.
@@ -287,25 +465,10 @@ pub fn save_chart_linear_n3_regression(
         (chart_resolution.0, chart_resolution.1),
     )
     .into_drawing_area();
-
     root_area.fill(&WHITE)?;
 
     let root_area = root_area.titled(chart_title, ("sans-serif", 60))?;
-
-    let mut x_min: FrameTime = FrameTime::MAX;
-    let mut x_max: FrameTime = FrameTime::MIN;
-    let mut y_min: Real = Real::MAX;
-    let mut y_max: Real = Real::MIN;
-    calculate_data_min_max_values(
-        data_raw, &mut x_min, &mut x_max, &mut y_min, &mut y_max,
-    );
-    calculate_data_min_max_values(
-        data, &mut x_min, &mut x_max, &mut y_min, &mut y_max,
-    );
-    debug!("x_min={x_min}");
-    debug!("x_max={x_max}");
-    debug!("y_min={y_min}");
-    debug!("y_max={y_max}");
+    let bounds = calculate_bounds(&[data_raw, data], None);
 
     let x_first = data[0].0;
     let y_first = data[0].1;
@@ -320,11 +483,15 @@ pub fn save_chart_linear_n3_regression(
     debug!("x_diff={x_diff}");
     debug!("y_diff={y_diff}");
 
-    let mut line = Vec::<(FrameTime, Real)>::new();
-    line.push((point_a.x(), point_a.y()));
-    line.push((point_b.x(), point_b.y()));
-    line.push((point_c.x(), point_c.y()));
+    let line = create_control_points_from_points(point_a, point_b, point_c);
     debug!("line: {:#?}", line);
+
+    let x_pad = 0.1;
+    let y_pad = 0.1;
+    let chart_min_value_x = bounds.x_min - x_pad;
+    let chart_max_value_x = bounds.x_max + x_pad;
+    let chart_min_value_y = bounds.y_min - y_pad;
+    let chart_max_value_y = bounds.y_max + y_pad;
 
     let chart_caption = format!(
         "Ay={:.3} By={:.3} Cy={:.3}",
@@ -332,13 +499,6 @@ pub fn save_chart_linear_n3_regression(
         point_b.y(),
         point_c.y()
     );
-
-    let x_pad = 0.1;
-    let y_pad = 0.1;
-    let chart_min_value_x = x_min - x_pad;
-    let chart_max_value_x = x_max + x_pad;
-    let chart_min_value_y = y_min - y_pad;
-    let chart_max_value_y = y_max + y_pad;
 
     let mut cc = ChartBuilder::on(&root_area)
         .margin(5)
@@ -357,21 +517,91 @@ pub fn save_chart_linear_n3_regression(
         .y_label_formatter(&|v| format!("{:.1}", v))
         .draw()?;
 
-    cc.draw_series(
-        LineSeries::new(data_raw.iter().map(|x| (x.0, x.1)), &RED)
-            .point_size(2),
-    )
-    .unwrap();
+    draw_line_series(&mut cc, data_raw, &RED, 2)?;
+    draw_line_series(&mut cc, data, &BLUE, 2)?;
+    draw_line_series(&mut cc, &line, &GREEN, 2)?;
 
-    cc.draw_series(
-        LineSeries::new(data.iter().map(|x| (x.0, x.1)), &BLUE).point_size(2),
-    )
-    .unwrap();
+    // To avoid the IO failure being ignored silently, we manually
+    // call the present function.
+    root_area.present()?;
+    debug!("Chart saved to: {:?}", chart_file_path);
 
-    cc.draw_series(
-        LineSeries::new(line.iter().map(|x| (x.0, x.1)), &GREEN).point_size(2),
+    Ok(())
+}
+
+#[allow(dead_code)]
+pub fn save_chart_linear_n3_regression_spike(
+    data_raw: &[(FrameTime, Real)],
+    data_spike: &[(FrameTime, Real)],
+    data_filtered: &[(FrameTime, Real)],
+    point_a: Point2,
+    point_b: Point2,
+    point_c: Point2,
+    chart_title: &str,
+    chart_file_path: &OsStr,
+    chart_resolution: (u32, u32),
+) -> Result<()> {
+    let root_area = BitMapBackend::new(
+        chart_file_path,
+        (chart_resolution.0, chart_resolution.1),
     )
-    .unwrap();
+    .into_drawing_area();
+    root_area.fill(&WHITE)?;
+
+    let root_area = root_area.titled(chart_title, ("sans-serif", 60))?;
+    let bounds = calculate_bounds(&[data_raw, data_spike, data_filtered], None);
+
+    let x_first = data_spike[0].0;
+    let y_first = data_spike[0].1;
+    let x_last = data_spike[data_spike.len() - 1].0;
+    let y_last = data_spike[data_spike.len() - 1].1;
+    let x_diff = (x_last - x_first) as Real / 2.0;
+    let y_diff = (y_last - y_first) as Real / 2.0;
+    debug!("x_first={x_first}");
+    debug!("y_first={y_first}");
+    debug!("x_last={x_last}");
+    debug!("y_last={y_last}");
+    debug!("x_diff={x_diff}");
+    debug!("y_diff={y_diff}");
+
+    let line = create_control_points_from_points(point_a, point_b, point_c);
+    debug!("line: {:#?}", line);
+
+    let x_pad = 0.1;
+    let y_pad = 0.1;
+    let chart_min_value_x = bounds.x_min - x_pad;
+    let chart_max_value_x = bounds.x_max + x_pad;
+    let chart_min_value_y = bounds.y_min - y_pad;
+    let chart_max_value_y = bounds.y_max + y_pad;
+
+    let chart_caption = format!(
+        "Ay={:.3} By={:.3} Cy={:.3}",
+        point_a.y(),
+        point_b.y(),
+        point_c.y()
+    );
+
+    let mut cc = ChartBuilder::on(&root_area)
+        .margin(5)
+        .set_all_label_area_size(50)
+        .caption(&chart_caption, ("sans-serif", 40))
+        .build_cartesian_2d(
+            chart_min_value_x..chart_max_value_x,
+            chart_min_value_y..chart_max_value_y,
+        )?;
+
+    cc.configure_mesh()
+        .x_labels(20)
+        .y_labels(10)
+        .disable_mesh()
+        .x_label_formatter(&|v| format!("{:.0}", v))
+        .y_label_formatter(&|v| format!("{:.1}", v))
+        .draw()?;
+
+    draw_line_series(&mut cc, data_raw, &RED, 2)?;
+    draw_line_series(&mut cc, data_spike, &BLUE, 2)?;
+    draw_line_series(&mut cc, data_filtered, &CYAN, 2)?;
+    draw_line_series(&mut cc, &line, &GREEN, 2)?;
 
     // To avoid the IO failure being ignored silently, we manually
     // call the present function.
@@ -395,57 +625,20 @@ pub fn save_chart_linear_n_points_regression(
         (chart_resolution.0, chart_resolution.1),
     )
     .into_drawing_area();
-
     root_area.fill(&WHITE)?;
 
     let root_area = root_area.titled(chart_title, ("sans-serif", 60))?;
-
-    // Calculate bounds from raw data, processed data, and control
-    // points.
-    let mut x_min: FrameTime = FrameTime::MAX;
-    let mut x_max: FrameTime = FrameTime::MIN;
-    let mut y_min: Real = Real::MAX;
-    let mut y_max: Real = Real::MIN;
-    calculate_data_min_max_values(
-        data_raw, &mut x_min, &mut x_max, &mut y_min, &mut y_max,
-    );
-    calculate_data_min_max_values(
-        data, &mut x_min, &mut x_max, &mut y_min, &mut y_max,
-    );
-    calculate_control_point_min_max_values(
-        control_points,
-        &mut x_min,
-        &mut x_max,
-        &mut y_min,
-        &mut y_max,
-    );
-    debug!("x_min={x_min}");
-    debug!("x_max={x_max}");
-    debug!("y_min={y_min}");
-    debug!("y_max={y_max}");
-
-    // Create control point line series
-    let mut line =
-        Vec::<(FrameTime, Real)>::with_capacity(control_points.len());
-    for control_point in control_points {
-        line.push((control_point.x(), control_point.y()));
-    }
-    debug!("control points line: {:#?}", line);
-
-    // Create caption showing Y values of all control points
-    let chart_caption = control_points
-        .iter()
-        .enumerate()
-        .map(|(i, p)| format!("P{}y={:.3}", i, p.y()))
-        .collect::<Vec<_>>()
-        .join(" ");
+    let bounds = calculate_bounds(&[data_raw, data], None);
+    let line = create_control_points_line(&control_points);
 
     let x_pad = 0.1;
     let y_pad = 0.1;
-    let chart_min_value_x = x_min - x_pad;
-    let chart_max_value_x = x_max + x_pad;
-    let chart_min_value_y = y_min - y_pad;
-    let chart_max_value_y = y_max + y_pad;
+    let chart_min_value_x = bounds.x_min - x_pad;
+    let chart_max_value_x = bounds.x_max + x_pad;
+    let chart_min_value_y = bounds.y_min - y_pad;
+    let chart_max_value_y = bounds.y_max + y_pad;
+
+    let chart_caption = generate_control_points_caption(control_points);
 
     let mut cc = ChartBuilder::on(&root_area)
         .margin(5)
@@ -464,21 +657,71 @@ pub fn save_chart_linear_n_points_regression(
         .y_label_formatter(&|v| format!("{:.1}", v))
         .draw()?;
 
-    // Draw original data points in red
-    cc.draw_series(
-        LineSeries::new(data_raw.iter().map(|x| (x.0, x.1)), &RED)
-            .point_size(2),
-    )?;
+    draw_line_series(&mut cc, data_raw, &RED, 2)?;
+    draw_line_series(&mut cc, data, &BLUE, 2)?;
+    draw_line_series(&mut cc, &line, &GREEN, 2)?;
 
-    // Draw processed data points in blue
-    cc.draw_series(
-        LineSeries::new(data.iter().map(|x| (x.0, x.1)), &BLUE).point_size(2),
-    )?;
+    // To avoid the IO failure being ignored silently, we manually
+    // call the present function
+    root_area.present()?;
+    debug!("Chart saved to: {:?}", chart_file_path);
 
-    // Draw control points and their connecting lines in green
-    cc.draw_series(
-        LineSeries::new(line.iter().map(|x| (x.0, x.1)), &GREEN).point_size(3),
-    )?;
+    Ok(())
+}
+
+#[allow(dead_code)]
+pub fn save_chart_linear_n_points_regression_spike(
+    data_raw: &[(FrameTime, Real)],
+    data_spike: &[(FrameTime, Real)],
+    data_filtered: &[(FrameTime, Real)],
+    control_points: &[Point2],
+    chart_title: &str,
+    chart_file_path: &OsStr,
+    chart_resolution: (u32, u32),
+) -> Result<()> {
+    let root_area = BitMapBackend::new(
+        chart_file_path,
+        (chart_resolution.0, chart_resolution.1),
+    )
+    .into_drawing_area();
+
+    root_area.fill(&WHITE)?;
+
+    let root_area = root_area.titled(chart_title, ("sans-serif", 60))?;
+    let bounds = calculate_bounds(&[data_raw, data_spike, data_filtered], None);
+    let line = create_control_points_line(&control_points);
+    debug!("control points line: {:#?}", line);
+
+    let x_pad = 0.1;
+    let y_pad = 0.1;
+    let chart_min_value_x = bounds.x_min - x_pad;
+    let chart_max_value_x = bounds.x_max + x_pad;
+    let chart_min_value_y = bounds.y_min - y_pad;
+    let chart_max_value_y = bounds.y_max + y_pad;
+
+    let chart_caption = generate_control_points_caption(control_points);
+
+    let mut cc = ChartBuilder::on(&root_area)
+        .margin(5)
+        .set_all_label_area_size(50)
+        .caption(&chart_caption, ("sans-serif", 40))
+        .build_cartesian_2d(
+            chart_min_value_x..chart_max_value_x,
+            chart_min_value_y..chart_max_value_y,
+        )?;
+
+    cc.configure_mesh()
+        .x_labels(20)
+        .y_labels(10)
+        .disable_mesh()
+        .x_label_formatter(&|v| format!("{:.0}", v))
+        .y_label_formatter(&|v| format!("{:.1}", v))
+        .draw()?;
+
+    draw_line_series(&mut cc, data_raw, &RED, 2)?;
+    draw_line_series(&mut cc, data_spike, &BLUE, 2)?;
+    draw_line_series(&mut cc, data_filtered, &CYAN, 2)?;
+    draw_line_series(&mut cc, &line, &GREEN, 2)?;
 
     // To avoid the IO failure being ignored silently, we manually
     // call the present function

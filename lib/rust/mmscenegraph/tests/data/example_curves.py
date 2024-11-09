@@ -119,6 +119,23 @@ variance = variance_very_high
 data = _generate_variance_data(raw_data, variance)
 _write_data('degree_45_up_variance4', data, output_directory)
 
+variance = variance_low
+spike_probability = spike_probability_medium
+data = _generate_spike_data(raw_data, variance, spike_probability)
+_write_data('degree_45_up_spike1', data, output_directory)
+
+variance = variance_medium
+data = _generate_spike_data(raw_data, variance, spike_probability)
+_write_data('degree_45_up_spike2', data, output_directory)
+
+variance = variance_high
+data = _generate_spike_data(raw_data, variance, spike_probability)
+_write_data('degree_45_up_spike3', data, output_directory)
+
+variance = variance_very_high
+data = _generate_spike_data(raw_data, variance, spike_probability)
+_write_data('degree_45_up_spike4', data, output_directory)
+
 
 # Degrees 45 - Down
 raw_data = _sample_attr(start_frame, end_frame, 'degree_45_down.translateY')
@@ -282,3 +299,20 @@ _write_data('bounce_5_up_down_variance3', data, output_directory)
 variance = variance_very_high
 data = _generate_variance_data(raw_data, variance)
 _write_data('bounce_5_up_down_variance4', data, output_directory)
+
+variance = variance_low
+spike_probability = spike_probability_medium
+data = _generate_spike_data(raw_data, variance, spike_probability)
+_write_data('bounce_5_up_down_spike1', data, output_directory)
+
+variance = variance_medium
+data = _generate_spike_data(raw_data, variance, spike_probability)
+_write_data('bounce_5_up_down_spike2', data, output_directory)
+
+variance = variance_high
+data = _generate_spike_data(raw_data, variance, spike_probability)
+_write_data('bounce_5_up_down_spike3', data, output_directory)
+
+variance = variance_very_high
+data = _generate_spike_data(raw_data, variance, spike_probability)
+_write_data('bounce_5_up_down_spike4', data, output_directory)

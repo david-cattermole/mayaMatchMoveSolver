@@ -18,6 +18,4 @@
 // ====================================================================
 //
 
-pub mod derivatives;
-pub mod detect;
-pub mod resample;
+pub mod pops;

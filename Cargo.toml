@@ -20,7 +20,7 @@ publish = false
 [workspace.dependencies]
 anyhow = "1.0.89"
 approx = "0.5.1"
-argmin = { version = "0.10.0", default-features = true, features = ["serde1"] } # ,
+argmin = { version = "0.10.0", default-features = true, features = ["serde1"] }
 argmin-math = { version = "0.4", default-features = true, features = ["primitives", "vec", "ndarray_latest"] }
 criterion = { version = "0.5.1", default-features = false, features = ["html_reports"] }
 exr = "1.72.0"

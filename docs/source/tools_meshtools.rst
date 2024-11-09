@@ -18,9 +18,9 @@ hand-generated model.
 `Mesh From Points` uses a type of `Delaunay Triangulation
 <https://en.wikipedia.org/wiki/Delaunay_triangulation>`_ named
 `Delaunator <https://github.com/mapbox/delaunator>`_, which is
-optimised to generate meshes for landscape meshes. As a result, the
-camera viewing position of the points is used to triangulate the
-points in camera-space.
+optimised to generate meshes for landscape meshes. As a result, the 3D
+points are expected to mostly lay in 2D axis plane (but the plane may
+be at any orientation).
 
 .. figure:: images/tools_mesh_from_points_window.png
     :alt: Mesh from Points Window.
@@ -32,18 +32,11 @@ points in camera-space.
 
 Usage:
 
-1) Select a transform nodes.
+1) Select transform nodes.
 
    - At least 3 transform nodes are required.
 
-2) Activate a Maya viewport, and adjust the camera view to see the
-   points.
-
-   - If your points represent a landscape, adjust the camera to view
-     all nodes from the "sky" point of view (from Y+, looking
-     downwards).
-
-3) Run `Create Full Mesh From Points` tool.
+2) Run `Create Full Mesh From Points` tool.
 
    - Optionally, use the `Create Border Mesh From Points` or open the
      `Mesh From Points` UI.

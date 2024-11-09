@@ -18,14 +18,15 @@
 
 import collections
 
-import maya.api.OpenMaya as om
-import maya.api.OpenMayaUI as omui
+import maya.api.OpenMaya as OpenMaya
 import maya.cmds
+
+import mmSolver.api as mmapi
 
 import mmSolver.logger
 import mmSolver.utils.node as node_utils
-from mmSolver.tools.meshfrompoints.delaunator import Delaunator
 import mmSolver.tools.meshfrompoints.constant as const
+import mmSolver.tools.meshfrompoints.delaunator as delaunator
 
 
 LOG = mmSolver.logger.get_logger()
@@ -37,7 +38,7 @@ MeshData = collections.namedtuple(
 )
 
 
-def _delaunator_indices(transform_nodes, viewport):
+def _delaunator_indices(world_positions, flat_positions):
     """
     Uses transforms and active camera view to compute delaunay
     indices in the proper order to create mesh.
@@ -48,27 +49,11 @@ def _delaunator_indices(transform_nodes, viewport):
     :type transform_nodes: list
 
     """
-    assert isinstance(viewport, omui.M3dView)
-    assert len(transform_nodes) >= const.MINIMUM_NUMBER_OF_POINTS
-
-    world_positions = []
-    view_positions = []
-    for transform_node in transform_nodes:
-        transform_pos = maya.cmds.xform(
-            transform_node, query=True, worldSpace=True, translation=True
-        )
-        transform_mpoint = om.MPoint(
-            transform_pos[0], transform_pos[1], transform_pos[2]
-        )
-        world_positions.append(transform_mpoint)
-
-        # Convert world position to view space.
-        view_pos = viewport.worldToView(transform_mpoint)
-        view_x, view_y = view_pos[0], view_pos[1]
-        view_positions.append([view_x, view_y])
+    assert len(flat_positions) == len(world_positions)
+    assert len(flat_positions) >= const.MINIMUM_NUMBER_OF_POINTS
 
     # Compute once, and reuse the result.
-    computation = Delaunator(view_positions)
+    computation = delaunator.Delaunator(flat_positions)
     mesh_indices = computation.triangles
 
     # Reverse order
@@ -82,14 +67,93 @@ def _delaunator_indices(transform_nodes, viewport):
     border_mesh_indices = computation.hull
     border_mesh_indices.reverse()
 
-    assert len(world_positions) == len(view_positions)
-
     mesh_data = MeshData(
         world_positions=world_positions,
         full_mesh_indices=full_mesh_indices,
         border_mesh_indices=border_mesh_indices,
     )
     return mesh_data
+
+
+def _best_fit_plane_matrix_from_3d_points(world_positions):
+    assert world_positions.len() >= const.MINIMUM_NUMBER_OF_POINTS
+
+    # Our plug-in must be loaded to access the mmBestFitPlane command.
+    mmapi.load_plugin()
+
+    # The data structure that the mmBestFitPlane command expects.
+    points_components = []
+    for point in world_positions:
+        points_components.append(point.x)
+        points_components.append(point.y)
+        points_components.append(point.z)
+
+    OUTPUT_VALUES_AS_MATRIX_4X4 = "matrix_4x4"
+    plane_fit_result = maya.cmds.mmBestFitPlane(
+        pointComponent=points_components,
+        outputValuesAs=OUTPUT_VALUES_AS_MATRIX_4X4,
+        outputRmsError=False,
+    )
+
+    plane_mmatrix = OpenMaya.MMatrix()
+    if plane_fit_result is not None:
+        plane_mmatrix = OpenMaya.MMatrix(
+            (
+                # Row 0
+                plane_fit_result[0],
+                plane_fit_result[1],
+                plane_fit_result[2],
+                plane_fit_result[3],
+                # Row 1
+                plane_fit_result[4],
+                plane_fit_result[5],
+                plane_fit_result[6],
+                plane_fit_result[7],
+                # Row 2
+                plane_fit_result[8],
+                plane_fit_result[9],
+                plane_fit_result[10],
+                plane_fit_result[11],
+                # Row 3
+                plane_fit_result[12],
+                plane_fit_result[13],
+                plane_fit_result[14],
+                plane_fit_result[15],
+            )
+        )
+
+    return plane_mmatrix
+
+
+def _convert_transform_nodes_to_positions(transform_nodes):
+    assert len(transform_nodes) >= const.MINIMUM_NUMBER_OF_POINTS
+
+    world_positions = []
+    for transform_node in transform_nodes:
+        transform_pos = maya.cmds.xform(
+            transform_node, query=True, worldSpace=True, translation=True
+        )
+        transform_mpoint = OpenMaya.MPoint(
+            transform_pos[0], transform_pos[1], transform_pos[2]
+        )
+        world_positions.append(transform_mpoint)
+
+    plane_mmatrix = _best_fit_plane_matrix_from_3d_points(world_positions)
+    if plane_mmatrix is None:
+        return None
+
+    flat_positions = []
+    for world_position in world_positions:
+        # Essentially this will parent the given point under the plane
+        # fit matrix.
+        plane_position = plane_mmatrix * world_position
+
+        # The plane matrix is oriented to Y-up, so X and Z should
+        # represent the 2D position.
+        flat_positions.append((plane_position.x, plane_position.z))
+    assert len(world_positions) == len(flat_positions)
+
+    return world_positions, flat_positions
 
 
 def create_mesh_from_transform_nodes(
@@ -123,8 +187,11 @@ def create_mesh_from_transform_nodes(
     assert isinstance(offset_value, float)
     assert len(transform_nodes) >= const.MINIMUM_NUMBER_OF_POINTS
 
-    active_viewport = omui.M3dView.active3dView()
-    mesh_data = _delaunator_indices(transform_nodes, active_viewport)
+    (world_positions, flat_positions) = _convert_transform_nodes_to_positions(
+        transform_nodes
+    )
+
+    mesh_data = _delaunator_indices(world_positions, flat_positions)
     positions = mesh_data.world_positions
 
     # Set face count and indices
@@ -136,11 +203,11 @@ def create_mesh_from_transform_nodes(
         face_counts = [len(indices)]
 
     # Create the mesh.
-    mesh_fn = om.MFnMesh()
+    mesh_fn = OpenMaya.MFnMesh()
     mesh = mesh_fn.create(positions, face_counts, indices)
 
     # Set mesh name.
-    dag_node = om.MFnDagNode(mesh)
+    dag_node = OpenMaya.MFnDagNode(mesh)
     dag_node.setName(mesh_name)
     mesh_node = dag_node.name()
 

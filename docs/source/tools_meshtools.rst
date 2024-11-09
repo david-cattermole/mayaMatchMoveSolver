@@ -5,6 +5,44 @@ Mesh tools will create, modify or operate on meshes. These tools are
 intended to augment Autodesk Maya's existing modeling tool-set and be
 specific to the common use cases for MatchMove tasks.
 
+.. _create-plane-from-points-ref:
+
+Create Aligned Plane From Points
+------------------------
+
+The `Create Aligned Plane From Points` tool is used to generate a Maya
+Mesh Plane aligned to a set of 3D points. The plane can be used as a
+ground plane, a wall or the beginnings of a 3D terrain.
+
+The aligned plane transform can also be used to re-orient a MatchMove
+camera by :ref:`Reparenting <reparent-under-node-tool-ref>` your
+camera under the generated Mesh plane, and then zeroing the
+translations and rotations of the plane.
+
+reparent-under-node-tool-ref
+
+.. figure:: images/tools_create_plane_from_points.png
+    :alt: Create Plane from Points example.
+    :align: right
+    :width: 100%
+
+Usage:
+
+1) Select transform nodes.
+
+   - At least 3 transform nodes are required.
+
+2) Run `Create Aligned Plane From Points` tool.
+
+   - A new "alignedPlane" node transform node will be selected.
+
+To run the tool, use this Python command:
+
+.. code:: python
+
+    import mmSolver.tools.createplanefrompoints.tool as tool
+    tool.main()
+
 .. _mesh-from-points-ref:
 
 Mesh From Points

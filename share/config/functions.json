@@ -678,6 +678,15 @@
                 "mmSolver.tools.meshfrompoints.tool.create_border_mesh();"
             ]
         },
+        "create_plane_from_points": {
+            "name": "Create Aligned Plane From Points",
+            "name_shelf": "AlPlnPts",
+            "tooltip": "Create a Mesh Plane aligned to selected nodes.",
+            "command": [
+                "import mmSolver.tools.createplanefrompoints.tool;",
+                "mmSolver.tools.createplanefrompoints.tool.main();"
+            ]
+        },
         "reparent_under_node": {
             "name": "Reparent under Node (v1)",
             "name_shelf": "RePar",

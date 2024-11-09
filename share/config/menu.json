@@ -106,6 +106,7 @@
             "zdepth_tools/---",
             "zdepth_tools/screen_z_transform_bake",
             "mesh_tools/---Create",
+            "mesh_tools/create_plane_from_points",
             "mesh_tools/mesh_from_points_full_mesh",
             "mesh_tools/mesh_from_points_border_mesh",
             "mesh_tools/mesh_from_points_ui",

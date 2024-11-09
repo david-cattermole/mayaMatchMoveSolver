@@ -37,6 +37,7 @@
  * print('points_components: {}'.format(points_components))
  *
  * OUTPUT_VALUES_AS_POSITION_AND_DIRECTION = "position_and_direction"
+ * OUTPUT_VALUES_AS_POSITION_AND_DIRECTION = "position_direction_and_scale"
  * OUTPUT_VALUES_AS_MATRIX_4X4 = "matrix_4x4"
  *
  * result = maya.cmds.mmBestFitPlane(
@@ -97,6 +98,9 @@
 #define POINT_COMPONENTS_SHORT_FLAG "-pc"
 #define POINT_COMPONENTS_LONG_FLAG "-pointComponent"
 
+#define WITH_SCALE_SHORT_FLAG "-wsc"
+#define WITH_SCALE_LONG_FLAG "-withScale"
+
 #define OUTPUT_VALUES_AS_SHORT_FLAG "-ova"
 #define OUTPUT_VALUES_AS_LONG_FLAG "-outputValuesAs"
 
@@ -105,6 +109,8 @@
 
 // Value strings.
 #define OUTPUT_VALUES_AS_POSITION_AND_DIRECTION "position_and_direction"
+#define OUTPUT_VALUES_AS_POSITION_DIRECTION_AND_SCALE \
+    "position_direction_and_scale"
 #define OUTPUT_VALUES_AS_MATRIX_4X4 "matrix_4x4"
 
 namespace mmsg = mmscenegraph;
@@ -134,6 +140,9 @@ MSyntax MMBestFitPlaneCmd::newSyntax() {
     syntax.addFlag(POINT_COMPONENTS_SHORT_FLAG, POINT_COMPONENTS_LONG_FLAG,
                    MSyntax::kDouble);
     syntax.makeFlagMultiUse(POINT_COMPONENTS_SHORT_FLAG);
+
+    syntax.addFlag(WITH_SCALE_SHORT_FLAG, WITH_SCALE_LONG_FLAG,
+                   MSyntax::kBoolean);
 
     syntax.addFlag(OUTPUT_VALUES_AS_SHORT_FLAG, OUTPUT_VALUES_AS_LONG_FLAG,
                    MSyntax::kString);
@@ -184,6 +193,18 @@ MStatus MMBestFitPlaneCmd::parseArgs(const MArgList &args) {
         m_points_xyz.push_back(value);
     }
 
+    m_with_scale = false;
+    const bool with_scale_flag =
+        argData.isFlagSet(WITH_SCALE_SHORT_FLAG, &status);
+    CHECK_MSTATUS_AND_RETURN_IT(status);
+    MMSOLVER_MAYA_VRB("mmBestFitPlane: with_scale_flag=" << with_scale_flag);
+    if (with_scale_flag) {
+        status =
+            argData.getFlagArgument(WITH_SCALE_SHORT_FLAG, 0, m_with_scale);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
+        MMSOLVER_MAYA_VRB("mmBestFitPlane: m_with_scale=" << m_with_scale);
+    }
+
     m_output_values_as = OutputValuesAs::kPositionAndDirection;
     const bool output_as_values_flag =
         argData.isFlagSet(OUTPUT_VALUES_AS_SHORT_FLAG, &status);
@@ -199,6 +220,10 @@ MStatus MMBestFitPlaneCmd::parseArgs(const MArgList &args) {
         MMSOLVER_MAYA_VRB("mmBestFitPlane: output_as_values=" << string);
         if (std::strcmp(string, OUTPUT_VALUES_AS_POSITION_AND_DIRECTION) == 0) {
             m_output_values_as = OutputValuesAs::kPositionAndDirection;
+        } else if (std::strcmp(string,
+                               OUTPUT_VALUES_AS_POSITION_DIRECTION_AND_SCALE) ==
+                   0) {
+            m_output_values_as = OutputValuesAs::kPositionDirectionAndScale;
         } else if (std::strcmp(string, OUTPUT_VALUES_AS_MATRIX_4X4) == 0) {
             m_output_values_as = OutputValuesAs::kMatrix4x4;
         }
@@ -234,6 +259,7 @@ MStatus MMBestFitPlaneCmd::doIt(const MArgList &args) {
     mmsg::Real plane_normal_x = 0.0;
     mmsg::Real plane_normal_y = 1.0;
     mmsg::Real plane_normal_z = 0.0;
+    mmsg::Real plane_scale = 1.0;
     mmsg::Real rms_error = 0.0;
 
     // Compute the best fit plane.
@@ -241,10 +267,13 @@ MStatus MMBestFitPlaneCmd::doIt(const MArgList &args) {
                                                    m_points_xyz.size()};
     const bool ok = mmsg::fit_plane_to_points(
         points_xyz_slice, plane_position_x, plane_position_y, plane_position_z,
-        plane_normal_x, plane_normal_y, plane_normal_z, rms_error);
+        plane_normal_x, plane_normal_y, plane_normal_z, plane_scale, rms_error);
     if (!ok) {
         MMSOLVER_MAYA_ERR("mmBestFitPlane: Failed to compute best fit plane.");
         return MStatus::kFailure;
+    }
+    if (!m_with_scale) {
+        plane_scale = 1.0;
     }
 
     // Return results as array of double floats:
@@ -256,6 +285,15 @@ MStatus MMBestFitPlaneCmd::doIt(const MArgList &args) {
         result.append(plane_normal_x);
         result.append(plane_normal_y);
         result.append(plane_normal_z);
+    } else if (m_output_values_as ==
+               OutputValuesAs::kPositionDirectionAndScale) {
+        result.append(plane_position_x);
+        result.append(plane_position_y);
+        result.append(plane_position_z);
+        result.append(plane_normal_x);
+        result.append(plane_normal_y);
+        result.append(plane_normal_z);
+        result.append(plane_scale);
     } else if (m_output_values_as == OutputValuesAs::kMatrix4x4) {
         mmdata::Matrix4x4 matrix;
         const mmdata::Vector3D dir(plane_normal_x, plane_normal_y,
@@ -265,18 +303,21 @@ MStatus MMBestFitPlaneCmd::doIt(const MArgList &args) {
         matrix.m31_ = plane_position_y;
         matrix.m32_ = plane_position_z;
 
-        result.append(matrix.m00_);
-        result.append(matrix.m01_);
-        result.append(matrix.m02_);
-        result.append(matrix.m03_);
-        result.append(matrix.m10_);
-        result.append(matrix.m11_);
-        result.append(matrix.m12_);
-        result.append(matrix.m13_);
-        result.append(matrix.m20_);
-        result.append(matrix.m21_);
-        result.append(matrix.m22_);
-        result.append(matrix.m23_);
+        // Scale and Rotation matrix 3x3:
+        result.append(matrix.m00_ * plane_scale);
+        result.append(matrix.m01_ * plane_scale);
+        result.append(matrix.m02_ * plane_scale);
+        result.append(matrix.m03_ * plane_scale);
+        result.append(matrix.m10_ * plane_scale);
+        result.append(matrix.m11_ * plane_scale);
+        result.append(matrix.m12_ * plane_scale);
+        result.append(matrix.m13_ * plane_scale);
+        result.append(matrix.m20_ * plane_scale);
+        result.append(matrix.m21_ * plane_scale);
+        result.append(matrix.m22_ * plane_scale);
+        result.append(matrix.m23_ * plane_scale);
+
+        // Translation:
         result.append(matrix.m30_);
         result.append(matrix.m31_);
         result.append(matrix.m32_);

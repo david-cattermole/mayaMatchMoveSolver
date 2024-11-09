@@ -427,6 +427,7 @@ pub mod ffi {
             out_dir_x: &mut f64,
             out_dir_y: &mut f64,
             out_dir_z: &mut f64,
+            out_scale: &mut f64,
             out_rms_error: &mut f64,
         ) -> bool;
     }

@@ -30,10 +30,10 @@ bool fit_plane_to_points(rust::Slice<const Real> &points_xyz,
                          Real &out_position_x, Real &out_position_y,
                          Real &out_position_z, Real &out_normal_x,
                          Real &out_normal_y, Real &out_normal_z,
-                         Real &out_rms_error) noexcept {
+                         Real &out_scale, Real &out_rms_error) noexcept {
     return shim_fit_plane_to_points(points_xyz, out_position_x, out_position_y,
                                     out_position_z, out_normal_x, out_normal_y,
-                                    out_normal_z, out_rms_error);
+                                    out_normal_z, out_scale, out_rms_error);
 }
 
 }  // namespace mmscenegraph

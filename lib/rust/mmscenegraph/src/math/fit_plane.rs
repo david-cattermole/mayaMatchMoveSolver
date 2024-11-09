@@ -19,7 +19,7 @@
 //
 
 use log::error;
-use nalgebra::{Matrix3xX, Vector3};
+use nalgebra::{Matrix3xX, Point3, Vector3};
 
 /// Represents a 3D plane.
 #[derive(Debug, Clone)]
@@ -28,12 +28,31 @@ pub struct PlaneFit {
     pub position: Vector3<f64>,
     /// Normal vector.
     pub normal: Vector3<f64>,
+    /// The plane scale.
+    pub scale: f64,
     /// Root mean square error of the fit.
     pub rms_error: f64,
 }
 
 const NUMBER_OF_POINT_COMPONENTS: usize = 3;
 const MINIMUM_POINT_COUNT: usize = 3;
+
+/// Calculate the approximate scale of the plane, so it would fit the
+/// 3D points.
+fn calculate_plane_scale(position: &Point3<f64>, points_xyz: &[f64]) -> f64 {
+    let point_count = points_xyz.len() / NUMBER_OF_POINT_COMPONENTS;
+
+    let mut scale = 0.0;
+    for point_xyz in points_xyz.chunks_exact(NUMBER_OF_POINT_COMPONENTS) {
+        let point = Point3::new(point_xyz[0], point_xyz[1], point_xyz[2]);
+        scale += nalgebra::distance(position, &point);
+    }
+
+    let scale = scale / (point_count as f64);
+
+    // Convert distance to axis, to better match the 3D points.
+    scale * scale
+}
 
 /// Calculate the Root Mean Square (RMS) error of the fit.
 fn calculate_rms_error(
@@ -111,12 +130,18 @@ pub fn fit_plane_to_points(points_xyz: &[f64]) -> Option<PlaneFit> {
                 normal.neg_mut();
             }
 
+            // The (uniform) scale of the plane.
+            let centre_point =
+                Point3::new(position[0], position[1], position[2]);
+            let scale = calculate_plane_scale(&centre_point, points_xyz);
+
             // Calculate RMS error.
             let rms_error = calculate_rms_error(points_xyz, &normal, &position);
 
             Some(PlaneFit {
-                normal,
                 position,
+                normal,
+                scale,
                 rms_error,
             })
         }

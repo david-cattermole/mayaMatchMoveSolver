@@ -29,6 +29,7 @@ pub fn shim_fit_plane_to_points(
     out_normal_x: &mut CoreReal,
     out_normal_y: &mut CoreReal,
     out_normal_z: &mut CoreReal,
+    out_scale: &mut CoreReal,
     out_rms_error: &mut CoreReal,
 ) -> bool {
     let plane_fit = core_fit_plane_to_points(points_xyz);
@@ -40,6 +41,7 @@ pub fn shim_fit_plane_to_points(
             *out_normal_x = value.normal.x;
             *out_normal_y = value.normal.y;
             *out_normal_z = value.normal.z;
+            *out_scale = value.scale;
             *out_rms_error = value.rms_error;
             true
         }

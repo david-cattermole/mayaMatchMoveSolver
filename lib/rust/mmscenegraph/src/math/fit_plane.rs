@@ -56,11 +56,13 @@ fn calculate_plane_scale(position: &Point3<f64>, points_xyz: &[f64]) -> f64 {
 
 /// Calculate the Root Mean Square (RMS) error of the fit.
 fn calculate_rms_error(
-    points: &[f64],
+    points_xyz: &[f64],
     normal: &Vector3<f64>,
     position: &Vector3<f64>,
 ) -> f64 {
-    let mse = points
+    let point_count = points_xyz.len() / NUMBER_OF_POINT_COMPONENTS;
+
+    let mse = points_xyz
         .chunks_exact(NUMBER_OF_POINT_COMPONENTS)
         .map(|p| {
             let point = Vector3::new(p[0], p[1], p[2]);
@@ -69,7 +71,8 @@ fn calculate_rms_error(
             dist * dist
         })
         .sum::<f64>()
-        / points.len() as f64;
+        / point_count as f64;
+
     mse.sqrt()
 }
 

@@ -76,7 +76,7 @@ def _delaunator_indices(world_positions, flat_positions):
 
 
 def _best_fit_plane_matrix_from_3d_points(world_positions):
-    assert world_positions.len() >= const.MINIMUM_NUMBER_OF_POINTS
+    assert len(world_positions) >= const.MINIMUM_NUMBER_OF_POINTS
 
     # Our plug-in must be loaded to access the mmBestFitPlane command.
     mmapi.load_plugin()

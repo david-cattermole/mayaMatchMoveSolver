@@ -135,6 +135,17 @@ pub fn chan_data_filter_only_y(data: &[(FrameTime, Real)]) -> Vec<Real> {
     data.iter().map(|x| x.1 as Real).collect()
 }
 
+pub fn chan_data_combine_xy(
+    x_values: &[FrameTime],
+    y_values: &[Real],
+) -> Vec<(FrameTime, Real)> {
+    x_values
+        .iter()
+        .zip(y_values.iter())
+        .map(|x| (*x.0, *x.1))
+        .collect()
+}
+
 fn calculate_data_min_max_values(
     data: &[(FrameTime, Real)],
     out_x_min: &mut FrameTime,
@@ -146,16 +157,24 @@ fn calculate_data_min_max_values(
         let x = *x as FrameTime;
         let y = *y as Real;
 
-        if x < *out_x_min {
-            *out_x_min = x;
-        } else if x > *out_x_max {
-            *out_x_max = x;
+        if x.is_finite() {
+            if x < *out_x_min {
+                *out_x_min = x;
+            }
+
+            if x > *out_x_max {
+                *out_x_max = x;
+            }
         }
 
-        if y < *out_y_min {
-            *out_y_min = y;
-        } else if y > *out_y_max {
-            *out_y_max = y;
+        if y.is_finite() {
+            if y < *out_y_min {
+                *out_y_min = y;
+            }
+
+            if y > *out_y_max {
+                *out_y_max = y;
+            }
         }
     }
 }
@@ -171,16 +190,24 @@ fn calculate_control_point_min_max_values(
         let x = control_point.x();
         let y = control_point.y();
 
-        if x < *out_x_min {
-            *out_x_min = x;
-        } else if x > *out_x_max {
-            *out_x_max = x;
+        if x.is_finite() {
+            if x < *out_x_min {
+                *out_x_min = x;
+            }
+
+            if x > *out_x_max {
+                *out_x_max = x;
+            }
         }
 
-        if y < *out_y_min {
-            *out_y_min = y;
-        } else if y > *out_y_max {
-            *out_y_max = y;
+        if y.is_finite() {
+            if y < *out_y_min {
+                *out_y_min = y;
+            }
+
+            if y > *out_y_max {
+                *out_y_max = y;
+            }
         }
     }
 }
@@ -722,6 +749,73 @@ pub fn save_chart_linear_n_points_regression_pop(
     draw_line_series(&mut cc, data_pop, &BLUE, 2)?;
     draw_line_series(&mut cc, data_filtered, &CYAN, 2)?;
     draw_line_series(&mut cc, &line, &GREEN, 2)?;
+
+    // To avoid the IO failure being ignored silently, we manually
+    // call the present function
+    root_area.present()?;
+    debug!("Chart saved to: {:?}", chart_file_path);
+
+    Ok(())
+}
+
+#[allow(dead_code)]
+pub fn save_chart_curves(
+    data_values: &[(FrameTime, Real)],
+    data_velocity: &[(FrameTime, Real)],
+    data_acceleration: &[(FrameTime, Real)],
+    data_jerk: &[(FrameTime, Real)],
+    chart_title: &str,
+    chart_file_path: &OsStr,
+    chart_resolution: (u32, u32),
+) -> Result<()> {
+    let root_area = BitMapBackend::new(
+        chart_file_path,
+        (chart_resolution.0, chart_resolution.1),
+    )
+    .into_drawing_area();
+
+    root_area.fill(&WHITE)?;
+    let root_area = root_area.titled(chart_title, ("sans-serif", 60))?;
+
+    let chart_captions = &["Values", "Velocity", "Acceleration", "Jerk"];
+    let line_colors = &[BLACK, RED, GREEN, BLUE];
+    let data_list = &[data_values, data_velocity, data_acceleration, data_jerk];
+
+    let drawing_areas = root_area.split_evenly((4, 1));
+    for (i, drawing_area) in drawing_areas.iter().enumerate() {
+        let data = data_list[i];
+        let data_count = data.len();
+
+        let bounds = calculate_bounds(&[data], None);
+
+        let x_pad = 0.1;
+        let y_pad = (bounds.y_max - bounds.y_min) * 0.05;
+        let chart_min_value_x = bounds.x_min - x_pad;
+        let chart_max_value_x = bounds.x_max + x_pad;
+        let chart_min_value_y = bounds.y_min - y_pad;
+        let chart_max_value_y = bounds.y_max + y_pad;
+
+        let chart_caption = chart_captions[i];
+        let mut cc = ChartBuilder::on(drawing_area)
+            .margin(5)
+            .set_all_label_area_size(50)
+            .caption(&chart_caption, ("sans-serif", 20))
+            .build_cartesian_2d(
+                chart_min_value_x..chart_max_value_x,
+                chart_min_value_y..chart_max_value_y,
+            )?;
+
+        cc.configure_mesh()
+            .x_labels(20)
+            .y_labels(5)
+            .disable_mesh()
+            .x_label_formatter(&|v| format!("{:.0}", v))
+            .y_label_formatter(&|v| format!("{:.3}", v))
+            .draw()?;
+
+        let line_color = line_colors[i];
+        draw_line_series(&mut cc, data, &line_color, 1)?;
+    }
 
     // To avoid the IO failure being ignored silently, we manually
     // call the present function

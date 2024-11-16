@@ -951,3 +951,59 @@ pub fn save_chart_curvature_curves(
 
     Ok(())
 }
+
+#[allow(dead_code)]
+pub fn save_chart_curves_compare_two(
+    data_a: &[(FrameTime, Real)],
+    data_b: &[(FrameTime, Real)],
+    chart_title: &str,
+    chart_file_path: &OsStr,
+    chart_resolution: (u32, u32),
+) -> Result<()> {
+    let root_area = BitMapBackend::new(
+        chart_file_path,
+        (chart_resolution.0, chart_resolution.1),
+    )
+    .into_drawing_area();
+
+    root_area.fill(&WHITE)?;
+    let root_area = root_area.titled(chart_title, ("sans-serif", 60))?;
+
+    let data_list = &[data_a, data_b];
+    let bounds = calculate_bounds(data_list, None);
+
+    let x_pad = 0.1;
+    let y_pad = (bounds.y_max - bounds.y_min) * 0.05;
+    let chart_min_value_x = bounds.x_min - x_pad;
+    let chart_max_value_x = bounds.x_max + x_pad;
+    let chart_min_value_y = bounds.y_min - y_pad;
+    let chart_max_value_y = bounds.y_max + y_pad;
+
+    let chart_caption = "Compare Curves A and B";
+    let mut cc = ChartBuilder::on(&root_area)
+        .margin(5)
+        .set_all_label_area_size(50)
+        .caption(&chart_caption, ("sans-serif", 20))
+        .build_cartesian_2d(
+            chart_min_value_x..chart_max_value_x,
+            chart_min_value_y..chart_max_value_y,
+        )?;
+
+    cc.configure_mesh()
+        .x_labels(20)
+        .y_labels(5)
+        .disable_mesh()
+        .x_label_formatter(&|v| format!("{:.0}", v))
+        .y_label_formatter(&|v| format!("{:.3}", v))
+        .draw()?;
+
+    draw_line_series(&mut cc, data_a, &RED, 2)?;
+    draw_line_series(&mut cc, data_b, &GREEN, 2)?;
+
+    // To avoid the IO failure being ignored silently, we manually
+    // call the present function
+    root_area.present()?;
+    debug!("Chart saved to: {:?}", chart_file_path);
+
+    Ok(())
+}

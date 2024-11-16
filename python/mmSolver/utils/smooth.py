@@ -146,22 +146,22 @@ def average_smooth(value_array, width):
     return new_array
 
 
-def _gaussian(sig, x, mu):
+def _gaussian(sigma, x, mean):
     """
     Gaussian Distribution Function
 
-    :param sig: Sigma value (the width)
-    :type sig: float
+    :param sigma: Sigma value (the width)
+    :type sigma: float
 
     :param x: input value
     :type x: float
 
-    :param mu: Mean value
-    :type mu: float
+    :param mean: Mean value
+    :type mean: float
 
     :rtype: float
     """
-    return math.exp(-(math.pow((x - mu), 2) / (2 * (math.pow(sig, 2)))))
+    return math.exp(-(math.pow((x - mean), 2) / (2 * (math.pow(sigma, 2)))))
 
 
 def gaussian_smooth(value_array, width):

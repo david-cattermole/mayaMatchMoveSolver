@@ -18,6 +18,7 @@
 // ====================================================================
 //
 
+pub mod curvature;
 pub mod derivatives;
 pub mod detect;
 pub mod resample;

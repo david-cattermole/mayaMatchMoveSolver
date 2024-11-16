@@ -40,6 +40,7 @@ use mmscenegraph_rust::math::curve_fit::Point2;
 
 pub const CHART_RESOLUTION: (u32, u32) = (1024, 1024);
 
+#[allow(dead_code)]
 pub fn find_data_dir() -> Result<PathBuf> {
     let directory = PathBuf::from("C:/Users/catte/dev/mayaMatchMoveSolver/lib/rust/mmscenegraph/tests/data/");
     if directory.is_dir() {
@@ -49,6 +50,7 @@ pub fn find_data_dir() -> Result<PathBuf> {
     }
 }
 
+#[allow(dead_code)]
 pub fn construct_input_file_path(
     base_dir: &Path,
     file_name: &str,
@@ -62,6 +64,7 @@ pub fn construct_input_file_path(
     Ok(file_path)
 }
 
+#[allow(dead_code)]
 pub fn construct_output_file_path(
     base_dir: &Path,
     file_name: &str,
@@ -72,6 +75,7 @@ pub fn construct_output_file_path(
     Ok(file_path)
 }
 
+#[allow(dead_code)]
 pub fn read_chan_file(file_name: &OsStr) -> Result<Vec<(FrameTime, Real)>> {
     let mut file = File::open(file_name)?;
     let mut buffer = String::new();
@@ -127,14 +131,67 @@ pub fn print_actual_pops(
     out
 }
 
+#[allow(dead_code)]
+pub fn print_derivative_arrays(
+    velocity: &[f64],
+    acceleration: &[f64],
+    jerk: &[f64],
+) {
+    println!("Velocity (1st order derivative) count {} :", velocity.len());
+    for (i, v) in velocity.iter().enumerate() {
+        println!("i={i} v={v}");
+    }
+
+    println!(
+        "Acceleration (2nd order derivative) count {} :",
+        acceleration.len()
+    );
+    for (i, v) in acceleration.iter().enumerate() {
+        println!("i={i} v={v}");
+    }
+
+    println!("Jerk (3rd order derivative) count {} :", jerk.len());
+    for (i, v) in jerk.iter().enumerate() {
+        println!("i={i} v={v}");
+    }
+}
+
+#[allow(dead_code)]
+pub fn print_curvature_arrays(
+    velocity: &[f64],
+    acceleration: &[f64],
+    curvature: &[f64],
+) {
+    println!("Velocity (1st order derivative) count {} :", velocity.len());
+    for (i, v) in velocity.iter().enumerate() {
+        println!("i={i} v={v}");
+    }
+
+    println!(
+        "Acceleration (2nd order derivative) count {} :",
+        acceleration.len()
+    );
+    for (i, v) in acceleration.iter().enumerate() {
+        println!("i={i} v={v}");
+    }
+
+    println!("Curvature count {} :", curvature.len());
+    for (i, v) in curvature.iter().enumerate() {
+        println!("i={i} v={v}");
+    }
+}
+
+#[allow(dead_code)]
 pub fn chan_data_filter_only_x(data: &[(FrameTime, Real)]) -> Vec<Real> {
     data.iter().map(|x| x.0 as Real).collect()
 }
 
+#[allow(dead_code)]
 pub fn chan_data_filter_only_y(data: &[(FrameTime, Real)]) -> Vec<Real> {
     data.iter().map(|x| x.1 as Real).collect()
 }
 
+#[allow(dead_code)]
 pub fn chan_data_combine_xy(
     x_values: &[FrameTime],
     y_values: &[Real],
@@ -759,7 +816,7 @@ pub fn save_chart_linear_n_points_regression_pop(
 }
 
 #[allow(dead_code)]
-pub fn save_chart_curves(
+pub fn save_chart_derivative_curves(
     data_values: &[(FrameTime, Real)],
     data_velocity: &[(FrameTime, Real)],
     data_acceleration: &[(FrameTime, Real)],
@@ -784,7 +841,77 @@ pub fn save_chart_curves(
     let drawing_areas = root_area.split_evenly((4, 1));
     for (i, drawing_area) in drawing_areas.iter().enumerate() {
         let data = data_list[i];
-        let data_count = data.len();
+
+        let bounds = calculate_bounds(&[data], None);
+
+        let x_pad = 0.1;
+        let y_pad = (bounds.y_max - bounds.y_min) * 0.05;
+        let chart_min_value_x = bounds.x_min - x_pad;
+        let chart_max_value_x = bounds.x_max + x_pad;
+        let chart_min_value_y = bounds.y_min - y_pad;
+        let chart_max_value_y = bounds.y_max + y_pad;
+
+        let chart_caption = chart_captions[i];
+        let mut cc = ChartBuilder::on(drawing_area)
+            .margin(5)
+            .set_all_label_area_size(50)
+            .caption(&chart_caption, ("sans-serif", 20))
+            .build_cartesian_2d(
+                chart_min_value_x..chart_max_value_x,
+                chart_min_value_y..chart_max_value_y,
+            )?;
+
+        cc.configure_mesh()
+            .x_labels(20)
+            .y_labels(5)
+            .disable_mesh()
+            .x_label_formatter(&|v| format!("{:.0}", v))
+            .y_label_formatter(&|v| format!("{:.3}", v))
+            .draw()?;
+
+        let line_color = line_colors[i];
+        draw_line_series(&mut cc, data, &line_color, 1)?;
+    }
+
+    // To avoid the IO failure being ignored silently, we manually
+    // call the present function
+    root_area.present()?;
+    debug!("Chart saved to: {:?}", chart_file_path);
+
+    Ok(())
+}
+
+#[allow(dead_code)]
+pub fn save_chart_curvature_curves(
+    data_values: &[(FrameTime, Real)],
+    data_velocity: &[(FrameTime, Real)],
+    data_acceleration: &[(FrameTime, Real)],
+    data_curvature: &[(FrameTime, Real)],
+    chart_title: &str,
+    chart_file_path: &OsStr,
+    chart_resolution: (u32, u32),
+) -> Result<()> {
+    let root_area = BitMapBackend::new(
+        chart_file_path,
+        (chart_resolution.0, chart_resolution.1),
+    )
+    .into_drawing_area();
+
+    root_area.fill(&WHITE)?;
+    let root_area = root_area.titled(chart_title, ("sans-serif", 60))?;
+
+    let chart_captions = &["Values", "Velocity", "Acceleration", "Curvature"];
+    let line_colors = &[BLACK, RED, GREEN, BLUE];
+    let data_list = &[
+        data_values,
+        data_velocity,
+        data_acceleration,
+        data_curvature,
+    ];
+
+    let drawing_areas = root_area.split_evenly((4, 1));
+    for (i, drawing_area) in drawing_areas.iter().enumerate() {
+        let data = data_list[i];
 
         let bounds = calculate_bounds(&[data], None);
 

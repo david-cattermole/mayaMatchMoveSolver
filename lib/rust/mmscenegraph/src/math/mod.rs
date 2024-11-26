@@ -21,10 +21,11 @@
 pub mod camera;
 pub mod curve_fit;
 pub mod dag;
-pub mod distributions;
 pub mod fit_plane;
+pub mod interpolate;
 pub mod line;
 pub mod line_intersect;
 pub mod reprojection;
 pub mod rotate;
+pub mod statistics;
 pub mod transform;

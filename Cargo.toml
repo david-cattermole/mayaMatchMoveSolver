@@ -40,6 +40,7 @@ rayon = "1.10.0"
 rustc-hash = "2.0.0"
 shellexpand = { version = "3.1", default-features = false, features = ["full"] }
 smallvec = "1.13.2"
+thiserror = "2.0.3"
 
 # CXX is used to build C++ bindings.
 #

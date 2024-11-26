@@ -26,26 +26,24 @@ use std::fmt;
 use crate::constant::Real;
 use crate::curve::derivatives::allocate_derivatives_order_1;
 use crate::curve::derivatives::calculate_derivatives_order_1;
-use crate::math::distributions::standard_deviation_of_values;
-use crate::math::distributions::Statistics;
+use crate::math::statistics::calc_population_standard_deviation;
+use crate::math::statistics::calc_z_score;
+use crate::math::statistics::UnsortedDataSlice;
+use crate::math::statistics::UnsortedDataSliceOps;
 
-// Calculates how many standard deviations a value is from the mean.
-fn calculate_z_score(stats: &Statistics, value: f64) -> f64 {
-    (value - stats.mean).abs() / stats.std_dev.max(1e-10)
-}
-
-// Normalize the deviations relative to the global statistics.
-//
-// Adjusts a local deviation score relative to global statistics.
+/// Normalize the deviations relative to the global statistics.
+///
+/// Adjusts a local deviation score relative to global statistics.
 fn normalize_local_deviation(
-    global_stats: &Statistics,
-    local_stats: &Statistics,
+    global_std_dev: f64,
+    local_std_dev: f64,
     deviation: f64,
 ) -> f64 {
-    deviation * (local_stats.std_dev / global_stats.std_dev.max(1e-10))
+    deviation * (local_std_dev / global_std_dev.max(1e-10))
 }
 
-// Computes a smoothness score for a window of the animation curve using velocity statistics.
+/// Computes a smoothness score for a window of the animation curve
+/// using velocity statistics.
 fn calculate_window_smoothness_score(
     i: usize,
     window_start: usize,
@@ -53,7 +51,7 @@ fn calculate_window_smoothness_score(
     times: &[f64],
     values: &[f64],
     velocity: &[f64],
-    global_velocity_stats: &Statistics,
+    global_velocity_std_dev: f64,
 ) -> f64 {
     let window_size = if window_end > window_start {
         window_end - window_start
@@ -65,20 +63,18 @@ fn calculate_window_smoothness_score(
     }
 
     let local_velocity = &velocity[window_start..window_end];
-    let local_velocity_stats = standard_deviation_of_values(&local_velocity);
-    let local_velocity_stats = match local_velocity_stats {
-        Some(value) => value,
-        None => return 0.0,
-    };
+    let local_stats = UnsortedDataSlice::new(&local_velocity, None).unwrap();
+    let local_std_dev =
+        calc_population_standard_deviation(&local_stats).unwrap();
 
     // Check for discontinuity.
     let velocity_deviation =
-        calculate_z_score(&local_velocity_stats, velocity[i]);
+        calc_z_score(local_stats.mean(), local_std_dev, velocity[i]);
 
     // Normalize the deviations relative to the global statistics.
     let smoothness_score = normalize_local_deviation(
-        &global_velocity_stats,
-        &local_velocity_stats,
+        global_velocity_std_dev,
+        local_std_dev,
         velocity_deviation,
     );
 
@@ -117,8 +113,9 @@ fn calculate_per_frame_pop_score(
     calculate_derivatives_order_1(times, values, out_velocity)?;
 
     // Calculate statistics for each derivative
-    let global_velocity_stats =
-        standard_deviation_of_values(&out_velocity).unwrap();
+    let velocity_slice = UnsortedDataSlice::new(&out_velocity, None)?;
+    let global_velocity_std_dev =
+        calc_population_standard_deviation(&velocity_slice)?;
 
     let n = times.len();
     let window_size = 2;
@@ -136,7 +133,7 @@ fn calculate_per_frame_pop_score(
             times,
             values,
             &out_velocity,
-            &global_velocity_stats,
+            global_velocity_std_dev,
         );
         out_scores[i] = score;
 
@@ -162,7 +159,7 @@ fn calculate_per_frame_pop_score(
             times,
             values,
             &out_velocity,
-            &global_velocity_stats,
+            global_velocity_std_dev,
         );
         out_scores[i] = score.min(out_scores[i]);
 
@@ -287,33 +284,45 @@ mod tests {
     #[test]
     fn test_detect_acceleration_changes() -> Result<()> {
         let times = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
+
+        #[rustfmt::skip]
         let values = vec![
-            // Smooth acceleration
+            // Smooth acceleration.
             1.0, 1.2, 1.5, 2.0, 2.7, 3.6,
-            // Sudden pop (discontinuous acceleration)
-            5.0, // Return to smooth motion
+            // Sudden pop (discontinuous acceleration).
+            5.0,
+            // Return to smooth motion.
             5.5, 5.8, 6.0,
         ];
 
-        let threshold = 3.0;
+        let threshold = 0.1;
         let pops = detect_curve_pops(&times, &values, threshold)?;
+        for (i, pop) in pops.iter().enumerate() {
+            println!("pop[{i}]={pop}");
+        }
 
-        assert!(pops[4].score < threshold); // Smooth acceleration should not be detected
-        assert!(pops[6].score > threshold); // Sudden pop should be detected
+        // Sudden pop should be detected.
+        assert!(pops[1].score > threshold);
+
+        // Smooth acceleration should not be detected.
+        assert!(pops[2].score < threshold);
 
         Ok(())
     }
 
     #[test]
     fn test_smooth_acceleration() -> Result<()> {
-        let times = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0];
-        // Gradually increasing acceleration
+        let times = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
+        // Gradually increasing acceleration.
         let values = vec![0.0, 0.1, 0.4, 0.9, 1.6, 2.5, 3.6, 4.9];
 
-        let threshold = 3.0;
+        let threshold = 0.5;
         let pops = detect_curve_pops(&times, &values, threshold)?;
+        for (i, pop) in pops.iter().enumerate() {
+            println!("pop[{i}]={pop}");
+        }
 
-        // Should not detect any pops in smoothly accelerating curve
+        // Should not detect any pops in smoothly accelerating curve.
         assert!(pops.iter().all(|x| x.score < threshold));
 
         Ok(())

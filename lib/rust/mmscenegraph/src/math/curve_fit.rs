@@ -28,6 +28,8 @@ use log::debug;
 use ndarray::{Array1, Array2};
 
 use crate::constant::Real;
+use crate::math::interpolate::inverse_lerp_f64;
+use crate::math::interpolate::lerp_f64;
 use crate::math::line::curve_fit_linear_regression_type1;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -102,31 +104,6 @@ pub fn linear_regression(
 
     Ok((point, angle))
 }
-
-/// Return 'min_value' to 'max_value' linearly, for a 'mix' value
-/// between 0.0 and 1.0.
-fn lerp_f64(min_value: f64, max_value: f64, mix: f64) -> f64 {
-    ((1.0 - mix) * min_value) + (mix * max_value)
-}
-
-/// Return a value between 0.0 and 1.0 for a value in an input range
-/// 'from' to 'to'.
-fn inverse_lerp_f64(from: f64, to: f64, value: f64) -> f64 {
-    (value - from) / (to - from)
-}
-
-// /// Remap from an 'original' value range to a 'target' value range.
-// fn remap_f64(
-//     original_from: f64,
-//     original_to: f64,
-//     target_from: f64,
-//     target_to: f64,
-//     value: f64,
-// ) -> f64 {
-//     let map_to_original_range =
-//         inverse_lerp_f64(original_from, original_to, value);
-//     lerp_f64(target_from, target_to, map_to_original_range)
-// }
 
 fn linear_interpolate_point_y_value_at_value_x(
     value_x: f64,

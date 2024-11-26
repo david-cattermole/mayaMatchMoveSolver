@@ -11,7 +11,9 @@ path = "./src/lib.rs"
 crate-type = ["lib"]
 
 [dependencies]
-log = { workspace = true }
-exr = { workspace = true }
 anyhow = { workspace = true }
+exr = { workspace = true }
+half = { workspace = true }
+log = { workspace = true }
 num = { workspace = true }
+num-traits = { workspace = true }

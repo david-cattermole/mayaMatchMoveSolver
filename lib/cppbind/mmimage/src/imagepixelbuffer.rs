@@ -23,21 +23,24 @@ use crate::cxxbridge::ffi::PixelF32x4 as BindPixelF32x4;
 use mmimage_rust::pixelbuffer::BufferDataType as CoreBufferDataType;
 use mmimage_rust::pixelbuffer::ImagePixelBuffer as CoreImagePixelBuffer;
 
-// fn core_to_bind_buffer_data_type(
-//     value: CoreBufferDataType,
-// ) -> BindBufferDataType {
-//     match value {
-//         CoreBufferDataType::None => BindBufferDataType::None,
-//         CoreBufferDataType::F32 => BindBufferDataType::F32,
-//         CoreBufferDataType::F64 => BindBufferDataType::F64,
-//     }
-// }
+#[allow(dead_code)]
+fn core_to_bind_buffer_data_type(
+    value: CoreBufferDataType,
+) -> BindBufferDataType {
+    match value {
+        CoreBufferDataType::None => BindBufferDataType::None,
+        CoreBufferDataType::F16 => BindBufferDataType::F16,
+        CoreBufferDataType::F32 => BindBufferDataType::F32,
+        CoreBufferDataType::F64 => BindBufferDataType::F64,
+    }
+}
 
 fn bind_to_core_buffer_data_type(
     value: BindBufferDataType,
 ) -> CoreBufferDataType {
     match value {
         BindBufferDataType::None => CoreBufferDataType::None,
+        BindBufferDataType::F16 => CoreBufferDataType::F16,
         BindBufferDataType::F32 => CoreBufferDataType::F32,
         BindBufferDataType::F64 => CoreBufferDataType::F64,
         _ => CoreBufferDataType::None,
@@ -67,6 +70,7 @@ impl ShimImagePixelBuffer {
     pub fn data_type(&self) -> BindBufferDataType {
         match self.inner.data_type() {
             CoreBufferDataType::None => BindBufferDataType::None,
+            CoreBufferDataType::F16 => BindBufferDataType::F16,
             CoreBufferDataType::F32 => BindBufferDataType::F32,
             CoreBufferDataType::F64 => BindBufferDataType::F64,
         }

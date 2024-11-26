@@ -199,11 +199,14 @@ pub mod ffi {
         #[cxx_name = "kNone"]
         None = 0,
 
+        #[cxx_name = "kF16"]
+        F16 = 1,
+
         #[cxx_name = "kF32"]
-        F32 = 1,
+        F32 = 2,
 
         #[cxx_name = "kF64"]
-        F64 = 2,
+        F64 = 3,
     }
 
     extern "Rust" {

@@ -20,6 +20,7 @@
 
 use anyhow::Result;
 use log::{debug, info};
+use mmimage_rust::image_read_pixels_exr_f16x4;
 use mmimage_rust::image_read_pixels_exr_f32x4;
 
 mod common;
@@ -53,10 +54,34 @@ fn read_as_f32x4() -> Result<()> {
         match file_path_str {
             Some(value) => {
                 info!("Reading: {}", value);
-                let (pixel_data, meta_data) =
+                let (meta_data, pixel_data) =
                     image_read_pixels_exr_f32x4(value, vertical_flip)?;
                 debug!("Metadata: {:?}", meta_data);
-                debug!("Pixel Data: {:?}", pixel_data);
+                debug!("PixelData: {:?}", pixel_data);
+            }
+            _ => (),
+        }
+    }
+
+    Ok(())
+}
+
+#[test]
+fn read_as_f16x4() -> Result<()> {
+    let base_dir_path = common::find_openexr_images_dir()?;
+    let file_paths =
+        common::construct_image_file_paths(&base_dir_path, FILE_NAMES)?;
+
+    let vertical_flip = false;
+    for file_path in file_paths {
+        let file_path_str = file_path.as_path().to_str();
+        match file_path_str {
+            Some(value) => {
+                info!("Reading: {}", value);
+                let (meta_data, pixel_data) =
+                    image_read_pixels_exr_f16x4(value, vertical_flip)?;
+                debug!("Metadata: {:?}", meta_data);
+                debug!("PixelData: {:?}", pixel_data);
             }
             _ => (),
         }

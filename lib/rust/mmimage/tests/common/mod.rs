@@ -1,5 +1,6 @@
 use anyhow::bail;
 use anyhow::Result;
+use log::debug;
 use log::warn;
 use std::path::Path;
 use std::path::PathBuf;
@@ -27,9 +28,31 @@ pub fn construct_image_file_paths(
 }
 
 pub fn find_openexr_images_dir() -> Result<PathBuf> {
-    let directory = PathBuf::from("C:/Users/catte/dev/openexr-images/");
-    if directory.is_dir() {
-        Ok(directory)
+    // '/home/user/dev/mayaMatchMoveSolver/lib/rust/mmimage'
+    let cargo_manifest_path: &'static str = env!("CARGO_MANIFEST_DIR");
+    debug!("cargo_manifest_path={cargo_manifest_path:?}");
+
+    let abs_file_path = std::path::absolute(Path::new(&cargo_manifest_path))?;
+    let mut pathbuf = PathBuf::from(abs_file_path);
+    debug!("pathbuf={pathbuf:?}");
+
+    // Strips down to project directory:
+    // '/home/user/dev/mayaMatchMoveSolver/'
+    let mut i = 0;
+    while i < 3 {
+        pathbuf.pop();
+        i += 1;
+    }
+    debug!("pathbuf={pathbuf:?}");
+
+    // '/home/user/dev/mayaMatchMoveSolver/tests/data/openexr-images/'
+    pathbuf.push("tests");
+    pathbuf.push("data");
+    pathbuf.push("openexr-images");
+    debug!("pathbuf={pathbuf:?}");
+
+    if pathbuf.is_dir() {
+        Ok(pathbuf)
     } else {
         bail!("Could not find openexr-images directory.")
     }

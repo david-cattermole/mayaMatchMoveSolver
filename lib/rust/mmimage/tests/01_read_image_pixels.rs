@@ -42,7 +42,7 @@ const FILE_NAMES: &[&str] = &[
 ];
 
 #[test]
-fn main() -> Result<()> {
+fn read_as_f32x4() -> Result<()> {
     let base_dir_path = common::find_openexr_images_dir()?;
     let file_paths =
         common::construct_image_file_paths(&base_dir_path, FILE_NAMES)?;
@@ -62,6 +62,5 @@ fn main() -> Result<()> {
         }
     }
 
-    // bail!("earily exit");
     Ok(())
 }

@@ -316,20 +316,16 @@ pub fn nonlinear_line_n3(
 
     let mut point_x = 0.0;
     let mut point_y = 0.0;
-    let mut angle = 0.0;
-    curve_fit_linear_regression_type1(
-        &x_values,
-        &y_values,
+    let mut dir_x = 0.0;
+    let mut dir_y = 0.0;
+    control_point_guess_from_linear_regression(
+        x_values,
+        y_values,
         &mut point_x,
         &mut point_y,
-        &mut angle,
+        &mut dir_x,
+        &mut dir_y,
     );
-    debug!("angle={angle}");
-
-    let dir_x = angle.cos();
-    let dir_y = angle.sin();
-    debug!("point_x={point_x} point_y={point_y}");
-    debug!("dir_x={dir_x} dir_y={dir_y}");
 
     let x_first = x_values[0];
     let y_first = y_values[0];
@@ -361,7 +357,7 @@ pub fn nonlinear_line_n3(
         x: point_x + dir_x,
         y: point_y + dir_y,
     };
-    // NOTE: point_a.x, point_a.y and point_c.x are omitted as these
+    // NOTE: point_a.x, point_b.x and point_c.x are omitted as these
     // are hard-coded as known parameters and do not need to be
     // solved.
     let initial_parameters_vec = vec![point_a.y, point_b.y, point_c.y];
@@ -572,57 +568,89 @@ impl argmin::core::Hessian for CurveFitLinearNPointsProblem {
     }
 }
 
-pub fn nonlinear_line_n_points(
+fn control_point_guess_from_linear_regression(
     x_values: &[f64],
     y_values: &[f64],
+    out_point_x: &mut f64,
+    out_point_y: &mut f64,
+    out_dir_x: &mut f64,
+    out_dir_y: &mut f64,
+) {
+    // First get initial guess using linear regression
+    *out_point_x = 0.0;
+    *out_point_y = 0.0;
+    let mut angle = 0.0;
+    curve_fit_linear_regression_type1(
+        x_values,
+        y_values,
+        out_point_x,
+        out_point_y,
+        &mut angle,
+    );
+
+    *out_dir_x = angle.cos();
+    *out_dir_y = angle.sin();
+    debug!("point_x={out_point_x} point_y={out_point_y}");
+    debug!("dir_x={out_dir_x} dir_y={out_dir_y}");
+}
+
+fn generate_evenly_space_control_points(
+    x_values: &[f64],
     control_point_count: usize,
-) -> Result<Vec<Point2>> {
-    assert_eq!(x_values.len(), y_values.len());
-    let value_count = x_values.len();
-    assert!(value_count > 2);
+    point_x: Real,
+    point_y: Real,
+    dir_x: Real,
+    dir_y: Real,
+) -> Result<(Vec<Real>, Vec<Real>)> {
+    assert!(x_values.len() > 2);
     assert!(
         control_point_count >= 3,
         "Must have at least 3 control points"
     );
 
-    // TODO: Normalize the input values to a known range, say 0.0 to
-    // 1.0, solve and then scale back to the original time and value
-    // range.
-
-    // First get initial guess using linear regression
-    let mut point_x = 0.0;
-    let mut point_y = 0.0;
-    let mut angle = 0.0;
-    curve_fit_linear_regression_type1(
-        x_values,
-        y_values,
-        &mut point_x,
-        &mut point_y,
-        &mut angle,
-    );
-
-    let dir_x = angle.cos();
-    let dir_y = angle.sin();
-    debug!("point_x={point_x} point_y={point_y}");
-    debug!("dir_x={dir_x} dir_y={dir_y}");
-
     // Calculate the range of x values
     let x_first = x_values[0];
-    let x_last = x_values[value_count - 1];
+    let x_last = x_values[x_values.len() - 1];
     let x_range = x_last - x_first;
 
     // Generate evenly spaced control points along x-axis
-    let mut control_points_x = Vec::with_capacity(control_point_count);
-    let mut initial_y_values = Vec::with_capacity(control_point_count);
+    let mut x_initial_control_points = Vec::with_capacity(control_point_count);
+    let mut y_initial_control_points = Vec::with_capacity(control_point_count);
     for i in 0..control_point_count {
         let mix = i as f64 / (control_point_count - 1) as f64;
         let x = (x_first + (mix * x_range)).floor();
-        control_points_x.push(x);
+        x_initial_control_points.push(x);
 
         // Initial y-values based on linear regression line.
         let y = point_y + (dir_y * (x - point_x) / dir_x);
-        initial_y_values.push(y);
+        y_initial_control_points.push(y);
     }
+
+    Ok((x_initial_control_points, y_initial_control_points))
+}
+
+pub fn nonlinear_line_n_points_with_initial(
+    x_values: &[f64],
+    y_values: &[f64],
+    x_initial_control_points: &[f64],
+    y_initial_control_points: &[f64],
+) -> Result<Vec<Point2>> {
+    assert!(x_values.len() > 2);
+    assert_eq!(
+        x_values.len(),
+        y_values.len(),
+        "X and Y values must match length."
+    );
+    assert!(
+        x_initial_control_points.len() >= 3,
+        "Must have at least 3 control points."
+    );
+    assert_eq!(
+        x_initial_control_points.len(),
+        y_initial_control_points.len(),
+        "X and Y control point values must match length."
+    );
+    let control_point_count = x_initial_control_points.len();
 
     // Create reference values
     let reference_values: Vec<(f64, f64)> = x_values
@@ -633,7 +661,7 @@ pub fn nonlinear_line_n_points(
 
     // Define the problem
     let problem = CurveFitLinearNPointsProblem::new(
-        control_points_x.clone(),
+        x_initial_control_points.to_vec(),
         &reference_values,
     );
 
@@ -648,7 +676,7 @@ pub fn nonlinear_line_n_points(
         .with_tolerance_cost(epsilon)?;
 
     // Run solver
-    let initial_parameters = Array1::from(initial_y_values);
+    let initial_parameters = Array1::from(y_initial_control_points.to_vec());
     let initial_hessian: Array2<f64> = Array2::eye(control_point_count);
     let result = argmin::core::Executor::new(problem, solver)
         .configure(|state| {
@@ -666,7 +694,7 @@ pub fn nonlinear_line_n_points(
             let mut control_points = Vec::with_capacity(control_point_count);
             for i in 0..control_point_count {
                 control_points.push(Point2 {
-                    x: control_points_x[i],
+                    x: x_initial_control_points[i],
                     y: parameters[i],
                 });
             }
@@ -674,4 +702,48 @@ pub fn nonlinear_line_n_points(
         }
         None => bail!("Solve failed."),
     }
+}
+
+pub fn nonlinear_line_n_points(
+    x_values: &[f64],
+    y_values: &[f64],
+    control_point_count: usize,
+) -> Result<Vec<Point2>> {
+    assert_eq!(x_values.len(), y_values.len());
+    let value_count = x_values.len();
+    assert!(value_count > 2);
+    assert!(
+        control_point_count >= 3,
+        "Must have at least 3 control points"
+    );
+
+    let mut point_x = 0.0;
+    let mut point_y = 0.0;
+    let mut dir_x = 0.0;
+    let mut dir_y = 0.0;
+    control_point_guess_from_linear_regression(
+        x_values,
+        y_values,
+        &mut point_x,
+        &mut point_y,
+        &mut dir_x,
+        &mut dir_y,
+    );
+
+    let (x_initial_control_points, y_initial_control_points) =
+        generate_evenly_space_control_points(
+            x_values,
+            control_point_count,
+            point_x,
+            point_y,
+            dir_x,
+            dir_y,
+        )?;
+
+    nonlinear_line_n_points_with_initial(
+        x_values,
+        y_values,
+        &x_initial_control_points,
+        &y_initial_control_points,
+    )
 }

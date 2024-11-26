@@ -21,5 +21,6 @@
 pub mod curvature;
 pub mod derivatives;
 pub mod detect;
+pub mod pyramid;
 pub mod resample;
 pub mod smooth;

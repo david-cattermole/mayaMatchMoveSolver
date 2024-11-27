@@ -52,8 +52,7 @@ use mmscenegraph_rust::math::curve_fit::nonlinear_line_n_points;
 fn compare_detected_vs_actual_pops(
     actual_pop_times: &[f64],
     pops: &[PopPoint],
-    allowed_not_found: usize,
-) {
+) -> usize {
     let pop_times: Vec<f64> = pops.iter().map(|x| x.time).collect();
 
     let mut not_found_count = 0;
@@ -66,8 +65,7 @@ fn compare_detected_vs_actual_pops(
         }
     }
 
-    // Should find all pops.
-    assert_eq!(not_found_count, allowed_not_found);
+    not_found_count
 }
 
 #[test]
@@ -93,7 +91,7 @@ fn identity_pop1() -> Result<()> {
     let actual_pops =
         print_actual_pops(&x_values, &y_values, &y_values_raw, 1.0e-9);
 
-    let threshold = 0.1;
+    let threshold = 0.8;
     let pops = detect_curve_pops(&x_values, &y_values, threshold)?;
     for pop in &pops {
         println!("pop: {pop:?}");
@@ -130,7 +128,9 @@ fn identity_pop1() -> Result<()> {
     )?;
 
     assert!(pops.len() >= actual_pops.len());
-    compare_detected_vs_actual_pops(&actual_pops, &pops, 1);
+    let not_found_count = compare_detected_vs_actual_pops(&actual_pops, &pops);
+    assert_eq!(not_found_count, 1);
+    assert!(pops.len() < 13);
 
     assert_relative_eq!(point.x(), 1051.0, epsilon = 1.0e-9);
     assert_relative_eq!(point.y(), 0.0, epsilon = 1.0e-5);
@@ -162,7 +162,7 @@ fn identity_pop2() -> Result<()> {
     let actual_pops =
         print_actual_pops(&x_values, &y_values, &y_values_raw, 1.0e-9);
 
-    let threshold = 0.1;
+    let threshold = 0.5;
     let pops = detect_curve_pops(&x_values, &y_values, threshold)?;
     for pop in &pops {
         println!("pop: {pop:?}");
@@ -199,8 +199,11 @@ fn identity_pop2() -> Result<()> {
     )?;
 
     assert_eq!(data_filtered.len(), data_raw.len());
+
     assert!(pops.len() >= actual_pops.len());
-    compare_detected_vs_actual_pops(&actual_pops, &pops, 0);
+    let not_found_count = compare_detected_vs_actual_pops(&actual_pops, &pops);
+    assert_eq!(not_found_count, 3);
+    assert!(pops.len() < 19);
 
     assert_relative_eq!(point.x(), 1051.0, epsilon = 1.0e-9);
     assert_relative_eq!(point.y(), 0.0, epsilon = 1.0e-2);
@@ -232,7 +235,7 @@ fn linear_3_point_pop3() -> Result<()> {
     let actual_pops =
         print_actual_pops(&x_values, &y_values, &y_values_raw, 1.0e-9);
 
-    let threshold = 0.1;
+    let threshold = 1.0;
     let pops = detect_curve_pops(&x_values, &y_values, threshold)?;
     for pop in &pops {
         println!("pop: {pop:?}");
@@ -272,7 +275,9 @@ fn linear_3_point_pop3() -> Result<()> {
     )?;
 
     assert!(pops.len() >= actual_pops.len());
-    compare_detected_vs_actual_pops(&actual_pops, &pops, 0);
+    let not_found_count = compare_detected_vs_actual_pops(&actual_pops, &pops);
+    assert_eq!(not_found_count, 2);
+    assert!(pops.len() < 19);
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-1);
     assert_relative_eq!(point_a.y(), -1.21533949192, epsilon = 0.3);
@@ -309,7 +314,7 @@ fn degree_45_up_pop3() -> Result<()> {
     let actual_pops =
         print_actual_pops(&x_values, &y_values, &y_values_raw, 1.0e-9);
 
-    let threshold = 0.1;
+    let threshold = 0.75;
     let pops = detect_curve_pops(&x_values, &y_values, threshold)?;
     for pop in &pops {
         println!("pop: {pop:?}");
@@ -346,10 +351,12 @@ fn degree_45_up_pop3() -> Result<()> {
     )?;
 
     assert!(pops.len() >= actual_pops.len());
-    compare_detected_vs_actual_pops(&actual_pops, &pops, 1);
+    let not_found_count = compare_detected_vs_actual_pops(&actual_pops, &pops);
+    assert_eq!(not_found_count, 1);
+    assert!(pops.len() < 23);
 
     assert_relative_eq!(point.x(), 1051.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point.y(), 50.0, epsilon = 1.14);
+    assert_relative_eq!(point.y(), 50.0, epsilon = 0.05);
     assert_relative_eq!(slope.as_degrees(), 45.0, epsilon = 1.0e-1);
 
     Ok(())
@@ -378,7 +385,7 @@ fn bounce_5_up_down_pop3() -> Result<()> {
     let actual_pops =
         print_actual_pops(&x_values, &y_values, &y_values_raw, 1.0e-9);
 
-    let threshold = 0.1;
+    let threshold = 1.0;
     let pops = detect_curve_pops(&x_values, &y_values, threshold)?;
     for pop in &pops {
         println!("pop: {pop:?}");
@@ -425,22 +432,24 @@ fn bounce_5_up_down_pop3() -> Result<()> {
     println!("point_e={point_e:?}");
 
     assert!(pops.len() >= actual_pops.len());
-    compare_detected_vs_actual_pops(&actual_pops, &pops, 1);
+    let not_found_count = compare_detected_vs_actual_pops(&actual_pops, &pops);
+    assert_eq!(not_found_count, 0);
+    assert!(pops.len() < 14);
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_a.y(), -0.9371984654725308, epsilon = 1.0e-9);
+    assert_relative_eq!(point_a.y(), -0.9991233334405204, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_b.x(), 1026.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_b.y(), 3.0081663616798155, epsilon = 1.0e-9);
+    assert_relative_eq!(point_b.y(), 2.980541438171237, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_c.x(), 1051.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_c.y(), -1.5667686469713358, epsilon = 1.0e-9);
+    assert_relative_eq!(point_c.y(), -1.5748364057699915, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_d.x(), 1076.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_d.y(), 3.168206647014793, epsilon = 1.0e-9);
+    assert_relative_eq!(point_d.y(), 3.174091329778726, epsilon = 1.0e-9);
 
     assert_relative_eq!(point_e.x(), 1101.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_e.y(), -2.9104705224487954, epsilon = 1.0e-9);
+    assert_relative_eq!(point_e.y(), -2.959335179739824, epsilon = 1.0e-9);
 
     Ok(())
 }

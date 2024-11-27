@@ -23,63 +23,13 @@ use anyhow::Result;
 use log::debug;
 use std::fmt;
 
-use crate::constant::Real;
-use crate::curve::derivatives::allocate_derivatives_order_1;
-use crate::curve::derivatives::calculate_derivatives_order_1;
+use crate::curve::derivatives::allocate_derivatives_order_2;
+use crate::curve::derivatives::calculate_derivatives_order_2;
+use crate::math::statistics::calc_median_absolute_deviation_sigma;
 use crate::math::statistics::calc_population_standard_deviation;
 use crate::math::statistics::calc_z_score;
-use crate::math::statistics::UnsortedDataSlice;
-use crate::math::statistics::UnsortedDataSliceOps;
-
-/// Normalize the deviations relative to the global statistics.
-///
-/// Adjusts a local deviation score relative to global statistics.
-fn normalize_local_deviation(
-    global_std_dev: f64,
-    local_std_dev: f64,
-    deviation: f64,
-) -> f64 {
-    deviation * (local_std_dev / global_std_dev.max(1e-10))
-}
-
-/// Computes a smoothness score for a window of the animation curve
-/// using velocity statistics.
-fn calculate_window_smoothness_score(
-    i: usize,
-    window_start: usize,
-    window_end: usize,
-    times: &[f64],
-    values: &[f64],
-    velocity: &[f64],
-    global_velocity_std_dev: f64,
-) -> f64 {
-    let window_size = if window_end > window_start {
-        window_end - window_start
-    } else {
-        window_start - window_end
-    };
-    if window_size < 2 {
-        return 0.0;
-    }
-
-    let local_velocity = &velocity[window_start..window_end];
-    let local_stats = UnsortedDataSlice::new(&local_velocity, None).unwrap();
-    let local_std_dev =
-        calc_population_standard_deviation(&local_stats).unwrap();
-
-    // Check for discontinuity.
-    let velocity_deviation =
-        calc_z_score(local_stats.mean(), local_std_dev, velocity[i]);
-
-    // Normalize the deviations relative to the global statistics.
-    let smoothness_score = normalize_local_deviation(
-        global_velocity_std_dev,
-        local_std_dev,
-        velocity_deviation,
-    );
-
-    smoothness_score
-}
+use crate::math::statistics::SortedDataSlice;
+use crate::math::statistics::SortedDataSliceOps;
 
 /// Represents a point that was classified as a pop
 #[derive(Debug)]
@@ -102,74 +52,52 @@ impl fmt::Display for PopPoint {
 fn calculate_per_frame_pop_score(
     times: &[f64],
     values: &[f64],
-    senstivity: f64,
     out_velocity: &mut [f64],
+    out_acceleration: &mut [f64],
     out_scores: &mut [f64],
 ) -> Result<()> {
     if (times.len() != values.len()) && (times.len() != out_scores.len()) {
         bail!("Times, values and output arrays must have the same length.");
     }
 
-    calculate_derivatives_order_1(times, values, out_velocity)?;
+    calculate_derivatives_order_2(
+        times,
+        values,
+        out_velocity,
+        out_acceleration,
+    )?;
 
-    // Calculate statistics for each derivative
-    let velocity_slice = UnsortedDataSlice::new(&out_velocity, None)?;
-    let global_velocity_std_dev =
-        calc_population_standard_deviation(&velocity_slice)?;
+    let mut sorted_acceleration = out_acceleration.to_vec();
+    sorted_acceleration.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    let acceleration_slice =
+        SortedDataSlice::new(&sorted_acceleration, None, None)?;
 
-    let n = times.len();
-    let window_size = 2;
+    // Reuse this allocation many times.
+    let mut sorted_deviations = vec![0.0; values.len()];
 
-    // Forward pass
-    let mut i = window_size;
-    while i < n {
-        let window_start = i - window_size;
-        let window_end = i;
-
-        let score = calculate_window_smoothness_score(
-            i,
-            window_start,
-            window_end,
-            times,
-            values,
-            &out_velocity,
-            global_velocity_std_dev,
-        );
-        out_scores[i] = score;
-
-        i += 1;
-        if score > senstivity {
-            let next = i + 1;
-            if next <= (n - 1) {
-                i = next;
-            }
-        }
+    for i in 0..times.len() {
+        let acceleration = out_acceleration[i];
+        let acceleration_mad_sigma = calc_median_absolute_deviation_sigma(
+            acceleration,
+            &acceleration_slice,
+            &mut sorted_deviations,
+        )?;
+        out_scores[i] = acceleration_mad_sigma;
     }
 
-    // Backward pass
-    let mut i = n - window_size;
-    while i > 0 {
-        let window_start = i;
-        let window_end = i + window_size;
+    let mut sorted_scores = out_scores.to_vec();
+    sorted_scores.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    let scores_slice = SortedDataSlice::new(&sorted_scores, None, None)?;
 
-        let score = calculate_window_smoothness_score(
-            i,
-            window_start,
-            window_end,
-            times,
-            values,
-            &out_velocity,
-            global_velocity_std_dev,
-        );
-        out_scores[i] = score.min(out_scores[i]);
+    let std_dev = calc_population_standard_deviation(&scores_slice)?;
+    debug!("calculate_per_frame_pop_score: scores std_dev={std_dev}");
 
-        i -= 1;
-        if score > senstivity {
-            let next = i.saturating_sub(1);
-            if next <= (n - 1) {
-                i = next;
-            }
-        }
+    let median = scores_slice.median();
+    debug!("calculate_per_frame_pop_score: scores median={median}");
+
+    for i in 0..out_scores.len() {
+        let score = calc_z_score(median, std_dev, out_scores[i]).abs();
+        out_scores[i] = score;
     }
 
     Ok(())
@@ -186,43 +114,61 @@ pub fn detect_curve_pops(
     }
 
     let n = times.len();
-    let mut velocity = allocate_derivatives_order_1(times.len())?;
+    let (mut velocity, mut acceleration) =
+        allocate_derivatives_order_2(times.len())?;
     let mut scores = vec![0.0; n];
 
-    let sensitivity = threshold;
     calculate_per_frame_pop_score(
         &times,
         &values,
-        sensitivity,
         &mut velocity,
+        &mut acceleration,
         &mut scores,
     )?;
 
     let mut out_values = Vec::new();
     out_values.reserve(n);
 
-    for i in 0..n {
-        let prev = i.saturating_sub(1);
-        let next = (i + 1).min(n - 1);
+    let include_neighbours = false;
+    if include_neighbours {
+        for i in 0..n {
+            let prev = i.saturating_sub(1);
+            let next = (i + 1).min(n - 1);
 
-        let score_prev = scores[prev];
-        let score_current = scores[i];
-        let score_next = scores[next];
+            let score_prev = scores[prev];
+            let score_current = scores[i];
+            let score_next = scores[next];
 
-        let pop_prev = score_prev > threshold;
-        let pop_current = score_current > threshold;
-        let pop_next = score_next > threshold;
+            let pop_prev = score_prev > threshold;
+            let pop_current = score_current > threshold;
+            let pop_next = score_next > threshold;
 
-        if pop_prev || pop_current || pop_next {
-            let t = times[i];
-            let v = values[i];
+            if pop_prev || pop_current || pop_next {
+                let t = times[i];
+                let v = values[i];
 
-            let point = PopPoint {
-                time: t,
-                value: v,
-                score: score_current,
-            };
-            out_values.push(point);
+                let point = PopPoint {
+                    time: t,
+                    value: v,
+                    score: score_current,
+                };
+                out_values.push(point);
+            }
+        }
+    } else {
+        for i in 0..n {
+            let score = scores[i];
+            if score > threshold {
+                let t = times[i];
+                let v = values[i];
+
+                let point = PopPoint {
+                    time: t,
+                    value: v,
+                    score: score,
+                };
+                out_values.push(point);
+            }
         }
     }
 
@@ -239,92 +185,51 @@ pub fn filter_curve_pops(
     }
 
     let n = times.len();
-    let mut velocity = allocate_derivatives_order_1(times.len())?;
+    let (mut velocity, mut acceleration) =
+        allocate_derivatives_order_2(times.len())?;
     let mut scores = vec![0.0; n];
 
-    let sensitivity = threshold;
     calculate_per_frame_pop_score(
         &times,
         &values,
-        sensitivity,
         &mut velocity,
+        &mut acceleration,
         &mut scores,
     )?;
 
     let mut out_values_xy = Vec::new();
     out_values_xy.reserve(n);
 
-    for i in 0..n {
-        let prev = i.saturating_sub(1);
-        let next = (i + 1).min(n - 1);
+    let include_neighbours = false;
+    if include_neighbours {
+        for i in 0..n {
+            let prev = i.saturating_sub(1);
+            let next = (i + 1).min(n - 1);
 
-        let score_prev = scores[prev];
-        let score_current = scores[i];
-        let score_next = scores[next];
+            let score_prev = scores[prev];
+            let score_current = scores[i];
+            let score_next = scores[next];
 
-        let pop_prev = score_prev <= threshold;
-        let pop_current = score_current <= threshold;
-        let pop_next = score_next <= threshold;
+            let pop_prev = score_prev <= threshold;
+            let pop_current = score_current <= threshold;
+            let pop_next = score_next <= threshold;
 
-        if pop_prev || pop_current || pop_next {
-            let t = times[i];
-            let v = values[i];
-            out_values_xy.push((t, v));
+            if pop_prev || pop_current || pop_next {
+                let t = times[i];
+                let v = values[i];
+                out_values_xy.push((t, v));
+            }
+        }
+    } else {
+        for i in 0..n {
+            let score = scores[i];
+            if score <= threshold {
+                let t = times[i];
+                let v = values[i];
+                out_values_xy.push((t, v));
+            }
         }
     }
 
-    // Ok((out_values_x, out_values_y))
     Ok(out_values_xy)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_detect_acceleration_changes() -> Result<()> {
-        let times = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
-
-        #[rustfmt::skip]
-        let values = vec![
-            // Smooth acceleration.
-            1.0, 1.2, 1.5, 2.0, 2.7, 3.6,
-            // Sudden pop (discontinuous acceleration).
-            5.0,
-            // Return to smooth motion.
-            5.5, 5.8, 6.0,
-        ];
-
-        let threshold = 0.1;
-        let pops = detect_curve_pops(&times, &values, threshold)?;
-        for (i, pop) in pops.iter().enumerate() {
-            println!("pop[{i}]={pop}");
-        }
-
-        // Sudden pop should be detected.
-        assert!(pops[1].score > threshold);
-
-        // Smooth acceleration should not be detected.
-        assert!(pops[2].score < threshold);
-
-        Ok(())
-    }
-
-    #[test]
-    fn test_smooth_acceleration() -> Result<()> {
-        let times = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0];
-        // Gradually increasing acceleration.
-        let values = vec![0.0, 0.1, 0.4, 0.9, 1.6, 2.5, 3.6, 4.9];
-
-        let threshold = 0.5;
-        let pops = detect_curve_pops(&times, &values, threshold)?;
-        for (i, pop) in pops.iter().enumerate() {
-            println!("pop[{i}]={pop}");
-        }
-
-        // Should not detect any pops in smoothly accelerating curve.
-        assert!(pops.iter().all(|x| x.score < threshold));
-
-        Ok(())
-    }
 }

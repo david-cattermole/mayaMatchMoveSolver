@@ -166,7 +166,8 @@ impl<'a> UnsortedDataSliceOps for UnsortedDataSlice<'a> {
         if !self.mean.get().is_nan() {
             self.mean.get()
         } else {
-            let mean = self.data.iter().sum::<Real>() / self.data.len() as Real;
+            let mean = calc_mean(self.data)
+                .expect("Mean value must be possible for unsorted data slice.");
             self.mean.set(mean);
             mean
         }
@@ -294,7 +295,7 @@ impl<'a> SortedDataSliceOps for SortedDataSlice<'a> {
         } else {
             let median = calc_median(self.data)
                 .expect("Median value must be possible for sorted data slice.");
-            debug_assert!(median.is_finite(), "Mean must be finite value.");
+            debug_assert!(median.is_finite(), "Median must be finite value.");
             self.median.set(median);
             median
         }
@@ -366,19 +367,19 @@ fn calc_mean(data: &[Real]) -> Result<Real> {
 /// - More intuitive than variance for some applications
 /// - Used in robust statistics
 fn calc_mean_absolute_deviation<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
 ) -> Result<Real> {
-    if stats.data().is_empty() {
+    if data_slice.data().is_empty() {
         bail!(StatisticsError::EmptyDataSlice);
     }
 
-    let mean = stats.mean();
+    let mean = data_slice.mean();
 
     // Calculate absolute deviations.
     let deviation_sum: Real =
-        stats.data().iter().map(|&x| (x - mean).abs()).sum();
+        data_slice.data().iter().map(|&x| (x - mean).abs()).sum();
 
-    Ok(deviation_sum / stats.data().len() as Real)
+    Ok(deviation_sum / data_slice.data().len() as Real)
 }
 
 /// Calculates the population variance of a dataset.
@@ -403,23 +404,23 @@ fn calc_mean_absolute_deviation<T: UnsortedDataSliceOps>(
 /// - Use when data represents entire population
 /// - Smaller than sample variance
 pub fn calc_population_variance<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
 ) -> Result<Real> {
-    if stats.data().is_empty() {
+    if data_slice.data().is_empty() {
         bail!(StatisticsError::EmptyDataSlice);
     }
 
-    let mean = stats.mean();
+    let mean = data_slice.mean();
     if !mean.is_finite() {
         bail!(StatisticsError::InputValueIsNotFinite);
     }
 
-    let variance = stats
+    let variance = data_slice
         .data()
         .iter()
         .map(|&x| (x - mean).powi(2))
         .sum::<Real>()
-        / (stats.data().len()) as Real; // Bessel's correction
+        / (data_slice.data().len()) as Real; // Bessel's correction
 
     Ok(variance)
 }
@@ -446,20 +447,20 @@ pub fn calc_population_variance<T: UnsortedDataSliceOps>(
 /// - Uses (n-1) denominator for unbiased estimate
 /// - Larger than population variance
 pub fn calc_sample_variance<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
 ) -> Result<Real> {
-    if stats.data().len() < 2 {
+    if data_slice.data().len() < 2 {
         bail!(StatisticsError::DataLengthLessThanTwo);
     }
 
-    let mean = stats.mean();
+    let mean = data_slice.mean();
     if !mean.is_finite() {
         bail!(StatisticsError::OutputValueIsNotFinite);
     }
 
     let sum_squared_diff: Real =
-        stats.data().iter().map(|&x| (x - mean).powi(2)).sum();
-    Ok(sum_squared_diff / (stats.data().len() - 1) as Real)
+        data_slice.data().iter().map(|&x| (x - mean).powi(2)).sum();
+    Ok(sum_squared_diff / (data_slice.data().len() - 1) as Real)
 }
 
 /// Calculates the population standard deviation, measuring spread
@@ -487,13 +488,13 @@ pub fn calc_sample_variance<T: UnsortedDataSliceOps>(
 /// - Returns None if fewer than 2 values
 /// - Use for complete populations only
 pub fn calc_population_standard_deviation<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
 ) -> Result<Real> {
-    if stats.data().len() < 2 {
+    if data_slice.data().len() < 2 {
         bail!(StatisticsError::DataLengthLessThanTwo);
     }
 
-    let variance = calc_population_variance(stats)?;
+    let variance = calc_population_variance(data_slice)?;
     Ok(variance.sqrt())
 }
 
@@ -521,13 +522,13 @@ pub fn calc_population_standard_deviation<T: UnsortedDataSliceOps>(
 /// - Uses (n-1) denominator for unbiased estimate
 /// - Returns None if fewer than 2 values
 pub fn calc_sample_standard_deviation<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
 ) -> Result<Real> {
-    if stats.data().len() < 2 {
+    if data_slice.data().len() < 2 {
         bail!(StatisticsError::DataLengthLessThanTwo);
     }
 
-    let variance = calc_sample_variance(stats)?;
+    let variance = calc_sample_variance(data_slice)?;
     Ok(variance.sqrt())
 }
 
@@ -539,14 +540,14 @@ pub fn calc_sample_standard_deviation<T: UnsortedDataSliceOps>(
 /// The coefficient of variation is calculated as the standard
 /// deviation divided by the mean.
 pub fn calc_population_coefficient_of_variation<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
 ) -> Result<Real> {
-    if stats.data().len() < 2 {
+    if data_slice.data().len() < 2 {
         bail!(StatisticsError::DataLengthLessThanTwo);
     }
 
-    let std_dev = calc_population_standard_deviation(stats)?;
-    let mean = stats.mean();
+    let std_dev = calc_population_standard_deviation(data_slice)?;
+    let mean = data_slice.mean();
 
     Ok(std_dev / mean)
 }
@@ -559,14 +560,14 @@ pub fn calc_population_coefficient_of_variation<T: UnsortedDataSliceOps>(
 /// The coefficient of variation is calculated as the standard
 /// deviation divided by the mean.
 pub fn calc_sample_coefficient_of_variation<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
 ) -> Result<Real> {
-    if stats.data().len() < 2 {
+    if data_slice.data().len() < 2 {
         bail!(StatisticsError::DataLengthLessThanTwo);
     }
 
-    let mean = stats.mean();
-    let std_dev = calc_sample_standard_deviation(stats)?;
+    let mean = data_slice.mean();
+    let std_dev = calc_sample_standard_deviation(data_slice)?;
 
     Ok(std_dev / mean)
 }
@@ -581,14 +582,14 @@ pub fn calc_sample_coefficient_of_variation<T: UnsortedDataSliceOps>(
 /// calculated as the standard deviation times 100 divided by the
 /// mean.
 pub fn calc_population_relative_standard_deviation<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
 ) -> Result<Real> {
-    if stats.data().len() < 2 {
+    if data_slice.data().len() < 2 {
         bail!(StatisticsError::DataLengthLessThanTwo);
     }
 
-    let std_dev = calc_population_standard_deviation(stats)?;
-    let mean = stats.mean();
+    let std_dev = calc_population_standard_deviation(data_slice)?;
+    let mean = data_slice.mean();
 
     Ok((std_dev * 100.0) / mean)
 }
@@ -602,14 +603,14 @@ pub fn calc_population_relative_standard_deviation<T: UnsortedDataSliceOps>(
 /// calculated as the standard deviation times 100 divided by the
 /// mean.
 pub fn calc_sample_relative_standard_deviation<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
 ) -> Result<Real> {
-    if stats.data().len() < 2 {
+    if data_slice.data().len() < 2 {
         bail!(StatisticsError::DataLengthLessThanTwo);
     }
 
-    let mean = stats.mean();
-    let std_dev = calc_sample_standard_deviation(stats)?;
+    let mean = data_slice.mean();
+    let std_dev = calc_sample_standard_deviation(data_slice)?;
 
     Ok((std_dev * 100.0) / mean)
 }
@@ -633,16 +634,19 @@ pub fn calc_z_score(mean: Real, std_dev: Real, value: Real) -> Real {
 /// - Measure total signal amplitude
 /// - Identify signal bounds
 /// - Quick variability assessment
-fn calc_peak_to_peak<T: UnsortedDataSliceOps>(stats: &T) -> Result<Real> {
-    if stats.data().is_empty() {
+fn calc_peak_to_peak<T: UnsortedDataSliceOps>(data_slice: &T) -> Result<Real> {
+    if data_slice.data().is_empty() {
         bail!(StatisticsError::EmptyDataSlice);
     }
 
-    let max_val = stats
+    let max_val = data_slice
         .data()
         .iter()
         .fold(Real::NEG_INFINITY, |a, &b| a.max(b));
-    let min_val = stats.data().iter().fold(Real::INFINITY, |a, &b| a.min(b));
+    let min_val = data_slice
+        .data()
+        .iter()
+        .fold(Real::INFINITY, |a, &b| a.min(b));
 
     Ok(max_val - min_val)
 }
@@ -674,18 +678,20 @@ fn calc_peak_to_peak<T: UnsortedDataSliceOps>(stats: &T) -> Result<Real> {
 /// - Positive values indicate right skew
 /// - Negative values indicate left skew
 /// - Zero indicates symmetry
-fn calc_skewness_type1<T: UnsortedDataSliceOps>(stats: &T) -> Result<Real> {
-    if stats.data().len() < 2 {
+fn calc_skewness_type1<T: UnsortedDataSliceOps>(
+    data_slice: &T,
+) -> Result<Real> {
+    if data_slice.data().len() < 2 {
         bail!(StatisticsError::DataLengthLessThanTwo);
     }
 
-    let mean = stats.mean();
-    let sum_squared_diff: Real = stats
+    let mean = data_slice.mean();
+    let sum_squared_diff: Real = data_slice
         .data()
         .iter()
         .map(|&x| (x - mean).powi(2))
         .sum::<Real>();
-    let sum_cubed_diff: Real = stats
+    let sum_cubed_diff: Real = data_slice
         .data()
         .iter()
         .map(|&x| (x - mean).powi(3))
@@ -695,7 +701,7 @@ fn calc_skewness_type1<T: UnsortedDataSliceOps>(stats: &T) -> Result<Real> {
         bail!(StatisticsError::OutputValueIsZero);
     }
 
-    let n = stats.data().len() as Real;
+    let n = data_slice.data().len() as Real;
     Ok((sum_cubed_diff / n) / (sum_squared_diff / n).powf(1.5))
 }
 
@@ -727,16 +733,18 @@ fn calc_skewness_type1<T: UnsortedDataSliceOps>(stats: &T) -> Result<Real> {
 /// - Includes bias correction
 /// - Standard method in SAS and SPSS
 /// - Negative values indicate left skew
-fn calc_skewness_type2<T: UnsortedDataSliceOps>(stats: &T) -> Result<Real> {
-    let mean = stats.mean();
-    let std_dev = calc_sample_standard_deviation(stats)?;
+fn calc_skewness_type2<T: UnsortedDataSliceOps>(
+    data_slice: &T,
+) -> Result<Real> {
+    let mean = data_slice.mean();
+    let std_dev = calc_sample_standard_deviation(data_slice)?;
 
     if std_dev == 0.0 {
         bail!(StatisticsError::OutputValueIsZero);
     }
 
-    let n = stats.data().len() as Real;
-    let sum_cubed_diff: Real = stats
+    let n = data_slice.data().len() as Real;
+    let sum_cubed_diff: Real = data_slice
         .data()
         .iter()
         .map(|&x| ((x - mean) / std_dev).powi(3))
@@ -776,24 +784,24 @@ fn calc_skewness_type2<T: UnsortedDataSliceOps>(stats: &T) -> Result<Real> {
 /// - Does not account for sample size bias
 /// - Sensitive to outliers
 fn calc_population_kurtosis_excess<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
     std_dev: Option<Real>,
 ) -> Result<Real> {
-    if stats.data().is_empty() {
+    if data_slice.data().is_empty() {
         bail!(StatisticsError::EmptyDataSlice);
     }
 
-    let mean = stats.mean();
+    let mean = data_slice.mean();
     let std_dev = match std_dev {
         Some(value) => value,
-        None => calc_population_standard_deviation(stats)?,
+        None => calc_population_standard_deviation(data_slice)?,
     };
     if std_dev == 0.0 {
         bail!(StatisticsError::OutputValueIsZero);
     }
 
-    let n = stats.data().len() as Real;
-    let fourth_moment = stats
+    let n = data_slice.data().len() as Real;
+    let fourth_moment = data_slice
         .data()
         .iter()
         .map(|&x| ((x - mean) / std_dev).powi(4))
@@ -833,17 +841,17 @@ fn calc_population_kurtosis_excess<T: UnsortedDataSliceOps>(
 /// - Undefined for zero standard deviation
 /// - The correction factor adjusts for sample size bias
 fn calc_sample_kurtosis_excess<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
     std_dev: Option<Real>,
 ) -> Result<Real> {
-    if stats.data().len() < 4 {
+    if data_slice.data().len() < 4 {
         bail!(StatisticsError::DataLengthLessThanFour);
     }
 
-    let mean = stats.mean();
+    let mean = data_slice.mean();
     let std_dev = match std_dev {
         Some(value) => value,
-        None => calc_sample_standard_deviation(stats)?,
+        None => calc_sample_standard_deviation(data_slice)?,
     };
     if std_dev == 0.0 {
         // Kurtosis is undefined.
@@ -851,14 +859,14 @@ fn calc_sample_kurtosis_excess<T: UnsortedDataSliceOps>(
     }
 
     // Calculate fourth moment.
-    let fourth_moment: Real = stats
+    let fourth_moment: Real = data_slice
         .data()
         .iter()
         .map(|&x| ((x - mean) / std_dev).powi(4))
         .sum::<Real>();
 
     // Calculate kurtosis excess using the formula for samples.
-    let n_real = stats.data().len() as Real;
+    let n_real = data_slice.data().len() as Real;
     let numerator = n_real * (n_real + 1.0) * fourth_moment;
     let denominator = (n_real - 1.0) * (n_real - 2.0) * (n_real - 3.0);
 
@@ -880,32 +888,35 @@ fn calc_sample_kurtosis_excess<T: UnsortedDataSliceOps>(
 /// - Compare observed vs expected frequencies
 /// - Evaluate distribution fit
 fn calc_population_chi_squared_test<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
     std_dev: Option<Real>,
 ) -> Result<Real> {
     let std_dev = match std_dev {
         Some(value) => value,
-        None => calc_population_standard_deviation(stats)?,
+        None => calc_population_standard_deviation(data_slice)?,
     };
     if std_dev == 0.0 {
         bail!(StatisticsError::OutputValueIsZero);
     }
 
     // Create histogram bins.
-    let n_bins = (stats.data().len() as Real).sqrt().round() as usize;
+    let n_bins = (data_slice.data().len() as Real).sqrt().round() as usize;
     // TODO: Avoid allocation here.
     let mut hist = vec![0.0; n_bins];
 
     // Find range for binning.
-    let min_val = stats.data().iter().fold(Real::INFINITY, |a, &b| a.min(b));
-    let max_val = stats
+    let min_val = data_slice
+        .data()
+        .iter()
+        .fold(Real::INFINITY, |a, &b| a.min(b));
+    let max_val = data_slice
         .data()
         .iter()
         .fold(Real::NEG_INFINITY, |a, &b| a.max(b));
     let bin_width = (max_val - min_val) / n_bins as Real;
 
     // Fill histogram.
-    for &value in stats.data() {
+    for &value in data_slice.data() {
         let bin = ((value - min_val) / bin_width).floor() as usize;
         if bin < n_bins {
             hist[bin] += 1.0;
@@ -913,8 +924,8 @@ fn calc_population_chi_squared_test<T: UnsortedDataSliceOps>(
     }
 
     // Calculate expected frequencies using normal distribution.
-    let mean = stats.mean();
-    let n = stats.data().len() as Real;
+    let mean = data_slice.mean();
+    let n = data_slice.data().len() as Real;
     let chi_squared: Real = hist
         .iter()
         .enumerate()
@@ -953,16 +964,16 @@ fn calc_population_chi_squared_test<T: UnsortedDataSliceOps>(
 /// - Endpoints (first and last points) cannot be extrema in this
 ///   implementation.
 fn calc_local_minima_maxima<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
 ) -> Result<Vec<usize>> {
-    if stats.data().len() < 3 {
+    if data_slice.data().len() < 3 {
         bail!(StatisticsError::DataLengthLessThanThree);
     }
 
     // TODO: Can we guess the capacity of 'points' to avoid reallocation?
     let mut points = Vec::new();
 
-    let data = stats.data();
+    let data = data_slice.data();
     for i in 1..data.len() - 1 {
         let a = data[i] > data[i - 1] && data[i] > data[i + 1];
         let b = data[i] < data[i - 1] && data[i] < data[i + 1];
@@ -987,13 +998,13 @@ fn calc_local_minima_maxima<T: UnsortedDataSliceOps>(
 /// - Always non-negative
 /// - Used in signal-to-noise calculations
 /// - Represents mean squared amplitude
-fn calc_signal_power<T: UnsortedDataSliceOps>(stats: &T) -> Result<Real> {
-    if stats.data().is_empty() {
+fn calc_signal_power<T: UnsortedDataSliceOps>(data_slice: &T) -> Result<Real> {
+    if data_slice.data().is_empty() {
         bail!(StatisticsError::EmptyDataSlice);
     }
 
-    let n = stats.data().len() as Real;
-    let sum_squares: Real = stats.data().iter().map(|&x| x * x).sum();
+    let n = data_slice.data().len() as Real;
+    let sum_squares: Real = data_slice.data().iter().map(|&x| x * x).sum();
     Ok(sum_squares / n)
 }
 
@@ -1013,15 +1024,15 @@ fn calc_signal_power<T: UnsortedDataSliceOps>(stats: &T) -> Result<Real> {
 /// - Higher values indicate cleaner signals
 /// - Often converted to decibels
 pub fn calc_signal_to_noise_ratio<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
 ) -> Result<Real> {
-    if stats.data().is_empty() {
+    if data_slice.data().is_empty() {
         bail!(StatisticsError::EmptyDataSlice);
     }
 
-    let mean = stats.mean();
-    let noise_power = calc_population_variance(stats)?;
-    let signal_power = calc_signal_power(stats)?;
+    let mean = data_slice.mean();
+    let noise_power = calc_population_variance(data_slice)?;
+    let signal_power = calc_signal_power(data_slice)?;
 
     if noise_power == 0.0 {
         Ok(Real::INFINITY)
@@ -1041,9 +1052,9 @@ pub fn calc_signal_to_noise_ratio<T: UnsortedDataSliceOps>(
 /// - Compare signal strength to noise
 /// - Evaluate data quality
 pub fn calc_signal_to_noise_ratio_as_decibels<T: UnsortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
 ) -> Result<Real> {
-    let result = calc_signal_to_noise_ratio(stats)?;
+    let result = calc_signal_to_noise_ratio(data_slice)?;
     if result.is_nan() {
         bail!(StatisticsError::OutputValueIsNaN);
     }
@@ -1112,21 +1123,21 @@ fn calc_median(sorted_data: &[Real]) -> Result<Real> {
 /// - Requires sorted input
 /// - More robust than standard deviation
 /// - Useful for non-normal distributions
-fn calc_median_absolute_deviation<T: SortedDataSliceOps>(
-    stats: &T,
+pub fn calc_median_absolute_deviation<T: SortedDataSliceOps>(
+    data_slice: &T,
     out_sorted_deviations: &mut [Real],
 ) -> Result<Real> {
-    if stats.data().is_empty() {
+    if data_slice.data().is_empty() {
         bail!(StatisticsError::EmptyDataSlice);
     }
-    if stats.data().len() != out_sorted_deviations.len() {
+    if data_slice.data().len() != out_sorted_deviations.len() {
         bail!(StatisticsError::DataLengthNotEqual);
     }
 
-    let median = stats.median();
+    let median = data_slice.median();
 
     // Calculate absolute deviations.
-    for (i, value) in stats.data().iter().enumerate() {
+    for (i, value) in data_slice.data().iter().enumerate() {
         out_sorted_deviations[i] = (value - median).abs();
     }
     out_sorted_deviations.sort_by(|a, b| a.partial_cmp(b).unwrap());
@@ -1145,28 +1156,29 @@ fn calc_median_absolute_deviation<T: SortedDataSliceOps>(
 /// - Robust outlier detection
 /// - Alternative to z-scores
 /// - Better for non-normal distributions
-fn calc_median_absolute_deviation_sigma<T: SortedDataSliceOps>(
+pub fn calc_median_absolute_deviation_sigma<T: SortedDataSliceOps>(
     value: Real,
-    stats: &T,
+    data_slice: &T,
     out_sorted_deviations: &mut [Real],
 ) -> Result<Real> {
     if !value.is_finite() {
         bail!(StatisticsError::InputValueIsNotFinite);
     }
-    if stats.data().is_empty() {
+    if data_slice.data().is_empty() {
         bail!(StatisticsError::EmptyDataSlice);
     }
-    if stats.data().len() != out_sorted_deviations.len() {
+    if data_slice.data().len() != out_sorted_deviations.len() {
         bail!(StatisticsError::DataLengthNotEqual);
     }
 
-    let median = calc_median(stats.data())?;
-    let mad = calc_median_absolute_deviation(stats, out_sorted_deviations)?;
+    let median = calc_median(data_slice.data())?;
+    let mad =
+        calc_median_absolute_deviation(data_slice, out_sorted_deviations)?;
 
     // 1.4826 is scaling factor for normal distribution.
     let scaled_mad = mad * 1.4826;
 
-    Ok((value - median) / scaled_mad)
+    Ok((value - median) / scaled_mad.max(1e-10))
 }
 
 /// Calculate quantile using Type 7 method for interpolation.
@@ -1182,10 +1194,10 @@ fn calc_median_absolute_deviation_sigma<T: SortedDataSliceOps>(
 /// Returns:
 ///   * Ok(Real) with the calculated quantile, or Err if input is invalid.
 pub fn calc_quantile<T: SortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
     probability: Real,
 ) -> Result<Real> {
-    if stats.data().is_empty() {
+    if data_slice.data().is_empty() {
         bail!(StatisticsError::EmptyDataSlice);
     }
     if probability < 0.0 {
@@ -1195,7 +1207,7 @@ pub fn calc_quantile<T: SortedDataSliceOps>(
         bail!(StatisticsError::PValueIsTooHigh);
     }
 
-    let n = stats.data().len();
+    let n = data_slice.data().len();
 
     // Calculate the theoretical position.
     let h = (n - 1) as Real * probability + 1.0;
@@ -1205,8 +1217,8 @@ pub fn calc_quantile<T: SortedDataSliceOps>(
     let j = (h.ceil() - 1.0).min((n - 1) as Real) as usize;
 
     // Get the actual values at those positions
-    let x_i = stats.data()[i];
-    let x_j = stats.data()[j];
+    let x_i = data_slice.data()[i];
+    let x_j = data_slice.data()[j];
 
     // Calculate interpolation factor.
     let gamma = if i == j { 1.0 } else { h - h.floor() };
@@ -1227,11 +1239,11 @@ pub fn calc_quantile<T: SortedDataSliceOps>(
 /// - Uses linear interpolation.
 /// - Robust to outliers.
 pub fn calc_quartiles<T: SortedDataSliceOps>(
-    stats: &T,
+    data_slice: &T,
 ) -> Result<(Real, Real, Real)> {
-    let q1 = calc_quantile(stats, 0.25)?;
-    let q2 = calc_quantile(stats, 0.5)?;
-    let q3 = calc_quantile(stats, 0.75)?;
+    let q1 = calc_quantile(data_slice, 0.25)?;
+    let q2 = calc_quantile(data_slice, 0.5)?;
+    let q3 = calc_quantile(data_slice, 0.75)?;
     Ok((q1, q2, q3))
 }
 
@@ -1252,15 +1264,54 @@ pub fn calc_quartiles<T: SortedDataSliceOps>(
 /// - Requires sorted input
 /// - Robust to outliers
 /// - Used in box plot construction
-fn calc_interquartile_range<T: SortedDataSliceOps>(stats: &T) -> Result<Real> {
-    if stats.data().is_empty() {
+fn calc_interquartile_range<T: SortedDataSliceOps>(
+    data_slice: &T,
+) -> Result<Real> {
+    if data_slice.data().is_empty() {
         bail!(StatisticsError::EmptyDataSlice);
     }
 
-    let (q1, q2, q3) = calc_quartiles(stats)?;
+    let (q1, q2, q3) = calc_quartiles(data_slice)?;
 
     // Return IQR (Q3 - Q1)
     Ok(q3 - q1)
+}
+
+/// Calculate the percentile rank for a single value within a dataset.
+///
+/// This function determines what percentage of values in the dataset fall below
+/// the given value. For example, if a value is at the 75th percentile, 75% of
+/// values in the dataset are less than or equal to it.
+///
+/// Arguments:
+///   * data_slice: Slice of data values, must be sorted in ascending order.
+///   * value: The value to find the percentile for.
+///
+/// Returns:
+///   * Percentile as a value between 0.0 and 100.0
+pub fn calc_percentile_rank<T: SortedDataSliceOps>(
+    data_slice: &T,
+    value: Real,
+) -> Result<Real> {
+    if data_slice.data().is_empty() {
+        bail!(StatisticsError::EmptyDataSlice);
+    }
+
+    let data = data_slice.data();
+    let n = data.len();
+
+    // Count values less than our target value
+    let mut count = 0;
+
+    for &x in data {
+        if x < value {
+            count += 1;
+        }
+    }
+
+    // Calculate percentile rank.
+    // Multiply by 100 to get percentage.
+    Ok((count as Real / n as Real) * 100.0)
 }
 
 #[cfg(test)]
@@ -1270,8 +1321,8 @@ mod tests {
 
     const EPSILON: Real = 1e-6;
 
-    fn compute_mean<T: UnsortedDataSliceOps>(stats: T) -> Real {
-        stats.mean()
+    fn compute_mean<T: UnsortedDataSliceOps>(data_slice: T) -> Real {
+        data_slice.mean()
     }
 
     #[test]
@@ -1279,7 +1330,7 @@ mod tests {
         let unsorted_data = vec![5.0, 1.0, 3.0, 2.0, 4.0];
         let sorted_data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
 
-        // Create both types of stats
+        // Create both types of data_slice
         let unsorted = UnsortedDataSlice::new(&unsorted_data, None).unwrap();
         let sorted = SortedDataSlice::new(&sorted_data, None, None).unwrap();
 
@@ -1296,16 +1347,16 @@ mod tests {
     #[test]
     fn test_unsorted_specific_ops() {
         let data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        let stats = UnsortedDataSlice::new(&data, None).unwrap();
-        assert_relative_eq!(stats.mean(), 3.0, epsilon = EPSILON);
+        let data_slice = UnsortedDataSlice::new(&data, None).unwrap();
+        assert_relative_eq!(data_slice.mean(), 3.0, epsilon = EPSILON);
     }
 
     #[test]
     fn test_sorted_specific_ops() {
         let data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        let stats = SortedDataSlice::new(&data, None, None).unwrap();
-        assert_relative_eq!(stats.mean(), 3.0, epsilon = EPSILON);
-        assert_relative_eq!(stats.median(), 3.0, epsilon = EPSILON);
+        let data_slice = SortedDataSlice::new(&data, None, None).unwrap();
+        assert_relative_eq!(data_slice.mean(), 3.0, epsilon = EPSILON);
+        assert_relative_eq!(data_slice.median(), 3.0, epsilon = EPSILON);
     }
 
     #[test]
@@ -1352,9 +1403,9 @@ mod tests {
     #[test]
     fn test_population_standard_deviation() -> Result<()> {
         let data = vec![2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let std_dev = calc_population_standard_deviation(&stats)?;
-        assert_relative_eq!(stats.mean(), 5.0, epsilon = EPSILON);
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let std_dev = calc_population_standard_deviation(&data_slice)?;
+        assert_relative_eq!(data_slice.mean(), 5.0, epsilon = EPSILON);
         assert_relative_eq!(std_dev, 2.0, epsilon = EPSILON);
 
         Ok(())
@@ -1363,9 +1414,9 @@ mod tests {
     #[test]
     fn test_sample_standard_deviation() -> Result<()> {
         let data = vec![2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let std_dev = calc_sample_standard_deviation(&stats)?;
-        assert_relative_eq!(stats.mean(), 5.0, epsilon = EPSILON);
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let std_dev = calc_sample_standard_deviation(&data_slice)?;
+        assert_relative_eq!(data_slice.mean(), 5.0, epsilon = EPSILON);
         assert_relative_eq!(std_dev, 2.13808994, epsilon = EPSILON);
 
         Ok(())
@@ -1374,9 +1425,10 @@ mod tests {
     #[test]
     fn test_population_relative_standard_deviation() -> Result<()> {
         let data = vec![2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let rel_std_dev = calc_population_relative_standard_deviation(&stats)?;
-        assert_relative_eq!(stats.mean(), 5.0, epsilon = EPSILON);
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let rel_std_dev =
+            calc_population_relative_standard_deviation(&data_slice)?;
+        assert_relative_eq!(data_slice.mean(), 5.0, epsilon = EPSILON);
         assert_relative_eq!(rel_std_dev, 40.0, epsilon = EPSILON);
 
         Ok(())
@@ -1385,9 +1437,9 @@ mod tests {
     #[test]
     fn test_sample_relative_standard_deviation() -> Result<()> {
         let data = vec![2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let rel_std_dev = calc_sample_relative_standard_deviation(&stats)?;
-        assert_relative_eq!(stats.mean(), 5.0, epsilon = EPSILON);
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let rel_std_dev = calc_sample_relative_standard_deviation(&data_slice)?;
+        assert_relative_eq!(data_slice.mean(), 5.0, epsilon = EPSILON);
         assert_relative_eq!(rel_std_dev, 42.7617987, epsilon = EPSILON);
 
         Ok(())
@@ -1401,13 +1453,13 @@ mod tests {
         //    z_scores
         let data =
             vec![6.0, 7.0, 7.0, 12.0, 13.0, 13.0, 15.0, 16.0, 19.0, 22.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let std_dev = calc_sample_standard_deviation(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let std_dev = calc_sample_standard_deviation(&data_slice)?;
         let expected_z_scores = &[
             -1.3228757, -1.1338934, -1.1338934, -0.1889822, 0.0000000,
             0.0000000, 0.3779645, 0.5669467, 1.1338934, 1.7008401,
         ];
-        let mean = stats.mean();
+        let mean = data_slice.mean();
         for (value, expected) in data.iter().zip(expected_z_scores) {
             let z_score = calc_z_score(mean, std_dev, *value);
             println!(
@@ -1422,8 +1474,8 @@ mod tests {
     #[test]
     fn test_population_variance() -> Result<()> {
         let data = vec![2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let variance = calc_population_variance(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let variance = calc_population_variance(&data_slice)?;
         assert_relative_eq!(variance, 4.0, epsilon = EPSILON);
 
         Ok(())
@@ -1432,8 +1484,8 @@ mod tests {
     #[test]
     fn test_sample_variance() -> Result<()> {
         let data = vec![2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let variance = calc_sample_variance(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let variance = calc_sample_variance(&data_slice)?;
         assert_relative_eq!(variance, 4.571428571428571, epsilon = EPSILON);
 
         Ok(())
@@ -1442,8 +1494,8 @@ mod tests {
     #[test]
     fn test_peak_to_peak() -> Result<()> {
         let data = vec![1.0, 3.0, -2.0, 4.0, 1.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let value = calc_peak_to_peak(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let value = calc_peak_to_peak(&data_slice)?;
         assert_relative_eq!(value, 6.0, epsilon = EPSILON);
 
         Ok(())
@@ -1458,8 +1510,8 @@ mod tests {
         //     x = c(-2.0, -1.0, 0.0, 1.0, 2.0)
         //     skewness(x, type = 1)
         let data = vec![-2.0, -1.0, 0.0, 1.0, 2.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let skewness = calc_skewness_type1(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let skewness = calc_skewness_type1(&data_slice)?;
         assert_relative_eq!(skewness, 0.0, epsilon = EPSILON);
 
         // Asymmetric distribution should have skewness not equal to 0.0.
@@ -1469,8 +1521,8 @@ mod tests {
         //     x = c(2.0, 1.0, 0.0, 1.0, 2.0)
         //     skewness(x, type = 1)
         let data = vec![2.0, 1.0, 0.0, 1.0, 2.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let skewness = calc_skewness_type1(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let skewness = calc_skewness_type1(&data_slice)?;
         assert_relative_eq!(skewness, -0.3436216, epsilon = EPSILON);
 
         // Asymmetric distribution should have skewness not equal to 0.0.
@@ -1480,8 +1532,8 @@ mod tests {
         //     x = c(-2.0, -1.0, 0.0, -1.0, -2.0)
         //     skewness(x, type = 1)
         let data = vec![-2.0, -1.0, 0.0, -1.0, -2.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let skewness = calc_skewness_type1(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let skewness = calc_skewness_type1(&data_slice)?;
         assert_relative_eq!(skewness, 0.3436216, epsilon = EPSILON);
 
         Ok(())
@@ -1496,8 +1548,8 @@ mod tests {
         //     x = c(-2.0, -1.0, 0.0, 1.0, 2.0)
         //     skewness(x, type = 2)
         let data = vec![-2.0, -1.0, 0.0, 1.0, 2.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let skewness = calc_skewness_type2(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let skewness = calc_skewness_type2(&data_slice)?;
         assert_relative_eq!(skewness, 0.0, epsilon = EPSILON);
 
         // Asymmetric distribution should have skewness not equal to 0.0.
@@ -1507,8 +1559,8 @@ mod tests {
         //     x = c(2.0, 1.0, 0.0, 1.0, 2.0)
         //     skewness(x, type = 2)
         let data = vec![2.0, 1.0, 0.0, 1.0, 2.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let skewness = calc_skewness_type2(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let skewness = calc_skewness_type2(&data_slice)?;
         assert_relative_eq!(skewness, -0.5122408, epsilon = EPSILON);
 
         // Asymmetric distribution should have skewness not equal to 0.0.
@@ -1518,8 +1570,8 @@ mod tests {
         //     x = c(-2.0, -1.0, 0.0, -1.0, -2.0)
         //     skewness(x, type = 2)
         let data = vec![-2.0, -1.0, -0.0, -1.0, -2.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let skewness = calc_skewness_type2(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let skewness = calc_skewness_type2(&data_slice)?;
         assert_relative_eq!(skewness, 0.5122408, epsilon = EPSILON);
 
         Ok(())
@@ -1529,11 +1581,12 @@ mod tests {
     fn test_population_kurtosis_excess() -> Result<()> {
         // Normal distribution should have excess kurtosis close to 0
         let data = vec![-2.0, -1.0, 0.0, 1.0, 2.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let std_dev = calc_population_standard_deviation(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let std_dev = calc_population_standard_deviation(&data_slice)?;
         let kurtosis_excess_a =
-            calc_population_kurtosis_excess(&stats, Some(std_dev))?;
-        let kurtosis_excess_b = calc_population_kurtosis_excess(&stats, None)?;
+            calc_population_kurtosis_excess(&data_slice, Some(std_dev))?;
+        let kurtosis_excess_b =
+            calc_population_kurtosis_excess(&data_slice, None)?;
         assert_relative_eq!(kurtosis_excess_a, -1.3, epsilon = EPSILON);
         assert_relative_eq!(
             kurtosis_excess_a,
@@ -1548,11 +1601,11 @@ mod tests {
     fn test_sample_kurtosis_excess() -> Result<()> {
         // Normal distribution should have excess kurtosis close to 0
         let data = vec![-2.0, -1.0, 0.0, 1.0, 2.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let std_dev = calc_sample_standard_deviation(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let std_dev = calc_sample_standard_deviation(&data_slice)?;
         let kurtosis_excess_a =
-            calc_sample_kurtosis_excess(&stats, Some(std_dev))?;
-        let kurtosis_excess_b = calc_sample_kurtosis_excess(&stats, None)?;
+            calc_sample_kurtosis_excess(&data_slice, Some(std_dev))?;
+        let kurtosis_excess_b = calc_sample_kurtosis_excess(&data_slice, None)?;
         assert_relative_eq!(kurtosis_excess_a, -1.2, epsilon = EPSILON);
         assert_relative_eq!(
             kurtosis_excess_a,
@@ -1566,11 +1619,12 @@ mod tests {
     #[test]
     fn test_population_chi_squared() -> Result<()> {
         let data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let std_dev = calc_population_standard_deviation(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let std_dev = calc_population_standard_deviation(&data_slice)?;
         let chi_squared_a =
-            calc_population_chi_squared_test(&stats, Some(std_dev))?;
-        let chi_squared_b = calc_population_chi_squared_test(&stats, None)?;
+            calc_population_chi_squared_test(&data_slice, Some(std_dev))?;
+        let chi_squared_b =
+            calc_population_chi_squared_test(&data_slice, None)?;
         assert_relative_eq!(chi_squared_a, 8.60323599477829, epsilon = EPSILON);
         assert_relative_eq!(chi_squared_a, chi_squared_b, epsilon = EPSILON);
 
@@ -1580,8 +1634,8 @@ mod tests {
     #[test]
     fn test_local_minima_maxima() -> Result<()> {
         let data = vec![1.0, 3.0, 2.0, 4.0, 1.0, 5.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let points = calc_local_minima_maxima(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let points = calc_local_minima_maxima(&data_slice)?;
         assert_eq!(points, vec![1, 2, 3, 4]);
 
         Ok(())
@@ -1591,25 +1645,25 @@ mod tests {
     fn test_signal_to_noise_ratio() -> Result<()> {
         // Test clean signal #1
         let data = vec![1.0, 1.0, 1.0, 1.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let snr = calc_signal_to_noise_ratio(&stats)?;
-        let snr_db = calc_signal_to_noise_ratio_as_decibels(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let snr = calc_signal_to_noise_ratio(&data_slice)?;
+        let snr_db = calc_signal_to_noise_ratio_as_decibels(&data_slice)?;
         println!("Clean Signal #1: snr={} snr={}dB", snr, snr_db);
         assert!(snr.is_infinite());
 
         // Test clean signal #2
         let data = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let snr = calc_signal_to_noise_ratio(&stats)?;
-        let snr_db = calc_signal_to_noise_ratio_as_decibels(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let snr = calc_signal_to_noise_ratio(&data_slice)?;
+        let snr_db = calc_signal_to_noise_ratio_as_decibels(&data_slice)?;
         println!("Clean Signal #2: snr={} snr={}dB", snr, snr_db);
         assert!(snr.is_finite());
 
         // Test noisy signal
         let data = vec![1.0, 1.1, 0.9, 1.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let snr = calc_signal_to_noise_ratio(&stats)?;
-        let snr_db = calc_signal_to_noise_ratio_as_decibels(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let snr = calc_signal_to_noise_ratio(&data_slice)?;
+        let snr_db = calc_signal_to_noise_ratio_as_decibels(&data_slice)?;
         println!("Noisy Signal: snr={} snr={}dB", snr, snr_db);
         assert!(snr.is_finite());
 
@@ -1618,9 +1672,9 @@ mod tests {
             53.0, 65.0, 68.0, 69.0, 70.0, 72.0, 79.0, 84.0, 85.0, 87.0, 89.0,
             90.0, 94.0,
         ];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let snr = calc_signal_to_noise_ratio(&stats)?;
-        let snr_db = calc_signal_to_noise_ratio_as_decibels(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let snr = calc_signal_to_noise_ratio(&data_slice)?;
+        let snr_db = calc_signal_to_noise_ratio_as_decibels(&data_slice)?;
         println!("Real-world Signal: snr={} snr={}dB", snr, snr_db);
         assert!(snr.is_finite());
 
@@ -1645,8 +1699,8 @@ mod tests {
     #[test]
     fn test_mean_absolute_deviation() -> Result<()> {
         let data = vec![1.0, 1.0, 2.0, 2.0, 4.0, 6.0, 9.0];
-        let stats = UnsortedDataSlice::new(&data, None)?;
-        let value = calc_mean_absolute_deviation(&stats)?;
+        let data_slice = UnsortedDataSlice::new(&data, None)?;
+        let value = calc_mean_absolute_deviation(&data_slice)?;
         assert_relative_eq!(value, 2.36734694, epsilon = EPSILON);
 
         Ok(())
@@ -1656,9 +1710,11 @@ mod tests {
     fn test_median_absolute_deviation() -> Result<()> {
         let sorted_data = vec![1.0, 1.0, 2.0, 2.0, 4.0, 6.0, 9.0];
         let mut sorted_deviations: Vec<Real> = vec![0.0; 7];
-        let stats = SortedDataSlice::new(&sorted_data, None, None)?;
-        let value =
-            calc_median_absolute_deviation(&stats, &mut sorted_deviations)?;
+        let data_slice = SortedDataSlice::new(&sorted_data, None, None)?;
+        let value = calc_median_absolute_deviation(
+            &data_slice,
+            &mut sorted_deviations,
+        )?;
         assert_relative_eq!(value, 1.0, epsilon = EPSILON);
 
         Ok(())
@@ -1668,10 +1724,10 @@ mod tests {
     fn test_median_absolute_deviation_sigma() -> Result<()> {
         let sorted_data = vec![1.0, 1.0, 2.0, 2.0, 4.0, 6.0, 9.0];
         let mut sorted_deviations: Vec<Real> = vec![0.0; 7];
-        let stats = SortedDataSlice::new(&sorted_data, None, None)?;
+        let data_slice = SortedDataSlice::new(&sorted_data, None, None)?;
         let value = calc_median_absolute_deviation_sigma(
             2.0,
-            &stats,
+            &data_slice,
             &mut sorted_deviations,
         )?;
         assert_relative_eq!(value, 0.0, epsilon = EPSILON);
@@ -1684,18 +1740,18 @@ mod tests {
         // Test 50% quantile is median value.
         let sorted_data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
         let median = calc_median(&sorted_data)?;
-        let stats = SortedDataSlice::new(&sorted_data, None, None)?;
-        let q2 = calc_quantile(&stats, 0.5)?;
+        let data_slice = SortedDataSlice::new(&sorted_data, None, None)?;
+        let q2 = calc_quantile(&data_slice, 0.5)?;
         assert_relative_eq!(q2, median, epsilon = EPSILON);
 
         // Basic quantiles.
         let sorted_data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        let stats = SortedDataSlice::new(&sorted_data, None, None)?;
-        let q0 = calc_quantile(&stats, 0.0)?;
-        let q1 = calc_quantile(&stats, 0.25)?;
-        let q2 = calc_quantile(&stats, 0.5)?;
-        let q3 = calc_quantile(&stats, 0.75)?;
-        let q4 = calc_quantile(&stats, 1.0)?;
+        let data_slice = SortedDataSlice::new(&sorted_data, None, None)?;
+        let q0 = calc_quantile(&data_slice, 0.0)?;
+        let q1 = calc_quantile(&data_slice, 0.25)?;
+        let q2 = calc_quantile(&data_slice, 0.5)?;
+        let q3 = calc_quantile(&data_slice, 0.75)?;
+        let q4 = calc_quantile(&data_slice, 1.0)?;
         assert_relative_eq!(q0, 1.0, epsilon = EPSILON);
         assert_relative_eq!(q1, 2.0, epsilon = EPSILON);
         assert_relative_eq!(q2, 3.0, epsilon = EPSILON);
@@ -1704,23 +1760,23 @@ mod tests {
 
         // Interpolated quantiles.
         let sorted_data = vec![1.0, 2.0, 3.0, 4.0];
-        let stats = SortedDataSlice::new(&sorted_data, None, None)?;
-        let q1 = calc_quantile(&stats, 0.25)?;
-        let q2 = calc_quantile(&stats, 0.5)?;
-        let q3 = calc_quantile(&stats, 0.75)?;
+        let data_slice = SortedDataSlice::new(&sorted_data, None, None)?;
+        let q1 = calc_quantile(&data_slice, 0.25)?;
+        let q2 = calc_quantile(&data_slice, 0.5)?;
+        let q3 = calc_quantile(&data_slice, 0.75)?;
         assert_relative_eq!(q2, 2.5, epsilon = EPSILON);
         assert_relative_eq!(q1, 1.75, epsilon = EPSILON);
         assert_relative_eq!(q3, 3.25, epsilon = EPSILON);
 
         // Edge cases.
         let single = vec![1.0];
-        let stats = SortedDataSlice::new(&single, None, None)?;
-        let q2 = calc_quantile(&stats, 0.5)?;
+        let data_slice = SortedDataSlice::new(&single, None, None)?;
+        let q2 = calc_quantile(&data_slice, 0.5)?;
         assert_relative_eq!(q2, 1.0, epsilon = EPSILON);
 
         let data = vec![1.0, 2.0];
-        let stats = SortedDataSlice::new(&data, None, None)?;
-        let q2 = calc_quantile(&stats, 0.5)?;
+        let data_slice = SortedDataSlice::new(&data, None, None)?;
+        let q2 = calc_quantile(&data_slice, 0.5)?;
         assert_relative_eq!(q2, 1.5, epsilon = EPSILON);
 
         Ok(())
@@ -1735,9 +1791,9 @@ mod tests {
         //     x = c(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
         //     quantile(x, probs = c(0,0.25,0.5,0.75,1))
         let sorted_data = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0];
-        let stats = SortedDataSlice::new(&sorted_data, None, None)?;
+        let data_slice = SortedDataSlice::new(&sorted_data, None, None)?;
         let median = calc_median(&sorted_data);
-        let (q1, q2, q3) = calc_quartiles(&stats)?;
+        let (q1, q2, q3) = calc_quartiles(&data_slice)?;
         assert_relative_eq!(q1, 2.5, epsilon = EPSILON); // Q1
         assert_relative_eq!(q2, 4.0, epsilon = EPSILON); // Q2 (median)
         assert_relative_eq!(q3, 5.5, epsilon = EPSILON); // Q3
@@ -1751,9 +1807,9 @@ mod tests {
         //     x = c(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0)
         //     IQR(x)
         let sorted_data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        let stats = SortedDataSlice::new(&sorted_data, None, None)?;
+        let data_slice = SortedDataSlice::new(&sorted_data, None, None)?;
         assert_relative_eq!(
-            calc_interquartile_range(&stats).unwrap(),
+            calc_interquartile_range(&data_slice).unwrap(),
             2.0,
             epsilon = EPSILON
         );
@@ -1765,9 +1821,9 @@ mod tests {
             53.0, 65.0, 68.0, 69.0, 70.0, 72.0, 79.0, 84.0, 85.0, 87.0, 89.0,
             90.0, 94.0,
         ];
-        let stats = SortedDataSlice::new(&sorted_data, None, None)?;
+        let data_slice = SortedDataSlice::new(&sorted_data, None, None)?;
         assert_relative_eq!(
-            calc_interquartile_range(&stats).unwrap(),
+            calc_interquartile_range(&data_slice).unwrap(),
             18.0,
             epsilon = EPSILON
         );
@@ -1776,13 +1832,32 @@ mod tests {
         //     x = c(2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0)
         //     IQR(x)
         let sorted_data = vec![2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0];
-        let stats = SortedDataSlice::new(&sorted_data, None, None)?;
+        let data_slice = SortedDataSlice::new(&sorted_data, None, None)?;
         assert_relative_eq!(
-            calc_interquartile_range(&stats).unwrap(),
+            calc_interquartile_range(&data_slice).unwrap(),
             1.5,
             epsilon = EPSILON
         );
 
         Ok(())
+    }
+
+    #[test]
+    fn test_percentile_rank() {
+        let data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let sorted_slice = SortedDataSlice::new(&data).unwrap();
+
+        assert_eq!(calc_percentile_rank(&sorted_slice, 1.0).unwrap(), 0.0);
+        assert_eq!(calc_percentile_rank(&sorted_slice, 3.0).unwrap(), 50.0);
+        assert_eq!(calc_percentile_rank(&sorted_slice, 5.0).unwrap(), 100.0);
+    }
+
+    #[test]
+    fn test_all_percentile_ranks() {
+        let data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let sorted_slice = SortedDataSlice::new(&data).unwrap();
+
+        let percentiles = calc_all_percentile_ranks(&sorted_slice).unwrap();
+        assert_eq!(percentiles, vec![0.0, 25.0, 50.0, 75.0, 100.0]);
     }
 }

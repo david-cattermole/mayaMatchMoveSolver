@@ -24,6 +24,7 @@ use log::debug;
 use std::cmp::Ordering;
 use thiserror::Error;
 
+use crate::constant::Real;
 use crate::curve::pyramid::build_pyramid_levels;
 use crate::curve::pyramid::compute_pyramid_depth;
 use crate::curve::pyramid::PyramidLevel;
@@ -51,9 +52,9 @@ pub enum KeypointType {
 /// Keypoint with importance score used for sorting.
 #[derive(Debug, Clone)]
 pub struct RankedKeypoint {
-    pub time: f64,
-    pub value: f64,
-    pub importance: f64,
+    pub time: Real,
+    pub value: Real,
+    pub importance: Real,
     pub level_detected: usize,
     pub keypoint_type: KeypointType,
 }
@@ -90,11 +91,11 @@ impl Eq for RankedKeypoint {}
 
 /// Compute importance for different keypoint types.
 fn compute_extreme_value_importance(
-    curr_value: f64,
-    prev_value: f64,
-    next_value: f64,
-    curr_curvature: f64,
-) -> f64 {
+    curr_value: Real,
+    prev_value: Real,
+    next_value: Real,
+    curr_curvature: Real,
+) -> Real {
     let value_diff = ((curr_value - prev_value).abs()
         + (curr_value - next_value).abs())
         / 2.0;
@@ -102,11 +103,11 @@ fn compute_extreme_value_importance(
     value_diff * curvature_weight
 }
 
-fn compute_inflection_importance(velocity: f64, curvature: f64) -> f64 {
+fn compute_inflection_importance(velocity: Real, curvature: Real) -> Real {
     curvature.abs() * (1.0 + velocity.abs())
 }
 
-fn compute_velocity_importance(velocity: f64, acceleration: f64) -> f64 {
+fn compute_velocity_importance(velocity: Real, acceleration: Real) -> Real {
     velocity.abs() * (1.0 + acceleration.abs())
 }
 
@@ -223,8 +224,8 @@ fn detect_level_keypoints(
 
 /// Check if point is near any existing keypoint.
 fn is_near_existing_keypoint(
-    time: f64,
-    scale: f64,
+    time: Real,
+    scale: Real,
     existing_keypoints: &[RankedKeypoint],
 ) -> bool {
     // Larger scale values are lower-resolution levels - each sample
@@ -242,7 +243,7 @@ fn is_near_existing_keypoint(
 }
 
 /// Validates input curve data.
-fn validate_curve_data(times: &[f64], values: &[f64]) -> Result<()> {
+fn validate_curve_data(times: &[Real], values: &[Real]) -> Result<()> {
     debug!("validate_curve_data: values.len()={:?}", values.len());
     debug!("validate_curve_data: times.len()={:?}", times.len());
 
@@ -287,7 +288,7 @@ fn process_pyramid_levels(
             all_keypoints.push(RankedKeypoint {
                 time: base_level.times[0],
                 value: base_level.values[0],
-                importance: f64::INFINITY, // Ensure endpoints are kept.
+                importance: Real::INFINITY, // Ensure endpoints are kept.
                 level_detected: 0,
                 keypoint_type: KeypointType::Endpoint,
             });
@@ -297,7 +298,7 @@ fn process_pyramid_levels(
             all_keypoints.push(RankedKeypoint {
                 time: base_level.times[last],
                 value: base_level.values[last],
-                importance: f64::INFINITY,
+                importance: Real::INFINITY,
                 level_detected: 0,
                 keypoint_type: KeypointType::Endpoint,
             });
@@ -330,7 +331,7 @@ fn process_pyramid_levels(
 fn filter_keypoints_by_type_and_level(
     only_keypoint_type: KeypointType,
     only_level_detected: usize,
-    min_spacing: f64,
+    min_spacing: Real,
     target_keypoints: usize,
     keypoints: &[RankedKeypoint],
     out_keypoints: &mut Vec<RankedKeypoint>,
@@ -408,7 +409,7 @@ fn pick_keypoints(
     let mut selected = Vec::with_capacity(target_keypoints);
 
     // Always include endpoints (they should be the most important due
-    // to f64::INFINITY).
+    // to Real::INFINITY).
     for keypoint in all_keypoints
         .iter()
         .filter(|k| k.keypoint_type == KeypointType::Endpoint)
@@ -428,16 +429,16 @@ fn pick_keypoints(
     let min_time = all_keypoints
         .iter()
         .map(|k| k.time)
-        .fold(f64::INFINITY, f64::min);
+        .fold(Real::INFINITY, Real::min);
     let max_time = all_keypoints
         .iter()
         .map(|k| k.time)
-        .fold(f64::NEG_INFINITY, f64::max);
+        .fold(Real::NEG_INFINITY, Real::max);
     let time_range = max_time - min_time;
 
     // Minimum spacing between keypoints (adaptive based on target
     // count).
-    let min_spacing = time_range / (target_keypoints as f64 * 2.0);
+    let min_spacing = time_range / (target_keypoints as Real * 2.0);
 
     for level_num in (0..=max_level).rev() {
         filter_keypoints_by_type_and_level(
@@ -501,8 +502,8 @@ fn pick_keypoints(
 
 /// Main analysis function with robust error handling.
 pub fn analyze_curve(
-    times: &[f64],
-    values: &[f64],
+    times: &[Real],
+    values: &[Real],
     target_keypoints: usize,
 ) -> Result<Vec<RankedKeypoint>> {
     debug!("analyze_curve: times.len()={:?}", times.len());

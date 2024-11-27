@@ -50,9 +50,6 @@ enum StatisticsError {
     #[error("Data slice contains non-finite values.")]
     DataContainsNonFiniteValues,
 
-    #[error("Input value cannot be NaN.")]
-    InputValueIsNaN,
-
     #[error("Input value is not finite.")]
     InputValueIsNotFinite,
 
@@ -366,7 +363,7 @@ fn calc_mean(data: &[Real]) -> Result<Real> {
 /// - Returns units matching input data
 /// - More intuitive than variance for some applications
 /// - Used in robust statistics
-fn calc_mean_absolute_deviation<T: UnsortedDataSliceOps>(
+pub fn calc_mean_absolute_deviation<T: UnsortedDataSliceOps>(
     data_slice: &T,
 ) -> Result<Real> {
     if data_slice.data().is_empty() {
@@ -634,7 +631,9 @@ pub fn calc_z_score(mean: Real, std_dev: Real, value: Real) -> Real {
 /// - Measure total signal amplitude
 /// - Identify signal bounds
 /// - Quick variability assessment
-fn calc_peak_to_peak<T: UnsortedDataSliceOps>(data_slice: &T) -> Result<Real> {
+pub fn calc_peak_to_peak<T: UnsortedDataSliceOps>(
+    data_slice: &T,
+) -> Result<Real> {
     if data_slice.data().is_empty() {
         bail!(StatisticsError::EmptyDataSlice);
     }
@@ -678,7 +677,7 @@ fn calc_peak_to_peak<T: UnsortedDataSliceOps>(data_slice: &T) -> Result<Real> {
 /// - Positive values indicate right skew
 /// - Negative values indicate left skew
 /// - Zero indicates symmetry
-fn calc_skewness_type1<T: UnsortedDataSliceOps>(
+pub fn calc_skewness_type1<T: UnsortedDataSliceOps>(
     data_slice: &T,
 ) -> Result<Real> {
     if data_slice.data().len() < 2 {
@@ -733,7 +732,7 @@ fn calc_skewness_type1<T: UnsortedDataSliceOps>(
 /// - Includes bias correction
 /// - Standard method in SAS and SPSS
 /// - Negative values indicate left skew
-fn calc_skewness_type2<T: UnsortedDataSliceOps>(
+pub fn calc_skewness_type2<T: UnsortedDataSliceOps>(
     data_slice: &T,
 ) -> Result<Real> {
     let mean = data_slice.mean();
@@ -783,7 +782,7 @@ fn calc_skewness_type2<T: UnsortedDataSliceOps>(
 /// - This is the population variant (not sample kurtosis)
 /// - Does not account for sample size bias
 /// - Sensitive to outliers
-fn calc_population_kurtosis_excess<T: UnsortedDataSliceOps>(
+pub fn calc_population_kurtosis_excess<T: UnsortedDataSliceOps>(
     data_slice: &T,
     std_dev: Option<Real>,
 ) -> Result<Real> {
@@ -840,7 +839,7 @@ fn calc_population_kurtosis_excess<T: UnsortedDataSliceOps>(
 /// - Requires at least 4 data points
 /// - Undefined for zero standard deviation
 /// - The correction factor adjusts for sample size bias
-fn calc_sample_kurtosis_excess<T: UnsortedDataSliceOps>(
+pub fn calc_sample_kurtosis_excess<T: UnsortedDataSliceOps>(
     data_slice: &T,
     std_dev: Option<Real>,
 ) -> Result<Real> {
@@ -876,75 +875,6 @@ fn calc_sample_kurtosis_excess<T: UnsortedDataSliceOps>(
     Ok(numerator / denominator - correction_factor)
 }
 
-/// Performs chi-squared test for goodness of fit to normal distribution.
-///
-/// Mathematics:
-/// chi^2 = sum((O - E)^2/E) where:
-/// - O is observed frequency
-/// - E is expected frequency
-///
-/// Usage:
-/// - Test for normality
-/// - Compare observed vs expected frequencies
-/// - Evaluate distribution fit
-fn calc_population_chi_squared_test<T: UnsortedDataSliceOps>(
-    data_slice: &T,
-    std_dev: Option<Real>,
-) -> Result<Real> {
-    let std_dev = match std_dev {
-        Some(value) => value,
-        None => calc_population_standard_deviation(data_slice)?,
-    };
-    if std_dev == 0.0 {
-        bail!(StatisticsError::OutputValueIsZero);
-    }
-
-    // Create histogram bins.
-    let n_bins = (data_slice.data().len() as Real).sqrt().round() as usize;
-    // TODO: Avoid allocation here.
-    let mut hist = vec![0.0; n_bins];
-
-    // Find range for binning.
-    let min_val = data_slice
-        .data()
-        .iter()
-        .fold(Real::INFINITY, |a, &b| a.min(b));
-    let max_val = data_slice
-        .data()
-        .iter()
-        .fold(Real::NEG_INFINITY, |a, &b| a.max(b));
-    let bin_width = (max_val - min_val) / n_bins as Real;
-
-    // Fill histogram.
-    for &value in data_slice.data() {
-        let bin = ((value - min_val) / bin_width).floor() as usize;
-        if bin < n_bins {
-            hist[bin] += 1.0;
-        }
-    }
-
-    // Calculate expected frequencies using normal distribution.
-    let mean = data_slice.mean();
-    let n = data_slice.data().len() as Real;
-    let chi_squared: Real = hist
-        .iter()
-        .enumerate()
-        .map(|(i, &observed)| {
-            let bin_center = min_val + (i as Real + 0.5) * bin_width;
-            let z = (bin_center - mean) / std_dev;
-            let expected = n * bin_width * gaussian(bin_center, mean, std_dev);
-
-            if expected > 0.0 {
-                (observed - expected).powi(2) / expected
-            } else {
-                0.0
-            }
-        })
-        .sum();
-
-    Ok(chi_squared)
-}
-
 /// Identifies local extrema (peaks and valleys) in a time series.
 ///
 /// Mathematics:
@@ -963,7 +893,7 @@ fn calc_population_chi_squared_test<T: UnsortedDataSliceOps>(
 /// - Simple derivative-based method.
 /// - Endpoints (first and last points) cannot be extrema in this
 ///   implementation.
-fn calc_local_minima_maxima<T: UnsortedDataSliceOps>(
+pub fn calc_local_minima_maxima<T: UnsortedDataSliceOps>(
     data_slice: &T,
 ) -> Result<Vec<usize>> {
     if data_slice.data().len() < 3 {
@@ -1030,7 +960,6 @@ pub fn calc_signal_to_noise_ratio<T: UnsortedDataSliceOps>(
         bail!(StatisticsError::EmptyDataSlice);
     }
 
-    let mean = data_slice.mean();
     let noise_power = calc_population_variance(data_slice)?;
     let signal_power = calc_signal_power(data_slice)?;
 
@@ -1264,14 +1193,14 @@ pub fn calc_quartiles<T: SortedDataSliceOps>(
 /// - Requires sorted input
 /// - Robust to outliers
 /// - Used in box plot construction
-fn calc_interquartile_range<T: SortedDataSliceOps>(
+pub fn calc_interquartile_range<T: SortedDataSliceOps>(
     data_slice: &T,
 ) -> Result<Real> {
     if data_slice.data().is_empty() {
         bail!(StatisticsError::EmptyDataSlice);
     }
 
-    let (q1, q2, q3) = calc_quartiles(data_slice)?;
+    let (q1, _q2, q3) = calc_quartiles(data_slice)?;
 
     // Return IQR (Q3 - Q1)
     Ok(q3 - q1)
@@ -1617,21 +1546,6 @@ mod tests {
     }
 
     #[test]
-    fn test_population_chi_squared() -> Result<()> {
-        let data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        let data_slice = UnsortedDataSlice::new(&data, None)?;
-        let std_dev = calc_population_standard_deviation(&data_slice)?;
-        let chi_squared_a =
-            calc_population_chi_squared_test(&data_slice, Some(std_dev))?;
-        let chi_squared_b =
-            calc_population_chi_squared_test(&data_slice, None)?;
-        assert_relative_eq!(chi_squared_a, 8.60323599477829, epsilon = EPSILON);
-        assert_relative_eq!(chi_squared_a, chi_squared_b, epsilon = EPSILON);
-
-        Ok(())
-    }
-
-    #[test]
     fn test_local_minima_maxima() -> Result<()> {
         let data = vec![1.0, 3.0, 2.0, 4.0, 1.0, 5.0];
         let data_slice = UnsortedDataSlice::new(&data, None)?;
@@ -1844,20 +1758,11 @@ mod tests {
 
     #[test]
     fn test_percentile_rank() {
-        let data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        let sorted_slice = SortedDataSlice::new(&data).unwrap();
+        let sorted_data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let data_slice = SortedDataSlice::new(&data, None, None).unwrap();
 
-        assert_eq!(calc_percentile_rank(&sorted_slice, 1.0).unwrap(), 0.0);
-        assert_eq!(calc_percentile_rank(&sorted_slice, 3.0).unwrap(), 50.0);
-        assert_eq!(calc_percentile_rank(&sorted_slice, 5.0).unwrap(), 100.0);
-    }
-
-    #[test]
-    fn test_all_percentile_ranks() {
-        let data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        let sorted_slice = SortedDataSlice::new(&data).unwrap();
-
-        let percentiles = calc_all_percentile_ranks(&sorted_slice).unwrap();
-        assert_eq!(percentiles, vec![0.0, 25.0, 50.0, 75.0, 100.0]);
+        assert_eq!(calc_percentile_rank(&data_slice, 1.0).unwrap(), 0.0);
+        assert_eq!(calc_percentile_rank(&data_slice, 3.0).unwrap(), 50.0);
+        assert_eq!(calc_percentile_rank(&data_slice, 5.0).unwrap(), 100.0);
     }
 }

@@ -92,7 +92,7 @@ class Attribute(object):
             if attr not in (attr_list_long + attr_list_short):
                 msg = 'Attribute not found on node. node=%r attr=%r'
                 LOG.error(msg, node, attr)
-                raise RuntimeError(msg)
+                raise RuntimeError(msg % (node, attr))
 
             node_attr = node + '.' + attr
             plug = node_utils.get_as_plug_apione(node_attr)

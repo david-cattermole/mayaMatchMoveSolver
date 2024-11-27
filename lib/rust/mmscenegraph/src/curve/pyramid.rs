@@ -212,8 +212,8 @@ fn downsample_curve_points(
             // Second to last point.
             let time = (prev_time + last_time) * 0.5;
             let value = (prev_value + last_value) * 0.5;
-            out_times.push(last_time);
-            out_values.push(last_value);
+            out_times.push(time);
+            out_values.push(value);
 
             // Last point.
             out_times.push(last_time);

@@ -20,6 +20,7 @@
 
 use anyhow::bail;
 use anyhow::Result;
+use log::debug;
 use std::cmp::Ordering;
 
 use crate::curve::curvature::allocate_curvature;
@@ -91,7 +92,7 @@ impl PyramidLevel {
 
 /// Computes appropriate pyramid depth based on input size.
 pub fn compute_pyramid_depth(input_size: usize) -> usize {
-    // debug!("compute_pyramid_depth: input_size={:?}", input_size);
+    debug!("compute_pyramid_depth: input_size={:?}", input_size);
 
     const MIN_LEVEL_SIZE: usize = 4;
     const MAX_DEPTH: usize = 10; // Prevent excessive depth.
@@ -107,24 +108,37 @@ pub fn compute_pyramid_depth(input_size: usize) -> usize {
     }
 
     let depth = depth.clamp(MIN_DEPTH, MAX_DEPTH);
-    // debug!("compute_pyramid_depth: depth={:?}", depth);
+    debug!("compute_pyramid_depth: depth={:?}", depth);
 
     depth
 }
 
-/// Down-sample handling variable intervals and odd/even counts, using a sliding window
-/// that considers previous, current, and next points for better curve preservation.
+/// Down-sample handling variable intervals and odd/even counts, using
+/// a sliding window that considers previous, current, and next points
+/// for better curve preservation.
 fn downsample_curve_points(
     times: &[f64],
     values: &[f64],
+    increment: usize,
 ) -> Result<(Vec<f64>, Vec<f64>)> {
-    // debug!("downsample_curve_points: times.len()={:?}", times.len());
-    // debug!("downsample_curve_points: values.len()={:?}", values.len());
-    assert_eq!(times.len(), values.len());
-
-    if times.len() < 2 {
-        return Ok((times.to_vec(), values.to_vec()));
+    debug!("downsample_curve_points: times.len()={:?}", times.len());
+    debug!("downsample_curve_points: values.len()={:?}", values.len());
+    debug!("downsample_curve_points: increment={:?}", increment);
+    if times.len() != values.len() {
+        bail!("Times and values slice lengths must match.");
     }
+    if times.len() < 2 {
+        bail!("Times and values are less than 2.");
+    }
+    if increment < 1 {
+        bail!("Invalid time intervals in curve points");
+    }
+
+    let half_increment = increment / 2;
+    debug!(
+        "downsample_curve_points: half_increment={:?}",
+        half_increment
+    );
 
     // TODO: Improve this guessed value.
     let approx_count = (times.len() / 2) + 1;
@@ -136,15 +150,15 @@ fn downsample_curve_points(
     out_values.push(values[0]);
 
     // Handle interior points using a sliding 3-point window.
-    let mut i = 1;
-    while i < times.len() - 1 {
+    let mut i = half_increment;
+    while i < times.len() - half_increment {
         let curr_time = times[i];
-        let prev_time = times[i - 1];
-        let next_time = times[i + 1];
+        let prev_time = times[i - half_increment];
+        let next_time = times[i + half_increment];
 
         let curr_value = values[i];
-        let prev_value = values[i - 1];
-        let next_value = values[i + 1];
+        let prev_value = values[i - half_increment];
+        let next_value = values[i + half_increment];
 
         // Time intervals between points.
         let dt_prev = curr_time - prev_time;
@@ -170,11 +184,11 @@ fn downsample_curve_points(
         out_times.push(weighted_time);
         out_values.push(weighted_value);
 
-        i += 2;
+        i += increment;
     }
 
     // Handle remaining points.
-    match times.len() - i {
+    match times.len().saturating_sub(i) {
         // One point remaining.
         1 => {
             let last_index = times.len() - 1;
@@ -211,7 +225,6 @@ fn downsample_curve_points(
         _ => {}
     }
 
-    // compute_metadata(&mut downsampled)?;
     Ok((out_times, out_values))
 }
 
@@ -223,7 +236,7 @@ fn compute_metadata(
     out_acceleration: &mut [f64],
     out_curvature: &mut [f64],
 ) -> Result<()> {
-    // debug!("compute_metadata: times.len()={:?}", times.len());
+    debug!("compute_metadata: times.len()={:?}", times.len());
 
     if times.len() < 2 {
         bail!("Insufficient points to compute derivatives. Minimum 2 points required.");
@@ -271,9 +284,9 @@ pub fn build_pyramid_levels(
     values: &[f64],
     num_levels: usize,
 ) -> Result<Vec<PyramidLevel>> {
-    // debug!("build_pyramid_levels: values.len()={:?}", values.len());
-    // debug!("build_pyramid_levels: times.len()={:?}", times.len());
-    // debug!("build_pyramid_levels: num_levels={:?}", num_levels);
+    debug!("build_pyramid_levels: values.len()={:?}", values.len());
+    debug!("build_pyramid_levels: times.len()={:?}", times.len());
+    debug!("build_pyramid_levels: num_levels={:?}", num_levels);
 
     let mut pyramid = Vec::with_capacity(num_levels);
 
@@ -287,6 +300,7 @@ pub fn build_pyramid_levels(
 
     // Build subsequent levels with validation
     for level_num in 1..num_levels {
+        debug!("build_pyramid_levels: level_num={level_num}");
         let prev_level = &pyramid[level_num - 1];
 
         if prev_level.times.len() < MIN_PYRAMID_CURVE_SAMPLES {
@@ -294,22 +308,27 @@ pub fn build_pyramid_levels(
         }
 
         let scale = pyramid_level_scale(level_num);
+        debug!("build_pyramid_levels: scale={scale}");
 
         // Using a smaller smooth width than the down-sampling seems
         // to provide more robust and uniform results.
         let smooth_width = scale * 0.5;
+        debug!("build_pyramid_levels: smooth_width={smooth_width}");
 
-        let mut smoothed_values = vec![0.0; prev_level.values.len()];
-        gaussian_smooth_2d(
-            &prev_level.times,
-            &prev_level.values,
-            smooth_width,
-            &mut smoothed_values,
-        )?;
+        let mut smoothed_values = vec![0.0; values.len()];
+        gaussian_smooth_2d(times, values, smooth_width, &mut smoothed_values)?;
+        debug!(
+            "build_pyramid_levels: smoothed_values.len()={}",
+            smoothed_values.len()
+        );
 
         // Reduce point count.
         let (downsampled_times, downsampled_values) =
-            downsample_curve_points(&prev_level.times, &smoothed_values)?;
+            downsample_curve_points(times, &smoothed_values, scale as usize)?;
+        debug!(
+            "build_pyramid_levels: downsampled_times.len()={}",
+            downsampled_times.len()
+        );
 
         let pyramid_level = create_pyramid_level(
             downsampled_times,

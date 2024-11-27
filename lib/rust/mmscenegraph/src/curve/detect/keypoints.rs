@@ -20,6 +20,7 @@
 
 use anyhow::bail;
 use anyhow::Result;
+use log::debug;
 use std::cmp::Ordering;
 use thiserror::Error;
 
@@ -80,7 +81,6 @@ impl PartialOrd for RankedKeypoint {
 
 impl PartialEq for RankedKeypoint {
     fn eq(&self, other: &Self) -> bool {
-        // self.importance == other.importance
         self.importance == other.importance
             && self.level_detected == other.level_detected
     }
@@ -116,17 +116,17 @@ fn detect_level_keypoints(
     existing_keypoints: &[RankedKeypoint],
     current_level: usize,
 ) -> Vec<RankedKeypoint> {
-    // println!("detect_level_keypoints: level.level={:?}", level.level);
-    // println!("detect_level_keypoints: level.scale={:?}", level.scale());
-    // println!(
-    //     "detect_level_keypoints: existing_keypoints.len()={:?}",
-    //     existing_keypoints.len()
-    // );
-    // println!(
-    //     "detect_level_keypoints: existing_keypoints={:?}",
-    //     existing_keypoints
-    // );
-    // println!("detect_level_keypoints: current_level={:?}", current_level);
+    debug!("detect_level_keypoints: level.level={:?}", level.level);
+    debug!("detect_level_keypoints: level.scale={:?}", level.scale());
+    debug!(
+        "detect_level_keypoints: existing_keypoints.len()={:?}",
+        existing_keypoints.len()
+    );
+    debug!(
+        "detect_level_keypoints: existing_keypoints={:?}",
+        existing_keypoints
+    );
+    debug!("detect_level_keypoints: current_level={:?}", current_level);
 
     let mut keypoints = Vec::new();
     let times = &level.times;
@@ -209,13 +209,13 @@ fn detect_level_keypoints(
         }
     }
 
-    // println!(
-    //     "detect_level_keypoints: keypoints.len()={:?}",
-    //     keypoints.len()
-    // );
-    // for keypoint in &keypoints {
-    //     println!("detect_level_keypoints: keypoint={:?}", keypoint);
-    // }
+    debug!(
+        "detect_level_keypoints: keypoints.len()={:?}",
+        keypoints.len()
+    );
+    for keypoint in &keypoints {
+        debug!("detect_level_keypoints: keypoint={:?}", keypoint);
+    }
 
     keypoints
 }
@@ -226,13 +226,6 @@ fn is_near_existing_keypoint(
     scale: f64,
     existing_keypoints: &[RankedKeypoint],
 ) -> bool {
-    // println!("is_near_existing_keypoint: time={:?}", time);
-    // println!("is_near_existing_keypoint: scale={:?}", scale);
-    // println!(
-    //     "is_near_existing_keypoint: existing_keypoints.len()={:?}",
-    //     existing_keypoints.len()
-    // );
-
     // Larger scale values are lower-resolution levels - each sample
     // represents a larger number of the original samples.
     let threshold = scale;
@@ -240,11 +233,6 @@ fn is_near_existing_keypoint(
     for existing_point in existing_keypoints.iter() {
         let time_diff = (time - existing_point.time).abs();
         if time_diff < threshold {
-            // println!(
-            //     "is_near_existing_keypoint: found close! time_diff={:?} | {:?}",
-            //     time_diff, existing_point
-            // );
-
             return true;
         }
     }
@@ -254,8 +242,8 @@ fn is_near_existing_keypoint(
 
 /// Validates input curve data.
 fn validate_curve_data(times: &[f64], values: &[f64]) -> Result<()> {
-    // println!("validate_curve_data: values.len()={:?}", values.len());
-    // println!("validate_curve_data: times.len()={:?}", times.len());
+    debug!("validate_curve_data: values.len()={:?}", values.len());
+    debug!("validate_curve_data: times.len()={:?}", times.len());
 
     // Check minimum size.
     if values.len() < 2 || times.len() < 2 {
@@ -269,7 +257,7 @@ fn validate_curve_data(times: &[f64], values: &[f64]) -> Result<()> {
 
     // Check strictly increasing time values.
     for i in 1..times.len() {
-        // println!("times[{}]={}", i, times[i]);
+        debug!("times[{}]={}", i, times[i]);
         if times[i - 1] >= times[i] {
             bail!(KeypointsError::NonSequentialTime);
         }
@@ -283,11 +271,11 @@ fn process_pyramid_levels(
     pyramids: &[PyramidLevel],
     target_keypoints: usize,
 ) -> Result<Vec<RankedKeypoint>> {
-    // println!("process_pyramid_levels: pyramids={:?}", pyramids);
-    // println!(
-    //     "process_pyramid_levels: target_keypoints={:?}",
-    //     target_keypoints
-    // );
+    debug!("process_pyramid_levels: pyramids={:?}", pyramids);
+    debug!(
+        "process_pyramid_levels: target_keypoints={:?}",
+        target_keypoints
+    );
 
     let mut all_keypoints = Vec::new();
 
@@ -386,16 +374,16 @@ fn pick_keypoints(
     max_level: usize,
     target_keypoints: usize,
 ) -> Vec<RankedKeypoint> {
-    // println!("pick_keypoints: max_level={:?}", max_level);
-    // println!("pick_keypoints: target_keypoints={:?}", target_keypoints);
+    debug!("pick_keypoints: max_level={:?}", max_level);
+    debug!("pick_keypoints: target_keypoints={:?}", target_keypoints);
 
-    // println!(
-    //     "pick_keypoints: all_keypoints.len()={:?}",
-    //     all_keypoints.len()
-    // );
-    // for (i, keypoint) in all_keypoints.iter().enumerate() {
-    //     println!("pick_keypoints: all_keypoints[{}]={:?}", i, keypoint);
-    // }
+    debug!(
+        "pick_keypoints: all_keypoints.len()={:?}",
+        all_keypoints.len()
+    );
+    for (i, keypoint) in all_keypoints.iter().enumerate() {
+        debug!("pick_keypoints: all_keypoints[{}]={:?}", i, keypoint);
+    }
 
     if target_keypoints == 0 {
         return Vec::new();
@@ -412,12 +400,9 @@ fn pick_keypoints(
         None => Ordering::Equal, // Handle NaN case
     });
 
-    // for (i, keypoint) in all_keypoints.iter().enumerate() {
-    //     println!(
-    //         "pick_keypoints: sorted keypoint[{}]={:?}",
-    //         i, keypoint
-    //     );
-    // }
+    for (i, keypoint) in all_keypoints.iter().enumerate() {
+        debug!("pick_keypoints: sorted keypoint[{}]={:?}", i, keypoint);
+    }
 
     let mut selected = Vec::with_capacity(target_keypoints);
 
@@ -519,9 +504,9 @@ pub fn analyze_curve(
     values: &[f64],
     target_keypoints: usize,
 ) -> Result<Vec<RankedKeypoint>> {
-    // println!("analyze_curve: times.len()={:?}", times.len());
-    // println!("analyze_curve: values.len()={:?}", values.len());
-    // println!("analyze_curve: target_keypoints={:?}", target_keypoints);
+    debug!("analyze_curve: times.len()={:?}", times.len());
+    debug!("analyze_curve: values.len()={:?}", values.len());
+    debug!("analyze_curve: target_keypoints={:?}", target_keypoints);
 
     // Add validation for target_keypoints
     if target_keypoints == 0 {

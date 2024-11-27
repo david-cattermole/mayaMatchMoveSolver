@@ -137,8 +137,8 @@ fn detect_level_keypoints(
 
     for i in 1..times.len() - 1 {
         let curr_time = times[i];
-        let prev_time = times[i - 1];
-        let next_time = times[i + 1];
+        let _prev_time = times[i - 1];
+        let _next_time = times[i + 1];
 
         let curr_value = values[i];
         let prev_value = values[i - 1];
@@ -150,11 +150,11 @@ fn detect_level_keypoints(
 
         let curr_acceleration = acceleration[i];
         let prev_acceleration = acceleration[i - 1];
-        let next_acceleration = acceleration[i + 1];
+        let _next_acceleration = acceleration[i + 1];
 
         let curr_curvature = curvature[i];
         let prev_curvature = curvature[i - 1];
-        let next_curvature = curvature[i + 1];
+        let _next_curvature = curvature[i + 1];
 
         let extreme_value_max =
             curr_value > prev_value && curr_value > next_value;
@@ -166,7 +166,8 @@ fn detect_level_keypoints(
         let velocity_peak = (curr_velocity.abs() > prev_velocity.abs())
             && (curr_velocity.abs() > next_velocity.abs());
 
-        let acceleration_change = (curr_acceleration - prev_acceleration).abs();
+        let _acceleration_change =
+            (curr_acceleration - prev_acceleration).abs();
 
         let mut importance = 0.0;
         let mut keypoint_type = None;

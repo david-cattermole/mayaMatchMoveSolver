@@ -21,15 +21,12 @@
 use anyhow::bail;
 use anyhow::Result;
 use log::debug;
-use std::cmp::Ordering;
 
 use crate::curve::curvature::allocate_curvature;
 use crate::curve::curvature::calculate_curvature;
 use crate::curve::derivatives::allocate_derivatives_order_2;
 use crate::curve::derivatives::calculate_derivatives_order_2;
 use crate::curve::smooth::gaussian::gaussian_smooth_2d;
-use crate::math::interpolate::inverse_lerp_f64;
-use crate::math::interpolate::lerp_f64;
 
 /// Represents a level in the animation curve pyramid.
 #[derive(Debug)]
@@ -156,7 +153,7 @@ fn downsample_curve_points(
         let prev_time = times[i - half_increment];
         let next_time = times[i + half_increment];
 
-        let curr_value = values[i];
+        let _curr_value = values[i];
         let prev_value = values[i - half_increment];
         let next_value = values[i + half_increment];
 
@@ -200,7 +197,7 @@ fn downsample_curve_points(
         // Two points remaining.
         2 => {
             let last_index = times.len() - 1;
-            let prev_index = times.len() - 2;
+            let _prev_index = times.len() - 2;
             let last_time = times[last_index];
             let prev_time = times[last_index];
             let last_value = values[last_index];

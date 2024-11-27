@@ -34,10 +34,10 @@ enum KeypointsError {
     #[error("Target keypoints must be greater than 0.")]
     TargetKeypointsTooLow,
 
-    #[error("Insufficient points in curve (minimum 2 required).")]
+    #[error("Time values must be strictly increasing.")]
     NonSequentialTime,
 
-    #[error("Time values must be strictly increasing.")]
+    #[error("Insufficient points in curve (minimum 2 required).")]
     InsufficientPoints,
 }
 

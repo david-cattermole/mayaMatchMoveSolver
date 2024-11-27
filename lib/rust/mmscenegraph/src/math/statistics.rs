@@ -1706,11 +1706,12 @@ mod tests {
         //     quantile(x, probs = c(0,0.25,0.5,0.75,1))
         let sorted_data = vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0];
         let data_slice = SortedDataSlice::new(&sorted_data, None, None)?;
-        let median = calc_median(&sorted_data);
         let (q1, q2, q3) = calc_quartiles(&data_slice)?;
         assert_relative_eq!(q1, 2.5, epsilon = EPSILON); // Q1
         assert_relative_eq!(q2, 4.0, epsilon = EPSILON); // Q2 (median)
         assert_relative_eq!(q3, 5.5, epsilon = EPSILON); // Q3
+
+        assert_relative_eq!(q2, data_slice.median(), epsilon = EPSILON);
 
         Ok(())
     }
@@ -1759,10 +1760,11 @@ mod tests {
     #[test]
     fn test_percentile_rank() {
         let sorted_data = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        let data_slice = SortedDataSlice::new(&data, None, None).unwrap();
+        let data_slice =
+            SortedDataSlice::new(&sorted_data, None, None).unwrap();
 
         assert_eq!(calc_percentile_rank(&data_slice, 1.0).unwrap(), 0.0);
-        assert_eq!(calc_percentile_rank(&data_slice, 3.0).unwrap(), 50.0);
-        assert_eq!(calc_percentile_rank(&data_slice, 5.0).unwrap(), 100.0);
+        assert_eq!(calc_percentile_rank(&data_slice, 3.0).unwrap(), 40.0);
+        assert_eq!(calc_percentile_rank(&data_slice, 5.0).unwrap(), 80.0);
     }
 }

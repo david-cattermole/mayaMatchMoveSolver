@@ -257,7 +257,7 @@ impl<'a> SortedDataSlice<'a> {
         Self {
             data,
             mean: Cell::new(mean),
-            median: Cell::new(mean),
+            median: Cell::new(median),
         }
     }
 

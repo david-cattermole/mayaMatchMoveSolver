@@ -709,7 +709,7 @@ MStatus connectLensModels(
         previousLensModels.resize(num_frames);
 
         std::vector<MString> lensNodeNames = cameraLensNodeNames[i];
-        for (uint32_t j = lensNodeNames.size(); j == 0; --j) {
+        for (uint32_t j = lensNodeNames.size(); j < 0; --j) {
             MString lensNodeName = lensNodeNames[j];
             std::string lensNodeNameStr = lensNodeName.asChar();
 

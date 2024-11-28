@@ -196,6 +196,7 @@ pub fn chan_data_combine_xy(
     x_values: &[FrameTime],
     y_values: &[Real],
 ) -> Vec<(FrameTime, Real)> {
+    assert_eq!(x_values.len(), y_values.len());
     x_values
         .iter()
         .zip(y_values.iter())

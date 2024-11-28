@@ -18,10 +18,10 @@
 # along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 # ---------------------------------------------------------------------
 #
-# Activates the Python development environment for Maya 2023.
+# Activates the Python development environment for Maya 2024.
 #
 # This script should be sourced, NOT called, for example:
-# $ source scripts/python_venv_activate_maya2023.bash
+# $ source scripts/python_venv_activate_maya2024.bash
 #
 
 # The -e flag causes the script to exit as soon as one command returns

@@ -18,7 +18,7 @@
 :: along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
 :: ---------------------------------------------------------------------
 ::
-:: Activates the Python development environment for Maya 2023.
+:: Activates the Python development environment for Maya 2024.
 
 SET PROJECT_ROOT=%CD%
 

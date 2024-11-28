@@ -112,6 +112,15 @@ fn evaluate_cubic(t: Real, a: Real, b: Real, c: Real, d: Real) -> Real {
     ((a * t + b) * t + c) * t + d
 }
 
+fn calculate_slope(
+    time1: Real,
+    value1: Real,
+    time2: Real,
+    value2: Real,
+) -> Real {
+    (value2 - value1) / (time2 - time1)
+}
+
 /// Fills gaps in animation curve data using smooth interpolation.
 ///
 /// # Arguments
@@ -119,7 +128,8 @@ fn evaluate_cubic(t: Real, a: Real, b: Real, c: Real, d: Real) -> Real {
 /// * `values` - Vector of corresponding values (y-axis)
 ///
 /// # Returns
-/// * Result<(Vec<Real>, Vec<Real>)> - Ok(filled_times, filled_values) if successful, Err if invalid input
+/// * Result<(Vec<Real>, Vec<Real>)> - Ok(filled_times, filled_values)
+///   if successful, Err if invalid input
 pub fn infill_curve(
     times: &[Real],
     values: &[Real],
@@ -154,15 +164,41 @@ pub fn infill_curve(
         .map(|(&t, &v)| (t, v))
         .collect();
 
+    // Process gaps sequentially to use previously interpolated
+    // points.
     for (gap, i) in gaps_with_indices {
-        let start_slope = if i > 0 {
-            (values[i] - values[i - 1]) / (times[i] - times[i - 1])
+        // For start slope, look at actual points in all_points.
+        let start_points: Vec<(Real, Real)> = all_points
+            .iter()
+            .filter(|xy| xy.0 <= gap.start_time)
+            .map(|(t, v)| (*t, *v))
+            .rev()
+            .take(2)
+            .collect();
+
+        let start_slope = if start_points.len() >= 2 {
+            calculate_slope(
+                start_points[0].0,
+                start_points[0].1,
+                start_points[1].0,
+                start_points[1].1,
+            )
         } else {
-            (values[i + 1] - values[i]) / (times[i + 1] - times[i])
+            calculate_slope(times[i], values[i], times[i + 1], values[i + 1])
         };
 
-        let end_slope = if i + 2 < times.len() {
-            (values[i + 2] - values[i + 1]) / (times[i + 2] - times[i + 1])
+        // For end slope, use next actual point and any interpolated
+        // points before it.
+        let end_points: Vec<(Real, Real)> = all_points
+            .iter()
+            .filter(|xy| xy.0 >= gap.end_time)
+            .map(|(t, v)| (*t, *v))
+            .take(2)
+            .collect();
+
+        let end_slope = if end_points.len() >= 2 {
+            (end_points[1].1 - end_points[0].1)
+                / (end_points[1].0 - end_points[0].0)
         } else {
             (values[i + 1] - values[i]) / (times[i + 1] - times[i])
         };
@@ -216,11 +252,11 @@ mod tests {
         let result = infill_curve(&times, &values).unwrap();
         let (filled_times, filled_values) = result;
 
-        // Should have more points than original due to gap between 1.0 and 5.0
+        // Should have more points than original due to gap between 1.0 and 5.0.
         assert!(filled_times.len() > times.len());
         assert_eq!(filled_times.len(), filled_values.len());
 
-        // Original points should be preserved
+        // Original points should be preserved.
         for (t, v) in times.iter().zip(values.iter()) {
             let idx = filled_times
                 .iter()
@@ -229,7 +265,7 @@ mod tests {
             assert_relative_eq!(filled_values[idx], *v, epsilon = EPSILON);
         }
 
-        // Interpolated values should be monotonic in gap
+        // Interpolated values should be monotonic in gap.
         let gap_points: Vec<(Real, Real)> = filled_times
             .iter()
             .zip(filled_values.iter())
@@ -239,7 +275,7 @@ mod tests {
 
         assert!(!gap_points.is_empty());
 
-        // Values should increase monotonically
+        // Values should increase monotonically.
         for i in 1..gap_points.len() {
             assert!(gap_points[i].1 >= gap_points[i - 1].1);
         }
@@ -249,16 +285,16 @@ mod tests {
 
     #[test]
     fn test_invalid_inputs() -> Result<()> {
-        // Mismatched lengths
+        // Mismatched lengths.
         assert!(infill_curve(&[1.0, 2.0], &[1.0]).is_err());
 
-        // Empty input
+        // Empty input.
         assert!(infill_curve(&[], &[]).is_err());
 
-        // Non-monotonic times
+        // Non-monotonic times.
         assert!(infill_curve(&[0.0, 2.0, 1.0], &[0.0, 2.0, 1.0]).is_err());
 
-        // Infinite values
+        // Infinite values.
         assert!(infill_curve(&[0.0, 1.0, Real::INFINITY], &[0.0, 1.0, 2.0])
             .is_err());
         assert!(infill_curve(&[0.0, 1.0, 2.0], &[0.0, Real::NAN, 2.0]).is_err());
@@ -274,7 +310,7 @@ mod tests {
         let result = infill_curve(&times, &values).unwrap();
         let (filled_times, filled_values) = result;
 
-        // Should return original data unchanged
+        // Should return original data unchanged.
         assert_eq!(filled_times.len(), times.len());
         for i in 0..times.len() {
             assert_relative_eq!(filled_times[i], times[i], epsilon = EPSILON);
@@ -292,10 +328,10 @@ mod tests {
         let result = infill_curve(&times, &values).unwrap();
         let (filled_times, filled_values) = result;
 
-        // Should handle gaps at both edges of data
+        // Should handle gaps at both edges of data.
         assert!(filled_times.len() > times.len());
 
-        // Check monotonicity in first gap (1.0 to 6.0)
+        // Check monotonicity in first gap (1.0 to 6.0).
         let first_gap: Vec<(Real, Real)> = filled_times
             .iter()
             .zip(filled_values.iter())
@@ -307,7 +343,7 @@ mod tests {
             assert!(first_gap[i].1 >= first_gap[i - 1].1);
         }
 
-        // Check monotonicity in second gap (8.0 to 15.0)
+        // Check monotonicity in second gap (8.0 to 15.0).
         let second_gap: Vec<(Real, Real)> = filled_times
             .iter()
             .zip(filled_values.iter())

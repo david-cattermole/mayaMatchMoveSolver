@@ -222,3 +222,18 @@ fn bounce_5_up_down_infill_gap1() -> Result<()> {
 
     infill_gap_common(chart_title, in_file_name, out_file_name, gaps)
 }
+
+#[test]
+fn bounce_5_up_down_infill_gap2() -> Result<()> {
+    let chart_title = "bounce_5_up_down_infill_gap2";
+    let in_file_name = "bounce_5_up_down_raw.chan";
+    let out_file_name = "bounce_5_up_down_infill_gap2.png";
+    let gaps: &[(Real, Real)] = &[
+        (1003.0, 1023.0),
+        (1027.0, 1048.0),
+        (1052.0, 1073.0),
+        (1077.0, 1099.0),
+    ];
+
+    infill_gap_common(chart_title, in_file_name, out_file_name, gaps)
+}

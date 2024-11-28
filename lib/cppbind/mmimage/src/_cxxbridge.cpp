@@ -1202,8 +1202,9 @@ struct PixelF64x2 final {
 #define CXXBRIDGE1_ENUM_mmimage$BufferDataType
 enum class BufferDataType : ::std::uint8_t {
   kNone = 0,
-  kF32 = 1,
-  kF64 = 2,
+  kF16 = 1,
+  kF32 = 2,
+  kF64 = 3,
 };
 #endif // CXXBRIDGE1_ENUM_mmimage$BufferDataType
 

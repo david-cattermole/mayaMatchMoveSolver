@@ -89,7 +89,9 @@ class Attribute(object):
             # Long and short names must be checked.
             attr_list_long = maya.cmds.listAttr(node, shortNames=False) or []
             attr_list_short = maya.cmds.listAttr(node, shortNames=True) or []
-            if attr not in (attr_list_long + attr_list_short):
+            alias_pairs = maya.cmds.aliasAttr(node, query=True) or []
+            all_attrs = attr_list_long + attr_list_short + alias_pairs
+            if attr not in all_attrs:
                 msg = 'Attribute not found on node. node=%r attr=%r'
                 LOG.error(msg, node, attr)
                 raise RuntimeError(msg % (node, attr))
@@ -175,6 +177,33 @@ class Attribute(object):
                 long_name,  # use long name.
             )
         return name
+
+    def get_attr_alias_name(self):
+        # Alias attributes are a little tricky. Alias attributes are
+        # not real attributes, they are a trick. Alias attributes do
+        # not have a "Nice Name" like regular attributes.
+        #
+        # This method was added to allow the user of the API to get
+        # the alias attribute name, but internally it's all referenced
+        # relative to the "real" attribute, and we must look up the
+        # alias name - if it exists.
+        node = self.get_node()
+        if node is None:
+            return None
+
+        alias_pairs = maya.cmds.aliasAttr(node, query=True) or []
+        if len(alias_pairs) == 0:
+            return None
+
+        attr = self.get_attr()
+        attr_names = alias_pairs[1::2]
+        if attr not in attr_names:
+            return None
+
+        alias_names = alias_pairs[0::2]
+        index = attr_names.index(attr)
+        alias_name = alias_names[index]
+        return alias_name
 
     def get_attr_nice_name(self):
         nice_name = None

@@ -424,7 +424,6 @@ pub fn nonlinear_line_n3(
 pub struct CurveFitLinearNPointsProblem {
     // Curve values we are trying to fit to
     reference_values: Vec<(f64, f64)>,
-    reference_values_first_x: usize,
 
     // X-coordinates of control points (fixed)
     control_points_x: Vec<f64>,
@@ -432,13 +431,11 @@ pub struct CurveFitLinearNPointsProblem {
 
 impl CurveFitLinearNPointsProblem {
     fn new(control_points_x: Vec<f64>, reference_curve: &[(f64, f64)]) -> Self {
-        let x_first: usize = reference_curve[0].0.floor() as usize;
         let reference_values: Vec<(f64, f64)> =
             reference_curve.iter().copied().collect();
 
         Self {
             reference_values,
-            reference_values_first_x: x_first,
             control_points_x,
         }
     }
@@ -446,25 +443,6 @@ impl CurveFitLinearNPointsProblem {
     fn parameter_count(&self) -> usize {
         // Only Y coordinates need to be solved for.
         self.control_points_x.len()
-    }
-
-    fn reference_y_value_at_value_x(&self, value_x: f64) -> f64 {
-        let value_start = self.control_points_x[0].floor() as usize;
-        let value_end = self.control_points_x.last().unwrap().ceil() as usize;
-
-        let mut value_index = value_x.round() as usize;
-        if value_index < value_start {
-            value_index = value_start;
-        } else if value_index > value_end {
-            value_index = value_end;
-        }
-
-        let mut index = value_index - self.reference_values_first_x;
-        if index >= self.reference_values.len() {
-            index = self.reference_values.len() - 1;
-        }
-
-        self.reference_values[index].1
     }
 
     fn interpolate_y_value_at_x(
@@ -664,6 +642,9 @@ pub fn nonlinear_line_n_points_with_initial(
         x_initial_control_points.to_vec(),
         &reference_values,
     );
+
+    // TODO: Solve twice - first time we just solve for offset and
+    // scale of the existing parameters.
 
     // Set up solver
     let epsilon = 1e-3;

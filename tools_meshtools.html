@@ -344,6 +344,38 @@
 <p>Mesh tools will create, modify or operate on meshes. These tools are
 intended to augment Autodesk Maya’s existing modeling tool-set and be
 specific to the common use cases for MatchMove tasks.</p>
+<section id="create-aligned-plane-from-points">
+<span id="create-plane-from-points-ref"></span><h2>Create Aligned Plane From Points<a class="headerlink" href="#create-aligned-plane-from-points" title="Permalink to this heading">#</a></h2>
+<p>The <cite>Create Aligned Plane From Points</cite> tool is used to generate a Maya
+Mesh Plane aligned to a set of 3D points. The plane can be used as a
+ground plane, a wall or the beginnings of a 3D terrain.</p>
+<p>The aligned plane transform can also be used to re-orient a MatchMove
+camera by <a class="reference internal" href="tools_generaltools.html#reparent-under-node-tool-ref"><span class="std std-ref">Reparenting</span></a> your
+camera under the generated Mesh plane, and then zeroing the
+translations and rotations of the plane.</p>
+<p>reparent-under-node-tool-ref</p>
+<figure class="align-right">
+<a class="reference internal image-reference" href="_images/tools_create_plane_from_points.png"><img alt="Create Plane from Points example." src="_images/tools_create_plane_from_points.png" style="width: 100%;" /></a>
+</figure>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select transform nodes.</p>
+<ul class="simple">
+<li><p>At least 3 transform nodes are required.</p></li>
+</ul>
+</li>
+<li><p>Run <cite>Create Aligned Plane From Points</cite> tool.</p>
+<ul class="simple">
+<li><p>A new “alignedPlane” node transform node will be selected.</p></li>
+</ul>
+</li>
+</ol>
+<p>To run the tool, use this Python command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.createplanefrompoints.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
 <section id="mesh-from-points">
 <span id="mesh-from-points-ref"></span><h2>Mesh From Points<a class="headerlink" href="#mesh-from-points" title="Permalink to this heading">#</a></h2>
 <p>The <cite>Mesh From Points</cite> tool is used to generate a triangulated mesh
@@ -352,9 +384,9 @@ create a 3D visualisation, or as a starting point for a refined
 hand-generated model.</p>
 <p><cite>Mesh From Points</cite> uses a type of <a class="reference external" href="https://en.wikipedia.org/wiki/Delaunay_triangulation">Delaunay Triangulation</a> named
 <a class="reference external" href="https://github.com/mapbox/delaunator">Delaunator</a>, which is
-optimised to generate meshes for landscape meshes. As a result, the
-camera viewing position of the points is used to triangulate the
-points in camera-space.</p>
+optimised to generate meshes for landscape meshes. As a result, the 3D
+points are expected to mostly lay in 2D axis plane (but the plane may
+be at any orientation).</p>
 <figure class="align-right">
 <a class="reference internal image-reference" href="_images/tools_mesh_from_points_window.png"><img alt="Mesh from Points Window." src="_images/tools_mesh_from_points_window.png" style="width: 100%;" /></a>
 </figure>
@@ -365,17 +397,9 @@ This is intended to be fixed in a future release.</p>
 </div>
 <p>Usage:</p>
 <ol class="arabic simple">
-<li><p>Select a transform nodes.</p>
+<li><p>Select transform nodes.</p>
 <ul class="simple">
 <li><p>At least 3 transform nodes are required.</p></li>
-</ul>
-</li>
-<li><p>Activate a Maya viewport, and adjust the camera view to see the
-points.</p>
-<ul class="simple">
-<li><p>If your points represent a landscape, adjust the camera to view
-all nodes from the “sky” point of view (from Y+, looking
-downwards).</p></li>
 </ul>
 </li>
 <li><p>Run <cite>Create Full Mesh From Points</cite> tool.</p>
@@ -463,6 +487,7 @@ position of the edges.</p></li>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Mesh Tools</a><ul>
+<li><a class="reference internal" href="#create-aligned-plane-from-points">Create Aligned Plane From Points</a></li>
 <li><a class="reference internal" href="#mesh-from-points">Mesh From Points</a></li>
 </ul>
 </li>

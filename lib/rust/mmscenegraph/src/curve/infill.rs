@@ -121,38 +121,10 @@ fn calculate_slope(
     (value2 - value1) / (time2 - time1)
 }
 
-/// Fills gaps in animation curve data using smooth interpolation.
-///
-/// # Arguments
-/// * `times` - Vector of time values (x-axis)
-/// * `values` - Vector of corresponding values (y-axis)
-///
-/// # Returns
-/// * Result<(Vec<Real>, Vec<Real>)> - Ok(filled_times, filled_values)
-///   if successful, Err if invalid input
-pub fn infill_curve(
+fn infill_curve_cubic(
     times: &[Real],
     values: &[Real],
 ) -> Result<(Vec<Real>, Vec<Real>)> {
-    if times.len() != values.len() {
-        bail!(InfillError::TimeValueSliceLengthNotMatch);
-    }
-    if times.is_empty() {
-        bail!(InfillError::DataSliceIsEmpty);
-    }
-    if times.len() == 1 {
-        bail!(InfillError::DataSliceLengthTooSmall);
-    }
-    if !times.windows(2).all(|w| w[0] < w[1]) {
-        bail!(InfillError::NonSequentialTime);
-    }
-    if !times.iter().all(|x| x.is_finite()) {
-        bail!(InfillError::DataSliceNonFiniteValues);
-    }
-    if !values.iter().all(|x| x.is_finite()) {
-        bail!(InfillError::DataSliceNonFiniteValues);
-    }
-
     let gaps_with_indices = find_gaps(times, values);
     if gaps_with_indices.is_empty() {
         return Ok((times.to_vec(), values.to_vec()));
@@ -197,10 +169,14 @@ pub fn infill_curve(
             .collect();
 
         let end_slope = if end_points.len() >= 2 {
-            (end_points[1].1 - end_points[0].1)
-                / (end_points[1].0 - end_points[0].0)
+            calculate_slope(
+                end_points[0].0,
+                end_points[0].1,
+                end_points[1].0,
+                end_points[1].1,
+            )
         } else {
-            (values[i + 1] - values[i]) / (times[i + 1] - times[i])
+            calculate_slope(times[i], values[i], times[i + 1], values[i + 1])
         };
 
         if let Some((a, b, c, d)) = calculate_cubic_coefficients(
@@ -235,6 +211,31 @@ pub fn infill_curve(
         all_points.into_iter().unzip();
 
     Ok((times_filled, values_filled))
+}
+
+/// Fills gaps in animation curve data using smooth interpolation.
+pub fn infill_curve(
+    times: &[Real],
+    values: &[Real],
+) -> Result<(Vec<Real>, Vec<Real>)> {
+    // Input validation
+    if times.len() != values.len() {
+        bail!(InfillError::TimeValueSliceLengthNotMatch);
+    }
+    if times.is_empty() {
+        bail!(InfillError::DataSliceIsEmpty);
+    }
+    if times.len() == 1 {
+        bail!(InfillError::DataSliceLengthTooSmall);
+    }
+    if !times.windows(2).all(|w| w[0] < w[1]) {
+        bail!(InfillError::NonSequentialTime);
+    }
+    if !times.iter().chain(values.iter()).all(|x| x.is_finite()) {
+        bail!(InfillError::DataSliceNonFiniteValues);
+    }
+
+    infill_curve_cubic(times, values)
 }
 
 #[cfg(test)]

@@ -301,8 +301,12 @@ def attributesToUINodes(col, attr_list, show_anm, show_stc, show_lck):
             node_data = maya_node.data()
             node_data['data'].append(attr)
             maya_node.setData(node_data)
-        a = attr.get_attr_nice_name()
-        attr_node = attr_nodes.AttrNode(a, data=data, parent=maya_node)
+
+        attr_name = attr.get_attr_alias_name()
+        if attr_name is None:
+            attr_name = attr.get_attr_nice_name()
+
+        attr_node = attr_nodes.AttrNode(attr_name, data=data, parent=maya_node)
         attr_node.setNeverHasChildren(True)
     e = time.time()
     LOG.debug('attributesToUINodes: %r seconds', e - s)

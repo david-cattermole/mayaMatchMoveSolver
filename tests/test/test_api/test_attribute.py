@@ -48,6 +48,38 @@ class TestAttribute(test_api_utils.APITestCase):
         self.assertEqual(y.get_attr(), 'translateY')
         self.assertEqual(y.get_name(), '|transform1.translateY')
 
+    def test_init_with_attr_alias(self):
+        node = maya.cmds.createNode('transform')
+        node = node_utils.get_long_name(node)
+        maya.cmds.aliasAttr('tilt', node + '.rotateX')
+        maya.cmds.aliasAttr('pan', node + '.rotateY')
+        maya.cmds.aliasAttr('roll', node + '.rotateZ')
+
+        tx = attribute.Attribute(node=node, attr='translateX')
+        tilt = attribute.Attribute(node=node, attr='rotateX')
+        pan = attribute.Attribute(node=node, attr='pan')
+        roll = attribute.Attribute(node=node, attr='roll')
+
+        self.assertEqual(tx.get_node(), node)
+        self.assertEqual(tilt.get_node(), node)
+        self.assertEqual(pan.get_node(), node)
+        self.assertEqual(roll.get_node(), node)
+
+        self.assertEqual(tx.get_attr(), 'translateX')
+        self.assertEqual(tilt.get_attr(), 'rotateX')
+        self.assertEqual(pan.get_attr(), 'rotateY')
+        self.assertEqual(roll.get_attr(), 'rotateZ')
+
+        self.assertEqual(tx.get_attr_alias_name(), None)
+        self.assertEqual(tilt.get_attr_alias_name(), 'tilt')
+        self.assertEqual(pan.get_attr_alias_name(), 'pan')
+        self.assertEqual(roll.get_attr_alias_name(), 'roll')
+
+        self.assertEqual(tx.get_name(), '|transform1.translateX')
+        self.assertEqual(tilt.get_name(), '|transform1.rotateX')
+        self.assertEqual(pan.get_name(), '|transform1.rotateY')
+        self.assertEqual(roll.get_name(), '|transform1.rotateZ')
+
     def test_get_state(self):
         node = maya.cmds.createNode('transform')
         node = node_utils.get_long_name(node)

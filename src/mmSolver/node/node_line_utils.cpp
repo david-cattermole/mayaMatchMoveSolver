@@ -55,7 +55,7 @@ MStatus query_line_point_data(const MMatrix parentInverseMatrix,
     out_point_data_x.clear();
     out_point_data_y.clear();
 
-    MStatus status = status = transformArrayHandle.jumpToArrayElement(0);
+    MStatus status = transformArrayHandle.jumpToArrayElement(0);
     if (status == MStatus::kSuccess) {
         do {
             MDataHandle transformArrayHandleElement =

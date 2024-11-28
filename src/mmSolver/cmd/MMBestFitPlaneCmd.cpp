@@ -75,6 +75,7 @@
 
 // STL
 #include <cassert>
+#include <cstring>
 
 // Maya
 #include <maya/MArgDatabase.h>

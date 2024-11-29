@@ -312,6 +312,41 @@ fn calculate_bounds(
     bounds
 }
 
+// Calculate bounds for all data series
+fn calculate_bounds_vec(
+    data_series: &Vec<Vec<(FrameTime, Real)>>,
+    control_points: Option<&[Point2]>,
+) -> ChartData {
+    let mut bounds = ChartData {
+        x_min: FrameTime::MAX,
+        x_max: FrameTime::MIN,
+        y_min: Real::MAX,
+        y_max: Real::MIN,
+    };
+
+    for data in data_series {
+        calculate_data_min_max_values(
+            data,
+            &mut bounds.x_min,
+            &mut bounds.x_max,
+            &mut bounds.y_min,
+            &mut bounds.y_max,
+        );
+    }
+
+    if let Some(points) = control_points {
+        calculate_control_point_min_max_values(
+            points,
+            &mut bounds.x_min,
+            &mut bounds.x_max,
+            &mut bounds.y_min,
+            &mut bounds.y_max,
+        );
+    }
+
+    bounds
+}
+
 // Generate caption for control points
 fn generate_control_points_caption(control_points: &[Point2]) -> String {
     control_points
@@ -1000,6 +1035,64 @@ pub fn save_chart_curves_compare_two(
 
     draw_line_series(&mut cc, data_a, &RED, 2)?;
     draw_line_series(&mut cc, data_b, &GREEN, 2)?;
+
+    // To avoid the IO failure being ignored silently, we manually
+    // call the present function
+    root_area.present()?;
+    debug!("Chart saved to: {:?}", chart_file_path);
+
+    Ok(())
+}
+
+#[allow(dead_code)]
+pub fn save_chart_curves_compare_many(
+    data_curves: &Vec<Vec<(FrameTime, Real)>>,
+    chart_title: &str,
+    chart_file_path: &OsStr,
+    chart_resolution: (u32, u32),
+) -> Result<()> {
+    let root_area = BitMapBackend::new(
+        chart_file_path,
+        (chart_resolution.0, chart_resolution.1),
+    )
+    .into_drawing_area();
+
+    root_area.fill(&WHITE)?;
+    let root_area = root_area.titled(chart_title, ("sans-serif", 60))?;
+
+    let bounds = calculate_bounds_vec(data_curves, None);
+
+    let x_pad = 0.1;
+    let y_pad = (bounds.y_max - bounds.y_min) * 0.05;
+    let chart_min_value_x = bounds.x_min - x_pad;
+    let chart_max_value_x = bounds.x_max + x_pad;
+    let chart_min_value_y = bounds.y_min - y_pad;
+    let chart_max_value_y = bounds.y_max + y_pad;
+
+    let chart_caption = "Compare Curves A and B";
+    let mut cc = ChartBuilder::on(&root_area)
+        .margin(5)
+        .set_all_label_area_size(50)
+        .caption(&chart_caption, ("sans-serif", 20))
+        .build_cartesian_2d(
+            chart_min_value_x..chart_max_value_x,
+            chart_min_value_y..chart_max_value_y,
+        )?;
+
+    cc.configure_mesh()
+        .x_labels(20)
+        .y_labels(5)
+        .disable_mesh()
+        .x_label_formatter(&|v| format!("{:.0}", v))
+        .y_label_formatter(&|v| format!("{:.3}", v))
+        .draw()?;
+
+    let colours = &[&RED, &GREEN, &BLUE, &CYAN, &MAGENTA, &YELLOW];
+    for (i, data_curve) in data_curves.iter().enumerate() {
+        let colour_index = i.rem_euclid(colours.len());
+        let colour = colours[colour_index];
+        draw_line_series(&mut cc, data_curve, colour, 2)?;
+    }
 
     // To avoid the IO failure being ignored silently, we manually
     // call the present function

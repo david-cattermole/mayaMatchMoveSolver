@@ -28,8 +28,10 @@ use log::debug;
 use ndarray::{Array1, Array2};
 
 use crate::constant::Real;
-use crate::math::interpolate::inverse_lerp_f64;
-use crate::math::interpolate::lerp_f64;
+use crate::math::interpolate::linear_interpolate_y_value_at_value_x;
+use crate::math::interpolate::CurveInterpolator;
+use crate::math::interpolate::InterpolationMethod;
+use crate::math::interpolate::Interpolator;
 use crate::math::line::curve_fit_linear_regression_type1;
 
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -103,40 +105,6 @@ pub fn linear_regression(
     debug!("angle={angle:?}");
 
     Ok((point, angle))
-}
-
-fn linear_interpolate_point_y_value_at_value_x(
-    value_x: f64,
-    point_a_x: f64,
-    point_a_y: f64,
-    point_b_x: f64,
-    point_b_y: f64,
-) -> f64 {
-    let mix_x = inverse_lerp_f64(point_a_x, point_b_x, value_x);
-    let mix_y = lerp_f64(point_a_y, point_b_y, mix_x);
-    mix_y
-}
-
-fn linear_interpolate_y_value_at_value_x(
-    value_x: f64,
-    point_a_x: f64,
-    point_a_y: f64,
-    point_b_x: f64,
-    point_b_y: f64,
-    point_c_x: f64,
-    point_c_y: f64,
-) -> f64 {
-    if value_x < point_b_x {
-        linear_interpolate_point_y_value_at_value_x(
-            value_x, point_a_x, point_a_y, point_b_x, point_b_y,
-        )
-    } else if value_x > point_b_x {
-        linear_interpolate_point_y_value_at_value_x(
-            value_x, point_b_x, point_b_y, point_c_x, point_c_y,
-        )
-    } else {
-        point_b_y
-    }
 }
 
 #[derive(Debug)]
@@ -422,26 +390,31 @@ pub fn nonlinear_line_n3(
 
 #[derive(Debug)]
 pub struct CurveFitLinearNPointsProblem {
-    // Curve values we are trying to fit to
+    // Curve values we are trying to fit to.
     reference_values: Vec<(f64, f64)>,
-
-    // X-coordinates of control points (fixed)
+    // X-coordinates of control points (fixed).
     control_points_x: Vec<f64>,
+    // Interpolation method to use.
+    interpolator: Interpolator,
 }
 
 impl CurveFitLinearNPointsProblem {
-    fn new(control_points_x: Vec<f64>, reference_curve: &[(f64, f64)]) -> Self {
+    fn new(
+        control_points_x: Vec<f64>,
+        reference_curve: &[(f64, f64)],
+        interpolation_method: InterpolationMethod,
+    ) -> Self {
         let reference_values: Vec<(f64, f64)> =
             reference_curve.iter().copied().collect();
 
         Self {
             reference_values,
             control_points_x,
+            interpolator: Interpolator::from_method(interpolation_method),
         }
     }
 
     fn parameter_count(&self) -> usize {
-        // Only Y coordinates need to be solved for.
         self.control_points_x.len()
     }
 
@@ -450,26 +423,11 @@ impl CurveFitLinearNPointsProblem {
         value_x: f64,
         control_points_y: &[f64],
     ) -> f64 {
-        debug_assert_eq!(self.control_points_x.len(), control_points_y.len());
-
-        // Find the segment containing value_x.
-        for i in 0..self.control_points_x.len() - 1 {
-            if value_x <= self.control_points_x[i + 1] {
-                if value_x == self.control_points_x[i + 1] {
-                    return control_points_y[i + 1];
-                }
-                return linear_interpolate_point_y_value_at_value_x(
-                    value_x,
-                    self.control_points_x[i],
-                    control_points_y[i],
-                    self.control_points_x[i + 1],
-                    control_points_y[i + 1],
-                );
-            }
-        }
-
-        // If we get here, value_x is beyond the last point.
-        *control_points_y.last().unwrap()
+        self.interpolator.interpolate(
+            value_x,
+            &self.control_points_x,
+            control_points_y,
+        )
     }
 
     fn residuals(&self, control_points_y: &[f64]) -> Vec<f64> {
@@ -514,7 +472,6 @@ impl argmin::core::Gradient for CurveFitLinearNPointsProblem {
         parameters: &Self::Param,
     ) -> Result<Self::Gradient, argmin::core::Error> {
         debug!("Gradient: parameters={parameters:?}");
-
         assert_eq!(parameters.len(), self.parameter_count());
 
         let vector = (*parameters).forward_diff(&|x| {
@@ -612,6 +569,7 @@ pub fn nonlinear_line_n_points_with_initial(
     y_values: &[f64],
     x_initial_control_points: &[f64],
     y_initial_control_points: &[f64],
+    interpolation_method: InterpolationMethod,
 ) -> Result<Vec<Point2>> {
     assert!(x_values.len() > 2);
     assert_eq!(
@@ -637,14 +595,12 @@ pub fn nonlinear_line_n_points_with_initial(
         .map(|(&x, &y)| (x, y))
         .collect();
 
-    // Define the problem
+    // Define the problem.
     let problem = CurveFitLinearNPointsProblem::new(
         x_initial_control_points.to_vec(),
         &reference_values,
+        interpolation_method,
     );
-
-    // TODO: Solve twice - first time we just solve for offset and
-    // scale of the existing parameters.
 
     // Set up solver
     let epsilon = 1e-3;
@@ -689,6 +645,7 @@ pub fn nonlinear_line_n_points(
     x_values: &[f64],
     y_values: &[f64],
     control_point_count: usize,
+    interpolation: InterpolationMethod,
 ) -> Result<Vec<Point2>> {
     assert_eq!(x_values.len(), y_values.len());
     let value_count = x_values.len();
@@ -726,5 +683,6 @@ pub fn nonlinear_line_n_points(
         y_values,
         &x_initial_control_points,
         &y_initial_control_points,
+        interpolation,
     )
 }

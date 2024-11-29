@@ -112,30 +112,28 @@ fn compute_velocity_importance(velocity: Real, acceleration: Real) -> Real {
 }
 
 /// Detect keypoints specific to animation curves
-fn detect_level_keypoints(
-    level: &PyramidLevel,
-    existing_keypoints: &[RankedKeypoint],
+pub fn detect_level_keypoints(
+    times: &[Real],
+    values: &[Real],
+    velocity: &[Real],
+    acceleration: &[Real],
+    curvature: &[Real],
     current_level: usize,
 ) -> Vec<RankedKeypoint> {
-    debug!("detect_level_keypoints: level.level={:?}", level.level);
-    debug!("detect_level_keypoints: level.scale={:?}", level.scale());
+    debug!("detect_level_keypoints: times.len()={}", times.len());
+    debug!("detect_level_keypoints: values.len()={}", values.len());
+    debug!("detect_level_keypoints: velocity.len()={}", velocity.len());
     debug!(
-        "detect_level_keypoints: existing_keypoints.len()={:?}",
-        existing_keypoints.len()
+        "detect_level_keypoints: acceleration.len()={}",
+        acceleration.len()
     );
     debug!(
-        "detect_level_keypoints: existing_keypoints={:?}",
-        existing_keypoints
+        "detect_level_keypoints: curvature.len()={}",
+        curvature.len()
     );
-    debug!("detect_level_keypoints: current_level={:?}", current_level);
+    debug!("detect_level_keypoints: current_level={}", current_level);
 
-    let mut keypoints = Vec::new();
-    let times = &level.times;
-    let values = &level.values;
-    let velocity = &level.velocity;
-    let acceleration = &level.acceleration;
-    let curvature = &level.curvature;
-
+    let mut keypoints = Vec::with_capacity(times.len() / 2);
     for i in 1..times.len() - 1 {
         let curr_time = times[i];
         let _prev_time = times[i - 1];
@@ -190,24 +188,14 @@ fn detect_level_keypoints(
             keypoint_type = Some(KeypointType::VelocityPeak);
         }
 
-        // If point is important and not near existing keypoints
         if let Some(kp_type) = keypoint_type {
-            let level_scale = level.scale();
-            // let level_scale = level.inverse_scale();
-
-            if !is_near_existing_keypoint(
-                curr_time,
-                level_scale,
-                existing_keypoints,
-            ) {
-                keypoints.push(RankedKeypoint {
-                    time: curr_time,
-                    value: curr_value,
-                    importance,
-                    level_detected: current_level,
-                    keypoint_type: kp_type,
-                });
-            }
+            keypoints.push(RankedKeypoint {
+                time: curr_time,
+                value: curr_value,
+                importance,
+                level_detected: current_level,
+                keypoint_type: kp_type,
+            });
         }
     }
 
@@ -217,6 +205,67 @@ fn detect_level_keypoints(
     );
     for keypoint in &keypoints {
         debug!("detect_level_keypoints: keypoint={:?}", keypoint);
+    }
+
+    keypoints
+}
+
+/// Detect keypoints specific to animation curves
+fn detect_level_and_combine_keypoints(
+    level: &PyramidLevel,
+    existing_keypoints: &[RankedKeypoint],
+    current_level: usize,
+) -> Vec<RankedKeypoint> {
+    debug!(
+        "detect_level_and_combine_keypoints: level.level={:?}",
+        level.level
+    );
+    debug!(
+        "detect_level_and_combine_keypoints: level.scale={:?}",
+        level.scale()
+    );
+    debug!(
+        "detect_level_and_combine_keypoints: existing_keypoints.len()={:?}",
+        existing_keypoints.len()
+    );
+    debug!(
+        "detect_level_and_combine_keypoints: existing_keypoints={:?}",
+        existing_keypoints
+    );
+    debug!(
+        "detect_level_and_combine_keypoints: current_level={:?}",
+        current_level
+    );
+
+    let level_keypoints = detect_level_keypoints(
+        &level.times,
+        &level.values,
+        &level.velocity,
+        &level.acceleration,
+        &level.curvature,
+        current_level,
+    );
+
+    let mut keypoints = Vec::new();
+    for keypoint in level_keypoints {
+        if !is_near_existing_keypoint(
+            keypoint.time,
+            level.scale(),
+            existing_keypoints,
+        ) {
+            keypoints.push(keypoint);
+        }
+    }
+
+    debug!(
+        "detect_level_and_combine_keypoints: keypoints.len()={:?}",
+        keypoints.len()
+    );
+    for keypoint in &keypoints {
+        debug!(
+            "detect_level_and_combine_keypoints: keypoint={:?}",
+            keypoint
+        );
     }
 
     keypoints
@@ -308,8 +357,11 @@ fn process_pyramid_levels(
     // Process levels from coarse to fine.
     let mut max_level = 0;
     for pyramid in pyramids.iter().rev() {
-        let pyramid_keypoints =
-            detect_level_keypoints(pyramid, &all_keypoints, pyramid.level);
+        let pyramid_keypoints = detect_level_and_combine_keypoints(
+            pyramid,
+            &all_keypoints,
+            pyramid.level,
+        );
 
         for keypoint in pyramid_keypoints {
             all_keypoints.push(keypoint);
@@ -328,7 +380,7 @@ fn process_pyramid_levels(
     Ok(selected)
 }
 
-fn filter_keypoints_by_type_and_level(
+pub fn filter_keypoints_by_type_and_level(
     only_keypoint_type: KeypointType,
     only_level_detected: usize,
     min_spacing: Real,

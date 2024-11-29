@@ -35,21 +35,23 @@ use crate::common::save_chart_linear_n3_regression;
 use crate::common::CHART_RESOLUTION;
 
 use mmscenegraph_rust::math::curve_fit::nonlinear_line_n3;
+use mmscenegraph_rust::math::curve_fit::Point2;
 
-#[test]
-fn linear_3_point_raw() -> Result<()> {
-    let chart_title = "linear_3_point_raw";
+fn curvefit_common(
+    chart_title: &str,
+    in_reference_file_name: &str,
+    in_file_name: &str,
+    out_file_name: &str,
+) -> Result<(Point2, Point2, Point2)> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
-    let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_3_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_3_point_raw.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_3_point_raw.png")?;
+    let in_reference_file_path =
+        construct_input_file_path(&data_dir, in_reference_file_name)?;
+    let in_file_path = construct_input_file_path(&data_dir, in_file_name)?;
+    let out_file_path = construct_output_file_path(&data_dir, out_file_name)?;
 
-    let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
+    let data_raw = read_chan_file(&in_reference_file_path.as_os_str())?;
     let data = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
     let x_values = chan_data_filter_only_x(&data);
@@ -71,51 +73,21 @@ fn linear_3_point_raw() -> Result<()> {
         chart_resolution,
     )?;
 
-    assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_a.y(), -1.21533949192, epsilon = 1.0e-2);
-
-    assert_relative_eq!(point_b.x(), 1051.0, epsilon = 1.0e-9);
-    assert_relative_eq!(point_b.y(), 4.5, epsilon = 1.0e-2);
-
-    assert_relative_eq!(point_c.x(), 1101.0, epsilon = 1.0e-1);
-    assert_relative_eq!(point_c.y(), 1.855, epsilon = 1.0e-2);
-
-    Ok(())
+    Ok((point_a, point_b, point_c))
 }
 
 #[test]
-fn linear_3_point_variance1() -> Result<()> {
-    let chart_title = "linear_3_point_variance1";
-    let chart_resolution = CHART_RESOLUTION;
+fn curvefit_linear_3_point_raw() -> Result<()> {
+    let chart_title = "curvefit_linear_3_point_raw";
+    let in_reference_file_name = "linear_3_point_raw.chan";
+    let in_file_name = "linear_3_point_raw.chan";
+    let out_file_name = "curvefit_linear_3_point_raw.png";
 
-    let data_dir = find_data_dir()?;
-    let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_3_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_3_point_variance1.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_3_point_variance1.png")?;
-
-    let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
-    let data = read_chan_file(&in_file_path.as_os_str())?;
-    // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data);
-    let y_values = chan_data_filter_only_y(&data);
-
-    let (point_a, point_b, point_c) = nonlinear_line_n3(&x_values, &y_values)?;
-    println!("point_a={point_a:?}");
-    println!("point_b={point_b:?}");
-    println!("point_c={point_c:?}");
-
-    save_chart_linear_n3_regression(
-        &data_raw,
-        &data,
-        point_a,
-        point_b,
-        point_c,
+    let (point_a, point_b, point_c) = curvefit_common(
         chart_title,
-        &out_file_path.as_os_str(),
-        chart_resolution,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
     )?;
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-1);
@@ -131,38 +103,43 @@ fn linear_3_point_variance1() -> Result<()> {
 }
 
 #[test]
-fn linear_3_point_variance2() -> Result<()> {
-    let chart_title = "linear_3_point_variance2";
-    let chart_resolution = CHART_RESOLUTION;
+fn curvefit_linear_3_point_variance1() -> Result<()> {
+    let chart_title = "curvefit_linear_3_point_variance1";
+    let in_reference_file_name = "linear_3_point_raw.chan";
+    let in_file_name = "linear_3_point_variance1.chan";
+    let out_file_name = "curvefit_linear_3_point_variance1.png";
 
-    let data_dir = find_data_dir()?;
-    let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_3_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_3_point_variance2.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_3_point_variance2.png")?;
-
-    let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
-    let data = read_chan_file(&in_file_path.as_os_str())?;
-    // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data);
-    let y_values = chan_data_filter_only_y(&data);
-
-    let (point_a, point_b, point_c) = nonlinear_line_n3(&x_values, &y_values)?;
-    println!("point_a={point_a:?}");
-    println!("point_b={point_b:?}");
-    println!("point_c={point_c:?}");
-
-    save_chart_linear_n3_regression(
-        &data_raw,
-        &data,
-        point_a,
-        point_b,
-        point_c,
+    let (point_a, point_b, point_c) = curvefit_common(
         chart_title,
-        &out_file_path.as_os_str(),
-        chart_resolution,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
+    )?;
+
+    assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-1);
+    assert_relative_eq!(point_a.y(), -1.21533949192, epsilon = 1.0e-2);
+
+    assert_relative_eq!(point_b.x(), 1051.0, epsilon = 1.0e-9);
+    assert_relative_eq!(point_b.y(), 4.5, epsilon = 1.0e-2);
+
+    assert_relative_eq!(point_c.x(), 1101.0, epsilon = 1.0e-1);
+    assert_relative_eq!(point_c.y(), 1.855, epsilon = 1.0e-2);
+
+    Ok(())
+}
+
+#[test]
+fn curvefit_linear_3_point_variance2() -> Result<()> {
+    let chart_title = "curvefit_linear_3_point_variance2";
+    let in_reference_file_name = "linear_3_point_raw.chan";
+    let in_file_name = "linear_3_point_variance2.chan";
+    let out_file_name = "curvefit_linear_3_point_variance2.png";
+
+    let (point_a, point_b, point_c) = curvefit_common(
+        chart_title,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
     )?;
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-1);
@@ -178,38 +155,17 @@ fn linear_3_point_variance2() -> Result<()> {
 }
 
 #[test]
-fn linear_3_point_variance3() -> Result<()> {
-    let chart_title = "linear_3_point_variance3";
-    let chart_resolution = CHART_RESOLUTION;
+fn curvefit_linear_3_point_variance3() -> Result<()> {
+    let chart_title = "curvefit_linear_3_point_variance3";
+    let in_reference_file_name = "linear_3_point_raw.chan";
+    let in_file_name = "linear_3_point_variance3.chan";
+    let out_file_name = "curvefit_linear_3_point_variance3.png";
 
-    let data_dir = find_data_dir()?;
-    let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_3_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_3_point_variance3.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_3_point_variance3.png")?;
-
-    let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
-    let data = read_chan_file(&in_file_path.as_os_str())?;
-    // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data);
-    let y_values = chan_data_filter_only_y(&data);
-
-    let (point_a, point_b, point_c) = nonlinear_line_n3(&x_values, &y_values)?;
-    println!("point_a={point_a:?}");
-    println!("point_b={point_b:?}");
-    println!("point_c={point_c:?}");
-
-    save_chart_linear_n3_regression(
-        &data_raw,
-        &data,
-        point_a,
-        point_b,
-        point_c,
+    let (point_a, point_b, point_c) = curvefit_common(
         chart_title,
-        &out_file_path.as_os_str(),
-        chart_resolution,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
     )?;
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-1);
@@ -225,38 +181,17 @@ fn linear_3_point_variance3() -> Result<()> {
 }
 
 #[test]
-fn linear_3_point_variance4() -> Result<()> {
-    let chart_title = "linear_3_point_variance4";
-    let chart_resolution = CHART_RESOLUTION;
+fn curvefit_linear_3_point_variance4() -> Result<()> {
+    let chart_title = "curvefit_linear_3_point_variance4";
+    let in_reference_file_name = "linear_3_point_raw.chan";
+    let in_file_name = "linear_3_point_variance4.chan";
+    let out_file_name = "curvefit_linear_3_point_variance4.png";
 
-    let data_dir = find_data_dir()?;
-    let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_3_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_3_point_variance4.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_3_point_variance4.png")?;
-
-    let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
-    let data = read_chan_file(&in_file_path.as_os_str())?;
-    // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data);
-    let y_values = chan_data_filter_only_y(&data);
-
-    let (point_a, point_b, point_c) = nonlinear_line_n3(&x_values, &y_values)?;
-    println!("point_a={point_a:?}");
-    println!("point_b={point_b:?}");
-    println!("point_c={point_c:?}");
-
-    save_chart_linear_n3_regression(
-        &data_raw,
-        &data,
-        point_a,
-        point_b,
-        point_c,
+    let (point_a, point_b, point_c) = curvefit_common(
         chart_title,
-        &out_file_path.as_os_str(),
-        chart_resolution,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
     )?;
 
     assert_relative_eq!(point_a.x(), 1001.0, epsilon = 1.0e-1);

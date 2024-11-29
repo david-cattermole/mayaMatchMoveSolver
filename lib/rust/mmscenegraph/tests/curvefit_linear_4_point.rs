@@ -38,21 +38,25 @@ use crate::common::read_chan_file;
 use crate::common::save_chart_linear_n_points_regression;
 use crate::common::CHART_RESOLUTION;
 
-// use mmscenegraph_rust::math::curve_fit::nonlinear_line_n3;
 use mmscenegraph_rust::math::curve_fit::nonlinear_line_n_points;
+use mmscenegraph_rust::math::curve_fit::Point2;
+use mmscenegraph_rust::math::interpolate::InterpolationMethod;
 
-#[test]
-fn linear_4_point_raw() -> Result<()> {
-    let chart_title = "linear_4_point_raw";
+fn curvefit_common(
+    chart_title: &str,
+    in_reference_file_name: &str,
+    in_file_name: &str,
+    out_file_name: &str,
+    n_points: usize,
+    interpolation_method: InterpolationMethod,
+) -> Result<Vec<Point2>> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
     let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_4_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_4_point_raw.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_4_point_raw.png")?;
+        construct_input_file_path(&data_dir, in_reference_file_name)?;
+    let in_file_path = construct_input_file_path(&data_dir, in_file_name)?;
+    let out_file_path = construct_output_file_path(&data_dir, out_file_name)?;
 
     let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
     let data = read_chan_file(&in_file_path.as_os_str())?;
@@ -60,7 +64,14 @@ fn linear_4_point_raw() -> Result<()> {
     let x_values = chan_data_filter_only_x(&data);
     let y_values = chan_data_filter_only_y(&data);
 
-    let points = nonlinear_line_n_points(&x_values, &y_values, 4)?;
+    let n_points = 4;
+    let interpolation_method = InterpolationMethod::Linear;
+    let points = nonlinear_line_n_points(
+        &x_values,
+        &y_values,
+        n_points,
+        interpolation_method,
+    )?;
     println!("points={points:?}");
 
     save_chart_linear_n_points_regression(
@@ -70,6 +81,27 @@ fn linear_4_point_raw() -> Result<()> {
         chart_title,
         &out_file_path.as_os_str(),
         chart_resolution,
+    )?;
+
+    Ok(points)
+}
+
+#[test]
+fn curvefit_linear_4_point_raw() -> Result<()> {
+    let chart_title = "curvefit_linear_4_point_raw";
+    let in_reference_file_name = "linear_4_point_raw.chan";
+    let in_file_name = "linear_4_point_raw.chan";
+    let out_file_name = "curvefit_linear_4_point_raw.png";
+    let n_points = 4;
+    let interpolation_method = InterpolationMethod::Linear;
+
+    let points = curvefit_common(
+        chart_title,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
+        n_points,
+        interpolation_method,
     )?;
 
     let point_a = points[0];
@@ -97,34 +129,21 @@ fn linear_4_point_raw() -> Result<()> {
 }
 
 #[test]
-fn linear_4_point_variance1() -> Result<()> {
-    let chart_title = "linear_4_point_variance1";
-    let chart_resolution = CHART_RESOLUTION;
+fn curvefit_linear_4_point_variance1() -> Result<()> {
+    let chart_title = "curvefit_linear_4_point_variance1";
+    let in_reference_file_name = "linear_4_point_raw.chan";
+    let in_file_name = "linear_4_point_variance1.chan";
+    let out_file_name = "curvefit_linear_4_point_variance1.png";
+    let n_points = 4;
+    let interpolation_method = InterpolationMethod::Linear;
 
-    let data_dir = find_data_dir()?;
-    let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_4_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_4_point_variance1.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_4_point_variance1.png")?;
-
-    let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
-    let data = read_chan_file(&in_file_path.as_os_str())?;
-    // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data);
-    let y_values = chan_data_filter_only_y(&data);
-
-    let points = nonlinear_line_n_points(&x_values, &y_values, 4)?;
-    println!("points={points:?}");
-
-    save_chart_linear_n_points_regression(
-        &data_raw,
-        &data,
-        &points,
+    let points = curvefit_common(
         chart_title,
-        &out_file_path.as_os_str(),
-        chart_resolution,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
+        n_points,
+        interpolation_method,
     )?;
 
     let point_a = points[0];
@@ -152,34 +171,21 @@ fn linear_4_point_variance1() -> Result<()> {
 }
 
 #[test]
-fn linear_4_point_variance2() -> Result<()> {
-    let chart_title = "linear_4_point_variance2";
-    let chart_resolution = CHART_RESOLUTION;
+fn curvefit_linear_4_point_variance2() -> Result<()> {
+    let chart_title = "curvefit_linear_4_point_variance2";
+    let in_reference_file_name = "linear_4_point_raw.chan";
+    let in_file_name = "linear_4_point_variance2.chan";
+    let out_file_name = "curvefit_linear_4_point_variance2.png";
+    let n_points = 4;
+    let interpolation_method = InterpolationMethod::Linear;
 
-    let data_dir = find_data_dir()?;
-    let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_4_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_4_point_variance2.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_4_point_variance2.png")?;
-
-    let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
-    let data = read_chan_file(&in_file_path.as_os_str())?;
-    // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data);
-    let y_values = chan_data_filter_only_y(&data);
-
-    let points = nonlinear_line_n_points(&x_values, &y_values, 4)?;
-    println!("points={points:?}");
-
-    save_chart_linear_n_points_regression(
-        &data_raw,
-        &data,
-        &points,
+    let points = curvefit_common(
         chart_title,
-        &out_file_path.as_os_str(),
-        chart_resolution,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
+        n_points,
+        interpolation_method,
     )?;
 
     let point_a = points[0];
@@ -207,34 +213,21 @@ fn linear_4_point_variance2() -> Result<()> {
 }
 
 #[test]
-fn linear_4_point_variance3() -> Result<()> {
-    let chart_title = "linear_4_point_variance3";
-    let chart_resolution = CHART_RESOLUTION;
+fn curvefit_linear_4_point_variance3() -> Result<()> {
+    let chart_title = "curvefit_linear_4_point_variance3";
+    let in_reference_file_name = "linear_4_point_raw.chan";
+    let in_file_name = "linear_4_point_variance3.chan";
+    let out_file_name = "curvefit_linear_4_point_variance3.png";
+    let n_points = 4;
+    let interpolation_method = InterpolationMethod::Linear;
 
-    let data_dir = find_data_dir()?;
-    let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_4_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_4_point_variance3.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_4_point_variance3.png")?;
-
-    let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
-    let data = read_chan_file(&in_file_path.as_os_str())?;
-    // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data);
-    let y_values = chan_data_filter_only_y(&data);
-
-    let points = nonlinear_line_n_points(&x_values, &y_values, 4)?;
-    println!("points={points:?}");
-
-    save_chart_linear_n_points_regression(
-        &data_raw,
-        &data,
-        &points,
+    let points = curvefit_common(
         chart_title,
-        &out_file_path.as_os_str(),
-        chart_resolution,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
+        n_points,
+        interpolation_method,
     )?;
 
     let point_a = points[0];
@@ -262,34 +255,21 @@ fn linear_4_point_variance3() -> Result<()> {
 }
 
 #[test]
-fn linear_4_point_variance4() -> Result<()> {
-    let chart_title = "linear_4_point_variance4";
-    let chart_resolution = CHART_RESOLUTION;
+fn curvefit_linear_4_point_variance4() -> Result<()> {
+    let chart_title = "curvefit_linear_4_point_variance4";
+    let in_reference_file_name = "linear_4_point_raw.chan";
+    let in_file_name = "linear_4_point_variance4.chan";
+    let out_file_name = "curvefit_linear_4_point_variance4.png";
+    let n_points = 4;
+    let interpolation_method = InterpolationMethod::Linear;
 
-    let data_dir = find_data_dir()?;
-    let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_4_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_4_point_variance4.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_4_point_variance4.png")?;
-
-    let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
-    let data = read_chan_file(&in_file_path.as_os_str())?;
-    // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data);
-    let y_values = chan_data_filter_only_y(&data);
-
-    let points = nonlinear_line_n_points(&x_values, &y_values, 4)?;
-    println!("points={points:?}");
-
-    save_chart_linear_n_points_regression(
-        &data_raw,
-        &data,
-        &points,
+    let points = curvefit_common(
         chart_title,
-        &out_file_path.as_os_str(),
-        chart_resolution,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
+        n_points,
+        interpolation_method,
     )?;
 
     let point_a = points[0];

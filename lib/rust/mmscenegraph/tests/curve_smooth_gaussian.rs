@@ -37,6 +37,7 @@ use crate::common::read_chan_file;
 use crate::common::save_chart_curves_compare_two;
 use crate::common::CHART_RESOLUTION;
 
+use mmscenegraph_rust::constant::Real;
 use mmscenegraph_rust::curve::smooth::gaussian::gaussian_smooth_2d;
 
 #[test]
@@ -57,7 +58,7 @@ fn curve_smooth_gaussian1() -> Result<()> {
     let y_values = chan_data_filter_only_y(&data);
 
     let smoothing_width = 1.0;
-    let mut y_values_smoothed: Vec<f64> = vec![0.0; y_values.len()];
+    let mut y_values_smoothed: Vec<Real> = vec![0.0; y_values.len()];
     gaussian_smooth_2d(
         &x_values,
         &y_values,
@@ -101,7 +102,7 @@ fn curve_smooth_gaussian2() -> Result<()> {
     let y_values = chan_data_filter_only_y(&data);
 
     let smoothing_width = 2.0;
-    let mut y_values_smoothed: Vec<f64> = vec![0.0; y_values.len()];
+    let mut y_values_smoothed: Vec<Real> = vec![0.0; y_values.len()];
     gaussian_smooth_2d(
         &x_values,
         &y_values,
@@ -142,7 +143,7 @@ fn curve_smooth_gaussian5() -> Result<()> {
     let y_values = chan_data_filter_only_y(&data);
 
     let smoothing_width = 5.0;
-    let mut y_values_smoothed: Vec<f64> = vec![0.0; y_values.len()];
+    let mut y_values_smoothed: Vec<Real> = vec![0.0; y_values.len()];
     gaussian_smooth_2d(
         &x_values,
         &y_values,
@@ -183,7 +184,7 @@ fn curve_smooth_gaussian10() -> Result<()> {
     let y_values = chan_data_filter_only_y(&data);
 
     let smoothing_width = 10.0;
-    let mut y_values_smoothed: Vec<f64> = vec![0.0; y_values.len()];
+    let mut y_values_smoothed: Vec<Real> = vec![0.0; y_values.len()];
     gaussian_smooth_2d(
         &x_values,
         &y_values,
@@ -224,7 +225,7 @@ fn curve_smooth_gaussian25() -> Result<()> {
     let y_values = chan_data_filter_only_y(&data);
 
     let smoothing_width = 25.0;
-    let mut y_values_smoothed: Vec<f64> = vec![0.0; y_values.len()];
+    let mut y_values_smoothed: Vec<Real> = vec![0.0; y_values.len()];
     gaussian_smooth_2d(
         &x_values,
         &y_values,
@@ -265,7 +266,7 @@ fn curve_smooth_gaussian50() -> Result<()> {
     let y_values = chan_data_filter_only_y(&data);
 
     let smoothing_width = 50.0;
-    let mut y_values_smoothed: Vec<f64> = vec![0.0; y_values.len()];
+    let mut y_values_smoothed: Vec<Real> = vec![0.0; y_values.len()];
     gaussian_smooth_2d(
         &x_values,
         &y_values,
@@ -306,7 +307,7 @@ fn curve_smooth_gaussian100() -> Result<()> {
     let y_values = chan_data_filter_only_y(&data);
 
     let smoothing_width = 100.0;
-    let mut y_values_smoothed: Vec<f64> = vec![0.0; y_values.len()];
+    let mut y_values_smoothed: Vec<Real> = vec![0.0; y_values.len()];
     gaussian_smooth_2d(
         &x_values,
         &y_values,

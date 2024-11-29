@@ -23,6 +23,7 @@ use anyhow::Result;
 use log::debug;
 use std::fmt;
 
+use crate::constant::Real;
 use crate::curve::derivatives::allocate_derivatives_order_2;
 use crate::curve::derivatives::calculate_derivatives_order_2;
 use crate::math::statistics::calc_median_absolute_deviation_sigma;
@@ -34,9 +35,9 @@ use crate::math::statistics::SortedDataSliceOps;
 /// Represents a point that was classified as a pop
 #[derive(Debug)]
 pub struct PopPoint {
-    pub time: f64,
-    pub value: f64,
-    pub score: f64,
+    pub time: Real,
+    pub value: Real,
+    pub score: Real,
 }
 
 impl fmt::Display for PopPoint {
@@ -50,11 +51,11 @@ impl fmt::Display for PopPoint {
 }
 
 fn calculate_per_frame_pop_score(
-    times: &[f64],
-    values: &[f64],
-    out_velocity: &mut [f64],
-    out_acceleration: &mut [f64],
-    out_scores: &mut [f64],
+    times: &[Real],
+    values: &[Real],
+    out_velocity: &mut [Real],
+    out_acceleration: &mut [Real],
+    out_scores: &mut [Real],
 ) -> Result<()> {
     if (times.len() != values.len()) && (times.len() != out_scores.len()) {
         bail!("Times, values and output arrays must have the same length.");
@@ -105,9 +106,9 @@ fn calculate_per_frame_pop_score(
 
 /// Find pops in the data.
 pub fn detect_curve_pops(
-    times: &[f64],
-    values: &[f64],
-    threshold: f64,
+    times: &[Real],
+    values: &[Real],
+    threshold: Real,
 ) -> Result<Vec<PopPoint>> {
     if times.len() != values.len() {
         bail!("Times and values must have the same length.");
@@ -176,10 +177,10 @@ pub fn detect_curve_pops(
 }
 
 pub fn filter_curve_pops(
-    times: &[f64],
-    values: &[f64],
-    threshold: f64,
-) -> Result<Vec<(f64, f64)>> {
+    times: &[Real],
+    values: &[Real],
+    threshold: Real,
+) -> Result<Vec<(Real, Real)>> {
     if times.len() != values.len() {
         bail!("Times and values must have the same length.");
     }

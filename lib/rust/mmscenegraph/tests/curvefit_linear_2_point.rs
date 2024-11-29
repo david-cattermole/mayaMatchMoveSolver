@@ -38,21 +38,24 @@ use crate::common::save_chart_linear_regression;
 use crate::common::CHART_RESOLUTION;
 
 use mmscenegraph_rust::math::curve_fit::linear_regression;
+use mmscenegraph_rust::math::curve_fit::AngleRadian;
+use mmscenegraph_rust::math::curve_fit::Point2;
 
-#[test]
-fn linear_2_point_raw() -> Result<()> {
-    let chart_title = "linear_2_point_raw";
+fn curvefit_common(
+    chart_title: &str,
+    in_reference_file_name: &str,
+    in_file_name: &str,
+    out_file_name: &str,
+) -> Result<(Point2, AngleRadian)> {
     let chart_resolution = CHART_RESOLUTION;
 
     let data_dir = find_data_dir()?;
-    let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_2_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_2_point_raw.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_2_point_raw.png")?;
+    let in_reference_file_path =
+        construct_input_file_path(&data_dir, in_reference_file_name)?;
+    let in_file_path = construct_input_file_path(&data_dir, in_file_name)?;
+    let out_file_path = construct_output_file_path(&data_dir, out_file_name)?;
 
-    let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
+    let data_raw = read_chan_file(&in_reference_file_path.as_os_str())?;
     let data = read_chan_file(&in_file_path.as_os_str())?;
     // print_chan_data(&data);
     let x_values = chan_data_filter_only_x(&data);
@@ -71,6 +74,23 @@ fn linear_2_point_raw() -> Result<()> {
         chart_resolution,
     )?;
 
+    Ok((point, slope))
+}
+
+#[test]
+fn linear_2_point_raw() -> Result<()> {
+    let chart_title = "curvefit_linear_2_point_raw";
+    let in_reference_file_name = "linear_2_point_raw.chan";
+    let in_file_name = "linear_2_point_raw.chan";
+    let out_file_name = "curvefit_linear_2_point_raw.png";
+
+    let (point, slope) = curvefit_common(
+        chart_title,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
+    )?;
+
     assert_relative_eq!(point.x(), 1051.0, epsilon = 1.0e-9);
     assert_relative_eq!(point.y(), 0.3197303694878337, epsilon = 1.0e-9);
     assert_relative_eq!(
@@ -78,41 +98,22 @@ fn linear_2_point_raw() -> Result<()> {
         1.7585081160706024,
         epsilon = 1.0e-9
     );
-    // assert!(false);
 
     Ok(())
 }
 
 #[test]
 fn linear_2_point_variance1() -> Result<()> {
-    let chart_title = "linear_2_point_variance1";
-    let chart_resolution = CHART_RESOLUTION;
+    let chart_title = "curvefit_linear_2_point_variance1";
+    let in_reference_file_name = "linear_2_point_raw.chan";
+    let in_file_name = "linear_2_point_variance1.chan";
+    let out_file_name = "curvefit_linear_2_point_variance1.png";
 
-    let data_dir = find_data_dir()?;
-    let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_2_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_2_point_variance1.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_2_point_variance1.png")?;
-
-    let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
-    let data = read_chan_file(&in_file_path.as_os_str())?;
-    // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data);
-    let y_values = chan_data_filter_only_y(&data);
-
-    let (point, slope) = linear_regression(&x_values, &y_values)?;
-    println!("point={point:?} slope={slope:?}");
-
-    save_chart_linear_regression(
-        &data_raw,
-        &data,
-        point,
-        slope,
+    let (point, slope) = curvefit_common(
         chart_title,
-        &out_file_path.as_os_str(),
-        chart_resolution,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
     )?;
 
     assert_relative_eq!(point.x(), 1051.0, epsilon = 1.0e-9);
@@ -128,34 +129,16 @@ fn linear_2_point_variance1() -> Result<()> {
 
 #[test]
 fn linear_2_point_variance2() -> Result<()> {
-    let chart_title = "linear_2_point_variance2";
-    let chart_resolution = CHART_RESOLUTION;
+    let chart_title = "curvefit_linear_2_point_variance2";
+    let in_reference_file_name = "linear_2_point_raw.chan";
+    let in_file_name = "linear_2_point_variance2.chan";
+    let out_file_name = "curvefit_linear_2_point_variance2.png";
 
-    let data_dir = find_data_dir()?;
-    let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_2_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_2_point_variance2.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_2_point_variance2.png")?;
-
-    let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
-    let data = read_chan_file(&in_file_path.as_os_str())?;
-    // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data);
-    let y_values = chan_data_filter_only_y(&data);
-
-    let (point, slope) = linear_regression(&x_values, &y_values)?;
-    println!("point={point:?} slope={slope:?}");
-
-    save_chart_linear_regression(
-        &data_raw,
-        &data,
-        point,
-        slope,
+    let (point, slope) = curvefit_common(
         chart_title,
-        &out_file_path.as_os_str(),
-        chart_resolution,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
     )?;
 
     assert_relative_eq!(point.x(), 1051.0, epsilon = 1.0e-9);
@@ -171,34 +154,16 @@ fn linear_2_point_variance2() -> Result<()> {
 
 #[test]
 fn linear_2_point_variance3() -> Result<()> {
-    let chart_title = "linear_2_point_variance3";
-    let chart_resolution = CHART_RESOLUTION;
+    let chart_title = "curvefit_linear_2_point_variance3";
+    let in_reference_file_name = "linear_2_point_raw.chan";
+    let in_file_name = "linear_2_point_variance3.chan";
+    let out_file_name = "curvefit_linear_2_point_variance3.png";
 
-    let data_dir = find_data_dir()?;
-    let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_2_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_2_point_variance3.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_2_point_variance3.png")?;
-
-    let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
-    let data = read_chan_file(&in_file_path.as_os_str())?;
-    // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data);
-    let y_values = chan_data_filter_only_y(&data);
-
-    let (point, slope) = linear_regression(&x_values, &y_values)?;
-    println!("point={point:?} slope={slope:?}");
-
-    save_chart_linear_regression(
-        &data_raw,
-        &data,
-        point,
-        slope,
+    let (point, slope) = curvefit_common(
         chart_title,
-        &out_file_path.as_os_str(),
-        chart_resolution,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
     )?;
 
     assert_relative_eq!(point.x(), 1051.0, epsilon = 1.0e-9);
@@ -210,34 +175,16 @@ fn linear_2_point_variance3() -> Result<()> {
 
 #[test]
 fn linear_2_point_variance4() -> Result<()> {
-    let chart_title = "linear_2_point_variance4";
-    let chart_resolution = CHART_RESOLUTION;
+    let chart_title = "curvefit_linear_2_point_variance4";
+    let in_reference_file_name = "linear_2_point_raw.chan";
+    let in_file_name = "linear_2_point_variance4.chan";
+    let out_file_name = "curvefit_linear_2_point_variance4.png";
 
-    let data_dir = find_data_dir()?;
-    let in_file_path_raw =
-        construct_input_file_path(&data_dir, "linear_2_point_raw.chan")?;
-    let in_file_path =
-        construct_input_file_path(&data_dir, "linear_2_point_variance4.chan")?;
-    let out_file_path =
-        construct_output_file_path(&data_dir, "linear_2_point_variance4.png")?;
-
-    let data_raw = read_chan_file(&in_file_path_raw.as_os_str())?;
-    let data = read_chan_file(&in_file_path.as_os_str())?;
-    // print_chan_data(&data);
-    let x_values = chan_data_filter_only_x(&data);
-    let y_values = chan_data_filter_only_y(&data);
-
-    let (point, slope) = linear_regression(&x_values, &y_values)?;
-    println!("point={point:?} slope={slope:?}");
-
-    save_chart_linear_regression(
-        &data_raw,
-        &data,
-        point,
-        slope,
+    let (point, slope) = curvefit_common(
         chart_title,
-        &out_file_path.as_os_str(),
-        chart_resolution,
+        in_reference_file_name,
+        in_file_name,
+        out_file_name,
     )?;
 
     assert_relative_eq!(point.x(), 1051.0, epsilon = 1.0e-9);

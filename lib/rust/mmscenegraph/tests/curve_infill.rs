@@ -48,7 +48,7 @@ use crate::common::CHART_RESOLUTION;
 use mmscenegraph_rust::constant::Real;
 use mmscenegraph_rust::curve::infill::infill_curve;
 use mmscenegraph_rust::curve::resample::resample_uniform_xy;
-use mmscenegraph_rust::curve::resample::Interpolation;
+use mmscenegraph_rust::math::interpolate::InterpolationMethod;
 
 fn infill_resample_common(
     chart_title: &str,
@@ -73,7 +73,7 @@ fn infill_resample_common(
         resample_start,
         resample_end,
         resample_by,
-        Interpolation::Linear,
+        InterpolationMethod::Linear,
     )?;
     assert!(data_filtered.len() < data_raw.len());
     let x_values_filtered = chan_data_filter_only_x(&data_filtered);
@@ -96,9 +96,9 @@ fn infill_resample_common(
 
 #[test]
 fn bounce_5_up_down_infill_2() -> Result<()> {
-    let chart_title = "bounce_5_up_down_infill_resample2";
+    let chart_title = "infill_resample2_bounce_5_up_down";
     let in_file_name = "bounce_5_up_down_raw.chan";
-    let out_file_name = "bounce_5_up_down_infill_resample2.png";
+    let out_file_name = "infill_resample2_bounce_5_up_down.png";
     let resample_by = 2.0;
 
     infill_resample_common(
@@ -111,9 +111,9 @@ fn bounce_5_up_down_infill_2() -> Result<()> {
 
 #[test]
 fn bounce_5_up_down_infill_5() -> Result<()> {
-    let chart_title = "bounce_5_up_down_infill_resample5";
+    let chart_title = "infill_resample5_bounce_5_up_down";
     let in_file_name = "bounce_5_up_down_raw.chan";
-    let out_file_name = "bounce_5_up_down_infill_resample5.png";
+    let out_file_name = "infill_resample5_bounce_5_up_down.png";
     let resample_by = 5.0;
 
     infill_resample_common(
@@ -126,9 +126,9 @@ fn bounce_5_up_down_infill_5() -> Result<()> {
 
 #[test]
 fn bounce_5_up_down_infill_10() -> Result<()> {
-    let chart_title = "bounce_5_up_down_infill_resample10";
+    let chart_title = "infill_resample10_bounce_5_up_down";
     let in_file_name = "bounce_5_up_down_raw.chan";
-    let out_file_name = "bounce_5_up_down_infill_resample10.png";
+    let out_file_name = "infill_resample10_bounce_5_up_down.png";
     let resample_by = 10.0;
 
     infill_resample_common(
@@ -141,9 +141,9 @@ fn bounce_5_up_down_infill_10() -> Result<()> {
 
 #[test]
 fn bounce_5_up_down_infill_20() -> Result<()> {
-    let chart_title = "bounce_5_up_down_infill_resample20";
+    let chart_title = "infill_resample20_bounce_5_up_down";
     let in_file_name = "bounce_5_up_down_raw.chan";
-    let out_file_name = "bounce_5_up_down_infill_resample20.png";
+    let out_file_name = "infill_resample20_bounce_5_up_down.png";
     let resample_by = 20.0;
 
     infill_resample_common(
@@ -209,9 +209,9 @@ fn infill_gap_common(
 
 #[test]
 fn bounce_5_up_down_infill_gap1() -> Result<()> {
-    let chart_title = "bounce_5_up_down_infill_gap1";
+    let chart_title = "infill_gap1_bounce_5_up_down";
     let in_file_name = "bounce_5_up_down_raw.chan";
-    let out_file_name = "bounce_5_up_down_infill_gap1.png";
+    let out_file_name = "infill_gap1_bounce_5_up_down.png";
     let gaps: &[(Real, Real)] = &[
         (1003.0, 1011.0),
         (1012.0, 1024.0),
@@ -225,9 +225,9 @@ fn bounce_5_up_down_infill_gap1() -> Result<()> {
 
 #[test]
 fn bounce_5_up_down_infill_gap2() -> Result<()> {
-    let chart_title = "bounce_5_up_down_infill_gap2";
+    let chart_title = "infill_gap2_bounce_5_up_down";
     let in_file_name = "bounce_5_up_down_raw.chan";
-    let out_file_name = "bounce_5_up_down_infill_gap2.png";
+    let out_file_name = "infill_gap2_bounce_5_up_down.png";
     let gaps: &[(Real, Real)] = &[
         (1003.0, 1023.0),
         (1027.0, 1048.0),

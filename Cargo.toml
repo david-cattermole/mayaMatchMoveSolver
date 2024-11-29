@@ -24,6 +24,7 @@ argmin = { version = "0.10.0", default-features = true, features = ["serde1"] }
 argmin-math = { version = "0.4", default-features = true, features = ["primitives", "vec", "ndarray_latest"] }
 criterion = { version = "0.5.1", default-features = false, features = ["html_reports"] }
 exr = "1.72.0"
+enum_dispatch = "0.3.13"
 fastapprox = "0.3.1"
 finitediff = { version = "0.1.4", features = ["ndarray"] }
 half = { version = "2.4.1", default-features = false, features = ["std", "num-traits"] }

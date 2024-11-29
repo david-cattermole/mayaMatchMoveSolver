@@ -48,3 +48,6 @@ pub const MM_TO_CM: Real = 0.1;
 pub const _CM_TO_MM: Real = 10.0;
 pub const INCH_TO_MM: Real = 25.4;
 pub const _INCH_TO_CM: Real = 2.54;
+
+// Number constants.
+pub const REAL_E: f64 = std::f64::consts::E;

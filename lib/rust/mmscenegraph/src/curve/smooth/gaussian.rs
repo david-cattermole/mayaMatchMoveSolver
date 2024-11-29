@@ -28,18 +28,19 @@
 use anyhow::bail;
 use anyhow::Result;
 
-// use crate::constant::Real;
+use crate::constant::Real;
+use crate::constant::REAL_E;
 
 /// Compute array of Gaussian weights for a given sigma value.
 #[inline]
 fn compute_gaussian_weights_1d(
-    sigma: f64,
+    sigma: Real,
     center: usize,
-    out_weights: &mut [f64],
-    out_weights_sum: &mut f64,
+    out_weights: &mut [Real],
+    out_weights_sum: &mut Real,
 ) {
     // Calculate center position for Gaussian
-    let center_pos = center as f64;
+    let center_pos = center as Real;
 
     // Precompute constant factors
     let sigma_squared_2 = 2.0 * sigma.powi(2);
@@ -51,10 +52,9 @@ fn compute_gaussian_weights_1d(
 
     // Compute all weights in a single vectorizable loop
     for i in 0..out_weights.len() {
-        let x = i as f64;
+        let x = i as Real;
         let diff = x - center_pos;
-        out_weights[i] =
-            std::f64::consts::E.powf(-diff.powi(2) / sigma_squared_2);
+        out_weights[i] = REAL_E.powf(-diff.powi(2) / sigma_squared_2);
     }
 
     *out_weights_sum = 0.0;
@@ -67,11 +67,11 @@ fn compute_gaussian_weights_1d(
 /// adjusting for non-uniform time sampling.
 #[inline]
 fn compute_gaussian_weights_2d(
-    times: &[f64],
-    sigma: f64,
+    times: &[Real],
+    sigma: Real,
     center_index: usize,
-    out_weights: &mut [f64],
-    out_weights_sum: &mut f64,
+    out_weights: &mut [Real],
+    out_weights_sum: &mut Real,
 ) {
     // Get center time value
     let center_time = times[center_index];
@@ -87,8 +87,7 @@ fn compute_gaussian_weights_2d(
     // Compute weights based on time differences rather than indices
     for i in 0..out_weights.len() {
         let time_diff = times[i] - center_time;
-        out_weights[i] =
-            std::f64::consts::E.powf(-time_diff.powi(2) / sigma_squared_2);
+        out_weights[i] = REAL_E.powf(-time_diff.powi(2) / sigma_squared_2);
     }
 
     // Calculate sum of weights
@@ -105,9 +104,9 @@ fn compute_gaussian_weights_2d(
 /// * `width` - Smoothing width (>1.0 for smoothing effect)
 /// * `out_values` - Pre-allocated buffer for output values, must be same length as input
 pub fn gaussian_smooth_1d(
-    values: &[f64],
-    width: f64,
-    out_values: &mut [f64],
+    values: &[Real],
+    width: Real,
+    out_values: &mut [Real],
 ) -> Result<()> {
     if values.len() != out_values.len() {
         bail!("Output buffer must be same length as input values");
@@ -152,10 +151,10 @@ pub fn gaussian_smooth_1d(
 /// * `out_values` - Pre-allocated buffer for output values, must be
 ///    same length as input.
 pub fn gaussian_smooth_2d(
-    times: &[f64],
-    values: &[f64],
-    width: f64,
-    out_values: &mut [f64],
+    times: &[Real],
+    values: &[Real],
+    width: Real,
+    out_values: &mut [Real],
 ) -> Result<()> {
     // Input validation
     if times.len() != values.len() {
@@ -218,7 +217,7 @@ mod tests {
 
     #[test]
     fn test_1d_large_array() -> Result<()> {
-        let values: Vec<f64> = (0..1000).map(|x| x as f64).collect();
+        let values: Vec<Real> = (0..1000).map(|x| x as Real).collect();
         let mut result = vec![0.0; values.len()];
         gaussian_smooth_1d(&values, 5.0, &mut result)?;
 
@@ -230,7 +229,7 @@ mod tests {
     fn test_1d_alignment() -> Result<()> {
         let sizes = [1, 8, 16, 32, 64, 128];
         for size in sizes.iter() {
-            let values: Vec<f64> = (0..*size).map(|x| x as f64).collect();
+            let values: Vec<Real> = (0..*size).map(|x| x as Real).collect();
             let mut result = vec![0.0; values.len()];
             gaussian_smooth_1d(&values, 3.0, &mut result)?;
             assert_eq!(result.len(), values.len());
@@ -241,7 +240,7 @@ mod tests {
     #[test]
     fn test_1d_edge_cases() -> Result<()> {
         // Empty array
-        let empty: Vec<f64> = vec![];
+        let empty: Vec<Real> = vec![];
         let mut result = vec![];
         gaussian_smooth_1d(&empty, 2.0, &mut result)?;
         assert_eq!(result, empty);
@@ -263,7 +262,7 @@ mod tests {
 
     #[test]
     fn test_2d_uniform_sampling() -> Result<()> {
-        let times: Vec<f64> = (0..5).map(|x| x as f64).collect();
+        let times: Vec<Real> = (0..5).map(|x| x as Real).collect();
         let values = vec![1.0, 2.0, 3.0, 2.0, 1.0];
         let mut result = vec![0.0; values.len()];
         gaussian_smooth_2d(&times, &values, 2.0, &mut result)?;
@@ -274,8 +273,8 @@ mod tests {
     }
 
     /// Helper function to generate an array of time values matching array indices
-    fn generate_uniform_times(len: usize) -> Vec<f64> {
-        (0..len).map(|x| x as f64).collect()
+    fn generate_uniform_times(len: usize) -> Vec<Real> {
+        (0..len).map(|x| x as Real).collect()
     }
 
     #[test]
@@ -285,8 +284,8 @@ mod tests {
         let test_widths = [1.5, 2.0, 3.0, 5.0, 10.0];
 
         for &size in &test_sizes {
-            let values: Vec<f64> =
-                (0..size).map(|x| (x as f64 * 0.1).sin()).collect();
+            let values: Vec<Real> =
+                (0..size).map(|x| (x as Real * 0.1).sin()).collect();
             let times = generate_uniform_times(values.len());
 
             for &width in &test_widths {

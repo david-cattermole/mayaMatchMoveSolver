@@ -22,26 +22,32 @@ use anyhow::bail;
 use anyhow::Result;
 use log::debug;
 
+use crate::constant::Real;
 use crate::curve::curvature::allocate_curvature;
 use crate::curve::curvature::calculate_curvature;
 use crate::curve::derivatives::allocate_derivatives_order_2;
 use crate::curve::derivatives::calculate_derivatives_order_2;
+use crate::curve::detect::keypoints::detect_level_keypoints;
+use crate::curve::detect::keypoints::filter_keypoints_by_type_and_level;
+use crate::curve::detect::keypoints::KeypointType;
 use crate::curve::smooth::gaussian::gaussian_smooth_2d;
+use crate::math::interpolate::evaluate_curve_points;
+use crate::math::interpolate::InterpolationMethod;
 
 /// Represents a level in the animation curve pyramid.
 #[derive(Debug)]
 pub struct PyramidLevel {
     /// X-value (time)
-    pub times: Vec<f64>,
+    pub times: Vec<Real>,
 
     /// Y-value (animated property)
-    pub values: Vec<f64>,
+    pub values: Vec<Real>,
 
     /// First derivative
-    pub velocity: Vec<f64>,
+    pub velocity: Vec<Real>,
 
     /// Second derivative.
-    pub acceleration: Vec<f64>,
+    pub acceleration: Vec<Real>,
 
     /// Key properties of curvature:
     ///
@@ -56,7 +62,7 @@ pub struct PyramidLevel {
     ///
     /// - Units are 1/radius - smaller radius = sharper curve = higher
     ///   curvature.
-    pub curvature: Vec<f64>,
+    pub curvature: Vec<Real>,
 
     /// Level 0 is the unchanged input points. Higher levels are
     /// smoothed and reduced number of samples.
@@ -65,24 +71,24 @@ pub struct PyramidLevel {
 
 /// As the `level` argument increases, the calculated number gets
 /// larger; '2^level'.
-fn pyramid_level_scale(level: usize) -> f64 {
-    2.0f64.powi(level as i32)
+fn pyramid_level_scale(level: usize) -> Real {
+    (2.0 as Real).powi(level as i32)
 }
 
 /// As the `level` argument increases, the calculated number gets
 /// smaller; '2^(-level)'.
-fn pyramid_level_inverse_scale(level: usize) -> f64 {
-    2.0f64.powi(-(level as i32))
+fn pyramid_level_inverse_scale(level: usize) -> Real {
+    (2.0 as Real).powi(-(level as i32))
 }
 
 impl PyramidLevel {
     /// Level 0 scale is 1.0. Higher levels are larger.
-    pub fn scale(&self) -> f64 {
+    pub fn scale(&self) -> Real {
         pyramid_level_scale(self.level)
     }
 
     /// Level 0 scale is 1.0. Higher levels are larger.
-    pub fn inverse_scale(&self) -> f64 {
+    pub fn inverse_scale(&self) -> Real {
         pyramid_level_inverse_scale(self.level)
     }
 }
@@ -91,7 +97,7 @@ impl PyramidLevel {
 pub fn compute_pyramid_depth(input_size: usize) -> usize {
     debug!("compute_pyramid_depth: input_size={:?}", input_size);
 
-    const MIN_LEVEL_SIZE: usize = 4;
+    const MIN_LEVEL_SIZE: usize = 8;
     const MAX_DEPTH: usize = 10; // Prevent excessive depth.
     const MIN_DEPTH: usize = 1;
 
@@ -110,128 +116,85 @@ pub fn compute_pyramid_depth(input_size: usize) -> usize {
     depth
 }
 
-/// Down-sample handling variable intervals and odd/even counts, using
-/// a sliding window that considers previous, current, and next points
-/// for better curve preservation.
+/// Down-sample the curve points by a scale factor.
 fn downsample_curve_points(
-    times: &[f64],
-    values: &[f64],
-    increment: usize,
-) -> Result<(Vec<f64>, Vec<f64>)> {
+    times: &[Real],
+    values: &[Real],
+    scale: Real,
+) -> Result<(Vec<Real>, Vec<Real>)> {
     debug!("downsample_curve_points: times.len()={:?}", times.len());
     debug!("downsample_curve_points: values.len()={:?}", values.len());
-    debug!("downsample_curve_points: increment={:?}", increment);
+
     if times.len() != values.len() {
         bail!("Times and values slice lengths must match.");
     }
     if times.len() < 2 {
         bail!("Times and values are less than 2.");
     }
-    if increment < 1 {
-        bail!("Invalid time intervals in curve points");
+
+    let first_time = times[0];
+    let last_index = times.len() - 1;
+    let last_time = times[last_index];
+
+    let time_range = last_time - first_time;
+    let increment = (time_range / times.len() as Real) * scale;
+    let count = ((time_range / increment) as usize) + 1;
+    debug!("downsample_curve_points: time_range={time_range}");
+    debug!("downsample_curve_points: increment={increment}");
+    debug!("downsample_curve_points: count={count}");
+
+    let mut out_times = Vec::with_capacity(count);
+    let mut current_time = first_time;
+    while current_time <= last_time {
+        debug!("downsample_curve_points: current_time={current_time}");
+        out_times.push(current_time);
+        current_time += increment;
     }
 
-    let half_increment = increment / 2;
+    // Must ensure that the full time range is maintained - we don't
+    // want to have the curve shrunk each time a down-sampling occurs.
+    let out_times_last_index = out_times.len() - 1;
+    let out_times_last_time = out_times[out_times_last_index];
+    let diff = out_times_last_time - last_time;
+    if diff.abs() < increment {
+        out_times[out_times_last_index] = last_time;
+    } else {
+        out_times.push(last_time);
+    }
+
+    // Because cubic spline interpolation allows a smooth re-sampling between
+    // points, and does not have tangent issues on the boundaries.
+    let interpolation_method = InterpolationMethod::CubicSpline;
+
+    let downsampled_xy =
+        evaluate_curve_points(&out_times, times, values, interpolation_method);
+    assert_eq!(out_times.len(), downsampled_xy.len());
+
+    let mut out_values = Vec::with_capacity(count);
+    for xy in downsampled_xy {
+        out_values.push(xy.1);
+    }
+    assert_eq!(out_times.len(), out_values.len());
+
     debug!(
-        "downsample_curve_points: half_increment={:?}",
-        half_increment
+        "downsample_curve_points: out_times.len()={:?}",
+        out_times.len()
     );
-
-    // TODO: Improve this guessed value.
-    let approx_count = (times.len() / 2) + 1;
-    let mut out_times = Vec::with_capacity(approx_count);
-    let mut out_values = Vec::with_capacity(approx_count);
-
-    // Always keep first point.
-    out_times.push(times[0]);
-    out_values.push(values[0]);
-
-    // Handle interior points using a sliding 3-point window.
-    let mut i = half_increment;
-    while i < times.len() - half_increment {
-        let curr_time = times[i];
-        let prev_time = times[i - half_increment];
-        let next_time = times[i + half_increment];
-
-        let _curr_value = values[i];
-        let prev_value = values[i - half_increment];
-        let next_value = values[i + half_increment];
-
-        // Time intervals between points.
-        let dt_prev = curr_time - prev_time;
-        let dt_next = next_time - curr_time;
-
-        if dt_prev <= 0.0 || dt_next <= 0.0 {
-            bail!("Invalid time intervals in curve points");
-        }
-
-        // Calculate weights based on time intervals.
-        let total_dt = dt_prev + dt_next;
-        let w_prev = dt_prev / total_dt;
-        let w_next = dt_next / total_dt;
-        let w_total = w_prev + w_next;
-
-        // Compute weighted average considering 2 points.
-        //
-        // TODO: Make sure the current values are used too.
-        let weighted_value =
-            (prev_value * w_prev + next_value * w_next) / w_total;
-        let weighted_time = (prev_time * w_prev + next_time * w_next) / w_total;
-
-        out_times.push(weighted_time);
-        out_values.push(weighted_value);
-
-        i += increment;
-    }
-
-    // Handle remaining points.
-    match times.len().saturating_sub(i) {
-        // One point remaining.
-        1 => {
-            let last_index = times.len() - 1;
-            let last_time = times[last_index];
-            let last_value = values[last_index];
-            out_times.push(last_time);
-            out_values.push(last_value);
-        }
-        // Two points remaining.
-        2 => {
-            let last_index = times.len() - 1;
-            let _prev_index = times.len() - 2;
-            let last_time = times[last_index];
-            let prev_time = times[last_index];
-            let last_value = values[last_index];
-            let prev_value = values[last_index];
-
-            // Weighted average of final two points
-            let dt = last_time - prev_time;
-            if dt <= 0.0 {
-                bail!("Invalid time interval in final points");
-            }
-
-            // Second to last point.
-            let time = (prev_time + last_time) * 0.5;
-            let value = (prev_value + last_value) * 0.5;
-            out_times.push(time);
-            out_values.push(value);
-
-            // Last point.
-            out_times.push(last_time);
-            out_values.push(last_value);
-        }
-        _ => {}
-    }
+    debug!(
+        "downsample_curve_points: out_values.len()={:?}",
+        out_values.len()
+    );
 
     Ok((out_times, out_values))
 }
 
 /// Compute derivatives handling variable time intervals and edge cases
 fn compute_metadata(
-    times: &[f64],
-    values: &[f64],
-    out_velocity: &mut [f64],
-    out_acceleration: &mut [f64],
-    out_curvature: &mut [f64],
+    times: &[Real],
+    values: &[Real],
+    out_velocity: &mut [Real],
+    out_acceleration: &mut [Real],
+    out_curvature: &mut [Real],
 ) -> Result<()> {
     debug!("compute_metadata: times.len()={:?}", times.len());
 
@@ -251,10 +214,15 @@ fn compute_metadata(
 }
 
 fn create_pyramid_level(
-    times: Vec<f64>,
-    values: Vec<f64>,
+    times: Vec<Real>,
+    values: Vec<Real>,
     level_num: usize,
 ) -> Result<PyramidLevel> {
+    debug!("create_pyramid_level: level_num={level_num}");
+    for (t, v) in times.iter().zip(values.iter()) {
+        debug!("create_pyramid_level: t={t} v={v}");
+    }
+
     let (mut velocity, mut acceleration) =
         allocate_derivatives_order_2(times.len())?;
     let mut curvature = allocate_curvature(times.len())?;
@@ -275,15 +243,53 @@ fn create_pyramid_level(
     })
 }
 
+fn merge_curves(
+    samples_a: &[(Real, Real)],
+    samples_b: &[(Real, Real)],
+    time_width: Real,
+) -> Result<Vec<(Real, Real)>> {
+    let mut samples = Vec::with_capacity(samples_a.len() + samples_b.len());
+
+    let mut overlapping_with_a = vec![false; samples_a.len()];
+    for xy_b in samples_b.iter() {
+        let time_b = xy_b.0;
+        let _value_b = xy_b.1;
+        for (i, (time_a, _value_a)) in samples_a.iter().enumerate() {
+            let time_diff = (time_a - time_b).abs();
+            if time_diff < time_width {
+                overlapping_with_a[i] = true;
+            }
+        }
+    }
+
+    for (xy, overlapping) in samples_a.iter().zip(overlapping_with_a) {
+        if overlapping == false {
+            samples.push(*xy);
+        }
+    }
+
+    for xy in samples_b.iter() {
+        samples.push(*xy);
+    }
+
+    // Sort by time
+    samples.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+
+    Ok(samples)
+}
+
 /// Builds pyramid with careful handling of boundaries and intervals.
 pub fn build_pyramid_levels(
-    times: &[f64],
-    values: &[f64],
+    times: &[Real],
+    values: &[Real],
     num_levels: usize,
 ) -> Result<Vec<PyramidLevel>> {
     debug!("build_pyramid_levels: values.len()={:?}", values.len());
     debug!("build_pyramid_levels: times.len()={:?}", times.len());
     debug!("build_pyramid_levels: num_levels={:?}", num_levels);
+
+    let use_keypoint_detection = true;
+    let smooth_factor = 1.0;
 
     let mut pyramid = Vec::with_capacity(num_levels);
 
@@ -299,7 +305,6 @@ pub fn build_pyramid_levels(
     for level_num in 1..num_levels {
         debug!("build_pyramid_levels: level_num={level_num}");
         let prev_level = &pyramid[level_num - 1];
-
         if prev_level.times.len() < MIN_PYRAMID_CURVE_SAMPLES {
             break;
         }
@@ -309,7 +314,7 @@ pub fn build_pyramid_levels(
 
         // Using a smaller smooth width than the down-sampling seems
         // to provide more robust and uniform results.
-        let smooth_width = scale * 0.5;
+        let smooth_width = scale * smooth_factor;
         debug!("build_pyramid_levels: smooth_width={smooth_width}");
 
         let mut smoothed_values = vec![0.0; values.len()];
@@ -319,19 +324,124 @@ pub fn build_pyramid_levels(
             smoothed_values.len()
         );
 
-        // Reduce point count.
         let (downsampled_times, downsampled_values) =
-            downsample_curve_points(times, &smoothed_values, scale as usize)?;
+            downsample_curve_points(times, &smoothed_values, scale)?;
         debug!(
             "build_pyramid_levels: downsampled_times.len()={}",
             downsampled_times.len()
         );
 
-        let pyramid_level = create_pyramid_level(
-            downsampled_times,
-            downsampled_values,
-            level_num,
-        )?;
+        let (out_times, out_values) = if use_keypoint_detection == false {
+            // Uniform sampling.
+            (downsampled_times, downsampled_values)
+        } else {
+            // A mixture of uniform sampling with key-point feature
+            // preservation.
+            let first_time = times[0];
+            let last_index = times.len() - 1;
+            let last_time = times[last_index];
+
+            let reduction_scale = scale;
+            let time_range = last_time - first_time;
+            let increment =
+                (time_range / times.len() as Real) * reduction_scale;
+            let count = ((time_range / increment) as usize) + 1;
+            debug!("build_pyamid_levels: time_range={time_range}");
+            debug!("build_pyamid_levels: increment={increment}");
+            debug!("build_pyamid_levels: count={count}");
+
+            let target_keypoints = count / 2;
+
+            // Detect keypoints.
+            let (mut velocity, mut acceleration) =
+                allocate_derivatives_order_2(times.len())?;
+            let mut curvature = allocate_curvature(times.len())?;
+            compute_metadata(
+                &times,
+                &values,
+                &mut velocity,
+                &mut acceleration,
+                &mut curvature,
+            )?;
+            let all_keypoints = detect_level_keypoints(
+                &times,
+                &smoothed_values,
+                &velocity,
+                &acceleration,
+                &curvature,
+                level_num,
+            );
+            debug!(
+                "build_pyamid_levels: all_keypoints.len()={}",
+                all_keypoints.len()
+            );
+
+            let mut selected_keypoints = Vec::with_capacity(target_keypoints);
+
+            // Always include endpoints.
+            for keypoint in all_keypoints
+                .iter()
+                .filter(|k| k.keypoint_type == KeypointType::Endpoint)
+            {
+                selected_keypoints.push(keypoint.clone());
+            }
+
+            // Minimum spacing between keypoints (adaptive based on target
+            // count).
+            let min_spacing = time_range / (target_keypoints as Real * 2.0);
+
+            filter_keypoints_by_type_and_level(
+                KeypointType::ExtremeValue,
+                level_num,
+                min_spacing,
+                target_keypoints,
+                &all_keypoints,
+                &mut selected_keypoints,
+            );
+
+            let mut downsampled_xy: Vec<_> = downsampled_times
+                .iter()
+                .zip(downsampled_values)
+                .map(|(&t, v)| (t, v))
+                .collect();
+            downsampled_xy.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+
+            let mut keypoints = Vec::with_capacity(selected_keypoints.len());
+            for keypoint in selected_keypoints.iter() {
+                keypoints.push((keypoint.time, keypoint.value));
+            }
+            keypoints.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap());
+
+            let mut samples = merge_curves(&downsampled_xy, &keypoints, scale)?;
+
+            // Ensure first frame is maintained.
+            const EPSILON: Real = 0.0001;
+            let first_sample_xy = samples[0];
+            let first_time_diff = (times[0] - first_sample_xy.0).abs();
+            if first_time_diff > EPSILON {
+                samples.insert(0, (times[0], smoothed_values[0]));
+            }
+
+            // Ensure last frame is maintained.
+            let times_last_index = times.len() - 1;
+            let samples_last_index = samples.len() - 1;
+            let last_sample_xy = samples[samples_last_index];
+            let last_time_diff =
+                (times[times_last_index] - last_sample_xy.0).abs();
+            if last_time_diff > EPSILON {
+                samples.push((
+                    times[times_last_index],
+                    smoothed_values[times_last_index],
+                ));
+            }
+
+            let out_times = samples.iter().map(|xy| xy.0 as Real).collect();
+            let out_values = samples.iter().map(|xy| xy.1 as Real).collect();
+            (out_times, out_values)
+        };
+
+        let pyramid_level =
+            create_pyramid_level(out_times, out_values, level_num)?;
         pyramid.push(pyramid_level);
     }
 

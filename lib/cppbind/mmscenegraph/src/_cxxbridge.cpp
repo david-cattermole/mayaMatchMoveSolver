@@ -1340,6 +1340,10 @@ bool mmscenegraph$cxxbridge1$shim_fit_straight_line_to_ordered_points(::rust::Sl
 bool mmscenegraph$cxxbridge1$shim_line_point_intersection(::mmscenegraph::Point3 point, ::mmscenegraph::Point3 line_a, ::mmscenegraph::Point3 line_b, ::mmscenegraph::Point3 &out_point) noexcept;
 
 bool mmscenegraph$cxxbridge1$shim_fit_plane_to_points(::rust::Slice<const double> points_xyz, double &out_point_x, double &out_point_y, double &out_point_z, double &out_dir_x, double &out_dir_y, double &out_dir_z, double &out_scale, double &out_rms_error) noexcept;
+
+bool mmscenegraph$cxxbridge1$shim_detect_curve_pops(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, double threshold, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
+
+bool mmscenegraph$cxxbridge1$shim_filter_curve_pops(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, double threshold, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
 } // extern "C"
 } // namespace mmscenegraph
 
@@ -1773,6 +1777,14 @@ MMSCENEGRAPH_API_EXPORT bool shim_line_point_intersection(::mmscenegraph::Point3
 
 MMSCENEGRAPH_API_EXPORT bool shim_fit_plane_to_points(::rust::Slice<const double> points_xyz, double &out_point_x, double &out_point_y, double &out_point_z, double &out_dir_x, double &out_dir_y, double &out_dir_z, double &out_scale, double &out_rms_error) noexcept {
   return mmscenegraph$cxxbridge1$shim_fit_plane_to_points(points_xyz, out_point_x, out_point_y, out_point_z, out_dir_x, out_dir_y, out_dir_z, out_scale, out_rms_error);
+}
+
+MMSCENEGRAPH_API_EXPORT bool shim_detect_curve_pops(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, double threshold, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept {
+  return mmscenegraph$cxxbridge1$shim_detect_curve_pops(x_values, y_values, threshold, out_x_values, out_y_values);
+}
+
+MMSCENEGRAPH_API_EXPORT bool shim_filter_curve_pops(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, double threshold, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept {
+  return mmscenegraph$cxxbridge1$shim_filter_curve_pops(x_values, y_values, threshold, out_x_values, out_y_values);
 }
 } // namespace mmscenegraph
 

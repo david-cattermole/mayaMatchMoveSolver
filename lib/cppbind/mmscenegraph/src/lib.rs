@@ -20,6 +20,7 @@
 
 pub mod attr;
 pub mod attrdatablock;
+pub mod curve_detect_pops;
 pub mod cxxbridge;
 pub mod evaluationobjects;
 pub mod fit_plane;

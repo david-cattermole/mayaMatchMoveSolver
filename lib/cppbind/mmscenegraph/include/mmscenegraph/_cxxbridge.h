@@ -1202,4 +1202,8 @@ MMSCENEGRAPH_API_EXPORT bool shim_fit_straight_line_to_ordered_points(::rust::Sl
 MMSCENEGRAPH_API_EXPORT bool shim_line_point_intersection(::mmscenegraph::Point3 point, ::mmscenegraph::Point3 line_a, ::mmscenegraph::Point3 line_b, ::mmscenegraph::Point3 &out_point) noexcept;
 
 MMSCENEGRAPH_API_EXPORT bool shim_fit_plane_to_points(::rust::Slice<const double> points_xyz, double &out_point_x, double &out_point_y, double &out_point_z, double &out_dir_x, double &out_dir_y, double &out_dir_z, double &out_scale, double &out_rms_error) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_detect_curve_pops(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, double threshold, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
+
+MMSCENEGRAPH_API_EXPORT bool shim_filter_curve_pops(::rust::Slice<const double> x_values, ::rust::Slice<const double> y_values, double threshold, ::rust::Vec<double> &out_x_values, ::rust::Vec<double> &out_y_values) noexcept;
 } // namespace mmscenegraph

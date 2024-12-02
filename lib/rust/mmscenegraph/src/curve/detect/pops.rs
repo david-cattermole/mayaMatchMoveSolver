@@ -21,7 +21,6 @@
 use anyhow::bail;
 use anyhow::Result;
 use log::debug;
-use std::fmt;
 
 use crate::constant::Real;
 use crate::curve::derivatives::allocate_derivatives_order_2;
@@ -31,24 +30,6 @@ use crate::math::statistics::calc_population_standard_deviation;
 use crate::math::statistics::calc_z_score;
 use crate::math::statistics::SortedDataSlice;
 use crate::math::statistics::SortedDataSliceOps;
-
-/// Represents a point that was classified as a pop
-#[derive(Debug)]
-pub struct PopPoint {
-    pub time: Real,
-    pub value: Real,
-    pub score: Real,
-}
-
-impl fmt::Display for PopPoint {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "PopPoint [ t={:.2}, v={:.2} (score={:.2}) ]",
-            self.time, self.value, self.score
-        )
-    }
-}
 
 fn calculate_per_frame_pop_score(
     times: &[Real],
@@ -109,7 +90,7 @@ pub fn detect_curve_pops(
     times: &[Real],
     values: &[Real],
     threshold: Real,
-) -> Result<Vec<PopPoint>> {
+) -> Result<Vec<(Real, Real)>> {
     if times.len() != values.len() {
         bail!("Times and values must have the same length.");
     }
@@ -147,13 +128,7 @@ pub fn detect_curve_pops(
             if pop_prev || pop_current || pop_next {
                 let t = times[i];
                 let v = values[i];
-
-                let point = PopPoint {
-                    time: t,
-                    value: v,
-                    score: score_current,
-                };
-                out_values.push(point);
+                out_values.push((t, v));
             }
         }
     } else {
@@ -162,13 +137,7 @@ pub fn detect_curve_pops(
             if score > threshold {
                 let t = times[i];
                 let v = values[i];
-
-                let point = PopPoint {
-                    time: t,
-                    value: v,
-                    score: score,
-                };
-                out_values.push(point);
+                out_values.push((t, v));
             }
         }
     }

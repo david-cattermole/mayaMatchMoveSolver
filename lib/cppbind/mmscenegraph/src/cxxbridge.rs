@@ -20,6 +20,8 @@
 
 use crate::attrdatablock::shim_create_attr_data_block_box;
 use crate::attrdatablock::ShimAttrDataBlock;
+use crate::curve_detect_pops::shim_detect_curve_pops;
+use crate::curve_detect_pops::shim_filter_curve_pops;
 use crate::evaluationobjects::shim_create_evaluation_objects_box;
 use crate::evaluationobjects::ShimEvaluationObjects;
 use crate::fit_plane::shim_fit_plane_to_points;
@@ -429,6 +431,25 @@ pub mod ffi {
             out_dir_z: &mut f64,
             out_scale: &mut f64,
             out_rms_error: &mut f64,
+        ) -> bool;
+    }
+
+    // Fit Plane
+    extern "Rust" {
+        fn shim_detect_curve_pops(
+            x_values: &[f64],
+            y_values: &[f64],
+            threshold: f64,
+            out_x_values: &mut Vec<f64>,
+            out_y_values: &mut Vec<f64>,
+        ) -> bool;
+
+        fn shim_filter_curve_pops(
+            x_values: &[f64],
+            y_values: &[f64],
+            threshold: f64,
+            out_x_values: &mut Vec<f64>,
+            out_y_values: &mut Vec<f64>,
         ) -> bool;
     }
 }

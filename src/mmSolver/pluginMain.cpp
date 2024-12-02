@@ -36,6 +36,7 @@
 #include "mmSolver/nodeTypeIds.h"
 
 // Solver and nodes
+#include "mmSolver/cmd/MMAnimCurveFilterPopsCmd.h"
 #include "mmSolver/cmd/MMBestFitPlaneCmd.h"
 #include "mmSolver/cmd/MMCameraPoseFromPointsCmd.h"
 #include "mmSolver/cmd/MMCameraRelativePoseCmd.h"
@@ -246,6 +247,10 @@ MStatus initializePlugin(MObject obj) {
     REGISTER_COMMAND(plugin, mmsolver::MMTestCameraMatrixCmd::cmdName(),
                      mmsolver::MMTestCameraMatrixCmd::creator,
                      mmsolver::MMTestCameraMatrixCmd::newSyntax, status);
+
+    REGISTER_COMMAND(plugin, mmsolver::MMAnimCurveFilterPopsCmd::cmdName(),
+                     mmsolver::MMAnimCurveFilterPopsCmd::creator,
+                     mmsolver::MMAnimCurveFilterPopsCmd::newSyntax, status);
 
     REGISTER_COMMAND(plugin, mmsolver::MMBestFitPlaneCmd::cmdName(),
                      mmsolver::MMBestFitPlaneCmd::creator,
@@ -661,6 +666,8 @@ MStatus uninitializePlugin(MObject obj) {
     DEREGISTER_COMMAND(plugin, mmsolver::MMSolverSceneGraphCmd::cmdName(),
                        status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMTestCameraMatrixCmd::cmdName(),
+                       status);
+    DEREGISTER_COMMAND(plugin, mmsolver::MMAnimCurveFilterPopsCmd::cmdName(),
                        status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMBestFitPlaneCmd::cmdName(), status);
     DEREGISTER_COMMAND(plugin, mmsolver::MMCameraPoseFromPointsCmd::cmdName(),

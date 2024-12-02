@@ -45,6 +45,12 @@ def _generate_pop_data(raw_data, variance, pop_probability):
     return data
 
 
+def _set_sample_attr(node_attr, data):
+    for f, v in data:
+        maya.cmds.setKeyframe(node_attr, value=v, time=f)
+    return
+
+
 output_directory = (
     '${USERPROFILE}/dev/mayaMatchMoveSolver/lib/rust/mmscenegraph/tests/data'
 )

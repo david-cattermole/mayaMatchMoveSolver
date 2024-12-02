@@ -95,8 +95,8 @@ MStatus query_line_point_data(const MMatrix parentInverseMatrix,
 }
 
 MStatus fit_line_to_points(const mmsg::Real line_length,
-                           const rust::Vec<mmscenegraph::Real> &point_data_x,
-                           const rust::Vec<mmscenegraph::Real> &point_data_y,
+                           const rust::Vec<mmsg::Real> &point_data_x,
+                           const rust::Vec<mmsg::Real> &point_data_y,
                            mmdata::Point2D &out_line_center,
                            mmsg::Real &out_line_slope,
                            mmsg::Real &out_line_angle,

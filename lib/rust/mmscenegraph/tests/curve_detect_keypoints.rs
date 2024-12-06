@@ -43,9 +43,9 @@ use crate::common::CHART_RESOLUTION;
 use mmscenegraph_rust::constant::Real;
 use mmscenegraph_rust::curve::detect::keypoints::analyze_curve;
 use mmscenegraph_rust::curve::detect::keypoints::RankedKeypoint;
+use mmscenegraph_rust::curve::detect::pops::detect_curve_pop_scores;
 use mmscenegraph_rust::curve::detect::pops::detect_curve_pops;
 use mmscenegraph_rust::curve::detect::pops::filter_curve_pops;
-use mmscenegraph_rust::curve::detect::pops::PopPoint;
 use mmscenegraph_rust::math::curve_fit::linear_regression;
 use mmscenegraph_rust::math::curve_fit::nonlinear_line_n3;
 use mmscenegraph_rust::math::curve_fit::nonlinear_line_n_points;
@@ -97,12 +97,23 @@ fn keypoints_common(
         .map(|x| (x.time as Real, x.value as Real))
         .collect();
 
+    let mut weights = vec![0.0; x_values.len()];
+    detect_curve_pop_scores(&x_values, &y_values, &mut weights)?;
+    // println!("weights: {weights:?}");
+    assert_eq!(x_values.len(), weights.len());
+    for i in 0..weights.len() {
+        weights[i] = 1.0 / weights[i];
+    }
+    // println!("weights: {weights:?}");
+    // assert!(false);
+
     let interpolation_method = InterpolationMethod::CubicNUBS;
     let points = nonlinear_line_n_points_with_initial(
         &x_values,
         &y_values,
         &x_values_keypoint,
         &y_values_keypoint,
+        &weights,
         interpolation_method,
     )?;
     print_points(&points);

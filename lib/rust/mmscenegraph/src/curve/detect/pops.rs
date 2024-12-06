@@ -25,6 +25,7 @@ use log::debug;
 use crate::constant::Real;
 use crate::curve::derivatives::allocate_derivatives_order_2;
 use crate::curve::derivatives::calculate_derivatives_order_2;
+use crate::curve::smooth::gaussian::gaussian_smooth_2d;
 use crate::math::statistics::calc_median_absolute_deviation_sigma;
 use crate::math::statistics::calc_population_standard_deviation;
 use crate::math::statistics::calc_z_score;
@@ -85,6 +86,23 @@ fn calculate_per_frame_pop_score(
     Ok(())
 }
 
+fn create_pop_values(times: &[Real], values: &[Real]) -> Result<Vec<f64>> {
+    // Because a value of 3.0 seems to work best with the test data.
+    let width = 3.0;
+
+    let mut diff_values_a = values.to_vec();
+    gaussian_smooth_2d(times, values, width, &mut diff_values_a)?;
+
+    let n = values.len();
+    for i in 0..n {
+        let value = values[i];
+        let smoothed_value = diff_values_a[i];
+        diff_values_a[i] = smoothed_value - value;
+    }
+
+    Ok(diff_values_a)
+}
+
 /// Find pops in the data.
 pub fn detect_curve_pops(
     times: &[Real],
@@ -95,14 +113,15 @@ pub fn detect_curve_pops(
         bail!("Times and values must have the same length.");
     }
 
+    let diff_values = create_pop_values(times, values)?;
+
     let n = times.len();
-    let (mut velocity, mut acceleration) =
-        allocate_derivatives_order_2(times.len())?;
+    let (mut velocity, mut acceleration) = allocate_derivatives_order_2(n)?;
     let mut scores = vec![0.0; n];
 
     calculate_per_frame_pop_score(
         &times,
-        &values,
+        &diff_values,
         &mut velocity,
         &mut acceleration,
         &mut scores,
@@ -134,9 +153,10 @@ pub fn detect_curve_pops(
     } else {
         for i in 0..n {
             let score = scores[i];
+            let t = times[i];
+            let v = values[i];
+            debug!("t={t} v={v} score={score}");
             if score > threshold {
-                let t = times[i];
-                let v = values[i];
                 out_values.push((t, v));
             }
         }
@@ -154,14 +174,16 @@ pub fn filter_curve_pops(
         bail!("Times and values must have the same length.");
     }
 
+    let diff_values = create_pop_values(times, values)?;
+
     let n = times.len();
     let (mut velocity, mut acceleration) =
-        allocate_derivatives_order_2(times.len())?;
+        allocate_derivatives_order_2(values.len())?;
     let mut scores = vec![0.0; n];
 
     calculate_per_frame_pop_score(
         &times,
-        &values,
+        &diff_values,
         &mut velocity,
         &mut acceleration,
         &mut scores,
@@ -202,4 +224,33 @@ pub fn filter_curve_pops(
     }
 
     Ok(out_values_xy)
+}
+
+/// Return the pop-scores, for each frame in the curve.
+pub fn detect_curve_pop_scores(
+    times: &[Real],
+    values: &[Real],
+    out_scores: &mut [Real],
+) -> Result<()> {
+    if times.len() != values.len() {
+        bail!("Times and values must have the same length.");
+    }
+    if times.len() != out_scores.len() {
+        bail!("Times and out_scores must have the same length.");
+    }
+
+    let diff_values = create_pop_values(times, values)?;
+
+    let n = times.len();
+    let (mut velocity, mut acceleration) = allocate_derivatives_order_2(n)?;
+
+    calculate_per_frame_pop_score(
+        &times,
+        &diff_values,
+        &mut velocity,
+        &mut acceleration,
+        out_scores,
+    )?;
+
+    Ok(())
 }

@@ -322,3 +322,40 @@ _write_data('bounce_5_up_down_pop3', data, output_directory)
 variance = variance_very_high
 data = _generate_pop_data(raw_data, variance, pop_probability)
 _write_data('bounce_5_up_down_pop4', data, output_directory)
+
+# Down-Up
+raw_data = _sample_attr(start_frame, end_frame, 'down_up.translateY')
+_write_data('down_up_raw', raw_data, output_directory)
+
+variance = variance_low
+data = _generate_variance_data(raw_data, variance)
+_write_data('down_up_variance1', data, output_directory)
+
+variance = variance_medium
+data = _generate_variance_data(raw_data, variance)
+_write_data('down_up_variance2', data, output_directory)
+
+variance = variance_high
+data = _generate_variance_data(raw_data, variance)
+_write_data('down_up_variance3', data, output_directory)
+
+variance = variance_very_high
+data = _generate_variance_data(raw_data, variance)
+_write_data('down_up_variance4', data, output_directory)
+
+variance = variance_low
+pop_probability = pop_probability_medium
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('down_up_pop1', data, output_directory)
+
+variance = variance_medium
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('down_up_pop2', data, output_directory)
+
+variance = variance_high
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('down_up_pop3', data, output_directory)
+
+variance = variance_very_high
+data = _generate_pop_data(raw_data, variance, pop_probability)
+_write_data('down_up_pop4', data, output_directory)

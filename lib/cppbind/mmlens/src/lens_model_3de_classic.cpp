@@ -20,7 +20,7 @@
  * Class for the 3DE classic lens distortion model.
  */
 
-#include <ldpk/ldpk_classic_3de_mixed_distortion.h>
+#include <ldpk/ldpk_classic_ld_model_distortion.h>
 #include <ldpk/ldpk_vec2d.h>
 #include <mmcore/mmdata.h>
 #include <mmcore/mmhash.h>

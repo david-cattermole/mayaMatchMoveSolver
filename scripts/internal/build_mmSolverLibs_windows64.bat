@@ -121,7 +121,7 @@ IF EXIST "C:\MinGW" (
 
 :: A local copy of LDPK to reduce the amount of downloads to the
 :: 3DEqualizer website (LDPK doesn't have a git repo to clone from).
-SET LDPK_URL="%PROJECT_ROOT%\external\archives\ldpk-2.8.tar"
+SET LDPK_URL="%PROJECT_ROOT%\external\archives\ldpk-2.12.0.tar"
 :: Convert back-slashes to forward-slashes.
 :: https://stackoverflow.com/questions/23542453/change-backslash-to-forward-slash-in-windows-batch-file
 SET "LDPK_URL=%LDPK_URL:\=/%"

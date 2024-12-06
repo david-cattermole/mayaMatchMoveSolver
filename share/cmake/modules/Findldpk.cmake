@@ -69,11 +69,14 @@ function(find_ldpk_create_target)
 endfunction()
 
 
-function(find_ldpk_set_target ldpk_include_dir)
+function(find_ldpk_set_target ldpk_version ldpk_include_dir)
 
   set_target_properties(ldpk::ldpk PROPERTIES
+    VERSION ${ldpk_version}
+  )
+  set_target_properties(ldpk::ldpk PROPERTIES
     INTERFACE_INCLUDE_DIRECTORIES ${ldpk_include_dir}
-    )
+  )
 
 endfunction()
 
@@ -211,7 +214,7 @@ endif()
 
 
 if(_ldpk_TARGET_CREATE)
-  find_ldpk_set_target(${ldpk_INCLUDE_DIR})
+  find_ldpk_set_target(${ldpk_VERSION} ${ldpk_INCLUDE_DIR})
   mark_as_advanced(
     ldpk_DIR
     ldpk_INCLUDE_DIR

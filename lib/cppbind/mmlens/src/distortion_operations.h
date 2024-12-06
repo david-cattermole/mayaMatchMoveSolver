@@ -79,9 +79,9 @@ std::pair<OUT_TYPE, OUT_TYPE> apply_lens_distortion_once(
             // A guess can be used to reduce the number of
             // iterations required to get a good result,
             // increasing performance.
-            distorted_point_dn = lens.map_inverse(in_point_dn, guess_point_dn);
+            distorted_point_dn = lens.eval_inv(in_point_dn, guess_point_dn);
         } else {
-            distorted_point_dn = lens.map_inverse(in_point_dn);
+            distorted_point_dn = lens.eval_inv(in_point_dn);
         }
 
         const mmdata::Vector2D distorted_point_unit =

@@ -43,4 +43,4 @@ set(CMAKE_FIND_USE_PACKAGE_REGISTRY OFF CACHE BOOL
 # LDPK is not used by any other libraries (eg. OpenMVG or Ceres).
 #
 # https://www.3dequalizer.com
-find_package(ldpk 2.8 REQUIRED)
+find_package(ldpk 2.12.0 REQUIRED)

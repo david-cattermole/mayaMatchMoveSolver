@@ -24,6 +24,40 @@
  * The assumption of using the Abstract Base Class "Distortion" is to
  * create a method contract that all classes must fulfill in order to
  * work in templates.
+ *
+ *
+ * LDPK lens models (as of v2.12.0):
+ *
+ * - tde4_ldp_anamorphic_degree_6
+ *
+ * - tde4_ldp_anamorphic_rescaled_degree_4
+ *   - Implemented as Distortion3deAnamorphicStdDeg4Rescaled
+ *
+ * - tde4_ldp_anamorphic_rescaled_degree_6
+ *
+ * - tde4_ldp_anamorphic_stabilizer_degree_6
+ *
+ * - tde4_ldp_anamorphic_standard_degree_4
+ *   - Implemented as Distortion3deAnamorphicStdDeg4
+ *
+ * - tde4_ldp_anamorphic_standard_degree_6
+ *
+ * - tde4_ldp_brown_conrady_degree_6_2
+ *
+ * - tde4_ldp_classic_ld_model
+ *   - Implemented as Distortion3deClassic
+ *   - tde4_ldp_classic_ld_model was originally named
+ *     tde4_ldp_classic_3de_mixed_model before LDPK 2.12.0.
+ *
+ * - tde4_ldp_radial_deg_6_decentered_deg_2_opencv
+ *
+ * - tde4_ldp_radial_fisheye_degree_8
+ *
+ * - tde4_ldp_radial_stabilizer_degree_6
+ *
+ * - tde4_ldp_radial_standard_degree_4 - Implemented as
+ * Distortion3deRadialStdDeg4
+ *
  */
 
 // Must have M_PI defined before LDPK is included.
@@ -31,7 +65,7 @@
 #include <math.h>
 
 // LDPK and MM Solver
-#include <ldpk/ldpk_classic_3de_mixed_distortion.h>
+#include <ldpk/ldpk_classic_ld_model_distortion.h>
 #include <ldpk/ldpk_cylindric_extender.h>
 #include <ldpk/ldpk_generic_anamorphic_distortion.h>
 #include <ldpk/ldpk_linear_extender.h>
@@ -49,14 +83,14 @@ public:
     // Set parameter
     virtual void set_parameter(const int index, const double value) = 0;
 
-    // Call this once before calling 'eval' or 'map_inverse'.
+    // Call this once before calling 'eval' or 'eval_inv'.
     virtual void initialize_parameters(CameraParameters camera_parameters) = 0;
 
     // Undistort point.
     virtual mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const = 0;
 
     // Distort, without initial values.
-    virtual mmdata::Vector2D map_inverse(
+    virtual mmdata::Vector2D eval_inv(
         const mmdata::Vector2D in_point_dn) const = 0;
 
     // Distort, With an initial guess.
@@ -65,11 +99,12 @@ public:
     // reduce the number of iterations, however the initial guess
     // usually requires a data structure and book-keeping for looking
     // up the initial guess values.
-    virtual mmdata::Vector2D map_inverse(
+    virtual mmdata::Vector2D eval_inv(
         const mmdata::Vector2D in_point_dn,
         const mmdata::Vector2D in_initial_point_dn) const = 0;
 };
 
+// Matches LDPK 'tde4_ldp_classic_ld_model' implementation.
 class Distortion3deClassic : public Distortion {
 public:
     Distortion3deClassic() {}
@@ -86,26 +121,31 @@ public:
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(
+    mmdata::Vector2D eval_inv(
         const mmdata::Vector2D in_point_dn) const override {
-        ldpk::vec2d out_point_dn = m_distortion.map_inverse(
-            ldpk::vec2d(in_point_dn.x_, in_point_dn.y_));
+        // FIXME: This method doesn't use a good mechanism to guess,
+        // ideally this should use a look-up table data structure to
+        // get a closer guess to the real value, to avoid iterations.
+        ldpk::vec2d out_point_dn =
+            m_distortion.eval_inv(ldpk::vec2d(in_point_dn.x_, in_point_dn.y_),
+                                  ldpk::vec2d(in_point_dn.x_, in_point_dn.y_));
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(
+    mmdata::Vector2D eval_inv(
         const mmdata::Vector2D in_point_dn,
         const mmdata::Vector2D in_initial_point_dn) const override {
-        ldpk::vec2d out_point_dn = m_distortion.map_inverse(
+        ldpk::vec2d out_point_dn = m_distortion.eval_inv(
             ldpk::vec2d(in_point_dn.x_, in_point_dn.y_),
             ldpk::vec2d(in_initial_point_dn.x_, in_initial_point_dn.y_));
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
 private:
-    ldpk::classic_3de_mixed_distortion<ldpk::vec2d, ldpk::mat2d> m_distortion;
+    ldpk::classic_ld_model_distortion<ldpk::vec2d, ldpk::mat2d> m_distortion;
 };
 
+// Matches LDPK 'tde4_ldp_radial_standard_degree_4' implementation.
 class Distortion3deRadialStdDeg4 : public Distortion {
 public:
     Distortion3deRadialStdDeg4() {}
@@ -129,17 +169,23 @@ public:
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(
+    mmdata::Vector2D eval_inv(
         const mmdata::Vector2D in_point_dn) const override {
-        ldpk::vec2d out_point_dn = m_radial.map_inverse(
-            m_cylindric.eval_inv(ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)));
+        // FIXME: This method doesn't use a good mechanism to guess,
+        // ideally this should use a look-up table data structure to
+        // get a closer guess to the real value, to avoid iterations.
+        ldpk::vec2d temp_point_dn =
+            m_cylindric.eval_inv(ldpk::vec2d(in_point_dn.x_, in_point_dn.y_),
+                                 ldpk::vec2d(in_point_dn.x_, in_point_dn.y_));
+        ldpk::vec2d out_point_dn =
+            m_radial.eval_inv(temp_point_dn, temp_point_dn);
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(
+    mmdata::Vector2D eval_inv(
         const mmdata::Vector2D in_point_dn,
         const mmdata::Vector2D in_initial_point_dn) const override {
-        ldpk::vec2d out_point_dn = m_radial.map_inverse(
+        ldpk::vec2d out_point_dn = m_radial.eval_inv(
             m_cylindric.eval_inv(ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)),
             m_cylindric.eval_inv(
                 ldpk::vec2d(in_initial_point_dn.x_, in_initial_point_dn.y_)));
@@ -151,6 +197,7 @@ private:
     ldpk::cylindric_extender_2<ldpk::vec2d, ldpk::mat2d> m_cylindric;
 };
 
+// Matches LDPK 'tde4_ldp_anamorphic_standard_degree_4' implementation.
 class Distortion3deAnamorphicStdDeg4 : public Distortion {
 public:
     Distortion3deAnamorphicStdDeg4() {}
@@ -185,20 +232,27 @@ public:
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(
+    mmdata::Vector2D eval_inv(
         const mmdata::Vector2D in_point_dn) const override {
+        // FIXME: This method doesn't use a good mechanism to guess,
+        // ideally this should use a look-up table data structure to
+        // get a closer guess to the real value, to avoid iterations.
+        ldpk::vec2d temp1_point_dn =
+            m_rotation_squeeze_xy_pixel_aspect.eval_inv(
+                ldpk::vec2d(in_point_dn.x_, in_point_dn.y_),
+                ldpk::vec2d(in_point_dn.x_, in_point_dn.y_));
+        ldpk::vec2d temp2_point_dn =
+            m_anamorphic.eval_inv(temp1_point_dn, temp1_point_dn);
         ldpk::vec2d out_point_dn =
-            m_pixel_aspect_and_rotation.eval(m_anamorphic.map_inverse(
-                m_rotation_squeeze_xy_pixel_aspect.eval_inv(
-                    ldpk::vec2d(in_point_dn.x_, in_point_dn.y_))));
+            m_pixel_aspect_and_rotation.eval(temp2_point_dn);
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(
+    mmdata::Vector2D eval_inv(
         const mmdata::Vector2D in_point_dn,
         const mmdata::Vector2D in_initial_point_dn) const override {
         ldpk::vec2d out_point_dn =
-            m_pixel_aspect_and_rotation.eval(m_anamorphic.map_inverse(
+            m_pixel_aspect_and_rotation.eval(m_anamorphic.eval_inv(
                 m_rotation_squeeze_xy_pixel_aspect.eval_inv(
                     ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)),
                 m_rotation_squeeze_xy_pixel_aspect.eval_inv(ldpk::vec2d(
@@ -223,6 +277,7 @@ private:
     ldpk::linear_extender<ldpk::vec2d, ldpk::mat2d> m_pixel_aspect_and_rotation;
 };
 
+// Matches LDPK 'tde4_ldp_anamorphic_rescaled_degree_4' implementation.
 class Distortion3deAnamorphicStdDeg4Rescaled : public Distortion {
 public:
     Distortion3deAnamorphicStdDeg4Rescaled() {}
@@ -262,20 +317,27 @@ public:
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(
+    mmdata::Vector2D eval_inv(
         const mmdata::Vector2D in_point_dn) const override {
+        // FIXME: This method doesn't use a good mechanism to guess,
+        // ideally this should use a look-up table data structure to
+        // get a closer guess to the real value, to avoid iterations.
+        ldpk::vec2d temp1_point_dn =
+            m_rotation_squeeze_xy_rescale_pixel_aspect.eval_inv(
+                ldpk::vec2d(in_point_dn.x_, in_point_dn.y_),
+                ldpk::vec2d(in_point_dn.x_, in_point_dn.y_));
+        ldpk::vec2d temp2_point_dn =
+            m_anamorphic.eval_inv(temp1_point_dn, temp1_point_dn);
         ldpk::vec2d out_point_dn =
-            m_pixel_aspect_rescale_and_rotation.eval(m_anamorphic.map_inverse(
-                m_rotation_squeeze_xy_rescale_pixel_aspect.eval_inv(
-                    ldpk::vec2d(in_point_dn.x_, in_point_dn.y_))));
+            m_pixel_aspect_rescale_and_rotation.eval(temp2_point_dn);
         return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
     }
 
-    mmdata::Vector2D map_inverse(
+    mmdata::Vector2D eval_inv(
         const mmdata::Vector2D in_point_dn,
         const mmdata::Vector2D in_initial_point_dn) const override {
         ldpk::vec2d out_point_dn =
-            m_pixel_aspect_rescale_and_rotation.eval(m_anamorphic.map_inverse(
+            m_pixel_aspect_rescale_and_rotation.eval(m_anamorphic.eval_inv(
                 m_rotation_squeeze_xy_rescale_pixel_aspect.eval_inv(
                     ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)),
                 m_rotation_squeeze_xy_rescale_pixel_aspect.eval_inv(ldpk::vec2d(

@@ -114,7 +114,7 @@ ${RUST_CARGO_EXE} build ${RELEASE_FLAG} --target-dir ${MMSOLVERLIBS_CPP_TARGET_D
 
 # A local copy of LDPK to reduce the amount of downloads to the
 # 3DEqualizer website (LDPK doesn't have a git repo to clone from).
-LDPK_URL="${PROJECT_ROOT}/external/archives/ldpk-2.8.tar"
+LDPK_URL="${PROJECT_ROOT}/external/archives/ldpk-2.12.0.tar"
 
 # Build project
 cd ${BUILD_DIR_BASE}

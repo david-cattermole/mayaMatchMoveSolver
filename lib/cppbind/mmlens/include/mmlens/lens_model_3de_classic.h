@@ -42,26 +42,11 @@ class LensModel3deClassic : public LensModel {
 public:
     LensModel3deClassic()
         : LensModel{LensModelType::k3deClassic}
-        , m_lens{0.0, 1.0, 0.0, 0.0, 0.0} {};
-
-    LensModel3deClassic(const double distortion,
-                        const double anamorphic_squeeze,
-                        const double curvature_x, const double curvature_y,
-                        const double quartic_distortion)
-        : LensModel{LensModelType::k3deClassic}
-        , m_lens{distortion, anamorphic_squeeze, curvature_x, curvature_y,
-                 quartic_distortion} {};
-
-    LensModel3deClassic(const LensModel3deClassic &rhs)
-        : LensModel{rhs}
-        , m_lens{rhs.getDistortion(), rhs.getAnamorphicSqueeze(),
-                 rhs.getCurvatureX(), rhs.getCurvatureY(),
-                 rhs.getQuarticDistortion()} {};
+        , m_lens{0.0, 1.0, 0.0, 0.0, 0.0} {}
 
     std::unique_ptr<LensModel> cloneAsUniquePtr() const override {
         return std::unique_ptr<LensModel>(new LensModel3deClassic(*this));
     }
-
     std::shared_ptr<LensModel> cloneAsSharedPtr() const override {
         return std::shared_ptr<LensModel>(new LensModel3deClassic(*this));
     }
@@ -73,48 +58,23 @@ public:
     double getQuarticDistortion() const { return m_lens.quartic_distortion; }
 
     void setDistortion(const double value) {
-        bool same_value = m_lens.distortion == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.distortion = value;
-        }
+        setParameter(m_lens.distortion, value);
     }
-
     void setAnamorphicSqueeze(const double value) {
-        bool same_value = m_lens.anamorphic_squeeze == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.anamorphic_squeeze = value;
-        }
+        setParameter(m_lens.anamorphic_squeeze, value);
     }
-
     void setCurvatureX(const double value) {
-        bool same_value = m_lens.curvature_x == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.curvature_x = value;
-        }
+        setParameter(m_lens.curvature_x, value);
     }
-
     void setCurvatureY(const double value) {
-        bool same_value = m_lens.curvature_y == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.curvature_y = value;
-        }
+        setParameter(m_lens.curvature_y, value);
     }
-
     void setQuarticDistortion(const double value) {
-        bool same_value = m_lens.quartic_distortion == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.quartic_distortion = value;
-        }
+        setParameter(m_lens.quartic_distortion, value);
     }
 
     void applyModelUndistort(const double x, const double y, double &out_x,
                              double &out_y) override;
-
     void applyModelDistort(const double x, const double y, double &out_x,
                            double &out_y) override;
 

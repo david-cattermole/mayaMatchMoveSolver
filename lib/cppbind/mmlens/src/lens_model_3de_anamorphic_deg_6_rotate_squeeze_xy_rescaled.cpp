@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022, 2023 David Cattermole.
+ * Copyright (C) 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -17,13 +17,13 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Class for the 3DE Anamorphic Degree 4 Lens Distortion with Rotation
+ * Class for the 3DE Anamorphic Degree 6 Lens Distortion with Rotation
  * and Squeeze X/Y - and 'rescaled' parameter to support images that
  * have reformated pixel aspect to 1.0.
  */
 
 #include <mmcore/mmhash.h>
-#include <mmlens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy_rescaled.h>
+#include <mmlens/lens_model_3de_anamorphic_deg_6_rotate_squeeze_xy_rescaled.h>
 #include <mmlens/lib.h>
 
 #include <functional>
@@ -33,7 +33,7 @@
 
 namespace mmlens {
 
-void LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled::applyModelUndistort(
+void LensModel3deAnamorphicDeg6RotateSqueezeXYRescaled::applyModelUndistort(
     const double xd, const double yd, double &xu, double &yu) {
     if (m_state != LensModelState::kClean) {
         m_film_back_radius_cm =
@@ -49,7 +49,7 @@ void LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled::applyModelUndistort(
         inputLensModel->applyModelUndistort(xdd, ydd, xdd, ydd);
     }
 
-    auto distortion = Distortion3deAnamorphicStdDeg4Rescaled();
+    auto distortion = Distortion3deAnamorphicStdDeg6Rescaled();
     distortion.set_parameter(0, m_lens.degree2_cx02);
     distortion.set_parameter(1, m_lens.degree2_cy02);
     distortion.set_parameter(2, m_lens.degree2_cx22);
@@ -60,10 +60,18 @@ void LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled::applyModelUndistort(
     distortion.set_parameter(7, m_lens.degree4_cy24);
     distortion.set_parameter(8, m_lens.degree4_cx44);
     distortion.set_parameter(9, m_lens.degree4_cy44);
-    distortion.set_parameter(10, m_lens.lens_rotation);
-    distortion.set_parameter(11, m_lens.squeeze_x);
-    distortion.set_parameter(12, m_lens.squeeze_y);
-    distortion.set_parameter(13, m_lens.rescale);
+    distortion.set_parameter(10, m_lens.degree6_cx06);
+    distortion.set_parameter(11, m_lens.degree6_cy06);
+    distortion.set_parameter(12, m_lens.degree6_cx26);
+    distortion.set_parameter(13, m_lens.degree6_cy26);
+    distortion.set_parameter(14, m_lens.degree6_cx46);
+    distortion.set_parameter(15, m_lens.degree6_cy46);
+    distortion.set_parameter(16, m_lens.degree6_cx66);
+    distortion.set_parameter(17, m_lens.degree6_cy66);
+    distortion.set_parameter(18, m_lens.lens_rotation);
+    distortion.set_parameter(19, m_lens.squeeze_x);
+    distortion.set_parameter(20, m_lens.squeeze_y);
+    distortion.set_parameter(21, m_lens.rescale);
     distortion.initialize_parameters(m_camera);
 
     // 'undistort' expects values 0.0 to 1.0, but our inputs are -0.5
@@ -71,7 +79,7 @@ void LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled::applyModelUndistort(
     const auto direction = DistortionDirection::kUndistort;
     auto out_xy =
         apply_lens_distortion_once<direction, double, double,
-                                   Distortion3deAnamorphicStdDeg4Rescaled>(
+                                   Distortion3deAnamorphicStdDeg6Rescaled>(
             xdd + 0.5, ydd + 0.5, m_camera, m_film_back_radius_cm, distortion);
 
     // Convert back to -0.5 to 0.5 coordinate space.
@@ -80,7 +88,7 @@ void LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled::applyModelUndistort(
     return;
 }
 
-void LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled::applyModelDistort(
+void LensModel3deAnamorphicDeg6RotateSqueezeXYRescaled::applyModelDistort(
     const double xd, const double yd, double &xu, double &yu) {
     if (m_state != LensModelState::kClean) {
         m_film_back_radius_cm =
@@ -96,7 +104,7 @@ void LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled::applyModelDistort(
         inputLensModel->applyModelDistort(xdd, ydd, xdd, ydd);
     }
 
-    auto distortion = Distortion3deAnamorphicStdDeg4Rescaled();
+    auto distortion = Distortion3deAnamorphicStdDeg6Rescaled();
     distortion.set_parameter(0, m_lens.degree2_cx02);
     distortion.set_parameter(1, m_lens.degree2_cy02);
     distortion.set_parameter(2, m_lens.degree2_cx22);
@@ -107,10 +115,18 @@ void LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled::applyModelDistort(
     distortion.set_parameter(7, m_lens.degree4_cy24);
     distortion.set_parameter(8, m_lens.degree4_cx44);
     distortion.set_parameter(9, m_lens.degree4_cy44);
-    distortion.set_parameter(10, m_lens.lens_rotation);
-    distortion.set_parameter(11, m_lens.squeeze_x);
-    distortion.set_parameter(12, m_lens.squeeze_y);
-    distortion.set_parameter(13, m_lens.rescale);
+    distortion.set_parameter(10, m_lens.degree6_cx06);
+    distortion.set_parameter(11, m_lens.degree6_cy06);
+    distortion.set_parameter(12, m_lens.degree6_cx26);
+    distortion.set_parameter(13, m_lens.degree6_cy26);
+    distortion.set_parameter(14, m_lens.degree6_cx46);
+    distortion.set_parameter(15, m_lens.degree6_cy46);
+    distortion.set_parameter(16, m_lens.degree6_cx66);
+    distortion.set_parameter(17, m_lens.degree6_cy66);
+    distortion.set_parameter(18, m_lens.lens_rotation);
+    distortion.set_parameter(19, m_lens.squeeze_x);
+    distortion.set_parameter(20, m_lens.squeeze_y);
+    distortion.set_parameter(21, m_lens.rescale);
     distortion.initialize_parameters(m_camera);
 
     // 'undistort' expects values 0.0 to 1.0, but our inputs are -0.5
@@ -118,7 +134,7 @@ void LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled::applyModelDistort(
     const auto direction = DistortionDirection::kRedistort;
     auto out_xy =
         apply_lens_distortion_once<direction, double, double,
-                                   Distortion3deAnamorphicStdDeg4Rescaled>(
+                                   Distortion3deAnamorphicStdDeg6Rescaled>(
             xdd + 0.5, ydd + 0.5, m_camera, m_film_back_radius_cm, distortion);
 
     // Convert back to -0.5 to 0.5 coordinate space.
@@ -128,7 +144,7 @@ void LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled::applyModelDistort(
 }
 
 mmhash::HashValue
-LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled::hashValue() {
+LensModel3deAnamorphicDeg6RotateSqueezeXYRescaled::hashValue() {
     // Apply the 'previous' lens model in the chain.
     std::shared_ptr<LensModel> inputLensModel = LensModel::getInputLensModel();
     mmhash::HashValue hash = 0;
@@ -149,6 +165,15 @@ LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled::hashValue() {
     addToHash(hash, m_lens.degree4_cy24);
     addToHash(hash, m_lens.degree4_cx44);
     addToHash(hash, m_lens.degree4_cy44);
+
+    addToHash(hash, m_lens.degree6_cx06);
+    addToHash(hash, m_lens.degree6_cy06);
+    addToHash(hash, m_lens.degree6_cx26);
+    addToHash(hash, m_lens.degree6_cy26);
+    addToHash(hash, m_lens.degree6_cx46);
+    addToHash(hash, m_lens.degree6_cy46);
+    addToHash(hash, m_lens.degree6_cx66);
+    addToHash(hash, m_lens.degree6_cy66);
 
     addToHash(hash, m_lens.lens_rotation);
     addToHash(hash, m_lens.squeeze_x);

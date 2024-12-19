@@ -45,30 +45,6 @@ public:
         , m_lens{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
                  0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0} {}
 
-    LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled(
-        const double degree2_cx02, const double degree2_cy02,
-        const double degree2_cx22, const double degree2_cy22,
-        const double degree4_cx04, const double degree4_cy04,
-        const double degree4_cx24, const double degree4_cy24,
-        const double degree4_cx44, const double degree4_cy44,
-        const double lens_rotation, const double squeeze_x,
-        const double squeeze_y, const double rescale)
-        : LensModel{LensModelType::k3deAnamorphicStdDeg4}
-        , m_lens{degree2_cx02, degree2_cy02, degree2_cx22,  degree2_cy22,
-                 degree4_cx04, degree4_cy04, degree4_cx24,  degree4_cy24,
-                 degree4_cx44, degree4_cy44, lens_rotation, squeeze_x,
-                 squeeze_y,    rescale} {}
-
-    LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled(
-        const LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled &rhs)
-        : LensModel{rhs}
-        , m_lens{
-              rhs.getDegree2Cx02(), rhs.getDegree2Cy02(),  rhs.getDegree2Cx22(),
-              rhs.getDegree2Cy22(), rhs.getDegree4Cx04(),  rhs.getDegree4Cy04(),
-              rhs.getDegree4Cx24(), rhs.getDegree4Cy24(),  rhs.getDegree4Cx44(),
-              rhs.getDegree4Cy44(), rhs.getLensRotation(), rhs.getSqueezeX(),
-              rhs.getSqueezeY(),    rhs.getRescale()} {}
-
     std::unique_ptr<LensModel> cloneAsUniquePtr() const override {
         return std::unique_ptr<LensModel>(
             new LensModel3deAnamorphicDeg4RotateSqueezeXYRescaled(*this));
@@ -100,116 +76,47 @@ public:
     double getRescale() const { return m_lens.rescale; }
 
     void setDegree2Cx02(const double value) {
-        bool same_value = m_lens.degree2_cx02 == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree2_cx02 = value;
-        }
+        setParameter(m_lens.degree2_cx02, value);
     }
-
     void setDegree2Cy02(const double value) {
-        bool same_value = m_lens.degree2_cy02 == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree2_cy02 = value;
-        }
+        setParameter(m_lens.degree2_cy02, value);
     }
-
     void setDegree2Cx22(const double value) {
-        bool same_value = m_lens.degree2_cx22 == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree2_cx22 = value;
-        }
+        setParameter(m_lens.degree2_cx22, value);
     }
-
     void setDegree2Cy22(const double value) {
-        bool same_value = m_lens.degree2_cy22 == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree2_cy22 = value;
-        }
+        setParameter(m_lens.degree2_cy22, value);
     }
 
     void setDegree4Cx04(const double value) {
-        bool same_value = m_lens.degree4_cx04 == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree4_cx04 = value;
-        }
+        setParameter(m_lens.degree4_cx04, value);
     }
-
     void setDegree4Cy04(const double value) {
-        bool same_value = m_lens.degree4_cy04 == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree4_cy04 = value;
-        }
+        setParameter(m_lens.degree4_cy04, value);
     }
-
     void setDegree4Cx24(const double value) {
-        bool same_value = m_lens.degree4_cx24 == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree4_cx24 = value;
-        }
+        setParameter(m_lens.degree4_cx24, value);
     }
-
     void setDegree4Cy24(const double value) {
-        bool same_value = m_lens.degree4_cy24 == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree4_cy24 = value;
-        }
+        setParameter(m_lens.degree4_cy24, value);
     }
-
     void setDegree4Cx44(const double value) {
-        bool same_value = m_lens.degree4_cx44 == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree4_cx44 = value;
-        }
+        setParameter(m_lens.degree4_cx44, value);
     }
-
     void setDegree4Cy44(const double value) {
-        bool same_value = m_lens.degree4_cy44 == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree4_cy44 = value;
-        }
+        setParameter(m_lens.degree4_cy44, value);
     }
 
     void setLensRotation(const double value) {
-        bool same_value = m_lens.lens_rotation == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.lens_rotation = value;
-        }
+        setParameter(m_lens.lens_rotation, value);
     }
-
     void setSqueezeX(const double value) {
-        bool same_value = m_lens.squeeze_x == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.squeeze_x = value;
-        }
+        setParameter(m_lens.squeeze_x, value);
     }
-
     void setSqueezeY(const double value) {
-        bool same_value = m_lens.squeeze_y == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.squeeze_y = value;
-        }
+        setParameter(m_lens.squeeze_y, value);
     }
-
-    void setRescale(const double value) {
-        bool same_value = m_lens.rescale == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.rescale = value;
-        }
-    }
+    void setRescale(const double value) { setParameter(m_lens.rescale, value); }
 
     void applyModelUndistort(const double x, const double y, double &out_x,
                              double &out_y) override;

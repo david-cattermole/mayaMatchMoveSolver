@@ -122,25 +122,18 @@ mmhash::HashValue LensModel3deRadialDecenteredDeg4Cylindric::hashValue() {
         hash = inputLensModel->hashValue();
     }
 
-    mmhash::combine(hash, std::hash<double>()(m_camera.focal_length_cm));
-    mmhash::combine(hash, std::hash<double>()(m_camera.film_back_width_cm));
-    mmhash::combine(hash, std::hash<double>()(m_camera.film_back_height_cm));
-    mmhash::combine(hash, std::hash<double>()(m_camera.pixel_aspect));
-    mmhash::combine(hash,
-                    std::hash<double>()(m_camera.lens_center_offset_x_cm));
-    mmhash::combine(hash,
-                    std::hash<double>()(m_camera.lens_center_offset_y_cm));
+    hashCameraParameters(hash);
 
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree2_distortion));
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree2_u));
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree2_v));
+    addToHash(hash, m_lens.degree2_distortion);
+    addToHash(hash, m_lens.degree2_u);
+    addToHash(hash, m_lens.degree2_v);
 
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree4_distortion));
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree4_u));
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree4_v));
+    addToHash(hash, m_lens.degree4_distortion);
+    addToHash(hash, m_lens.degree4_u);
+    addToHash(hash, m_lens.degree4_v);
 
-    mmhash::combine(hash, std::hash<double>()(m_lens.cylindric_direction));
-    mmhash::combine(hash, std::hash<double>()(m_lens.cylindric_bending));
+    addToHash(hash, m_lens.cylindric_direction);
+    addToHash(hash, m_lens.cylindric_bending);
 
     return hash;
 }

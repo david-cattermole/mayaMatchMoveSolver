@@ -35,8 +35,6 @@ class LensModelPassthrough : public LensModel {
 public:
     LensModelPassthrough() : LensModel{LensModelType::kPassthrough} {}
 
-    LensModelPassthrough(const LensModelPassthrough &rhs) : LensModel{rhs} {}
-
     std::unique_ptr<LensModel> cloneAsUniquePtr() const override {
         return std::unique_ptr<LensModel>(new LensModelPassthrough(*this));
     }
@@ -47,7 +45,6 @@ public:
 
     void applyModelUndistort(const double x, const double y, double &out_x,
                              double &out_y) override;
-
     void applyModelDistort(const double x, const double y, double &out_x,
                            double &out_y) override;
 

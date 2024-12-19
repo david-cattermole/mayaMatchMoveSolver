@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022, 2023 David Cattermole.
+ * Copyright (C) 2024 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -17,12 +17,12 @@
  * along with mmSolver.  If not, see <https://www.gnu.org/licenses/>.
  * ====================================================================
  *
- * Class for the 3DE Anamorphic Degree 4 Lens Distortion with Rotation
+ * Class for the 3DE Anamorphic Degree 6 Lens Distortion with Rotation
  * and Squeeze X/Y.
  */
 
-#ifndef MM_LENS_LENS_MODEL_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_H
-#define MM_LENS_LENS_MODEL_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_H
+#ifndef MM_LENS_LENS_MODEL_3DE_ANAMORPHIC_DEG_6_ROTATE_SQUEEZE_XY_H
+#define MM_LENS_LENS_MODEL_3DE_ANAMORPHIC_DEG_6_ROTATE_SQUEEZE_XY_H
 
 // Do not define 'min' and 'max' macros on MS Windows (with MSVC),
 // added to fix errors with LDPK.
@@ -39,37 +39,43 @@
 
 namespace mmlens {
 
-class LensModel3deAnamorphicDeg4RotateSqueezeXY : public LensModel {
+class LensModel3deAnamorphicDeg6RotateSqueezeXY : public LensModel {
 public:
-    LensModel3deAnamorphicDeg4RotateSqueezeXY()
-        : LensModel{LensModelType::k3deAnamorphicStdDeg4}
-        , m_lens{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                 0.0, 0.0, 0.0, 0.0, 1.0, 1.0} {}
+    LensModel3deAnamorphicDeg6RotateSqueezeXY()
+        : LensModel{LensModelType::k3deAnamorphicStdDeg6}
+        , m_lens{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0} {}
 
     std::unique_ptr<LensModel> cloneAsUniquePtr() const override {
         return std::unique_ptr<LensModel>(
-            new LensModel3deAnamorphicDeg4RotateSqueezeXY(*this));
+            new LensModel3deAnamorphicDeg6RotateSqueezeXY(*this));
     }
 
     std::shared_ptr<LensModel> cloneAsSharedPtr() const override {
         return std::shared_ptr<LensModel>(
-            new LensModel3deAnamorphicDeg4RotateSqueezeXY(*this));
+            new LensModel3deAnamorphicDeg6RotateSqueezeXY(*this));
     }
 
     double getDegree2Cx02() const { return m_lens.degree2_cx02; }
     double getDegree2Cy02() const { return m_lens.degree2_cy02; }
-
     double getDegree2Cx22() const { return m_lens.degree2_cx22; }
     double getDegree2Cy22() const { return m_lens.degree2_cy22; }
 
     double getDegree4Cx04() const { return m_lens.degree4_cx04; }
     double getDegree4Cy04() const { return m_lens.degree4_cy04; }
-
     double getDegree4Cx24() const { return m_lens.degree4_cx24; }
     double getDegree4Cy24() const { return m_lens.degree4_cy24; }
-
     double getDegree4Cx44() const { return m_lens.degree4_cx44; }
     double getDegree4Cy44() const { return m_lens.degree4_cy44; }
+
+    double getDegree6Cx06() const { return m_lens.degree6_cx06; }
+    double getDegree6Cy06() const { return m_lens.degree6_cy06; }
+    double getDegree6Cx26() const { return m_lens.degree6_cx26; }
+    double getDegree6Cy26() const { return m_lens.degree6_cy26; }
+    double getDegree6Cx46() const { return m_lens.degree6_cx46; }
+    double getDegree6Cy46() const { return m_lens.degree6_cy46; }
+    double getDegree6Cx66() const { return m_lens.degree6_cx66; }
+    double getDegree6Cy66() const { return m_lens.degree6_cy66; }
 
     double getLensRotation() const { return m_lens.lens_rotation; }
     double getSqueezeX() const { return m_lens.squeeze_x; }
@@ -107,6 +113,31 @@ public:
         setParameter(m_lens.degree4_cy44, value);
     }
 
+    void setDegree6Cx06(const double value) {
+        setParameter(m_lens.degree6_cx06, value);
+    }
+    void setDegree6Cy06(const double value) {
+        setParameter(m_lens.degree6_cy06, value);
+    }
+    void setDegree6Cx26(const double value) {
+        setParameter(m_lens.degree6_cx26, value);
+    }
+    void setDegree6Cy26(const double value) {
+        setParameter(m_lens.degree6_cy26, value);
+    }
+    void setDegree6Cx46(const double value) {
+        setParameter(m_lens.degree6_cx46, value);
+    }
+    void setDegree6Cy46(const double value) {
+        setParameter(m_lens.degree6_cy46, value);
+    }
+    void setDegree6Cx66(const double value) {
+        setParameter(m_lens.degree6_cx66, value);
+    }
+    void setDegree6Cy66(const double value) {
+        setParameter(m_lens.degree6_cy66, value);
+    }
+
     void setLensRotation(const double value) {
         setParameter(m_lens.lens_rotation, value);
     }
@@ -126,9 +157,9 @@ public:
     mmhash::HashValue hashValue() override;
 
 private:
-    Parameters3deAnamorphicStdDeg4 m_lens;
+    Parameters3deAnamorphicStdDeg6 m_lens;
 };
 
 }  // namespace mmlens
 
-#endif  // MM_LENS_LENS_MODEL_3DE_ANAMORPHIC_DEG_4_ROTATE_SQUEEZE_XY_H
+#endif  // MM_LENS_LENS_MODEL_3DE_ANAMORPHIC_DEG_6_ROTATE_SQUEEZE_XY_H

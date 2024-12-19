@@ -45,24 +45,6 @@ public:
         : LensModel{LensModelType::k3deRadialStdDeg4}
         , m_lens{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0} {}
 
-    LensModel3deRadialDecenteredDeg4Cylindric(
-        const double degree2_distortion, const double degree2_u,
-        const double degree2_v, const double degree4_distortion,
-        const double degree4_u, const double degree4_v,
-        const double cylindric_direction, const double cylindric_bending)
-        : LensModel{LensModelType::k3deRadialStdDeg4}
-        , m_lens{degree2_distortion,  degree2_u,        degree2_v,
-                 degree4_distortion,  degree4_u,        degree4_v,
-                 cylindric_direction, cylindric_bending} {}
-
-    LensModel3deRadialDecenteredDeg4Cylindric(
-        const LensModel3deRadialDecenteredDeg4Cylindric &rhs)
-        : LensModel{rhs}
-        , m_lens{rhs.getDegree2Distortion(),  rhs.getDegree2U(),
-                 rhs.getDegree2V(),           rhs.getDegree4Distortion(),
-                 rhs.getDegree4U(),           rhs.getDegree4V(),
-                 rhs.getCylindricDirection(), rhs.getCylindricBending()} {}
-
     std::unique_ptr<LensModel> cloneAsUniquePtr() const override {
         return std::unique_ptr<LensModel>(
             new LensModel3deRadialDecenteredDeg4Cylindric(*this));
@@ -83,67 +65,35 @@ public:
     double getCylindricBending() const { return m_lens.cylindric_bending; }
 
     void setDegree2Distortion(const double value) {
-        bool same_value = m_lens.degree2_distortion == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree2_distortion = value;
-        }
+        setParameter(m_lens.degree2_distortion, value);
     }
 
     void setDegree2U(const double value) {
-        bool same_value = m_lens.degree2_u == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree2_u = value;
-        }
+        setParameter(m_lens.degree2_u, value);
     }
 
     void setDegree2V(const double value) {
-        bool same_value = m_lens.degree2_v == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree2_v = value;
-        }
+        setParameter(m_lens.degree2_v, value);
     }
 
     void setDegree4Distortion(const double value) {
-        bool same_value = m_lens.degree4_distortion == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree4_distortion = value;
-        }
+        setParameter(m_lens.degree4_distortion, value);
     }
 
     void setDegree4U(const double value) {
-        bool same_value = m_lens.degree4_u == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree4_u = value;
-        }
+        setParameter(m_lens.degree4_u, value);
     }
 
     void setDegree4V(const double value) {
-        bool same_value = m_lens.degree4_v == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.degree4_v = value;
-        }
+        setParameter(m_lens.degree4_v, value);
     }
 
     void setCylindricDirection(const double value) {
-        bool same_value = m_lens.cylindric_direction == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.cylindric_direction = value;
-        }
+        setParameter(m_lens.cylindric_direction, value);
     }
 
     void setCylindricBending(const double value) {
-        bool same_value = m_lens.cylindric_bending == value;
-        if (!same_value) {
-            m_state = LensModelState::kDirty;
-            m_lens.cylindric_bending = value;
-        }
+        setParameter(m_lens.cylindric_bending, value);
     }
 
     void applyModelUndistort(const double x, const double y, double &out_x,

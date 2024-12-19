@@ -130,33 +130,23 @@ mmhash::HashValue LensModel3deAnamorphicDeg4RotateSqueezeXY::hashValue() {
         hash = inputLensModel->hashValue();
     }
 
-    mmhash::combine(hash, std::hash<double>()(m_camera.focal_length_cm));
-    mmhash::combine(hash, std::hash<double>()(m_camera.film_back_width_cm));
-    mmhash::combine(hash, std::hash<double>()(m_camera.film_back_height_cm));
-    mmhash::combine(hash, std::hash<double>()(m_camera.pixel_aspect));
-    mmhash::combine(hash,
-                    std::hash<double>()(m_camera.lens_center_offset_x_cm));
-    mmhash::combine(hash,
-                    std::hash<double>()(m_camera.lens_center_offset_y_cm));
+    hashCameraParameters(hash);
 
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree2_cx02));
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree2_cy02));
+    addToHash(hash, m_lens.degree2_cx02);
+    addToHash(hash, m_lens.degree2_cy02);
+    addToHash(hash, m_lens.degree2_cx22);
+    addToHash(hash, m_lens.degree2_cy22);
 
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree2_cx22));
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree2_cy22));
+    addToHash(hash, m_lens.degree4_cx04);
+    addToHash(hash, m_lens.degree4_cy04);
+    addToHash(hash, m_lens.degree4_cx24);
+    addToHash(hash, m_lens.degree4_cy24);
+    addToHash(hash, m_lens.degree4_cx44);
+    addToHash(hash, m_lens.degree4_cy44);
 
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree4_cx04));
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree4_cy04));
-
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree4_cx24));
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree4_cy24));
-
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree4_cx44));
-    mmhash::combine(hash, std::hash<double>()(m_lens.degree4_cy44));
-
-    mmhash::combine(hash, std::hash<double>()(m_lens.lens_rotation));
-    mmhash::combine(hash, std::hash<double>()(m_lens.squeeze_x));
-    mmhash::combine(hash, std::hash<double>()(m_lens.squeeze_y));
+    addToHash(hash, m_lens.lens_rotation);
+    addToHash(hash, m_lens.squeeze_x);
+    addToHash(hash, m_lens.squeeze_y);
 
     return hash;
 }

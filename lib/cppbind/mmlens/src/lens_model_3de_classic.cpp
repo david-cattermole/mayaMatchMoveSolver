@@ -118,20 +118,13 @@ mmhash::HashValue LensModel3deClassic::hashValue() {
         hash = inputLensModel->hashValue();
     }
 
-    mmhash::combine(hash, std::hash<double>()(m_camera.focal_length_cm));
-    mmhash::combine(hash, std::hash<double>()(m_camera.film_back_width_cm));
-    mmhash::combine(hash, std::hash<double>()(m_camera.film_back_height_cm));
-    mmhash::combine(hash, std::hash<double>()(m_camera.pixel_aspect));
-    mmhash::combine(hash,
-                    std::hash<double>()(m_camera.lens_center_offset_x_cm));
-    mmhash::combine(hash,
-                    std::hash<double>()(m_camera.lens_center_offset_y_cm));
+    hashCameraParameters(hash);
 
-    mmhash::combine(hash, std::hash<double>()(m_lens.distortion));
-    mmhash::combine(hash, std::hash<double>()(m_lens.anamorphic_squeeze));
-    mmhash::combine(hash, std::hash<double>()(m_lens.curvature_x));
-    mmhash::combine(hash, std::hash<double>()(m_lens.curvature_y));
-    mmhash::combine(hash, std::hash<double>()(m_lens.quartic_distortion));
+    addToHash(hash, m_lens.distortion);
+    addToHash(hash, m_lens.anamorphic_squeeze);
+    addToHash(hash, m_lens.curvature_x);
+    addToHash(hash, m_lens.curvature_y);
+    addToHash(hash, m_lens.quartic_distortion);
 
     return hash;
 }

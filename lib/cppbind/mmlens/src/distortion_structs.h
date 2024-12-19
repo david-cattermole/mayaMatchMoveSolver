@@ -392,42 +392,6 @@ public:
         m_anamorphic.prepare();
     }
 
-    // mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const override
-    // {
-    //     ldpk::vec2d out_point_dn = m_rotation_squeeze_xy_pixel_aspect.eval(
-    //         m_anamorphic.eval(m_pixel_aspect_and_rotation.eval_inv(
-    //             ldpk::vec2d(in_point_dn.x_, in_point_dn.y_))));
-    //     return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
-    // }
-
-    // mmdata::Vector2D eval_inv(
-    //     const mmdata::Vector2D in_point_dn) const override {
-    //     // FIXME: This method doesn't use a good mechanism to guess,
-    //     // ideally this should use a look-up table data structure to
-    //     // get a closer guess to the real value, to avoid iterations.
-    //     ldpk::vec2d temp1_point_dn =
-    //         m_rotation_squeeze_xy_pixel_aspect.eval_inv(
-    //             ldpk::vec2d(in_point_dn.x_, in_point_dn.y_),
-    //             ldpk::vec2d(in_point_dn.x_, in_point_dn.y_));
-    //     ldpk::vec2d temp2_point_dn =
-    //         m_anamorphic.eval_inv(temp1_point_dn, temp1_point_dn);
-    //     ldpk::vec2d out_point_dn =
-    //         m_pixel_aspect_and_rotation.eval(temp2_point_dn);
-    //     return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
-    // }
-
-    // mmdata::Vector2D eval_inv(
-    //     const mmdata::Vector2D in_point_dn,
-    //     const mmdata::Vector2D in_initial_point_dn) const override {
-    //     ldpk::vec2d out_point_dn =
-    //         m_pixel_aspect_and_rotation.eval(m_anamorphic.eval_inv(
-    //             m_rotation_squeeze_xy_pixel_aspect.eval_inv(
-    //                 ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)),
-    //             m_rotation_squeeze_xy_pixel_aspect.eval_inv(ldpk::vec2d(
-    //                 in_initial_point_dn.x_, in_initial_point_dn.y_))));
-    //     return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
-    // }
-
     mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const override {
         ldpk::vec2d out_point_dn = m_rotation_squeeze_xy_pixel_aspect.eval(
             m_anamorphic.eval(m_pixel_aspect_and_rotation.eval_inv(
@@ -521,43 +485,6 @@ public:
         m_anamorphic.prepare();
     }
 
-    // mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const override
-    // {
-    //     ldpk::vec2d out_point_dn = m_rotation_squeeze_xy_pixel_aspect.eval(
-    //         m_anamorphic.eval(m_pixel_aspect_and_rotation.eval_inv(
-    //             ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)))
-
-    //     );
-    //     return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
-    // }
-
-    // mmdata::Vector2D eval_inv(
-    //     const mmdata::Vector2D in_point_dn) const override {
-    //     // FIXME: This method doesn't use a good mechanism to guess,
-    //     // ideally this should use a look-up table data structure to
-    //     // get a closer guess to the real value, to avoid iterations.
-    //     ldpk::vec2d temp1_point_dn =
-    //     m_rotation_squeeze_xy_rescale_pa.eval_inv(
-    //         ldpk::vec2d(in_point_dn.x_, in_point_dn.y_));
-    //     ldpk::vec2d temp2_point_dn =
-    //         m_anamorphic.eval_inv(temp1_point_dn, temp1_point_dn);
-    //     ldpk::vec2d out_point_dn = m_pa_rescale_rot.eval(temp2_point_dn);
-    //     return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
-    // }
-
-    // mmdata::Vector2D eval_inv(
-    //     const mmdata::Vector2D in_point_dn,
-    //     const mmdata::Vector2D in_initial_point_dn) const override {
-    //     ldpk::vec2d out_point_dn =
-    //     m_pa_rescale_rot.eval(m_anamorphic.eval_inv(
-    //         m_rotation_squeeze_xy_rescale_pa.eval_inv(
-    //             ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)),
-    //         m_rotation_squeeze_xy_rescale_pa.eval_inv(
-    //             ldpk::vec2d(in_initial_point_dn.x_,
-    //             in_initial_point_dn.y_))));
-    //     return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
-    // }
-
     mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const override {
         ldpk::vec2d out_point_dn =
             m_rotation_squeeze_xy_rescale_pixel_aspect.eval(
@@ -604,7 +531,6 @@ private:
     ldpk::rotation_extender<ldpk::vec2d, ldpk::mat2d> m_rotation;
     ldpk::squeeze_x_extender<ldpk::vec2d, ldpk::mat2d> m_squeeze_x;
     ldpk::squeeze_y_extender<ldpk::vec2d, ldpk::mat2d> m_squeeze_y;
-    // ldpk::squeeze_x_extender<ldpk::vec2d, ldpk::mat2d> m_pa;
     ldpk::squeeze_x_extender<ldpk::vec2d, ldpk::mat2d> m_pixel_aspect;
     ldpk::squeeze_x_extender<ldpk::vec2d, ldpk::mat2d> m_rescale;
 
@@ -613,9 +539,6 @@ private:
         m_rotation_squeeze_xy_rescale_pixel_aspect;
     ldpk::linear_extender<ldpk::vec2d, ldpk::mat2d>
         m_pixel_aspect_rescale_and_rotation;
-    // ldpk::linear_extender<ldpk::vec2d, ldpk::mat2d>
-    //     m_rotation_squeeze_xy_rescale_pa;
-    // ldpk::linear_extender<ldpk::vec2d, ldpk::mat2d> m_pa_rescale_rot;
 };
 
 }  // namespace mmlens

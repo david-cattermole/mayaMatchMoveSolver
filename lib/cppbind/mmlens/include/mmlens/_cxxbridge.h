@@ -380,10 +380,14 @@ namespace mmlens {
   struct Parameters3deRadialStdDeg4;
   struct Parameters3deAnamorphicStdDeg4;
   struct Parameters3deAnamorphicStdDeg4Rescaled;
+  struct Parameters3deAnamorphicStdDeg6;
+  struct Parameters3deAnamorphicStdDeg6Rescaled;
   struct OptionParameters3deClassic;
   struct OptionParameters3deRadialStdDeg4;
   struct OptionParameters3deAnamorphicStdDeg4;
   struct OptionParameters3deAnamorphicStdDeg4Rescaled;
+  struct OptionParameters3deAnamorphicStdDeg6;
+  struct OptionParameters3deAnamorphicStdDeg6Rescaled;
   struct ShimDistortionLayers;
 }
 
@@ -418,7 +422,9 @@ enum class LensModelType : ::std::uint8_t {
   k3deRadialStdDeg4 = 3,
   k3deAnamorphicStdDeg4 = 4,
   k3deAnamorphicStdDeg4Rescaled = 5,
-  kNumLensModelType = 6,
+  k3deAnamorphicStdDeg6 = 6,
+  k3deAnamorphicStdDeg6Rescaled = 7,
+  kNumLensModelType = 8,
 };
 #endif // CXXBRIDGE1_ENUM_mmlens$LensModelType
 
@@ -538,6 +544,77 @@ struct Parameters3deAnamorphicStdDeg4Rescaled final {
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg4Rescaled
 
+#ifndef CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg6
+#define CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg6
+struct Parameters3deAnamorphicStdDeg6 final {
+  double degree2_cx02;
+  double degree2_cy02;
+  double degree2_cx22;
+  double degree2_cy22;
+  double degree4_cx04;
+  double degree4_cy04;
+  double degree4_cx24;
+  double degree4_cy24;
+  double degree4_cx44;
+  double degree4_cy44;
+  double degree6_cx06;
+  double degree6_cy06;
+  double degree6_cx26;
+  double degree6_cy26;
+  double degree6_cx46;
+  double degree6_cy46;
+  double degree6_cx66;
+  double degree6_cy66;
+  double lens_rotation;
+  double squeeze_x;
+  double squeeze_y;
+
+  bool operator==(const Parameters3deAnamorphicStdDeg6 &) const noexcept;
+  bool operator!=(const Parameters3deAnamorphicStdDeg6 &) const noexcept;
+  bool operator<(const Parameters3deAnamorphicStdDeg6 &) const noexcept;
+  bool operator<=(const Parameters3deAnamorphicStdDeg6 &) const noexcept;
+  bool operator>(const Parameters3deAnamorphicStdDeg6 &) const noexcept;
+  bool operator>=(const Parameters3deAnamorphicStdDeg6 &) const noexcept;
+  using IsRelocatable = ::std::true_type;
+};
+#endif // CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg6
+
+#ifndef CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg6Rescaled
+#define CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg6Rescaled
+struct Parameters3deAnamorphicStdDeg6Rescaled final {
+  double degree2_cx02;
+  double degree2_cy02;
+  double degree2_cx22;
+  double degree2_cy22;
+  double degree4_cx04;
+  double degree4_cy04;
+  double degree4_cx24;
+  double degree4_cy24;
+  double degree4_cx44;
+  double degree4_cy44;
+  double degree6_cx06;
+  double degree6_cy06;
+  double degree6_cx26;
+  double degree6_cy26;
+  double degree6_cx46;
+  double degree6_cy46;
+  double degree6_cx66;
+  double degree6_cy66;
+  double lens_rotation;
+  double squeeze_x;
+  double squeeze_y;
+  double rescale;
+
+  bool operator==(const Parameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
+  bool operator!=(const Parameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
+  bool operator<(const Parameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
+  bool operator<=(const Parameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
+  bool operator>(const Parameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
+  bool operator>=(const Parameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
+  using IsRelocatable = ::std::true_type;
+};
+#endif // CXXBRIDGE1_STRUCT_mmlens$Parameters3deAnamorphicStdDeg6Rescaled
+
 #ifndef CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deClassic
 #define CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deClassic
 struct OptionParameters3deClassic final {
@@ -602,6 +679,38 @@ struct OptionParameters3deAnamorphicStdDeg4Rescaled final {
 };
 #endif // CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deAnamorphicStdDeg4Rescaled
 
+#ifndef CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deAnamorphicStdDeg6
+#define CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deAnamorphicStdDeg6
+struct OptionParameters3deAnamorphicStdDeg6 final {
+  bool exists;
+  ::mmlens::Parameters3deAnamorphicStdDeg6 value;
+
+  bool operator==(const OptionParameters3deAnamorphicStdDeg6 &) const noexcept;
+  bool operator!=(const OptionParameters3deAnamorphicStdDeg6 &) const noexcept;
+  bool operator<(const OptionParameters3deAnamorphicStdDeg6 &) const noexcept;
+  bool operator<=(const OptionParameters3deAnamorphicStdDeg6 &) const noexcept;
+  bool operator>(const OptionParameters3deAnamorphicStdDeg6 &) const noexcept;
+  bool operator>=(const OptionParameters3deAnamorphicStdDeg6 &) const noexcept;
+  using IsRelocatable = ::std::true_type;
+};
+#endif // CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deAnamorphicStdDeg6
+
+#ifndef CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deAnamorphicStdDeg6Rescaled
+#define CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deAnamorphicStdDeg6Rescaled
+struct OptionParameters3deAnamorphicStdDeg6Rescaled final {
+  bool exists;
+  ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled value;
+
+  bool operator==(const OptionParameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
+  bool operator!=(const OptionParameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
+  bool operator<(const OptionParameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
+  bool operator<=(const OptionParameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
+  bool operator>(const OptionParameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
+  bool operator>=(const OptionParameters3deAnamorphicStdDeg6Rescaled &) const noexcept;
+  using IsRelocatable = ::std::true_type;
+};
+#endif // CXXBRIDGE1_STRUCT_mmlens$OptionParameters3deAnamorphicStdDeg6Rescaled
+
 #ifndef CXXBRIDGE1_STRUCT_mmlens$ShimDistortionLayers
 #define CXXBRIDGE1_STRUCT_mmlens$ShimDistortionLayers
 struct ShimDistortionLayers final : public ::rust::Opaque {
@@ -616,6 +725,8 @@ struct ShimDistortionLayers final : public ::rust::Opaque {
   MMLENS_API_EXPORT ::mmlens::OptionParameters3deRadialStdDeg4 layer_lens_parameters_3de_radial_std_deg4(::std::uint8_t layer_num, ::std::uint16_t frame) const noexcept;
   MMLENS_API_EXPORT ::mmlens::OptionParameters3deAnamorphicStdDeg4 layer_lens_parameters_3de_anamorphic_std_deg4(::std::uint8_t layer_num, ::std::uint16_t frame) const noexcept;
   MMLENS_API_EXPORT ::mmlens::OptionParameters3deAnamorphicStdDeg4Rescaled layer_lens_parameters_3de_anamorphic_std_deg4_rescaled(::std::uint8_t layer_num, ::std::uint16_t frame) const noexcept;
+  MMLENS_API_EXPORT ::mmlens::OptionParameters3deAnamorphicStdDeg6 layer_lens_parameters_3de_anamorphic_std_deg6(::std::uint8_t layer_num, ::std::uint16_t frame) const noexcept;
+  MMLENS_API_EXPORT ::mmlens::OptionParameters3deAnamorphicStdDeg6Rescaled layer_lens_parameters_3de_anamorphic_std_deg6_rescaled(::std::uint8_t layer_num, ::std::uint16_t frame) const noexcept;
   MMLENS_API_EXPORT ::rust::String as_string() const noexcept;
   ~ShimDistortionLayers() = delete;
 
@@ -665,4 +776,20 @@ MMLENS_API_EXPORT void apply_identity_to_f32_multithread(::mmlens::DistortionDir
 MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept;
 
 MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept;
+
+MMLENS_API_EXPORT void apply_identity_to_f64_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept;
+
+MMLENS_API_EXPORT void apply_identity_to_f32_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept;
+
+MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept;
+
+MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept;
+
+MMLENS_API_EXPORT void apply_identity_to_f64_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept;
+
+MMLENS_API_EXPORT void apply_identity_to_f32_multithread(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept;
+
+MMLENS_API_EXPORT void apply_f64_to_f64_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept;
+
+MMLENS_API_EXPORT void apply_f64_to_f32_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept;
 } // namespace mmlens

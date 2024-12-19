@@ -87,6 +87,16 @@ public:
         const LayerIndex layer_num, const FrameNumber frame) const noexcept;
 
     MMLENS_API_EXPORT
+    OptionParameters3deAnamorphicStdDeg6
+    layer_lens_parameters_3de_anamorphic_std_deg6(
+        const LayerIndex layer_num, const FrameNumber frame) const noexcept;
+
+    MMLENS_API_EXPORT
+    OptionParameters3deAnamorphicStdDeg6Rescaled
+    layer_lens_parameters_3de_anamorphic_std_deg6_rescaled(
+        const LayerIndex layer_num, const FrameNumber frame) const noexcept;
+
+    MMLENS_API_EXPORT
     rust::String as_string() noexcept;
 
 private:

@@ -21,6 +21,8 @@
 use crate::constants::MAX_LENS_PARAMETER_COUNT;
 use crate::constants::NUKE_3DE4_ANAMORPHIC_STD_DEG4;
 use crate::constants::NUKE_3DE4_ANAMORPHIC_STD_DEG4_RESCALED;
+use crate::constants::NUKE_3DE4_ANAMORPHIC_STD_DEG6;
+use crate::constants::NUKE_3DE4_ANAMORPHIC_STD_DEG6_RESCALED;
 use crate::constants::NUKE_3DE4_CLASSIC;
 use crate::constants::NUKE_3DE4_RADIAL_STD_DEG4;
 use crate::constants::STATIC_FRAME_NUMBER;
@@ -43,6 +45,12 @@ fn lookup_lens_model_type(value: &str) -> BindLensModelType {
         }
         NUKE_3DE4_ANAMORPHIC_STD_DEG4_RESCALED => {
             BindLensModelType::TdeAnamorphicStdDeg4Rescaled
+        }
+        NUKE_3DE4_ANAMORPHIC_STD_DEG6 => {
+            BindLensModelType::TdeAnamorphicStdDeg6
+        }
+        NUKE_3DE4_ANAMORPHIC_STD_DEG6_RESCALED => {
+            BindLensModelType::TdeAnamorphicStdDeg6Rescaled
         }
         _ => BindLensModelType::Uninitialized,
     }
@@ -794,6 +802,348 @@ fn parse_nuke_file_lines(
                 }
                 layer_count += 1;
             }
+
+            BindLensModelType::TdeAnamorphicStdDeg6 => {
+                for frame_number in min_frame..=max_frame {
+                    let degree2_cx02 = get_animated_knob_value_f64(
+                        "Cx02_Degree_2",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree2_cy02 = get_animated_knob_value_f64(
+                        "Cy02_Degree_2",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree2_cx22 = get_animated_knob_value_f64(
+                        "Cx22_Degree_2",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree2_cy22 = get_animated_knob_value_f64(
+                        "Cy22_Degree_2",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree4_cx04 = get_animated_knob_value_f64(
+                        "Cx04_Degree_4",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree4_cy04 = get_animated_knob_value_f64(
+                        "Cy04_Degree_4",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree4_cx24 = get_animated_knob_value_f64(
+                        "Cx24_Degree_4",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree4_cy24 = get_animated_knob_value_f64(
+                        "Cy24_Degree_4",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree4_cx44 = get_animated_knob_value_f64(
+                        "Cx44_Degree_4",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree4_cy44 = get_animated_knob_value_f64(
+                        "Cx44_Degree_4",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree6_cx06 = get_animated_knob_value_f64(
+                        "Cx06_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree6_cy06 = get_animated_knob_value_f64(
+                        "Cy06_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree6_cx26 = get_animated_knob_value_f64(
+                        "Cx26_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree6_cy26 = get_animated_knob_value_f64(
+                        "Cy26_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree6_cx46 = get_animated_knob_value_f64(
+                        "Cx46_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree6_cy46 = get_animated_knob_value_f64(
+                        "Cy46_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree6_cx66 = get_animated_knob_value_f64(
+                        "Cx66_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree6_cy66 = get_animated_knob_value_f64(
+                        "Cx66_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let lens_rotation = get_animated_knob_value_f64(
+                        "Lens_Rotation",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let squeeze_x = get_animated_knob_value_f64(
+                        "Squeeze_X",
+                        &node.knobs,
+                        1.0,
+                        frame_number,
+                    );
+                    let squeeze_y = get_animated_knob_value_f64(
+                        "Squeeze_Y",
+                        &node.knobs,
+                        1.0,
+                        frame_number,
+                    );
+
+                    let mut parameter_block =
+                        [0.0 as f64; MAX_LENS_PARAMETER_COUNT];
+                    parameter_block[0] = degree2_cx02;
+                    parameter_block[1] = degree2_cy02;
+                    parameter_block[2] = degree2_cx22;
+                    parameter_block[3] = degree2_cy22;
+                    parameter_block[4] = degree4_cx04;
+                    parameter_block[5] = degree4_cy04;
+                    parameter_block[6] = degree4_cx24;
+                    parameter_block[7] = degree4_cy24;
+                    parameter_block[8] = degree4_cx44;
+                    parameter_block[9] = degree4_cy44;
+                    parameter_block[10] = degree6_cx06;
+                    parameter_block[11] = degree6_cy06;
+                    parameter_block[12] = degree6_cx26;
+                    parameter_block[13] = degree6_cy26;
+                    parameter_block[14] = degree6_cx46;
+                    parameter_block[15] = degree6_cy46;
+                    parameter_block[16] = degree6_cx66;
+                    parameter_block[17] = degree6_cy66;
+                    parameter_block[18] = lens_rotation;
+                    parameter_block[19] = squeeze_x;
+                    parameter_block[20] = squeeze_y;
+                    lens_parameters
+                        .insert((layer_count, frame_number), parameter_block);
+                }
+                layer_count += 1;
+            }
+            BindLensModelType::TdeAnamorphicStdDeg6Rescaled => {
+                for frame_number in min_frame..=max_frame {
+                    let degree2_cx02 = get_animated_knob_value_f64(
+                        "Cx02_Degree_2",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree2_cy02 = get_animated_knob_value_f64(
+                        "Cy02_Degree_2",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree2_cx22 = get_animated_knob_value_f64(
+                        "Cx22_Degree_2",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree2_cy22 = get_animated_knob_value_f64(
+                        "Cy22_Degree_2",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree4_cx04 = get_animated_knob_value_f64(
+                        "Cx04_Degree_4",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree4_cy04 = get_animated_knob_value_f64(
+                        "Cy04_Degree_4",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree4_cx24 = get_animated_knob_value_f64(
+                        "Cx24_Degree_4",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree4_cy24 = get_animated_knob_value_f64(
+                        "Cy24_Degree_4",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree4_cx44 = get_animated_knob_value_f64(
+                        "Cx44_Degree_4",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree4_cy44 = get_animated_knob_value_f64(
+                        "Cx44_Degree_4",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree6_cx06 = get_animated_knob_value_f64(
+                        "Cx06_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree6_cy06 = get_animated_knob_value_f64(
+                        "Cy06_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree6_cx26 = get_animated_knob_value_f64(
+                        "Cx26_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree6_cy26 = get_animated_knob_value_f64(
+                        "Cy26_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree6_cx46 = get_animated_knob_value_f64(
+                        "Cx46_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree6_cy46 = get_animated_knob_value_f64(
+                        "Cy46_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let degree6_cx66 = get_animated_knob_value_f64(
+                        "Cx66_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let degree6_cy66 = get_animated_knob_value_f64(
+                        "Cx66_Degree_6",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+
+                    let lens_rotation = get_animated_knob_value_f64(
+                        "Lens_Rotation",
+                        &node.knobs,
+                        0.0,
+                        frame_number,
+                    );
+                    let squeeze_x = get_animated_knob_value_f64(
+                        "Squeeze_X",
+                        &node.knobs,
+                        1.0,
+                        frame_number,
+                    );
+                    let squeeze_y = get_animated_knob_value_f64(
+                        "Squeeze_Y",
+                        &node.knobs,
+                        1.0,
+                        frame_number,
+                    );
+
+                    let rescale = get_animated_knob_value_f64(
+                        "Rescale",
+                        &node.knobs,
+                        1.0,
+                        frame_number,
+                    );
+
+                    let mut parameter_block =
+                        [0.0 as f64; MAX_LENS_PARAMETER_COUNT];
+                    parameter_block[0] = degree2_cx02;
+                    parameter_block[1] = degree2_cy02;
+                    parameter_block[2] = degree2_cx22;
+                    parameter_block[3] = degree2_cy22;
+                    parameter_block[4] = degree4_cx04;
+                    parameter_block[5] = degree4_cy04;
+                    parameter_block[6] = degree4_cx24;
+                    parameter_block[7] = degree4_cy24;
+                    parameter_block[8] = degree4_cx44;
+                    parameter_block[9] = degree4_cy44;
+                    parameter_block[10] = degree6_cx06;
+                    parameter_block[11] = degree6_cy06;
+                    parameter_block[12] = degree6_cx26;
+                    parameter_block[13] = degree6_cy26;
+                    parameter_block[14] = degree6_cx46;
+                    parameter_block[15] = degree6_cy46;
+                    parameter_block[16] = degree6_cx66;
+                    parameter_block[17] = degree6_cy66;
+                    parameter_block[18] = lens_rotation;
+                    parameter_block[19] = squeeze_x;
+                    parameter_block[20] = squeeze_y;
+                    parameter_block[21] = rescale;
+                    lens_parameters
+                        .insert((layer_count, frame_number), parameter_block);
+                }
+                layer_count += 1;
+            }
+
             _ => continue,
         }
 

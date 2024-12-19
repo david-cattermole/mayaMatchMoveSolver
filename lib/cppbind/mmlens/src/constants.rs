@@ -56,12 +56,14 @@ pub const THREAD_TASK_BREAK_UP_FACTOR: usize = 4;
 /// The maximum lens parameter count, used to hold at most this number
 /// of lens parameter values.
 #[allow(dead_code)]
-pub const MAX_LENS_PARAMETER_COUNT: usize = 14;
+pub const MAX_LENS_PARAMETER_COUNT: usize = 22;
 
 pub const PARAMETER_COUNT_3DE_CLASSIC: ParameterSize = 5;
 pub const PARAMETER_COUNT_3DE_RADIAL_STD_DEG4: ParameterSize = 8;
 pub const PARAMETER_COUNT_3DE_ANAMORPHIC_STD_DEG4: ParameterSize = 13;
 pub const PARAMETER_COUNT_3DE_ANAMORPHIC_STD_DEG4_RESCALED: ParameterSize = 14;
+pub const PARAMETER_COUNT_3DE_ANAMORPHIC_STD_DEG6: ParameterSize = 21;
+pub const PARAMETER_COUNT_3DE_ANAMORPHIC_STD_DEG6_RESCALED: ParameterSize = 22;
 
 // Nuke node types.
 #[allow(dead_code)]

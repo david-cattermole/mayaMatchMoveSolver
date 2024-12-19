@@ -68,6 +68,7 @@
 #include <mmcore/mmmath.h>
 #include <mmlens/lens_model.h>
 #include <mmlens/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.h>
+#include <mmlens/lens_model_3de_anamorphic_deg_6_rotate_squeeze_xy.h>
 #include <mmlens/lens_model_3de_classic.h>
 #include <mmlens/lens_model_3de_radial_decentered_deg_4_cylindric.h>
 #include <mmlens/lens_model_passthrough.h>
@@ -154,6 +155,34 @@ MStatus setLensModelAttributeValue(
         solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4SqueezeX;
     is_model_3de_anamorphic_deg_4 +=
         solverAttrType == AttrSolverType::kLens3deAnamorphicDeg4SqueezeY;
+
+    auto is_model_3de_anamorphic_deg_6 = 0;
+    is_model_3de_anamorphic_deg_6 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg6Degree2Cx02;
+    is_model_3de_anamorphic_deg_6 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg6Degree2Cy02;
+    is_model_3de_anamorphic_deg_6 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg6Degree2Cx22;
+    is_model_3de_anamorphic_deg_6 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg6Degree2Cy22;
+    is_model_3de_anamorphic_deg_6 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg6Degree4Cx04;
+    is_model_3de_anamorphic_deg_6 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg6Degree4Cy04;
+    is_model_3de_anamorphic_deg_6 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg6Degree4Cx24;
+    is_model_3de_anamorphic_deg_6 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg6Degree4Cy24;
+    is_model_3de_anamorphic_deg_6 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg6Degree4Cx44;
+    is_model_3de_anamorphic_deg_6 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg6Degree4Cy44;
+    is_model_3de_anamorphic_deg_6 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg6LensRotation;
+    is_model_3de_anamorphic_deg_6 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg6SqueezeX;
+    is_model_3de_anamorphic_deg_6 +=
+        solverAttrType == AttrSolverType::kLens3deAnamorphicDeg6SqueezeY;
 
     if (is_model_3de_classic > 0) {
         auto ptr =
@@ -244,6 +273,74 @@ MStatus setLensModelAttributeValue(
                    AttrSolverType::kLens3deAnamorphicDeg4SqueezeY) {
             ptr->setSqueezeY(value);
         }
+    } else if (is_model_3de_anamorphic_deg_6 > 0) {
+        auto ptr = reinterpret_cast<
+            mmlens::LensModel3deAnamorphicDeg6RotateSqueezeXY *>(lensModelPtr);
+        if (solverAttrType ==
+            AttrSolverType::kLens3deAnamorphicDeg6Degree2Cx02) {
+            ptr->setDegree2Cx02(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree2Cy02) {
+            ptr->setDegree2Cy02(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree2Cx22) {
+            ptr->setDegree2Cx22(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree2Cy22) {
+            ptr->setDegree2Cy22(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree4Cx04) {
+            ptr->setDegree4Cx04(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree4Cy04) {
+            ptr->setDegree4Cy04(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree4Cx24) {
+            ptr->setDegree4Cx24(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree4Cy24) {
+            ptr->setDegree4Cy24(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree4Cx44) {
+            ptr->setDegree4Cx44(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree4Cy44) {
+            ptr->setDegree4Cy44(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree6Cx06) {
+            ptr->setDegree6Cx06(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree6Cy06) {
+            ptr->setDegree6Cy06(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree6Cx26) {
+            ptr->setDegree6Cx26(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree6Cy26) {
+            ptr->setDegree6Cy26(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree6Cx46) {
+            ptr->setDegree6Cx46(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree6Cy46) {
+            ptr->setDegree6Cy46(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree6Cx66) {
+            ptr->setDegree6Cx66(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6Degree6Cy66) {
+            ptr->setDegree6Cy66(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6LensRotation) {
+            ptr->setLensRotation(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6SqueezeX) {
+            ptr->setSqueezeX(value);
+        } else if (solverAttrType ==
+                   AttrSolverType::kLens3deAnamorphicDeg6SqueezeY) {
+            ptr->setSqueezeY(value);
+        }
+
     } else {
         MMSOLVER_MAYA_ERR("Unknown lens attribute: solverAttrType="
                           << static_cast<int>(solverAttrType));
@@ -585,6 +682,53 @@ MStatus getAttrsFromLensNode(const MObject &node, const MString &nodeName,
             attrNames.append("tdeAnamorphicStdDeg4_squeeze_x");
             attrNames.append("tdeAnamorphicStdDeg4_squeeze_y");
             attrNames.append("tdeAnamorphicStdDeg4_rescale");
+
+        } else if (lensModel == mmlens::LensModelType::k3deAnamorphicStdDeg6) {
+            attrNames.append("tdeAnamorphicStdDeg6_degree2_cx02");
+            attrNames.append("tdeAnamorphicStdDeg6_degree2_cy02");
+            attrNames.append("tdeAnamorphicStdDeg6_degree2_cx22");
+            attrNames.append("tdeAnamorphicStdDeg6_degree2_cy22");
+            attrNames.append("tdeAnamorphicStdDeg6_degree4_cx04");
+            attrNames.append("tdeAnamorphicStdDeg6_degree4_cy04");
+            attrNames.append("tdeAnamorphicStdDeg6_degree4_cx24");
+            attrNames.append("tdeAnamorphicStdDeg6_degree4_cy24");
+            attrNames.append("tdeAnamorphicStdDeg6_degree4_cx44");
+            attrNames.append("tdeAnamorphicStdDeg6_degree4_cy44");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cx06");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cy06");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cx26");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cy26");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cx46");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cy46");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cx66");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cy66");
+            attrNames.append("tdeAnamorphicStdDeg6_lensRotation");
+            attrNames.append("tdeAnamorphicStdDeg6_squeeze_x");
+            attrNames.append("tdeAnamorphicStdDeg6_squeeze_y");
+        } else if (lensModel ==
+                   mmlens::LensModelType::k3deAnamorphicStdDeg6Rescaled) {
+            attrNames.append("tdeAnamorphicStdDeg6_degree2_cx02");
+            attrNames.append("tdeAnamorphicStdDeg6_degree2_cy02");
+            attrNames.append("tdeAnamorphicStdDeg6_degree2_cx22");
+            attrNames.append("tdeAnamorphicStdDeg6_degree2_cy22");
+            attrNames.append("tdeAnamorphicStdDeg6_degree4_cx04");
+            attrNames.append("tdeAnamorphicStdDeg6_degree4_cy04");
+            attrNames.append("tdeAnamorphicStdDeg6_degree4_cx24");
+            attrNames.append("tdeAnamorphicStdDeg6_degree4_cy24");
+            attrNames.append("tdeAnamorphicStdDeg6_degree4_cx44");
+            attrNames.append("tdeAnamorphicStdDeg6_degree4_cy44");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cx06");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cy06");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cx26");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cy26");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cx46");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cy46");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cx66");
+            attrNames.append("tdeAnamorphicStdDeg6_degree6_cy66");
+            attrNames.append("tdeAnamorphicStdDeg6_lensRotation");
+            attrNames.append("tdeAnamorphicStdDeg6_squeeze_x");
+            attrNames.append("tdeAnamorphicStdDeg6_squeeze_y");
+            attrNames.append("tdeAnamorphicStdDeg6_rescale");
         } else {
             MMSOLVER_MAYA_ERR(
                 "Invalid lens model type value from 'lensModel' attribute: "

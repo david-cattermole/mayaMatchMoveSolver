@@ -97,6 +97,20 @@ DistortionLayers::layer_lens_parameters_3de_anamorphic_std_deg4_rescaled(
         layer_num, frame);
 }
 
+OptionParameters3deAnamorphicStdDeg6
+DistortionLayers::layer_lens_parameters_3de_anamorphic_std_deg6(
+    const LayerIndex layer_num, const FrameNumber frame) const noexcept {
+    return inner_->layer_lens_parameters_3de_anamorphic_std_deg6(layer_num,
+                                                                 frame);
+}
+
+OptionParameters3deAnamorphicStdDeg6Rescaled
+DistortionLayers::layer_lens_parameters_3de_anamorphic_std_deg6_rescaled(
+    const LayerIndex layer_num, const FrameNumber frame) const noexcept {
+    return inner_->layer_lens_parameters_3de_anamorphic_std_deg6_rescaled(
+        layer_num, frame);
+}
+
 rust::String DistortionLayers::as_string() noexcept {
     return inner_->as_string();
 }

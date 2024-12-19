@@ -47,6 +47,18 @@ use crate::cxxbridge::ffi::apply_identity_to_f32_3de_anamorphic_std_deg4_rescale
 use crate::cxxbridge::ffi::apply_identity_to_f64_3de_anamorphic_std_deg4_rescaled;
 use crate::cxxbridge::ffi::Parameters3deAnamorphicStdDeg4Rescaled as BindParameters3deAnamorphicStdDeg4Rescaled;
 
+use crate::cxxbridge::ffi::apply_f64_to_f32_3de_anamorphic_std_deg6;
+use crate::cxxbridge::ffi::apply_f64_to_f64_3de_anamorphic_std_deg6;
+use crate::cxxbridge::ffi::apply_identity_to_f32_3de_anamorphic_std_deg6;
+use crate::cxxbridge::ffi::apply_identity_to_f64_3de_anamorphic_std_deg6;
+use crate::cxxbridge::ffi::Parameters3deAnamorphicStdDeg6 as BindParameters3deAnamorphicStdDeg6;
+
+use crate::cxxbridge::ffi::apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled;
+use crate::cxxbridge::ffi::apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled;
+use crate::cxxbridge::ffi::apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled;
+use crate::cxxbridge::ffi::apply_identity_to_f64_3de_anamorphic_std_deg6_rescaled;
+use crate::cxxbridge::ffi::Parameters3deAnamorphicStdDeg6Rescaled as BindParameters3deAnamorphicStdDeg6Rescaled;
+
 /// Valid num-thread values are -1 to i32::MAX. If given -2, -1 is
 /// assumed.
 ///
@@ -872,5 +884,219 @@ pub fn apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled_multithread(
         film_back_radius_cm,
         lens_parameters,
         apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled,
+    );
+}
+
+//////////////////////////////////////////////////////////////////////
+// 3DE Anamorphic Degree 6 Rotate Squeeze XY
+
+pub fn apply_identity_to_f64_3de_anamorphic_std_deg6_multithread(
+    direction: BindDistortionDirection,
+    image_width: usize,
+    image_height: usize,
+    out_data_ptr: *mut f64,
+    out_data_size: usize,
+    out_data_stride: usize,
+    camera_parameters: BindCameraParameters,
+    film_back_radius_cm: f64,
+    lens_parameters: BindParameters3deAnamorphicStdDeg6,
+) {
+    apply_identity_multithread::<f64, BindParameters3deAnamorphicStdDeg6>(
+        direction,
+        image_width,
+        image_height,
+        out_data_stride,
+        out_data_ptr,
+        out_data_size,
+        camera_parameters,
+        film_back_radius_cm,
+        lens_parameters,
+        apply_identity_to_f64_3de_anamorphic_std_deg6,
+    );
+}
+
+pub fn apply_identity_to_f32_3de_anamorphic_std_deg6_multithread(
+    direction: BindDistortionDirection,
+    image_width: usize,
+    image_height: usize,
+    out_data_ptr: *mut f32,
+    out_data_size: usize,
+    out_data_stride: usize,
+    camera_parameters: BindCameraParameters,
+    film_back_radius_cm: f64,
+    lens_parameters: BindParameters3deAnamorphicStdDeg6,
+) {
+    apply_identity_multithread::<f32, BindParameters3deAnamorphicStdDeg6>(
+        direction,
+        image_width,
+        image_height,
+        out_data_stride,
+        out_data_ptr,
+        out_data_size,
+        camera_parameters,
+        film_back_radius_cm,
+        lens_parameters,
+        apply_identity_to_f32_3de_anamorphic_std_deg6,
+    );
+}
+
+pub fn apply_f64_to_f32_3de_anamorphic_std_deg6_multithread(
+    direction: BindDistortionDirection,
+    in_data_ptr: *const f64,
+    in_data_size: usize,
+    in_data_stride: usize,
+    out_data_ptr: *mut f32,
+    out_data_size: usize,
+    out_data_stride: usize,
+    camera_parameters: BindCameraParameters,
+    film_back_radius_cm: f64,
+    lens_parameters: BindParameters3deAnamorphicStdDeg6,
+) {
+    apply_buffer_multithread::<f32, BindParameters3deAnamorphicStdDeg6>(
+        direction,
+        in_data_ptr,
+        in_data_size,
+        in_data_stride,
+        out_data_ptr,
+        out_data_size,
+        out_data_stride,
+        camera_parameters,
+        film_back_radius_cm,
+        lens_parameters,
+        apply_f64_to_f32_3de_anamorphic_std_deg6,
+    );
+}
+
+pub fn apply_f64_to_f64_3de_anamorphic_std_deg6_multithread(
+    direction: BindDistortionDirection,
+    in_data_ptr: *const f64,
+    in_data_size: usize,
+    in_data_stride: usize,
+    out_data_ptr: *mut f64,
+    out_data_size: usize,
+    out_data_stride: usize,
+    camera_parameters: BindCameraParameters,
+    film_back_radius_cm: f64,
+    lens_parameters: BindParameters3deAnamorphicStdDeg6,
+) {
+    apply_buffer_multithread::<f64, BindParameters3deAnamorphicStdDeg6>(
+        direction,
+        in_data_ptr,
+        in_data_size,
+        in_data_stride,
+        out_data_ptr,
+        out_data_size,
+        out_data_stride,
+        camera_parameters,
+        film_back_radius_cm,
+        lens_parameters,
+        apply_f64_to_f64_3de_anamorphic_std_deg6,
+    );
+}
+
+//////////////////////////////////////////////////////////////////////
+// 3DE Anamorphic Degree 6 Rotate Squeeze XY Rescaled
+
+pub fn apply_identity_to_f64_3de_anamorphic_std_deg6_rescaled_multithread(
+    direction: BindDistortionDirection,
+    image_width: usize,
+    image_height: usize,
+    out_data_ptr: *mut f64,
+    out_data_size: usize,
+    out_data_stride: usize,
+    camera_parameters: BindCameraParameters,
+    film_back_radius_cm: f64,
+    lens_parameters: BindParameters3deAnamorphicStdDeg6Rescaled,
+) {
+    apply_identity_multithread::<f64, BindParameters3deAnamorphicStdDeg6Rescaled>(
+        direction,
+        image_width,
+        image_height,
+        out_data_stride,
+        out_data_ptr,
+        out_data_size,
+        camera_parameters,
+        film_back_radius_cm,
+        lens_parameters,
+        apply_identity_to_f64_3de_anamorphic_std_deg6_rescaled,
+    );
+}
+
+pub fn apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled_multithread(
+    direction: BindDistortionDirection,
+    image_width: usize,
+    image_height: usize,
+    out_data_ptr: *mut f32,
+    out_data_size: usize,
+    out_data_stride: usize,
+    camera_parameters: BindCameraParameters,
+    film_back_radius_cm: f64,
+    lens_parameters: BindParameters3deAnamorphicStdDeg6Rescaled,
+) {
+    apply_identity_multithread::<f32, BindParameters3deAnamorphicStdDeg6Rescaled>(
+        direction,
+        image_width,
+        image_height,
+        out_data_stride,
+        out_data_ptr,
+        out_data_size,
+        camera_parameters,
+        film_back_radius_cm,
+        lens_parameters,
+        apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled,
+    );
+}
+
+pub fn apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled_multithread(
+    direction: BindDistortionDirection,
+    in_data_ptr: *const f64,
+    in_data_size: usize,
+    in_data_stride: usize,
+    out_data_ptr: *mut f32,
+    out_data_size: usize,
+    out_data_stride: usize,
+    camera_parameters: BindCameraParameters,
+    film_back_radius_cm: f64,
+    lens_parameters: BindParameters3deAnamorphicStdDeg6Rescaled,
+) {
+    apply_buffer_multithread::<f32, BindParameters3deAnamorphicStdDeg6Rescaled>(
+        direction,
+        in_data_ptr,
+        in_data_size,
+        in_data_stride,
+        out_data_ptr,
+        out_data_size,
+        out_data_stride,
+        camera_parameters,
+        film_back_radius_cm,
+        lens_parameters,
+        apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled,
+    );
+}
+
+pub fn apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled_multithread(
+    direction: BindDistortionDirection,
+    in_data_ptr: *const f64,
+    in_data_size: usize,
+    in_data_stride: usize,
+    out_data_ptr: *mut f64,
+    out_data_size: usize,
+    out_data_stride: usize,
+    camera_parameters: BindCameraParameters,
+    film_back_radius_cm: f64,
+    lens_parameters: BindParameters3deAnamorphicStdDeg6Rescaled,
+) {
+    apply_buffer_multithread::<f64, BindParameters3deAnamorphicStdDeg6Rescaled>(
+        direction,
+        in_data_ptr,
+        in_data_size,
+        in_data_stride,
+        out_data_ptr,
+        out_data_size,
+        out_data_stride,
+        camera_parameters,
+        film_back_radius_cm,
+        lens_parameters,
+        apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled,
     );
 }

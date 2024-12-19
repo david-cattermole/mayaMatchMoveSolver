@@ -31,21 +31,21 @@
  * - tde4_ldp_anamorphic_degree_6
  *
  * - tde4_ldp_anamorphic_rescaled_degree_4
- *   - Implemented as Distortion3deAnamorphicStdDeg4Rescaled
+ *   - Implemented as Distortion3deAnamorphicStdDeg4Rescaled.
  *
  * - tde4_ldp_anamorphic_rescaled_degree_6
  *
  * - tde4_ldp_anamorphic_stabilizer_degree_6
  *
  * - tde4_ldp_anamorphic_standard_degree_4
- *   - Implemented as Distortion3deAnamorphicStdDeg4
+ *   - Implemented as Distortion3deAnamorphicStdDeg4.
  *
  * - tde4_ldp_anamorphic_standard_degree_6
  *
  * - tde4_ldp_brown_conrady_degree_6_2
  *
  * - tde4_ldp_classic_ld_model
- *   - Implemented as Distortion3deClassic
+ *   - Implemented as Distortion3deClassic.
  *   - tde4_ldp_classic_ld_model was originally named
  *     tde4_ldp_classic_3de_mixed_model before LDPK 2.12.0.
  *
@@ -55,8 +55,8 @@
  *
  * - tde4_ldp_radial_stabilizer_degree_6
  *
- * - tde4_ldp_radial_standard_degree_4 - Implemented as
- * Distortion3deRadialStdDeg4
+ * - tde4_ldp_radial_standard_degree_4
+ *   - Implemented as Distortion3deRadialStdDeg4.
  *
  */
 
@@ -357,11 +357,265 @@ private:
     ldpk::squeeze_x_extender<ldpk::vec2d, ldpk::mat2d> m_pixel_aspect;
     ldpk::squeeze_x_extender<ldpk::vec2d, ldpk::mat2d> m_rescale;
 
-    // Concatenating extenders for better performance
+    // Concatenating extenders for better performance.
     ldpk::linear_extender<ldpk::vec2d, ldpk::mat2d>
         m_rotation_squeeze_xy_rescale_pixel_aspect;
     ldpk::linear_extender<ldpk::vec2d, ldpk::mat2d>
         m_pixel_aspect_rescale_and_rotation;
+};
+
+// Matches LDPK 'tde4_ldp_anamorphic_standard_degree_6' implementation.
+class Distortion3deAnamorphicStdDeg6 : public Distortion {
+public:
+    Distortion3deAnamorphicStdDeg6() {}
+
+    void set_parameter(const int index, const double value) override {
+        if (index < 18) {
+            m_anamorphic.set_coeff(index, value);
+        } else if (index == 18) {
+            m_rotation.set_phi(value / 180.0 * M_PI);
+        } else if (index == 19) {
+            m_squeeze_x.set_sq(value);
+        } else if (index == 20) {
+            m_squeeze_y.set_sq(value);
+        }
+        return;
+    }
+
+    void initialize_parameters(CameraParameters camera_parameters) override {
+        m_pixel_aspect.set_sq(camera_parameters.pixel_aspect);
+        m_rotation_squeeze_xy_pixel_aspect.set(m_rotation, m_squeeze_x,
+                                               m_squeeze_y, m_pixel_aspect);
+
+        m_pixel_aspect_and_rotation.set(m_pixel_aspect, m_rotation);
+
+        m_anamorphic.prepare();
+    }
+
+    // mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const override
+    // {
+    //     ldpk::vec2d out_point_dn = m_rotation_squeeze_xy_pixel_aspect.eval(
+    //         m_anamorphic.eval(m_pixel_aspect_and_rotation.eval_inv(
+    //             ldpk::vec2d(in_point_dn.x_, in_point_dn.y_))));
+    //     return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
+    // }
+
+    // mmdata::Vector2D eval_inv(
+    //     const mmdata::Vector2D in_point_dn) const override {
+    //     // FIXME: This method doesn't use a good mechanism to guess,
+    //     // ideally this should use a look-up table data structure to
+    //     // get a closer guess to the real value, to avoid iterations.
+    //     ldpk::vec2d temp1_point_dn =
+    //         m_rotation_squeeze_xy_pixel_aspect.eval_inv(
+    //             ldpk::vec2d(in_point_dn.x_, in_point_dn.y_),
+    //             ldpk::vec2d(in_point_dn.x_, in_point_dn.y_));
+    //     ldpk::vec2d temp2_point_dn =
+    //         m_anamorphic.eval_inv(temp1_point_dn, temp1_point_dn);
+    //     ldpk::vec2d out_point_dn =
+    //         m_pixel_aspect_and_rotation.eval(temp2_point_dn);
+    //     return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
+    // }
+
+    // mmdata::Vector2D eval_inv(
+    //     const mmdata::Vector2D in_point_dn,
+    //     const mmdata::Vector2D in_initial_point_dn) const override {
+    //     ldpk::vec2d out_point_dn =
+    //         m_pixel_aspect_and_rotation.eval(m_anamorphic.eval_inv(
+    //             m_rotation_squeeze_xy_pixel_aspect.eval_inv(
+    //                 ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)),
+    //             m_rotation_squeeze_xy_pixel_aspect.eval_inv(ldpk::vec2d(
+    //                 in_initial_point_dn.x_, in_initial_point_dn.y_))));
+    //     return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
+    // }
+
+    mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const override {
+        ldpk::vec2d out_point_dn = m_rotation_squeeze_xy_pixel_aspect.eval(
+            m_anamorphic.eval(m_pixel_aspect_and_rotation.eval_inv(
+                ldpk::vec2d(in_point_dn.x_, in_point_dn.y_))));
+        return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
+    }
+
+    mmdata::Vector2D eval_inv(
+        const mmdata::Vector2D in_point_dn) const override {
+        // FIXME: This method doesn't use a good mechanism to guess,
+        // ideally this should use a look-up table data structure to
+        // get a closer guess to the real value, to avoid iterations.
+        ldpk::vec2d temp1_point_dn =
+            m_rotation_squeeze_xy_pixel_aspect.eval_inv(
+                ldpk::vec2d(in_point_dn.x_, in_point_dn.y_),
+                ldpk::vec2d(in_point_dn.x_, in_point_dn.y_));
+        ldpk::vec2d temp2_point_dn =
+            m_anamorphic.eval_inv(temp1_point_dn, temp1_point_dn);
+        ldpk::vec2d out_point_dn =
+            m_pixel_aspect_and_rotation.eval(temp2_point_dn);
+        return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
+    }
+
+    mmdata::Vector2D eval_inv(
+        const mmdata::Vector2D in_point_dn,
+        const mmdata::Vector2D in_initial_point_dn) const override {
+        ldpk::vec2d out_point_dn =
+            m_pixel_aspect_and_rotation.eval(m_anamorphic.eval_inv(
+                m_rotation_squeeze_xy_pixel_aspect.eval_inv(
+                    ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)),
+                m_rotation_squeeze_xy_pixel_aspect.eval_inv(ldpk::vec2d(
+                    in_initial_point_dn.x_, in_initial_point_dn.y_))));
+        return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
+    }
+
+private:
+    // Anamorphic distortion of degree 6.
+    ldpk::generic_anamorphic_distortion<ldpk::vec2d, ldpk::mat2d, 6>
+        m_anamorphic;
+
+    // Extenders for lens rotation, squeeze and pixel aspect ratio.
+    ldpk::rotation_extender<ldpk::vec2d, ldpk::mat2d> m_rotation;
+    ldpk::squeeze_x_extender<ldpk::vec2d, ldpk::mat2d> m_squeeze_x;
+    ldpk::squeeze_y_extender<ldpk::vec2d, ldpk::mat2d> m_squeeze_y;
+    ldpk::squeeze_x_extender<ldpk::vec2d, ldpk::mat2d> m_pixel_aspect;
+
+    // Concatenating extenders for better performance.
+    ldpk::linear_extender<ldpk::vec2d, ldpk::mat2d>
+        m_rotation_squeeze_xy_pixel_aspect;
+    ldpk::linear_extender<ldpk::vec2d, ldpk::mat2d> m_pixel_aspect_and_rotation;
+};
+
+// Matches LDPK 'tde4_ldp_anamorphic_rescaled_degree_6' implementation.
+class Distortion3deAnamorphicStdDeg6Rescaled : public Distortion {
+public:
+    Distortion3deAnamorphicStdDeg6Rescaled() {}
+
+    void set_parameter(const int index, const double value) override {
+        if (index < 18) {
+            m_anamorphic.set_coeff(index, value);
+        } else if (index == 18) {
+            m_rotation.set_phi(value / 180.0 * M_PI);
+        } else if (index == 19) {
+            m_squeeze_x.set_sq(value);
+        } else if (index == 20) {
+            m_squeeze_y.set_sq(value);
+        } else if (index == 21) {
+            m_rescale.set_sq(value);
+        }
+        return;
+    }
+
+    void initialize_parameters(CameraParameters camera_parameters) override {
+        m_pixel_aspect.set_sq(camera_parameters.pixel_aspect);
+        m_rotation_squeeze_xy_rescale_pixel_aspect.set(
+            m_rotation, m_squeeze_x, m_squeeze_y, m_rescale, m_pixel_aspect);
+
+        if (m_squeeze_x.get_sq() == 0) {
+            std::cerr << "Distortion3deAnamorphicStdDeg6Rescaled::initialize_"
+                         "parameters, error: Squeeze-X is 0."
+                      << std::endl;
+        }
+        if (m_squeeze_y.get_sq() == 0) {
+            std::cerr << "Distortion3deAnamorphicStdDeg6Rescaled::initialize_"
+                         "parameters, error: Squeeze-Y is 0."
+                      << std::endl;
+        }
+
+        m_pixel_aspect_rescale_and_rotation.set(m_pixel_aspect, m_rescale,
+                                                m_rotation);
+        m_anamorphic.prepare();
+    }
+
+    // mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const override
+    // {
+    //     ldpk::vec2d out_point_dn = m_rotation_squeeze_xy_pixel_aspect.eval(
+    //         m_anamorphic.eval(m_pixel_aspect_and_rotation.eval_inv(
+    //             ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)))
+
+    //     );
+    //     return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
+    // }
+
+    // mmdata::Vector2D eval_inv(
+    //     const mmdata::Vector2D in_point_dn) const override {
+    //     // FIXME: This method doesn't use a good mechanism to guess,
+    //     // ideally this should use a look-up table data structure to
+    //     // get a closer guess to the real value, to avoid iterations.
+    //     ldpk::vec2d temp1_point_dn =
+    //     m_rotation_squeeze_xy_rescale_pa.eval_inv(
+    //         ldpk::vec2d(in_point_dn.x_, in_point_dn.y_));
+    //     ldpk::vec2d temp2_point_dn =
+    //         m_anamorphic.eval_inv(temp1_point_dn, temp1_point_dn);
+    //     ldpk::vec2d out_point_dn = m_pa_rescale_rot.eval(temp2_point_dn);
+    //     return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
+    // }
+
+    // mmdata::Vector2D eval_inv(
+    //     const mmdata::Vector2D in_point_dn,
+    //     const mmdata::Vector2D in_initial_point_dn) const override {
+    //     ldpk::vec2d out_point_dn =
+    //     m_pa_rescale_rot.eval(m_anamorphic.eval_inv(
+    //         m_rotation_squeeze_xy_rescale_pa.eval_inv(
+    //             ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)),
+    //         m_rotation_squeeze_xy_rescale_pa.eval_inv(
+    //             ldpk::vec2d(in_initial_point_dn.x_,
+    //             in_initial_point_dn.y_))));
+    //     return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
+    // }
+
+    mmdata::Vector2D eval(const mmdata::Vector2D in_point_dn) const override {
+        ldpk::vec2d out_point_dn =
+            m_rotation_squeeze_xy_rescale_pixel_aspect.eval(
+                m_anamorphic.eval(m_pixel_aspect_rescale_and_rotation.eval_inv(
+                    ldpk::vec2d(in_point_dn.x_, in_point_dn.y_))));
+
+        return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
+    }
+
+    mmdata::Vector2D eval_inv(
+        const mmdata::Vector2D in_point_dn) const override {
+        // FIXME: This method doesn't use a good mechanism to guess,
+        // ideally this should use a look-up table data structure to
+        // get a closer guess to the real value, to avoid iterations.
+        ldpk::vec2d temp1_point_dn =
+            m_rotation_squeeze_xy_rescale_pixel_aspect.eval_inv(
+                ldpk::vec2d(in_point_dn.x_, in_point_dn.y_),
+                ldpk::vec2d(in_point_dn.x_, in_point_dn.y_));
+        ldpk::vec2d temp2_point_dn =
+            m_anamorphic.eval_inv(temp1_point_dn, temp1_point_dn);
+        ldpk::vec2d out_point_dn =
+            m_pixel_aspect_rescale_and_rotation.eval(temp2_point_dn);
+        return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
+    }
+
+    mmdata::Vector2D eval_inv(
+        const mmdata::Vector2D in_point_dn,
+        const mmdata::Vector2D in_initial_point_dn) const override {
+        ldpk::vec2d out_point_dn =
+            m_pixel_aspect_rescale_and_rotation.eval(m_anamorphic.eval_inv(
+                m_rotation_squeeze_xy_rescale_pixel_aspect.eval_inv(
+                    ldpk::vec2d(in_point_dn.x_, in_point_dn.y_)),
+                m_rotation_squeeze_xy_rescale_pixel_aspect.eval_inv(ldpk::vec2d(
+                    in_initial_point_dn.x_, in_initial_point_dn.y_))));
+        return mmdata::Vector2D(out_point_dn[0], out_point_dn[1]);
+    }
+
+private:
+    // Anamorphic distortion of degree 6
+    ldpk::generic_anamorphic_distortion<ldpk::vec2d, ldpk::mat2d, 6>
+        m_anamorphic;
+
+    // Extenders for lens rotation, squeeze and pixel aspect ratio
+    ldpk::rotation_extender<ldpk::vec2d, ldpk::mat2d> m_rotation;
+    ldpk::squeeze_x_extender<ldpk::vec2d, ldpk::mat2d> m_squeeze_x;
+    ldpk::squeeze_y_extender<ldpk::vec2d, ldpk::mat2d> m_squeeze_y;
+    // ldpk::squeeze_x_extender<ldpk::vec2d, ldpk::mat2d> m_pa;
+    ldpk::squeeze_x_extender<ldpk::vec2d, ldpk::mat2d> m_pixel_aspect;
+    ldpk::squeeze_x_extender<ldpk::vec2d, ldpk::mat2d> m_rescale;
+
+    // Concatenating extenders for better performance.
+    ldpk::linear_extender<ldpk::vec2d, ldpk::mat2d>
+        m_rotation_squeeze_xy_rescale_pixel_aspect;
+    ldpk::linear_extender<ldpk::vec2d, ldpk::mat2d>
+        m_pixel_aspect_rescale_and_rotation;
+    // ldpk::linear_extender<ldpk::vec2d, ldpk::mat2d>
+    //     m_rotation_squeeze_xy_rescale_pa;
+    // ldpk::linear_extender<ldpk::vec2d, ldpk::mat2d> m_pa_rescale_rot;
 };
 
 }  // namespace mmlens

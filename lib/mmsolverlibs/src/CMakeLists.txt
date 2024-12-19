@@ -50,6 +50,8 @@ set(lib_source_files
   ${mmlens_source_dir}/distortion_process.cpp
   ${mmlens_source_dir}/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy.cpp
   ${mmlens_source_dir}/lens_model_3de_anamorphic_deg_4_rotate_squeeze_xy_rescaled.cpp
+  ${mmlens_source_dir}/lens_model_3de_anamorphic_deg_6_rotate_squeeze_xy.cpp
+  ${mmlens_source_dir}/lens_model_3de_anamorphic_deg_6_rotate_squeeze_xy_rescaled.cpp
   ${mmlens_source_dir}/lens_model_3de_classic.cpp
   ${mmlens_source_dir}/lens_model_3de_radial_decentered_deg_4_cylindric.cpp
   ${mmlens_source_dir}/lens_model_passthrough.cpp

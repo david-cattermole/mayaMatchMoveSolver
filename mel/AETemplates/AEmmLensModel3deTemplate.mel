@@ -73,6 +73,34 @@ global proc AEmmLensModel3deTemplate(string $nodeName)
     editorTemplate -addControl "tdeAnamorphicStdDeg4_rescale";
     editorTemplate -endLayout;
 
+    editorTemplate -beginLayout "3DE4 Anamorphic - Standard, Degree 6" -collapse 0;
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree2_cx02";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree2_cy02";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree2_cx22";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree2_cy22";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree4_cx04";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree4_cy04";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree4_cx24";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree4_cy24";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree4_cx44";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree4_cy44";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree6_cx06";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree6_cx26";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree6_cx46";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree6_cx66";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree6_cy06";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree6_cy26";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree6_cy46";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_degree6_cy66";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_lensRotation";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_squeeze_x";
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_squeeze_y";
+    editorTemplate -endLayout;
+
+    editorTemplate -beginLayout "3DE4 Anamorphic - Rescaled, Degree 6" -collapse 1;
+    editorTemplate -addControl "tdeAnamorphicStdDeg6_rescale";
+    editorTemplate -endLayout;
+
     // editorTemplate -beginLayout "3DE4 Anamorphic, Degree 6" -collapse 1;
     // editorTemplate -endLayout;
 

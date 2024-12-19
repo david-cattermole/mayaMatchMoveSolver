@@ -1,6 +1,6 @@
 //Maya ASCII 2020 scene
 //Name: example_curves.ma
-//Last modified: Wed, Oct 23, 2024 11:44:00 PM
+//Last modified: Wed, Dec 04, 2024 12:58:40 AM
 //Codeset: 1252
 requires maya "2020";
 currentUnit -l centimeter -a degree -t film;
@@ -9,7 +9,7 @@ fileInfo "product" "Maya 2020";
 fileInfo "version" "2020";
 fileInfo "cutIdentifier" "202011110415-b1e20b88e2";
 fileInfo "osv" "Microsoft Windows 10 Technical Preview  (Build 19045)\n";
-fileInfo "UUID" "2F50B0D5-4C6B-B554-5C6D-08B31B311FD9";
+fileInfo "UUID" "06CE81AC-4E7A-AEE1-BF30-81817FFDCD20";
 createNode transform -s -n "persp";
 	rename -uid "E129F641-4E32-AD8D-31EA-4792779E0583";
 	setAttr ".v" no;
@@ -117,20 +117,25 @@ createNode transform -n "degree_45_down";
 createNode locator -n "degree_45_downShape" -p "degree_45_down";
 	rename -uid "BD7C8DE8-47A7-73A1-CEF4-6589469A338D";
 	setAttr -k off ".v";
+createNode transform -n "down_up";
+	rename -uid "C39783CE-4F1E-E95C-FEA3-7086FBFB64E5";
+createNode locator -n "down_upShape" -p "down_up";
+	rename -uid "E39EE40B-4025-5561-1D1B-989AB601A036";
+	setAttr -k off ".v";
 createNode lightLinker -s -n "lightLinker1";
-	rename -uid "E5190919-4F3E-9A27-7BC5-8399D128CE8A";
+	rename -uid "21CBF86F-4583-5573-63A0-7AB89FB8D998";
 	setAttr -s 2 ".lnk";
 	setAttr -s 2 ".slnk";
 createNode shapeEditorManager -n "shapeEditorManager";
-	rename -uid "461F07EF-4C14-6D48-0846-7190637099FC";
+	rename -uid "B014C4D4-45A9-CD46-E94A-CDA5CE7BBB41";
 createNode poseInterpolatorManager -n "poseInterpolatorManager";
-	rename -uid "6EAF8EF9-4DB0-EBDB-AA50-1CA19ADB52DB";
+	rename -uid "E8BB4563-44C1-FE89-0D16-DBA97771381F";
 createNode displayLayerManager -n "layerManager";
-	rename -uid "817FC77F-420E-BE4C-2C93-908DE9980416";
+	rename -uid "36947941-4BA8-3C6A-31B2-88B597F0421A";
 createNode displayLayer -n "defaultLayer";
 	rename -uid "45C1739C-4ED6-FE47-3446-2191760FA6B0";
 createNode renderLayerManager -n "renderLayerManager";
-	rename -uid "C605DF74-45EF-4396-2715-E0AE9624084B";
+	rename -uid "23DE6FD7-4C38-E23C-2D5F-A2A2F325BB92";
 createNode renderLayer -n "defaultRenderLayer";
 	rename -uid "F50161CF-4D4A-394A-C546-BFAE270532CD";
 	setAttr ".g" yes;
@@ -306,9 +311,14 @@ createNode animCurveTL -n "degree_45_translateZ1";
 	setAttr ".tan" 2;
 	setAttr ".wgt" no;
 	setAttr -s 2 ".ktv[0:1]"  1001 0 1101 0;
+createNode animCurveTL -n "down_up_translateY";
+	rename -uid "A508517B-4C9B-D072-6061-EFA62907A80D";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr -s 2 ".ktv[0:1]"  1001 -10 1101 10;
 select -ne :time1;
-	setAttr ".o" 1101;
-	setAttr ".unw" 1101;
+	setAttr ".o" 1054;
+	setAttr ".unw" 1054;
 select -ne :hardwareRenderingGlobals;
 	setAttr ".otfna" -type "stringArray" 22 "NURBS Curves" "NURBS Surfaces" "Polygons" "Subdiv Surface" "Particles" "Particle Instance" "Fluids" "Strokes" "Image Planes" "UI" "Lights" "Cameras" "Locators" "Joints" "IK Handles" "Deformers" "Motion Trails" "Components" "Hair Systems" "Follicles" "Misc. UI" "Ornaments"  ;
 	setAttr ".otfva" -type "Int32Array" 22 0 1 1 1 1 1
@@ -359,6 +369,7 @@ connectAttr "degree_45_translateZ.o" "degree_45_up.tz";
 connectAttr "degree_45_translateX1.o" "degree_45_down.tx";
 connectAttr "degree_45_translateY1.o" "degree_45_down.ty";
 connectAttr "degree_45_translateZ1.o" "degree_45_down.tz";
+connectAttr "down_up_translateY.o" "down_up.ty";
 relationship "link" ":lightLinker1" ":initialShadingGroup.message" ":defaultLightSet.message";
 relationship "link" ":lightLinker1" ":initialParticleSE.message" ":defaultLightSet.message";
 relationship "shadowLink" ":lightLinker1" ":initialShadingGroup.message" ":defaultLightSet.message";

@@ -195,6 +195,9 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
     filtered_x_values.reserve(actual_count);
     filtered_y_values.reserve(actual_count);
 
+    // TODO: Can we 'calc_signal_to_noise_ratio', so we can determine
+    // if a pop-detection is actually needed?
+
     MMSOLVER_MAYA_VRB("m_threshold: " << m_threshold);
     rust::Slice<const mmsg::Real> x_values_slice{x_values.data(),
                                                  x_values.size()};

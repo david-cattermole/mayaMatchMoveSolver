@@ -83,6 +83,7 @@ enum class AttrDataType {
 #define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_X (28)
 #define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_CURVATURE_Y (29)
 #define ATTR_SOLVER_TYPE_LENS_3DE_CLASSIC_QUARTIC_DISTORTION (30)
+
 #define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_DISTORTION (31)
 #define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_U (32)
 #define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_2_V (33)
@@ -91,6 +92,7 @@ enum class AttrDataType {
 #define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DEGREE_4_V (36)
 #define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_DIRECTION (37)
 #define ATTR_SOLVER_TYPE_LENS_3DE_RADIAL_DEG_4_BENDING (38)
+
 #define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_2_CX02 (39)
 #define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_2_CY02 (40)
 #define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_DEGREE_2_CX22 (41)
@@ -104,6 +106,28 @@ enum class AttrDataType {
 #define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_LENS_ROTATION (49)
 #define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_SQUEEZE_X (50)
 #define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_SQUEEZE_Y (51)
+
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_2_CX02 (52)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_2_CY02 (53)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_2_CX22 (54)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_2_CY22 (55)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_4_CX04 (56)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_4_CY04 (57)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_4_CX24 (58)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_4_CY24 (59)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_4_CX44 (60)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_4_CY44 (61)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CX06 (62)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CY06 (63)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CX26 (64)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CY26 (65)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CX46 (66)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CY46 (67)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CX66 (68)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CY66 (69)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_LENS_ROTATION (70)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_SQUEEZE_X (71)
+#define ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_SQUEEZE_Y (72)
 
 enum class AttrSolverType {
     kUninitialized = ATTR_SOLVER_TYPE_UNINITIALIZED,
@@ -184,6 +208,49 @@ enum class AttrSolverType {
         ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_SQUEEZE_X,
     kLens3deAnamorphicDeg4SqueezeY =
         ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_4_SQUEEZE_Y,
+
+    kLens3deAnamorphicDeg6Degree2Cx02 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_2_CX02,
+    kLens3deAnamorphicDeg6Degree2Cy02 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_2_CY02,
+    kLens3deAnamorphicDeg6Degree2Cx22 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_2_CX22,
+    kLens3deAnamorphicDeg6Degree2Cy22 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_2_CY22,
+    kLens3deAnamorphicDeg6Degree4Cx04 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_4_CX04,
+    kLens3deAnamorphicDeg6Degree4Cy04 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_4_CY04,
+    kLens3deAnamorphicDeg6Degree4Cx24 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_4_CX24,
+    kLens3deAnamorphicDeg6Degree4Cy24 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_4_CY24,
+    kLens3deAnamorphicDeg6Degree4Cx44 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_4_CX44,
+    kLens3deAnamorphicDeg6Degree4Cy44 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_4_CY44,
+    kLens3deAnamorphicDeg6Degree6Cx06 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CX06,
+    kLens3deAnamorphicDeg6Degree6Cy06 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CY06,
+    kLens3deAnamorphicDeg6Degree6Cx26 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CX26,
+    kLens3deAnamorphicDeg6Degree6Cy26 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CY26,
+    kLens3deAnamorphicDeg6Degree6Cx46 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CX46,
+    kLens3deAnamorphicDeg6Degree6Cy46 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CY46,
+    kLens3deAnamorphicDeg6Degree6Cx66 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CX66,
+    kLens3deAnamorphicDeg6Degree6Cy66 =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_DEGREE_6_CY66,
+    kLens3deAnamorphicDeg6LensRotation =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_LENS_ROTATION,
+    kLens3deAnamorphicDeg6SqueezeX =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_SQUEEZE_X,
+    kLens3deAnamorphicDeg6SqueezeY =
+        ATTR_SOLVER_TYPE_LENS_3DE_ANAMORPHIC_DEG_6_SQUEEZE_Y,
 };
 
 inline AttrSolverType computeSolverAttrType(ObjectType objectType,
@@ -275,7 +342,50 @@ inline AttrSolverType computeSolverAttrType(ObjectType objectType,
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4SqueezeX;
         } else if (attrName == "tdeAnamorphicStdDeg4_squeeze_y") {
             attr_type = AttrSolverType::kLens3deAnamorphicDeg4SqueezeY;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree2_cx02") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree2Cx02;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree2_cy02") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree2Cy02;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree2_cx22") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree2Cx22;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree2_cy22") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree2Cy22;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree4_cx04") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree4Cx04;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree4_cy04") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree4Cy04;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree4_cx24") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree4Cx24;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree4_cy24") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree4Cy24;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree4_cx44") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree4Cx44;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree4_cy44") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree4Cy44;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree6_cx06") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree6Cx06;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree6_cy06") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree6Cy06;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree6_cx26") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree6Cx26;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree6_cy26") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree6Cy26;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree6_cx46") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree6Cx46;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree6_cy46") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree6Cy46;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree6_cx66") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree6Cx66;
+        } else if (attrName == "tdeAnamorphicStdDeg6_degree6_cy66") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6Degree6Cy66;
+        } else if (attrName == "tdeAnamorphicStdDeg6_lensRotation") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6LensRotation;
+        } else if (attrName == "tdeAnamorphicStdDeg6_squeeze_x") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6SqueezeX;
+        } else if (attrName == "tdeAnamorphicStdDeg6_squeeze_y") {
+            attr_type = AttrSolverType::kLens3deAnamorphicDeg6SqueezeY;
         }
+
     } else {
         // A normal transform node.
         if (attrName == "translateX" || attrName == "tx") {

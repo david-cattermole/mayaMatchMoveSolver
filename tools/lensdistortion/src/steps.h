@@ -187,6 +187,33 @@ mmimage::Box2F32 calculate_lens_distortion_bbox_region(
             frame, camera_parameters, film_back_radius_cm, lens_parameters,
             bbox_duration, verbose);
 
+    } else if (lens_model_type ==
+               mmlens::LensModelType::k3deAnamorphicStdDeg6) {
+        const auto option =
+            lens_layers.layer_lens_parameters_3de_anamorphic_std_deg6(layer_num,
+                                                                      frame);
+        MMSOLVER_ASSERT(
+            option.exists,
+            "LensParameters are expected to exist for matching LensModelType.");
+
+        const auto lens_parameters = option.value;
+        box_region = calculate_lens_distortion_bbox_region_function(
+            frame, camera_parameters, film_back_radius_cm, lens_parameters,
+            bbox_duration, verbose);
+    } else if (lens_model_type ==
+               mmlens::LensModelType::k3deAnamorphicStdDeg6Rescaled) {
+        const auto option =
+            lens_layers.layer_lens_parameters_3de_anamorphic_std_deg6_rescaled(
+                layer_num, frame);
+        MMSOLVER_ASSERT(
+            option.exists,
+            "LensParameters are expected to exist for matching LensModelType.");
+
+        const auto lens_parameters = option.value;
+        box_region = calculate_lens_distortion_bbox_region_function(
+            frame, camera_parameters, film_back_radius_cm, lens_parameters,
+            bbox_duration, verbose);
+
     } else {
         MMSOLVER_PANIC(
             "calculate_lens_distortion_bbox_region: Unsupported "
@@ -316,6 +343,14 @@ void calculate_image(const mmlens::DistortionDirection distortion_direction,
                        mmlens::LensModelType::k3deAnamorphicStdDeg4Rescaled) {
                 MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
                                << static_cast<int>(lens_model_type));
+            } else if (lens_model_type ==
+                       mmlens::LensModelType::k3deAnamorphicStdDeg6) {
+                MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
+                               << static_cast<int>(lens_model_type));
+            } else if (lens_model_type ==
+                       mmlens::LensModelType::k3deAnamorphicStdDeg6Rescaled) {
+                MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
+                               << static_cast<int>(lens_model_type));                
             } else {
                 MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
                                << static_cast<int>(lens_model_type));

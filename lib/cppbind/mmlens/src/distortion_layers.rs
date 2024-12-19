@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2023 David Cattermole.
+// Copyright (C) 2023, 2024 David Cattermole.
 //
 // This file is part of mmSolver.
 //
@@ -20,6 +20,8 @@
 
 use crate::constants::PARAMETER_COUNT_3DE_ANAMORPHIC_STD_DEG4;
 use crate::constants::PARAMETER_COUNT_3DE_ANAMORPHIC_STD_DEG4_RESCALED;
+use crate::constants::PARAMETER_COUNT_3DE_ANAMORPHIC_STD_DEG6;
+use crate::constants::PARAMETER_COUNT_3DE_ANAMORPHIC_STD_DEG6_RESCALED;
 use crate::constants::PARAMETER_COUNT_3DE_CLASSIC;
 use crate::constants::PARAMETER_COUNT_3DE_RADIAL_STD_DEG4;
 use crate::constants::STATIC_FRAME_NUMBER;
@@ -27,6 +29,8 @@ use crate::cxxbridge::ffi::CameraParameters as BindCameraParameters;
 use crate::cxxbridge::ffi::LensModelType as BindLensModelType;
 use crate::cxxbridge::ffi::OptionParameters3deAnamorphicStdDeg4 as BindOptionParameters3deAnamorphicStdDeg4;
 use crate::cxxbridge::ffi::OptionParameters3deAnamorphicStdDeg4Rescaled as BindOptionParameters3deAnamorphicStdDeg4Rescaled;
+use crate::cxxbridge::ffi::OptionParameters3deAnamorphicStdDeg6 as BindOptionParameters3deAnamorphicStdDeg6;
+use crate::cxxbridge::ffi::OptionParameters3deAnamorphicStdDeg6Rescaled as BindOptionParameters3deAnamorphicStdDeg6Rescaled;
 use crate::cxxbridge::ffi::OptionParameters3deClassic as BindOptionParameters3deClassic;
 use crate::cxxbridge::ffi::OptionParameters3deRadialStdDeg4 as BindOptionParameters3deRadialStdDeg4;
 use crate::data::FrameNumber;
@@ -57,6 +61,12 @@ impl BindLensModelType {
             }
             BindLensModelType::TdeAnamorphicStdDeg4Rescaled => {
                 PARAMETER_COUNT_3DE_ANAMORPHIC_STD_DEG4_RESCALED
+            }
+            BindLensModelType::TdeAnamorphicStdDeg6 => {
+                PARAMETER_COUNT_3DE_ANAMORPHIC_STD_DEG6
+            }
+            BindLensModelType::TdeAnamorphicStdDeg6Rescaled => {
+                PARAMETER_COUNT_3DE_ANAMORPHIC_STD_DEG6_RESCALED
             }
             _ => 0,
         }
@@ -124,6 +134,53 @@ fn set_parameter_block_values(
                 output_values[11] = input_values[11];
                 output_values[12] = input_values[12];
                 output_values[13] = input_values[13];
+            }
+            BindLensModelType::TdeAnamorphicStdDeg6 => {
+                output_values[0] = input_values[0];
+                output_values[1] = input_values[1];
+                output_values[2] = input_values[2];
+                output_values[3] = input_values[3];
+                output_values[4] = input_values[4];
+                output_values[5] = input_values[5];
+                output_values[6] = input_values[6];
+                output_values[7] = input_values[7];
+                output_values[8] = input_values[8];
+                output_values[9] = input_values[9];
+                output_values[10] = input_values[10];
+                output_values[11] = input_values[11];
+                output_values[12] = input_values[12];
+                output_values[13] = input_values[13];
+                output_values[14] = input_values[14];
+                output_values[15] = input_values[15];
+                output_values[16] = input_values[16];
+                output_values[17] = input_values[17];
+                output_values[18] = input_values[18];
+                output_values[19] = input_values[19];
+                output_values[20] = input_values[20];
+            }
+            BindLensModelType::TdeAnamorphicStdDeg6Rescaled => {
+                output_values[0] = input_values[0];
+                output_values[1] = input_values[1];
+                output_values[2] = input_values[2];
+                output_values[3] = input_values[3];
+                output_values[4] = input_values[4];
+                output_values[5] = input_values[5];
+                output_values[6] = input_values[6];
+                output_values[7] = input_values[7];
+                output_values[8] = input_values[8];
+                output_values[9] = input_values[9];
+                output_values[10] = input_values[10];
+                output_values[11] = input_values[11];
+                output_values[12] = input_values[12];
+                output_values[13] = input_values[13];
+                output_values[14] = input_values[14];
+                output_values[15] = input_values[15];
+                output_values[16] = input_values[16];
+                output_values[17] = input_values[17];
+                output_values[18] = input_values[18];
+                output_values[19] = input_values[19];
+                output_values[20] = input_values[20];
+                output_values[21] = input_values[21];
             }
             _ => (),
         },
@@ -414,6 +471,114 @@ fn hash_lens_layer_params(
             degree4_cy24.hash(state);
             degree4_cx44.hash(state);
             degree4_cy44.hash(state);
+            lens_rotation.hash(state);
+            squeeze_x.hash(state);
+            squeeze_y.hash(state);
+            rescale.hash(state);
+        }
+        BindLensModelType::TdeAnamorphicStdDeg6 => {
+            let option_parameters = lens_layers
+                .layer_lens_parameters_3de_anamorphic_std_deg6(
+                    layer_num, frame,
+                );
+            assert!(option_parameters.exists == true);
+            let parameters = option_parameters.value;
+
+            let degree2_cx02 = HashableF64::new(parameters.degree2_cx02);
+            let degree2_cy02 = HashableF64::new(parameters.degree2_cy02);
+            let degree2_cx22 = HashableF64::new(parameters.degree2_cx22);
+            let degree2_cy22 = HashableF64::new(parameters.degree2_cy22);
+            let degree4_cx04 = HashableF64::new(parameters.degree4_cx04);
+            let degree4_cy04 = HashableF64::new(parameters.degree4_cy04);
+            let degree4_cx24 = HashableF64::new(parameters.degree4_cx24);
+            let degree4_cy24 = HashableF64::new(parameters.degree4_cy24);
+            let degree4_cx44 = HashableF64::new(parameters.degree4_cx44);
+            let degree4_cy44 = HashableF64::new(parameters.degree4_cy44);
+            let degree6_cx06 = HashableF64::new(parameters.degree6_cx06);
+            let degree6_cy06 = HashableF64::new(parameters.degree6_cy06);
+            let degree6_cx26 = HashableF64::new(parameters.degree6_cx26);
+            let degree6_cy26 = HashableF64::new(parameters.degree6_cy26);
+            let degree6_cx46 = HashableF64::new(parameters.degree6_cx46);
+            let degree6_cy46 = HashableF64::new(parameters.degree6_cy46);
+            let degree6_cx66 = HashableF64::new(parameters.degree6_cx66);
+            let degree6_cy66 = HashableF64::new(parameters.degree6_cy66);
+            let lens_rotation = HashableF64::new(parameters.lens_rotation);
+            let squeeze_x = HashableF64::new(parameters.squeeze_x);
+            let squeeze_y = HashableF64::new(parameters.squeeze_y);
+
+            lens_model_type.hash(state);
+            degree2_cx02.hash(state);
+            degree2_cy02.hash(state);
+            degree2_cx22.hash(state);
+            degree2_cy22.hash(state);
+            degree4_cx04.hash(state);
+            degree4_cy04.hash(state);
+            degree4_cx24.hash(state);
+            degree4_cy24.hash(state);
+            degree4_cx44.hash(state);
+            degree4_cy44.hash(state);
+            degree6_cx06.hash(state);
+            degree6_cy06.hash(state);
+            degree6_cx26.hash(state);
+            degree6_cy26.hash(state);
+            degree6_cx46.hash(state);
+            degree6_cy46.hash(state);
+            degree6_cx66.hash(state);
+            degree6_cy66.hash(state);
+            lens_rotation.hash(state);
+            squeeze_x.hash(state);
+            squeeze_y.hash(state);
+        }
+        BindLensModelType::TdeAnamorphicStdDeg6Rescaled => {
+            let option_parameters = lens_layers
+                .layer_lens_parameters_3de_anamorphic_std_deg6_rescaled(
+                    layer_num, frame,
+                );
+            assert!(option_parameters.exists == true);
+            let parameters = option_parameters.value;
+
+            let degree2_cx02 = HashableF64::new(parameters.degree2_cx02);
+            let degree2_cy02 = HashableF64::new(parameters.degree2_cy02);
+            let degree2_cx22 = HashableF64::new(parameters.degree2_cx22);
+            let degree2_cy22 = HashableF64::new(parameters.degree2_cy22);
+            let degree4_cx04 = HashableF64::new(parameters.degree4_cx04);
+            let degree4_cy04 = HashableF64::new(parameters.degree4_cy04);
+            let degree4_cx24 = HashableF64::new(parameters.degree4_cx24);
+            let degree4_cy24 = HashableF64::new(parameters.degree4_cy24);
+            let degree4_cx44 = HashableF64::new(parameters.degree4_cx44);
+            let degree4_cy44 = HashableF64::new(parameters.degree4_cy44);
+            let degree6_cx06 = HashableF64::new(parameters.degree6_cx06);
+            let degree6_cy06 = HashableF64::new(parameters.degree6_cy06);
+            let degree6_cx26 = HashableF64::new(parameters.degree6_cx26);
+            let degree6_cy26 = HashableF64::new(parameters.degree6_cy26);
+            let degree6_cx46 = HashableF64::new(parameters.degree6_cx46);
+            let degree6_cy46 = HashableF64::new(parameters.degree6_cy46);
+            let degree6_cx66 = HashableF64::new(parameters.degree6_cx66);
+            let degree6_cy66 = HashableF64::new(parameters.degree6_cy66);
+            let lens_rotation = HashableF64::new(parameters.lens_rotation);
+            let squeeze_x = HashableF64::new(parameters.squeeze_x);
+            let squeeze_y = HashableF64::new(parameters.squeeze_y);
+            let rescale = HashableF64::new(parameters.rescale);
+
+            lens_model_type.hash(state);
+            degree2_cx02.hash(state);
+            degree2_cy02.hash(state);
+            degree2_cx22.hash(state);
+            degree2_cy22.hash(state);
+            degree4_cx04.hash(state);
+            degree4_cy04.hash(state);
+            degree4_cx24.hash(state);
+            degree4_cy24.hash(state);
+            degree4_cx44.hash(state);
+            degree4_cy44.hash(state);
+            degree6_cx06.hash(state);
+            degree6_cy06.hash(state);
+            degree6_cx26.hash(state);
+            degree6_cy26.hash(state);
+            degree6_cx46.hash(state);
+            degree6_cy46.hash(state);
+            degree6_cx66.hash(state);
+            degree6_cy66.hash(state);
             lens_rotation.hash(state);
             squeeze_x.hash(state);
             squeeze_y.hash(state);
@@ -831,6 +996,146 @@ impl ShimDistortionLayers {
             )
         } else {
             BindOptionParameters3deAnamorphicStdDeg4Rescaled::new_as_none()
+        }
+    }
+
+    /// When a 'frame' outside the frame range is requested, the
+    /// returned values come from the first or last frame.
+    pub fn layer_lens_parameters_3de_anamorphic_std_deg6(
+        &self,
+        layer_num: LayerIndex,
+        frame: FrameNumber,
+    ) -> BindOptionParameters3deAnamorphicStdDeg6 {
+        let lens_model_type = BindLensModelType::TdeAnamorphicStdDeg6;
+        let layer_parameters = construct_lens_parameters(
+            layer_num,
+            lens_model_type,
+            frame,
+            self.layer_count,
+            &self.layer_frame_range,
+            &self.layer_lens_model_types,
+            &self.parameter_block,
+            &self.parameter_indices,
+        );
+
+        if let Some(parameters) = layer_parameters {
+            let degree2_cx02 = parameters[0];
+            let degree2_cy02 = parameters[1];
+            let degree2_cx22 = parameters[2];
+            let degree2_cy22 = parameters[3];
+            let degree4_cx04 = parameters[4];
+            let degree4_cy04 = parameters[5];
+            let degree4_cx24 = parameters[6];
+            let degree4_cy24 = parameters[7];
+            let degree4_cx44 = parameters[8];
+            let degree4_cy44 = parameters[9];
+            let degree6_cx06 = parameters[10];
+            let degree6_cy06 = parameters[11];
+            let degree6_cx26 = parameters[12];
+            let degree6_cy26 = parameters[13];
+            let degree6_cx46 = parameters[14];
+            let degree6_cy46 = parameters[15];
+            let degree6_cx66 = parameters[16];
+            let degree6_cy66 = parameters[17];
+            let lens_rotation = parameters[18];
+            let squeeze_x = parameters[19];
+            let squeeze_y = parameters[20];
+            BindOptionParameters3deAnamorphicStdDeg6::new_as_some(
+                degree2_cx02,
+                degree2_cy02,
+                degree2_cx22,
+                degree2_cy22,
+                degree4_cx04,
+                degree4_cy04,
+                degree4_cx24,
+                degree4_cy24,
+                degree4_cx44,
+                degree4_cy44,
+                degree6_cx06,
+                degree6_cy06,
+                degree6_cx26,
+                degree6_cy26,
+                degree6_cx46,
+                degree6_cy46,
+                degree6_cx66,
+                degree6_cy66,
+                lens_rotation,
+                squeeze_x,
+                squeeze_y,
+            )
+        } else {
+            BindOptionParameters3deAnamorphicStdDeg6::new_as_none()
+        }
+    }
+
+    /// When a 'frame' outside the frame range is requested, the
+    /// returned values come from the first or last frame.
+    pub fn layer_lens_parameters_3de_anamorphic_std_deg6_rescaled(
+        &self,
+        layer_num: LayerIndex,
+        frame: FrameNumber,
+    ) -> BindOptionParameters3deAnamorphicStdDeg6Rescaled {
+        let lens_model_type = BindLensModelType::TdeAnamorphicStdDeg6Rescaled;
+        let layer_parameters = construct_lens_parameters(
+            layer_num,
+            lens_model_type,
+            frame,
+            self.layer_count,
+            &self.layer_frame_range,
+            &self.layer_lens_model_types,
+            &self.parameter_block,
+            &self.parameter_indices,
+        );
+
+        if let Some(parameters) = layer_parameters {
+            let degree2_cx02 = parameters[0];
+            let degree2_cy02 = parameters[1];
+            let degree2_cx22 = parameters[2];
+            let degree2_cy22 = parameters[3];
+            let degree4_cx04 = parameters[4];
+            let degree4_cy04 = parameters[5];
+            let degree4_cx24 = parameters[6];
+            let degree4_cy24 = parameters[7];
+            let degree4_cx44 = parameters[8];
+            let degree4_cy44 = parameters[9];
+            let degree6_cx06 = parameters[10];
+            let degree6_cy06 = parameters[11];
+            let degree6_cx26 = parameters[12];
+            let degree6_cy26 = parameters[13];
+            let degree6_cx46 = parameters[14];
+            let degree6_cy46 = parameters[15];
+            let degree6_cx66 = parameters[16];
+            let degree6_cy66 = parameters[17];
+            let lens_rotation = parameters[18];
+            let squeeze_x = parameters[19];
+            let squeeze_y = parameters[20];
+            let rescale = parameters[21];
+            BindOptionParameters3deAnamorphicStdDeg6Rescaled::new_as_some(
+                degree2_cx02,
+                degree2_cy02,
+                degree2_cx22,
+                degree2_cy22,
+                degree4_cx04,
+                degree4_cy04,
+                degree4_cx24,
+                degree4_cy24,
+                degree4_cx44,
+                degree4_cy44,
+                degree6_cx06,
+                degree6_cy06,
+                degree6_cx26,
+                degree6_cy26,
+                degree6_cx46,
+                degree6_cy46,
+                degree6_cx66,
+                degree6_cy66,
+                lens_rotation,
+                squeeze_x,
+                squeeze_y,
+                rescale,
+            )
+        } else {
+            BindOptionParameters3deAnamorphicStdDeg6Rescaled::new_as_none()
         }
     }
 

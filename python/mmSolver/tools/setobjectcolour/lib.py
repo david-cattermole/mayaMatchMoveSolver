@@ -85,6 +85,7 @@ def reset_nodes_colour(tfm_nodes):
 def set_nodes_colour(tfm_nodes, rgba):
     assert len(rgba) >= 4
     for tfm_node in tfm_nodes:
+        # TODO: Should this be here? Perhaps we should only fail.
         is_ref = node_utils.node_is_referenced(tfm_node)
         if is_ref is True:
             continue

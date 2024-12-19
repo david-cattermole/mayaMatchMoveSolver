@@ -43,6 +43,16 @@ use crate::distortion_process::apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled
 use crate::distortion_process::apply_identity_to_f32_3de_anamorphic_std_deg4_rescaled_multithread;
 use crate::distortion_process::apply_identity_to_f64_3de_anamorphic_std_deg4_rescaled_multithread;
 
+use crate::distortion_process::apply_f64_to_f32_3de_anamorphic_std_deg6_multithread;
+use crate::distortion_process::apply_f64_to_f64_3de_anamorphic_std_deg6_multithread;
+use crate::distortion_process::apply_identity_to_f32_3de_anamorphic_std_deg6_multithread;
+use crate::distortion_process::apply_identity_to_f64_3de_anamorphic_std_deg6_multithread;
+
+use crate::distortion_process::apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled_multithread;
+use crate::distortion_process::apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled_multithread;
+use crate::distortion_process::apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled_multithread;
+use crate::distortion_process::apply_identity_to_f64_3de_anamorphic_std_deg6_rescaled_multithread;
+
 #[cxx::bridge(namespace = "mmlens")]
 pub mod ffi {
 
@@ -121,13 +131,13 @@ pub mod ffi {
         #[cxx_name = "k3deAnamorphicStdDeg4Rescaled"]
         TdeAnamorphicStdDeg4Rescaled = 5,
 
-        // // "3DE4 Anamorphic - Standard, Degree 6"
-        // #[cxx_name = "k3deAnamorphicStdDeg6"]
-        // TdeAnamorphicStdDeg6 = 6,
+        // "3DE4 Anamorphic - Standard, Degree 6"
+        #[cxx_name = "k3deAnamorphicStdDeg6"]
+        TdeAnamorphicStdDeg6 = 6,
 
-        // // "3DE4 Anamorphic - Rescaled, Degree 6"
-        // #[cxx_name = "k3deAnamorphicStdDeg6Rescaled"]
-        // TdeAnamorphicStdDeg6Rescaled = 7,
+        // "3DE4 Anamorphic - Rescaled, Degree 6"
+        #[cxx_name = "k3deAnamorphicStdDeg6Rescaled"]
+        TdeAnamorphicStdDeg6Rescaled = 7,
 
         // // "3DE4 Anamorphic, Degree 6"
         // #[cxx_name = "k3deAnamorphicDeg6"]
@@ -177,16 +187,13 @@ pub mod ffi {
     pub(crate) struct Parameters3deAnamorphicStdDeg4 {
         degree2_cx02: f64, // "Cx02 - Degree 2"
         degree2_cy02: f64, // "Cy02 - Degree 2"
-
         degree2_cx22: f64, // "Cx22 - Degree 2"
         degree2_cy22: f64, // "Cy22 - Degree 2"
 
         degree4_cx04: f64, // "Cx04 - Degree 4"
         degree4_cy04: f64, // "Cy04 - Degree 4"
-
         degree4_cx24: f64, // "Cx24 - Degree 4"
         degree4_cy24: f64, // "Cy24 - Degree 4"
-
         degree4_cx44: f64, // "Cx44 - Degree 4"
         degree4_cy44: f64, // "Cy44 - Degree 4"
 
@@ -199,18 +206,72 @@ pub mod ffi {
     pub(crate) struct Parameters3deAnamorphicStdDeg4Rescaled {
         degree2_cx02: f64, // "Cx02 - Degree 2"
         degree2_cy02: f64, // "Cy02 - Degree 2"
-
         degree2_cx22: f64, // "Cx22 - Degree 2"
         degree2_cy22: f64, // "Cy22 - Degree 2"
 
         degree4_cx04: f64, // "Cx04 - Degree 4"
         degree4_cy04: f64, // "Cy04 - Degree 4"
-
         degree4_cx24: f64, // "Cx24 - Degree 4"
         degree4_cy24: f64, // "Cy24 - Degree 4"
-
         degree4_cx44: f64, // "Cx44 - Degree 4"
         degree4_cy44: f64, // "Cy44 - Degree 4"
+
+        lens_rotation: f64, // "Lens Rotation"
+        squeeze_x: f64,     // "Squeeze-X"
+        squeeze_y: f64,     // "Squeeze-Y"
+        rescale: f64,       // "Rescale"
+    }
+
+    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    pub(crate) struct Parameters3deAnamorphicStdDeg6 {
+        degree2_cx02: f64, // "Cx02 - Degree 2"
+        degree2_cy02: f64, // "Cy02 - Degree 2"
+        degree2_cx22: f64, // "Cx22 - Degree 2"
+        degree2_cy22: f64, // "Cy22 - Degree 2"
+
+        degree4_cx04: f64, // "Cx04 - Degree 4"
+        degree4_cy04: f64, // "Cy04 - Degree 4"
+        degree4_cx24: f64, // "Cx24 - Degree 4"
+        degree4_cy24: f64, // "Cy24 - Degree 4"
+        degree4_cx44: f64, // "Cx44 - Degree 4"
+        degree4_cy44: f64, // "Cy44 - Degree 4"
+
+        degree6_cx06: f64, // "Cx06 - Degree 6"
+        degree6_cy06: f64, // "Cy06 - Degree 6"
+        degree6_cx26: f64, // "Cx26 - Degree 6"
+        degree6_cy26: f64, // "Cy26 - Degree 6"
+        degree6_cx46: f64, // "Cx46 - Degree 6"
+        degree6_cy46: f64, // "Cy46 - Degree 6"
+        degree6_cx66: f64, // "Cx66 - Degree 6"
+        degree6_cy66: f64, // "Cy66 - Degree 6"
+
+        lens_rotation: f64, // "Lens Rotation"
+        squeeze_x: f64,     // "Squeeze-X"
+        squeeze_y: f64,     // "Squeeze-Y"
+    }
+
+    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    pub(crate) struct Parameters3deAnamorphicStdDeg6Rescaled {
+        degree2_cx02: f64, // "Cx02 - Degree 2"
+        degree2_cy02: f64, // "Cy02 - Degree 2"
+        degree2_cx22: f64, // "Cx22 - Degree 2"
+        degree2_cy22: f64, // "Cy22 - Degree 2"
+
+        degree4_cx04: f64, // "Cx04 - Degree 4"
+        degree4_cy04: f64, // "Cy04 - Degree 4"
+        degree4_cx24: f64, // "Cx24 - Degree 4"
+        degree4_cy24: f64, // "Cy24 - Degree 4"
+        degree4_cx44: f64, // "Cx44 - Degree 4"
+        degree4_cy44: f64, // "Cy44 - Degree 4"
+
+        degree6_cx06: f64, // "Cx06 - Degree 6"
+        degree6_cy06: f64, // "Cy06 - Degree 6"
+        degree6_cx26: f64, // "Cx26 - Degree 6"
+        degree6_cy26: f64, // "Cy26 - Degree 6"
+        degree6_cx46: f64, // "Cx46 - Degree 6"
+        degree6_cy46: f64, // "Cy46 - Degree 6"
+        degree6_cx66: f64, // "Cx66 - Degree 6"
+        degree6_cy66: f64, // "Cy66 - Degree 6"
 
         lens_rotation: f64, // "Lens Rotation"
         squeeze_x: f64,     // "Squeeze-X"
@@ -241,6 +302,19 @@ pub mod ffi {
         exists: bool,
         value: Parameters3deAnamorphicStdDeg4Rescaled,
     }
+
+    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    struct OptionParameters3deAnamorphicStdDeg6 {
+        exists: bool,
+        value: Parameters3deAnamorphicStdDeg6,
+    }
+
+    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    struct OptionParameters3deAnamorphicStdDeg6Rescaled {
+        exists: bool,
+        value: Parameters3deAnamorphicStdDeg6Rescaled,
+    }
+
     extern "Rust" {
         type ShimDistortionLayers;
 
@@ -275,6 +349,17 @@ pub mod ffi {
             layer_num: u8,
             frame: u16,
         ) -> OptionParameters3deAnamorphicStdDeg4Rescaled;
+        fn layer_lens_parameters_3de_anamorphic_std_deg6(
+            &self,
+            layer_num: u8,
+            frame: u16,
+        ) -> OptionParameters3deAnamorphicStdDeg6;
+        fn layer_lens_parameters_3de_anamorphic_std_deg6_rescaled(
+            &self,
+            layer_num: u8,
+            frame: u16,
+        ) -> OptionParameters3deAnamorphicStdDeg6Rescaled;
+
         fn as_string(&self) -> String;
 
         fn shim_create_distortion_layers_box() -> Box<ShimDistortionLayers>;
@@ -561,6 +646,144 @@ pub mod ffi {
             lens_parameters: Parameters3deAnamorphicStdDeg4Rescaled,
         );
 
+        //////////////////////////////////////////////////////////////////////
+        // 3DE Anamorphic degree 6 Rotate Squeeze XY
+
+        #[rust_name = "apply_identity_to_f64_3de_anamorphic_std_deg6"]
+        unsafe fn apply_identity_to_f64(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            start_image_width: usize,
+            start_image_height: usize,
+            end_image_width: usize,
+            end_image_height: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6,
+        );
+
+        #[rust_name = "apply_identity_to_f32_3de_anamorphic_std_deg6"]
+        unsafe fn apply_identity_to_f32(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            start_image_width: usize,
+            start_image_height: usize,
+            end_image_width: usize,
+            end_image_height: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6,
+        );
+
+        #[rust_name = "apply_f64_to_f64_3de_anamorphic_std_deg6"]
+        unsafe fn apply_f64_to_f64(
+            direction: DistortionDirection,
+            data_chunk_start: usize,
+            data_chunk_end: usize,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6,
+        );
+
+        #[rust_name = "apply_f64_to_f32_3de_anamorphic_std_deg6"]
+        unsafe fn apply_f64_to_f32(
+            direction: DistortionDirection,
+            data_chunk_start: usize,
+            data_chunk_end: usize,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6,
+        );
+
+        //////////////////////////////////////////////////////////////////////
+        // 3DE Anamorphic degree 6 Rotate Squeeze XY Rescaled
+
+        #[rust_name = "apply_identity_to_f64_3de_anamorphic_std_deg6_rescaled"]
+        unsafe fn apply_identity_to_f64(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            start_image_width: usize,
+            start_image_height: usize,
+            end_image_width: usize,
+            end_image_height: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6Rescaled,
+        );
+
+        #[rust_name = "apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled"]
+        unsafe fn apply_identity_to_f32(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            start_image_width: usize,
+            start_image_height: usize,
+            end_image_width: usize,
+            end_image_height: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6Rescaled,
+        );
+
+        #[rust_name = "apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled"]
+        unsafe fn apply_f64_to_f64(
+            direction: DistortionDirection,
+            data_chunk_start: usize,
+            data_chunk_end: usize,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6Rescaled,
+        );
+
+        #[rust_name = "apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled"]
+        unsafe fn apply_f64_to_f32(
+            direction: DistortionDirection,
+            data_chunk_start: usize,
+            data_chunk_end: usize,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6Rescaled,
+        );
+
     }
 
     extern "Rust" {
@@ -792,6 +1015,120 @@ pub mod ffi {
             camera_parameters: CameraParameters,
             film_back_radius_cm: f64,
             lens_parameters: Parameters3deAnamorphicStdDeg4Rescaled,
+        );
+
+        //////////////////////////////////////////////////////////////////////
+        // 3DE Anamorphic degree 6 Rotate Squeeze XY
+
+        #[cxx_name = "apply_identity_to_f64_multithread"]
+        unsafe fn apply_identity_to_f64_3de_anamorphic_std_deg6_multithread(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6,
+        );
+
+        #[cxx_name = "apply_identity_to_f32_multithread"]
+        unsafe fn apply_identity_to_f32_3de_anamorphic_std_deg6_multithread(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6,
+        );
+
+        #[cxx_name = "apply_f64_to_f64_multithread"]
+        unsafe fn apply_f64_to_f64_3de_anamorphic_std_deg6_multithread(
+            direction: DistortionDirection,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6,
+        );
+
+        #[cxx_name = "apply_f64_to_f32_multithread"]
+        unsafe fn apply_f64_to_f32_3de_anamorphic_std_deg6_multithread(
+            direction: DistortionDirection,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6,
+        );
+
+        //////////////////////////////////////////////////////////////////////
+        // 3DE Anamorphic degree 6 Rotate Squeeze XY Rescaled
+
+        #[cxx_name = "apply_identity_to_f64_multithread"]
+        unsafe fn apply_identity_to_f64_3de_anamorphic_std_deg6_rescaled_multithread(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6Rescaled,
+        );
+
+        #[cxx_name = "apply_identity_to_f32_multithread"]
+        unsafe fn apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled_multithread(
+            direction: DistortionDirection,
+            image_width: usize,
+            image_height: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6Rescaled,
+        );
+
+        #[cxx_name = "apply_f64_to_f64_multithread"]
+        unsafe fn apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled_multithread(
+            direction: DistortionDirection,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f64,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6Rescaled,
+        );
+
+        #[cxx_name = "apply_f64_to_f32_multithread"]
+        unsafe fn apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled_multithread(
+            direction: DistortionDirection,
+            in_data_ptr: *const f64,
+            in_data_size: usize,
+            in_data_stride: usize,
+            out_data_ptr: *mut f32,
+            out_data_size: usize,
+            out_data_stride: usize,
+            camera_parameters: CameraParameters,
+            film_back_radius_cm: f64,
+            lens_parameters: Parameters3deAnamorphicStdDeg6Rescaled,
         );
 
     }

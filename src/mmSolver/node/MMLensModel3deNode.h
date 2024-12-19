@@ -87,6 +87,30 @@ public:
     static MObject a_tdeAnamorphicStdDeg4_squeeze_y;
     static MObject a_tdeAnamorphicStdDeg4_rescale;
 
+    static MObject a_tdeAnamorphicStdDeg6_heading;
+    static MObject a_tdeAnamorphicStdDeg6_degree2_cx02;
+    static MObject a_tdeAnamorphicStdDeg6_degree2_cy02;
+    static MObject a_tdeAnamorphicStdDeg6_degree2_cx22;
+    static MObject a_tdeAnamorphicStdDeg6_degree2_cy22;
+    static MObject a_tdeAnamorphicStdDeg6_degree4_cx04;
+    static MObject a_tdeAnamorphicStdDeg6_degree4_cy04;
+    static MObject a_tdeAnamorphicStdDeg6_degree4_cx24;
+    static MObject a_tdeAnamorphicStdDeg6_degree4_cy24;
+    static MObject a_tdeAnamorphicStdDeg6_degree4_cx44;
+    static MObject a_tdeAnamorphicStdDeg6_degree4_cy44;
+    static MObject a_tdeAnamorphicStdDeg6_degree6_cx06;
+    static MObject a_tdeAnamorphicStdDeg6_degree6_cy06;
+    static MObject a_tdeAnamorphicStdDeg6_degree6_cx26;
+    static MObject a_tdeAnamorphicStdDeg6_degree6_cy26;
+    static MObject a_tdeAnamorphicStdDeg6_degree6_cx46;
+    static MObject a_tdeAnamorphicStdDeg6_degree6_cy46;
+    static MObject a_tdeAnamorphicStdDeg6_degree6_cx66;
+    static MObject a_tdeAnamorphicStdDeg6_degree6_cy66;
+    static MObject a_tdeAnamorphicStdDeg6_lensRotation;
+    static MObject a_tdeAnamorphicStdDeg6_squeeze_x;
+    static MObject a_tdeAnamorphicStdDeg6_squeeze_y;
+    static MObject a_tdeAnamorphicStdDeg6_rescale;
+
     // Output Attributes
     static MObject a_outLens;
 };

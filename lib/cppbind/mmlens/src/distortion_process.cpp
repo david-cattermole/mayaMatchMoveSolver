@@ -26,9 +26,108 @@
 
 namespace mmlens {
 
-// Templates
+// Generic creation of lens parameters.
 template <typename DistortionType, typename ParameterType>
 inline DistortionType create_distortion(const ParameterType& lens_parameters);
+
+// Applying lens distortion to identity, abstracting the lens
+// distortion model away.
+template <typename OutType, typename DistortionType, typename ParameterType>
+void apply_identity_impl(const DistortionDirection direction,
+
+                         // Image size
+                         const size_t image_width, const size_t image_height,
+
+                         // Image sub-window
+                         const size_t start_image_width,
+                         const size_t start_image_height,
+                         const size_t end_image_width,
+                         const size_t end_image_height,
+
+                         // Output buffer
+                         OutType* out_data_ptr, const size_t out_data_size,
+                         const size_t out_data_stride,
+
+                         // Parameters
+                         const CameraParameters camera_parameters,
+                         const double film_back_radius_cm,
+                         const ParameterType& lens_parameters) {
+    auto distortion = create_distortion<DistortionType>(lens_parameters);
+    distortion.initialize_parameters(camera_parameters);
+
+    if (direction == DistortionDirection::kUndistort) {
+        apply_lens_distortion_from_identity_with_stride<
+            DistortionDirection::kUndistort, OutType, DistortionType>(
+            image_width, image_height, start_image_width, start_image_height,
+            end_image_width, end_image_height, out_data_ptr, out_data_size,
+            out_data_stride, camera_parameters, film_back_radius_cm,
+            distortion);
+    } else if (direction == DistortionDirection::kRedistort) {
+        apply_lens_distortion_from_identity_with_stride<
+            DistortionDirection::kRedistort, OutType, DistortionType>(
+            image_width, image_height, start_image_width, start_image_height,
+            end_image_width, end_image_height, out_data_ptr, out_data_size,
+            out_data_stride, camera_parameters, film_back_radius_cm,
+            distortion);
+    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
+        apply_lens_distortion_from_identity_with_stride<
+            DistortionDirection::kUndistortAndRedistort, OutType,
+            DistortionType>(image_width, image_height, start_image_width,
+                            start_image_height, end_image_width,
+                            end_image_height, out_data_ptr, out_data_size,
+                            out_data_stride, camera_parameters,
+                            film_back_radius_cm, distortion);
+    }
+}
+
+// Applying lens distortion to an existing buffer, abstracting the
+// lens distortion model away.
+template <typename InType, typename OutType, typename DistortionType,
+          typename ParameterType>
+void apply_buffer_impl(const DistortionDirection direction,
+
+                       // Data chunk sub-window
+                       const size_t data_chunk_start,
+                       const size_t data_chunk_end,
+
+                       // Input data buffer
+                       const InType* in_data_ptr, const size_t in_data_size,
+                       const size_t in_data_stride,
+
+                       // Output data buffer
+                       OutType* out_data_ptr, const size_t out_data_size,
+                       const size_t out_data_stride,
+
+                       // Camera and lens parameters
+                       const CameraParameters camera_parameters,
+                       const double film_back_radius_cm,
+                       const ParameterType& lens_parameters) {
+    auto distortion = create_distortion<DistortionType>(lens_parameters);
+    distortion.initialize_parameters(camera_parameters);
+
+    if (direction == DistortionDirection::kUndistort) {
+        apply_lens_distortion_from_buffer_with_stride<
+            DistortionDirection::kUndistort, InType, OutType, DistortionType>(
+            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
+            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
+            camera_parameters, film_back_radius_cm, distortion);
+
+    } else if (direction == DistortionDirection::kRedistort) {
+        apply_lens_distortion_from_buffer_with_stride<
+            DistortionDirection::kRedistort, InType, OutType, DistortionType>(
+            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
+            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
+            camera_parameters, film_back_radius_cm, distortion);
+
+    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
+        apply_lens_distortion_from_buffer_with_stride<
+            DistortionDirection::kUndistortAndRedistort, InType, OutType,
+            DistortionType>(data_chunk_start, data_chunk_end, in_data_ptr,
+                            in_data_size, in_data_stride, out_data_ptr,
+                            out_data_size, out_data_stride, camera_parameters,
+                            film_back_radius_cm, distortion);
+    }
+}
 
 //////////////////////////////////////////////////////////////////////
 // 3DE Classic
@@ -44,12 +143,6 @@ create_distortion<Distortion3deClassic, Parameters3deClassic>(
     distortion.set_parameter(3, lens_parameters.curvature_y);
     distortion.set_parameter(4, lens_parameters.quartic_distortion);
     return distortion;
-}
-
-inline Distortion3deClassic create_distortion_3de_classic(
-    Parameters3deClassic lens_parameters) {
-    return create_distortion<Distortion3deClassic, Parameters3deClassic>(
-        lens_parameters);
 }
 
 void apply_identity_to_f64(const DistortionDirection direction,
@@ -71,36 +164,11 @@ void apply_identity_to_f64(const DistortionDirection direction,
                            const CameraParameters camera_parameters,
                            const double film_back_radius_cm,
                            Parameters3deClassic lens_parameters) {
-    auto distortion = create_distortion_3de_classic(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistort, double, Distortion3deClassic>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kRedistort, double, Distortion3deClassic>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double,
-            Distortion3deClassic>(image_width, image_height, start_image_width,
-                                  start_image_height, end_image_width,
-                                  end_image_height, out_data_ptr, out_data_size,
-                                  out_data_stride, camera_parameters,
-                                  film_back_radius_cm, distortion);
-    }
-
-    return;
+    apply_identity_impl<double, Distortion3deClassic, Parameters3deClassic>(
+        direction, image_width, image_height, start_image_width,
+        start_image_height, end_image_width, end_image_height, out_data_ptr,
+        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        lens_parameters);
 }
 
 void apply_identity_to_f32(const DistortionDirection direction,
@@ -122,36 +190,11 @@ void apply_identity_to_f32(const DistortionDirection direction,
                            const CameraParameters camera_parameters,
                            const double film_back_radius_cm,
                            Parameters3deClassic lens_parameters) {
-    auto distortion = create_distortion_3de_classic(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistort, float, Distortion3deClassic>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kRedistort, float, Distortion3deClassic>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistortAndRedistort, float,
-            Distortion3deClassic>(image_width, image_height, start_image_width,
-                                  start_image_height, end_image_width,
-                                  end_image_height, out_data_ptr, out_data_size,
-                                  out_data_stride, camera_parameters,
-                                  film_back_radius_cm, distortion);
-    }
-
-    return;
+    apply_identity_impl<float, Distortion3deClassic, Parameters3deClassic>(
+        direction, image_width, image_height, start_image_width,
+        start_image_height, end_image_width, end_image_height, out_data_ptr,
+        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        lens_parameters);
 }
 
 void apply_f64_to_f64(const DistortionDirection direction,
@@ -172,35 +215,11 @@ void apply_f64_to_f64(const DistortionDirection direction,
                       const CameraParameters camera_parameters,
                       const double film_back_radius_cm,
                       Parameters3deClassic lens_parameters) {
-    auto distortion = create_distortion_3de_classic(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistort, double, double,
-            Distortion3deClassic>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kRedistort, double, double,
-            Distortion3deClassic>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double, double,
-            Distortion3deClassic>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-    }
-
-    return;
+    apply_buffer_impl<double, double, Distortion3deClassic,
+                      Parameters3deClassic>(
+        direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
+        in_data_stride, out_data_ptr, out_data_size, out_data_stride,
+        camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 void apply_f64_to_f32(const DistortionDirection direction,
@@ -221,35 +240,11 @@ void apply_f64_to_f32(const DistortionDirection direction,
                       const CameraParameters camera_parameters,
                       const double film_back_radius_cm,
                       Parameters3deClassic lens_parameters) {
-    auto distortion = create_distortion_3de_classic(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistort, double, float,
-            Distortion3deClassic>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kRedistort, double, float,
-            Distortion3deClassic>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double, float,
-            Distortion3deClassic>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-    }
-
-    return;
+    apply_buffer_impl<double, float, Distortion3deClassic,
+                      Parameters3deClassic>(
+        direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
+        in_data_stride, out_data_ptr, out_data_size, out_data_stride,
+        camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -271,12 +266,6 @@ create_distortion<Distortion3deRadialStdDeg4, Parameters3deRadialStdDeg4>(
     return distortion;
 }
 
-inline Distortion3deRadialStdDeg4 create_distortion_3de_radial_std_deg4(
-    Parameters3deRadialStdDeg4 lens_parameters) {
-    return create_distortion<Distortion3deRadialStdDeg4,
-                             Parameters3deRadialStdDeg4>(lens_parameters);
-}
-
 void apply_identity_to_f64(const DistortionDirection direction,
 
                            // Image size
@@ -296,38 +285,12 @@ void apply_identity_to_f64(const DistortionDirection direction,
                            const CameraParameters camera_parameters,
                            const double film_back_radius_cm,
                            Parameters3deRadialStdDeg4 lens_parameters) {
-    auto distortion = create_distortion_3de_radial_std_deg4(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistort, double,
-            Distortion3deRadialStdDeg4>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kRedistort, double,
-            Distortion3deRadialStdDeg4>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double,
-            Distortion3deRadialStdDeg4>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-    }
-
-    return;
+    apply_identity_impl<double, Distortion3deRadialStdDeg4,
+                        Parameters3deRadialStdDeg4>(
+        direction, image_width, image_height, start_image_width,
+        start_image_height, end_image_width, end_image_height, out_data_ptr,
+        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        lens_parameters);
 }
 
 void apply_identity_to_f32(const DistortionDirection direction,
@@ -349,36 +312,12 @@ void apply_identity_to_f32(const DistortionDirection direction,
                            const CameraParameters camera_parameters,
                            const double film_back_radius_cm,
                            Parameters3deRadialStdDeg4 lens_parameters) {
-    auto distortion = create_distortion_3de_radial_std_deg4(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistort, float, Distortion3deRadialStdDeg4>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kRedistort, float, Distortion3deRadialStdDeg4>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistortAndRedistort, float,
-            Distortion3deRadialStdDeg4>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-    }
-
-    return;
+    apply_identity_impl<float, Distortion3deRadialStdDeg4,
+                        Parameters3deRadialStdDeg4>(
+        direction, image_width, image_height, start_image_width,
+        start_image_height, end_image_width, end_image_height, out_data_ptr,
+        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        lens_parameters);
 }
 
 void apply_f64_to_f64(const DistortionDirection direction,
@@ -399,35 +338,11 @@ void apply_f64_to_f64(const DistortionDirection direction,
                       const CameraParameters camera_parameters,
                       const double film_back_radius_cm,
                       Parameters3deRadialStdDeg4 lens_parameters) {
-    auto distortion = create_distortion_3de_radial_std_deg4(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistort, double, double,
-            Distortion3deRadialStdDeg4>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kRedistort, double, double,
-            Distortion3deRadialStdDeg4>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double, double,
-            Distortion3deRadialStdDeg4>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-    }
-
-    return;
+    apply_buffer_impl<double, double, Distortion3deRadialStdDeg4,
+                      Parameters3deRadialStdDeg4>(
+        direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
+        in_data_stride, out_data_ptr, out_data_size, out_data_stride,
+        camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 void apply_f64_to_f32(const DistortionDirection direction,
@@ -448,35 +363,11 @@ void apply_f64_to_f32(const DistortionDirection direction,
                       const CameraParameters camera_parameters,
                       const double film_back_radius_cm,
                       Parameters3deRadialStdDeg4 lens_parameters) {
-    auto distortion = create_distortion_3de_radial_std_deg4(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistort, double, float,
-            Distortion3deRadialStdDeg4>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kRedistort, double, float,
-            Distortion3deRadialStdDeg4>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double, float,
-            Distortion3deRadialStdDeg4>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-    }
-
-    return;
+    apply_buffer_impl<double, float, Distortion3deRadialStdDeg4,
+                      Parameters3deRadialStdDeg4>(
+        direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
+        in_data_stride, out_data_ptr, out_data_size, out_data_stride,
+        camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -503,12 +394,6 @@ inline Distortion3deAnamorphicStdDeg4 create_distortion<
     return distortion;
 }
 
-inline Distortion3deAnamorphicStdDeg4 create_distortion_3de_anamorphic_std_deg4(
-    Parameters3deAnamorphicStdDeg4 lens_parameters) {
-    return create_distortion<Distortion3deAnamorphicStdDeg4,
-                             Parameters3deAnamorphicStdDeg4>(lens_parameters);
-}
-
 void apply_identity_to_f64(const DistortionDirection direction,
 
                            // Image size
@@ -528,39 +413,12 @@ void apply_identity_to_f64(const DistortionDirection direction,
                            const CameraParameters camera_parameters,
                            const double film_back_radius_cm,
                            Parameters3deAnamorphicStdDeg4 lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg4(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistort, double,
-            Distortion3deAnamorphicStdDeg4>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kRedistort, double,
-            Distortion3deAnamorphicStdDeg4>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double,
-            Distortion3deAnamorphicStdDeg4>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-    }
-
-    return;
+    apply_identity_impl<double, Distortion3deAnamorphicStdDeg4,
+                        Parameters3deAnamorphicStdDeg4>(
+        direction, image_width, image_height, start_image_width,
+        start_image_height, end_image_width, end_image_height, out_data_ptr,
+        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        lens_parameters);
 }
 
 void apply_identity_to_f32(const DistortionDirection direction,
@@ -582,39 +440,12 @@ void apply_identity_to_f32(const DistortionDirection direction,
                            const CameraParameters camera_parameters,
                            const double film_back_radius_cm,
                            Parameters3deAnamorphicStdDeg4 lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg4(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistort, float,
-            Distortion3deAnamorphicStdDeg4>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kRedistort, float,
-            Distortion3deAnamorphicStdDeg4>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistortAndRedistort, float,
-            Distortion3deAnamorphicStdDeg4>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-    }
-
-    return;
+    apply_identity_impl<float, Distortion3deAnamorphicStdDeg4,
+                        Parameters3deAnamorphicStdDeg4>(
+        direction, image_width, image_height, start_image_width,
+        start_image_height, end_image_width, end_image_height, out_data_ptr,
+        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        lens_parameters);
 }
 
 void apply_f64_to_f64(const DistortionDirection direction,
@@ -635,36 +466,11 @@ void apply_f64_to_f64(const DistortionDirection direction,
                       const CameraParameters camera_parameters,
                       const double film_back_radius_cm,
                       Parameters3deAnamorphicStdDeg4 lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg4(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistort, double, double,
-            Distortion3deAnamorphicStdDeg4>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kRedistort, double, double,
-            Distortion3deAnamorphicStdDeg4>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double, double,
-            Distortion3deAnamorphicStdDeg4>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-    }
-
-    return;
+    apply_buffer_impl<double, double, Distortion3deAnamorphicStdDeg4,
+                      Parameters3deAnamorphicStdDeg4>(
+        direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
+        in_data_stride, out_data_ptr, out_data_size, out_data_stride,
+        camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 void apply_f64_to_f32(const DistortionDirection direction,
@@ -685,36 +491,11 @@ void apply_f64_to_f32(const DistortionDirection direction,
                       const CameraParameters camera_parameters,
                       const double film_back_radius_cm,
                       Parameters3deAnamorphicStdDeg4 lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg4(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistort, double, float,
-            Distortion3deAnamorphicStdDeg4>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kRedistort, double, float,
-            Distortion3deAnamorphicStdDeg4>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double, float,
-            Distortion3deAnamorphicStdDeg4>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-    }
-
-    return;
+    apply_buffer_impl<double, float, Distortion3deAnamorphicStdDeg4,
+                      Parameters3deAnamorphicStdDeg4>(
+        direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
+        in_data_stride, out_data_ptr, out_data_size, out_data_stride,
+        camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -743,14 +524,6 @@ create_distortion<Distortion3deAnamorphicStdDeg4Rescaled,
     return distortion;
 }
 
-inline Distortion3deAnamorphicStdDeg4Rescaled
-create_distortion_3de_anamorphic_std_deg4_rescaled(
-    Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) {
-    return create_distortion<Distortion3deAnamorphicStdDeg4Rescaled,
-                             Parameters3deAnamorphicStdDeg4Rescaled>(
-        lens_parameters);
-}
-
 void apply_identity_to_f64(
     const DistortionDirection direction,
 
@@ -768,39 +541,12 @@ void apply_identity_to_f64(
     // Camera and lens parameters
     const CameraParameters camera_parameters, const double film_back_radius_cm,
     Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg4_rescaled(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistort, double,
-            Distortion3deAnamorphicStdDeg4Rescaled>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kRedistort, double,
-            Distortion3deAnamorphicStdDeg4Rescaled>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double,
-            Distortion3deAnamorphicStdDeg4Rescaled>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-    }
-
-    return;
+    apply_identity_impl<double, Distortion3deAnamorphicStdDeg4Rescaled,
+                        Parameters3deAnamorphicStdDeg4Rescaled>(
+        direction, image_width, image_height, start_image_width,
+        start_image_height, end_image_width, end_image_height, out_data_ptr,
+        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        lens_parameters);
 }
 
 void apply_identity_to_f32(
@@ -820,39 +566,12 @@ void apply_identity_to_f32(
     // Camera and lens parameters
     const CameraParameters camera_parameters, const double film_back_radius_cm,
     Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg4_rescaled(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistort, float,
-            Distortion3deAnamorphicStdDeg4Rescaled>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kRedistort, float,
-            Distortion3deAnamorphicStdDeg4Rescaled>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistortAndRedistort, float,
-            Distortion3deAnamorphicStdDeg4Rescaled>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-    }
-
-    return;
+    apply_identity_impl<float, Distortion3deAnamorphicStdDeg4Rescaled,
+                        Parameters3deAnamorphicStdDeg4Rescaled>(
+        direction, image_width, image_height, start_image_width,
+        start_image_height, end_image_width, end_image_height, out_data_ptr,
+        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        lens_parameters);
 }
 
 void apply_f64_to_f64(const DistortionDirection direction,
@@ -873,36 +592,11 @@ void apply_f64_to_f64(const DistortionDirection direction,
                       const CameraParameters camera_parameters,
                       const double film_back_radius_cm,
                       Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg4_rescaled(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistort, double, double,
-            Distortion3deAnamorphicStdDeg4Rescaled>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kRedistort, double, double,
-            Distortion3deAnamorphicStdDeg4Rescaled>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double, double,
-            Distortion3deAnamorphicStdDeg4Rescaled>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-    }
-
-    return;
+    apply_buffer_impl<double, double, Distortion3deAnamorphicStdDeg4Rescaled,
+                      Parameters3deAnamorphicStdDeg4Rescaled>(
+        direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
+        in_data_stride, out_data_ptr, out_data_size, out_data_stride,
+        camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 void apply_f64_to_f32(const DistortionDirection direction,
@@ -923,36 +617,11 @@ void apply_f64_to_f32(const DistortionDirection direction,
                       const CameraParameters camera_parameters,
                       const double film_back_radius_cm,
                       Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg4_rescaled(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistort, double, float,
-            Distortion3deAnamorphicStdDeg4Rescaled>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kRedistort, double, float,
-            Distortion3deAnamorphicStdDeg4Rescaled>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double, float,
-            Distortion3deAnamorphicStdDeg4Rescaled>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-    }
-
-    return;
+    apply_buffer_impl<double, float, Distortion3deAnamorphicStdDeg4Rescaled,
+                      Parameters3deAnamorphicStdDeg4Rescaled>(
+        direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
+        in_data_stride, out_data_ptr, out_data_size, out_data_stride,
+        camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -987,12 +656,6 @@ inline Distortion3deAnamorphicStdDeg6 create_distortion<
     return distortion;
 }
 
-inline Distortion3deAnamorphicStdDeg6 create_distortion_3de_anamorphic_std_deg6(
-    Parameters3deAnamorphicStdDeg6 lens_parameters) {
-    return create_distortion<Distortion3deAnamorphicStdDeg6,
-                             Parameters3deAnamorphicStdDeg6>(lens_parameters);
-}
-
 void apply_identity_to_f64(const DistortionDirection direction,
 
                            // Image size
@@ -1012,39 +675,12 @@ void apply_identity_to_f64(const DistortionDirection direction,
                            const CameraParameters camera_parameters,
                            const double film_back_radius_cm,
                            Parameters3deAnamorphicStdDeg6 lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg6(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistort, double,
-            Distortion3deAnamorphicStdDeg6>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kRedistort, double,
-            Distortion3deAnamorphicStdDeg6>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double,
-            Distortion3deAnamorphicStdDeg6>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-    }
-
-    return;
+    apply_identity_impl<double, Distortion3deAnamorphicStdDeg6,
+                        Parameters3deAnamorphicStdDeg6>(
+        direction, image_width, image_height, start_image_width,
+        start_image_height, end_image_width, end_image_height, out_data_ptr,
+        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        lens_parameters);
 }
 
 void apply_identity_to_f32(const DistortionDirection direction,
@@ -1066,39 +702,12 @@ void apply_identity_to_f32(const DistortionDirection direction,
                            const CameraParameters camera_parameters,
                            const double film_back_radius_cm,
                            Parameters3deAnamorphicStdDeg6 lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg6(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistort, float,
-            Distortion3deAnamorphicStdDeg6>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kRedistort, float,
-            Distortion3deAnamorphicStdDeg6>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistortAndRedistort, float,
-            Distortion3deAnamorphicStdDeg6>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-    }
-
-    return;
+    apply_identity_impl<float, Distortion3deAnamorphicStdDeg6,
+                        Parameters3deAnamorphicStdDeg6>(
+        direction, image_width, image_height, start_image_width,
+        start_image_height, end_image_width, end_image_height, out_data_ptr,
+        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        lens_parameters);
 }
 
 void apply_f64_to_f64(const DistortionDirection direction,
@@ -1119,36 +728,11 @@ void apply_f64_to_f64(const DistortionDirection direction,
                       const CameraParameters camera_parameters,
                       const double film_back_radius_cm,
                       Parameters3deAnamorphicStdDeg6 lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg6(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistort, double, double,
-            Distortion3deAnamorphicStdDeg6>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kRedistort, double, double,
-            Distortion3deAnamorphicStdDeg6>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double, double,
-            Distortion3deAnamorphicStdDeg6>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-    }
-
-    return;
+    apply_buffer_impl<double, double, Distortion3deAnamorphicStdDeg6,
+                      Parameters3deAnamorphicStdDeg6>(
+        direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
+        in_data_stride, out_data_ptr, out_data_size, out_data_stride,
+        camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 void apply_f64_to_f32(const DistortionDirection direction,
@@ -1169,36 +753,11 @@ void apply_f64_to_f32(const DistortionDirection direction,
                       const CameraParameters camera_parameters,
                       const double film_back_radius_cm,
                       Parameters3deAnamorphicStdDeg6 lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg6(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistort, double, float,
-            Distortion3deAnamorphicStdDeg6>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kRedistort, double, float,
-            Distortion3deAnamorphicStdDeg6>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double, float,
-            Distortion3deAnamorphicStdDeg6>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-    }
-
-    return;
+    apply_buffer_impl<double, float, Distortion3deAnamorphicStdDeg6,
+                      Parameters3deAnamorphicStdDeg6>(
+        direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
+        in_data_stride, out_data_ptr, out_data_size, out_data_stride,
+        camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 //////////////////////////////////////////////////////////////////////
@@ -1235,14 +794,6 @@ create_distortion<Distortion3deAnamorphicStdDeg6Rescaled,
     return distortion;
 }
 
-inline Distortion3deAnamorphicStdDeg6Rescaled
-create_distortion_3de_anamorphic_std_deg6_rescaled(
-    Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) {
-    return create_distortion<Distortion3deAnamorphicStdDeg6Rescaled,
-                             Parameters3deAnamorphicStdDeg6Rescaled>(
-        lens_parameters);
-}
-
 void apply_identity_to_f64(
     const DistortionDirection direction,
 
@@ -1260,39 +811,12 @@ void apply_identity_to_f64(
     // Camera and lens parameters
     const CameraParameters camera_parameters, const double film_back_radius_cm,
     Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg6_rescaled(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistort, double,
-            Distortion3deAnamorphicStdDeg6Rescaled>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kRedistort, double,
-            Distortion3deAnamorphicStdDeg6Rescaled>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double,
-            Distortion3deAnamorphicStdDeg6Rescaled>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-    }
-
-    return;
+    apply_identity_impl<double, Distortion3deAnamorphicStdDeg6Rescaled,
+                        Parameters3deAnamorphicStdDeg6Rescaled>(
+        direction, image_width, image_height, start_image_width,
+        start_image_height, end_image_width, end_image_height, out_data_ptr,
+        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        lens_parameters);
 }
 
 void apply_identity_to_f32(
@@ -1312,39 +836,12 @@ void apply_identity_to_f32(
     // Camera and lens parameters
     const CameraParameters camera_parameters, const double film_back_radius_cm,
     Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg6_rescaled(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistort, float,
-            Distortion3deAnamorphicStdDeg6Rescaled>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kRedistort, float,
-            Distortion3deAnamorphicStdDeg6Rescaled>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_identity_with_stride<
-            DistortionDirection::kUndistortAndRedistort, float,
-            Distortion3deAnamorphicStdDeg6Rescaled>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
-    }
-
-    return;
+    apply_identity_impl<float, Distortion3deAnamorphicStdDeg6Rescaled,
+                        Parameters3deAnamorphicStdDeg6Rescaled>(
+        direction, image_width, image_height, start_image_width,
+        start_image_height, end_image_width, end_image_height, out_data_ptr,
+        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        lens_parameters);
 }
 
 void apply_f64_to_f64(const DistortionDirection direction,
@@ -1365,36 +862,11 @@ void apply_f64_to_f64(const DistortionDirection direction,
                       const CameraParameters camera_parameters,
                       const double film_back_radius_cm,
                       Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg6_rescaled(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistort, double, double,
-            Distortion3deAnamorphicStdDeg6Rescaled>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kRedistort, double, double,
-            Distortion3deAnamorphicStdDeg6Rescaled>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double, double,
-            Distortion3deAnamorphicStdDeg6Rescaled>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-    }
-
-    return;
+    apply_buffer_impl<double, double, Distortion3deAnamorphicStdDeg6Rescaled,
+                      Parameters3deAnamorphicStdDeg6Rescaled>(
+        direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
+        in_data_stride, out_data_ptr, out_data_size, out_data_stride,
+        camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 void apply_f64_to_f32(const DistortionDirection direction,
@@ -1415,36 +887,11 @@ void apply_f64_to_f32(const DistortionDirection direction,
                       const CameraParameters camera_parameters,
                       const double film_back_radius_cm,
                       Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) {
-    auto distortion =
-        create_distortion_3de_anamorphic_std_deg6_rescaled(lens_parameters);
-    distortion.initialize_parameters(camera_parameters);
-
-    if (direction == DistortionDirection::kUndistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistort, double, float,
-            Distortion3deAnamorphicStdDeg6Rescaled>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kRedistort, double, float,
-            Distortion3deAnamorphicStdDeg6Rescaled>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-
-    } else if (direction == DistortionDirection::kUndistortAndRedistort) {
-        apply_lens_distortion_from_buffer_with_stride<
-            DistortionDirection::kUndistortAndRedistort, double, float,
-            Distortion3deAnamorphicStdDeg6Rescaled>(
-            data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
-            in_data_stride, out_data_ptr, out_data_size, out_data_stride,
-            camera_parameters, film_back_radius_cm, distortion);
-    }
-
-    return;
+    apply_buffer_impl<double, float, Distortion3deAnamorphicStdDeg6Rescaled,
+                      Parameters3deAnamorphicStdDeg6Rescaled>(
+        direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size,
+        in_data_stride, out_data_ptr, out_data_size, out_data_stride,
+        camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 }  // namespace mmlens

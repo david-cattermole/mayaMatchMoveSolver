@@ -26,11 +26,17 @@
 
 namespace mmlens {
 
+// Templates
+template <typename DistortionType, typename ParameterType>
+inline DistortionType create_distortion(const ParameterType& lens_parameters);
+
 //////////////////////////////////////////////////////////////////////
 // 3DE Classic
 
-inline Distortion3deClassic create_distortion_3de_classic(
-    Parameters3deClassic lens_parameters) {
+template <>
+inline Distortion3deClassic
+create_distortion<Distortion3deClassic, Parameters3deClassic>(
+    const Parameters3deClassic& lens_parameters) {
     auto distortion = Distortion3deClassic();
     distortion.set_parameter(0, lens_parameters.distortion);
     distortion.set_parameter(1, lens_parameters.anamorphic_squeeze);
@@ -38,6 +44,12 @@ inline Distortion3deClassic create_distortion_3de_classic(
     distortion.set_parameter(3, lens_parameters.curvature_y);
     distortion.set_parameter(4, lens_parameters.quartic_distortion);
     return distortion;
+}
+
+inline Distortion3deClassic create_distortion_3de_classic(
+    Parameters3deClassic lens_parameters) {
+    return create_distortion<Distortion3deClassic, Parameters3deClassic>(
+        lens_parameters);
 }
 
 void apply_identity_to_f64(const DistortionDirection direction,
@@ -243,8 +255,10 @@ void apply_f64_to_f32(const DistortionDirection direction,
 //////////////////////////////////////////////////////////////////////
 // 3DE Radial Decentered Degree 4 Cylindric
 
-inline Distortion3deRadialStdDeg4 create_distortion_3de_radial_std_deg4(
-    Parameters3deRadialStdDeg4 lens_parameters) {
+template <>
+inline Distortion3deRadialStdDeg4
+create_distortion<Distortion3deRadialStdDeg4, Parameters3deRadialStdDeg4>(
+    const Parameters3deRadialStdDeg4& lens_parameters) {
     auto distortion = Distortion3deRadialStdDeg4();
     distortion.set_parameter(0, lens_parameters.degree2_distortion);
     distortion.set_parameter(1, lens_parameters.degree2_u);
@@ -255,6 +269,12 @@ inline Distortion3deRadialStdDeg4 create_distortion_3de_radial_std_deg4(
     distortion.set_parameter(6, lens_parameters.cylindric_direction);
     distortion.set_parameter(7, lens_parameters.cylindric_bending);
     return distortion;
+}
+
+inline Distortion3deRadialStdDeg4 create_distortion_3de_radial_std_deg4(
+    Parameters3deRadialStdDeg4 lens_parameters) {
+    return create_distortion<Distortion3deRadialStdDeg4,
+                             Parameters3deRadialStdDeg4>(lens_parameters);
 }
 
 void apply_identity_to_f64(const DistortionDirection direction,
@@ -462,8 +482,10 @@ void apply_f64_to_f32(const DistortionDirection direction,
 //////////////////////////////////////////////////////////////////////
 // 3DE Anamorphic Degree 4 Rotate Squeeze XY
 
-inline Distortion3deAnamorphicStdDeg4 create_distortion_3de_anamorphic_std_deg4(
-    Parameters3deAnamorphicStdDeg4 lens_parameters) {
+template <>
+inline Distortion3deAnamorphicStdDeg4 create_distortion<
+    Distortion3deAnamorphicStdDeg4, Parameters3deAnamorphicStdDeg4>(
+    const Parameters3deAnamorphicStdDeg4& lens_parameters) {
     auto distortion = Distortion3deAnamorphicStdDeg4();
     distortion.set_parameter(0, lens_parameters.degree2_cx02);
     distortion.set_parameter(1, lens_parameters.degree2_cy02);
@@ -479,6 +501,12 @@ inline Distortion3deAnamorphicStdDeg4 create_distortion_3de_anamorphic_std_deg4(
     distortion.set_parameter(11, lens_parameters.squeeze_x);
     distortion.set_parameter(12, lens_parameters.squeeze_y);
     return distortion;
+}
+
+inline Distortion3deAnamorphicStdDeg4 create_distortion_3de_anamorphic_std_deg4(
+    Parameters3deAnamorphicStdDeg4 lens_parameters) {
+    return create_distortion<Distortion3deAnamorphicStdDeg4,
+                             Parameters3deAnamorphicStdDeg4>(lens_parameters);
 }
 
 void apply_identity_to_f64(const DistortionDirection direction,
@@ -692,9 +720,11 @@ void apply_f64_to_f32(const DistortionDirection direction,
 //////////////////////////////////////////////////////////////////////
 // 3DE Anamorphic Degree 4 Rotate Squeeze XY Rescaled
 
+template <>
 inline Distortion3deAnamorphicStdDeg4Rescaled
-create_distortion_3de_anamorphic_std_deg4_rescaled(
-    Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) {
+create_distortion<Distortion3deAnamorphicStdDeg4Rescaled,
+                  Parameters3deAnamorphicStdDeg4Rescaled>(
+    const Parameters3deAnamorphicStdDeg4Rescaled& lens_parameters) {
     auto distortion = Distortion3deAnamorphicStdDeg4Rescaled();
     distortion.set_parameter(0, lens_parameters.degree2_cx02);
     distortion.set_parameter(1, lens_parameters.degree2_cy02);
@@ -711,6 +741,14 @@ create_distortion_3de_anamorphic_std_deg4_rescaled(
     distortion.set_parameter(12, lens_parameters.squeeze_y);
     distortion.set_parameter(13, lens_parameters.rescale);
     return distortion;
+}
+
+inline Distortion3deAnamorphicStdDeg4Rescaled
+create_distortion_3de_anamorphic_std_deg4_rescaled(
+    Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) {
+    return create_distortion<Distortion3deAnamorphicStdDeg4Rescaled,
+                             Parameters3deAnamorphicStdDeg4Rescaled>(
+        lens_parameters);
 }
 
 void apply_identity_to_f64(
@@ -920,8 +958,10 @@ void apply_f64_to_f32(const DistortionDirection direction,
 //////////////////////////////////////////////////////////////////////
 // 3DE Anamorphic Degree 6 Rotate Squeeze XY
 
-inline Distortion3deAnamorphicStdDeg6 create_distortion_3de_anamorphic_std_deg6(
-    Parameters3deAnamorphicStdDeg6 lens_parameters) {
+template <>
+inline Distortion3deAnamorphicStdDeg6 create_distortion<
+    Distortion3deAnamorphicStdDeg6, Parameters3deAnamorphicStdDeg6>(
+    const Parameters3deAnamorphicStdDeg6& lens_parameters) {
     auto distortion = Distortion3deAnamorphicStdDeg6();
     distortion.set_parameter(0, lens_parameters.degree2_cx02);
     distortion.set_parameter(1, lens_parameters.degree2_cy02);
@@ -945,6 +985,12 @@ inline Distortion3deAnamorphicStdDeg6 create_distortion_3de_anamorphic_std_deg6(
     distortion.set_parameter(19, lens_parameters.squeeze_x);
     distortion.set_parameter(20, lens_parameters.squeeze_y);
     return distortion;
+}
+
+inline Distortion3deAnamorphicStdDeg6 create_distortion_3de_anamorphic_std_deg6(
+    Parameters3deAnamorphicStdDeg6 lens_parameters) {
+    return create_distortion<Distortion3deAnamorphicStdDeg6,
+                             Parameters3deAnamorphicStdDeg6>(lens_parameters);
 }
 
 void apply_identity_to_f64(const DistortionDirection direction,
@@ -1158,9 +1204,11 @@ void apply_f64_to_f32(const DistortionDirection direction,
 //////////////////////////////////////////////////////////////////////
 // 3DE Anamorphic Degree 6 Rotate Squeeze XY Rescaled
 
+template <>
 inline Distortion3deAnamorphicStdDeg6Rescaled
-create_distortion_3de_anamorphic_std_deg6_rescaled(
-    Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) {
+create_distortion<Distortion3deAnamorphicStdDeg6Rescaled,
+                  Parameters3deAnamorphicStdDeg6Rescaled>(
+    const Parameters3deAnamorphicStdDeg6Rescaled& lens_parameters) {
     auto distortion = Distortion3deAnamorphicStdDeg6Rescaled();
     distortion.set_parameter(0, lens_parameters.degree2_cx02);
     distortion.set_parameter(1, lens_parameters.degree2_cy02);
@@ -1185,6 +1233,14 @@ create_distortion_3de_anamorphic_std_deg6_rescaled(
     distortion.set_parameter(20, lens_parameters.squeeze_y);
     distortion.set_parameter(21, lens_parameters.rescale);
     return distortion;
+}
+
+inline Distortion3deAnamorphicStdDeg6Rescaled
+create_distortion_3de_anamorphic_std_deg6_rescaled(
+    Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) {
+    return create_distortion<Distortion3deAnamorphicStdDeg6Rescaled,
+                             Parameters3deAnamorphicStdDeg6Rescaled>(
+        lens_parameters);
 }
 
 void apply_identity_to_f64(

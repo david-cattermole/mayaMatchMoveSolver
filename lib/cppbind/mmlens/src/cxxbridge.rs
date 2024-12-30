@@ -160,7 +160,7 @@ pub mod ffi {
         lens_center_offset_y_cm: f64,
     }
 
-    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
     pub(crate) struct Parameters3deClassic {
         distortion: f64,         // "Distortion"
         anamorphic_squeeze: f64, // "Anamorphic Squeeze"
@@ -169,7 +169,7 @@ pub mod ffi {
         quartic_distortion: f64, // "Quartic Distortion"
     }
 
-    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
     pub(crate) struct Parameters3deRadialStdDeg4 {
         degree2_distortion: f64, // "Distortion - Degree 2"
         degree2_u: f64,          // "U - Degree 2"
@@ -183,7 +183,7 @@ pub mod ffi {
         cylindric_bending: f64,   // "B - Cylindric Bending"
     }
 
-    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
     pub(crate) struct Parameters3deAnamorphicStdDeg4 {
         degree2_cx02: f64, // "Cx02 - Degree 2"
         degree2_cy02: f64, // "Cy02 - Degree 2"
@@ -202,7 +202,7 @@ pub mod ffi {
         squeeze_y: f64,     // "Squeeze-Y"
     }
 
-    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
     pub(crate) struct Parameters3deAnamorphicStdDeg4Rescaled {
         degree2_cx02: f64, // "Cx02 - Degree 2"
         degree2_cy02: f64, // "Cy02 - Degree 2"
@@ -222,7 +222,7 @@ pub mod ffi {
         rescale: f64,       // "Rescale"
     }
 
-    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
     pub(crate) struct Parameters3deAnamorphicStdDeg6 {
         degree2_cx02: f64, // "Cx02 - Degree 2"
         degree2_cy02: f64, // "Cy02 - Degree 2"
@@ -250,7 +250,7 @@ pub mod ffi {
         squeeze_y: f64,     // "Squeeze-Y"
     }
 
-    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    #[derive(Debug, Copy, Clone, PartialEq, PartialOrd)]
     pub(crate) struct Parameters3deAnamorphicStdDeg6Rescaled {
         degree2_cx02: f64, // "Cx02 - Degree 2"
         degree2_cy02: f64, // "Cy02 - Degree 2"

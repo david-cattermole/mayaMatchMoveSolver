@@ -59,6 +59,7 @@ lib/cppbind/mmlens/src/distortion_layers.rs
 lib/cppbind/mmlens/src/distortion_process.cpp
 lib/cppbind/mmlens/src/distortion_process.rs
 lib/cppbind/mmlens/src/distortion_structs.h
+lib/cppbind/mmlens/src/lens_parameters/mod.rs
 lib/cppbind/mmlens/src/option_lens_parameters.rs
 lib/mmsolverlibs/src/CMakeLists.txt
 ```
@@ -67,6 +68,7 @@ Add files:
 ```
 lib/cppbind/mmlens/include/mmlens/lens_model_EXAMPLE.h
 lib/cppbind/mmlens/src/lens_model_EXAMPLE.cpp
+lib/cppbind/mmlens/src/lens_parameters/EXAMPLE.rs
 ```
 
 ### Important Implementation Considerations
@@ -111,17 +113,16 @@ Documentation:
 
 
 
-### 0) option_lens_parameters.rs and cxxbridge.rs
-
-#### Add Option Parameter Type
+### 0) option_lens_parameters.rs and cxxbridge.rs - Add Option Parameter Type
 
 In `option_lens_parameters.rs` add:
 
 ```rust
-struct OptionParametersExample {
-    exists: bool,
-    value: ParametersExample,
-}
+impl_option_parameters_trait!(
+    BindOptionParametersExample,
+    BindParametersExample
+);
+
 ```
 
 Define parameter structures in `cxxbridge.rs`:
@@ -134,22 +135,60 @@ struct OptionParametersExample {
 }
 ```
 
+### 1) lens_parameters/mod.rs and lens_parameters/example.rs - Create Main Parameter Struct
 
-### 1) cxxbridge.rs
 
-#### Add New Type Enum
-
-Add a new variant to `LensModelType` enum in `cxxbridge.rs`:
-
+Create a new file `lens_parameters/example.rs`, and add default values
+and functions to set each value via a slice:
 ```rust
-#[repr(u8)]
-pub(crate) enum LensModelType {
-    // ... existing types ...
-    TdeExample = <next_number>,  // Add new type
+impl Default for BindParametersExample {
+    fn default() -> Self {
+        Self {
+            distortion: 0.0,
+            anamorphic_squeeze: 1.0,
+            curvature_x: 0.0,
+            curvature_y: 0.0,
+            quartic_distortion: 0.0,
+        }
+    }
+}
+
+impl LensParameters for BindParametersExample {
+    impl_LensParameters_hash_parameters_method!(
+        distortion,
+        anamorphic_squeeze,
+        curvature_x,
+        curvature_y,
+        quartic_distortion
+    );
+
+    fn from_slice(data: &[f64]) -> Self {
+        Self {
+            distortion: data[0],
+            anamorphic_squeeze: data[1],
+            curvature_x: data[2],
+            curvature_y: data[3],
+            quartic_distortion: data[4],
+        }
+    }
+
+    fn into_args(self) -> Vec<f64> {
+        vec![
+            self.distortion,
+            self.anamorphic_squeeze,
+            self.curvature_x,
+            self.curvature_y,
+            self.quartic_distortion,
+        ]
+    }
 }
 ```
 
-#### Create Main Parameter Struct
+
+Then add the newly created file to `lens_parameters/mod.rs`:
+```rust
+mod example;
+```
 
 Define parameter structures in `cxxbridge.rs`:
 
@@ -163,7 +202,19 @@ pub(crate) struct ParametersExample {
 }
 ```
 
-### 2) lens_model_example.cpp/.h - Create Lens Model Class
+### 2) cxxbridge.rs - Add New Type Enum
+
+Add a new variant to `LensModelType` enum in `cxxbridge.rs`:
+
+```rust
+#[repr(u8)]
+pub(crate) enum LensModelType {
+    // ... existing types ...
+    TdeExample = <next_number>,  // Add new type
+}
+```
+
+### 3) lens_model_example.cpp/.h - Create Lens Model Class
 
 Add `lens_model_example.cpp` and `lens_model_example.h`, define the
 'Example' lens model class inheriting from LensModel, and implement
@@ -189,9 +240,7 @@ private:
 };
 ```
 
-### 3) distortion_structs.h
-
-#### Implement Distortion Operations
+### 4) distortion_structs.h - Implement Distortion Operations
 
 Create distortion class implementing the Distortion interface in `distortion_structs.h`.
 
@@ -215,7 +264,6 @@ void apply_identity_to_f32(...);
 void apply_f64_to_f64(...);
 void apply_f64_to_f32(...);
 ```
-
 
 ### 5) constants.rs
 

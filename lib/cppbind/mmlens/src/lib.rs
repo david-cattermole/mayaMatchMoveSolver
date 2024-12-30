@@ -25,4 +25,5 @@ mod distortion_layers;
 mod distortion_process;
 mod hash_float;
 mod lens_io;
+mod lens_parameters;
 mod option_lens_parameters;

@@ -1194,6 +1194,7 @@ dependencies = [
  "anyhow",
  "cxx",
  "num_cpus",
+ "paste",
  "rayon",
  "rustc-hash",
  "smallvec",

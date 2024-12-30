@@ -24,24 +24,22 @@
 #define MM_SOLVER_MM_ANIM_CURVE_FILTER_POPS_CMD_H
 
 // Maya
-#include <maya/MPxCommand.h>
+#include <maya/MAnimCurveChange.h>
 #include <maya/MArgDatabase.h>
 #include <maya/MArgList.h>
-#include <maya/MSyntax.h>
-#include <maya/MObject.h>
-#include <maya/MFnAnimCurve.h>
-#include <maya/MTime.h>
 #include <maya/MDGModifier.h>
-#include <maya/MAnimCurveChange.h>
+#include <maya/MFnAnimCurve.h>
+#include <maya/MObject.h>
+#include <maya/MPxCommand.h>
+#include <maya/MSyntax.h>
+#include <maya/MTime.h>
 
 namespace mmsolver {
 
 class MMAnimCurveFilterPopsCmd : public MPxCommand {
 public:
     MMAnimCurveFilterPopsCmd()
-        : m_startFrame(1.0)
-        , m_endFrame(101.0)
-        , m_threshold(1.0){};
+        : m_startFrame(1.0), m_endFrame(101.0), m_threshold(1.0){};
     virtual ~MMAnimCurveFilterPopsCmd();
 
     virtual bool hasSyntax() const;

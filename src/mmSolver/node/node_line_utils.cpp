@@ -94,16 +94,12 @@ MStatus query_line_point_data(const MMatrix parentInverseMatrix,
     return status;
 }
 
-MStatus fit_line_to_points(const mmsg::Real line_length,
-                           const rust::Vec<mmsg::Real> &point_data_x,
-                           const rust::Vec<mmsg::Real> &point_data_y,
-                           mmdata::Point2D &out_line_center,
-                           mmsg::Real &out_line_slope,
-                           mmsg::Real &out_line_angle,
-                           mmdata::Vector2D &out_line_dir,
-                           mmdata::Point2D &out_line_point_a,
-                           mmdata::Point2D &out_line_point_b,
-                           const bool verbose) {
+MStatus fit_line_to_points(
+    const mmsg::Real line_length, const rust::Vec<mmsg::Real> &point_data_x,
+    const rust::Vec<mmsg::Real> &point_data_y, mmdata::Point2D &out_line_center,
+    mmsg::Real &out_line_slope, mmsg::Real &out_line_angle,
+    mmdata::Vector2D &out_line_dir, mmdata::Point2D &out_line_point_a,
+    mmdata::Point2D &out_line_point_b, const bool verbose) {
     MStatus status = MS::kSuccess;
 
     auto line_dir_x = 1.0;

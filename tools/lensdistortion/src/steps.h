@@ -350,7 +350,7 @@ void calculate_image(const mmlens::DistortionDirection distortion_direction,
             } else if (lens_model_type ==
                        mmlens::LensModelType::k3deAnamorphicStdDeg6Rescaled) {
                 MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
-                               << static_cast<int>(lens_model_type));                
+                               << static_cast<int>(lens_model_type));
             } else {
                 MMSOLVER_PANIC("calculate_image: Unsupported lens_model_type: "
                                << static_cast<int>(lens_model_type));

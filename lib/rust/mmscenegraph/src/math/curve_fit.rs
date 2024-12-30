@@ -394,8 +394,6 @@ pub struct CurveFitLinearNPointsProblem {
     reference_values: Vec<(f64, f64)>,
     // X-coordinates of control points (fixed).
     control_points_x: Vec<f64>,
-    // Weights.
-    weights: Vec<f64>,
     // Interpolation method to use.
     interpolator: Interpolator,
 }
@@ -404,21 +402,14 @@ impl CurveFitLinearNPointsProblem {
     fn new(
         control_points_x: Vec<f64>,
         reference_curve: &[(f64, f64)],
-        weights: &[f64],
         interpolation_method: InterpolationMethod,
     ) -> Self {
         let reference_values: Vec<(f64, f64)> =
             reference_curve.iter().copied().collect();
 
-        let weights_max =
-            weights.iter().fold(Real::NEG_INFINITY, |a, &b| a.max(b));
-        let weights: Vec<f64> =
-            weights.iter().map(|w| w / weights_max).collect();
-
         Self {
             reference_values,
             control_points_x,
-            weights,
             interpolator: Interpolator::from_method(interpolation_method),
         }
     }
@@ -440,15 +431,12 @@ impl CurveFitLinearNPointsProblem {
     }
 
     fn residuals(&self, control_points_y: &[f64]) -> Vec<f64> {
-        self.weights
+        self.reference_values
             .iter()
-            .zip(self.reference_values.iter())
-            .map(|(weight, &(value_x, data_y))| {
+            .map(|&(value_x, data_y)| {
                 let curve_y =
                     self.interpolate_y_value_at_x(value_x, control_points_y);
-                // TODO: Can we use the 'weight' for each point or is
-                // that invalid?
-                (curve_y - data_y).abs() // * weight
+                (curve_y - data_y).abs()
             })
             .collect()
     }
@@ -581,9 +569,6 @@ pub fn nonlinear_line_n_points_with_initial(
     y_values: &[f64],
     x_initial_control_points: &[f64],
     y_initial_control_points: &[f64],
-    // Per-value weights, so we can give more emphasis to more
-    // important frames, and we can essentially filter out 'bad' data.
-    weights: &[f64],
     interpolation_method: InterpolationMethod,
 ) -> Result<Vec<Point2>> {
     assert!(x_values.len() > 2);
@@ -601,7 +586,6 @@ pub fn nonlinear_line_n_points_with_initial(
         y_initial_control_points.len(),
         "X and Y control point values must match length."
     );
-    assert_eq!(x_values.len(), weights.len());
     let control_point_count = x_initial_control_points.len();
 
     // Create reference values.
@@ -615,7 +599,6 @@ pub fn nonlinear_line_n_points_with_initial(
     let problem = CurveFitLinearNPointsProblem::new(
         x_initial_control_points.to_vec(),
         &reference_values,
-        &weights,
         interpolation_method,
     );
 
@@ -672,8 +655,6 @@ pub fn nonlinear_line_n_points(
         "Must have at least 3 control points"
     );
 
-    let weights = vec![0.0; x_values.len()];
-
     let mut point_x = 0.0;
     let mut point_y = 0.0;
     let mut dir_x = 0.0;
@@ -702,7 +683,6 @@ pub fn nonlinear_line_n_points(
         y_values,
         &x_initial_control_points,
         &y_initial_control_points,
-        &weights,
         interpolation,
     )
 }

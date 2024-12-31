@@ -394,6 +394,7 @@ namespace mmlens {
   enum class DistortionDirection : ::std::uint8_t;
   enum class LensModelState : ::std::uint8_t;
   enum class LensModelType : ::std::uint8_t;
+  struct ImageDimensions;
   struct CameraParameters;
   struct Parameters3deClassic;
   struct Parameters3deRadialStdDeg4;
@@ -446,6 +447,26 @@ enum class LensModelType : ::std::uint8_t {
   kNumLensModelType = 8,
 };
 #endif // CXXBRIDGE1_ENUM_mmlens$LensModelType
+
+#ifndef CXXBRIDGE1_STRUCT_mmlens$ImageDimensions
+#define CXXBRIDGE1_STRUCT_mmlens$ImageDimensions
+struct ImageDimensions final {
+  ::std::size_t width;
+  ::std::size_t height;
+  ::std::size_t start_width;
+  ::std::size_t start_height;
+  ::std::size_t end_width;
+  ::std::size_t end_height;
+
+  bool operator==(const ImageDimensions &) const noexcept;
+  bool operator!=(const ImageDimensions &) const noexcept;
+  bool operator<(const ImageDimensions &) const noexcept;
+  bool operator<=(const ImageDimensions &) const noexcept;
+  bool operator>(const ImageDimensions &) const noexcept;
+  bool operator>=(const ImageDimensions &) const noexcept;
+  using IsRelocatable = ::std::true_type;
+};
+#endif // CXXBRIDGE1_STRUCT_mmlens$ImageDimensions
 
 #ifndef CXXBRIDGE1_STRUCT_mmlens$CameraParameters
 #define CXXBRIDGE1_STRUCT_mmlens$CameraParameters
@@ -759,6 +780,12 @@ private:
 #endif // CXXBRIDGE1_STRUCT_mmlens$ShimDistortionLayers
 
 extern "C" {
+bool mmlens$cxxbridge1$ImageDimensions$operator$eq(const ImageDimensions &, const ImageDimensions &) noexcept;
+bool mmlens$cxxbridge1$ImageDimensions$operator$ne(const ImageDimensions &, const ImageDimensions &) noexcept;
+bool mmlens$cxxbridge1$ImageDimensions$operator$lt(const ImageDimensions &, const ImageDimensions &) noexcept;
+bool mmlens$cxxbridge1$ImageDimensions$operator$le(const ImageDimensions &, const ImageDimensions &) noexcept;
+bool mmlens$cxxbridge1$ImageDimensions$operator$gt(const ImageDimensions &, const ImageDimensions &) noexcept;
+bool mmlens$cxxbridge1$ImageDimensions$operator$ge(const ImageDimensions &, const ImageDimensions &) noexcept;
 bool mmlens$cxxbridge1$CameraParameters$operator$eq(const CameraParameters &, const CameraParameters &) noexcept;
 bool mmlens$cxxbridge1$CameraParameters$operator$ne(const CameraParameters &, const CameraParameters &) noexcept;
 bool mmlens$cxxbridge1$CameraParameters$operator$lt(const CameraParameters &, const CameraParameters &) noexcept;
@@ -872,14 +899,14 @@ void mmlens$cxxbridge1$ShimDistortionLayers$as_string(const ::mmlens::ShimDistor
 
 ::mmlens::ShimDistortionLayers *mmlens$cxxbridge1$shim_read_lens_file(::rust::Str file_path) noexcept;
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f64_3de_classic(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t start_image_width, ::std::size_t start_image_height, ::std::size_t end_image_width, ::std::size_t end_image_height, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept {
-  void (*apply_identity_to_f64_3de_classic$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deClassic) = ::mmlens::apply_identity_to_f64;
-  apply_identity_to_f64_3de_classic$(direction, image_width, image_height, start_image_width, start_image_height, end_image_width, end_image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f64_3de_classic(::mmlens::DistortionDirection direction, ::mmlens::ImageDimensions image_dimensions, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept {
+  void (*apply_identity_to_f64_3de_classic$)(::mmlens::DistortionDirection, ::mmlens::ImageDimensions, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deClassic) = ::mmlens::apply_identity_to_f64;
+  apply_identity_to_f64_3de_classic$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_classic(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t start_image_width, ::std::size_t start_image_height, ::std::size_t end_image_width, ::std::size_t end_image_height, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept {
-  void (*apply_identity_to_f32_3de_classic$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deClassic) = ::mmlens::apply_identity_to_f32;
-  apply_identity_to_f32_3de_classic$(direction, image_width, image_height, start_image_width, start_image_height, end_image_width, end_image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_classic(::mmlens::DistortionDirection direction, ::mmlens::ImageDimensions image_dimensions, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept {
+  void (*apply_identity_to_f32_3de_classic$)(::mmlens::DistortionDirection, ::mmlens::ImageDimensions, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deClassic) = ::mmlens::apply_identity_to_f32;
+  apply_identity_to_f32_3de_classic$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_classic(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deClassic lens_parameters) noexcept {
@@ -892,14 +919,14 @@ MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_classic(::mmlens::
   apply_f64_to_f32_3de_classic$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f64_3de_radial_std_deg4(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t start_image_width, ::std::size_t start_image_height, ::std::size_t end_image_width, ::std::size_t end_image_height, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept {
-  void (*apply_identity_to_f64_3de_radial_std_deg4$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deRadialStdDeg4) = ::mmlens::apply_identity_to_f64;
-  apply_identity_to_f64_3de_radial_std_deg4$(direction, image_width, image_height, start_image_width, start_image_height, end_image_width, end_image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f64_3de_radial_std_deg4(::mmlens::DistortionDirection direction, ::mmlens::ImageDimensions image_dimensions, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept {
+  void (*apply_identity_to_f64_3de_radial_std_deg4$)(::mmlens::DistortionDirection, ::mmlens::ImageDimensions, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deRadialStdDeg4) = ::mmlens::apply_identity_to_f64;
+  apply_identity_to_f64_3de_radial_std_deg4$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_radial_std_deg4(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t start_image_width, ::std::size_t start_image_height, ::std::size_t end_image_width, ::std::size_t end_image_height, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept {
-  void (*apply_identity_to_f32_3de_radial_std_deg4$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deRadialStdDeg4) = ::mmlens::apply_identity_to_f32;
-  apply_identity_to_f32_3de_radial_std_deg4$(direction, image_width, image_height, start_image_width, start_image_height, end_image_width, end_image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_radial_std_deg4(::mmlens::DistortionDirection direction, ::mmlens::ImageDimensions image_dimensions, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept {
+  void (*apply_identity_to_f32_3de_radial_std_deg4$)(::mmlens::DistortionDirection, ::mmlens::ImageDimensions, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deRadialStdDeg4) = ::mmlens::apply_identity_to_f32;
+  apply_identity_to_f32_3de_radial_std_deg4$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_radial_std_deg4(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deRadialStdDeg4 lens_parameters) noexcept {
@@ -912,14 +939,14 @@ MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_radial_std_deg4(::
   apply_f64_to_f32_3de_radial_std_deg4$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f64_3de_anamorphic_std_deg4(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t start_image_width, ::std::size_t start_image_height, ::std::size_t end_image_width, ::std::size_t end_image_height, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept {
-  void (*apply_identity_to_f64_3de_anamorphic_std_deg4$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4) = ::mmlens::apply_identity_to_f64;
-  apply_identity_to_f64_3de_anamorphic_std_deg4$(direction, image_width, image_height, start_image_width, start_image_height, end_image_width, end_image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f64_3de_anamorphic_std_deg4(::mmlens::DistortionDirection direction, ::mmlens::ImageDimensions image_dimensions, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept {
+  void (*apply_identity_to_f64_3de_anamorphic_std_deg4$)(::mmlens::DistortionDirection, ::mmlens::ImageDimensions, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4) = ::mmlens::apply_identity_to_f64;
+  apply_identity_to_f64_3de_anamorphic_std_deg4$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg4(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t start_image_width, ::std::size_t start_image_height, ::std::size_t end_image_width, ::std::size_t end_image_height, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept {
-  void (*apply_identity_to_f32_3de_anamorphic_std_deg4$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4) = ::mmlens::apply_identity_to_f32;
-  apply_identity_to_f32_3de_anamorphic_std_deg4$(direction, image_width, image_height, start_image_width, start_image_height, end_image_width, end_image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg4(::mmlens::DistortionDirection direction, ::mmlens::ImageDimensions image_dimensions, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept {
+  void (*apply_identity_to_f32_3de_anamorphic_std_deg4$)(::mmlens::DistortionDirection, ::mmlens::ImageDimensions, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4) = ::mmlens::apply_identity_to_f32;
+  apply_identity_to_f32_3de_anamorphic_std_deg4$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg4(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4 lens_parameters) noexcept {
@@ -932,14 +959,14 @@ MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg
   apply_f64_to_f32_3de_anamorphic_std_deg4$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f64_3de_anamorphic_std_deg4_rescaled(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t start_image_width, ::std::size_t start_image_height, ::std::size_t end_image_width, ::std::size_t end_image_height, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept {
-  void (*apply_identity_to_f64_3de_anamorphic_std_deg4_rescaled$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled) = ::mmlens::apply_identity_to_f64;
-  apply_identity_to_f64_3de_anamorphic_std_deg4_rescaled$(direction, image_width, image_height, start_image_width, start_image_height, end_image_width, end_image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f64_3de_anamorphic_std_deg4_rescaled(::mmlens::DistortionDirection direction, ::mmlens::ImageDimensions image_dimensions, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept {
+  void (*apply_identity_to_f64_3de_anamorphic_std_deg4_rescaled$)(::mmlens::DistortionDirection, ::mmlens::ImageDimensions, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled) = ::mmlens::apply_identity_to_f64;
+  apply_identity_to_f64_3de_anamorphic_std_deg4_rescaled$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg4_rescaled(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t start_image_width, ::std::size_t start_image_height, ::std::size_t end_image_width, ::std::size_t end_image_height, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept {
-  void (*apply_identity_to_f32_3de_anamorphic_std_deg4_rescaled$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled) = ::mmlens::apply_identity_to_f32;
-  apply_identity_to_f32_3de_anamorphic_std_deg4_rescaled$(direction, image_width, image_height, start_image_width, start_image_height, end_image_width, end_image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg4_rescaled(::mmlens::DistortionDirection direction, ::mmlens::ImageDimensions image_dimensions, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept {
+  void (*apply_identity_to_f32_3de_anamorphic_std_deg4_rescaled$)(::mmlens::DistortionDirection, ::mmlens::ImageDimensions, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled) = ::mmlens::apply_identity_to_f32;
+  apply_identity_to_f32_3de_anamorphic_std_deg4_rescaled$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg4_rescaled(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) noexcept {
@@ -952,14 +979,14 @@ MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg
   apply_f64_to_f32_3de_anamorphic_std_deg4_rescaled$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f64_3de_anamorphic_std_deg6(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t start_image_width, ::std::size_t start_image_height, ::std::size_t end_image_width, ::std::size_t end_image_height, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept {
-  void (*apply_identity_to_f64_3de_anamorphic_std_deg6$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6) = ::mmlens::apply_identity_to_f64;
-  apply_identity_to_f64_3de_anamorphic_std_deg6$(direction, image_width, image_height, start_image_width, start_image_height, end_image_width, end_image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f64_3de_anamorphic_std_deg6(::mmlens::DistortionDirection direction, ::mmlens::ImageDimensions image_dimensions, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept {
+  void (*apply_identity_to_f64_3de_anamorphic_std_deg6$)(::mmlens::DistortionDirection, ::mmlens::ImageDimensions, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6) = ::mmlens::apply_identity_to_f64;
+  apply_identity_to_f64_3de_anamorphic_std_deg6$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg6(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t start_image_width, ::std::size_t start_image_height, ::std::size_t end_image_width, ::std::size_t end_image_height, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept {
-  void (*apply_identity_to_f32_3de_anamorphic_std_deg6$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6) = ::mmlens::apply_identity_to_f32;
-  apply_identity_to_f32_3de_anamorphic_std_deg6$(direction, image_width, image_height, start_image_width, start_image_height, end_image_width, end_image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg6(::mmlens::DistortionDirection direction, ::mmlens::ImageDimensions image_dimensions, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept {
+  void (*apply_identity_to_f32_3de_anamorphic_std_deg6$)(::mmlens::DistortionDirection, ::mmlens::ImageDimensions, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6) = ::mmlens::apply_identity_to_f32;
+  apply_identity_to_f32_3de_anamorphic_std_deg6$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg6(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6 lens_parameters) noexcept {
@@ -972,14 +999,14 @@ MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg
   apply_f64_to_f32_3de_anamorphic_std_deg6$(direction, data_chunk_start, data_chunk_end, in_data_ptr, in_data_size, in_data_stride, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f64_3de_anamorphic_std_deg6_rescaled(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t start_image_width, ::std::size_t start_image_height, ::std::size_t end_image_width, ::std::size_t end_image_height, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept {
-  void (*apply_identity_to_f64_3de_anamorphic_std_deg6_rescaled$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled) = ::mmlens::apply_identity_to_f64;
-  apply_identity_to_f64_3de_anamorphic_std_deg6_rescaled$(direction, image_width, image_height, start_image_width, start_image_height, end_image_width, end_image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f64_3de_anamorphic_std_deg6_rescaled(::mmlens::DistortionDirection direction, ::mmlens::ImageDimensions image_dimensions, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept {
+  void (*apply_identity_to_f64_3de_anamorphic_std_deg6_rescaled$)(::mmlens::DistortionDirection, ::mmlens::ImageDimensions, double *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled) = ::mmlens::apply_identity_to_f64;
+  apply_identity_to_f64_3de_anamorphic_std_deg6_rescaled$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
-MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled(::mmlens::DistortionDirection direction, ::std::size_t image_width, ::std::size_t image_height, ::std::size_t start_image_width, ::std::size_t start_image_height, ::std::size_t end_image_width, ::std::size_t end_image_height, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept {
-  void (*apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled$)(::mmlens::DistortionDirection, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, ::std::size_t, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled) = ::mmlens::apply_identity_to_f32;
-  apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled$(direction, image_width, image_height, start_image_width, start_image_height, end_image_width, end_image_height, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
+MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled(::mmlens::DistortionDirection direction, ::mmlens::ImageDimensions image_dimensions, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept {
+  void (*apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled$)(::mmlens::DistortionDirection, ::mmlens::ImageDimensions, float *, ::std::size_t, ::std::size_t, ::mmlens::CameraParameters, double, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled) = ::mmlens::apply_identity_to_f32;
+  apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled$(direction, image_dimensions, out_data_ptr, out_data_size, out_data_stride, camera_parameters, film_back_radius_cm, lens_parameters);
 }
 
 MMLENS_API_EXPORT void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled(::mmlens::DistortionDirection direction, ::std::size_t data_chunk_start, ::std::size_t data_chunk_end, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, double *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept {
@@ -1042,6 +1069,30 @@ void mmlens$cxxbridge1$apply_f64_to_f64_3de_anamorphic_std_deg6_rescaled_multith
 
 void mmlens$cxxbridge1$apply_f64_to_f32_3de_anamorphic_std_deg6_rescaled_multithread(::mmlens::DistortionDirection direction, const double *in_data_ptr, ::std::size_t in_data_size, ::std::size_t in_data_stride, float *out_data_ptr, ::std::size_t out_data_size, ::std::size_t out_data_stride, ::mmlens::CameraParameters camera_parameters, double film_back_radius_cm, ::mmlens::Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) noexcept;
 } // extern "C"
+
+bool ImageDimensions::operator==(const ImageDimensions &rhs) const noexcept {
+  return mmlens$cxxbridge1$ImageDimensions$operator$eq(*this, rhs);
+}
+
+bool ImageDimensions::operator!=(const ImageDimensions &rhs) const noexcept {
+  return mmlens$cxxbridge1$ImageDimensions$operator$ne(*this, rhs);
+}
+
+bool ImageDimensions::operator<(const ImageDimensions &rhs) const noexcept {
+  return mmlens$cxxbridge1$ImageDimensions$operator$lt(*this, rhs);
+}
+
+bool ImageDimensions::operator<=(const ImageDimensions &rhs) const noexcept {
+  return mmlens$cxxbridge1$ImageDimensions$operator$le(*this, rhs);
+}
+
+bool ImageDimensions::operator>(const ImageDimensions &rhs) const noexcept {
+  return mmlens$cxxbridge1$ImageDimensions$operator$gt(*this, rhs);
+}
+
+bool ImageDimensions::operator>=(const ImageDimensions &rhs) const noexcept {
+  return mmlens$cxxbridge1$ImageDimensions$operator$ge(*this, rhs);
+}
 
 bool CameraParameters::operator==(const CameraParameters &rhs) const noexcept {
   return mmlens$cxxbridge1$CameraParameters$operator$eq(*this, rhs);

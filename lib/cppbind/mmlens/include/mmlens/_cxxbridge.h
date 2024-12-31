@@ -375,6 +375,7 @@ namespace mmlens {
   enum class DistortionDirection : ::std::uint8_t;
   enum class LensModelState : ::std::uint8_t;
   enum class LensModelType : ::std::uint8_t;
+  struct ImageDimensions;
   struct CameraParameters;
   struct Parameters3deClassic;
   struct Parameters3deRadialStdDeg4;
@@ -427,6 +428,26 @@ enum class LensModelType : ::std::uint8_t {
   kNumLensModelType = 8,
 };
 #endif // CXXBRIDGE1_ENUM_mmlens$LensModelType
+
+#ifndef CXXBRIDGE1_STRUCT_mmlens$ImageDimensions
+#define CXXBRIDGE1_STRUCT_mmlens$ImageDimensions
+struct ImageDimensions final {
+  ::std::size_t width;
+  ::std::size_t height;
+  ::std::size_t start_width;
+  ::std::size_t start_height;
+  ::std::size_t end_width;
+  ::std::size_t end_height;
+
+  bool operator==(const ImageDimensions &) const noexcept;
+  bool operator!=(const ImageDimensions &) const noexcept;
+  bool operator<(const ImageDimensions &) const noexcept;
+  bool operator<=(const ImageDimensions &) const noexcept;
+  bool operator>(const ImageDimensions &) const noexcept;
+  bool operator>=(const ImageDimensions &) const noexcept;
+  using IsRelocatable = ::std::true_type;
+};
+#endif // CXXBRIDGE1_STRUCT_mmlens$ImageDimensions
 
 #ifndef CXXBRIDGE1_STRUCT_mmlens$CameraParameters
 #define CXXBRIDGE1_STRUCT_mmlens$CameraParameters

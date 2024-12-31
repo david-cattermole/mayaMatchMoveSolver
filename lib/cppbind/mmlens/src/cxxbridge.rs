@@ -149,6 +149,20 @@ pub mod ffi {
         NumLensModelType,
     }
 
+    // Represents the dimensions and sub-window of an image.
+    #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
+    pub(crate) struct ImageDimensions {
+        // Image size
+        width: usize,  // Full image width.
+        height: usize, // Full image height.
+
+        // Image sub-window
+        start_width: usize, // Start of processing window width.
+        start_height: usize, // Start of processing window height.
+        end_width: usize,   // End of processing window width.
+        end_height: usize,  // End of processing window height.
+    }
+
     #[derive(Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
     pub(crate) struct CameraParameters {
         // cm = centimeter, the unit of the value.
@@ -376,12 +390,7 @@ pub mod ffi {
         #[rust_name = "apply_identity_to_f64_3de_classic"]
         unsafe fn apply_identity_to_f64(
             direction: DistortionDirection,
-            image_width: usize,
-            image_height: usize,
-            start_image_width: usize,
-            start_image_height: usize,
-            end_image_width: usize,
-            end_image_height: usize,
+            image_dimensions: ImageDimensions,
             out_data_ptr: *mut f64,
             out_data_size: usize,
             out_data_stride: usize,
@@ -393,12 +402,7 @@ pub mod ffi {
         #[rust_name = "apply_identity_to_f32_3de_classic"]
         unsafe fn apply_identity_to_f32(
             direction: DistortionDirection,
-            image_width: usize,
-            image_height: usize,
-            start_image_width: usize,
-            start_image_height: usize,
-            end_image_width: usize,
-            end_image_height: usize,
+            image_dimensions: ImageDimensions,
             out_data_ptr: *mut f32,
             out_data_size: usize,
             out_data_stride: usize,
@@ -445,12 +449,7 @@ pub mod ffi {
         #[rust_name = "apply_identity_to_f64_3de_radial_std_deg4"]
         unsafe fn apply_identity_to_f64(
             direction: DistortionDirection,
-            image_width: usize,
-            image_height: usize,
-            start_image_width: usize,
-            start_image_height: usize,
-            end_image_width: usize,
-            end_image_height: usize,
+            image_dimensions: ImageDimensions,
             out_data_ptr: *mut f64,
             out_data_size: usize,
             out_data_stride: usize,
@@ -462,12 +461,7 @@ pub mod ffi {
         #[rust_name = "apply_identity_to_f32_3de_radial_std_deg4"]
         unsafe fn apply_identity_to_f32(
             direction: DistortionDirection,
-            image_width: usize,
-            image_height: usize,
-            start_image_width: usize,
-            start_image_height: usize,
-            end_image_width: usize,
-            end_image_height: usize,
+            image_dimensions: ImageDimensions,
             out_data_ptr: *mut f32,
             out_data_size: usize,
             out_data_stride: usize,
@@ -514,12 +508,7 @@ pub mod ffi {
         #[rust_name = "apply_identity_to_f64_3de_anamorphic_std_deg4"]
         unsafe fn apply_identity_to_f64(
             direction: DistortionDirection,
-            image_width: usize,
-            image_height: usize,
-            start_image_width: usize,
-            start_image_height: usize,
-            end_image_width: usize,
-            end_image_height: usize,
+            image_dimensions: ImageDimensions,
             out_data_ptr: *mut f64,
             out_data_size: usize,
             out_data_stride: usize,
@@ -531,12 +520,7 @@ pub mod ffi {
         #[rust_name = "apply_identity_to_f32_3de_anamorphic_std_deg4"]
         unsafe fn apply_identity_to_f32(
             direction: DistortionDirection,
-            image_width: usize,
-            image_height: usize,
-            start_image_width: usize,
-            start_image_height: usize,
-            end_image_width: usize,
-            end_image_height: usize,
+            image_dimensions: ImageDimensions,
             out_data_ptr: *mut f32,
             out_data_size: usize,
             out_data_stride: usize,
@@ -583,12 +567,7 @@ pub mod ffi {
         #[rust_name = "apply_identity_to_f64_3de_anamorphic_std_deg4_rescaled"]
         unsafe fn apply_identity_to_f64(
             direction: DistortionDirection,
-            image_width: usize,
-            image_height: usize,
-            start_image_width: usize,
-            start_image_height: usize,
-            end_image_width: usize,
-            end_image_height: usize,
+            image_dimensions: ImageDimensions,
             out_data_ptr: *mut f64,
             out_data_size: usize,
             out_data_stride: usize,
@@ -600,12 +579,7 @@ pub mod ffi {
         #[rust_name = "apply_identity_to_f32_3de_anamorphic_std_deg4_rescaled"]
         unsafe fn apply_identity_to_f32(
             direction: DistortionDirection,
-            image_width: usize,
-            image_height: usize,
-            start_image_width: usize,
-            start_image_height: usize,
-            end_image_width: usize,
-            end_image_height: usize,
+            image_dimensions: ImageDimensions,
             out_data_ptr: *mut f32,
             out_data_size: usize,
             out_data_stride: usize,
@@ -652,12 +626,7 @@ pub mod ffi {
         #[rust_name = "apply_identity_to_f64_3de_anamorphic_std_deg6"]
         unsafe fn apply_identity_to_f64(
             direction: DistortionDirection,
-            image_width: usize,
-            image_height: usize,
-            start_image_width: usize,
-            start_image_height: usize,
-            end_image_width: usize,
-            end_image_height: usize,
+            image_dimensions: ImageDimensions,
             out_data_ptr: *mut f64,
             out_data_size: usize,
             out_data_stride: usize,
@@ -669,12 +638,7 @@ pub mod ffi {
         #[rust_name = "apply_identity_to_f32_3de_anamorphic_std_deg6"]
         unsafe fn apply_identity_to_f32(
             direction: DistortionDirection,
-            image_width: usize,
-            image_height: usize,
-            start_image_width: usize,
-            start_image_height: usize,
-            end_image_width: usize,
-            end_image_height: usize,
+            image_dimensions: ImageDimensions,
             out_data_ptr: *mut f32,
             out_data_size: usize,
             out_data_stride: usize,
@@ -721,12 +685,7 @@ pub mod ffi {
         #[rust_name = "apply_identity_to_f64_3de_anamorphic_std_deg6_rescaled"]
         unsafe fn apply_identity_to_f64(
             direction: DistortionDirection,
-            image_width: usize,
-            image_height: usize,
-            start_image_width: usize,
-            start_image_height: usize,
-            end_image_width: usize,
-            end_image_height: usize,
+            image_dimensions: ImageDimensions,
             out_data_ptr: *mut f64,
             out_data_size: usize,
             out_data_stride: usize,
@@ -738,12 +697,7 @@ pub mod ffi {
         #[rust_name = "apply_identity_to_f32_3de_anamorphic_std_deg6_rescaled"]
         unsafe fn apply_identity_to_f32(
             direction: DistortionDirection,
-            image_width: usize,
-            image_height: usize,
-            start_image_width: usize,
-            start_image_height: usize,
-            end_image_width: usize,
-            end_image_height: usize,
+            image_dimensions: ImageDimensions,
             out_data_ptr: *mut f32,
             out_data_size: usize,
             out_data_stride: usize,

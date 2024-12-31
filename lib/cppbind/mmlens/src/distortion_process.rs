@@ -22,6 +22,7 @@ use rayon::prelude::*;
 
 use crate::cxxbridge::ffi::CameraParameters as BindCameraParameters;
 use crate::cxxbridge::ffi::DistortionDirection as BindDistortionDirection;
+use crate::cxxbridge::ffi::ImageDimensions as BindImageDimensions;
 
 use crate::cxxbridge::ffi::apply_f64_to_f32_3de_classic;
 use crate::cxxbridge::ffi::apply_f64_to_f64_3de_classic;
@@ -81,36 +82,22 @@ pub fn initialize_global_thread_pool(num_threads: i32) -> i32 {
 }
 
 fn apply_identity_func<
-    T: Copy + Send + Sync,
+    OutType: Copy + Send + Sync,
     LensParameter: Copy + Sized + Send + Sync,
 >(
     direction: BindDistortionDirection,
-    image_width: usize,
-    image_height: usize,
-    start_image_width: usize,
-    start_image_height: usize,
-    end_image_width: usize,
-    end_image_height: usize,
-    out_data: &mut [T],
+    image_dimensions: BindImageDimensions,
+    out_data: &mut [OutType],
     out_data_stride: usize,
     camera_parameters: BindCameraParameters,
     film_back_radius_cm: f64,
     lens_parameters: LensParameter,
     func: unsafe fn(
         BindDistortionDirection,
+        BindImageDimensions,
 
-        // Image size
-        usize,
-        usize,
-
-        // Image sub-window
-        usize,
-        usize,
-        usize,
-        usize,
-
-        // Output buffer
-        *mut T,
+        // Output buffer.
+        *mut OutType,
         usize,
         usize,
 
@@ -129,12 +116,7 @@ fn apply_identity_func<
     unsafe {
         func(
             direction,
-            image_width,
-            image_height,
-            start_image_width,
-            start_image_height,
-            end_image_width,
-            end_image_height,
+            image_dimensions,
             out_data_ptr,
             out_data_size,
             out_data_stride,
@@ -146,33 +128,24 @@ fn apply_identity_func<
 }
 
 fn apply_identity_multithread<
-    T: Copy + Send + Sync,
+    OutType: Copy + Send + Sync,
     LensParameter: Copy + Sized + Send + Sync,
 >(
     direction: BindDistortionDirection,
     image_width: usize,
     image_height: usize,
     num_channels: usize,
-    out_data_ptr: *mut T,
+    out_data_ptr: *mut OutType,
     out_data_size: usize,
     camera_parameters: BindCameraParameters,
     film_back_radius_cm: f64,
     lens_parameters: LensParameter,
     func: unsafe fn(
         BindDistortionDirection,
+        BindImageDimensions,
 
-        // Image size
-        usize,
-        usize,
-
-        // Image sub-window
-        usize,
-        usize,
-        usize,
-        usize,
-
-        // Output buffer
-        *mut T,
+        // Output buffer.
+        *mut OutType,
         usize,
         usize,
 
@@ -205,23 +178,27 @@ fn apply_identity_multithread<
             let out_data_chunk_ptr = out_data_chunk.as_ptr();
             let image_height_offset = (out_data_chunk_ptr as usize
                 - out_data_ptr_num)
-                / (core::mem::size_of::<T>() * chunk_size);
+                / (core::mem::size_of::<OutType>() * chunk_size);
 
             let start_image_width = 0;
             let start_image_height = image_height_offset * parallel_scanlines;
             let end_image_width = image_width;
             let end_image_height = start_image_height + parallel_scanlines;
 
+            let image_dimensions = BindImageDimensions {
+                width: image_width,
+                height: image_height,
+                start_width: start_image_width,
+                start_height: start_image_height,
+                end_width: end_image_width,
+                end_height: end_image_height,
+            };
+
             apply_identity_func(
                 direction,
-                image_width,
-                image_height,
-                start_image_width,
-                start_image_height,
-                end_image_width,
-                end_image_height,
+                image_dimensions,
                 out_data_chunk,
-                num_channels,
+                num_channels, // out_data_stride
                 camera_parameters,
                 film_back_radius_cm,
                 lens_parameters,
@@ -238,14 +215,18 @@ fn apply_identity_multithread<
         let end_image_width = image_width;
         let end_image_height = image_height;
 
+        let image_dimensions = BindImageDimensions {
+            width: image_width,
+            height: image_height,
+            start_width: start_image_width,
+            start_height: start_image_height,
+            end_width: end_image_width,
+            end_height: end_image_height,
+        };
+
         apply_identity_func(
             direction,
-            image_width,
-            image_height,
-            start_image_width,
-            start_image_height,
-            end_image_width,
-            end_image_height,
+            image_dimensions,
             out_data,
             num_channels,
             camera_parameters,
@@ -279,15 +260,16 @@ const CPU_CACHE_LINE_PIXEL_COUNT: usize =
 const NUM_CACHE_LINES_PER_TASK: usize = 64;
 
 fn apply_buffer_func<
-    T: Copy + Send + Sync,
+    InType: Copy + Send + Sync,
+    OutType: Copy + Send + Sync,
     LensParameter: Copy + Sized + Send + Sync,
 >(
     direction: BindDistortionDirection,
     pixel_num_start: usize,
     pixel_num_end: usize,
-    in_data: &[f64],
+    in_data: &[InType],
     in_data_stride: usize,
-    out_data: &mut [T],
+    out_data: &mut [OutType],
     out_data_stride: usize,
     camera_parameters: BindCameraParameters,
     film_back_radius_cm: f64,
@@ -299,13 +281,13 @@ fn apply_buffer_func<
         usize,
         usize,
 
-        // Input buffer
-        *const f64,
+        // Input buffer.
+        *const InType,
         usize,
         usize,
 
-        // Output buffer
-        *mut T,
+        // Output buffer.
+        *mut OutType,
         usize,
         usize,
 
@@ -350,14 +332,15 @@ fn apply_buffer_func<
 }
 
 fn apply_buffer_multithread<
-    T: Copy + Send + Sync,
+    InType: Copy + Send + Sync,
+    OutType: Copy + Send + Sync,
     LensParameter: Copy + Sized + Send + Sync,
 >(
     direction: BindDistortionDirection,
-    in_data_ptr: *const f64,
+    in_data_ptr: *const InType,
     in_data_size: usize,
     in_data_stride: usize,
-    out_data_ptr: *mut T,
+    out_data_ptr: *mut OutType,
     out_data_size: usize,
     out_data_stride: usize,
     camera_parameters: BindCameraParameters,
@@ -371,12 +354,12 @@ fn apply_buffer_multithread<
         usize,
 
         // Input buffer
-        *const f64,
+        *const InType,
         usize,
         usize,
 
         // Output buffer
-        *mut T,
+        *mut OutType,
         usize,
         usize,
 
@@ -415,7 +398,7 @@ fn apply_buffer_multithread<
             let out_data_chunk_ptr = out_data_chunk.as_mut_ptr();
             let data_chunk_offset = (out_data_chunk_ptr as usize
                 - out_data_ptr_num)
-                / (core::mem::size_of::<T>() * chunk_size);
+                / (core::mem::size_of::<OutType>() * chunk_size);
 
             let chunk_pixel_count = chunk_size / out_data_stride;
             let pixel_num_start = data_chunk_offset * chunk_pixel_count;
@@ -526,7 +509,7 @@ macro_rules! impl_lens_model_functions {
                 film_back_radius_cm: f64,
                 lens_parameters: $lens_params,
             ) {
-                apply_buffer_multithread::<f64, $lens_params>(
+                apply_buffer_multithread::<f64, f64, $lens_params>(
                     direction,
                     in_data_ptr,
                     in_data_size,
@@ -553,7 +536,7 @@ macro_rules! impl_lens_model_functions {
                 film_back_radius_cm: f64,
                 lens_parameters: $lens_params,
             ) {
-                apply_buffer_multithread::<f32, $lens_params>(
+                apply_buffer_multithread::<f64, f32, $lens_params>(
                     direction,
                     in_data_ptr,
                     in_data_size,

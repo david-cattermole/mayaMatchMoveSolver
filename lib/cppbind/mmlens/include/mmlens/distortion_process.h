@@ -34,6 +34,7 @@
 
 namespace mmlens {
 
+struct ImageDimensions;
 struct CameraParameters;
 struct Parameters3deClassic;
 struct Parameters3deRadialStdDeg4;
@@ -47,24 +48,22 @@ enum class DistortionDirection : uint8_t;
 // 3DE Classic
 
 MMLENS_API_EXPORT
-void apply_identity_to_f64(
-    const DistortionDirection direction, const size_t image_width,
-    const size_t image_height, const size_t start_image_width,
-    const size_t start_image_height, const size_t end_image_width,
-    const size_t end_image_height, double* out_data_ptr,
-    const size_t out_data_size, const size_t out_data_stride,
-    const CameraParameters camera_parameters, const double film_back_radius_cm,
-    Parameters3deClassic lens_parameters);
+void apply_identity_to_f64(const DistortionDirection direction,
+                           const ImageDimensions image_dimensions,
+                           double* out_data_ptr, const size_t out_data_size,
+                           const size_t out_data_stride,
+                           const CameraParameters camera_parameters,
+                           const double film_back_radius_cm,
+                           Parameters3deClassic lens_parameters);
 
 MMLENS_API_EXPORT
-void apply_identity_to_f32(
-    const DistortionDirection direction, const size_t image_width,
-    const size_t image_height, const size_t start_image_width,
-    const size_t start_image_height, const size_t end_image_width,
-    const size_t end_image_height, float* out_data_ptr,
-    const size_t out_data_size, const size_t out_data_stride,
-    const CameraParameters camera_parameters, const double film_back_radius_cm,
-    Parameters3deClassic lens_parameters);
+void apply_identity_to_f32(const DistortionDirection direction,
+                           const ImageDimensions image_dimensions,
+                           float* out_data_ptr, const size_t out_data_size,
+                           const size_t out_data_stride,
+                           const CameraParameters camera_parameters,
+                           const double film_back_radius_cm,
+                           Parameters3deClassic lens_parameters);
 
 MMLENS_API_EXPORT
 void apply_f64_to_f64(const DistortionDirection direction,
@@ -92,24 +91,22 @@ void apply_f64_to_f32(const DistortionDirection direction,
 // 3DE Radial Decentered Degree 4 Cylindric
 
 MMLENS_API_EXPORT
-void apply_identity_to_f64(
-    const DistortionDirection direction, const size_t image_width,
-    const size_t image_height, const size_t start_image_width,
-    const size_t start_image_height, const size_t end_image_width,
-    const size_t end_image_height, double* out_data_ptr,
-    const size_t out_data_size, const size_t out_data_stride,
-    const CameraParameters camera_parameters, const double film_back_radius_cm,
-    Parameters3deRadialStdDeg4 lens_parameters);
+void apply_identity_to_f64(const DistortionDirection direction,
+                           const ImageDimensions image_dimensions,
+                           double* out_data_ptr, const size_t out_data_size,
+                           const size_t out_data_stride,
+                           const CameraParameters camera_parameters,
+                           const double film_back_radius_cm,
+                           Parameters3deRadialStdDeg4 lens_parameters);
 
 MMLENS_API_EXPORT
-void apply_identity_to_f32(
-    const DistortionDirection direction, const size_t image_width,
-    const size_t image_height, const size_t start_image_width,
-    const size_t start_image_height, const size_t end_image_width,
-    const size_t end_image_height, float* out_data_ptr,
-    const size_t out_data_size, const size_t out_data_stride,
-    const CameraParameters camera_parameters, const double film_back_radius_cm,
-    Parameters3deRadialStdDeg4 lens_parameters);
+void apply_identity_to_f32(const DistortionDirection direction,
+                           const ImageDimensions image_dimensions,
+                           float* out_data_ptr, const size_t out_data_size,
+                           const size_t out_data_stride,
+                           const CameraParameters camera_parameters,
+                           const double film_back_radius_cm,
+                           Parameters3deRadialStdDeg4 lens_parameters);
 
 MMLENS_API_EXPORT
 void apply_f64_to_f64(const DistortionDirection direction,
@@ -137,24 +134,22 @@ void apply_f64_to_f32(const DistortionDirection direction,
 // 3DE Anamorphic Degree 4 Rotate Squeeze XY
 
 MMLENS_API_EXPORT
-void apply_identity_to_f64(
-    const DistortionDirection direction, const size_t image_width,
-    const size_t image_height, const size_t start_image_width,
-    const size_t start_image_height, const size_t end_image_width,
-    const size_t end_image_height, double* out_data_ptr,
-    const size_t out_data_size, const size_t out_data_stride,
-    const CameraParameters camera_parameters, const double film_back_radius_cm,
-    Parameters3deAnamorphicStdDeg4 lens_parameters);
+void apply_identity_to_f64(const DistortionDirection direction,
+                           const ImageDimensions image_dimensions,
+                           double* out_data_ptr, const size_t out_data_size,
+                           const size_t out_data_stride,
+                           const CameraParameters camera_parameters,
+                           const double film_back_radius_cm,
+                           Parameters3deAnamorphicStdDeg4 lens_parameters);
 
 MMLENS_API_EXPORT
-void apply_identity_to_f32(
-    const DistortionDirection direction, const size_t image_width,
-    const size_t image_height, const size_t start_image_width,
-    const size_t start_image_height, const size_t end_image_width,
-    const size_t end_image_height, float* out_data_ptr,
-    const size_t out_data_size, const size_t out_data_stride,
-    const CameraParameters camera_parameters, const double film_back_radius_cm,
-    Parameters3deAnamorphicStdDeg4 lens_parameters);
+void apply_identity_to_f32(const DistortionDirection direction,
+                           const ImageDimensions image_dimensions,
+                           float* out_data_ptr, const size_t out_data_size,
+                           const size_t out_data_stride,
+                           const CameraParameters camera_parameters,
+                           const double film_back_radius_cm,
+                           Parameters3deAnamorphicStdDeg4 lens_parameters);
 
 MMLENS_API_EXPORT
 void apply_f64_to_f64(const DistortionDirection direction,
@@ -183,20 +178,16 @@ void apply_f64_to_f32(const DistortionDirection direction,
 
 MMLENS_API_EXPORT
 void apply_identity_to_f64(
-    const DistortionDirection direction, const size_t image_width,
-    const size_t image_height, const size_t start_image_width,
-    const size_t start_image_height, const size_t end_image_width,
-    const size_t end_image_height, double* out_data_ptr,
+    const DistortionDirection direction,
+    const ImageDimensions image_dimensions, double* out_data_ptr,
     const size_t out_data_size, const size_t out_data_stride,
     const CameraParameters camera_parameters, const double film_back_radius_cm,
     Parameters3deAnamorphicStdDeg4Rescaled lens_parameters);
 
 MMLENS_API_EXPORT
 void apply_identity_to_f32(
-    const DistortionDirection direction, const size_t image_width,
-    const size_t image_height, const size_t start_image_width,
-    const size_t start_image_height, const size_t end_image_width,
-    const size_t end_image_height, float* out_data_ptr,
+    const DistortionDirection direction,
+    const ImageDimensions image_dimensions, float* out_data_ptr,
     const size_t out_data_size, const size_t out_data_stride,
     const CameraParameters camera_parameters, const double film_back_radius_cm,
     Parameters3deAnamorphicStdDeg4Rescaled lens_parameters);
@@ -227,24 +218,22 @@ void apply_f64_to_f32(const DistortionDirection direction,
 // 3DE Anamorphic Degree 6 Rotate Squeeze XY
 
 MMLENS_API_EXPORT
-void apply_identity_to_f64(
-    const DistortionDirection direction, const size_t image_width,
-    const size_t image_height, const size_t start_image_width,
-    const size_t start_image_height, const size_t end_image_width,
-    const size_t end_image_height, double* out_data_ptr,
-    const size_t out_data_size, const size_t out_data_stride,
-    const CameraParameters camera_parameters, const double film_back_radius_cm,
-    Parameters3deAnamorphicStdDeg6 lens_parameters);
+void apply_identity_to_f64(const DistortionDirection direction,
+                           const ImageDimensions image_dimensions,
+                           double* out_data_ptr, const size_t out_data_size,
+                           const size_t out_data_stride,
+                           const CameraParameters camera_parameters,
+                           const double film_back_radius_cm,
+                           Parameters3deAnamorphicStdDeg6 lens_parameters);
 
 MMLENS_API_EXPORT
-void apply_identity_to_f32(
-    const DistortionDirection direction, const size_t image_width,
-    const size_t image_height, const size_t start_image_width,
-    const size_t start_image_height, const size_t end_image_width,
-    const size_t end_image_height, float* out_data_ptr,
-    const size_t out_data_size, const size_t out_data_stride,
-    const CameraParameters camera_parameters, const double film_back_radius_cm,
-    Parameters3deAnamorphicStdDeg6 lens_parameters);
+void apply_identity_to_f32(const DistortionDirection direction,
+                           const ImageDimensions image_dimensions,
+                           float* out_data_ptr, const size_t out_data_size,
+                           const size_t out_data_stride,
+                           const CameraParameters camera_parameters,
+                           const double film_back_radius_cm,
+                           Parameters3deAnamorphicStdDeg6 lens_parameters);
 
 MMLENS_API_EXPORT
 void apply_f64_to_f64(const DistortionDirection direction,
@@ -273,20 +262,16 @@ void apply_f64_to_f32(const DistortionDirection direction,
 
 MMLENS_API_EXPORT
 void apply_identity_to_f64(
-    const DistortionDirection direction, const size_t image_width,
-    const size_t image_height, const size_t start_image_width,
-    const size_t start_image_height, const size_t end_image_width,
-    const size_t end_image_height, double* out_data_ptr,
+    const DistortionDirection direction,
+    const ImageDimensions image_dimensions, double* out_data_ptr,
     const size_t out_data_size, const size_t out_data_stride,
     const CameraParameters camera_parameters, const double film_back_radius_cm,
     Parameters3deAnamorphicStdDeg6Rescaled lens_parameters);
 
 MMLENS_API_EXPORT
 void apply_identity_to_f32(
-    const DistortionDirection direction, const size_t image_width,
-    const size_t image_height, const size_t start_image_width,
-    const size_t start_image_height, const size_t end_image_width,
-    const size_t end_image_height, float* out_data_ptr,
+    const DistortionDirection direction,
+    const ImageDimensions image_dimensions, float* out_data_ptr,
     const size_t out_data_size, const size_t out_data_stride,
     const CameraParameters camera_parameters, const double film_back_radius_cm,
     Parameters3deAnamorphicStdDeg6Rescaled lens_parameters);

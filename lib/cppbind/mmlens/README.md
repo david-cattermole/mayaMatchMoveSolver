@@ -255,8 +255,10 @@ class DistortionExample : public Distortion {
 ### 4) distortion_process.h/.cpp
 
 - Add new processing functions in `distortion_process.h` and `distortion_process.cpp`.
-- Implement both single-threaded and multi-threaded versions.
-- Include variants for different precision types (f32/f64).
+- Functions use C++ templates, so copy/paste should get you 99% finished.
+- Ensure you add functions for both single-threaded and multi-threaded
+  versions and include variants for different precision types
+  (f32/f64).
 
 ```cpp
 void apply_identity_to_f64(...);

@@ -278,10 +278,13 @@ void test_batch(const char* test_name_text, const char* undistort_prefix_text,
             in_data_size, in_data_stride, camera_parameters,
             film_back_radius_cm, lens_parameters);
     } else {
-        mmlens::apply_identity_to_f64(
-            mmlens::DistortionDirection::kUndistort, width, height, 0, 0, width,
-            height, in_data, in_data_size, in_data_stride, camera_parameters,
-            film_back_radius_cm, lens_parameters);
+        auto image_dimensions =
+            mmlens::ImageDimensions{width, height, 0, 0, width, height};
+
+        mmlens::apply_identity_to_f64(mmlens::DistortionDirection::kUndistort,
+                                      image_dimensions, in_data, in_data_size,
+                                      in_data_stride, camera_parameters,
+                                      film_back_radius_cm, lens_parameters);
     }
     if (verbosity >= 2) {
         print_data_2d(undistort_prefix_text, width, height, in_data_stride,
@@ -390,9 +393,12 @@ void test_both(const char* test_name_text, const char* print_prefix_text,
             out_data, out_data_size, out_data_stride, camera_parameters,
             film_back_radius_cm, lens_parameters);
     } else {
+        auto image_dimensions =
+            mmlens::ImageDimensions{width, height, 0, 0, width, height};
+
         mmlens::apply_identity_to_f32(
-            mmlens::DistortionDirection::kUndistortAndRedistort, width, height,
-            0, 0, width, height, out_data, out_data_size, out_data_stride,
+            mmlens::DistortionDirection::kUndistortAndRedistort,
+            image_dimensions, out_data, out_data_size, out_data_stride,
             camera_parameters, film_back_radius_cm, lens_parameters);
     }
 

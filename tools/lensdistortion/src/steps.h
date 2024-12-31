@@ -319,11 +319,14 @@ void calculate_image(const mmlens::DistortionDirection distortion_direction,
                     const mmlens::Parameters3deClassic lens_parameters =
                         option.value;
                     if (num_threads == 1) {
+                        auto image_dimensions = mmlens::ImageDimensions{
+                            image_width, image_height, 0,
+                            0,           image_width,  image_height};
+
                         mmlens::apply_identity_to_f32(
-                            distortion_direction, image_width, image_height, 0,
-                            0, image_width, image_height, data_ptr, data_size,
-                            data_stride, camera_parameters, film_back_radius_cm,
-                            lens_parameters);
+                            distortion_direction, image_dimensions, data_ptr,
+                            data_size, data_stride, camera_parameters,
+                            film_back_radius_cm, lens_parameters);
                     } else {
                         mmlens::apply_identity_to_f32_multithread(
                             distortion_direction, image_width, image_height,

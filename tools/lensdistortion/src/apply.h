@@ -108,6 +108,9 @@ void function(const InputMode input_mode, const OutputMode output_mode,
     const size_t out_data_size = out_buffer.element_count();
     const size_t out_pixel_count = out_buffer.pixel_count();
 
+    auto image_dimensions = mmlens::ImageDimensions{
+        image_width, image_height, 0, 0, image_width, image_height};
+
     if ((input_mode == InputMode::kIdentity) &&
         (output_mode == OutputMode::kF32x4)) {
         const size_t out_data_stride = 4;  // RGBA.
@@ -118,10 +121,9 @@ void function(const InputMode input_mode, const OutputMode output_mode,
 
         if (num_threads == 1) {
             mmlens::apply_identity_to_f32(
-                distortion_direction, image_width, image_height, 0, 0,
-                image_width, image_height, out_data_ptr, out_data_size,
-                out_data_stride, camera_parameters, film_back_radius_cm,
-                lens_parameters);
+                distortion_direction, image_dimensions, out_data_ptr,
+                out_data_size, out_data_stride, camera_parameters,
+                film_back_radius_cm, lens_parameters);
         } else {
             mmlens::apply_identity_to_f32_multithread(
                 distortion_direction, image_width, image_height, out_data_ptr,
@@ -139,10 +141,9 @@ void function(const InputMode input_mode, const OutputMode output_mode,
 
         if (num_threads == 1) {
             mmlens::apply_identity_to_f64(
-                distortion_direction, image_width, image_height, 0, 0,
-                image_width, image_height, out_data_ptr, out_data_size,
-                out_data_stride, camera_parameters, film_back_radius_cm,
-                lens_parameters);
+                distortion_direction, image_dimensions, out_data_ptr,
+                out_data_size, out_data_stride, camera_parameters,
+                film_back_radius_cm, lens_parameters);
         } else {
             mmlens::apply_identity_to_f64_multithread(
                 distortion_direction, image_width, image_height, out_data_ptr,
@@ -160,10 +161,9 @@ void function(const InputMode input_mode, const OutputMode output_mode,
 
         if (num_threads == 1) {
             mmlens::apply_identity_to_f64(
-                distortion_direction, image_width, image_height, 0, 0,
-                image_width, image_height, out_data_ptr, out_data_size,
-                out_data_stride, camera_parameters, film_back_radius_cm,
-                lens_parameters);
+                distortion_direction, image_dimensions, out_data_ptr,
+                out_data_size, out_data_stride, camera_parameters,
+                film_back_radius_cm, lens_parameters);
         } else {
             mmlens::apply_identity_to_f64_multithread(
                 distortion_direction, image_width, image_height, out_data_ptr,

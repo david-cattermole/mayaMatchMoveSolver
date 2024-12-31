@@ -34,15 +34,7 @@ inline DistortionType create_distortion(const ParameterType& lens_parameters);
 // distortion model away.
 template <typename OutType, typename DistortionType, typename ParameterType>
 void apply_identity_impl(const DistortionDirection direction,
-
-                         // Image size
-                         const size_t image_width, const size_t image_height,
-
-                         // Image sub-window
-                         const size_t start_image_width,
-                         const size_t start_image_height,
-                         const size_t end_image_width,
-                         const size_t end_image_height,
+                         const ImageDimensions image_dimensions,
 
                          // Output buffer
                          OutType* out_data_ptr, const size_t out_data_size,
@@ -58,25 +50,28 @@ void apply_identity_impl(const DistortionDirection direction,
     if (direction == DistortionDirection::kUndistort) {
         apply_lens_distortion_from_identity_with_stride<
             DistortionDirection::kUndistort, OutType, DistortionType>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
+            image_dimensions.width, image_dimensions.height,
+            image_dimensions.start_width, image_dimensions.start_height,
+            image_dimensions.end_width, image_dimensions.end_height,
+            out_data_ptr, out_data_size, out_data_stride, camera_parameters,
+            film_back_radius_cm, distortion);
     } else if (direction == DistortionDirection::kRedistort) {
         apply_lens_distortion_from_identity_with_stride<
             DistortionDirection::kRedistort, OutType, DistortionType>(
-            image_width, image_height, start_image_width, start_image_height,
-            end_image_width, end_image_height, out_data_ptr, out_data_size,
-            out_data_stride, camera_parameters, film_back_radius_cm,
-            distortion);
+            image_dimensions.width, image_dimensions.height,
+            image_dimensions.start_width, image_dimensions.start_height,
+            image_dimensions.end_width, image_dimensions.end_height,
+            out_data_ptr, out_data_size, out_data_stride, camera_parameters,
+            film_back_radius_cm, distortion);
     } else if (direction == DistortionDirection::kUndistortAndRedistort) {
         apply_lens_distortion_from_identity_with_stride<
             DistortionDirection::kUndistortAndRedistort, OutType,
-            DistortionType>(image_width, image_height, start_image_width,
-                            start_image_height, end_image_width,
-                            end_image_height, out_data_ptr, out_data_size,
-                            out_data_stride, camera_parameters,
-                            film_back_radius_cm, distortion);
+            DistortionType>(
+            image_dimensions.width, image_dimensions.height,
+            image_dimensions.start_width, image_dimensions.start_height,
+            image_dimensions.end_width, image_dimensions.end_height,
+            out_data_ptr, out_data_size, out_data_stride, camera_parameters,
+            film_back_radius_cm, distortion);
     }
 }
 
@@ -146,15 +141,7 @@ create_distortion<Distortion3deClassic, Parameters3deClassic>(
 }
 
 void apply_identity_to_f64(const DistortionDirection direction,
-
-                           // Image size
-                           const size_t image_width, const size_t image_height,
-
-                           // Image sub-window
-                           const size_t start_image_width,
-                           const size_t start_image_height,
-                           const size_t end_image_width,
-                           const size_t end_image_height,
+                           const ImageDimensions image_dimensions,
 
                            // Output buffer
                            double* out_data_ptr, const size_t out_data_size,
@@ -165,22 +152,13 @@ void apply_identity_to_f64(const DistortionDirection direction,
                            const double film_back_radius_cm,
                            Parameters3deClassic lens_parameters) {
     apply_identity_impl<double, Distortion3deClassic, Parameters3deClassic>(
-        direction, image_width, image_height, start_image_width,
-        start_image_height, end_image_width, end_image_height, out_data_ptr,
-        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        direction, image_dimensions, out_data_ptr, out_data_size,
+        out_data_stride, camera_parameters, film_back_radius_cm,
         lens_parameters);
 }
 
 void apply_identity_to_f32(const DistortionDirection direction,
-
-                           // Image size
-                           const size_t image_width, const size_t image_height,
-
-                           // Image sub-window
-                           const size_t start_image_width,
-                           const size_t start_image_height,
-                           const size_t end_image_width,
-                           const size_t end_image_height,
+                           const ImageDimensions image_dimensions,
 
                            // Output buffer
                            float* out_data_ptr, const size_t out_data_size,
@@ -191,9 +169,8 @@ void apply_identity_to_f32(const DistortionDirection direction,
                            const double film_back_radius_cm,
                            Parameters3deClassic lens_parameters) {
     apply_identity_impl<float, Distortion3deClassic, Parameters3deClassic>(
-        direction, image_width, image_height, start_image_width,
-        start_image_height, end_image_width, end_image_height, out_data_ptr,
-        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        direction, image_dimensions, out_data_ptr, out_data_size,
+        out_data_stride, camera_parameters, film_back_radius_cm,
         lens_parameters);
 }
 
@@ -267,15 +244,7 @@ create_distortion<Distortion3deRadialStdDeg4, Parameters3deRadialStdDeg4>(
 }
 
 void apply_identity_to_f64(const DistortionDirection direction,
-
-                           // Image size
-                           const size_t image_width, const size_t image_height,
-
-                           // Image sub-window
-                           const size_t start_image_width,
-                           const size_t start_image_height,
-                           const size_t end_image_width,
-                           const size_t end_image_height,
+                           const ImageDimensions image_dimensions,
 
                            // Output buffer
                            double* out_data_ptr, const size_t out_data_size,
@@ -287,22 +256,13 @@ void apply_identity_to_f64(const DistortionDirection direction,
                            Parameters3deRadialStdDeg4 lens_parameters) {
     apply_identity_impl<double, Distortion3deRadialStdDeg4,
                         Parameters3deRadialStdDeg4>(
-        direction, image_width, image_height, start_image_width,
-        start_image_height, end_image_width, end_image_height, out_data_ptr,
-        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        direction, image_dimensions, out_data_ptr, out_data_size,
+        out_data_stride, camera_parameters, film_back_radius_cm,
         lens_parameters);
 }
 
 void apply_identity_to_f32(const DistortionDirection direction,
-
-                           // Image size
-                           const size_t image_width, const size_t image_height,
-
-                           // Image sub-window
-                           const size_t start_image_width,
-                           const size_t start_image_height,
-                           const size_t end_image_width,
-                           const size_t end_image_height,
+                           const ImageDimensions image_dimensions,
 
                            // Output buffer
                            float* out_data_ptr, const size_t out_data_size,
@@ -314,9 +274,8 @@ void apply_identity_to_f32(const DistortionDirection direction,
                            Parameters3deRadialStdDeg4 lens_parameters) {
     apply_identity_impl<float, Distortion3deRadialStdDeg4,
                         Parameters3deRadialStdDeg4>(
-        direction, image_width, image_height, start_image_width,
-        start_image_height, end_image_width, end_image_height, out_data_ptr,
-        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        direction, image_dimensions, out_data_ptr, out_data_size,
+        out_data_stride, camera_parameters, film_back_radius_cm,
         lens_parameters);
 }
 
@@ -395,15 +354,7 @@ inline Distortion3deAnamorphicStdDeg4 create_distortion<
 }
 
 void apply_identity_to_f64(const DistortionDirection direction,
-
-                           // Image size
-                           const size_t image_width, const size_t image_height,
-
-                           // Image sub-window
-                           const size_t start_image_width,
-                           const size_t start_image_height,
-                           const size_t end_image_width,
-                           const size_t end_image_height,
+                           const ImageDimensions image_dimensions,
 
                            // Output buffer
                            double* out_data_ptr, const size_t out_data_size,
@@ -415,22 +366,13 @@ void apply_identity_to_f64(const DistortionDirection direction,
                            Parameters3deAnamorphicStdDeg4 lens_parameters) {
     apply_identity_impl<double, Distortion3deAnamorphicStdDeg4,
                         Parameters3deAnamorphicStdDeg4>(
-        direction, image_width, image_height, start_image_width,
-        start_image_height, end_image_width, end_image_height, out_data_ptr,
-        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        direction, image_dimensions, out_data_ptr, out_data_size,
+        out_data_stride, camera_parameters, film_back_radius_cm,
         lens_parameters);
 }
 
 void apply_identity_to_f32(const DistortionDirection direction,
-
-                           // Image size
-                           const size_t image_width, const size_t image_height,
-
-                           // Image sub-window
-                           const size_t start_image_width,
-                           const size_t start_image_height,
-                           const size_t end_image_width,
-                           const size_t end_image_height,
+                           const ImageDimensions image_dimensions,
 
                            // Output buffer
                            float* out_data_ptr, const size_t out_data_size,
@@ -442,9 +384,8 @@ void apply_identity_to_f32(const DistortionDirection direction,
                            Parameters3deAnamorphicStdDeg4 lens_parameters) {
     apply_identity_impl<float, Distortion3deAnamorphicStdDeg4,
                         Parameters3deAnamorphicStdDeg4>(
-        direction, image_width, image_height, start_image_width,
-        start_image_height, end_image_width, end_image_height, out_data_ptr,
-        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        direction, image_dimensions, out_data_ptr, out_data_size,
+        out_data_stride, camera_parameters, film_back_radius_cm,
         lens_parameters);
 }
 
@@ -526,13 +467,7 @@ create_distortion<Distortion3deAnamorphicStdDeg4Rescaled,
 
 void apply_identity_to_f64(
     const DistortionDirection direction,
-
-    // Image size
-    const size_t image_width, const size_t image_height,
-
-    // Image sub-window
-    const size_t start_image_width, const size_t start_image_height,
-    const size_t end_image_width, const size_t end_image_height,
+    const ImageDimensions image_dimensions,
 
     // Output buffer
     double* out_data_ptr, const size_t out_data_size,
@@ -543,21 +478,14 @@ void apply_identity_to_f64(
     Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) {
     apply_identity_impl<double, Distortion3deAnamorphicStdDeg4Rescaled,
                         Parameters3deAnamorphicStdDeg4Rescaled>(
-        direction, image_width, image_height, start_image_width,
-        start_image_height, end_image_width, end_image_height, out_data_ptr,
-        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        direction, image_dimensions, out_data_ptr, out_data_size,
+        out_data_stride, camera_parameters, film_back_radius_cm,
         lens_parameters);
 }
 
 void apply_identity_to_f32(
     const DistortionDirection direction,
-
-    // Image size
-    const size_t image_width, const size_t image_height,
-
-    // Image sub-window
-    const size_t start_image_width, const size_t start_image_height,
-    const size_t end_image_width, const size_t end_image_height,
+    const ImageDimensions image_dimensions,
 
     // Output buffer
     float* out_data_ptr, const size_t out_data_size,
@@ -568,9 +496,8 @@ void apply_identity_to_f32(
     Parameters3deAnamorphicStdDeg4Rescaled lens_parameters) {
     apply_identity_impl<float, Distortion3deAnamorphicStdDeg4Rescaled,
                         Parameters3deAnamorphicStdDeg4Rescaled>(
-        direction, image_width, image_height, start_image_width,
-        start_image_height, end_image_width, end_image_height, out_data_ptr,
-        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        direction, image_dimensions, out_data_ptr, out_data_size,
+        out_data_stride, camera_parameters, film_back_radius_cm,
         lens_parameters);
 }
 
@@ -657,15 +584,7 @@ inline Distortion3deAnamorphicStdDeg6 create_distortion<
 }
 
 void apply_identity_to_f64(const DistortionDirection direction,
-
-                           // Image size
-                           const size_t image_width, const size_t image_height,
-
-                           // Image sub-window
-                           const size_t start_image_width,
-                           const size_t start_image_height,
-                           const size_t end_image_width,
-                           const size_t end_image_height,
+                           const ImageDimensions image_dimensions,
 
                            // Output buffer
                            double* out_data_ptr, const size_t out_data_size,
@@ -677,22 +596,13 @@ void apply_identity_to_f64(const DistortionDirection direction,
                            Parameters3deAnamorphicStdDeg6 lens_parameters) {
     apply_identity_impl<double, Distortion3deAnamorphicStdDeg6,
                         Parameters3deAnamorphicStdDeg6>(
-        direction, image_width, image_height, start_image_width,
-        start_image_height, end_image_width, end_image_height, out_data_ptr,
-        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        direction, image_dimensions, out_data_ptr, out_data_size,
+        out_data_stride, camera_parameters, film_back_radius_cm,
         lens_parameters);
 }
 
 void apply_identity_to_f32(const DistortionDirection direction,
-
-                           // Image size
-                           const size_t image_width, const size_t image_height,
-
-                           // Image sub-window
-                           const size_t start_image_width,
-                           const size_t start_image_height,
-                           const size_t end_image_width,
-                           const size_t end_image_height,
+                           const ImageDimensions image_dimensions,
 
                            // Output buffer
                            float* out_data_ptr, const size_t out_data_size,
@@ -704,9 +614,8 @@ void apply_identity_to_f32(const DistortionDirection direction,
                            Parameters3deAnamorphicStdDeg6 lens_parameters) {
     apply_identity_impl<float, Distortion3deAnamorphicStdDeg6,
                         Parameters3deAnamorphicStdDeg6>(
-        direction, image_width, image_height, start_image_width,
-        start_image_height, end_image_width, end_image_height, out_data_ptr,
-        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        direction, image_dimensions, out_data_ptr, out_data_size,
+        out_data_stride, camera_parameters, film_back_radius_cm,
         lens_parameters);
 }
 
@@ -796,13 +705,7 @@ create_distortion<Distortion3deAnamorphicStdDeg6Rescaled,
 
 void apply_identity_to_f64(
     const DistortionDirection direction,
-
-    // Image size
-    const size_t image_width, const size_t image_height,
-
-    // Image sub-window
-    const size_t start_image_width, const size_t start_image_height,
-    const size_t end_image_width, const size_t end_image_height,
+    const ImageDimensions image_dimensions,
 
     // Output buffer
     double* out_data_ptr, const size_t out_data_size,
@@ -813,21 +716,14 @@ void apply_identity_to_f64(
     Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) {
     apply_identity_impl<double, Distortion3deAnamorphicStdDeg6Rescaled,
                         Parameters3deAnamorphicStdDeg6Rescaled>(
-        direction, image_width, image_height, start_image_width,
-        start_image_height, end_image_width, end_image_height, out_data_ptr,
-        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        direction, image_dimensions, out_data_ptr, out_data_size,
+        out_data_stride, camera_parameters, film_back_radius_cm,
         lens_parameters);
 }
 
 void apply_identity_to_f32(
     const DistortionDirection direction,
-
-    // Image size
-    const size_t image_width, const size_t image_height,
-
-    // Image sub-window
-    const size_t start_image_width, const size_t start_image_height,
-    const size_t end_image_width, const size_t end_image_height,
+    const ImageDimensions image_dimensions,
 
     // Output buffer
     float* out_data_ptr, const size_t out_data_size,
@@ -838,9 +734,8 @@ void apply_identity_to_f32(
     Parameters3deAnamorphicStdDeg6Rescaled lens_parameters) {
     apply_identity_impl<float, Distortion3deAnamorphicStdDeg6Rescaled,
                         Parameters3deAnamorphicStdDeg6Rescaled>(
-        direction, image_width, image_height, start_image_width,
-        start_image_height, end_image_width, end_image_height, out_data_ptr,
-        out_data_size, out_data_stride, camera_parameters, film_back_radius_cm,
+        direction, image_dimensions, out_data_ptr, out_data_size,
+        out_data_stride, camera_parameters, film_back_radius_cm,
         lens_parameters);
 }
 

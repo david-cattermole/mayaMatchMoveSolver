@@ -466,8 +466,7 @@ create_distortion<Distortion3deAnamorphicStdDeg4Rescaled,
 }
 
 void apply_identity_to_f64(
-    const DistortionDirection direction,
-    const ImageDimensions image_dimensions,
+    const DistortionDirection direction, const ImageDimensions image_dimensions,
 
     // Output buffer
     double* out_data_ptr, const size_t out_data_size,
@@ -484,8 +483,7 @@ void apply_identity_to_f64(
 }
 
 void apply_identity_to_f32(
-    const DistortionDirection direction,
-    const ImageDimensions image_dimensions,
+    const DistortionDirection direction, const ImageDimensions image_dimensions,
 
     // Output buffer
     float* out_data_ptr, const size_t out_data_size,
@@ -704,8 +702,7 @@ create_distortion<Distortion3deAnamorphicStdDeg6Rescaled,
 }
 
 void apply_identity_to_f64(
-    const DistortionDirection direction,
-    const ImageDimensions image_dimensions,
+    const DistortionDirection direction, const ImageDimensions image_dimensions,
 
     // Output buffer
     double* out_data_ptr, const size_t out_data_size,
@@ -722,8 +719,7 @@ void apply_identity_to_f64(
 }
 
 void apply_identity_to_f32(
-    const DistortionDirection direction,
-    const ImageDimensions image_dimensions,
+    const DistortionDirection direction, const ImageDimensions image_dimensions,
 
     // Output buffer
     float* out_data_ptr, const size_t out_data_size,

@@ -31,11 +31,17 @@ LOG = mmSolver.logger.get_logger()
 
 
 def get_gpu_memory_total_bytes():
-    return int(maya.cmds.mmMemoryGPU(query=True, total=True))
+    total_bytes = maya.cmds.mmMemoryGPU(query=True, total=True)
+    if total_bytes is None:
+        return 0
+    return int(total_bytes)
 
 
 def get_gpu_memory_used_bytes():
-    return int(maya.cmds.mmMemoryGPU(query=True, used=True))
+    used_bytes = maya.cmds.mmMemoryGPU(query=True, used=True)
+    if used_bytes is None:
+        return 0
+    return int(used_bytes)
 
 
 def get_cpu_memory_total_bytes():

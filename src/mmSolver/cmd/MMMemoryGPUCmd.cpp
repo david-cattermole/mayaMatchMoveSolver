@@ -41,6 +41,9 @@
 #include <maya/MStringArray.h>
 #include <maya/MSyntax.h>
 
+// Maya Viewport 2.0
+#include <maya/MViewport2Renderer.h>
+
 // MM Solver
 #include <mmcolorio/lib.h>
 
@@ -158,6 +161,17 @@ MStatus MMMemoryGPUCmd::doIt(const MArgList &args) {
     // Read all the flag arguments.
     MStatus status = parseArgs(args);
     CHECK_MSTATUS_AND_RETURN_IT(status);
+
+    // When running without a GPU (for example in a Docker container),
+    // don't Spam the user with warnings and errors that the MRenderer
+    // cannot be found.
+    const MHWRender::MRenderer *renderer = MHWRender::MRenderer::theRenderer();
+    if (!renderer) {
+        MMSOLVER_MAYA_WRN(
+            "mmMemoryGPU: Failed to get Maya MRenderer! "
+            "Maybe running on a machine without a GPU?");
+        return MStatus::kSuccess;
+    }
 
     size_t bytes_value = 0;
     if (m_memory_total) {

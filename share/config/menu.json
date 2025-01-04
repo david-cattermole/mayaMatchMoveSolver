@@ -33,6 +33,7 @@
             "attr_tools/---General",
             "attr_tools/smooth_keyframes",
             "attr_tools/channel_sensitivity_ui",
+            "attr_tools/attribute_curve_filter_pops",
             "attr_tools/---Bake Attributes",
             "attr_tools/attribute_bake",
             "camera_tools/---Camera & Lens",

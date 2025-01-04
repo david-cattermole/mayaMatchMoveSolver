@@ -206,6 +206,29 @@
                 "mmSolver.tools.attributebake.tool.open_window();"
             ]
         },
+        "attribute_curve_filter_pops": {
+            "name": "Filter Animation Curve Pops",
+            "name_shelf": "AttrFilterCurvePops",
+            "tooltip": "Pop filter animation curve on attributes.",
+            "command": [
+                "import mmSolver.tools.attributecurvefilterpops.tool;",
+                "mmSolver.tools.attributecurvefilterpops.tool.main();"
+            ],
+            "option_box": true,
+            "command_option_box": [
+                "import mmSolver.tools.attributecurvefilterpops.tool;",
+                "mmSolver.tools.attributecurvefilterpops.tool.open_window();"
+            ]
+        },
+        "attribute_curve_filter_pops_ui": {
+            "name": "Filter Animation Curve Pops UI...",
+            "name_shelf": "AttrFilterCurvePops",
+            "tooltip": "Pop filter animation curve on attributes.",
+            "command": [
+                "import mmSolver.tools.attributecurvefilterpops.tool;",
+                "mmSolver.tools.attributecurvefilterpops.tool.open_window();"
+            ]
+        },
         "aim_at_camera_manipulator": {
             "name": "Aim At Camera (Screen-Z Manipulator)",
             "tooltip": "Screen-space Z manipulator.",

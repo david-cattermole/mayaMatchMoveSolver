@@ -31,6 +31,7 @@
 #include <maya/MFnAnimCurve.h>
 #include <maya/MObject.h>
 #include <maya/MPxCommand.h>
+#include <maya/MSelectionList.h>
 #include <maya/MSyntax.h>
 #include <maya/MTime.h>
 
@@ -61,7 +62,8 @@ private:
     double m_endFrame;
     double m_threshold;
 
-    // The animation curves to process
+    // The animation curves to process.
+    MSelectionList m_selection;
     MObject m_animCurveObj;
     MFnAnimCurve m_animCurveFn;
 

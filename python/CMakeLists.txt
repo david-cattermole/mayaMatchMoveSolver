@@ -159,9 +159,14 @@ if (MMSOLVER_BUILD_QT_UI)
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/userprefswindow/ui/ui_pref_layout.py
             )
 
-    compile_qt_ui_to_python_file("fastbake"
+    compile_qt_ui_to_python_file("attrbake"
             ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/attributebake/ui/attrbake_layout.ui
             ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/attributebake/ui/ui_attrbake_layout.py
+          )
+
+    compile_qt_ui_to_python_file("attributecurvefilterpops"
+            ${CMAKE_CURRENT_SOURCE_DIR}/mmSolver/tools/attributecurvefilterpops/ui/attrcurvefilterpops_layout.ui
+            ${CMAKE_CURRENT_BINARY_DIR}/mmSolver/tools/attributecurvefilterpops/ui/ui_attrcurvefilterpops_layout.py
             )
 
     compile_qt_ui_to_python_file("createcontroller2"

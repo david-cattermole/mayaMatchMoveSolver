@@ -27,6 +27,7 @@
             "attr_tools/attr_popup/---General",
             "attr_tools/attr_popup/smooth_keyframes",
             "attr_tools/attr_popup/channel_sensitivity_ui",
+            "attr_tools/attr_popup/attribute_curve_filter_pops",
             "attr_tools/attr_popup/---Bake Attributes",
             "attr_tools/attr_popup/attribute_bake",
             "camera_tools/camera_popup/---Camera & Lens",

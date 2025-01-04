@@ -27,10 +27,11 @@ qtpyutils.override_binding_order()
 import mmSolver.ui.Qt.QtWidgets as QtWidgets
 
 import mmSolver.logger
-import mmSolver.tools.smoothkeyframes.ui.ui_smoothkeys_layout as ui_smoothkeys_layout
-import mmSolver.tools.smoothkeyframes.constant as const
 import mmSolver.utils.configmaya as configmaya
 import mmSolver.utils.constant as utils_const
+import mmSolver.ui.uisliderspinbox as uisliderspinbox
+import mmSolver.tools.smoothkeyframes.constant as const
+import mmSolver.tools.smoothkeyframes.ui.ui_smoothkeys_layout as ui_smoothkeys_layout
 
 
 LOG = mmSolver.logger.get_logger()
@@ -40,6 +41,24 @@ class SmoothKeysLayout(QtWidgets.QWidget, ui_smoothkeys_layout.Ui_Form):
     def __init__(self, parent=None, *args, **kwargs):
         super(SmoothKeysLayout, self).__init__(*args, **kwargs)
         self.setupUi(self)
+
+        # Remove placeholder widgets.
+        self.width_spinBox.setParent(None)
+        self.width_slider.setParent(None)
+        self.width_sliderSpinBox_layout.setParent(None)
+
+        # Add slider spin-box, replacing placeholder widget from the
+        # .ui file.
+        widget = uisliderspinbox.SliderSpinBox(
+            parent=self,
+            min_value=1,
+            max_value=20,
+            default_value=2,
+            use_float=False,
+            show_ticks=True,
+        )
+        self.options_layout.setWidget(1, QtWidgets.QFormLayout.FieldRole, widget)
+        self.width_sliderSpinBox = widget
 
         # Function
         modes = [
@@ -51,8 +70,7 @@ class SmoothKeysLayout(QtWidgets.QWidget, ui_smoothkeys_layout.Ui_Form):
         self.function_comboBox.currentIndexChanged.connect(self.modeIndexChanged)
 
         # Width
-        self.width_horizontalSlider.valueChanged.connect(self.widthValueChanged)
-        self.width_spinBox.valueChanged.connect(self.widthSpinBoxValueChanged)
+        self.width_sliderSpinBox.valueChanged.connect(self.widthValueChanged)
 
         # Populate the UI with data
         self.populateUi()
@@ -64,14 +82,7 @@ class SmoothKeysLayout(QtWidgets.QWidget, ui_smoothkeys_layout.Ui_Form):
         LOG.debug('key=%r value=%r', name, value)
 
     def widthValueChanged(self, value):
-        self.width_spinBox.setValue(value)
-        name = const.CONFIG_WIDTH_KEY
-        value = float(value)
-        configmaya.set_scene_option(name, value, add_attr=True)
-        LOG.debug('key=%r value=%r', name, value)
-
-    def widthSpinBoxValueChanged(self, value):
-        self.width_horizontalSlider.setValue(value)
+        self.width_sliderSpinBox.setValue(value)
         name = const.CONFIG_WIDTH_KEY
         value = float(value)
         configmaya.set_scene_option(name, value, add_attr=True)
@@ -103,6 +114,5 @@ class SmoothKeysLayout(QtWidgets.QWidget, ui_smoothkeys_layout.Ui_Form):
         name = const.CONFIG_WIDTH_KEY
         value = configmaya.get_scene_option(name, default=const.DEFAULT_WIDTH)
         LOG.debug('key=%r value=%r', name, value)
-        self.width_horizontalSlider.setValue(value)
-        self.width_spinBox.setValue(value)
+        self.width_sliderSpinBox.setValue(value)
         return

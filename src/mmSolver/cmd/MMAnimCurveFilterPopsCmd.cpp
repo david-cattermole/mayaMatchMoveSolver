@@ -36,7 +36,6 @@
 #include <maya/MDagPath.h>
 #include <maya/MFnDependencyNode.h>
 #include <maya/MGlobal.h>
-#include <maya/MSelectionList.h>
 #include <maya/MStreamUtils.h>
 #include <maya/MSyntax.h>
 
@@ -92,7 +91,8 @@ MSyntax MMAnimCurveFilterPopsCmd::newSyntax() {
     // TODO: Add an option to 'infill' the pops.
 
     // Add object argument for animation curve
-    syntax.setObjectType(MSyntax::kSelectionList, 1, 1);
+    const unsigned int min_curves = 1;
+    syntax.setObjectType(MSyntax::kSelectionList, min_curves);
     syntax.useSelectionAsDefault(true);
 
     return syntax;
@@ -106,23 +106,20 @@ MStatus MMAnimCurveFilterPopsCmd::parseArgs(const MArgList &args) {
     MArgDatabase argData(syntax(), args, &status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    // Get animation curve from selection
-    MSelectionList selection;
-    status = argData.getObjects(selection);
+    // Get animation curve from selection.
+    status = argData.getObjects(m_selection);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
-    if (selection.length() == 0) {
+    if (m_selection.length() == 0) {
         MGlobal::displayError("Please select at least one animation curve.");
         return MS::kFailure;
     }
 
-    status = selection.getDependNode(0, m_animCurveObj);
-    CHECK_MSTATUS_AND_RETURN_IT(status);
-
-    status = m_animCurveFn.setObject(m_animCurveObj);
-    if (status != MS::kSuccess) {
-        MGlobal::displayError("Selected object is not an animation curve.");
-        return status;
+    // To make sure that if any node is invalid, we catch it here, and
+    // not during 'doIt'.
+    for (auto i = 0; i < m_selection.length(); i++) {
+        status = m_selection.getDependNode(i, m_animCurveObj);
+        CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
     // Parse optional arguments
@@ -147,13 +144,38 @@ MStatus MMAnimCurveFilterPopsCmd::parseArgs(const MArgList &args) {
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
 
-    if (verbose) {
-        MMSOLVER_MAYA_VRB(
-            "MMAnimCurveFilterPopsCmd::m_startFrame=" << m_startFrame);
-        MMSOLVER_MAYA_VRB(
-            "MMAnimCurveFilterPopsCmd::m_endFrame=" << m_endFrame);
-        MMSOLVER_MAYA_VRB(
-            "MMAnimCurveFilterPopsCmd::m_threshold=" << m_threshold);
+    const double frame_range_duration = m_endFrame - m_startFrame;
+    MMSOLVER_MAYA_VRB(
+        "MMAnimCurveFilterPopsCmd::m_startFrame=" << m_startFrame);
+    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::m_endFrame=" << m_endFrame);
+    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::m_threshold=" << m_threshold);
+    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::frame_range_duration="
+                      << frame_range_duration);
+
+    if (m_startFrame > m_endFrame) {
+        MGlobal::displayError(
+            "Invalid frame range; "
+            "The start frame is larger than the end frame.");
+        return MS::kFailure;
+    }
+
+    if (m_startFrame == m_endFrame) {
+        MGlobal::displayError(
+            "Invalid frame range; "
+            "The start frame is equal to the end frame.");
+        return MS::kFailure;
+    }
+
+    if (frame_range_duration <= 2.0) {
+        MGlobal::displayError(
+            "Invalid frame range; "
+            "The frame range length is less than 2 frames.");
+        return MS::kFailure;
+    }
+
+    if (m_threshold < 0.0) {
+        MGlobal::displayError("Threshold value is less than 0.0.");
+        return MS::kFailure;
     }
 
     return status;
@@ -169,75 +191,97 @@ MStatus MMAnimCurveFilterPopsCmd::doIt(const MArgList &args) {
     m_curveChange.setInteractive(true);
 
     auto count = static_cast<size_t>((m_endFrame - m_startFrame) / 1.0);
+    MMSOLVER_MAYA_VRB("MMAnimCurveFilterPopsCmd::count=" << count);
 
     rust::Vec<mmsg::Real> x_values;
     rust::Vec<mmsg::Real> y_values;
     x_values.reserve(count);
     y_values.reserve(count);
 
-    auto time_unit = MTime::uiUnit();
-    for (auto frame = m_startFrame; frame <= m_endFrame; frame += 1.0) {
-        auto time = MTime(frame, time_unit);
-        auto value = m_animCurveFn.evaluate(time, &status);
-        CHECK_MSTATUS_AND_RETURN_IT(status);
-        MMSOLVER_MAYA_VRB("f=" << frame << " v=" << value);
-
-        x_values.push_back(frame);
-        y_values.push_back(value);
-    }
-
-    MMSOLVER_MAYA_VRB("In curve: " << x_values.size() << " | "
-                                   << y_values.size());
-
-    auto actual_count = x_values.size();
     rust::Vec<mmsg::Real> filtered_x_values;
     rust::Vec<mmsg::Real> filtered_y_values;
-    filtered_x_values.reserve(actual_count);
-    filtered_y_values.reserve(actual_count);
 
-    // TODO: Can we 'calc_signal_to_noise_ratio', so we can determine
-    // if a pop-detection is actually needed?
-
-    MMSOLVER_MAYA_VRB("m_threshold: " << m_threshold);
-    rust::Slice<const mmsg::Real> x_values_slice{x_values.data(),
-                                                 x_values.size()};
-    rust::Slice<const mmsg::Real> y_values_slice{y_values.data(),
-                                                 y_values.size()};
-    mmsg::filter_curve_pops(x_values_slice, y_values_slice, m_threshold,
-                            filtered_x_values, filtered_y_values);
-
-    // Clear all keys from the anim curve.
-    //
-    // TODO: Only keyframes between (and including) the start frame
-    // and end frame should be removed.
-    auto num_keys = m_animCurveFn.numKeys();
-    MMSOLVER_MAYA_VRB("num_keys=" << num_keys);
-    for (auto i = 0; i < num_keys; i++) {
-        m_animCurveFn.remove(0, &m_curveChange);
-    }
-
-    MMSOLVER_MAYA_VRB("Filtered curve: " << filtered_x_values.size() << " | "
-                                         << filtered_y_values.size());
-    const auto tangent_in_type = MFnAnimCurve::TangentType::kTangentGlobal;
-    const auto tangent_out_type = MFnAnimCurve::TangentType::kTangentGlobal;
-    for (auto i = 0; i < filtered_x_values.size(); i++) {
-        auto frame = filtered_x_values[i];
-        auto value = filtered_y_values[i];
-        MMSOLVER_MAYA_VRB("f=" << frame << " v=" << value);
-
-        auto time = MTime(frame, time_unit);
-
-        uint32_t key_index = 0;
-        const bool found = m_animCurveFn.find(time, key_index, &status);
+    for (auto i = 0; i < m_selection.length(); i++) {
+        status = m_selection.getDependNode(i, m_animCurveObj);
         CHECK_MSTATUS_AND_RETURN_IT(status);
-        if (found) {
-            status = m_animCurveFn.setValue(key_index, value, &m_curveChange);
+
+        status = m_animCurveFn.setObject(m_animCurveObj);
+        if (status != MS::kSuccess) {
+            MGlobal::displayError("Selected object is not an animation curve.");
+            return status;
+        }
+
+        x_values.clear();
+        y_values.clear();
+
+        auto time_unit = MTime::uiUnit();
+        for (auto frame = m_startFrame; frame <= m_endFrame; frame += 1.0) {
+            auto time = MTime(frame, time_unit);
+            auto value = m_animCurveFn.evaluate(time, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-        } else {
-            key_index =
-                m_animCurveFn.addKey(time, value, tangent_in_type,
-                                     tangent_out_type, &m_curveChange, &status);
+            MMSOLVER_MAYA_VRB("f=" << frame << " v=" << value);
+
+            x_values.push_back(frame);
+            y_values.push_back(value);
+        }
+
+        MMSOLVER_MAYA_VRB("In curve: " << x_values.size() << " | "
+                                       << y_values.size());
+
+        auto actual_count = x_values.size();
+        MMSOLVER_MAYA_VRB(
+            "MMAnimCurveFilterPopsCmd::actual_count=" << actual_count);
+        filtered_x_values.reserve(actual_count);
+        filtered_y_values.reserve(actual_count);
+        filtered_x_values.clear();
+        filtered_y_values.clear();
+
+        // TODO: Can we 'calc_signal_to_noise_ratio', so we can determine
+        // if a pop-detection is actually needed?
+
+        MMSOLVER_MAYA_VRB("m_threshold: " << m_threshold);
+        rust::Slice<const mmsg::Real> x_values_slice{x_values.data(),
+                                                     x_values.size()};
+        rust::Slice<const mmsg::Real> y_values_slice{y_values.data(),
+                                                     y_values.size()};
+        mmsg::filter_curve_pops(x_values_slice, y_values_slice, m_threshold,
+                                filtered_x_values, filtered_y_values);
+
+        // Clear all keys from the anim curve.
+        //
+        // TODO: Only keyframes between (and including) the start frame
+        // and end frame should be removed.
+        auto num_keys = m_animCurveFn.numKeys();
+        MMSOLVER_MAYA_VRB("num_keys=" << num_keys);
+        for (auto i = 0; i < num_keys; i++) {
+            m_animCurveFn.remove(0, &m_curveChange);
+        }
+
+        MMSOLVER_MAYA_VRB("Filtered curve: " << filtered_x_values.size()
+                                             << " | "
+                                             << filtered_y_values.size());
+        const auto tangent_in_type = MFnAnimCurve::TangentType::kTangentGlobal;
+        const auto tangent_out_type = MFnAnimCurve::TangentType::kTangentGlobal;
+        for (auto i = 0; i < filtered_x_values.size(); i++) {
+            auto frame = filtered_x_values[i];
+            auto value = filtered_y_values[i];
+            MMSOLVER_MAYA_VRB("f=" << frame << " v=" << value);
+
+            auto time = MTime(frame, time_unit);
+
+            uint32_t key_index = 0;
+            const bool found = m_animCurveFn.find(time, key_index, &status);
             CHECK_MSTATUS_AND_RETURN_IT(status);
+            if (found) {
+                status =
+                    m_animCurveFn.setValue(key_index, value, &m_curveChange);
+                CHECK_MSTATUS_AND_RETURN_IT(status);
+            } else {
+                key_index = m_animCurveFn.addKey(time, value, tangent_in_type,
+                                                 tangent_out_type,
+                                                 &m_curveChange, &status);
+                CHECK_MSTATUS_AND_RETURN_IT(status);
+            }
         }
     }
 

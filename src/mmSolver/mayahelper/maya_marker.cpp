@@ -242,16 +242,14 @@ MStatus Marker::getWeight(double &value, const MTime &time,
 }
 
 MString Marker::getLongNodeName() {
-    MString result;
-    MStatus status;
-
     MObject nodeObj = Marker::getObject();
+
     MDagPath nodeDagPath;
-    status = MDagPath::getAPathTo(nodeObj, nodeDagPath);
+    MStatus status = MDagPath::getAPathTo(nodeObj, nodeDagPath);
     CHECK_MSTATUS(status);
 
-    MString nodeName = nodeDagPath.fullPathName(&status);
+    MString result = nodeDagPath.fullPathName(&status);
     CHECK_MSTATUS(status);
 
-    return nodeName;
+    return result;
 }

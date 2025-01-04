@@ -692,29 +692,33 @@ struct SolverObjectUsageResult {
         for (MarkerPtrListCIt mit = usedMarkerList.cbegin();
              mit != usedMarkerList.cend(); ++mit) {
             MarkerPtr marker = *mit;
-            auto marker_name_char = marker->getLongNodeName().asChar();
-            Self::markers_used.insert(marker_name_char);
+            auto marker_name = marker->getLongNodeName();
+            auto marker_name_char = marker_name.asChar();
+            Self::markers_used.insert(std::string(marker_name_char));
         }
 
         for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
              mit != unusedMarkerList.cend(); ++mit) {
             MarkerPtr marker = *mit;
-            auto marker_name_char = marker->getLongNodeName().asChar();
-            Self::markers_unused.insert(marker_name_char);
+            auto marker_name = marker->getLongNodeName();
+            auto marker_name_char = marker_name.asChar();
+            Self::markers_unused.insert(std::string(marker_name_char));
         }
 
         for (AttrPtrListCIt ait = usedAttrList.cbegin();
              ait != usedAttrList.cend(); ++ait) {
             AttrPtr attr = *ait;
-            auto attr_name_char = attr->getLongName().asChar();
-            Self::attributes_used.insert(attr_name_char);
+            auto attr_name = attr->getLongName();
+            auto attr_name_char = attr_name.asChar();
+            Self::attributes_used.insert(std::string(attr_name_char));
         }
 
         for (AttrPtrListCIt ait = unusedAttrList.cbegin();
              ait != unusedAttrList.cend(); ++ait) {
             AttrPtr attr = *ait;
-            auto attr_name_char = attr->getLongName().asChar();
-            Self::attributes_unused.insert(attr_name_char);
+            auto attr_name = attr->getLongName();
+            auto attr_name_char = attr_name.asChar();
+            Self::attributes_unused.insert(std::string(attr_name_char));
         }
     }
 

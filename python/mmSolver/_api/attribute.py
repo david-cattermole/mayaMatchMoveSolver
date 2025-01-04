@@ -76,7 +76,10 @@ class Attribute(object):
         :type attr: str
         """
         if isinstance(name, pycompat.TEXT_TYPE):
-            assert api_utils.get_object_type(name) == const.OBJECT_TYPE_ATTRIBUTE
+            object_type = api_utils.get_object_type(name)
+            assert (
+                object_type == const.OBJECT_TYPE_ATTRIBUTE
+            ), 'name={} object_type={}'.format(repr(name), repr(object_type))
             part = name.partition('.')
             node = part[0]
             attr = part[-1]
@@ -85,7 +88,7 @@ class Attribute(object):
         if isinstance(node, pycompat.TEXT_TYPE) and isinstance(
             attr, pycompat.TEXT_TYPE
         ):
-            assert maya.cmds.objExists(node)
+            assert maya.cmds.objExists(node), 'node={}'.format(repr(node))
             # Long and short names must be checked.
             attr_list_long = maya.cmds.listAttr(node, shortNames=False) or []
             attr_list_short = maya.cmds.listAttr(node, shortNames=True) or []

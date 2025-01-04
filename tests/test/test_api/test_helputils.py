@@ -35,17 +35,18 @@ import mmSolver.ui.helputils as helputils
 class TestHelpUtils(test_api_utils.APITestCase):
     def test_get_help_source(self):
         src = helputils.get_help_source()
-        assert isinstance(src, pycompat.TEXT_TYPE)
+        msg = 'Invalid help source; src=%r'
+        assert isinstance(src, pycompat.TEXT_TYPE), msg % src
 
     def test_get_help_base_location(self):
         src = helputils.get_help_source()
         url = helputils.get_help_base_location(help_source=src)
         msg = (
             'The help URL cannot be found! '
-            'Did you build and install documentation?'
+            'Did you build and install documentation? '
             'url=%r'
         )
-        assert isinstance(url, pycompat.TEXT_TYPE), msg
+        assert isinstance(url, pycompat.TEXT_TYPE), msg % url
 
 
 if __name__ == '__main__':

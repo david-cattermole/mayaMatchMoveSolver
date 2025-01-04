@@ -329,8 +329,9 @@ int countUpNumberOfUnknownParameters(
                 out_staticAttrList.push_back(attr);
             }
         } else {
-            const char *attrName = attr->getName().asChar();
-            MMSOLVER_MAYA_ERR("attr is not animated or free: " << attrName);
+            const MString attrName = attr->getName();
+            MMSOLVER_MAYA_ERR(
+                "attr is not animated or free: " << attrName.asChar());
         }
         i++;
     }
@@ -392,9 +393,12 @@ void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
         BundlePtr bundle = marker->getBundle();
 
         // Get node names.
-        const char *markerName = marker->getNodeName().asChar();
-        const char *camName = cam->getTransformNodeName().asChar();
-        const char *bundleName = bundle->getNodeName().asChar();
+        const MString markerNodeName = marker->getNodeName();
+        const MString camNodeName = cam->getTransformNodeName();
+        const MString bundleNodeName = bundle->getNodeName();
+        const char *markerName = markerNodeName.asChar();
+        const char *camName = camNodeName.asChar();
+        const char *bundleName = bundleNodeName.asChar();
 
         // Find list of plug names that are affected by the bundle.
         cmd = "";

@@ -229,7 +229,7 @@ MStatus Marker::getEnable(bool &value, const MTime &time,
 
 MStatus Marker::getWeight(double &value, const MTime &time,
                           const int timeEvalMode) {
-    MStatus status;
+    MStatus status = MS::kSuccess;
     MPlug plug = m_weight.getPlug();
     if (plug.isNull() == true) {
         value = 1.0;

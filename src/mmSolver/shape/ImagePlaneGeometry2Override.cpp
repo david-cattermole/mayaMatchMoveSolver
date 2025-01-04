@@ -483,8 +483,9 @@ void ImagePlaneGeometry2Override::set_shader_instance_parameters(
             m_temp_meta_data, file_path, expanded_file_path, do_texture_update);
 
         if (out_color_texture) {
+            const MString texture_name = out_color_texture->name();
             MMSOLVER_MAYA_VRB("mmImagePlaneGeometry2Override: texture->name()="
-                              << out_color_texture->name().asChar());
+                              << texture_name.asChar());
             const void *resource_handle = out_color_texture->resourceHandle();
             MMSOLVER_MAYA_VRB(
                 "mmImagePlaneGeometry2Override: texture->resourceHandle()="
@@ -907,9 +908,10 @@ bool ImagePlaneGeometry2Override::requiresGeometryUpdate() const {
 bool ImagePlaneGeometry2Override::requiresUpdateRenderItems(
     const MDagPath &path) const {
     const bool verbose = false;
+    const MString full_path_name = path.fullPathName();
     MMSOLVER_MAYA_VRB(
         "ImagePlaneGeometry2Override::requiresUpdateRenderItems: true: "
-        << path.fullPathName().asChar());
+        << full_path_name.asChar());
     return true;  // Always update the render items.
 }
 #endif

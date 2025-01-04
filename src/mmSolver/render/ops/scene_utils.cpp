@@ -48,10 +48,11 @@ MString get_dependency_node_classification(MFnDependencyNode& depend_fn) {
     MStatus status = MS::kSuccess;
     MString node_type_name = depend_fn.typeName(&status);
     if (status != MS::kSuccess) {
+        const MString absolute_name = depend_fn.absoluteName();
         MMSOLVER_MAYA_VRB(
             "NodeManager::dependency_node_is_geometry: failed to get type "
             "name for node \""
-            << depend_fn.absoluteName().asChar() << "\".");
+            << absolute_name.asChar() << "\".");
         return MString();
     }
     MString node_type_classification =
@@ -102,20 +103,22 @@ MStatus add_all_image_planes(MSelectionList& out_selection_list) {
             continue;
         }
 
+        const MString dag_full_path_name = dagPath.fullPathName();
         MMSOLVER_MAYA_VRB(
             "add_all_image_planes: "
             "node=\""
-            << dagPath.fullPathName().asChar() << "\" is being considered.");
+            << dag_full_path_name.asChar() << "\" is being considered.");
 
         bool ok = false;
         if (dagPath.hasFn(MFn::kCamera) || dagPath.hasFn(MFn::kImagePlane) ||
             dagPath.hasFn(MFn::kPluginImagePlaneNode)) {
             // By definition these must be image planes, so we don't need
             // to check any further.
+            const MString dag_full_path_name = dagPath.fullPathName();
             MMSOLVER_MAYA_VRB(
                 "add_all_image_planes: "
                 "node=\""
-                << dagPath.fullPathName().asChar()
+                << dag_full_path_name.asChar()
                 << "\" has MFn::kCamera, MFn::kImagePlane or "
                    "MFn::kPluginImagePlaneNode.");
             ok = true;
@@ -127,10 +130,11 @@ MStatus add_all_image_planes(MSelectionList& out_selection_list) {
             const MString node_classification =
                 get_dependency_node_classification(depend_fn);
             if (node_classification_is_image_plane(node_classification)) {
+                const MString dag_full_path_name = dagPath.fullPathName();
                 MMSOLVER_MAYA_VRB(
                     "add_all_image_planes: "
                     "node=\""
-                    << dagPath.fullPathName().asChar()
+                    << dag_full_path_name.asChar()
                     << "\" has draw classification.");
                 ok = true;
             }
@@ -148,11 +152,11 @@ MStatus add_all_image_planes(MSelectionList& out_selection_list) {
         for (int i = 0; i < out_selection_list.length(); i++) {
             status = out_selection_list.getDagPath(i, dag_path);
             if (status == MS::kSuccess) {
+                const MString dag_full_path_name = dag_path.fullPathName();
                 MMSOLVER_MAYA_VRB(
                     "add_all_image_planes: "
                     "i="
-                    << i << " node=\"" << dag_path.fullPathName().asChar()
-                    << "\".");
+                    << i << " node=\"" << dag_full_path_name.asChar() << "\".");
             }
         }
     }
@@ -167,8 +171,9 @@ MStatus only_named_layer_objects(MObject& layer_node,
 
     MFnDependencyNode layer_depends_fn(layer_node, &status);
     CHECK_MSTATUS(status);
-    MMSOLVER_MAYA_VRB("only_named_layer_objects: layer: "
-                      << layer_depends_fn.name().asChar());
+    const MString layer_node_name = layer_depends_fn.name();
+    MMSOLVER_MAYA_VRB(
+        "only_named_layer_objects: layer: " << layer_node_name.asChar());
 
     const bool want_networked_plug = true;
 
@@ -203,16 +208,17 @@ MStatus only_named_layer_objects(MObject& layer_node,
             !destination_node.hasFn(MFn::kPluginShape)) {
             if (verbose) {
                 MFnDependencyNode depend_fn(destination_node);
+                const MString node_absolute_name = depend_fn.absoluteName();
                 MMSOLVER_MAYA_VRB("only_named_layer_objects: discard node: i = "
-                                  << i << " - "
-                                  << depend_fn.absoluteName().asChar());
+                                  << i << " - " << node_absolute_name.asChar());
             }
             continue;
         }
 
         MFnDependencyNode depend_fn(destination_node);
+        const MString node_absolute_name = depend_fn.absoluteName();
         MMSOLVER_MAYA_VRB("only_named_layer_objects: accept node: i = "
-                          << i << " - " << depend_fn.absoluteName().asChar());
+                          << i << " - " << node_absolute_name.asChar());
 
         const MString node_classification =
             get_dependency_node_classification(depend_fn);
@@ -233,9 +239,10 @@ MStatus only_named_layer_objects(MObject& layer_node,
                 MDagPath shape_path(dag_path);
                 shape_path.extendToShapeDirectlyBelow(j);
 
+                const MString shape_full_path_name = shape_path.fullPathName();
                 MMSOLVER_MAYA_VRB("only_named_layer_objects: shape_node: i="
                                   << i << " j=" << j << " - "
-                                  << shape_path.fullPathName().asChar());
+                                  << shape_full_path_name.asChar());
 
                 out_selection_list.add(shape_path);
             }
@@ -262,8 +269,8 @@ const MSelectionList* find_draw_objects(const DrawObjects draw_objects,
 
         MFnDependencyNode layer_depends_fn(layer_node, &status);
         CHECK_MSTATUS(status);
-        MMSOLVER_MAYA_VRB(
-            "find_draw_objects::layer: " << layer_depends_fn.name().asChar());
+        const MString layer_name = layer_depends_fn.name();
+        MMSOLVER_MAYA_VRB("find_draw_objects::layer: " << layer_name.asChar());
 
         const bool want_networked_plug = true;
 
@@ -290,9 +297,11 @@ const MSelectionList* find_draw_objects(const DrawObjects draw_objects,
                     if ((dag_path.apiType() == MFn::kShape) ||
                         (dag_path.apiType() == MFn::kPluginLocatorNode) ||
                         (dag_path.apiType() == MFn::kPluginShape)) {
+                        const MString dag_full_path_name =
+                            dag_path.fullPathName();
                         MMSOLVER_MAYA_VRB("find_draw_objects::node: i = "
                                           << i << " - "
-                                          << dag_path.fullPathName().asChar());
+                                          << dag_full_path_name.asChar());
                         out_selection_list.add(dag_path);
                     }
 
@@ -302,10 +311,11 @@ const MSelectionList* find_draw_objects(const DrawObjects draw_objects,
                         MDagPath shape_path(dag_path);
                         shape_path.extendToShapeDirectlyBelow(j);
 
-                        MMSOLVER_MAYA_VRB(
-                            "find_draw_objects::shape_node: i="
-                            << i << " j=" << j << " - "
-                            << shape_path.fullPathName().asChar());
+                        const MString shape_full_path_name =
+                            shape_path.fullPathName();
+                        MMSOLVER_MAYA_VRB("find_draw_objects::shape_node: i="
+                                          << i << " j=" << j << " - "
+                                          << shape_full_path_name.asChar());
 
                         out_selection_list.add(shape_path);
                     }

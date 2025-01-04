@@ -176,15 +176,18 @@ MHWRender::MShaderInstance *compile_shader_file(const MString &shader_file_name,
         bool display_line_number = true;
         bool filter_source = true;
         uint32_t num_lines = 3;
+
+        const MString last_error = MHWRender::MShaderManager::getLastError();
+        const MString last_error_source =
+            MHWRender::MShaderManager::getLastErrorSource(
+                display_line_number, filter_source, num_lines);
+
         MGlobal::displayError(error_message);
-        MGlobal::displayError(MHWRender::MShaderManager::getLastError());
-        MGlobal::displayError(MHWRender::MShaderManager::getLastErrorSource(
-            display_line_number, filter_source, num_lines));
+        MGlobal::displayError(last_error);
+        MGlobal::displayError(last_error_source);
         MMSOLVER_MAYA_ERR("MM Renderer failed to compile shader.");
-        MMSOLVER_MAYA_ERR(MHWRender::MShaderManager::getLastError().asChar());
-        MMSOLVER_MAYA_ERR(MHWRender::MShaderManager::getLastErrorSource(
-                              display_line_number, filter_source, num_lines)
-                              .asChar());
+        MMSOLVER_MAYA_ERR(last_error.asChar());
+        MMSOLVER_MAYA_ERR(last_error_source);
         return nullptr;
     }
 
@@ -234,15 +237,18 @@ MHWRender::MShaderInstance *compile_shader_text(const MString &shader_text,
         bool display_line_number = true;
         bool filter_source = true;
         uint32_t num_lines = 3;
+
+        const MString last_error = MHWRender::MShaderManager::getLastError();
+        const MString last_error_source =
+            MHWRender::MShaderManager::getLastErrorSource(
+                display_line_number, filter_source, num_lines);
+
         MGlobal::displayError(error_message);
-        MGlobal::displayError(MHWRender::MShaderManager::getLastError());
-        MGlobal::displayError(MHWRender::MShaderManager::getLastErrorSource(
-            display_line_number, filter_source, num_lines));
+        MGlobal::displayError(last_error);
+        MGlobal::displayError(last_error_source);
         MMSOLVER_MAYA_ERR("MM Renderer failed to compile shader.");
-        MMSOLVER_MAYA_ERR(MHWRender::MShaderManager::getLastError().asChar());
-        MMSOLVER_MAYA_ERR(MHWRender::MShaderManager::getLastErrorSource(
-                              display_line_number, filter_source, num_lines)
-                              .asChar());
+        MMSOLVER_MAYA_ERR(last_error.asChar());
+        MMSOLVER_MAYA_ERR(last_error_source.asChar());
         return nullptr;
     }
 

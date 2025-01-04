@@ -1363,7 +1363,8 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
             for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
                  mit != unusedMarkerList.cend(); ++mit) {
                 MarkerPtr marker = *mit;
-                const char *markerName = marker->getLongNodeName().asChar();
+                MString markerNodeName = marker->getLongNodeName();
+                const char *markerName = markerNodeName.asChar();
                 MMSOLVER_MAYA_WRN("-> " << markerName);
             }
         }
@@ -1374,7 +1375,8 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
             for (AttrPtrListCIt ait = unusedAttrList.cbegin();
                  ait != unusedAttrList.cend(); ++ait) {
                 AttrPtr attr = *ait;
-                const char *attrName = attr->getLongName().asChar();
+                MString attrLongName = attr->getLongName();
+                const char *attrName = attrLongName.asChar();
                 MMSOLVER_MAYA_WRN("-> " << attrName);
             }
         }
@@ -1555,8 +1557,8 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
             for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
                  mit != unusedMarkerList.cend(); ++mit) {
                 MarkerPtr marker = *mit;
-                const char *markerName = marker->getLongNodeName().asChar();
-                MMSOLVER_MAYA_WRN("-> " << markerName);
+                const MString markerNodeName = marker->getLongNodeName();
+                MMSOLVER_MAYA_WRN("-> " << markerNodeName.asChar());
             }
         }
 
@@ -1566,8 +1568,8 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
             for (AttrPtrListCIt ait = unusedAttrList.cbegin();
                  ait != unusedAttrList.cend(); ++ait) {
                 AttrPtr attr = *ait;
-                const char *attrName = attr->getLongName().asChar();
-                MMSOLVER_MAYA_WRN("-> " << attrName);
+                const MString attrName = attr->getLongName();
+                MMSOLVER_MAYA_WRN("-> " << attrName.asChar());
             }
         }
 

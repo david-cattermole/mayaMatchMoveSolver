@@ -74,9 +74,10 @@ bool getUpstreamNodeFromConnection(const MObject &this_node,
         return false;
     }
     if (plug.isNull()) {
+        const MString node_name = mfn_depend_node.name();
         MMSOLVER_MAYA_WRN("Could not get plug for \""
-                          << mfn_depend_node.name().asChar() << "."
-                          << attr_name.asChar() << "\" node.");
+                          << node_name.asChar() << "." << attr_name.asChar()
+                          << "\" node.");
         return false;
     }
 
@@ -90,9 +91,10 @@ bool getUpstreamNodeFromConnection(const MObject &this_node,
         return false;
     }
     if (out_connections.length() == 0) {
+        const MString node_name = mfn_depend_node.name();
         MMSOLVER_MAYA_WRN("No connections to the \""
-                          << mfn_depend_node.name().asChar() << "."
-                          << attr_name.asChar() << "\" attribute.");
+                          << node_name.asChar() << "." << attr_name.asChar()
+                          << "\" attribute.");
         return false;
     }
     return true;
@@ -191,15 +193,17 @@ void find_geometry_node_path(const MObject &node, const MString &attr_name,
             MDagPath::getAPathTo(connection_node, path);
             out_geometry_node_path = path;
             out_geometry_node_type = path.apiType();
+            const MString full_node_path =
+                out_geometry_node_path.fullPathName();
             MMSOLVER_MAYA_VRB("Validated geometry node: "
-                              << " path="
-                              << out_geometry_node_path.fullPathName().asChar()
+                              << " path=" << full_node_path.asChar()
                               << " type=" << connection_node.apiTypeStr());
             break;
         } else {
+            const MString full_node_path =
+                out_geometry_node_path.fullPathName();
             MMSOLVER_MAYA_WRN("Geometry node is not correct type:"
-                              << " path="
-                              << out_geometry_node_path.fullPathName().asChar()
+                              << " path=" << full_node_path.asChar()
                               << " type=" << connection_node.apiTypeStr());
         }
     }
@@ -226,13 +230,15 @@ void find_shader_node_path(const MObject &node, const MString &attr_name,
             connection_node.hasFn(MFn::kPluginHwShaderNode)) {
             out_shader_node = connection_node;
             out_shader_node_type = connection_node.apiType();
+            const MString node_name = mfn_depend_node.name();
             MMSOLVER_MAYA_VRB("Validated shader node: "
-                              << " path=" << mfn_depend_node.name().asChar()
+                              << " path=" << node_name.asChar()
                               << " type=" << connection_node.apiTypeStr());
             break;
         } else {
+            const MString node_name = mfn_depend_node.name();
             MMSOLVER_MAYA_WRN("Shader node is not correct type:"
-                              << " path=" << mfn_depend_node.name().asChar()
+                              << " path=" << node_name.asChar()
                               << " type=" << connection_node.apiTypeStr());
         }
     }
@@ -257,15 +263,15 @@ void find_camera_node_path(const MObject &node, const MString &attr_name,
             MDagPath::getAPathTo(connection_node, path);
             out_camera_node_path = path;
             out_camera_node_type = path.apiType();
+            const MString full_node_path = out_camera_node_path.fullPathName();
             MMSOLVER_MAYA_VRB("Validated camera node: "
-                              << " path="
-                              << out_camera_node_path.fullPathName().asChar()
+                              << " path=" << full_node_path.asChar()
                               << " type=" << connection_node.apiTypeStr());
             break;
         } else {
+            const MString full_node_path = out_camera_node_path.fullPathName();
             MMSOLVER_MAYA_WRN("Camera node is not correct type:"
-                              << " path="
-                              << out_camera_node_path.fullPathName().asChar()
+                              << " path=" << full_node_path.asChar()
                               << " type=" << connection_node.apiTypeStr());
         }
     }

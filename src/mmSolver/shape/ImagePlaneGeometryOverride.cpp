@@ -425,9 +425,10 @@ bool ImagePlaneGeometryOverride::requiresGeometryUpdate() const {
 bool ImagePlaneGeometryOverride::requiresUpdateRenderItems(
     const MDagPath &path) const {
     const bool verbose = false;
+    const MString full_path_name = path.fullPathName();
     MMSOLVER_MAYA_VRB(
         "ImagePlaneGeometryOverride::requiresUpdateRenderItems: true: "
-        << path.fullPathName().asChar());
+        << full_path_name.asChar());
     return true;  // Always update the render items.
 }
 #endif

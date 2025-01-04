@@ -649,9 +649,10 @@ MStatus MMLensModel3deNode::compute(const MPlug &plug, MDataBlock &data) {
         }
 
         else {
+            const MString node_name = name();
             MMSOLVER_MAYA_ERR(
                 "mmlens::LensModelType value is invalid: nodeName="
-                << name().asChar()
+                << node_name.asChar()
                 << " lensModelType=" << static_cast<int>(lensModelType));
             status = MS::kFailure;
 

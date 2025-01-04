@@ -614,7 +614,8 @@ struct AffectsResult {
                 AttrPtr attr = attrList[attrIndex];
 
                 // Get node names.
-                const char *markerName = marker->getNodeName().asChar();
+                const MString markerNodeName = marker->getNodeName();
+                const char *markerName = markerNodeName.asChar();
 
                 // Get attribute full path.
                 MPlug plug = attr->getPlug();

@@ -23,7 +23,6 @@ use mmscenegraph_rust::curve::detect::pops::detect_curve_pops as core_detect_cur
 use mmscenegraph_rust::curve::detect::pops::filter_curve_pops as core_filter_curve_pops;
 
 pub fn shim_detect_curve_pops(
-    // xy_values: &[(CoreReal, CoreReal)],
     x_values: &[CoreReal],
     y_values: &[CoreReal],
     threshold: CoreReal,
@@ -56,7 +55,6 @@ pub fn shim_detect_curve_pops(
 }
 
 pub fn shim_filter_curve_pops(
-    // xy_values: &[(CoreReal, CoreReal)],
     x_values: &[CoreReal],
     y_values: &[CoreReal],
     threshold: CoreReal,

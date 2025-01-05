@@ -434,7 +434,7 @@ pub mod ffi {
         ) -> bool;
     }
 
-    // Fit Plane
+    // Detect Curve Pops
     extern "Rust" {
         fn shim_detect_curve_pops(
             x_values: &[f64],

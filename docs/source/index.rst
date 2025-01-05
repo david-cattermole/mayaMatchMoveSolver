@@ -25,6 +25,7 @@ An overview of the features available inside mmSolver.
    :maxdepth: 2
 
    introduction
+   quick_start_guide
    tutorial
    tools
    techniques

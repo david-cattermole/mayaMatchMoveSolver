@@ -43,6 +43,24 @@ fn calculate_per_frame_pop_score(
         bail!("Times, values and output arrays must have the same length.");
     }
 
+    // TODO: We can test a different algorithm, like this;
+    //
+    // 1) Iteratively apply a larger and larger blur width to the
+    //    input source.
+    //
+    //    - The maximum filter size should be (maybe) 1/4th of the
+    //      total number of values.
+    //
+    // 2) At each blur filter size, we compare the original curve to
+    //    the blurred curve values, creating a difference of the
+    //    curves.
+    //
+    // 3) We sum the differences for each curve, and then apply the
+    //    same acceleration metrics as below.
+    //
+    // This suggested algorithm would be a lot slower, but may be more
+    // accurate.
+
     calculate_derivatives_order_2(
         times,
         values,

@@ -216,6 +216,7 @@ To run the tool, use this Python command:
     import mmSolver.tools.channelsen.tool as tool
     tool.main()
 
+.. _bake-attributes-tool-ref:
 
 Bake Attributes
 ---------------
@@ -270,3 +271,91 @@ Run this Python command:
     # To run the "fast bake" tool directly (with currently set
     # options).
     tool.main()
+
+.. _attribute-curve-filter-pops-tool-ref:
+
+Attribute Curve Filter Pops
+---------------------------
+
+.. figure:: images/tools_attribute_curve_filter_pops_ui.png
+    :alt: Attribute Curve Filter Pops UI
+    :align: center
+    :width: 80%
+
+The `Attribute Curve Filter Pops` tool is used to detect and remove
+unwanted spikes or "pops" in animation curves. These sudden value
+changes can occur during animation or when solving, and this tool
+helps smooth them out while preserving the intended animation.
+
+For example, after solving a camera with noisy tracking data, you may
+get small value spikes/pops in the animation curves. This tool can help
+remove those spikes.
+
+The tool works by analyzing each keyframe and comparing the value
+changes between neighboring frames. When the change exceeds the
+specified threshold, it's identified as a pop and filtered out.
+
+Usage:
+
+1) Select nodes with animation curves.
+
+   - The tool will look for selected attributes in the Channel Box.
+   - Or selected Graph Editor Outliner attributes.
+   - Or selected keyframes in the Graph Editor.
+
+2) Open the Attribute Curve Filter Pops UI:
+
+   - Menu: ``mmSolver > Attribute Tools > Attribute Curves Filter Pops``
+
+3) Configure the options:
+
+   - Set the frame range to process.
+   - Adjust the threshold value that determines what constitutes a "pop".
+
+4) Click "Apply" to filter the animation curves.
+
+   - The tool will apply to multiple attributes at once.
+
+Python Command:
+
+.. code:: python
+
+    import mmSolver.tools.attributecurvefilterpops.tool as tool
+
+    # Run the filter with current settings
+    tool.main()
+
+    # Open the UI window
+    tool.open_window()
+
+Notes
++++++
+
+- The tool requires animation curves on the attributes to filter. If
+  attributes aren't animated, bake them to animation curves first.
+- The threshold determines what constitutes a "pop" - experiment with
+  different values to find what works best for your animation.
+- Use the Graph Editor to visually inspect the results after
+  filtering.
+- All operations can be undone if needed.
+- For general animation curve smoothing (rather than spike removal),
+  consider using the :ref:`Smooth Keyframes
+  <smooth-keyframes-tool-ref>` tool instead.
+
+Options
++++++++
+
+- **Frame Range** - Choose how to determine which frames to process:
+
+  - *Timeline (Inner)* - Uses the inner timeline range (highlighted region)
+  - *Timeline (Outer)* - Uses the outer timeline range
+  - *Custom* - Manually specify start/end frames
+
+- **Start/End** - When "Custom" frame range is selected, specify the exact frame range to process
+
+- **Threshold** - Controls how aggressively pops are detected and filtered:
+
+  - Default value is 1.0,
+  - Higher values (above 1.0) remove less pops, only fixing large spikes.
+  - Lower values (below 1.0) remove more pops, smoothing out smaller variations.
+  - For typical matchmove solves, however values between 0.5 and 1.5 work well.

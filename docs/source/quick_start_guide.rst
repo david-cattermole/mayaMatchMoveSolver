@@ -83,11 +83,11 @@ Common Tools Reference
 Essential Hotkeys
 ~~~~~~~~~~~~~~~~~
 
-See :ref:`default-hotkeys-heading` for the complete list.
-
-- **M** - Toggle between Marker/Bundle selection.
 - **C** - Center on selected Marker.
 - **Z** - Maya's standard zoom/pan tool.
+- **M** - Toggle between Marker/Bundle selection.
+
+See :ref:`default-hotkeys-heading` for the complete list.
 
 Frequently Used Tools
 ~~~~~~~~~~~~~~~~~~~~~

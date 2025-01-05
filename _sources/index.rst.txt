@@ -5,7 +5,8 @@ Welcome to `mmSolver`! `mmSolver` is a Bundle Adjustment solver for
 Autodesk Maya, for solving MatchMove tasks by adjusting Maya
 attributes.
 
-If you are new to mmSolver, take a look at the video :ref:`tutorial-heading`.
+If you are new to mmSolver, take a look at the
+:ref:`quick-start-guide-heading` and video :ref:`tutorial-heading`.
 
 Any questions you have can be asked on the `mailing list`_.
 
@@ -25,6 +26,7 @@ An overview of the features available inside mmSolver.
    :maxdepth: 2
 
    introduction
+   quick_start_guide
    tutorial
    tools
    techniques
@@ -38,6 +40,7 @@ details and features to use.
 .. toctree::
    :maxdepth: 1
 
+   solver_concepts
    solver_design
    nodes
    commands

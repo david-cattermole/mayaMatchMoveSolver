@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="mmSolver.tools.deformmarker" href="mmSolver.tools.deformmarker.html" /><link rel="prev" title="mmSolver.tools.createrivet" href="mmSolver.tools.createrivet.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="Solver Design" href="solver_design.html" /><link rel="prev" title="Solving Maya Rigs" href="techniques_rigs.html" />
 
     <!-- Generated with Sphinx 5.3.0 and Furo 2023.03.27 -->
-        <title>mmSolver.tools.createskydome - mayaMatchMoveSolver master documentation</title>
+        <title>Understanding the Solver Core Concepts - mayaMatchMoveSolver master documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=fad236701ea90a88636c2a8c73b44ae642ed2a53" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -190,7 +190,7 @@
 </li>
 </ul>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="solver_concepts.html">Understanding the Solver Core Concepts</a></li>
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Understanding the Solver Core Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="nodes.html">Nodes</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="nodes_transforms.html">Transform Nodes</a></li>
@@ -208,8 +208,8 @@
 <li class="toctree-l2"><a class="reference internal" href="commands_display.html">Display Commands</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children"><a class="reference internal" href="scripting.html">Scripting</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current has-children"><a class="reference internal" href="mmSolver.tools.html">mmSolver.tools</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l1 has-children"><a class="reference internal" href="scripting.html">Scripting</a><input class="toctree-checkbox" id="toctree-checkbox-6" name="toctree-checkbox-6" role="switch" type="checkbox"/><label for="toctree-checkbox-6"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2 has-children"><a class="reference internal" href="mmSolver.tools.html">mmSolver.tools</a><input class="toctree-checkbox" id="toctree-checkbox-7" name="toctree-checkbox-7" role="switch" type="checkbox"/><label for="toctree-checkbox-7"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.aboutwindow.html">mmSolver.tools.aboutwindow</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.attachbundletocurve.html">mmSolver.tools.attachbundletocurve</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.attributebake.html">mmSolver.tools.attributebake</a></li>
@@ -233,7 +233,7 @@
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createline.html">mmSolver.tools.createline</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createmarker.html">mmSolver.tools.createmarker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createrivet.html">mmSolver.tools.createrivet</a></li>
-<li class="toctree-l3 current current-page"><a class="current reference internal" href="#">mmSolver.tools.createskydome</a></li>
+<li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.createskydome.html">mmSolver.tools.createskydome</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.deformmarker.html">mmSolver.tools.deformmarker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.duplicatemarker.html">mmSolver.tools.duplicatemarker</a></li>
 <li class="toctree-l3"><a class="reference internal" href="mmSolver.tools.editrootframes.html">mmSolver.tools.editrootframes</a></li>
@@ -341,27 +341,208 @@
           </label>
         </div>
         <article role="main">
-          <section id="module-mmSolver.tools.createskydome">
-<span id="mmsolver-tools-createskydome"></span><h1>mmSolver.tools.createskydome<a class="headerlink" href="#module-mmSolver.tools.createskydome" title="Permalink to this heading">#</a></h1>
-<p>Create a Sky dome node.</p>
-<section id="module-mmSolver.tools.createskydome.tool">
-<span id="tools"></span><h2>Tools<a class="headerlink" href="#module-mmSolver.tools.createskydome.tool" title="Permalink to this heading">#</a></h2>
-<p>The Create Sky Dome tool.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="mmSolver.tools.createskydome.tool.main">
-<span class="sig-prename descclassname"><span class="pre">mmSolver.tools.createskydome.tool.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">preset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mmSolver.tools.createskydome.tool.main" title="Permalink to this definition">#</a></dt>
-<dd><p>Create a new Sky Dome.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>preset_name</strong> – The name</p>
-</dd>
-</dl>
-</dd></dl>
-
+          <section id="understanding-the-solver-core-concepts">
+<span id="solver-concepts-heading"></span><h1>Understanding the Solver Core Concepts<a class="headerlink" href="#understanding-the-solver-core-concepts" title="Permalink to this heading">#</a></h1>
+<section id="the-basic-idea">
+<h2>The Basic Idea<a class="headerlink" href="#the-basic-idea" title="Permalink to this heading">#</a></h2>
+<p>Think of mmSolver like a puzzle solver. You have:</p>
+<ul class="simple">
+<li><p>A set of 2D points in your camera view (Markers).</p></li>
+<li><p>A set of 3D points in space (Bundles).</p></li>
+<li><p>A camera looking at the scene.</p></li>
+<li><p>Various properties (attributes) that can be adjusted.</p></li>
+</ul>
+<p>The solver’s job is to find the perfect values for these properties so
+that when you look through the camera, the 3D points line up exactly
+with the 2D points.</p>
 </section>
-<section id="module-mmSolver.tools.createskydome.constant">
-<span id="constants"></span><h2>Constants<a class="headerlink" href="#module-mmSolver.tools.createskydome.constant" title="Permalink to this heading">#</a></h2>
-<p>Contains constant values for the Create Sky Dome tool.</p>
+<section id="real-world-analogy">
+<h2>Real-World Analogy<a class="headerlink" href="#real-world-analogy" title="Permalink to this heading">#</a></h2>
+<p>Imagine you’re trying to take a photo of a building:</p>
+<ul class="simple">
+<li><p>The building’s features are like your 3D Bundles.</p></li>
+<li><p>The spots in your viewfinder are like 2D Markers.</p></li>
+<li><p>You can move yourself (the camera) or the building (the object).</p></li>
+<li><p>Your goal is to make the photo match a reference image exactly./</p></li>
+</ul>
+</section>
+<section id="key-components">
+<h2>Key Components<a class="headerlink" href="#key-components" title="Permalink to this heading">#</a></h2>
+<section id="markers-2d-points">
+<h3>1. Markers (2D Points)<a class="headerlink" href="#markers-2d-points" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Like push-pins on a photograph.</p></li>
+<li><p>Represent tracked features in your footage.</p></li>
+<li><p>Have accurate screen positions.</p></li>
+<li><p>Store deviation (error) values.</p></li>
+</ul>
+<p>See <a class="reference internal" href="tools_createnode.html#create-marker-ref"><span class="std std-ref">Create Marker</span></a> for creating Markers.</p>
+</section>
+<section id="bundles-3d-points">
+<h3>2. Bundles (3D Points)<a class="headerlink" href="#bundles-3d-points" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Like push-pins in the real world.</p></li>
+<li><p>Represent actual 3D positions.</p></li>
+<li><p>Can be connected to multiple Markers.</p></li>
+<li><p>Move when their attributes change.</p></li>
+</ul>
+<p>See <a class="reference internal" href="tools_createnode.html#create-bundle-ref"><span class="std std-ref">Create Bundle</span></a> for creating Bundles.</p>
+</section>
+<section id="attributes">
+<h3>3. Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Properties that can be solved.</p></li>
+<li><p>Examples: camera position, object rotation, focal length.</p></li>
+<li><p>Can be:</p>
+<ul>
+<li><p>Static (one value for all frames).</p></li>
+<li><p>Animated (different values per frame).</p></li>
+<li><p>Locked (won’t be changed by solver).</p></li>
+</ul>
+</li>
+</ul>
+<p>See <a class="reference internal" href="solver_design.html#solver-design-attributes"><span class="std std-ref">Attributes</span></a> for more details.</p>
+</section>
+<section id="deviation-error">
+<h3>4. Deviation (Error)<a class="headerlink" href="#deviation-error" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Measures how far off the solution is.</p></li>
+<li><p>Calculated in pixels.</p></li>
+<li><p>Lower values = better solve.</p></li>
+<li><p>Displayed per Marker and as overall average.</p></li>
+</ul>
+</section>
+</section>
+<section id="how-the-solver-works">
+<h2>How the Solver Works<a class="headerlink" href="#how-the-solver-works" title="Permalink to this heading">#</a></h2>
+<section id="initial-setup">
+<h3>1. Initial Setup<a class="headerlink" href="#initial-setup" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>You provide starting positions for everything.</p></li>
+<li><p>Better initial guesses = better, faster solves.</p></li>
+<li><p>The solver won’t drastically change your initial setup.</p></li>
+</ul>
+</section>
+<section id="solving-process">
+<h3>2. Solving Process<a class="headerlink" href="#solving-process" title="Permalink to this heading">#</a></h3>
+<ol class="arabic simple">
+<li><p>Measures current error.</p></li>
+<li><p>Makes small adjustments to attributes.</p></li>
+<li><p>Checks if error improved.</p></li>
+<li><p>Repeats until error is acceptable or can’t improve.</p></li>
+</ol>
+<p>Like walking down a hill blindfolded:</p>
+<ul class="simple">
+<li><p>Take a small step.</p></li>
+<li><p>Check if you’re lower than before.</p></li>
+<li><p>Keep going until you reach the bottom.</p></li>
+<li><p>Sometimes you need to try different directions.</p></li>
+</ul>
+</section>
+<section id="solving-strategies">
+<h3>3. Solving Strategies<a class="headerlink" href="#solving-strategies" title="Permalink to this heading">#</a></h3>
+<section id="basic-solve">
+<h4>Basic Solve<a class="headerlink" href="#basic-solve" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p>Simplest approach.</p></li>
+<li><p>Solves frame-by-frame.</p></li>
+<li><p>Only for animated attributes.</p></li>
+</ul>
+<p>See <a class="reference internal" href="tools_solver_ui_tab_basic.html#basic-solver-tab-heading"><span class="std std-ref">Basic Solver Tab</span></a> for details.</p>
+</section>
+<section id="standard-solve">
+<h4>Standard Solve<a class="headerlink" href="#standard-solve" title="Permalink to this heading">#</a></h4>
+<ul class="simple">
+<li><p>More sophisticated.</p></li>
+<li><p>Handles static and animated attributes.</p></li>
+<li><p>Uses key “root frames” for results stability.</p></li>
+</ul>
+<p>See <a class="reference internal" href="tools_solver_ui_tab_standard.html#standard-solver-tab-heading"><span class="std std-ref">Standard Solver Tab</span></a> for details.</p>
+</section>
+</section>
+</section>
+<section id="common-pitfalls-and-solutions">
+<h2>Common Pitfalls and Solutions<a class="headerlink" href="#common-pitfalls-and-solutions" title="Permalink to this heading">#</a></h2>
+<section id="too-few-markers">
+<h3>1. Too Few Markers<a class="headerlink" href="#too-few-markers" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Like trying to balance a table with too few legs.</p></li>
+<li><p>Need enough measurements to solve your attributes.</p></li>
+<li><p>Rule: Measurements &gt; Attributes being solved.</p></li>
+</ul>
+</section>
+<section id="poor-initial-values">
+<h3>2. Poor Initial Values<a class="headerlink" href="#poor-initial-values" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Like starting a maze from the wrong entrance.</p></li>
+<li><p>Get camera/object roughly positioned first.</p></li>
+<li><p>Use known information (focal length, object size).</p></li>
+</ul>
+</section>
+<section id="over-constraining">
+<h3>3. Over-constraining<a class="headerlink" href="#over-constraining" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Like trying to fit a square peg in a round hole.</p></li>
+<li><p>Don’t solve attributes that should be fixed.</p></li>
+<li><p>Lock attributes when you know their values.</p></li>
+</ul>
+</section>
+</section>
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Permalink to this heading">#</a></h2>
+<section id="start-simple">
+<h3>1. Start Simple<a class="headerlink" href="#start-simple" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Begin with basic solves.</p></li>
+<li><p>Add complexity gradually.</p></li>
+<li><p>Verify each step.</p></li>
+</ul>
+</section>
+<section id="use-root-frames">
+<h3>2. Use Root Frames<a class="headerlink" href="#use-root-frames" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Pick frames with good parallax.</p></li>
+<li><p>Space them throughout the sequence.</p></li>
+<li><p>Use for initial static solves.</p></li>
+</ul>
+<p>See <a class="reference internal" href="solver_design.html#solver-design-time-evaluation"><span class="std std-ref">Attribute Value Evaluation at Different Times</span></a> for details.</p>
+</section>
+<section id="check-your-work">
+<h3>3. Check Your Work<a class="headerlink" href="#check-your-work" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Monitor deviation values.</p></li>
+<li><p>Visually verify results.</p></li>
+<li><p>Test solve stability.</p></li>
+</ul>
+</section>
+</section>
+<section id="advanced-topics">
+<h2>Advanced Topics<a class="headerlink" href="#advanced-topics" title="Permalink to this heading">#</a></h2>
+<section id="weight-values">
+<h3>1. Weight Values<a class="headerlink" href="#weight-values" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Control Marker importance.</p></li>
+<li><p>Higher weight = more influence.</p></li>
+</ul>
+</section>
+<section id="solve-strategies">
+<h3>2. Solve Strategies<a class="headerlink" href="#solve-strategies" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Different approaches for different scenarios.</p></li>
+<li><p>Can combine multiple solve passes.</p></li>
+<li><p>Balance speed vs accuracy.</p></li>
+</ul>
+<p>See <a class="reference internal" href="solver_design.html#solver-design-solver-strategies"><span class="std std-ref">Solver Strategies</span></a> for details.</p>
+</section>
+<section id="hierarchical-solving">
+<h3>3. Hierarchical Solving<a class="headerlink" href="#hierarchical-solving" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>Solve simple relationships first.</p></li>
+<li><p>Build up to complex relationships.</p></li>
+<li><p>Maintain solve stability.</p></li>
+</ul>
+<p>For practical examples, see the <a class="reference internal" href="tutorial.html#tutorial-heading"><span class="std std-ref">Tutorials</span></a> section.</p>
+</section>
 </section>
 </section>
 
@@ -370,23 +551,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="mmSolver.tools.deformmarker.html">
+          <a class="next-page" href="solver_design.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">mmSolver.tools.deformmarker</div>
+                <div class="title">Solver Design</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="mmSolver.tools.createrivet.html">
+          <a class="prev-page" href="techniques_rigs.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">mmSolver.tools.createrivet</div>
+                <div class="title">Solving Maya Rigs</div>
                 
               </div>
             </a>
@@ -420,12 +601,44 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">mmSolver.tools.createskydome</a><ul>
-<li><a class="reference internal" href="#module-mmSolver.tools.createskydome.tool">Tools</a><ul>
-<li><a class="reference internal" href="#mmSolver.tools.createskydome.tool.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li><a class="reference internal" href="#">Understanding the Solver Core Concepts</a><ul>
+<li><a class="reference internal" href="#the-basic-idea">The Basic Idea</a></li>
+<li><a class="reference internal" href="#real-world-analogy">Real-World Analogy</a></li>
+<li><a class="reference internal" href="#key-components">Key Components</a><ul>
+<li><a class="reference internal" href="#markers-2d-points">1. Markers (2D Points)</a></li>
+<li><a class="reference internal" href="#bundles-3d-points">2. Bundles (3D Points)</a></li>
+<li><a class="reference internal" href="#attributes">3. Attributes</a></li>
+<li><a class="reference internal" href="#deviation-error">4. Deviation (Error)</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-mmSolver.tools.createskydome.constant">Constants</a></li>
+<li><a class="reference internal" href="#how-the-solver-works">How the Solver Works</a><ul>
+<li><a class="reference internal" href="#initial-setup">1. Initial Setup</a></li>
+<li><a class="reference internal" href="#solving-process">2. Solving Process</a></li>
+<li><a class="reference internal" href="#solving-strategies">3. Solving Strategies</a><ul>
+<li><a class="reference internal" href="#basic-solve">Basic Solve</a></li>
+<li><a class="reference internal" href="#standard-solve">Standard Solve</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#common-pitfalls-and-solutions">Common Pitfalls and Solutions</a><ul>
+<li><a class="reference internal" href="#too-few-markers">1. Too Few Markers</a></li>
+<li><a class="reference internal" href="#poor-initial-values">2. Poor Initial Values</a></li>
+<li><a class="reference internal" href="#over-constraining">3. Over-constraining</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#best-practices">Best Practices</a><ul>
+<li><a class="reference internal" href="#start-simple">1. Start Simple</a></li>
+<li><a class="reference internal" href="#use-root-frames">2. Use Root Frames</a></li>
+<li><a class="reference internal" href="#check-your-work">3. Check Your Work</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#advanced-topics">Advanced Topics</a><ul>
+<li><a class="reference internal" href="#weight-values">1. Weight Values</a></li>
+<li><a class="reference internal" href="#solve-strategies">2. Solve Strategies</a></li>
+<li><a class="reference internal" href="#hierarchical-solving">3. Hierarchical Solving</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

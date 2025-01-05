@@ -156,6 +156,7 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start_guide.html">Quick Start Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorials</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="tools.html">Tools</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 has-children"><a class="reference internal" href="tools_solver_ui.html">Solver UI</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -189,6 +190,7 @@
 </li>
 </ul>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="solver_concepts.html">Understanding the Solver Core Concepts</a></li>
 <li class="toctree-l1"><a class="reference internal" href="solver_design.html">Solver Design</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="nodes.html">Nodes</a><input class="toctree-checkbox" id="toctree-checkbox-4" name="toctree-checkbox-4" role="switch" type="checkbox"/><label for="toctree-checkbox-4"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="nodes_transforms.html">Transform Nodes</a></li>
@@ -506,7 +508,7 @@ change the sensitivity.</p></li>
 </div>
 </section>
 <section id="bake-attributes">
-<h2>Bake Attributes<a class="headerlink" href="#bake-attributes" title="Permalink to this heading">#</a></h2>
+<span id="bake-attributes-tool-ref"></span><h2>Bake Attributes<a class="headerlink" href="#bake-attributes" title="Permalink to this heading">#</a></h2>
 <figure class="align-center">
 <a class="reference internal image-reference" href="_images/tools_bake_attributes_ui.png"><img alt="Bake Attributes UI" src="_images/tools_bake_attributes_ui.png" style="width: 257.0px; height: 242.0px;" /></a>
 </figure>
@@ -551,6 +553,93 @@ and this tool is a faster baking tool.</p>
 <span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
 </pre></div>
 </div>
+</section>
+<section id="attribute-curve-filter-pops">
+<span id="attribute-curve-filter-pops-tool-ref"></span><h2>Attribute Curve Filter Pops<a class="headerlink" href="#attribute-curve-filter-pops" title="Permalink to this heading">#</a></h2>
+<figure class="align-center">
+<a class="reference internal image-reference" href="_images/tools_attribute_curve_filter_pops_ui.png"><img alt="Attribute Curve Filter Pops UI" src="_images/tools_attribute_curve_filter_pops_ui.png" style="width: 80%;" /></a>
+</figure>
+<p>The <cite>Attribute Curve Filter Pops</cite> tool is used to detect and remove
+unwanted spikes or “pops” in animation curves. These sudden value
+changes can occur during animation or when solving, and this tool
+helps smooth them out while preserving the intended animation.</p>
+<p>For example, after solving a camera with noisy tracking data, you may
+get small value spikes/pops in the animation curves. This tool can help
+remove those spikes.</p>
+<p>The tool works by analyzing each keyframe and comparing the value
+changes between neighboring frames. When the change exceeds the
+specified threshold, it’s identified as a pop and filtered out.</p>
+<p>Usage:</p>
+<ol class="arabic simple">
+<li><p>Select nodes with animation curves.</p>
+<ul class="simple">
+<li><p>The tool will look for selected attributes in the Channel Box.</p></li>
+<li><p>Or selected Graph Editor Outliner attributes.</p></li>
+<li><p>Or selected keyframes in the Graph Editor.</p></li>
+</ul>
+</li>
+<li><p>Open the Attribute Curve Filter Pops UI:</p>
+<ul class="simple">
+<li><p>Menu: <code class="docutils literal notranslate"><span class="pre">mmSolver</span> <span class="pre">&gt;</span> <span class="pre">Attribute</span> <span class="pre">Tools</span> <span class="pre">&gt;</span> <span class="pre">Attribute</span> <span class="pre">Curves</span> <span class="pre">Filter</span> <span class="pre">Pops</span></code></p></li>
+</ul>
+</li>
+<li><p>Configure the options:</p>
+<ul class="simple">
+<li><p>Set the frame range to process.</p></li>
+<li><p>Adjust the threshold value that determines what constitutes a “pop”.</p></li>
+</ul>
+</li>
+<li><p>Click “Apply” to filter the animation curves.</p>
+<ul class="simple">
+<li><p>The tool will apply to multiple attributes at once.</p></li>
+</ul>
+</li>
+</ol>
+<p>Python Command:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">mmSolver.tools.attributecurvefilterpops.tool</span> <span class="k">as</span> <span class="nn">tool</span>
+
+<span class="c1"># Run the filter with current settings</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+
+<span class="c1"># Open the UI window</span>
+<span class="n">tool</span><span class="o">.</span><span class="n">open_window</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="notes">
+<h3>Notes<a class="headerlink" href="#notes" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p>The tool requires animation curves on the attributes to filter. If
+attributes aren’t animated, bake them to animation curves first.</p></li>
+<li><p>The threshold determines what constitutes a “pop” - experiment with
+different values to find what works best for your animation.</p></li>
+<li><p>Use the Graph Editor to visually inspect the results after
+filtering.</p></li>
+<li><p>All operations can be undone if needed.</p></li>
+<li><p>For general animation curve smoothing (rather than spike removal),
+consider using the <a class="reference internal" href="#smooth-keyframes-tool-ref"><span class="std std-ref">Smooth Keyframes</span></a> tool instead.</p></li>
+</ul>
+</section>
+<section id="options">
+<h3>Options<a class="headerlink" href="#options" title="Permalink to this heading">#</a></h3>
+<ul class="simple">
+<li><p><strong>Frame Range</strong> - Choose how to determine which frames to process:</p>
+<ul>
+<li><p><em>Timeline (Inner)</em> - Uses the inner timeline range (highlighted region)</p></li>
+<li><p><em>Timeline (Outer)</em> - Uses the outer timeline range</p></li>
+<li><p><em>Custom</em> - Manually specify start/end frames</p></li>
+</ul>
+</li>
+<li><p><strong>Start/End</strong> - When “Custom” frame range is selected, specify the exact frame range to process</p></li>
+<li><p><strong>Threshold</strong> - Controls how aggressively pops are detected and filtered:</p>
+<ul>
+<li><p>Default value is 1.0,</p></li>
+<li><p>Higher values (above 1.0) remove less pops, only fixing large spikes.</p></li>
+<li><p>Lower values (below 1.0) remove more pops, smoothing out smaller variations.</p></li>
+<li><p>For typical matchmove solves, however values between 0.5 and 1.5 work well.</p></li>
+</ul>
+</li>
+</ul>
+</section>
 </section>
 </section>
 
@@ -620,6 +709,11 @@ and this tool is a faster baking tool.</p>
 </li>
 <li><a class="reference internal" href="#channel-sensitivity">Channel Sensitivity</a></li>
 <li><a class="reference internal" href="#bake-attributes">Bake Attributes</a></li>
+<li><a class="reference internal" href="#attribute-curve-filter-pops">Attribute Curve Filter Pops</a><ul>
+<li><a class="reference internal" href="#notes">Notes</a></li>
+<li><a class="reference internal" href="#options">Options</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -39,6 +39,7 @@ details and features to use.
 .. toctree::
    :maxdepth: 1
 
+   solver_concepts
    solver_design
    nodes
    commands

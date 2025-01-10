@@ -57,9 +57,15 @@ class TestAnimCurveFilterPops(test_tools_utils.ToolsTestCase):
         print('animCurve_ty:', repr(animCurve_ty))
         print('animCurve_ty:', repr(animCurve_ty))
 
-        maya.cmds.mmAnimCurveFilterPops(animCurve_tx, threshold=1.0)
-        maya.cmds.mmAnimCurveFilterPops(animCurve_ty, threshold=1.0)
-        maya.cmds.mmAnimCurveFilterPops(animCurve_tz, threshold=0.1)
+        maya.cmds.mmAnimCurveFilterPops(
+            animCurve_tx, threshold=1.0, startFrame=startFrame, endFrame=endFrame
+        )
+        maya.cmds.mmAnimCurveFilterPops(
+            animCurve_ty, threshold=1.0, startFrame=startFrame, endFrame=endFrame
+        )
+        maya.cmds.mmAnimCurveFilterPops(
+            animCurve_tz, threshold=0.1, startFrame=startFrame, endFrame=endFrame
+        )
 
         # save the output
         name = 'animcurve_filter_pops1_after.ma'

@@ -1010,7 +1010,7 @@ MStatus solveFrames(
     // Solving Objects.
     //
     // This data structure is passed to the solve function, so we can
-    // access all this data inside the CMinpack solver function.
+    // access all this data inside the solver function.
     SolverData userData;
     userData.cameraList = cameraList;
     userData.markerList = usedMarkerList;
@@ -1491,6 +1491,19 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
     return cmdResult.solverResult.success;
 }
 
+// Solve everything!
+//
+// This function is responsible for taking the given cameras, markers,
+// bundles and solver options, and modifying the current Maya scene,
+// saving changes in the 'dgmod' variable, and returning the results
+// in the outResult string.
+//
+// This is the refactored solve function. It's intended to be shorter
+// and easier to understand while providing exactly the same
+// functionality.
+//
+// As part of this refactor, we can remove older features that are
+// unused or unneeded, such as stiffness and smoothness attributes.
 bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
               MarkerPtrList &markerList, BundlePtrList &bundleList,
               AttrPtrList &attrList, const MTimeArray &frameList,
@@ -1518,6 +1531,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
     AttrPtrList usedAttrList;
     AttrPtrList unusedAttrList;
 
+    // TODO: Remove stiffness and smoothness attributes.
     StiffAttrsPtrList stiffAttrsList;
     SmoothAttrsPtrList smoothAttrsList;
 

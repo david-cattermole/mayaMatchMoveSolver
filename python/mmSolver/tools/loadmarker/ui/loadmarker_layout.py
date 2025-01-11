@@ -179,16 +179,22 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.fileInfo_plainTextEdit.setReadOnly(True)
 
         default_value = get_user_prefs_rename_markers_default()
-        value = get_config_value(config, 'data/rename_markers', default_value)
+        value = get_config_value(
+            config, const.CONFIG_PATH_RENAME_MARKERS, default_value
+        )
         self.renameMarkers_checkBox.setChecked(value)
         if value is True:
             # Empty string is intended to force the user to enter a valid name.
             fallback = ''
-            new_name = get_config_value(config, 'data/rename_markers_name', fallback)
+            new_name = get_config_value(
+                config, const.CONFIG_PATH_RENAME_MARKERS_NAME, fallback
+            )
             self.renameMarkers_lineEdit.setText(new_name)
 
         default_value = get_user_prefs_load_bundle_positions_default()
-        value = get_config_value(config, 'data/load_bundle_position', default_value)
+        value = get_config_value(
+            config, const.CONFIG_PATH_LOAD_BUNDLE_POSITION, default_value
+        )
         self.loadBndPositions_checkBox.setChecked(value)
 
         # Get the file path from the clipboard.
@@ -234,27 +240,30 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.updateCollectionEnabledState()
 
         value = get_config_value(
-            config, "data/load_mode", const.LOAD_MODE_DEFAULT_VALUE
+            config, const.CONFIG_PATH_LOAD_MODE, const.LOAD_MODE_DEFAULT_VALUE
         )
         self.populateLoadModeModel(self.loadMode_model)
         index = self.loadMode_model.stringList().index(value)
         self.loadMode_comboBox.setCurrentIndex(index)
 
         default_value = get_user_prefs_distortion_mode_default()
-        value = get_config_value(config, "data/distortion_mode", default_value)
+        value = get_config_value(
+            config, const.CONFIG_PATH_DISTORTION_MODE, default_value
+        )
         self.populateDistortionModeModel(self.distortionMode_model)
         index = self.distortionMode_model.stringList().index(value)
         self.distortionMode_comboBox.setCurrentIndex(index)
 
         default_value = get_user_prefs_use_overscan_default()
-        value = get_config_value(config, 'data/use_overscan', default_value)
+        value = get_config_value(config, const.CONFIG_PATH_USE_OVERSCAN, default_value)
         self.overscan_checkBox.setChecked(value)
         self.updateOverscanValues()
 
         default_value = get_user_prefs_load_bundle_positions_default()
-        value = get_config_value(config, 'data/load_bundle_positions', default_value)
-        self.overscan_checkBox.setChecked(value)
-        self.updateOverscanValues()
+        value = get_config_value(
+            config, const.CONFIG_PATH_LOAD_BUNDLE_POSITION, default_value
+        )
+        self.loadBndPositions_checkBox.setChecked(value)
         return
 
     def updateFileInfo(self):

@@ -65,3 +65,15 @@ UNDISTORTION_MODE_VALUE = (
 
 # Default values
 LOAD_MODE_DEFAULT_VALUE = LOAD_MODE_NEW_VALUE
+
+
+# Configuration option keys.
+#
+# Used to look into the Load marker configuration file and get stored
+# values.
+CONFIG_PATH_LOAD_MODE = 'data/load_mode'
+CONFIG_PATH_USE_OVERSCAN = 'data/use_overscan'
+CONFIG_PATH_DISTORTION_MODE = 'data/distortion_mode'
+CONFIG_PATH_LOAD_BUNDLE_POSITION = 'data/load_bundle_position'
+CONFIG_PATH_RENAME_MARKERS = 'data/rename_markers'
+CONFIG_PATH_RENAME_MARKERS_NAME = 'data/rename_markers_name'

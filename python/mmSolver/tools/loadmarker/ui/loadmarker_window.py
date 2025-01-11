@@ -295,12 +295,14 @@ class LoadMarkerWindow(BaseWindow):
             # Update config file with latest values.
             config = get_config()
             if config is not None:
-                config.set_value("data/use_overscan", use_overscan)
-                config.set_value("data/load_bundle_position", load_bnd_pos)
-                config.set_value("data/distortion_mode", undist_mode)
-                config.set_value("data/load_mode", load_mode)
-                config.set_value('data/rename_markers', rename_markers)
-                config.set_value('data/rename_markers_name', rename_markers_name)
+                config.set_value(const.CONFIG_PATH_USE_OVERSCAN, use_overscan)
+                config.set_value(const.CONFIG_PATH_LOAD_BUNDLE_POSITION, load_bnd_pos)
+                config.set_value(const.CONFIG_PATH_DISTORTION_MODE, undist_mode)
+                config.set_value(const.CONFIG_PATH_LOAD_MODE, load_mode)
+                config.set_value(const.CONFIG_PATH_RENAME_MARKERS, rename_markers)
+                config.set_value(
+                    const.CONFIG_PATH_RENAME_MARKERS_NAME, rename_markers_name
+                )
                 config.write()
 
         return

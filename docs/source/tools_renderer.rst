@@ -81,7 +81,9 @@ tool).
     Example green silhouette effect on shaded objects.
 
 .. note:: `MM Silhouette Renderer` requires the use of the OpenGL
-          graphics API backend; DirectX is not supported.
+          graphics API backend; DirectX is not supported, if you are
+          using DirectX please switch your Maya Preferences to use
+          "OpenGL Core Profile".
 
 Usage
 ~~~~~

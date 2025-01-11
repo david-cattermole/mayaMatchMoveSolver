@@ -59,6 +59,7 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
         self.updateAddNewMarkersToWidget(config)
         self.updateAddNewLinesToWidget(config)
         self.updateSolverUIMinimalUIWhileSolvingWidget(config)
+        self.updateLoadMarkerUIRenameMarkersDefaultWidget(config)
         self.updateLoadMarkerUIDistortionModeDefaultWidget(config)
         self.updateLoadMarkerUIUseOverscanDefaultWidget(config)
         self.updateLoadMarkerUILoadBundlePositionsDefaultWidget(config)
@@ -101,6 +102,23 @@ class PrefLayout(QtWidgets.QWidget, ui_pref_layout.Ui_Form):
     def getAddNewLinesToConfigValue(self):
         key = pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY
         label = self.addNewLinesToComboBox.currentText()
+        value = userprefs_lib.get_value_from_label(key, label)
+        return value
+
+    def updateLoadMarkerUIRenameMarkersDefaultWidget(self, config):
+        key = pref_const.LOAD_MARKER_UI_RENAME_MARKERS_DEFAULT_KEY
+        value = userprefs_lib.get_value(config, key)
+        label = userprefs_lib.get_label_from_value(key, value)
+        assert isinstance(label, pycompat.TEXT_TYPE)
+        labels = userprefs_lib.get_labels(key)
+        self.renameMarkersDefaultComboBox.clear()
+        self.renameMarkersDefaultComboBox.addItems(labels)
+        self.renameMarkersDefaultComboBox.setCurrentText(label)
+        return
+
+    def getLoadMarkerUIRenameMarkersDefaultConfigValue(self):
+        key = pref_const.LOAD_MARKER_UI_RENAME_MARKERS_DEFAULT_KEY
+        label = self.renameMarkersDefaultComboBox.currentText()
         value = userprefs_lib.get_value_from_label(key, label)
         return value
 

@@ -89,6 +89,10 @@ class PrefWindow(BaseWindow):
         option_keys = [
             pref_const.REG_EVNT_ADD_NEW_MKR_TO_KEY,
             pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY,
+            pref_const.LOAD_MARKER_UI_RENAME_MARKERS_DEFAULT_KEY,
+            pref_const.LOAD_MARKER_UI_DISTORTION_MODE_DEFAULT_KEY,
+            pref_const.LOAD_MARKER_UI_USE_OVERSCAN_DEFAULT_KEY,
+            pref_const.LOAD_MARKER_UI_LOAD_BUNDLE_POSITIONS_DEFAULT_KEY,
             pref_const.SOLVER_UI_MINIMAL_UI_WHILE_SOLVING_KEY,
         ]
         for key in option_keys:
@@ -109,6 +113,10 @@ class PrefWindow(BaseWindow):
             (
                 pref_const.REG_EVNT_ADD_NEW_LINE_TO_KEY,
                 self.subForm.getAddNewLinesToConfigValue,
+            ),
+            (
+                pref_const.LOAD_MARKER_UI_RENAME_MARKERS_DEFAULT_KEY,
+                self.subForm.getLoadMarkerUIRenameMarkersDefaultConfigValue,
             ),
             (
                 pref_const.LOAD_MARKER_UI_DISTORTION_MODE_DEFAULT_KEY,

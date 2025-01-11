@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019, 2020 David Cattermole.
+# Copyright (C) 2018, 2019, 2020, 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -69,6 +69,72 @@ def _open_help():
     return
 
 
+def _load_nodes(
+    load_mode,
+    progress_bar,
+    camera_text,
+    camera_data,
+    mkr_grp_text,
+    mkr_grp_data,
+    add_to_collection,
+    collection_text,
+    collection_data,
+    mkr_data_list,
+    load_bnd_pos,
+    camera_field_of_view,
+):
+    new_mkr_list = None
+
+    if load_mode == const.LOAD_MODE_NEW_VALUE:
+        # Get Camera and MarkerGroup.
+        if camera_text == const.NEW_CAMERA_VALUE:
+            cam = lib.create_new_camera()
+            mkr_grp = lib.create_new_marker_group(cam)
+        else:
+            cam = camera_data
+            if mkr_grp_text == const.NEW_MARKER_GROUP_VALUE:
+                mkr_grp = lib.create_new_marker_group(cam)
+            else:
+                mkr_grp = mkr_grp_data
+        progress_bar.setValue(60)
+
+        # Get Collection
+        col = None
+        if add_to_collection is True:
+            if collection_text == const.NEW_COLLECTION_VALUE:
+                col = col_lib.create_collection()
+            else:
+                col = collection_data
+        progress_bar.setValue(70)
+
+        new_mkr_list = mayareadfile.create_nodes(
+            mkr_data_list,
+            cam=cam,
+            mkr_grp=mkr_grp,
+            col=col,
+            with_bundles=True,
+            load_bundle_position=load_bnd_pos,
+            camera_field_of_view=camera_field_of_view,
+        )
+
+    elif load_mode == const.LOAD_MODE_REPLACE_VALUE:
+        progress_bar.setValue(60)
+        mkr_list = lib.get_selected_markers()
+        # NOTE: camera_field_of_view can only be from one
+        # camera, because (we assume) only one MarkerData
+        # file can be loaded at once.
+        new_mkr_list = mayareadfile.update_nodes(
+            mkr_list,
+            mkr_data_list,
+            load_bundle_position=load_bnd_pos,
+            camera_field_of_view=camera_field_of_view,
+        )
+    else:
+        raise ValueError('Load mode is not valid: %r' % load_mode)
+
+    return new_mkr_list
+
+
 class LoadMarkerWindow(BaseWindow):
 
     name = 'LoadMarkerWindow'
@@ -106,6 +172,8 @@ class LoadMarkerWindow(BaseWindow):
 
         file_path = self.subForm.getFilePath()
         load_mode = self.subForm.getLoadModeText()
+        rename_markers = self.subForm.getRenameMarkers()
+        rename_markers_name = self.subForm.getRenameMarkersName()
         camera_text = self.subForm.getCameraText()
         camera_data = self.subForm.getCameraData()
         mkr_grp_text = self.subForm.getMarkerGroupText()
@@ -118,6 +186,22 @@ class LoadMarkerWindow(BaseWindow):
         use_overscan = self.subForm.getUseOverscanValue()
         undistorted = undist_mode == const.UNDISTORTION_MODE_VALUE
         width, height = self.subForm.getImageResolution()
+
+        # Otherwise when we try to rename markers, the tool will get
+        # errors.
+        if rename_markers is True:
+            if len(rename_markers_name) == 0:
+                LOG.error(
+                    'Please type a Rename Markers name, or disable Rename Markers.'
+                )
+                return
+            elif rename_markers_name[0].isdigit():
+                LOG.error(
+                    'Rename Markers name cannot %r start with a number! '
+                    'Please start with a letter or underscore.',
+                    rename_markers_name,
+                )
+                return
 
         camera_field_of_view = None
         if use_overscan is True:
@@ -144,52 +228,27 @@ class LoadMarkerWindow(BaseWindow):
                 )
                 self.progressBar.setValue(50)
 
-                if load_mode == const.LOAD_MODE_NEW_VALUE:
-                    # Get Camera and MarkerGroup.
-                    if camera_text == const.NEW_CAMERA_VALUE:
-                        cam = lib.create_new_camera()
-                        mkr_grp = lib.create_new_marker_group(cam)
-                    else:
-                        cam = camera_data
-                        if mkr_grp_text == const.NEW_MARKER_GROUP_VALUE:
-                            mkr_grp = lib.create_new_marker_group(cam)
-                        else:
-                            mkr_grp = mkr_grp_data
-                    self.progressBar.setValue(60)
+                new_mkr_list = _load_nodes(
+                    load_mode,
+                    self.progressBar,
+                    camera_text,
+                    camera_data,
+                    mkr_grp_text,
+                    mkr_grp_data,
+                    add_to_collection,
+                    collection_text,
+                    collection_data,
+                    mkr_data_list,
+                    load_bnd_pos,
+                    camera_field_of_view,
+                )
 
-                    # Get Collection
-                    col = None
-                    if add_to_collection is True:
-                        if collection_text == const.NEW_COLLECTION_VALUE:
-                            col = col_lib.create_collection()
-                        else:
-                            col = collection_data
-                    self.progressBar.setValue(70)
-
-                    mayareadfile.create_nodes(
-                        mkr_data_list,
-                        cam=cam,
-                        mkr_grp=mkr_grp,
-                        col=col,
-                        with_bundles=True,
-                        load_bundle_position=load_bnd_pos,
-                        camera_field_of_view=camera_field_of_view,
+                self.progressBar.setValue(90)
+                if rename_markers is True:
+                    changed_mkr_nodes = lib.rename_markers_and_bundles(
+                        new_mkr_list, rename_markers_name
                     )
-
-                elif load_mode == const.LOAD_MODE_REPLACE_VALUE:
-                    self.progressBar.setValue(60)
-                    mkr_list = lib.get_selected_markers()
-                    # NOTE: camera_field_of_view can only be from one
-                    # camera, because (we assume) only one MarkerData
-                    # file can be loaded at once.
-                    mayareadfile.update_nodes(
-                        mkr_list,
-                        mkr_data_list,
-                        load_bundle_position=load_bnd_pos,
-                        camera_field_of_view=camera_field_of_view,
-                    )
-                else:
-                    raise ValueError('Load mode is not valid: %r' % load_mode)
+                    lib.set_selected_nodes(changed_mkr_nodes)
 
                 self.progressBar.setValue(99)
                 lib.trigger_maya_to_refresh()
@@ -240,6 +299,8 @@ class LoadMarkerWindow(BaseWindow):
                 config.set_value("data/load_bundle_position", load_bnd_pos)
                 config.set_value("data/distortion_mode", undist_mode)
                 config.set_value("data/load_mode", load_mode)
+                config.set_value('data/rename_markers', rename_markers)
+                config.set_value('data/rename_markers_name', rename_markers_name)
                 config.write()
 
         return

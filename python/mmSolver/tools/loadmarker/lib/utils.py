@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2020 David Cattermole.
+# Copyright (C) 2018, 2020, 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -36,6 +36,8 @@ import mmSolver.utils.python_compat as pycompat
 import mmSolver.api as mmapi
 import mmSolver.tools.createcamera.lib as createcamera_lib
 import mmSolver.tools.userpreferences.lib as userprefs_lib
+import mmSolver.tools.markerbundlerename.lib as markerbundlerename_lib
+import mmSolver.tools.markerbundlerename.constant as markerbundlerename_const
 
 
 LOG = mmSolver.logger.get_logger()
@@ -145,6 +147,12 @@ def get_selected_markers():
     return mkr_list
 
 
+def set_selected_nodes(nodes):
+    if len(nodes) > 0:
+        maya.cmds.select(nodes, replace=True)
+    return
+
+
 def get_active_viewport_camera():
     """
     Get the Camera that is attached to the active viewport.
@@ -235,3 +243,34 @@ def deferred_revert_of_config_value(config, key, old_value):
     """Set the user preferences to a value, as a deferred fashion."""
     maya.utils.executeDeferred(lambda: userprefs_lib.set_value(config, key, old_value))
     return
+
+
+def rename_markers_and_bundles(mkr_list, name):
+    """
+    Rename all markers and bundles with a name.
+    """
+    bnd_list = [mkr.get_bundle() for mkr in mkr_list]
+
+    mkr_nodes = [mkr.get_node() for mkr in mkr_list]
+    bnd_nodes = [bnd.get_node() for bnd in bnd_list]
+    mkr_nodes = [mkr for mkr in mkr_nodes if mkr is not None]
+    bnd_nodes = [bnd for bnd in bnd_nodes if bnd is not None]
+
+    mkr_name = name
+    bnd_name = name
+
+    number_format = markerbundlerename_const.NUMBER_FORMAT
+    mkr_suffix = markerbundlerename_const.MARKER_SUFFIX
+    bnd_suffix = markerbundlerename_const.BUNDLE_SUFFIX
+
+    changed_nodes = markerbundlerename_lib.rename_markers_and_bundles(
+        mkr_nodes,
+        bnd_nodes,
+        mkr_name,
+        bnd_name,
+        number_format,
+        mkr_suffix,
+        bnd_suffix,
+    )
+    changed_mkr_nodes = mmapi.filter_marker_nodes(changed_nodes)
+    return changed_mkr_nodes

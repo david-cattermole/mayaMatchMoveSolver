@@ -1,4 +1,4 @@
-# Copyright (C) 2018, 2019, 2020 David Cattermole.
+# Copyright (C) 2018, 2019, 2020, 2025 David Cattermole.
 #
 # This file is part of mmSolver.
 #
@@ -105,6 +105,13 @@ def get_user_prefs_load_bundle_positions_default():
     )
 
 
+def get_user_prefs_rename_markers_default():
+    config = userprefs_lib.get_config()
+    key = userprefs_const.LOAD_MARKER_UI_RENAME_MARKERS_DEFAULT_KEY
+    value = userprefs_lib.get_value(config, key)
+    return value == userprefs_const.LOAD_MARKER_UI_RENAME_MARKERS_DEFAULT_TRUE_VALUE
+
+
 class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
     def __init__(self, parent=None, *args, **kwargs):
         super(LoadMarkerLayout, self).__init__(*args, **kwargs)
@@ -170,6 +177,15 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
         self.imageResHeight_spinBox.setEnabled(False)
 
         self.fileInfo_plainTextEdit.setReadOnly(True)
+
+        default_value = get_user_prefs_rename_markers_default()
+        value = get_config_value(config, 'data/rename_markers', default_value)
+        self.renameMarkers_checkBox.setChecked(value)
+        if value is True:
+            # Empty string is intended to force the user to enter a valid name.
+            fallback = ''
+            new_name = get_config_value(config, 'data/rename_markers_name', fallback)
+            self.renameMarkers_lineEdit.setText(new_name)
 
         default_value = get_user_prefs_load_bundle_positions_default()
         value = get_config_value(config, 'data/load_bundle_position', default_value)
@@ -689,6 +705,18 @@ class LoadMarkerLayout(QtWidgets.QWidget, ui_loadmarker_layout.Ui_Form):
     def getLoadModeText(self):
         text = self.loadMode_comboBox.currentText()
         return text
+
+    def getRenameMarkers(self):
+        value = self.renameMarkers_checkBox.isChecked()
+        enabled = self.renameMarkers_checkBox.isEnabled()
+        return value and enabled
+
+    def getRenameMarkersName(self):
+        enabled = self.renameMarkers_lineEdit.isEnabled()
+        if enabled is False:
+            return ''
+        value = self.renameMarkers_lineEdit.text()
+        return value
 
     def getDistortionModeText(self):
         text = self.distortionMode_comboBox.currentText()

@@ -78,35 +78,45 @@
      <layout class="QVBoxLayout" name="verticalLayout_5">
       <item>
        <layout class="QFormLayout" name="loadMarkerUI_formLayout">
-        <item row="1" column="0">
+        <item row="2" column="0">
          <widget class="QLabel" name="useOverscanDefaultLabel">
           <property name="text">
            <string>Use Embedded Overscan Default:</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
+        <item row="2" column="1">
          <widget class="QComboBox" name="useOverscanDefaultComboBox"/>
         </item>
-        <item row="2" column="0">
+        <item row="3" column="0">
          <widget class="QLabel" name="loadBundlePositionsDefaultLabel">
           <property name="text">
            <string>Load Bundle Positions Default:</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="1">
+        <item row="3" column="1">
          <widget class="QComboBox" name="loadBundlePositionsDefaultComboBox"/>
         </item>
-        <item row="0" column="0">
+        <item row="1" column="0">
          <widget class="QLabel" name="distortionModeDefaultLabel">
           <property name="text">
            <string>Distortion Mode Default:</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
+        <item row="1" column="1">
          <widget class="QComboBox" name="distortionModeDefaultComboBox"/>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="renameMarkersDefaultLabel">
+          <property name="text">
+           <string>Rename Markers Default:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QComboBox" name="renameMarkersDefaultComboBox"/>
         </item>
        </layout>
       </item>

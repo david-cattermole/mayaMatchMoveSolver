@@ -685,17 +685,25 @@ general functions behave, by default.
        UI solving has finished. If *No*, the :ref:`Solver UI <solver-ui-ref>`
        will not be adjusted.
 
+   * - Rename Markers Default
+     - *Yes* or *No*
+     - Controls the default value used for the "Rename Markers" option
+       in the :ref:`Load Markers <load-markers-ref>` UI.
+
    * - Distortion Mode Default
      - *Undistorted* or *Distorted*
-     - Controls the default value shown in the Load Marker UI.
+     - Controls the default value shown in the :ref:`Load Markers
+       <load-markers-ref>` UI.
 
    * - Use Embedded Overscan Default
      - *Yes* or *No*
-     - Controls the default value shown in the Load Marker UI.
+     - Controls the default value shown in the :ref:`Load Markers
+       <load-markers-ref>` UI.
 
    * - Load Bundle Positions Default
      - *Yes* or *No*
-     - Controls the default value shown in the Load Marker UI.
+     - Controls the default value shown in the :ref:`Load Markers
+       <load-markers-ref>` UI.
 
 
 Usage:

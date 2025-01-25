@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, 2019, 2020 David Cattermole.
+ * Copyright (C) 2018, 2019, 2020, 2025 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -28,6 +28,7 @@
 #include <cassert>
 #include <cmath>
 #include <string>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -42,13 +43,13 @@
 #include "adjust_data.h"
 #include "adjust_defines.h"
 #include "adjust_solveFunc.h"
+#include "mmSolver/core/matrix_bool_2d.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/utilities/debug_utils.h"
 
-typedef std::vector<std::vector<bool> > BoolList2D;
 typedef std::pair<int, int> IndexPair;
 typedef std::vector<std::pair<int, int> > IndexPairList;
 
@@ -68,24 +69,23 @@ int countUpNumberOfUnknownParameters(
     std::vector<double> &out_paramLowerBoundList,
     std::vector<double> &out_paramUpperBoundList,
     std::vector<double> &out_paramWeightList,
-    IndexPairList &out_paramToAttrList, BoolList2D &out_paramFrameList,
-    MStatus &out_status);
+    IndexPairList &out_paramToAttrList,
+    mmsolver::MatrixBool2D &out_paramFrameList, MStatus &out_status);
 
-void findMarkerToAttributeRelationship(const MarkerPtrList &markerList,
-                                       const AttrPtrList &attrList,
-                                       BoolList2D &out_markerToAttrList,
-                                       MStatus &out_status);
+void findMarkerToAttributeRelationship(
+    const MarkerPtrList &markerList, const AttrPtrList &attrList,
+    mmsolver::MatrixBool2D &out_markerToAttrMatrix, MStatus &out_status);
 
-void getMarkerToAttributeRelationship(const MarkerPtrList &markerList,
-                                      const AttrPtrList &attrList,
-                                      BoolList2D &out_markerToAttrList,
-                                      MStatus &out_status);
+void getMarkerToAttributeRelationship(
+    const MarkerPtrList &markerList, const AttrPtrList &attrList,
+    mmsolver::MatrixBool2D &out_markerToAttrMatrix, MStatus &out_status);
 
 void findErrorToParameterRelationship(
     const MarkerPtrList &markerList, const AttrPtrList &attrList,
     const MTimeArray &frameList, const int numParameters,
     const int numMarkerErrors, const IndexPairList &paramToAttrList,
-    const IndexPairList &errorToMarkerList, const BoolList2D &markerToAttrList,
-    BoolList2D &out_errorToParamList, MStatus &out_status);
+    const IndexPairList &errorToMarkerList,
+    const mmsolver::MatrixBool2D &markerToAttrMatrix,
+    mmsolver::MatrixBool2D &out_errorToParamList, MStatus &out_status);
 
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_RELATIONSHIPS_H

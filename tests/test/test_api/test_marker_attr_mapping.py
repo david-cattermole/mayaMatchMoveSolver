@@ -8,12 +8,15 @@ from __future__ import division
 from __future__ import print_function
 
 import unittest
+import time
 
 import maya.cmds
 
 import test.test_api.apiutils as apiUtils
 import mmSolver.api as mmapi
 import mmSolver.utils.nodeaffects as affects_utils
+import mmSolver.tools.solver.lib.collectionstate as collectionstate
+import mmSolver.tools.solver.constant as solver_const
 
 
 # @unittest.skip
@@ -153,6 +156,96 @@ class TestMarkerAttrMapping(apiUtils.APITestCase):
         path = self.get_data_path('find_marker_attr_mapping_after.ma')
         maya.cmds.file(rename=path)
         maya.cmds.file(save=True, type='mayaAscii', force=True)
+        return
+
+    # @unittest.skip
+    def test_static_attr_correctness_solver_basic(self):
+        s = time.time()
+        # Open the Maya file
+        file_name = 'solverAffectsCorrectnessSolverBasic.ma'
+        path = self.get_data_path('scenes', file_name)
+        maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
+
+        col = mmapi.Collection(node='myCollection')
+        collectionstate.set_solver_type_on_collection(
+            col, solver_const.SOLVER_TYPE_CMINPACK_LMDER
+        )
+
+        e = time.time()
+        print('pre-solve time:', e - s)
+
+        # save the output, before.
+        path = self.get_data_path(
+            'test_marker_attr_mapping_correctness_solver_basic_before.ma'
+        )
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        s = time.time()
+        solres_list = mmapi.execute(col)
+        e = time.time()
+        print('total time:', e - s)
+
+        # Set Deviation
+        mkr_list = col.get_marker_list()
+        mmapi.update_deviation_on_markers(mkr_list, solres_list)
+        mmapi.update_deviation_on_collection(col, solres_list)
+
+        # save the output
+        path = self.get_data_path(
+            'test_marker_attr_mapping_correctness_solver_basic_after.ma'
+        )
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        self.checkSolveResults(
+            solres_list, allow_max_avg_error=0.1, allow_max_error=0.1
+        )
+        return
+
+    # @unittest.skip
+    def test_static_attr_correctness_solver_standard(self):
+        s = time.time()
+        # Open the Maya file
+        file_name = 'solverAffectsCorrectnessSolverStandard.ma'
+        path = self.get_data_path('scenes', file_name)
+        maya.cmds.file(path, open=True, force=True, ignoreVersion=True)
+
+        col = mmapi.Collection(node='myCollection')
+        collectionstate.set_solver_type_on_collection(
+            col, solver_const.SOLVER_TYPE_CMINPACK_LMDER
+        )
+
+        e = time.time()
+        print('pre-solve time:', e - s)
+
+        # save the output, before.
+        path = self.get_data_path(
+            'test_marker_attr_mapping_correctness_solver_standard_before.ma'
+        )
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        s = time.time()
+        solres_list = mmapi.execute(col)
+        e = time.time()
+        print('total time:', e - s)
+
+        # Set Deviation
+        mkr_list = col.get_marker_list()
+        mmapi.update_deviation_on_markers(mkr_list, solres_list)
+        mmapi.update_deviation_on_collection(col, solres_list)
+
+        # save the output
+        path = self.get_data_path(
+            'test_marker_attr_mapping_correctness_solver_standard_after.ma'
+        )
+        maya.cmds.file(rename=path)
+        maya.cmds.file(save=True, type='mayaAscii', force=True)
+
+        self.checkSolveResults(
+            solres_list, allow_max_avg_error=0.1, allow_max_error=0.1
+        )
         return
 
 

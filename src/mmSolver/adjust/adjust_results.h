@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, 2019, 2022 David Cattermole.
+ * Copyright (C) 2018, 2019, 2022, 2025 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -51,6 +51,7 @@
 #include "adjust_data.h"
 #include "adjust_defines.h"
 #include "adjust_relationships.h"
+#include "mmSolver/core/matrix_bool_2d.h"
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
@@ -600,16 +601,11 @@ struct AffectsResult {
     AffectsResult() = default;
 
     void fill(const MarkerPtrList &markerList, const AttrPtrList &attrList,
-              const BoolList2D &markerToAttrList) {
-        std::vector<bool>::const_iterator cit_inner;
-        BoolList2D::const_iterator cit_outer;
-        int markerIndex = 0;
-        for (cit_outer = markerToAttrList.cbegin();
-             cit_outer != markerToAttrList.cend(); ++cit_outer) {
-            int attrIndex = 0;
-            std::vector<bool> inner = *cit_outer;
-            for (cit_inner = inner.cbegin(); cit_inner != inner.cend();
-                 ++cit_inner) {
+              const mmsolver::MatrixBool2D &markerToAttrMatrix) {
+        for (uint32_t markerIndex = 0;
+             markerIndex < markerToAttrMatrix.width(); ++markerIndex) {
+            for (uint32_t attrIndex = 0; attrIndex < markerToAttrMatrix.height();
+                 ++attrIndex) {
                 MarkerPtr marker = markerList[markerIndex];
                 AttrPtr attr = attrList[attrIndex];
 
@@ -638,13 +634,10 @@ struct AffectsResult {
                 const char *attrName = attrNameString.asChar();
 
                 auto key = MarkerAttrNamePair(markerName, attrName);
-                bool value = *cit_inner;
+                const bool value =
+                    markerToAttrMatrix.at(markerIndex, attrIndex);
                 Self::marker_affects_attribute.insert({key, value});
-
-                ++attrIndex;
             }
-
-            ++markerIndex;
         }
     }
 
@@ -678,6 +671,85 @@ struct AffectsResult {
     }
 };
 
+namespace {
+
+void add_marker_names_to_unordered_set(
+    MarkerPtrList &markerList,
+    std::unordered_set<std::string> &out_marker_names) {
+    // Reserve memory up-front.
+    auto new_count = markerList.size();
+    auto old_count = out_marker_names.size();
+    out_marker_names.reserve(old_count + new_count);
+
+    for (auto mit = markerList.cbegin(); mit != markerList.cend(); ++mit) {
+        MarkerPtr marker = *mit;
+        MString marker_name = marker->getLongNodeName();
+        auto marker_name_char = marker_name.asChar();
+        out_marker_names.insert(std::string(marker_name_char));
+    }
+}
+
+void add_attribute_names_to_unordered_set(
+    AttrPtrList &attrList, std::unordered_set<std::string> &out_attr_names) {
+    // Reserve memory up-front.
+    auto new_count = attrList.size();
+    auto old_count = out_attr_names.size();
+    out_attr_names.reserve(old_count + new_count);
+
+    for (auto mit = attrList.cbegin(); mit != attrList.cend(); ++mit) {
+        AttrPtr attr = *mit;
+        MString attr_name = attr->getLongName();
+        auto attr_name_char = attr_name.asChar();
+        out_attr_names.insert(std::string(attr_name_char));
+    }
+}
+
+template <typename T>
+void combine_used_unordered_set_values(
+    std::unordered_set<T> &used, std::unordered_set<T> &unused,
+    const std::unordered_set<T> &other_used,
+    const std::unordered_set<T> &other_unused) {
+    for (const auto &value : other_used) {
+        used.insert(value);
+
+        // If the value is now used, we must ensure it's removed
+        // from the '_unused' set.
+        auto search_unused = unused.find(value);
+        if (search_unused != unused.end()) {
+            unused.erase(search_unused);
+        }
+    }
+
+    for (const auto &value : other_unused) {
+        unused.insert(value);
+    }
+}
+
+// // Implementation, not to be used by users.
+// template <typename T>
+// void combine_vectors(std::vector<T> &result_vector,
+//                      const std::vector<T> &other_vector) {
+//     for (auto i = 0; i < other_vector.size(); i++) {
+//         auto other_value = other_vector[i];
+
+//         uint32_t has_value_count = 0;
+//         for (auto j = 0; j < result_vector.size(); j++) {
+//             // We don't 'break' because we don't want any conditionals
+//             // in the loop body, because we want this loop to be
+//             // auto-vectorized.
+//             auto value = result_vector[j];
+//             has_value_count += static_cast<uint32_t>(other_value == value);
+//         }
+
+//         if (has_value_count > 0) {
+//             result_vector.push_back(other_value);
+//         }
+//     }
+//     return;
+// }
+
+}  // namespace
+
 struct SolverObjectUsageResult {
     typedef SolverObjectUsageResult Self;
 
@@ -690,69 +762,85 @@ struct SolverObjectUsageResult {
 
     void fill(MarkerPtrList &usedMarkerList, MarkerPtrList &unusedMarkerList,
               AttrPtrList &usedAttrList, AttrPtrList &unusedAttrList) {
-        for (MarkerPtrListCIt mit = usedMarkerList.cbegin();
-             mit != usedMarkerList.cend(); ++mit) {
-            MarkerPtr marker = *mit;
-            auto marker_name = marker->getLongNodeName();
-            auto marker_name_char = marker_name.asChar();
-            Self::markers_used.insert(std::string(marker_name_char));
-        }
+        add_marker_names_to_unordered_set(usedMarkerList, Self::markers_used);
+        add_marker_names_to_unordered_set(unusedMarkerList,
+                                          Self::markers_unused);
 
-        for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
-             mit != unusedMarkerList.cend(); ++mit) {
-            MarkerPtr marker = *mit;
-            auto marker_name = marker->getLongNodeName();
-            auto marker_name_char = marker_name.asChar();
-            Self::markers_unused.insert(std::string(marker_name_char));
-        }
+        add_attribute_names_to_unordered_set(usedAttrList,
+                                             Self::attributes_used);
+        add_attribute_names_to_unordered_set(unusedAttrList,
+                                             Self::attributes_unused);
 
-        for (AttrPtrListCIt ait = usedAttrList.cbegin();
-             ait != usedAttrList.cend(); ++ait) {
-            AttrPtr attr = *ait;
-            auto attr_name = attr->getLongName();
-            auto attr_name_char = attr_name.asChar();
-            Self::attributes_used.insert(std::string(attr_name_char));
-        }
+        // for (MarkerPtrListCIt mit = usedMarkerList.cbegin();
+        //      mit != usedMarkerList.cend(); ++mit) {
+        //     MarkerPtr marker = *mit;
+        //     auto marker_name = marker->getLongNodeName();
+        //     auto marker_name_char = marker_name.asChar();
+        //     Self::markers_used.insert(std::string(marker_name_char));
+        // }
 
-        for (AttrPtrListCIt ait = unusedAttrList.cbegin();
-             ait != unusedAttrList.cend(); ++ait) {
-            AttrPtr attr = *ait;
-            auto attr_name = attr->getLongName();
-            auto attr_name_char = attr_name.asChar();
-            Self::attributes_unused.insert(std::string(attr_name_char));
-        }
+        // for (MarkerPtrListCIt mit = unusedMarkerList.cbegin();
+        //      mit != unusedMarkerList.cend(); ++mit) {
+        //     MarkerPtr marker = *mit;
+        //     auto marker_name = marker->getLongNodeName();
+        //     auto marker_name_char = marker_name.asChar();
+        //     Self::markers_unused.insert(std::string(marker_name_char));
+        // }
+
+        // for (AttrPtrListCIt ait = usedAttrList.cbegin();
+        //      ait != usedAttrList.cend(); ++ait) {
+        //     AttrPtr attr = *ait;
+        //     auto attr_name = attr->getLongName();
+        //     auto attr_name_char = attr_name.asChar();
+        //     Self::attributes_used.insert(std::string(attr_name_char));
+        // }
+
+        // for (AttrPtrListCIt ait = unusedAttrList.cbegin();
+        //      ait != unusedAttrList.cend(); ++ait) {
+        //     AttrPtr attr = *ait;
+        //     auto attr_name = attr->getLongName();
+        //     auto attr_name_char = attr_name.asChar();
+        //     Self::attributes_unused.insert(std::string(attr_name_char));
+        // }
     }
 
     void add(const Self &other) {
-        for (const auto &value : other.markers_used) {
-            Self::markers_used.insert(value);
+        combine_used_unordered_set_values<std::string>(
+            Self::markers_used, Self::markers_unused, other.markers_used,
+            other.markers_unused);
+        combine_used_unordered_set_values<std::string>(
+            Self::attributes_used, Self::attributes_unused,
+            other.attributes_used, other.attributes_unused);
 
-            // If the Marker is now used, we must ensure it's removed
-            // from the '_unused' set.
-            auto search_unused = Self::markers_unused.find(value);
-            if (search_unused != markers_unused.end()) {
-                Self::markers_unused.erase(search_unused);
-            }
-        }
+        // for (const auto &value : other.markers_used) {
+        //     Self::markers_used.insert(value);
 
-        for (const auto &value : other.markers_unused) {
-            Self::markers_unused.insert(value);
-        }
+        //     // If the Marker is now used, we must ensure it's removed
+        //     // from the '_unused' set.
+        //     auto search_unused = Self::markers_unused.find(value);
+        //     if (search_unused != markers_unused.end()) {
+        //         Self::markers_unused.erase(search_unused);
+        //     }
+        // }
 
-        for (const auto &value : other.attributes_used) {
-            Self::attributes_used.insert(value);
+        // for (const auto &value : other.markers_unused) {
+        //     Self::markers_unused.insert(value);
+        // }
 
-            // If the Marker is now used, we must ensure it's removed
-            // from the '_unused' set.
-            auto search_unused = Self::attributes_unused.find(value);
-            if (search_unused != attributes_unused.end()) {
-                Self::attributes_unused.erase(search_unused);
-            }
-        }
+        // for (const auto &value : other.attributes_used) {
+        //     Self::attributes_used.insert(value);
 
-        for (const auto &value : other.attributes_unused) {
-            Self::attributes_unused.insert(value);
-        }
+        //     // If the Marker is now used, we must ensure it's removed
+        //     // from the '_unused' set.
+        //     auto search_unused = Self::attributes_unused.find(value);
+        //     if (search_unused != attributes_unused.end()) {
+        //         Self::attributes_unused.erase(search_unused);
+        //     }
+        // }
+
+        // for (const auto &value : other.attributes_unused) {
+        //     Self::attributes_unused.insert(value);
+        // }
     }
 
     void appendToMStringArray(MStringArray &result) {
@@ -871,6 +959,63 @@ struct SolverObjectCountResult {
     }
 };
 
+struct SolverFramesResult {
+    typedef SolverFramesResult Self;
+
+    std::unordered_set<int32_t> valid_frames;
+    std::unordered_set<int32_t> invalid_frames;
+
+    SolverFramesResult() : valid_frames(), invalid_frames() {}
+
+    void fill(const size_t total_frame_count,
+              std::unordered_set<int32_t> &&valid_frames_,
+              std::unordered_set<int32_t> &&invalid_frames_) {
+        Self::valid_frames = std::move(valid_frames_);
+        Self::invalid_frames = std::move(invalid_frames_);
+    }
+
+    void add(const Self &other) {
+        combine_used_unordered_set_values<int32_t>(
+            Self::valid_frames, Self::invalid_frames, other.valid_frames,
+            other.invalid_frames);
+    }
+
+    void appendToMStringArray(MStringArray &result) {
+        MString str;
+        std::string number_str;
+
+        number_str = mmstring::numberToString<int>(Self::valid_frames.size());
+        str = "number_of_valid_frames=";
+        str += MString(number_str.c_str());
+        result.append(str);
+
+        number_str = mmstring::numberToString<int>(Self::invalid_frames.size());
+        str = "number_of_invalid_frames=";
+        str += MString(number_str.c_str());
+        result.append(str);
+
+        if (!Self::valid_frames.empty()) {
+            str = "valid_frames=";
+            for (const auto &value : Self::valid_frames) {
+                number_str = mmstring::numberToString<int>(value);
+                str += MString(number_str.c_str());
+                str += CMD_RESULT_SPLIT_CHAR;
+            }
+            result.append(str);
+        }
+
+        if (!Self::invalid_frames.empty()) {
+            str = "invalid_frames=";
+            for (const auto &value : Self::invalid_frames) {
+                number_str = mmstring::numberToString<int>(value);
+                str += MString(number_str.c_str());
+                str += CMD_RESULT_SPLIT_CHAR;
+            }
+            result.append(str);
+        }
+    }
+};
+
 struct CommandResult {
     typedef CommandResult Self;
 
@@ -884,6 +1029,7 @@ struct CommandResult {
     AffectsResult affectsResult;
     SolverObjectUsageResult solverObjectUsageResult;
     SolverObjectCountResult solverObjectCountResult;
+    SolverFramesResult solverFramesResult;
 
     CommandResult() = default;
 
@@ -904,6 +1050,7 @@ struct CommandResult {
         Self::timerResult.add(other.timerResult);
         Self::errorMetricsResult.add(other.errorMetricsResult);
         Self::solveValuesResult.add(other.solveValuesResult);
+        Self::solverFramesResult.add(other.solverFramesResult);
     }
 
     void divide() {
@@ -937,6 +1084,7 @@ struct CommandResult {
         Self::timerResult.appendToMStringArray(result);
         Self::errorMetricsResult.appendToMStringArray(result);
         Self::solveValuesResult.appendToMStringArray(result);
+        Self::solverFramesResult.appendToMStringArray(result);
     }
 };
 

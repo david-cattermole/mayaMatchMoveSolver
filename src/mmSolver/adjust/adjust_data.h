@@ -48,6 +48,7 @@
 #include <mmlens/lens_model.h>
 
 #include "adjust_defines.h"
+#include "mmSolver/core/matrix_bool_2d.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
@@ -215,8 +216,8 @@ struct SolverData {
     std::vector<std::pair<int, int>> errorToMarkerList;
     std::vector<MPoint> markerPosList;
     std::vector<double> markerWeightList;
-    std::vector<std::vector<bool>> paramFrameList;
-    std::vector<std::vector<bool>> errorToParamList;
+    mmsolver::MatrixBool2D paramFrameList;
+    mmsolver::MatrixBool2D errorToParamList;
 
     // Internal Solver Data.
     std::vector<double> paramList;

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, 2019, 2022 David Cattermole.
+ * Copyright (C) 2018, 2019, 2022, 2025 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -44,13 +44,13 @@
 #include "adjust_defines.h"
 #include "adjust_results.h"
 #include "adjust_solveFunc.h"
+#include "mmSolver/core/matrix_bool_2d.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_bundle.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_marker.h"
 #include "mmSolver/utilities/debug_utils.h"
 
-typedef std::vector<std::vector<bool> > BoolList2D;
 typedef std::pair<int, int> IndexPair;
 typedef std::vector<std::pair<int, int> > IndexPairList;
 typedef std::pair<int, std::string> SolverTypePair;
@@ -103,10 +103,10 @@ bool compute_error_stats(const int numberOfMarkerErrors,
                          double &out_errorAvg, double &out_errorMin,
                          double &out_errorMax);
 
-MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList &markerList,
-                                         const AttrPtrList &attrList,
-                                         const BoolList2D &markerToAttrList,
-                                         AffectsResult &out_result);
+MStatus logResultsMarkerAffectsAttribute(
+    const MarkerPtrList &markerList, const AttrPtrList &attrList,
+    const mmsolver::MatrixBool2D &markerToAttrMatrix,
+    AffectsResult &out_result);
 
 bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
               MarkerPtrList &markerList, BundlePtrList &bundleList,

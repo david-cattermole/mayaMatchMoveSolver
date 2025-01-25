@@ -69,6 +69,7 @@
 #include "adjust_data.h"
 #include "adjust_measureErrors.h"
 #include "adjust_setParameters.h"
+#include "mmSolver/core/matrix_bool_2d.h"
 #include "mmSolver/mayahelper/maya_attr.h"
 #include "mmSolver/mayahelper/maya_camera.h"
 #include "mmSolver/mayahelper/maya_lens_model_utils.h"
@@ -189,7 +190,7 @@ double calculateParameterDelta(const double value, const double delta,
 void determineMarkersToBeEvaluated(
     const int numberOfParameters, const int numberOfMarkers, const double delta,
     const std::vector<double> previousParamList, const double *parameters,
-    const std::vector<std::vector<bool>> &errorToParamList,
+    const mmsolver::MatrixBool2D &errorToParamList,
     std::vector<bool> &out_evalMeasurements) {
     std::vector<int> evalCount(numberOfMarkers, 0);
 
@@ -213,7 +214,8 @@ void determineMarkersToBeEvaluated(
             changed = true;
         }
         for (int j = 0; j < numberOfMarkers; ++j) {
-            if (changed && errorToParamList[j][i]) {
+            const bool errorAffectsParameter = errorToParamList.at(j, i);
+            if (changed && errorAffectsParameter) {
                 evalCount[j] = evalCount[j] + 1;
             }
         }
@@ -305,7 +307,7 @@ int solveFunc_measureErrors(
 }
 
 int solveFunc_calculateJacobianMatrixForParameter(
-    const int i, const int progressMin, const int progressMax,
+    const int parameterIndex, const int progressMin, const int progressMax,
     std::vector<double> &paramListA, std::vector<double> &errorListA,
     const std::vector<bool> &evalMeasurements, const int autoDiffType,
     const int ldfjac, const int numberOfMarkerErrors,
@@ -316,7 +318,7 @@ int solveFunc_calculateJacobianMatrixForParameter(
     SolverData *userData, SolverTimer &timer) {
     MStatus status;
 
-    const double ratio = (double)i / (double)numberOfParameters;
+    const double ratio = (double)parameterIndex / (double)numberOfParameters;
     int progressNum = progressMin + static_cast<int>(ratio * progressMax);
     userData->computation->setProgress(progressNum);
 
@@ -343,20 +345,25 @@ int solveFunc_calculateJacobianMatrixForParameter(
     //  This will give us a jacobian matrix, without needing
     //  to set attribute values and re-evaluate them in Maya's
     //  DG.
-    IndexPair attrPair = userData->paramToAttrList[i];
+    IndexPair attrPair = userData->paramToAttrList[parameterIndex];
     AttrPtr attr = userData->attrList[attrPair.first];
     // TODO: Get the camera that is best for the attribute,
     //  not just index 0.
     MarkerPtr mkr = userData->markerList[0];
     CameraPtr cam = mkr->getCamera();
 
-    const double value = parameters[i];
+    const double value = parameters[parameterIndex];
     const double deltaA = calculateParameterDelta(value, delta, 1, attr);
 
-    std::vector<bool> frameIndexEnabled = userData->paramFrameList[i];
+    std::vector<bool> frameIndexEnabled;
+    frameIndexEnabled.reserve(userData->paramFrameList.height());
+    for (auto j = 0; j < userData->paramFrameList.height(); j++) {
+        const auto value = userData->paramFrameList.at(parameterIndex, j);
+        frameIndexEnabled.push_back(value);
+    }
 
     incrementJacobianIteration(userData);
-    paramListA[i] = paramListA[i] + deltaA;
+    paramListA[parameterIndex] = paramListA[parameterIndex] + deltaA;
     {
         timer.paramBenchTimer.start();
         timer.paramBenchTicks.start();
@@ -398,7 +405,7 @@ int solveFunc_calculateJacobianMatrixForParameter(
         // calculated errors (original and A).
         const double inv_delta = 1.0 / deltaA;
         for (size_t j = 0; j < errorListA.size(); ++j) {
-            const size_t num = (i * ldfjac) + j;
+            const size_t num = (parameterIndex * ldfjac) + j;
             const double x = (errorListA[j] - errors[j]) * inv_delta;
             userData->jacobianList[num] = x;
             jacobian[num] = x;
@@ -423,14 +430,14 @@ int solveFunc_calculateJacobianMatrixForParameter(
             // calculated errors (original and A).
             const double inv_delta = 1.0 / deltaA;
             for (size_t j = 0; j < errorListA.size(); ++j) {
-                const size_t num = (i * ldfjac) + j;
+                const size_t num = (parameterIndex * ldfjac) + j;
                 const double x = (errorListA[j] - errors[j]) * inv_delta;
                 userData->jacobianList[num] = x;
                 jacobian[num] = x;
             }
         } else {
             incrementJacobianIteration(userData);
-            paramListB[i] = paramListB[i] + deltaB;
+            paramListB[parameterIndex] = paramListB[parameterIndex] + deltaB;
             {
                 timer.paramBenchTimer.start();
                 timer.paramBenchTicks.start();
@@ -469,7 +476,7 @@ int solveFunc_calculateJacobianMatrixForParameter(
             assert(errorListA.size() == errorListB.size());
             double inv_delta = 0.5 / (std::fabs(deltaA) + std::fabs(deltaB));
             for (size_t j = 0; j < errorListA.size(); ++j) {
-                size_t num = (i * ldfjac) + j;
+                size_t num = (parameterIndex * ldfjac) + j;
                 double x = (errorListA[j] - errorListB[j]) * inv_delta;
                 userData->jacobianList[num] = x;
                 jacobian[num] = x;

@@ -117,7 +117,7 @@ MStatus MMSolverAffectsCmd::parseArgs(const MArgList &args) {
  * many functions can re-use the (cached) data.
  */
 MStatus setAttrsOnMarkers(MarkerPtrList markerList, AttrPtrList attrList,
-                          BoolList2D markerToAttrMapping,
+                          mmsolver::MatrixBool2D &markerToAttrMapping,
                           MDGModifier &addAttr_dgmod,
                           MDGModifier &setAttr_dgmod) {
     MStatus status = MStatus::kSuccess;
@@ -163,15 +163,10 @@ MStatus setAttrsOnMarkers(MarkerPtrList markerList, AttrPtrList attrList,
     }
     addAttr_dgmod.doIt();
 
-    std::vector<bool>::const_iterator cit_inner;
-    BoolList2D::const_iterator cit_outer;
-    int markerIndex = 0;
-    for (cit_outer = markerToAttrMapping.cbegin();
-         cit_outer != markerToAttrMapping.cend(); ++cit_outer) {
-        int attrIndex = 0;
-        std::vector<bool> inner = *cit_outer;
-        for (cit_inner = inner.cbegin(); cit_inner != inner.cend();
-             ++cit_inner) {
+    for (uint32_t markerIndex = 0; markerIndex < markerToAttrMapping.width();
+         ++markerIndex) {
+        for (uint32_t attrIndex = 0; attrIndex < markerToAttrMapping.height();
+             ++attrIndex) {
             MarkerPtr marker = markerList[markerIndex];
             AttrPtr attr = attrList[attrIndex];
 
@@ -197,14 +192,12 @@ MStatus setAttrsOnMarkers(MarkerPtrList markerList, AttrPtrList attrList,
             MPlug attrPlug =
                 markerNodeFn.findPlug(attrName, wantNetworkedPlug, &status);
 
-            bool value = *cit_inner;
+            bool value = markerToAttrMapping.at(markerIndex, attrIndex);
             int plugValue = static_cast<int>(value);
 
             status = setAttr_dgmod.newPlugValueInt(attrPlug, plugValue);
             CHECK_MSTATUS_AND_RETURN_IT(status);
-            ++attrIndex;
         }
-        ++markerIndex;
     }
 
     setAttr_dgmod.doIt();
@@ -219,19 +212,19 @@ MStatus MMSolverAffectsCmd::doIt(const MArgList &args) {
         return status;
     }
 
-    BoolList2D markerToAttrList;
+    mmsolver::MatrixBool2D markerToAttrMatrix;
     findMarkerToAttributeRelationship(m_markerList, m_attrList,
-                                      markerToAttrList, status);
+                                      markerToAttrMatrix, status);
     CHECK_MSTATUS_AND_RETURN_IT(status);
 
     if (m_mode == MODE_VALUE_ADD_ATTRS_TO_MARKERS) {
-        status = setAttrsOnMarkers(m_markerList, m_attrList, markerToAttrList,
+        status = setAttrsOnMarkers(m_markerList, m_attrList, markerToAttrMatrix,
                                    m_addAttr_dgmod, m_setAttr_dgmod);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     } else if (m_mode == MODE_VALUE_RETURN_STRING) {
         AffectsResult affectsResult;
         status = logResultsMarkerAffectsAttribute(
-            m_markerList, m_attrList, markerToAttrList, affectsResult);
+            m_markerList, m_attrList, markerToAttrMatrix, affectsResult);
         CHECK_MSTATUS_AND_RETURN_IT(status);
 
         MStringArray outResult;

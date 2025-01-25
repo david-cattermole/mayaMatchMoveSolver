@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, 2019, 2020 David Cattermole.
+ * Copyright (C) 2018, 2019, 2020, 2025 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -42,15 +42,16 @@
 
 // Dense LM solver using 'cminpack' library.
 #define SOLVER_TYPE_CMINPACK_LMDIF (1)
-#define SOLVER_TYPE_CMINPACK_LM_DIF_NAME "cminpack_lmdif"
+#define SOLVER_TYPE_CMINPACK_LMDIF_NAME "cminpack_lmdif"
 
 // Dense LM solver, with custom jacobian, using 'cminpack' library.
 #define SOLVER_TYPE_CMINPACK_LMDER (2)
-#define SOLVER_TYPE_CMINPACK_LM_DER_NAME "cminpack_lmder"
+#define SOLVER_TYPE_CMINPACK_LMDER_NAME "cminpack_lmder"
 
-// Dense LM solver using 'ceres',
-#define SOLVER_TYPE_CERES (3)
-#define SOLVER_TYPE_CERES_NAME "ceres"
+// Dense LM solver using 'ceres' using a trust-region
+// Levenberg-Marquardt algorithm.
+#define SOLVER_TYPE_CERES_LMDIF (3)
+#define SOLVER_TYPE_CERES_LMDIF_NAME "ceres_lmdif"
 
 // The default solver to use, if all solvers are available.
 #define SOLVER_TYPE_DEFAULT_VALUE SOLVER_TYPE_CMINPACK_LMDER
@@ -90,6 +91,7 @@
 #define PRINT_STATS_MODE_AFFECTS "affects"
 #define PRINT_STATS_MODE_USED_SOLVE_OBJECTS "usedSolveObjects"
 #define PRINT_STATS_MODE_DEVIATION "deviation"
+// #define PRINT_STATS_MODE_SOLVE_FRAMES "solveFrames"
 
 // Robust Loss Function Types.
 //
@@ -110,12 +112,14 @@
 #define CMINPACK_LMDIF_EPSILON2_DEFAULT_VALUE (1E-6)  // xtol
 #define CMINPACK_LMDIF_EPSILON3_DEFAULT_VALUE (1E-6)  // gtol
 #define CMINPACK_LMDIF_DELTA_DEFAULT_VALUE (1E-04)
-// cminpack lmdif only supports forward '0=forward' auto-diff'ing.
+// cminpack lmdif only supports forward '0=forward' differentiation.
 #define CMINPACK_LMDIF_AUTO_DIFF_TYPE_DEFAULT_VALUE (AUTO_DIFF_TYPE_FORWARD)
 #define CMINPACK_LMDIF_AUTO_PARAM_SCALE_DEFAULT_VALUE \
     (1)  // default is 'on=1 (mode=1)'
 #define CMINPACK_LMDIF_ROBUST_LOSS_TYPE_DEFAULT_VALUE (ROBUST_LOSS_TYPE_TRIVIAL)
 #define CMINPACK_LMDIF_ROBUST_LOSS_SCALE_DEFAULT_VALUE (1.0)
+// TODO: Technically this is actually for finite-differentiation, not
+// auto-differentiation
 #define CMINPACK_LMDIF_SUPPORT_AUTO_DIFF_FORWARD_VALUE true
 #define CMINPACK_LMDIF_SUPPORT_AUTO_DIFF_CENTRAL_VALUE false
 #define CMINPACK_LMDIF_SUPPORT_PARAMETER_BOUNDS_VALUE true
@@ -135,10 +139,33 @@
     (1)  // default is 'on=1 (mode=1)'
 #define CMINPACK_LMDER_ROBUST_LOSS_TYPE_DEFAULT_VALUE (ROBUST_LOSS_TYPE_TRIVIAL)
 #define CMINPACK_LMDER_ROBUST_LOSS_SCALE_DEFAULT_VALUE (1.0)
+// TODO: Technically this is actually for finite-differentiation, not
+// auto-differentiation
 #define CMINPACK_LMDER_SUPPORT_AUTO_DIFF_FORWARD_VALUE true
 #define CMINPACK_LMDER_SUPPORT_AUTO_DIFF_CENTRAL_VALUE true
 #define CMINPACK_LMDER_SUPPORT_PARAMETER_BOUNDS_VALUE true
 #define CMINPACK_LMDER_SUPPORT_ROBUST_LOSS_VALUE false
+
+// Ceres Levenberg-Marquardt Solver default flag values.
+//
+#define CERES_LMDIF_ITERATIONS_DEFAULT_VALUE (100)
+#define CERES_LMDIF_TAU_DEFAULT_VALUE (1E4)
+#define CERES_LMDIF_EPSILON1_DEFAULT_VALUE (1E-6)   // function_tolerance
+#define CERES_LMDIF_EPSILON2_DEFAULT_VALUE (1E-10)  // parameter_tolerance
+#define CERES_LMDIF_EPSILON3_DEFAULT_VALUE (1E-8)   // gradient_tolerance
+#define CERES_LMDIF_DELTA_DEFAULT_VALUE (1E-04)
+// cminpack lmder supports both forward '0=forward' and 'central' auto-diff'ing.
+#define CERES_LMDIF_AUTO_DIFF_TYPE_DEFAULT_VALUE (AUTO_DIFF_TYPE_FORWARD)
+#define CERES_LMDIF_AUTO_PARAM_SCALE_DEFAULT_VALUE \
+    (1)  // default is 'on=1 (mode=1)'
+#define CERES_LMDIF_ROBUST_LOSS_TYPE_DEFAULT_VALUE (ROBUST_LOSS_TYPE_TRIVIAL)
+#define CERES_LMDIF_ROBUST_LOSS_SCALE_DEFAULT_VALUE (1.0)
+// TODO: Technically this is actually for finite-differentiation, not
+// auto-differentiation
+#define CERES_LMDIF_SUPPORT_AUTO_DIFF_FORWARD_VALUE false
+#define CERES_LMDIF_SUPPORT_AUTO_DIFF_CENTRAL_VALUE false
+#define CERES_LMDIF_SUPPORT_PARAMETER_BOUNDS_VALUE false
+#define CERES_LMDIF_SUPPORT_ROBUST_LOSS_VALUE false
 
 // Levmar Solver default flag values
 //
@@ -153,6 +180,8 @@
 #define LEVMAR_AUTO_PARAM_SCALE_DEFAULT_VALUE (0)
 #define LEVMAR_ROBUST_LOSS_TYPE_DEFAULT_VALUE (ROBUST_LOSS_TYPE_TRIVIAL)
 #define LEVMAR_ROBUST_LOSS_SCALE_DEFAULT_VALUE (1.0)
+// TODO: Technically this is actually for finite-differentiation, not
+// auto-differentiation
 #define LEVMAR_SUPPORT_AUTO_DIFF_FORWARD_VALUE true
 #define LEVMAR_SUPPORT_AUTO_DIFF_CENTRAL_VALUE true
 #define LEVMAR_SUPPORT_PARAMETER_BOUNDS_VALUE true

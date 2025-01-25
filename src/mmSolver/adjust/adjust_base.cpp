@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018, 2019, 2022 David Cattermole.
+ * Copyright (C) 2018, 2019, 2022, 2025 David Cattermole.
  *
  * This file is part of mmSolver.
  *
@@ -489,15 +489,15 @@ MStatus logResultsObjectCounts(const int numberOfParameters,
 /*
  * Print out the marker-to-attribute 'affects' relationship.
  *
- * markerToAttrList is expected to be pre-computed from the function
+ * markerToAttrMatrix is expected to be pre-computed from the function
  * 'getMarkerToAttributeRelationship'.
  */
-MStatus logResultsMarkerAffectsAttribute(const MarkerPtrList &markerList,
-                                         const AttrPtrList &attrList,
-                                         const BoolList2D &markerToAttrList,
-                                         AffectsResult &out_result) {
+MStatus logResultsMarkerAffectsAttribute(
+    const MarkerPtrList &markerList, const AttrPtrList &attrList,
+    const mmsolver::MatrixBool2D &markerToAttrMatrix,
+    AffectsResult &out_result) {
     MStatus status = MStatus::kSuccess;
-    out_result.fill(markerList, attrList, markerToAttrList);
+    out_result.fill(markerList, attrList, markerToAttrMatrix);
     return status;
 }
 
@@ -573,40 +573,31 @@ IndexCountMap _incrementMapIndex(const size_t key,
  * Split the given Markers and Attributes into both used and unused
  * objects.
  */
-MStatus splitUsedMarkersAndAttributes(const MarkerPtrList &markerList,
-                                      const AttrPtrList &attrList,
-                                      const BoolList2D &markerToAttrList,
-                                      MarkerPtrList &out_usedMarkerList,
-                                      MarkerPtrList &out_unusedMarkerList,
-                                      AttrPtrList &out_usedAttrList,
-                                      AttrPtrList &out_unusedAttrList) {
+MStatus splitUsedMarkersAndAttributes(
+    const MarkerPtrList &markerList, const AttrPtrList &attrList,
+    const mmsolver::MatrixBool2D &markerToAttrMatrix,
+    MarkerPtrList &out_usedMarkerList, MarkerPtrList &out_unusedMarkerList,
+    AttrPtrList &out_usedAttrList, AttrPtrList &out_unusedAttrList) {
     MStatus status = MStatus::kSuccess;
 
     IndexCountMap markerIndexUsedCount;
     IndexCountMap attrIndexUsedCount;
 
-    std::vector<bool>::const_iterator cit_inner;
-    BoolList2D::const_iterator cit_outer;
-    int markerIndex = 0;
-    for (cit_outer = markerToAttrList.cbegin();
-         cit_outer != markerToAttrList.cend(); ++cit_outer) {
-        int attrIndex = 0;
-        std::vector<bool> inner = *cit_outer;
-        for (cit_inner = inner.cbegin(); cit_inner != inner.cend();
-             ++cit_inner) {
+    for (uint32_t markerIndex = 0; markerIndex < markerToAttrMatrix.width();
+         ++markerIndex) {
+        for (uint32_t attrIndex = 0; attrIndex < markerToAttrMatrix.height();
+             ++attrIndex) {
             MarkerPtr marker = markerList[markerIndex];
             AttrPtr attr = attrList[attrIndex];
 
-            int value = *cit_inner;
+            bool value = markerToAttrMatrix.at(markerIndex, attrIndex);
             if (value == 1) {
                 markerIndexUsedCount =
                     _incrementMapIndex(markerIndex, markerIndexUsedCount);
                 attrIndexUsedCount =
                     _incrementMapIndex(attrIndex, attrIndexUsedCount);
             }
-            ++attrIndex;
         }
-        ++markerIndex;
     }
 
     _splitIntoUsedAndUnusedLists<MarkerPtr, MarkerPtrList>(
@@ -718,7 +709,8 @@ MStatus solveFrames(
     MarkerPtrList &unusedMarkerList, AttrPtrList &usedAttrList,
     AttrPtrList &unusedAttrList, const StiffAttrsPtrList &stiffAttrsList,
     const SmoothAttrsPtrList &smoothAttrsList,
-    const BoolList2D &markerToAttrList, SolverOptions &solverOptions,
+    const mmsolver::MatrixBool2D &markerToAttrMatrix,
+    SolverOptions &solverOptions,
     //
     const MGlobal::MMayaState &mayaSessionState, MDGModifier &out_dgmod,
     MAnimCurveChange &out_curveChange, MComputation &out_computation,
@@ -745,12 +737,11 @@ MStatus solveFrames(
     out_previousParamList.clear();
     out_jacobianList.clear();
 
-    int numberOfErrors = 0;
     int numberOfMarkerErrors = 0;
     int numberOfAttrStiffnessErrors = 0;
     int numberOfAttrSmoothnessErrors = 0;
     auto validMarkerList = MarkerPtrList();
-    numberOfErrors = countUpNumberOfErrors(
+    const int numberOfErrors = countUpNumberOfErrors(
         usedMarkerList, stiffAttrsList, smoothAttrsList, frameList,
 
         // Outputs
@@ -762,7 +753,6 @@ MStatus solveFrames(
            (numberOfMarkerErrors + numberOfAttrStiffnessErrors +
             numberOfAttrSmoothnessErrors));
 
-    int numberOfParameters = 0;
     auto camStaticAttrList = AttrPtrList();
     auto camAnimAttrList = AttrPtrList();
     auto staticAttrList = AttrPtrList();
@@ -770,8 +760,8 @@ MStatus solveFrames(
     auto paramLowerBoundList = std::vector<double>();
     auto paramUpperBoundList = std::vector<double>();
     auto paramWeightList = std::vector<double>();
-    auto paramFrameList = BoolList2D();
-    numberOfParameters = countUpNumberOfUnknownParameters(
+    auto paramFrameList = mmsolver::MatrixBool2D();
+    const int numberOfParameters = countUpNumberOfUnknownParameters(
         usedAttrList, frameList,
 
         // Outputs
@@ -788,12 +778,12 @@ MStatus solveFrames(
 
     // Expand the 'Marker to Attribute' relationship into errors and
     // parameter relationships.
-    auto errorToParamList = BoolList2D();
+    auto errorToParamList = mmsolver::MatrixBool2D();
     findErrorToParameterRelationship(usedMarkerList, usedAttrList, frameList,
 
                                      numberOfParameters, numberOfMarkerErrors,
                                      out_paramToAttrList, out_errorToMarkerList,
-                                     markerToAttrList,
+                                     markerToAttrMatrix,
 
                                      // Outputs
                                      errorToParamList, status);
@@ -819,7 +809,7 @@ MStatus solveFrames(
     if (out_cmdResult.printStats.affects) {
         assert(out_cmdResult.printStats.doNotSolve);
         status = logResultsMarkerAffectsAttribute(usedMarkerList, usedAttrList,
-                                                  markerToAttrList,
+                                                  markerToAttrMatrix,
                                                   out_cmdResult.affectsResult);
         CHECK_MSTATUS_AND_RETURN_IT(status);
     }
@@ -1327,7 +1317,10 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
     AttrPtrList usedAttrList;
     AttrPtrList unusedAttrList;
 
-    auto markerToAttrList = BoolList2D();
+    // Initialise 'markerToAttrMatrix' to assume all markers affect
+    // all attributes. This is the default assumption.
+    auto markerToAttrMatrix = mmsolver::MatrixBool2D();
+
     if (!solverOptions.removeUnusedMarkers &&
         !solverOptions.removeUnusedAttributes) {
         // All 'object relationships' will be ignored.
@@ -1336,23 +1329,20 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
         usedMarkerList = markerList;
         usedAttrList = attrList;
 
-        // Initialise 'markerToAttrList' to assume all markers affect
-        // all attributes. This is the default assumption.
-        markerToAttrList.resize(markerList.size());
-        auto defaultValue = true;
-        for (size_t i = 0; i < markerList.size(); ++i) {
-            markerToAttrList[i].resize(attrList.size(), defaultValue);
-        }
+        // Initialise 'markerToAttrMatrix' to assume all markers
+        // affect all attributes. This is the default assumption.
+        markerToAttrMatrix.reset(markerList.size(), attrList.size(),
+                                 /*initial_value=*/true);
     } else {
         // Query the relationship by pre-computed attributes on the
         // Markers. If the attributes do not exist, we assume all markers
         // affect all attributes (and therefore suffer a performance
         // problem).
-        getMarkerToAttributeRelationship(markerList, attrList, markerToAttrList,
-                                         status);
+        getMarkerToAttributeRelationship(markerList, attrList,
+                                         markerToAttrMatrix, status);
         CHECK_MSTATUS(status);
 
-        splitUsedMarkersAndAttributes(markerList, attrList, markerToAttrList,
+        splitUsedMarkersAndAttributes(markerList, attrList, markerToAttrMatrix,
                                       usedMarkerList, unusedMarkerList,
                                       usedAttrList, unusedAttrList);
 
@@ -1398,7 +1388,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
 
         if (usedObjectsChanged) {
             getMarkerToAttributeRelationship(usedMarkerList, usedAttrList,
-                                             markerToAttrList, status);
+                                             markerToAttrMatrix, status);
             CHECK_MSTATUS(status);
         }
     }
@@ -1423,7 +1413,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
         status = solveFrames(
             cameraList, bundleList, frameList, usedMarkerList, unusedMarkerList,
             usedAttrList, unusedAttrList, stiffAttrsList, smoothAttrsList,
-            markerToAttrList, solverOptions,
+            markerToAttrMatrix, solverOptions,
             //
             mayaSessionState, dgmod, curveChange, computation,
             //
@@ -1462,7 +1452,7 @@ bool solve_v1(SolverOptions &solverOptions, CameraPtrList &cameraList,
             status = solveFrames(
                 cameraList, bundleList, frames, usedMarkerList,
                 unusedMarkerList, usedAttrList, unusedAttrList, stiffAttrsList,
-                smoothAttrsList, markerToAttrList, solverOptions,
+                smoothAttrsList, markerToAttrMatrix, solverOptions,
                 //
                 mayaSessionState, dgmod, curveChange, computation,
                 //
@@ -1535,7 +1525,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
     StiffAttrsPtrList stiffAttrsList;
     SmoothAttrsPtrList smoothAttrsList;
 
-    auto markerToAttrList = BoolList2D();
+    auto markerToAttrMatrix = mmsolver::MatrixBool2D();
     if (!solverOptions.removeUnusedMarkers &&
         !solverOptions.removeUnusedAttributes) {
         // All 'object relationships' will be ignored.
@@ -1544,23 +1534,20 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
         usedMarkerList = markerList;
         usedAttrList = attrList;
 
-        // Initialise 'markerToAttrList' to assume all markers affect
+        // Initialise 'markerToAttrMatrix' to assume all markers affect
         // all attributes. This is the default assumption.
-        markerToAttrList.resize(markerList.size());
-        auto defaultValue = true;
-        for (size_t i = 0; i < markerList.size(); ++i) {
-            markerToAttrList[i].resize(attrList.size(), defaultValue);
-        }
+        markerToAttrMatrix.reset(markerList.size(), attrList.size(),
+                                 /*initial_value=*/true);
     } else {
         // Query the relationship by pre-computed attributes on the
         // Markers. If the attributes do not exist, we assume all markers
         // affect all attributes (and therefore suffer a performance
         // problem).
-        getMarkerToAttributeRelationship(markerList, attrList, markerToAttrList,
-                                         status);
+        getMarkerToAttributeRelationship(markerList, attrList,
+                                         markerToAttrMatrix, status);
         CHECK_MSTATUS(status);
 
-        splitUsedMarkersAndAttributes(markerList, attrList, markerToAttrList,
+        splitUsedMarkersAndAttributes(markerList, attrList, markerToAttrMatrix,
                                       usedMarkerList, unusedMarkerList,
                                       usedAttrList, unusedAttrList);
 
@@ -1604,7 +1591,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
 
         if (usedObjectsChanged) {
             getMarkerToAttributeRelationship(usedMarkerList, usedAttrList,
-                                             markerToAttrList, status);
+                                             markerToAttrMatrix, status);
             CHECK_MSTATUS(status);
         }
     }
@@ -1629,7 +1616,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
         status = solveFrames(
             cameraList, bundleList, frameList, usedMarkerList, unusedMarkerList,
             usedAttrList, unusedAttrList, stiffAttrsList, smoothAttrsList,
-            markerToAttrList, solverOptions,
+            markerToAttrMatrix, solverOptions,
             //
             mayaSessionState, dgmod, curveChange, computation,
             //
@@ -1668,7 +1655,7 @@ bool solve_v2(SolverOptions &solverOptions, CameraPtrList &cameraList,
             status = solveFrames(
                 cameraList, bundleList, frames, usedMarkerList,
                 unusedMarkerList, usedAttrList, unusedAttrList, stiffAttrsList,
-                smoothAttrsList, markerToAttrList, solverOptions,
+                smoothAttrsList, markerToAttrMatrix, solverOptions,
                 //
                 mayaSessionState, dgmod, curveChange, computation, jacobianList,
                 //

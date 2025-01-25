@@ -49,7 +49,4 @@ bool solve_3d_cminpack_lmder(SolverOptions &solverOptions,
                              std::vector<double> &paramWeightList,
                              SolverData &userData, SolverResult &solveResult);
 
-int solveFunc_cminpack_lmder(void *data, int m, int n, const double *x,
-                             double *fvec, double *fjac, int ldfjac, int iflag);
-
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_CMINPACK_LMDER_H

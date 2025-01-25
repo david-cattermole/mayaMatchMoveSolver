@@ -54,6 +54,9 @@
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
+// Forward declare.
+void solveFunc_levmar_bc_dif(double *p, double *x, int m, int n, void *data);
+
 bool solve_3d_levmar_bc_dif(SolverOptions &solverOptions,
                             int numberOfParameters, int numberOfErrors,
                             std::vector<double> &paramList,

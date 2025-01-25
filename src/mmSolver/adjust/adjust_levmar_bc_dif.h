@@ -88,6 +88,4 @@ bool solve_3d_levmar_bc_dif(SolverOptions &solverOptions,
                             SolverData &userData, SolverResult &solveResult,
                             MStringArray &outResult);
 
-void solveFunc_levmar_bc_dif(double *p, double *x, int m, int n, void *data);
-
 #endif  // MM_SOLVER_CORE_BUNDLE_ADJUST_LEVMAR_BC_DIF_H

@@ -61,6 +61,10 @@
 #include "mmSolver/utilities/debug_utils.h"
 #include "mmSolver/utilities/string_utils.h"
 
+// Forward declare.
+int solveFunc_cminpack_lmder(void *data, int m, int n, const double *x,
+                             double *fvec, double *fjac, int ldfjac, int iflag);
+
 bool solve_3d_cminpack_lmder(SolverOptions &solverOptions,
                              int numberOfParameters, int numberOfErrors,
                              std::vector<double> &paramList,

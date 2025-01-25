@@ -173,7 +173,7 @@ int countUpNumberOfErrors(
 
         xit = weightMaxPerFrame.find(frameIndex);
         assert(xit != weightMaxPerFrame.end());
-        double weight_max = xit->second;
+        const double weight_max = xit->second;
 
         weight = weight / weight_max;
         out_markerWeightList[i] = weight;
@@ -191,7 +191,7 @@ int countUpNumberOfErrors(
         // to be calculated.
         AttrPtr weightAttr = stiffAttrs->weightAttr;
         weightAttr->getValue(stiffValue, timeEvalMode);
-        bool useStiffness = stiffValue > 0.0;
+        const bool useStiffness = stiffValue > 0.0;
         if (useStiffness) {
             out_numberOfAttrStiffnessErrors++;
         }
@@ -207,7 +207,7 @@ int countUpNumberOfErrors(
         // to be calculated.
         AttrPtr weightAttr = smoothAttrs->weightAttr;
         weightAttr->getValue(smoothValue, timeEvalMode);
-        bool useSmoothness = smoothValue > 0.0;
+        const bool useSmoothness = smoothValue > 0.0;
         if (useSmoothness) {
             out_numberOfAttrSmoothnessErrors++;
         }

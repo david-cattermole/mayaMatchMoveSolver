@@ -663,19 +663,23 @@ class TestTransform(test_utils.UtilsTestCase):
         book_attrs = cache.get_attrs_for_node(book_tfm)
         self.assertEqual(list(book_attrs), ["worldMatrix[0]"])
 
-        attr_names_with_pivot = [
-            "worldMatrix[0]",
-            "matrix",
-            "parentInverseMatrix[0]",
-            "rotatePivotX",
-            "rotatePivotY",
-            "rotatePivotZ",
-        ]
+        attr_names_with_pivot = list(
+            sorted(
+                [
+                    "worldMatrix[0]",
+                    "matrix",
+                    "parentInverseMatrix[0]",
+                    "rotatePivotX",
+                    "rotatePivotY",
+                    "rotatePivotZ",
+                ]
+            )
+        )
         spine_attrs = cache.get_attrs_for_node(spine_tfm)
-        self.assertEqual(list(spine_attrs), attr_names_with_pivot)
+        self.assertEqual(list(sorted(spine_attrs)), attr_names_with_pivot)
 
         cover_attrs = cache.get_attrs_for_node(cover_tfm)
-        self.assertEqual(list(cover_attrs), attr_names_with_pivot)
+        self.assertEqual(list(sorted(cover_attrs)), attr_names_with_pivot)
 
         # Confirm matrix values in the cache are correct
         book_world_matrix = list(
